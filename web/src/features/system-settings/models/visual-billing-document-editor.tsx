@@ -290,12 +290,12 @@ function PricingRuleCard(
           aria-label={t('Pricing tier {{name}}', { name })}
         />
       }
-      className='bg-background data-open:border-info-soft dark:data-open:border-info min-w-0 overflow-hidden rounded-xl border'
+      className='bg-background data-open:border-info-soft dark:data-open:border-info min-w-0 overflow-hidden rounded-lg border'
     >
       <div className='flex items-start gap-1 p-3'>
         <CollapsibleTrigger
           aria-label={t('Edit pricing rule {{name}}', { name })}
-          className='flex min-w-0 flex-1 items-start gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-0'
+          className='flex min-w-0 flex-1 items-start gap-3 rounded-md text-left focus-visible:outline-1 focus-visible:outline-offset-0'
         >
           <Badge variant='secondary' className='mt-0.5 shrink-0 tabular-nums'>
             {props.number}

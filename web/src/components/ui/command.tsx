@@ -40,7 +40,7 @@ function Command({
     <CommandPrimitive
       data-slot='command'
       className={cn(
-        'bg-popover text-popover-foreground flex size-full flex-col overflow-hidden rounded-xl! p-1',
+        'bg-popover text-popover-foreground flex size-full flex-col overflow-hidden rounded-lg! p-1',
         className
       )}
       {...props}
@@ -70,7 +70,7 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent
         className={cn(
-          'top-1/3 translate-y-0 overflow-hidden rounded-xl! p-0',
+          'top-1/3 translate-y-0 overflow-hidden rounded-lg! p-0',
           className
         )}
         showCloseButton={showCloseButton}
@@ -90,7 +90,7 @@ function CommandInput({
       {/* 高度不再覆盖：InputGroup 与 Input 同高（--ds-control-height-md
           40px，规范 2.1 Input / InputGroup）。此前 h-8!（32px）让命令面板
           的搜索框比全站输入框矮一档。 */}
-      <InputGroup className='border-input/30 bg-input/30 rounded-lg! shadow-none! *:data-[slot=input-group-addon]:pl-2!'>
+      <InputGroup className='border-input/30 bg-input/30 rounded-md! shadow-none! *:data-[slot=input-group-addon]:pl-2!'>
         <CommandPrimitive.Input
           data-slot='command-input'
           className={cn(

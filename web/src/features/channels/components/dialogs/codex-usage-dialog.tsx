@@ -578,7 +578,7 @@ function RateLimitGroupSection(props: RateLimitGroupSectionProps) {
   const statusBadge = getUsageStatusBadge(props.source?.rate_limit, t)
 
   return (
-    <section className='bg-muted/40 flex flex-col gap-3 rounded-xl p-3'>
+    <section className='bg-muted/40 flex flex-col gap-3 rounded-lg p-3'>
       <SectionHeading title={props.title} description={props.description}>
         {statusBadge}
       </SectionHeading>

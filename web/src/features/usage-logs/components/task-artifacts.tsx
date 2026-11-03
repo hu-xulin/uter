@@ -300,7 +300,7 @@ function TaskArtifacts(props: TaskArtifactsProps) {
   if (artifactsQuery.isPending) {
     return (
       <div aria-label={t('Loading...')}>
-        <Skeleton className='aspect-video min-h-48 w-full rounded-xl' />
+        <Skeleton className='aspect-video min-h-48 w-full rounded-lg' />
       </div>
     )
   }

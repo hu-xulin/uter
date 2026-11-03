@@ -35,7 +35,7 @@ export function LoadingSkeleton(props: LoadingSkeletonProps) {
         <Skeleton className='mt-4 h-10 w-full max-w-2xl sm:mt-6' />
       </div>
       <div className='grid gap-4 xl:grid-cols-[280px_minmax(0,1fr)]'>
-        <div className='hidden self-start rounded-xl border p-3 xl:block'>
+        <div className='hidden self-start rounded-lg border p-3 xl:block'>
           <Skeleton className='mb-4 h-5 w-24' />
           {Array.from({ length: 5 }, (_, index) => (
             <div
@@ -52,7 +52,7 @@ export function LoadingSkeleton(props: LoadingSkeletonProps) {
           ))}
         </div>
         <div className='flex min-w-0 flex-col gap-4'>
-          <div className='flex flex-wrap items-center justify-between gap-3 rounded-xl border p-3'>
+          <div className='flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3'>
             <Skeleton className='h-7 w-20' />
             <div className='flex flex-wrap gap-2'>
               <Skeleton className='h-7 w-32' />
@@ -61,7 +61,7 @@ export function LoadingSkeleton(props: LoadingSkeletonProps) {
             </div>
           </div>
           {props.viewMode === VIEW_MODES.TABLE ? (
-            <div className='overflow-hidden rounded-xl border'>
+            <div className='overflow-hidden rounded-lg border'>
               {Array.from({ length: 10 }, (_, index) => (
                 <div
                   key={index}

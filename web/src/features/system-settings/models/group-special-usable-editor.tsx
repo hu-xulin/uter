@@ -53,7 +53,7 @@ import {
 } from '@/components/ui/select'
 
 const sectionCardClassName =
-  'relative ring-0 before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:border before:border-border/90'
+  'relative ring-0 before:pointer-events-none before:absolute before:inset-0 before:rounded-lg before:border before:border-border/90'
 const sectionHeaderClassName = 'border-b bg-muted/20'
 
 type Rule = {

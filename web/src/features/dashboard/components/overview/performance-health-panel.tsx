@@ -166,7 +166,7 @@ function MetricCell(props: {
 }) {
   const Icon = props.icon
   return (
-    <div className='bg-muted/40 rounded-xl px-3 py-2.5'>
+    <div className='bg-muted/40 rounded-lg px-3 py-2.5'>
       <div className='text-muted-foreground flex items-center gap-1.5 text-sm font-medium'>
         <IconBadge tone={props.tone} size='xs'>
           <Icon />

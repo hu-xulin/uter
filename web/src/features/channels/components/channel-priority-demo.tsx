@@ -109,7 +109,7 @@ export function ChannelPriorityDemo(props: {
       <ol
         aria-label={card ? t('Card view') : t('Table view')}
         className={cn(
-          'bg-muted/30 relative m-0 list-none overflow-hidden rounded-xl border p-0',
+          'bg-muted/30 relative m-0 list-none overflow-hidden rounded-lg border p-0',
           card ? 'h-60' : 'h-52'
         )}
       >

@@ -69,7 +69,7 @@ function UsageLogsMobileSkeleton(props: { separate: boolean }) {
           key={i}
           className={
             props.separate
-              ? 'border-border/60 bg-card space-y-3 rounded-xl border p-3.5'
+              ? 'border-border/60 bg-card space-y-3 rounded-lg border p-3.5'
               : 'border-border/40 space-y-2.5 border-b p-3 last:border-b-0'
           }
         >
@@ -295,7 +295,7 @@ export function UsageLogsMobileList<TData>({
             key={row.id}
             className={cn(
               logCategory === 'common'
-                ? 'border-border/60 bg-card min-w-0 rounded-xl border p-3.5'
+                ? 'border-border/60 bg-card min-w-0 rounded-lg border p-3.5'
                 : 'border-border/40 border-b border-l-2 border-l-transparent p-3 transition-colors last:border-b-0',
               tintClass
             )}

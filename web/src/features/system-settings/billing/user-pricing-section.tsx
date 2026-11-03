@@ -220,7 +220,7 @@ export function UserPricingSection({
         </SettingsFormGridItem>
 
         <SettingsFormGridItem span='full'>
-          <div className='bg-muted/20 space-y-3 rounded-xl border p-3'>
+          <div className='bg-muted/20 space-y-3 rounded-lg border p-3'>
             <div className='text-muted-foreground grid grid-cols-[1fr_1fr_1fr_1.2fr_auto] items-center gap-2 text-sm'>
               <span>
                 {t('Monthly spend from')} ({currencyUnit})

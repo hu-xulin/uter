@@ -231,7 +231,7 @@ export function PlaygroundParameterPanel(props: PlaygroundParameterPanelProps) {
           </TooltipContent>
         </Tooltip>
         <SheetContent
-          className='max-h-[85vh] overflow-hidden rounded-t-xl'
+          className='max-h-[85vh] overflow-hidden rounded-t-lg'
           side='bottom'
         >
           <SheetHeader>

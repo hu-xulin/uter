@@ -314,7 +314,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
   ]
 
   return (
-    <aside className={cn('bg-card rounded-xl border p-3', props.className)}>
+    <aside className={cn('bg-card rounded-lg border p-3', props.className)}>
       <div className='mb-2.5 flex items-center justify-between gap-2'>
         <div>
           {/* 侧栏是一张卡片，所以「筛选」是**卡片标题**（h3 18/600/26），

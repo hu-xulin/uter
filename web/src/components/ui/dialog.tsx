@@ -76,7 +76,7 @@ function DialogContent({
           // 纵向用 pt-6/pb-8 而非对称 padding：规范要求内容下留白比头部大，
           // 弹窗底部不至于顶手。 Footer 的负边距必须与这里的 px/pb 成对改动，
           // 否则底部操作区无法贴到弹窗底边。
-          'bg-popover text-popover-foreground ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 fixed top-[var(--dialog-viewport-center,50dvh)] left-1/2 z-50 grid max-h-[var(--dialog-available-height,calc(100dvh-2rem))] w-full overflow-y-auto overscroll-contain max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl px-6 pt-6 pb-8 text-sm ring-1 duration-100 outline-none sm:max-w-[26.25rem]',
+          'bg-popover text-popover-foreground ring-foreground/10 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 fixed top-[var(--dialog-viewport-center,50dvh)] left-1/2 z-50 grid max-h-[var(--dialog-available-height,calc(100dvh-2rem))] w-full overflow-y-auto overscroll-contain max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg px-6 pt-6 pb-8 text-sm ring-1 duration-100 outline-none sm:max-w-[26.25rem]',
           className
         )}
         {...props}
@@ -126,7 +126,7 @@ function DialogFooter({
       className={cn(
         // 规范 2.1 Dialog 底部操作区：内边距 24px。负边距与 Popup 的
         // px-6/pb-8 成对——把Footer 拉出内容区，贴到弹窗底边并通栏。
-        'bg-muted/50 -mx-6 -mb-8 flex flex-col-reverse gap-2 rounded-b-xl border-t p-6 sm:flex-row sm:justify-end',
+        'bg-muted/50 -mx-6 -mb-8 flex flex-col-reverse gap-2 rounded-b-lg border-t p-6 sm:flex-row sm:justify-end',
         className
       )}
       {...props}

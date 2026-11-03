@@ -413,22 +413,24 @@ For commercial licensing, please contact support@uter.ai
 /* ── Brand scale derived from the preset primary ──────────────────────── */
 /* 规范 2.0（§11.2）把品牌色拆成 6 条语义出口（primary / primary-strong /
  * hover-primary / primary-active / primary-subtle / primary-border）。
- * `:root` 里写的是默认品牌 #6565E8 的实测值；预设改了 `--primary` 之后，
+ * `:root` 里写的是默认品牌浅色 #5B5EE6 的实测值；预设改了 `--primary` 之后，
  * 其余 5 条必须跟着走，否则 rose-garden 的主按钮会在悬停时变成紫色。
  *
  * 这里用 color-mix 从 `--primary` 推导，而不是给 7 个预设各抄一份色阶
  * （百分比按 oklch 混合对默认主题实测值求解）：
- *   · 悬停/按下 = 同色相压暗（oklch L 对齐 0.847 / 0.745 → 87% / 78% 混黑；
- *     2026-11-03 拍板后**深色主题同样压暗**，不再提亮）
+ *   · 悬停/按下（浅色）= 同色相小步压暗（oklch L 对齐 0.933 / 0.878 →
+ *     93% / 88% 混黑；2026-11-03 终裁「柔和渐进式 Hover」）
+ *   · 悬停/按下（深色）= 小步提亮（深色主色本身是提亮档 #8B8DF5，
+ *     hover/active 混白再提亮 → 89% / 81% 混白）
  *   · 浅底      = 8% 品牌色叠在页面底色上（→ #F3F3FD，与规范一致）；
- *     深色底改为 24% 叠加（→ #161941 档）
+ *     深色底改为 24% 叠加（→ #25264A 档）
  *   · 描边      = 39% 品牌色叠在页面底色上（浅色 → #C4C4F6 档）；
  *     深色改为提亮（93% 品牌色 + 7% 白 → #7171EA 档，对深底 3:1）
  * 焦点环恒等于品牌色。 */
 [data-theme-preset]:not([data-theme-preset='default']) {
   --primary-strong: var(--primary);
-  --hover-primary: color-mix(in oklch, var(--primary) 87%, oklch(0 0 0));
-  --primary-active: color-mix(in oklch, var(--primary) 78%, oklch(0 0 0));
+  --hover-primary: color-mix(in oklch, var(--primary) 93%, oklch(0 0 0));
+  --primary-active: color-mix(in oklch, var(--primary) 88%, oklch(0 0 0));
   --primary-subtle: color-mix(in oklch, var(--primary) 8%, var(--background));
   --primary-border: color-mix(in oklch, var(--primary) 39%, var(--background));
   --ring: var(--primary);
@@ -436,9 +438,11 @@ For commercial licensing, please contact support@uter.ai
 }
 
 .dark [data-theme-preset]:not([data-theme-preset='default']) {
-  /* 深色动作梯回归品牌实色（2.0 §11.2）：与浅色同向压暗。 */
-  --hover-primary: color-mix(in oklch, var(--primary) 87%, oklch(0 0 0));
-  --primary-active: color-mix(in oklch, var(--primary) 78%, oklch(0 0 0));
+  /* 深色动作梯（2026-11-03 终裁「柔和渐进式 Hover」）：深色主色为提亮档
+   * #8B8DF5，hover / active 混白小步再提亮（步幅对齐默认主题
+   * #8B8DF5→#9799F7→#A1A3F8）。 */
+  --hover-primary: color-mix(in oklch, var(--primary) 89%, oklch(1 0 0));
+  --primary-active: color-mix(in oklch, var(--primary) 81%, oklch(1 0 0));
   --primary-subtle: color-mix(in oklch, var(--primary) 24%, var(--background));
   --primary-border: color-mix(in oklch, var(--primary) 93%, oklch(1 0 0));
 }
@@ -645,7 +649,8 @@ For commercial licensing, please contact support@uter.ai
 /* ── Sidebar active foreground（规范 §2.3）───────────────────────────────
  *
  * 左侧导航选中态的前景色必须与选中浅底 `primary-subtle` 配对达标
- * （普通文本 ≥ 4.5:1）。默认主题用的是 2.0 规范给定的 `#5959cc` / `#a2a2f8`。
+ * （普通文本 ≥ 4.5:1）。默认主题用的是规范给定的 `#5959cc` / `#8b8df5`
+ * （2026-11-03 复裁定）。
  *
  * 但预设主题会整体换掉 `--primary`（绿、玫红、青绿、橙……），若这里继续用
  * 固定的紫蓝值，选中行就会出现「红主题里的蓝字」。因此预设下改为**从该预设
@@ -655,12 +660,13 @@ For commercial licensing, please contact support@uter.ai
  * 靠顺序覆盖，所以不必逐个预设重复写 8 遍。
  */
 [data-theme-preset] {
-  /* 浅色：#6565E8 压深到 #5959CC 档（oklab L 对齐 → 91% 混黑）。 */
-  --sidebar-active-foreground: color-mix(in oklab, var(--primary) 91%, #000);
+  /* 浅色：#5B5EE6 压深到 #5959CC 档（oklab L 对齐 → 94.6% ≈ 95% 混黑）。 */
+  --sidebar-active-foreground: color-mix(in oklab, var(--primary) 95%, #000);
 }
 .dark [data-theme-preset] {
-  /* 深色：文字出口不跟动作梯走（2.0 §11.2），提亮到 #A2A2F8 档。 */
-  --sidebar-active-foreground: color-mix(in oklab, var(--primary) 60%, #fff);
+  /* 深色：主色本身已是提亮档（#8B8DF5，on #25264A = 4.97:1 达 AA），
+   * 选中态文字直接取主色。 */
+  --sidebar-active-foreground: var(--primary);
 }
 
 /* ── Border radius ────────────────────────────────────────────────────── */

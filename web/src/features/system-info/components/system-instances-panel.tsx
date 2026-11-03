@@ -217,7 +217,7 @@ function ResourceCell(props: ResourceCellProps) {
   return (
     <TooltipProvider delay={100}>
       <Tooltip>
-        <TooltipTrigger className='block w-full rounded-sm text-left focus-visible:ring-2 focus-visible:outline-none'>
+        <TooltipTrigger className='block w-full rounded-sm text-left focus-visible:ring-1 focus-visible:outline-none'>
           {content}
         </TooltipTrigger>
         <TooltipContent className='max-w-80'>{props.tooltip}</TooltipContent>
@@ -297,7 +297,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                         {shouldConfigure && (
                           <Popover>
                             <PopoverTrigger
-                              className='inline-flex shrink-0 rounded-full focus-visible:ring-2 focus-visible:outline-none'
+                              className='inline-flex shrink-0 rounded-full focus-visible:ring-1 focus-visible:outline-none'
                               aria-label={t('Configure NODE_NAME')}
                             >
                               <Badge
@@ -368,7 +368,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                   <TooltipProvider delay={100}>
                     <Tooltip>
                       <TooltipTrigger
-                        className='inline-flex shrink-0 rounded-full focus-visible:ring-2 focus-visible:outline-none'
+                        className='inline-flex shrink-0 rounded-full focus-visible:ring-1 focus-visible:outline-none'
                         aria-label={t('Node role')}
                       >
                         <Badge variant='outline'>{roleLabel(instance)}</Badge>

@@ -333,7 +333,7 @@ export function SetupWizard() {
                 return (
                   <li
                     key={step.titleKey}
-                    className={cn('rounded-xl border p-3', {
+                    className={cn('rounded-lg border p-3', {
                       'border-primary ring-primary/20 ring-2': isActive,
                       'border-primary/40 bg-primary-subtle':
                         !isActive && isCompleted,

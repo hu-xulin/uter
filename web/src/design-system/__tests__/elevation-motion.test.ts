@@ -55,13 +55,12 @@ function declaredVars(css: string): Set<string> {
 }
 
 describe('elevation tokens', () => {
-  it('declares four elevation steps, one hover step, plus one glow', () => {
+  it('declares four elevation steps, plus one glow', () => {
     const vars = declaredVars(elevationCss)
     const elevation = [...vars]
       .filter((v) => v.startsWith('--ds-elevation-'))
       .sort()
     expect(elevation).toEqual([
-      '--ds-elevation-card-hover',
       '--ds-elevation-marketing',
       '--ds-elevation-none',
       '--ds-elevation-overlay',
@@ -74,14 +73,13 @@ describe('elevation tokens', () => {
   })
 
   it('keeps the gate allowlist in sync with the declared steps', () => {
-    // 门禁只认 `ELEVATION_TOKENS` 里的六个写法；新增档位必须两处一起改。
+    // 门禁只认 `ELEVATION_TOKENS` 里的五个写法；新增档位必须两处一起改。
     const expected = [
       'shadow-(--ds-elevation-none)',
       'shadow-(--ds-elevation-popover)',
       'shadow-(--ds-elevation-overlay)',
       'shadow-(--ds-elevation-raised)',
       'shadow-(--ds-elevation-marketing)',
-      'shadow-(--ds-elevation-card-hover)',
       'shadow-(--ds-glow-online)',
     ]
     for (const token of expected) {

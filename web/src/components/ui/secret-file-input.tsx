@@ -226,7 +226,7 @@ export function SecretFileInput({
                 buttonVariants({ variant: 'outline', size: 'sm' }),
                 'pointer-events-none',
                 'peer-hover:bg-muted peer-hover:text-foreground',
-                'peer-focus-visible:border-ring peer-focus-visible:ring-2 peer-focus-visible:ring-ring',
+                'peer-focus-visible:border-ring peer-focus-visible:ring-1 peer-focus-visible:ring-ring',
                 (disabled || reading) && 'opacity-50'
               )}
             >

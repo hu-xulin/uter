@@ -81,7 +81,7 @@ function ApiKeysMobileSkeleton() {
       {API_KEYS_MOBILE_SKELETON_IDS.map((id) => (
         <div
           key={id}
-          className='border-border/60 bg-card space-y-2 rounded-xl border p-3.5'
+          className='border-border/60 bg-card space-y-2 rounded-lg border p-3.5'
         >
           <div className='flex items-center justify-between'>
             <Skeleton className='h-4 w-32' />
@@ -148,7 +148,7 @@ function ApiKeysMobileList({
           <div
             key={row.id}
             className={cn(
-              'border-border/60 bg-card min-w-0 space-y-2 rounded-xl border p-3.5 text-xs',
+              'border-border/60 bg-card min-w-0 space-y-2 rounded-lg border p-3.5 text-xs',
               isDisabledApiKeyRow(apiKey) && DISABLED_ROW_MOBILE
             )}
           >

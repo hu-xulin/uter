@@ -1295,7 +1295,7 @@ function FailureDetailsSheet({
         side={isMobile ? 'bottom' : 'right'}
         className={
           isMobile
-            ? sideDrawerContentClassName('h-auto max-h-[85dvh] rounded-t-xl')
+            ? sideDrawerContentClassName('h-auto max-h-[85dvh] rounded-t-lg')
             : sideDrawerContentClassName('sm:max-w-lg')
         }
       >

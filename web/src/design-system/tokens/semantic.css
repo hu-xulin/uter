@@ -91,20 +91,20 @@ For commercial licensing, please contact support@uter.ai
   --ds-weight-bold: var(--primitive-weight-bold);
 
   /* ── 语义圆角（design-system-2.0 §13.4）────────────────────────────── */
-  --ds-radius-xs: var(--primitive-radius-xs); /* 6.4px 极小徽标、内嵌标记 */
-  --ds-radius-sm: var(--primitive-radius-sm); /* 9.6px 关闭按钮、密集控件点击区 */
+  --ds-radius-xs: var(--primitive-radius-xs); /* 6px 极小徽标、内嵌标记 */
+  --ds-radius-sm: var(--primitive-radius-sm); /* 8px 关闭按钮、密集控件点击区 */
   --ds-radius-md: var(
     --primitive-radius-md
-  ); /* 12.8px 标签页触发器、侧栏菜单项 */
+  ); /* 10px 按钮、输入框、标签页触发器（默认控件档） */
   --ds-radius-lg: var(
     --primitive-radius-lg
-  ); /* 16px 按钮、输入框、图标按钮（控件默认） */
+  ); /* 12px 卡片、弹窗、标签页容器、图标按钮 */
   --ds-radius-xl: var(
     --primitive-radius-xl
-  ); /* 22.4px 卡片、弹窗、Toast */
-  --ds-radius-2xl: var(--primitive-radius-2xl); /* 28.8px 展示型容器 */
-  --ds-radius-3xl: var(--primitive-radius-3xl); /* 35.2px 大型展示容器 */
-  --ds-radius-4xl: var(--primitive-radius-4xl); /* 44.8px 胶囊大标签等 */
+  ); /* 14px 强调容器、大圆角方形头像 */
+  --ds-radius-2xl: var(--primitive-radius-2xl); /* 16px 展示型卡片 */
+  --ds-radius-3xl: var(--primitive-radius-3xl); /* 18px 大型展示容器 */
+  --ds-radius-4xl: var(--primitive-radius-4xl); /* 20px 胶囊大标签等 */
   --ds-radius-full: var(
     --primitive-radius-full
   ); /* 胶囊徽标、圆形头像、开关轨道 */
@@ -114,11 +114,12 @@ For commercial licensing, please contact support@uter.ai
   --ds-stroke-color-border: var(--border);
   --ds-stroke-color-input: var(--input);
   --ds-stroke-color-destructive: var(--destructive);
-  /* 焦点环恒 2px（design-system-2.0 §13.5「2px 满色、贴边」）。
-   * 历史：2026-10-29 由「表单 1px / 其余 2px」统一收窄到 1px；2.0 起裁定
-   * 回 2px 满色。全站仍只读这一个 Token，原生元素兜底与组件层
-   * （`focus-visible:ring-2`）同读它，改值必须两处同步。 */
-  --ds-focus-ring-width: 2px;
+  /* 焦点环恒 1px 满色（2026-11-03 复裁定，回到 2026-10-29 口径）。
+   * 历史：2026-10-29 由「表单 1px / 其余 2px」统一收窄到 1px；
+   * design-system-2.0 曾改回 2px，2026-11-03 复裁定维持 1px —— 两档并存
+   * 会让同一次 Tab 里环「跳一下」。全站仍只读这一个 Token，原生元素
+   * 兜底与组件层（`focus-visible:ring-1`）同读它，改值必须两处同步。 */
+  --ds-focus-ring-width: 1px;
   --ds-focus-ring-color: var(--ring);
 
   /* ── 语义图标（规范 §2.2 Icons，2026-10-28 13:24 版）──────────────────
