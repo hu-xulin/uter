@@ -201,11 +201,11 @@ For commercial licensing, please contact support@uter.ai
 /* ── 多行主标题行高 ───────────────────────────────────────────────────
  * 这一条**故意放在 `@layer components` 之外**。
  *
- * 唯一用途就是压过 `text-3xl` / `text-4xl` 自带的 line-height：调用方
- * 需要保留 Tailwind 的响应式字号（移动端 28px、桌面 36px），只把行高
+ * 唯一用途就是压过 `text-4xl` / `text-5xl` 自带的 line-height：调用方
+ * 需要保留 Tailwind 的响应式字号（移动端 30px、桌面 36px），只把行高
  * 换成多行档。放在 components 层会被 utilities 层覆盖，等于没写。
  *
- * 用法：<h1 className='ds-heading--display-multiline text-3xl md:text-4xl'>
+ * 用法：<h1 className='ds-heading--display-multiline text-4xl md:text-5xl'>
  */
 .ds-heading--display-multiline {
   line-height: var(--ds-line-display-multiline);

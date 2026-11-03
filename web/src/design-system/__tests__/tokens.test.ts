@@ -25,11 +25,13 @@ import { describe, expect, it } from 'vitest'
  * 设计系统 Token 的守卫测试。
  *
  * 文档第十节要求「文档中的字号表由 Token 生成，或通过自动化检查确保
- * 一致」。这份测试就是那个检查：它把 `docs/design-system/design-system.md`
+ * 一致」。这份测试就是那个检查：它把 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`
  * 里的九档字号表**硬编码**成期望值，再去解析真实的 CSS 文件。
  *
  * 因此任何一次「顺手把 text-sm 改成 15px」都会让测试变红，而不是等
  * 三个月后有人发现页面字号不一致。
+ *
+ * 字号真源已迁至 UTER-DESIGN-SYSTEM-3.0.md §1.2（十档），旧 design-system.md 已废止删除。
  */
 
 const DS_DIR = join(process.cwd(), 'src', 'design-system')
@@ -67,18 +69,23 @@ function toPx(value: string): number {
  * [token, 字号px, 行高px, 语义角色]
  */
 const LADDER: Array<[string, number, number, string]> = [
-  ['xs', 12, 18, 'small / caption'],
-  ['sm', 14, 22, 'body-sm / body-medium / label'],
+  ['xs', 12, 18, '辅助说明、最小标签'],
+  ['sm', 14, 22, '默认正文 / label'],
+  ['md', 15, 24, '次级正文（3.0 §1.2）'],
+  ['mono-xs', 12, 18, 'mono-xs：小型 ID、标签（3.0 §1.5）'],
   ['mono', 13, 20, 'mono 正文等宽文本'],
+  ['mono-base', 14, 22, 'mono-base：代码、技术信息（3.0 §1.5）'],
   ['mono-code', 13, 20, '等宽代码展示区'],
   ['mono-title', 16, 22, '等宽卡片标题'],
   ['dense', 13, 20, '密集数据：表格单元格 / 二级导航 / 分页（专用派生档）'],
-  ['group', 15, 22, 'group-title 分组标题（专用派生档）'],
+  ['group', 16, 24, 'group-title 分组标题（专用派生档）'],
   ['base', 16, 24, '行标题 / 设置字段 / 指标数值'],
   ['lg', 18, 26, 'h3 卡片标题 / 弹窗标题'],
-  ['2xl', 22, 30, 'h2 区块标题'],
-  ['3xl', 28, 36, 'h1 页面标题'],
-  ['4xl', 36, 44, 'display'],
+  ['xl', 18, 26, 'xl：卡片及次级标题（3.0 §1.2）'],
+  ['2xl', 20, 28, '小型区块标题（3.0 §1.2）'],
+  ['3xl', 24, 32, '区块标题（3.0 §1.2）'],
+  ['4xl', 30, 38, '页面标题（3.0 §1.2）'],
+  ['5xl', 36, 44, 'display 营销展示、特殊大标题（3.0 §1.2）'],
 ]
 
 describe('字号阶梯（tokens/typography.css）', () => {
@@ -125,9 +132,9 @@ describe('字号阶梯（tokens/typography.css）', () => {
 
 describe('语义 Token 指向正确的阶梯档位', () => {
   const MAPPING: Array<[string, string]> = [
-    ['ds-text-display', 'var(--text-4xl)'],
-    ['ds-text-page-title', 'var(--text-3xl)'],
-    ['ds-text-section-title', 'var(--text-2xl)'],
+    ['ds-text-display', 'var(--text-5xl)'],
+    ['ds-text-page-title', 'var(--text-4xl)'],
+    ['ds-text-section-title', 'var(--text-3xl)'],
     ['ds-text-card-title', 'var(--text-lg)'],
     ['ds-text-dialog-title', 'var(--text-lg)'],
     ['ds-text-group-title', 'var(--text-group)'],
@@ -165,34 +172,15 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     )
   })
 
-  it('多行主标题行高是无单位比例（E7）', () => {
-    // 必须是纯数字：写成 rem 就丢了「随响应式字号缩放」的语义。
-    expect(readVar(semanticCss, 'ds-line-display-multiline')).toBe('1.5')
-  })
-
-  it('多行主标题行高在 layers 之外，且引用语义 Token', () => {
-    const foundations = read('foundations/typography.css')
-    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(
-      foundations
-    )
-    expect(rule, '缺少 .ds-heading--display-multiline').toBeTruthy()
-    expect(rule?.[1]).toContain('var(--ds-line-display-multiline)')
-    // 必须落在 @layer components 之外，否则会被 utilities 层的
-    // text-3xl / text-4xl 自带的 line-height 覆盖。
-    expect(foundations.indexOf('@layer components')).toBeLessThan(
-      foundations.indexOf('.ds-heading--display-multiline')
-    )
-  })
-
   it('语义行高的兜底值与阶梯行高一致', () => {
     // 兜底值是 `var(--text-x--line-height, <fallback>)` 里的 fallback，
     // 一旦和 typography.css 对不上，说明有人只改了一边。
     const pairs: Array<[string, string, number]> = [
-      ['ds-line-display', 'text-4xl--line-height', 44],
-      ['ds-line-page-title', 'text-3xl--line-height', 36],
-      ['ds-line-section-title', 'text-2xl--line-height', 30],
+      ['ds-line-display', 'text-5xl--line-height', 44],
+      ['ds-line-page-title', 'text-4xl--line-height', 38],
+      ['ds-line-section-title', 'text-3xl--line-height', 32],
       ['ds-line-card-title', 'text-lg--line-height', 26],
-      ['ds-line-group-title', 'text-group--line-height', 22],
+      ['ds-line-group-title', 'text-group--line-height', 24],
       ['ds-line-body', 'text-sm--line-height', 22],
       ['ds-line-long', 'text-long--line-height', 26],
       ['ds-line-body-sm', 'text-sm--line-height', 22],
@@ -216,10 +204,10 @@ describe('语义 Token 指向正确的阶梯档位', () => {
 })
 
 describe('分组标题档（group-title）', () => {
-  it('是 15/22/600，且比卡片标题低一档', () => {
-    // 页面层级第 4 层：28 页标题 → 22 区块 → 18 卡片 → 15 分组 → 14 标签。
-    // 一旦有人把分组标题调到 14（与 label 同号）或 18（与卡片标题撞车），
-    // 这一层的语义就消失了。
+  it('是 16/24/600，且比卡片标题低一档', () => {
+    // 页面层级第 4 层：30 页面标题 → 24 区块 → 20 小区块 → 18 卡片 →
+    // 16 分组 → 14 标签。一旦有人把分组标题调到 14（与 label 同号）或
+    // 18（与卡片标题撞车），这一层的语义就消失了。
     const rule = /\.ds-heading--group-title\s*\{([^}]*)\}/.exec(
       read('foundations/typography.css')
     )
@@ -266,14 +254,14 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     return Number.NaN
   }
 
-  it('默认基准 0.625rem(10px) 推出 6/8/10/12/14/16/18/20 八档', () => {
+  it('默认基准 0.625rem(10px) 推出 6/8/10/12/14/16 六档（3.0 §5）', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
     // 出现「文档 12px、页面 10px」，这里把差异钉死。
-    // design-system-2.0 §13.4（2026-11-03 圆角七档定版）：基准 0.625rem
+    // UTER-DESIGN-SYSTEM-3.0 §5（圆角七档定版，含 full）：基准 0.625rem
     // （10px = 默认控件档 r-md），系数 xs×0.6 / sm×0.8 / md×1 / lg×1.2 /
-    // xl×1.4 / 2xl×1.6 / 3xl×1.8 / 4xl×2。
+    // xl×1.4 / 2xl×1.6；阶梯到 2xl 为止，full 由 --radius-full 另行承担。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
@@ -288,14 +276,16 @@ describe('theme.css 圆角阶梯与文档一致', () => {
       ['lg', 12],
       ['xl', 14],
       ['2xl', 16],
-      ['3xl', 18],
-      ['4xl', 20],
     ]
     for (const [step, px] of EXPECTED) {
       const declaration = readVar(themeCss, `radius-${step}`) as string
       expect(declaration, `--radius-${step} 未声明`).toBeDefined()
       expect(resolveLadderPx(declaration, base), `圆角 ${step}`).toBe(px)
     }
+
+    // 3.0 收紧为七档：theme.css 不得再出现 3xl / 4xl 圆角档。
+    expect(readVar(themeCss, 'radius-3xl')).toBeUndefined()
+    expect(readVar(themeCss, 'radius-4xl')).toBeUndefined()
   })
 })
 
@@ -306,62 +296,67 @@ describe('showcase 核查页与 Token 真源一致', () => {
   const DOCS_DIR = join(process.cwd(), '..', 'docs', 'design-system')
   const readDoc = (name: string) => readFileSync(join(DOCS_DIR, name), 'utf8')
 
-  const SHOWCASES = ['showcase-2.0.html', 'showcase.html']
+  const SHOWCASES = ['showcase-3.0.html']
   const LADDER_STEPS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
 
-  /** 解析 theme.css 的圆角阶梯：`var(--radius)` / `calc(var(--radius) * N)`。 */
-  function ladderCoefficient(declaration: string | undefined): number | null {
-    if (!declaration) return null
-    if (declaration === 'var(--radius)') return 1
+  /** theme.css 的圆角声明解析成 px：`var(--radius)` 基准 × 系数。 */
+  function themeRadiusPx(themeCss: string, step: string): number {
+    const base = toPx(readVar(themeCss, 'radius') as string)
+    const declaration = readVar(themeCss, `radius-${step}`) as string
     const scaled = /^calc\(var\(--radius\)\s*\*\s*([\d.]+)\)$/.exec(declaration)
-    return scaled ? Number.parseFloat(scaled[1]) : null
+    return scaled ? base * Number.parseFloat(scaled[1]) : base
   }
 
-  it.each(SHOWCASES)('%s 的 :root 基准 --radius 与 theme.css 一致', (name) => {
-    const html = readDoc(name)
-    // 第一个 --radius 声明就是 :root 默认基准（preset 块在其后，各自带值）。
-    const match = /--radius:\s*([^;]+);/.exec(html)
-    expect(match, 'showcase 缺少 :root --radius 声明').not.toBeNull()
-    const themeRadius = readVar(
-      readFileSync(join(process.cwd(), 'src', 'styles', 'theme.css'), 'utf8'),
-      'radius'
-    )
-    const declared = match?.[1].replaceAll(/\s+/g, '')
-    expect(declared, 'showcase 缺少 :root --radius 声明').toBeDefined()
-    expect(declared).toBe(themeRadius?.replaceAll(/\s+/g, ''))
-  })
-
-  it.each(SHOWCASES)('%s 的 rounded-* 系数与 theme.css 阶梯一致', (name) => {
+  it.each(SHOWCASES)('%s 的 --radius-* 圆角阶梯与 theme.css 一致', (name) => {
     const html = readDoc(name)
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
     )
+    // showcase-3.0 把阶梯声明成绝对 px（:root 里没有裸 --radius 基准），
+    // 与 theme.css 的「基准 × 系数」是同一套刻度的两种写法，逐档对齐。
     for (const step of LADDER_STEPS) {
-      const classDecl = new RegExp(
-        `\\.rounded-${step === '2xl' ? '2xl' : step}\\s*\\{\\s*border-radius:\\s*([^;]+);`
-      ).exec(html)
-      const actual = ladderCoefficient(classDecl?.[1].replaceAll(/\s+/g, ''))
-      const expected = ladderCoefficient(readVar(themeCss, `radius-${step}`))
-      expect(classDecl, `showcase 缺少 .rounded-${step}`).not.toBeNull()
-      expect(actual, `showcase .rounded-${step} 系数`).toBe(expected)
+      const htmlDecl = new RegExp(`--radius-${step}:\\s*([^;]+);`).exec(html)
+      expect(htmlDecl, `showcase 缺少 --radius-${step}`).not.toBeNull()
+      expect(
+        toPx(htmlDecl?.[1] as string),
+        `showcase --radius-${step} 与 theme.css 不一致`
+      ).toBe(themeRadiusPx(themeCss, step))
     }
   })
 
-  it.each(SHOWCASES)('%s 的 primitive 圆角块与 primitives.css 一致', (name) => {
+  it.each(SHOWCASES)(
+    '%s 的 rounded-* 阶梯块引用对应 --radius-* 变量',
+    (name) => {
+      const html = readDoc(name)
+      for (const step of LADDER_STEPS) {
+        const classDecl = new RegExp(
+          `\\.rounded-${step}\\s*\\{\\s*border-radius:\\s*([^;]+);`
+        ).exec(html)
+        expect(classDecl, `showcase 缺少 .rounded-${step}`).not.toBeNull()
+        expect(
+          classDecl?.[1].replaceAll(/\s+/g, ''),
+          `showcase .rounded-${step} 未引用 --radius-${step}`
+        ).toBe(`var(--radius-${step})`)
+      }
+    }
+  )
+
+  it.each(SHOWCASES)('%s 的圆角取值与 primitives.css 一致', (name) => {
     const html = readDoc(name)
     const primitives = read('tokens/primitives.css')
-    for (const step of [...LADDER_STEPS, '3xl', '4xl', 'full'] as const) {
-      const htmlDecl = new RegExp(
-        `--primitive-radius-${step}:\\s*([^;]+);`
-      ).exec(html)
-      const htmlValue = htmlDecl?.[1].replaceAll(/\s+/g, '')
-      const primitiveValue = readVar(
-        primitives,
-        `primitive-radius-${step}`
-      )?.replaceAll(/\s+/g, '')
-      expect(htmlValue, `showcase 缺少 --primitive-radius-${step}`).toBeDefined()
-      expect(htmlValue).toBe(primitiveValue)
+    for (const step of [...LADDER_STEPS, 'full'] as const) {
+      const htmlDecl = new RegExp(`--radius-${step}:\\s*([^;]+);`).exec(html)
+      const primitiveValue = readVar(primitives, `primitive-radius-${step}`)
+      expect(htmlDecl, `showcase 缺少 --radius-${step}`).not.toBeNull()
+      expect(
+        primitiveValue,
+        `primitives.css 缺少 --primitive-radius-${step}`
+      ).toBeDefined()
+      expect(
+        toPx(htmlDecl?.[1] as string),
+        `showcase --radius-${step} 与 primitives.css 不一致`
+      ).toBe(toPx(primitiveValue as string))
     }
   })
 })

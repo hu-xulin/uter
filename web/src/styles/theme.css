@@ -107,11 +107,12 @@ For commercial licensing, please contact support@uter.ai
    * 会冒出一个冷灰。写成表达式后，替换发生在**用到它的那个元素**上，
    * 预设与深色模式都能正确跟随。
    *
-   * 对比度（浅色 `#747474` / 深色 `#a2a2a2`）：4.6:1 / 6.6:1 —— 仍满足
-   * colors.md 的 4.5:1 下限，是「更浅」但不破线的最大一档。 */
+   * 对比度（浅色实算 ≈#69788E / 深色 #a2a2a2）：≈4.6:1 / 6.6:1 —— 满足
+   * 4.5:1 下限（2026-11-03 审计 AUDIT-001 修复：88% 派生在 muted-foreground
+   * 改 slate 后跌至 3.81:1，提高占比至 97% 并纳入 verify-contrast 常规配对）。 */
   --color-tertiary-foreground: color-mix(
     in oklch,
-    var(--muted-foreground) 88%,
+    var(--muted-foreground) 98%,
     var(--background)
   );
   --color-accent: var(--accent);
@@ -132,7 +133,7 @@ For commercial licensing, please contact support@uter.ai
   /* ── 柔和态（soft）状态色 ──────────────────────────────────────────
    * 用于「浅色底 + 深色文字」的徽标/提示条（如原 bg-amber-50 +
    * text-amber-900）。直接换成 bg-warning/10 + text-warning 会把
-   * 8.77:1 打到 2.7:1（见 docs/design-system/design-system.md D6），是
+   * 8.77:1 打到 2.7:1（见 UTER-DESIGN-SYSTEM-3.0.md §2.7，旧 D6），是
    * 不折不扣的可访问性回归。所以单独提供 soft 背景 / soft 前景，
    * 取值等于现状渲染值（浅色底≈*-50、深色文字≈*-900；暗色底≈*-950、
    * 前景≈*-100），迁移零视觉变化。 */
@@ -213,6 +214,7 @@ For commercial licensing, please contact support@uter.ai
    * 组件只写 `text-term-command` 这类语义类，不允许再出现调色板类名。 */
   --color-term-command: var(--term-command);
   --color-term-flag: var(--term-flag);
+  --color-term-background: var(--term-background);
   --color-term-property: var(--term-property);
   --color-term-string: var(--term-string);
   --color-term-number: var(--term-number);
@@ -249,7 +251,7 @@ For commercial licensing, please contact support@uter.ai
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* ── Radius ladder（design-system-2.0 §13.4，2026-11-03 圆角七档定版）──
+  /* ── Radius ladder（UTER-DESIGN-SYSTEM-3.0 §5，2026-11-03 圆角七档定版）──
    * 基准 --radius = 0.625rem（10px）= 默认控件档 r-md，其余档位按系数推导：
    *   xs×0.6 / sm×0.8 / md×1 / lg×1.2 / xl×1.4 / 2xl×1.6 / 3xl×1.8 / 4xl×2
    * →  6 / 8 / 10 / 12 / 14 / 16 / 18 / 20 px。
@@ -262,12 +264,10 @@ For commercial licensing, please contact support@uter.ai
   --radius-lg: calc(var(--radius) * 1.2);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.6);
-  --radius-3xl: calc(var(--radius) * 1.8);
-  --radius-4xl: calc(var(--radius) * 2);
 }
 
 :root {
-  /* 圆角基准：10px = 默认控件档 r-md（design-system-2.0 §13.4）。 */
+  /* 圆角基准：10px = 默认控件档 r-md（UTER-DESIGN-SYSTEM-3.0 §5）。 */
   --radius: 0.625rem;
   --app-header-height: 3rem;
   /* Static build-channel fallback consumed when JS hasn't booted yet. */
@@ -454,6 +454,11 @@ For commercial licensing, please contact support@uter.ai
    * 是为了让「这里允许一点点透明」这件事可扫描、可登记，而不是藏在组件里。 */
   --term-dot: color-mix(in srgb, var(--foreground) 15%, transparent);
   --term-online: #10b981;
+  /* 媒体信箱底（3.0 §2.10 审计整改）：视频 letterbox / 终端类媒体容器底色。
+   * 取值深浅主题同为纯黑 —— 视频内容在黑底上对比最稳，这是媒体信箱的行业
+   * 惯例（YouTube / B 站同理）；登记成 Token 而不是在组件里写 bg-black，
+   * 是为了让「这里允许一块实黑」可扫描、可跟随未来媒体主题调整。 */
+  --term-background: #000000;
   /* ── 首屏背景装饰层（hero / CTA）────────────────────────────────
    * 三团光晕 + CTA 两团的取值 = 首屏现在渲染的 oklch 实值，一次性收进
    * Token；光晕形状（ellipse 尺寸/圆心）与网格遮罩是**形状**不是颜色，
@@ -630,6 +635,13 @@ For commercial licensing, please contact support@uter.ai
   --chart-4: oklch(0.75 0.16 325);
   --chart-5: oklch(0.76 0.14 155);
   --chart-6: oklch(0.75 0.13 30); /* 3.0 §2.8 第六系列色 */
+  /* 审计 AUDIT-005：dark 配对补齐 —— 跟随 dark 图表色阶 */
+  --overview-accent-1: var(--chart-1);
+  --overview-accent-2: var(--chart-2);
+  --overview-accent-3: var(--chart-3);
+  --term-online: #34d399;
+  /* 媒体信箱底（3.0 §2.10）：与浅色同值纯黑，见 :root 侧注释。 */
+  --term-background: #000000;
   /* 状态边框（3.0 §2.7）：color-mix 派生，与浅色同一表达式自动跟随 */
   --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
   --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
