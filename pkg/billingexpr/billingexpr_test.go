@@ -320,6 +320,69 @@ func TestRequestProbeMissingFieldReturnsNil(t *testing.T) {
 	}
 }
 
+// Regression: upstream-synced video billing expressions feed param()/u()
+// results straight into lower()/upper(). A missing key used to crash the
+// evaluator at runtime with "interface conversion: interface {} is nil, not
+// string" (observed on wan3.0-video's alibaba billing expression), which made
+// both pricing validation and settlement fail. The env-level lower/upper
+// overrides treat nil as "".
+func TestStringBuiltinsTolerateMissingParams(t *testing.T) {
+	exprStr := `has(lower(param("size")), "1080") || has(lower(param("metadata.size")), "1080") || lower(param("metadata.resolution")) == "1080p" || lower(param("parameters.resolution")) == "1080p" || has(lower(param("parameters.size")), "1080") ? 4 : 1`
+
+	// No body at all — every param() is nil (the pre-fix crash case).
+	cost, _, err := billingexpr.RunExprWithRequest(exprStr, billingexpr.TokenParams{}, billingexpr.RequestInput{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cost != 1 {
+		t.Errorf("cost = %f, want 1 (no param matched)", cost)
+	}
+
+	// 1080p present via param("size").
+	cost, _, err = billingexpr.RunExprWithRequest(
+		exprStr,
+		billingexpr.TokenParams{},
+		billingexpr.RequestInput{Body: []byte(`{"size":"1920*1080"}`)},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cost != 4 {
+		t.Errorf("cost = %f, want 4 (1080 matched)", cost)
+	}
+
+	// Missing u()/param() keys compare as "" through lower/upper.
+	cost, _, err = billingexpr.RunExprWithRequest(
+		`lower(param("missing")) == "" && upper(u("missing")) == "" ? 1 : 0`,
+		billingexpr.TokenParams{},
+		billingexpr.RequestInput{},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cost != 1 {
+		t.Errorf("cost = %f, want 1 (nil stringifies to empty)", cost)
+	}
+
+	// Non-string values still format through lower/upper.
+	cost, _, err = billingexpr.RunExprWithRequest(
+		`lower(u("seconds")) == "10" && upper(param("flag")) == "TRUE" ? 1 : 0`,
+		billingexpr.TokenParams{},
+		billingexpr.RequestInput{
+			Body: []byte(`{"flag":true}`),
+			Usage: map[string]any{
+				"seconds": 10.0,
+			},
+		},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cost != 1 {
+		t.Errorf("cost = %f, want 1 (non-string values format via Sprint)", cost)
+	}
+}
+
 func TestRequestProbeMultipleRulesTraceAllFactors(t *testing.T) {
 	exprStr := `(tier("base", p * 2)) * (param("service_tier") == "fast" ? 2 : 1) * (has(header("anthropic-beta"), "fast-mode-2026-02-01") ? 2.5 : 1)`
 	cost, trace, err := billingexpr.RunExprWithRequest(

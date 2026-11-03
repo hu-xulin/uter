@@ -110,3 +110,18 @@ func TestSmokeTestExprRejectsTaskUsageWithoutSchema(t *testing.T) {
 
 	require.NoError(t, SmokeTestExpr(`tier("base", p * 2 + c * 8)`))
 }
+
+// Regression for the reported production failure: the alibaba wan3.0-video
+// billing expression feeds param("...") results straight into lower(), and the
+// smoke-test requests carry no size/resolution keys, so evaluation crashed with
+// "interface conversion: interface {} is nil, not string" and blocked pricing
+// validation ("model wan3.0-video: plugin alibaba: usage vector ...: run
+// failed"). The nil-safe lower/upper env overrides resolve it.
+func TestSmokeTestTaskExprToleratesMissingRequestParams(t *testing.T) {
+	expression := `has(lower(param("size")), "1080") || has(lower(param("metadata.size")), "1080") || lower(param("metadata.resolution")) == "1080p" || lower(param("parameters.resolution")) == "1080p" || has(lower(param("parameters.size")), "1080") ? tier("fhd", u("seconds") * 0.8) : tier("other", u("seconds") * 0.2)`
+	schema := map[string]jsplugin.UsageFieldSchema{
+		"seconds":    {Type: "number", Unit: "second"},
+		"resolution": {Enum: []string{"480P", "720P", "1080P"}},
+	}
+	require.NoError(t, SmokeTestTaskExpr(expression, schema))
+}
