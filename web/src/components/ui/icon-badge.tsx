@@ -37,6 +37,7 @@ const iconBadgeVariants = cva(
         'chart-3': 'bg-chart-3/10 text-chart-3',
         'chart-4': 'bg-chart-4/10 text-chart-4',
         'chart-5': 'bg-chart-5/10 text-chart-5',
+        'chart-6': 'bg-chart-6/10 text-chart-6',
       },
       size: {
         // 图标字形落在规范 §2.2 的合法档位上：16 / 24（2026-10-28 10:58 版

@@ -34,6 +34,14 @@ const alertVariants = cva(
         default: 'bg-card text-card-foreground',
         destructive:
           'bg-card text-destructive *:data-[slot=alert-description]:text-destructive *:[svg]:text-current',
+        // 语义状态三变体（对齐 Toast 四态命名）：底色用 *-soft（双主题
+        // 各自给出），文字用 *-soft-foreground（软底上的 AA 对比度，
+        // 与 Badge 的 warning-soft-foreground 同一决策）。
+        success:
+          'bg-success-soft text-success-soft-foreground *:data-[slot=alert-description]:text-success-soft-foreground *:[svg]:text-current',
+        warning:
+          'bg-warning-soft text-warning-soft-foreground *:data-[slot=alert-description]:text-warning-soft-foreground *:[svg]:text-current',
+        info: 'bg-info-soft text-info-soft-foreground *:data-[slot=alert-description]:text-info-soft-foreground *:[svg]:text-current',
       },
     },
     defaultVariants: {

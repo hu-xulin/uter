@@ -314,22 +314,24 @@ export function PublicHeader(props: PublicHeaderProps) {
                 aria-label={t('Toggle navigation menu')}
               >
                 <div className='relative size-4'>
+                  {/* 3.0 §7 审计整改：汉堡线偏移网格化（4px 网格档），
+                      3/7/11px → 4/8/12px（top-1/2/3），开合动画节奏不变。 */}
                   <span
                     className={cn(
                       'ds-motion-marketing-fast absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all',
-                      mobileOpen ? 'top-[7px] rotate-45' : 'top-[3px]'
+                      mobileOpen ? 'top-2 rotate-45' : 'top-1'
                     )}
                   />
                   <span
                     className={cn(
-                      'ds-motion-marketing-fast absolute inset-x-0 top-[7px] block h-[1.5px] rounded-full bg-current transition-all',
+                      'ds-motion-marketing-fast absolute inset-x-0 top-2 block h-[1.5px] rounded-full bg-current transition-all',
                       mobileOpen ? 'scale-x-0 opacity-0' : 'opacity-100'
                     )}
                   />
                   <span
                     className={cn(
                       'ds-motion-marketing-fast absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all',
-                      mobileOpen ? 'top-[7px] -rotate-45' : 'top-[11px]'
+                      mobileOpen ? 'top-2 -rotate-45' : 'top-3'
                     )}
                   />
                 </div>

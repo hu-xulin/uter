@@ -1,0 +1,290 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+
+/* 智能客服挂件样式（UTER 3.0 语义 Token）。
+   颜色 / 字号 / 圆角 / 阴影全部取自设计系统变量，切换浅深主题或主题预设时自动一致。
+   原本散落在组件里的内联 style 已集中到此文件，减少内联样式数量、便于审计与维护。
+   唯一保留内联的是 BotIcon 的 SVG `fill`（品牌色跟随主题，var() 注入）。 */
+
+.cs-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483000;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--ds-radius-full);
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--ds-elevation-overlay);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.cs-fab:hover {
+  transform: translateY(-2px);
+}
+
+.cs-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 88px;
+  z-index: 2147483000;
+  width: 372px;
+  max-width: calc(100vw - 32px);
+  height: min(520px, calc(100dvh - 140px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--ds-elevation-overlay);
+  font-family: var(--font-ui);
+  animation: cs-in 0.18s ease-out;
+}
+
+.cs-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+}
+
+.cs-logo {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cs-title {
+  font-size: var(--ds-text-body);
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cs-close {
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font-size: var(--ds-text-group-title);
+  line-height: 1;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.cs-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--background);
+}
+
+.cs-bubble {
+  align-self: flex-end;
+  max-width: 84%;
+  padding: 10px 14px;
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xs)
+    var(--radius-xl);
+  font-size: var(--ds-text-body);
+  line-height: var(--ds-line-body);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--ds-elevation-popover);
+}
+
+.cs-reply {
+  align-self: flex-start;
+  max-width: 84%;
+  padding: 10px 14px;
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl)
+    var(--radius-xs);
+  font-size: var(--ds-text-body);
+  line-height: var(--ds-line-body);
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+}
+
+.cs-typing {
+  align-self: flex-start;
+  display: flex;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-xl) var(--radius-xl) var(--radius-xl)
+    var(--radius-xs);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.cs-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--ds-radius-full);
+  background: var(--muted-foreground);
+  animation: cs-blink 1.2s infinite;
+}
+.cs-dot:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.cs-dot:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+.cs-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 12px;
+  background: var(--background);
+  flex-shrink: 0;
+}
+
+.cs-preset {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: var(--ds-text-caption);
+  font-family: inherit;
+  padding: 6px 12px;
+  border-radius: var(--ds-radius-full);
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+.cs-preset:hover {
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+.cs-inputarea {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+}
+
+.cs-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: var(--ds-text-body);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.cs-input:focus {
+  /* 焦点环按规范 §1.4：1px（stroke-focus Outside 1px），走 ring Token，不用 3px 半透明手写色。 */
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+.cs-send {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  padding: 0 18px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--ds-text-body);
+  font-weight: 600;
+  transition:
+    opacity 0.15s,
+    filter 0.15s;
+  flex-shrink: 0;
+}
+.cs-send:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+/* Disabled 统一模式（3.0 §10.5）：用底色 + 文字双重信号区分，而非仅 opacity 蒙版。 */
+.cs-send:disabled {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+}
+
+.cs-powered {
+  text-align: center;
+  font-size: var(--ds-text-caption);
+  color: var(--muted-foreground);
+  padding: 7px 0 8px;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.cs-bot-icon {
+  display: block;
+}
+
+@keyframes cs-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cs-blink {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+}
