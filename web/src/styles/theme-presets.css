@@ -413,16 +413,16 @@ For commercial licensing, please contact support@uter.ai
 /* ── Brand scale derived from the preset primary ──────────────────────── */
 /* 规范 2.0（§11.2）把品牌色拆成 6 条语义出口（primary / primary-strong /
  * hover-primary / primary-active / primary-subtle / primary-border）。
- * `:root` 里写的是默认品牌浅色 #5B5EE6 的实测值；预设改了 `--primary` 之后，
+ * `:root` 里写的是默认品牌浅色 #5558D8（3.0 §2.2）的实测值；预设改了 `--primary` 之后，
  * 其余 5 条必须跟着走，否则 rose-garden 的主按钮会在悬停时变成紫色。
  *
  * 这里用 color-mix 从 `--primary` 推导，而不是给 7 个预设各抄一份色阶
  * （百分比按 oklch 混合对默认主题实测值求解）：
  *   · 悬停/按下（浅色）= 同色相小步压暗（oklch L 对齐 0.933 / 0.878 →
  *     93% / 88% 混黑；2026-11-03 终裁「柔和渐进式 Hover」）
- *   · 悬停/按下（深色）= 小步提亮（深色主色本身是提亮档 #8B8DF5，
+ *   · 悬停/按下（深色）= 小步提亮（3.0 深色主色 #A1A3F7，
  *     hover/active 混白再提亮 → 89% / 81% 混白）
- *   · 浅底      = 8% 品牌色叠在页面底色上（→ #F3F3FD，与规范一致）；
+ *   · 浅底      = 8% 品牌色叠在页面底色上（→ brand-soft #F0F0FF，与 3.0 一致）；
  *     深色底改为 24% 叠加（→ #25264A 档）
  *   · 描边      = 39% 品牌色叠在页面底色上（浅色 → #C4C4F6 档）；
  *     深色改为提亮（93% 品牌色 + 7% 白 → #7171EA 档，对深底 3:1）
