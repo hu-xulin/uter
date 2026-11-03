@@ -1,0 +1,43 @@
+--- Radius Token 映射（@theme --radius-*）
+259:  --radius-xs: calc(var(--radius) * 0.6);
+260:  --radius-sm: calc(var(--radius) * 0.8);
+261:  --radius-md: var(--radius);
+262:  --radius-lg: calc(var(--radius) * 1.2);
+263:  --radius-xl: calc(var(--radius) * 1.4);
+264:  --radius-2xl: calc(var(--radius) * 1.6);
+265:  --radius-3xl: calc(var(--radius) * 1.8);
+266:  --radius-4xl: calc(var(--radius) * 2);
+271:  --radius: 0.625rem;
+253:   * 基准 --radius = 0.625rem（10px）= 默认控件档 r-md，其余档位按系数推导：
+271:  --radius: 0.625rem;
+
+--- elevation.css 五档+glow
+25: *   --ds-elevation-none       none                              静止的页面内元素
+26: *   --ds-elevation-popover    0 1px 2px 0                       下拉面板 / 气泡 / 悬浮提示
+27: *   --ds-elevation-overlay    0 4px 6px -4px, 0 10px 15px -3px  弹窗 / 抽屉 / 浮层
+28: *   --ds-elevation-raised     0 12px 24px -12px, 0 2px 6px -2px 拖拽中的元素（瞬时离开文档流）
+29: *   --ds-elevation-marketing  0 20px 50px -25px                 营销展示卡片（脱离页面平面）
+30: *   --ds-glow-online          0 0 8px                           在线状态点（状态语义，不是层级）
+42: * `shadow-(--ds-elevation-raised)`。
+49:  --ds-elevation-none: none;
+50:  --ds-elevation-overlay:
+52:  --ds-elevation-popover: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+54:  --ds-elevation-raised:
+57:  --ds-elevation-marketing: 0 20px 50px -25px rgb(15 23 42 / 0.18);
+
+--- motion Token 定义位置
+brand-colors.ts
+chart-typography.ts
+colors.css
+elevation.css
+index.css
+primitives.css
+semantic.css
+spacing.css
+typography.css
+
+--- 唯一无限循环动画是什么
+src/features/customer-service/CustomerServiceWidget.tsx:471:                      animation: `cs-blink 1.2s ${i * 0.18}s infinite`,
+
+--- rounded-[2px] 位置
+src/components/ui/tooltip.tsx:77:              柔和过渡，既不会「秃」也不会露直角。此前这里写的是 `rounded-[2px]`，

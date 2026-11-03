@@ -1,0 +1,13 @@
+--- 已监听端口探测
+port 3000 OPEN
+port 3001 OPEN
+port 3200 OPEN
+--- playwright 安装
+playwright
+playwright-core
+25:    "test:visual:e2e": "playwright test --config e2e/visual/playwright.config.ts",
+26:    "test:visual:e2e:update": "playwright test --config e2e/visual/playwright.config.ts --update-snapshots",
+27:    "test:visual:e2e:auth": "playwright test --config e2e/visual/playwright.config.ts --project=auth-setup",
+100:    "@playwright/test": "^1.64.1",
+--- dev script
+    "dev": "rsbuild dev",

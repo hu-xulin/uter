@@ -1,0 +1,54 @@
+--- 5 个疑似 Dark 缺口 Token
+72:  --color-primary-subtle-hover: var(--primary-subtle-hover, var(--accent));
+79:  --color-destructive-subtle: var(--destructive-subtle, transparent);
+90:  --color-border-destructive-subtle: var(
+235:  --color-term-online: var(--term-online);
+237:  --color-overview-accent-1: var(--overview-accent-1);
+238:  --color-overview-accent-2: var(--overview-accent-2);
+239:  --color-overview-accent-3: var(--overview-accent-3);
+456:  --term-online: #10b981;
+471:  --overview-accent-1: oklch(0.72 0.18 250);
+472:  --overview-accent-2: oklch(0.65 0.15 200);
+473:  --overview-accent-3: oklch(0.7 0.12 280);
+557:  --border-destructive-subtle: #fecaca;
+562:  --primary-subtle-hover: color-mix(
+567:  --destructive-subtle: color-mix(
+749:  --border-destructive-subtle: #7f1d1d;
+
+## 2.3 Spacing 任意值
+src/features/channels/components/channel-priority-demo.tsx:142:p-[4.5rem]
+src/components/ui/tabs.tsx:44:p-[3px]
+src/components/layout/components/public-header.tsx:320:p-[7px]
+src/components/layout/components/public-header.tsx:320:p-[3px]
+src/components/layout/components/public-header.tsx:325:p-[7px]
+src/components/layout/components/public-header.tsx:332:p-[7px]
+src/components/layout/components/public-header.tsx:332:p-[11px]
+src/components/search.tsx:53:p-[0.3rem]
+count: src/features/organization/index.tsx:0
+
+## 2.4 Radius 分布
+ 342 rounded-lg
+ 241 rounded-md
+ 105 rounded-full
+  35 rounded-sm
+  26 rounded-none
+  14 rounded-2xl
+   6 rounded-xl
+   4 rounded-xs
+   1 rounded-[2px]
+
+## 2.5 Shadow
+40: * 不加阴影；Card 组件是唯一例外（悬停档，见下）。代码里写 `shadow-sm` /
+41: * `shadow-lg` 会被门禁 T6 拦下，引用 Token 的写法是
+42: * `shadow-(--ds-elevation-raised)`。
+--- 任意 shadow
+src/components/ui/sidebar.tsx:509:          'bg-background shadow-[0_0_0_1px_var(--sidebar-border)] hover:bg-muted hover:text-sidebar-foreground hover:shadow-[0_0_0_1px_var(--muted)]',
+
+## 2.6 Motion
+--- Reduced Motion
+src/styles/index.css:167:@media (prefers-reduced-motion: reduce) {
+src/styles/index.css:259:@media (prefers-reduced-motion: no-preference) {
+src/styles/index.css:448:@media (prefers-reduced-motion: reduce) {
+src/styles/index.css:477:@media (prefers-reduced-motion: reduce) {
+--- 无限循环动画处数
+       1
