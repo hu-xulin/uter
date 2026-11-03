@@ -20,6 +20,7 @@ For commercial licensing, please contact support@uter.ai
 package service
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/uter-ai/uter/pkg/billingexpr"
@@ -159,5 +160,121 @@ func TestDreamRouterScaledExprKeepsUnitPriceRatio(t *testing.T) {
 				t.Errorf("factor %v %s: got %v, want %v", factor, pair.field, pair.got, pair.want)
 			}
 		}
+	}
+}
+
+// TestDreamRouterDurationUnitPrices 锁定按秒计费视频模型的官方单价解析。
+//
+// 表达式取自上游 dreamrouter.ai /api/pricing 的真实记录（2026-11-03，
+// wan3.0-video）：ternary 链按请求参数选分辨率档，每档单价 = 美元/秒 ×
+// duration（缺省 5 秒）。兜底档（最后一支，720p）是上游定价页的默认档。
+func TestDreamRouterDurationUnitPrices(t *testing.T) {
+	const wan3Video = `has(lower(param("size")), "1080") || has(lower(param("metadata.size")), "1080") || lower(param("metadata.resolution")) == "1080p" || lower(param("parameters.resolution")) == "1080p" || has(lower(param("parameters.size")), "1080")
+  ? tier("1080p", (duration > 0 ? duration : 5) * 0.1791045)
+  : has(lower(param("size")), "480") || has(lower(param("metadata.size")), "480") || lower(param("metadata.resolution")) == "480p" || lower(param("parameters.resolution")) == "480p" || has(lower(param("parameters.size")), "480")
+  ? tier("480p", (duration > 0 ? duration : 5) * 0.0447761)
+  : tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`
+
+	prices, ok := dreamRouterDurationUnitPrices(wan3Video)
+	if !ok {
+		t.Fatal("duration unit prices not parsed")
+	}
+	// 基准价取兜底档（最后一支 = 720p），不是首档（1080p）。
+	if !nearlyEqualSync(prices.Input, 0.0895522) {
+		t.Errorf("input = %v, want 0.0895522 (fallback tier)", prices.Input)
+	}
+	if prices.Output != 0 || prices.Cache != 0 || prices.CreateCache != 0 {
+		t.Errorf("video models have no output/cache pricing: %+v", prices)
+	}
+
+	// token 表达式没有 duration 计价项，解不出来。
+	if _, ok := dreamRouterDurationUnitPrices(`tier("base", p * 5 + c * 30)`); ok {
+		t.Error("token expression should not parse as duration-priced")
+	}
+
+	// 非 duration 的括号乘法不误中。
+	if _, ok := dreamRouterDurationUnitPrices(`(tier("base", p * 2)) * (weekday("Asia/Shanghai") == 0 ? 0.5 : 1)`); ok {
+		t.Error("time-discount parenthesis should not parse as duration-priced")
+	}
+}
+
+// TestDreamRouterScaleExprDuration 验证按秒计费项随规则系数缩放，且缩放后
+// 的表达式仍可编译、解出的单价正好等于官方单价 × 系数。
+func TestDreamRouterScaleExprDuration(t *testing.T) {
+	const wan3Video = `has(lower(param("size")), "1080")
+  ? tier("1080p", (duration > 0 ? duration : 5) * 0.1791045)
+  : tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`
+
+	scaled, ok := dreamRouterScaleExpr(wan3Video, 1.1)
+	if !ok {
+		t.Fatal("scale: ok = false")
+	}
+	for _, coef := range []string{"0.19701495", "0.09850742"} {
+		if !strings.Contains(scaled, coef) {
+			t.Errorf("scaled expression missing coefficient %s: %s", coef, scaled)
+		}
+	}
+	// 原系数不得残留（否则重复同步会二次缩放）。
+	if strings.Contains(scaled, "0.1791045") || strings.Contains(scaled, "0.0895522") {
+		t.Errorf("scaled expression still contains original coefficients: %s", scaled)
+	}
+	if _, err := billingexpr.CompileFromCache(scaled); err != nil {
+		t.Errorf("scaled expression does not compile: %v", err)
+	}
+
+	// 缩放后的单价 = 官方单价 × factor（对齐复核的数学定义）。
+	official, _ := dreamRouterDurationUnitPrices(wan3Video)
+	got, ok := dreamRouterDurationUnitPrices(scaled)
+	if !ok {
+		t.Fatal("scaled expression not duration-parsable")
+	}
+	if !nearlyEqualSync(got.Input, official.Input*1.1) {
+		t.Errorf("input = %v, want %v", got.Input, official.Input*1.1)
+	}
+}
+
+// TestDreamRouterComputeTargetDurationVideo 锁定 wan3.0-video 的同步目标计算：
+// 从「tiered_unparsable 跳过」变为「tiered + 缩放表达式落库」。
+func TestDreamRouterComputeTargetDurationVideo(t *testing.T) {
+	const wan3Video = `has(lower(param("size")), "1080") || lower(param("metadata.resolution")) == "1080p"
+  ? tier("1080p", (duration > 0 ? duration : 5) * 0.1791045)
+  : tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`
+	rec := dreamRouterRecord{
+		ModelName:       "wan3.0-video",
+		QuotaType:       0,
+		ModelRatio:      37.5,
+		CompletionRatio: 1,
+		EnableGroups:    []string{"wan3"},
+		BillingMode:     "tiered_expr",
+		BillingExpr:     wan3Video,
+	}
+	change := dreamRouterComputeTarget(rec, 0.9, 1.0)
+	if change.BillingClass != "tiered" {
+		t.Fatalf("billing class = %q, want tiered", change.BillingClass)
+	}
+	if !nearlyEqualSync(change.Official.Input, 0.0895522) {
+		t.Errorf("official input = %v, want 0.0895522", change.Official.Input)
+	}
+	if !nearlyEqualSync(change.NewModelRatio, 37.5) {
+		t.Errorf("model ratio = %v, want 37.5 (upstream nominal × factor)", change.NewModelRatio)
+	}
+	if change.NewBillingExpr == "" {
+		t.Fatal("NewBillingExpr is empty")
+	}
+	if _, ok := dreamRouterDurationUnitPrices(change.NewBillingExpr); !ok {
+		t.Errorf("NewBillingExpr not duration-parsable: %s", change.NewBillingExpr)
+	}
+	// Upstream 行 = 官方价 × 上游组折扣。
+	if !nearlyEqualSync(change.Upstream.Input, 0.0895522*0.9) {
+		t.Errorf("upstream input = %v, want %v", change.Upstream.Input, 0.0895522*0.9)
+	}
+
+	// 既没有 token 系数也没有 duration 计价项 → 仍然 tiered_unparsable。
+	change = dreamRouterComputeTarget(dreamRouterRecord{
+		ModelName:   "mystery",
+		BillingExpr: `tier("base", fixed(0.02))`,
+	}, 0.9, 1.0)
+	if change.BillingClass != "tiered_unparsable" {
+		t.Errorf("billing class = %q, want tiered_unparsable", change.BillingClass)
 	}
 }

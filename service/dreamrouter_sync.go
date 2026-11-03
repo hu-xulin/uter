@@ -77,6 +77,10 @@ import (
 //	    ModelRatio      = p系数 / 2 × (r + step)
 //	    CompletionRatio = c系数 / p系数
 //	    表达式不可解析时标记 tiered_unparsable 并告警，不猜价。
+//	C2 类 按秒计费的视频模型（wan3.0-video 等，表达式含 duration 计价项）：
+//	    官方单价 = 兜底档（默认分辨率）的 $/秒，表达式按规则系数缩放后
+//	    原样落库（uter 运行时支持 duration/tier/param）；倍率取上游名义值
+//	    × 系数做兜底。
 const (
 	dreamRouterBaseURL      = "https://dreamrouter.ai"
 	dreamRouterLoginPath    = "/api/user/login"
@@ -511,8 +515,27 @@ func dreamRouterComputeTarget(rec dreamRouterRecord, r, factor float64) DreamRou
 		change.BillingClass = "tiered"
 		prices, ok := dreamRouterOfficialUnitPrices(rec.BillingExpr)
 		if !ok {
-			// 表达式结构无法解析：宁可不改价，也不套错公式。
-			change.BillingClass = "tiered_unparsable"
+			// C2 类：按秒计费的视频模型（wan3.0-video 等，ali-video 端点）。
+			// 表达式形如 tier("720p", (duration > 0 ? duration : 5) * 0.0895522)，
+			// 官方单价 = 兜底档（默认分辨率）的美元/秒。uter 的 billingexpr
+			// 运行时完整支持 duration/tier/param，上游表达式缩放后可原样落库。
+			perSec, durOK := dreamRouterDurationUnitPrices(rec.BillingExpr)
+			if !durOK {
+				// 表达式结构无法解析：宁可不改价，也不套错公式。
+				change.BillingClass = "tiered_unparsable"
+				return change
+			}
+			// 倍率只做兜底与展示：上游给了名义 model_ratio，随规则系数
+			// 同步缩放，保证表达式落库失败时仍有与上游一致的兜底价。
+			change.NewModelRatio = roundRatioValue(rec.ModelRatio * factor)
+			// 官方单价行只填 Input（美元/秒），对照表与对齐复核都以它为基准：
+			// 本地落库后的表达式解出的同档系数 ≈ 上游系数 × factor 即对齐。
+			change.Official = DreamRouterPriceLine{Input: perSec.Input}
+			// 表达式才是这类模型的真实计价来源（见下方 token 分支的说明）。
+			if scaled, scaledOK := dreamRouterScaleExpr(rec.BillingExpr, factor); scaledOK {
+				change.NewBillingExpr = scaled
+			}
+			change.Upstream = scaleDreamRouterPriceLine(change.Official, r)
 			return change
 		}
 		change.NewModelRatio = roundRatioValue(prices.Input / 2 * factor)
@@ -1080,13 +1103,19 @@ func dreamRouterRowAligned(change DreamRouterModelChange, row DreamRouterModelRo
 }
 
 // dreamRouterConfiguredUnitPrices 读取模型当前生效的 billing_expr，并解出
-// 其中的单价（美元 / 1M tokens 或 / 次）。没有表达式时返回 ok=false。
+// 其中的单价（美元 / 1M tokens、/ 次或按秒计费模型的 / 秒）。
+// 没有表达式或解析不出单价时返回 ok=false。
 func dreamRouterConfiguredUnitPrices(name string) (dreamRouterUnitPrices, bool) {
 	expr, ok := billing_setting.GetBillingExpr(name)
 	if !ok || strings.TrimSpace(expr) == "" {
 		return dreamRouterUnitPrices{}, false
 	}
-	return dreamRouterOfficialUnitPrices(expr)
+	if prices, ok := dreamRouterOfficialUnitPrices(expr); ok {
+		return prices, true
+	}
+	// 按秒计费的视频模型（wan3.0-video 等）：token 系数解不出来，
+	// 兜底走 duration 计价项。
+	return dreamRouterDurationUnitPrices(expr)
 }
 
 // discountPercent 返回售价相对官方价的折扣百分比（6 折 → 40）。
