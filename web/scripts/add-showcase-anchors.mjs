@@ -18,7 +18,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /**
- * 在 design-system.md 的关键章节插入「可视核查」提示块。
+ * 在设计规范文档的关键章节插入「可视核查」提示块。
+ *
+ * ⚠ 2026-11-03 起目标文档为 UTER-DESIGN-SYSTEM-3.0.md，且默认目标文件
+ * 已变更；旧 design-system.md 已废止删除。本脚本按章节标题匹配插入，
+ * 运行前先确认目标文档的章节标题仍与 ANCHORS 定义匹配，不匹配则
+ * 不会插入（静默跳过）。
  *
  * 提示块的作用是把该章节与核查页的对应分区绑定：读者读到某一节，可以立刻
  * 知道「这一节的实体样本长什么样、在核查页的哪个位置」。纯文字表格看不出
@@ -32,7 +37,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const DOC = path.resolve(__dirname, '../../docs/design-system/design-system.md')
+const DOC = path.resolve(__dirname, '../../docs/design-system/UTER-DESIGN-SYSTEM-3.0.md')
 
 /** 每条：章节标题前缀 → 提示块内容 */
 const ANCHORS = [

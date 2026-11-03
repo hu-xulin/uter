@@ -80,7 +80,7 @@ AI 必须以项目实际代码、真实配置和现有业务规则为依据，�
 |---|---|
 | 一切任务的前置 | `AGENTS.md`（根宪法）+ `.ai/AIES.md`（方法论）；前端另读 `web/AGENTS.md` |
 | 新功能（后端） | `docs/ai-specs/ARCHITECTURE-STANDARD.md`、`DEVELOPMENT-STANDARD.md`、`PRODUCT-REQUIREMENTS-STANDARD.md` |
-| UI 开发 | `web/docs/design-system/design-system.md`（唯一真源）+ `docs/ai-specs/UX-INTERACTION-STANDARD.md` + `DEVELOPMENT-STANDARD.md` |
+| UI 开发 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（唯一真源）+ `docs/ai-specs/UX-INTERACTION-STANDARD.md` + `DEVELOPMENT-STANDARD.md` |
 | API 开发 | `docs/ai-specs/API-CONTRACT-STANDARD.md`、`ARCHITECTURE-STANDARD.md`、`SECURITY-STANDARD.md` |
 | 数据库开发 | `docs/ai-specs/DATABASE-STANDARD.md`、`ARCHITECTURE-STANDARD.md`、`SECURITY-STANDARD.md` |
 | 支付开发 | `PRODUCT-REQUIREMENTS-STANDARD.md` §5.2/§10、`API-CONTRACT-STANDARD.md`、`DATABASE-STANDARD.md`、`SECURITY-STANDARD.md` §18.2 |
@@ -294,7 +294,7 @@ AI 必须以项目实际代码、真实配置和现有业务规则为依据，�
 - **停止条件**补充仓库实况：GitHub Actions 停跑期间（账号账务问题），CI 相关项标 NOT RUN 而非 BLOCKED；本地 verify-all.sh 是唯一门禁。
 - **自主决策边界**的硬约束来自 `AGENTS.md`「Change Protection」：禁 `git add -A`、禁 `--no-verify`、禁 `rm -rf`/`git clean -fd`、commit 前复查暂存区（并发会话共享 index）。
 - **沙箱与本地环境**：`SESSION_SECRET` 持久化于 `~/uter/.env` 切勿重新生成（换值 2FA TOTP 永久不可解密）；进程 CWD 须 `~/uter`；本地构建前检查并发 WIP（`git status --short` 出现非本次改动即不全量构建）。
-- **本文件在规范体系中的位置**：`AGENTS.md` > `web/AGENTS.md` > `design-system.md` > `.ai/AIES.md` ≈ 本目录（ai-specs）> MEMORY。冲突时以更高优先级为准。
+- **本文件在规范体系中的位置**：`AGENTS.md` > `web/AGENTS.md` > `UTER-DESIGN-SYSTEM-3.0.md` > `.ai/AIES.md` ≈ 本目录（ai-specs）> MEMORY。冲突时以更高优先级为准。
 ---
 
 **本规范为 Uter 所有 AI Coding Agent 的基础行为规范。**

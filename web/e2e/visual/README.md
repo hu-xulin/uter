@@ -4,14 +4,14 @@
 
 ## 1. 双轨分工
 
-|                   | 第一轨（零依赖）                                  | 第二轨（本目录）                         |
-| ----------------- | ------------------------------------------------- | ---------------------------------------- |
-| 命令              | `bun run test:visual`                             | `bun run test:visual:e2e`                |
-| 实现              | `scripts/visual-regression.mjs` + 本机 Chrome CLI | `@playwright/test` + Playwright Chromium |
-| 覆盖面            | 仅 `docs/design-system/showcase.html` 静态核查页  | 真实路由，含需登录页                     |
-| 前置              | 有 Chrome 即可                                    | 需完整栈（Go 后端 + 前端 dev server）    |
-| 耗时              | 秒级                                              | 分钟级                                   |
-| 可否挂 pre-commit | 可以                                              | **不可以**（太慢）                       |
+|                   | 第一轨（零依赖）                                     | 第二轨（本目录）                         |
+| ----------------- | ---------------------------------------------------- | ---------------------------------------- |
+| 命令              | `bun run test:visual`                                | `bun run test:visual:e2e`                |
+| 实现              | `scripts/visual-regression.mjs` + 本机 Chrome CLI    | `@playwright/test` + Playwright Chromium |
+| 覆盖面            | 仅 `docs/design-system/showcase-3.0.html` 静态核查页 | 真实路由，含需登录页                     |
+| 前置              | 有 Chrome 即可                                       | 需完整栈（Go 后端 + 前端 dev server）    |
+| 耗时              | 秒级                                                 | 分钟级                                   |
+| 可否挂 pre-commit | 可以                                                 | **不可以**（太慢）                       |
 
 第一轨回答「设计系统的 token 本身有没有走样」，第二轨回答「真实页面组装起来后有没有走样」。
 

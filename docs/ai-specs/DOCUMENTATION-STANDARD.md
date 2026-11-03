@@ -180,29 +180,29 @@ AI 更新文档前必须核对：
 |---|---|---|
 | `AGENTS.md`（根） | 项目宪法：技术栈、四项 AI 协作自律、OWASP 强制、后端/前端规则、Git 纪律 | 最高（仅次于用户授权） |
 | `web/AGENTS.md` | 前端专属约定 | 高 |
-| `web/docs/design-system/design-system.md` | 设计系统唯一真源（单文件 + showcase.html） | 高 |
+| `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | 设计系统唯一真源（单文件 + showcase-3.0.html，2026-11-03 起唯一标准） | 高 |
 | `.ai/AIES.md` + `.ai/README.md` | 执行方法论（L0–L4、12 阶段 SOP、任务合同） | 中（不得覆盖上面三者） |
 | `docs/ai-specs/`（本目录，10 份 STANDARD + engineering-quality/UEQE） | 领域规范基线，已按真实代码校准（2026-11-01） | 中 |
 | `docs-dev/` | 开发文档（构建、部署、协议） | 参考 |
-| `web/docs/design-system/` 其余分篇 | 从属于单文件真源 | 参考 |
+| `web/docs/design-system/` 其余分篇 | 已废止删除（2026-11-03），统一并入 3.0 单文件 | 已废止 |
 | `.workbuddy/` 下 MEMORY.md / MEMORY-detail.md | 踩坑记忆与「勿回退」红线 | 低（但红线结论不可回退） |
 
 ### 14.2 目录纪律
 
 - `docs/` 常规禁止新增文件（AGENTS.md 约定）；`docs/ai-specs/` 是用户显式授权建立的规范库，属例外。再新增规范文档须用户显式要求。
-- 方法论产出放 `.ai/`，工程文档放 `docs-dev/`，设计规范只进 design-system.md 单文件——不得在各处散落平行版本。
+- 方法论产出放 `.ai/`，工程文档放 `docs-dev/`，设计规范只进 UTER-DESIGN-SYSTEM-3.0.md 单文件——不得在各处散落平行版本。
 
 ### 14.3 文档与代码同步的硬性检查点
 
 - i18n：改用户可见文案必须同步 7 份 locale 文件（web/src/i18n/locales/）并过 `check-i18n-keys`；prop/变量形式传 key 扫不到，须登记 `static-keys.ts`。
-- 设计系统：改 Token/字号/颜色必须同步 design-system.md 对应章节并重跑 `bun run lint:design:strict`；改动基线须走 `--write-baseline` 且只减不增。
+- 设计系统：改 Token/字号/颜色必须同步 UTER-DESIGN-SYSTEM-3.0.md 对应章节并重跑 `bun run lint:design:strict`；改动基线须走 `--write-baseline` 且只减不增。
 - 密钥登记表类文档：secret 三件套相关文档有 3 处守卫同步，改登记表必须同步守卫。
 - 品牌资产：换 logo 必 bump LOGO_ASSET_VERSION + 5 处 `?v=N` + 重生成 brandEmailLogoBase64——文档若提及 logo 必须与当前版本一致。
 - 已废弃表述不得恢复：如「渠道同步每天/时刻」（实为每 10 分钟）、「字号阶梯 v1.1」（实为 v1.2）、「DreamRouterSyncHour」等。
 
 ### 14.4 ADR 现状
 
-仓库尚无 `docs/adr/` 目录；重大决策目前记录在 design-system.md、MEMORY.md 与提交信息中。建立正式 ADR 目录属新增文件，须用户显式授权。
+仓库尚无 `docs/adr/` 目录；重大决策目前记录在 UTER-DESIGN-SYSTEM-3.0.md、MEMORY.md 与提交信息中。建立正式 ADR 目录属新增文件，须用户显式授权。
 ---
 
 **文档是 Uter 工程知识的一部分，必须与代码同步维护。**

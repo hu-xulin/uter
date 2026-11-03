@@ -6,7 +6,7 @@ import { BASE_URL } from './lib/target'
  * 视觉回归（真实业务页面）专用 Playwright 配置。
  *
  * 两条轨的分工（2026-10-30 决策 B：双轨并存，互不替代）：
- *  - 第一轨 `scripts/visual-regression.mjs`（零依赖）：只截 docs/design-system/showcase.html
+ *  - 第一轨 `scripts/visual-regression.mjs`（零依赖）：只截 docs/design-system/showcase-3.0.html
  *    静态核查页，秒级完成，本机 Chrome headless 即可。
  *  - 第二轨（本文件）：跑真实路由，含鉴权页，需要完整栈（Go 后端 + 前端 dev server）。
  *

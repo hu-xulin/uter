@@ -112,12 +112,12 @@ const OVERLAY_ALLOWLIST = [
  *                              `*-soft` / 品牌色 / 状态色语义
  *
  * 需要新增例外时，必须同时满足：① 写明 `reason`；② 在
- * `docs/design-system/design-system.md` 登记编号与影响范围；③ 说明为什么
+ * `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 登记编号与影响范围；③ 说明为什么
  * 无法用 Token 表达。没有理由的例外等于没有规范。
  */
 /**
  * 逐条登记的真例外。每条必须：① `reason` 写明为什么无法用 Token 表达；
- * ② 在 `docs/design-system/design-system.md` 登记编号与影响范围。
+ * ② 在 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 登记编号与影响范围。
  */
 /**
  * 例外清单：**当前为空**（2026-10-30）。

@@ -278,7 +278,7 @@ docs/product/features/
 | 登录形态 | RegisterEnabled 只关自主注册表单，不阻断已验证身份登录即注册；邮箱验证码登录 EmailCodeLoginEnabled（登录即注册 provisionEmailCodeUser） | `service/`、`controller/user.go` |
 | 微信登录 | 仅保留网站应用扫码（wechat_web），跨域两段式回调 | `controller/`、`oauth/` |
 
-功能文档目录 `docs/product/features/` 目前不存在；当前真实文档布局为 `docs/`（ai-specs/、security/、engineering/）、`docs-dev/`（开发文档）、`web/docs/design-system/`。建立功能文档前先与用户确认目录。
+功能文档目录 `docs/product/features/` 目前不存在；当前真实文档布局为 `docs/`（ai-specs/、security/、engineering/、design-system/UTER-DESIGN-SYSTEM-3.0.md）、`docs-dev/`（开发文档）。建立功能文档前先与用户确认目录。
 
 ## 11. 完成定义
 
