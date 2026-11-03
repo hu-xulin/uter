@@ -19,13 +19,15 @@ For commercial licensing, please contact support@uter.ai
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 
 export function MaintenanceError() {
   const { t } = useTranslation()
   return (
     <div className='h-svh'>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
-        <h1 className='text-4xl font-bold'>503</h1>
+        {/* 3.0 §3 审计整改：页面标题走 Heading page-title（600 字重） */}
+        <Heading variant='page-title'>503</Heading>
         <span className='font-medium'>
           {t('Website is under maintenance!')}
         </span>

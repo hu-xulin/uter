@@ -261,7 +261,8 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 </div>
               </div>
 
-              <div className='text-foreground mt-1.5 truncate text-lg font-semibold tabular-nums sm:mt-2 sm:text-2xl'>
+              {/* 3.0 §6.1 审计整改：mt-1.5(6px 非网格整档) → mt-2（8px 网格档） */}
+              <div className='text-foreground mt-2 truncate text-lg font-semibold tabular-nums sm:text-2xl'>
                 {item.value}
               </div>
               <div className='text-muted-foreground mt-1 hidden text-sm md:block'>

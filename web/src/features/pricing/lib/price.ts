@@ -589,7 +589,13 @@ export function getMarkupMultiplier(
  */
 function badgeFromRatio(ratio: number): DiscountInfo {
   if (!Number.isFinite(ratio) || ratio <= 0) {
-    return { hasDiscount: false, percent: 0, zhe: 10, markup: null, ratio: null }
+    return {
+      hasDiscount: false,
+      percent: 0,
+      zhe: 10,
+      markup: null,
+      ratio: null,
+    }
   }
   if (ratio < 1 - 1e-9) {
     return {
@@ -648,7 +654,13 @@ export function getDiscountInfo(
     ) {
       return badgeFromRatio((platformRequest * displayRatio) / officialRequest)
     }
-    return { hasDiscount: false, percent: 0, zhe: 10, markup: null, ratio: null }
+    return {
+      hasDiscount: false,
+      percent: 0,
+      zhe: 10,
+      markup: null,
+      ratio: null,
+    }
   }
 
   // Expression-billed models keep the admin discount inside billing_expr
@@ -666,7 +678,13 @@ export function getDiscountInfo(
     if (Number.isFinite(effectiveInputUSD) && effectiveInputUSD > 0) {
       return badgeFromRatio(effectiveInputUSD / officialInputUSD)
     }
-    return { hasDiscount: false, percent: 0, zhe: 10, markup: null, ratio: null }
+    return {
+      hasDiscount: false,
+      percent: 0,
+      zhe: 10,
+      markup: null,
+      ratio: null,
+    }
   }
 
   if (

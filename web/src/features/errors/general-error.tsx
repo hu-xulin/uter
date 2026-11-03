@@ -21,6 +21,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 import { cn } from '@/lib/utils'
 
 const FEEDBACK_URL = 'github.com/uter-ai/uter/issues'
@@ -81,7 +82,8 @@ export function GeneralError({
     <div className={cn('h-svh w-full', className)}>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         {!minimal && status !== undefined && (
-          <h1 className='text-4xl font-bold'>{status}</h1>
+          // 3.0 §3 审计整改：页面标题走 Heading page-title（600 字重）
+          <Heading variant='page-title'>{status}</Heading>
         )}
         <span className='font-medium'>{title}</span>
         <p className='text-muted-foreground text-center'>

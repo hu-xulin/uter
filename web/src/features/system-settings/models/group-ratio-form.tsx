@@ -52,6 +52,14 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 import {
   SettingsForm,
@@ -561,32 +569,33 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
               <div className='bg-muted/40 border-b px-3 py-1.5 text-xs font-medium'>
                 {t('Pricing groups')}
               </div>
-              <table className='w-full text-sm'>
-                <thead>
-                  <tr className='text-muted-foreground border-b text-xs'>
-                    <th className='px-3 py-1.5 text-left font-medium'>
+              {/* 3.0 §13 审计整改：示例表格改走统一 Table 组件，cell padding 走 ui 默认档 */}
+              <Table>
+                <TableHeader>
+                  <TableRow className='hover:bg-transparent'>
+                    <TableHead className='text-muted-foreground'>
                       {t('Group name')}
-                    </th>
-                    <th className='px-3 py-1.5 text-right font-medium'>
+                    </TableHead>
+                    <TableHead className='text-muted-foreground text-right'>
                       {t('Ratio')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className='border-b'>
-                    <td className='px-3 py-1.5'>default</td>
-                    <td className='px-3 py-1.5 text-right'>1.0</td>
-                  </tr>
-                  <tr className='border-b'>
-                    <td className='px-3 py-1.5'>premium</td>
-                    <td className='px-3 py-1.5 text-right'>0.5</td>
-                  </tr>
-                  <tr>
-                    <td className='px-3 py-1.5'>vip</td>
-                    <td className='px-3 py-1.5 text-right'>0.8</td>
-                  </tr>
-                </tbody>
-              </table>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>default</TableCell>
+                    <TableCell className='text-right'>1.0</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>premium</TableCell>
+                    <TableCell className='text-right'>0.5</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>vip</TableCell>
+                    <TableCell className='text-right'>0.8</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
 
             <div className='overflow-hidden rounded-lg border'>

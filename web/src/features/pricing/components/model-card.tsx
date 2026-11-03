@@ -327,7 +327,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 >
                   <span className='flex flex-col items-start'>
                     <span>
-                      <span className={cn(off != null && isDiscount && 'line-through')}>
+                      <span
+                        className={cn(
+                          off != null && isDiscount && 'line-through'
+                        )}
+                      >
                         {offText}
                       </span>
                       {off && unitLabelFor(entry) !== tokenUnitLabel && (
@@ -463,10 +467,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       >
         <span aria-hidden />
         {dims.map((d) => (
-          <span
-            key={`h-${d.type}`}
-            className='text-muted-foreground text-sm'
-          >
+          <span key={`h-${d.type}`} className='text-muted-foreground text-sm'>
             {d.label}
           </span>
         ))}
@@ -569,10 +570,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       >
         <span aria-hidden />
         {dims.map((d) => (
-          <span
-            key={`h-${d.key}`}
-            className='text-muted-foreground text-sm'
-          >
+          <span key={`h-${d.key}`} className='text-muted-foreground text-sm'>
             {d.label}
           </span>
         ))}
