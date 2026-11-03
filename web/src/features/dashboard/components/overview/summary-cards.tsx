@@ -272,7 +272,7 @@ export function SummaryCards() {
             {items.map((it) => (
               <StaggerItem
                 key={it.key}
-                className='bg-background/60 rounded-lg border px-2 py-1.5 sm:rounded-xl sm:p-3'
+                className='bg-background/60 rounded-lg border px-2 py-1.5 sm:rounded-lg sm:p-3'
               >
                 <StatCard
                   title={it.title}

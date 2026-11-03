@@ -27,7 +27,6 @@ For commercial licensing, please contact support@uter.ai
  *   --ds-elevation-overlay    0 4px 6px -4px, 0 10px 15px -3px  弹窗 / 抽屉 / 浮层
  *   --ds-elevation-raised     0 12px 24px -12px, 0 2px 6px -2px 拖拽中的元素（瞬时离开文档流）
  *   --ds-elevation-marketing  0 20px 50px -25px                 营销展示卡片（脱离页面平面）
- *   --ds-elevation-card-hover 0 4px 12px                        Card 悬停（2.0 §13.6 唯一成文例外，仅 ≥641px）
  *   --ds-glow-online          0 0 8px                           在线状态点（状态语义，不是层级）
  *
  * 为什么「拖拽」与「营销卡片」各占一档而不是复用 overlay：
@@ -56,15 +55,10 @@ For commercial licensing, please contact support@uter.ai
     0 12px 24px -12px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.1);
   /* 营销展示卡片：大而柔的下沉投影，让卡片明确离开页面平面 */
   --ds-elevation-marketing: 0 20px 50px -25px rgb(15 23 42 / 0.18);
-  /* Card 悬停投影（design-system-2.0 §13.6 唯一成文例外）：常态仍靠
-   * ring-1 描边分层，悬停时才给这层浅投影。配套 translateY(-1px) 与
-   * 150ms 过渡（--ds-motion-card-hover），仅 ≥641px 生效（触屏不悬停）。
-   * 业务组件不得自行新增悬停投影。 */
-  --ds-elevation-card-hover: 0 4px 12px rgb(0 0 0 / 0.06);
-  /* Card 悬停的过渡时长：150ms 介于 fast(100) 与 base(200) 之间，是
-   * 2.0 §13.6 成文规定的专用档（不进入通用五组）。组件用
-   * `duration-(--ds-motion-card-hover)` 引用，不要写 duration-150。 */
-  --ds-motion-card-hover: 150ms;
+  /* 2026-11-03 复裁定：移除 Card 悬停投影（--ds-elevation-card-hover 与
+   * --ds-motion-card-hover 已删）。常态分层只靠 ring-1 描边 + 表面色差，
+   * 回到「全站不投影（营销卡除外）」的 1.x 口径。业务组件不得自行新增
+   * 悬停投影。 */
   /* 在线状态点辉光：语义是「亮着」，不是层级 */
   --ds-glow-online: 0 0 8px rgb(16 185 129 / 0.45);
 
@@ -134,6 +128,4 @@ For commercial licensing, please contact support@uter.ai
   --ds-elevation-marketing: 0 20px 60px -25px rgb(0 0 0 / 0.7);
   --ds-elevation-raised:
     0 12px 24px -12px rgb(0 0 0 / 0.6), 0 2px 6px -2px rgb(0 0 0 / 0.4);
-  /* 2.0 §13.6：卡片悬停投影深色档 0.3（浅色 0.06 在深底上看不见）。 */
-  --ds-elevation-card-hover: 0 4px 12px rgb(0 0 0 / 0.3);
 }

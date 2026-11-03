@@ -238,14 +238,14 @@ describe('分组标题档（group-title）', () => {
 describe('圆角 Token 对应 design-system-2.0 §13.4', () => {
   it('七个圆角档位与文档一致', () => {
     const SHAPE: Array<[string, number]> = [
-      ['xs', 6.4],
-      ['sm', 9.6],
-      ['md', 12.8],
-      ['lg', 16],
-      ['xl', 22.4],
-      ['2xl', 28.8],
-      ['3xl', 35.2],
-      ['4xl', 44.8],
+      ['xs', 6],
+      ['sm', 8],
+      ['md', 10],
+      ['lg', 12],
+      ['xl', 14],
+      ['2xl', 16],
+      ['3xl', 18],
+      ['4xl', 20],
     ]
     for (const [step, px] of SHAPE) {
       const value = readVar(semanticCss, `ds-radius-${step}`) as string
@@ -266,34 +266,102 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     return Number.NaN
   }
 
-  it('默认基准 1rem 推出 6.4/9.6/12.8/16/22.4/28.8/35.2/44.8 八档', () => {
+  it('默认基准 0.625rem(10px) 推出 6/8/10/12/14/16/18/20 八档', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
-    // 出现「文档 16px、页面 12.8px」，这里把差异钉死。
-    // design-system-2.0 §13.4：基准 1rem，系数 xs×0.4 / sm×0.6 / md×0.8 /
-    // lg×1 / xl×1.4 / 2xl×1.8 / 3xl×2.2 / 4xl×2.8。
+    // 出现「文档 12px、页面 10px」，这里把差异钉死。
+    // design-system-2.0 §13.4（2026-11-03 圆角七档定版）：基准 0.625rem
+    // （10px = 默认控件档 r-md），系数 xs×0.6 / sm×0.8 / md×1 / lg×1.2 /
+    // xl×1.4 / 2xl×1.6 / 3xl×1.8 / 4xl×2。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
     )
     const base = toPx(readVar(themeCss, 'radius') as string)
-    expect(base, '默认基准 --radius').toBe(16)
+    expect(base, '默认基准 --radius').toBe(10)
 
     const EXPECTED: Array<[string, number]> = [
-      ['xs', 6.4],
-      ['sm', 9.6],
-      ['md', 12.8],
-      ['lg', 16],
-      ['xl', 22.4],
-      ['2xl', 28.8],
-      ['3xl', 35.2],
-      ['4xl', 44.8],
+      ['xs', 6],
+      ['sm', 8],
+      ['md', 10],
+      ['lg', 12],
+      ['xl', 14],
+      ['2xl', 16],
+      ['3xl', 18],
+      ['4xl', 20],
     ]
     for (const [step, px] of EXPECTED) {
       const declaration = readVar(themeCss, `radius-${step}`) as string
       expect(declaration, `--radius-${step} 未声明`).toBeDefined()
       expect(resolveLadderPx(declaration, base), `圆角 ${step}`).toBe(px)
+    }
+  })
+})
+
+describe('showcase 核查页与 Token 真源一致', () => {
+  // design-system-2.0 §4「规范与代码的断层」：核查页（showcase*.html）里的
+  // Token 块是 theme.css / primitives.css 的手工副本。本测试把「改了规范、
+  // 核查页没跟上」的断层钉死：任何一边单独改动都会让测试变红。
+  const DOCS_DIR = join(process.cwd(), '..', 'docs', 'design-system')
+  const readDoc = (name: string) => readFileSync(join(DOCS_DIR, name), 'utf8')
+
+  const SHOWCASES = ['showcase-2.0.html', 'showcase.html']
+  const LADDER_STEPS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
+
+  /** 解析 theme.css 的圆角阶梯：`var(--radius)` / `calc(var(--radius) * N)`。 */
+  function ladderCoefficient(declaration: string | undefined): number | null {
+    if (!declaration) return null
+    if (declaration === 'var(--radius)') return 1
+    const scaled = /^calc\(var\(--radius\)\s*\*\s*([\d.]+)\)$/.exec(declaration)
+    return scaled ? Number.parseFloat(scaled[1]) : null
+  }
+
+  it.each(SHOWCASES)('%s 的 :root 基准 --radius 与 theme.css 一致', (name) => {
+    const html = readDoc(name)
+    // 第一个 --radius 声明就是 :root 默认基准（preset 块在其后，各自带值）。
+    const match = /--radius:\s*([^;]+);/.exec(html)
+    expect(match, 'showcase 缺少 :root --radius 声明').not.toBeNull()
+    const themeRadius = readVar(
+      readFileSync(join(process.cwd(), 'src', 'styles', 'theme.css'), 'utf8'),
+      'radius'
+    )
+    const declared = match?.[1].replaceAll(/\s+/g, '')
+    expect(declared, 'showcase 缺少 :root --radius 声明').toBeDefined()
+    expect(declared).toBe(themeRadius?.replaceAll(/\s+/g, ''))
+  })
+
+  it.each(SHOWCASES)('%s 的 rounded-* 系数与 theme.css 阶梯一致', (name) => {
+    const html = readDoc(name)
+    const themeCss = readFileSync(
+      join(process.cwd(), 'src', 'styles', 'theme.css'),
+      'utf8'
+    )
+    for (const step of LADDER_STEPS) {
+      const classDecl = new RegExp(
+        `\\.rounded-${step === '2xl' ? '2xl' : step}\\s*\\{\\s*border-radius:\\s*([^;]+);`
+      ).exec(html)
+      const actual = ladderCoefficient(classDecl?.[1].replaceAll(/\s+/g, ''))
+      const expected = ladderCoefficient(readVar(themeCss, `radius-${step}`))
+      expect(classDecl, `showcase 缺少 .rounded-${step}`).not.toBeNull()
+      expect(actual, `showcase .rounded-${step} 系数`).toBe(expected)
+    }
+  })
+
+  it.each(SHOWCASES)('%s 的 primitive 圆角块与 primitives.css 一致', (name) => {
+    const html = readDoc(name)
+    const primitives = read('tokens/primitives.css')
+    for (const step of [...LADDER_STEPS, '3xl', '4xl', 'full'] as const) {
+      const htmlDecl = new RegExp(
+        `--primitive-radius-${step}:\\s*([^;]+);`
+      ).exec(html)
+      const htmlValue = htmlDecl?.[1].replaceAll(/\s+/g, '')
+      const primitiveValue = readVar(
+        primitives,
+        `primitive-radius-${step}`
+      )?.replaceAll(/\s+/g, '')
+      expect(htmlValue, `showcase 缺少 --primitive-radius-${step}`).toBeDefined()
+      expect(htmlValue).toBe(primitiveValue)
     }
   })
 })

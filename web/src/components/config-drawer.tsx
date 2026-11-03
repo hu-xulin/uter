@@ -176,7 +176,7 @@ function RadioGroupItem(props: {
         className={cn(
           'ring-border relative rounded-md ring-[1px]',
           'group-data-checked:ring-primary',
-          'group-focus-visible:ring-2'
+          'group-focus-visible:ring-1'
         )}
         role='img'
         aria-hidden='false'
@@ -268,7 +268,7 @@ function PresetConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-2',
+                'group-focus-visible:ring-1',
                 'group-hover:ring-primary/60'
               )}
             >
@@ -306,7 +306,7 @@ const RADIUS_OPTIONS: {
   // CSS border-radius value used to render the visual preview corner.
   preview: string
 }[] = [
-  { value: 'default', label: 'Auto', preview: '1rem' },
+  { value: 'default', label: 'Auto', preview: '0.625rem' },
   { value: 'none', label: '0', preview: '0' },
   { value: 'sm', label: '0.3', preview: '0.3rem' },
   { value: 'md', label: '0.5', preview: '0.5rem' },
@@ -343,7 +343,7 @@ function RadiusConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-2',
+                'group-focus-visible:ring-1',
                 'group-hover:ring-primary/60'
               )}
             >
@@ -430,7 +430,7 @@ function ScaleConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-2',
+                'group-focus-visible:ring-1',
                 'group-hover:ring-primary/60'
               )}
             >
@@ -571,7 +571,7 @@ function ContentLayoutConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-2',
+                'group-focus-visible:ring-1',
                 'group-hover:ring-primary/60'
               )}
             >

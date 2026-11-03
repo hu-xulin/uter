@@ -268,7 +268,6 @@ const ELEVATION_TOKENS = new Set([
   'shadow-(--ds-elevation-overlay)',
   'shadow-(--ds-elevation-raised)',
   'shadow-(--ds-elevation-marketing)',
-  'shadow-(--ds-elevation-card-hover)',
   'shadow-(--ds-glow-online)',
 ])
 
@@ -465,7 +464,7 @@ for (const abs of walk(SRC)) {
 
     // T10：任意圆角
     //
-    // 圆角阶梯是 4/6/8/10/12/16/9999（见 tokens/radius）。`rounded-[3px]`
+    // 圆角阶梯是 6/8/10/12/14/16/9999（见 tokens/primitives）。`rounded-[3px]`
     // 这类自造档位会让同一层级的控件圆角不一致。
     // 放行 `rounded-[inherit]`：滚动区视口必须继承外层圆角，没有对应工具类；
     // 放行 `rounded-[var(--radius-…)]`：引用 Token 是正确写法。

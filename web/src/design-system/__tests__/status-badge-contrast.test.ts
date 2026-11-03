@@ -37,10 +37,11 @@ import { describe, expect, it } from 'vitest'
  *    绿色不能用 `--success`（#16A34A）：配白字只有 3.30:1。
  *
  * 2. 胶囊徽标沿用导航的 `bg-primary-subtle text-primary`。品牌色落在
- *    `primary-subtle` 浅底上不达 AA（2.0：`#6565E8` on `#F3F3FD` = 4.16:1），
- *    规范明确要求「不能默认继承导航例外」。导航有专用 Token，非导航场景
- *    此前没有可用的可读档，于是补了 `--primary-subtle-foreground`
- *    （2.0 §11.2：浅 `#5959CC` = 5.11:1 / 深 `#A2A2F8` on `#161941` = 7.25:1）。
+ *    `primary-subtle` 浅底上不达 AA（2026-11-03 复裁定：`#6366F1` on
+ *    `#F3F3FD` = 4.05:1），规范明确要求「不能默认继承导航例外」。导航有
+ *    专用 Token，非导航场景此前没有可用的可读档，于是补了
+ *    `--primary-subtle-foreground`（浅 `#5959CC` = 5.11:1 /
+ *    深 `#8B8DF5` on `#25264A` = 4.97:1）。
  */
 const ROOT = join(process.cwd(), 'src')
 const THEME = readFileSync(join(ROOT, 'styles/theme.css'), 'utf8')
@@ -106,10 +107,10 @@ describe('status badge contrast', () => {
 
 describe('brand-subtle foreground', () => {
   it('defines a readable foreground for primary-subtle surfaces in both themes', () => {
-    // design-system-2.0 §11.2：浅 #5959CC（on #F3F3FD = 5.11:1）/
-    // 深 #A2A2F8（on #161941 = 7.25:1）。
+    // design-system-2.0 §11.2（2026-11-03 复裁定）：浅 #5959CC（on #F3F3FD = 5.11:1）/
+    // 深 #8B8DF5（on #25264A = 4.97:1）。
     expect(THEME).toContain('--primary-subtle-foreground: #5959cc')
-    expect(THEME).toContain('--primary-subtle-foreground: #a2a2f8')
+    expect(THEME).toContain('--primary-subtle-foreground: #8b8df5')
   })
 
   it('maps it to a Tailwind semantic color', () => {

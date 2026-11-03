@@ -419,7 +419,7 @@ export function ChannelModelWeightSection({
 
         {draft.channels.map((row) => (
           <SettingsFormGridItem key={row.id} span='full'>
-            <div className='bg-muted/20 space-y-3 rounded-xl border p-3'>
+            <div className='bg-muted/20 space-y-3 rounded-lg border p-3'>
               <div className='flex flex-wrap items-end justify-between gap-3'>
                 <div className='flex min-w-0 flex-wrap items-end gap-3'>
                   <div className='space-y-1'>

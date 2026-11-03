@@ -152,7 +152,7 @@ export function ChannelModelWeightInline({
   }
 
   return (
-    <div className='bg-muted/20 space-y-3 rounded-xl border p-3'>
+    <div className='bg-muted/20 space-y-3 rounded-lg border p-3'>
       <Label className='text-muted-foreground text-sm'>
         {t('Per-model routing')}
       </Label>

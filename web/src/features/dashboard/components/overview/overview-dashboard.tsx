@@ -255,7 +255,7 @@ function StartStepItem(props: {
 
       <Link
         to={props.step.to}
-        className='bg-background/70 hover:bg-muted/50 focus-visible:ring-ring flex min-w-0 flex-1 items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors outline-none focus-visible:ring-2'
+        className='bg-background/70 hover:bg-muted/50 focus-visible:ring-ring flex min-w-0 flex-1 items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors outline-none focus-visible:ring-1'
       >
         <span className='flex min-w-0 items-start gap-2.5'>
           <span className='bg-muted mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg'>
@@ -388,7 +388,7 @@ function RequestPreview(props: {
         )}
       </div>
 
-      <div className='bg-foreground/[0.035] text-mono my-3 rounded-xl p-3 font-mono'>
+      <div className='bg-foreground/[0.035] text-mono my-3 rounded-lg p-3 font-mono'>
         <div className='mb-2 flex items-center gap-1.5'>
           <span className='bg-destructive size-2 rounded-full' />
           <span className='bg-warning size-2 rounded-full' />
@@ -414,7 +414,7 @@ function RequestPreview(props: {
           return (
             <div
               key={signal.label}
-              className='bg-muted/40 flex items-center justify-between gap-3 rounded-xl px-3 py-2'
+              className='bg-muted/40 flex items-center justify-between gap-3 rounded-lg px-3 py-2'
             >
               <span className='flex min-w-0 items-center gap-2'>
                 <IconBadge tone={signal.tone} size='xs'>
@@ -442,7 +442,7 @@ function QuickActionItem(props: { action: QuickAction }) {
     <Button
       variant='outline'
       size='wrap'
-      className='justify-start rounded-xl py-3 text-left'
+      className='justify-start rounded-lg py-3 text-left'
       render={<Link to={props.action.to} />}
     >
       <span className='bg-muted flex size-9 shrink-0 items-center justify-center rounded-lg'>

@@ -35,7 +35,7 @@ function Card({
         // （comfortable=24px / compact=16px / xl=28px）——这个 Token 在
         // spacing.css 里声明了三档却从未被引用，等于密度切换对卡片无效，
         // 本次一并接上。sm 尺寸档按 0.75 比例跟随，不另设死值。
-        'group/card bg-card text-card-foreground ring-foreground/10 flex flex-col gap-4 overflow-hidden rounded-xl py-(--ds-card-padding) text-sm ring-1 transition-[translate,box-shadow] duration-(--ds-motion-card-hover) md:hover:shadow-(--ds-elevation-card-hover) md:hover:-translate-y-px has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-[calc(var(--ds-card-padding)*0.75)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl',
+        'group/card bg-card text-card-foreground ring-foreground/10 flex flex-col gap-4 overflow-hidden rounded-lg py-(--ds-card-padding) text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-[calc(var(--ds-card-padding)*0.75)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg',
         className
       )}
       {...props}
@@ -50,7 +50,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
       className={cn(
         // 规范 2.1 Card 头部：四周 24px、标题与描述间距 6px（sp-1）。
         // 原 gap-1(4px) 偏紧，且 px-4(16px) 未达规范值。
-        'group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-t-xl px-(--ds-card-padding) group-data-[size=sm]/card:px-[calc(var(--ds-card-padding)*0.75)] has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3',
+        'group/card-header @container/card-header grid auto-rows-min items-start gap-1.5 rounded-t-lg px-(--ds-card-padding) group-data-[size=sm]/card:px-[calc(var(--ds-card-padding)*0.75)] has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3',
         className
       )}
       {...props}
@@ -116,7 +116,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
       data-slot='card-footer'
       className={cn(
         // 规范 2.1 Card 底部操作区：内边距 24px。
-        'bg-muted/50 flex items-center rounded-b-xl border-t p-(--ds-card-padding) group-data-[size=sm]/card:p-[calc(var(--ds-card-padding)*0.75)]',
+        'bg-muted/50 flex items-center rounded-b-lg border-t p-(--ds-card-padding) group-data-[size=sm]/card:p-[calc(var(--ds-card-padding)*0.75)]',
         className
       )}
       {...props}

@@ -298,7 +298,7 @@ export function RiskAcknowledgementDialog({
           ) : null}
         </div>
 
-        <AlertDialogFooter className='mx-0 mb-0 shrink-0 rounded-b-xl border-t p-3 sm:p-4'>
+        <AlertDialogFooter className='mx-0 mb-0 shrink-0 rounded-b-lg border-t p-3 sm:p-4'>
           <AlertDialogCancel disabled={isLoading}>
             {cancelText ?? t('Cancel')}
           </AlertDialogCancel>

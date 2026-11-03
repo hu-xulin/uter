@@ -65,7 +65,7 @@ export function CompleteStep({ status, values }: CompleteStepProps) {
         </p>
       </div>
 
-      <div className='bg-card w-full rounded-xl border p-6 text-left sm:p-8'>
+      <div className='bg-card w-full rounded-lg border p-6 text-left sm:p-8'>
         <dl className='grid gap-6'>
           <div className='space-y-1.5'>
             <dt className='text-muted-foreground text-xs font-medium uppercase'>
