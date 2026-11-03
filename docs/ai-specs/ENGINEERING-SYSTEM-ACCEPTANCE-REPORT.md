@@ -1,5 +1,9 @@
 # Uter Vibe Coding Engineering System — 正式验收报告
 
+> **迁移注记（2026-11-03）**：本报告为 2026-11-01 历史时点验收记录，文中引用的
+> `design-system.md`/`showcase.html` 系当时真源，现已废止删除（迁移至
+> `UTER-DESIGN-SYSTEM-3.0.md` + `showcase-3.0.html`）。历史事实保留不改写。
+
 - 验收基线：`bd8523eec7550cd5ae99ae53064b59379e775642`（分支 `docs/migrate-design-system`）
 - 验收时间：2026-11-01 11:20–11:50（UTC+8）
 - 验收方式：独立审计。第一轮未修改任何被审计对象；本报告为唯一新增文件。

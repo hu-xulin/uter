@@ -2,7 +2,7 @@
 
 **项目：** Uter
 **检查日期：** 2026-11-01
-**检查范围：** `docs/ai-specs/` 10 份规范 + `docs/ai-specs/engineering-quality/` 4 份工程质量规范 + `AGENTS.md` + `web/AGENTS.md` + `web/docs/design-system/design-system.md` + `.ai/AIES.md` + UEQE 实际实现（`scripts/quality/uter-quality.sh`）+ 真实技术栈（`go.mod` ×3、`web/package.json`）
+**检查范围：** `docs/ai-specs/` 10 份规范 + `docs/ai-specs/engineering-quality/` 4 份工程质量规范 + `AGENTS.md` + `web/AGENTS.md` + `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（2026-11-03 起唯一标准，旧 design-system.md/2.0 已废止删除） + `.ai/AIES.md` + UEQE 实际实现（`scripts/quality/uter-quality.sh`）+ 真实技术栈（`go.mod` ×3、`web/package.json`）
 **检查方法：** 全文通读 10 份规范（共 2469 行）并与宪法文件、现有规范、UEQE 实现逐项比对；技术栈一致性以 `go.mod`/`package.json` 实际值为准。
 **原则：** 只报告与给出修改方案，不擅自删除任何已有安全限制。
 

@@ -16,7 +16,7 @@ AIES 是**上层方法论 + L2/L3 补齐**，不替代项目已批准的"宪法"
 | 最高 | 用户明确的操作授权、L0 安全底线 | 授权范围、数据/生产/资金安全 |
 | 高 | `AGENTS.md`（根，256 行执行入口） | 项目宪法：技术栈、OWASP、后端/前端规则、项目治理、Git/PR 规范 |
 | 高 | `web/AGENTS.md` | 前端专属约定（组件复用、i18n、构建） |
-| 高 | `docs/design-system/design-system.md` + `showcase.html` | 设计系统唯一真源（§11 颜色 / §12 字号 / §14 组件 / §21 响应式 / §26 例外） |
+| 高 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` + `showcase-3.0.html` | 设计系统唯一真源（§2 色彩 / §1 字号 / §13 组件 / §16 响应式 / §0 执行原则） |
 | 中高 | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准） | 领域规范基线：架构/API 契约/数据库/支付计费/安全/UX/变更/文档/AI 执行，各文档含「Uter 代码事实锚点」章节（真实文件路径+符号名） |
 | 中 | 本文件 `.ai/AIES.md` | 任务编译、合同、SOP、验收门禁、持续改进的**通用框架** |
 | 中 | `.ai/task-schema.json`、`.ai/checklists/*` | 机器可验证的 L2/L3 规则 |
@@ -257,7 +257,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 | 支付回调契约 | `topup_gateway_contract_test.go`、验签/幂等/金额测试 | Go 测试 | P0 |
 | 认证安全（OWASP） | 专项回归（失败/过期/重放/绕过） | Go/前端测试 | P0 |
 | i18n 键完整性 | `web/scripts/check-i18n-keys.mjs` + `static-keys.ts` 登记 | 脚本 | P1（prop 形式需人工同补 7 份） |
-| 视觉差异 | **尚未实现** Playwright 截图基线 | — | 待建设；当前须人工+`showcase.html` 对比，不可声称视觉验收通过 |
+| 视觉差异 | **尚未实现** Playwright 截图基线 | — | 待建设；当前须人工+`showcase-3.0.html` 对比，不可声称视觉验收通过 |
 
 ### 7.5 检查项与阻断适用性（通用原则）
 - 适合阻断：颜色/字号 Token、禁止新增未批准 Token、类型错误、组件单测、支付安全与金额一致性。
@@ -378,14 +378,14 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 ### 13.2 Uter 现状审计（2026-10-29）
 
 **已存在（无需重复造，直接复用）**：
-- L1 宪法：`AGENTS.md`（256 行，OWASP/后端/前端/设计系统/项目治理）、`web/AGENTS.md`、合并后的 `design-system.md`（单文件 + `showcase.html`）。
+- L1 宪法：`AGENTS.md`（OWASP/后端/前端/设计系统/项目治理）、`web/AGENTS.md`、`UTER-DESIGN-SYSTEM-3.0.md`（单文件 + `showcase-3.0.html`）。
 - L3 门禁：`check-design-tokens.mjs`（T1–T15）、`spec-guards.test.ts` 等 10 个守卫套件、CI（`ci.yml`/`release-gate.yml`）、pre-commit 钩子（`design-token-gate.sh` + `setup-git-hooks.mjs`）、i18n 键检查。
 - 治理：`.agents/github/ISSUE.md`/`PR.md`、受保护标识规则、提交身份守卫。
 
 **本次补齐（L2/L3 增量，纯新增不覆盖）**：`.ai/AIES.md`（本文件）、`.ai/task-schema.json`、`.ai/README.md`、`.ai/checklists/`（UI/功能/认证支付/测试审计）。
 
 **待建设（诚实标注，不可声称已实现）**：
-- Playwright 截图基线 / 视觉回归（当前 `showcase.html` 仅作人工对比依据）。
+- Playwright 截图基线 / 视觉回归（当前 `showcase-3.0.html` 仅作人工对比依据）。
 - 自动化需求编译（当前靠 AI 依本合同人工编译）。
 - 违规记录库/质量评分的自动采集（当前靠文档登记）。
 

@@ -54,7 +54,7 @@ right scope every time:
 |---|---|
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
-| Design system / typography / color | `docs/design-system/design-system.md` (single authoritative file) |
+| Design system / typography / color | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (single authoritative file, 2026-11-03 起唯一标准) |
 | Execution methodology | `.ai/AIES.md` + `.ai/README.md` |
 | Domain standards (architecture / API contract / database / payment / billing / security / UX / change / documentation) | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准，含「代码事实锚点」章节） |
 | Engineering quality standards (code review / testing / auto-fix / quality gate) | `docs/ai-specs/engineering-quality/` |
@@ -73,7 +73,7 @@ changes"). Spec standards live under `docs/ai-specs/`:
 |---|---|
 | 所有开发任务 / All development tasks | AI Execution: `docs/ai-specs/AI-EXECUTION-STANDARD.md` + Development: `docs/ai-specs/DEVELOPMENT-STANDARD.md` |
 | 新功能 / New features | Product Requirements: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
-| UI 开发 / UI development | Design System: `docs/design-system/design-system.md` + UX Interaction: `docs/ai-specs/UX-INTERACTION-STANDARD.md` |
+| UI 开发 / UI development | Design System: `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` + UX Interaction: `docs/ai-specs/UX-INTERACTION-STANDARD.md` |
 | API 开发 / API development | API Contract: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Security: `docs/ai-specs/SECURITY-STANDARD.md` |
 | 数据库开发 / Database work | Database: `docs/ai-specs/DATABASE-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
 | 支付开发 / Payment work | Product: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + API: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Database: `docs/ai-specs/DATABASE-STANDARD.md` + Security: `docs/ai-specs/SECURITY-STANDARD.md` |
@@ -144,7 +144,7 @@ the four disciplines above (this file stays the constitution). On conflict,
 resolve by precedence, never by convenience:
 
 1. `AGENTS.md` (this file) and `web/AGENTS.md` (frontend scope)
-2. `docs/design-system/design-system.md` (UI design values and rules)
+2. `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (UI design values and rules)
 3. `docs/ai-specs/*` (domain standards; `engineering-quality/` = quality process)
 4. `.ai/AIES.md` (execution methodology)
 
@@ -347,8 +347,8 @@ Inside `relaykit/`, use `kitutil.*` from `relaykit/relayconvert/kitutil/json.go`
 ### Design System Enforcement
 
 The approved design system is the single source of truth for all UI implementation.
-**Full spec: `docs/design-system/design-system.md`** (rules + enforcement layers).
-**Visual specimen: `docs/design-system/showcase.html`** — open it to see every
+**Full spec: `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`** (rules + enforcement layers).
+**Visual specimen: `docs/design-system/showcase-3.0.html`** — open it to see every
 font size, color, size tier, and component rendered with the real tokens.
 
 Before changing any UI code, read the relevant chapters of the spec (§11 colors,
@@ -400,12 +400,12 @@ sections. Two screenshot-diff tracks exist, and **neither runs in CI**:
 
 ```bash
 cd web
-bun run test:visual        # track 1: showcase.html diff, zero-dep, headless Chrome
+bun run test:visual        # track 1: showcase-3.0.html diff, zero-dep, headless Chrome
 bun run test:visual:e2e    # track 2: Playwright diff of real routes, needs the full stack
 ```
 
 - Track 1 (`scripts/visual-regression.mjs`) screenshots
-  `docs/design-system/showcase.html` at 1440x900 and 390x844 and compares
+  `docs/design-system/showcase-3.0.html` at 1440x900 and 390x844 and compares
   hashes stored in `visual-regression/baseline.json`.
 - Track 2 (`web/e2e/visual/`) covers real routes, including authenticated ones,
   and requires the Go backend plus `bun run dev` to be running.

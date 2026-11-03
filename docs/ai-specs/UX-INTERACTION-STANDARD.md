@@ -12,7 +12,7 @@
 
 统一 Uter 所有页面和组件的交互行为，确保用户能够清晰理解系统状态、操作结果和异常原因。
 
-本规范负责交互行为，不替代 design-system 的视觉设计规则（见 `docs/design-system/design-system.md`）。
+本规范负责交互行为，不替代 design-system 的视觉设计规则（见 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`）。
 
 ## 2. 基本原则
 
@@ -241,7 +241,7 @@ PC Web 与 H5 应保持一致的业务逻辑，同时根据设备特点调整交
 
 ### 16.1 视觉与交互的分工
 
-视觉规则**不定义在本文件**，唯一真源是 `web/docs/design-system/design-system.md`（+ showcase.html），门禁为 `bun run lint:design:strict`（T1–T16，见下）。本文件只管交互行为。二者冲突时以 design-system.md 为准。
+视觉规则**不定义在本文件**，唯一真源是 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（+ showcase-3.0.html），门禁为 `bun run lint:design:strict`（T1–T16，见下）。本文件只管交互行为。二者冲突时以 UTER-DESIGN-SYSTEM-3.0.md 为准。
 
 ### 16.2 前端结构事实
 
