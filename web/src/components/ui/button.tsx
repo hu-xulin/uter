@@ -24,30 +24,35 @@ import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  // 圆角按尺寸给：普通按钮 r-md（8px），图标按钮 r-lg（10px）。
+  // 圆角按尺寸给：普通按钮 r-md（10px，--radius 基准档），
+  // 图标按钮 r-lg（12px）。
   // 规范 2.1：Button → r-md，Icon Button → r-lg。写在基类上会让
   // 调用方的 rounded-* 覆盖失效顺序不稳定，因此这里逐档位声明。
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
   {
     variants: {
+      // Disabled 统一模式（3.0 §10.5）：禁止只依赖 opacity，必须保留明确的禁用
+      // 状态且不被误认为普通状态。做法 = 各 variant 各自给 `disabled:` 态：终止
+      // 品牌/强调色、落到 `bg-muted` + `text-muted-foreground`（ghost/link 为
+      // 透明底 + 弱化文字），用底色 + 文字双重信号区分，而非 50% 透明蒙版。
       variant: {
         // 主按钮底用 `primary-strong`（规范 1.1.1）：浅色主题下与 primary
         // 同值，深色主题下它更亮，才配得上 `primary-foreground` 的深色文字。
         // 悬停/按下各有独立 Token，不用「常态色 + 透明度」凑 —— 那会在
         // 浅色底上泛白而不是变深。
         default:
-          'bg-primary-strong text-primary-foreground hover:bg-primary-hover active:bg-primary-active',
+          'bg-primary-strong text-primary-foreground hover:bg-primary-hover active:bg-primary-active disabled:bg-muted disabled:text-muted-foreground disabled:border-transparent',
         outline:
-          'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50',
+          'border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 disabled:bg-muted disabled:text-muted-foreground disabled:border-border dark:disabled:bg-input/30',
         secondary:
-          'bg-secondary text-secondary-foreground hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-secondary-foreground',
+          'bg-secondary text-secondary-foreground hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-secondary-foreground disabled:bg-muted disabled:text-muted-foreground disabled:border-transparent',
         ghost:
-          'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50',
+          'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 disabled:bg-transparent disabled:text-muted-foreground',
         destructive:
-          'bg-destructive-subtle text-destructive hover:bg-destructive-subtle-hover focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
+          'bg-destructive-subtle text-destructive hover:bg-destructive-subtle-hover focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 disabled:bg-muted disabled:text-muted-foreground disabled:border-transparent',
         // 链接型按钮：品牌色 + 悬停加下划线。规范 1.1.2 要求文字链接
         // 「悬停/焦点必须提供颜色以外的反馈」，只变色不算。
-        link: 'text-fg-link underline-offset-4 hover:underline focus-visible:underline',
+        link: 'text-fg-link underline-offset-4 hover:underline focus-visible:underline disabled:text-muted-foreground disabled:no-underline',
       },
       size: {
         // 规范 2.1 Button 的尺寸档：md（36px）/ sm（32px）/ lg（40px）+ 四档

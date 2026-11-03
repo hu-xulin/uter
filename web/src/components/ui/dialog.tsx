@@ -120,6 +120,9 @@ function DialogFooter({
 }: React.ComponentProps<'div'> & {
   showCloseButton?: boolean
 }) {
+  // 与 DialogContent 的 sr-only「Close」同源走 i18n（97 行），避免 footer
+  // 的关闭钮漏出硬编码英文。
+  const { t } = useTranslation()
   return (
     <div
       data-slot='dialog-footer'
@@ -134,7 +137,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close render={<Button variant='outline' />}>
-          Close
+          {t('Close')}
         </DialogPrimitive.Close>
       )}
     </div>

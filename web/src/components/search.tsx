@@ -50,7 +50,8 @@ export function Search({ className = '', placeholder }: SearchProps) {
           也不需要重算文字缩进。 */}
       <SearchIcon aria-hidden='true' className='size-4.5 shrink-0' />
       <span className='truncate'>{resolvedPlaceholder}</span>
-      <kbd className='bg-background text-muted-foreground text-mono pointer-events-none absolute end-[0.3rem] top-[0.3rem] hidden h-5 items-center gap-1 rounded border px-1.5 font-mono font-medium opacity-100 select-none sm:flex'>
+      {/* 3.0 §7 审计整改：快捷键徽标偏移网格化，0.3rem(4.8px) → 4px（sp-1） */}
+      <kbd className='bg-background text-muted-foreground text-mono pointer-events-none absolute end-1 top-1 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono font-medium opacity-100 select-none sm:flex'>
         <span className='text-xs'>⌘</span>
         {t('K')}
       </kbd>

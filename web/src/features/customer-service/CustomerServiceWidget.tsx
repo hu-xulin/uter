@@ -27,6 +27,8 @@ import {
   type CustomerServicePageKey,
 } from './page-keys'
 
+import './CustomerServiceWidget.css'
+
 // 智能客服挂件（uter-cs）的 Uter 原生实现。
 // 通过 Go 网关的 /api/cs/* 反代访问 uter-cs 后端（本地 3200），对外单端口，
 // 不再依赖外挂的 /cs/widget.js 与 Nginx 反代。
@@ -37,9 +39,9 @@ import {
 // 品牌色用于：面板头部徽标、悬浮气泡圆底、发送气泡与发送按钮。
 // **一律读 `var(--primary)`**，不得写死色值——否则改品牌色 / 换主题预设时
 // 挂件会停在旧颜色上，成为全站唯一不同步的地方。
+// 样式集中在同目录 CustomerServiceWidget.css（3.0 语义 Token）。
+//
 // 文案配置（标题/欢迎语/预置问题）由后台「部署配置」实时下发。
-
-const BRAND = 'var(--primary)'
 
 // 气泡图标：取自品牌 SVG service.svg / service02.svg（对话气泡 + 机器人，同一几何形）。
 // service02.svg 的实填色由 `fill={BRAND}` 注入（SVG fill 接受 var()），
@@ -49,9 +51,11 @@ const BRAND = 'var(--primary)'
 function BotIcon({
   width = 28,
   fill = 'white',
+  className,
 }: {
   width?: number
   fill?: string
+  className?: string
 }) {
   const height = Math.round((width * 175) / 200)
   return (
@@ -60,12 +64,10 @@ function BotIcon({
       height={height}
       viewBox='0 0 200 175'
       aria-hidden='true'
-      style={{ display: 'block' }}
+      className={className}
+      fill={fill}
     >
-      <path
-        d='M100 0C155.229 0 200 39.1752 200 87.5C200 135.825 155.229 175 100 175C79.624 175 60.6713 169.668 44.8652 160.511L12.8066 170.864C11.4019 171.318 9.88153 171.26 8.51562 170.7C5.32189 169.392 3.79397 165.741 5.10254 162.547L16.252 135.335C5.97484 121.587 0 105.154 0 87.5C0 39.1752 44.7714 0 100 0ZM131.166 75.0059C130.315 75.0059 129.485 75.0791 128.683 75.2158C125.553 75.753 122.872 77.2812 121.195 79.3623C120.015 80.8242 119.329 82.5596 119.329 84.416V109.004C119.329 117.19 111.179 123.86 100.979 124.17C100.814 124.172 100.648 124.178 100.482 124.179C100.4 124.18 100.318 124.18 100.236 124.18C100.154 124.18 100.071 124.18 99.9893 124.179C89.6947 124.075 81.3623 117.49 81.1514 109.32C81.1509 109.28 81.1497 109.24 81.1494 109.199C81.1482 109.134 81.1484 109.068 81.1484 109.003V84.417C81.1484 82.5606 80.4632 80.8242 79.2842 79.3623C78.8206 78.7875 78.2794 78.2541 77.6719 77.7715C75.5259 76.0654 72.5654 75.0068 69.3115 75.0068C65.5553 75.0069 62.1922 76.4179 60.0205 78.6055V78.6064C58.4286 80.209 57.4766 82.2285 57.4766 84.416V109.003C57.4766 122.325 67.1132 133.857 81.1484 139.433C86.8934 141.716 93.378 143 100.238 143C104.345 143 108.315 142.54 112.073 141.681L112.072 141.68C114.572 141.11 117.001 140.358 119.327 139.434C133.362 133.857 142.999 122.325 142.999 109.003V90.2705C142.999 90.2417 143 90.2125 143 90.1836V84.416C143 82.2265 142.046 80.2051 140.453 78.6025C140.163 78.3106 139.854 78.0332 139.523 77.7705C139.192 77.5069 138.843 77.2607 138.479 77.0303C136.46 75.7636 133.92 75.0059 131.166 75.0059ZM69.2832 43C62.4993 43.0002 57 48.5972 57 55.501C57.0002 62.4046 62.4995 68.0008 69.2832 68.001C76.0671 68.001 81.5672 62.4047 81.5674 55.501C81.5674 48.5971 76.0673 43 69.2832 43ZM130.701 43C123.917 43.0003 118.418 48.5972 118.418 55.501C118.418 62.4045 123.917 68.0007 130.701 68.001C137.485 68.001 142.985 62.4047 142.985 55.501C142.985 48.5971 137.485 43 130.701 43Z'
-        fill={fill}
-      />
+      <path d='M100 0C155.229 0 200 39.1752 200 87.5C200 135.825 155.229 175 100 175C79.624 175 60.6713 169.668 44.8652 160.511L12.8066 170.864C11.4019 171.318 9.88153 171.26 8.51562 170.7C5.32189 169.392 3.79397 165.741 5.10254 162.547L16.252 135.335C5.97484 121.587 0 105.154 0 87.5C0 39.1752 44.7714 0 100 0ZM131.166 75.0059C130.315 75.0059 129.485 75.0791 128.683 75.2158C125.553 75.753 122.872 77.2812 121.195 79.3623C120.015 80.8242 119.329 82.5596 119.329 84.416V109.004C119.329 117.19 111.179 123.86 100.979 124.17C100.814 124.172 100.648 124.178 100.482 124.179C100.4 124.18 100.318 124.18 100.236 124.18C100.154 124.18 100.071 124.18 99.9893 124.179C89.6947 124.075 81.3623 117.49 81.1514 109.32C81.1509 109.28 81.1497 109.24 81.1494 109.199C81.1482 109.134 81.1484 109.068 81.1484 109.003V84.417C81.1484 82.5606 80.4632 80.8242 79.2842 79.3623C78.8206 78.7875 78.2794 78.2541 77.6719 77.7715C75.5259 76.0654 72.5654 75.0068 69.3115 75.0068C65.5553 75.0069 62.1922 76.4179 60.0205 78.6055V78.6064C58.4286 80.209 57.4766 82.2285 57.4766 84.416V109.003C57.4766 122.325 67.1132 133.857 81.1484 139.433C86.8934 141.716 93.378 143 100.238 143C104.345 143 108.315 142.54 112.073 141.681L112.072 141.68C114.572 141.11 117.001 140.358 119.327 139.434C133.362 133.857 142.999 122.325 142.999 109.003V90.2705C142.999 90.2417 143 90.2125 143 90.1836V84.416C143 82.2265 142.046 80.2051 140.453 78.6025C140.163 78.3106 139.854 78.0332 139.523 77.7705C139.192 77.5069 138.843 77.2607 138.479 77.0303C136.46 75.7636 133.92 75.0059 131.166 75.0059ZM69.2832 43C62.4993 43.0002 57 48.5972 57 55.501C57.0002 62.4046 62.4995 68.0008 69.2832 68.001C76.0671 68.001 81.5672 62.4047 81.5674 55.501C81.5674 48.5971 76.0673 43 69.2832 43ZM130.701 43C123.917 43.0003 118.418 48.5972 118.418 55.501C118.418 62.4045 123.917 68.0007 130.701 68.001C137.485 68.001 142.985 62.4047 142.985 55.501C142.985 48.5971 137.485 43 130.701 43Z' />
     </svg>
   )
 }
@@ -249,36 +251,6 @@ export function CustomerServiceWidget() {
     }
   }
 
-  const bubble: React.CSSProperties = {
-    alignSelf: 'flex-end',
-    maxWidth: '84%',
-    padding: '10px 14px',
-    borderRadius:
-      'var(--radius-xl) var(--radius-xl) var(--radius-xs) var(--radius-xl)',
-    fontSize: 'var(--ds-text-body)',
-    lineHeight: 'var(--ds-line-body)',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-    background: BRAND,
-    color: 'var(--primary-foreground)',
-    boxShadow: 'var(--ds-elevation-popover)',
-  }
-
-  const reply: React.CSSProperties = {
-    alignSelf: 'flex-start',
-    maxWidth: '84%',
-    padding: '10px 14px',
-    borderRadius:
-      'var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-xs)',
-    fontSize: 'var(--ds-text-body)',
-    lineHeight: 'var(--ds-line-body)',
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
-    background: 'var(--card)',
-    color: 'var(--card-foreground)',
-    border: '1px solid var(--border)',
-  }
-
   // 页面级开关（递进于总开关）。判定逻辑收敛到纯函数 shouldShowCustomerService，
   // 组件与单测共用同一份实现，避免两边规则漂移。
   const pageEnabled = shouldShowCustomerService(pathname, pages)
@@ -309,174 +281,51 @@ export function CustomerServiceWidget() {
         aria-label={cfg.title}
         title={cfg.title}
         onClick={() => setOpen((o) => !o)}
-        style={{
-          position: 'fixed',
-          right: 20,
-          bottom: 20,
-          zIndex: 2147483000,
-          width: 56,
-          height: 56,
-          borderRadius: '9999px',
-          display: 'grid',
-          placeItems: 'center',
-          background: BRAND,
-          border: 'none',
-          cursor: 'pointer',
-          boxShadow: 'var(--ds-elevation-overlay)',
-          transition: 'transform .18s ease, box-shadow .18s ease',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateY(-2px)'
-          e.currentTarget.style.boxShadow = 'var(--ds-elevation-overlay)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'none'
-          e.currentTarget.style.boxShadow = 'var(--ds-elevation-overlay)'
-        }}
+        className='cs-fab'
       >
-        <BotIcon width={30} />
+        <BotIcon width={30} className='cs-bot-icon' />
       </button>
 
       {open && (
-        <div
-          role='dialog'
-          aria-label={cfg.title}
-          style={{
-            position: 'fixed',
-            right: 20,
-            bottom: 88,
-            zIndex: 2147483000,
-            width: 372,
-            maxWidth: 'calc(100vw - 32px)',
-            height: 'min(520px, calc(100dvh - 140px))',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            background: 'var(--popover)',
-            color: 'var(--popover-foreground)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-2xl)',
-            boxShadow: 'var(--ds-elevation-overlay)',
-            fontFamily: 'var(--font-ui)',
-            animation: 'cs-in .18s ease-out',
-          }}
-        >
-          <style>
-            {
-              '@keyframes cs-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}'
-            }
-          </style>
-
+        <div role='dialog' aria-label={cfg.title} className='cs-panel'>
           {/* 头部：品牌渐变细条 + 图标 + 标题 */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '12px 12px 12px 16px',
-              borderBottom: '1px solid var(--border)',
-              background: 'var(--card)',
-              flexShrink: 0,
-            }}
-          >
-            <span
-              style={{
-                width: 26,
-                height: 26,
-                display: 'grid',
-                placeItems: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <BotIcon width={24} fill={BRAND} />
+          <div className='cs-header'>
+            <span className='cs-logo'>
+              <BotIcon
+                width={24}
+                fill='var(--primary)'
+                className='cs-bot-icon'
+              />
             </span>
-            <span
-              style={{
-                fontSize: 'var(--ds-text-body)',
-                fontWeight: 600,
-                flex: 1,
-                minWidth: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {cfg.title}
-            </span>
+            <span className='cs-title'>{cfg.title}</span>
             <button
               type='button'
               onClick={() => setOpen(false)}
               aria-label='关闭'
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--muted-foreground)',
-                cursor: 'pointer',
-                fontSize: 'var(--ds-text-group-title)',
-                lineHeight: 1,
-                padding: 6,
-                borderRadius: 'var(--radius-sm)',
-                flexShrink: 0,
-              }}
+              className='cs-close'
             >
               ✕
             </button>
           </div>
 
           {/* 消息区 */}
-          <div
-            ref={bodyRef}
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: 16,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-              background: 'var(--background)',
-            }}
-          >
-            <div style={reply}>{cfg.greeting}</div>
+          <div ref={bodyRef} className='cs-messages'>
+            <div className='cs-reply'>{cfg.greeting}</div>
             {messages.map((m) => (
               // 消息无业务 id，用「角色 + 内容」构造 key。不用数组索引：追加消息时
               // 索引会整体错位导致全列表重渲染（react/no-array-index-key）。
               <div
                 key={`${m.role}:${m.text.slice(0, 24)}`}
-                style={m.role === 'user' ? bubble : reply}
+                className={m.role === 'user' ? 'cs-bubble' : 'cs-reply'}
               >
                 {m.text}
               </div>
             ))}
             {typing && (
-              <div
-                style={{
-                  alignSelf: 'flex-start',
-                  display: 'flex',
-                  gap: 4,
-                  padding: '12px 14px',
-                  borderRadius:
-                    'var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-xs)',
-                  background: 'var(--card)',
-                  border: '1px solid var(--border)',
-                }}
-              >
+              <div className='cs-typing'>
                 {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: '9999px',
-                      background: 'var(--muted-foreground)',
-                      animation: `cs-blink 1.2s ${i * 0.18}s infinite`,
-                    }}
-                  />
+                  <span key={i} className='cs-dot' />
                 ))}
-                <style>
-                  {
-                    '@keyframes cs-blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:.9;transform:translateY(-2px)}}'
-                  }
-                </style>
               </div>
             )}
           </div>
@@ -485,41 +334,13 @@ export function CustomerServiceWidget() {
           {showPresets &&
             cfg.presetQuestions &&
             cfg.presetQuestions.length > 0 && (
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 6,
-                  padding: '0 16px 12px',
-                  background: 'var(--background)',
-                  flexShrink: 0,
-                }}
-              >
+              <div className='cs-presets'>
                 {cfg.presetQuestions.map((q) => (
                   <button
                     type='button'
                     key={q}
                     onClick={() => send(q)}
-                    style={{
-                      background: 'var(--card)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--muted-foreground)',
-                      fontSize: 'var(--ds-text-caption)',
-                      fontFamily: 'inherit',
-                      padding: '6px 12px',
-                      borderRadius: '9999px',
-                      cursor: 'pointer',
-                      transition: 'color .15s, border-color .15s',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = BRAND
-                      e.currentTarget.style.borderColor =
-                        'var(--primary-border)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'var(--muted-foreground)'
-                      e.currentTarget.style.borderColor = 'var(--border)'
-                    }}
+                    className='cs-preset'
                   >
                     {q}
                   </button>
@@ -528,16 +349,7 @@ export function CustomerServiceWidget() {
             )}
 
           {/* 输入区 */}
-          <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              padding: 12,
-              borderTop: '1px solid var(--border)',
-              background: 'var(--card)',
-              flexShrink: 0,
-            }}
-          >
+          <div className='cs-inputarea'>
             <input
               ref={inputRef}
               value={input}
@@ -546,76 +358,20 @@ export function CustomerServiceWidget() {
                 if (e.key === 'Enter') send()
               }}
               placeholder={cfg.placeholder}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '10px 12px',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border)',
-                background: 'var(--background)',
-                color: 'var(--foreground)',
-                fontFamily: 'inherit',
-                fontSize: 'var(--ds-text-body)',
-                outline: 'none',
-                transition: 'border-color .15s, box-shadow .15s',
-              }}
-              onFocus={(e) => {
-                // 焦点环按规范 §1.4：1px（`stroke-focus` Outside 1px）、走 ring Token，不用 3px 半透明手写色。
-                e.currentTarget.style.borderColor = 'var(--ring)'
-                e.currentTarget.style.boxShadow = '0 0 0 1px var(--ring)'
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border)'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
+              className='cs-input'
             />
             <button
               type='button'
               onClick={() => send()}
               disabled={!input.trim() || typing}
               aria-label='发送'
-              style={{
-                background: BRAND,
-                color: 'var(--primary-foreground)',
-                border: 'none',
-                padding: '0 18px',
-                borderRadius: 'var(--radius-lg)',
-                cursor: input.trim() && !typing ? 'pointer' : 'not-allowed',
-                fontFamily: 'inherit',
-                fontSize: 'var(--ds-text-body)',
-                fontWeight: 600,
-                opacity: input.trim() && !typing ? 1 : 0.5,
-                transition: 'opacity .15s, filter .15s',
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) => {
-                if (input.trim() && !typing) {
-                  e.currentTarget.style.filter = 'brightness(1.08)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.filter = 'none'
-              }}
+              className='cs-send'
             >
               发送
             </button>
           </div>
 
-          {cfg.powered && (
-            <div
-              style={{
-                textAlign: 'center',
-                fontSize: 'var(--ds-text-caption)',
-                color: 'var(--muted-foreground)',
-                padding: '7px 0 8px',
-                background: 'var(--card)',
-                borderTop: '1px solid var(--border)',
-                flexShrink: 0,
-              }}
-            >
-              {cfg.powered}
-            </div>
-          )}
+          {cfg.powered && <div className='cs-powered'>{cfg.powered}</div>}
         </div>
       )}
     </>

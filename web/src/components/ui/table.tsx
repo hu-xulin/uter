@@ -89,7 +89,7 @@ function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
     <tfoot
       data-slot='table-footer'
       className={cn(
-        'bg-muted/50 border-t font-medium [&>tr]:last:border-b-0',
+        'bg-subtle border-t font-medium [&>tr]:last:border-b-0' /* 3.0 §2.5 subtle 表面（审计 AUDIT-008 接线） */,
         className
       )}
       {...props}
