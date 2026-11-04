@@ -187,6 +187,7 @@ jobs:
             go.sum
             relaykit/go.sum
             tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
 
       - name: Create frontend embed placeholder
         run: |
@@ -202,6 +203,14 @@ jobs:
       # 数分钟，与上面的单元测试分开跑便于定位是哪一侧出的问题。
       - name: Race test end-to-end billing flows
         run: go test -race -count=1 ./e2e/...
+
+      - name: Race test relaykit module
+        working-directory: relaykit
+        run: GOWORK=off go test -race -count=1 ./...
+
+      - name: Race test tokenkit module
+        working-directory: tokenkit
+        run: GOWORK=off go test -race -count=1 ./...
 
       - name: Race test nested TokenKit module
         working-directory: tokenkit/tokenkit
@@ -232,6 +241,7 @@ jobs:
             go.sum
             relaykit/go.sum
             tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
 
       - name: Create frontend embed placeholder
         run: |
@@ -249,6 +259,15 @@ jobs:
 
       - name: Coverage summary
         run: go tool cover -func=coverage.out | tail -1
+
+      - name: Collect independent Go module coverage
+        run: |
+          set -o pipefail
+          for module in relaykit tokenkit tokenkit/tokenkit; do
+            label="${module//\//-}"
+            (cd "$module" && GOWORK=off go test -count=1 -covermode=atomic -coverprofile="$RUNNER_TEMP/${label}.coverage.out" ./...)
+            go tool cover -func="$RUNNER_TEMP/${label}.coverage.out" | tail -1
+          done
 
       # F-15：关键路径覆盖率下限。基线（本次测量）：controller 41.6%、
       # model 47.7%、service 45.7%、middleware 66.4%。阈值各留约 2 个点余量，
@@ -268,7 +287,7 @@ jobs:
           path: coverage.out
           retention-days: 14
 
-  # Go 依赖漏洞扫描：覆盖三个模块各自的 go.mod。
+  # Go 依赖漏洞扫描：覆盖四个独立模块各自的 go.mod。
   vulnscan:
     name: Go dependency vulnerability scan
     runs-on: ubuntu-latest
