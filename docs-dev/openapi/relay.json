@@ -446,7 +446,7 @@
         "summary": "编辑图像(qwen-image-edit)",
         "deprecated": false,
         "description": " 百炼qwen-image系列图片生成",
-        "operationId": "createImage",
+        "operationId": "editImage",
         "tags": [
           "图片生成/Qwen千问"
         ],
