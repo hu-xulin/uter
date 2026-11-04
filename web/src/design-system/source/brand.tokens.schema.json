@@ -1,28 +1,53 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://uter.ai/uaes/schemas/brand-token-source.schema.json",
-  "title": "UTER Brand Token Source",
+  "$id": "https://uter.ai/schemas/brand.tokens.schema.json",
+  "title": "UTER Brand Tokens (DTCG-compatible)",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "$schema",
-    "metadata",
-    "themes",
-    "provenance"
+    "$extensions",
+    "themes"
   ],
   "properties": {
-    "$schema": {
-      "type": "string"
+    "$extensions": {
+      "type": "object",
+      "required": [
+        "com.uter.uaes"
+      ],
+      "properties": {
+        "com.uter.uaes": {
+          "$ref": "#/$defs/metadata"
+        }
+      },
+      "additionalProperties": false
     },
+    "themes": {
+      "type": "object",
+      "required": [
+        "light",
+        "dark"
+      ],
+      "properties": {
+        "light": {
+          "$ref": "#/$defs/theme"
+        },
+        "dark": {
+          "$ref": "#/$defs/theme"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
     "metadata": {
       "type": "object",
-      "additionalProperties": false,
       "required": [
         "id",
         "version",
         "designSystem",
         "status",
         "sourceCommit",
+        "provenance",
         "notes"
       ],
       "properties": {
@@ -47,43 +72,38 @@
           "type": "string",
           "pattern": "^[0-9a-f]{40}$"
         },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "USER_CONFIRMED",
+              "EXISTING_3_0_IMPLEMENTATION",
+              "PROPOSED"
+            ]
+          }
+        },
         "notes": {
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
-    "themes": {
+    "theme": {
       "type": "object",
-      "additionalProperties": false,
       "required": [
-        "light",
-        "dark"
+        "brand"
       ],
       "properties": {
-        "light": {
-          "$ref": "#/$defs/palette"
-        },
-        "dark": {
-          "$ref": "#/$defs/palette"
+        "brand": {
+          "$ref": "#/$defs/colorGroup"
         }
-      }
+      },
+      "additionalProperties": false
     },
-    "provenance": {
+    "colorGroup": {
       "type": "object",
-      "additionalProperties": {
-        "enum": [
-          "USER_CONFIRMED",
-          "EXISTING_3_0_IMPLEMENTATION",
-          "PROPOSED"
-        ]
-      }
-    }
-  },
-  "$defs": {
-    "palette": {
-      "type": "object",
-      "additionalProperties": false,
       "required": [
+        "$type",
         "primary",
         "primaryForeground",
         "hover",
@@ -94,31 +114,51 @@
         "subtleSurface"
       ],
       "properties": {
+        "$type": {
+          "const": "color"
+        },
         "primary": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "primaryForeground": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "hover": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "active": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "soft": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "softForeground": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "border": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         },
         "subtleSurface": {
-          "$ref": "#/$defs/hex"
+          "$ref": "#/$defs/colorToken"
         }
-      }
+      },
+      "additionalProperties": false
+    },
+    "colorToken": {
+      "type": "object",
+      "required": [
+        "$value",
+        "$description"
+      ],
+      "properties": {
+        "$value": {
+          "$ref": "#/$defs/hex"
+        },
+        "$description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
     },
     "hex": {
       "type": "string",
