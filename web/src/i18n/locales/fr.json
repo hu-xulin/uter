@@ -7771,6 +7771,8 @@
     "0 uses the default limit of 400 emails per day.": "0 utilise la limite par défaut de 400 e-mails par jour.",
     "Add sender account": "Ajouter un compte expéditeur",
     "At least one sender account is required": "Au moins un compte expéditeur est requis",
-    "Daily send limit must be a non-negative integer": "La limite d'envoi quotidienne doit être un entier positif ou nul"
+    "Daily send limit must be a non-negative integer": "La limite d'envoi quotidienne doit être un entier positif ou nul",
+    "new-api": "new-api",
+    "Frontend design and development by New API contributors.": "Conception et développement de l'interface par les contributeurs de New API."
   }
 }

@@ -3,6 +3,18 @@ Notices
 
 Copyright (c) Uter.ai and contributors.
 
+This project is a modified version of new-api, which is developed based on
+One API. The upstream copyright notices are preserved as required by AGPLv3:
+
+  new-api
+  Copyright (c) QuantumNous and contributors.
+
+  Upstream project: https://github.com/QuantumNous/new-api
+
+  One API
+  Copyright (c) songquanpeng and contributors.
+  Upstream project: https://github.com/songquanpeng/one-api
+
 This project is licensed under the GNU Affero General Public License v3.0.
 See LICENSE for the full project license terms.
 
@@ -18,6 +30,11 @@ about, legal, footer, or attribution location presented by the user interface:
 Modified versions that present a user interface must also preserve a visible
 link to the original project in a prominent about, legal, footer, or
 attribution location:
+
+https://github.com/QuantumNous/new-api
+
+The upstream project link above must not be replaced. A modified version may
+additionally present its own project link:
 
 https://Uter.ai
 

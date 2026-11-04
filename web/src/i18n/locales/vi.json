@@ -7771,6 +7771,8 @@
     "0 uses the default limit of 400 emails per day.": "0 sử dụng giới hạn mặc định 400 email mỗi ngày.",
     "Add sender account": "Thêm tài khoản gửi",
     "At least one sender account is required": "Cần ít nhất một tài khoản gửi",
-    "Daily send limit must be a non-negative integer": "Giới hạn gửi mỗi ngày phải là số nguyên không âm"
+    "Daily send limit must be a non-negative integer": "Giới hạn gửi mỗi ngày phải là số nguyên không âm",
+    "new-api": "new-api",
+    "Frontend design and development by New API contributors.": "Thiết kế và phát triển giao diện bởi những người đóng góp cho New API."
   }
 }

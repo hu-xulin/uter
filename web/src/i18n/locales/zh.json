@@ -7772,6 +7772,8 @@
     "0 uses the default limit of 400 emails per day.": "0 表示使用默认值：每天 400 封。",
     "Add sender account": "添加发信邮箱",
     "At least one sender account is required": "至少需要一个发信邮箱",
-    "Daily send limit must be a non-negative integer": "每日发信上限必须是非负整数"
+    "Daily send limit must be a non-negative integer": "每日发信上限必须是非负整数",
+    "new-api": "new-api",
+    "Frontend design and development by New API contributors.": "前端设计与开发由 New API 贡献者完成。"
   }
 }

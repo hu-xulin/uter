@@ -7771,6 +7771,8 @@
     "0 uses the default limit of 400 emails per day.": "0 uses the default limit of 400 emails per day.",
     "Add sender account": "Add sender account",
     "At least one sender account is required": "At least one sender account is required",
-    "Daily send limit must be a non-negative integer": "Daily send limit must be a non-negative integer"
+    "Daily send limit must be a non-negative integer": "Daily send limit must be a non-negative integer",
+    "new-api": "new-api",
+    "Frontend design and development by New API contributors.": "Frontend design and development by New API contributors."
   }
 }

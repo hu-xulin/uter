@@ -275,6 +275,45 @@ function FilingLinks(props: { className?: string }) {
   )
 }
 
+// Upstream attribution required by AGPLv3 Section 7(b).
+//
+// new-api's NOTICE requires modified versions that present a user interface to
+// keep a visible link to the original project plus the attribution text
+// "Frontend design and development by New API contributors." in a prominent
+// about, legal, footer, or attribution location. The footer's legal row is that
+// location. The link target is the upstream repository and must not be replaced
+// with this project's own site; see NOTICE.
+//
+// Rendered as a sibling of the legal links rather than folded into
+// `ProjectAttribution`, because that component carries the brand copyright and
+// its own link — mixing the two would make the notice look like part of the
+// copyright line and invite someone to delete it as duplication.
+const UPSTREAM_PROJECT_URL = 'https://github.com/QuantumNous/new-api'
+
+function UpstreamAttribution(props: { className?: string }) {
+  const { t } = useTranslation()
+
+  return (
+    <span
+      className={cn(
+        'text-tertiary-foreground inline-flex flex-wrap items-center gap-x-1 text-sm',
+        props.className
+      )}
+    >
+      <a
+        href={UPSTREAM_PROJECT_URL}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='hover:text-foreground ds-motion-marketing-fast transition-colors'
+      >
+        {t('new-api')}
+      </a>
+      <span aria-hidden='true'>·</span>
+      <span>{t('Frontend design and development by New API contributors.')}</span>
+    </span>
+  )
+}
+
 // inline=true returns just the inner span for composition in a parent flex
 // row. inline=false wraps in a centered/right-aligned div (default).
 function ProjectAttribution(props: {
@@ -462,6 +501,9 @@ export function Footer(props: FooterProps) {
               brandName={brandName}
             />
           </div>
+        </div>
+        <div className='mt-2 flex justify-center sm:justify-end'>
+          <UpstreamAttribution />
         </div>
       </div>
     </footer>
