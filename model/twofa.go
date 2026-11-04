@@ -179,6 +179,13 @@ func (t *TwoFA) IncrementFailedAttempts() error {
 
 		nextFailedAttempts := current.FailedAttempts + 1
 		nextLockedUntil := current.LockedUntil
+		if current.LockedUntil != nil {
+			// 上一次锁定已经过期（未过期的情形在上面提前返回），本次失败开启
+			// 新的计数窗口。否则 current.FailedAttempts 已达到上限，+1 会立刻
+			// 重新锁定，用户永远拿不到一次新的尝试机会。
+			nextFailedAttempts = 1
+			nextLockedUntil = nil
+		}
 		if nextFailedAttempts >= common.MaxFailAttempts {
 			lockUntil := now.Add(time.Duration(common.LockoutDuration) * time.Second)
 			nextLockedUntil = &lockUntil
