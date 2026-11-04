@@ -24,6 +24,23 @@
 | P11 DevOps & Delivery | .github/workflows/ci.yml, Dockerfiles, Compose files, deploy/, release scripts | PARTIAL | Release promotion, rollback, artifact provenance, environment approval, and branch protection evidence |
 | P12 Lifecycle & Evolution | docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md, migration scripts, versioning and release docs | PARTIAL | Technical-debt, deprecation, schema-evolution, postmortem, and retirement evidence |
 
+## 2026-11-05 integration audit evidence
+
+The following evidence supplements the phase inventory above. It does **not** promote any phase to VERIFIED.
+
+| Area | Evidence collected | Remaining limitation |
+|---|---|---|
+| Uter CI baseline | Uter PR #15 commit `442ddb5a7c234f2ee2d78651e0882407e9371c91` passed CI run [41897312764](https://github.com/hu-xulin/uter/actions/runs/41897312764), including backend, frontend, race, vulnerability, Electron secret-persistence, UAES static wiring, and UEQE review jobs. | This is one pinned PR revision, not proof of every UAES rule or runtime agent discovery. |
+| Go module architecture | UAES architecture source checks observed `MOD-GO-ROOT → MOD-RELAYKIT, MOD-TOKENKIT`; four Go module manifests are inventoried. | Does not prove every module's full semantic boundary or all package-level rules. |
+| API contract | Both OpenAPI documents passed structural and compatibility checks: 161 management operations / 8 schemas and 38 relay operations / 52 schemas. | Runtime route comparison found two documented management operations without matching Gin/plugin routes: `POST /api/oauth/wechat/bind`, `GET /api/verify/status`. Contract-owner decision remains required. |
+| Database migrations | Inventory covers 20 custom migration steps and 2 manual SQL files. Selected migration tests passed on SQLite, MySQL 8.4.4, and PostgreSQL 17.4 in [UAES run 41908683578](https://github.com/hu-xulin/uaes/actions/runs/41908683578). | Not full replay of all 20 steps, not ClickHouse log-database coverage, and not full rollback/recovery certification. Migration safety remains NOT_VERIFIED. |
+| Frontend module graph | 1,500 source files scanned; production/test imports are separated, generated route-tree imports excluded, and 21 lower-level-to-feature import edges identified for review. | Inventory is not an approved dependency policy. Semantic import-kind classification and boundary migration remain in progress; no boundary gate is enforced. |
+| UAES governance | UAES governance validation passed on the current DRAFT PR branch in [run 41908670106](https://github.com/hu-xulin/uaes/actions/runs/41908670106). | UAES PR #1 is not merged or approved; its registry remains DRAFT and is not an immutable release. |
+
+### Current integration gate scope
+
+Uter's `scripts/quality/uaes-integration-check.sh` is a static wiring and overlay-preservation gate. It checks lifecycle/pin declarations, P00–P12 traceability rows, critical Uter-owned payment/billing/auth/database/design-system rules, and agent-entrypoint/skill-adapter references. Positive and negative fixtures are maintained separately. Passing this gate does not prove WorkBuddy or Claude Code has discovered and loaded the canonical UAES skill at runtime. The strengthened gate's latest CI result must be checked before treating this control as PASS.
+
 ## Duplicate and overlay disposition
 
 ### Keep in Uter
