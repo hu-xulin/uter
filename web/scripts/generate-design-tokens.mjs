@@ -1,6 +1,20 @@
 /*
 Copyright (C) 2023-2026 Uter.ai
-Licensed under the GNU Affero General Public License v3 or later.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
 */
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -24,6 +38,24 @@ for (const theme of ['light','dark']) {
 const names = {primary:'primary',primaryForeground:'primary-foreground',hover:'hover',active:'active',soft:'soft',softForeground:'soft-foreground',border:'border',subtleSurface:'subtle-surface'}
 const render = theme => keys.map(key => `  --uaes-brand-${names[key]}: ${source.themes[theme][key]};`).join('\n')
 const output = `/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/*
  * GENERATED FILE — DO NOT EDIT.
  * Source: src/design-system/source/brand.tokens.json
  * Generator: scripts/generate-design-tokens.mjs
