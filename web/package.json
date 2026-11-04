@@ -36,7 +36,9 @@
     "knip": "knip",
     "design:tokens:generate": "node scripts/generate-design-tokens.mjs",
     "design:tokens:check": "node scripts/generate-design-tokens.mjs --check",
-    "verify:contrast": "node scripts/verify-contrast.mjs"
+    "verify:contrast": "node scripts/verify-contrast.mjs",
+    "components:registry:check": "node scripts/check-component-registry.mjs",
+    "components:registry:strict": "node scripts/check-component-registry.mjs --strict"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
