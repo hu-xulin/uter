@@ -1,0 +1,2339 @@
+{
+  "$schema": "./schemas/component-registry.schema.json",
+  "registryVersion": "1.0.0",
+  "designSystem": "UTER Design System 3.0",
+  "implementationRoot": "src/components/ui",
+  "policy": {
+    "singleImplementationRoot": true,
+    "forbidDuplicatePrimitives": true,
+    "requireRegisteredFiles": true,
+    "requireExplicitEvidenceStatus": true
+  },
+  "components": [
+    {
+      "id": "UTER-CMP-ACCORDION",
+      "name": "Accordion",
+      "file": "src/components/ui/accordion.tsx",
+      "category": "disclosure",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-ALERT_DIALOG",
+      "name": "AlertDialog",
+      "file": "src/components/ui/alert-dialog.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-ALERT",
+      "name": "Alert",
+      "file": "src/components/ui/alert.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "loading",
+          "error"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-ASPECT_RATIO",
+      "name": "AspectRatio",
+      "file": "src/components/ui/aspect-ratio.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-AVATAR",
+      "name": "Avatar",
+      "file": "src/components/ui/avatar.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-BADGE",
+      "name": "Badge",
+      "file": "src/components/ui/badge.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-BREADCRUMB",
+      "name": "Breadcrumb",
+      "file": "src/components/ui/breadcrumb.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-BUTTON_GROUP",
+      "name": "ButtonGroup",
+      "file": "src/components/ui/button-group.tsx",
+      "category": "action",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-BUTTON",
+      "name": "Button",
+      "file": "src/components/ui/button.tsx",
+      "category": "action",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/button-loading.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CALENDAR",
+      "name": "Calendar",
+      "file": "src/components/ui/calendar.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CARD",
+      "name": "Card",
+      "file": "src/components/ui/card.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CAROUSEL",
+      "name": "Carousel",
+      "file": "src/components/ui/carousel.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CHART",
+      "name": "Chart",
+      "file": "src/components/ui/chart.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CHECKBOX",
+      "name": "Checkbox",
+      "file": "src/components/ui/checkbox.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-COLLAPSIBLE",
+      "name": "Collapsible",
+      "file": "src/components/ui/collapsible.tsx",
+      "category": "disclosure",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-COMBOBOX_INPUT",
+      "name": "ComboboxInput",
+      "file": "src/components/ui/combobox-input.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-COMBOBOX",
+      "name": "Combobox",
+      "file": "src/components/ui/combobox.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/combobox.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-COMMAND",
+      "name": "Command",
+      "file": "src/components/ui/command.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CONTEXT_MENU",
+      "name": "ContextMenu",
+      "file": "src/components/ui/context-menu.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-DIALOG",
+      "name": "Dialog",
+      "file": "src/components/ui/dialog.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/dialog-layout.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-DIRECTION",
+      "name": "Direction",
+      "file": "src/components/ui/direction.tsx",
+      "category": "utility",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-DISCOUNT_BADGE",
+      "name": "DiscountBadge",
+      "file": "src/components/ui/discount-badge.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-DRAWER",
+      "name": "Drawer",
+      "file": "src/components/ui/drawer.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-DROPDOWN_MENU",
+      "name": "DropdownMenu",
+      "file": "src/components/ui/dropdown-menu.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/dropdown-menu.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-EMPTY",
+      "name": "Empty",
+      "file": "src/components/ui/empty.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "loading",
+          "error"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-FIELD",
+      "name": "Field",
+      "file": "src/components/ui/field.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-FORM_LABEL_TIER",
+      "name": "FormLabelTier",
+      "file": "src/components/ui/form-label-tier.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/form-label-tier.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-FORM",
+      "name": "Form",
+      "file": "src/components/ui/form.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-HOVER_CARD",
+      "name": "HoverCard",
+      "file": "src/components/ui/hover-card.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-ICON_BADGE",
+      "name": "IconBadge",
+      "file": "src/components/ui/icon-badge.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-INPUT_GROUP",
+      "name": "InputGroup",
+      "file": "src/components/ui/input-group.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/input-group.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-INPUT_OTP",
+      "name": "InputOtp",
+      "file": "src/components/ui/input-otp.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-INPUT",
+      "name": "Input",
+      "file": "src/components/ui/input.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-ITEM",
+      "name": "Item",
+      "file": "src/components/ui/item.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-KBD",
+      "name": "Kbd",
+      "file": "src/components/ui/kbd.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-LABEL",
+      "name": "Label",
+      "file": "src/components/ui/label.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/label.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-MARKDOWN",
+      "name": "Markdown",
+      "file": "src/components/ui/markdown.tsx",
+      "category": "content",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-MENUBAR",
+      "name": "Menubar",
+      "file": "src/components/ui/menubar.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-NATIVE_SELECT",
+      "name": "NativeSelect",
+      "file": "src/components/ui/native-select.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-NAVIGATION_MENU",
+      "name": "NavigationMenu",
+      "file": "src/components/ui/navigation-menu.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-PAGINATION",
+      "name": "Pagination",
+      "file": "src/components/ui/pagination.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-POPOVER",
+      "name": "Popover",
+      "file": "src/components/ui/popover.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-PROGRESS",
+      "name": "Progress",
+      "file": "src/components/ui/progress.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "loading",
+          "error"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-RADIO_GROUP",
+      "name": "RadioGroup",
+      "file": "src/components/ui/radio-group.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-RESIZABLE",
+      "name": "Resizable",
+      "file": "src/components/ui/resizable.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SCROLL_AREA",
+      "name": "ScrollArea",
+      "file": "src/components/ui/scroll-area.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SECRET_FILE_INPUT",
+      "name": "SecretFileInput",
+      "file": "src/components/ui/secret-file-input.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/secret-file-input.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SECRET_INPUT",
+      "name": "SecretInput",
+      "file": "src/components/ui/secret-input.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SECRET_TEXTAREA",
+      "name": "SecretTextarea",
+      "file": "src/components/ui/secret-textarea.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SELECT",
+      "name": "Select",
+      "file": "src/components/ui/select.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SEPARATOR",
+      "name": "Separator",
+      "file": "src/components/ui/separator.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SHEET",
+      "name": "Sheet",
+      "file": "src/components/ui/sheet.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SIDEBAR",
+      "name": "Sidebar",
+      "file": "src/components/ui/sidebar.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SKELETON",
+      "name": "Skeleton",
+      "file": "src/components/ui/skeleton.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "loading",
+          "error"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SLIDER",
+      "name": "Slider",
+      "file": "src/components/ui/slider.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SONNER",
+      "name": "Sonner",
+      "file": "src/components/ui/sonner.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "loading",
+          "error"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SPINNER",
+      "name": "Spinner",
+      "file": "src/components/ui/spinner.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "loading",
+          "error"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SWITCH",
+      "name": "Switch",
+      "file": "src/components/ui/switch.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TABLE",
+      "name": "Table",
+      "file": "src/components/ui/table.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TABS",
+      "name": "Tabs",
+      "file": "src/components/ui/tabs.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TEXTAREA",
+      "name": "Textarea",
+      "file": "src/components/ui/textarea.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TITLED_CARD",
+      "name": "TitledCard",
+      "file": "src/components/ui/titled-card.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default"
+        ],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TOGGLE_GROUP",
+      "name": "ToggleGroup",
+      "file": "src/components/ui/toggle-group.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/toggle-group.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TOGGLE",
+      "name": "Toggle",
+      "file": "src/components/ui/toggle.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "default",
+          "focus-visible",
+          "disabled"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TOOLTIP",
+      "name": "Tooltip",
+      "file": "src/components/ui/tooltip.tsx",
+      "category": "overlay",
+      "status": "ACTIVE",
+      "contract": {
+        "states": [
+          "closed",
+          "open",
+          "focus-visible",
+          "keyboard-interaction"
+        ],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "PRIMITIVE_MANAGED_AND_BROWSER_VERIFIED"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "NOT_VERIFIED",
+          "tests": [],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    }
+  ]
+}
