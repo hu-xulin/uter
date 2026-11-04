@@ -33,7 +33,10 @@
     "i18n:sync": "node scripts/sync-i18n.mjs",
     "settings:hints": "node scripts/audit-settings-input-hints.mjs",
     "i18n:check": "node scripts/check-i18n-keys.mjs",
-    "knip": "knip"
+    "knip": "knip",
+    "design:tokens:generate": "node scripts/generate-design-tokens.mjs",
+    "design:tokens:check": "node scripts/generate-design-tokens.mjs --check",
+    "verify:contrast": "node scripts/verify-contrast.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
