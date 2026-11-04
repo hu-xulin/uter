@@ -1551,7 +1551,7 @@ Token 分为三层：
 业务语义源变量使用独立名称，例如：
 
 ```css
---brand-primary: #5558D8;
+--brand-primary: #5B5EE6;
 ```
 
 再映射到 Tailwind：
