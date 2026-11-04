@@ -10,6 +10,8 @@ fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 pass() { printf 'PASS: %s\n' "$*"; }
 
 test -s "$ROOT/.uaes/INTEGRATION.md" || fail "missing or empty .uaes/INTEGRATION.md"
+test -s "$ROOT/.uaes/TRACEABILITY.md" || fail "missing or empty .uaes/TRACEABILITY.md"
+grep -q "No phase in this matrix is currently marked VERIFIED" "$ROOT/.uaes/TRACEABILITY.md" || fail "traceability matrix must disclose unverified phase status"
 test -s "$ROOT/AGENTS.md" || fail "missing or empty AGENTS.md"
 test -s "$ROOT/CLAUDE.md" || fail "missing or empty CLAUDE.md"
 test -s "$ROOT/.agents/skills/uaes-integration/SKILL.md" || fail "missing Agents Runtime UAES skill adapter"
