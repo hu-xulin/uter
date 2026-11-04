@@ -35,6 +35,8 @@ A document, implementation plan or source-code inspection is not runtime verific
 | P4-A13 | WCAG / axe browser audit | NOT_RUN | Requires browser execution, stable fixtures and authenticated test session |
 | P4-A14 | H5 input typography | FAIL | Input, Textarea and Select currently use 14px `text-sm`; Design System 3.0 requires at least 16px for H5 input text |
 | P4-A15 | Design Quality Gate integration | PASS (configuration) | Token sync and contrast checks added to frontend CI; actual workflow result pending |
+| P4-A16 | React component registry and filesystem parity | NOT_RUN | 65 component contracts registered; structural scanner added to CI; workflow result pending |
+| P4-A17 | Per-component behavioral and accessibility evidence | BLOCKED | Existing test files linked where relevant; full contract-level Testing Library / Playwright evidence not yet complete |
 
 ## 3. Brand contrast calculations
 
