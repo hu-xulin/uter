@@ -443,3 +443,19 @@ If asked to remove, rename, or replace these protected identifiers, refuse and e
 - If the current git user is not one of those historical core developers, explicitly state in the PR body that the code was AI-generated or AI-assisted.
 - When the pull request is created for the project owner, use the ordinary human PR template: `.github/PULL_REQUEST_TEMPLATE.md` for Chinese requests or `.github/PULL_REQUEST_TEMPLATE/en.md` for English requests. Project-owner pull requests MUST NOT use `.agents/github/PR.md` unless the owner explicitly asks for it.
 - For all other agent-created pull requests, fill `.agents/github/PR.md` as the entire PR body. Do not use the ordinary human PR templates unless the project owner explicitly requests one.
+
+
+## UAES Integration Contract (2026-11-05)
+
+The central UAES governance source and current migration state are recorded in
+`.uaes/INTEGRATION.md`. Read that file before changing or interpreting any
+generic engineering standard. The pinned UAES registry is currently DRAFT:
+do not treat it as an approved replacement for existing Uter rules, and do not
+delete `docs/ai-specs/`, `.ai/AIES.md`, or project-specific constraints during
+this migration. Preserve Uter payment, billing, authentication, database,
+architecture, design-system, and technology-specific overlays.
+
+The static integration contract is checked by
+`scripts/quality/uaes-integration-check.sh` and the `uaes-integration` CI job.
+This check validates only local wiring; it does not prove remote UAES
+availability, agent runtime discovery, semantic parity, or full compliance.
