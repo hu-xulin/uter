@@ -1,27 +1,22 @@
-# UAES-P4-ACCEPTANCE-STATUS — P4 Acceptance Status Record
+# UAES-P05-ACCEPTANCE-STATUS — P4 Design System Acceptance Status Record
 
-**Report ID:** UAES-P4-ACCEPTANCE-STATUS  
-**Report Name:** P4 Acceptance Status Record  
-**Version:** 1.0.0  
-**Status:** DRAFT  
-**Domain:** UAES-05 Experience & Design  
-**Phase:** P4  
-**Classification:** Implementation Evidence Report  
-**Related Standard:** UAES-P4-ACCEPTANCE-BASELINE  
-**Related Gate:** UAES-05-GATE-001  
-**Baseline Commit:** 77dab9bf56fff59d6bed0d11cb88fa0901253c4a  
-**Implementation Branch:** uaes/p4-design-token-engine  
-**Result:** BLOCKED  
+| Field | Value |
+|---|---|
+| Report ID | UAES-P05-ACCEPTANCE-STATUS |
+| Version | 1.0.0 |
+| Status | DRAFT |
+| Domain | UAES-05 Experience & Design |
+| Phase | P4 |
+| Gate | UAES-05-GATE-001 |
+| Result | NOT_RUN |
+
+> 本文件是**实施证据记录**，不是 UAES 标准文件，不得覆盖或替代权威资产。
+> 权威资产位于 UAES 规范库：`quality/acceptance/UAES-P05-ACCEPTANCE-BASELINE.md`、
+> `quality/gates/UAES-05-GATE-001-DESIGN-QUALITY-GATE.md`，
+> 唯一事实源为 `.uaes/STANDARD-REGISTRY.yaml`；本仓库不另立注册表。
+> 依 `UAES-05-GATE-001` §4/§6，`NOT_RUN` / `NOT_VERIFIED` 不得记为 `PASS`。
 
 ---
-
-> 本文件是 P4 实施证据记录，**不是 UAES 标准文件**，不得用于覆盖、替代或改写 UAES 权威资产。
-> 权威基线：`quality/acceptance/UAES-P4-ACCEPTANCE-BASELINE.md`；
-> 权威门禁：`quality/gates/UAES-05-GATE-001-EXPERIENCE-AND-DESIGN-GATE.md`。
-> UAES 全局注册表的唯一事实源是 UAES 规范库 `.uaes/STANDARD-REGISTRY.yaml`；
-> 本仓库不另立注册表，也不在此新增未登记的标准编号。
-> 下方「原始记录元数据」与正文保留自分支原始记录，除状态值按 UAES-00-003-005
-> 归一到允许枚举外，未作删改。
 
 ## 0. 原始记录元数据
 
@@ -45,7 +40,7 @@ A document, implementation plan or source-code inspection is not runtime verific
 
 | ID | Area | Current result | Evidence / gap |
 |---|---|---|---|
-| P4-A01 | Repository and design asset inventory | PASS | Fixed-SHA inventory recorded in `reports/quality/UAES-P4-IMPLEMENTATION-AUDIT.md` |
+| P4-A01 | Repository and design asset inventory | PASS | Fixed-SHA inventory recorded in `reports/quality/UAES-P05-IMPLEMENTATION-AUDIT.md` |
 | P4-A02 | UTER Design System 3.0 review | PASS | Existing official spec compared with theme, Token and component source |
 | P4-A03 | React component inventory | PASS | `components/ui/` inventory and key control source review completed |
 | P4-A04 | Full component contract coverage | BLOCKED | Machine-readable component registry and contract scanner not yet implemented |
@@ -132,4 +127,4 @@ P4 can be accepted only when all mandatory checks have evidence, no unresolved P
 ### 6.2 仍未完成项（Result 保持 BLOCKED）
 
 Playwright 视觉回归、axe 无障碍扫描、认证后页面会话、H5 输入字号 P2 整改（P4-A14）、组件行为级契约证据（P4-A17）、品牌色变更的正式审批（见 `reports/compliance/UAES-P4-BRAND-PRIMARY-CHANGE-RECORD.md`）。
-本地门禁通过**不等于** P4 验收通过；按 `quality/acceptance/UAES-P4-ACCEPTANCE-BASELINE.md` §4，上述 BLOCKED / NOT_RUN 项未关闭前不得标记 ACCEPTED。
+本地门禁通过**不等于** P4 验收通过；按 `quality/acceptance/UAES-P05-ACCEPTANCE-BASELINE.md` §4，上述 BLOCKED / NOT_RUN 项未关闭前不得标记 ACCEPTED。

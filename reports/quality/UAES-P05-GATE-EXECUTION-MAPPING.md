@@ -1,27 +1,22 @@
-# UAES-P4-GATE-EXECUTION-MAPPING — P4 Design Gate Execution Mapping
+# UAES-P05-GATE-EXECUTION-MAPPING — P4 Gate Execution Mapping Record
 
-**Report ID:** UAES-P4-GATE-EXECUTION-MAPPING  
-**Report Name:** P4 Design Gate Execution Mapping  
-**Version:** 1.0.0  
-**Status:** DRAFT  
-**Domain:** UAES-05 Experience & Design  
-**Phase:** P4  
-**Classification:** Implementation Evidence Report  
-**Related Standard:** UAES-05-GATE-001  
-**Related Gate:** UAES-05-GATE-001  
-**Baseline Commit:** 77dab9bf56fff59d6bed0d11cb88fa0901253c4a  
-**Implementation Branch:** uaes/p4-design-token-engine  
-**Result:** NOT_RUN  
+| Field | Value |
+|---|---|
+| Report ID | UAES-P05-GATE-EXECUTION-MAPPING |
+| Version | 1.0.0 |
+| Status | DRAFT |
+| Domain | UAES-05 Experience & Design |
+| Phase | P4 |
+| Gate | UAES-05-GATE-001 |
+| Result | NOT_RUN |
+
+> 本文件是**实施证据记录**，不是 UAES 标准文件，不得覆盖或替代权威资产。
+> 权威资产位于 UAES 规范库：`quality/acceptance/UAES-P05-ACCEPTANCE-BASELINE.md`、
+> `quality/gates/UAES-05-GATE-001-DESIGN-QUALITY-GATE.md`，
+> 唯一事实源为 `.uaes/STANDARD-REGISTRY.yaml`；本仓库不另立注册表。
+> 依 `UAES-05-GATE-001` §4/§6，`NOT_RUN` / `NOT_VERIFIED` 不得记为 `PASS`。
 
 ---
-
-> 本文件是 P4 实施证据记录，**不是 UAES 标准文件**，不得用于覆盖、替代或改写 UAES 权威资产。
-> 权威基线：`quality/acceptance/UAES-P4-ACCEPTANCE-BASELINE.md`；
-> 权威门禁：`quality/gates/UAES-05-GATE-001-EXPERIENCE-AND-DESIGN-GATE.md`。
-> UAES 全局注册表的唯一事实源是 UAES 规范库 `.uaes/STANDARD-REGISTRY.yaml`；
-> 本仓库不另立注册表，也不在此新增未登记的标准编号。
-> 下方「原始记录元数据」与正文保留自分支原始记录，除状态值按 UAES-00-003-005
-> 归一到允许枚举外，未作删改。
 
 ## 0. 原始记录元数据
 

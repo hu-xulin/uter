@@ -1,3 +1,13 @@
+> **DEPRECATED — 本文件不是权威资产**
+>
+> 本文件是 UAES 规范库早期版本的历史副本，保留仅作 Git 历史与审计参考。
+> 依「冲突/重复以 UAES 规范库为准」，权威版本位于 UAES 规范库：
+> `quality/acceptance/UAES-P05-ACCEPTANCE-BASELINE.md`、
+> `quality/gates/UAES-05-GATE-001-DESIGN-QUALITY-GATE.md`，
+> 唯一事实源 `.uaes/STANDARD-REGISTRY.yaml`。不得据此修改或覆盖权威资产。
+
+---
+
 # UAES-05-GATE-001 — EXPERIENCE AND DESIGN QUALITY GATE
 
 **Standard ID:** UAES-05-GATE-001  

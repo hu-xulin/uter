@@ -84,6 +84,29 @@
         },
         "notes": {
           "type": "string"
+        },
+        "registryPointer": {
+          "type": "string"
+        },
+        "governingStandard": {
+          "type": "string"
+        },
+        "governingColorStandard": {
+          "type": "string"
+        },
+        "governingSchema": {
+          "type": "string"
+        },
+        "changeApproval": {
+          "type": "string",
+          "enum": [
+            "NOT_VERIFIED",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "approvalNote": {
+          "type": "string"
         }
       },
       "additionalProperties": false

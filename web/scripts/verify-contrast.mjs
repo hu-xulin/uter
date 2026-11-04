@@ -49,7 +49,7 @@ const pairs = [
   [light.primaryForeground, light.hover, 4.5, 'primary text on hover', 'light', 'hover'],
   [light.primaryForeground, light.active, 4.5, 'primary text on active', 'light', 'active'],
   [light.primary, '#FFFFFF', 4.5, 'brand link on page', 'light', 'link'],
-  [light.softForeground, light.soft, 4.5, 'soft foreground on soft', 'light', 'soft'],
+  [light.softForeground, light.soft, 4.5, 'navigation selected state — remediated foreground per UAES-05-003 §6', 'light', 'selected'],
   [light.primary, light.subtleSurface, 4.5, 'brand link on subtle surface', 'light', 'link'],
   ['#67778D', '#FFFFFF', 4.5, 'tertiary foreground on page (audited mix)', 'light', 'tertiary'],
   [dark.primaryForeground, dark.primary, 4.5, 'primary text on primary', 'dark', 'default'],
@@ -69,5 +69,25 @@ const rows = pairs.map(([fg, bg, min, label, theme, state]) => {
   return (pass ? 'PASS' : 'FAIL') + '  ' + theme + '/' + state + '  ' + fg + ' on ' + bg + '  ' + value.toFixed(2) + ':1 (min ' + min + ')  ' + label
 })
 console.log(rows.join('\n'))
-console.log(failures === 0 ? '\nAll brand contrast pairs pass.' : '\n' + failures + ' pair(s) FAILED')
+
+// Negative test (UAES-P05 acceptance baseline §L.4 / UAES-05-003 §6):
+// the pre-remediation navigation selected combination was 4.44:1 and MUST be
+// rejected, not silently waived because the gap is small.
+const NEG_FG = '#5B5EE6'
+const NEG_BG = '#F0F0FF'
+const negValue = ratio(NEG_FG, NEG_BG)
+const negRejected = negValue < 4.5
+if (!negRejected) failures += 1
+console.log(
+  (negRejected ? 'NEGATIVE-TEST PASS' : 'NEGATIVE-TEST FAIL') +
+  '  pre-remediation navigation selected ' + NEG_FG + ' on ' + NEG_BG +
+  ' = ' + negValue.toFixed(2) + ':1 -> ' +
+  (negRejected ? 'correctly rejected by the AA 4.5:1 rule' : 'incorrectly accepted')
+)
+
+// UAES-05-GATE-001 §4/§6: checks that cannot run are NOT_RUN, never PASS.
+console.log('\nNOT_RUN: full non-text 3:1 inventory, gradient text, runtime')
+console.log('theme-switch combinations and automated axe scan are not covered here.')
+
+console.log(failures === 0 ? '\nAll executable brand contrast checks pass; NOT_RUN items remain open.' : '\n' + failures + ' check(s) FAILED')
 process.exit(failures === 0 ? 0 : 1)

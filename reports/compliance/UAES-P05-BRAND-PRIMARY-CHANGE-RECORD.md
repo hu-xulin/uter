@@ -1,26 +1,22 @@
-# UAES-P4-BRAND-PRIMARY-CHANGE-RECORD — P4 Brand Primary Color Change Record
+# UAES-P05-BRAND-PRIMARY-CHANGE-RECORD — P4 Brand Primary Color Change Record
 
-**Report ID:** UAES-P4-BRAND-PRIMARY-CHANGE-RECORD  
-**Report Name:** P4 Brand Primary Color Change Record  
-**Version:** 1.0.0  
-**Status:** DRAFT  
-**Domain:** UAES-05 Experience & Design  
-**Phase:** P4  
-**Classification:** Compliance Change Record  
-**Related Standard:** UAES-05-003 / UAES-05-013  
-**Related Gate:** UAES-05-GATE-001（§5.3 未批准的品牌色修改进入正式实现 / §8 例外）  
-**Baseline Commit:** 77dab9bf56fff59d6bed0d11cb88fa0901253c4a  
-**Implementation Branch:** uaes/p4-design-token-engine  
-**Result:** NOT_VERIFIED  
+| Field | Value |
+|---|---|
+| Report ID | UAES-P05-BRAND-PRIMARY-CHANGE-RECORD |
+| Version | 1.0.0 |
+| Status | DRAFT |
+| Domain | UAES-05 Experience & Design |
+| Phase | P4 |
+| Gate | UAES-05-GATE-001 |
+| Result | NOT_VERIFIED |
+
+> 本文件是**实施证据记录**，不是 UAES 标准文件，不得覆盖或替代权威资产。
+> 权威资产位于 UAES 规范库：`quality/acceptance/UAES-P05-ACCEPTANCE-BASELINE.md`、
+> `quality/gates/UAES-05-GATE-001-DESIGN-QUALITY-GATE.md`，
+> 唯一事实源为 `.uaes/STANDARD-REGISTRY.yaml`；本仓库不另立注册表。
+> 依 `UAES-05-GATE-001` §4/§6，`NOT_RUN` / `NOT_VERIFIED` 不得记为 `PASS`。
 
 ---
-
-> 本文件是合规变更记录，**不是 UAES 标准文件**，也不构成对品牌色变更的批准。
-> UAES 注册表 `governance.prohibit_implicit_approval: true`：缺少 Exception ID、
-> 审批人与批准日期时，不得把本变更表述为已获批准。
-> 权威门禁见 `quality/gates/UAES-05-GATE-001-EXPERIENCE-AND-DESIGN-GATE.md`。
-> UAES 全局注册表的唯一事实源是 UAES 规范库 `.uaes/STANDARD-REGISTRY.yaml`；
-> 本仓库不另立注册表，也不在此新增未登记的标准编号。
 
 ## 1. 原规则与新规则
 
@@ -32,7 +28,7 @@
 
 ## 2. 变更原因
 
-分支实施审计记录（`reports/quality/UAES-P4-IMPLEMENTATION-AUDIT.md` §2.3）记载：用户于 2026-11-04 确认品牌主色为 `#5B5EE6`。该记录是分支内的陈述，**未附带 Exception ID、审批人或批准日期**，因此本变更记录的状态为 DRAFT、结果为 NOT_VERIFIED。
+分支实施审计记录（`reports/quality/UAES-P05-IMPLEMENTATION-AUDIT.md` §2.3）记载：用户于 2026-11-04 确认品牌主色为 `#5B5EE6`。该记录是分支内的陈述，**未附带 Exception ID、审批人或批准日期**，因此本变更记录的状态为 DRAFT、结果为 NOT_VERIFIED。
 
 ## 3. 影响范围
 
