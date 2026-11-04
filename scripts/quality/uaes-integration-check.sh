@@ -21,8 +21,8 @@ INTEGRATION="$ROOT/.uaes/INTEGRATION.md"
 TRACEABILITY="$ROOT/.uaes/TRACEABILITY.md"
 AGENTS="$ROOT/AGENTS.md"
 CLAUDE="$ROOT/CLAUDE.md"
-AGENTS_SKILL="$ROOT/.agents/skills/uaes-integration/SKILL.md"
-CLAUDE_SKILL="$ROOT/.claude/skills/uaes-integration/SKILL.md"
+AGENTS_SKILL="$ROOT/.agents/skills/uaes-uter-integration/SKILL.md"
+CLAUDE_SKILL="$ROOT/.claude/skills/uaes-uter-integration/SKILL.md"
 
 for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
   require_file "$file"
@@ -57,7 +57,7 @@ require_text "$CLAUDE" ".agents/rules/billing.md"
 
 # Both supported runtime adapters must delegate to the canonical integration skill.
 for adapter in "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
-  require_text "$adapter" "skills/uaes-integration/SKILL.md"
+  require_text "$adapter" "skills/uaes-uter-integration/SKILL.md"
   require_text "$adapter" "Never claim UAES integration is VERIFIED"
 done
 
