@@ -1,4 +1,29 @@
-# UAES P4-I / P4-III — UTER Design System 工程审计与 Token 源数据落地记录
+# UAES-P4-IMPLEMENTATION-AUDIT — P4 Design System Implementation Audit Record
+
+**Report ID:** UAES-P4-IMPLEMENTATION-AUDIT  
+**Report Name:** P4 Design System Implementation Audit Record  
+**Version:** 1.0.0  
+**Status:** DRAFT  
+**Domain:** UAES-05 Experience & Design  
+**Phase:** P4  
+**Classification:** Implementation Evidence Report  
+**Related Standard:** UAES-05  
+**Related Gate:** UAES-05-GATE-001  
+**Baseline Commit:** 77dab9bf56fff59d6bed0d11cb88fa0901253c4a  
+**Implementation Branch:** uaes/p4-design-token-engine  
+**Result:** NOT_RUN  
+
+---
+
+> 本文件是 P4 实施证据记录，**不是 UAES 标准文件**，不得用于覆盖、替代或改写 UAES 权威资产。
+> 权威基线：`quality/acceptance/UAES-P4-ACCEPTANCE-BASELINE.md`；
+> 权威门禁：`quality/gates/UAES-05-GATE-001-EXPERIENCE-AND-DESIGN-GATE.md`。
+> UAES 全局注册表的唯一事实源是 UAES 规范库 `.uaes/STANDARD-REGISTRY.yaml`；
+> 本仓库不另立注册表，也不在此新增未登记的标准编号。
+> 下方「原始记录元数据」与正文保留自分支原始记录，除状态值按 UAES-00-003-005
+> 归一到允许枚举外，未作删改。
+
+## 0. 原始记录元数据
 
 - 项目：Uter
 - 审计基线：`77dab9bf56fff59d6bed0d11cb88fa0901253c4a`
@@ -89,6 +114,6 @@ CI 已运行 `lint:design:strict` 和 Vitest，但原有对比度脚本未纳入
 - Added `web/scripts/check-component-registry.mjs` to compare registry entries with the actual UI filesystem, detect duplicate IDs/paths, missing contract sections and missing referenced test files.
 - Added normal structural validation to the existing frontend CI. Strict mode remains a later acceptance gate because component behavior evidence is not yet complete.
 - Existing tests are linked only where a directly relevant test file was found. File existence does not imply that every contract requirement is tested or passed.
-- Component registry and contract standard: `standards/05-experience-design/UAES-05-014-REACT-COMPONENT-REGISTRY-AND-CONTRACT.md`.
+- Component registry implementation record: `reports/quality/UAES-P4-IV-COMPONENT-REGISTRY-IMPLEMENTATION.md`（分支原以未登记的 `UAES-05-014` 标准编号命名，已按 UAES-00-003-001 编号唯一性规则撤销，改为实施证据记录）。
 
 **P4-IV verification status:** source inventory and registry generation are complete. The scanner has not yet been executed in a local runtime or CI; browser behavior, ARIA, keyboard and responsive evidence remain NOT_VERIFIED.
