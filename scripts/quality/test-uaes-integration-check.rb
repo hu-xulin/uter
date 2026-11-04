@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+require "fileutils"
+require "minitest/autorun"
+require "open3"
+require "rbconfig"
+require "tmpdir"
+
+class UaesIntegrationCheckTest < Minitest::Test
+  REPO_ROOT = File.expand_path("../..", __dir__)
+  CHECKER = File.join(REPO_ROOT, "scripts/quality/uaes-integration-check.sh")
+  PHASES = (0..12).map { |number| "P%02d" % number }.freeze
+
+  def fixture
+    root = Dir.mktmpdir("uter-uaes-integration-")
+    paths = {
+      ".uaes/INTEGRATION.md" => <<~MD,
+        # UAES Integration Contract
+        Status: MIGRATION_PENDING
+        UAES source commit: 84416f7f55c1166e3f5adfa0575c1ea713ff20d2
+        Registry blob: 1c74e918b84b8cc18d2806a936721852b823ca75
+        - Payment, recharge, refund, balance
+        - Token usage, pricing, quota
+        - SQLite/MySQL/PostgreSQL
+        - UTER Design System 3.0
+        Do not change this status to VERIFIED
+      MD
+      ".uaes/TRACEABILITY.md" => "No phase in this matrix is currently marked VERIFIED\n" + PHASES.map { |phase| "| #{phase} Foundation | PARTIAL |" }.join("\n"),
+      "AGENTS.md" => [
+        "UAES Integration Contract",
+        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/ai-specs/engineering-quality/",
+        "Billing safety invariants",
+        "Authentication Security (OWASP Mandatory)"
+      ].join("\n"),
+      "CLAUDE.md" => [
+        "Read AGENTS.md with the Read tool",
+        "web/AGENTS.md",
+        ".agents/rules/billing.md"
+      ].join("\n"),
+      ".agents/skills/uaes-integration/SKILL.md" => "Read skills/uaes-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
+      ".claude/skills/uaes-integration/SKILL.md" => "Read skills/uaes-integration/SKILL.md\nNever claim UAES integration is VERIFIED"
+    }
+    paths.each do |relative, body|
+      path = File.join(root, relative)
+      FileUtils.mkdir_p(File.dirname(path))
+      File.write(path, body)
+    end
+    root
+  end
+
+  def run_checker(root)
+    Open3.capture3({ "UAES_INTEGRATION_ROOT" => root }, "bash", CHECKER)
+  end
+
+  def test_accepts_complete_static_integration_fixture
+    root = fixture
+    out, err, status = run_checker(root)
+    assert status.success?, "#{err}\n#{out}"
+    assert_match(/P00-P12 traceability is complete/, out)
+    assert_match(/project overlays remain protected/, out)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+
+  def test_fails_when_project_overlay_is_removed
+    root = fixture
+    path = File.join(root, ".uaes/INTEGRATION.md")
+    File.write(path, File.read(path).sub("- Payment, recharge, refund, balance\n", ""))
+    _out, err, status = run_checker(root)
+    refute status.success?
+    assert_match(/Payment, recharge, refund, balance/, err)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+
+  def test_fails_when_traceability_phase_is_missing
+    root = fixture
+    path = File.join(root, ".uaes/TRACEABILITY.md")
+    File.write(path, File.read(path).sub("| P08 Foundation | PARTIAL |\n", ""))
+    _out, err, status = run_checker(root)
+    refute status.success?
+    assert_match(/missing P08/, err)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+end
