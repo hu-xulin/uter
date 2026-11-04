@@ -243,3 +243,9 @@ ADR 至少包含：
 ---
 
 **任何 AI 不得仅为降低当前开发难度而牺牲 Uter 的长期架构质量。**
+
+## 独立模块边界：tokenkit/tokenkit
+
+tokenkit/tokenkit 是独立 Go module（module path: github.com/QuantumNous/new-api/tokenkit），拥有独立 go.mod、go.sum、源码和测试。它不受父目录 tokenkit 的 go test ./...、go vet ./... 或 go build ./... 覆盖。
+
+修改该模块时，必须在 tokenkit/tokenkit 目录内以 GOWORK=off 独立执行 vet、build、test；CI、UEQE、Makefile 与 verify-all 必须将其作为独立模块登记。不得未经 ADR 批准将其合并到父模块或改变其 module path。
