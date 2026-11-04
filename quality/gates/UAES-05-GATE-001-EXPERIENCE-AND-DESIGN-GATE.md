@@ -1,137 +1,214 @@
-# UAES-05-GATE-001 — Experience & Design Quality Gate
+# UAES-05-GATE-001 — EXPERIENCE AND DESIGN QUALITY GATE
 
-- **Domain:** UAES-05 Experience & Design
-- **Status:** DRAFT
-- **Applies to:** `web/` design tokens, themes, React UI components, page styles and visual assets
-- **Primary workflow:** `.github/workflows/ci.yml` → frontend job
-- **Rule source:** UTER Design System 3.0 + UAES-05 standards
-- **Gate owner:** Uter Engineering
+**Standard ID:** UAES-05-GATE-001  
+**Standard Name:** Experience And Design Quality Gate  
+**Version:** 1.0.0  
+**Status:** DRAFT  
+**Domain:** UAES-05 Experience & Design  
+**Phase:** P4  
+**Priority:** MUST  
+**Classification:** Enterprise Engineering Standard  
+**Gate Level:** G0-G6  
+**Related Baseline:** UAES-P4-ACCEPTANCE-BASELINE  
+
+---
 
 ## 1. Purpose
 
-This gate prevents design-system drift from entering the default branch. It combines structured token integrity, generated CSS synchronization, contrast verification, static style scanning, component tests, type checking and production build verification.
+将 P4 设计工程规范转化为实际可执行的质量检查机制。
 
-A passing Token check alone does not prove that every React component or page is visually and accessibly compliant. The gate therefore distinguishes automated checks from browser-level checks and coverage that is still pending.
+本 Gate 是设计系统、Token、组件、页面、无障碍和视觉回归的统一验收入口。
 
-## 2. Gate result
+## 2. Gate Levels
 
-Only these result values are permitted:
+### G0 — Registry and Governance
 
-- `PASS`: executed and passed with retained evidence.
-- `FAIL`: executed and failed.
-- `BLOCKED`: could not execute because a required environment, account, fixture or dependency was unavailable.
-- `NOT_RUN`: not executed.
-- `NOT_APPLICABLE`: not applicable, with a written reason.
+检查：
 
-`BLOCKED`, `NOT_RUN` and `NOT_APPLICABLE` must never be counted as `PASS`.
+- P4 标准登记完整。
+- 设计系统 Manifest 存在。
+- Design Owner 已指定。
+- Token 权威来源明确。
+- 设计系统版本明确。
+- 变更审批机制存在。
 
-## 3. Mandatory CI checks
+### G1 — Design Tokens
 
-| ID | Check | Command | Blocking |
-|---|---|---|---|
-| DQG-01 | Token source → generated CSS sync | `bun run design:tokens:check` | Yes |
-| DQG-02 | Brand contrast pairs | `bun run verify:contrast` | Yes |
-| DQG-03 | Design-token code scan | `bun run lint:design:strict` | Yes |
-| DQG-04 | Frontend unit/component tests | `bun run test` | Yes |
-| DQG-05 | Type safety | `bun run typecheck` | Yes |
-| DQG-06 | Copyright headers | `bun run copyright:check` | Yes |
-| DQG-07 | Production build | `bun run build:check` | Yes |
-| DQG-08 | React component registry and filesystem parity | `bun run components:registry:check` | Yes |
+检查：
 
-The checks above are integrated into the existing frontend CI job. Do not create a second independent lint or component implementation pipeline when the existing project tooling already provides the required behavior. The component registry check validates structural completeness and filesystem parity only; it does not claim browser behavior or accessibility evidence is verified.
+- Token Schema。
+- Token 命名。
+- Token 类型。
+- Alias 引用。
+- 循环引用。
+- 未登记 Token。
+- Light / Dark 主题。
+- 平台生成结果。
 
-## 4. Token source requirements
+### G2 — Visual Foundation
 
-1. Structured token source is authoritative for each migrated token family. The current brand source uses DTCG token fields (`$type`, `$value`, `$description`) and a namespaced `$extensions` object for UAES provenance.
-2. Generated CSS is committed and must exactly match generator output.
-3. Generated files must contain a generated-file warning and must not be edited manually.
-4. A source change without regenerated output is a failure.
-5. Generated output without a source change is a failure unless explicitly explained.
-6. Every token family must identify its theme coverage and provenance.
-7. User-confirmed values, migrated legacy values and proposals must remain distinguishable.
-8. Do not mark the entire design system as machine-generated while unmigrated token families remain CSS-authored.
+检查：
 
-Current migrated family:
-- Brand palette: `web/src/design-system/source/brand.tokens.json`.
+- 品牌色。
+- 语义颜色。
+- 对比度。
+- 字体族。
+- 字号和行高。
+- 间距。
+- 圆角。
+- 边框。
+- 表面层级。
 
-Still CSS-authored and not yet migrated:
-- Typography, primitive values, semantic tokens, spacing/density, elevation/motion, chart/syntax/terminal colors, and user theme presets.
+### G3 — Component Engineering
 
-## 5. Contrast requirements
+检查：
 
-The contrast script must read the same structured source that generates the CSS. It must not maintain a second independent copy of brand colors.
+- 组件登记。
+- Component Contract。
+- API 类型。
+- 变体。
+- 交互状态。
+- Token 使用。
+- 组件复用。
+- 单元测试。
+- 交互测试。
 
-Minimum thresholds:
-- Normal text: 4.5:1.
-- Large text: 3:1.
-- Required non-text UI boundaries and focus indicators: 3:1 where WCAG 2.2 applies.
+### G4 — Responsive and Accessibility
 
-The current brand contrast script covers a defined subset of primary, hover, active, link, soft and focus/border pairs. This is not yet a full audit of every semantic color, every preset, every component state or every rendered background.
+检查：
 
-Alpha colors must be composited against their actual background before contrast evaluation. Do not lower thresholds to make a failing pair pass.
+- 关键视口。
+- 横向溢出。
+- 内容遮挡。
+- 触摸目标。
+- 键盘操作。
+- 焦点管理。
+- Accessible Name。
+- 错误提示。
+- 自动无障碍扫描。
+- 人工辅助技术测试。
 
-## 6. Component requirements
+### G5 — Visual Regression
 
-The formal implementation location for base UI components remains `web/src/components/ui/`.
+检查：
 
-For each registered component, its contract must define only applicable states and behaviors, such as:
-- Default, hover, pressed, selected, expanded and disabled.
-- Focus-visible and keyboard behavior.
-- Loading and error, where applicable.
-- Accessible name, role, description and labeling relationships.
-- Light/Dark behavior.
-- Responsive constraints and touch target behavior.
-- The tests or browser evidence that verify the contract.
+- 基准截图。
+- Commit SHA。
+- 测试环境。
+- 视觉差异。
+- 差异审批。
+- 动态区域屏蔽规则。
+- 关键页面覆盖。
 
-Do not require non-interactive components such as Card or Table to implement button-only states. Components wrapping Base UI primitives still require browser-level evidence for focus management, keyboard traversal, dismissal and focus restoration.
+### G6 — AI Compliance
 
-**Current limitation:** a complete machine-readable component registry and per-component contract scanner have not yet been implemented. Until P4-IV is complete, component contract coverage is `BLOCKED`, not `PASS`.
+检查：
 
-## 7. Visual and accessibility checks
+- AI 是否读取设计规范。
+- 是否使用批准 Token。
+- 是否优先复用公共组件。
+- 是否遵守字号和布局约束。
+- 是否保留无障碍能力。
+- 是否提供测试证据。
+- 是否存在未经批准的设计变更。
 
-Required browser checks:
-- Light and Dark themes.
-- Supported desktop and mobile viewports.
-- Focus-visible, disabled, loading, error, empty and expanded states where applicable.
-- Layout overflow, clipping, overlay stacking and responsive behavior.
-- Keyboard-only navigation and dialog/popover focus restoration.
-- axe-based automated accessibility checks plus manual keyboard review.
+## 3. Severity
 
-Existing Playwright visual regression assets are retained. Visual snapshot updates require review and must not be used to conceal regressions.
+| Severity | Description | Gate Impact |
+| --- | --- | --- |
+| P0 | 核心品牌、严重无障碍、关键界面不可用、权威 Token 冲突 | BLOCK |
+| P1 | 公共组件契约破坏、关键页面严重偏差、重要交互缺陷 | BLOCK |
+| P2 | 一般视觉偏差、局部一致性问题 | 按范围评估 |
+| P3 | 轻微视觉优化建议 | 不单独阻断 |
 
-**Current limitation:** full authenticated-route visual/a11y coverage is not part of the newly added mandatory CI steps. Until valid test sessions and stable fixtures are provided, these checks must be recorded as `BLOCKED` or `NOT_RUN`.
+安全和无障碍相关缺陷不得因为视觉效果良好而降级。
 
-## 8. Blocking conditions
+## 4. Gate Result
 
-The gate must fail when:
-- Generated CSS is stale.
-- Required source tokens are missing or malformed.
-- A required contrast pair fails.
-- Strict token scanning reports a new violation.
-- A required frontend test, typecheck or production build fails.
-- A P0/P1 design or accessibility defect remains unresolved.
-- A generated file was manually edited without updating its source.
-- A CI step is removed, skipped or weakened without an approved change record.
+结果只能是：
 
-## 9. Evidence record
+- PASS
+- FAIL
+- BLOCKED
+- NOT_RUN
+- NOT_APPLICABLE
 
-Every gate run must retain:
-- Repository and commit SHA.
-- Workflow run URL and job name.
-- Exact command and exit code.
-- Token source and generated-file hashes.
-- Contrast output.
-- Test summary.
-- Static scan summary.
-- Visual artifacts and axe output, when run.
-- All BLOCKED / NOT_RUN checks with reason and owner.
+不得把 NOT_RUN 当作 PASS。
 
-## 10. Current implementation mapping
+## 5. Blocking Conditions
 
-The existing frontend CI job now includes:
-- `bun run design:tokens:check`
-- `bun run verify:contrast`
-- `bun run lint:design:strict`
-- Existing full frontend Vitest, typecheck, copyright and build steps.
+以下情况必须阻断：
 
-The gate remains DRAFT until the workflow completes successfully and P4-IV component contracts plus P4-VI browser validation have evidence.
+1. Token 源数据不可验证。
+2. Token 引用存在循环或悬空。
+3. 未批准的品牌色修改进入正式实现。
+4. 公共组件存在关键键盘操作缺陷。
+5. 关键页面存在严重内容遮挡。
+6. 关键交互缺少可访问名称。
+7. 未经批准覆盖视觉基线。
+8. P0 设计违规未处理。
+9. 关键测试未运行却报告通过。
+10. 未授权修改设计系统权威资产。
+
+## 6. Required Evidence
+
+每次 Gate 必须记录：
+
+- Commit SHA。
+- Design System Version。
+- Token Validation Report。
+- Component Contract Report。
+- Accessibility Report。
+- Responsive Test Report。
+- Visual Regression Report。
+- Findings。
+- Exceptions。
+- Final Result。
+
+## 7. Gate Execution
+
+建议 CI 顺序：
+
+```text
+Registry Validation
+  ↓
+JSON Schema Validation
+  ↓
+Token Reference Validation
+  ↓
+Design Token Build
+  ↓
+TypeScript / Lint
+  ↓
+Component Tests
+  ↓
+Accessibility Tests
+  ↓
+Responsive Tests
+  ↓
+Visual Regression
+  ↓
+Gate Aggregation
+  ↓
+PASS / FAIL / BLOCKED
+```
+
+## 8. Exceptions
+
+任何例外必须关联 Exception ID、责任人、审批记录、风险、到期时间和修复计划。
+
+P0 阻断条件不得通过普通例外绕过。
+
+## 9. Acceptance Criteria
+
+- Gate 能独立执行。
+- 每项检查有明确结果。
+- 失败能够阻断 CI。
+- 报告关联 Commit SHA。
+- 所有例外可追踪。
+- 未执行的检查不能伪装成通过。
+- 人工检查和自动化检查明确区分。
+
+## 10. Related Standards
+
+UAES-05 至 UAES-05-013。

@@ -1,77 +1,186 @@
-# UAES P4 — Experience & Design Engineering Acceptance Baseline
+# UAES-P4-ACCEPTANCE-BASELINE — P4 EXPERIENCE AND DESIGN ACCEPTANCE BASELINE
 
-- **Status:** DRAFT / NOT ACCEPTED
-- **Repository baseline:** `77dab9bf56fff59d6bed0d11cb88fa0901253c4a`
-- **Implementation branch:** `uaes/p4-design-token-engine`
-- **CI validation branch:** `audit/uaes-p4-design-token-engine`
-- **Gate:** `UAES-05-GATE-001`
+**Standard ID:** UAES-P4-ACCEPTANCE-BASELINE  
+**Standard Name:** P4 Experience And Design Acceptance Baseline  
+**Version:** 1.0.0  
+**Status:** DRAFT  
+**Domain:** UAES-05 Experience & Design  
+**Phase:** P4  
+**Priority:** MUST  
+**Classification:** Enterprise Engineering Standard  
+**Gate:** UAES-05-GATE-001  
+**Acceptance Status:** NOT_ACCEPTED (DRAFT)  
 
-## 1. Acceptance rules
+---
 
-- `PASS`: verified by executable evidence.
-- `FAIL`: executed and failed.
-- `BLOCKED`: environment or prerequisite prevented execution.
-- `NOT_RUN`: not executed.
-- `NOT_APPLICABLE`: not applicable with a reason.
+## 1. Acceptance Objective
 
-A document, implementation plan or source-code inspection is not runtime verification. A pending CI run is not a pass.
+验证 Uter 是否建立了完整的体验与设计工程体系，以及 AI 是否能够在真实工程任务中遵循该体系。
 
-## 2. Current acceptance matrix
+## 2. Acceptance Dimensions
 
-| ID | Area | Current result | Evidence / gap |
-|---|---|---|---|
-| P4-A01 | Repository and design asset inventory | PASS | Fixed-SHA inventory recorded in `docs/design-system/audit/UAES-P4-IMPLEMENTATION-AUDIT.md` |
-| P4-A02 | UTER Design System 3.0 review | PASS | Existing official spec compared with theme, Token and component source |
-| P4-A03 | React component inventory | PASS | `components/ui/` inventory and key control source review completed |
-| P4-A04 | Full component contract coverage | BLOCKED | Machine-readable component registry and contract scanner not yet implemented |
-| P4-A05 | Brand Token structured source | PASS (implementation) | JSON source and schema committed; runtime validation still pending |
-| P4-A06 | CSS generation tool | NOT_RUN | Generator committed; local execution unavailable in remote repository session |
-| P4-A07 | Generated CSS synchronization | NOT_RUN | CI command added; workflow result pending |
-| P4-A08 | Brand contrast matrix | NOT_RUN | Values calculated during review; script and CI execution pending |
-| P4-A09 | Strict design-token scan | NOT_RUN | Existing script retained; current branch execution pending |
-| P4-A10 | Frontend unit/component tests | NOT_RUN | Existing tests plus new token-source test; CI execution pending |
-| P4-A11 | Typecheck and production build | NOT_RUN | CI execution pending |
-| P4-A12 | Full Light/Dark page visual regression | NOT_RUN | Requires browser execution and complete page coverage |
-| P4-A13 | WCAG / axe browser audit | NOT_RUN | Requires browser execution, stable fixtures and authenticated test session |
-| P4-A14 | H5 input typography | FAIL | Input, Textarea and Select currently use 14px `text-sm`; Design System 3.0 requires at least 16px for H5 input text |
-| P4-A15 | Design Quality Gate integration | PASS (configuration) | Token sync and contrast checks added to frontend CI; actual workflow result pending |
-| P4-A16 | React component registry and filesystem parity | NOT_RUN | 65 component contracts registered; structural scanner added to CI; workflow result pending |
-| P4-A17 | Per-component behavioral and accessibility evidence | BLOCKED | Existing test files linked where relevant; full contract-level Testing Library / Playwright evidence not yet complete |
+### A. Document Completeness
 
-## 3. Brand contrast calculations
+- UAES-05 总标准完成。
+- UAES-05-001 至 UAES-05-013 全部完成。
+- 标准 ID 唯一。
+- 文件路径登记正确。
+- 规范依赖关系有效。
+- 规则之间没有未处理冲突。
 
-The values below are deterministic calculations from the structured brand source, not a claim that the CI script has executed:
+### B. Design System Governance
 
-| Pair | Calculated ratio | Threshold | Calculation |
-|---|---:|---:|---|
-| Light white text / primary `#5B5EE6` | 5.01:1 | 4.5:1 | PASS |
-| Light white text / hover `#4F52D1` | 6.07:1 | 4.5:1 | PASS |
-| Light white text / active `#4A4DC5` | 6.65:1 | 4.5:1 | PASS |
-| Light soft foreground `#5558D8` / soft `#F0F0FF` | 4.93:1 | 4.5:1 | PASS |
-| Dark foreground `#020617` / primary `#A1A3F7` | 8.74:1 | 4.5:1 | PASS |
-| Dark soft foreground `#B1B3FF` / soft `#25264A` | 7.40:1 | 4.5:1 | PASS |
+- Design Owner 明确。
+- Token 权威来源明确。
+- 设计系统版本明确。
+- 变更审批机制建立。
+- 废弃与迁移机制建立。
+- 设计决策可追踪。
 
-These calculations cover only the listed pairs. They do not establish full semantic color, theme preset, component or rendered-page compliance.
+### C. Design Tokens
 
-## 4. Outstanding P4 work
+- Token 数据源存在。
+- Token Schema 校验通过。
+- Primitive / Semantic / Component 分层完整。
+- 命名规则统一。
+- 引用无悬空。
+- 无循环引用。
+- Light / Dark 主题有效。
+- 平台输出可复现。
 
-1. Extend structured Token source to typography, spacing, radius, elevation, motion and other semantic color families.
-2. Create a complete component registry and typed contracts for the formal `components/ui/` implementation.
-3. Add component contract checks to CI.
-4. Correct H5 input text sizing and add mobile viewport regression tests.
-5. Expand contrast coverage to all required semantic foreground/background/state pairs.
-6. Run visual regression and axe against public and authenticated routes.
-7. Complete keyboard-only verification for dialogs, menus, popovers, tabs and form controls.
-8. Review theme preset behavior to ensure derived brand states remain coherent when `data-theme-preset` overrides `--primary`.
+### D. Visual Foundation
 
-## 5. Acceptance decision
+- 品牌色符合批准规范。
+- 语义色完整。
+- 文字对比度达标。
+- 字体体系完整。
+- 字号和行高符合规范。
+- 最小字号规则已检查。
+- 间距 Token 完整。
+- 圆角和边框 Token 完整。
+- 表面层级符合设计原则。
 
-**Current decision: BLOCKED — do not mark P4 accepted.**
+### E. Component Engineering
 
-Reasons:
-- CI execution evidence is pending.
-- Full component contracts are not yet implemented.
-- H5 input typography has a known mismatch.
-- Full browser visual and accessibility coverage has not been executed.
+- 公共组件已登记。
+- 公共组件有契约。
+- 变体定义完整。
+- 状态定义完整。
+- TypeScript 类型检查通过。
+- Token 引用正确。
+- 组件单元测试通过。
+- 关键组件交互测试通过。
 
-P4 can be accepted only when all mandatory checks have evidence, no unresolved P0/P1 issue remains, the H5 input mismatch is fixed, and all BLOCKED / NOT_RUN items have been resolved or formally excepted.
+### F. Responsive Design
+
+- PC Web 关键页面验证。
+- H5 关键页面验证。
+- Electron 窗口缩放验证。
+- 关键断点验证。
+- 无严重横向溢出。
+- 无关键内容遮挡。
+- 触摸操作可用。
+- 安全区域适配完成。
+
+### G. Accessibility
+
+- 关键页面完成自动化扫描。
+- 关键组件可键盘操作。
+- 焦点可见。
+- 焦点顺序合理。
+- 表单标签完整。
+- 错误信息可识别。
+- 动态内容通知合理。
+- 关键流程完成辅助技术人工测试。
+
+### H. Visual Regression
+
+- 关键页面基线建立。
+- 基线绑定 Commit SHA。
+- 测试环境可重复。
+- 差异报告可生成。
+- 基线审批机制生效。
+- 视觉回归可以阻断 CI。
+
+I. AI Execution
+
+- AI 能够读取设计系统。
+- AI 能够识别 Token。
+- AI 优先复用公共组件。
+- AI 不擅自创建设计规则。
+- AI 能够执行设计变更分析。
+- AI 能够运行规定测试。
+- AI 能够输出完整验证证据。
+
+## 3. Acceptance Rules
+
+每个检查项必须使用以下结果：
+
+- PASS
+- FAIL
+- BLOCKED
+- NOT_RUN
+- NOT_APPLICABLE
+- NOT_VERIFIED
+
+NOT_VERIFIED 和 NOT_RUN 不得计入通过率。
+
+## 4. Phase Acceptance
+
+P4 只有同时满足以下条件才允许通过：
+
+1. 必需标准文件完整。
+2. Schema 已实际验证。
+3. Token 工具链能够运行。
+4. 组件契约和登记机制有效。
+5. 关键组件测试通过。
+6. 响应式验证通过。
+7. 关键无障碍测试通过。
+8. 视觉回归机制能够实际运行。
+9. Quality Gate 已集成到 CI。
+10. 至少完成一次 AI 真实任务验收。
+11. 没有未处理的 P0 阻断问题。
+12. 所有例外均有正式记录。
+
+## 5. Required Deliverables
+
+- P4 标准文档集合。
+- P4 Schema 集合。
+- Design System Manifest。
+- Token Source。
+- Token Build Pipeline。
+- Component Registry。
+- Component Contracts。
+- Accessibility Test Report。
+- Responsive Test Report。
+- Visual Regression Report。
+- Design Quality Gate Report。
+- P4 Acceptance Report。
+
+## 6. Acceptance Conclusion
+
+最终结论必须是：
+
+- ACCEPTED
+- REJECTED
+- CONDITIONALLY_ACCEPTED
+- BLOCKED
+
+只有 ACCEPTED 才代表 P4 正式验收通过。
+
+## 7. Acceptance Record
+
+必须记录：
+
+- Acceptance ID。
+- Commit SHA。
+- Registry Version。
+- Design System Version。
+- Gate Result。
+- Test Evidence。
+- Open Risks。
+- Exceptions。
+- Reviewer。
+- Approval Date。
+
+本文件目前为 DRAFT，不代表 P4 已完成工程验收。

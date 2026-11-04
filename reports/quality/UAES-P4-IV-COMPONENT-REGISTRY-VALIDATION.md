@@ -1,10 +1,35 @@
-# UAES P4-IV — React Component Registry Validation Record
+# UAES-P4-IV-COMPONENT-REGISTRY-VALIDATION — P4-IV React Component Registry Validation Record
+
+**Report ID:** UAES-P4-IV-COMPONENT-REGISTRY-VALIDATION  
+**Report Name:** P4-IV React Component Registry Validation Record  
+**Version:** 1.0.0  
+**Status:** DRAFT  
+**Domain:** UAES-05 Experience & Design  
+**Phase:** P4  
+**Classification:** Implementation Evidence Report  
+**Related Standard:** UAES-05-006  
+**Related Gate:** UAES-05-GATE-001  
+**Baseline Commit:** 77dab9bf56fff59d6bed0d11cb88fa0901253c4a  
+**Implementation Branch:** uaes/p4-design-token-engine  
+**Result:** NOT_RUN  
+
+---
+
+> 本文件是 P4 实施证据记录，**不是 UAES 标准文件**，不得用于覆盖、替代或改写 UAES 权威资产。
+> 权威基线：`quality/acceptance/UAES-P4-ACCEPTANCE-BASELINE.md`；
+> 权威门禁：`quality/gates/UAES-05-GATE-001-EXPERIENCE-AND-DESIGN-GATE.md`。
+> UAES 全局注册表的唯一事实源是 UAES 规范库 `.uaes/STANDARD-REGISTRY.yaml`；
+> 本仓库不另立注册表，也不在此新增未登记的标准编号。
+> 下方「原始记录元数据」与正文保留自分支原始记录，除状态值按 UAES-00-003-005
+> 归一到允许枚举外，未作删改。
+
+## 0. 原始记录元数据
 
 - Repository: `hu-xulin/uter`
 - Implementation branch: `uaes/p4-design-token-engine`
 - CI branch: `audit/uaes-p4-design-token-engine`
 - Baseline commit: `77dab9bf56fff59d6bed0d11cb88fa0901253c4a`
-- Status: **PENDING CI**
+- Status: NOT_RUN
 
 ## 1. Static source inventory
 
