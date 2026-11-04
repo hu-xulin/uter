@@ -37,8 +37,8 @@ class UaesIntegrationCheckTest < Minitest::Test
         "web/AGENTS.md",
         ".agents/rules/billing.md"
       ].join("\n"),
-      ".agents/skills/uaes-uter-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
-      ".claude/skills/uaes-uter-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED"
+      ".agents/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
+      ".claude/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED"
     }
     paths.each do |relative, body|
       path = File.join(root, relative)
