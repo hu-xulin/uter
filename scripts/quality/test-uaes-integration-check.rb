@@ -18,7 +18,7 @@ class UaesIntegrationCheckTest < Minitest::Test
         Status: MIGRATION_PENDING
         UAES source commit: 84416f7f55c1166e3f5adfa0575c1ea713ff20d2
         Registry blob: 1c74e918b84b8cc18d2806a936721852b823ca75
-        - Payment, recharge, refund, balance
+        - payment, recharge, refund, balance
         - Token usage, pricing, quota
         - SQLite/MySQL/PostgreSQL
         - UTER Design System 3.0
@@ -65,10 +65,10 @@ class UaesIntegrationCheckTest < Minitest::Test
   def test_fails_when_project_overlay_is_removed
     root = fixture
     path = File.join(root, ".uaes/INTEGRATION.md")
-    File.write(path, File.read(path).sub("- Payment, recharge, refund, balance\n", ""))
+    File.write(path, File.read(path).sub("- payment, recharge, refund, balance\n", ""))
     _out, err, status = run_checker(root)
     refute status.success?
-    assert_match(/Payment, recharge, refund, balance/, err)
+    assert_match(/payment, recharge, refund, balance/, err)
   ensure
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
