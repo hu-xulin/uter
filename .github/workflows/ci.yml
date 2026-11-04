@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Test UAES integration gate positive and negative fixtures
+        run: ruby scripts/quality/test-uaes-integration-check.rb
       - name: Validate UAES integration wiring
         run: bash scripts/quality/uaes-integration-check.sh
 
