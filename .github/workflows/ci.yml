@@ -28,6 +28,36 @@ jobs:
       - name: Validate UAES integration wiring
         run: bash scripts/quality/uaes-integration-check.sh
 
+
+  ueqe-review:
+    name: UEQE review engine (all modules + AI spec integrity)
+    needs: uaes-integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOWORK: 'off'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.0'
+      - name: Install web dependencies
+        working-directory: web
+        run: bun install --frozen-lockfile
+      - name: Run UEQE review stage
+        run: bash scripts/quality/uter-quality.sh review
+
   backend:
     name: Backend vet, build, and test
     if: github.event.action != 'closed' || github.event.pull_request.merged == true
@@ -51,6 +81,7 @@ jobs:
             go.sum
             relaykit/go.sum
             tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
 
       - name: Create frontend embed placeholder
         run: |
@@ -75,7 +106,7 @@ jobs:
         # only-new-issues：push / pull_request 事件经 GitHub API 取 diff
         # （--new-from-patch），只拦本次变更引入的问题；存量 121 项问题为已知
         # 基线，不阻断（分批清理）。仅覆盖根模块；relaykit / tokenkit 为独立
-        # Go 模块，暂沿用下方 go vet 门禁。
+        # Go 模块，暂沿用下方 go vet 门禁。嵌套 TokenKit 也是独立模块，必须单独验证。
         uses: golangci/golangci-lint-action@db9de0fc1a667e1a49d2291a1a042dff081d78f6 # v9
         with:
           version: v2.15.0
@@ -90,7 +121,11 @@ jobs:
 
       - name: Vet tokenkit independently
         working-directory: tokenkit
-        run: go vet ./...
+        run: GOWORK=off go vet ./...
+
+      - name: Vet nested tokenkit/tokenkit independently
+        working-directory: tokenkit/tokenkit
+        run: GOWORK=off go vet ./...
 
       - name: Build root module
         run: go build ./...
@@ -101,9 +136,13 @@ jobs:
 
       - name: Build tokenkit independently
         working-directory: tokenkit
-        run: go build ./...
+        run: GOWORK=off go build ./...
 
-      - name: Test root, relaykit, and tokenkit modules
+      - name: Build nested tokenkit/tokenkit independently
+        working-directory: tokenkit/tokenkit
+        run: GOWORK=off go build ./...
+
+      - name: Test root, relaykit, tokenkit, and nested tokenkit/tokenkit modules
         run: make test
 
   # 竞态检测：覆盖并发敏感且已验证无竞争的包。计费/钱包/组织权限/中继都在
@@ -163,6 +202,10 @@ jobs:
       # 数分钟，与上面的单元测试分开跑便于定位是哪一侧出的问题。
       - name: Race test end-to-end billing flows
         run: go test -race -count=1 ./e2e/...
+
+      - name: Race test nested TokenKit module
+        working-directory: tokenkit/tokenkit
+        run: GOWORK=off go test -race -count=1 ./...
 
   # 覆盖率报告 + 门禁：既产出可追踪的工件，也对关键包设下限。
   # 门槛只覆盖资金/权限所在的包，且取当前基线往下留 2 个点——总覆盖率会被
