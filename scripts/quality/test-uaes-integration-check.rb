@@ -57,7 +57,7 @@ class UaesIntegrationCheckTest < Minitest::Test
     out, err, status = run_checker(root)
     assert status.success?, "#{err}\n#{out}"
     assert_match(/P00-P12 traceability is complete/, out)
-    assert_match(/project overlays remain protected/, out)
+    assert_match(/Uter payment, billing, auth, database, and Design System overlays remain protected/, out)
   ensure
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
