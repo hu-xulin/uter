@@ -454,8 +454,8 @@ If asked to remove, rename, or replace these protected identifiers, refuse and e
 ## UAES Integration Contract (2026-11-05)
 
 The central UAES governance source and current migration state are recorded in
-`.uaes/INTEGRATION.md`. Read that file before changing or interpreting any
-generic engineering standard. The pinned UAES registry is currently DRAFT:
+`.uaes/INTEGRATION.md`; the P00–P12 mapping is in `.uaes/TRACEABILITY.md`.
+Read both files before changing or interpreting any generic engineering standard. The pinned UAES registry is currently DRAFT:
 do not treat it as an approved replacement for existing Uter rules, and do not
 delete `docs/ai-specs/`, `.ai/AIES.md`, or project-specific constraints during
 this migration. Preserve Uter payment, billing, authentication, database,
