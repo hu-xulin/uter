@@ -17,10 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-const source = JSON.parse(readFileSync(new URL('../source/brand.tokens.json', import.meta.url), 'utf8'))
-const generated = readFileSync(new URL('../tokens/generated/brand.css', import.meta.url), 'utf8')
+const source = JSON.parse(readFileSync(join(process.cwd(), 'src/design-system/source/brand.tokens.json'), 'utf8'))
+const generated = readFileSync(join(process.cwd(), 'src/design-system/tokens/generated/brand.css'), 'utf8')
 const metadata = source.$extensions['com.uter.uaes']
 
 describe('structured brand token source', () => {
