@@ -12,6 +12,8 @@ pass() { printf 'PASS: %s\n' "$*"; }
 test -s "$ROOT/.uaes/INTEGRATION.md" || fail "missing or empty .uaes/INTEGRATION.md"
 test -s "$ROOT/AGENTS.md" || fail "missing or empty AGENTS.md"
 test -s "$ROOT/CLAUDE.md" || fail "missing or empty CLAUDE.md"
+test -s "$ROOT/.agents/skills/uaes-integration/SKILL.md" || fail "missing Agents Runtime UAES skill adapter"
+test -s "$ROOT/.claude/skills/uaes-integration/SKILL.md" || fail "missing Claude Code UAES skill adapter"
 
 grep -q 'UAES Integration Contract' "$ROOT/.uaes/INTEGRATION.md" || fail "integration contract title missing"
 grep -q 'MIGRATION_PENDING' "$ROOT/.uaes/INTEGRATION.md" || fail "migration status missing"
