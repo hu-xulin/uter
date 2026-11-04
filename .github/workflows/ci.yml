@@ -55,6 +55,8 @@ jobs:
       - name: Install web dependencies
         working-directory: web
         run: bun install --frozen-lockfile
+      - name: Create frontend embed placeholder
+        run: ./scripts/make-frontend-placeholder.sh
       - name: Run UEQE review stage
         run: bash scripts/quality/uter-quality.sh review
 
