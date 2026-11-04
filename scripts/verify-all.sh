@@ -97,7 +97,7 @@ printf '工作区: %s 处未提交改动（本脚本不会修改其中任何内�
 # ---------- Go 后端 ----------
 if command -v go >/dev/null 2>&1; then
   step "Go 格式"   'gofmt_files=$(gofmt -l . 2>/dev/null | grep -v "^vendor/" || true); if [ -n "$gofmt_files" ]; then echo "以下文件未 gofmt:"; echo "$gofmt_files"; exit 1; fi'
-  step "Go vet"    'go vet ./... 2>&1'
+  step "Go vet (all four modules)" 'GOWORK=off go vet ./... 2>&1 && (cd relaykit && GOWORK=off go vet ./...) && (cd tokenkit && GOWORK=off go vet ./...) && (cd tokenkit/tokenkit && GOWORK=off go vet ./...)'
   if [ "$QUICK" -eq 1 ]; then
     skip "Go 测试 (make test)" "--quick 模式跳过"
   else
