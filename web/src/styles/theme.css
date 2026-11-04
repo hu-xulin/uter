@@ -175,7 +175,7 @@ For commercial licensing, please contact support@uter.ai
    *   text-fg-secondary    二级文字 #334155：描述、辅助说明、次级信息
    *   text-fg-tertiary     三级文字 #64748B：时间戳、元信息、次要标签
    *   text-fg-disabled     禁用文字 #94A3B8
-   *   text-fg-link         链接 #6366F1
+   *   text-fg-link         链接 #5B5EE6
    *   text-fg-placeholder  输入框占位符 #64748B
    *   text-fg-inverse      深色/品牌实心底上的反色文字
    * 一级文字直接用既有的 `text-foreground`，说明文字用
@@ -484,10 +484,9 @@ For commercial licensing, please contact support@uter.ai
   --sidebar-accent-foreground: #0f172a;
   /* 左侧导航选中态专用前景色（规范 2.0 §17）。
    *
-   * 取值即 3.0 brand-soft-foreground #5558D8（on #F0F0FF = 4.93:1）；
-   * 4.05:1，未达 WCAG AA 普通文本 4.5:1（导航文字 14px/500 不属大文本豁免）。
-   * 与 --primary 同值（3.0 §2.2 浅色 soft-foreground 就取主色本身）。
-   * —— 主按钮、链接、焦点环仍然是 #6366F1。
+   * 取值为独立的可读前景色 #5558D8（on #F0F0FF = 4.93:1），满足 WCAG AA。
+   * 它不与品牌主色完全相同：主色为 #5B5EE6，Soft 前景单独加深以保持对比度。
+   * 主按钮、链接和焦点环使用品牌主色 #5B5EE6。
    *
    * 只与 `primary-subtle` 浅底配对使用，不要拿它当通用强调色。 */
   --sidebar-active-foreground: var(--uaes-brand-soft-foreground);
