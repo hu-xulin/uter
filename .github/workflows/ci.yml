@@ -18,6 +18,16 @@ concurrency:
 # Checkout the event commit in both jobs. A PR merge ref can disappear while
 # queued runs start, and a base branch can advance after the merge event.
 jobs:
+  uaes-integration:
+    name: UAES integration contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate UAES integration wiring
+        run: bash scripts/quality/uaes-integration-check.sh
+
   backend:
     name: Backend vet, build, and test
     if: github.event.action != 'closed' || github.event.pull_request.merged == true
