@@ -1204,3 +1204,9 @@ govulncheck ./...
 不得擅自 Commit、Push、Merge 或部署。
 
 **最终目标：完成 Uter 全仓库自动化测试，发现并直接修复能够安全修复的问题，执行充分的回归验证，并交付真实、完整、可追溯的测试报告。**
+
+## 独立 Go Module 覆盖要求（2026-11-05）
+
+当前仓库存在四个独立 Go module：根模块、relaykit、tokenkit、tokenkit/tokenkit。尤其 tokenkit/tokenkit 拥有自己的 go.mod/go.sum，不能视为父 tokenkit 模块的普通子目录。
+
+每个 module 必须独立执行 vet、build、test；适用时执行 race、coverage 和 govulncheck。统一模块清单由 .quality/policy.env 的 UEQE_GO_MODULES 维护，CI、Makefile、verify-all.sh 与 UEQE 必须保持一致。任何模块新增或移除都必须同步更新模块清单和测试矩阵。
