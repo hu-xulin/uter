@@ -1,14 +1,34 @@
 /*
 Copyright (C) 2023-2026 Uter.ai
-Licensed under the GNU Affero General Public License v3 or later.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
 */
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
+// UTER Design System 3.0 — WCAG contrast checks consume the structured DTCG token source.
 const sourceUrl = new URL('../src/design-system/source/brand.tokens.json', import.meta.url)
 const { themes } = JSON.parse(readFileSync(fileURLToPath(sourceUrl), 'utf8'))
-const light = themes.light
-const dark = themes.dark
+const values = (theme) => Object.fromEntries(
+  Object.entries(themes[theme].brand)
+    .filter(([key]) => key !== '$type')
+    .map(([key, token]) => [key, token.$value])
+)
+const light = values('light')
+const dark = values('dark')
 
 const L = (hex) => {
   const c = hex.replace('#', '')
@@ -46,8 +66,8 @@ const rows = pairs.map(([fg, bg, min, label, theme, state]) => {
   const value = ratio(fg, bg)
   const pass = value >= min
   if (!pass) failures += 1
-  return `${pass ? 'PASS' : 'FAIL'}  ${theme}/${state}  ${fg} on ${bg}  ${value.toFixed(2)}:1 (min ${min})  ${label}`
+  return (pass ? 'PASS' : 'FAIL') + '  ' + theme + '/' + state + '  ' + fg + ' on ' + bg + '  ' + value.toFixed(2) + ':1 (min ' + min + ')  ' + label
 })
 console.log(rows.join('\n'))
-console.log(failures === 0 ? '\nAll brand contrast pairs pass.' : `\n${failures} pair(s) FAILED`)
+console.log(failures === 0 ? '\nAll brand contrast pairs pass.' : '\n' + failures + ' pair(s) FAILED')
 process.exit(failures === 0 ? 0 : 1)
