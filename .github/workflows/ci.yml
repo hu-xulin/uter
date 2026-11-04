@@ -267,8 +267,11 @@ jobs:
           set -o pipefail
           for module in relaykit tokenkit tokenkit/tokenkit; do
             label="${module//\//-}"
-            (cd "$module" && GOWORK=off go test -count=1 -covermode=atomic -coverprofile="$RUNNER_TEMP/${label}.coverage.out" ./...)
-            go tool cover -func="$RUNNER_TEMP/${label}.coverage.out" | tail -1
+            (
+              cd "$module"
+              GOWORK=off go test -count=1 -covermode=atomic -coverprofile="$RUNNER_TEMP/${label}.coverage.out" ./...
+              go tool cover -func="$RUNNER_TEMP/${label}.coverage.out" | tail -1
+            )
           done
 
       # F-15：关键路径覆盖率下限。基线（本次测量）：controller 41.6%、
