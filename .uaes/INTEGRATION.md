@@ -69,3 +69,8 @@ Do not change this status to VERIFIED until:
 ## 7. Audit limitations
 
 This integration record is based on remote GitHub file inspection. Remote source inspection does not execute Uter's Go, Bun, security, visual, or end-to-end test suites. Those results must be produced by a real checkout and CI run.
+
+
+## 8. Traceability matrix
+
+The P00–P12 project mapping and keep/migrate/deprecate decisions are maintained in `.uaes/TRACEABILITY.md`. The matrix is an inventory, not a compliance certificate; no phase may be marked VERIFIED without reproducible evidence and independent approval.
