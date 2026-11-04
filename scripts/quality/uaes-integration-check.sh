@@ -21,8 +21,8 @@ INTEGRATION="$ROOT/.uaes/INTEGRATION.md"
 TRACEABILITY="$ROOT/.uaes/TRACEABILITY.md"
 AGENTS="$ROOT/AGENTS.md"
 CLAUDE="$ROOT/CLAUDE.md"
-AGENTS_SKILL="$ROOT/.agents/skills/uaes-uter-integration/SKILL.md"
-CLAUDE_SKILL="$ROOT/.claude/skills/uaes-uter-integration/SKILL.md"
+AGENTS_SKILL="$ROOT/.agents/skills/uaes-integration/SKILL.md"
+CLAUDE_SKILL="$ROOT/.claude/skills/uaes-integration/SKILL.md"
 
 for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
   require_file "$file"
