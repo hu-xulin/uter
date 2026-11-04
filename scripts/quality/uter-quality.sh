@@ -143,7 +143,7 @@ stage_security() {
         govulncheck)
           for m in $UEQE_GO_MODULES; do
             local_label="${m//\//_}"
-            run_check security "govulncheck:$local_label" bash -c "cd '$m' && GOWORK=off govulncheck ./... 2>&1 | tail -40" || true
+            run_check security "govulncheck:$local_label" bash -c "set -o pipefail; cd '$m' && GOWORK=off govulncheck ./... 2>&1 | tail -40" || true
           done
           ;;
         gitleaks)
@@ -178,7 +178,7 @@ stage_coverage() {
   # 独立模块覆盖率仅采集不设阈值；路径名转为安全状态文件名。
   for m in tokenkit relaykit tokenkit/tokenkit; do
     local_label="${m//\//_}"
-    run_check coverage "go-$local_label-collect" bash -c "cd '$m' && GOWORK=off go test -count=1 -cover -timeout ${UEQE_GO_TEST_TIMEOUT}s ./... | tail -20" || true
+    run_check coverage "go-$local_label-collect" bash -c "set -o pipefail; cd '$m' && GOWORK=off go test -count=1 -cover -timeout ${UEQE_GO_TEST_TIMEOUT}s ./... | tail -20" || true
   done
 }
 
