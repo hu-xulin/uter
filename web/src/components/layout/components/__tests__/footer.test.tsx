@@ -274,3 +274,24 @@ it('colours the whole legal row like the tertiary text token', async () => {
   expect(brand?.className).not.toContain('font-medium')
   expect(brand?.className).not.toContain('font-semibold')
 })
+
+// AGPLv3 Section 7(b): new-api's NOTICE requires a modified version that
+// presents a user interface to keep a visible link to the original project
+// plus the "Frontend design and development by New API contributors."
+// attribution. This guards against the notice being quietly dropped — the
+// failure mode the upstream terms are written to prevent.
+it('keeps the upstream project link and attribution required by AGPLv3', async () => {
+  const footer = await renderFooter('en')
+
+  const upstream = within(footer).getByRole('link', { name: 'new-api' })
+  expect(upstream.getAttribute('href')).toBe(
+    'https://github.com/QuantumNous/new-api'
+  )
+  expect(upstream.getAttribute('target')).toBe('_blank')
+
+  expect(
+    within(footer).getByText(
+      'Frontend design and development by New API contributors.'
+    )
+  ).toBeTruthy()
+})

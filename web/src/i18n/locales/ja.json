@@ -7771,6 +7771,8 @@
     "0 uses the default limit of 400 emails per day.": "0 はデフォルト値（1日400通）を使用します。",
     "Add sender account": "送信アカウントを追加",
     "At least one sender account is required": "送信アカウントが少なくとも1つ必要です",
-    "Daily send limit must be a non-negative integer": "1日の送信上限は0以上の整数である必要があります"
+    "Daily send limit must be a non-negative integer": "1日の送信上限は0以上の整数である必要があります",
+    "new-api": "new-api",
+    "Frontend design and development by New API contributors.": "フロントエンドの設計と開発は New API contributors によるものです。"
   }
 }
