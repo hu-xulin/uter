@@ -41,7 +41,7 @@ The checks above are integrated into the existing frontend CI job. Do not create
 
 ## 4. Token source requirements
 
-1. Structured token source is authoritative for each migrated token family.
+1. Structured token source is authoritative for each migrated token family. The current brand source uses DTCG token fields (`$type`, `$value`, `$description`) and a namespaced `$extensions` object for UAES provenance.
 2. Generated CSS is committed and must exactly match generator output.
 3. Generated files must contain a generated-file warning and must not be edited manually.
 4. A source change without regenerated output is a failure.
