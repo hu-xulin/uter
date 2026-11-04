@@ -547,8 +547,7 @@ For commercial licensing, please contact support@uter.ai
   --fg-link: var(--uaes-brand-primary);
   --fg-placeholder: #64748b;
   /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 品牌色阶）────────────────
-   * 2026-11-03 起以 3.0 规范为唯一标准：主色 #5558D8，小步压暗
-   * #5558D8 → #4F52D1 → #4A4DC5（hover / active，逐态对比度见
+   * 2026-11-04 起采用用户确认的主色 #5B5EE6；Hover #4F52D1 / Active #4A4DC5，逐态对比度见
    * scripts/verify-contrast.mjs 输出；不得以 Default 结果替代 Hover/Active）。
    * brand-soft = --primary-subtle #F0F0FF、brand-border = #D9DAFF。 */
   --primary-strong: var(--uaes-brand-primary);
