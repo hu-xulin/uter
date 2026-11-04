@@ -322,7 +322,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/button-loading.test.tsx"
           ],
@@ -608,7 +608,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/combobox.test.tsx"
           ],
@@ -720,7 +720,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/dialog-layout.test.tsx"
           ],
@@ -864,7 +864,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/dropdown-menu.test.tsx"
           ],
@@ -970,7 +970,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/form-label-tier.test.tsx"
           ],
@@ -1111,7 +1111,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/input-group.test.tsx"
           ],
@@ -1287,7 +1287,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/label.test.tsx"
           ],
@@ -1680,7 +1680,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/secret-file-input.test.tsx"
           ],
@@ -2253,7 +2253,7 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "NOT_VERIFIED",
+          "status": "PARTIAL",
           "tests": [
             "src/components/ui/__tests__/toggle-group.test.tsx"
           ],
