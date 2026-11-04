@@ -79,3 +79,16 @@ CI 已运行 `lint:design:strict` 和 Vitest，但原有对比度脚本未纳入
 - P4-V：扩展主题预设、对比度、Token 未使用和循环引用检查。
 - P4-VI：补充认证后页面会话，执行 Playwright + axe 和视觉回归。
 - P4-VII：以固定 SHA 汇总验收证据；强制项全部 PASS 后才可 ACCEPT。
+
+
+## 6. P4-IV — React Component Registry
+
+- Fixed-SHA inventory found **65 eligible `.tsx` implementation files** under `web/src/components/ui/`, excluding tests.
+- Added `web/src/design-system/component-registry.json` with 65 stable component IDs, categories, applicable states, accessibility expectations, responsive requirements, semantic Token rules and explicit evidence status.
+- Added `web/src/design-system/schemas/component-registry.schema.json`.
+- Added `web/scripts/check-component-registry.mjs` to compare registry entries with the actual UI filesystem, detect duplicate IDs/paths, missing contract sections and missing referenced test files.
+- Added normal structural validation to the existing frontend CI. Strict mode remains a later acceptance gate because component behavior evidence is not yet complete.
+- Existing tests are linked only where a directly relevant test file was found. File existence does not imply that every contract requirement is tested or passed.
+- Component registry and contract standard: `standards/05-experience-design/UAES-05-014-REACT-COMPONENT-REGISTRY-AND-CONTRACT.md`.
+
+**P4-IV verification status:** source inventory and registry generation are complete. The scanner has not yet been executed in a local runtime or CI; browser behavior, ARIA, keyboard and responsive evidence remain NOT_VERIFIED.
