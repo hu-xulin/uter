@@ -1,49 +1,104 @@
 {
-  "$schema": "./brand.tokens.schema.json",
-  "metadata": {
-    "id": "UTER-BRAND-TOKEN-SOURCE",
-    "version": "1.0.0",
-    "designSystem": "UTER Design System 3.0",
-    "status": "DRAFT",
-    "sourceCommit": "77dab9bf56fff59d6bed0d11cb88fa0901253c4a",
-    "notes": "Light primary is user-confirmed on 2026-11-04. Remaining state values are migrated from the existing UTER Design System 3.0 implementation and remain subject to full contrast and visual revalidation."
+  "$extensions": {
+    "com.uter.uaes": {
+      "id": "UTER-BRAND-TOKEN-SOURCE",
+      "version": "1.0.0",
+      "designSystem": "UTER Design System 3.0",
+      "status": "DRAFT",
+      "sourceCommit": "77dab9bf56fff59d6bed0d11cb88fa0901253c4a",
+      "provenance": {
+        "themes.light.primary": "USER_CONFIRMED",
+        "themes.dark.primary": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.hover": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.active": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.soft": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.softForeground": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.border": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.hover": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.active": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.soft": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
+      },
+      "notes": "Light primary is user-confirmed on 2026-11-04. Remaining state values are migrated from the existing UTER Design System 3.0 implementation and remain subject to full contrast and visual revalidation."
+    }
   },
   "themes": {
     "light": {
-      "primary": "#5B5EE6",
-      "primaryForeground": "#FFFFFF",
-      "hover": "#4F52D1",
-      "active": "#4A4DC5",
-      "soft": "#F0F0FF",
-      "softForeground": "#5558D8",
-      "border": "#D9DAFF",
-      "subtleSurface": "#FAFBFC"
+      "brand": {
+        "$type": "color",
+        "primary": {
+          "$value": "#5B5EE6",
+          "$description": "User-confirmed Uter brand primary."
+        },
+        "primaryForeground": {
+          "$value": "#FFFFFF",
+          "$description": "Foreground on the filled Light primary control."
+        },
+        "hover": {
+          "$value": "#4F52D1",
+          "$description": "Hover state of the filled Light primary control."
+        },
+        "active": {
+          "$value": "#4A4DC5",
+          "$description": "Active state of the filled Light primary control."
+        },
+        "soft": {
+          "$value": "#F0F0FF",
+          "$description": "Soft Light brand surface."
+        },
+        "softForeground": {
+          "$value": "#5558D8",
+          "$description": "Contrast-safe foreground on the Light soft brand surface."
+        },
+        "border": {
+          "$value": "#D9DAFF",
+          "$description": "Light brand border."
+        },
+        "subtleSurface": {
+          "$value": "#FAFBFC",
+          "$description": "Light subtle surface used for contrast verification."
+        }
+      }
     },
     "dark": {
-      "primary": "#A1A3F7",
-      "primaryForeground": "#020617",
-      "hover": "#B1B3FF",
-      "active": "#9294F7",
-      "soft": "#25264A",
-      "softForeground": "#B1B3FF",
-      "border": "#45466F",
-      "subtleSurface": "#0F172A"
+      "brand": {
+        "$type": "color",
+        "primary": {
+          "$value": "#A1A3F7",
+          "$description": "Existing Dark primary value migrated from UTER Design System 3.0."
+        },
+        "primaryForeground": {
+          "$value": "#020617",
+          "$description": "Foreground on the filled Dark primary control."
+        },
+        "hover": {
+          "$value": "#B1B3FF",
+          "$description": "Hover state of the filled Dark primary control."
+        },
+        "active": {
+          "$value": "#9294F7",
+          "$description": "Active state of the filled Dark primary control."
+        },
+        "soft": {
+          "$value": "#25264A",
+          "$description": "Soft Dark brand surface."
+        },
+        "softForeground": {
+          "$value": "#B1B3FF",
+          "$description": "Foreground on the Dark soft brand surface."
+        },
+        "border": {
+          "$value": "#45466F",
+          "$description": "Dark brand border."
+        },
+        "subtleSurface": {
+          "$value": "#0F172A",
+          "$description": "Dark subtle surface used for contrast verification."
+        }
+      }
     }
-  },
-  "provenance": {
-    "themes.light.primary": "USER_CONFIRMED",
-    "themes.dark.primary": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.light.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.light.hover": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.light.active": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.light.soft": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.light.softForeground": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.light.border": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.dark.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.dark.hover": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.dark.active": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.dark.soft": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
-    "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
   }
 }
