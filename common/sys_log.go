@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"sync"
@@ -14,6 +15,30 @@ import (
 // during log file rotation. Acquire RLock when reading/writing through the writers,
 // acquire Lock when swapping writers and closing old files.
 var LogWriterMu sync.RWMutex
+
+// LogWriter 与 ErrorLogWriter 在每次写入时才去读 gin.DefaultWriter /
+// gin.DefaultErrorWriter，而不是在启动时把当时的值存下来。
+//
+// 日志轮转会把这两个 gin Writer 换成新文件、并关闭旧文件。任何在启动时
+// 缓存了 writer 的中间件（gin 的访问日志、panic 恢复）在轮转之后就会一直
+// 往已关闭的文件句柄写，日志静默丢失。这类中间件必须改用这两个间接 writer。
+var (
+	LogWriter      io.Writer = currentLogWriter{}
+	ErrorLogWriter io.Writer = currentLogWriter{errorStream: true}
+)
+
+type currentLogWriter struct {
+	errorStream bool
+}
+
+func (w currentLogWriter) Write(p []byte) (int, error) {
+	LogWriterMu.RLock()
+	defer LogWriterMu.RUnlock()
+	if w.errorStream {
+		return gin.DefaultErrorWriter.Write(p)
+	}
+	return gin.DefaultWriter.Write(p)
+}
 
 func SysLog(s string) {
 	t := time.Now()
