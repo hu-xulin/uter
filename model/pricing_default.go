@@ -304,7 +304,43 @@ var defaultProductIcons = map[string]string{
 	"vidu":  "Vidu",
 	"sora":  "Sora",
 	"bge":   "BAAI",
+	// Wan（通义万相）：@lobehub/icons 没有 Wan 品牌，本仓库自带整枚彩色 SVG
+	// （前端 CUSTOM_ICONS 的 IconWan，已同步登记到 customIconVariants）。
+	// Wan（通义万相）：@lobehub/icons 没有 Wan 品牌，本仓库自带整枚彩色 SVG
+	// （前端 CUSTOM_ICONS 的 IconWan，已同步登记到 customIconVariants）。
+	// 刻意**不**登记在本表：三个字母的 "wan" 作为子串会误命中 taiwan-llm、
+	// swan-2，改为在下方的 defaultProductIconPrefixes 里按前缀匹配。
 }
+
+// defaultProductIconPrefixes 按「模型名以该词开头」归因产品图标，与
+// defaultProductIcons 的子串规则互补。
+//
+// 为什么不能只靠子串规则："wan" 只有三个字母，作为子串会命中 taiwan-llm、
+// swan-2 这类完全无关的名字，把 Wan 的图标错安到别的模型上。前缀匹配把
+// 判定收窄到真正的万相系列（wan3.0-video、wan2.7-image…），代价是要求品牌词
+// 必须出现在模型名最前面——这正是渠道的实际命名方式。
+//
+// 只在首段精确命中失败后才查本表：带版本号的 "wan3.0" 首段命不中裸键 "wan"，
+// 但 "wan" 是它的前缀，于是落到这里。若某模型名同时被 defaultProductIcons 的
+// 首段命中（如 wan-t2v 的首段恰是 "wan"），走前一条路径，结果一致。
+var defaultProductIconPrefixes = map[string]string{
+	"wan": "Wan",
+}
+
+// defaultProductIconPrefixKeys 按长度降序，长前缀优先，避免短前缀抢先命中。
+var defaultProductIconPrefixKeys = func() []string {
+	keys := make([]string, 0, len(defaultProductIconPrefixes))
+	for prefix := range defaultProductIconPrefixes {
+		keys = append(keys, prefix)
+	}
+	slices.SortFunc(keys, func(a, b string) int {
+		if len(a) != len(b) {
+			return len(b) - len(a)
+		}
+		return strings.Compare(a, b)
+	})
+	return keys
+}()
 
 // defaultProductIconPatterns 与 defaultVendorPatterns 同样的「长规则优先」排序：
 // 同一模型名可能命中多条规则时取最长那条。
@@ -324,14 +360,20 @@ var defaultProductIconPatterns = func() []string {
 
 // defaultProductIconForModel 返回关键词归因模型的「自己的产品 logo」。
 //
-// 只在 @lobehub/icons 存在可渲染变体（lobeIconVariants）时才返回该键；否则返回
-// 空串，让卡片显示首字母占位而不是一个根本渲染不出来的坏键。这个函数**绝不**返回
-// 供应商公司 logo：产品与公司同名的品牌（OpenAI、Meta……）填的是两者的同一图标，
-// 而 Anthropic/Google/Z.AI/Moonshot 等都映射到各自的产品 logo，而非公司 logo。
+// 只在图标键确实可渲染（isRenderableIconKey：上游品牌表或前端自定义图标表）
+// 时才返回该键；否则返回空串，让卡片显示首字母占位而不是一个根本渲染不出来的
+// 坏键。这个函数**绝不**返回供应商公司 logo：产品与公司同名的品牌（OpenAI、
+// Meta……）填的是两者的同一图标，而 Anthropic/Google/Z.AI/Moonshot 等都映射到
+// 各自的产品 logo，而非公司 logo。
 //
-// 匹配优先级：先按模型名**首段精确命中**（muse-spark 的首段是 muse，属于 Meta，
-// 不应被其中的 spark 子串误判成 iFlytek 的 Spark），首段未命中再按最长子串规则
-// （保留 c4ai-aya 这类非首段的精确匹配）。
+// 匹配优先级：
+//  1. 模型名**首段精确命中**（muse-spark 的首段是 muse，属于 Meta，不应被其中
+//     的 spark 子串误判成 iFlytek 的 Spark）；
+//  2. **前缀命中**（wan3.0-video 带版本号，首段 "wan3.0" 命不中裸键 "wan"）；
+//  3. 最长子串规则（保留 c4ai-aya 这类非首段的精确匹配）。
+//
+// 前缀先于子串：多字母短词做子串容易误伤（"wan" 会命中 taiwan-llm），前缀
+// 把这类品牌收窄到真正的系列命名，且不影响既有子串规则的覆盖范围。
 func defaultProductIconForModel(modelName string) string {
 	lower := strings.ToLower(strings.TrimSpace(modelName))
 	if lower == "" {
@@ -339,14 +381,23 @@ func defaultProductIconForModel(modelName string) string {
 	}
 	segments := strings.Split(lower, "-")
 	if productKey, ok := defaultProductIcons[segments[0]]; ok {
-		if _, renderable := lobeIconVariants[productKey]; renderable {
+		if isRenderableIconKey(productKey) {
 			return productKey
+		}
+	}
+	for _, prefix := range defaultProductIconPrefixKeys {
+		if strings.HasPrefix(lower, prefix) {
+			productKey := defaultProductIconPrefixes[prefix]
+			if isRenderableIconKey(productKey) {
+				return productKey
+			}
+			break
 		}
 	}
 	for _, pattern := range defaultProductIconPatterns {
 		if strings.Contains(lower, pattern) {
 			productKey := defaultProductIcons[pattern]
-			if _, ok := lobeIconVariants[productKey]; ok {
+			if isRenderableIconKey(productKey) {
 				return productKey
 			}
 			return ""

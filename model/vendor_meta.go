@@ -51,7 +51,10 @@ func NormalizeColorIconKey(icon string) string {
 	_, rest, found := strings.Cut(trimmed, ".")
 	if !found {
 		// 裸品牌名：查变体表升级；未登记（无任何彩色变体）则原样返回。
-		variant, ok := lobeIconVariants[trimmed]
+		// 用 iconVariantOf 而不是直接查 lobeIconVariants：前端 CUSTOM_ICONS
+		// 里的自定义图标（Wan / SGLang / Uter 系列）不在上游生成的表里，
+		// 直接查会被误判为不可渲染而漏掉色彩升级。
+		variant, ok := iconVariantOf(trimmed)
 		if !ok {
 			return trimmed
 		}

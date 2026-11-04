@@ -415,6 +415,11 @@ func migrateDB() error {
 	if err := migrateUserEmailNormalization(DB); err != nil {
 		return err
 	}
+	// 模型图标回填同样排在 AutoMigrate 之后：models 表已就绪，且要在定价广场与
+	// 管理端列表读模型元数据之前完成，否则首屏仍会显示首字母占位。
+	if err := migrateModelIcons(DB); err != nil {
+		return err
+	}
 	if err := EnsureLegacyAccessTokenRetireAt(common.GetTimestamp()); err != nil {
 		return fmt.Errorf("initialize legacy access token deadline: %w", err)
 	}

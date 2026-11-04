@@ -310,12 +310,105 @@ func TestDefaultProductIconForModelCoversVideoAndEmbeddingBrands(t *testing.T) {
 	}
 }
 
-// defaultProductIcons 的每个值都必须在 lobeIconVariants 里可渲染；写进
-// 不可渲染的键会让 defaultProductIconForModel 静默回落空串，映射形同虚设。
+// defaultProductIcons 的每个值都必须可渲染（上游品牌表或前端自定义图标表）；
+// 写进不可渲染的键会让 defaultProductIconForModel 静默回落空串，映射形同虚设。
 func TestDefaultProductIconsAreRenderable(t *testing.T) {
 	for pattern, key := range defaultProductIcons {
-		if _, ok := lobeIconVariants[key]; !ok {
-			t.Errorf("defaultProductIcons[%q] = %q 不在 lobeIconVariants 中，不可渲染", pattern, key)
+		if !isRenderableIconKey(key) {
+			t.Errorf("defaultProductIcons[%q] = %q 不可渲染（既不在 lobeIconVariants，也不在 customIconVariants）", pattern, key)
 		}
+	}
+	for prefix, key := range defaultProductIconPrefixes {
+		if !isRenderableIconKey(key) {
+			t.Errorf("defaultProductIconPrefixes[%q] = %q 不可渲染", prefix, key)
+		}
+	}
+}
+
+// Wan 走前缀规则而非子串：三字母 "wan" 做子串会把 taiwan-llm、swan-2 这类
+// 完全无关的名字错判成万相。这条用例锁定「该命中的命中、不该命中的不命中」。
+func TestDefaultProductIconForModelWanUsesPrefixNotSubstring(t *testing.T) {
+	hit := []string{
+		"wan3.0-video",
+		"wan3.0-video-prime",
+		"wan2.7-image-pro",
+		"wan-t2v",
+		"WAN2.6",
+	}
+	for _, name := range hit {
+		if got := defaultProductIconForModel(name); got != "Wan" {
+			t.Errorf("defaultProductIconForModel(%q) = %q, want \"Wan\"", name, got)
+		}
+	}
+	// 这些名字含 "wan" 子串但与万相无关，必须保持不归因。
+	miss := []string{
+		"taiwan-llm",
+		"swan-2",
+	}
+	for _, name := range miss {
+		if got := defaultProductIconForModel(name); got != "" {
+			t.Errorf("defaultProductIconForModel(%q) = %q, want 空（wan 子串不应误命中）", name, got)
+		}
+	}
+}
+
+// customIconVariants 必须覆盖前端 CUSTOM_ICONS 的每一个键。
+//
+// 前端能渲染而后端不认识是这套双来源设计的固有缺口：defaultProductIconForModel
+// 会把这些品牌判为不可渲染并静默回落首字母占位（wan3.0-video 显示 "w" 就是这么来的）。
+// 这里直接读前端源码比对，漏登记立即失败。
+func TestCustomIconVariantsMatchFrontend(t *testing.T) {
+	source, err := os.ReadFile(filepath.Join("..", "web", "src", "lib", "lobe-icon.tsx"))
+	if err != nil {
+		t.Fatalf("读取前端 lobe-icon.tsx 失败: %v", err)
+	}
+	text := string(source)
+
+	// CUSTOM_ICONS 表形如：const CUSTOM_ICONS: Record<...> = {\n  Wan: IconWan,
+	start := strings.Index(text, "const CUSTOM_ICONS")
+	if start == -1 {
+		t.Fatal("前端 lobe-icon.tsx 中找不到 CUSTOM_ICONS")
+	}
+	rest := text[start:]
+	open := strings.Index(rest, "{")
+	close := strings.Index(rest, "\n}")
+	if open == -1 || close == -1 || close < open {
+		t.Fatal("无法解析 CUSTOM_ICONS 对象体")
+	}
+	body := rest[open+1 : close]
+
+	found := 0
+	for _, line := range strings.Split(body, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "//") {
+			continue
+		}
+		// 只认 "<Key>: <Component>," 这种登记行。CUSTOM_ICONS 里唯一的非登记
+		// 内容是 SGLang 那条内联箭头函数（含 `<img` 与 `props.size ?? 20`），
+		// 它跨多行且以 `(` 开头，靠「值不以大写字母开头的标识符结尾」过滤掉。
+		if !strings.HasSuffix(line, ",") {
+			continue
+		}
+		colon := strings.Index(line, ":")
+		if colon <= 0 {
+			continue
+		}
+		key := strings.TrimSpace(line[:colon])
+		value := strings.TrimSpace(strings.TrimSuffix(line[colon+1:], ","))
+		// 登记值必须是单个组件标识符（IconXxx / 标识符），不能含空白或符号。
+		if key == "" || value == "" || strings.ContainsAny(key, "(<>=? ") {
+			continue
+		}
+		if strings.ContainsAny(value, "(<>=? ") {
+			continue
+		}
+		found++
+		if _, ok := customIconVariants[key]; !ok {
+			t.Errorf("前端 CUSTOM_ICONS 注册了 %q，但后端 customIconVariants 未登记——"+
+				"该品牌的模型会回落首字母占位", key)
+		}
+	}
+	if found == 0 {
+		t.Fatal("未从前端 CUSTOM_ICONS 解析出任何图标键，解析逻辑可能已失效")
 	}
 }
