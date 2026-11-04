@@ -330,6 +330,12 @@ jobs:
       #
       # 图标几何、正文基准、焦点环那几组由上面的 `bun run test`
       # （design-system/__tests__/spec-guards.test.ts）兜底。
+      - name: Design token source sync
+        run: bun run design:tokens:check
+
+      - name: Brand contrast verification
+        run: bun run verify:contrast
+
       - name: Design tokens
         run: bun run lint:design:strict
 
