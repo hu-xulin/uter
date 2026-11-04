@@ -36,8 +36,9 @@ Only these result values are permitted:
 | DQG-05 | Type safety | `bun run typecheck` | Yes |
 | DQG-06 | Copyright headers | `bun run copyright:check` | Yes |
 | DQG-07 | Production build | `bun run build:check` | Yes |
+| DQG-08 | React component registry and filesystem parity | `bun run components:registry:check` | Yes |
 
-The checks above are integrated into the existing frontend CI job. Do not create a second independent lint or component implementation pipeline when the existing project tooling already provides the required behavior.
+The checks above are integrated into the existing frontend CI job. Do not create a second independent lint or component implementation pipeline when the existing project tooling already provides the required behavior. The component registry check validates structural completeness and filesystem parity only; it does not claim browser behavior or accessibility evidence is verified.
 
 ## 4. Token source requirements
 
