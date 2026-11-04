@@ -5,9 +5,9 @@
 # 整合三份规范（全面代码审查 / 全面自动化测试 / 统一工程质量管理）为单一入口，
 # 复用既有门禁而非重建（宪法 AGENTS.md 与规范第三部分均要求）。五个引擎：
 #
-#   review     静态审查：gofmt/go vet × 3 模块 + 前端 lint/i18n/design-strict/copyright
+#   review     静态审查：gofmt/go vet × 4 模块 + 前端 lint/i18n/design-strict/copyright
 #              + ai-specs（docs/ai-specs/ 规范体系完整性，见 ai-specs-check.sh）
-#   test       自动化测试：Go test × 3 模块 + vitest（含 spec-guards 92 项）
+#   test       自动化测试：Go test × 4 模块 + vitest（含 spec-guards 92 项）
 #   security   安全扫描：govulncheck/gitleaks（缺工具=NOT_RUN，绝不伪通过）+ 敏感文件入库抽查
 #   coverage   覆盖率门禁：按包阈值 controller=39 model=45 service=43（与 CI 同口径）
 #   regression 视觉回归：第一轨 showcase 哈希恒跑；第二轨 Playwright 仅 --with-e2e
@@ -113,10 +113,11 @@ stage_review() {
   # gofmt -l 递归扫描会把它当源码扫入造成假阳性——review 前先清理。
   rm -rf "$ROOT/$UEQE_STATE_DIR/head-tree"
   for m in $UEQE_GO_MODULES; do
+    local_label="${m//\//_}"
     ( cd "$m" && test -z "$(gofmt -l . | head -1)" ) \
-      && mark review "gofmt:$m" PASSED \
-      || { mark review "gofmt:$m" FAILED; ( cd "$m" && gofmt -l . ) > "$ROOT/$UEQE_STATE_DIR/review.gofmt:$m.log" 2>&1; }
-    run_check review "vet:$m" bash -c "cd '$m' && go vet ./..." || true
+      && mark review "gofmt:$local_label" PASSED \
+      || { mark review "gofmt:$local_label" FAILED; ( cd "$m" && gofmt -l . ) > "$ROOT/$UEQE_STATE_DIR/review.gofmt:$local_label.log" 2>&1; }
+    run_check review "vet:$local_label" bash -c "cd '$m' && GOWORK=off go vet ./..." || true
   done
   run_check review "web:lint" bash -c "cd web && bun run lint" || true
   run_check review "web:design-strict" bash -c "cd web && bun run lint:design:strict" || true
@@ -127,7 +128,8 @@ stage_review() {
 
 stage_test() {
   for m in $UEQE_GO_MODULES; do
-    run_check test "go:$m" bash -c "cd '$m' && go build ./... && go test -count=1 -timeout ${UEQE_GO_TEST_TIMEOUT}s ./..." || true
+    local_label="${m//\//_}"
+    run_check test "go:$local_label" bash -c "cd '$m' && GOWORK=off go build ./... && GOWORK=off go test -count=1 -timeout ${UEQE_GO_TEST_TIMEOUT}s ./..." || true
   done
   run_check test "web:vitest" bash -c "cd web && bun run test" || true
 }
@@ -138,7 +140,12 @@ stage_security() {
     if command -v "$tool" >/dev/null 2>&1; then
       found=1
       case "$tool" in
-        govulncheck) run_check security "govulncheck" bash -c "cd . && govulncheck ./... 2>&1 | tail -40" || true ;;
+        govulncheck)
+          for m in $UEQE_GO_MODULES; do
+            local_label="${m//\//_}"
+            run_check security "govulncheck:$local_label" bash -c "cd '$m' && GOWORK=off govulncheck ./... 2>&1 | tail -40" || true
+          done
+          ;;
         gitleaks)
           # 口径=当前跟踪内容（git archive HEAD 解包后扫描）：dir 直扫会把 gitignored
           # 的 node_modules/.next/.env 全卷进来产生海量噪音；历史模式则被上游开源
@@ -168,9 +175,10 @@ stage_coverage() {
   # 注意：go test 输出必须留在日志里——测试失败时 coverage-gate 短路，日志是唯一归因依据。
   run_check coverage "go-root" bash -c "go test -count=1 -coverprofile='$ROOT/$UEQE_STATE_DIR/coverage.out' -timeout ${UEQE_GO_TEST_TIMEOUT}s ./... && \
     '$ROOT/scripts/coverage-gate.sh' '$ROOT/$UEQE_STATE_DIR/coverage.out' \"\$(go list -m)\" $UEQE_COVERAGE_ARGS" || true
-  # tokenkit/relaykit 走 go vet 口径（golangci-lint 暂缓），覆盖率仅采集不设阈值
-  for m in tokenkit relaykit; do
-    run_check coverage "go-$m-collect" bash -c "cd '$m' && go test -count=1 -cover -timeout ${UEQE_GO_TEST_TIMEOUT}s ./... | tail -20" || true
+  # 独立模块覆盖率仅采集不设阈值；路径名转为安全状态文件名。
+  for m in tokenkit relaykit tokenkit/tokenkit; do
+    local_label="${m//\//_}"
+    run_check coverage "go-$local_label-collect" bash -c "cd '$m' && GOWORK=off go test -count=1 -cover -timeout ${UEQE_GO_TEST_TIMEOUT}s ./... | tail -20" || true
   done
 }
 
