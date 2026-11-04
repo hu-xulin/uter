@@ -15,30 +15,14 @@
 </p>
 
 <p align="center">  
-  <a href="https://raw.githubusercontent.com/Calcium-Ion/uter/main/LICENSE">  
-    <img src="https://img.shields.io/github/license/Calcium-Ion/uter?color=brightgreen" alt="license">  
-  </a><a href="https://github.com/Calcium-Ion/uter/releases/latest">  
-    <img src="https://img.shields.io/github/v/release/Calcium-Ion/uter?color=brightgreen\&include_prereleases" alt="release">  
-  </a><a href="https://hub.docker.com/r/CalciumIon/uter">  
-    <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">  
-  </a>  
-  <a href="https://atomgit.com/uter-ai/uter" target="\_blank">  
-    <img alt="AtomGit G-Star" src="https://atomgit.com/uter-ai/uter/star/badge.svg"/>  
-  </a>  
+  <a href="https://raw.githubusercontent.com/hu-xulin/uter/main/LICENSE">  
+    <img src="https://img.shields.io/github/license/hu-xulin/uter?color=brightgreen" alt="license">  
+  </a><a href="https://github.com/hu-xulin/uter/releases/latest">  
+    <img src="https://img.shields.io/github/v/release/hu-xulin/uter?color=brightgreen\&include_prereleases" alt="release">  
+  </a>
 </p>
 
 <p align="center">  
-  <a href="https://trendshift.io/repositories/20180" target="\_blank">  
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="uter-ai%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>  
-  </a>  
-    
-  
-  <a href="https://hellogithub.com/repository/uter-ai/uter" target="\_blank">  
-    <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811\&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />  
-  </a>  
-  <a href="https://atomgit.com/uter-ai/uter" target="\_blank">  
-    <img alt="AtomGit G-Star" src="https://atomgit.com/uter-ai/uter/star/new_badge.svg" width="250" height="55" />  
-  </a>  
 </p>
 
 <p align="center">  
@@ -202,7 +186,6 @@ docker run --name uter -d --restart always \
 - 🤖 LinuxDO 授权登录
 - 📱 Telegram 授权登录
 - 🔑 OIDC 统一认证
-- 🔍 Key 查询使用额度（配合 [uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool)）
 
 ### 🚀 高级功能
 
@@ -454,8 +437,6 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 | 项目                                                            | 说明          |
 | ------------------------------------------------------------- | ----------- |
-| [uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool) | Key 额度查询工具  |
-| [uter-horizon](https://github.com/Calcium-Ion/uter-horizon)   | Uter 高性能优化版 |
 
 ---
 
@@ -485,7 +466,19 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 本项目采用 [GNU Affero 通用公共许可证 v3.0 (AGPLv3)](./LICENSE) 授权。
 
-本项目为开源项目，在 [One API](https://github.com/songquanpeng/one-api)（MIT 许可证）的基础上进行二次开发。
+本项目为开源项目，是基于 [new-api](https://github.com/QuantumNous/new-api) 的修改版本；new-api 由 [One API](https://github.com/songquanpeng/one-api)（MIT 许可证）二次开发而来。上游版权声明与 AGPLv3 第 7 条附加条款要求的署名、原始项目链接均已保留在 [NOTICE](./NOTICE) 中，并在界面页脚展示：
+
+- new-api：Copyright (c) QuantumNous and contributors.
+- One API：Copyright (c) songquanpeng and contributors.
+
+### 源码获取（AGPLv3 第 13 条）
+
+本项目通过网络提供服务。任何通过网络与本服务交互的用户，都有权获取该服务所运行版本的完整对应源码：
+
+- 源码仓库：<https://github.com/hu-xulin/uter>
+- 发布版本：<https://github.com/hu-xulin/uter/releases>
+
+如无法访问上述地址，请发送邮件至 <support@uter.ai> 索取对应源码。
 
 如果您所在的组织政策不允许使用 AGPLv3 许可的软件，或您希望规避 AGPLv3 的开源义务，请发送邮件至：<support@uter.ai>
 
@@ -495,7 +488,7 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 <div align="center">
 
-![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/uter\&type=Date)
+![Star History Chart](https://api.star-history.com/svg?repos=hu-xulin/uter\&type=Date)
 
 </div>
 
@@ -507,7 +500,7 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 如果这个项目对你有帮助，欢迎给我们一个 ⭐️ Star！
 
-**[官方文档](https://uter.ai/docszh/docs)** • **[问题反馈](https://github.com/Calcium-Ion/uter/issues)** • **[最新发布](https://github.com/Calcium-Ion/uter/releases)**
+**[官方文档](https://uter.ai/docszh/docs)** • **[问题反馈](https://github.com/hu-xulin/uter/issues)** • **[最新发布](https://github.com/hu-xulin/uter/releases)**
 
 <sub>Built with ❤️ by Uter.ai</sub>
 
