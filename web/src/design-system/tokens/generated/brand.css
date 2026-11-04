@@ -1,0 +1,26 @@
+/*
+ * GENERATED FILE — DO NOT EDIT.
+ * Source: src/design-system/source/brand.tokens.json
+ * Generator: scripts/generate-design-tokens.mjs
+ */
+:root {
+  --uaes-brand-primary: #5B5EE6;
+  --uaes-brand-primary-foreground: #FFFFFF;
+  --uaes-brand-hover: #4F52D1;
+  --uaes-brand-active: #4A4DC5;
+  --uaes-brand-soft: #F0F0FF;
+  --uaes-brand-soft-foreground: #5558D8;
+  --uaes-brand-border: #D9DAFF;
+  --uaes-brand-subtle-surface: #FAFBFC;
+}
+
+.dark {
+  --uaes-brand-primary: #A1A3F7;
+  --uaes-brand-primary-foreground: #020617;
+  --uaes-brand-hover: #B1B3FF;
+  --uaes-brand-active: #9294F7;
+  --uaes-brand-soft: #25264A;
+  --uaes-brand-soft-foreground: #B1B3FF;
+  --uaes-brand-border: #45466F;
+  --uaes-brand-subtle-surface: #0F172A;
+}
