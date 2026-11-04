@@ -183,7 +183,7 @@ Rule Auto-Loading 的 **Task-based spec routing** 表（单一事实源，两处
 | 规范域 | 自动化检查 | 调用入口 |
 |---|---|---|
 | Development | gofmt / go vet / golangci-lint + tsgo / eslint | `uter-quality.sh review`、`verify-all.sh`、CI |
-| Testing | Go test ×3 模块 + vitest + spec-guards | `uter-quality.sh test` |
+| Testing | Go test ×4 模块（root / relaykit / tokenkit / tokenkit/tokenkit）+ vitest + spec-guards | `uter-quality.sh test` |
 | Security | govulncheck + gitleaks + 敏感文件抽查 | `uter-quality.sh security` |
 | UX / Design | 设计令牌门禁 T1–T16 + design-system 守卫测试 | `bun run lint:design:strict` |
 | Coverage | 按包阈值（与 CI 同口径） | `uter-quality.sh coverage` |
@@ -249,6 +249,12 @@ Commit/Push/PR 的要求适用于无人值守自动化（Auto-Fix Engine、定�
 
 - Code under `relaykit/` MUST NOT import or depend on packages from the root `uter` module, or rely on root-only configuration, generated files, or workspace wiring.
 - Any change affecting `relaykit/` or its public APIs MUST be verified with `cd relaykit && GOWORK=off go build ./...`; a successful root-module build is not sufficient.
+
+**tokenkit/tokenkit module independence:** `tokenkit/tokenkit/` is a separately declared Go module (`github.com/QuantumNous/new-api/tokenkit`) with its own `go.mod`, `go.sum`, source, and tests. It is not covered by `tokenkit/...` in the parent module.
+
+- Changes under `tokenkit/tokenkit/` MUST be verified independently with `cd tokenkit/tokenkit && GOWORK=off go vet ./... && GOWORK=off go test ./... && GOWORK=off go build ./...`.
+- The module MUST be included in repository module inventory, UEQE, CI test/build/vet, race testing where supported, and vulnerability scanning.
+- Do not change its upstream module path or merge it into the parent module without an approved architecture decision.
 
 **JSON package:** In the root Go module, all JSON marshal/unmarshal operations MUST use the wrapper functions in `common/json.go`:
 
