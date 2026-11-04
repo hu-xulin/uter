@@ -42,7 +42,7 @@ require_text "$INTEGRATION" "Do not change this status to VERIFIED"
 # The traceability matrix must cover every phase and must not overstate compliance.
 require_text "$TRACEABILITY" "No phase in this matrix is currently marked VERIFIED"
 for phase in P00 P01 P02 P03 P04 P05 P06 P07 P08 P09 P10 P11 P12; do
-  grep -Eq "\\| ${phase}([ |])" "$TRACEABILITY" || fail "traceability matrix is missing ${phase}"
+  grep -Fq "| ${phase} " "$TRACEABILITY" || fail "traceability matrix is missing ${phase}"
 done
 
 # Uter project instructions and overlays remain authoritative during migration.
