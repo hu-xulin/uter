@@ -7,7 +7,7 @@ description: Audit and maintain Uter's integration with the central UAES standar
 
 ## Bootstrap
 
-1. Read root `AGENTS.md` and `.uaes/INTEGRATION.md`.
+1. Read root `AGENTS.md`, `.uaes/INTEGRATION.md`, and `.uaes/TRACEABILITY.md`.
 2. Identify the UAES source commit and registry blob SHA recorded in the integration contract.
 3. If the UAES repository is available in the workspace, read its canonical `skills/uaes-uter-integration/SKILL.md` and the applicable UAES standards.
 4. If the canonical UAES source is unavailable, report BLOCKED for any task requiring its normative content; do not invent or reconstruct missing rules.
