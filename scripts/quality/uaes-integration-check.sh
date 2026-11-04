@@ -1,30 +1,68 @@
 #!/usr/bin/env bash
-# Validate the static UAES integration contract in the Uter repository.
-# This check does not claim remote UAES availability or runtime skill discovery.
+# Validate static UAES integration wiring and preservation of Uter-owned rules.
+# This does not claim remote UAES availability, runtime skill discovery, or full compliance.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+DEFAULT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT="${UAES_INTEGRATION_ROOT:-$DEFAULT_ROOT}"
+ROOT="$(cd "$ROOT" && pwd)"
 cd "$ROOT"
 
 fail() { printf 'FAIL: %s\n' "$*" >&2; exit 1; }
 pass() { printf 'PASS: %s\n' "$*"; }
+require_file() { test -s "$1" || fail "missing or empty $1"; }
+require_text() {
+  local file="$1"
+  local expected="$2"
+  grep -Fq -- "$expected" "$file" || fail "$file is missing required invariant: $expected"
+}
 
-test -s "$ROOT/.uaes/INTEGRATION.md" || fail "missing or empty .uaes/INTEGRATION.md"
-test -s "$ROOT/.uaes/TRACEABILITY.md" || fail "missing or empty .uaes/TRACEABILITY.md"
-grep -q "No phase in this matrix is currently marked VERIFIED" "$ROOT/.uaes/TRACEABILITY.md" || fail "traceability matrix must disclose unverified phase status"
-test -s "$ROOT/AGENTS.md" || fail "missing or empty AGENTS.md"
-test -s "$ROOT/CLAUDE.md" || fail "missing or empty CLAUDE.md"
-test -s "$ROOT/.agents/skills/uaes-integration/SKILL.md" || fail "missing Agents Runtime UAES skill adapter"
-test -s "$ROOT/.claude/skills/uaes-integration/SKILL.md" || fail "missing Claude Code UAES skill adapter"
-test -s "$ROOT/.claude/skills/i18n-translate/SKILL.md" || fail "missing Claude i18n skill adapter"
-test -s "$ROOT/.claude/skills/shadcn-ui/SKILL.md" || fail "missing Claude shadcn-ui skill adapter"
-test -s "$ROOT/.claude/skills/vercel-react-best-practices/SKILL.md" || fail "missing Claude React performance skill adapter"
+INTEGRATION="$ROOT/.uaes/INTEGRATION.md"
+TRACEABILITY="$ROOT/.uaes/TRACEABILITY.md"
+AGENTS="$ROOT/AGENTS.md"
+CLAUDE="$ROOT/CLAUDE.md"
+AGENTS_SKILL="$ROOT/.agents/skills/uaes-integration/SKILL.md"
+CLAUDE_SKILL="$ROOT/.claude/skills/uaes-integration/SKILL.md"
 
-grep -q 'UAES Integration Contract' "$ROOT/.uaes/INTEGRATION.md" || fail "integration contract title missing"
-grep -q 'MIGRATION_PENDING' "$ROOT/.uaes/INTEGRATION.md" || fail "migration status missing"
-grep -q 'UAES Integration Contract' "$ROOT/AGENTS.md" || fail "AGENTS.md does not route to UAES integration contract"
-grep -q '84416f7f55c1166e3f5adfa0575c1ea713ff20d2' "$ROOT/.uaes/INTEGRATION.md" || fail "UAES source commit pin missing"
-grep -q '1c74e918b84b8cc18d2806a936721852b823ca75' "$ROOT/.uaes/INTEGRATION.md" || fail "UAES registry blob pin missing"
+for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
+  require_file "$file"
+done
 
-pass "UAES integration manifest and agent-entrypoint references are present"
-printf '%s\n' "NOTE: this static check does not validate remote commit reachability, UAES registry semantics, skill runtime discovery, or full UAES compliance."
+# Integration lifecycle and immutable audit-baseline identity.
+require_text "$INTEGRATION" "UAES Integration Contract"
+require_text "$INTEGRATION" "MIGRATION_PENDING"
+require_text "$INTEGRATION" "84416f7f55c1166e3f5adfa0575c1ea713ff20d2"
+require_text "$INTEGRATION" "1c74e918b84b8cc18d2806a936721852b823ca75"
+require_text "$INTEGRATION" "Payment, recharge, refund, balance"
+require_text "$INTEGRATION" "Token usage, pricing, quota"
+require_text "$INTEGRATION" "SQLite/MySQL/PostgreSQL"
+require_text "$INTEGRATION" "UTER Design System 3.0"
+require_text "$INTEGRATION" "Do not change this status to VERIFIED"
+
+# The traceability matrix must cover every phase and must not overstate compliance.
+require_text "$TRACEABILITY" "No phase in this matrix is currently marked VERIFIED"
+for phase in P00 P01 P02 P03 P04 P05 P06 P07 P08 P09 P10 P11 P12; do
+  grep -Eq "\\| ${phase}([ |])" "$TRACEABILITY" || fail "traceability matrix is missing ${phase}"
+done
+
+# Uter project instructions and overlays remain authoritative during migration.
+require_text "$AGENTS" "UAES Integration Contract"
+require_text "$AGENTS" "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md"
+require_text "$AGENTS" "docs/ai-specs/engineering-quality/"
+require_text "$AGENTS" "Billing safety invariants"
+require_text "$AGENTS" "Authentication Security (OWASP Mandatory)"
+require_text "$CLAUDE" "Read AGENTS.md with the Read tool"
+require_text "$CLAUDE" "web/AGENTS.md"
+require_text "$CLAUDE" ".agents/rules/billing.md"
+
+# Both supported runtime adapters must delegate to the canonical integration skill.
+for adapter in "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
+  require_text "$adapter" "skills/uaes-integration/SKILL.md"
+  require_text "$adapter" "Never claim UAES integration is VERIFIED"
+done
+
+pass "UAES integration lifecycle and source pins are present"
+pass "P00-P12 traceability is complete and explicitly unverified"
+pass "Uter payment, billing, auth, database, and Design System overlays remain protected"
+pass "Agent entrypoints and both runtime skill adapters route to the canonical contract"
+printf '%s\n' "NOTE: static wiring only; remote commit reachability, semantic parity, runtime skill discovery, CI policy enforcement, and full UAES compliance remain separate acceptance requirements."
