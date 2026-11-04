@@ -37,4 +37,13 @@ describe('structured brand token source', () => {
     expect(generated).toContain('--uaes-brand-primary: #5B5EE6;')
     expect(generated).toContain('--uaes-brand-primary: #A1A3F7;')
   })
+  it('declares UAES-05-002 governance and does not claim approval', () => {
+    expect(metadata.governingStandard).toBe('UAES-05-002')
+    expect(metadata.changeApproval).toBe('NOT_VERIFIED')
+  })
+  it('declares generator and source versions in the generated file', () => {
+    expect(generated).toContain('GENERATED FILE — DO NOT EDIT')
+    expect(generated).toContain('Generator version:')
+    expect(generated).toContain('Source version: 1.0.0')
+  })
 })

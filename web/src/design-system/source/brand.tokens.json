@@ -22,7 +22,13 @@
         "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
       },
-      "notes": "Light primary is user-confirmed on 2026-11-04. Remaining state values are migrated from the existing UTER Design System 3.0 implementation and remain subject to full contrast and visual revalidation."
+      "notes": "Light primary is user-confirmed on 2026-11-04. Remaining state values are migrated from the existing UTER Design System 3.0 implementation and remain subject to full contrast and visual revalidation.",
+      "registryPointer": "UAES standard library: .uaes/STANDARD-REGISTRY.yaml",
+      "governingStandard": "UAES-05-002",
+      "governingColorStandard": "UAES-05-003",
+      "governingSchema": "UAES standard library: .uaes/schemas/design-token.schema.json",
+      "changeApproval": "NOT_VERIFIED",
+      "approvalNote": "UAES-05-001-009: high-impact brand colour changes require human approval. No Exception ID, approver or approval date has been supplied."
     }
   },
   "themes": {
