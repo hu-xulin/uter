@@ -41,7 +41,18 @@ Dark 及其余状态值先从现有 3.0 实现迁入，并明确标记为既有�
 ### 2.4 组件治理缺口
 现有基础组件数量较多，但没有独立的机器可读组件契约注册表。后续 P4-IV 需要先登记正式组件路径，再按组件类型声明适用状态、键盘行为、Accessible Name 和测试证据；不能把 Button 的状态要求机械套用到所有组件。
 
-### 2.5 Quality Gate
+### 2.5 React 组件静态审计
+
+- `web/src/components/ui/` 当前有 **68 个文件**；`__tests__/` 有 **11 个测试文件**。另有 `web/src/design-system/__tests__/` 的 10 个设计系统守卫测试。
+- `web/src/design-system/index.ts` 明确规定基础 UI 组件仍由 `components/ui/` 实现，避免建立第二套组件库。
+- Button、Input、Textarea、Select、Checkbox、RadioGroup、Switch、Tabs 等关键控件均可见 `focus-visible:ring-1` 规则；Button 还提供 loading、`aria-busy` 和自动 disabled 行为。
+- Dialog、AlertDialog、Popover、Tooltip、DropdownMenu、Menubar、Drawer、Sheet 等组件封装 Base UI primitives。仅靠静态 class 扫描无法证明焦点陷阱、键盘遍历、弹层关闭和焦点还原，必须保留浏览器 E2E 验证。
+- Table、Card、Alert 属于语义容器或内容组件，不应机械要求拥有 Button 的 hover / disabled / loading 状态。
+- 当前没有机器可读的组件注册表，尚不能自动证明全部 UI 文件都有组件契约及适用状态测试。
+
+**已识别的 P2 差距：H5 表单输入字号。** `input.tsx`、`textarea.tsx` 和 `select.tsx` 当前使用 `text-sm`（14px），未见 H5 专用 16px 输入文字策略；这与 UTER Design System 3.0 §1.7 的 H5 输入文字至少 16px 要求不一致。本轮先记录为待整改项，不在 Token 基础设施提交中顺带改动表单视觉。
+
+### 2.6 Quality Gate
 CI 已运行 `lint:design:strict` 和 Vitest，但原有对比度脚本未纳入前端 CI。本次增加源数据漂移检查和品牌对比度检查。视觉回归保留现有 Playwright 流程；认证后页面仍需有效测试会话。
 
 ## 3. 本阶段交付
