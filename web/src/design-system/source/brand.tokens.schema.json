@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uter.ai/uaes/schemas/brand-token-source.schema.json",
+  "title": "UTER Brand Token Source",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "metadata",
+    "themes",
+    "provenance"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "designSystem",
+        "status",
+        "sourceCommit",
+        "notes"
+      ],
+      "properties": {
+        "id": {
+          "const": "UTER-BRAND-TOKEN-SOURCE"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "designSystem": {
+          "const": "UTER Design System 3.0"
+        },
+        "status": {
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "DEPRECATED"
+          ]
+        },
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "themes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "light",
+        "dark"
+      ],
+      "properties": {
+        "light": {
+          "$ref": "#/$defs/palette"
+        },
+        "dark": {
+          "$ref": "#/$defs/palette"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "USER_CONFIRMED",
+          "EXISTING_3_0_IMPLEMENTATION",
+          "PROPOSED"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "palette": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary",
+        "primaryForeground",
+        "hover",
+        "active",
+        "soft",
+        "softForeground",
+        "border",
+        "subtleSurface"
+      ],
+      "properties": {
+        "primary": {
+          "$ref": "#/$defs/hex"
+        },
+        "primaryForeground": {
+          "$ref": "#/$defs/hex"
+        },
+        "hover": {
+          "$ref": "#/$defs/hex"
+        },
+        "active": {
+          "$ref": "#/$defs/hex"
+        },
+        "soft": {
+          "$ref": "#/$defs/hex"
+        },
+        "softForeground": {
+          "$ref": "#/$defs/hex"
+        },
+        "border": {
+          "$ref": "#/$defs/hex"
+        },
+        "subtleSurface": {
+          "$ref": "#/$defs/hex"
+        }
+      }
+    },
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    }
+  }
+}
