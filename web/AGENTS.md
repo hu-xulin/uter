@@ -92,6 +92,10 @@
 **先检索，再复用，最后才新增（强制）**
 
 - **开发前检索**：新增或修改 UI 前，必须读取项目 `shadcn-ui` 技能，使用 `rg --files` / `rg` 检索 `src/components/` 和相关 `src/features/`；涉及通用交互时同时检查 `src/hooks/`。按用途和行为查找，不能只查准备新增的组件名。阅读候选组件的实现、props 和实际调用示例后再确定方案。
+  - Agents Runtime / WorkBuddy：读取 `.agents/skills/shadcn-ui/SKILL.md`。
+  - Claude Code：先读取 `.claude/skills/shadcn-ui/SKILL.md`，再按适配器要求读取 canonical skill。
+  - 涉及 locale、翻译或用户可见文案时，额外读取对应的 `i18n-translate` skill。
+  - 涉及 React 渲染、性能或数据获取优化时，额外读取对应的 `vercel-react-best-practices` skill。
 - **复用顺序**：优先使用满足场景的项目业务封装；能力不足时，先评估现有 props、插槽、组合方式或兼容扩展。业务封装确实不适用时，再用 `src/components/ui/` 中已有基础组件组合。项目内仍有能力缺口时，才评估引入组件或新增实现；查外部 registry 不能替代项目内检索。
 - **复用到行为层**：仅使用 `Button`、`Dialog`、`AlertDialog` 等基础组件，不代表已经复用了对应的复制、确认、弹窗布局等通用能力。已有业务封装能覆盖时，必须使用该封装，禁止在 feature 内重新拼装同一套交互、状态和样式。
 - **新增条件**：新增替代实现前，必须明确候选组件缺少的具体能力，并在变更说明或 PR 中记录候选路径及不能复用、组合或兼容扩展的原因。文案、图标、尺寸、颜色或所在页面不同，不构成重复实现的理由；优先通过已有 API 和主题约定处理这些差异。
