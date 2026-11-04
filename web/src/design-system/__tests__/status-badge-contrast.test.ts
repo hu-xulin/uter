@@ -109,7 +109,7 @@ describe('brand-subtle foreground', () => {
   it('defines a readable foreground for primary-subtle surfaces in both themes', () => {
     // design-system-2.0 §11.2（2026-11-03 复裁定）：浅 #5959CC（on #F3F3FD = 5.11:1）/
     // 深 #8B8DF5（on #25264A = 4.97:1）。
-    expect(THEME).toContain('--primary-subtle-foreground: #5558d8')
+    expect(THEME).toContain('--primary-subtle-foreground: var(--uaes-brand-soft-foreground)')
     expect(THEME).toContain('--primary-subtle-foreground: #b1b3ff')
   })
 
