@@ -64,6 +64,9 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 		"remain_quota": 70,
 		"used_quota":   10,
 	}).Error)
+	// adjustUserUsedQuotaTx 拒绝把 used_quota 扣成负数；给 user 与 token 对称的
+	// 初始用量，四个原语才能执行到事务末尾由 rollbackErr 触发整体回滚。
+	require.NoError(t, DB.Model(&User{}).Where("id = ?", user.Id).Update("used_quota", 10).Error)
 	channel := Channel{Name: "accounting-tx-rollback", Key: "accounting-tx-rollback-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
 
@@ -91,7 +94,7 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 
 	var storedUser User
 	require.NoError(t, DB.Select("used_quota").First(&storedUser, user.Id).Error)
-	assert.Zero(t, storedUser.UsedQuota)
+	assert.Equal(t, 10, storedUser.UsedQuota)
 	var storedChannel Channel
 	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
 	assert.EqualValues(t, 40, storedChannel.UsedQuota)

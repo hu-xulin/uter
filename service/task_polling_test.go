@@ -321,6 +321,8 @@ func TestUpdateBatchTasksSettlesTieredUsageForTerminalStates(t *testing.T) {
 			const tokenRemain = 8_000
 			seedUser(t, userID, initialQuota)
 			seedToken(t, tokenID, userID, "sk-batch-tiered", tokenRemain)
+			// 退款结算会校验 token 已用额度不能被扣成负数；预扣对应的用量需先落账。
+			require.NoError(t, model.DB.Model(&model.Token{}).Where("id = ?", tokenID).Update("used_quota", preConsumedQuota).Error)
 			seedTaskPollingChannel(t, channelID, true)
 
 			expression := `tier("actual", u("units"))`
@@ -386,6 +388,7 @@ func TestUpdateBatchTasksRefundsFailedTieredTask(t *testing.T) {
 	const initialQuota, preConsumedQuota, tokenRemain = 10_000, 5_000, 8_000
 	seedUser(t, userID, initialQuota)
 	seedToken(t, tokenID, userID, "sk-batch-tiered-refund", tokenRemain)
+	require.NoError(t, model.DB.Model(&model.Token{}).Where("id = ?", tokenID).Update("used_quota", preConsumedQuota).Error)
 	seedTaskPollingChannel(t, channelID, true)
 
 	expression := `tier("actual", u("units"))`
@@ -442,6 +445,7 @@ func TestUpdateBatchTasksRefundsFailedTaskWithoutUsageSettlement(t *testing.T) {
 	const initialQuota, preConsumedQuota, tokenRemain = 10_000, 4_000, 7_000
 	seedUser(t, userID, initialQuota)
 	seedToken(t, tokenID, userID, "sk-batch-refund", tokenRemain)
+	require.NoError(t, model.DB.Model(&model.Token{}).Where("id = ?", tokenID).Update("used_quota", preConsumedQuota).Error)
 	seedTaskPollingChannel(t, channelID, true)
 
 	task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
@@ -656,6 +660,7 @@ func TestUpdateSunoTasksStalePollsRefundExactlyOnce(t *testing.T) {
 
 	seedUser(t, userID, initialUserQuota)
 	seedToken(t, tokenID, userID, "sk-suno-refund-once", initialTokenQuota)
+	require.NoError(t, model.DB.Model(&model.Token{}).Where("id = ?", tokenID).Update("used_quota", taskQuota).Error)
 	baseURL := "https://suno.invalid"
 	require.NoError(t, model.DB.Create(&model.Channel{
 		Id:      channelID,
@@ -1094,12 +1099,17 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	previousAdaptor := GetTaskAdaptorFunc
 	GetTaskAdaptorFunc = nil
 	t.Cleanup(func() { GetTaskAdaptorFunc = previousAdaptor })
+	// common.Init() 未在本测试进程运行，TaskQueryLimit 为 0 会让 Limit(0)
+	// 静默返回空候选集；这里补上生产默认值 1000。
+	previousLimit := constant.TaskQueryLimit
+	constant.TaskQueryLimit = 1000
+	t.Cleanup(func() { constant.TaskQueryLimit = previousLimit })
 
 	summary := RunTaskPollingOnce(context.Background(), nil)
 	assert.Equal(t, 1, summary.NullTasksFailed)
 	var persisted model.Task
 	require.NoError(t, model.DB.First(&persisted, task.ID).Error)
-	assert.Equal(t, model.TaskStatusFailure, persisted.Status)
+	assert.EqualValues(t, model.TaskStatusFailure, persisted.Status)
 	assert.Zero(t, persisted.Quota)
 	assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
 	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
