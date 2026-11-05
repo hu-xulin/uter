@@ -55,6 +55,17 @@ require_text "$CLAUDE" "Read AGENTS.md with the Read tool"
 require_text "$CLAUDE" "web/AGENTS.md"
 require_text "$CLAUDE" ".agents/rules/billing.md"
 
+# Every Uter-owned canonical project skill must have a Claude runtime adapter
+# that explicitly delegates to the canonical source instead of drifting in parallel.
+for canonical_skill in "$ROOT"/.agents/skills/*/SKILL.md; do
+  test -f "$canonical_skill" || continue
+  skill_name="$(basename "$(dirname "$canonical_skill")")"
+  [[ "$skill_name" == "uaes-integration" ]] && continue
+  adapter="$ROOT/.claude/skills/$skill_name/SKILL.md"
+  require_file "$adapter"
+  require_text "$adapter" ".agents/skills/$skill_name/SKILL.md"
+done
+
 # Both supported runtime adapters must delegate to the canonical integration skill.
 for adapter in "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
   require_text "$adapter" "skills/uaes-uter-integration/SKILL.md"
@@ -62,6 +73,7 @@ for adapter in "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
 done
 
 pass "UAES integration lifecycle and source pins are present"
+pass "all Uter-owned canonical project skills have Claude adapters"
 pass "P00-P12 traceability is complete and explicitly unverified"
 pass "Uter payment, billing, auth, database, and Design System overlays remain protected"
 pass "Agent entrypoints and both runtime skill adapters route to the canonical contract"
