@@ -406,7 +406,6 @@ func TestRefundTaskQuotaReturnsFalseWhenLostClaimCannotRefreshSnapshot(t *testin
 	require.False(t, RefundTaskQuota(ctx, task, "stale task snapshot"), "a failed snapshot refresh must never be reported as a successful refund")
 }
 
-
 func TestRefundTaskQuotaZeroQuotaStillChecksBillingState(t *testing.T) {
 	truncate(t)
 	task := makeTask(t, 56, 156, 0, 0, BillingSourceWallet, 0)
