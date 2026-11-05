@@ -1,6 +1,6 @@
 # Midjourney Refund Transaction Design
 
-**Status:** DRAFT — design contract only; not an implementation or approval to change charging semantics  
+**Status:** DRAFT — normative design contract; implementation is partial and not yet accepted or approved for production  
 **Audit date:** 2026-11-05  
 **Target project:** Uter  
 **Related UAES controls:** financial integrity, idempotency, transaction boundaries, durable recovery, evidence-based quality gates
@@ -237,4 +237,4 @@ This design is not complete implementation evidence. It may be marked implemente
 - UAES traceability links each normative requirement to code, tests, and CI evidence;
 - an independent reviewer approves the implementation.
 
-**Current disposition:** design contract drafted; implementation not started; no financial behavior or production data changed.
+**Current disposition (updated 2026-11-05):** implementation has started in Uter PR #19 and PR #20. The branches now contain a versioned refund operation/outbox model, a primary-database refund transaction, durable reconciliation cases for ambiguous/missing ledgers, synchronous usage persistence, and an independent Midjourney refund recovery SystemTask. These changes are Draft and their latest CI runs are pending; they are not accepted or production-ready. LOG_DB outbox delivery/receipt idempotency, crash/concurrency and dialect verification, full controller failure-path coverage, and operational alert/dead-letter behavior remain incomplete. No PR has been merged and no production data or deployment was changed.
