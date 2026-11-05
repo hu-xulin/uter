@@ -56,6 +56,9 @@ func TestMidjourneyRefundOperationRejectsUnverifiableInput(t *testing.T) {
 		{MidjourneyTaskID: 203, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: ""},
 		{MidjourneyTaskID: 204, OperationType: "partial", ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},
 		{MidjourneyTaskID: 205, Status: MidjourneyRefundCompleted, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},
+		{MidjourneyTaskID: 206, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `not-json`},
+		{MidjourneyTaskID: 207, ReasonCode: "failed", FundingSource: "unsupported", BillingSnapshotJSON: `{"version":1}`},
+		{MidjourneyTaskID: 208, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`, WalletAppliedQuota: -1},
 	} {
 		assert.Error(t, db.Create(op).Error)
 	}
