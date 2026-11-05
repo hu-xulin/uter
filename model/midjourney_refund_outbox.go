@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
@@ -45,15 +46,23 @@ func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
 	if event.RefundOperationID <= 0 {
 		return errors.New("outbox event requires a refund operation ID")
 	}
-	if event.EventKey == "" || event.EventType == "" || !json.Valid([]byte(event.PayloadJSON)) {
-		return errors.New("outbox event requires event key, event type, and valid payload JSON")
+	if strings.TrimSpace(event.EventKey) == "" || len(event.EventKey) > 128 {
+		return errors.New("outbox event key must be non-empty and at most 128 characters")
+	}
+	if !json.Valid([]byte(event.PayloadJSON)) {
+		return errors.New("outbox event requires valid payload JSON")
+	}
+	switch event.EventType {
+	case "midjourney.refund.completed", "midjourney.refund.reconciliation_required":
+	default:
+		return fmt.Errorf("unsupported Midjourney refund outbox event type %q", event.EventType)
 	}
 	// GORM SQL defaults are not populated before hooks run.
 	if event.PayloadVersion == 0 {
 		event.PayloadVersion = 1
 	}
-	if event.PayloadVersion < 0 {
-		return errors.New("outbox payload version must be positive")
+	if event.PayloadVersion != 1 {
+		return fmt.Errorf("unsupported Midjourney refund outbox payload version %d", event.PayloadVersion)
 	}
 	if event.Status == "" {
 		event.Status = MidjourneyRefundOutboxPending
