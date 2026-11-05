@@ -434,3 +434,56 @@ func TestRunTaskPollingOnceReconcilesBillingWithoutAnyAdapter(t *testing.T) {
 	assert.Equal(t, model.TaskBillingRefunded, stored.BillingState)
 	assert.Zero(t, stored.Quota)
 }
+
+func TestReconcileStuckTaskBillingQuarantinesLegacyTerminalTask(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 61, 61, 161
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-legacy-refund", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+	require.NoError(t, model.DB.Model(&model.Task{}).Where("task_id = ?", task.TaskID).
+		Update("submit_time", model.TaskRefundLegacyCutoff-1).Error)
+	backdateBillingUpdate(t, task.TaskID)
+
+	ReconcileStuckTaskBilling(ctx)
+
+	assert.Equal(t, initQuota, getUserQuota(t, userID), "legacy task must never be automatically refunded")
+	assert.Equal(t, tokenRemain, getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+	assert.Contains(t, stored.BillingLastError, "historical terminal task")
+}
+
+func TestReconcileStuckTaskBillingQuarantinesMissingSubmitTimestamp(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 62, 62, 162
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-missing-submit-time", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+	require.NoError(t, model.DB.Model(&model.Task{}).Where("task_id = ?", task.TaskID).
+		Update("submit_time", 0).Error)
+	backdateBillingUpdate(t, task.TaskID)
+
+	ReconcileStuckTaskBilling(ctx)
+
+	assert.Equal(t, initQuota, getUserQuota(t, userID), "missing timestamp is ambiguous and must fail closed")
+	assert.Equal(t, tokenRemain, getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+}
