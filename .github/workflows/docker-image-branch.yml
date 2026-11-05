@@ -9,8 +9,15 @@ on:
         type: string
 
 jobs:
+  # A manual branch image is still a release artifact: run the same full gate
+  # before any registry credentials are used or any image is pushed.
+  gate:
+    name: Release gate (tests, vet, build, vulnerability scan)
+    uses: ./.github/workflows/release-gate.yml
+
   prepare:
     name: Prepare Docker tags
+    needs: [gate]
     runs-on: ubuntu-latest
     outputs:
       branch: ${{ steps.version.outputs.branch }}
@@ -20,11 +27,23 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Require dispatch ref to match requested branch
+        env:
+          REQUESTED_BRANCH: ${{ inputs.branch }}
+          DISPATCH_REF: ${{ github.ref_name }}
+          DISPATCH_REF_TYPE: ${{ github.ref_type }}
+        run: |
+          set -euo pipefail
+          if [ "$DISPATCH_REF_TYPE" != "branch" ] || [ "$REQUESTED_BRANCH" != "$DISPATCH_REF" ]; then
+            echo "::error::Select the requested branch in the workflow dispatch ref selector and enter the same branch name. The release gate validates the dispatch ref commit."
+            exit 1
+          fi
+
       - name: Check out branch
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 1
-          ref: ${{ inputs.branch }}
+          ref: ${{ github.sha }}
 
       - name: Resolve Docker tags
         id: version
