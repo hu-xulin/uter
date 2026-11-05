@@ -220,9 +220,9 @@ func shouldUpdateRedis(fromDB bool, err error) bool {
  // task refund. It also drains this user's/channel's queued batch deltas under
  // the same queue locks, so a refund cannot race a later batch flush or be lost
  // when the process exits before the next batch tick.
-func ApplyTaskRefundUsage(userID, channelID, quota int) error {
-	if userID <= 0 || channelID <= 0 || quota <= 0 {
-		return errors.New("task refund usage adjustment requires positive user, channel, and quota")
+func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
+	if userID <= 0 || channelID <= 0 {
+		return errors.New("task billing usage adjustment requires positive user and channel IDs")
 	}
 
 	batchUpdateExecutionLock.Lock()
@@ -235,8 +235,8 @@ func ApplyTaskRefundUsage(userID, channelID, quota int) error {
 	defer batchUpdateLocks[channelType].Unlock()
 	defer batchUpdateLocks[userType].Unlock()
 
-	userDelta := batchUpdateStores[userType][userID] - quota
-	channelDelta := batchUpdateStores[channelType][channelID] - quota
+	userDelta := batchUpdateStores[userType][userID] + delta
+	channelDelta := batchUpdateStores[channelType][channelID] + delta
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		var userCount, channelCount int64
 		if err := tx.Model(&User{}).Where("id = ?", userID).Count(&userCount).Error; err != nil {
@@ -273,4 +273,13 @@ func ApplyTaskRefundUsage(userID, channelID, quota int) error {
 	delete(batchUpdateRetries[userType], userID)
 	delete(batchUpdateRetries[channelType], channelID)
 	return nil
+}
+
+
+// ApplyTaskRefundUsage reverses the usage delta associated with a task refund.
+func ApplyTaskRefundUsage(userID, channelID, quota int) error {
+	if quota <= 0 {
+		return errors.New("task refund usage adjustment requires a positive quota")
+	}
+	return ApplyTaskBillingUsageDelta(userID, channelID, -quota)
 }
