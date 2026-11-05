@@ -474,15 +474,20 @@ func applyTaskRefund(ctx context.Context, task *model.Task, quota int, reason st
 		return fmt.Errorf("refund the token quota (funding already compensated): %w", err)
 	}
 
-	// 3. 回减预扣时累计的用户和渠道用量，请求次数保持不变
-	model.UpdateUserUsedQuota(task.UserId, -quota)
-	model.UpdateChannelUsedQuota(task.ChannelId, -quota)
+	// 3. 回减预扣时累计的用户和渠道用量，请求次数保持不变。
+	// 这些统计账本也属于退款审计数据：数据库更新失败时不得吞错并标记退款完成。
+	if err := model.UpdateUserUsedQuotaWithError(task.UserId, -quota); err != nil {
+		return fmt.Errorf("%w: user usage rollback failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
+	}
+	if err := model.UpdateChannelUsedQuotaWithError(task.ChannelId, -quota); err != nil {
+		return fmt.Errorf("%w: channel usage rollback failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
+	}
 
-	// 4. 记录日志
+	// 4. 记录退款审计日志。日志落库失败不重放资金动作，转人工对账并保留错误。
 	other := taskBillingOther(task)
 	other.SetPublic("task_id", task.TaskID)
 	other.SetPublic("reason", reason)
-	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
+	if err := model.RecordTaskBillingLogWithError(model.RecordTaskBillingLogParams{
 		UserId:    task.UserId,
 		LogType:   model.LogTypeRefund,
 		ChannelId: task.ChannelId,
@@ -491,7 +496,9 @@ func applyTaskRefund(ctx context.Context, task *model.Task, quota int, reason st
 		TokenId:   task.PrivateData.TokenId,
 		Group:     task.Group,
 		Other:     other,
-	})
+	}); err != nil {
+		return fmt.Errorf("%w: refund audit log persistence failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
+	}
 
 	// 5. 任务记录的 quota 已由调用方的 CAS 一并归零，这里只需同步内存视图。
 	task.Quota = 0
