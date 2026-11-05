@@ -384,7 +384,17 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 			FromState: model.TaskBillingRefundPending,
 			ToState:   model.TaskBillingRefunded,
 		}); serr != nil {
+			// Ledger refund has already committed. Never return success while the
+			// durable state remains refund_pending: that would hide an incomplete
+			// state transition and make recovery semantics ambiguous. Quarantine
+			// instead of retrying the non-idempotent refund operation.
 			logger.LogError(ctx, common.LogText("refund succeeded but the final state could not be recorded, task %s: %s", task.TaskID, serr.Error()))
+			if merr := model.MarkTaskBillingForReconciliation(task.TaskID,
+				fmt.Sprintf("refund ledger committed but final state transition failed: %v", serr)); merr != nil {
+				logger.LogError(ctx, common.LogText("failed to quarantine task %s after committed refund: %s", task.TaskID, merr.Error()))
+			}
+			task.Quota = claimedQuota
+			return false
 		}
 		return true
 	case errors.Is(err, ErrTaskBillingPartialFailure):
