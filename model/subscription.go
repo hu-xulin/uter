@@ -1559,7 +1559,7 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 // refundSubscriptionPreConsumeTx refunds a subscription pre-consumption using
 // the caller's transaction. Keeping the ledger reversal and its idempotency
 // record in the same transaction lets compound refund intents remain atomic.
-func refundSubscriptionPreConsumeTx(tx *gorm.DB, requestId string) error {
+func refundSubscriptionPreConsumeForUserTx(tx *gorm.DB, requestId string, expectedUserID int) error {
 	if tx == nil {
 		return errors.New("subscription refund transaction is nil")
 	}
@@ -1570,6 +1570,16 @@ func refundSubscriptionPreConsumeTx(tx *gorm.DB, requestId string) error {
 	if err := lockForUpdate(tx).
 		Where("request_id = ?", requestId).First(&record).Error; err != nil {
 		return err
+	}
+	if expectedUserID > 0 && record.UserId != expectedUserID {
+		return fmt.Errorf("subscription pre-consume request %q belongs to user %d, not user %d", requestId, record.UserId, expectedUserID)
+	}
+	var subscription UserSubscription
+	if err := lockForUpdate(tx).Where("id = ?", record.UserSubscriptionId).First(&subscription).Error; err != nil {
+		return err
+	}
+	if subscription.UserId != record.UserId {
+		return fmt.Errorf("subscription pre-consume request %q owner mismatch: record user %d, subscription user %d", requestId, record.UserId, subscription.UserId)
 	}
 	if record.Status == "refunded" {
 		return nil
@@ -1583,6 +1593,12 @@ func refundSubscriptionPreConsumeTx(tx *gorm.DB, requestId string) error {
 	}
 	record.Status = "refunded"
 	return tx.Save(&record).Error
+}
+
+// refundSubscriptionPreConsumeTx is the legacy owner-agnostic entry point.
+// It still validates that the receipt and subscription belong to the same user.
+func refundSubscriptionPreConsumeTx(tx *gorm.DB, requestId string) error {
+	return refundSubscriptionPreConsumeForUserTx(tx, requestId, 0)
 }
 
 // RefundSubscriptionPreConsume is idempotent and refunds pre-consumed subscription quota by requestId.
