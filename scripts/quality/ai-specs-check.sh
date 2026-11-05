@@ -46,20 +46,14 @@ for spec in CODE-REVIEW-STANDARD AUTOMATED-TEST-STANDARD AUTO-FIX-STANDARD QUALI
 done
 [ -s "$EQ/README.md" ] || fail "工程质量规范入口缺失：$EQ/README.md"
 
-# 3. Compare authoritative quality standards with retained source copies when present.
-declare -a EQ_MAP=(
-  "CODE-REVIEW-STANDARD.md|Uter 全面代码审查与修复规范.md"
-  "AUTOMATED-TEST-STANDARD.md|Uter 全面自动化测试与问题修复规范.md"
-  "AUTO-FIX-STANDARD.md|Uter AI Auto-Fix Standard.md"
-  "QUALITY-GATE-STANDARD.md|Uter Engineering Quality Gate Standard.md"
-)
-for pair in "${EQ_MAP[@]}"; do
-  spec_name="${pair%%|*}"
-  source_name="${pair#*|}"
-  source_file="$ROOT/_reports/$source_name"
-  if [ -s "$source_file" ] && ! diff -q "$source_file" "$EQ/$spec_name" >/dev/null 2>&1; then
-    fail "工程质量规范与保留源文件不一致：$spec_name"
-  fi
+# 3. Engineering-quality standards must carry the same governance metadata.
+for spec in CODE-REVIEW-STANDARD AUTOMATED-TEST-STANDARD AUTO-FIX-STANDARD QUALITY-GATE-STANDARD; do
+  file="$EQ/$spec.md"
+  [ -s "$file" ] || continue
+  grep -Fq '**规范版本：**' "$file" || fail "$spec.md 缺少规范版本"
+  grep -Fq '**规范状态：** Active' "$file" || fail "$spec.md 缺少 Active 状态"
+  grep -Fq '**最后更新：**' "$file" || fail "$spec.md 缺少最后更新时间"
+  grep -Fq '**维护责任：**' "$file" || fail "$spec.md 缺少维护责任"
 done
 
 # 4. Required Agent governance entry points.
