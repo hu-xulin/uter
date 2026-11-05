@@ -322,6 +322,7 @@ func TestUpdateBatchTasksSettlesTieredUsageForTerminalStates(t *testing.T) {
 			seedUser(t, userID, initialQuota)
 			seedToken(t, tokenID, userID, "sk-batch-tiered", tokenRemain)
 			seedTaskPollingChannel(t, channelID, true)
+			seedChargedAccounting(t, userID, channelID, tokenID, preConsumedQuota, 1)
 
 			expression := `tier("actual", u("units"))`
 			task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
@@ -387,6 +388,7 @@ func TestUpdateBatchTasksRefundsFailedTieredTask(t *testing.T) {
 	seedUser(t, userID, initialQuota)
 	seedToken(t, tokenID, userID, "sk-batch-tiered-refund", tokenRemain)
 	seedTaskPollingChannel(t, channelID, true)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumedQuota, 1)
 
 	expression := `tier("actual", u("units"))`
 	task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
@@ -443,6 +445,7 @@ func TestUpdateBatchTasksRefundsFailedTaskWithoutUsageSettlement(t *testing.T) {
 	seedUser(t, userID, initialQuota)
 	seedToken(t, tokenID, userID, "sk-batch-refund", tokenRemain)
 	seedTaskPollingChannel(t, channelID, true)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumedQuota, 1)
 
 	task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
 	task.TaskID = "task_batch_refund"
@@ -665,6 +668,7 @@ func TestUpdateSunoTasksStalePollsRefundExactlyOnce(t *testing.T) {
 		Status:  common.ChannelStatusEnabled,
 		BaseURL: &baseURL,
 	}).Error)
+	seedChargedAccounting(t, userID, channelID, tokenID, taskQuota, 1)
 
 	task := makeTask(t, userID, channelID, taskQuota, tokenID, BillingSourceWallet, 0)
 	task.TaskID = publicTaskID
