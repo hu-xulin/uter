@@ -75,14 +75,14 @@ func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
 // BeforeUpdate keeps the event identity and payload immutable while allowing
 // delivery status, retry count, lease, and error metadata to advance.
 func (event *MidjourneyRefundOutbox) BeforeUpdate(tx *gorm.DB) error {
-  if tx.Statement.Changed(
-   "EventKey", "RefundOperationID", "EventType", "PayloadVersion",
-   "PayloadJSON", "CreatedAt",
-  ) {
-   return errors.New("Midjourney refund outbox event payload is immutable")
-  }
-  return nil
- }
+	if tx.Statement.Changed(
+		"EventKey", "RefundOperationID", "EventType", "PayloadVersion",
+		"PayloadJSON", "CreatedAt",
+	) {
+		return errors.New("Midjourney refund outbox event payload is immutable")
+	}
+	return nil
+}
 
 func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) error {
 	if tx == nil {
@@ -99,24 +99,24 @@ func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) 
 // when called inside a transaction, so an outbox failure cannot leave an
 // orphaned operation even if the caller handles the returned error.
 func CreateMidjourneyRefundOperationWithOutboxTx(
-  tx *gorm.DB,
-  op *MidjourneyRefundOperation,
-  event *MidjourneyRefundOutbox,
- ) error {
-  if tx == nil {
-   return errors.New("Midjourney refund operation/outbox transaction is nil")
-  }
-  if op == nil {
-   return errors.New("Midjourney refund operation is nil")
-  }
-  if event == nil {
-   return errors.New("Midjourney refund outbox event is nil")
-  }
-  return tx.Transaction(func(nestedTx *gorm.DB) error {
-   if err := CreateMidjourneyRefundOperationTx(nestedTx, op); err != nil {
-    return err
-   }
-   event.RefundOperationID = op.ID
-   return CreateMidjourneyRefundOutboxTx(nestedTx, event)
-  })
- }
+	tx *gorm.DB,
+	op *MidjourneyRefundOperation,
+	event *MidjourneyRefundOutbox,
+) error {
+	if tx == nil {
+		return errors.New("Midjourney refund operation/outbox transaction is nil")
+	}
+	if op == nil {
+		return errors.New("Midjourney refund operation is nil")
+	}
+	if event == nil {
+		return errors.New("Midjourney refund outbox event is nil")
+	}
+	return tx.Transaction(func(nestedTx *gorm.DB) error {
+		if err := CreateMidjourneyRefundOperationTx(nestedTx, op); err != nil {
+			return err
+		}
+		event.RefundOperationID = op.ID
+		return CreateMidjourneyRefundOutboxTx(nestedTx, event)
+	})
+}
