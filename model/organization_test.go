@@ -717,7 +717,7 @@ func TestIncrOrgUsedQuotaRejectsRefundUnderflow(t *testing.T) {
 func TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow(t *testing.T) {
 	truncateTables(t)
 	insertOrgForTest(t, 90, 0)
-	insertOrgUserForTest(t, 91, 90, OrgRoleMember, 0, 50, "")
+	insertOrgUserForTest(t, 91, 90, OrgRoleMember, 50, 0, "")
 	require.NoError(t, IncrOrgUsedQuota(90, 100))
 
 	require.Error(t, AdjustOrgAndMemberUsedQuota(90, 91, -75))
