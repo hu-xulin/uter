@@ -914,12 +914,22 @@ func EditChannelByTag(tag string, newTag *string, modelMapping *string, models *
 	return nil
 }
 
-func UpdateChannelUsedQuota(id int, quota int) {
+func UpdateChannelUsedQuotaWithError(id int, quota int) error {
+	if id <= 0 {
+		return fmt.Errorf("channel ID must be positive")
+	}
 	if common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeChannelUsedQuota, id, quota)
-		return
+		return nil
 	}
-	_ = updateChannelUsedQuota(id, quota)
+	return updateChannelUsedQuota(id, quota)
+}
+
+// UpdateChannelUsedQuota preserves the legacy best-effort API for non-accounting callers.
+func UpdateChannelUsedQuota(id int, quota int) {
+	if err := UpdateChannelUsedQuotaWithError(id, quota); err != nil {
+		common.SysLog(common.LogText("failed to update channel used quota: %s", err.Error()))
+	}
 }
 
 // updateChannelUsedQuota 返回错误而不是吞掉：批量写路径（model/utils.go 的
