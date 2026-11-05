@@ -409,6 +409,9 @@ func TaskGetAllTasks(startIdx int, num int, queryParams SyncTaskQueryParams) []*
 
 func GetTimedOutUnfinishedTasks(cutoffUnix int64, limit int) []*Task {
 	var tasks []*Task
+	if limit <= 0 {
+		limit = 100
+	}
 	err := DB.Where("COALESCE(progress, '') <> ?", "100%").
 		Where("status NOT IN ?", []string{TaskStatusFailure, TaskStatusSuccess}).
 		Where("submit_time < ?", cutoffUnix).
@@ -423,6 +426,9 @@ func GetTimedOutUnfinishedTasks(cutoffUnix int64, limit int) []*Task {
 
 func GetAllUnFinishSyncTasks(limit int) []*Task {
 	var tasks []*Task
+	if limit <= 0 {
+		limit = 100
+	}
 	var err error
 	// get all tasks progress is not 100%
 	err = DB.Where("COALESCE(progress, '') <> ?", "100%").Where("status NOT IN ?", []string{TaskStatusFailure, TaskStatusSuccess}).Limit(limit).Order("id").Find(&tasks).Error
