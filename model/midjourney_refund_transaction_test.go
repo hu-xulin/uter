@@ -190,3 +190,33 @@ func TestRefundMidjourneyTaskBillingQuarantinesMissingToken(t *testing.T) {
 	require.NoError(t, DB.Where("midjourney_task_id = ?", task.Id).First(&op).Error)
 	assert.Equal(t, MidjourneyRefundReconciliationRequired, op.Status)
 }
+
+func TestMarkMidjourneyRefundReconciliationRequiresTaskRowUpdate(t *testing.T) {
+	truncateTables(t)
+	require.NoError(t, DB.AutoMigrate(&Midjourney{}, &MidjourneyRefundOperation{}, &MidjourneyRefundOutbox{}))
+
+	missingTask := &Midjourney{
+		Id: 999999,
+		UserId: 1,
+		TokenId: 0,
+		BillingChannelId: 1,
+	}
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		return markMidjourneyRefundReconciliationTx(
+			tx,
+			missingTask,
+			"test_missing_task",
+			"task row must exist",
+			map[string]any{"task_id": missingTask.Id},
+		)
+	})
+	require.ErrorContains(t, err, "task state was not persisted")
+
+	var operationCount int64
+	require.NoError(t, DB.Model(&MidjourneyRefundOperation{}).Where("midjourney_task_id = ?", missingTask.Id).Count(&operationCount).Error)
+	assert.Zero(t, operationCount, "the operation and outbox must roll back when the task state cannot be persisted")
+
+	var outboxCount int64
+	require.NoError(t, DB.Model(&MidjourneyRefundOutbox{}).Where("event_key = ?", "midjourney:999999:refund-reconciliation").Count(&outboxCount).Error)
+	assert.Zero(t, outboxCount)
+}
