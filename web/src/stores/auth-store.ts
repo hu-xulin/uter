@@ -18,71 +18,24 @@ For commercial licensing, please contact support@uter.ai
 */
 import { create } from 'zustand'
 
-import type { LoginChallenge } from '@/features/auth/secure-verification/types'
+import type {
+  AuthBootstrapState,
+  AuthBundle,
+  AuthUser,
+  LoginSession,
+  PendingLoginVerification,
+} from '@/types/auth'
 import type { AdminCapabilities } from '@/lib/admin-permissions'
 
-export type UserPermissions = {
-  sidebar_settings?: boolean
-  sidebar_modules?: Record<string, unknown>
-  admin_permissions?: AdminCapabilities
-}
-
-export interface AuthUser {
-  has_password?: boolean
-  id: number
-  username: string
-  display_name?: string
-  email?: string
-  role: number
-  status?: number
-  group?: string
-  organization_id?: number
-  org_role?: string
-  quota?: number
-  used_quota?: number
-  request_count?: number
-  aff_code?: string
-  aff_count?: number
-  aff_quota?: number
-  aff_history_quota?: number
-  inviter_id?: number
-  github_id?: string
-  discord_id?: string
-  oidc_id?: string
-  telegram_id?: string
-  linux_do_id?: string
-  language?: string
-  setting?: Record<string, unknown> | string
-  stripe_customer?: string
-  sidebar_modules?: string
-  permissions?: UserPermissions
-}
-
-export interface LoginSession {
-  sid: string
-  current: boolean
-  login_method: string
-  ip: string
-  user_agent: string
-  created_at: number
-  last_active_at: number
-  expires_at: number
-}
-
-export interface AuthBundle {
-  access_token: string
-  token_type: 'Bearer' | string
-  access_expires_at: number
-  user: AuthUser
-  session: LoginSession
-}
-
-export type AuthBootstrapState = 'idle' | 'checking' | 'complete'
-
-export interface PendingLoginVerification {
-  challenge: LoginChallenge
-  redirectTo?: string
-}
+// Compatibility exports: shared contracts are owned by @/types/auth.
+export type {
+  AuthBootstrapState,
+  AuthBundle,
+  AuthUser,
+  LoginSession,
+  PendingLoginVerification,
+  UserPermissions,
+} from '@/types/auth'
 
 interface AuthState {
   auth: {
