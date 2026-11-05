@@ -38,7 +38,9 @@ class UaesIntegrationCheckTest < Minitest::Test
         ".agents/rules/billing.md"
       ].join("\n"),
       ".agents/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
-      ".claude/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED"
+      ".claude/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
+      ".agents/skills/i18n-translate/SKILL.md" => "Canonical i18n skill",
+      ".claude/skills/i18n-translate/SKILL.md" => "Read .agents/skills/i18n-translate/SKILL.md"
     }
     paths.each do |relative, body|
       path = File.join(root, relative)
@@ -83,4 +85,14 @@ class UaesIntegrationCheckTest < Minitest::Test
   ensure
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
+  def test_fails_when_canonical_skill_adapter_is_missing
+    root = fixture
+    FileUtils.rm(File.join(root, ".claude/skills/i18n-translate/SKILL.md"))
+    _out, err, status = run_checker(root)
+    refute status.success?
+    assert_match(/missing or empty/, err)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+
 end
