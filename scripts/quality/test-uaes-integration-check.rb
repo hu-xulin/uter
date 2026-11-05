@@ -13,6 +13,18 @@ class UaesIntegrationCheckTest < Minitest::Test
   def fixture
     root = Dir.mktmpdir("uter-uaes-integration-")
     paths = {
+      ".uaes/agent-governance.yaml" => <<~YAML,
+        repository:
+          max_non_main_branches: 1
+        permission_profiles:
+          pull_request_creator:
+            deny:
+              - git.merge
+              - production.database.write
+              - payment.configuration.write
+              - overwrite.user_uncommitted_changes
+      YAML
+      ".ai/task-schema.json" => "{\n  \"version\": \"1.0.0\"\n}",
       ".uaes/INTEGRATION.md" => <<~MD,
         # UAES Integration Contract
         Status: MIGRATION_PENDING
