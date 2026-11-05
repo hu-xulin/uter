@@ -326,6 +326,13 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 		// A zero quota is a successful no-op only when the durable billing
 		// state is not an in-flight or quarantined operation. A claimed refund
 		// also sets quota to zero before the ledger work is complete.
+		if task.TaskID == "" {
+			return false
+		}
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh zero-quota task %s billing state: %s", task.TaskID, err.Error()))
+			return false
+		}
 		switch task.BillingState {
 		case "", model.TaskBillingPending, model.TaskBillingReserved, model.TaskBillingSettled, model.TaskBillingRefunded:
 			return true
