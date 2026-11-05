@@ -109,3 +109,16 @@ Uter CI run 41970513914 passed all 8 jobs at implementation source commit `422ca
 A source-grounded draft contract is maintained in `.uaes/MIDJOURNEY-REFUND-TRANSACTION-DESIGN-2026-11-05.md` (Uter PR #18). It defines the required immutable billing snapshot, local-task refund idempotency, one-primary-DB transaction boundary, transaction-aware accounting helpers, LOG_DB outbox delivery, independent recovery, controller terminal-failure handling, legacy migration safeguards, and crash/concurrency/dialect verification matrix.
 
 **Mapping status: DESIGN DRAFT / NOT IMPLEMENTED / NOT VERIFIED.** The contract deliberately leaves organization-funded Midjourney behavior, subscription funding support, partial-charge semantics, historical backfill, and retry/alert thresholds unresolved pending owner decisions. No billing behavior or production data was changed by the design PR.
+### 2026-11-05 refund and task-billing implementation evidence
+
+| Control area | Implementation evidence | Status / limitation |
+|---|---|---|
+| Midjourney refund transaction | PR #19/#20: `model/midjourney_refund_operation.go`, `model/midjourney_refund_outbox.go`, `model/midjourney_refund_transaction.go`; transaction-level wallet/Token/usage/task-state updates and durable reconciliation-required snapshots. | PARTIAL — exact-head CI and crash/concurrency/dialect acceptance pending. |
+| Refund recovery | PR #19/#20: `FindPendingMidjourneyRefundTaskIDs`, `controller/midjourney_refund_recovery_task.go`, registered independent SystemTask handler. | PARTIAL — multi-instance lease and restart acceptance pending. |
+| Refund log delivery | PR #19/#20: `model/midjourney_refund_log_outbox.go`; SQL LOG_DB receipt keyed by event key, SHA-256 payload identity, receipt+log transaction, retry/backoff/dead-letter. | PARTIAL — ClickHouse adapter is deliberately fail-closed and not implemented; SQL dialect matrix and operational replay tooling remain open. |
+| Generic task-billing CAS | PR #17/#19/#20: retry-count increment is part of the same conditional UPDATE; reconciliation writes only from nonterminal states; zero-quota refunds re-read durable state. | PARTIAL — new regression tests are awaiting exact-head CI. |
+| Refund result contract and polling liveness | PR #17/#19/#20: lost refund claims return success only when durable state is refunded; snapshot read errors fail closed; polling and local terminal cleanup continue without adapter registry. | PARTIAL — full restart/concurrency tests remain open. |
+| Violation fee ordering | PR #17/#19/#20: `relay/request_billing.go` waits for the asynchronous refund via optional `relaycommon.RefundWaiter` before applying a violation fee. | PARTIAL — regression test and exact-head CI pending. |
+| Malformed Midjourney action parsing | PR #17/#19/#20: `ConvertSimpleChangeParams` uses whitespace-safe tokenization and validates action length before indexing. | PARTIAL — malformed-input regression suite and exact-head CI pending. |
+
+These changes remain in unmerged Draft PRs. Passing individual CI jobs does not make these controls VERIFIED. No production configuration, production database, or payment credentials were changed.
