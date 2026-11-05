@@ -720,7 +720,7 @@ func TestRunTaskPollingOnceDoesNotRefundHistoricalFailedTask(t *testing.T) {
 	task.TaskID = "historical_failed_already_refunded"
 	task.Status = model.TaskStatusFailure
 	task.Progress = "100%"
-	task.SubmitTime = time.Now().Add(-90 * 24 * time.Hour).Unix()
+	task.SubmitTime = model.TaskRefundLegacyCutoff - 24*60*60 // fixed instant before the 2026-02-22 refund rollout boundary
 	task.UpdatedAt = time.Now().Add(-time.Minute).Unix()
 
 	previousFactory := GetTaskAdaptorFunc
@@ -1125,7 +1125,7 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	assert.Equal(t, 1, summary.NullTasksFailed)
 	var persisted model.Task
 	require.NoError(t, model.DB.First(&persisted, task.ID).Error)
-	assert.Equal(t, model.TaskStatusFailure, persisted.Status)
+	assert.Equal(t, model.TaskStatus("FAILURE"), persisted.Status)
 	assert.Zero(t, persisted.Quota)
 	assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
 	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
