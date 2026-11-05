@@ -237,12 +237,12 @@ This design is not complete implementation evidence. It may be marked implemente
 - UAES traceability links each normative requirement to code, tests, and CI evidence;
 - an independent reviewer approves the implementation.
 
-**Current disposition (updated 2026-11-05):** implementation has started in Uter PR #19 and PR #20. The branches now contain a versioned refund operation/outbox model, a primary-database refund transaction, durable reconciliation cases for ambiguous/missing ledgers, synchronous usage persistence, and an independent Midjourney refund recovery SystemTask. These changes are Draft and their latest CI runs are pending; they are not accepted or production-ready. SQL LOG_DB outbox delivery/receipt idempotency and bounded retry/dead-letter handling are now implemented in Draft PR #19/#20. ClickHouse delivery is deliberately fail-closed pending a dedicated adapter. Crash/concurrency and dialect verification, full controller failure-path coverage, and operational alerting beyond SystemTask failure visibility remain incomplete. No PR has been merged and no production data or deployment was changed.
+**Current disposition (updated 2026-11-05):** implementation is consolidated in the current Uter PR #15 integration branch. The branch contains a versioned refund operation/outbox model, a primary-database refund transaction, durable reconciliation cases for ambiguous/missing ledgers, synchronous usage persistence, and an independent Midjourney refund recovery SystemTask. These changes remain unaccepted and are not production-ready until the current PR #15 head passes the complete quality gates and the required transaction, concurrency, dialect, and controller-path evidence is recorded. SQL LOG_DB outbox delivery/receipt idempotency and bounded retry/dead-letter handling are now implemented in Draft PR #19/#20. ClickHouse delivery is deliberately fail-closed pending a dedicated adapter. Crash/concurrency and dialect verification, full controller failure-path coverage, and operational alerting beyond SystemTask failure visibility remain incomplete. No PR has been merged and no production data or deployment was changed.
 
 
 ## 5.1 Current implementation evidence and limitations (2026-11-05)
 
-Draft PR #19 and PR #20 now include a scheduled outbox delivery worker with:
+The PR #15 integration branch includes a scheduled outbox delivery worker with:
 - atomic conditional claim and a bounded two-minute lease;
 - SQL LOG_DB receipt rows keyed by `event_key`, with a SHA-256 hash of the immutable payload;
 - receipt creation and refund-log insertion in one LOG_DB SQL transaction;
@@ -252,4 +252,4 @@ Draft PR #19 and PR #20 now include a scheduled outbox delivery worker with:
 
 **ClickHouse limitation:** ClickHouse does not provide the transactional unique-receipt semantics used by this SQL adapter. The worker explicitly fails closed for ClickHouse instead of performing an unsafe check-then-insert. Such events retry and eventually enter dead-letter. A ClickHouse-specific insert-deduplication adapter, exact retry semantics, and integration tests are still required before claiming support for ClickHouse LOG_DB.
 
-The above code is Draft and has not passed final CI/acceptance yet. No production configuration is changed by this implementation.
+The above code remains unaccepted until the current PR #15 head passes the complete quality gates and the verification matrix is independently reviewed. No production configuration is changed by this implementation.
