@@ -50,14 +50,26 @@ type MidjourneyRefundOperation struct {
 	CompletedAt int64 `json:"completed_at" gorm:"bigint;not null;default:0"`
 }
 
-func (MidjourneyRefundOperation) TableName() string { return "midjourney_refund_operations" }
+func (MidjourneyRefundOperation) TableName() string {
+	return "midjourney_refund_operations"
+}
 
 func (op *MidjourneyRefundOperation) BeforeCreate(tx *gorm.DB) error {
-	if op == nil { return errors.New("midjourney refund operation is nil") }
-	if op.MidjourneyTaskID <= 0 { return errors.New("midjourney refund operation requires a local task ID") }
-	if op.OperationType == "" { op.OperationType = MidjourneyRefundOperationTypeFull }
-	if op.OperationType != MidjourneyRefundOperationTypeFull { return fmt.Errorf("unsupported Midjourney refund operation type %q", op.OperationType) }
-	if op.IdempotencyKey == "" { op.IdempotencyKey = fmt.Sprintf("midjourney:%d:%s", op.MidjourneyTaskID, op.OperationType) }
+	if op == nil {
+		return errors.New("midjourney refund operation is nil")
+	}
+	if op.MidjourneyTaskID <= 0 {
+		return errors.New("midjourney refund operation requires a local task ID")
+	}
+	if op.OperationType == "" {
+		op.OperationType = MidjourneyRefundOperationTypeFull
+	}
+	if op.OperationType != MidjourneyRefundOperationTypeFull {
+		return fmt.Errorf("unsupported Midjourney refund operation type %q", op.OperationType)
+	}
+	if op.IdempotencyKey == "" {
+		op.IdempotencyKey = fmt.Sprintf("midjourney:%d:%s", op.MidjourneyTaskID, op.OperationType)
+	}
 	if op.ReasonCode == "" || op.FundingSource == "" || !json.Valid([]byte(op.BillingSnapshotJSON)) {
 		return errors.New("midjourney refund operation requires reason, funding source, and valid billing snapshot JSON")
 	}
@@ -67,25 +79,42 @@ func (op *MidjourneyRefundOperation) BeforeCreate(tx *gorm.DB) error {
 	default:
 		return fmt.Errorf("unsupported Midjourney refund funding source %q", op.FundingSource)
 	}
-	if op.BillingVersion <= 0 { return errors.New("billing snapshot version must be positive") }
+	// GORM applies SQL column defaults after BeforeCreate; initialize here so
+	// validation and the persisted snapshot use the same explicit version.
+	if op.BillingVersion == 0 {
+		op.BillingVersion = 1
+	}
+	if op.BillingVersion < 0 {
+		return errors.New("billing snapshot version must be positive")
+	}
 	if op.FundingUserID < 0 || op.FundingOrgID < 0 || op.TokenID < 0 || op.ChannelID < 0 {
 		return errors.New("Midjourney refund snapshot IDs cannot be negative")
 	}
 	if op.WalletAppliedQuota < 0 || op.TokenAppliedQuota < 0 || op.UserUsageApplied < 0 || op.ChannelUsageApplied < 0 {
 		return errors.New("Midjourney refund applied quota amounts cannot be negative")
 	}
-	if op.Status == "" { op.Status = MidjourneyRefundPending }
+	if op.Status == "" {
+		op.Status = MidjourneyRefundPending
+	}
 	if op.Status != MidjourneyRefundPending && op.Status != MidjourneyRefundReconciliationRequired {
 		return fmt.Errorf("invalid initial Midjourney refund operation status %q", op.Status)
 	}
 	now := common.GetTimestamp()
-	if op.CreatedAt == 0 { op.CreatedAt = now }
-	if op.UpdatedAt == 0 { op.UpdatedAt = now }
+	if op.CreatedAt == 0 {
+		op.CreatedAt = now
+	}
+	if op.UpdatedAt == 0 {
+		op.UpdatedAt = now
+	}
 	return nil
 }
 
 func CreateMidjourneyRefundOperationTx(tx *gorm.DB, op *MidjourneyRefundOperation) error {
-	if tx == nil { return errors.New("midjourney refund operation transaction is nil") }
-	if op == nil { return errors.New("midjourney refund operation is nil") }
+	if tx == nil {
+		return errors.New("midjourney refund operation transaction is nil")
+	}
+	if op == nil {
+		return errors.New("midjourney refund operation is nil")
+	}
 	return tx.Create(op).Error
 }
