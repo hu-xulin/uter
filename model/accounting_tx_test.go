@@ -66,6 +66,7 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 	}).Error)
 	channel := Channel{Name: "accounting-tx-rollback", Key: "accounting-tx-rollback-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
+	require.NoError(t, DB.Model(&User{}).Where("id = ?", user.Id).Update("used_quota", 10).Error)
 
 	rollbackErr := errors.New("force rollback")
 	err := DB.Transaction(func(tx *gorm.DB) error {
