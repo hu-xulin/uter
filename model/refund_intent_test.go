@@ -34,7 +34,7 @@ func newRefundIntentFixture(t *testing.T) (User, Token, RefundIntent) {
 		Update("used_quota", 20).Error)
 
 	intent := RefundIntent{
-		UserId:        user.Id,
+		UserId:         user.Id,
 		IdempotencyKey: "test-refund-intent:" + strconv.Itoa(user.Id),
 		FundingSource: RefundSourceWallet,
 		OrgResolved:   true,
