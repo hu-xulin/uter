@@ -26,21 +26,21 @@ func createMidjourneyRefundFixture(t *testing.T, tokenApplied bool) (*User, *Tok
 		tokenID = token.Id
 		require.NoError(t, DB.Model(&Token{}).Where("id = ?", token.Id).Updates(map[string]any{
 			"remain_quota": 60,
-			"used_quota": 40,
+			"used_quota":   40,
 		}).Error)
 	}
 
 	task := &Midjourney{
-		UserId: user.Id,
-		MjId: "mj-refund-fixture",
-		Quota: 40,
-		TokenId: tokenID,
-		ChannelId: channel.Id,
-		BillingChannelId: channel.Id,
-		BillingVersion: 1,
-		BillingStatus: "applied",
+		UserId:               user.Id,
+		MjId:                 "mj-refund-fixture",
+		Quota:                40,
+		TokenId:              tokenID,
+		ChannelId:            channel.Id,
+		BillingChannelId:     channel.Id,
+		BillingVersion:       1,
+		BillingStatus:        "applied",
 		BillingWalletApplied: true,
-		BillingTokenApplied: tokenApplied,
+		BillingTokenApplied:  tokenApplied,
 	}
 	if !tokenApplied {
 		task.BillingStatus = "partial"
