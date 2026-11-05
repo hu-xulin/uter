@@ -113,7 +113,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	router.SetRelayRouter(engine)
 
 	env := &orgPlatformEnv{
-		testID:   testID,
+		testID:    testID,
 		engine:    engine,
 		db:        database,
 		users:     map[string]*model.User{},
