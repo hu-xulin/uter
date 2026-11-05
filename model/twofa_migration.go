@@ -84,12 +84,13 @@ func MigrateTwoFASecretsToEncrypted(batchSize int) (TwoFASecretMigrationResult, 
 				result.Encrypted++
 				continue
 			}
-			if !common.IsSecretEnvelope(rows[i].Secret) {
+			persistedEncrypted, verifyErr := isPersistedTwoFASecretEncrypted(rows[i].Id)
+			if verifyErr != nil || !persistedEncrypted {
 				result.Failed++
 				result.FailedIDs = append(result.FailedIDs, rows[i].Id)
 				common.SysLog(common.LogText(
-					"twofa migration: post-write verification failed user_id=%d twofa_id=%d",
-					rows[i].UserId, rows[i].Id))
+					"twofa migration: post-write database verification failed user_id=%d twofa_id=%d error=%v",
+					rows[i].UserId, rows[i].Id, verifyErr))
 				continue
 			}
 			result.Migrated++
@@ -124,4 +125,22 @@ func loadTwoFASecretBatch(afterID int, limit int) ([]TwoFA, error) {
 		return nil, err
 	}
 	return rows, nil
+}
+
+
+// isPersistedTwoFASecretEncrypted verifies the value read back from the database.
+// Checking rows[i].Secret alone only verifies the in-memory value assigned after
+// UPDATE; a fresh read is required to prove the stored row contains the envelope.
+func isPersistedTwoFASecretEncrypted(id int) (bool, error) {
+	var persisted struct {
+		Secret string
+	}
+	err := DB.Model(&TwoFA{}).
+		Select("secret").
+		Where("id = ?", id).
+		Take(&persisted).Error
+	if err != nil {
+		return false, err
+	}
+	return common.IsSecretEnvelope(persisted.Secret), nil
 }
