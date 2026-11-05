@@ -1,6 +1,8 @@
 package model
 
 import (
+	"errors"
+
 	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
 )
