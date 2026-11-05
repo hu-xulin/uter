@@ -45,8 +45,8 @@ var errRefundIntentAlreadyDone = errors.New("refund intent already done")
 type RefundIntent struct {
 	Id             int    `gorm:"primaryKey"`
 	IdempotencyKey string `gorm:"size:128;not null;uniqueIndex"`
-	UserId        int    `gorm:"index"`
-	FundingSource string `gorm:"size:16"` // wallet | subscription
+	UserId         int    `gorm:"index"`
+	FundingSource  string `gorm:"size:16"` // wallet | subscription
 	// 钱包出资：OrgResolved=false 表示出资归属尚未解析，不可执行（防止把组织
 	// 预扣退成个人余额）；OrgId>0 表示组织共享预算出资。
 	OrgResolved  bool
