@@ -107,7 +107,15 @@ func batchUpdate() {
 		for key, value := range store {
 			switch i {
 			case BatchUpdateTypeTokenQuota:
-				if err := increaseTokenQuota(key, value); err != nil {
+				// The accumulator stores signed deltas: positive refunds increase
+				// remain_quota; negative charges decrease it and increase used_quota.
+				var err error
+				if value > 0 {
+					err = increaseTokenQuota(key, value)
+				} else if value < 0 {
+					err = decreaseTokenQuota(key, -value)
+				}
+				if err != nil {
 					common.SysLog("failed to batch update token quota, requeueing: " + err.Error())
 					requeueBatchUpdate(i, key, value)
 					continue
