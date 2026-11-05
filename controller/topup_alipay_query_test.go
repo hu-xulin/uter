@@ -20,6 +20,7 @@ For commercial licensing, please contact support@uter.ai
 package controller
 
 import (
+	"context"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -42,6 +43,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
@@ -341,4 +343,36 @@ func TestQueryAlipayOrderExpiresClosedTrade(t *testing.T) {
 	var reloaded model.User
 	require.NoError(t, db.First(&reloaded, user.Id).Error)
 	assert.Zero(t, reloaded.Quota)
+}
+
+func TestApplyAlipayQueryResultRejectsOrderAndCurrencyMismatch(t *testing.T) {
+	db := setupAlipayQueryEnv(t, func(outTradeNo string) string {
+		return fmt.Sprintf(`{"code":"10000","msg":"Success","trade_status":"TRADE_SUCCESS","total_amount":"10.00","out_trade_no":%q}`, outTradeNo)
+	})
+	user := &model.User{Username: "alipay_query_snapshot_guard", AffCode: "aqsnap", Status: common.UserStatusEnabled}
+	require.NoError(t, db.Create(user).Error)
+
+	t.Run("wrong returned order number", func(t *testing.T) {
+		order := alipayQueryOrder(t, db, user.Id, "ALIPAY-QUERY-ORDER-GUARD", 2, 10, 1000)
+		status := applyAlipayQueryResult(context.Background(), order, &service.AlipayQueryResult{
+			TradeStatus: "TRADE_SUCCESS", TotalAmount: "10.00", OutTradeNo: "ANOTHER-ORDER",
+		}, "127.0.0.1")
+		require.Equal(t, AlipayReconcileAmountMismatch, status)
+		var stored model.TopUp
+		require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
+		require.Equal(t, common.TopUpStatusPending, stored.Status)
+	})
+
+	t.Run("non-CNY snapshot", func(t *testing.T) {
+		order := alipayQueryOrder(t, db, user.Id, "ALIPAY-QUERY-CURRENCY-GUARD", 2, 10, 1000)
+		require.NoError(t, db.Model(&model.TopUp{}).Where("id = ?", order.Id).Update("provider_currency", "USD").Error)
+		order.ProviderCurrency = "USD"
+		status := applyAlipayQueryResult(context.Background(), order, &service.AlipayQueryResult{
+			TradeStatus: "TRADE_SUCCESS", TotalAmount: "10.00", OutTradeNo: order.TradeNo,
+		}, "127.0.0.1")
+		require.Equal(t, AlipayReconcileAmountMismatch, status)
+		var stored model.TopUp
+		require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
+		require.Equal(t, common.TopUpStatusPending, stored.Status)
+	})
 }
