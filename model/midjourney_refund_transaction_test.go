@@ -221,3 +221,28 @@ func TestMarkMidjourneyRefundReconciliationRequiresTaskRowUpdate(t *testing.T) {
 	require.NoError(t, DB.Model(&MidjourneyRefundOutbox{}).Where("event_key = ?", "midjourney:999999:refund-reconciliation").Count(&outboxCount).Error)
 	assert.Zero(t, outboxCount)
 }
+
+func TestRefundMidjourneyTaskBillingQuarantinesZeroQuotaTokenOnlyPartialCharge(t *testing.T) {
+	user, token, _, task := createMidjourneyRefundFixture(t, true)
+	require.NoError(t, DB.Model(&Midjourney{}).Where("id = ?", task.Id).Updates(map[string]any{
+		"quota": 0,
+		"billing_status": "partial",
+		"billing_wallet_applied": false,
+		"billing_token_applied": true,
+	}).Error)
+
+	err := RefundMidjourneyTaskBilling(task.Id, "zero-quota token-only partial charge")
+	require.ErrorIs(t, err, ErrMidjourneyRefundReconciliationRequired)
+	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
+	storedToken := getTokenFromDB(t, token.Id)
+	assert.Equal(t, 60, storedToken.RemainQuota)
+	assert.Equal(t, 40, storedToken.UsedQuota)
+
+	var storedTask Midjourney
+	require.NoError(t, DB.First(&storedTask, task.Id).Error)
+	assert.Equal(t, "reconciliation_required", storedTask.BillingStatus)
+
+	var operation MidjourneyRefundOperation
+	require.NoError(t, DB.Where("midjourney_task_id = ?", task.Id).First(&operation).Error)
+	assert.Equal(t, MidjourneyRefundReconciliationRequired, operation.Status)
+}
