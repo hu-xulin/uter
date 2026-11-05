@@ -9,6 +9,9 @@
 #   4. AGENTS.md 含规范入口节（AI Spec System / Task routing / Branch strategy）。
 #   5. AGENTS.md 引用的 docs/ai-specs/... 路径全部真实存在。
 #   6. CONFLICT-REPORT.md 在库且被 AGENTS.md 引用。
+#   7. 十份域规范均登记版本、状态、更新时间与维护责任。
+#   8. .ai/README.md 不得引用已废弃的 design-system.md 路径。
+#   9. ADR 目录、索引和至少一份已批准决策记录存在。
 #
 # 退出码：0=全部通过；1=存在缺失/篡改。由 scripts/quality/uter-quality.sh 调用。
 
@@ -33,6 +36,10 @@ for s in $DOMAIN_SPECS; do
   fi
   grep -q '^## 1\. 规范目标' "$f" || fail "$s-STANDARD.md 缺少「规范目标」节（可能被截断/改写）"
   grep -q '完成定义' "$f" || fail "$s-STANDARD.md 缺少「完成定义」节（可能被截断/改写）"
+  grep -Fq '**规范版本：**' "$f" || fail "$s-STANDARD.md 缺少规范版本"
+  grep -Fq '**规范状态：** Active' "$f" || fail "$s-STANDARD.md 缺少 Active 状态"
+  grep -Fq '**最后更新：**' "$f" || fail "$s-STANDARD.md 缺少最后更新时间"
+  grep -Fq '**维护责任：**' "$f" || fail "$s-STANDARD.md 缺少维护责任人"
 done
 
 # ── 2. engineering-quality 组 ────────────────────────────────────────
@@ -70,8 +77,27 @@ for p in $(grep -o 'docs/ai-specs/[A-Za-z0-9_./-]*' "$AGENTS" | sort -u); do
   [ -e "$ROOT/$p" ] || fail "AGENTS.md 引用了不存在的路径：$p"
 done
 
-# ── 6. 冲突报告在库 ──────────────────────────────────────────────────
+# ── 6. 冲突报告与知识引用 ────────────────────────────────────────────
 [ -s "$SPECS/CONFLICT-REPORT.md" ] || fail "冲突检查报告缺失：$SPECS/CONFLICT-REPORT.md"
+AI_README="$ROOT/.ai/README.md"
+if grep -Fq '`design-system.md`' "$AI_README"; then
+  fail ".ai/README.md 仍引用已废弃的 design-system.md 路径"
+fi
+
+# ── 7. ADR 注册与决策记录 ────────────────────────────────────────────
+ADR_DIR="$ROOT/docs/adr"
+[ -s "$ADR_DIR/README.md" ] || fail "ADR 注册索引缺失：docs/adr/README.md"
+[ -s "$ADR_DIR/0001-uter-design-system-single-source-of-truth.md" ] || fail "ADR-0001 缺失"
+if [ -s "$ADR_DIR/0001-uter-design-system-single-source-of-truth.md" ]; then
+  grep -q '^status: Accepted
+
+if [ "$errors" -gt 0 ]; then
+  echo "ai-specs-check: $errors 项不通过"
+  exit 1
+fi
+echo "ai-specs-check: 通过（10 域规范 + 4 质量规范 + 入口节 + 引用完整性）"
+ "$ADR_DIR/0001-uter-design-system-single-source-of-truth.md" || fail "ADR-0001 未标记 Accepted"
+fi
 
 if [ "$errors" -gt 0 ]; then
   echo "ai-specs-check: $errors 项不通过"
