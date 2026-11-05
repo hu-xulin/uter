@@ -246,6 +246,36 @@ approval_rules:
   task_scope_expansion:
     effect: "require_human_approval"
 
+workspace_protection:
+  preflight_required: true
+  preserve_preexisting_tracked_changes: true
+  preserve_untracked_files: true
+  explicit_path_staging_only: true
+  forbid_git_add_all: true
+  forbid_git_clean: true
+  forbid_force_push: true
+  overwrite_user_changes: false
+
+multi_agent_coordination:
+  task_id_unique: true
+  task_claim_required: true
+  delegated_authorization_must_not_expand: true
+  result_handoff_required: true
+  shared_resource_write_lock_required: true
+  max_concurrent_writers_per_resource: 1
+  conflicting_write_effect: "BLOCKED"
+  duplicate_task_effect: "DENY"
+
+manual_intervention_triggers:
+  - authorization_conflict
+  - approval_required
+  - production_or_real_payment_scope
+  - unconfirmed_irreversible_operation
+  - critical_business_rule_ambiguity
+  - verification_failure_with_damage_risk
+  - agent_cannot_resume_from_checkpoint
+  - unresolved_governance_conflict
+
 authorization_dimensions:
   required:
     - subject
