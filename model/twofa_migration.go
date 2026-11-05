@@ -80,8 +80,18 @@ func MigrateTwoFASecretsToEncrypted(batchSize int) (TwoFASecretMigrationResult, 
 			}
 			if !migrated {
 				// 条件 UPDATE 没命中：这一行在读取之后被改过了（另一轮迁移或
-				// 用户正在重新绑定）。不算失败，下一轮会重新读到最新值。
-				result.Encrypted++
+				// 用户正在重新绑定）。只有重新读取确认当前值已是密文，才能计为
+				// Encrypted；若仍是明文则记录失败，留待下一次迁移调用重试。
+				persistedEncrypted, verifyErr := isPersistedTwoFASecretEncrypted(rows[i].Id)
+				if verifyErr == nil && persistedEncrypted {
+					result.Encrypted++
+					continue
+				}
+				result.Failed++
+				result.FailedIDs = append(result.FailedIDs, rows[i].Id)
+				common.SysLog(common.LogText(
+					"twofa migration: concurrent update left secret unverified user_id=%d twofa_id=%d error=%v",
+					rows[i].UserId, rows[i].Id, verifyErr))
 				continue
 			}
 			persistedEncrypted, verifyErr := isPersistedTwoFASecretEncrypted(rows[i].Id)
