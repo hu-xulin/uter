@@ -301,3 +301,29 @@ func TestTwoFASecretColumnRejectsOversizedCiphertext(t *testing.T) {
 	require.NoError(t, record.SetPlainSecret(longest))
 	assert.Less(t, len(record.Secret), 255, "密文必须能放进 varchar(255)")
 }
+
+
+// TestTwoFAPersistedSecretVerificationReadsDatabaseState proves the migration
+// verifier inspects a fresh database read rather than the in-memory model value.
+func TestTwoFAPersistedSecretVerificationReadsDatabaseState(t *testing.T) {
+	twoFASecretFixture(t)
+	user := createTwoFATestUser(t, "twofa-persisted-verification")
+	legacy := seedTwoFAWithPlainSecret(t, user.Id, "JBSWY3DPEHPK3PXP")
+
+	verified, err := isPersistedTwoFASecretEncrypted(legacy.Id)
+	require.NoError(t, err)
+	assert.False(t, verified, "a plaintext value in the database must fail verification")
+
+	encrypted := TwoFA{Id: legacy.Id, UserId: user.Id}
+	require.NoError(t, encrypted.SetPlainSecret("JBSWY3DPEHPK3PXP"))
+	require.NoError(t, DB.Model(&TwoFA{}).Where("id = ?", legacy.Id).Update("secret", encrypted.Secret).Error)
+
+	verified, err = isPersistedTwoFASecretEncrypted(legacy.Id)
+	require.NoError(t, err)
+	assert.True(t, verified, "a persisted encrypted envelope must pass verification")
+
+	require.NoError(t, DB.Model(&TwoFA{}).Where("id = ?", legacy.Id).Update("secret", "tampered-plaintext").Error)
+	verified, err = isPersistedTwoFASecretEncrypted(legacy.Id)
+	require.NoError(t, err)
+	assert.False(t, verified, "verification must detect a later plaintext/tampered database value")
+}
