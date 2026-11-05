@@ -62,7 +62,10 @@ for canonical_skill in "$ROOT"/.agents/skills/*/SKILL.md; do
   skill_name="$(basename "$(dirname "$canonical_skill")")"
   [[ "$skill_name" == "uaes-integration" ]] && continue
   adapter="$ROOT/.claude/skills/$skill_name/SKILL.md"
+  require_text "$canonical_skill" "name: $skill_name"
   require_file "$adapter"
+  require_text "$adapter" "name: $skill_name"
+  require_text "$adapter" "description:"
   require_text "$adapter" ".agents/skills/$skill_name/SKILL.md"
 done
 
