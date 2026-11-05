@@ -33,7 +33,7 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	event := MidjourneyRefundOutbox{
 		EventKey:    "midjourney:123:refund-log",
 		EventType:   "midjourney.refund.completed",
-		PayloadJSON: `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
+		PayloadJSON:       `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(event))
 	require.NoError(t, deliverMidjourneyRefundLog(event))
@@ -45,7 +45,7 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	reconciliation := MidjourneyRefundOutbox{
 		EventKey:    "midjourney:124:refund-reconciliation",
 		EventType:   "midjourney.refund.reconciliation_required",
-		PayloadJSON: `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
+		PayloadJSON:       `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(reconciliation))
 
@@ -79,7 +79,7 @@ func TestMidjourneyRefundOutboxLeaseIsExclusive(t *testing.T) {
 		EventKey:          "midjourney:456:refund-log",
 		RefundOperationID: 1,
 		EventType:         "midjourney.refund.completed",
-		PayloadJSON: `{"task_id":456,"mj_id":"mj-task-456","user_id":1,"quota":10,"result":"refunded"}`,
+		PayloadJSON:       `{"task_id":456,"mj_id":"mj-task-456","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&event).Error)
 
@@ -94,7 +94,6 @@ func TestMidjourneyRefundOutboxLeaseIsExclusive(t *testing.T) {
 	require.NoError(t, db.First(&persisted, first.ID).Error)
 	require.Equal(t, MidjourneyRefundOutboxDelivered, persisted.Status)
 }
-
 
 func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
