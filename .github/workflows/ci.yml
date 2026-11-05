@@ -102,6 +102,10 @@ jobs:
           if [ -n "$unformatted" ]; then
             echo "以下文件未通过 gofmt，请执行 gofmt -w 后提交："
             echo "$unformatted"
+            echo "gofmt version:"
+            go version
+            echo "Formatting diff:"
+            gofmt -d $unformatted
             exit 1
           fi
 
