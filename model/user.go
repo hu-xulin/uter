@@ -1721,13 +1721,17 @@ func admissionQuotaLowWater() int {
  // adjustments are guarded against underflow instead of silently clamping the
  // ledger to zero; billing workflows must surface an inconsistent snapshot.
 func AdjustUserUsedQuota(id int, delta int) error {
-	if id <= 0 {
-		return fmt.Errorf("user ID must be positive")
+	return adjustUserUsedQuotaTx(DB, id, delta)
+}
+
+func adjustUserUsedQuotaTx(tx *gorm.DB, id int, delta int) error {
+	if tx == nil || id <= 0 {
+		return fmt.Errorf("user usage adjustment requires a transaction and positive user ID")
 	}
 	if delta == 0 {
 		return nil
 	}
-	query := DB.Model(&User{}).Where("id = ?", id)
+	query := tx.Model(&User{}).Where("id = ?", id)
 	if delta < 0 {
 		query = query.Where("used_quota >= ?", -delta)
 	}
@@ -1739,7 +1743,7 @@ func AdjustUserUsedQuota(id int, delta int) error {
 		return nil
 	}
 	var count int64
-	if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+	if err := tx.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
 		return err
 	}
 	if count == 0 {
