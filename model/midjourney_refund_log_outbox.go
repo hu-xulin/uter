@@ -31,13 +31,13 @@ func (MidjourneyRefundLogReceipt) TableName() string {
 }
 
 type midjourneyRefundLogPayload struct {
-	TaskID    int    `json:"task_id"`
-	MjID      string `json:"mj_id"`
-	UserID    int    `json:"user_id"`
-	TokenID   int    `json:"token_id"`
-	ChannelID int    `json:"channel_id"`
-	Quota     int    `json:"quota"`
-	Reason    string `json:"reason"`
+	TaskID     int    `json:"task_id"`
+	MjID       string `json:"mj_id"`
+	UserID     int    `json:"user_id"`
+	TokenID    int    `json:"token_id"`
+	ChannelID  int    `json:"channel_id"`
+	Quota      int    `json:"quota"`
+	Reason     string `json:"reason"`
 	Result     string `json:"result"`
 	Status     string `json:"status"`
 	ReasonCode string `json:"reason_code"`
