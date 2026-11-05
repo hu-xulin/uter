@@ -159,7 +159,7 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			}
 			return err
 		}
-		if user.UsedQuota < quota || channel.UsedQuota < quota {
+		if user.UsedQuota < quota || channel.UsedQuota < int64(quota) {
 			if err := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_usage_mismatch", "recorded usage is smaller than the refund reversal", snapshot); err != nil {
 				return err
 			}
