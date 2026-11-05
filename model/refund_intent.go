@@ -67,16 +67,52 @@ type RefundIntent struct {
 func (RefundIntent) TableName() string { return "refund_intents" }
 
 // CreateRefundIntent 落一条 pending 凭证，返回后即可安全地把退款交给后台执行。
+func validateRefundIntent(intent *RefundIntent) error {
+	if intent == nil || intent.UserId <= 0 {
+		return errors.New("refund intent requires a positive user id")
+	}
+	if intent.WalletAmount < 0 || intent.SubExtra < 0 || intent.TokenConsumed < 0 {
+		return errors.New("refund intent amounts cannot be negative")
+	}
+	if intent.TokenConsumed > 0 && intent.TokenId <= 0 {
+		return errors.New("refund intent token amount requires a positive token id")
+	}
+	switch intent.FundingSource {
+	case RefundSourceWallet:
+		if intent.SubRequestId != "" || intent.SubId != 0 || intent.SubExtra != 0 {
+			return errors.New("wallet refund intent cannot contain subscription fields")
+		}
+		if intent.WalletAmount > 0 && (!intent.OrgResolved || intent.OrgId < 0) {
+			return errors.New("wallet refund intent requires a resolved, non-negative funding organization")
+		}
+	case RefundSourceSubscription:
+		if intent.WalletAmount != 0 || intent.OrgResolved || intent.OrgId != 0 {
+			return errors.New("subscription refund intent cannot contain wallet fields")
+		}
+		if intent.SubRequestId == "" {
+			return errors.New("subscription refund intent requires an idempotency request id")
+		}
+		if intent.SubExtra > 0 && intent.SubId <= 0 {
+			return errors.New("subscription extra refund requires a positive subscription id")
+		}
+	default:
+		return fmt.Errorf("unknown refund funding source %q", intent.FundingSource)
+	}
+	return nil
+}
+
+// CreateRefundIntent persists only a valid pending recovery credential.
 func CreateRefundIntent(intent *RefundIntent) error {
-	if intent == nil || intent.UserId == 0 {
-		return errors.New("refund intent requires a user id")
+	if err := validateRefundIntent(intent); err != nil {
+		return err
+	}
+	if intent.Status != "" && intent.Status != RefundIntentPending {
+		return fmt.Errorf("invalid initial refund intent status %q", intent.Status)
 	}
 	now := common.GetTimestamp()
 	intent.CreateTime = now
 	intent.UpdateTime = now
-	if intent.Status == "" {
-		intent.Status = RefundIntentPending
-	}
+	intent.Status = RefundIntentPending
 	return DB.Create(intent).Error
 }
 
@@ -90,8 +126,11 @@ func ExecuteRefundIntent(id int) error {
 	if intent.Status == RefundIntentDone {
 		return nil
 	}
-	if intent.FundingSource != RefundSourceWallet && intent.FundingSource != RefundSourceSubscription {
-		return fmt.Errorf("refund intent %d has unknown funding source %q", id, intent.FundingSource)
+	if intent.Status != RefundIntentPending {
+		return fmt.Errorf("refund intent %d has invalid executable status %q", id, intent.Status)
+	}
+	if err := validateRefundIntent(&intent); err != nil {
+		return fmt.Errorf("refund intent %d is invalid: %w", id, err)
 	}
 	// 订阅预扣退回：requestId 幂等，重复执行是空操作；放在事务外，失败时
 	// 凭证保持 pending 等待重放。与旧路径（funding.Refund）同一原语。
