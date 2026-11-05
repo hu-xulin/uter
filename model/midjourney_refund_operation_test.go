@@ -8,8 +8,8 @@ import (
 )
 
 func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
-	table: = "midjourney_refund_operations_contract_test"
-	db:    = DB.Table(table)
+	table:= "midjourney_refund_operations_contract_test"
+	db:= DB.Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOperation{}))
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
@@ -46,8 +46,8 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 }
 
 func TestMidjourneyRefundOperationRejectsUnverifiableInput(t *testing.T) {
-	table: = "midjourney_refund_operations_validation_test"
-	db:    = DB.Table(table)
+	table:= "midjourney_refund_operations_validation_test"
+	db:= DB.Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOperation{}))
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
