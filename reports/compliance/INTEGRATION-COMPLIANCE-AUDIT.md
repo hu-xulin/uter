@@ -69,7 +69,7 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 | 8 | Skill 可调用 | 静态 adapter 校验通过 | `test-uaes-integration-check.rb` |
 | 9 | Workflow 可执行 | 未执行真实 workflow | NOT_RUN |
 | 10 | CI 强制 Gate | CI 有 `uaes-integration` job + 本批新增 2 step；未覆盖 UAES L3/L4 | ci.yml |
-| 11 | PR 是否含合规证据 | 本批生成 `reports/compliance/` 24 份 | 本目录 |
+| 11 | PR 是否含合规证据 | 本批生成 `reports/compliance/` 25 份 | 本目录 |
 | 12 | 规范升级审批 | pin 中 `approval_state: NOT_APPROVED`，校验器禁止 DRAFT 升级 | `uaes-pin-check.sh` |
 | 13 | 冲突处理 | `.uaes/INTEGRATION.md` §2 规定 BLOCKED + 人工裁定 | 契约 |
 | 14 | 规范缺失阻断 | 未实现产品侧 fail-closed 缺失检测 | NOT_RUN |

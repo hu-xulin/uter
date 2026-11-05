@@ -90,5 +90,14 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 2. `go test ./model/` 出现 `no such table: vendor_merge_rules`，与共享 SQLite 跨测试污染一致；单包全量仍失败（`UAES-AUDIT-P09-003` OPEN）。
 3. `./scripts/verify-all.sh --quick` = exit 1（5 PASS / 2 FAIL / 4 SKIP，日志 `/tmp/uter-verify-all-quick.log`）：`GOWORK=off go vet ./...` 因 `main.go:57 pattern all:web/dist/docs-content/_next: no matching files found` 失败，补齐本地 gitignored embed 占位后 4 个模块 vet 全 exit 0；`bun run format:check` 仍有 16 个文件格式债务（`UAES-AUDIT-P06-002` OPEN）。`--quick` 跳过 vitest / build:check / security（4 项 SKIP，不计通过）。
 
+## 真实 GitHub Actions 补充验证（head `6d76c0678`）
+
+run `42056763863` 快照：`Go dependency vulnerability scan` / `Electron desktop secret persistence` = success；`UEQE review engine` = skipped；`UAES integration contract` / `Backend vet, build, and test` / `Backend coverage report` / `Backend race detector` = failure；`Frontend typecheck, tests, lint and production build` 采集时仍 in_progress。
+
+- 本批新增的 4 个 CI step 在真实 runner 上全部 PASS（7 runs/23、6 PASS、10 runs/34、5 PASS），证明规范 pin 与 CI 接线已生效，详见 `CI-VERIFICATION-REPORT.md`。
+- `UAES integration contract` 失败来自既有唯一分支守卫检测到并发新建的第 2 条非 main 分支（PR #31），非本批整改回归，登记 `UAES-AUDIT-P11-003` OPEN。
+- 三个后端 job 失败均指向 `TestFixedPriceBillingDatabaseMatrix/sqlite` 与 `refund intent requires the originating request id`，与 `P02-002` / `P09-002` / `P09-003` 同源；race detector 日志无 `WARNING: DATA RACE`。
+- exact-head CI 未通过，不宣称「CI 全绿」。
+
 ## 禁止事项声明
 未使用 Mock 冒充集成验证、未删除失败测试、未降低门禁阈值、未排除文件/目录、未把 NOT_RUN 记为通过。

@@ -57,7 +57,7 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 
 # 23. REMEDIATION-REPORT — 整改报告
 
-## 本批实际修改文件（7 个代码/契约文件 + 24 份审计报告）
+## 本批实际修改文件（7 个代码/契约文件 + 25 份审计报告）
 | 文件 | 类型 | 作用 |
 |---|---|---|
 | `.uaes/uaes-pin.json` | 新增 | 机器可读规范锁定：version 1.7.0 / status DRAFT / commit 9b1f5f1 / blob a73447a7 / approval NOT_APPROVED |
@@ -67,7 +67,7 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 | `scripts/quality/uaes-integration-check.sh` | 修改 | 移除硬编码 SHA，改从 pin 动态读取，消除漂移检测盲区 |
 | `scripts/quality/test-uaes-integration-check.rb` | 修改 | fixture 增加 pin.json，保持 7 个既有测试通过 |
 | `.github/workflows/ci.yml` | 修改 | `uaes-integration` job 新增 2 个 pin 门禁 step |
-| `reports/compliance/*.md` | 新增 24 份 | 审计证据与交付物 |
+| `reports/compliance/*.md` | 新增 25 份 | 审计证据与交付物（含 `CI-VERIFICATION-REPORT.md`） |
 
 ## 回归证据（真实）
 - `bash -n` 两个脚本 → exit 0
@@ -81,6 +81,7 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 - `bun run typecheck` → exit 0；`lint:design:strict` / `copyright:check` PASS
 - `bunx vitest run` 独立重跑 → exit 0，283 files / 3022 tests
 - **失败项（未隐瞒）**：`go test ./controller/` exit 1；`go test ./model/` exit 1；`go test ./service/` 定向 exit 1（11 项）；首次并行 vitest exit 1；`verify-all.sh --quick` exit 1（format:check 未修）
+- **真实 CI 补充（run `42056763863`）**：本批 4 个新增 CI step 全 PASS；`UAES integration contract` job 因并发第 2 条非 main 分支触发既有唯一分支守卫而 FAIL（`P11-003`）；`Backend vet, build, and test` / `Backend coverage report` / `Backend race detector` 均因 `TestFixedPriceBillingDatabaseMatrix/sqlite` 与 `refund intent requires the originating request id` 失败，与既有 `P02-002` 同源。exact-head CI 未通过，详见 `CI-VERIFICATION-REPORT.md`。
 - **环境性修复**：`web/dist/docs-content/_next/placeholder.txt` + `web/dist/index.html`（gitignored，不进提交）后，4 个 Go module 的 `go vet` 全部 exit 0
 
 ## 未修复项与原因
