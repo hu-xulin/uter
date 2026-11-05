@@ -11,7 +11,7 @@
 | UAES phase | Uter current source / implementation | Mapping status | Required next evidence |
 |---|---|---|---|
 | P00 Foundation | AGENTS.md, CLAUDE.md, .ai/AIES.md, docs/ai-specs/, scripts/quality/ai-specs-check.sh | PARTIAL | Reconcile precedence and migrate generic rules after UAES approval |
-| P01 AI Governance | Root agent instructions, task routing, branch strategy, auto-fix permission boundaries, .agents/rules/ | PARTIAL | Machine-readable permission mapping and runtime negative tests |
+| P01 AI Governance | Root agent instructions, `.uaes/agent-governance.yaml`, `.ai/task-schema.json`, P01 policy contract tests, CI single-work-branch check | PARTIAL | Exact-head CI; WorkBuddy/Claude runtime permission denial tests; local dirty-worktree preservation; interruption/resume and multi-agent runtime evidence |
 | P02 Product Engineering | docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md | PRESENT / NOT_VERIFIED | Trace requirements to product acceptance tests and approved business rules |
 | P03 Knowledge Engineering | .ai/ project context and task artifacts; project documentation | PARTIAL | Verified knowledge registry, provenance, freshness, and conflict workflow |
 | P04 System Architecture | docs/ai-specs/ARCHITECTURE-STANDARD.md, root Go modules, web/electron architecture | PRESENT / NOT_VERIFIED | Architecture inventory, module dependency graph, ADR and API/data-flow evidence |
@@ -138,3 +138,12 @@ Regression coverage added in `service/task_billing_funding_test.go` includes org
 **Acceptance status: IMPLEMENTED / TESTS_AUTHORED / RUNTIME_NOT_VERIFIED.** These tests have been committed but have not yet been executed in this environment. Do not mark task-billing acceptance or any UAES phase VERIFIED until the applicable test suites and independent review produce reproducible evidence.
 
 - Personal-wallet task adjustments now request the persisted DB-first quota path, and the regression suite covers both debit and refund persistence.
+
+
+### P01 governance remediation — 2026-11-05
+
+- Added `.uaes/agent-governance.yaml`: fail-closed default, 11 explicit Agent identities/roles, least-privilege profiles, task lifecycle, audit fields, single non-main branch limit, and explicit denials for PR merge, deployment, production database writes, production credentials, and real payment configuration.
+- Extended `.ai/task-schema.json`: R0–R4, requester/Agent identity, scoped authorization, lifecycle history, execution audit, resume checkpoint, and one-work-branch maximum.
+- Aligned `AGENTS.md`, `.ai/AIES.md`, and `CHANGE-MANAGEMENT-STANDARD.md` with the authorized Uter repair workflow: Commit/Push/PR on the one work branch only; no direct main push, force-push, merge, deployment, or production writes.
+- Added `scripts/quality/test-ai-governance-policy.rb` and wired it into the UAES CI job. CI also checks the live GitHub branch inventory and fails when more than one non-main branch exists.
+- **Status: IMPLEMENTED / EXACT-HEAD-CI-PENDING / RUNTIME-UNVERIFIED.** Static policy tests do not prove that WorkBuddy/Claude external tool runtimes enforce the policy. GitHub main branch protection remains unconfigured/unverified because this integration connection does not expose an administrative write operation.
