@@ -69,6 +69,17 @@ func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+// BeforeUpdate prevents changing the event identity or payload after enqueue.
+func (event *MidjourneyRefundOutbox) BeforeUpdate(tx *gorm.DB) error {
+	if tx.Statement.Changed(
+		"EventKey", "RefundOperationID", "EventType", "PayloadVersion",
+		"PayloadJSON", "CreatedAt",
+	) {
+		return errors.New("Midjourney refund outbox event payload is immutable")
+	}
+	return nil
+}
+
 func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) error {
 	if tx == nil {
 		return errors.New("Midjourney refund outbox transaction is nil")
@@ -77,4 +88,31 @@ func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) 
 		return errors.New("Midjourney refund outbox event is nil")
 	}
 	return tx.Create(event).Error
+}
+
+ 
+// CreateMidjourneyRefundOperationWithOutboxTx atomically creates the refund
+// operation and its durable log event. A savepoint prevents an orphaned
+// operation if outbox insertion fails and the caller handles the error.
+func CreateMidjourneyRefundOperationWithOutboxTx(
+	tx *gorm.DB,
+	op *MidjourneyRefundOperation,
+	event *MidjourneyRefundOutbox,
+) error {
+	if tx == nil {
+		return errors.New("Midjourney refund operation/outbox transaction is nil")
+	}
+	if op == nil {
+		return errors.New("Midjourney refund operation is nil")
+	}
+	if event == nil {
+		return errors.New("Midjourney refund outbox event is nil")
+	}
+	return tx.Transaction(func(nestedTx *gorm.DB) error {
+		if err := CreateMidjourneyRefundOperationTx(nestedTx, op); err != nil {
+			return err
+		}
+		event.RefundOperationID = op.ID
+		return CreateMidjourneyRefundOutboxTx(nestedTx, event)
+	})
 }
