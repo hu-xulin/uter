@@ -9,10 +9,10 @@ import (
 
 type midjourneyRefundOutboxHandler struct{}
 
-func (midjourneyRefundOutboxHandler) Type() string { return model.SystemTaskTypeMidjourneyRefundOutbox }
-func (midjourneyRefundOutboxHandler) Enabled() bool { return true }
+func (midjourneyRefundOutboxHandler) Type() string            { return model.SystemTaskTypeMidjourneyRefundOutbox }
+func (midjourneyRefundOutboxHandler) Enabled() bool           { return true }
 func (midjourneyRefundOutboxHandler) Interval() time.Duration { return time.Minute }
-func (midjourneyRefundOutboxHandler) NewPayload() any { return nil }
+func (midjourneyRefundOutboxHandler) NewPayload() any         { return nil }
 
 func (midjourneyRefundOutboxHandler) Run(ctx context.Context, task *model.SystemTask, runnerID string) {
 	result, err := model.ProcessMidjourneyRefundOutboxOnce(ctx, runnerID, 20)
