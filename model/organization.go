@@ -1119,3 +1119,21 @@ func GetOrgMemberUsernamesInDepartment(orgId int, departmentName string, exclude
 	err := query.Pluck("username", &names).Error
 	return names, err
 }
+
+ // AdjustOrgAndMemberUsedQuota keeps the organization budget ledger and its
+ // member usage ledger in one transaction. A failed member adjustment must
+ // never leave only the organization side committed (or vice versa).
+func AdjustOrgAndMemberUsedQuota(orgID, userID int, delta int64) error {
+	if orgID <= 0 || userID <= 0 {
+		return fmt.Errorf("organization/member usage adjustment requires positive IDs")
+	}
+	if delta > int64(^uint(0)>>1) || delta < -int64(^uint(0)>>1)-1 {
+		return fmt.Errorf("organization/member usage delta is outside int range")
+	}
+	return DB.Transaction(func(tx *gorm.DB) error {
+		if err := incrOrgUsedQuotaTx(tx, orgID, delta); err != nil {
+			return err
+		}
+		return adjustUserUsedQuotaTx(tx, userID, int(delta))
+	})
+}
