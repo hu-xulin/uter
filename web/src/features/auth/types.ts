@@ -17,11 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { AuthBundle } from '@/types/auth'
+import type { LoginResult } from './secure-verification/types'
 
 export type { AuthBundle } from '@/types/auth'
 export type { SystemStatus, CustomOAuthProviderInfo } from '@/types/system'
-
-import type { LoginResult } from './secure-verification/types'
 
 // ============================================================================
 // API Payloads
@@ -97,7 +96,6 @@ export interface OAuthProvider {
   clientId?: string
   authEndpoint?: string
 }
-
 
 // ============================================================================
 // Form Props
