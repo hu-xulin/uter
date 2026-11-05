@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/glebarez/sqlite"
-	"github.com/uter-ai/uter/common"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
@@ -31,8 +31,8 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	require.NoError(t, db.AutoMigrate(&Log{}, &User{}, &MidjourneyRefundLogReceipt{}))
 
 	event := MidjourneyRefundOutbox{
-		EventKey: "midjourney:123:refund-log",
-		EventType: "midjourney.refund.completed",
+		EventKey:    "midjourney:123:refund-log",
+		EventType:   "midjourney.refund.completed",
 		PayloadJSON: `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(event))
@@ -43,8 +43,8 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	require.Error(t, deliverMidjourneyRefundLog(mismatched))
 
 	reconciliation := MidjourneyRefundOutbox{
-		EventKey: "midjourney:124:refund-reconciliation",
-		EventType: "midjourney.refund.reconciliation_required",
+		EventKey:    "midjourney:124:refund-reconciliation",
+		EventType:   "midjourney.refund.reconciliation_required",
 		PayloadJSON: `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(reconciliation))
@@ -76,9 +76,9 @@ func TestMidjourneyRefundOutboxLeaseIsExclusive(t *testing.T) {
 	})
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOutbox{}))
 	event := MidjourneyRefundOutbox{
-		EventKey: "midjourney:456:refund-log",
+		EventKey:          "midjourney:456:refund-log",
 		RefundOperationID: 1,
-		EventType: "midjourney.refund.completed",
+		EventType:         "midjourney.refund.completed",
 		PayloadJSON: `{"task_id":456,"mj_id":"mj-task-456","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&event).Error)
@@ -113,9 +113,9 @@ func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOutbox{}))
 
 	transient := MidjourneyRefundOutbox{
-		EventKey: "midjourney:789:refund-log",
+		EventKey:          "midjourney:789:refund-log",
 		RefundOperationID: 1,
-		EventType: "midjourney.refund.completed",
+		EventType:         "midjourney.refund.completed",
 		PayloadJSON: `{"task_id":789,"mj_id":"mj-task-789","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&transient).Error)
@@ -133,7 +133,7 @@ func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 	require.Empty(t, retry.LeaseOwner)
 
 	dead := MidjourneyRefundOutbox{
-		EventKey: "midjourney:790:refund-log",
+		EventKey:          "midjourney:790:refund-log",
 		RefundOperationID: 2,
 		EventType: "midjourney.refund.completed",
 		PayloadJSON: `{"task_id":790,"mj_id":"mj-task-790","user_id":1,"quota":10,"result":"refunded"}`,
