@@ -51,7 +51,7 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 
 	var receipts int64
 	require.NoError(t, db.Model(&MidjourneyRefundLogReceipt{}).Where("event_key = ?", event.EventKey).Count(&receipts).Error)
-	require.EqualValues(t, 2, receipts)
+	require.EqualValues(t, 1, receipts)
 	var logs int64
 	require.NoError(t, db.Model(&Log{}).Where("request_id = ?", event.EventKey).Count(&logs).Error)
 	require.EqualValues(t, 1, logs)
