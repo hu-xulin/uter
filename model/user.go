@@ -1455,17 +1455,26 @@ func DecreaseUserQuota(id int, quota int, db bool) (err error) {
 	if quota < 0 {
 		return errors.New("quota cannot be negative")
 	}
+	if !db && common.BatchUpdateEnabled {
+		addNewRecord(BatchUpdateTypeUserQuota, id, -quota)
+		runCacheSync(func() {
+			if err := cacheDecrUserQuota(id, int64(quota)); err != nil {
+				common.SysLog(common.LogText("failed to decrease user quota: %s", err.Error()))
+			}
+		})
+		return nil
+	}
+	if err := decreaseUserQuota(id, quota); err != nil {
+		return err
+	}
+	// Keep the cache behind the durable ledger: a failed DB decrement must not
+	// make the cache look charged when the persisted wallet was not changed.
 	runCacheSync(func() {
-		err := cacheDecrUserQuota(id, int64(quota))
-		if err != nil {
+		if err := cacheDecrUserQuota(id, int64(quota)); err != nil {
 			common.SysLog(common.LogText("failed to decrease user quota: %s", err.Error()))
 		}
 	})
-	if !db && common.BatchUpdateEnabled {
-		addNewRecord(BatchUpdateTypeUserQuota, id, -quota)
-		return nil
-	}
-	return decreaseUserQuota(id, quota)
+	return nil
 }
 
 func decreaseUserQuota(id int, quota int) (err error) {
