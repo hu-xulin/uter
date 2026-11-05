@@ -256,3 +256,4 @@ func MarkTaskBillingForReconciliation(taskID string, reason string) error {
 	}
 	return fmt.Errorf("%w: refusing to overwrite task %s billing state %q", ErrTaskBillingStateConflict, taskID, current.BillingState)
 }
+

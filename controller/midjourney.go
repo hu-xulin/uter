@@ -57,15 +57,13 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 	}
 	if len(nullTaskIds) > 0 {
 		summary.NullTasksFailed = len(nullTaskIds)
-		err := model.MjBulkUpdateByTaskIds(nullTaskIds, map[string]any{
-			"status":   "FAILURE",
-			"progress": "100%",
-		})
-		if err != nil {
-			logger.LogError(ctx, common.LogText("Fix null mj_id task error: %v", err))
-		} else {
-			logger.LogInfo(ctx, common.LogText("Fix null mj_id task success: %v", nullTaskIds))
-		}
+		// Do not mark these tasks complete here: that would bypass quota refund
+		// and remove them from the polling/recovery set. Keep them visible as
+		// unfinished until a durable refund/reconciliation operation handles them.
+		logger.LogError(ctx, common.LogText(
+			"Midjourney tasks have empty local upstream IDs and require refund reconciliation: %v",
+			nullTaskIds,
+		))
 	}
 	if len(taskChannelM) == 0 {
 		return summary
@@ -88,15 +86,13 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 		}
 		midjourneyChannel, err := model.CacheGetChannel(channelId)
 		if err != nil {
-			logger.LogError(ctx, common.LogText("CacheGetChannel: %v", err))
-			err := model.MjBulkUpdate(taskIds, map[string]any{
-				"fail_reason": "Failed to get the channel information. Please contact the administrator",
-				"status":      "FAILURE",
-				"progress":    "100%",
-			})
-			if err != nil {
-				logger.LogInfo(ctx, common.LogText("UpdateMidjourneyTask error: %v", err))
-			}
+			// A transient channel-cache failure is not an upstream task failure.
+			// Keep tasks unfinished so the next polling/recovery pass can retry;
+			// marking them 100% here would bypass billing compensation.
+			logger.LogError(ctx, common.LogText(
+				"CacheGetChannel failed; preserving unfinished Midjourney tasks for retry (channel=%d, tasks=%v): %v",
+				channelId, taskIds, err,
+			))
 			continue
 		}
 		requestUrl := fmt.Sprintf("%s/mj/task/list-by-condition", *midjourneyChannel.BaseURL)
@@ -326,3 +322,4 @@ func GetUserMidjourney(c *gin.Context) {
 	pageInfo.SetItems(items)
 	common.ApiSuccess(c, pageInfo)
 }
+

@@ -411,3 +411,4 @@ func DoMidjourneyHttpRequest(c *gin.Context, timeout time.Duration, fullRequestU
 		Response:   midjResponse,
 	}, responseBody, nil
 }
+

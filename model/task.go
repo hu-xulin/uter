@@ -707,3 +707,4 @@ func (t *Task) ToOpenAIVideo() *dto.OpenAIVideo {
 	}
 	return openAIVideo
 }
+

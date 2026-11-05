@@ -866,3 +866,4 @@ func failTasksFromPoll(ctx context.Context, adaptor TaskPollingAdaptor, tasks []
 	}
 	return firstErr
 }
+

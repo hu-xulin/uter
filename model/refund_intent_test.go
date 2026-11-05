@@ -85,6 +85,23 @@ func TestRefundIntentWalletCapBlocksIntent(t *testing.T) {
 	assert.Equal(t, RefundIntentPending, pending.Status)
 }
 
+// TestSweepPendingRefundIntentsSurfacesExecutionFailure ensures a stale intent
+// that cannot be safely refunded remains pending and makes the recovery pass fail.
+func TestSweepPendingRefundIntentsSurfacesExecutionFailure(t *testing.T) {
+	user, _, intent := newRefundIntentFixture(t)
+	require.NoError(t, DB.Model(&RefundIntent{}).Where("id = ?", intent.Id).
+		Updates(map[string]any{"org_resolved": false, "update_time": common.GetTimestamp() - 3600}).Error)
+
+	n, err := SweepPendingRefundIntents(120, 200)
+	require.Error(t, err)
+	assert.Equal(t, 0, n)
+	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
+
+	var pending RefundIntent
+	require.NoError(t, DB.First(&pending, intent.Id).Error)
+	assert.Equal(t, RefundIntentPending, pending.Status)
+}
+
 // TestSweepPendingRefundIntents 扫描只重放滞留（超过 stale 阈值）的 pending
 // 凭证，执行成功后收口；新鲜凭证与 done 凭证不受影响。
 func TestSweepPendingRefundIntents(t *testing.T) {
@@ -140,3 +157,4 @@ func TestSweepPendingRefundIntentsSurfacesExecutionFailure(t *testing.T) {
 	require.NoError(t, DB.First(&pending, intent.Id).Error)
 	assert.Equal(t, RefundIntentPending, pending.Status)
 }
+

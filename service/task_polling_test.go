@@ -1010,6 +1010,60 @@ func TestUpdateVideoSingleTaskPollClassification(t *testing.T) {
 	}
 }
 
+func TestGetUpstreamTaskIDDistinguishesLegacyAndMissingNewIDs(t *testing.T) {
+	legacy := &model.Task{TaskID: "legacy-provider-id"}
+	assert.Equal(t, "legacy-provider-id", legacy.GetUpstreamTaskID(), "legacy rows retain TaskID fallback")
+
+	newTask := &model.Task{TaskID: "local-task-id", PrivateData: model.TaskPrivateData{BillingSource: BillingSourceWallet}}
+	assert.Empty(t, newTask.GetUpstreamTaskID(), "new billing-aware rows must not treat a local task ID as an upstream ID")
+}
+
+func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
+	truncate(t)
+	const userID, tokenID, channelID = 620, 620, 620
+	const initialQuota, preConsumed, tokenRemain = 10000, 3000, 5000
+	seedUser(t, userID, initialQuota)
+	seedToken(t, tokenID, userID, "sk-null-task-no-adapter", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	task.Status = model.TaskStatusInProgress
+	task.PrivateData.UpstreamTaskID = ""
+	// Legacy task rows may have NULL progress; SQL "progress != '100%'" would
+	// silently exclude them from polling because NULL comparisons are UNKNOWN.
+	require.NoError(t, model.DB.Model(task).Updates(map[string]any{
+		"status":       task.Status,
+		"private_data": task.PrivateData,
+		"progress":     nil,
+	}).Error)
+	require.Len(t, model.GetAllUnFinishSyncTasks(100), 1, "NULL-progress tasks must remain pollable")
+	require.Len(t, model.GetAllUnFinishSyncTasks(0), 1, "a zero configured query limit must use the safe default rather than suppress polling")
+	var persistedBeforePoll model.Task
+	require.NoError(t, model.DB.First(&persistedBeforePoll, task.ID).Error)
+	assert.Equal(t, BillingSourceWallet, persistedBeforePoll.PrivateData.BillingSource, "billing provenance must survive persistence")
+	assert.Empty(t, persistedBeforePoll.PrivateData.UpstreamTaskID, "the fixture must persist a missing upstream ID")
+	assert.Empty(t, persistedBeforePoll.GetUpstreamTaskID(), "new billing-aware tasks must not fall back to their local task ID")
+	require.NotNil(t, persistedBeforePoll.PrivateData.OrganizationId, "submit-time funding organization snapshot must persist")
+	assert.Zero(t, *persistedBeforePoll.PrivateData.OrganizationId, "this fixture is funded by the personal wallet")
+	assert.Equal(t, tokenID, persistedBeforePoll.PrivateData.TokenId, "token funding identity must persist")
+	assert.Equal(t, preConsumed, persistedBeforePoll.Quota, "the persisted task must retain its pre-consumed quota")
+
+	previousAdaptor := GetTaskAdaptorFunc
+	GetTaskAdaptorFunc = nil
+	t.Cleanup(func() { GetTaskAdaptorFunc = previousAdaptor })
+
+	summary := RunTaskPollingOnce(context.Background(), nil)
+	assert.Equal(t, 1, summary.NullTasksFailed)
+	var persisted model.Task
+	require.NoError(t, model.DB.First(&persisted, task.ID).Error)
+	assert.Equal(t, model.TaskStatus("FAILURE"), persisted.Status)
+	assert.Zero(t, persisted.Quota)
+	assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
+	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
+	t.Logf("null-upstream refund result: task=%s status=%s quota=%d billing_state=%s billing_error=%q retries=%d", persisted.TaskID, persisted.Status, persisted.Quota, persisted.BillingState, persisted.BillingLastError, persisted.BillingRetryCount)
+}
+
 func TestUpdateBatchTasksPollClassification(t *testing.T) {
 	testCases := []struct {
 		name         string
@@ -1137,3 +1191,4 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
 	t.Logf("null-upstream refund result: task=%s status=%s quota=%d billing_state=%s billing_error=%q retries=%d", persisted.TaskID, persisted.Status, persisted.Quota, persisted.BillingState, persisted.BillingLastError, persisted.BillingRetryCount)
 }
+

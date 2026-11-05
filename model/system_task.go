@@ -21,6 +21,8 @@ const (
 	SystemTaskTypeModelUpdate          = "model_update"
 	SystemTaskTypeMidjourneyPoll       = "midjourney_poll"
 	SystemTaskTypeAsyncTaskPoll        = "async_task_poll"
+	SystemTaskTypeMidjourneyRefundRecovery = "midjourney_refund_recovery"
+	SystemTaskTypeMidjourneyRefundOutbox   = "midjourney_refund_outbox"
 	SystemTaskTypeRefundIntentRecovery = "refund_intent_recovery"
 )
 
@@ -524,3 +526,4 @@ func decodeSystemTaskJSONValue(data string) any {
 	}
 	return value
 }
+

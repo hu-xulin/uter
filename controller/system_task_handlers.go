@@ -21,6 +21,8 @@ func RegisterScheduledSystemTasks() {
 	service.RegisterSystemTaskHandler(modelUpdateHandler{})
 	service.RegisterSystemTaskHandler(midjourneyPollHandler{})
 	service.RegisterSystemTaskHandler(asyncTaskPollHandler{})
+	service.RegisterSystemTaskHandler(midjourneyRefundRecoveryHandler{})
+	service.RegisterSystemTaskHandler(midjourneyRefundOutboxHandler{})
 	service.RegisterSystemTaskHandler(refundIntentRecoveryHandler{})
 }
 
@@ -161,3 +163,4 @@ func finishSystemTaskHandler(task *model.SystemTask, runnerID string, status mod
 		common.SysLog(common.LogText("system task %s failed to persist result: %v", task.TaskID, err))
 	}
 }
+

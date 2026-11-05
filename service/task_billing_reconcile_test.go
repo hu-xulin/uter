@@ -434,3 +434,35 @@ func TestRunTaskPollingOnceReconcilesBillingWithoutAnyAdapter(t *testing.T) {
 	assert.Equal(t, model.TaskBillingRefunded, stored.BillingState)
 	assert.Zero(t, stored.Quota)
 }
+
+func TestRunTaskPollingOnceReconcilesBillingWithoutAnyAdapter(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+
+	const userID, tokenID, channelID = 55, 55, 155
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-no-poll-adapter", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+	backdateBillingUpdate(t, task.TaskID)
+
+	previousAdaptor := GetTaskAdaptorFunc
+	GetTaskAdaptorFunc = nil
+	t.Cleanup(func() { GetTaskAdaptorFunc = previousAdaptor })
+
+	summary := RunTaskPollingOnce(ctx, nil)
+	assert.Zero(t, summary.PlatformsScanned, "upstream polling should be skipped when no adapter registry exists")
+	assert.Equal(t, initQuota+preConsumed, getUserQuota(t, userID), "billing reconciliation must still refund terminal failed tasks")
+	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID), "billing reconciliation must still restore Token quota")
+
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingRefunded, stored.BillingState)
+	assert.Zero(t, stored.Quota)
+}
+

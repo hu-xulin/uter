@@ -204,3 +204,4 @@ func SweepPendingRefundIntents(staleAfterSeconds int64, limit int) (int, error) 
 	}
 	return done, firstErr
 }
+
