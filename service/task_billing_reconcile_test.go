@@ -487,3 +487,63 @@ func TestReconcileStuckTaskBillingQuarantinesMissingSubmitTimestamp(t *testing.T
 	require.NoError(t, err)
 	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
 }
+
+func TestRefundFinalStateCASFailureQuarantinesCommittedRefund(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 71, 71, 171
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-refund-final-cas", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+
+	var taskUpdates atomic.Int32
+	const callbackName = "fail_refund_final_state_cas"
+	require.NoError(t, model.DB.Callback().Update().Before("gorm:update").Register(callbackName, func(tx *gorm.DB) {
+		if tx.Statement.Table == "tasks" && taskUpdates.Add(1) == 2 {
+			tx.AddError(errors.New("injected final refund state failure"))
+		}
+	}))
+	t.Cleanup(func() { model.DB.Callback().Update().Remove(callbackName) })
+
+	require.False(t, RefundTaskQuota(ctx, task, "final CAS failure"))
+	assert.Equal(t, initQuota+preConsumed, getUserQuota(t, userID))
+	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+}
+
+func TestSettlementFinalStateCASFailureQuarantinesCommittedSettlement(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 72, 72, 172
+	const initQuota, preConsumed, actualQuota = 10000, 2000, 3000
+	const tokenRemain = 5000
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-settle-final-cas", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusSuccess)
+
+	var taskUpdates atomic.Int32
+	const callbackName = "fail_settlement_final_state_cas"
+	require.NoError(t, model.DB.Callback().Update().Before("gorm:update").Register(callbackName, func(tx *gorm.DB) {
+		if tx.Statement.Table == "tasks" && taskUpdates.Add(1) == 2 {
+			tx.AddError(errors.New("injected final settlement state failure"))
+		}
+	}))
+	t.Cleanup(func() { model.DB.Callback().Update().Remove(callbackName) })
+
+	RecalculateTaskQuota(ctx, task, actualQuota, newTestMessage("final CAS failure"))
+	assert.Equal(t, initQuota-(actualQuota-preConsumed), getUserQuota(t, userID))
+	assert.Equal(t, tokenRemain-(actualQuota-preConsumed), getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+}
