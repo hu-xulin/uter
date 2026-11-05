@@ -1716,3 +1716,34 @@ func admissionQuotaLowWater() int {
 	}
 	return int(trustUSD * common.QuotaPerUnit)
 }
+
+ // AdjustUserUsedQuota applies an accounting usage delta immediately. Negative
+ // adjustments are guarded against underflow instead of silently clamping the
+ // ledger to zero; billing workflows must surface an inconsistent snapshot.
+func AdjustUserUsedQuota(id int, delta int) error {
+	if id <= 0 {
+		return fmt.Errorf("user ID must be positive")
+	}
+	if delta == 0 {
+		return nil
+	}
+	query := DB.Model(&User{}).Where("id = ?", id)
+	if delta < 0 {
+		query = query.Where("used_quota >= ?", -delta)
+	}
+	result := query.Update("used_quota", gorm.Expr("used_quota + ?", delta))
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 1 {
+		return nil
+	}
+	var count int64
+	if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+		return err
+	}
+	if count == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return fmt.Errorf("user %d used quota is insufficient for adjustment (delta=%d)", id, delta)
+}
