@@ -164,3 +164,32 @@ func TestRefundSubscriptionPreConsumeTxRejectsReceiptSubscriptionMismatch(t *tes
 	require.NoError(t, db.First(&savedRecord, record.Id).Error)
 	require.Equal(t, "consumed", savedRecord.Status)
 }
+
+// TestRefundSubscriptionIntentRequiresMatchingSubscriptionSnapshot ensures
+// the persisted intent subscription ID matches the subscription receipt.
+func TestRefundSubscriptionIntentRequiresMatchingSubscriptionSnapshot(t *testing.T) {
+	db := setupSubscriptionRefundTxTestDB(t)
+	require.NoError(t, db.AutoMigrate(&RefundIntent{}))
+
+	sub := UserSubscription{UserId: 10, PlanId: 1, AmountTotal: 100, AmountUsed: 40, Status: "active"}
+	otherSub := UserSubscription{UserId: 10, PlanId: 2, AmountTotal: 100, AmountUsed: 30, Status: "active"}
+	require.NoError(t, db.Create(&sub).Error)
+	require.NoError(t, db.Create(&otherSub).Error)
+	record := SubscriptionPreConsumeRecord{
+		RequestId: "subscription-snapshot-check", UserId: 10, UserSubscriptionId: sub.Id,
+		PreConsumed: 20, Status: "consumed",
+	}
+	require.NoError(t, db.Create(&record).Error)
+	intent := RefundIntent{
+		UserId: 10, IdempotencyKey: "subscription-snapshot-check-intent",
+		FundingSource: RefundSourceSubscription, SubRequestId: record.RequestId, SubId: otherSub.Id,
+	}
+	require.NoError(t, CreateRefundIntent(&intent))
+
+	require.ErrorContains(t, ExecuteRefundIntent(intent.Id), "not expected subscription")
+	var savedSub UserSubscription
+	require.NoError(t, db.First(&savedSub, sub.Id).Error)
+	require.EqualValues(t, 40, savedSub.AmountUsed)
+	require.NoError(t, db.First(&savedSub, otherSub.Id).Error)
+	require.EqualValues(t, 30, savedSub.AmountUsed)
+}
