@@ -25,6 +25,21 @@ class UaesIntegrationCheckTest < Minitest::Test
               - overwrite.user_uncommitted_changes
       YAML
       ".ai/task-schema.json" => "{\n  \"version\": \"1.0.0\"\n}",
+      ".uaes/uaes-pin.json" => <<~JSON,
+        {
+          "schema_version": "1.0.0",
+          "repository": "https://github.com/hu-xulin/uaes",
+          "default_branch": "main",
+          "source_commit": "84416f7f55c1166e3f5adfa0575c1ea713ff20d2",
+          "registry_path": ".uaes/STANDARD-REGISTRY.yaml",
+          "registry_blob_sha": "1c74e918b84b8cc18d2806a936721852b823ca75",
+          "registry_version": "1.7.0",
+          "registry_status": "DRAFT",
+          "integration_status": "MIGRATION_PENDING",
+          "approval_state": "NOT_APPROVED",
+          "pinned_at": "2026-11-05T00:00:00Z"
+        }
+      JSON
       ".uaes/INTEGRATION.md" => <<~MD,
         # UAES Integration Contract
         Status: MIGRATION_PENDING

@@ -10,14 +10,16 @@
 |---|---|
 | UAES repository | https://github.com/hu-xulin/uaes |
 | UAES default branch at audit baseline | `main` |
-| UAES source commit | `84416f7f55c1166e3f5adfa0575c1ea713ff20d2` |
+| UAES source commit | `9b1f5f19e480817c7717fff203aa6b4287602aeb` |
 | Registry path | `.uaes/STANDARD-REGISTRY.yaml` |
-| Registry blob SHA at audit baseline | `1c74e918b84b8cc18d2806a936721852b823ca75` |
+| Registry blob SHA at audit baseline | `a73447a7206321976bcfcdcc2b58e70157703e5a` |
 | Registry version | `1.7.0` |
 | Registry status | `DRAFT` |
 | Integration status | `MIGRATION_PENDING` |
 
 The commit and blob SHA above identify the inspected audit baseline. They are not a release approval and must be updated only through a reviewed integration change.
+
+The machine-readable counterpart is `.uaes/uaes-pin.json`; `scripts/quality/uaes-pin-check.sh` cross-checks this contract against that pin so a spec-version refresh cannot desynchronise the two. This baseline was refreshed on 2026-11-05 to UAES `main` after PR #3 was merged; the registry is still `DRAFT` and the integration status is still `MIGRATION_PENDING`, so no Uter requirement may be marked `VERIFIED` on this basis.
 
 ## 2. Authority during migration
 

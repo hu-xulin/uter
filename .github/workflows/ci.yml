@@ -29,6 +29,10 @@ jobs:
         run: ruby scripts/quality/test-uaes-integration-check.rb
       - name: Validate UAES integration wiring
         run: bash scripts/quality/uaes-integration-check.sh
+      - name: Test UAES spec-version pin gate positive and negative fixtures
+        run: ruby scripts/quality/test-uaes-pin-check.rb
+      - name: Validate UAES spec-version pin against integration contract
+        run: bash scripts/quality/uaes-pin-check.sh
       - name: Test P01 AI governance policy and task contract
         run: ruby scripts/quality/test-ai-governance-policy.rb
       - name: Validate production Docker Compose configuration and immutable service images
