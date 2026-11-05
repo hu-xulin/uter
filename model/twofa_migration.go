@@ -137,7 +137,6 @@ func loadTwoFASecretBatch(afterID int, limit int) ([]TwoFA, error) {
 	return rows, nil
 }
 
-
 // isPersistedTwoFASecretEncrypted verifies the value read back from the database.
 // Checking rows[i].Secret alone only verifies the in-memory value assigned after
 // UPDATE; a fresh read is required to prove the stored row contains the envelope.
