@@ -700,6 +700,10 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaym
 	if topup.UserId != order.UserId {
 		return fmt.Errorf("%w: subscription/top-up user mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
 	}
+	if topup.Money > 0 && order.Money > 0 &&
+		!decimal.NewFromFloat(topup.Money).Round(2).Equal(decimal.NewFromFloat(order.Money).Round(2)) {
+		return fmt.Errorf("%w: subscription/top-up local amount mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
 	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
 		return fmt.Errorf("%w: subscription/top-up provider mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
 	}
