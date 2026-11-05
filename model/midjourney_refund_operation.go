@@ -109,7 +109,6 @@ func (op *MidjourneyRefundOperation) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-
 // BeforeUpdate prevents rewriting the original billing evidence. Only
 // lifecycle/recovery fields may change after the operation is created.
 func (op *MidjourneyRefundOperation) BeforeUpdate(tx *gorm.DB) error {
