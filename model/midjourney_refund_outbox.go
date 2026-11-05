@@ -34,27 +34,49 @@ type MidjourneyRefundOutbox struct {
 	DeliveredAt int64 `json:"delivered_at" gorm:"bigint;not null;default:0"`
 }
 
-func (MidjourneyRefundOutbox) TableName() string { return "midjourney_refund_outbox" }
+func (MidjourneyRefundOutbox) TableName() string {
+	return "midjourney_refund_outbox"
+}
 
 func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
-	if event == nil { return errors.New("Midjourney refund outbox event is nil") }
-	if event.RefundOperationID <= 0 { return errors.New("outbox event requires a refund operation ID") }
+	if event == nil {
+		return errors.New("Midjourney refund outbox event is nil")
+	}
+	if event.RefundOperationID <= 0 {
+		return errors.New("outbox event requires a refund operation ID")
+	}
 	if event.EventKey == "" || event.EventType == "" || !json.Valid([]byte(event.PayloadJSON)) {
 		return errors.New("outbox event requires event key, event type, and valid payload JSON")
 	}
-	if event.PayloadVersion <= 0 { return errors.New("outbox payload version must be positive") }
-	if event.Status == "" { event.Status = MidjourneyRefundOutboxPending }
+	// GORM SQL defaults are not populated before hooks run.
+	if event.PayloadVersion == 0 {
+		event.PayloadVersion = 1
+	}
+	if event.PayloadVersion < 0 {
+		return errors.New("outbox payload version must be positive")
+	}
+	if event.Status == "" {
+		event.Status = MidjourneyRefundOutboxPending
+	}
 	if event.Status != MidjourneyRefundOutboxPending {
 		return fmt.Errorf("invalid initial Midjourney refund outbox status %q", event.Status)
 	}
 	now := common.GetTimestamp()
-	if event.CreatedAt == 0 { event.CreatedAt = now }
-	if event.UpdatedAt == 0 { event.UpdatedAt = now }
+	if event.CreatedAt == 0 {
+		event.CreatedAt = now
+	}
+	if event.UpdatedAt == 0 {
+		event.UpdatedAt = now
+	}
 	return nil
 }
 
 func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) error {
-	if tx == nil { return errors.New("Midjourney refund outbox transaction is nil") }
-	if event == nil { return errors.New("Midjourney refund outbox event is nil") }
+	if tx == nil {
+		return errors.New("Midjourney refund outbox transaction is nil")
+	}
+	if event == nil {
+		return errors.New("Midjourney refund outbox event is nil")
+	}
 	return tx.Create(event).Error
 }
