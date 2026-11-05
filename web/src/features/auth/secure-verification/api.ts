@@ -24,7 +24,7 @@ import {
   authRequestOptions,
   authResult,
 } from '@/lib/secure-verification'
-import type { AuthBundle } from '@/stores/auth-store'
+import type { AuthBundle } from '@/types/auth'
 
 import { createOAuthAuthorization } from '../api'
 import { openOAuthPopup } from '../lib/oauth-popup'
@@ -39,7 +39,7 @@ import {
   type PasskeyDomains,
 } from '../passkey/assertion'
 import type { PasskeyOptionsPayload } from '../passkey/types'
-import type { SystemStatus } from '../types'
+import type { SystemStatus } from '@/types/system'
 import type {
   SecurityProof,
   LoginChallenge,

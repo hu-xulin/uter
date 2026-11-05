@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { SystemStatus } from '@/features/auth/types'
+import type { SystemStatus } from '@/types/system'
 
 // ============================================================================
 // OAuth URL Builders

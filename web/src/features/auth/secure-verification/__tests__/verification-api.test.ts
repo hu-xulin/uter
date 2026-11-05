@@ -37,8 +37,30 @@ import {
   clearPasswordEncryptionCache,
   encryptPassword,
 } from '../../lib/password-encryption'
-import { checkVerificationMethods, verify } from '../api'
+import { checkVerificationMethods, isLoginChallenge, verify } from '../api'
 import type { SecurityProof } from '../types'
+
+it('accepts only the login-specific 2FA and Passkey challenge methods', () => {
+  const challenge = {
+    require_verification: true,
+    flow_token: 'login-flow',
+    expires_at: Math.floor(Date.now() / 1000) + 300,
+    methods: [
+      { method: '2fa', available: true },
+      { method: 'passkey', available: false, reason: 'Unavailable' },
+    ],
+  }
+  expect(isLoginChallenge(challenge)).toBe(true)
+
+  for (const method of ['password', 'email_code', 'oauth', 'session']) {
+    expect(
+      isLoginChallenge({
+        ...challenge,
+        methods: [{ method, available: true }],
+      })
+    ).toBe(false)
+  }
+})
 
 const originalAdapter = api.defaults.adapter
 const originalLocation = window.location.href
