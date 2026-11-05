@@ -1074,7 +1074,6 @@ func TestUpdateBatchTasksPollClassification(t *testing.T) {
 	}
 }
 
-
 func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	truncate(t)
 	const userID, tokenID, channelID = 620, 620, 620
@@ -1088,7 +1087,7 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	task.Status = model.TaskStatusInProgress
 	task.PrivateData.UpstreamTaskID = ""
 	require.NoError(t, model.DB.Model(task).Updates(map[string]any{
-		"status": task.Status,
+		"status":       task.Status,
 		"private_data": task.PrivateData,
 	}).Error)
 
