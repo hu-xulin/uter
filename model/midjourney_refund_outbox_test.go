@@ -12,7 +12,7 @@ import (
 
 func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 	table := "midjourney_refund_outbox_contract_test"
-	db := DB.Table(table)
+	db    := DB.Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOutbox{}))
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
@@ -50,9 +50,9 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 
 func TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic(t *testing.T) {
 	require.NoError(t, DB.AutoMigrate(&MidjourneyRefundOperation{}, &MidjourneyRefundOutbox{}))
-	suffix := fmt.Sprintf("%d", time.Now().UnixNano())
-	taskID := int(time.Now().UnixNano() % 1000000000)
-	opKey := "midjourney:atomic-test:" + suffix
+	suffix   := fmt.Sprintf("%d", time.Now().UnixNano())
+	taskID   := int(time.Now().UnixNano() % 1000000000)
+	opKey    := "midjourney:atomic-test:" + suffix
 	eventKey := "mj-refund-atomic-test:" + suffix
 
 	t.Cleanup(func() {
