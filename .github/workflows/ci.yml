@@ -382,6 +382,12 @@ jobs:
           repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
           ref: ${{ github.sha }}
 
+      - name: Validate API documentation deprecation filter
+        working-directory: .
+        run: |
+          python3 -m py_compile docs-web/scripts/sync-upstream-docs.py
+          python3 docs-web/scripts/test_sync_upstream_docs.py
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
