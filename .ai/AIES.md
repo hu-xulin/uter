@@ -130,6 +130,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 ```json
 {
   "task_id": "AUTH-UI-001",
+  "title": "Improve login UI and reliability",
   "goal": "Improve login UI and flow reliability",
   "task_type": "FEATURE",
   "original_request": "Improve the login UI and make the login flow more reliable.",
@@ -151,6 +152,8 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
   "constraints": ["Follow project design tokens", "Preserve approved authentication behavior", "Do not bypass security verification"],
   "applicable_specs": ["design-system.md §12/§14/§21", "AGENTS.md Authentication Security"],
   "required_evidence": ["Relevant source inspection", "Changed-file list", "Test results", "Acceptance checklist"],
+  "execution_audit": [],
+  "lifecycle_history": [{"state": "CREATED", "timestamp": "2026-11-05T00:00:00Z", "actor_id": "human-requester"}],
   "acceptance_criteria": [
     {"id": "AUTH-AC-01", "criterion": "Visual rules are satisfied", "verification": "Run the applicable design-system checks."},
     {"id": "AUTH-AC-02", "criterion": "Existing auth methods remain functional", "verification": "Run relevant authentication regression tests."},
@@ -377,7 +380,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 
 - 用户要求直接修改代码时，必须在授权范围内**实际完成修改**，而非只输出建议/方案/提示词。
 - 必须优先遵守项目已批准的设计规范、架构约束、API 契约、安全规则和测试约定；冲突按规则优先级与风险处理，不能擅自忽略强制约束。
-- 必须保护用户未提交代码和其他已有工作；最小必要修改；不得无故扩大范围；不得未经授权升级依赖、大规模重构、删除数据、生产操作或 Git 提交/推送/部署。
+- 必须保护用户未提交代码和其他已有工作；最小必要修改；不得无故扩大范围；不得未经授权升级依赖、大规模重构、删除数据、生产操作或超出本项目明确授权范围的 Git 操作；Uter 唯一工作分支内的 Commit/Push/PR 按本文件 §3.3 执行。
 - 必须按任务风险确定验证强度；认证/支付/数据库/权限/资金/生产环境任务须专项分析与测试。关键业务信息不明确时暂停相关高风险操作，但继续完成不受影响且已授权的工作。
 - 修改完成后执行实际可运行的测试与质量检查，并审查完整 diff；发现范围内且能安全修复的问题，修复后重新验证。
 - **不得伪造测试结果，不得声称未执行的测试已通过，不得通过删除测试、跳过断言或关闭安全控制制造成功。**
@@ -415,8 +418,8 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 - 导航与衔接：`.ai/README.md`。
 
 ### 13.4 待协调项（需用户决策，本次未执行）
-- **`AGENTS.md` 正被并发会话大幅修改（工作区标记 M）**：为避免覆盖他人 WIP，本次**未**改 `AGENTS.md`。建议由该会话维护者在收尾后，向 `AGENTS.md` 追加一行指向 `.ai/AIES.md` 的指针，或授权本会话在并发收尾后统一整合。
-- **未自动 git commit/push**：遵循"提交需额外授权"与"不混入并发 WIP"两条纪律，本次改动全部留未提交，待用户确认后再显式暂存提交。
+- **治理规则现状**：Agent 角色、权限配置和任务审计合同以 `.uaes/agent-governance.yaml` 与 `.ai/task-schema.json` 为准；第三方 Agent 的运行时工具阻断仍须通过 WorkBuddy/Claude 等实际运行环境单独验证，不得把静态策略测试描述为运行时验收。
+- **Git 授权现状**：Uter 自动修复可在唯一非 main 工作分支内 Commit、Push、创建/更新 PR；禁止直接推送 main、force push、合并 PR、部署和生产写操作。
 - **PandaMall 规范包**：平移本框架时需换成 React Native/Expo/Clerk 技术规则，不共用 Uter 的 Web 设计与支付规则。
 
 ---
