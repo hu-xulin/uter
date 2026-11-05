@@ -294,8 +294,9 @@ func RelaySwapFace(c *gin.Context, info *relaycommon.RelayInfo) *dto.MidjourneyR
 			Group:     info.UsingGroup,
 			Other:     other,
 		})
-		model.UpdateUserUsedQuotaAndRequestCount(info.UserId, midjourneyTask.Quota)
-		model.UpdateChannelUsedQuota(billingChannelId, midjourneyTask.Quota)
+		if err := model.RecordMidjourneyTaskUsage(info.UserId, billingChannelId, midjourneyTask.Quota); err != nil {
+			common.SysLog(common.LogText("failed to persist Midjourney task usage: %s", err.Error()))
+		}
 	}
 	c.Writer.WriteHeader(mjResp.StatusCode)
 	respBody, err := common.Marshal(midjResponse)
