@@ -93,48 +93,29 @@ func SettleMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.M
 
 // RefundMidjourneyQuota reverses every accounting element recorded for a billed legacy task.
 func RefundMidjourneyQuota(ctx context.Context, task *model.Midjourney, reason string) bool {
-	quota := task.Quota
-	if quota == 0 {
-		return true
-	}
-
-	if err := model.IncreaseUserQuota(task.UserId, quota, false); err != nil {
-		logger.LogWarn(ctx, common.LogText("failed to refund Midjourney user quota, task %s: %s", task.MjId, err.Error()))
+	if task == nil || task.Id <= 0 {
+		logger.LogError(ctx, "cannot refund a nil or unsaved Midjourney task")
 		return false
 	}
-
-	if task.TokenId > 0 {
-		tokenKey, keyErr := resolveTokenKey(ctx, task.TokenId, task.MjId)
-		if keyErr != nil {
-			logger.LogWarn(ctx, common.LogText("failed to resolve the token key for Midjourney task %s: %s", task.MjId, keyErr.Error()))
-		} else if tokenKey != "" {
-			if err := model.IncreaseTokenQuota(task.TokenId, tokenKey, quota); err != nil {
-				logger.LogWarn(ctx, common.LogText("failed to refund Midjourney token quota, task %s: %s", task.MjId, err.Error()))
-			}
-		}
+	if err := model.RefundMidjourneyTaskBilling(task.Id, reason); err != nil {
+		logger.LogError(ctx, common.LogText(
+			"durable Midjourney refund/reconciliation failed for local task %d: %v",
+			task.Id, err,
+		))
+		return false
 	}
-
-	billingChannelId := task.GetBillingChannelId()
-	model.UpdateUserUsedQuota(task.UserId, -quota)
-	model.UpdateChannelUsedQuota(billingChannelId, -quota)
-	other := model.NewLogOther()
-	other.SetPublic("task_id", task.MjId)
-	other.SetPublic("reason", reason)
-	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
-		UserId:    task.UserId,
-		LogType:   model.LogTypeRefund,
-		ChannelId: billingChannelId,
-		ModelName: CovertMjpActionToModelName(task.Action),
-		Quota:     quota,
-		TokenId:   task.TokenId,
-		Other:     other,
-	})
-
-	task.Quota = 0
-	if err := task.UpdateBillingState(); err != nil {
-		logger.LogError(ctx, common.LogText("Midjourney refund succeeded but clearing the quota failed, task %s: %s", task.MjId, err.Error()))
+	// Refresh only the in-memory view; the model transaction is the source of
+	// truth and has already persisted the refund state and accounting legs.
+	latest := model.GetMjByuId(task.Id)
+	if latest == nil {
+		logger.LogError(ctx, common.LogText("Midjourney task %d disappeared after durable refund", task.Id))
+		return false
 	}
-	return true
+	task.Quota = latest.Quota
+	task.BillingStatus = latest.BillingStatus
+	task.BillingWalletApplied = latest.BillingWalletApplied
+	task.BillingTokenApplied = latest.BillingTokenApplied
+	return latest.BillingStatus == "refunded" || latest.BillingStatus == "reconciliation_required"
 }
 
 func GetMjRequestModel(relayMode int, midjRequest *dto.MidjourneyRequest) (string, *dto.MidjourneyResponse, bool) {
