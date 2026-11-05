@@ -42,6 +42,19 @@ task_lifecycle:
   terminal_states:
     - CLOSED
     - FAILED
+  transitions:
+    CREATED: [EXECUTING, BLOCKED]
+    EXECUTING: [VERIFYING, BLOCKED, FAILED, INTERRUPTED]
+    VERIFYING: [CLOSED, EXECUTING, BLOCKED, FAILED, INTERRUPTED]
+    BLOCKED: [EXECUTING, FAILED]
+    INTERRUPTED: [EXECUTING, BLOCKED]
+    FAILED: []
+    CLOSED: []
+  close_requires:
+    - all_acceptance_criteria_pass
+    - required_tests_pass
+    - evidence_complete
+    - no_open_p0_issue
   resume_requires:
     - task_id
     - agent_id
