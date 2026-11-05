@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { AuthUser } from '@/stores/auth-store'
+import type { AuthUser } from '@/types/auth'
 
 import { ROLE } from './roles'
 
