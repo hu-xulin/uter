@@ -252,3 +252,17 @@ func TestApplyTaskBillingUsageDeltaFlushesQueueForZeroDelta(t *testing.T) {
 	assert.EqualValues(t, 3000, stored.UsedQuota)
 	assert.NotContains(t, batchUpdateStores[BatchUpdateTypeUsedQuota], user.Id)
 }
+
+func TestAdjustUserUsedQuotaRejectsUnderflow(t *testing.T) {
+	user, _, _ := newRefundIntentFixture(t)
+	require.NoError(t, DB.Model(&User{}).Where("id = ?", user.Id).Update("used_quota", 100).Error)
+
+	require.Error(t, AdjustUserUsedQuota(user.Id, -101))
+	var stored User
+	require.NoError(t, DB.Select("id", "used_quota").First(&stored, user.Id).Error)
+	assert.EqualValues(t, 100, stored.UsedQuota)
+
+	require.NoError(t, AdjustUserUsedQuota(user.Id, -100))
+	require.NoError(t, DB.Select("id", "used_quota").First(&stored, user.Id).Error)
+	assert.Zero(t, stored.UsedQuota)
+}
