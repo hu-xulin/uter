@@ -322,3 +322,44 @@ func TestCompleteSubscriptionOrderReplayRejectsConflictingTopUp(t *testing.T) {
 	require.Equal(t, 72, stored.UserId)
 	require.Equal(t, common.TopUpStatusPending, stored.Status)
 }
+
+func TestSubscriptionTerminalTransitionRejectsConflictingLinkedTopUp(t *testing.T) {
+	cases := []struct {
+		name       string
+		topupUser  int
+		provider   string
+	}{
+		{name: "different owner", topupUser: 92, provider: PaymentProviderEpay},
+		{name: "different provider", topupUser: 91, provider: PaymentProviderStripe},
+	}
+	for i, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			previousDB := DB
+			db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+			require.NoError(t, err)
+			sqlDB, err := db.DB()
+			require.NoError(t, err)
+			sqlDB.SetMaxOpenConns(1)
+			require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+			DB = db
+			t.Cleanup(func() {
+				DB = previousDB
+				_ = sqlDB.Close()
+			})
+
+			tradeNo := fmt.Sprintf("subscription-terminal-identity-%d", i)
+			order := SubscriptionOrder{UserId: 91, PlanId: 1, Money: 10, TradeNo: tradeNo, PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusPending}
+			topup := TopUp{UserId: tc.topupUser, TradeNo: tradeNo, PaymentProvider: tc.provider, Status: common.TopUpStatusPending}
+			require.NoError(t, db.Create(&order).Error)
+			require.NoError(t, db.Create(&topup).Error)
+
+			require.ErrorIs(t, FailPendingSubscriptionOrder(tradeNo, PaymentProviderEpay), ErrPaymentMethodMismatch)
+			var storedOrder SubscriptionOrder
+			var storedTopUp TopUp
+			require.NoError(t, db.Where("trade_no = ?", tradeNo).First(&storedOrder).Error)
+			require.NoError(t, db.Where("trade_no = ?", tradeNo).First(&storedTopUp).Error)
+			require.Equal(t, common.TopUpStatusPending, storedOrder.Status, "subscription transition must roll back")
+			require.Equal(t, common.TopUpStatusPending, storedTopUp.Status, "conflicting linked top-up must remain untouched")
+		})
+	}
+}
