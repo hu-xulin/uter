@@ -2,53 +2,51 @@
 #
 # ai-specs-check.sh — AI 规范体系完整性检查（UEQE review.ai-specs 子项）
 #
-# 程序化守护 AGENTS.md「AI Spec System」节的物质量：
-#   1. docs/ai-specs/ 10 份域规范在库、非空、含规范骨架（规范目标/完成定义）。
-#   2. docs/ai-specs/engineering-quality/ 4 份质量规范 + README 在库。
-#   3. engineering-quality 规范与 _reports/ 原件逐字节一致（原件存在时）。
-#   4. AGENTS.md 含规范入口节（AI Spec System / Task routing / Branch strategy）。
-#   5. AGENTS.md 引用的 docs/ai-specs/... 路径全部真实存在。
-#   6. CONFLICT-REPORT.md 在库且被 AGENTS.md 引用。
-#   7. 十份域规范均登记版本、状态、更新时间与维护责任。
-#   8. .ai/README.md 不得引用已废弃的 design-system.md 路径。
-#   9. ADR 目录、索引和至少一份已批准决策记录存在。
+# 检查规范清单、版本元数据、Agent 入口、文档引用、ADR 注册和唯一工作分支策略。
+# 退出码：0=全部通过；1=存在缺失/不一致。
 #
-# 退出码：0=全部通过；1=存在缺失/篡改。由 scripts/quality/uter-quality.sh 调用。
-
 set -uo pipefail
 
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SPECS="$ROOT/docs/ai-specs"
 EQ="$SPECS/engineering-quality"
 AGENTS="$ROOT/AGENTS.md"
+AI_README="$ROOT/.ai/README.md"
+AIES="$ROOT/.ai/AIES.md"
+AUTO_FIX="$EQ/AUTO-FIX-STANDARD.md"
+EQ_README="$EQ/README.md"
+ADR_DIR="$ROOT/docs/adr"
 
 errors=0
-fail() { echo "✘ $1"; errors=$((errors+1)); }
+fail() {
+  printf '✘ %s\n' "$1"
+  errors=$((errors + 1))
+}
+pass() { printf '✔ %s\n' "$1"; }
 
-# ── 1. 十份域规范 ─────────────────────────────────────────────────────
-DOMAIN_SPECS="AI-EXECUTION PRODUCT-REQUIREMENTS ARCHITECTURE DEVELOPMENT \
-API-CONTRACT DATABASE SECURITY UX-INTERACTION DOCUMENTATION CHANGE-MANAGEMENT"
-for s in $DOMAIN_SPECS; do
-  f="$SPECS/$s-STANDARD.md"
-  if [ ! -s "$f" ]; then
-    fail "域规范缺失或为空：$f"
+# 1. Ten domain standards and required metadata.
+DOMAIN_SPECS="AI-EXECUTION PRODUCT-REQUIREMENTS ARCHITECTURE DEVELOPMENT API-CONTRACT DATABASE SECURITY UX-INTERACTION DOCUMENTATION CHANGE-MANAGEMENT"
+for spec in $DOMAIN_SPECS; do
+  file="$SPECS/$spec-STANDARD.md"
+  if [ ! -s "$file" ]; then
+    fail "域规范缺失或为空：$file"
     continue
   fi
-  grep -q '^## 1\. 规范目标' "$f" || fail "$s-STANDARD.md 缺少「规范目标」节（可能被截断/改写）"
-  grep -q '完成定义' "$f" || fail "$s-STANDARD.md 缺少「完成定义」节（可能被截断/改写）"
-  grep -Fq '**规范版本：**' "$f" || fail "$s-STANDARD.md 缺少规范版本"
-  grep -Fq '**规范状态：** Active' "$f" || fail "$s-STANDARD.md 缺少 Active 状态"
-  grep -Fq '**最后更新：**' "$f" || fail "$s-STANDARD.md 缺少最后更新时间"
-  grep -Fq '**维护责任：**' "$f" || fail "$s-STANDARD.md 缺少维护责任人"
+  grep -q '^## 1\. 规范目标' "$file" || fail "$spec-STANDARD.md 缺少规范目标"
+  grep -q '完成定义' "$file" || fail "$spec-STANDARD.md 缺少完成定义"
+  grep -Fq '**规范版本：**' "$file" || fail "$spec-STANDARD.md 缺少规范版本"
+  grep -Fq '**规范状态：** Active' "$file" || fail "$spec-STANDARD.md 缺少 Active 状态"
+  grep -Fq '**最后更新：**' "$file" || fail "$spec-STANDARD.md 缺少最后更新时间"
+  grep -Fq '**维护责任：**' "$file" || fail "$spec-STANDARD.md 缺少维护责任"
 done
 
-# ── 2. engineering-quality 组 ────────────────────────────────────────
-for s in CODE-REVIEW-STANDARD AUTOMATED-TEST-STANDARD AUTO-FIX-STANDARD QUALITY-GATE-STANDARD; do
-  [ -s "$EQ/$s.md" ] || fail "工程质量规范缺失：$EQ/$s.md"
+# 2. Engineering-quality standards and entry point.
+for spec in CODE-REVIEW-STANDARD AUTOMATED-TEST-STANDARD AUTO-FIX-STANDARD QUALITY-GATE-STANDARD; do
+  [ -s "$EQ/$spec.md" ] || fail "工程质量规范缺失：$EQ/$spec.md"
 done
-[ -s "$EQ/README.md" ] || fail "工程质量组入口缺失：$EQ/README.md"
+[ -s "$EQ/README.md" ] || fail "工程质量规范入口缺失：$EQ/README.md"
 
-# ── 3. 与 _reports 原件一致性（原件被清理时跳过，不算失败）──────────
+# 3. Compare authoritative quality standards with retained source copies when present.
 declare -a EQ_MAP=(
   "CODE-REVIEW-STANDARD.md|Uter 全面代码审查与修复规范.md"
   "AUTOMATED-TEST-STANDARD.md|Uter 全面自动化测试与问题修复规范.md"
@@ -56,51 +54,55 @@ declare -a EQ_MAP=(
   "QUALITY-GATE-STANDARD.md|Uter Engineering Quality Gate Standard.md"
 )
 for pair in "${EQ_MAP[@]}"; do
-  eq_name="${pair%%|*}"; src_name="${pair#*|}"
-  src="$ROOT/_reports/$src_name"
-  [ -s "$src" ] || continue
-  if ! diff -q "$src" "$EQ/$eq_name" >/dev/null 2>&1; then
-    fail "工程质量规范与 _reports 原件不一致：$eq_name"
+  spec_name="${pair%%|*}"
+  source_name="${pair#*|}"
+  source_file="$ROOT/_reports/$source_name"
+  if [ -s "$source_file" ] && ! diff -q "$source_file" "$EQ/$spec_name" >/dev/null 2>&1; then
+    fail "工程质量规范与保留源文件不一致：$spec_name"
   fi
 done
 
-# ── 4. AGENTS.md 入口节 ──────────────────────────────────────────────
+# 4. Required Agent governance entry points.
 for marker in '## AI Spec System' '### Task routing' '### Branch strategy' '### Automated enforcement' 'CONFLICT-REPORT.md'; do
-  grep -q "$marker" "$AGENTS" || fail "AGENTS.md 缺少入口节/引用：$marker"
+  grep -Fq "$marker" "$AGENTS" || fail "AGENTS.md 缺少入口或引用：$marker"
 done
 
-# ── 5. AGENTS.md 引用的 docs/ai-specs 路径必须真实存在 ───────────────
-for p in $(grep -o 'docs/ai-specs/[A-Za-z0-9_./-]*' "$AGENTS" | sort -u); do
-  case "$p" in
-    */) continue ;;  # 目录引用跳过
-  esac
-  [ -e "$ROOT/$p" ] || fail "AGENTS.md 引用了不存在的路径：$p"
-done
+# 5. All literal docs/ai-specs paths referenced by AGENTS.md must exist.
+while IFS= read -r path; do
+  [ -n "$path" ] || continue
+  case "$path" in */) continue ;; esac
+  [ -e "$ROOT/$path" ] || fail "AGENTS.md 引用了不存在的路径：$path"
+done < <(grep -oE 'docs/ai-specs/[A-Za-z0-9_./-]+' "$AGENTS" | sort -u || true)
 
-# ── 6. 冲突报告与知识引用 ────────────────────────────────────────────
-[ -s "$SPECS/CONFLICT-REPORT.md" ] || fail "冲突检查报告缺失：$SPECS/CONFLICT-REPORT.md"
-AI_README="$ROOT/.ai/README.md"
+# 6. No known obsolete design-system references; conflict report must reflect ADR registry.
+[ -s "$SPECS/CONFLICT-REPORT.md" ] || fail "冲突报告缺失"
 if grep -Fq '`design-system.md`' "$AI_README"; then
-  fail ".ai/README.md 仍引用已废弃的 design-system.md 路径"
+  fail ".ai/README.md 仍引用废弃 design-system.md 路径"
+fi
+if grep -Fq '`design-system.md`' "$AIES"; then
+  fail ".ai/AIES.md 仍引用废弃 design-system.md 路径"
+fi
+if grep -Fq '仓库尚无 `docs/adr/`' "$SPECS/CONFLICT-REPORT.md"; then
+  fail "CONFLICT-REPORT.md 的 ADR 状态已过期"
 fi
 
-# ── 7. ADR 注册与决策记录 ────────────────────────────────────────────
-ADR_DIR="$ROOT/docs/adr"
-[ -s "$ADR_DIR/README.md" ] || fail "ADR 注册索引缺失：docs/adr/README.md"
-[ -s "$ADR_DIR/0001-uter-design-system-single-source-of-truth.md" ] || fail "ADR-0001 缺失"
-if [ -s "$ADR_DIR/0001-uter-design-system-single-source-of-truth.md" ]; then
-  grep -q '^status: Accepted
+# 7. Single non-main work branch policy must be reflected in governing docs.
+grep -Fq '最多一个非' "$AGENTS" || fail "AGENTS.md 未声明每项目最多一个非 main 分支"
+grep -Fq '不得创建第二个分支' "$AGENTS" || fail "AGENTS.md 未禁止创建第二个工作分支"
+grep -Fq '禁止创建第二分支' "$AUTO_FIX" || fail "AUTO-FIX-STANDARD.md 未执行唯一工作分支策略"
+grep -Fq '禁止创建第二分支' "$EQ_README" || fail "工程质量入口未执行唯一工作分支策略"
+
+# 8. ADR registry and accepted decision.
+[ -s "$ADR_DIR/README.md" ] || fail "ADR 注册索引缺失"
+ADR_FILE="$ADR_DIR/0001-uter-design-system-single-source-of-truth.md"
+[ -s "$ADR_FILE" ] || fail "ADR-0001 缺失"
+if [ -s "$ADR_FILE" ]; then
+  grep -Eq '^status: Accepted$' "$ADR_FILE" || fail "ADR-0001 未标记 Accepted"
+  grep -Fq '0001-uter-design-system-single-source-of-truth.md' "$ADR_DIR/README.md" || fail "ADR 索引未登记 ADR-0001"
+fi
 
 if [ "$errors" -gt 0 ]; then
-  echo "ai-specs-check: $errors 项不通过"
+  printf 'ai-specs-check: %s 项不通过\n' "$errors"
   exit 1
 fi
-echo "ai-specs-check: 通过（10 域规范 + 4 质量规范 + 入口节 + 引用完整性）"
- "$ADR_DIR/0001-uter-design-system-single-source-of-truth.md" || fail "ADR-0001 未标记 Accepted"
-fi
-
-if [ "$errors" -gt 0 ]; then
-  echo "ai-specs-check: $errors 项不通过"
-  exit 1
-fi
-echo "ai-specs-check: 通过（10 域规范 + 4 质量规范 + 入口节 + 引用完整性）"
+printf 'ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、唯一分支策略、ADR）\n'
