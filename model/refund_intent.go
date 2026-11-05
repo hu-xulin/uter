@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
@@ -43,6 +44,7 @@ var errRefundIntentAlreadyDone = errors.New("refund intent already done")
 
 type RefundIntent struct {
 	Id            int    `gorm:"primaryKey"`
+	IdempotencyKey string `gorm:"size:128;not null;uniqueIndex"`
 	UserId        int    `gorm:"index"`
 	FundingSource string `gorm:"size:16"` // wallet | subscription
 	// 钱包出资：OrgResolved=false 表示出资归属尚未解析，不可执行（防止把组织
@@ -70,6 +72,9 @@ func (RefundIntent) TableName() string { return "refund_intents" }
 func validateRefundIntent(intent *RefundIntent) error {
 	if intent == nil || intent.UserId <= 0 {
 		return errors.New("refund intent requires a positive user id")
+	}
+	if strings.TrimSpace(intent.IdempotencyKey) == "" || len(intent.IdempotencyKey) > 128 {
+		return errors.New("refund intent requires an idempotency key of at most 128 characters")
 	}
 	if intent.WalletAmount < 0 || intent.SubExtra < 0 || intent.TokenConsumed < 0 {
 		return errors.New("refund intent amounts cannot be negative")
@@ -113,7 +118,29 @@ func CreateRefundIntent(intent *RefundIntent) error {
 	intent.CreateTime = now
 	intent.UpdateTime = now
 	intent.Status = RefundIntentPending
-	return DB.Create(intent).Error
+	if err := DB.Create(intent).Error; err != nil {
+		// A concurrent request may have inserted the same logical refund first.
+		// Reuse it only when its immutable accounting snapshot is byte-for-byte
+		// equivalent; never treat an idempotency-key collision as a valid replay.
+		var existing RefundIntent
+		if lookupErr := DB.Where("idempotency_key = ?", intent.IdempotencyKey).First(&existing).Error; lookupErr != nil {
+			return err
+		}
+		if existing.UserId != intent.UserId ||
+			existing.FundingSource != intent.FundingSource ||
+			existing.OrgResolved != intent.OrgResolved ||
+			existing.OrgId != intent.OrgId ||
+			existing.WalletAmount != intent.WalletAmount ||
+			existing.SubRequestId != intent.SubRequestId ||
+			existing.SubId != intent.SubId ||
+			existing.SubExtra != intent.SubExtra ||
+			existing.TokenId != intent.TokenId ||
+			existing.TokenConsumed != intent.TokenConsumed {
+			return fmt.Errorf("refund idempotency key %q collides with a different accounting snapshot", intent.IdempotencyKey)
+		}
+		intent.Id = existing.Id
+	}
+	return nil
 }
 
 // ExecuteRefundIntent 执行一笔退款意图：所有非幂等退款原语与完成标记在同一
