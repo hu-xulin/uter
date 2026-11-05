@@ -3,10 +3,10 @@ package service
 import (
 	"testing"
 
-	"github.com/uter-ai/uter/constant"
-	"github.com/uter-ai/uter/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
 )
 
 func TestConvertSimpleChangeParamsRejectsMalformedInput(t *testing.T) {
@@ -23,9 +23,9 @@ func TestConvertSimpleChangeParamsRejectsMalformedInput(t *testing.T) {
 
 func TestConvertSimpleChangeParamsAcceptsSupportedActions(t *testing.T) {
 	for _, test := range []struct {
-		input string
+		input  string
 		action string
-		index int
+		index  int
 	}{
 		{"task u1", "UPSCALE", 1},
 		{"task u4", "UPSCALE", 4},
@@ -56,8 +56,8 @@ func TestCoverPlusActionToNormalActionRejectsMalformedCustomIDs(t *testing.T) {
 func TestCoverPlusActionToNormalActionAcceptsSupportedActions(t *testing.T) {
 	tests := []struct {
 		customID string
-		action string
-		index int
+		action   string
+		index    int
 	}{
 		{"MJ::JOB::upsample::2::task", constant.MjActionUpscale, 2},
 		{"MJ::JOB::variation::3::task", constant.MjActionVariation, 3},
