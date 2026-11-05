@@ -1768,6 +1768,9 @@ func PostConsumeUserSubscriptionDeltaCappedWithWallet(userSubscriptionId, userId
 		if err := lockForUpdate(tx).Where("id = ?", userSubscriptionId).First(&sub).Error; err != nil {
 			return err
 		}
+		if sub.UserId != userId {
+			return fmt.Errorf("subscription %d belongs to user %d, not user %d", userSubscriptionId, sub.UserId, userId)
+		}
 		newUsed := sub.AmountUsed + delta
 		if newUsed < 0 {
 			sub.RefundCarryOver += -newUsed
