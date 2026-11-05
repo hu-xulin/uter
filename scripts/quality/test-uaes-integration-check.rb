@@ -39,8 +39,8 @@ class UaesIntegrationCheckTest < Minitest::Test
       ].join("\n"),
       ".agents/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
       ".claude/skills/uaes-integration/SKILL.md" => "Read skills/uaes-uter-integration/SKILL.md\nNever claim UAES integration is VERIFIED",
-      ".agents/skills/i18n-translate/SKILL.md" => "Canonical i18n skill",
-      ".claude/skills/i18n-translate/SKILL.md" => "Read .agents/skills/i18n-translate/SKILL.md"
+      ".agents/skills/i18n-translate/SKILL.md" => "---\nname: i18n-translate\ndescription: canonical\n---",
+      ".claude/skills/i18n-translate/SKILL.md" => "---\nname: i18n-translate\ndescription: adapter\n---\nRead .agents/skills/i18n-translate/SKILL.md"
     }
     paths.each do |relative, body|
       path = File.join(root, relative)
@@ -91,6 +91,17 @@ class UaesIntegrationCheckTest < Minitest::Test
     _out, err, status = run_checker(root)
     refute status.success?
     assert_match(/missing or empty/, err)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+
+  def test_fails_when_skill_adapter_name_does_not_match_directory
+    root = fixture
+    path = File.join(root, ".claude/skills/i18n-translate/SKILL.md")
+    File.write(path, File.read(path).sub("name: i18n-translate", "name: wrong-skill"))
+    _out, err, status = run_checker(root)
+    refute status.success?
+    assert_match(/name: i18n-translate/, err)
   ensure
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
