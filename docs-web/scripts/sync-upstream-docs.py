@@ -331,6 +331,11 @@ REMOVED_API_PATHS = {
 }
 
 
+def should_skip_api_path(path: str) -> bool:
+    """Return whether an upstream API operation is retired by this repository."""
+    return path in REMOVED_API_PATHS
+
+
 TYPE_LABELS = {
     'string': 'string', 'integer': 'integer', 'number': 'number',
     'boolean': 'boolean', 'array': 'array', 'object': 'object',
@@ -619,7 +624,7 @@ def sync_api(upstream: Path, texts: list) -> None:
                 found = operation_for(spec, wanted)
                 if not found:
                     continue
-                if found[0] in REMOVED_API_PATHS:
+                if should_skip_api_path(found[0]):
                     continue
                 rendered.append((op_title, endpoint_markdown(found[0], found[1], found[2], op_title)))
             parts += [block for _, block in rendered]
