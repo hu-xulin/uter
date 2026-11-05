@@ -371,7 +371,11 @@
           "action",
           "resource",
           "timestamp",
-          "result"
+          "result",
+          "task_id",
+          "authorization_id",
+          "environment",
+          "evidence_ref"
         ],
         "properties": {
           "agent_id": {
@@ -401,7 +405,26 @@
             ]
           },
           "evidence_ref": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
+          },
+          "task_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authorization_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "LOCAL_SANDBOX",
+              "DEVELOPMENT",
+              "TEST",
+              "STAGING",
+              "PRODUCTION"
+            ]
           }
         },
         "additionalProperties": false
