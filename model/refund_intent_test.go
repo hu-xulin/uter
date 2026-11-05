@@ -140,3 +140,43 @@ func TestSweepPendingRefundIntentsSurfacesExecutionFailure(t *testing.T) {
 	require.NoError(t, DB.First(&pending, intent.Id).Error)
 	assert.Equal(t, RefundIntentPending, pending.Status)
 }
+
+func TestValidateRefundIntentRejectsMalformedLedgerSnapshots(t *testing.T) {
+	validWallet := RefundIntent{
+		UserId: 1, FundingSource: RefundSourceWallet,
+		OrgResolved: true, WalletAmount: 10,
+	}
+	validSubscription := RefundIntent{
+		UserId: 1, FundingSource: RefundSourceSubscription,
+		SubRequestId: "request-1", SubId: 2, SubExtra: 5,
+	}
+	tests := []struct {
+		name   string
+		intent RefundIntent
+	}{
+		{name: "negative wallet amount", intent: func() RefundIntent { v := validWallet; v.WalletAmount = -1; return v }()},
+		{name: "unresolved wallet owner", intent: func() RefundIntent { v := validWallet; v.OrgResolved = false; return v }()},
+		{name: "negative organization", intent: func() RefundIntent { v := validWallet; v.OrgId = -1; return v }()},
+		{name: "wallet with subscription fields", intent: func() RefundIntent { v := validWallet; v.SubRequestId = "request-1"; return v }()},
+		{name: "negative token amount", intent: func() RefundIntent { v := validWallet; v.TokenConsumed = -1; return v }()},
+		{name: "token amount without token id", intent: func() RefundIntent { v := validWallet; v.TokenConsumed = 1; return v }()},
+		{name: "subscription without idempotency key", intent: func() RefundIntent { v := validSubscription; v.SubRequestId = ""; return v }()},
+		{name: "subscription extra without subscription id", intent: func() RefundIntent { v := validSubscription; v.SubId = 0; return v }()},
+		{name: "subscription with wallet amount", intent: func() RefundIntent { v := validSubscription; v.WalletAmount = 1; return v }()},
+		{name: "negative subscription extra", intent: func() RefundIntent { v := validSubscription; v.SubExtra = -1; return v }()},
+		{name: "unknown funding source", intent: RefundIntent{UserId: 1, FundingSource: "unknown"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Error(t, validateRefundIntent(&tt.intent))
+		})
+	}
+}
+
+func TestCreateRefundIntentRejectsNonPendingStatus(t *testing.T) {
+	intent := RefundIntent{
+		UserId: 1, FundingSource: RefundSourceWallet,
+		OrgResolved: true, WalletAmount: 1, Status: RefundIntentDone,
+	}
+	require.Error(t, CreateRefundIntent(&intent))
+}
