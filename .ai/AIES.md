@@ -131,7 +131,8 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 {
   "task_id": "AUTH-UI-001",
   "goal": "Improve login UI and flow reliability",
-  "task_type": "feature_enhancement",
+  "task_type": "FEATURE",
+  "original_request": "Improve the login UI and make the login flow more reliable.",
   "requester": "human-requester",
   "agent_id": "uter.agent.engineering.coding",
   "risk_level": "R2",
@@ -150,7 +151,12 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
   "constraints": ["Follow project design tokens", "Preserve approved authentication behavior", "Do not bypass security verification"],
   "applicable_specs": ["design-system.md §12/§14/§21", "AGENTS.md Authentication Security"],
   "required_evidence": ["Relevant source inspection", "Changed-file list", "Test results", "Acceptance checklist"],
-  "acceptance_criteria": ["Visual rules satisfied", "Existing auth methods remain functional", "Relevant tests pass"],
+  "acceptance_criteria": [
+    {"id": "AUTH-AC-01", "criterion": "Visual rules are satisfied", "verification": "Run the applicable design-system checks."},
+    {"id": "AUTH-AC-02", "criterion": "Existing auth methods remain functional", "verification": "Run relevant authentication regression tests."},
+    {"id": "AUTH-AC-03", "criterion": "Relevant tests pass", "verification": "Run the test_plan commands."}
+  ],
+  "test_plan": [{"command": "Use the repository's verified authentication and design-system test commands", "scope": "login UI and directly related authentication behavior", "status": "NOT_RUN"}],
   "approval_gates": ["Confirm scope expansion before implementation"]
 }
 ```
