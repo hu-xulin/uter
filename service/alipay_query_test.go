@@ -177,9 +177,6 @@ func TestAlipayQueryOrderSurfacesOtherBusinessFailures(t *testing.T) {
 func TestAlipayQueryOrderRejectsMismatchedTradeNumber(t *testing.T) {
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
-	other, err := rsa.GenerateKey(rand.Reader, 2048)
-	require.NoError(t, err)
-	_ = other
 
 	node := `{"code":"10000","msg":"Success","trade_status":"TRADE_SUCCESS","total_amount":"0.06","out_trade_no":"OTHER-ORDER"}`
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
