@@ -878,8 +878,12 @@ func reconcileUnfinishedTaskBilling(ctx context.Context, olderThan int64) {
 		task := &tasks[i]
 		// The refund rollout boundary is intentionally fail-closed for historical
 		// terminal tasks: their legacy quota may already have been refunded by the
-		// pre-ledger implementation. Never infer a refundable balance from them.
-		if task.SubmitTime > 0 && task.SubmitTime < model.TaskRefundLegacyCutoff {
+		// pre-ledger implementation. A missing submit timestamp is equally
+		// ambiguous. Do not silently skip these rows forever; persist them in the
+		// reconciliation queue so an operator can verify the historical ledger.
+		if task.SubmitTime <= 0 || task.SubmitTime < model.TaskRefundLegacyCutoff {
+			markTaskBillingForReconciliation(ctx, task,
+				"historical terminal task has no verifiable durable refund snapshot; automatic refund is disabled")
 			continue
 		}
 		switch {
