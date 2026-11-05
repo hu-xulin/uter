@@ -1736,7 +1736,7 @@ func admissionQuotaLowWater() int {
 	return int(trustUSD * common.QuotaPerUnit)
 }
 
- // AdjustUserUsedQuota applies an accounting usage delta immediately. Negative
+// AdjustUserUsedQuota applies an accounting usage delta immediately. Negative
 // adjustments are guarded against underflow instead of silently clamping the
 // ledger to zero; billing workflows must surface an inconsistent snapshot.
 func AdjustUserUsedQuota(id int, delta int) error {
