@@ -218,7 +218,15 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 			if err != nil {
 				logger.LogError(ctx, common.LogText("UpdateMidjourneyTask task error: %s", err.Error()))
 			} else if won && shouldReturnQuota {
-				service.RefundMidjourneyQuota(ctx, task, "Composition failed")
+				// Route every terminal failure through the durable local-task refund
+				// transaction. The legacy helper performs independent writes and
+				// cannot safely recover partial success or LOG_DB delivery.
+				if refundErr := model.RefundMidjourneyTaskBilling(task.Id, "Composition failed"); refundErr != nil {
+					logger.LogError(ctx, common.LogText(
+						"Midjourney task %d durable refund/reconciliation failed: %v",
+						task.Id, refundErr,
+					))
+				}
 			}
 		}
 	}
