@@ -49,21 +49,21 @@ type RefundIntent struct {
 	FundingSource  string `gorm:"size:16"` // wallet | subscription
 	// 钱包出资：OrgResolved=false 表示出资归属尚未解析，不可执行（防止把组织
 	// 预扣退成个人余额）；OrgId>0 表示组织共享预算出资。
-	OrgResolved  bool
-	OrgId        int
-	WalletAmount int
+	OrgResolved    bool
+	OrgId          int
+	WalletAmount   int
 	// 订阅出资：预扣退回按 SubRequestId 幂等重放；SubExtra 是发送前补充预扣，
 	// 非幂等，必须与完成标记同事务回滚。
-	SubRequestId string
-	SubId        int
-	SubExtra     int64
+	SubRequestId   string
+	SubId          int
+	SubExtra       int64
 	// 令牌侧：TokenKey 不落凭证（避免扩大密钥面），执行时按 TokenId 从
 	// tokens 表读取用于缓存同步。
-	TokenId       int
-	TokenConsumed int
-	Status        string `gorm:"index;size:16"`
-	CreateTime    int64
-	UpdateTime    int64
+	TokenId        int
+	TokenConsumed  int
+	Status         string `gorm:"index;size:16"`
+	CreateTime     int64
+	UpdateTime     int64
 }
 
 func (RefundIntent) TableName() string { return "refund_intents" }
