@@ -992,7 +992,6 @@ func TestUpdateVideoSingleTaskPollClassification(t *testing.T) {
 			if testCase.wantRefund {
 				assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
 				assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
-	t.Logf("null-upstream refund result: task=%s status=%s quota=%d billing_state=%s billing_error=%q retries=%d", persisted.TaskID, persisted.Status, persisted.Quota, persisted.BillingState, persisted.BillingLastError, persisted.BillingRetryCount)
 				assert.Zero(t, persisted.Quota)
 				log := getLastLog(t)
 				require.NotNil(t, log)
@@ -1130,4 +1129,5 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	assert.Zero(t, persisted.Quota)
 	assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
 	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
+	t.Logf("null-upstream refund result: task=%s status=%s quota=%d billing_state=%s billing_error=%q retries=%d", persisted.TaskID, persisted.Status, persisted.Quota, persisted.BillingState, persisted.BillingLastError, persisted.BillingRetryCount)
 }
