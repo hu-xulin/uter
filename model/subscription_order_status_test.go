@@ -258,3 +258,67 @@ func TestSubscriptionFailurePreservesInconsistentSuccessfulTopUp(t *testing.T) {
 	require.Equal(t, common.TopUpStatusPending, storedOrder.Status, "the inconsistent pair must be reconciled, not terminalized")
 	require.Equal(t, common.TopUpStatusSuccess, storedTopUp.Status)
 }
+
+func TestCompleteSubscriptionOrderReplayRepairsMissingTopUp(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	order := SubscriptionOrder{
+		UserId: 71, PlanId: 1, Money: 12.5, TradeNo: "subscription-replay-repair",
+		PaymentProvider: PaymentProviderAlipay, PaymentMethod: "alipay",
+		ProviderAmount: 1250, ProviderCurrency: "CNY",
+		Status: common.TopUpStatusSuccess, CompleteTime: common.GetTimestamp(),
+	}
+	require.NoError(t, db.Create(&order).Error)
+
+	require.NoError(t, CompleteSubscriptionOrder(order.TradeNo, "", PaymentProviderAlipay, ""))
+	var topup TopUp
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&topup).Error)
+	require.Equal(t, order.UserId, topup.UserId)
+	require.Equal(t, order.PaymentProvider, topup.PaymentProvider)
+	require.Equal(t, order.Money, topup.Money)
+	require.Equal(t, common.TopUpStatusSuccess, topup.Status)
+}
+
+func TestCompleteSubscriptionOrderReplayRejectsConflictingTopUp(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	order := SubscriptionOrder{
+		UserId: 71, PlanId: 1, Money: 12.5, TradeNo: "subscription-replay-conflict",
+		PaymentProvider: PaymentProviderAlipay, PaymentMethod: "alipay",
+		Status: common.TopUpStatusSuccess, CompleteTime: common.GetTimestamp(),
+	}
+	topup := TopUp{
+		UserId: 72, Money: 12.5, TradeNo: order.TradeNo,
+		PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending,
+	}
+	require.NoError(t, db.Create(&order).Error)
+	require.NoError(t, db.Create(&topup).Error)
+
+	require.ErrorIs(t, CompleteSubscriptionOrder(order.TradeNo, "", PaymentProviderAlipay, ""), ErrPaymentMethodMismatch)
+	var stored TopUp
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
+	require.Equal(t, 72, stored.UserId)
+	require.Equal(t, common.TopUpStatusPending, stored.Status)
+}
