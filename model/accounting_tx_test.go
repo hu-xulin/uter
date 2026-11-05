@@ -60,6 +60,10 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 
 	user := createReserveTestUser(t, 100)
 	token := createReserveTestToken(t, 80)
+	require.NoError(t, DB.Model(&Token{}).Where("id = ?", token.Id).Updates(map[string]any{
+		"remain_quota": 70,
+		"used_quota": 10,
+	}).Error)
 	channel := Channel{Name: "accounting-tx-rollback", Key: "accounting-tx-rollback-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
 
@@ -82,8 +86,8 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 	assert.ErrorIs(t, err, rollbackErr)
 	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
 	storedToken := getTokenFromDB(t, token.Id)
-	assert.Equal(t, 80, storedToken.RemainQuota)
-	assert.Zero(t, storedToken.UsedQuota)
+	assert.Equal(t, 70, storedToken.RemainQuota)
+	assert.Equal(t, 10, storedToken.UsedQuota)
 
 	var storedUser User
 	require.NoError(t, DB.Select("used_quota").First(&storedUser, user.Id).Error)
