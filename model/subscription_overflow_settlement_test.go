@@ -21,6 +21,7 @@ func TestPostConsumeSubscriptionOverflowChargesWalletAtomically(t *testing.T) {
 	DB = db
 	common.RedisEnabled = false
 	t.Cleanup(func() {
+		WaitCacheSyncForTest()
 		DB = previousDB
 		common.RedisEnabled = previousRedis
 		_ = sqlDB.Close()
@@ -52,6 +53,7 @@ func TestPostConsumeSubscriptionOverflowRollsBackWhenWalletMissing(t *testing.T)
 	DB = db
 	common.RedisEnabled = false
 	t.Cleanup(func() {
+		WaitCacheSyncForTest()
 		DB = previousDB
 		common.RedisEnabled = previousRedis
 		_ = sqlDB.Close()
