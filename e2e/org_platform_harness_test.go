@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"testing"
 
 	"github.com/uter-ai/uter/common"
@@ -43,14 +42,13 @@ import (
 //	m2        role=1    org=A  org_role=member    研发部成员
 //	outsider  role=1    org=0                     平台直管普通用户
 
-var orgE2EDatabaseSequence uint64
-
 const (
 	orgE2EPassword = "Test1234!"
 	orgE2EModel    = "gpt-4o-org-e2e"
 )
 
 type orgPlatformEnv struct {
+	testID    string
 	engine    *gin.Engine
 	db        *gorm.DB
 	upstream  *httptest.Server
@@ -82,7 +80,8 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	previousPasswordLogin := common.PasswordLoginEnabled
 	previousSSRF := *system_setting.GetFetchSetting()
 
-	database, err := gorm.Open(sqlite.Open("file:orge2e-"+strconv.FormatUint(atomic.AddUint64(&orgE2EDatabaseSequence, 1), 10)+"?mode=memory&cache=shared"), &gorm.Config{})
+	testID := strings.NewReplacer("/", "-", " ", "-").Replace(t.Name())
+	database, err := gorm.Open(sqlite.Open("file:orge2e-"+testID+"?mode=memory&cache=shared"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, database.AutoMigrate(
 		&model.Channel{}, &model.Token{}, &model.User{}, &model.UserSession{},
@@ -94,6 +93,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 		&model.Organization{}, &model.TwoFA{}, &model.TwoFABackupCode{},
 		&model.Checkin{}, &model.SubscriptionOrder{}, &model.UserSubscription{},
 		&model.SubscriptionPreConsumeRecord{}, &model.CustomOAuthProvider{},
+		&model.RefundIntent{},
 		&model.UserOAuthBinding{}, &model.PerfMetric{}, &model.SystemInstance{},
 		&model.SystemTask{}, &model.SystemTaskLock{}, &model.CasbinRule{},
 		&model.AuthzRole{}, &model.SubscriptionPlan{},
@@ -114,6 +114,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	router.SetRelayRouter(engine)
 
 	env := &orgPlatformEnv{
+		testID:    testID,
 		engine:    engine,
 		db:        database,
 		users:     map[string]*model.User{},
@@ -194,7 +195,7 @@ func (env *orgPlatformEnv) createUser(t *testing.T, username string, role int) *
 		Role:     role,
 		Status:   common.UserStatusEnabled,
 		Group:    "default",
-		AffCode:  username + "-aff",
+		AffCode:  env.testID + "-" + username + "-aff",
 	}
 	require.NoError(t, model.DB.Create(user).Error)
 	env.users[username] = user
