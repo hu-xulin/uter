@@ -35,7 +35,9 @@ type midjourneyRefundLogPayload struct {
 	ChannelID int    `json:"channel_id"`
 	Quota     int    `json:"quota"`
 	Reason    string `json:"reason"`
-	Result    string `json:"result"`
+	Result     string `json:"result"`
+	Status     string `json:"status"`
+	ReasonCode string `json:"reason_code"`
 }
 
 type MidjourneyRefundOutboxBatchResult struct {
@@ -58,17 +60,33 @@ func deliverMidjourneyRefundLog(event MidjourneyRefundOutbox) error {
 	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
 		return errors.New("Midjourney refund outbox delivery requires a transactional SQL LOG_DB; ClickHouse adapter is not implemented")
 	}
-	if event.EventKey == "" || event.EventType != "midjourney.refund.completed" {
-		return fmt.Errorf("unsupported Midjourney refund outbox event %q", event.EventType)
+	if event.EventKey == "" {
+		return errors.New("Midjourney refund outbox event key is required")
 	}
 	var payload midjourneyRefundLogPayload
 	if err := json.Unmarshal([]byte(event.PayloadJSON), &payload); err != nil {
 		return fmt.Errorf("decode Midjourney refund event %s: %w", event.EventKey, err)
 	}
-	if payload.TaskID <= 0 || payload.UserID <= 0 || payload.Quota <= 0 || payload.Result != "refunded" {
-		return fmt.Errorf("invalid Midjourney refund event payload for %s", event.EventKey)
+	logType := LogTypeRefund
+	content := fmt.Sprintf("Midjourney task %s refund completed: %s", payload.MjID, payload.Reason)
+	switch event.EventType {
+	case "midjourney.refund.completed":
+		if payload.TaskID <= 0 || payload.UserID <= 0 || payload.Quota <= 0 || payload.Result != "refunded" {
+			return fmt.Errorf("invalid Midjourney refund completion payload for %s", event.EventKey)
+		}
+	case "midjourney.refund.reconciliation_required":
+		if payload.TaskID <= 0 || payload.Status != MidjourneyRefundReconciliationRequired || payload.ReasonCode == "" {
+			return fmt.Errorf("invalid Midjourney refund reconciliation payload for %s", event.EventKey)
+		}
+		logType = LogTypeError
+		content = fmt.Sprintf("Midjourney task %s requires refund reconciliation (%s): %s", payload.MjID, payload.ReasonCode, payload.Reason)
+	default:
+		return fmt.Errorf("unsupported Midjourney refund outbox event %q", event.EventType)
 	}
-	username, _ := GetUsernameById(payload.UserID, false)
+	username := ""
+	if payload.UserID > 0 {
+		username, _ = GetUsernameById(payload.UserID, false)
+	}
 	return LOG_DB.Transaction(func(tx *gorm.DB) error {
 		receipt := MidjourneyRefundLogReceipt{EventKey: event.EventKey, CreatedAt: common.GetTimestamp()}
 		result := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(&receipt)
@@ -82,8 +100,8 @@ func deliverMidjourneyRefundLog(event MidjourneyRefundOutbox) error {
 			UserId:    payload.UserID,
 			Username:  username,
 			CreatedAt: common.GetTimestamp(),
-			Type:      LogTypeRefund,
-			Content:   fmt.Sprintf("Midjourney task %s refund completed: %s", payload.MjID, payload.Reason),
+			Type:      logType,
+			Content:   content,
 			Quota:     payload.Quota,
 			ChannelId: payload.ChannelID,
 			TokenId:   payload.TokenID,
