@@ -18,7 +18,7 @@ func TestFailPendingSubscriptionOrder(t *testing.T) {
 	sqlDB, err := db.DB()
 	require.NoError(t, err)
 	sqlDB.SetMaxOpenConns(1)
-	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}))
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
 	DB = db
 	t.Cleanup(func() {
 		DB = previousDB
@@ -40,12 +40,19 @@ func TestFailPendingSubscriptionOrder(t *testing.T) {
 	require.NoError(t, db.Create(&pending).Error)
 	require.NoError(t, db.Create(&success).Error)
 	require.NoError(t, db.Create(&otherProvider).Error)
+	pendingTopUp := TopUp{UserId: pending.UserId, TradeNo: pending.TradeNo, PaymentProvider: PaymentProviderStripe, Status: common.TopUpStatusPending}
+	successTopUp := TopUp{UserId: success.UserId, TradeNo: success.TradeNo, PaymentProvider: PaymentProviderStripe, Status: common.TopUpStatusSuccess}
+	require.NoError(t, db.Create(&pendingTopUp).Error)
+	require.NoError(t, db.Create(&successTopUp).Error)
 
 	require.NoError(t, FailPendingSubscriptionOrder(pending.TradeNo, PaymentProviderStripe))
 	var saved SubscriptionOrder
 	require.NoError(t, db.Where("trade_no = ?", pending.TradeNo).First(&saved).Error)
 	require.Equal(t, common.TopUpStatusFailed, saved.Status)
 	require.Positive(t, saved.CompleteTime)
+	var linkedTopUp TopUp
+	require.NoError(t, db.Where("trade_no = ?", pending.TradeNo).First(&linkedTopUp).Error)
+	require.Equal(t, common.TopUpStatusFailed, linkedTopUp.Status, "linked top-up must follow subscription failure")
 
 	// Repeated events are idempotent.
 	require.NoError(t, FailPendingSubscriptionOrder(pending.TradeNo, PaymentProviderStripe))
@@ -59,6 +66,8 @@ func TestFailPendingSubscriptionOrder(t *testing.T) {
 	saved = SubscriptionOrder{}
 	require.NoError(t, db.Where("trade_no = ?", success.TradeNo).First(&saved).Error)
 	require.Equal(t, common.TopUpStatusSuccess, saved.Status)
+	require.NoError(t, db.Where("trade_no = ?", success.TradeNo).First(&linkedTopUp).Error)
+	require.Equal(t, common.TopUpStatusSuccess, linkedTopUp.Status, "late failure must not downgrade successful top-up")
 
 	require.ErrorIs(t, FailPendingSubscriptionOrder(otherProvider.TradeNo, PaymentProviderStripe), ErrPaymentMethodMismatch)
 	require.True(t, errors.Is(FailPendingSubscriptionOrder("missing", PaymentProviderStripe), ErrSubscriptionOrderNotFound))
@@ -192,4 +201,60 @@ func TestUpsertSubscriptionTopUpPersistsActualPaymentMethod(t *testing.T) {
 	var stored TopUp
 	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
 	require.Equal(t, "wxpay", stored.PaymentMethod)
+}
+
+func TestExpireSubscriptionOrderTransitionsLinkedTopUp(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	order := SubscriptionOrder{UserId: 44, PlanId: 1, Money: 10, TradeNo: "expire-linked-topup", PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending}
+	topup := TopUp{UserId: 44, TradeNo: order.TradeNo, Money: 10, PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending}
+	require.NoError(t, db.Create(&order).Error)
+	require.NoError(t, db.Create(&topup).Error)
+
+	require.NoError(t, ExpireSubscriptionOrder(order.TradeNo, PaymentProviderAlipay))
+	var storedOrder SubscriptionOrder
+	var storedTopUp TopUp
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&storedOrder).Error)
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&storedTopUp).Error)
+	require.Equal(t, common.TopUpStatusExpired, storedOrder.Status)
+	require.Equal(t, common.TopUpStatusExpired, storedTopUp.Status)
+}
+
+func TestSubscriptionFailurePreservesInconsistentSuccessfulTopUp(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	order := SubscriptionOrder{UserId: 45, PlanId: 1, Money: 10, TradeNo: "failed-linked-success-topup", PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusPending}
+	topup := TopUp{UserId: 45, TradeNo: order.TradeNo, Money: 10, PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusSuccess}
+	require.NoError(t, db.Create(&order).Error)
+	require.NoError(t, db.Create(&topup).Error)
+
+	require.ErrorIs(t, FailPendingSubscriptionOrder(order.TradeNo, PaymentProviderEpay), ErrTopUpStatusInvalid)
+	var storedOrder SubscriptionOrder
+	var storedTopUp TopUp
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&storedOrder).Error)
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&storedTopUp).Error)
+	require.Equal(t, common.TopUpStatusPending, storedOrder.Status, "the inconsistent pair must be reconciled, not terminalized")
+	require.Equal(t, common.TopUpStatusSuccess, storedTopUp.Status)
 }
