@@ -109,7 +109,7 @@ func getSubscriptionPlanInfoCache() *cachex.HybridCache[SubscriptionPlanInfo] {
 		ttl := subscriptionPlanInfoCacheTTL()
 		subscriptionPlanInfoCache = cachex.NewHybridCache[SubscriptionPlanInfo](cachex.HybridCacheConfig[SubscriptionPlanInfo]{
 			Namespace: cachex.Namespace(subscriptionPlanInfoCacheNamespace),
-			Redis:        common.RDB,
+			Redis:     common.RDB,
 			RedisEnabled: func() bool {
 				return common.RedisEnabled && common.RDB != nil
 			},
