@@ -193,7 +193,6 @@ func TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions(t *testing.T) {
 	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "event key must be non-empty")
 }
 
-
 // TestMidjourneyRefundOutboxCreationRejectsInvalidIdentityAndSchema ensures
 // malformed event identities and unsupported schemas never enter the durable queue.
 func TestMidjourneyRefundOutboxCreationRejectsInvalidIdentityAndSchema(t *testing.T) {
