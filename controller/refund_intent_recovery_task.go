@@ -30,6 +30,9 @@ func (refundIntentRecoveryHandler) Interval() time.Duration { return refundInten
 func (refundIntentRecoveryHandler) NewPayload() any         { return nil }
 
 func (refundIntentRecoveryHandler) Run(ctx context.Context, task *model.SystemTask, runnerID string) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	if err := ctx.Err(); err != nil {
 		finishSystemTaskHandler(task, runnerID, model.SystemTaskStatusFailed, nil, err)
 		return
