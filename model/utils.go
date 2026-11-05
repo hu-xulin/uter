@@ -211,3 +211,50 @@ func RecordExist(err error) (bool, error) {
 func shouldUpdateRedis(fromDB bool, err error) bool {
 	return common.RedisEnabled && fromDB && err == nil
 }
+
+ // ApplyTaskRefundUsage atomically reverses the usage counters associated with a
+ // task refund. It also drains this user's/channel's queued batch deltas under
+ // the same queue locks, so a refund cannot race a later batch flush or be lost
+ // when the process exits before the next batch tick.
+func ApplyTaskRefundUsage(userID, channelID, quota int) error {
+	if userID <= 0 || channelID <= 0 || quota <= 0 {
+		return errors.New("task refund usage adjustment requires positive user, channel, and quota")
+	}
+
+	userType := BatchUpdateTypeUsedQuota
+	channelType := BatchUpdateTypeChannelUsedQuota
+	batchUpdateLocks[userType].Lock()
+	batchUpdateLocks[channelType].Lock()
+	defer batchUpdateLocks[channelType].Unlock()
+	defer batchUpdateLocks[userType].Unlock()
+
+	userDelta := batchUpdateStores[userType][userID] - quota
+	channelDelta := batchUpdateStores[channelType][channelID] - quota
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		userResult := tx.Model(&User{}).Where("id = ?", userID).
+			Update("used_quota", gorm.Expr("used_quota + ?", userDelta))
+		if userResult.Error != nil {
+			return userResult.Error
+		}
+		if userResult.RowsAffected != 1 {
+			return fmt.Errorf("user %d usage row was not updated", userID)
+		}
+		channelResult := tx.Model(&Channel{}).Where("id = ?", channelID).
+			Update("used_quota", gorm.Expr("used_quota + ?", channelDelta))
+		if channelResult.Error != nil {
+			return channelResult.Error
+		}
+		if channelResult.RowsAffected != 1 {
+			return fmt.Errorf("channel %d usage row was not updated", channelID)
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	delete(batchUpdateStores[userType], userID)
+	delete(batchUpdateStores[channelType], channelID)
+	delete(batchUpdateRetries[userType], userID)
+	delete(batchUpdateRetries[channelType], channelID)
+	return nil
+}
