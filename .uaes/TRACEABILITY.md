@@ -136,3 +136,5 @@ Code-level remediation on the integration branch:
 Regression coverage added in `service/task_billing_funding_test.go` includes organization debit/refund symmetry, member and organization underflow rollback, missing member rollback, missing organization snapshot, subscription overflow charging, no-overflow behavior, subscription refund/carryover, missing wallet rollback, foreign subscription ownership, zero-delta no-op, nil task, and invalid funding snapshots.
 
 **Acceptance status: IMPLEMENTED / TESTS_AUTHORED / RUNTIME_NOT_VERIFIED.** These tests have been committed but have not yet been executed in this environment. Do not mark task-billing acceptance or any UAES phase VERIFIED until the applicable test suites and independent review produce reproducible evidence.
+
+- Personal-wallet task adjustments now request the persisted DB-first quota path, and the regression suite covers both debit and refund persistence.
