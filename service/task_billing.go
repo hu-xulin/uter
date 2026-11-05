@@ -314,6 +314,9 @@ var ErrTaskBillingPartialFailure = errors.New("task billing partially applied an
 // 请求（或上一轮重试）在处理同一笔退款，直接返回，绝不第二次动账——那正是
 // 「人工重试时发生重复退款」的成因。
 func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	if task == nil {
 		logger.LogError(ctx, "cannot refund a nil task")
 		return false
@@ -504,6 +507,9 @@ func releaseTaskRefundClaim(ctx context.Context, task *model.Task, claimedQuota,
 // fromQuota/toQuota 一并纳入 CAS。抢占失败说明已有请求在处理同一笔结算，
 // 直接返回，不重复动账。
 func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int, reason *common.Message, clamps ...*common.QuotaClamp) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	if task == nil || actualQuota < 0 {
 		return
 	}
