@@ -1762,9 +1762,9 @@ func PostConsumeUserSubscriptionDeltaCapped(userSubscriptionId int, delta int64)
 }
 
 // PostConsumeUserSubscriptionDeltaCappedWithWallet atomically caps the
- // subscription usage and charges any overflow to the user's wallet. The
- // previous two-transaction sequence could commit the subscription cap and
- // then fail the wallet charge, permanently losing the overflow.
+// subscription usage and charges any overflow to the user's wallet. The
+// previous two-transaction sequence could commit the subscription cap and
+// then fail the wallet charge, permanently losing the overflow.
 func PostConsumeUserSubscriptionDeltaCappedWithWallet(userSubscriptionId, userId int, delta int64) error {
 	if userSubscriptionId <= 0 || userId <= 0 {
 		return errors.New("invalid subscription or user ID")
