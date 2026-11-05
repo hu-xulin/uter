@@ -296,6 +296,10 @@ func RelaySwapFace(c *gin.Context, info *relaycommon.RelayInfo) *dto.MidjourneyR
 		})
 		if err := model.RecordMidjourneyTaskUsage(info.UserId, billingChannelId, midjourneyTask.Quota); err != nil {
 			common.SysLog(common.LogText("failed to persist Midjourney task usage: %s", err.Error()))
+			midjourneyTask.BillingStatus = "usage_pending"
+			if updateErr := midjourneyTask.UpdateBillingState(); updateErr != nil {
+				common.SysLog(common.LogText("failed to persist Midjourney usage reconciliation marker: %s", updateErr.Error()))
+			}
 		}
 	}
 	c.Writer.WriteHeader(mjResp.StatusCode)
