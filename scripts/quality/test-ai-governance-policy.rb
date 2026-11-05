@@ -33,6 +33,13 @@ check.call(repo["force_push"] == false, "force push must be denied")
 check.call(policy["risk_levels"] == %w[R0 R1 R2 R3 R4], "risk levels must be R0-R4")
 expected_states = %w[CREATED EXECUTING VERIFYING CLOSED BLOCKED FAILED INTERRUPTED]
 check.call(policy.dig("task_lifecycle", "states") == expected_states, "task lifecycle states are incomplete or out of order")
+transitions = policy.dig("task_lifecycle", "transitions")
+check.call(transitions["CLOSED"] == [] && transitions["FAILED"] == [], "CLOSED and FAILED must be terminal states")
+check.call(transitions.fetch("VERIFYING", []).include?("CLOSED"), "VERIFYING must be able to close a validated task")
+check.call(!transitions.fetch("EXECUTING", []).include?("CLOSED"), "EXECUTING must never close a task without verification")
+check.call(policy.dig("task_lifecycle", "close_requires") == %w[all_acceptance_criteria_pass required_tests_pass evidence_complete no_open_p0_issue], "task closure must require all acceptance gates")
+check.call(policy.dig("task_lifecycle", "resume_requires").include?("last_completed_step"), "interrupted task must persist a resume checkpoint")
+check.call(policy.dig("global_controls", "delegated_permissions_can_escalate") == false, "delegated Agents must not escalate permissions")
 
 agents = policy.fetch("agents")
 agent_ids = agents.map { |agent| agent.fetch("id") }
@@ -95,5 +102,7 @@ puts "PASS: least privilege, task identity, scoped authorization and audit requi
 puts "PASS: R0-R4 risk classification and durable task lifecycle"
 puts "PASS: one non-main branch maximum; main push, force-push and PR merge denied"
 puts "PASS: PR repair workflow allows verified branch commit/push/PR only"
+puts "PASS: task lifecycle prevents unverified closure and supports checkpointed recovery"
+puts "PASS: delegated Agent permissions cannot escalate"
 puts "PASS: production, real-payment and production-database changes denied"
 puts "NOTE: static policy/schema tests do not replace live Agent runtime denial tests."
