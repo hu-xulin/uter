@@ -23,8 +23,9 @@ AGENTS="$ROOT/AGENTS.md"
 CLAUDE="$ROOT/CLAUDE.md"
 AGENTS_SKILL="$ROOT/.agents/skills/uaes-integration/SKILL.md"
 CLAUDE_SKILL="$ROOT/.claude/skills/uaes-integration/SKILL.md"
+GOVERNANCE_POLICY="$ROOT/.uaes/agent-governance.yaml"
 
-for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL"; do
+for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL" "$GOVERNANCE_POLICY" "$ROOT/.ai/task-schema.json"; do
   require_file "$file"
 done
 
@@ -40,6 +41,13 @@ require_text "$INTEGRATION" "Token usage, pricing, quota"
 require_text "$INTEGRATION" "SQLite/MySQL/PostgreSQL"
 require_text "$INTEGRATION" "UTER Design System 3.0"
 require_text "$INTEGRATION" "Do not change this status to VERIFIED"
+
+# P01 fail-closed policy and task contract must be present.
+require_text "$GOVERNANCE_POLICY" "max_non_main_branches: 1"
+require_text "$GOVERNANCE_POLICY" "git.merge"
+require_text "$GOVERNANCE_POLICY" "production.database.write"
+require_text "$GOVERNANCE_POLICY" "payment.configuration.write"
+require_text "$GOVERNANCE_POLICY" "overwrite.user_uncommitted_changes"
 
 # The traceability matrix must cover every phase and must not overstate compliance.
 require_text "$TRACEABILITY" "No phase in this matrix is currently marked VERIFIED"
@@ -82,4 +90,5 @@ pass "all Uter-owned canonical project skills have Claude adapters"
 pass "P00-P12 traceability is complete and explicitly unverified"
 pass "Uter payment, billing, auth, database, and Design System overlays remain protected"
 pass "Agent entrypoints and both runtime skill adapters route to the canonical contract"
+pass "P01 fail-closed permission policy and task schema are registered"
 printf '%s\n' "NOTE: static wiring only; remote commit reachability, semantic parity, runtime skill discovery, CI policy enforcement, and full UAES compliance remain separate acceptance requirements."
