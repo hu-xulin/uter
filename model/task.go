@@ -209,9 +209,21 @@ func (t *Task) ResultRetrievable() bool {
 // GetUpstreamTaskID 获取上游真实 task ID（用于与 provider 通信）
 // 旧数据没有 UpstreamTaskID 时，TaskID 本身就是上游 ID
 func (t *Task) GetUpstreamTaskID() string {
+	if t == nil {
+		return ""
+	}
 	if t.PrivateData.UpstreamTaskID != "" {
 		return t.PrivateData.UpstreamTaskID
 	}
+	// New billing-aware tasks persist submit-time provenance. For these rows an
+	// empty upstream ID is genuinely missing; never substitute our local TaskID
+	// and accidentally poll/refund against a provider ID that was never issued.
+	if t.PrivateData.BillingSource != "" || t.PrivateData.BillingContext != nil ||
+		t.PrivateData.OrganizationId != nil || t.PrivateData.Execution != nil {
+		return ""
+	}
+	// Historical rows predate the upstream_task_id field and used TaskID as the
+	// provider ID. Preserve that compatibility only for legacy-shaped records.
 	return t.TaskID
 }
 
