@@ -252,7 +252,7 @@ func ProcessMidjourneyRefundOutboxOnce(ctx context.Context, owner string, limit 
 	return result, firstErr
 }
 
- 
+
 // HasPendingMidjourneyRefundOutbox reports whether the independent delivery
 // worker has events ready now or abandoned leases that can be reclaimed.
 func HasPendingMidjourneyRefundOutbox() bool {
