@@ -21,9 +21,9 @@ const (
 )
 
 type MidjourneyRefundLogReceipt struct {
-	EventKey     string `json:"event_key" gorm:"type:varchar(128);primaryKey"`
-	PayloadHash  string `json:"payload_hash" gorm:"type:varchar(64);not null"`
-	CreatedAt    int64  `json:"created_at" gorm:"bigint;not null"`
+	EventKey    string `json:"event_key" gorm:"type:varchar(128);primaryKey"`
+	PayloadHash string `json:"payload_hash" gorm:"type:varchar(64);not null"`
+	CreatedAt   int64  `json:"created_at" gorm:"bigint;not null"`
 }
 
 func (MidjourneyRefundLogReceipt) TableName() string {
