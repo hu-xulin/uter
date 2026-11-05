@@ -323,7 +323,15 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 	}
 	quota := task.Quota
 	if quota == 0 {
-		return true
+		// A zero quota is a successful no-op only when the durable billing
+		// state is not an in-flight or quarantined operation. A claimed refund
+		// also sets quota to zero before the ledger work is complete.
+		switch task.BillingState {
+		case "", model.TaskBillingPending, model.TaskBillingReserved, model.TaskBillingSettled, model.TaskBillingRefunded:
+			return true
+		default:
+			return false
+		}
 	}
 
 	// 抢占退款执行权。quota 条件一并纳入 CAS：只有任务记录的待退额度仍等于
