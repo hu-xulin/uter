@@ -82,3 +82,47 @@ func adjustChannelUsedQuotaTx(tx *gorm.DB, channelID int, delta int) error {
 	}
 	return nil
 }
+
+
+// RecordMidjourneyTaskUsage synchronously persists the user request/usage and
+// channel usage in one primary-DB transaction. Midjourney refunds depend on
+// these values being durable before a failed task can be refunded; the generic
+// batch queue is intentionally bypassed.
+func RecordMidjourneyTaskUsage(userID int, channelID int, quota int) error {
+	if userID <= 0 || channelID <= 0 {
+		return errors.New("Midjourney usage requires positive user and channel IDs")
+	}
+	if quota < 0 {
+		return errors.New("Midjourney usage quota cannot be negative")
+	}
+	return DB.Transaction(func(tx *gorm.DB) error {
+		userResult := tx.Model(&User{}).
+			Where("id = ?", userID).
+			Updates(map[string]any{
+				"used_quota":    gorm.Expr("used_quota + ?", quota),
+				"request_count": gorm.Expr("request_count + ?", 1),
+			})
+		if userResult.Error != nil {
+			return userResult.Error
+		}
+		if userResult.RowsAffected == 0 {
+			return gorm.ErrRecordNotFound
+		}
+
+		channelQuery := tx.Model(&Channel{}).Where("id = ?", channelID)
+		channelResult := channelQuery.Update("used_quota", gorm.Expr("used_quota + ?", quota))
+		if channelResult.Error != nil {
+			return channelResult.Error
+		}
+		if channelResult.RowsAffected == 0 {
+			var count int64
+			if err := tx.Model(&Channel{}).Where("id = ?", channelID).Count(&count).Error; err != nil {
+				return err
+			}
+			if count == 0 {
+				return gorm.ErrRecordNotFound
+			}
+		}
+		return nil
+	})
+}
