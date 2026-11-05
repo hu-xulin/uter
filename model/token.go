@@ -617,7 +617,7 @@ func likeContains(keyword string) (string, error) {
 	return "%" + pattern + "%", nil
 }
 
- // IncreaseTokenQuotaPersisted applies a token refund directly to the durable
+// IncreaseTokenQuotaPersisted applies a token refund directly to the durable
  // ledger, bypassing the volatile batch queue. Cache synchronization happens
  // only after the database update succeeds.
 func IncreaseTokenQuotaPersisted(tokenId int, key string, quota int) error {
