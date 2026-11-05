@@ -18,7 +18,7 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 		MidjourneyTaskID: 101,
 		ReasonCode: "upstream_failed",
 		FundingSource: "personal_wallet",
-		BillingSnapshotJSON: \`{"version":1,"wallet_applied_quota":25}\`,
+		BillingSnapshotJSON: `{"version":1,"wallet_applied_quota":25}`,
 		WalletAppliedQuota: 25,
 	}
 	require.NoError(t, db.Create(&first).Error)
@@ -30,7 +30,7 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 		MidjourneyTaskID: 101,
 		ReasonCode: "duplicate",
 		FundingSource: "personal_wallet",
-		BillingSnapshotJSON: \`{"version":1,"wallet_applied_quota":25}\`,
+		BillingSnapshotJSON: `{"version":1,"wallet_applied_quota":25}`,
 	}
 	assert.Error(t, db.Create(&duplicateTask).Error, "one full refund per local task")
 
@@ -39,7 +39,7 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 		IdempotencyKey: first.IdempotencyKey,
 		ReasonCode: "duplicate_key",
 		FundingSource: "personal_wallet",
-		BillingSnapshotJSON: \`{"version":1}\`,
+		BillingSnapshotJSON: `{"version":1}`,
 	}
 	assert.Error(t, db.Create(&duplicateKey).Error, "idempotency key must also be unique")
 }
@@ -57,12 +57,12 @@ func TestMidjourneyRefundOperationRejectsUnverifiableInput(t *testing.T) {
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
 	for _, op := range []*MidjourneyRefundOperation{
-		{MidjourneyTaskID: 0, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: \`{"version":1}\`},
-		{MidjourneyTaskID: 201, ReasonCode: "", FundingSource: "personal_wallet", BillingSnapshotJSON: \`{"version":1}\`},
-		{MidjourneyTaskID: 202, ReasonCode: "failed", FundingSource: "", BillingSnapshotJSON: \`{"version":1}\`},
+		{MidjourneyTaskID: 0, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},
+		{MidjourneyTaskID: 201, ReasonCode: "", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},
+		{MidjourneyTaskID: 202, ReasonCode: "failed", FundingSource: "", BillingSnapshotJSON: `{"version":1}`},
 		{MidjourneyTaskID: 203, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: ""},
-		{MidjourneyTaskID: 204, OperationType: "partial", ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: \`{"version":1}\`},
-		{MidjourneyTaskID: 205, Status: MidjourneyRefundCompleted, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: \`{"version":1}\`},
+		{MidjourneyTaskID: 204, OperationType: "partial", ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},
+		{MidjourneyTaskID: 205, Status: MidjourneyRefundCompleted, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},
 	} {
 		assert.Error(t, db.Create(op).Error)
 	}
