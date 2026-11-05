@@ -214,12 +214,21 @@ func (midjourney *Midjourney) UpdateBillingState() error {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
-		var count int64
-		if err := DB.Model(&Midjourney{}).Where("id = ?", midjourney.Id).Count(&count).Error; err != nil {
+		var persisted Midjourney
+		if err := DB.Select(
+			"id", "quota", "token_id", "billing_channel_id", "billing_version",
+			"billing_status", "billing_wallet_applied", "billing_token_applied",
+		).First(&persisted, midjourney.Id).Error; err != nil {
 			return err
 		}
-		if count == 0 {
-			return gorm.ErrRecordNotFound
+		if persisted.Quota != midjourney.Quota ||
+			persisted.TokenId != midjourney.TokenId ||
+			persisted.BillingChannelId != midjourney.BillingChannelId ||
+			persisted.BillingVersion != midjourney.BillingVersion ||
+			persisted.BillingStatus != midjourney.BillingStatus ||
+			persisted.BillingWalletApplied != midjourney.BillingWalletApplied ||
+			persisted.BillingTokenApplied != midjourney.BillingTokenApplied {
+			return errors.New("Midjourney billing state changed concurrently")
 		}
 	}
 	return nil
