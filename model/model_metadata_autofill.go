@@ -228,6 +228,30 @@ func metadataFieldsToFill(local *Model, localVendor *Vendor, upstream MetadataVa
 			// it would re-attribute every model the record matches.
 		case "status":
 			// Visibility is an administrator's publication decision.
+		case "context_length":
+			if local.ContextLength == 0 && upstream.ContextLength > 0 {
+				fields = append(fields, field)
+			}
+		case "max_output_tokens":
+			if local.MaxOutputTokens == 0 && upstream.MaxOutputTokens > 0 {
+				fields = append(fields, field)
+			}
+		case "knowledge_cutoff":
+			if strings.TrimSpace(local.KnowledgeCutoff) == "" && strings.TrimSpace(upstream.KnowledgeCutoff) != "" {
+				fields = append(fields, field)
+			}
+		case "release_date":
+			if strings.TrimSpace(local.ReleaseDate) == "" && strings.TrimSpace(upstream.ReleaseDate) != "" {
+				fields = append(fields, field)
+			}
+		case "input_modalities":
+			if strings.TrimSpace(local.InputModalities) == "" && strings.TrimSpace(upstream.InputModalities) != "" {
+				fields = append(fields, field)
+			}
+		case "output_modalities":
+			if strings.TrimSpace(local.OutputModalities) == "" && strings.TrimSpace(upstream.OutputModalities) != "" {
+				fields = append(fields, field)
+			}
 		}
 	}
 	return fields

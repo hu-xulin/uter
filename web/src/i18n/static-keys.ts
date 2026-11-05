@@ -162,6 +162,16 @@ export const STATIC_I18N_KEYS = [
   'Custom endpoints',
   'Catalog visibility',
 
+  // Metadata sync field labels (FIELD_LABELS in sync-wizard-dialog.tsx).
+  // 'Description' / 'Icon' / 'Tags' / 'Vendor' / 'Match Type' /
+  // 'Model square visibility' are covered by t('...') call sites elsewhere.
+  'Context window',
+  'Max output tokens',
+  'Knowledge cutoff',
+  'Release date',
+  'Input modalities',
+  'Output modalities',
+
   // Header navigation
   'Home',
   'Console',
