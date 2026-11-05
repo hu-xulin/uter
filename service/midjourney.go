@@ -115,7 +115,13 @@ func RefundMidjourneyQuota(ctx context.Context, task *model.Midjourney, reason s
 	task.BillingStatus = latest.BillingStatus
 	task.BillingWalletApplied = latest.BillingWalletApplied
 	task.BillingTokenApplied = latest.BillingTokenApplied
-	return latest.BillingStatus == "refunded" || latest.BillingStatus == "reconciliation_required"
+	if latest.BillingStatus == "refunded" {
+		return true
+	}
+	return latest.Quota == 0 &&
+		!latest.BillingWalletApplied &&
+		!latest.BillingTokenApplied &&
+		latest.BillingStatus != "reconciliation_required"
 }
 
 func GetMjRequestModel(relayMode int, midjRequest *dto.MidjourneyRequest) (string, *dto.MidjourneyResponse, bool) {
