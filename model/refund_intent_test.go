@@ -119,7 +119,6 @@ func TestRefundIntentUnresolvedOrgRefusesExecution(t *testing.T) {
 	assert.Equal(t, RefundIntentPending, pending.Status)
 }
 
-
 // TestSweepPendingRefundIntentsSurfacesExecutionFailure ensures a stale intent
 // that cannot be safely refunded remains pending and makes the recovery pass fail.
 func TestSweepPendingRefundIntentsSurfacesExecutionFailure(t *testing.T) {
