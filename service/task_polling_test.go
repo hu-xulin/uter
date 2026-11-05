@@ -722,6 +722,12 @@ func TestRunTaskPollingOnceDoesNotRefundHistoricalFailedTask(t *testing.T) {
 	task.Progress = "100%"
 	task.SubmitTime = model.TaskRefundLegacyCutoff - 24*60*60 // fixed instant before the 2026-02-22 refund rollout boundary
 	task.UpdatedAt = time.Now().Add(-time.Minute).Unix()
+	// makeTask persists before returning; persist the historical terminal snapshot
+	// so reconciliation reads the same values asserted by this test.
+	require.NoError(t, model.DB.Model(&model.Task{}).Where("id = ?", task.ID).Updates(map[string]any{
+		"task_id": task.TaskID, "status": task.Status, "progress": task.Progress,
+		"submit_time": task.SubmitTime, "updated_at": task.UpdatedAt,
+	}).Error)
 
 	previousFactory := GetTaskAdaptorFunc
 	GetTaskAdaptorFunc = func(constant.TaskPlatform) TaskPollingAdaptor {
