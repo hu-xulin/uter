@@ -14,7 +14,7 @@ AIES 是**上层方法论 + L2/L3 补齐**，不替代项目已批准的"宪法"
 | 优先级 | 权威来源 | 职责 |
 |---|---|---|
 | 最高 | 用户明确的操作授权、L0 安全底线 | 授权范围、数据/生产/资金安全 |
-| 高 | `AGENTS.md`（根，256 行执行入口） | 项目宪法：技术栈、OWASP、后端/前端规则、项目治理、Git/PR 规范 |
+| 高 | `AGENTS.md`（根，仓库级执行入口） | 项目宪法：技术栈、OWASP、后端/前端规则、项目治理、Git/PR 规范 |
 | 高 | `web/AGENTS.md` | 前端专属约定（组件复用、i18n、构建） |
 | 高 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` + `showcase-3.0.html` | 设计系统唯一真源（§2 色彩 / §1 字号 / §13 组件 / §16 响应式 / §0 执行原则） |
 | 中高 | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准） | 领域规范基线：架构/API 契约/数据库/支付计费/安全/UX/变更/文档/AI 执行，各文档含「Uter 代码事实锚点」章节（真实文件路径+符号名） |
@@ -150,7 +150,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
   "scope": { "include": ["login screen", "directly related auth components"],
              "exclude": ["unrelated screens", "unapproved auth architecture changes"] },
   "constraints": ["Follow project design tokens", "Preserve approved authentication behavior", "Do not bypass security verification"],
-  "applicable_specs": ["`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §12/§14/§21", "AGENTS.md Authentication Security"],
+  "applicable_specs": ["docs/design-system/UTER-DESIGN-SYSTEM-3.0.md §12/§14/§21", "AGENTS.md Authentication Security"],
   "required_evidence": ["Relevant source inspection", "Changed-file list", "Test results", "Acceptance checklist"],
   "execution_audit": [],
   "lifecycle_history": [{"state": "CREATED", "timestamp": "2026-11-05T00:00:00Z", "actor_id": "human-requester"}],
