@@ -1,6 +1,11 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"github.com/uter-ai/uter/common"
+	"gorm.io/gorm"
+)
 
 type Midjourney struct {
 	Id          int    `json:"id"`
@@ -130,7 +135,13 @@ func HasUnfinishedMidjourneyTasks() bool {
 		Where("progress != ?", "100%").
 		Limit(1).
 		Pluck("id", &id).Error
-	return err == nil && id != 0
+	if err != nil {
+		// Fail closed: a database error must not make the scheduler conclude
+		// that there are no unfinished tasks and permanently stop polling.
+		common.SysLog("failed to check unfinished Midjourney tasks: " + err.Error())
+		return true
+	}
+	return id != 0
 }
 
 func GetByOnlyMJId(mjId string) *Midjourney {
@@ -190,9 +201,23 @@ func (midjourney *Midjourney) Update() error {
 }
 
 func (midjourney *Midjourney) UpdateBillingState() error {
-	return DB.Model(midjourney).
+	if midjourney == nil {
+		return errors.New("Midjourney task is nil")
+	}
+	if midjourney.Id <= 0 {
+		return errors.New("Midjourney task ID must be positive")
+	}
+	result := DB.Model(&Midjourney{}).
+		Where("id = ?", midjourney.Id).
 		Select("quota", "token_id", "billing_channel_id").
-		Updates(midjourney).Error
+		Updates(midjourney)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (midjourney *Midjourney) GetBillingChannelId() int {
