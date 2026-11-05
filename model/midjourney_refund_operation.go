@@ -67,7 +67,13 @@ func (op *MidjourneyRefundOperation) BeforeCreate(tx *gorm.DB) error {
 	default:
 		return fmt.Errorf("unsupported Midjourney refund funding source %q", op.FundingSource)
 	}
-	if op.BillingVersion <= 0 { return errors.New("billing snapshot version must be positive") }
+	// GORM applies SQL defaults after hooks; initialize zero-value structs here.
+	if op.BillingVersion == 0 {
+		op.BillingVersion = 1
+	}
+	if op.BillingVersion < 0 {
+		return errors.New("billing snapshot version must be positive")
+	}
 	if op.FundingUserID < 0 || op.FundingOrgID < 0 || op.TokenID < 0 || op.ChannelID < 0 {
 		return errors.New("Midjourney refund snapshot IDs cannot be negative")
 	}
