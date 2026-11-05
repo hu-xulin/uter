@@ -337,16 +337,15 @@ func newTestMessage(text string) *common.Message {
 	return common.NewMessage(text)
 }
 
-
 func TestTaskBillingRetryCountIncrementsOnlyWithSuccessfulCAS(t *testing.T) {
 	truncate(t)
 	task := makeTask(t, 51, 151, 5000, 0, BillingSourceWallet, 0)
 	fromQuota, toQuota := 5000, 3000
 	transition := model.TaskBillingTransition{
-		FromState: model.TaskBillingPending,
-		ToState: model.TaskBillingSettlementPending,
-		FromQuota: &fromQuota,
-		ToQuota: &toQuota,
+		FromState:           model.TaskBillingPending,
+		ToState:             model.TaskBillingSettlementPending,
+		FromQuota:           &fromQuota,
+		ToQuota:             &toQuota,
 		RetryCountIncrement: true,
 	}
 	won, err := model.TransitionTaskBilling(task.TaskID, transition)
@@ -367,7 +366,7 @@ func TestMarkTaskBillingForReconciliationDoesNotOverwriteTerminalState(t *testin
 	fromQuota := 5000
 	won, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 		FromState: model.TaskBillingPending,
-		ToState: model.TaskBillingSettled,
+		ToState:   model.TaskBillingSettled,
 		FromQuota: &fromQuota,
 	})
 	require.NoError(t, err)
@@ -387,9 +386,9 @@ func TestRefundTaskQuotaLostClaimIsNotReportedAsSuccess(t *testing.T) {
 	fromQuota, toQuota := 5000, 0
 	won, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 		FromState: model.TaskBillingPending,
-		ToState: model.TaskBillingRefundPending,
+		ToState:   model.TaskBillingRefundPending,
 		FromQuota: &fromQuota,
-		ToQuota: &toQuota,
+		ToQuota:   &toQuota,
 	})
 	require.NoError(t, err)
 	require.True(t, won)
