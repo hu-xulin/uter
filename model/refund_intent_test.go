@@ -182,3 +182,23 @@ func TestCreateRefundIntentRejectsNonPendingStatus(t *testing.T) {
 	}
 	require.Error(t, CreateRefundIntent(&intent))
 }
+
+func TestCreateRefundIntentReusesOnlyIdenticalIdempotencySnapshot(t *testing.T) {
+	_, _, original := newRefundIntentFixture(t)
+
+	replay := original
+	replay.Id = 0
+	replay.Status = ""
+	require.NoError(t, CreateRefundIntent(&replay))
+	assert.Equal(t, original.Id, replay.Id, "same logical refund must reuse its durable intent")
+
+	collision := original
+	collision.Id = 0
+	collision.Status = ""
+	collision.WalletAmount++
+	require.Error(t, CreateRefundIntent(&collision), "same key with a different amount must fail closed")
+
+	var rows int64
+	require.NoError(t, DB.Model(&RefundIntent{}).Where("idempotency_key = ?", original.IdempotencyKey).Count(&rows).Error)
+	assert.EqualValues(t, 1, rows, "one durable intent per logical refund")
+}
