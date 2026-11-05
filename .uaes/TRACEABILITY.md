@@ -10,7 +10,7 @@
 
 | UAES phase | Uter current source / implementation | Mapping status | Required next evidence |
 |---|---|---|---|
-| P00 Foundation | AGENTS.md, CLAUDE.md, .ai/AIES.md, docs/ai-specs/, scripts/quality/ai-specs-check.sh | PARTIAL | Reconcile precedence and migrate generic rules after UAES approval |
+| P00 Foundation | AGENTS.md, CLAUDE.md, .ai/AIES.md, docs/ai-specs/, scripts/quality/ai-specs-check.sh, .uaes/INTEGRATION.md, docs/ai-specs/CONFLICT-REPORT.md | PARTIAL | Complete 15-control evidence mapping; reconcile UAES/Uter result-state semantics; full local-standard conflict review; current-head Uter CI and runtime agent permission-denial evidence; migrate generic rules only after UAES approval |
 | P01 AI Governance | Root agent instructions, `.uaes/agent-governance.yaml`, `.ai/task-schema.json`, P01 policy contract tests, CI single-work-branch check | PARTIAL | Exact-head CI; WorkBuddy/Claude runtime permission denial tests; local dirty-worktree preservation; interruption/resume and multi-agent runtime evidence |
 | P02 Product Engineering | docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md | PRESENT / NOT_VERIFIED | Trace requirements to product acceptance tests and approved business rules |
 | P03 Knowledge Engineering | `.ai/` context, 10 domain standards, 4 UEQE standards, ADR registry, `CONFLICT-REPORT.md`, `ai-specs-check.sh`, OpenAPI drift audit | PARTIAL | Version/owner/status metadata and 90-day review-date enforcement added; source-path/branch/ADR checks added; API drift audit still records about 240 implemented but undocumented routes; full Markdown link validation, business-doc/code consistency sampling, historical ADR inventory, runtime Agent knowledge-load/retrieval evidence, and exact-head CI remain open |
