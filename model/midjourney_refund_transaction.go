@@ -21,12 +21,12 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 	}
 
 	var (
-		userID       int
-		tokenID      int
-		channelID    int
-		tokenKey     string
-		quota        int
-		applied      bool
+		userID         int
+		tokenID        int
+		channelID      int
+		tokenKey       string
+		quota          int
+		applied        bool
 		reconciliation bool
 	)
 
@@ -61,12 +61,12 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			reasonDetail = reasonDetail[:512]
 		}
 		snapshot := map[string]any{
-			"billing_version": task.BillingVersion,
-			"billing_status": task.BillingStatus,
-			"wallet_applied": task.BillingWalletApplied,
-			"token_applied": task.BillingTokenApplied,
-			"task_quota": task.Quota,
-			"token_id": task.TokenId,
+			"billing_version":    task.BillingVersion,
+			"billing_status":     task.BillingStatus,
+			"wallet_applied":     task.BillingWalletApplied,
+			"token_applied":      task.BillingTokenApplied,
+			"task_quota":         task.Quota,
+			"token_id":           task.TokenId,
 			"billing_channel_id": task.GetBillingChannelId(),
 		}
 
@@ -83,32 +83,32 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 				return marshalErr
 			}
 			op := &MidjourneyRefundOperation{
-				MidjourneyTaskID: task.Id,
-				OperationType: MidjourneyRefundOperationTypeFull,
-				ReasonCode: "midjourney_billing_snapshot_ambiguous",
-				ReasonDetail: reasonDetail,
-				BillingVersion: 1,
+				MidjourneyTaskID:    task.Id,
+				OperationType:       MidjourneyRefundOperationTypeFull,
+				ReasonCode:          "midjourney_billing_snapshot_ambiguous",
+				ReasonDetail:        reasonDetail,
+				BillingVersion:      1,
 				BillingSnapshotJSON: string(snapshotJSON),
-				FundingSource: MidjourneyRefundFundingUnknownLegacy,
-				FundingUserID: task.UserId,
-				TokenID: task.TokenId,
-				ChannelID: task.GetBillingChannelId(),
-				Status: MidjourneyRefundReconciliationRequired,
+				FundingSource:       MidjourneyRefundFundingUnknownLegacy,
+				FundingUserID:       task.UserId,
+				TokenID:             task.TokenId,
+				ChannelID:           task.GetBillingChannelId(),
+				Status:              MidjourneyRefundReconciliationRequired,
 			}
 			eventPayload, marshalErr := json.Marshal(map[string]any{
-				"task_id": task.Id,
-				"mj_id": task.MjId,
-				"reason": reasonDetail,
-				"status": MidjourneyRefundReconciliationRequired,
+				"task_id":    task.Id,
+				"mj_id":   task.MjId,
+				"reason":  reasonDetail,
+				"status":  MidjourneyRefundReconciliationRequired,
 			})
 			if marshalErr != nil {
 				return marshalErr
 			}
 			event := &MidjourneyRefundOutbox{
-				EventKey: fmt.Sprintf("midjourney:%d:refund-reconciliation", task.Id),
-				EventType: "midjourney.refund.reconciliation_required",
+				EventKey:       fmt.Sprintf("midjourney:%d:refund-reconciliation", task.Id),
+				EventType:      "midjourney.refund.reconciliation_required",
 				PayloadVersion: 1,
-				PayloadJSON: string(eventPayload),
+				PayloadJSON:    string(eventPayload),
 			}
 			if err := CreateMidjourneyRefundOperationWithOutboxTx(tx, op, event); err != nil {
 				return err
@@ -147,42 +147,42 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 		}
 
 		op := &MidjourneyRefundOperation{
-			MidjourneyTaskID: task.Id,
-			OperationType: MidjourneyRefundOperationTypeFull,
-			ReasonCode: "midjourney_task_failure",
-			ReasonDetail: reasonDetail,
-			BillingVersion: 1,
+			MidjourneyTaskID:    task.Id,
+			OperationType:       MidjourneyRefundOperationTypeFull,
+			ReasonCode:          "midjourney_task_failure",
+			ReasonDetail:        reasonDetail,
+			BillingVersion:      1,
 			BillingSnapshotJSON: string(snapshotJSON),
-			FundingSource: MidjourneyRefundFundingPersonalWallet,
-			FundingUserID: userID,
-			TokenID: tokenID,
-			ChannelID: channelID,
-			WalletAppliedQuota: quota,
-			UserUsageApplied: quota,
+			FundingSource:       MidjourneyRefundFundingPersonalWallet,
+			FundingUserID:       userID,
+			TokenID:             tokenID,
+			ChannelID:           channelID,
+			WalletAppliedQuota:  quota,
+			UserUsageApplied:    quota,
 			ChannelUsageApplied: quota,
-			Status: MidjourneyRefundPending,
+			Status:              MidjourneyRefundPending,
 		}
 		if task.BillingTokenApplied {
 			op.TokenAppliedQuota = quota
 		}
 		eventPayload, marshalErr := json.Marshal(map[string]any{
-			"task_id": task.Id,
-			"mj_id": task.MjId,
-			"user_id": userID,
-			"token_id": tokenID,
+			"task_id":    task.Id,
+			"mj_id":      task.MjId,
+			"user_id":    userID,
+			"token_id":   tokenID,
 			"channel_id": channelID,
-			"quota": quota,
-			"reason": reasonDetail,
-			"result": "refunded",
+			"quota":      quota,
+			"reason":     reasonDetail,
+			"result":     "refunded",
 		})
 		if marshalErr != nil {
 			return marshalErr
 		}
 		event := &MidjourneyRefundOutbox{
-			EventKey: fmt.Sprintf("midjourney:%d:refund-log", task.Id),
-			EventType: "midjourney.refund.completed",
+			EventKey:       fmt.Sprintf("midjourney:%d:refund-log", task.Id),
+			EventType:      "midjourney.refund.completed",
 			PayloadVersion: 1,
-			PayloadJSON: string(eventPayload),
+			PayloadJSON:    string(eventPayload),
 		}
 
 		if err := increaseUserQuotaTx(tx, userID, quota); err != nil {
@@ -215,9 +215,9 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 		}
 		now := common.GetTimestamp()
 		if err := tx.Model(&MidjourneyRefundOperation{}).Where("id = ?", op.ID).Updates(map[string]any{
-			"status": MidjourneyRefundCompleted,
+			"status":       MidjourneyRefundCompleted,
 			"completed_at": now,
-			"updated_at": now,
+			"updated_at":   now,
 		}).Error; err != nil {
 			return err
 		}
