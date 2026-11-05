@@ -1078,6 +1078,14 @@ func TestUpdateBatchTasksPollClassification(t *testing.T) {
 	}
 }
 
+func TestGetUpstreamTaskIDDistinguishesLegacyAndMissingNewIDs(t *testing.T) {
+	legacy := &model.Task{TaskID: "legacy-provider-id"}
+	assert.Equal(t, "legacy-provider-id", legacy.GetUpstreamTaskID(), "legacy rows retain TaskID fallback")
+
+	newTask := &model.Task{TaskID: "local-task-id", PrivateData: model.TaskPrivateData{BillingSource: BillingSourceWallet}}
+	assert.Empty(t, newTask.GetUpstreamTaskID(), "new billing-aware rows must not treat a local task ID as an upstream ID")
+}
+
 func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	truncate(t)
 	const userID, tokenID, channelID = 620, 620, 620
