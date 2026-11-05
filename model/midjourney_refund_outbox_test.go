@@ -19,7 +19,7 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 	event := MidjourneyRefundOutbox{
 		EventKey:          "mj-refund-op-1:task-billing-log",
 		RefundOperationID: 1,
-		EventType:         "task_billing_log",
+		EventType:         "midjourney.refund.completed",
 		PayloadJSON:       `{"operation_id":1,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&event).Error)
@@ -31,18 +31,18 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 	duplicate := MidjourneyRefundOutbox{
 		EventKey:          event.EventKey,
 		RefundOperationID: 2,
-		EventType:         "task_billing_log",
+		EventType:         "midjourney.refund.completed",
 		PayloadJSON:       `{"operation_id":2}`,
 	}
 	assert.Error(t, db.Create(&duplicate).Error)
 
 	for _, invalid := range []*MidjourneyRefundOutbox{
-		{EventKey: "missing-op", RefundOperationID: 0, EventType: "task_billing_log", PayloadJSON: `{}`},
-		{RefundOperationID: 1, EventType: "task_billing_log", PayloadJSON: `{}`},
+		{EventKey: "missing-op", RefundOperationID: 0, EventType: "midjourney.refund.completed", PayloadJSON: `{}`},
+		{RefundOperationID: 1, EventType: "midjourney.refund.completed", PayloadJSON: `{}`},
 		{EventKey: "missing-type", RefundOperationID: 1, PayloadJSON: `{}`},
-		{EventKey: "bad-json", RefundOperationID: 1, EventType: "task_billing_log", PayloadJSON: "{"},
-		{EventKey: "bad-status", RefundOperationID: 1, EventType: "task_billing_log", PayloadJSON: `{}`, Status: MidjourneyRefundOutboxDelivered},
-		{EventKey: "bad-version", RefundOperationID: 1, EventType: "task_billing_log", PayloadVersion: -1, PayloadJSON: `{}`},
+		{EventKey: "bad-json", RefundOperationID: 1, EventType: "midjourney.refund.completed", PayloadJSON: "{"},
+		{EventKey: "bad-status", RefundOperationID: 1, EventType: "midjourney.refund.completed", PayloadJSON: `{}`, Status: MidjourneyRefundOutboxDelivered},
+		{EventKey: "bad-version", RefundOperationID: 1, EventType: "midjourney.refund.completed", PayloadVersion: -1, PayloadJSON: `{}`},
 	} {
 		assert.Error(t, db.Create(invalid).Error)
 	}
@@ -69,7 +69,7 @@ func TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic(t *testing.T) {
 	}
 	event := &MidjourneyRefundOutbox{
 		EventKey:    eventKey,
-		EventType:   "task_billing_log",
+		EventType:   "midjourney.refund.completed",
 		PayloadJSON: `{"result":"refunded"}`,
 	}
 	require.NoError(t, DB.Transaction(func(tx *gorm.DB) error {
@@ -83,7 +83,7 @@ func TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic(t *testing.T) {
 	duplicateOpKey := opKey + ":rollback"
 	duplicateEvent := &MidjourneyRefundOutbox{
 		EventKey:    eventKey,
-		EventType:   "task_billing_log",
+		EventType:   "midjourney.refund.completed",
 		PayloadJSON: `{"result":"duplicate"}`,
 	}
 	rollbackOp := &MidjourneyRefundOperation{
