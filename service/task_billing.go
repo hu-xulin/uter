@@ -837,6 +837,12 @@ func reconcileUnfinishedTaskBilling(ctx context.Context, olderThan int64) {
 	}
 	for i := range tasks {
 		task := &tasks[i]
+		// The refund rollout boundary is intentionally fail-closed for historical
+		// terminal tasks: their legacy quota may already have been refunded by the
+		// pre-ledger implementation. Never infer a refundable balance from them.
+		if task.SubmitTime > 0 && task.SubmitTime < model.TaskRefundLegacyCutoff {
+			continue
+		}
 		switch {
 		case task.Quota == 0:
 			// 没有待结算的额度：直接收口，避免终态任务永远停在非终态。
