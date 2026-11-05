@@ -1507,13 +1507,31 @@ func UpdateUserUsedQuotaAndRequestCount(id int, quota int) {
 	updateUserUsedQuotaAndRequestCount(id, quota, 1)
 }
 
-// UpdateUserUsedQuota adjusts accumulated usage without changing request count.
-func UpdateUserUsedQuota(id int, quota int) {
+// UpdateUserUsedQuotaWithError adjusts accumulated usage without changing request count.
+// Batch mode preserves the existing queued-delta semantics; direct mode exposes DB errors
+// to accounting workflows that must quarantine partial ledger updates.
+func UpdateUserUsedQuotaWithError(id int, quota int) error {
+	if id <= 0 {
+		return fmt.Errorf("user ID must be positive")
+	}
 	if common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeUsedQuota, id, quota)
-		return
+		return nil
 	}
-	if err := DB.Model(&User{}).Where("id = ?", id).Update("used_quota", gorm.Expr("used_quota + ?", quota)).Error; err != nil {
+	result := DB.Model(&User{}).Where("id = ?", id).
+		Update("used_quota", gorm.Expr("used_quota + ?", quota))
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected != 1 {
+		return fmt.Errorf("user %d usage row was not updated", id)
+	}
+	return nil
+}
+
+// UpdateUserUsedQuota preserves the legacy best-effort API for non-accounting callers.
+func UpdateUserUsedQuota(id int, quota int) {
+	if err := UpdateUserUsedQuotaWithError(id, quota); err != nil {
 		common.SysLog(common.LogText("failed to update user used quota: %s", err.Error()))
 	}
 }
