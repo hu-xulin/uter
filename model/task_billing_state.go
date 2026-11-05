@@ -120,7 +120,10 @@ func TransitionTaskBilling(taskID string, transition TaskBillingTransition) (boo
 		query = query.Where("quota = ?", *transition.FromQuota)
 	}
 	if transition.RetryCountIncrement {
-		query = query.UpdateColumns(map[string]any{"billing_retry_count": gorm.Expr("billing_retry_count + 1")})
+		// Retry accounting must be part of the same conditional UPDATE as the
+		// state/quota transition. A separate UPDATE lets two contenders both
+		// increment the retry counter before either one wins the CAS.
+		updates["billing_retry_count"] = gorm.Expr("billing_retry_count + 1")
 	}
 
 	result := query.Updates(updates)
@@ -226,11 +229,30 @@ func MarkTaskBillingForReconciliation(taskID string, reason string) error {
 	if taskID == "" {
 		return errors.New("task ID is empty")
 	}
-	return DB.Model(&Task{}).
-		Where("task_id = ? AND billing_state != ?", taskID, TaskBillingReconciliationRequired).
+	allowedStates := []string{
+		"", TaskBillingPending, TaskBillingReserved,
+		TaskBillingSettlementPending, TaskBillingRefundPending,
+	}
+	result := DB.Model(&Task{}).
+		Where("task_id = ? AND billing_state IN ?", taskID, allowedStates).
 		Updates(map[string]any{
 			"billing_state":      TaskBillingReconciliationRequired,
 			"billing_last_error": reason,
 			"billing_updated_at": common.GetTimestamp(),
-		}).Error
+		})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 1 {
+		return nil
+	}
+
+	var current Task
+	if err := DB.Select("task_id", "billing_state").Where("task_id = ?", taskID).First(&current).Error; err != nil {
+		return err
+	}
+	if current.BillingState == TaskBillingReconciliationRequired {
+		return nil
+	}
+	return fmt.Errorf("%w: refusing to overwrite task %s billing state %q", ErrTaskBillingStateConflict, taskID, current.BillingState)
 }
