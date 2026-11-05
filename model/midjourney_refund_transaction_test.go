@@ -13,7 +13,8 @@ func createMidjourneyRefundFixture(t *testing.T, tokenApplied bool) (*User, *Tok
 	resetBatchUpdateTestState(t)
 	require.NoError(t, DB.AutoMigrate(&Midjourney{}, &MidjourneyRefundOperation{}, &MidjourneyRefundOutbox{}))
 
-	user := createReserveTestUser(t, 100)
+	userValue := createReserveTestUser(t, 100)
+	user := &userValue
 	channel := Channel{Name: "mj-refund-transaction", Key: "mj-refund-transaction-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
 	require.NoError(t, DB.Model(&User{}).Where("id = ?", user.Id).Update("used_quota", 40).Error)
@@ -21,7 +22,8 @@ func createMidjourneyRefundFixture(t *testing.T, tokenApplied bool) (*User, *Tok
 	var token *Token
 	tokenID := 0
 	if tokenApplied {
-		token = createReserveTestToken(t, 60)
+		tokenValue := createReserveTestToken(t, 60)
+		token = &tokenValue
 		tokenID = token.Id
 		require.NoError(t, DB.Model(&Token{}).Where("id = ?", token.Id).Updates(map[string]any{
 			"remain_quota": 60,
