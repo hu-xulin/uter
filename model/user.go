@@ -1737,36 +1737,8 @@ func admissionQuotaLowWater() int {
 }
 
  // AdjustUserUsedQuota applies an accounting usage delta immediately. Negative
- // adjustments are guarded against underflow instead of silently clamping the
- // ledger to zero; billing workflows must surface an inconsistent snapshot.
+// adjustments are guarded against underflow instead of silently clamping the
+// ledger to zero; billing workflows must surface an inconsistent snapshot.
 func AdjustUserUsedQuota(id int, delta int) error {
 	return adjustUserUsedQuotaTx(DB, id, delta)
-}
-
-func adjustUserUsedQuotaTx(tx *gorm.DB, id int, delta int) error {
-	if tx == nil || id <= 0 {
-		return fmt.Errorf("user usage adjustment requires a transaction and positive user ID")
-	}
-	if delta == 0 {
-		return nil
-	}
-	query := tx.Model(&User{}).Where("id = ?", id)
-	if delta < 0 {
-		query = query.Where("used_quota >= ?", -delta)
-	}
-	result := query.Update("used_quota", gorm.Expr("used_quota + ?", delta))
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 1 {
-		return nil
-	}
-	var count int64
-	if err := tx.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
-		return err
-	}
-	if count == 0 {
-		return gorm.ErrRecordNotFound
-	}
-	return fmt.Errorf("user %d used quota is insufficient for adjustment (delta=%d)", id, delta)
 }
