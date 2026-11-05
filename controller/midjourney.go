@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -62,15 +63,39 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 		// refunded atomically; ambiguous legacy/partial charges are quarantined
 		// for reconciliation. Never leave these rows in an endless poll loop.
 		for _, taskID := range nullTaskIds {
-			if err := model.RefundMidjourneyTaskBilling(taskID, "local Midjourney task has an empty upstream mj_id"); err != nil {
+			refundErr := model.RefundMidjourneyTaskBilling(taskID, "local Midjourney task has an empty upstream mj_id")
+			if refundErr != nil && !errors.Is(refundErr, model.ErrMidjourneyRefundReconciliationRequired) {
 				logger.LogError(ctx, common.LogText(
 					"Midjourney task %d refund/reconciliation handoff failed: %v",
-					taskID, err,
+					taskID, refundErr,
+				))
+				continue
+			}
+
+			// Reload after the billing transaction so UpdateWithStatus cannot
+			// overwrite its newly persisted refund/reconciliation fields with the
+			// stale polling snapshot.
+			latest := model.GetMjByuId(taskID)
+			if latest == nil {
+				logger.LogError(ctx, common.LogText("Midjourney task %d disappeared after refund handoff", taskID))
+				continue
+			}
+			preStatus := latest.Status
+			latest.Status = "FAILURE"
+			latest.Progress = "100%"
+			if latest.FailReason == "" {
+				latest.FailReason = "Missing upstream task ID; refund/reconciliation handled"
+			}
+			won, updateErr := latest.UpdateWithStatus(preStatus)
+			if updateErr != nil || !won {
+				logger.LogError(ctx, common.LogText(
+					"Midjourney task %d terminal status update failed after refund handoff (won=%t): %v",
+					taskID, won, updateErr,
 				))
 				continue
 			}
 			logger.LogInfo(ctx, common.LogText(
-				"Midjourney task %d refund/reconciliation handoff completed",
+				"Midjourney task %d refund/reconciliation handoff completed; task marked terminal",
 				taskID,
 			))
 		}
