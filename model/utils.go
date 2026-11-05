@@ -284,7 +284,6 @@ func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
 	return nil
 }
 
-
 // ApplyTaskRefundUsage reverses the usage delta associated with a task refund.
 func ApplyTaskRefundUsage(userID, channelID, quota int) error {
 	if quota <= 0 {
