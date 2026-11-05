@@ -118,7 +118,10 @@ func repairOptionPrimaryKey(db *gorm.DB) error {
 	if err := db.Find(&rows).Error; err != nil {
 		return fmt.Errorf("read options rows: %w", err)
 	}
-	deduped, skippedEmpty := dedupeOptionRows(rows)
+	deduped, skippedEmpty, err := dedupeOptionRows(rows)
+	if err != nil {
+		return fmt.Errorf("refusing to rebuild options with conflicting duplicate keys: %w", err)
+	}
 	if db.Migrator().HasTable(optionPrimaryKeyTmpTable) {
 		if err := db.Migrator().DropTable(optionPrimaryKeyTmpTable); err != nil {
 			return fmt.Errorf("drop leftover %s: %w", optionPrimaryKeyTmpTable, err)
@@ -161,7 +164,7 @@ func repairOptionPrimaryKey(db *gorm.DB) error {
 	return nil
 }
 
-func dedupeOptionRows(rows []Option) ([]Option, int) {
+func dedupeOptionRows(rows []Option) ([]Option, int, error) {
 	seen := make(map[string]int)
 	deduped := make([]Option, 0, len(rows))
 	skippedEmpty := 0
@@ -172,18 +175,20 @@ func dedupeOptionRows(rows []Option) ([]Option, int) {
 		}
 		if i, ok := seen[row.Key]; ok {
 			if deduped[i].Value != row.Value {
-				common.SysError(common.LogText("options key %q had conflicting values; keeping the last row", row.Key))
+				// Find() has no stable row order across SQL dialects. Choosing
+				// "first" or "last" here could silently select a different live
+				// payment/security configuration on different deployments.
+				return nil, skippedEmpty, fmt.Errorf("conflicting values for duplicate options key %q", row.Key)
 			}
-			deduped[i].Value = row.Value
 			continue
 		}
 		seen[row.Key] = len(deduped)
 		deduped = append(deduped, Option{Key: row.Key, Value: row.Value})
 	}
 	if skippedEmpty > 0 {
-		common.SysError(common.LogText("skipped %d options rows with empty keys while rebuilding the primary key", skippedEmpty))
+		common.SysError(common.LogText("skipped %d options rows with empty keys while rebuilding the primary key; original rows remain in the legacy backup", skippedEmpty))
 	}
-	return deduped, skippedEmpty
+	return deduped, skippedEmpty, nil
 }
 
 func swapOptionTables(db *gorm.DB, tmp, backup string) error {
