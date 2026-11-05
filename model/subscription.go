@@ -1669,3 +1669,66 @@ func PostConsumeUserSubscriptionDeltaCapped(userSubscriptionId int, delta int64)
 	})
 	return overflow, err
 }
+
+ // PostConsumeUserSubscriptionDeltaCappedWithWallet atomically caps the
+ // subscription usage and charges any overflow to the user's wallet. The
+ // previous two-transaction sequence could commit the subscription cap and
+ // then fail the wallet charge, permanently losing the overflow.
+func PostConsumeUserSubscriptionDeltaCappedWithWallet(userSubscriptionId, userId int, delta int64) error {
+	if userSubscriptionId <= 0 || userId <= 0 {
+		return errors.New("invalid subscription or user ID")
+	}
+	if delta == 0 {
+		return nil
+	}
+	var overflow int64
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var sub UserSubscription
+		if err := lockForUpdate(tx).Where("id = ?", userSubscriptionId).First(&sub).Error; err != nil {
+			return err
+		}
+		newUsed := sub.AmountUsed + delta
+		if newUsed < 0 {
+			sub.RefundCarryOver += -newUsed
+			newUsed = 0
+		}
+		if sub.RefundCarryOver > 0 && newUsed > 0 {
+			applied := min(newUsed, sub.RefundCarryOver)
+			newUsed -= applied
+			sub.RefundCarryOver -= applied
+		}
+		if sub.AmountTotal > 0 && newUsed > sub.AmountTotal {
+			overflow = newUsed - sub.AmountTotal
+			newUsed = sub.AmountTotal
+		}
+		sub.AmountUsed = newUsed
+		if err := tx.Save(&sub).Error; err != nil {
+			return err
+		}
+		if overflow > 0 {
+			if overflow > int64(^uint(0)>>1) {
+				return errors.New("subscription wallet overflow exceeds int range")
+			}
+			result := tx.Model(&User{}).Where("id = ?", userId).
+				Update("quota", gorm.Expr("quota - ?", overflow))
+			if result.Error != nil {
+				return result.Error
+			}
+			if result.RowsAffected != 1 {
+				return gorm.ErrRecordNotFound
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if overflow > 0 {
+		runCacheSync(func() {
+			if err := cacheDecrUserQuota(userId, overflow); err != nil {
+				common.SysLog(common.LogText("failed to sync subscription overflow wallet charge to cache: %s", err.Error()))
+			}
+		})
+	}
+	return nil
+}
