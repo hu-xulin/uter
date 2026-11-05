@@ -45,14 +45,14 @@ services:
       - dev-network
 
   redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f
     container_name: uter-dev-redis
     restart: unless-stopped
     networks:
       - dev-network
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:15-alpine@sha256:54e0dd8e8cddcdbb9156c2486eed5a43eccb7214d7c6828097d41ce049fb3984
     container_name: uter-dev-pg
     restart: unless-stopped
     environment:
