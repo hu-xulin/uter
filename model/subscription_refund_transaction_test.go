@@ -193,3 +193,24 @@ func TestRefundSubscriptionIntentRequiresMatchingSubscriptionSnapshot(t *testing
 	require.NoError(t, db.First(&savedSub, otherSub.Id).Error)
 	require.EqualValues(t, 30, savedSub.AmountUsed)
 }
+
+// TestRefundSubscriptionPreConsumeTxRejectsNegativeReceiptAmount ensures
+// corrupt negative accounting snapshots are not silently marked refunded.
+func TestRefundSubscriptionPreConsumeTxRejectsNegativeReceiptAmount(t *testing.T) {
+	db := setupSubscriptionRefundTxTestDB(t)
+	sub := UserSubscription{UserId: 11, PlanId: 1, AmountTotal: 100, AmountUsed: 40, Status: "active"}
+	require.NoError(t, db.Create(&sub).Error)
+	record := SubscriptionPreConsumeRecord{
+		RequestId: "negative-subscription-preconsume", UserId: 11, UserSubscriptionId: sub.Id,
+		PreConsumed: -10, Status: "consumed",
+	}
+	require.NoError(t, db.Create(&record).Error)
+
+	require.ErrorContains(t, RefundSubscriptionPreConsume(record.RequestId), "has negative amount")
+	var savedSub UserSubscription
+	require.NoError(t, db.First(&savedSub, sub.Id).Error)
+	require.EqualValues(t, 40, savedSub.AmountUsed)
+	var savedRecord SubscriptionPreConsumeRecord
+	require.NoError(t, db.First(&savedRecord, record.Id).Error)
+	require.Equal(t, "consumed", savedRecord.Status)
+}
