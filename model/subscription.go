@@ -629,7 +629,7 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 		if subscription.PrevUserGroup != "" {
 			upgradeGroup = strings.TrimSpace(subscription.UpgradeGroup)
 		}
-		if err := upsertSubscriptionTopUpTx(tx, &order); err != nil {
+		if err := upsertSubscriptionTopUpTx(tx, &order, actualPaymentMethod); err != nil {
 			return err
 		}
 		order.Status = common.TopUpStatusSuccess
@@ -665,7 +665,7 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 	return nil
 }
 
-func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
+func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaymentMethod string) error {
 	if tx == nil || order == nil {
 		return errors.New("invalid subscription order")
 	}
@@ -673,12 +673,16 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	var topup TopUp
 	if err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-				topup = TopUp{
+				paymentMethod := order.PaymentMethod
+			if actualPaymentMethod != "" {
+				paymentMethod = actualPaymentMethod
+			}
+			topup = TopUp{
 				UserId:           order.UserId,
 				Amount:           0,
 				Money:            order.Money,
 				TradeNo:          order.TradeNo,
-				PaymentMethod:    order.PaymentMethod,
+				PaymentMethod:    paymentMethod,
 				PaymentProvider:  order.PaymentProvider,
 				ProviderAmount:   order.ProviderAmount,
 				ProviderCurrency: order.ProviderCurrency,
@@ -721,7 +725,11 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	if strings.TrimSpace(order.ProviderCurrency) != "" {
 		topup.ProviderCurrency = strings.ToLower(strings.TrimSpace(order.ProviderCurrency))
 	}
-	if topup.PaymentMethod == "" {
+	if actualPaymentMethod != "" {
+		// Epay can report the method actually used after the user leaves the
+		// checkout page; persist it consistently to both linked order records.
+		topup.PaymentMethod = actualPaymentMethod
+	} else if topup.PaymentMethod == "" {
 		topup.PaymentMethod = order.PaymentMethod
 	} else if topup.PaymentMethod != order.PaymentMethod {
 		return ErrPaymentMethodMismatch
