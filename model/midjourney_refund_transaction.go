@@ -120,6 +120,10 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			if err := CreateMidjourneyRefundOperationWithOutboxTx(tx, op, event); err != nil {
 				return err
 			}
+			if err := tx.Model(&Midjourney{}).Where("id = ?", task.Id).
+				Update("billing_status", "reconciliation_required").Error; err != nil {
+				return err
+			}
 			reconciliation = true
 			return nil
 		}
