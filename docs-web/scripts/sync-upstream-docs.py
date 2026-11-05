@@ -322,6 +322,15 @@ def localise_assets(text: str) -> str:
 
 # ── OpenAPI → Markdown ─────────────────────────────────────────────────
 
+# Legacy operations confirmed obsolete by the Uter API contract owner.
+# Filter by path (not method) because historical upstream docs disagree on
+# the WeChat bind method; neither variant is a supported current contract.
+REMOVED_API_PATHS = {
+    '/api/oauth/wechat/bind',
+    '/api/verify/status',
+}
+
+
 TYPE_LABELS = {
     'string': 'string', 'integer': 'integer', 'number': 'number',
     'boolean': 'boolean', 'array': 'array', 'object': 'object',
@@ -609,6 +618,8 @@ def sync_api(upstream: Path, texts: list) -> None:
                 spec = json.loads(spec_path.read_text(encoding='utf-8'))
                 found = operation_for(spec, wanted)
                 if not found:
+                    continue
+                if found[0] in REMOVED_API_PATHS:
                     continue
                 rendered.append((op_title, endpoint_markdown(found[0], found[1], found[2], op_title)))
             parts += [block for _, block in rendered]
