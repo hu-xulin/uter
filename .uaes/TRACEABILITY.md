@@ -122,3 +122,17 @@ A source-grounded draft contract is maintained in `.uaes/MIDJOURNEY-REFUND-TRANS
 | Malformed Midjourney action parsing | PR #17/#19/#20: `ConvertSimpleChangeParams` uses whitespace-safe tokenization and validates action length before indexing. | PARTIAL — malformed-input regression suite and exact-head CI pending. |
 
 These changes remain in unmerged Draft PRs. Passing individual CI jobs does not make these controls VERIFIED. No production configuration, production database, or payment credentials were changed.
+
+
+### Async task billing funding-ledger follow-up — 2026-11-05
+
+Code-level remediation on the integration branch:
+
+- `service/task_billing.go` now applies organization-funded task settlement/refunds through `AdjustOrgAndMemberUsedQuota`, keeping the shared organization ledger and member sub-quota usage in one transaction.
+- Subscription-funded async task settlement now uses `PostConsumeUserSubscriptionDeltaCappedWithWallet`, so subscription overrun is capped and charged to the task owner's wallet atomically instead of being rejected or silently mis-accounted.
+- `taskAdjustFunding` rejects nil task snapshots and returns immediately for zero deltas; unresolved organization snapshots remain fail-closed.
+- `PostConsumeUserSubscriptionDeltaCappedWithWallet` now verifies that the subscription belongs to the supplied user before changing subscription usage or charging wallet overflow.
+
+Regression coverage added in `service/task_billing_funding_test.go` includes organization debit/refund symmetry, member and organization underflow rollback, missing member rollback, missing organization snapshot, subscription overflow charging, no-overflow behavior, subscription refund/carryover, missing wallet rollback, foreign subscription ownership, zero-delta no-op, nil task, and invalid funding snapshots.
+
+**Acceptance status: IMPLEMENTED / TESTS_AUTHORED / RUNTIME_NOT_VERIFIED.** These tests have been committed but have not yet been executed in this environment. Do not mark task-billing acceptance or any UAES phase VERIFIED until the applicable test suites and independent review produce reproducible evidence.
