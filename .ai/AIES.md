@@ -105,10 +105,11 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 | **R0 低** | 改文案、调局部间距、修复明显显示问题 | 基本检查、直接修改并验证 |
 | **R1 中** | 改多个关联组件、一般业务流程、共享组件、普通 API 调用逻辑 | 制定实施计划，执行相关回归测试 |
 | **R2 高** | 改认证/权限、数据库模型、关键 API 契约、并发处理、账户/业务状态机 | 专项分析 + 测试计划 + 实施后独立审查 + 关键失败路径验证 |
-| **R3 严重** | 改支付/资金到账、生产数据库、不可逆迁移、生产密钥/权限、生产部署、大规模数据丢失操作 | 明确范围与授权 + 恢复/回滚方案 + 专项验收；缺关键信息或授权必须暂停 |
+| **R3 严重** | 改支付/资金到账、重要数据库模型、不可逆迁移、关键安全策略 | 明确范围与授权 + 恢复/回滚方案 + 专项验收；缺关键信息或授权必须暂停 |
+| **R4 极高** | 生产环境写入、生产数据库操作、真实支付配置、生产密钥、生产部署、重大不可逆操作 | 默认禁止自动执行；必须停止并请求有权人工决策。当前 Uter 自动修复授权不包含任何 R4 写操作 |
 
 ### 3.3 必须额外授权的操作（普通代码修改授权 ≠ 全部授权）
-除非用户明确授权当前操作及目标，否则不得擅自：提交 Git Commit、推送、合并、发布版本、部署生产、改生产配置、执行生产数据库操作、删除数据/不可逆迁移、覆盖/重置/清理用户已有工作、轮换生产密钥、修改支付金额/退款策略/余额调整/账户合并规则，以及其他重大影响或难以恢复的操作。**不得将一次授权扩大解释为对其他操作的授权。**
+当前用户已明确授予 Uter 工程修复的持续任务范围授权：AI 可在唯一独立工作分支内修改授权范围代码、添加测试、执行验证；验证达到提交条件后可 Commit、Push 该工作分支并创建/更新 PR。该授权不包含合并 PR、部署、生产数据库写入、生产环境修改、真实支付配置/凭据修改、生产密钥读取或不可逆生产操作。禁止直接推送 main、force push、覆盖用户未提交修改。授权仅适用于当前 Uter 工程修复工作流；超出范围或无法确认授权时必须 fail-closed。
 
 ### 3.4 何时询问用户（风险分级，不必每次填表）
 - **低风险、信息完整**：直接解析并执行（如改一个按钮间距）。
@@ -131,7 +132,19 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
   "task_id": "AUTH-UI-001",
   "goal": "Improve login UI and flow reliability",
   "task_type": "feature_enhancement",
+  "requester": "human-requester",
+  "agent_id": "uter.agent.engineering.coding",
   "risk_level": "R2",
+  "lifecycle_status": "CREATED",
+  "authorization": {
+    "authorization_id": "AUTH-EXAMPLE-001",
+    "allowed_actions": ["filesystem.write.scoped", "test.execute"],
+    "forbidden_actions": ["git.merge", "deployment.execute", "production.database.write", "payment.configuration.write"],
+    "target_resources": ["login screen", "directly related auth components"],
+    "environment": "LOCAL_SANDBOX",
+    "expires_at": "2026-12-31T23:59:59Z",
+    "approval_ids": []
+  },
   "scope": { "include": ["login screen", "directly related auth components"],
              "exclude": ["unrelated screens", "unapproved auth architecture changes"] },
   "constraints": ["Follow project design tokens", "Preserve approved authentication behavior", "Do not bypass security verification"],
