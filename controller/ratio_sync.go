@@ -1042,9 +1042,49 @@ type modelsDevCost struct {
 	CacheWrite  *float64 `json:"cache_write"`
 	InputAudio  *float64 `json:"input_audio"`
 	OutputAudio *float64 `json:"output_audio"`
-	// reasoning, context_over_200k and tiers from models.dev have no
-	// counterpart in the local ratio pricing model and are intentionally
-	// not mapped to a ratio field.
+	// The three fields below have no counterpart among the six local ratio
+	// fields, so they are not mapped into the ratio engine. They are kept as
+	// raw catalogue facts for the pricing cards instead (see
+	// ModelsDevPriceDimensions).
+	Reasoning       *float64                `json:"reasoning"`
+	ContextOver200K *modelsDevDimensionCost `json:"context_over_200k"`
+	Tiers           []modelsDevTierEntry    `json:"tiers"`
+}
+
+// modelsDevDimensionCost is one models.dev price point, in USD per 1M tokens.
+// Pointers keep "absent" distinct from a real zero price.
+type modelsDevDimensionCost struct {
+	Input       *float64 `json:"input,omitempty"`
+	Output      *float64 `json:"output,omitempty"`
+	CacheRead   *float64 `json:"cache_read,omitempty"`
+	CacheWrite  *float64 `json:"cache_write,omitempty"`
+	Reasoning   *float64 `json:"reasoning,omitempty"`
+	InputAudio  *float64 `json:"input_audio,omitempty"`
+	OutputAudio *float64 `json:"output_audio,omitempty"`
+}
+
+type modelsDevTierEntry struct {
+	modelsDevDimensionCost
+	Tier struct {
+		Type string `json:"type"`
+		Size int64  `json:"size"`
+	} `json:"tier"`
+}
+
+type modelsDevTierDimension struct {
+	Type string `json:"type,omitempty"`
+	Size int64  `json:"size,omitempty"`
+	modelsDevDimensionCost
+}
+
+// ModelsDevPriceDimensions keeps every price dimension models.dev publishes for
+// one model. These are display facts only: tiered pricing, >200K context and
+// reasoning-token prices cannot be expressed by the local ratio fields, so
+// feeding them into the billing engine would silently misprice requests.
+type ModelsDevPriceDimensions struct {
+	Base            modelsDevDimensionCost   `json:"base"`
+	ContextOver200K *modelsDevDimensionCost  `json:"context_over_200k,omitempty"`
+	Tiers           []modelsDevTierDimension `json:"tiers,omitempty"`
 }
 
 type modelsDevCandidate struct {
@@ -1055,6 +1095,10 @@ type modelsDevCandidate struct {
 	CacheWrite  *float64
 	InputAudio  *float64
 	OutputAudio *float64
+	// Cost is kept so the winning provider's full price dimensions (tiers,
+	// long-context, reasoning) travel with the selected candidate. Deriving
+	// them from a different provider would mix two vendors' prices in one card.
+	Cost modelsDevCost
 }
 
 func cloneFloatPtr(v *float64) *float64 {
@@ -1123,6 +1167,7 @@ func buildModelsDevCandidate(provider string, cost modelsDevCost) (modelsDevCand
 		CacheWrite:  cacheWrite,
 		InputAudio:  inputAudio,
 		OutputAudio: outputAudio,
+		Cost:        cost,
 	}, true
 }
 
@@ -1156,13 +1201,23 @@ func shouldReplaceModelsDevCandidate(current, next modelsDevCandidate) bool {
 // cheapest non-zero input cost. If only zero-priced candidates exist,
 // a zero ratio is kept.
 func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
+	converted, _, err := parseModelsDevPricing(reader)
+	return converted, err
+}
+
+// parseModelsDevPricing decodes models.dev /api.json once and returns both the
+// local ratio map and the complete price dimensions. A single decode matters:
+// the catalogue is several MB and both the admin preset editor and the plaza
+// reference prices refresh it in the background.
+func parseModelsDevPricing(reader io.Reader) (map[string]any, map[string]ModelsDevPriceDimensions, error) {
 	var upstreamData map[string]modelsDevProvider
 	if err := common.DecodeJson(reader, &upstreamData); err != nil {
-		return nil, fmt.Errorf("failed to decode models.dev response: %w", err)
+		return nil, nil, fmt.Errorf("failed to decode models.dev response: %w", err)
 	}
 	if len(upstreamData) == 0 {
-		return nil, fmt.Errorf("empty models.dev response")
+		return nil, nil, fmt.Errorf("empty models.dev response")
 	}
+	dimensions := make(map[string]ModelsDevPriceDimensions)
 
 	providers := make([]string, 0, len(upstreamData))
 	for provider := range upstreamData {
@@ -1196,7 +1251,15 @@ func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
 	}
 
 	if len(selectedCandidates) == 0 {
-		return nil, fmt.Errorf("no valid models.dev pricing entries found")
+		return nil, nil, fmt.Errorf("no valid models.dev pricing entries found")
+	}
+
+	// models.dev keys are "provider/model" and use dots for version numbers
+	// (bytedance/seedream-4.0), while site models use channel-shaped names.
+	// Publish normalized aliases alongside the original keys so a station name
+	// can hit its catalogue price. Real upstream keys always win over aliases.
+	for alias, candidate := range modelsDevAliasCandidates(selectedCandidates) {
+		selectedCandidates[alias] = candidate
 	}
 
 	modelRatioMap := make(map[string]any)
@@ -1207,6 +1270,9 @@ func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
 	audioCompletionRatioMap := make(map[string]any)
 
 	for modelName, candidate := range selectedCandidates {
+		if dims, ok := dimensionsFromModelsDevCost(candidate.Cost); ok {
+			dimensions[modelName] = dims
+		}
 		if candidate.Input == 0 {
 			modelRatioMap[modelName] = 0.0
 			continue
@@ -1262,7 +1328,73 @@ func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
 	if len(audioCompletionRatioMap) > 0 {
 		converted["audio_completion_ratio"] = audioCompletionRatioMap
 	}
-	return converted, nil
+	return converted, dimensions, nil
+}
+
+// dimensionsFromModelsDevCost keeps the full price card for models that expose
+// a dimension the six local ratio fields cannot express. Plain input/output
+// models are already fully described by their ratios, so they are omitted to
+// keep the dimension payload small.
+func dimensionsFromModelsDevCost(cost modelsDevCost) (ModelsDevPriceDimensions, bool) {
+	base := modelsDevDimensionCost{
+		Input:       cost.Input,
+		Output:      cost.Output,
+		CacheRead:   cost.CacheRead,
+		CacheWrite:  cost.CacheWrite,
+		Reasoning:   cost.Reasoning,
+		InputAudio:  cost.InputAudio,
+		OutputAudio: cost.OutputAudio,
+	}
+	dims := ModelsDevPriceDimensions{Base: base, ContextOver200K: cost.ContextOver200K}
+	for _, tier := range cost.Tiers {
+		dims.Tiers = append(dims.Tiers, modelsDevTierDimension{
+			Type:                   tier.Tier.Type,
+			Size:                   tier.Tier.Size,
+			modelsDevDimensionCost: tier.modelsDevDimensionCost,
+		})
+	}
+	hasExtra := base.Reasoning != nil || cost.ContextOver200K != nil || len(dims.Tiers) > 0
+	return dims, hasExtra
+}
+
+// modelsDevAliasCandidates derives site-shaped aliases for the winning keys.
+// Aliases are collected into a separate map first: inserting into a map while
+// ranging over it has unspecified iteration behavior, and an alias that is
+// itself an upstream key must never replace that key's own candidate.
+func modelsDevAliasCandidates(selected map[string]modelsDevCandidate) map[string]modelsDevCandidate {
+	aliases := make(map[string]modelsDevCandidate)
+	names := make([]string, 0, len(selected))
+	for name := range selected {
+		names = append(names, name)
+	}
+	// Deterministic order: two providers may produce the same alias, and a map
+	// range would make the winner depend on Go's randomized iteration order.
+	sort.Strings(names)
+	for _, name := range names {
+		candidate := selected[name]
+		base := name
+		if slash := strings.LastIndex(name, "/"); slash >= 0 && slash < len(name)-1 {
+			base = name[slash+1:]
+		}
+		for _, alias := range []string{
+			base,
+			strings.ReplaceAll(base, ".", "-"),
+			strings.ToLower(base),
+			strings.ToLower(strings.ReplaceAll(base, ".", "-")),
+		} {
+			if alias == "" || alias == name {
+				continue
+			}
+			if _, isUpstreamKey := selected[alias]; isUpstreamKey {
+				continue
+			}
+			if _, taken := aliases[alias]; taken {
+				continue
+			}
+			aliases[alias] = candidate
+		}
+	}
+	return aliases
 }
 
 // ---------------------------------------------------------------------------
@@ -1291,7 +1423,33 @@ var (
 	// presetRefreshing maps a presetID to a channel that is closed once its
 	// background refresh completes. A present key means a refresh is in flight.
 	presetRefreshing = map[int]chan struct{}{}
+
+	// presetDimensions holds the full models.dev price dimensions (tiered,
+	// >200K context, reasoning) captured by the last preset fetch. They are
+	// read-only display facts and never enter the ratio/billing engine.
+	presetDimensionsMu sync.RWMutex
+	presetDimensions   = map[int]map[string]ModelsDevPriceDimensions{}
 )
+
+func setPresetDimensions(presetID int, dimensions map[string]ModelsDevPriceDimensions) {
+	presetDimensionsMu.Lock()
+	presetDimensions[presetID] = dimensions
+	presetDimensionsMu.Unlock()
+}
+
+// GetPresetPriceDimensions returns a snapshot of the per-model price
+// dimensions captured from a built-in preset. Non-models.dev presets have no
+// such data and return an empty map.
+func GetPresetPriceDimensions(presetID int) map[string]ModelsDevPriceDimensions {
+	presetDimensionsMu.RLock()
+	defer presetDimensionsMu.RUnlock()
+	source := presetDimensions[presetID]
+	result := make(map[string]ModelsDevPriceDimensions, len(source))
+	for name, dimensions := range source {
+		result[name] = dimensions
+	}
+	return result
+}
 
 // GetPresetModelRatios returns normalized per-model ratio maps for a built-in
 // pricing preset (official -100 or models.dev -101): model -> field -> ratio.
@@ -1475,6 +1633,9 @@ func GetPresetPrices(c *gin.Context) {
 		"data": gin.H{
 			"preset": presetName,
 			"prices": GetPresetModelRatios(presetID),
+			// Extra price dimensions the ratio model cannot express. Empty for
+			// the basellm preset; additive so older clients ignore it.
+			"dimensions": GetPresetPriceDimensions(presetID),
 		},
 	})
 }
@@ -1710,7 +1871,11 @@ func fetchPresetRaw(presetID int) (map[string]any, error) {
 	}
 
 	if presetID == modelsDevPresetID {
-		return convertModelsDevToRatioData(bytes.NewReader(bodyBytes))
+		converted, dimensions, err := parseModelsDevPricing(bytes.NewReader(bodyBytes))
+		if err == nil {
+			setPresetDimensions(presetID, dimensions)
+		}
+		return converted, err
 	}
 	return parseOfficialRatioConfig(bodyBytes)
 }

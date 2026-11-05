@@ -219,13 +219,16 @@ func autoFillOfficialPricing(ctx context.Context, names []string) (*model.AutoFi
 	return model.AutoFillOfficialPricing(names, prices)
 }
 
-// officialPricingPresetIDs returns the configured official preset and the
-// fallback preset used for models the primary one does not price.
+// officialPricingPresetIDs returns the configured primary preset and the
+// fallback preset used for models the primary one does not price. models.dev is
+// the primary source; the basellm "official" preset is primary only when an
+// operator explicitly selected it. An empty or unknown option value therefore
+// also resolves to models.dev, matching normalizePricingSource.
 func officialPricingPresetIDs() (primary int, fallback int) {
-	if common.OptionMap["PricingSource"] == "models.dev" {
-		return modelsDevPresetID, officialRatioPresetID
+	if common.OptionMap["PricingSource"] == "official" {
+		return officialRatioPresetID, modelsDevPresetID
 	}
-	return officialRatioPresetID, modelsDevPresetID
+	return modelsDevPresetID, officialRatioPresetID
 }
 
 // AutoFillChannelOfficialData fills official metadata and prices for every
