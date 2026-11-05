@@ -358,7 +358,10 @@ func migrateDB() error {
 		return err
 	}
 	if err := migrateOptionPrimaryKey(DB); err != nil {
-		common.SysError("failed to migrate options primary key: " + err.Error())
+		// A failed rebuild can leave duplicate/ambiguous configuration rows.
+		// Continuing startup would allow different instances to load different
+		// payment/security settings, so this migration is a hard startup gate.
+		return fmt.Errorf("failed to migrate options primary key: %w", err)
 	}
 	// 必须在下方AutoMigrate 建 idx_qdt_agg_unique 唯一索引【之前】去重：
 	// 存量库若已有同一聚合键的多行（多实例刷盘、或旧的「先查后写」在竞态下双写），
