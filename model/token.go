@@ -618,8 +618,8 @@ func likeContains(keyword string) (string, error) {
 }
 
 // IncreaseTokenQuotaPersisted applies a token refund directly to the durable
- // ledger, bypassing the volatile batch queue. Cache synchronization happens
- // only after the database update succeeds.
+// ledger, bypassing the volatile batch queue. Cache synchronization happens
+// only after the database update succeeds.
 func IncreaseTokenQuotaPersisted(tokenId int, key string, quota int) error {
 	if quota < 0 {
 		return errors.New("quota cannot be negative")
