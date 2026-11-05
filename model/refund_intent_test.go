@@ -1,8 +1,8 @@
 package model
 
 import (
-	"testing"
 	"strconv"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -201,4 +201,14 @@ func TestCreateRefundIntentReusesOnlyIdenticalIdempotencySnapshot(t *testing.T) 
 	var rows int64
 	require.NoError(t, DB.Model(&RefundIntent{}).Where("idempotency_key = ?", original.IdempotencyKey).Count(&rows).Error)
 	assert.EqualValues(t, 1, rows, "one durable intent per logical refund")
+}
+
+func TestUsageAdjustmentHelpersReturnMissingLedgerRows(t *testing.T) {
+	_, _, _ = newRefundIntentFixture(t)
+	batchEnabled := common.BatchUpdateEnabled
+	common.BatchUpdateEnabled = false
+	defer func() { common.BatchUpdateEnabled = batchEnabled }()
+
+	require.Error(t, UpdateUserUsedQuotaWithError(2147483000, -1))
+	require.Error(t, UpdateChannelUsedQuotaWithError(2147483000, -1))
 }
