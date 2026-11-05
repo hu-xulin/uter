@@ -404,7 +404,6 @@ func TestRefundUncompensatableFailureGoesToReconciliation(t *testing.T) {
 	assert.Equal(t, task.TaskID, listed[0].TaskID)
 }
 
-
 func TestRunTaskPollingOnceReconcilesBillingWithoutAnyAdapter(t *testing.T) {
 	truncate(t)
 	ctx := context.Background()
