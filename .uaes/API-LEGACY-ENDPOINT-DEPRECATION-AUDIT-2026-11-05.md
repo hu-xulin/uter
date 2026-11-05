@@ -65,3 +65,8 @@ The owner-approved Option B changes are now committed on the Uter integration PR
 - No runtime Go handler or frontend call site was changed.
 
 The final Uter PR head and CI run must be rechecked after the audit and traceability updates. Do not mark route parity PASS until the Architecture Source Checks workflow runs against the exact final Uter commit and confirms all remaining OpenAPI operations map to runtime routes.
+
+
+## 8. Documentation-generator regression gate
+
+A regression helper `should_skip_api_path` now owns the retired-path filter. Added `docs-web/scripts/test_sync_upstream_docs.py` with positive assertions for both retired paths and negative assertions for current OAuth/verification paths. Uter CI's frontend job now runs both Python syntax validation and this regression test before frontend checks. The workflow change is part of the current PR branch; its exact-head CI result is pending.
