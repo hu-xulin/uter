@@ -997,6 +997,9 @@ export function parseTaskResult() { return {}; }
 				defer upstream.Close()
 				t.Setenv("SYNC_UPSTREAM_BASE", upstream.URL)
 				t.Setenv("SYNC_HTTP_RETRY", "1")
+				// 关闭第二上游，避免测试外呼 models.dev：上面的桩只实现了
+				// basellm 的三语目录路由，真实请求既不确定也不密闭。
+				t.Setenv("SYNC_MODELSDEV_URL", "")
 				var preview struct {
 					Success bool
 					Data    struct {
@@ -1073,6 +1076,94 @@ export function parseTaskResult() { return {}; }
 				failVendors.Store(true)
 				modelManagementRequest(t, SyncUpstreamPreview, "GET", "/api/models/sync_upstream/preview?locale=zh", nil, &preview)
 				assert.False(t, preview.Success)
+			})
+			t.Run("metadata_sync_merges_basellm_with_models_dev", func(t *testing.T) {
+				// 双源合并的完整闭环：basellm 桩只发文案，models.dev 桩只发规格，
+				// 预览必须把两者拼进同一条候选并落库；断网侧（models.dev 500）
+				// 只降级为纯 basellm 同步，不能把整轮拖失败。
+				local := &model.Model{ModelName: "dual-gpt-4o", Description: "Local copy", Status: 1, SyncOfficial: 1}
+				require.NoError(t, local.Insert())
+
+				basellm := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					payload := any([]upstreamModel{{ModelName: "dual-gpt-4o", Description: "Curated copy", Tags: "chat", Status: 1}})
+					if strings.HasSuffix(r.URL.Path, "vendors.json") {
+						payload = []upstreamVendor{}
+					}
+					encoded, err := common.Marshal(payload)
+					require.NoError(t, err)
+					_, _ = w.Write(encoded)
+				}))
+				defer basellm.Close()
+
+				modelsDevUp := true
+				modelsDev := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+					if !modelsDevUp {
+						w.WriteHeader(http.StatusServiceUnavailable)
+						return
+					}
+					_, _ = w.Write([]byte(`{"openai":{"models":{"gpt-4o":{"id":"gpt-4o","name":"GPT-4o","knowledge":"2024-06-01","release_date":"2024-05-13","limit":{"context":128000,"output":16384},"modalities":{"input":["text","image"],"output":["text"]}}}}}`))
+				}))
+				defer modelsDev.Close()
+
+				t.Setenv("SYNC_UPSTREAM_BASE", basellm.URL)
+				t.Setenv("SYNC_MODELSDEV_URL", modelsDev.URL)
+				t.Setenv("SYNC_HTTP_RETRY", "1")
+
+				var preview struct {
+					Success bool
+					Data    struct {
+						Source     metadataSyncSource
+						Candidates []metadataSyncCandidate
+					}
+				}
+				response := modelManagementRequest(t, SyncUpstreamPreview, "GET", "/api/models/sync_upstream/preview?locale=zh", nil, &preview)
+				require.Equal(t, http.StatusOK, response.Code)
+				require.True(t, preview.Success, response.Body.String())
+				require.Equal(t, modelsDev.URL, preview.Data.Source.ModelsDevURL)
+				require.Empty(t, preview.Data.Source.ModelsDevError)
+				assert.Equal(t, 1, preview.Data.Source.SpecMatchCount)
+
+				var candidate *metadataSyncCandidate
+				for i := range preview.Data.Candidates {
+					if preview.Data.Candidates[i].ModelName == "dual-gpt-4o" {
+						candidate = &preview.Data.Candidates[i]
+					}
+				}
+				require.NotNil(t, candidate)
+				require.NotNil(t, candidate.Upstream)
+				// 文案来自 basellm，规格来自 models.dev，同一候选里两者都在。
+				assert.Equal(t, "Curated copy", candidate.Upstream.Description)
+				assert.Equal(t, 128000, candidate.Upstream.ContextLength)
+				assert.Equal(t, 16384, candidate.Upstream.MaxOutputTokens)
+				assert.Equal(t, "2024-06", candidate.Upstream.KnowledgeCutoff)
+				assert.Equal(t, "text,image", candidate.Upstream.InputModalities)
+
+				body := map[string]any{"locale": "zh", "source_version": preview.Data.Source.Version, "selections": []model.MetadataSyncSelection{
+					{ModelName: "dual-gpt-4o", RecordVersion: candidate.RecordVersion, Fields: []string{"description", "context_length", "max_output_tokens", "knowledge_cutoff", "release_date", "input_modalities", "output_modalities"}},
+				}}
+				var result struct {
+					Success bool
+					Data    model.MetadataSyncResult
+				}
+				response = modelManagementRequest(t, SyncUpstreamModels, "POST", "/api/models/sync_upstream", body, &result)
+				require.Equal(t, http.StatusOK, response.Code, response.Body.String())
+				require.True(t, result.Success)
+
+				var persisted model.Model
+				require.NoError(t, db.Where("model_name = ?", "dual-gpt-4o").First(&persisted).Error)
+				assert.Equal(t, "Curated copy", persisted.Description)
+				assert.Equal(t, 128000, persisted.ContextLength)
+				assert.Equal(t, 16384, persisted.MaxOutputTokens)
+				assert.Equal(t, "2024-06", persisted.KnowledgeCutoff)
+				assert.Equal(t, "text,image", persisted.InputModalities)
+
+				// 规格源单独挂掉：文案同步仍可完成，错误在 source 上如实回显。
+				modelsDevUp = false
+				response = modelManagementRequest(t, SyncUpstreamPreview, "GET", "/api/models/sync_upstream/preview?locale=zh", nil, &preview)
+				require.Equal(t, http.StatusOK, response.Code)
+				require.True(t, preview.Success, response.Body.String())
+				assert.NotEmpty(t, preview.Data.Source.ModelsDevError)
+				assert.Zero(t, preview.Data.Source.SpecMatchCount)
 			})
 		})
 	}

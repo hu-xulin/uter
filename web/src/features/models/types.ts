@@ -210,6 +210,12 @@ export type MetadataSyncField =
   | 'endpoints'
   | 'name_rule'
   | 'status'
+  | 'context_length'
+  | 'max_output_tokens'
+  | 'knowledge_cutoff'
+  | 'release_date'
+  | 'input_modalities'
+  | 'output_modalities'
 export type MetadataSyncValues = {
   description: string
   icon: string
@@ -218,6 +224,17 @@ export type MetadataSyncValues = {
   endpoints: string
   name_rule: number
   status: number
+  /**
+   * Catalog specs sourced from models.dev. 0 / '' means the upstream does not
+   * publish this fact; the sync diff uses that to decide whether a row differs.
+   */
+  context_length: number
+  max_output_tokens: number
+  knowledge_cutoff: string
+  release_date: string
+  /** Comma-joined modality list; the pricing API splits it into an array. */
+  input_modalities: string
+  output_modalities: string
 }
 export type MetadataSyncCandidate = {
   model_name: string
@@ -243,6 +260,12 @@ export type MetadataSyncSource = {
   models_url: string
   vendors_url: string
   version: string
+  /** Second upstream providing catalog specs (context window, modalities, ...). */
+  models_dev_url?: string
+  /** Populated when the spec source failed; the copy sync still succeeds. */
+  models_dev_error?: string
+  /** How many site models got spec fields merged from models.dev. */
+  spec_match_count: number
 }
 export type MetadataSyncPreview = {
   source: MetadataSyncSource

@@ -7775,6 +7775,14 @@
     "At least one sender account is required": "At least one sender account is required",
     "Daily send limit must be a non-negative integer": "Daily send limit must be a non-negative integer",
     "new-api": "new-api",
-    "Frontend design and development by New API contributors.": "Frontend design and development by New API contributors."
+    "Frontend design and development by New API contributors.": "Frontend design and development by New API contributors.",
+    "Context window": "Context window",
+    "Max output tokens": "Max output tokens",
+    "Release date": "Release date",
+    "Input modalities": "Input modalities",
+    "Output modalities": "Output modalities",
+    "Spec source": "Spec source",
+    "Spec source unavailable": "Spec source unavailable",
+    "{{count}} models matched": "{{count}} models matched"
   }
 }

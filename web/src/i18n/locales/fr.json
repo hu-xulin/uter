@@ -7775,6 +7775,14 @@
     "At least one sender account is required": "Au moins un compte expéditeur est requis",
     "Daily send limit must be a non-negative integer": "La limite d'envoi quotidienne doit être un entier positif ou nul",
     "new-api": "new-api",
-    "Frontend design and development by New API contributors.": "Conception et développement de l'interface par les contributeurs de New API."
+    "Frontend design and development by New API contributors.": "Conception et développement de l'interface par les contributeurs de New API.",
+    "Context window": "Fenêtre de contexte",
+    "Max output tokens": "Tokens de sortie max",
+    "Release date": "Date de sortie",
+    "Input modalities": "Modalités d'entrée",
+    "Output modalities": "Modalités de sortie",
+    "Spec source": "Source des spécifications",
+    "Spec source unavailable": "Source des spécifications indisponible",
+    "{{count}} models matched": "{{count}} modèles correspondants"
   }
 }

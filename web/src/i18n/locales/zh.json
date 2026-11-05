@@ -7776,6 +7776,14 @@
     "At least one sender account is required": "至少需要一个发信邮箱",
     "Daily send limit must be a non-negative integer": "每日发信上限必须是非负整数",
     "new-api": "new-api",
-    "Frontend design and development by New API contributors.": "前端设计与开发由 New API 贡献者完成。"
+    "Frontend design and development by New API contributors.": "前端设计与开发由 New API 贡献者完成。",
+    "Context window": "上下文窗口",
+    "Max output tokens": "最大输出 Token",
+    "Release date": "发布日期",
+    "Input modalities": "输入模态",
+    "Output modalities": "输出模态",
+    "Spec source": "规格来源",
+    "Spec source unavailable": "规格来源不可用",
+    "{{count}} models matched": "命中 {{count}} 个模型"
   }
 }
