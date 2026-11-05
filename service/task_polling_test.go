@@ -992,6 +992,7 @@ func TestUpdateVideoSingleTaskPollClassification(t *testing.T) {
 			if testCase.wantRefund {
 				assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
 				assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
+	t.Logf("null-upstream refund result: task=%s status=%s quota=%d billing_state=%s billing_error=%q retries=%d", persisted.TaskID, persisted.Status, persisted.Quota, persisted.BillingState, persisted.BillingLastError, persisted.BillingRetryCount)
 				assert.Zero(t, persisted.Quota)
 				log := getLastLog(t)
 				require.NotNil(t, log)
@@ -1112,6 +1113,10 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	assert.Equal(t, BillingSourceWallet, persistedBeforePoll.PrivateData.BillingSource, "billing provenance must survive persistence")
 	assert.Empty(t, persistedBeforePoll.PrivateData.UpstreamTaskID, "the fixture must persist a missing upstream ID")
 	assert.Empty(t, persistedBeforePoll.GetUpstreamTaskID(), "new billing-aware tasks must not fall back to their local task ID")
+	require.NotNil(t, persistedBeforePoll.PrivateData.OrganizationId, "submit-time funding organization snapshot must persist")
+	assert.Zero(t, *persistedBeforePoll.PrivateData.OrganizationId, "this fixture is funded by the personal wallet")
+	assert.Equal(t, tokenID, persistedBeforePoll.PrivateData.TokenId, "token funding identity must persist")
+	assert.Equal(t, preConsumed, persistedBeforePoll.Quota, "the persisted task must retain its pre-consumed quota")
 
 	previousAdaptor := GetTaskAdaptorFunc
 	GetTaskAdaptorFunc = nil
