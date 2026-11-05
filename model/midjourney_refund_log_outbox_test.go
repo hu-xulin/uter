@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/glebarez/sqlite"
@@ -152,4 +153,37 @@ func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 	require.Equal(t, MidjourneyRefundOutboxDeadLetter, persistedDead.Status)
 	require.NotEmpty(t, persistedDead.LastError)
 	require.Empty(t, persistedDead.LeaseOwner)
+}
+
+
+// TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions ensures an
+// unknown schema is retried/quarantined rather than decoded as version 1.
+func TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions(t *testing.T) {
+	previousDB, previousLogDB := DB, LOG_DB
+	previousLogType := common.LogDatabaseType()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	DB, LOG_DB = db, db
+	common.SetLogDatabaseType(common.DatabaseTypeSQLite)
+	t.Cleanup(func() {
+		DB, LOG_DB = previousDB, previousLogDB
+		common.SetLogDatabaseType(previousLogType)
+		_ = sqlDB.Close()
+	})
+	require.NoError(t, db.AutoMigrate(&Log{}, &User{}, &MidjourneyRefundLogReceipt{}))
+
+	event := MidjourneyRefundOutbox{
+		EventKey: "midjourney:version-test", EventType: "midjourney.refund.completed",
+		PayloadVersion: 2,
+		PayloadJSON: `{"task_id":321,"mj_id":"mj-321","user_id":1,"quota":10,"result":"refunded"}`,
+	}
+	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "unsupported Midjourney refund outbox payload version")
+	event.PayloadVersion = 1
+	event.EventKey = "   "
+	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "event key must be non-empty")
+	event.EventKey = strings.Repeat("x", 129)
+	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "event key must be non-empty")
 }
