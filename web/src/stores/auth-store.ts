@@ -25,7 +25,6 @@ import type {
   LoginSession,
   PendingLoginVerification,
 } from '@/types/auth'
-import type { AdminCapabilities } from '@/lib/admin-permissions'
 
 // Compatibility exports: shared contracts are owned by @/types/auth.
 export type {
