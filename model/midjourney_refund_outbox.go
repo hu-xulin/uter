@@ -71,7 +71,6 @@ func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
-
 // BeforeUpdate keeps the event identity and payload immutable while allowing
 // delivery status, retry count, lease, and error metadata to advance.
 func (event *MidjourneyRefundOutbox) BeforeUpdate(tx *gorm.DB) error {
