@@ -88,14 +88,14 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 	})
 
 	cases := []struct {
-		name       string
-		userID     int
-		provider   string
-		status          string
-		money           float64
+		name             string
+		userID           int
+		provider         string
+		status           string
+		money            float64
 		providerAmount  int64
 		providerCurrency string
-		wantErr         error
+		wantErr          error
 	}{
 		{name: "different owner", userID: 99, provider: PaymentProviderEpay, status: common.TopUpStatusPending, wantErr: ErrPaymentMethodMismatch},
 		{name: "different provider", userID: 7, provider: PaymentProviderStripe, status: common.TopUpStatusPending, wantErr: ErrPaymentMethodMismatch},
