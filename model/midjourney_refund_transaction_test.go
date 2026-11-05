@@ -133,3 +133,42 @@ func TestRefundMidjourneyTaskBillingRollsBackOnUsageUnderflow(t *testing.T) {
 	assert.Zero(t, count)
 	assert.False(t, errors.Is(err, ErrMidjourneyRefundReconciliationRequired))
 }
+
+
+func TestFindPendingMidjourneyRefundTaskIDsStopsAfterRefundOrReconciliation(t *testing.T) {
+	user, token, channel, task := createMidjourneyRefundFixture(t, true)
+	require.NoError(t, DB.Model(&Midjourney{}).Where("id = ?", task.Id).Update("status", "FAILURE").Error)
+
+	taskIDs, err := FindPendingMidjourneyRefundTaskIDs(10)
+	require.NoError(t, err)
+	assert.Equal(t, []int{task.Id}, taskIDs)
+
+	require.NoError(t, RefundMidjourneyTaskBilling(task.Id, "terminal task failure"))
+	taskIDs, err = FindPendingMidjourneyRefundTaskIDs(10)
+	require.NoError(t, err)
+	assert.Empty(t, taskIDs)
+
+	// A second failed task with no durable billing snapshot is quarantined,
+	// then excluded from automatic retry until an operator reconciles it.
+	legacy := &Midjourney{
+		UserId: user.Id,
+		MjId: "mj-refund-legacy-sweep",
+		Quota: 5,
+		ChannelId: channel.Id,
+		Status: "FAILURE",
+	}
+	require.NoError(t, legacy.Insert())
+	taskIDs, err = FindPendingMidjourneyRefundTaskIDs(10)
+	require.NoError(t, err)
+	assert.Equal(t, []int{legacy.Id}, taskIDs)
+	err = RefundMidjourneyTaskBilling(legacy.Id, "legacy task")
+	require.ErrorIs(t, err, ErrMidjourneyRefundReconciliationRequired)
+	taskIDs, err = FindPendingMidjourneyRefundTaskIDs(10)
+	require.NoError(t, err)
+	assert.Empty(t, taskIDs)
+
+	// Ensure the first task's financial state was not touched a second time.
+	assert.Equal(t, 140, getUserQuotaFromDB(t, user.Id))
+	storedToken := getTokenFromDB(t, token.Id)
+	assert.Equal(t, 100, storedToken.RemainQuota)
+}
