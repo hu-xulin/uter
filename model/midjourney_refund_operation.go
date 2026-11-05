@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -13,8 +14,15 @@ const (
 	MidjourneyRefundPending = "pending"
 	MidjourneyRefundCompleted = "completed"
 	MidjourneyRefundReconciliationRequired = "reconciliation_required"
+
+	MidjourneyRefundFundingPersonalWallet = "personal_wallet"
+	MidjourneyRefundFundingOrganizationWallet = "organization_wallet"
+	MidjourneyRefundFundingSubscription = "subscription"
+	MidjourneyRefundFundingUnknownLegacy = "unknown_legacy"
 )
 
+// MidjourneyRefundOperation stores the immutable applied-leg snapshot and
+// idempotency record for one local Midjourney task refund.
 type MidjourneyRefundOperation struct {
 	ID int `json:"id" gorm:"primaryKey"`
 	MidjourneyTaskID int `json:"midjourney_task_id" gorm:"not null;uniqueIndex:idx_mj_refund_task_operation,priority:1;index"`
@@ -50,8 +58,21 @@ func (op *MidjourneyRefundOperation) BeforeCreate(tx *gorm.DB) error {
 	if op.OperationType == "" { op.OperationType = MidjourneyRefundOperationTypeFull }
 	if op.OperationType != MidjourneyRefundOperationTypeFull { return fmt.Errorf("unsupported Midjourney refund operation type %q", op.OperationType) }
 	if op.IdempotencyKey == "" { op.IdempotencyKey = fmt.Sprintf("midjourney:%d:%s", op.MidjourneyTaskID, op.OperationType) }
-	if op.ReasonCode == "" || op.FundingSource == "" || op.BillingSnapshotJSON == "" {
-		return errors.New("midjourney refund operation requires reason, funding source, and billing snapshot")
+	if op.ReasonCode == "" || op.FundingSource == "" || !json.Valid([]byte(op.BillingSnapshotJSON)) {
+		return errors.New("midjourney refund operation requires reason, funding source, and valid billing snapshot JSON")
+	}
+	switch op.FundingSource {
+	case MidjourneyRefundFundingPersonalWallet, MidjourneyRefundFundingOrganizationWallet,
+		MidjourneyRefundFundingSubscription, MidjourneyRefundFundingUnknownLegacy:
+	default:
+		return fmt.Errorf("unsupported Midjourney refund funding source %q", op.FundingSource)
+	}
+	if op.BillingVersion <= 0 { return errors.New("billing snapshot version must be positive") }
+	if op.FundingUserID < 0 || op.FundingOrgID < 0 || op.TokenID < 0 || op.ChannelID < 0 {
+		return errors.New("Midjourney refund snapshot IDs cannot be negative")
+	}
+	if op.WalletAppliedQuota < 0 || op.TokenAppliedQuota < 0 || op.UserUsageApplied < 0 || op.ChannelUsageApplied < 0 {
+		return errors.New("Midjourney refund applied quota amounts cannot be negative")
 	}
 	if op.Status == "" { op.Status = MidjourneyRefundPending }
 	if op.Status != MidjourneyRefundPending && op.Status != MidjourneyRefundReconciliationRequired {
