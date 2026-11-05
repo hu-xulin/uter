@@ -176,7 +176,7 @@ func (w *WalletFunding) Refund() error {
 	// 订阅的 RefundSubscriptionPreConsume 有 requestId 幂等保护所以可以重试。
 	// 成功后将 consumed 归零，使本对象的二次 Refund（如 defer + 显式调用并存）成为空操作，
 	// 与 BillingSession.refunded 标志形成双重幂等保护。
-	if err := model.IncreaseUserQuota(w.userId, w.consumed, false); err != nil {
+	if err := model.IncreaseUserQuota(w.userId, w.consumed, true); err != nil {
 		return err
 	}
 	w.consumed = 0
