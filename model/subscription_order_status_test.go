@@ -325,9 +325,9 @@ func TestCompleteSubscriptionOrderReplayRejectsConflictingTopUp(t *testing.T) {
 
 func TestSubscriptionTerminalTransitionRejectsConflictingLinkedTopUp(t *testing.T) {
 	cases := []struct {
-		name       string
-		topupUser  int
-		provider   string
+		name      string
+		topupUser int
+		provider  string
 	}{
 		{name: "different owner", topupUser: 92, provider: PaymentProviderEpay},
 		{name: "different provider", topupUser: 91, provider: PaymentProviderStripe},
