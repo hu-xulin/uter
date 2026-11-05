@@ -62,7 +62,7 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 	token := createReserveTestToken(t, 80)
 	require.NoError(t, DB.Model(&Token{}).Where("id = ?", token.Id).Updates(map[string]any{
 		"remain_quota": 70,
-		"used_quota": 10,
+		"used_quota":   10,
 	}).Error)
 	channel := Channel{Name: "accounting-tx-rollback", Key: "accounting-tx-rollback-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
@@ -136,7 +136,6 @@ func TestAccountingTransactionPrimitivesRejectUsageUnderflow(t *testing.T) {
 	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
 	assert.EqualValues(t, 5, storedChannel.UsedQuota)
 }
-
 
 func TestRecordMidjourneyTaskUsageIsSynchronousAndAtomic(t *testing.T) {
 	truncateTables(t)
