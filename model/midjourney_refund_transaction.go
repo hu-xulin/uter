@@ -34,6 +34,9 @@ func markMidjourneyRefundReconciliationTx(tx *gorm.DB, task *Midjourney, reasonC
 	payload, err := json.Marshal(map[string]any{
 		"task_id":     task.Id,
 		"mj_id":       task.MjId,
+		"user_id":     task.UserId,
+		"token_id":    task.TokenId,
+		"channel_id":  task.GetBillingChannelId(),
 		"reason_code": reasonCode,
 		"reason":      reasonDetail,
 		"status":      MidjourneyRefundReconciliationRequired,
