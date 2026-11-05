@@ -949,6 +949,8 @@ func TestUpdateVideoSingleTaskPollClassification(t *testing.T) {
 			const initialQuota, preConsumed, tokenRemain = 10_000, 4_000, 7_000
 			seedUser(t, userID, initialQuota)
 			seedToken(t, tokenID, userID, "sk-poll-class", tokenRemain)
+			seedChannel(t, channelID)
+			seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 			ch := &model.Channel{Id: channelID, Type: constant.ChannelTypeKling, Name: "poll", Key: "sk-test", Status: common.ChannelStatusEnabled}
 
 			if testCase.maxFailures > 0 {
@@ -1037,6 +1039,7 @@ func TestUpdateBatchTasksPollClassification(t *testing.T) {
 			seedUser(t, userID, initialQuota)
 			seedToken(t, tokenID, userID, "sk-batch-class", tokenRemain)
 			seedTaskPollingChannel(t, channelID, true)
+			seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 
 			task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
 			task.TaskID = "task_batch_class"
@@ -1069,4 +1072,36 @@ func TestUpdateBatchTasksPollClassification(t *testing.T) {
 			}
 		})
 	}
+}
+
+
+func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
+	truncate(t)
+	const userID, tokenID, channelID = 620, 620, 620
+	const initialQuota, preConsumed, tokenRemain = 10000, 3000, 5000
+	seedUser(t, userID, initialQuota)
+	seedToken(t, tokenID, userID, "sk-null-task-no-adapter", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	task.Status = model.TaskStatusInProgress
+	task.PrivateData.UpstreamTaskID = ""
+	require.NoError(t, model.DB.Model(task).Updates(map[string]any{
+		"status": task.Status,
+		"private_data": task.PrivateData,
+	}).Error)
+
+	previousAdaptor := GetTaskAdaptorFunc
+	GetTaskAdaptorFunc = nil
+	t.Cleanup(func() { GetTaskAdaptorFunc = previousAdaptor })
+
+	summary := RunTaskPollingOnce(context.Background(), nil)
+	assert.Equal(t, 1, summary.NullTasksFailed)
+	var persisted model.Task
+	require.NoError(t, model.DB.First(&persisted, task.ID).Error)
+	assert.Equal(t, model.TaskStatusFailure, persisted.Status)
+	assert.Zero(t, persisted.Quota)
+	assert.Equal(t, initialQuota+preConsumed, getUserQuota(t, userID))
+	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
 }
