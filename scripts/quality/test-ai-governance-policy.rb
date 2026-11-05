@@ -70,7 +70,7 @@ check.call(schema.dig("properties", "git_state", "properties", "work_branch_coun
   check.call(required.include?(key), "task schema must require #{key}")
 end
 aies = File.read(File.join(root, ".ai/AIES.md"))
-example = aies[/```json\\s*(.*?)\\s*```/m, 1]
+example = aies[/```json\s*(.*?)\s*```/m, 1]
 check.call(!example.nil?, "AIES must contain a machine-readable task example")
 if example
   begin
