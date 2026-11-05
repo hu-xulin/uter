@@ -1121,8 +1121,8 @@ func GetOrgMemberUsernamesInDepartment(orgId int, departmentName string, exclude
 }
 
 // AdjustOrgAndMemberUsedQuota keeps the organization budget ledger and its
- // member usage ledger in one transaction. A failed member adjustment must
- // never leave only the organization side committed (or vice versa).
+// member usage ledger in one transaction. A failed member adjustment must
+// never leave only the organization side committed (or vice versa).
 func AdjustOrgAndMemberUsedQuota(orgID, userID int, delta int64) error {
 	if orgID <= 0 || userID <= 0 {
 		return fmt.Errorf("organization/member usage adjustment requires positive IDs")
