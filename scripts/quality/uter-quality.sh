@@ -242,9 +242,9 @@ stage_status_print() {
 }
 
 # compute_verdict — 机器可读总裁决（QUALITY-GATE-STANDARD §阻断矩阵的程序化出口）。
-#   FAIL            存在 FAILED 或 BLOCKED 子项（阻断级：禁止放行，绝不伪通过）
-#   PASS_WITH_NOTES 仅 PASSED 与 NOT_RUN（放行，NOT_RUN 项必须在报告中披露）
-#   PASS            全部 PASSED
+#   FAIL            存在 FAILED、BLOCKED 或 NOT_RUN 子项（禁止将未执行冒充通过）
+#   PASS            所有必需子项均 PASSED
+#   NOT_RUN          没有可验证子项（阻断）
 # 结果落盘 .quality/.state/verdict，并设 UEQE_VERDICT 变量。
 compute_verdict() {
   local s f failed=0 blocked=0 notrun=0 passed=0
@@ -263,12 +263,12 @@ compute_verdict() {
       NOT_RUN) notrun=$((notrun + 1)) ;;
     esac
   done
-  if [ $((failed + blocked)) -gt 0 ]; then
+  if [ $((failed + blocked + notrun)) -gt 0 ]; then
     UEQE_VERDICT=FAIL
-  elif [ "$notrun" -gt 0 ]; then
-    UEQE_VERDICT=PASS_WITH_NOTES
-  else
+  elif [ "$passed" -gt 0 ]; then
     UEQE_VERDICT=PASS
+  else
+    UEQE_VERDICT=FAIL
   fi
   printf '%s\n' "$UEQE_VERDICT" > "$ROOT/$UEQE_STATE_DIR/verdict"
 }
@@ -278,7 +278,7 @@ compute_verdict() {
 # 编排器无法被 CI/脚本链当作阻断门禁消费。
 gate_exit() {
   compute_verdict
-  printf 'verdict: %s（FAILED/BLOCKED→exit 1；NOT_RUN 不阻断但须披露）\n' "$UEQE_VERDICT" >&2
+  printf 'verdict: %s（FAILED/BLOCKED/NOT_RUN→exit 1；仅全部必需检查 PASSED 才放行）\n' "$UEQE_VERDICT" >&2
   [ "$UEQE_VERDICT" = "FAIL" ] && exit 1
   exit 0
 }
