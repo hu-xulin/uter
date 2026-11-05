@@ -203,8 +203,8 @@ func (s *BillingSession) Refund(c *gin.Context) {
 }
 
 // buildRefundIntent 把本次退款快照落为持久化凭证，返回凭证 id（0 表示没有
-// 需要持久化的退款内容）。钱包出资的归属解析失败必须上抛——宁可回退旧路径
-// 告警，也不能把组织预扣猜成个人钱包退掉。
+// 需要持久化的退款内容）。钱包出资的归属解析失败必须上抛；调用方
+// 必须 fail-closed，禁止退回非幂等的旧进程内退款路径。
 func buildRefundIntent(funding FundingSource, userId, tokenId, tokenConsumed int, refundToken bool, extraReserved int) (int, error) {
 	intent := &model.RefundIntent{
 		UserId:        userId,
