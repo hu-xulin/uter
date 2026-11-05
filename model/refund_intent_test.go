@@ -6,6 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/glebarez/sqlite"
+	"gorm.io/gorm"
 
 	"github.com/uter-ai/uter/common"
 )
@@ -265,4 +267,90 @@ func TestAdjustUserUsedQuotaRejectsUnderflow(t *testing.T) {
 	require.NoError(t, AdjustUserUsedQuota(user.Id, -100))
 	require.NoError(t, DB.Select("id", "used_quota").First(&stored, user.Id).Error)
 	assert.Zero(t, stored.UsedQuota)
+}
+
+
+// TestSubscriptionRefundIntentRollsBackAllLegs verifies that the original
+// subscription pre-consumption and its idempotency record roll back when a
+// later Token ledger leg fails.
+func TestSubscriptionRefundIntentRollsBackAllLegs(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&UserSubscription{}, &SubscriptionPreConsumeRecord{}, &RefundIntent{}, &Token{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	sub := UserSubscription{UserId: 7, PlanId: 3, AmountTotal: 100, AmountUsed: 40, Status: "active"}
+	require.NoError(t, db.Create(&sub).Error)
+	record := SubscriptionPreConsumeRecord{
+		RequestId: "atomic-sub-refund", UserId: 7, UserSubscriptionId: sub.Id,
+		PreConsumed: 20, Status: "consumed",
+	}
+	require.NoError(t, db.Create(&record).Error)
+	intent := RefundIntent{
+		UserId: 7, IdempotencyKey: "atomic-sub-refund-intent",
+		FundingSource: RefundSourceSubscription, SubRequestId: record.RequestId,
+		SubId: sub.Id, TokenId: 999999, TokenConsumed: 5,
+	}
+	require.NoError(t, CreateRefundIntent(&intent))
+
+	require.Error(t, ExecuteRefundIntent(intent.Id), "missing Token must fail the complete refund transaction")
+	var savedSub UserSubscription
+	require.NoError(t, db.First(&savedSub, sub.Id).Error)
+	require.EqualValues(t, 40, savedSub.AmountUsed, "subscription usage must roll back")
+	var savedRecord SubscriptionPreConsumeRecord
+	require.NoError(t, db.First(&savedRecord, record.Id).Error)
+	require.Equal(t, "consumed", savedRecord.Status, "pre-consumption receipt must roll back")
+	var savedIntent RefundIntent
+	require.NoError(t, db.First(&savedIntent, intent.Id).Error)
+	require.Equal(t, RefundIntentPending, savedIntent.Status, "intent remains retryable")
+}
+
+// TestSubscriptionRefundIntentCommitsOnce verifies the successful subscription
+// path and replay behavior after the entire intent commits.
+func TestSubscriptionRefundIntentCommitsOnce(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&UserSubscription{}, &SubscriptionPreConsumeRecord{}, &RefundIntent{}, &Token{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	sub := UserSubscription{UserId: 8, PlanId: 4, AmountTotal: 100, AmountUsed: 40, Status: "active"}
+	require.NoError(t, db.Create(&sub).Error)
+	record := SubscriptionPreConsumeRecord{
+		RequestId: "atomic-sub-refund-success", UserId: 8, UserSubscriptionId: sub.Id,
+		PreConsumed: 20, Status: "consumed",
+	}
+	require.NoError(t, db.Create(&record).Error)
+	intent := RefundIntent{
+		UserId: 8, IdempotencyKey: "atomic-sub-refund-success-intent",
+		FundingSource: RefundSourceSubscription, SubRequestId: record.RequestId, SubId: sub.Id,
+	}
+	require.NoError(t, CreateRefundIntent(&intent))
+
+	require.NoError(t, ExecuteRefundIntent(intent.Id))
+	require.NoError(t, ExecuteRefundIntent(intent.Id), "replay must be a no-op")
+	var savedSub UserSubscription
+	require.NoError(t, db.First(&savedSub, sub.Id).Error)
+	require.EqualValues(t, 20, savedSub.AmountUsed)
+	var savedRecord SubscriptionPreConsumeRecord
+	require.NoError(t, db.First(&savedRecord, record.Id).Error)
+	require.Equal(t, "refunded", savedRecord.Status)
+	var savedIntent RefundIntent
+	require.NoError(t, db.First(&savedIntent, intent.Id).Error)
+	require.Equal(t, RefundIntentDone, savedIntent.Status)
 }
