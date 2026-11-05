@@ -32,10 +32,10 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	require.NoError(t, db.AutoMigrate(&Log{}, &User{}, &MidjourneyRefundLogReceipt{}))
 
 	event := MidjourneyRefundOutbox{
-		EventKey:    "midjourney:123:refund-log",
+		EventKey:       "midjourney:123:refund-log",
 		EventType:      "midjourney.refund.completed",
 		PayloadVersion: 1,
-		PayloadJSON: `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
+		PayloadJSON:    `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(event))
 	require.NoError(t, deliverMidjourneyRefundLog(event))
@@ -45,10 +45,10 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	require.Error(t, deliverMidjourneyRefundLog(mismatched))
 
 	reconciliation := MidjourneyRefundOutbox{
-		EventKey:    "midjourney:124:refund-reconciliation",
+		EventKey:       "midjourney:124:refund-reconciliation",
 		EventType:      "midjourney.refund.reconciliation_required",
 		PayloadVersion: 1,
-		PayloadJSON: `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
+		PayloadJSON:    `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(reconciliation))
 
@@ -183,7 +183,7 @@ func TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions(t *testing.T) {
 		EventKey:       "midjourney:version-test",
 		EventType:      "midjourney.refund.completed",
 		PayloadVersion: 2,
-		PayloadJSON:     `{"task_id":321,"mj_id":"mj-321","user_id":1,"quota":10,"result":"refunded"}`,
+		PayloadJSON:    `{"task_id":321,"mj_id":"mj-321","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "unsupported Midjourney refund outbox payload version")
 	event.PayloadVersion = 1
@@ -205,7 +205,7 @@ func TestMidjourneyRefundOutboxCreationRejectsInvalidIdentityAndSchema(t *testin
 		RefundOperationID: 1,
 		EventKey:          "midjourney:valid",
 		EventType:         "midjourney.refund.completed",
-		PayloadJSON:        `{"task_id":1,"user_id":1,"quota":1,"result":"refunded"}`,
+		PayloadJSON:       `{"task_id":1,"user_id":1,"quota":1,"result":"refunded"}`,
 	}
 	invalid := []struct {
 		name   string
