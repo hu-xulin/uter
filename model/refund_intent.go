@@ -190,13 +190,17 @@ func SweepPendingRefundIntents(staleAfterSeconds int64, limit int) (int, error) 
 		return 0, err
 	}
 	done := 0
+	var firstErr error
 	for i := range intents {
 		if err := ExecuteRefundIntent(intents[i].Id); err != nil {
 			common.SysError(fmt.Sprintf("refund intent %d sweep execution failed (userId=%d): %s",
 				intents[i].Id, intents[i].UserId, err.Error()))
+			if firstErr == nil {
+				firstErr = fmt.Errorf("refund intent %d failed: %w", intents[i].Id, err)
+			}
 			continue
 		}
 		done++
 	}
-	return done, nil
+	return done, firstErr
 }
