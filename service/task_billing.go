@@ -144,17 +144,29 @@ func taskFundingOrgId(task *model.Task) (int, error) {
 
 // taskAdjustFunding 调整任务的资金来源（钱包或订阅），delta > 0 表示扣费，delta < 0 表示退还。
 func taskAdjustFunding(task *model.Task, delta int) error {
-	if taskIsSubscription(task) {
-		return model.PostConsumeUserSubscriptionDelta(task.PrivateData.SubscriptionId, int64(delta))
+	if task == nil {
+		return errors.New("task funding adjustment requires a task")
 	}
-	// 组织成员的资金来源是组织共享预算：提交端按组织出资预扣，这里的退款/差额结算
-	// 必须对称地回到同一本账。退到个人钱包会让组织 used_quota 永不回减，对账破裂。
+	if delta == 0 {
+		return nil
+	}
+	if taskIsSubscription(task) {
+		// Task execution may outlive the subscription's remaining balance. Match
+		// synchronous BillingSession settlement: cap subscription usage and charge
+		// any positive overflow to the owner's wallet in the same transaction.
+		return model.PostConsumeUserSubscriptionDeltaCappedWithWallet(
+			task.PrivateData.SubscriptionId, task.UserId, int64(delta),
+		)
+	}
+	// Organization reservations update both the shared budget and the member
+	// sub-quota ledger. Settlement/refund must true-up both atomically as well;
+	// changing only organizations.used_quota silently desynchronizes member limits.
 	orgId, err := taskFundingOrgId(task)
 	if err != nil {
 		return err
 	}
 	if orgId > 0 {
-		return model.IncrOrgUsedQuota(orgId, int64(delta))
+		return model.AdjustOrgAndMemberUsedQuota(orgId, task.UserId, int64(delta))
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(task.UserId, delta, true)
