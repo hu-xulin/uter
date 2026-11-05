@@ -9,16 +9,16 @@ import (
 
 func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 	table := "midjourney_refund_operations_contract_test"
-	db    := DB.Table(table)
+	db := DB.Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOperation{}))
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
 	first := MidjourneyRefundOperation{
-		MidjourneyTaskID: 101,
-		ReasonCode: "upstream_failed",
-		FundingSource: "personal_wallet",
+		MidjourneyTaskID   : 101,
+		ReasonCode         : "upstream_failed",
+		FundingSource      : "personal_wallet",
 		BillingSnapshotJSON: `{"version":1,"wallet_applied_quota":25}`,
-		WalletAppliedQuota: 25,
+		WalletAppliedQuota : 25,
 	}
 	require.NoError(t, db.Create(&first).Error)
 	assert.Error(t, db.Model(&first).Update("billing_snapshot_json", `{"version":2}`).Error)
@@ -28,18 +28,18 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 	assert.NotZero(t, first.CreatedAt)
 
 	duplicateTask := MidjourneyRefundOperation{
-		MidjourneyTaskID: 101,
-		ReasonCode: "duplicate",
-		FundingSource: "personal_wallet",
+		MidjourneyTaskID   : 101,
+		ReasonCode         : "duplicate",
+		FundingSource      : "personal_wallet",
 		BillingSnapshotJSON: `{"version":1,"wallet_applied_quota":25}`,
 	}
 	assert.Error(t, db.Create(&duplicateTask).Error)
 
 	duplicateKey := MidjourneyRefundOperation{
-		MidjourneyTaskID: 102,
-		IdempotencyKey: first.IdempotencyKey,
-		ReasonCode: "duplicate_key",
-		FundingSource: "personal_wallet",
+		MidjourneyTaskID   : 102,
+		IdempotencyKey     : first.IdempotencyKey,
+		ReasonCode         : "duplicate_key",
+		FundingSource      : "personal_wallet",
 		BillingSnapshotJSON: `{"version":1}`,
 	}
 	assert.Error(t, db.Create(&duplicateKey).Error)
@@ -47,7 +47,7 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 
 func TestMidjourneyRefundOperationRejectsUnverifiableInput(t *testing.T) {
 	table := "midjourney_refund_operations_validation_test"
-	db    := DB.Table(table)
+	db := DB.Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOperation{}))
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
