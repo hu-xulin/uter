@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	MidjourneyRefundOperationTypeFull         = "full"
-	MidjourneyRefundPending                   = "pending"
-	MidjourneyRefundCompleted                 = "completed"
-	MidjourneyRefundReconciliationRequired    = "reconciliation_required"
+	MidjourneyRefundOperationTypeFull      = "full"
+	MidjourneyRefundPending                = "pending"
+	MidjourneyRefundCompleted              = "completed"
+	MidjourneyRefundReconciliationRequired = "reconciliation_required"
 
 	MidjourneyRefundFundingPersonalWallet     = "personal_wallet"
 	MidjourneyRefundFundingOrganizationWallet = "organization_wallet"
