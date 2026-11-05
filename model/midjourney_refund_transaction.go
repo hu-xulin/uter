@@ -91,7 +91,14 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			return errors.New("Midjourney task quota cannot be negative")
 		}
 		if task.Quota == 0 {
-			if task.BillingStatus == "refunded" || !task.BillingWalletApplied {
+			if task.BillingStatus == "refunded" {
+				return nil
+			}
+			// A zero task quota is not proof that every billing leg was a no-op.
+			// In particular, a token-only partial charge must be quarantined
+			// instead of being silently reported as already refunded.
+			if !task.BillingWalletApplied && !task.BillingTokenApplied &&
+				task.BillingStatus != "applied" && task.BillingStatus != "partial" {
 				return nil
 			}
 			snapshot := map[string]any{
