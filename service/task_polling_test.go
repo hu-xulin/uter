@@ -1106,6 +1106,7 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 		"progress":     nil,
 	}).Error)
 	require.Len(t, model.GetAllUnFinishSyncTasks(100), 1, "NULL-progress tasks must remain pollable")
+	require.Len(t, model.GetAllUnFinishSyncTasks(0), 1, "a zero configured query limit must use the safe default rather than suppress polling")
 	var persistedBeforePoll model.Task
 	require.NoError(t, model.DB.First(&persistedBeforePoll, task.ID).Error)
 	assert.Equal(t, BillingSourceWallet, persistedBeforePoll.PrivateData.BillingSource, "billing provenance must survive persistence")
