@@ -1106,6 +1106,11 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 		"progress":     nil,
 	}).Error)
 	require.Len(t, model.GetAllUnFinishSyncTasks(100), 1, "NULL-progress tasks must remain pollable")
+	var persistedBeforePoll model.Task
+	require.NoError(t, model.DB.First(&persistedBeforePoll, task.ID).Error)
+	assert.Equal(t, BillingSourceWallet, persistedBeforePoll.PrivateData.BillingSource, "billing provenance must survive persistence")
+	assert.Empty(t, persistedBeforePoll.PrivateData.UpstreamTaskID, "the fixture must persist a missing upstream ID")
+	assert.Empty(t, persistedBeforePoll.GetUpstreamTaskID(), "new billing-aware tasks must not fall back to their local task ID")
 
 	previousAdaptor := GetTaskAdaptorFunc
 	GetTaskAdaptorFunc = nil
