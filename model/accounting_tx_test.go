@@ -105,3 +105,31 @@ func TestAccountingTransactionPrimitivesRejectMissingRows(t *testing.T) {
 	assert.Error(t, adjustChannelUsedQuotaTx(nil, 1, -1))
 	assert.Error(t, increaseTokenQuotaTx(DB, 1, -1))
 }
+
+
+func TestAccountingTransactionPrimitivesRejectUsageUnderflow(t *testing.T) {
+	truncateTables(t)
+	resetBatchUpdateTestState(t)
+
+	user := createReserveTestUser(t, 100)
+	channel := Channel{Name: "accounting-tx-underflow", Key: "accounting-tx-underflow-key", Status: 1, UsedQuota: 5}
+	require.NoError(t, DB.Create(&channel).Error)
+
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		if err := adjustUserUsedQuotaTx(tx, user.Id, -1); err == nil {
+			return errors.New("expected user usage underflow to be rejected")
+		}
+		if err := adjustChannelUsedQuotaTx(tx, channel.Id, -6); err == nil {
+			return errors.New("expected channel usage underflow to be rejected")
+		}
+		return nil
+	})
+	require.NoError(t, err)
+
+	var storedUser User
+	require.NoError(t, DB.Select("used_quota").First(&storedUser, user.Id).Error)
+	assert.Zero(t, storedUser.UsedQuota)
+	var storedChannel Channel
+	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
+	assert.EqualValues(t, 5, storedChannel.UsedQuota)
+}
