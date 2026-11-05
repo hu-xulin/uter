@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,8 +21,9 @@ const (
 )
 
 type MidjourneyRefundLogReceipt struct {
-	EventKey  string `json:"event_key" gorm:"type:varchar(128);primaryKey"`
-	CreatedAt int64  `json:"created_at" gorm:"bigint;not null"`
+	EventKey     string `json:"event_key" gorm:"type:varchar(128);primaryKey"`
+	PayloadHash  string `json:"payload_hash" gorm:"type:varchar(64);not null"`
+	CreatedAt    int64  `json:"created_at" gorm:"bigint;not null"`
 }
 
 func (MidjourneyRefundLogReceipt) TableName() string {
@@ -87,13 +90,24 @@ func deliverMidjourneyRefundLog(event MidjourneyRefundOutbox) error {
 	if payload.UserID > 0 {
 		username, _ = GetUsernameById(payload.UserID, false)
 	}
+	payloadDigest := sha256.Sum256([]byte(event.PayloadJSON))
+	payloadHash := hex.EncodeToString(payloadDigest[:])
 	return LOG_DB.Transaction(func(tx *gorm.DB) error {
-		receipt := MidjourneyRefundLogReceipt{EventKey: event.EventKey, CreatedAt: common.GetTimestamp()}
+		receipt := MidjourneyRefundLogReceipt{
+			EventKey: event.EventKey, PayloadHash: payloadHash, CreatedAt: common.GetTimestamp(),
+		}
 		result := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(&receipt)
 		if result.Error != nil {
 			return result.Error
 		}
 		if result.RowsAffected == 0 {
+			var existing MidjourneyRefundLogReceipt
+			if err := tx.First(&existing, "event_key = ?", event.EventKey).Error; err != nil {
+				return err
+			}
+			if existing.PayloadHash != payloadHash {
+				return fmt.Errorf("refund outbox receipt payload mismatch for event %s", event.EventKey)
+			}
 			return nil
 		}
 		log := &Log{
