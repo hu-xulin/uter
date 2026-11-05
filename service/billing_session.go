@@ -173,49 +173,31 @@ func (s *BillingSession) Refund(c *gin.Context) {
 		s.funding.Source(),
 	))
 
-	// 复制需要的值到闭包中
-	tokenId := s.relayInfo.TokenId
-	tokenKey := s.relayInfo.TokenKey
-	isPlayground := s.relayInfo.IsPlayground
-	tokenConsumed := s.tokenConsumed
-	extraReserved := s.extraReserved
-	subscriptionId := s.relayInfo.SubscriptionId
-	funding := s.funding
+	// 持久化退款意图必须先成功；否则绝不能退回旧的非幂等进程内路径。
+	// 一旦凭证落库，执行失败会保留 pending 状态，由独立恢复任务重放。
 	userId := s.relayInfo.UserId
-
-	// 持久化退款意图：异步执行前先落凭证。退款原语与完成标记在
-	// ExecuteRefundIntent 内同事务提交，进程在执行窗口内崩溃时凭证保持
-	// pending，由 SweepPendingRefundIntents 安全重放（不会多退）。落库失败
-	// 时回退旧的进程内路径，行为与历史版本一致（尽力而为 + SysError 告警）。
-	intentId, intentErr := buildRefundIntent(funding, userId, tokenId, tokenConsumed, !isPlayground, extraReserved)
+	intentId, intentErr := buildRefundIntent(
+		s.funding, userId, s.relayInfo.TokenId, s.tokenConsumed,
+		!s.relayInfo.IsPlayground, s.extraReserved,
+	)
 	if intentErr != nil {
-		common.SysLog(fmt.Sprintf("refund intent persist failed, falling back to in-process refund (userId=%d): %s",
-			userId, intentErr.Error()))
+		common.SysError(fmt.Sprintf(
+			"refund intent persistence failed; refund was NOT applied and requires operator recovery (userId=%d): %s",
+			userId, intentErr.Error(),
+		))
+		close(refundDone)
+		return
+	}
+	if intentId == 0 {
+		close(refundDone)
+		return
 	}
 
 	gopool.Go(func() {
 		defer close(refundDone)
-		if intentId > 0 {
-			if err := model.ExecuteRefundIntent(intentId); err != nil {
-				common.SysError(fmt.Sprintf("refund intent %d execution failed (userId=%d), stays pending for sweep: %s",
-					intentId, userId, err.Error()))
-			}
-			return
-		}
-		// 1) 退还资金来源
-		if err := funding.Refund(); err != nil {
-			common.SysLog("error refunding billing source: " + err.Error())
-		}
-		if extraReserved > 0 && funding.Source() == BillingSourceSubscription && subscriptionId > 0 {
-			if err := model.PostConsumeUserSubscriptionDelta(subscriptionId, -int64(extraReserved)); err != nil {
-				common.SysLog("error refunding subscription extra reserved quota: " + err.Error())
-			}
-		}
-		// 2) 退还令牌额度
-		if tokenConsumed > 0 && !isPlayground {
-			if err := model.IncreaseTokenQuota(tokenId, tokenKey, tokenConsumed); err != nil {
-				common.SysLog("error refunding token quota: " + err.Error())
-			}
+		if err := model.ExecuteRefundIntent(intentId); err != nil {
+			common.SysError(fmt.Sprintf("refund intent %d execution failed (userId=%d), stays pending for sweep: %s",
+				intentId, userId, err.Error()))
 		}
 	})
 }
