@@ -699,6 +699,15 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
 		return fmt.Errorf("%w: subscription/top-up provider mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
 	}
+	if topup.ProviderAmount > 0 && order.ProviderAmount > 0 && topup.ProviderAmount != order.ProviderAmount {
+		return fmt.Errorf("%w: subscription/top-up provider amount mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if existingCurrency := strings.TrimSpace(topup.ProviderCurrency); existingCurrency != "" {
+		if orderCurrency := strings.TrimSpace(order.ProviderCurrency); orderCurrency != "" &&
+			!strings.EqualFold(existingCurrency, orderCurrency) {
+			return fmt.Errorf("%w: subscription/top-up provider currency mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+		}
+	}
 	if topup.Status != common.TopUpStatusPending && topup.Status != common.TopUpStatusSuccess {
 		return fmt.Errorf("%w: linked top-up is not completable for trade %s", ErrTopUpStatusInvalid, order.TradeNo)
 	}
