@@ -46,3 +46,30 @@ func TestMigrateOptionPrimaryKeyRebuildsAndPreservesLegacyRows(t *testing.T) {
 	require.NoError(t, db.Table(backupTables[0]).Count(&backupRows).Error)
 	assert.EqualValues(t, 4, backupRows, "the backup must retain every original row, including skipped empty keys")
 }
+
+func TestMigrateOptionPrimaryKeyFailsClosedOnConflictingDuplicateValues(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.Exec("CREATE TABLE options (key TEXT, value TEXT)").Error)
+	require.NoError(t, db.Exec(
+		"INSERT INTO options (key, value) VALUES (?, ?), (?, ?)",
+		"payment_gateway", "gateway-a", "payment_gateway", "gateway-b",
+	).Error)
+
+	err = migrateOptionPrimaryKey(db)
+	require.ErrorContains(t, err, "conflicting values for duplicate options key")
+	var rows []Option
+	require.NoError(t, db.Order("rowid").Find(&rows).Error)
+	require.Equal(t, []Option{
+		{Key: "payment_gateway", Value: "gateway-a"},
+		{Key: "payment_gateway", Value: "gateway-b"},
+	}, rows, "migration must leave ambiguous source configuration untouched")
+
+	assert.False(t, db.Migrator().HasTable(optionPrimaryKeyTmpTable), "migration must fail before creating a replacement table")
+	var backups int64
+	require.NoError(t, db.Raw(
+		"SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name LIKE ?",
+		optionLegacyTablePrefix+"%",
+	).Scan(&backups).Error)
+	assert.Zero(t, backups, "ambiguous data must not be moved to a backup as if migration succeeded")
+}
