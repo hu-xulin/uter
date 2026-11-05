@@ -36,12 +36,12 @@ func newRefundIntentFixture(t *testing.T) (User, Token, RefundIntent) {
 	intent := RefundIntent{
 		UserId:         user.Id,
 		IdempotencyKey: "test-refund-intent:" + strconv.Itoa(user.Id),
-		FundingSource: RefundSourceWallet,
-		OrgResolved:   true,
-		OrgId:         0,
-		WalletAmount:  30,
-		TokenId:       token.Id,
-		TokenConsumed: 20,
+		FundingSource:  RefundSourceWallet,
+		OrgResolved:    true,
+		OrgId:          0,
+		WalletAmount:   30,
+		TokenId:        token.Id,
+		TokenConsumed:  20,
 	}
 	require.NoError(t, CreateRefundIntent(&intent))
 	return user, token, intent
