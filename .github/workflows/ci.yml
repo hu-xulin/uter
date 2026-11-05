@@ -42,7 +42,7 @@ jobs:
           compose = Path("docker-compose.yml").read_text()
           for service in ("redis", "postgres"):
               match = re.search(
-                  rf"(?ms)^  {service}:\\n(?:(?!^  [A-Za-z0-9_-]+:).)*?^    image: ([^\\n]+)",
+                  rf"(?ms)^  {service}:\n(?:(?!^  [A-Za-z0-9_-]+:).)*?^    image: ([^\n]+)",
                   compose,
               )
               if not match:
