@@ -24,6 +24,25 @@ fail() {
 }
 pass() { printf '✔ %s\n' "$1"; }
 
+check_review_date() {
+  local file="$1" label="$2" due due_epoch today_epoch
+  due="$(sed -n 's/^\\*\\*下次复核：\\*\\*[[:space:]]*//p' "$file" | head -n 1)"
+  if [[ ! "$due" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    fail "$label 下次复核日期缺失或格式错误：$due"
+    return
+  fi
+  if due_epoch="$(date -d "$due" +%s 2>/dev/null)"; then
+    :
+  elif due_epoch="$(date -j -f "%Y-%m-%d" "$due" +%s 2>/dev/null)"; then
+    :
+  else
+    fail "$label 无法解析下次复核日期：$due"
+    return
+  fi
+  today_epoch="$(date +%s)"
+  [ "$due_epoch" -ge "$today_epoch" ] || fail "$label 知识已过期，须复核后恢复 Active：$due"
+}
+
 # 1. Ten domain standards and required metadata.
 DOMAIN_SPECS="AI-EXECUTION PRODUCT-REQUIREMENTS ARCHITECTURE DEVELOPMENT API-CONTRACT DATABASE SECURITY UX-INTERACTION DOCUMENTATION CHANGE-MANAGEMENT"
 for spec in $DOMAIN_SPECS; do
@@ -38,6 +57,7 @@ for spec in $DOMAIN_SPECS; do
   grep -Fq '**规范状态：** Active' "$file" || fail "$spec-STANDARD.md 缺少 Active 状态"
   grep -Fq '**最后更新：**' "$file" || fail "$spec-STANDARD.md 缺少最后更新时间"
   grep -Fq '**维护责任：**' "$file" || fail "$spec-STANDARD.md 缺少维护责任"
+  check_review_date "$file" "$spec-STANDARD.md"
 done
 
 # 2. Engineering-quality standards and entry point.
@@ -54,6 +74,7 @@ for spec in CODE-REVIEW-STANDARD AUTOMATED-TEST-STANDARD AUTO-FIX-STANDARD QUALI
   grep -Fq '**规范状态：** Active' "$file" || fail "$spec.md 缺少 Active 状态"
   grep -Fq '**最后更新：**' "$file" || fail "$spec.md 缺少最后更新时间"
   grep -Fq '**维护责任：**' "$file" || fail "$spec.md 缺少维护责任"
+  check_review_date "$file" "$spec.md"
 done
 
 # 4. Required Agent governance entry points.
