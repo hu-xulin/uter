@@ -57,13 +57,23 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 	}
 	if len(nullTaskIds) > 0 {
 		summary.NullTasksFailed = len(nullTaskIds)
-		// Do not mark these tasks complete here: that would bypass quota refund
-		// and remove them from the polling/recovery set. Keep them visible as
-		// unfinished until a durable refund/reconciliation operation handles them.
-		logger.LogError(ctx, common.LogText(
-			"Midjourney tasks have empty local upstream IDs and require refund reconciliation: %v",
-			nullTaskIds,
-		))
+		// An empty upstream ID cannot be polled again. Hand each task to the
+		// durable local-ID refund operation now: verifiable applied charges are
+		// refunded atomically; ambiguous legacy/partial charges are quarantined
+		// for reconciliation. Never leave these rows in an endless poll loop.
+		for _, taskID := range nullTaskIds {
+			if err := model.RefundMidjourneyTaskBilling(taskID, "local Midjourney task has an empty upstream mj_id"); err != nil {
+				logger.LogError(ctx, common.LogText(
+					"Midjourney task %d refund/reconciliation handoff failed: %v",
+					taskID, err,
+				))
+				continue
+			}
+			logger.LogInfo(ctx, common.LogText(
+				"Midjourney task %d refund/reconciliation handoff completed",
+				taskID,
+			))
+		}
 	}
 	if len(taskChannelM) == 0 {
 		return summary
