@@ -157,9 +157,9 @@ func taskAdjustFunding(task *model.Task, delta int) error {
 		return model.IncrOrgUsedQuota(orgId, int64(delta))
 	}
 	if delta > 0 {
-		return model.DecreaseUserQuota(task.UserId, delta, false)
+		return model.DecreaseUserQuota(task.UserId, delta, true)
 	}
-	return model.IncreaseUserQuota(task.UserId, -delta, false)
+	return model.IncreaseUserQuota(task.UserId, -delta, true)
 }
 
 // taskAdjustTokenQuota 调整任务的令牌额度，delta > 0 表示扣费，delta < 0 表示退还。
@@ -182,9 +182,9 @@ func taskAdjustTokenQuota(ctx context.Context, task *model.Task, delta int) erro
 		return nil
 	}
 	if delta > 0 {
-		return model.DecreaseTokenQuota(task.PrivateData.TokenId, tokenKey, delta)
+		return model.DecreaseTokenQuotaPersisted(task.PrivateData.TokenId, tokenKey, delta)
 	}
-	return model.IncreaseTokenQuota(task.PrivateData.TokenId, tokenKey, -delta)
+	return model.IncreaseTokenQuotaPersisted(task.PrivateData.TokenId, tokenKey, -delta)
 }
 
 // taskBillingOther 从 task 的 BillingContext 构建日志 Other 字段。
