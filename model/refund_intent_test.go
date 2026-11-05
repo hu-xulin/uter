@@ -215,7 +215,7 @@ func TestUsageAdjustmentHelpersReturnMissingLedgerRows(t *testing.T) {
 
 func TestApplyTaskRefundUsageAtomicallyDrainsBatchDeltas(t *testing.T) {
 	user, _, _ := newRefundIntentFixture(t)
-	channel := Channel{Key: "refund-usage-channel", Type: 1, Status: common.ChannelStatusEnabled}
+	channel := Channel{Key: "refund-usage-channel", Type: 1, Status: 1}
 	require.NoError(t, DB.Create(&channel).Error)
 
 	addNewRecord(BatchUpdateTypeUsedQuota, user.Id, 30)
