@@ -87,13 +87,13 @@ func getSubscriptionPlanCache() *cachex.HybridCache[SubscriptionPlan] {
 	subscriptionPlanCacheOnce.Do(func() {
 		ttl := subscriptionPlanCacheTTL()
 		subscriptionPlanCache = cachex.NewHybridCache[SubscriptionPlan](cachex.HybridCacheConfig[SubscriptionPlan]{
-			Namespace: cachex.Namespace(subscriptionPlanCacheNamespace),
-			Redis:     common.RDB,
+			Namespace:    cachex.Namespace(subscriptionPlanCacheNamespace),
+			Redis:        common.RDB,
 			RedisEnabled: func() bool {
 				return common.RedisEnabled && common.RDB != nil
 			},
 			RedisCodec: cachex.JSONCodec[SubscriptionPlan]{},
-			Memory: func() *hot.HotCache[string, SubscriptionPlan] {
+			Memory:      func() *hot.HotCache[string, SubscriptionPlan] {
 				return hot.NewHotCache[string, SubscriptionPlan](hot.LRU, subscriptionPlanCacheCapacity()).
 					WithTTL(ttl).
 					WithJanitor().
@@ -108,13 +108,13 @@ func getSubscriptionPlanInfoCache() *cachex.HybridCache[SubscriptionPlanInfo] {
 	subscriptionPlanInfoCacheOnce.Do(func() {
 		ttl := subscriptionPlanInfoCacheTTL()
 		subscriptionPlanInfoCache = cachex.NewHybridCache[SubscriptionPlanInfo](cachex.HybridCacheConfig[SubscriptionPlanInfo]{
-			Namespace: cachex.Namespace(subscriptionPlanInfoCacheNamespace),
-			Redis:     common.RDB,
+			Namespace:    cachex.Namespace(subscriptionPlanInfoCacheNamespace),
+			Redis:        common.RDB,
 			RedisEnabled: func() bool {
 				return common.RedisEnabled && common.RDB != nil
 			},
 			RedisCodec: cachex.JSONCodec[SubscriptionPlanInfo]{},
-			Memory: func() *hot.HotCache[string, SubscriptionPlanInfo] {
+			Memory:      func() *hot.HotCache[string, SubscriptionPlanInfo] {
 				return hot.NewHotCache[string, SubscriptionPlanInfo](hot.LRU, subscriptionPlanInfoCacheCapacity()).
 					WithTTL(ttl).
 					WithJanitor().
