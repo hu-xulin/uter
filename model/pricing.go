@@ -53,6 +53,19 @@ type Pricing struct {
 	BillingUsageSchema     map[string]jsplugin.UsageFieldSchema `json:"billing_usage_schema,omitempty"`
 	BillingUsageExamples   []jsplugin.UsageExample              `json:"billing_usage_examples,omitempty"`
 	PricingVersion         string                               `json:"pricing_version,omitempty"`
+
+	// 目录规格：定价页模型详情的「上下文 / 最大输出 / 知识截止 / 发布于 / 模态」
+	// 五格直接消费这五个字段。
+	//
+	// 全部 omitempty：0 与空串代表「上游没有这条事实」，前端按存在性判断是否
+	// 渲染该格。若不加 omitempty，未同步的模型会下发一堆 0，前端不得不为
+	// 「0 是真值还是缺省」写额外判断。
+	ContextLength    int      `json:"context_length,omitempty"`
+	MaxOutputTokens  int      `json:"max_output_tokens,omitempty"`
+	KnowledgeCutoff  string   `json:"knowledge_cutoff,omitempty"`
+	ReleaseDate      string   `json:"release_date,omitempty"`
+	InputModalities  []string `json:"input_modalities,omitempty"`
+	OutputModalities []string `json:"output_modalities,omitempty"`
 }
 
 type PricingVendor struct {
@@ -356,6 +369,17 @@ func updatePricing() {
 			}
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
+			// 目录规格直接下发给定价页。这些字段由「同步资料」从 models.dev 与
+			// basellm 双源合并写入 models 表，未同步时为 0 / 空，前端据此隐藏对应格子。
+			//
+			// 模态在库里是逗号分隔串，这里拆成数组再下发：前端要做成标签列表，
+			// 让它对字符串再 split 一次等于把解析责任推给两端，格式一改就两边不同步。
+			pricing.ContextLength = meta.ContextLength
+			pricing.MaxOutputTokens = meta.MaxOutputTokens
+			pricing.KnowledgeCutoff = meta.KnowledgeCutoff
+			pricing.ReleaseDate = meta.ReleaseDate
+			pricing.InputModalities = splitCatalogModalities(meta.InputModalities)
+			pricing.OutputModalities = splitCatalogModalities(meta.OutputModalities)
 			// 入库模型若图标为空，按名称归因到自己的产品 logo，
 			// 与同家族模型保持一致，避免卡片回落到首字母占位。
 			if meta.Icon != "" {

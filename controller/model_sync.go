@@ -26,7 +26,17 @@ import (
 const (
 	upstreamModelsURL  = "https://basellm.github.io/llm-metadata/api/newapi/models.json"
 	upstreamVendorsURL = "https://basellm.github.io/llm-metadata/api/newapi/vendors.json"
+
+	// models.dev 是第二个上游：basellm 只提供文案类字段（描述/图标/标签/
+	// 供应商/端点），没有上下文窗口、最大输出、模态、知识截止、发布日期，
+	// 而定价页的模型详情卡片需要这五项。它免费、无需鉴权、按 provider 分组。
+	defaultModelsDevURL = "https://models.dev/api.json"
 )
+
+// getModelsDevURL 允许用环境变量替换 models.dev 地址（私有镜像或测试桩）。
+func getModelsDevURL() string {
+	return strings.TrimSpace(common.GetEnvOrDefaultString("SYNC_MODELSDEV_URL", defaultModelsDevURL))
+}
 
 func normalizeLocale(locale string) (string, bool) {
 	switch strings.ToLower(strings.TrimSpace(locale)) {
@@ -240,6 +250,123 @@ type metadataSyncSource struct {
 	ModelsURL  string `json:"models_url"`
 	VendorsURL string `json:"vendors_url"`
 	Version    string `json:"version"`
+
+	// models.dev 侧的来源信息。两个源合并成一份目录后，运营需要知道规格字段
+	// 从哪来、命中多少个模型，否则「同步了但详情页还是空」无从排查。
+	ModelsDevURL   string `json:"models_dev_url,omitempty"`
+	ModelsDevError string `json:"models_dev_error,omitempty"`
+	SpecMatchCount int    `json:"spec_match_count"`
+}
+
+// fetchRawBytes 抓取一份原始响应体，带 ETag 条件请求与重试。
+//
+// 与 fetchJSON 分开是因为 models.dev 的载荷是「provider -> models」的 map，
+// 既不是 envelope 也不是数组，套 upstreamEnvelope 解不出来。缓存一律在
+// validate 通过之后才写入：否则一份畸形载荷会被 304 分支反复回放，永远
+// 恢复不了（fetchJSON 里的 SY-001 修的是同一个洞）。
+func fetchRawBytes(ctx context.Context, url string, maxMB int, validate func([]byte) error) ([]byte, error) {
+	var lastErr error
+	attempts := max(common.GetEnvOrDefault("SYNC_HTTP_RETRY", 3), 1)
+	baseDelay := 200 * time.Millisecond
+	maxBytes := int64(maxMB) << 20
+	for attempt := 0; attempt < attempts; attempt++ {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err != nil {
+			return nil, err
+		}
+		cacheMutex.RLock()
+		if et := etagCache[url]; et != "" {
+			req.Header.Set("If-None-Match", et)
+		}
+		cacheMutex.RUnlock()
+
+		resp, err := getHTTPClient().Do(req)
+		if err != nil {
+			lastErr = err
+			time.Sleep(baseDelay*time.Duration(1<<attempt) + time.Duration(rand.Intn(150))*time.Millisecond)
+			continue
+		}
+		func() {
+			defer resp.Body.Close()
+			switch resp.StatusCode {
+			case http.StatusOK:
+				buf, err := io.ReadAll(io.LimitReader(resp.Body, maxBytes+1))
+				if err != nil {
+					lastErr = err
+					return
+				}
+				if int64(len(buf)) > maxBytes {
+					lastErr = fmt.Errorf("%s: payload exceeds %d MB", url, maxMB)
+					return
+				}
+				if validate != nil {
+					if err := validate(buf); err != nil {
+						lastErr = fmt.Errorf("%s: %w", url, err)
+						return
+					}
+				}
+				cacheMutex.Lock()
+				if et := resp.Header.Get("ETag"); et != "" {
+					etagCache[url] = et
+				}
+				bodyCache[url] = buf
+				cacheMutex.Unlock()
+				lastErr = nil
+			case http.StatusNotModified:
+				cacheMutex.RLock()
+				buf := bodyCache[url]
+				cacheMutex.RUnlock()
+				if len(buf) == 0 {
+					lastErr = fmt.Errorf("%s: cache miss for 304 response", url)
+					return
+				}
+				lastErr = nil
+			default:
+				lastErr = errors.New(resp.Status)
+			}
+		}()
+		if lastErr == nil {
+			cacheMutex.RLock()
+			buf := bodyCache[url]
+			cacheMutex.RUnlock()
+			if len(buf) == 0 {
+				return nil, fmt.Errorf("%s: empty payload", url)
+			}
+			return buf, nil
+		}
+		time.Sleep(baseDelay*time.Duration(1<<attempt) + time.Duration(rand.Intn(150))*time.Millisecond)
+	}
+	return nil, lastErr
+}
+
+// loadModelsDevIndex 拉取并索引 models.dev 目录。
+//
+// 失败不阻断整轮同步：basellm 是必选的下游口径，models.dev 只补规格字段，
+// 单独挂掉时仍应让运营同步文案；错误通过 source.ModelsDevError 回显，
+// 让界面能说明「规格字段这次没拿到」而不是静默留空。
+func loadModelsDevIndex(ctx context.Context, source *metadataSyncSource) (*model.ModelsDevCatalogIndex, int) {
+	url := getModelsDevURL()
+	source.ModelsDevURL = url
+	if url == "" {
+		source.ModelsDevError = "no models.dev endpoint configured"
+		return nil, 0
+	}
+	raw, err := fetchRawBytes(ctx, url, common.GetEnvOrDefault("SYNC_MODELSDEV_MAX_MB", 32), func(buf []byte) error {
+		// 只校验形状，不建索引：建索引的开销远大于一次 JSON 合法性检查，
+		// 校验放在这里只是为了避免把畸形载荷写进缓存。
+		var probe map[string]json.RawMessage
+		return common.Unmarshal(buf, &probe)
+	})
+	if err != nil {
+		source.ModelsDevError = err.Error()
+		return nil, 0
+	}
+	index, err := model.NewModelsDevCatalogIndexFromJSON(raw)
+	if err != nil {
+		source.ModelsDevError = err.Error()
+		return nil, 0
+	}
+	return index, index.Len()
 }
 
 type metadataSyncField struct {
@@ -322,6 +449,19 @@ func fetchMetadataCatalogContext(ctx context.Context, locale string) (metadataSy
 		}
 		models[item.ModelName] = values
 	}
+	// 双源合并：basellm 管文案，models.dev 管规格。合并发生在建版本号之前，
+	// 让版本号如实反映「最终会写进库的那份数据」——否则 models.dev 刷新后
+	// 版本号不动，预览里显示的规格和实际写入的就会不一致。
+	//
+	// models.dev 拉取失败不阻断整轮同步，只在 source 上记下原因：basellm 仍是
+	// 文案字段的唯一来源，让它因为第二个源抽风而整体失败没有收益。
+	if index, indexed := loadModelsDevIndex(ctx, &source); indexed > 0 {
+		if matched, mergeErr := model.MergeCatalogSpecsInto(models, index); mergeErr != nil {
+			source.ModelsDevError = fmt.Sprintf("merge catalog specs: %v", mergeErr)
+		} else {
+			source.SpecMatchCount = matched
+		}
+	}
 	encoded, err := common.Marshal([]any{source.Locale, models, vendors})
 	if err != nil {
 		return source, nil, nil, err
@@ -403,7 +543,23 @@ func SyncUpstreamPreview(c *gin.Context) {
 		localValues := model.MetadataValues{}
 		if local != nil {
 			candidate.Kind = "update"
-			localValues = model.MetadataValues{Description: local.Description, Icon: local.Icon, Tags: local.Tags, Endpoints: local.Endpoints, NameRule: local.NameRule, Status: local.Status}
+			// 本地侧必须把六个规格字段一并带上：预览是按整个 MetadataValues
+			// 逐字段比对的，漏填会让「本地已有上下文窗口」显示成本地空值，
+			// 运营一旦勾选就等于把已有事实清成 0。
+			localValues = model.MetadataValues{
+				Description:      local.Description,
+				Icon:             local.Icon,
+				Tags:             local.Tags,
+				Endpoints:        local.Endpoints,
+				NameRule:         local.NameRule,
+				Status:           local.Status,
+				ContextLength:    local.ContextLength,
+				MaxOutputTokens:  local.MaxOutputTokens,
+				KnowledgeCutoff:  local.KnowledgeCutoff,
+				ReleaseDate:      local.ReleaseDate,
+				InputModalities:  local.InputModalities,
+				OutputModalities: local.OutputModalities,
+			}
 			if localVendor != nil {
 				localValues.Vendor = localVendor.Name
 			}

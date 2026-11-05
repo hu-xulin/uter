@@ -32,6 +32,8 @@ const preview: MetadataSyncPreview = {
     models_url: 'https://example.test/models.json',
     vendors_url: 'https://example.test/vendors.json',
     version: 'source-v1',
+    models_dev_url: 'https://example.test/api.json',
+    spec_match_count: 1,
   },
   candidates: [
     {

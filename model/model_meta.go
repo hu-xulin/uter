@@ -48,11 +48,24 @@ type Model struct {
 	VendorID           int                  `json:"vendor_id,omitempty" gorm:"index"`
 	Endpoints          string               `json:"endpoints,omitempty" gorm:"type:text"`
 	SupportedEndpoints []string             `json:"supported_endpoints,omitempty" gorm:"-"`
-	Status             int                  `json:"status" gorm:"default:1"`
-	SyncOfficial       int                  `json:"sync_official" gorm:"default:1"`
-	CreatedTime        int64                `json:"created_time" gorm:"bigint"`
-	UpdatedTime        int64                `json:"updated_time" gorm:"bigint"`
-	DeletedAt          gorm.DeletedAt       `json:"-" gorm:"index;uniqueIndex:uk_model_name_delete_at,priority:2"`
+	// 目录规格字段：来自 models.dev 的模型卡片事实，供定价页「上下文 / 最大输出 /
+	// 模态 / 知识截止 / 发布于」五格展示。
+	//
+	// 0 与空串是「未知」而不是真实取值，因此前端按 >0 / 非空判断是否渲染该格；
+	// 不要用 0 表达「不支持」，那会让一行表格在无数据时反而显示 0。
+	// 模态存成逗号分隔字符串而非 JSON 数组：同步预览按字段逐值比较新旧值，
+	// 切片无法用 == 比较，会在 common.Marshal 后出现顺序不稳定的假差异。
+	ContextLength    int            `json:"context_length,omitempty" gorm:"default:0"`
+	MaxOutputTokens  int            `json:"max_output_tokens,omitempty" gorm:"default:0"`
+	KnowledgeCutoff  string         `json:"knowledge_cutoff,omitempty" gorm:"type:varchar(16)"`
+	ReleaseDate      string         `json:"release_date,omitempty" gorm:"type:varchar(16)"`
+	InputModalities  string         `json:"input_modalities,omitempty" gorm:"type:varchar(64)"`
+	OutputModalities string         `json:"output_modalities,omitempty" gorm:"type:varchar(64)"`
+	Status           int            `json:"status" gorm:"default:1"`
+	SyncOfficial     int            `json:"sync_official" gorm:"default:1"`
+	CreatedTime      int64          `json:"created_time" gorm:"bigint"`
+	UpdatedTime      int64          `json:"updated_time" gorm:"bigint"`
+	DeletedAt        gorm.DeletedAt `json:"-" gorm:"index;uniqueIndex:uk_model_name_delete_at,priority:2"`
 
 	BoundChannels []BoundChannel `json:"bound_channels,omitempty" gorm:"-"`
 	EnableGroups  []string       `json:"enable_groups,omitempty" gorm:"-"`

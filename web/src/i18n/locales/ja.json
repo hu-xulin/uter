@@ -7775,6 +7775,14 @@
     "At least one sender account is required": "送信アカウントが少なくとも1つ必要です",
     "Daily send limit must be a non-negative integer": "1日の送信上限は0以上の整数である必要があります",
     "new-api": "new-api",
-    "Frontend design and development by New API contributors.": "フロントエンドの設計と開発は New API contributors によるものです。"
+    "Frontend design and development by New API contributors.": "フロントエンドの設計と開発は New API contributors によるものです。",
+    "Context window": "コンテキストウィンドウ",
+    "Max output tokens": "最大出力トークン",
+    "Release date": "リリース日",
+    "Input modalities": "入力モダリティ",
+    "Output modalities": "出力モダリティ",
+    "Spec source": "スペック情報ソース",
+    "Spec source unavailable": "スペック情報ソースを利用できません",
+    "{{count}} models matched": "{{count}} 件のモデルに一致"
   }
 }
