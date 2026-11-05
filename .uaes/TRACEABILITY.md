@@ -102,3 +102,18 @@ The owner-approved Option B cleanup is implemented in the Uter integration branc
 ### Final Option B acceptance evidence
 
 Uter CI run 41970513914 passed all 8 jobs at implementation source commit `422caafffb7a64370700ddd4859a057911f5f9e0`. UAES Architecture Source Checks run 41971060421 and Database Migration Dialect Matrix run 41971060428 passed at UAES PR #1 head `88b96136d48cad65056918cac72a1ac6017fe139`. The legacy API deprecation audit records the detailed scope and remaining external telemetry limitation.
+
+
+### 2026-11-05 refund and task-billing implementation evidence
+
+| Control area | Implementation evidence | Status / limitation |
+|---|---|---|
+| Midjourney refund transaction | PR #19/#20: `model/midjourney_refund_operation.go`, `model/midjourney_refund_outbox.go`, `model/midjourney_refund_transaction.go`; transaction-level wallet/Token/usage/task-state updates and durable reconciliation-required snapshots. | PARTIAL — exact-head CI and crash/concurrency/dialect acceptance pending. |
+| Refund recovery | PR #19/#20: `FindPendingMidjourneyRefundTaskIDs`, `controller/midjourney_refund_recovery_task.go`, registered independent SystemTask handler. | PARTIAL — multi-instance lease and restart acceptance pending. |
+| Refund log delivery | PR #19/#20: `model/midjourney_refund_log_outbox.go`; SQL LOG_DB receipt keyed by event key, SHA-256 payload identity, receipt+log transaction, retry/backoff/dead-letter. | PARTIAL — ClickHouse adapter is deliberately fail-closed and not implemented; SQL dialect matrix and operational replay tooling remain open. |
+| Generic task-billing CAS | PR #17/#19/#20: retry-count increment is part of the same conditional UPDATE; reconciliation writes only from nonterminal states; zero-quota refunds re-read durable state. | PARTIAL — new regression tests are awaiting exact-head CI. |
+| Refund result contract and polling liveness | PR #17/#19/#20: lost refund claims return success only when durable state is refunded; snapshot read errors fail closed; polling and local terminal cleanup continue without adapter registry. | PARTIAL — full restart/concurrency tests remain open. |
+| Violation fee ordering | PR #17/#19/#20: `relay/request_billing.go` waits for the asynchronous refund via optional `relaycommon.RefundWaiter` before applying a violation fee. | PARTIAL — regression test and exact-head CI pending. |
+| Malformed Midjourney action parsing | PR #17/#19/#20: `ConvertSimpleChangeParams` uses whitespace-safe tokenization and validates action length before indexing. | PARTIAL — malformed-input regression suite and exact-head CI pending. |
+
+These changes remain in unmerged Draft PRs. Passing individual CI jobs does not make these controls VERIFIED. No production configuration, production database, or payment credentials were changed.
