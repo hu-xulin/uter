@@ -1556,29 +1556,39 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 	return returnValue, nil
 }
 
-// RefundSubscriptionPreConsume is idempotent and refunds pre-consumed subscription quota by requestId.
-func RefundSubscriptionPreConsume(requestId string) error {
+// refundSubscriptionPreConsumeTx refunds a subscription pre-consumption using
+// the caller's transaction. Keeping the ledger reversal and its idempotency
+// record in the same transaction lets compound refund intents remain atomic.
+func refundSubscriptionPreConsumeTx(tx *gorm.DB, requestId string) error {
+	if tx == nil {
+		return errors.New("subscription refund transaction is nil")
+	}
 	if strings.TrimSpace(requestId) == "" {
 		return errors.New("requestId is empty")
 	}
-	return DB.Transaction(func(tx *gorm.DB) error {
-		var record SubscriptionPreConsumeRecord
-		if err := lockForUpdate(tx).
-			Where("request_id = ?", requestId).First(&record).Error; err != nil {
-			return err
-		}
-		if record.Status == "refunded" {
-			return nil
-		}
-		if record.PreConsumed <= 0 {
-			record.Status = "refunded"
-			return tx.Save(&record).Error
-		}
-		if err := postConsumeUserSubscriptionDeltaTx(tx, record.UserSubscriptionId, -record.PreConsumed); err != nil {
-			return err
-		}
+	var record SubscriptionPreConsumeRecord
+	if err := lockForUpdate(tx).
+		Where("request_id = ?", requestId).First(&record).Error; err != nil {
+		return err
+	}
+	if record.Status == "refunded" {
+		return nil
+	}
+	if record.PreConsumed <= 0 {
 		record.Status = "refunded"
 		return tx.Save(&record).Error
+	}
+	if err := postConsumeUserSubscriptionDeltaTx(tx, record.UserSubscriptionId, -record.PreConsumed); err != nil {
+		return err
+	}
+	record.Status = "refunded"
+	return tx.Save(&record).Error
+}
+
+// RefundSubscriptionPreConsume is idempotent and refunds pre-consumed subscription quota by requestId.
+func RefundSubscriptionPreConsume(requestId string) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		return refundSubscriptionPreConsumeTx(tx, requestId)
 	})
 }
 
