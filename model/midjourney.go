@@ -29,12 +29,12 @@ type Midjourney struct {
 	Buttons     string `json:"buttons"`
 	Properties  string `json:"properties"`
 
-	TokenId               int    `json:"-" gorm:"default:0"`
-	BillingChannelId      int    `json:"-" gorm:"default:0"`
-	BillingVersion        int    `json:"-" gorm:"default:0"`
-	BillingStatus         string `json:"-" gorm:"type:varchar(24);default:'';index"`
-	BillingWalletApplied  bool   `json:"-" gorm:"default:false"`
-	BillingTokenApplied   bool   `json:"-" gorm:"default:false"`
+	TokenId              int    `json:"-" gorm:"default:0"`
+	BillingChannelId     int    `json:"-" gorm:"default:0"`
+	BillingVersion       int    `json:"-" gorm:"default:0"`
+	BillingStatus        string `json:"-" gorm:"type:varchar(24);default:'';index"`
+	BillingWalletApplied bool   `json:"-" gorm:"default:false"`
+	BillingTokenApplied  bool   `json:"-" gorm:"default:false"`
 }
 
 // TaskQueryParams 用于包含所有搜索条件的结构体，可以根据需求添加更多字段
