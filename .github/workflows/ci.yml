@@ -35,22 +35,24 @@ jobs:
         run: |
           set -euo pipefail
           docker compose --env-file .env.example -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.dev.yml config --quiet
           python3 - <<'PY'
           import re
           from pathlib import Path
 
-          compose = Path("docker-compose.yml").read_text()
-          for service in ("redis", "postgres"):
-              match = re.search(
-                  rf"(?ms)^  {service}:\n(?:(?!^  [A-Za-z0-9_-]+:).)*?^    image: ([^\n]+)",
-                  compose,
-              )
-              if not match:
-                  raise SystemExit(f"FAIL: {service} image declaration not found")
-              image = match.group(1).strip()
-              if not re.search(r"@sha256:[0-9a-f]{64}$", image):
-                  raise SystemExit(f"FAIL: {service} image is not pinned by a full SHA-256 digest: {image}")
-              print(f"PASS: {service} image is digest-pinned")
+          for compose_path in ("docker-compose.yml", "docker-compose.dev.yml"):
+              compose = Path(compose_path).read_text()
+              for service in ("redis", "postgres"):
+                  match = re.search(
+                      rf"(?ms)^  {service}:\n(?:(?!^  [A-Za-z0-9_-]+:).)*?^    image: ([^\n]+)",
+                      compose,
+                  )
+                  if not match:
+                      raise SystemExit(f"FAIL: {compose_path}: {service} image declaration not found")
+                  image = match.group(1).strip()
+                  if not re.search(r"@sha256:[0-9a-f]{64}$", image):
+                      raise SystemExit(f"FAIL: {compose_path}: {service} image is not pinned by a full SHA-256 digest: {image}")
+                  print(f"PASS: {compose_path}: {service} image is digest-pinned")
           PY
 
       - name: Enforce one non-main branch per project
