@@ -324,7 +324,6 @@ func TestTwoFASecretColumnRejectsOversizedCiphertext(t *testing.T) {
 	assert.Less(t, len(record.Secret), 255, "密文必须能放进 varchar(255)")
 }
 
-
 // TestTwoFAPersistedSecretVerificationReadsDatabaseState proves the migration
 // verifier inspects a fresh database read rather than the in-memory model value.
 func TestTwoFAPersistedSecretVerificationReadsDatabaseState(t *testing.T) {
