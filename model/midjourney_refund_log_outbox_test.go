@@ -116,7 +116,7 @@ func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 		EventKey:          "midjourney:789:refund-log",
 		RefundOperationID: 1,
 		EventType:         "midjourney.refund.completed",
-		PayloadJSON: `{"task_id":789,"mj_id":"mj-task-789","user_id":1,"quota":10,"result":"refunded"}`,
+		PayloadJSON:       `{"task_id":789,"mj_id":"mj-task-789","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&transient).Error)
 	transient.Status = MidjourneyRefundOutboxDelivering
@@ -135,8 +135,8 @@ func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 	dead := MidjourneyRefundOutbox{
 		EventKey:          "midjourney:790:refund-log",
 		RefundOperationID: 2,
-		EventType: "midjourney.refund.completed",
-		PayloadJSON: `{"task_id":790,"mj_id":"mj-task-790","user_id":1,"quota":10,"result":"refunded"}`,
+		EventType:         "midjourney.refund.completed",
+		PayloadJSON:       `{"task_id":790,"mj_id":"mj-task-790","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&dead).Error)
 	dead.Status = MidjourneyRefundOutboxDelivering
