@@ -192,3 +192,38 @@ func TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions(t *testing.T) {
 	event.EventKey = strings.Repeat("x", 129)
 	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "event key must be non-empty")
 }
+
+
+// TestMidjourneyRefundOutboxCreationRejectsInvalidIdentityAndSchema ensures
+// malformed event identities and unsupported schemas never enter the durable queue.
+func TestMidjourneyRefundOutboxCreationRejectsInvalidIdentityAndSchema(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOutbox{}))
+
+	base := MidjourneyRefundOutbox{
+		RefundOperationID: 1,
+		EventKey: "midjourney:valid",
+		EventType: "midjourney.refund.completed",
+		PayloadJSON: `{"task_id":1,"user_id":1,"quota":1,"result":"refunded"}`,
+	}
+	invalid := []struct {
+		name string
+		mutate func(*MidjourneyRefundOutbox)
+	}{
+		{name: "blank event key", mutate: func(e *MidjourneyRefundOutbox) { e.EventKey = "  " }},
+		{name: "oversized event key", mutate: func(e *MidjourneyRefundOutbox) { e.EventKey = strings.Repeat("x", 129) }},
+		{name: "unsupported event type", mutate: func(e *MidjourneyRefundOutbox) { e.EventType = "midjourney.refund.unknown" }},
+		{name: "unsupported payload version", mutate: func(e *MidjourneyRefundOutbox) { e.PayloadVersion = 2 }},
+		{name: "invalid payload JSON", mutate: func(e *MidjourneyRefundOutbox) { e.PayloadJSON = "{" }},
+	}
+	for _, tc := range invalid {
+		t.Run(tc.name, func(t *testing.T) {
+			event := base
+			event.ID = 0
+			event.EventKey = base.EventKey + ":" + tc.name
+			tc.mutate(&event)
+			require.Error(t, db.Create(&event).Error)
+		})
+	}
+}
