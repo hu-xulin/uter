@@ -37,10 +37,6 @@ func PrepareMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.
 	task.Quota = 0
 	task.TokenId = 0
 	task.BillingChannelId = 0
-	task.BillingVersion = 0
-	task.BillingStatus = "not_billable"
-	task.BillingWalletApplied = false
-	task.BillingTokenApplied = false
 	if !shouldBill {
 		return false, nil
 	}
@@ -56,10 +52,6 @@ func PrepareMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.
 
 	task.Quota = quota
 	task.BillingChannelId = task.ChannelId
-	task.BillingVersion = 1
-	task.BillingStatus = "prepared"
-	task.BillingWalletApplied = false
-	task.BillingTokenApplied = false
 	if relayInfo.ChannelMeta != nil && relayInfo.ChannelId > 0 {
 		task.BillingChannelId = relayInfo.ChannelId
 	}
@@ -78,40 +70,20 @@ func SettleMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.M
 		return false, errors.New("Midjourney task must be persisted before billing")
 	}
 
-	// Persist a charging marker before touching either wallet or token quota.
-	// If settlement succeeds but the following write fails, recovery can
-	// distinguish an ambiguous charge from a task that was never charged.
-	task.BillingStatus = "charging"
-	task.BillingWalletApplied = false
-	task.BillingTokenApplied = false
-	if err := task.UpdateBillingState(); err != nil {
-		return false, fmt.Errorf("persist Midjourney charging marker: %w", err)
-	}
-
 	result, billingErr := postConsumeQuotaWithResult(relayInfo, task.Quota, 0, true)
 	if !result.FundingApplied {
 		task.Quota = 0
 		task.TokenId = 0
 		task.BillingChannelId = 0
-		task.BillingStatus = "failed"
-		task.BillingWalletApplied = false
-		task.BillingTokenApplied = false
 		if updateErr := task.UpdateBillingState(); updateErr != nil {
 			return false, errors.Join(billingErr, fmt.Errorf("clear Midjourney billing state: %w", updateErr))
 		}
 		return false, billingErr
 	}
 
-	task.BillingWalletApplied = true
-	task.BillingTokenApplied = result.TokenApplied
 	task.TokenId = 0
 	if result.TokenApplied {
 		task.TokenId = relayInfo.TokenId
-	}
-	if result.TokenApplied {
-		task.BillingStatus = "applied"
-	} else {
-		task.BillingStatus = "partial"
 	}
 	if updateErr := task.UpdateBillingState(); updateErr != nil {
 		return true, errors.Join(billingErr, fmt.Errorf("update Midjourney billing state: %w", updateErr))
@@ -121,19 +93,47 @@ func SettleMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.M
 
 // RefundMidjourneyQuota reverses every accounting element recorded for a billed legacy task.
 func RefundMidjourneyQuota(ctx context.Context, task *model.Midjourney, reason string) bool {
-	if task == nil {
-		logger.LogError(ctx, "cannot refund a nil Midjourney task")
-		return false
-	}
-	if task.Quota == 0 {
+	quota := task.Quota
+	if quota == 0 {
 		return true
 	}
-	if err := model.RefundMidjourneyTaskBilling(task.Id, reason); err != nil {
-		logger.LogWarn(ctx, common.LogText("Midjourney refund was not completed for task %s: %s", task.MjId, err.Error()))
+
+	if err := model.IncreaseUserQuota(task.UserId, quota, false); err != nil {
+		logger.LogWarn(ctx, common.LogText("failed to refund Midjourney user quota, task %s: %s", task.MjId, err.Error()))
 		return false
 	}
+
+	if task.TokenId > 0 {
+		tokenKey, keyErr := resolveTokenKey(ctx, task.TokenId, task.MjId)
+		if keyErr != nil {
+			logger.LogWarn(ctx, common.LogText("failed to resolve the token key for Midjourney task %s: %s", task.MjId, keyErr.Error()))
+		} else if tokenKey != "" {
+			if err := model.IncreaseTokenQuota(task.TokenId, tokenKey, quota); err != nil {
+				logger.LogWarn(ctx, common.LogText("failed to refund Midjourney token quota, task %s: %s", task.MjId, err.Error()))
+			}
+		}
+	}
+
+	billingChannelId := task.GetBillingChannelId()
+	model.UpdateUserUsedQuota(task.UserId, -quota)
+	model.UpdateChannelUsedQuota(billingChannelId, -quota)
+	other := model.NewLogOther()
+	other.SetPublic("task_id", task.MjId)
+	other.SetPublic("reason", reason)
+	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
+		UserId:    task.UserId,
+		LogType:   model.LogTypeRefund,
+		ChannelId: billingChannelId,
+		ModelName: CovertMjpActionToModelName(task.Action),
+		Quota:     quota,
+		TokenId:   task.TokenId,
+		Other:     other,
+	})
+
 	task.Quota = 0
-	task.BillingStatus = "refunded"
+	if err := task.UpdateBillingState(); err != nil {
+		logger.LogError(ctx, common.LogText("Midjourney refund succeeded but clearing the quota failed, task %s: %s", task.MjId, err.Error()))
+	}
 	return true
 }
 
@@ -244,27 +244,30 @@ func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.Midj
 }
 
 func ConvertSimpleChangeParams(content string) *dto.MidjourneyRequest {
-	split := strings.Split(content, " ")
-	if len(split) != 2 {
+	parts := strings.Fields(content)
+	if len(parts) != 2 || parts[0] == "" {
 		return nil
 	}
 
-	action := strings.ToLower(split[1])
-	changeParams := &dto.MidjourneyRequest{}
-	changeParams.TaskId = split[0]
-
-	if action[0] == 'u' {
-		changeParams.Action = "UPSCALE"
-	} else if action[0] == 'v' {
-		changeParams.Action = "VARIATION"
-	} else if action == "r" {
+	action := strings.ToLower(parts[1])
+	changeParams := &dto.MidjourneyRequest{TaskId: parts[0]}
+	if action == "r" {
 		changeParams.Action = "REROLL"
 		return changeParams
-	} else {
+	}
+	if len(action) != 2 {
+		return nil
+	}
+	switch action[0] {
+	case 'u':
+		changeParams.Action = "UPSCALE"
+	case 'v':
+		changeParams.Action = "VARIATION"
+	default:
 		return nil
 	}
 
-	index, err := strconv.Atoi(action[1:2])
+	index, err := strconv.Atoi(action[1:])
 	if err != nil || index < 1 || index > 4 {
 		return nil
 	}
