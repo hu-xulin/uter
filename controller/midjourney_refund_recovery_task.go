@@ -36,6 +36,9 @@ func (midjourneyRefundRecoveryHandler) NewPayload() any { return nil }
 // Run retries terminal failed tasks independently of upstream polling. Each
 // refund is transactionally isolated; one bad task does not prevent the rest.
 func (midjourneyRefundRecoveryHandler) Run(ctx context.Context, task *model.SystemTask, runnerID string) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	result := midjourneyRefundRecoveryResult{}
 	taskIDs, err := model.FindPendingMidjourneyRefundTaskIDs(midjourneyRefundRecoveryBatchSize)
 	if err != nil {
