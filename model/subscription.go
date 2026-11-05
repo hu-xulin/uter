@@ -604,7 +604,11 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 			return ErrPaymentMethodMismatch
 		}
 		if order.Status == common.TopUpStatusSuccess {
-			return nil
+			// Repair/verify the shadow top-up record on idempotent provider
+			// retries. Older deployments may have committed the subscription
+			// order before this linked record existed; returning early would
+			// leave that payment permanently absent from top-up reconciliation.
+			return upsertSubscriptionTopUpTx(tx, &order, actualPaymentMethod)
 		}
 		if order.Status != common.TopUpStatusPending {
 			return ErrSubscriptionOrderStatusInvalid
