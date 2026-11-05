@@ -145,9 +145,9 @@ func (w *WalletFunding) Settle(delta int) error {
 		return model.IncrUserUsedQuotaClamped(w.userId, delta)
 	}
 	if delta > 0 {
-		return model.DecreaseUserQuota(w.userId, delta, false)
+		return model.DecreaseUserQuota(w.userId, delta, true)
 	}
-	return model.IncreaseUserQuota(w.userId, -delta, false)
+	return model.IncreaseUserQuota(w.userId, -delta, true)
 }
 
 func (w *WalletFunding) Refund() error {
@@ -232,7 +232,7 @@ func (s *SubscriptionFunding) Settle(delta int) error {
 	if overflow > 0 {
 		// 订阅结算超额：订阅已封顶到总额，超出部分转为用户钱包欠费，避免平台少收。
 		common.SysLog(fmt.Sprintf("subscription settled over total, charging wallet overflow (userId=%d, subscriptionId=%d, overflow=%d)", s.userId, s.subscriptionId, overflow))
-		if werr := model.DecreaseUserQuota(s.userId, int(overflow), false); werr != nil {
+		if werr := model.DecreaseUserQuota(s.userId, int(overflow), true); werr != nil {
 			// 钱包欠费记账失败：订阅侧已封顶，平台仍少收 overflow，必须告警对账。
 			return fmt.Errorf("subscription overflow wallet charge failed (userId=%d, subscriptionId=%d, overflow=%d): %w", s.userId, s.subscriptionId, overflow, werr)
 		}
