@@ -67,6 +67,20 @@ func PrepareRequestBilling(c *gin.Context, info *relaycommon.RelayInfo) *types.N
 	return service.PreConsumeBilling(c, priceData.QuotaToPreConsume, info)
 }
 
+// refundBillingAndWait serializes the asynchronous pre-consume refund before
+// any later wallet mutation (notably a violation fee). BillingSettler keeps the
+// waiter as an optional extension so test doubles and non-async implementations
+// do not need to implement a blocking method.
+func refundBillingAndWait(c *gin.Context, info *relaycommon.RelayInfo) {
+	if info == nil || info.Billing == nil {
+		return
+	}
+	info.Billing.Refund(c)
+	if waiter, ok := info.Billing.(relaycommon.RefundWaiter); ok {
+		waiter.WaitRefundDone()
+	}
+}
+
 // RefundFailedRequestBilling applies the common final-failure policy after all
 // eligible attempts have ended. A settled BillingSession never refunds again.
 func RefundFailedRequestBilling(c *gin.Context, info *relaycommon.RelayInfo, apiErr *types.NewAPIError) *types.NewAPIError {
@@ -74,9 +88,7 @@ func RefundFailedRequestBilling(c *gin.Context, info *relaycommon.RelayInfo, api
 		return nil
 	}
 	apiErr = service.NormalizeViolationFeeError(apiErr)
-	if info.Billing != nil {
-		info.Billing.Refund(c)
-	}
+	refundBillingAndWait(c, info)
 	service.ChargeViolationFeeIfNeeded(c, info, apiErr)
 	return apiErr
 }
