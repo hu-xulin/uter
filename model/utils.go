@@ -231,21 +231,30 @@ func ApplyTaskRefundUsage(userID, channelID, quota int) error {
 	userDelta := batchUpdateStores[userType][userID] - quota
 	channelDelta := batchUpdateStores[channelType][channelID] - quota
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		userResult := tx.Model(&User{}).Where("id = ?", userID).
-			Update("used_quota", gorm.Expr("used_quota + ?", userDelta))
-		if userResult.Error != nil {
-			return userResult.Error
+		var userCount, channelCount int64
+		if err := tx.Model(&User{}).Where("id = ?", userID).Count(&userCount).Error; err != nil {
+			return err
 		}
-		if userResult.RowsAffected != 1 {
-			return fmt.Errorf("user %d usage row was not updated", userID)
+		if userCount != 1 {
+			return fmt.Errorf("user %d usage row does not exist", userID)
 		}
-		channelResult := tx.Model(&Channel{}).Where("id = ?", channelID).
-			Update("used_quota", gorm.Expr("used_quota + ?", channelDelta))
-		if channelResult.Error != nil {
-			return channelResult.Error
+		if err := tx.Model(&Channel{}).Where("id = ?", channelID).Count(&channelCount).Error; err != nil {
+			return err
 		}
-		if channelResult.RowsAffected != 1 {
-			return fmt.Errorf("channel %d usage row was not updated", channelID)
+		if channelCount != 1 {
+			return fmt.Errorf("channel %d usage row does not exist", channelID)
+		}
+		if userDelta != 0 {
+			if err := tx.Model(&User{}).Where("id = ?", userID).
+				Update("used_quota", gorm.Expr("used_quota + ?", userDelta)).Error; err != nil {
+				return err
+			}
+		}
+		if channelDelta != 0 {
+			if err := tx.Model(&Channel{}).Where("id = ?", channelID).
+				Update("used_quota", gorm.Expr("used_quota + ?", channelDelta)).Error; err != nil {
+				return err
+			}
 		}
 		return nil
 	})
