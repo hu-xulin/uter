@@ -181,8 +181,9 @@ AI 不得未经授权操作生产数据库。
 
 在用户已经授权的范围内，AI 可以：
 
-- 创建独立分支。
-- 创建隔离 Worktree。
+- 复用项目唯一的独立工作分支；仅当不存在工作分支时才可创建。
+- 每个项目最多一个非 main 工作分支；不得为不同任务、审计阶段或 Agent 创建第二个分支。
+- 创建隔离 Worktree，但不得借 Worktree 规避单工作分支策略。
 - 修改代码。
 - 添加测试。
 - 执行质量检查。
@@ -193,8 +194,9 @@ AI 不得未经授权操作生产数据库。
 必须满足：
 
 - 不覆盖用户未提交修改。
-- 不直接推送主分支。
+- 不直接修改或推送 main。
 - 不使用 force push。
+- 不创建第二个非 main 工作分支；发现分支数量超限时先停止并升级处理。
 - 不提交真实密钥。
 - 不绕过质量门禁。
 
@@ -254,14 +256,14 @@ AI 不得未经授权操作生产数据库。
 
 - **变更前检查**：`git status --short` 记录脏区——仓库常有并发 WIP，预存在修改绝不混入本次提交。
 - **显式暂存**：只允许 `git add <路径>`，禁止 `git add -A` / `-u`；提交前一刻必须复查暂存区（`git diff --cached --name-status`）——并发会话共享同一 index，曾在 add 与 commit 之间混入他人暂存内容（2026-10-30 实测）。
-- **逐项授权**：提交/推送/合并/rebase/部署是**逐次单独授权**；产出 commit 与 push 是两项不同授权。
+- **授权基线**：用户已明确授权 Uter 工程修复可在唯一工作分支上 Commit、Push 和创建/更新 PR；该授权不包含合并、部署、生产数据库写入、生产环境修改或真实支付配置修改。超出该范围的操作仍须独立明确授权，且禁止项不得由普通任务授权覆盖。
 - **禁用破坏性操作**：无 `rm -rf`、无 `git clean -fd`；删文件走废纸篓，每批 ≤10。
 - **禁止入库物**：`.env`、`*.db`/`-shm`/`-wal`、`logs/`、构建产物（`web/dist`）不进提交、代码与文档。
 - **提交身份**：`Uter.ai <huxulin.hxl@gmail.com>`；被 pre-commit 拒绝 = 身份不对，**禁止 `--no-verify`**。
 - **远端**：origin = `git@github-huxulin:hu-xulin/uter.git`（必须 SSH，全局 gitconfig 会改写 https 为 proxy）；push 前 `git remote -v` 核对、push 后 `git ls-remote` 复核；公司仓 `git@github-uter` 无权勿推。
 - **Commit 风格**（仓库历史实际用法）：`feat(scope): 描述` / `fix(scope): 描述` / `refactor(web): 描述` / `style: 描述`，scope 用实际域（design-system、monitor、brand、web、auth…）。
 - **四步闭环**：改动 → 回归（verify-all.sh，🚫不带 --no-docs）→ `./rebuild-all.sh` → 提交。
-- **分支与 PR**：当前主干协作为主，AI 自动修复走独立分支 + PR（UEQE 规范）；GitHub Actions 目前因账号账务停跑（2026-10-30 起），门禁只靠本地 verify-all.sh——提交报告必须如实标注 CI 状态为 NOT RUN。
+- **分支与 PR**：所有 AI 代码修复复用项目唯一非 main 工作分支 + 单一 PR；CI 检查非 main 分支数量不得超过 1。AI 可在授权范围内 Commit、Push 和创建/更新 PR，但不得合并 PR、部署或修改生产环境。CI 状态必须按当前提交的真实结果报告。
 
 ---
 
