@@ -113,7 +113,6 @@ func TestRefundSubscriptionPreConsumeTxRejectsMissingSubscriptionWithoutChanging
 	require.Equal(t, "consumed", saved.Status, "a missing ledger target must not consume the refund receipt")
 }
 
-
 // TestRefundSubscriptionPreConsumeTxRequiresMatchingOwner ensures a receipt
 // cannot reverse quota from a subscription owned by a different user.
 func TestRefundSubscriptionPreConsumeTxRequiresMatchingOwner(t *testing.T) {
