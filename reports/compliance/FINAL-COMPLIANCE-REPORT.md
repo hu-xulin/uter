@@ -62,8 +62,8 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 合规率计算（以适用规范项为分母，不排除未完成项）：
 - 适用规范项（13 域 + 6 核心业务专项 + UAES 自身 + 集成 = 21 个验收域）：**0 项 VERIFIED**。
 - 本批取得 `IMPLEMENTED`（域级静态整改）：P00 / P01 / P03 / P11 共 4 域；其余为 BLOCKED 或 NOT_RUN。
-- 正式销项问题：**11 项**（详见 `ISSUE-REGISTER.md`），均为治理/证据/机制类缺陷，非产品业务合规。
-- 例外（ACCEPTED_EXCEPTION）：0；阻断（BLOCKED）：5；OPEN：10；未执行（NOT_RUN）：5（登记总数 31）。
+- 正式销项问题：**12 项**（详见 `ISSUE-REGISTER.md`），均为治理/证据/机制类缺陷，非产品业务合规。
+- 例外（ACCEPTED_EXCEPTION）：0；阻断（BLOCKED）：5；OPEN：9；未执行（NOT_RUN）：5（登记总数 31）。
 
 ## 12.1 规范覆盖 — 未通过
 13 域均已建立域级审计记录，但 178 标准 / 590 rule IDs 的逐条映射未完成；全部适用 Schema 未逐项验证；13 个 UAES 域门禁 NOT_RUN；注册表 `DRAFT`。
@@ -85,7 +85,7 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 - 双仓完整基线、45 个并发 WIP 零触碰、唯一审计分支复用（Uter PR #15 / UAES PR #1，未新建分支）。
 - UAES 自身注册表 23/23 PASS、三向测试、总门禁真实运行并记录 BLOCKED。
 - Uter 侧 17 项真实门禁命令与退出码（见文首证据表）。
-- 11 项问题正式销项（含 1 项真实回归失败修复），每项有独立验证命令。
+- 12 项问题正式销项（含 1 项真实回归失败修复与 1 项分支收敛后的 CI 复跑验证），每项有独立验证命令。
 - 25 份审计交付物、`reports/compliance/` 证据目录。
 - 真实 GitHub Actions（run `42056763863`）：本批新增 4 个 CI step 全部 PASS；但 `UAES integration contract` 因并发第 2 条工作分支失败、3 个后端 job 因预存退款计费缺陷失败，exact-head CI **未通过**，详见 `CI-VERIFICATION-REPORT.md`。
 
@@ -96,4 +96,4 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 4. 提供 Playwright 视觉栈 / 三库环境 / 安全扫描工具 / 真实 Agent 运行时 → 完成 P05/P07/P08/P10 专项。
 5. 完成 178 标准逐条映射与 13 域 Gate 接线 → 才能计算真实合规率。
 
-**本报告不宣称 Uter 全面符合 UAES；任何 `VERIFIED` 声明均以 `ISSUE-REGISTER.md` 中带证据的 11 项为限。**
+**本报告不宣称 Uter 全面符合 UAES；任何 `VERIFIED` 声明均以 `ISSUE-REGISTER.md` 中带证据的 12 项为限。**

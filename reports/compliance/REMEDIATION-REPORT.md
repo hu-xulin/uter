@@ -90,5 +90,13 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 3. `UAES-AUDIT-P09-002/003`：并发会话的退款/订阅测试与共享 SQLite 缺表缺陷；`origin/main` 已有 revert，但审计分支未同步，且修复涉及业务测试基建，需单独授权。
 4. P05/P08/P10/P07 专项：缺 Playwright 视觉栈、真实 Agent 运行时、安全扫描工具、三库环境 —— 记录为 NOT_RUN，未伪造结果。
 
+## 分支收敛整改（用户授权「把 PR #31 工作并入唯一审计分支再删除」）
+
+- PR #31（`ai/models-dev-dual-source-sync-2026-11-05` @ `1f6b3e0b`）**未合并进 main**；其工作 cherry-pick 为 `0a7e73def164980bf598b67a8da85522a2ead07d` 并入唯一审计分支，保留原作者与描述，commit message 追加来源与冲突解决说明。
+- 删分支前推送 annotated 归档 tag `archive/2026-11-05/ai-models-dev-dual-source-sync-2026-11-05` → `1f6b3e0b`；随后 PR #31 CLOSED、远程分支与 `[gone]` 本地残留引用删除。远程 = `main` + 唯一审计分支，`non_main_count=1`。
+- 3 个 focus-ring 冲突（`ui/input.tsx` / `ui/native-select.tsx` / `ui/textarea.tsx`）按「两者语义都保留」解决：采纳删除 `focus-visible:border-ring`，保留设计系统 `text-long`（16px）与 `ring-1`；7 份 i18n + `static-keys.ts` 自动合并。
+- 合并后门禁全 exit 0：Go gofmt/vet/build/定向测试、前端 typecheck/lint/design-tokens/copyright/i18n、`build:check`、全量 vitest 3022/3022、6 项 UAES/规范门禁。首次全量 vitest 的 2 files / 49 tests 图标超时经「合并后 + 合并前基线」各 201/201 PASS 判定为资源竞态。
+- 真实 CI 复跑 run `42067958313` attempt 2：`UAES integration contract` = **success**（`Non-main branches (1): PASS`），前端/UEQE/Electron/Go 漏洞扫描也 success；3 个后端 job 仍因预存退款意图缺陷 failure，run 整体未全绿。据此 `UAES-AUDIT-P11-003` 正式销项为第 12 项。
+
 ## 持续合规机制（本批已建部分）
 `.uaes/uaes-pin.json`（锁定）→ `uaes-pin-check.sh`（完整性 + 防虚假销项）→ `test-uaes-pin-check.rb`（正反向）→ CI `uaes-integration` job（强制）→ `reports/compliance/`（证据）。**缺口**：UAES L3/L4 域门禁仍未接入，不能声称「每次变更自动接受 UAES 检查」。

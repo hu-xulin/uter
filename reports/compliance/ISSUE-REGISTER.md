@@ -91,16 +91,17 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 | 28 | `UAES-AUDIT-P02-002` | P02 | service 退款/计费定向测试 11 项失败 | P1 | **OPEN** | `go test ./service/ -run ... -count=1` exit 1；含 `TestFixedPriceBillingDatabaseMatrix/sqlite` |
 | 29 | `UAES-AUDIT-P06-002` | P06 | `bun run format:check` 16 个既有文件格式债务 | P2 | **OPEN** | `verify-all.sh --quick` 失败项；涉及主仓并发 WIP 同名文件，需独立 PR 处理 |
 | 30 | `UAES-AUDIT-P09-008` | P09 | `./scripts/verify-all.sh --quick` 未通过 | P1 | **OPEN** | exit 1：5 PASS / 2 FAIL / 4 SKIP；Go vet 环境阻塞已解除，format 仍 FAIL |
-| 31 | `UAES-AUDIT-P11-003` | P11 | exact-head CI `UAES integration contract` job 因并发第二条工作分支失败 | P1 | **OPEN** | run `42056763863` job `127347140413`：本批 4 个新门禁 step 全 PASS，末步唯一分支守卫检测到 2 条非 main 分支（含 PR #31 `ai/models-dev-dual-source-sync-2026-11-05`）；需人工收敛，本次未删分支、未降门禁 |
+| 31 | `UAES-AUDIT-P11-003` | P11 | exact-head CI `UAES integration contract` job 因并发第二条工作分支失败 | P1 | **FIXED / VERIFIED** | 原失败：run `42056763863` job `127347140413` 守卫检测到 2 条非 main 分支。收敛：PR #31 工作 cherry-pick 为 `0a7e73def`、归档 tag `archive/2026-11-05/ai-models-dev-dual-source-sync-2026-11-05`、PR #31 CLOSED、远程及本地残留分支删除；`gh api repos/hu-xulin/uter/branches` 返回 `non_main_count=1`。真实 CI 复跑：run `42067958313` attempt 2 / job `127392710324` = **success**，日志 `Non-main branches (1): PASS: project has at most one non-main work branch.` |
 
 ## 统计
 - 登记总数：**31**
-- 本批正式销项（FIXED / VERIFIED）：**11** — 满足「每批至少 10 项」要求，且每项均有独立可复核验证命令
-- BLOCKED：5；OPEN：10；NOT_RUN：5
+- 本批正式销项（FIXED / VERIFIED）：**12** — 满足「每批至少 10 项」要求，且每项均有独立可复核验证命令
+- BLOCKED：5；OPEN：9；NOT_RUN：5
 - P0 未解决：3（全部为治理阻断，非降级处理）
 - 真实 GitHub Actions 结果（含 3 个后端 job 失败根因）见 `CI-VERIFICATION-REPORT.md`；后端失败与 `P02-002` / `P09-002` / `P09-003` 同源，不重复登记、不计新销项。
+- 第 12 项 `P11-003` 为用户授权「并入后删除」收敛工作产生的**真实新增销项**：收敛前 CI 守卫 FAIL（2 条非 main 分支），收敛后 run `42067958313` attempt 2 / job `127392710324` = success（`Non-main branches (1): PASS`）。原先坚持 11 项、未虚构第 12 项。
 
-## 销项明细（11 项，逐项证据）
+## 销项明细（12 项，逐项证据）
 - `UAES-AUDIT-P00-001` 契约锁定的 UAES commit 过期（84416f7 → 9b1f5f1） → pin.json + INTEGRATION.md 刷新；`uaes-pin-check.sh` exit 0；`test-uaes-pin-check.rb` 10/10
 - `UAES-AUDIT-P00-002` registry blob SHA 漂移（1c74e918 → a73447a7） → 同上；交叉校验 PASS
 - `UAES-AUDIT-P00-003` 缺机器可读规范锁定文件（Registry Version / Commit / 完整性 / 更新时间 / 审批状态） → 新增 `.uaes/uaes-pin.json`（11 字段）；pin 校验 5 PASS
@@ -112,6 +113,7 @@ Logs: `/tmp/uaes-registry-validate.log`, `/tmp/uaes-registry-test.log`, `/tmp/ua
 - `UAES-AUDIT-P09-001` `reports/compliance/` 缺 23 份审计交付物 → 本批生成 25 份，见本目录文件清单
 - `UAES-AUDIT-P09-005` 缺问题登记册与销项证据 → 本文件 ISSUE-REGISTER.md + REMEDIATION-REPORT.md
 - `UAES-AUDIT-P09-006` pin 校验器虚假销项防线顺序缺陷（真实回归失败） → 首次测试 1 failure；调整检查顺序后 10/10 通过
+- `UAES-AUDIT-P11-003` CI 唯一分支守卫因并发第二条工作分支失败 → PR #31 工作 cherry-pick 为 `0a7e73def`、归档 tag + 分支删除、`non_main_count=1`；run `42067958313` attempt 2 / job `127392710324` = success，日志 `Non-main branches (1): PASS: project has at most one non-main work branch.`
 
 ## 禁止虚假销项声明
 未使用「仅改文档即声称代码合规」「降低门禁」「删除失败测试」「排除目录」「把 NOT_RUN 记为 PASS」等手段。所有 OPEN/BLOCKED/NOT_RUN 项均保留原始等级与原因。

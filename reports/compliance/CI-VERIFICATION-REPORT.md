@@ -135,9 +135,25 @@ FAIL: only one non-main work branch is permitted for this project.
 
 这与 `ISSUE-REGISTER.md` 中已登记的 `UAES-AUDIT-P02-002`（service 退款/计费定向 11 项失败）、`UAES-AUDIT-P09-002/003` 属同一预存缺陷族，因此**不重复计入新销项，也不重复登记为新问题**，仅补强证据链。修复涉及资金安全/退款意图持久化逻辑，且相关文件位于主仓 45 个并发 WIP 范围内，需独立授权与独立 PR。
 
+## 收敛后 CI 复跑（head `0a7e73def`，run `42067958313`）
+
+按用户授权，PR #31 的工作 cherry-pick 为 `0a7e73def164980bf598b67a8da85522a2ead07d` 并入唯一审计分支，随后归档 tag、关闭 PR #31、删除第二条分支（远程 + 本地残留）。
+
+- **首次尝试（attempt 1）**：`UAES integration contract` 仍 FAIL，日志 `16:47:28Z Non-main branches (2)` —— 守卫执行时删除操作尚未完成，属时序竞争，非代码回归。
+- **复跑（attempt 2，job `127392710324`）= `success`**，关键日志：
+  ```text
+  Non-main branches (1):
+  PASS: project has at most one non-main work branch.
+  uaes-pin-check: PASS scope=static-integrity status=DRAFT version=1.7.0 commit=9b1f5f19e480
+  ```
+  同时 `PASS: pin contains all 11 required fields` 等 5 项、AI governance 8 项、compose digest 4 项均 PASS。
+- **同一 run 的 8 项 check-runs 最终状态**：success × 5（`UEQE review engine`、`Electron desktop secret persistence`、`Frontend typecheck, tests, lint and production build`、`Go dependency vulnerability scan`、`UAES integration contract`）；failure × 3（`Backend vet, build, and test`、`Backend race detector`、`Backend coverage report`），均为前述预存退款意图缺陷。run 整体 conclusion 仍为 `failure`。
+- `gh api --paginate "repos/hu-xulin/uter/branches?per_page=100" --jq '.[].name'`（守卫同一 API）返回 `ai/uaes-uter-integration-2026-11-05` 与 `main`，`non_main_count=1`。
+- 该 job 的 PASS 使 `UAES-AUDIT-P11-003` 具备真实 CI 证据，正式销项（第 12 项）。
+
 ## 结论
 
-- 本批整改在真实 GitHub Actions 上**已验证生效**：4 个新增门禁 step 全部 PASS，规范 pin 与 CI 接线不是「仅本地可跑」。
-- 但 **exact-head CI 未通过**，故不得宣称「CI 全绿」或「合规验收通过」；PR #15 继续保持 OPEN、未合并。
+- 本批整改在真实 GitHub Actions 上**已验证生效**：4 个新增门禁 step 全部 PASS，规范 pin 与 CI 接线不是「仅本地可跑」；收敛后 `UAES integration contract` job 亦已 success。
+- 但 **exact-head CI 整体未通过**（3 个后端 job 因预存退款意图缺陷失败），故不得宣称「CI 全绿」或「合规验收通过」；PR #15 继续保持 OPEN、未合并。
 - 最终合规状态仍为 **`BLOCKED / MIGRATION_PENDING`**（UAES DRAFT、13 域 Gate NOT_RUN、main 零 UAES 引用）。
 - 所有失败项均如实保留，未删除/跳过测试、未降低门禁、未把 failure 记为 PASS。
