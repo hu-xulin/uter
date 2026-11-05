@@ -29,6 +29,21 @@ jobs:
         run: ruby scripts/quality/test-uaes-integration-check.rb
       - name: Validate UAES integration wiring
         run: bash scripts/quality/uaes-integration-check.sh
+      - name: Test P01 AI governance policy and task contract
+        run: ruby scripts/quality/test-ai-governance-policy.rb
+      - name: Enforce one non-main branch per project
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mapfile -t work_branches < <(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name' | grep -vx 'main' || true)
+          printf 'Non-main branches (%s):\\n' "${#work_branches[@]}"
+          printf '  %s\\n' "${work_branches[@]}"
+          if [ "${#work_branches[@]}" -gt 1 ]; then
+            echo 'FAIL: only one non-main work branch is permitted for this project.' >&2
+            exit 1
+          fi
+          echo 'PASS: project has at most one non-main work branch.'
 
 
   ueqe-review:
