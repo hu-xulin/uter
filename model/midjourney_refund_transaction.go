@@ -35,8 +35,14 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&task, taskID).Error; err != nil {
 			return err
 		}
-		if task.Quota <= 0 {
-			return nil
+		if task.Quota < 0 {
+			return errors.New("Midjourney task quota cannot be negative")
+		}
+		if task.Quota == 0 {
+			if task.BillingStatus == "refunded" || !task.BillingWalletApplied {
+				return nil
+			}
+			return ErrMidjourneyRefundReconciliationRequired
 		}
 
 		var existing MidjourneyRefundOperation
@@ -75,6 +81,7 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 		if task.BillingVersion != 1 ||
 			(task.BillingStatus != "applied" && task.BillingStatus != "partial") ||
 			!task.BillingWalletApplied ||
+			task.UserId <= 0 || task.GetBillingChannelId() <= 0 ||
 			(task.BillingTokenApplied && task.TokenId <= 0) ||
 			(!task.BillingTokenApplied && task.TokenId > 0) {
 			snapshot["reconciliation_reason"] = "billing snapshot is absent, incomplete, or inconsistent"
@@ -121,10 +128,6 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 		tokenID = task.TokenId
 		channelID = task.GetBillingChannelId()
 		quota = task.Quota
-		if userID <= 0 || channelID <= 0 {
-			return fmt.Errorf("%w: missing user or billing channel identity", ErrMidjourneyRefundReconciliationRequired)
-		}
-
 		if task.BillingTokenApplied {
 			var token Token
 			if err := tx.Select("id", "key").First(&token, tokenID).Error; err != nil {
