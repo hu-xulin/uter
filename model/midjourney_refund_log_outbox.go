@@ -68,6 +68,7 @@ func deliverMidjourneyRefundLog(event MidjourneyRefundOutbox) error {
 	if payload.TaskID <= 0 || payload.UserID <= 0 || payload.Quota <= 0 || payload.Result != "refunded" {
 		return fmt.Errorf("invalid Midjourney refund event payload for %s", event.EventKey)
 	}
+	username, _ := GetUsernameById(payload.UserID, false)
 	return LOG_DB.Transaction(func(tx *gorm.DB) error {
 		receipt := MidjourneyRefundLogReceipt{EventKey: event.EventKey, CreatedAt: common.GetTimestamp()}
 		result := tx.Clauses(clause.OnConflict{DoNothing: true}).Create(&receipt)
@@ -77,7 +78,6 @@ func deliverMidjourneyRefundLog(event MidjourneyRefundOutbox) error {
 		if result.RowsAffected == 0 {
 			return nil
 		}
-		username, _ := GetUsernameById(payload.UserID, false)
 		log := &Log{
 			UserId:    payload.UserID,
 			Username:  username,
