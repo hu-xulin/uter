@@ -717,7 +717,7 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 		}
 		session := &BillingSession{
 			relayInfo: relayInfo,
-			funding:   &SubscriptionFunding{
+			funding: &SubscriptionFunding{
 				requestId: relayInfo.RequestId,
 				userId:    relayInfo.UserId,
 				modelName: relayInfo.GetBillingModelName(),
