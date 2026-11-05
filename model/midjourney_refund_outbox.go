@@ -42,7 +42,13 @@ func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
 	if event.EventKey == "" || event.EventType == "" || !json.Valid([]byte(event.PayloadJSON)) {
 		return errors.New("outbox event requires event key, event type, and valid payload JSON")
 	}
-	if event.PayloadVersion <= 0 { return errors.New("outbox payload version must be positive") }
+	// GORM applies SQL defaults after hooks; initialize zero-value structs here.
+	if event.PayloadVersion == 0 {
+		event.PayloadVersion = 1
+	}
+	if event.PayloadVersion < 0 {
+		return errors.New("outbox payload version must be positive")
+	}
 	if event.Status == "" { event.Status = MidjourneyRefundOutboxPending }
 	if event.Status != MidjourneyRefundOutboxPending {
 		return fmt.Errorf("invalid initial Midjourney refund outbox status %q", event.Status)
