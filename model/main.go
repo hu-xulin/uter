@@ -348,8 +348,11 @@ func migrateDB() error {
 	if err := migratePrefillGroupUniqueness(DB); err != nil {
 		return err
 	}
-	// Migrate price_amount column from float/double to decimal for existing tables
-	migrateSubscriptionPlanPriceAmount()
+	// Migrate price_amount column from float/double to decimal(10,6) for existing tables.
+	// Failure aborts startup instead of silently leaving a wrong column type.
+	if err := migrateSubscriptionPlanPriceAmount(); err != nil {
+		return fmt.Errorf("migrate subscription plan price_amount: %w", err)
+	}
 	// Migrate model_limits column from varchar to text for existing tables
 	if err := migrateTokenModelLimitsToText(); err != nil {
 		return err
@@ -754,13 +757,21 @@ func migrateTokenModelLimitsToText() error {
 	return nil
 }
 
-// migrateSubscriptionPlanPriceAmount migrates price_amount column from float/double to decimal(10,6)
-// This is safe to run multiple times - it checks the column type first
-func migrateSubscriptionPlanPriceAmount() {
+// migrateSubscriptionPlanPriceAmount migrates price_amount column from float/double to decimal(10,6).
+// It returns an error (instead of only logging) when it cannot safely complete, so startup is
+// blocked rather than silently leaving an inconsistent column type.
+//
+// Safety notes:
+//   - Idempotent: skips when the column is already exactly decimal(10,6).
+//   - For PostgreSQL it also verifies numeric precision/scale (not just that the type is "numeric"),
+//     because a column typed numeric(20,2) or bare numeric would otherwise be left un-normalized.
+//   - It pre-checks that existing values fit decimal(10,6) (absolute value < 10000) before altering,
+//     so a value that would overflow/truncate the new type aborts startup instead of corrupting data.
+func migrateSubscriptionPlanPriceAmount() error {
 	// SQLite doesn't support ALTER COLUMN, and its type affinity handles this automatically
 	// Skip early to avoid GORM parsing the existing table DDL which may cause issues
 	if common.UsingMainDatabase(common.DatabaseTypeSQLite) {
-		return
+		return nil
 	}
 
 	tableName := "subscription_plans"
@@ -768,50 +779,84 @@ func migrateSubscriptionPlanPriceAmount() {
 
 	// Check if table exists first
 	if !DB.Migrator().HasTable(tableName) {
-		return
+		return nil
 	}
 
 	// Check if column exists
 	if !DB.Migrator().HasColumn(&SubscriptionPlan{}, columnName) {
-		return
+		return nil
 	}
 
-	var alterSQL string
+	needsAlter := false
+
 	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
-		// PostgreSQL: Check if already decimal/numeric
-		var dataType string
-		if err := DB.Raw(`SELECT data_type FROM information_schema.columns
+		var dataType, numericPrecision, numericScale string
+		if err := DB.Raw(`SELECT data_type, numeric_precision, numeric_scale
+			FROM information_schema.columns
 			WHERE table_schema = current_schema() AND table_name = ? AND column_name = ?`,
-			tableName, columnName).Scan(&dataType).Error; err != nil {
-			common.SysLog(fmt.Sprintf("Warning: failed to query metadata for %s.%s: %v", tableName, columnName, err))
-		} else if dataType == "numeric" {
-			return // Already decimal/numeric
+			tableName, columnName).Row().Scan(&dataType, &numericPrecision, &numericScale); err != nil {
+			return fmt.Errorf("query metadata for %s.%s: %w", tableName, columnName, err)
 		}
-		alterSQL = fmt.Sprintf(`ALTER TABLE %s ALTER COLUMN %s TYPE decimal(10,6) USING %s::decimal(10,6)`,
-			tableName, columnName, columnName)
+		// Skip only when exactly decimal(10,6); other numeric variants get re-normalized.
+		if dataType == "numeric" && numericPrecision == "10" && numericScale == "6" {
+			return nil
+		}
+		needsAlter = true
 	} else if common.UsingMainDatabase(common.DatabaseTypeMySQL) {
-		// MySQL: Check if already decimal
 		var columnType string
 		if err := DB.Raw(`SELECT COLUMN_TYPE FROM information_schema.columns
 				WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?`,
 			tableName, columnName).Scan(&columnType).Error; err != nil {
-			common.SysLog(fmt.Sprintf("Warning: failed to query metadata for %s.%s: %v", tableName, columnName, err))
-		} else if strings.HasPrefix(strings.ToLower(columnType), "decimal") {
-			return // Already decimal
+			return fmt.Errorf("query metadata for %s.%s: %w", tableName, columnName, err)
 		}
+		// Skip only when exactly decimal(10,6); other decimal variants get re-normalized.
+		if strings.EqualFold(columnType, "decimal(10,6)") {
+			return nil
+		}
+		needsAlter = true
+	} else {
+		return nil
+	}
+
+	if !needsAlter {
+		return nil
+	}
+
+	// Guard: ensure no existing value overflows decimal(10,6) (max abs = 9999.999999).
+	overflow, err := priceAmountExceedsDecimal106(tableName, columnName)
+	if err != nil {
+		return fmt.Errorf("verify %s.%s range before migration: %w", tableName, columnName, err)
+	}
+	if overflow {
+		return fmt.Errorf("%s.%s contains values that do not fit decimal(10,6) (absolute value must be < 10000); aborting migration to avoid data loss", tableName, columnName)
+	}
+
+	var alterSQL string
+	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
+		alterSQL = fmt.Sprintf(`ALTER TABLE %s ALTER COLUMN %s TYPE decimal(10,6) USING %s::decimal(10,6)`,
+			tableName, columnName, columnName)
+	} else if common.UsingMainDatabase(common.DatabaseTypeMySQL) {
 		alterSQL = fmt.Sprintf("ALTER TABLE %s MODIFY COLUMN %s decimal(10,6) NOT NULL DEFAULT 0",
 			tableName, columnName)
-	} else {
-		return
 	}
 
 	if alterSQL != "" {
 		if err := DB.Exec(alterSQL).Error; err != nil {
-			common.SysLog(fmt.Sprintf("Warning: failed to migrate %s.%s to decimal: %v", tableName, columnName, err))
-		} else {
-			common.SysLog(fmt.Sprintf("Successfully migrated %s.%s to decimal(10,6)", tableName, columnName))
+			return fmt.Errorf("failed to migrate %s.%s to decimal(10,6): %w", tableName, columnName, err)
 		}
+		common.SysLog(fmt.Sprintf("Successfully migrated %s.%s to decimal(10,6)", tableName, columnName))
 	}
+	return nil
+}
+
+// priceAmountExceedsDecimal106 reports whether any row in tableName.columnName has an absolute
+// value >= 10000, which decimal(10,6) (max 9999.999999) cannot represent. An empty table reports false.
+func priceAmountExceedsDecimal106(tableName, columnName string) (bool, error) {
+	var maxAbs float64
+	if err := DB.Raw(fmt.Sprintf("SELECT COALESCE(MAX(ABS(%s)), 0) FROM %s", columnName, tableName)).Scan(&maxAbs).Error; err != nil {
+		return false, fmt.Errorf("select max abs of %s.%s: %w", tableName, columnName, err)
+	}
+	return maxAbs >= 10000, nil
 }
 
 func closeDB(db *gorm.DB) error {
