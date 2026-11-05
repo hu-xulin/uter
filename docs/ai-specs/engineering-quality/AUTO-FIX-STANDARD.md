@@ -3,7 +3,12 @@
 
 **项目：** Uter  
 **规范编号：** UTER-ENG-003  
-**版本：** 1.0  
+**版本：** 1.0.0  
+**规范版本：** 1.0.0  
+**规范状态：** Active  
+**最后更新：** 2026-11-05  
+**维护责任：** Uter Engineering Maintainers  
+**版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
 **适用范围：** Uter 全部代码仓库、工程模块及自动化修复流程  
 **执行主体：** AI Coding Agent、Auto-Fix Engine、GitHub Actions  
 **关联规范：**
