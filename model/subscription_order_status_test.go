@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/glebarez/sqlite"
@@ -61,4 +62,89 @@ func TestFailPendingSubscriptionOrder(t *testing.T) {
 
 	require.ErrorIs(t, FailPendingSubscriptionOrder(otherProvider.TradeNo, PaymentProviderStripe), ErrPaymentMethodMismatch)
 	require.True(t, errors.Is(FailPendingSubscriptionOrder("missing", PaymentProviderStripe), ErrSubscriptionOrderNotFound))
+}
+
+func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	cases := []struct {
+		name       string
+		userID     int
+		provider   string
+		status     string
+		wantErr    error
+	}{
+		{name: "different owner", userID: 99, provider: PaymentProviderEpay, status: common.TopUpStatusPending, wantErr: ErrPaymentMethodMismatch},
+		{name: "different provider", userID: 7, provider: PaymentProviderStripe, status: common.TopUpStatusPending, wantErr: ErrPaymentMethodMismatch},
+		{name: "terminal top-up", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusExpired, wantErr: ErrTopUpStatusInvalid},
+	}
+	for i, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tradeNo := fmt.Sprintf("subscription-link-%d", i)
+			order := &SubscriptionOrder{
+				UserId: 7, PlanId: 1, Money: 10, TradeNo: tradeNo,
+				PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
+				Status: common.TopUpStatusPending,
+			}
+			topup := &TopUp{
+				UserId: tc.userID, Money: 10, TradeNo: tradeNo,
+				PaymentProvider: tc.provider, PaymentMethod: "alipay",
+				Status: tc.status,
+			}
+			require.NoError(t, db.Create(order).Error)
+			require.NoError(t, db.Create(topup).Error)
+
+			err := upsertSubscriptionTopUpTx(db, order)
+			require.ErrorIs(t, err, tc.wantErr)
+			var stored TopUp
+			require.NoError(t, db.Where("trade_no = ?", tradeNo).First(&stored).Error)
+			require.Equal(t, tc.userID, stored.UserId)
+			require.Equal(t, tc.provider, stored.PaymentProvider)
+			require.Equal(t, tc.status, stored.Status)
+		})
+	}
+}
+
+func TestUpsertSubscriptionTopUpBackfillsLegacyProvider(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	order := &SubscriptionOrder{
+		UserId: 7, PlanId: 1, Money: 10, TradeNo: "subscription-link-legacy",
+		PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
+		Status: common.TopUpStatusPending,
+	}
+	topup := &TopUp{
+		UserId: 7, Money: 10, TradeNo: order.TradeNo,
+		PaymentMethod: "alipay", Status: common.TopUpStatusPending,
+	}
+	require.NoError(t, db.Create(order).Error)
+	require.NoError(t, db.Create(topup).Error)
+
+	require.NoError(t, upsertSubscriptionTopUpTx(db, order))
+	var stored TopUp
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
+	require.Equal(t, PaymentProviderEpay, stored.PaymentProvider)
+	require.Equal(t, common.TopUpStatusSuccess, stored.Status)
 }
