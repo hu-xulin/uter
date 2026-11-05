@@ -1587,7 +1587,10 @@ func refundSubscriptionPreConsumeForUserTx(tx *gorm.DB, requestId string, expect
 	if record.Status == "refunded" {
 		return nil
 	}
-	if record.PreConsumed <= 0 {
+	if record.PreConsumed < 0 {
+		return fmt.Errorf("subscription pre-consume request %q has negative amount %d", requestId, record.PreConsumed)
+	}
+	if record.PreConsumed == 0 {
 		record.Status = "refunded"
 		return tx.Save(&record).Error
 	}
