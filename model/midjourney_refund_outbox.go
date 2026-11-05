@@ -71,6 +71,19 @@ func (event *MidjourneyRefundOutbox) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+
+ // BeforeUpdate keeps the event identity and payload immutable while allowing
+ // delivery status, retry count, lease, and error metadata to advance.
+ func (event *MidjourneyRefundOutbox) BeforeUpdate(tx *gorm.DB) error {
+  if tx.Statement.Changed(
+   "EventKey", "RefundOperationID", "EventType", "PayloadVersion",
+   "PayloadJSON", "CreatedAt",
+  ) {
+   return errors.New("Midjourney refund outbox event payload is immutable")
+  }
+  return nil
+ }
+
 func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) error {
 	if tx == nil {
 		return errors.New("Midjourney refund outbox transaction is nil")
