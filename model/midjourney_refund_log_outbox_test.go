@@ -37,12 +37,26 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	require.NoError(t, deliverMidjourneyRefundLog(event))
 	require.NoError(t, deliverMidjourneyRefundLog(event))
 
+	mismatched := event
+	mismatched.PayloadJSON = `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":41,"reason":"changed payload","result":"refunded"}`
+	require.Error(t, deliverMidjourneyRefundLog(mismatched))
+
+	reconciliation := MidjourneyRefundOutbox{
+		EventKey: "midjourney:124:refund-reconciliation",
+		EventType: "midjourney.refund.reconciliation_required",
+		PayloadJSON: `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
+	}
+	require.NoError(t, deliverMidjourneyRefundLog(reconciliation))
+
 	var receipts int64
 	require.NoError(t, db.Model(&MidjourneyRefundLogReceipt{}).Where("event_key = ?", event.EventKey).Count(&receipts).Error)
-	require.EqualValues(t, 1, receipts)
+	require.EqualValues(t, 2, receipts)
 	var logs int64
 	require.NoError(t, db.Model(&Log{}).Where("request_id = ?", event.EventKey).Count(&logs).Error)
 	require.EqualValues(t, 1, logs)
+	var reconciliationLogs int64
+	require.NoError(t, db.Model(&Log{}).Where("request_id = ?", reconciliation.EventKey).Count(&reconciliationLogs).Error)
+	require.EqualValues(t, 1, reconciliationLogs)
 }
 
 func TestMidjourneyRefundOutboxLeaseIsExclusive(t *testing.T) {
