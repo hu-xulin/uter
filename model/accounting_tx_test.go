@@ -106,7 +106,6 @@ func TestAccountingTransactionPrimitivesRejectMissingRows(t *testing.T) {
 	assert.Error(t, increaseTokenQuotaTx(DB, 1, -1))
 }
 
-
 func TestAccountingTransactionPrimitivesRejectUsageUnderflow(t *testing.T) {
 	truncateTables(t)
 	resetBatchUpdateTestState(t)
