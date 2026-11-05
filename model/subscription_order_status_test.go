@@ -83,6 +83,7 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 		userID     int
 		provider   string
 		status          string
+		money           float64
 		providerAmount  int64
 		providerCurrency string
 		wantErr         error
@@ -92,6 +93,7 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 		{name: "terminal top-up", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusExpired, wantErr: ErrTopUpStatusInvalid},
 		{name: "different provider amount", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusPending, providerAmount: 999, providerCurrency: "CNY", wantErr: ErrPaymentMethodMismatch},
 		{name: "different provider currency", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusPending, providerAmount: 1000, providerCurrency: "USD", wantErr: ErrPaymentMethodMismatch},
+		{name: "different local amount", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusPending, money: 11, providerAmount: 1000, providerCurrency: "CNY", wantErr: ErrPaymentMethodMismatch},
 	}
 	for i, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -102,8 +104,12 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 				ProviderAmount: 1000, ProviderCurrency: "CNY",
 				Status: common.TopUpStatusPending,
 			}
+			money := tc.money
+			if money == 0 {
+				money = 10
+			}
 			topup := &TopUp{
-				UserId: tc.userID, Money: 10, TradeNo: tradeNo,
+				UserId: tc.userID, Money: money, TradeNo: tradeNo,
 				PaymentProvider: tc.provider, PaymentMethod: "alipay",
 				ProviderAmount: tc.providerAmount, ProviderCurrency: tc.providerCurrency,
 				Status: tc.status,
