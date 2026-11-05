@@ -103,7 +103,7 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 				Status:              MidjourneyRefundReconciliationRequired,
 			}
 			eventPayload, marshalErr := json.Marshal(map[string]any{
-				"task_id":    task.Id,
+				"task_id": task.Id,
 				"mj_id":   task.MjId,
 				"reason":  reasonDetail,
 				"status":  MidjourneyRefundReconciliationRequired,
@@ -173,7 +173,7 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			op.TokenAppliedQuota = quota
 		}
 		eventPayload, marshalErr := json.Marshal(map[string]any{
-			"task_id":    task.Id,
+			"task_id": task.Id,
 			"mj_id":      task.MjId,
 			"user_id":    userID,
 			"token_id":   tokenID,
@@ -258,7 +258,6 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 	return nil
 }
 
- 
 // FindPendingMidjourneyRefundTaskIDs returns terminal failed tasks whose
 // durable billing quota has not yet been cleared. Reconciliation-required
 // tasks are excluded because they need operator review, not automatic retries.
