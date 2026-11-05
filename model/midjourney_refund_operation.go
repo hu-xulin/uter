@@ -109,6 +109,22 @@ func (op *MidjourneyRefundOperation) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+
+ // BeforeUpdate prevents rewriting the original billing evidence. Only
+ // lifecycle/recovery fields may change after the operation is created.
+ func (op *MidjourneyRefundOperation) BeforeUpdate(tx *gorm.DB) error {
+  if tx.Statement.Changed(
+   "MidjourneyTaskID", "OperationType", "IdempotencyKey", "ReasonCode",
+   "ReasonDetail", "BillingVersion", "BillingSnapshotJSON", "FundingSource",
+   "FundingUserID", "FundingOrgID", "TokenID", "ChannelID",
+   "WalletAppliedQuota", "TokenAppliedQuota", "UserUsageApplied",
+   "ChannelUsageApplied", "CreatedAt",
+  ) {
+   return errors.New("Midjourney refund billing snapshot is immutable")
+  }
+  return nil
+ }
+
 func CreateMidjourneyRefundOperationTx(tx *gorm.DB, op *MidjourneyRefundOperation) error {
 	if tx == nil {
 		return errors.New("midjourney refund operation transaction is nil")
