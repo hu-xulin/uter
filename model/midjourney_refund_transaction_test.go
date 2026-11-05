@@ -100,7 +100,7 @@ func TestRefundMidjourneyTaskBillingQuarantinesLegacyAmbiguousTask(t *testing.T)
 	user := createReserveTestUser(t, 100)
 	channel := Channel{Name: "mj-refund-legacy", Key: "mj-refund-legacy-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
-	task := &Midjourney{UserId:    user.Id, MjId: "mj-legacy-ambiguous", Quota: 40, ChannelId: channel.Id}
+	task := &Midjourney{UserId: user.Id, MjId: "mj-legacy-ambiguous", Quota: 40, ChannelId: channel.Id}
 	require.NoError(t, task.Insert())
 
 	err := RefundMidjourneyTaskBilling(task.Id, "legacy task")
