@@ -132,9 +132,6 @@ type TaskPollSummary struct {
 // adaptor factory has not been wired yet, to avoid a nil call during startup.
 func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) TaskPollSummary {
 	summary := TaskPollSummary{}
-	if GetTaskAdaptorFunc == nil {
-		return summary
-	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -142,8 +139,13 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 	common.SysLog(common.LogText("task progress polling started"))
 	sweepTimedOutTasks(ctx)
 	// 计费对账与超时清理并列：前者负责「终态已定但钱货未两讫」的任务，
-	// 后者负责「永远不结束的任务」。少任何一个都会留下一批无人处理的残局。
+	// 后者负责「永远不结束的任务」。即使当前没有任何平台 Adapter，也必须执行。
 	ReconcileStuckTaskBilling(ctx)
+	if GetTaskAdaptorFunc == nil {
+		logger.LogWarn(ctx, "task polling adapters are unavailable; billing reconciliation completed, upstream polling skipped")
+		common.SysLog(common.LogText("task progress polling finished"))
+		return summary
+	}
 	allTasks := model.GetAllUnFinishSyncTasks(constant.TaskQueryLimit)
 	summary.UnfinishedTasks = len(allTasks)
 	platformTask := make(map[constant.TaskPlatform][]*model.Task)
@@ -192,7 +194,11 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 					logger.LogError(ctx, common.LogText("Fix null task_id task error: %v", err))
 				}
 			} else {
-				logger.LogError(ctx, common.LogText("Fix null task_id task skipped: no adaptor for platform %s", platform))
+				// Failure finalization/refund does not require an upstream Adapter.
+				// The nil-adapter path is explicitly supported by finalizeTerminalTask.
+				if err := failTasksFromPoll(ctx, nil, nullTasks, "No upstream task ID"); err != nil {
+					logger.LogError(ctx, common.LogText("Fix null task_id task without adapter: %v", err))
+				}
 			}
 		}
 		if len(taskChannelM) == 0 {
@@ -218,6 +224,10 @@ func DispatchPlatformUpdate(ctx context.Context, platform constant.TaskPlatform,
 		return
 	}
 	adaptor := GetTaskAdaptorFunc(platform)
+	if adaptor == nil {
+		logger.LogWarn(ctx, common.LogText("task polling skipped for platform %s: no adapter is registered", platform))
+		return
+	}
 	if batchAdaptor, ok := adaptor.(BatchTaskPollingAdaptor); ok && batchAdaptor.FetchMode() == "batch" {
 		if err := UpdateBatchTasks(ctx, batchAdaptor, taskChannelM, taskM); err != nil {
 			common.SysLog(common.LogText("UpdateBatchTasks fail: %s", err))
@@ -645,11 +655,21 @@ func updateVideoSingleTask(ctx context.Context, adaptor TaskPollingAdaptor, ch *
 
 // finalizeTerminalTask 终态统一收尾（状态 CAS 赢家调用，恰好一次）：采样 + 结算 + 失败兜底退款。
 func finalizeTerminalTask(ctx context.Context, adaptor TaskPollingAdaptor, task *model.Task, taskResult *relaycommon.TaskInfo) {
-	perfmetrics.RecordTaskResult(task, taskResult)
-	billingSettled := settleTaskBillingOnComplete(ctx, adaptor, task, taskResult)
-	if task.Status == model.TaskStatusFailure && !billingSettled && task.Quota != 0 {
-		RefundTaskQuota(ctx, task, task.FailReason)
+	if task == nil {
+		return
 	}
+	perfmetrics.RecordTaskResult(task, taskResult)
+	if task.Status == model.TaskStatusFailure {
+		if task.Quota != 0 {
+			RefundTaskQuota(ctx, task, task.FailReason)
+		}
+		return
+	}
+	if adaptor == nil {
+		logger.LogWarn(ctx, common.LogText("task %s completed but no adapter is available for final billing adjustment", task.TaskID))
+		return
+	}
+	settleTaskBillingOnComplete(ctx, adaptor, task, taskResult)
 }
 
 func redactVideoResponseBody(body []byte) []byte {
