@@ -176,7 +176,7 @@ func ExecuteRefundIntent(id int) error {
 				if err := incrOrgUsedQuotaTx(tx, intent.OrgId, -int64(intent.WalletAmount)); err != nil {
 					return fmt.Errorf("roll back organization %d reserve of %d: %w", intent.OrgId, intent.WalletAmount, err)
 				}
-				if err := incrUserUsedQuotaClampedTx(tx, intent.UserId, -intent.WalletAmount); err != nil {
+				if err := adjustUserUsedQuotaTx(tx, intent.UserId, -intent.WalletAmount); err != nil {
 					return fmt.Errorf("roll back member %d sub-quota reserve of %d: %w", intent.UserId, intent.WalletAmount, err)
 				}
 			} else if err := increaseUserQuotaTx(tx, intent.UserId, intent.WalletAmount); err != nil {
