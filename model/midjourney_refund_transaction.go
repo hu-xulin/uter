@@ -84,7 +84,20 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			if task.BillingStatus == "refunded" || !task.BillingWalletApplied {
 				return nil
 			}
-			return ErrMidjourneyRefundReconciliationRequired
+			snapshot := map[string]any{
+				"billing_version":    task.BillingVersion,
+				"billing_status":     task.BillingStatus,
+				"wallet_applied":     task.BillingWalletApplied,
+				"token_applied":      task.BillingTokenApplied,
+				"task_quota":         task.Quota,
+				"token_id":           task.TokenId,
+				"billing_channel_id": task.GetBillingChannelId(),
+			}
+			if err := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_zero_quota_conflict", "task quota is zero while billing snapshot still records an applied wallet charge", snapshot); err != nil {
+				return err
+			}
+			reconciliation = true
+			return nil
 		}
 
 		var existing MidjourneyRefundOperation
@@ -92,6 +105,11 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			First(&existing).Error
 		if err == nil {
 			if existing.Status == MidjourneyRefundCompleted {
+				if err := tx.Model(&Midjourney{}).Where("id = ?", task.Id).
+					Update("billing_status", "reconciliation_required").Error; err != nil {
+					return err
+				}
+				reconciliation = true
 				return nil
 			}
 			if existing.Status == MidjourneyRefundReconciliationRequired {
