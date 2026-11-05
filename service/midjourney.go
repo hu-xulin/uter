@@ -186,59 +186,77 @@ func GetMjRequestModel(relayMode int, midjRequest *dto.MidjourneyRequest) (strin
 
 func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.MidjourneyResponse {
 	// "customId": "MJ::JOB::upsample::2::3dbbd469-36af-4a0f-8f02-df6c579e7011"
-	customId := midjRequest.CustomId
-	if customId == "" {
+	if midjRequest == nil {
 		return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_required")
 	}
-	splits := strings.Split(customId, "::")
-	var action string
-	if splits[1] == "JOB" {
-		action = splits[2]
-	} else {
-		action = splits[1]
+	customID := strings.TrimSpace(midjRequest.CustomId)
+	if customID == "" {
+		return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_required")
 	}
 
-	if action == "" {
+	parts := strings.Split(customID, "::")
+	if len(parts) < 2 || parts[0] != "MJ" || parts[1] == "" {
 		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action")
 	}
-	if strings.Contains(action, "upsample") {
-		index, err := strconv.Atoi(splits[3])
-		if err != nil {
-			return MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
+
+	action := parts[1]
+	if action == "JOB" {
+		if len(parts) < 3 || parts[2] == "" {
+			return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action")
 		}
-		midjRequest.Index = index
+		action = parts[2]
+		parts = parts[2:]
+	}
+
+	parseIndex := func() (int, *dto.MidjourneyResponse) {
+		if len(parts) < 2 || parts[1] == "" {
+			return 0, MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
+		}
+		index, err := strconv.Atoi(parts[1])
+		if err != nil || index < 1 || index > 4 {
+			return 0, MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
+		}
+		return index, nil
+	}
+
+	switch action {
+	case "upsample":
+		index, errResponse := parseIndex()
+		if errResponse != nil {
+			return errResponse
+		}
 		midjRequest.Action = constant.MjActionUpscale
-	} else if strings.Contains(action, "variation") {
-		midjRequest.Index = 1
-		if action == "variation" {
-			index, err := strconv.Atoi(splits[3])
-			if err != nil {
-				return MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
-			}
-			midjRequest.Index = index
-			midjRequest.Action = constant.MjActionVariation
-		} else if action == "low_variation" {
-			midjRequest.Action = constant.MjActionLowVariation
-		} else if action == "high_variation" {
-			midjRequest.Action = constant.MjActionHighVariation
+		midjRequest.Index = index
+	case "variation":
+		index, errResponse := parseIndex()
+		if errResponse != nil {
+			return errResponse
 		}
-	} else if strings.Contains(action, "pan") {
+		midjRequest.Action = constant.MjActionVariation
+		midjRequest.Index = index
+	case "low_variation":
+		midjRequest.Action = constant.MjActionLowVariation
+		midjRequest.Index = 1
+	case "high_variation":
+		midjRequest.Action = constant.MjActionHighVariation
+		midjRequest.Index = 1
+	case "pan", "pan_left", "pan_right", "pan_up", "pan_down":
 		midjRequest.Action = constant.MjActionPan
 		midjRequest.Index = 1
-	} else if strings.Contains(action, "reroll") {
+	case "reroll":
 		midjRequest.Action = constant.MjActionReRoll
 		midjRequest.Index = 1
-	} else if action == "Outpaint" {
+	case "Outpaint":
 		midjRequest.Action = constant.MjActionZoom
 		midjRequest.Index = 1
-	} else if action == "CustomZoom" {
+	case "CustomZoom":
 		midjRequest.Action = constant.MjActionCustomZoom
 		midjRequest.Index = 1
-	} else if action == "Inpaint" {
+	case "Inpaint":
 		midjRequest.Action = constant.MjActionInPaint
 		midjRequest.Index = 1
-	} else {
-		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action:"+customId)
+	default:
+		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action:"+customID)
 	}
 	return nil
 }
