@@ -746,6 +746,40 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaym
 	return tx.Save(&topup).Error
 }
 
+func transitionLinkedSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, targetStatus string) error {
+	if tx == nil || order == nil || order.TradeNo == "" {
+		return errors.New("invalid subscription order transition")
+	}
+	var topup TopUp
+	err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// Older installations may not have created the shadow top-up row.
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if topup.UserId != order.UserId {
+		return fmt.Errorf("%w: linked top-up owner mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
+		return fmt.Errorf("%w: linked top-up provider mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.Status == targetStatus {
+		return nil
+	}
+	if topup.Status != common.TopUpStatusPending {
+		// A successful or differently terminal top-up beside a pending
+		// subscription order is inconsistent. Preserve both records for
+		// reconciliation instead of silently making their states diverge.
+		return fmt.Errorf("%w: linked top-up status %q cannot transition to %q for trade %s",
+			ErrTopUpStatusInvalid, topup.Status, targetStatus, order.TradeNo)
+	}
+	topup.Status = targetStatus
+	topup.CompleteTime = common.GetTimestamp()
+	return tx.Save(&topup).Error
+}
+
 func ExpireSubscriptionOrder(tradeNo string, expectedPaymentProvider string) error {
 	if tradeNo == "" {
 		return errors.New("tradeNo is empty")
@@ -767,6 +801,9 @@ func ExpireSubscriptionOrder(tradeNo string, expectedPaymentProvider string) err
 		}
 		if order.Status != common.TopUpStatusPending {
 			return nil
+		}
+		if err := transitionLinkedSubscriptionTopUpTx(tx, &order, common.TopUpStatusExpired); err != nil {
+			return err
 		}
 		order.Status = common.TopUpStatusExpired
 		order.CompleteTime = common.GetTimestamp()
@@ -797,6 +834,9 @@ func FailPendingSubscriptionOrder(tradeNo string, expectedPaymentProvider string
 		}
 		if order.Status != common.TopUpStatusPending {
 			return nil
+		}
+		if err := transitionLinkedSubscriptionTopUpTx(tx, &order, common.TopUpStatusFailed); err != nil {
+			return err
 		}
 		order.Status = common.TopUpStatusFailed
 		order.CompleteTime = common.GetTimestamp()
