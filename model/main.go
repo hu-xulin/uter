@@ -376,6 +376,8 @@ func migrateDB() error {
 		&Ability{},
 		&Log{},
 		&Midjourney{},
+		&MidjourneyRefundOperation{},
+		&MidjourneyRefundOutbox{},
 		&TopUp{},
 		&QuotaData{},
 		&Task{},
