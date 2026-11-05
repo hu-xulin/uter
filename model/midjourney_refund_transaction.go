@@ -12,7 +12,6 @@ import (
 
 var ErrMidjourneyRefundReconciliationRequired = errors.New("Midjourney refund requires billing reconciliation")
 
-
 func markMidjourneyRefundReconciliationTx(tx *gorm.DB, task *Midjourney, reasonCode, reasonDetail string, snapshot map[string]any) error {
 	snapshot["reconciliation_reason"] = reasonDetail
 	snapshotJSON, err := json.Marshal(snapshot)
@@ -33,20 +32,20 @@ func markMidjourneyRefundReconciliationTx(tx *gorm.DB, task *Midjourney, reasonC
 		Status:              MidjourneyRefundReconciliationRequired,
 	}
 	payload, err := json.Marshal(map[string]any{
-		"task_id": task.Id,
-		"mj_id": task.MjId,
+		"task_id":     task.Id,
+		"mj_id":       task.MjId,
 		"reason_code": reasonCode,
-		"reason": reasonDetail,
-		"status": MidjourneyRefundReconciliationRequired,
+		"reason":      reasonDetail,
+		"status":      MidjourneyRefundReconciliationRequired,
 	})
 	if err != nil {
 		return err
 	}
 	event := &MidjourneyRefundOutbox{
-		EventKey: fmt.Sprintf("midjourney:%d:refund-reconciliation", task.Id),
-		EventType: "midjourney.refund.reconciliation_required",
+		EventKey:       fmt.Sprintf("midjourney:%d:refund-reconciliation", task.Id),
+		EventType:      "midjourney.refund.reconciliation_required",
 		PayloadVersion: 1,
-		PayloadJSON: string(payload),
+		PayloadJSON:    string(payload),
 	}
 	if err := CreateMidjourneyRefundOperationWithOutboxTx(tx, op, event); err != nil {
 		return err
@@ -233,7 +232,7 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			op.TokenAppliedQuota = quota
 		}
 		eventPayload, marshalErr := json.Marshal(map[string]any{
-			"task_id": task.Id,
+			"task_id":     task.Id,
 			"mj_id":      task.MjId,
 			"user_id":    userID,
 			"token_id":   tokenID,
