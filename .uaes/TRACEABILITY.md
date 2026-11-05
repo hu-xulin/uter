@@ -102,3 +102,10 @@ The owner-approved Option B cleanup is implemented in the Uter integration branc
 ### Final Option B acceptance evidence
 
 Uter CI run 41970513914 passed all 8 jobs at implementation source commit `422caafffb7a64370700ddd4859a057911f5f9e0`. UAES Architecture Source Checks run 41971060421 and Database Migration Dialect Matrix run 41971060428 passed at UAES PR #1 head `88b96136d48cad65056918cac72a1ac6017fe139`. The legacy API deprecation audit records the detailed scope and remaining external telemetry limitation.
+
+
+### Midjourney refund transaction design
+
+A source-grounded draft contract is maintained in `.uaes/MIDJOURNEY-REFUND-TRANSACTION-DESIGN-2026-11-05.md` (Uter PR #18). It defines the required immutable billing snapshot, local-task refund idempotency, one-primary-DB transaction boundary, transaction-aware accounting helpers, LOG_DB outbox delivery, independent recovery, controller terminal-failure handling, legacy migration safeguards, and crash/concurrency/dialect verification matrix.
+
+**Mapping status: DESIGN DRAFT / NOT IMPLEMENTED / NOT VERIFIED.** The contract deliberately leaves organization-funded Midjourney behavior, subscription funding support, partial-charge semantics, historical backfill, and retry/alert thresholds unresolved pending owner decisions. No billing behavior or production data was changed by the design PR.
