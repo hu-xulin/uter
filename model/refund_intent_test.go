@@ -24,6 +24,11 @@ func newRefundIntentFixture(t *testing.T) (User, Token, RefundIntent) {
 	// 直接 Create：User.Insert 会把 Quota 重置为新用户配额。
 	require.NoError(t, DB.Create(&user).Error)
 	token := createReserveTestToken(t, 50)
+	// The fixture represents a real pre-consumption: 20 quota was deducted
+	// from the Token, so a refund must restore it without driving used_quota
+	// below zero.
+	require.NoError(t, DB.Model(&Token{}).Where("id = ?", token.Id).
+		Update("used_quota", 20).Error)
 
 	intent := RefundIntent{
 		UserId:        user.Id,
@@ -47,7 +52,7 @@ func TestRefundIntentExecuteAppliesRefundOnce(t *testing.T) {
 	assert.Equal(t, 130, getUserQuotaFromDB(t, user.Id), "wallet refund applied exactly once")
 	reloaded := getTokenFromDB(t, token.Id)
 	assert.Equal(t, 70, reloaded.RemainQuota)
-	assert.Equal(t, -20, reloaded.UsedQuota)
+	assert.Equal(t, 0, reloaded.UsedQuota)
 
 	var done RefundIntent
 	require.NoError(t, DB.First(&done, intent.Id).Error)
