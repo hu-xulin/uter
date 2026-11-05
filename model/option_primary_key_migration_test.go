@@ -112,3 +112,32 @@ func TestMigrateOptionPrimaryKeyIsNoopWhenAlreadyUnique(t *testing.T) {
 func TestMigrateOptionPrimaryKeyRejectsNilDatabase(t *testing.T) {
 	require.ErrorContains(t, migrateOptionPrimaryKey(nil), "database is nil")
 }
+
+
+// TestMigrateDBAbortsStartupWhenOptionsPrimaryKeyCannotBeRebuilt protects
+// payment/security configuration from ambiguous duplicate option values.
+func TestMigrateDBAbortsStartupWhenOptionsPrimaryKeyCannotBeRebuilt(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+	require.NoError(t, db.Exec("CREATE TABLE options (key TEXT, value TEXT)").Error)
+	require.NoError(t, db.Exec(
+		"INSERT INTO options (key, value) VALUES (?, ?), (?, ?)",
+		"payment_gateway", "gateway-a", "payment_gateway", "gateway-b",
+	).Error)
+
+	err = migrateDB()
+	require.ErrorContains(t, err, "failed to migrate options primary key")
+	require.False(t, db.Migrator().HasTable(&Channel{}), "schema migration must stop before normal AutoMigrate")
+	var rows int64
+	require.NoError(t, db.Table("options").Count(&rows).Error)
+	require.EqualValues(t, 2, rows, "ambiguous source configuration must remain untouched")
+}
