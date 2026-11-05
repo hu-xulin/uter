@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMemo } from 'react'
 
-import type { SystemStatus } from '@/features/auth/types'
+import type { SystemStatus } from '@/types/system'
 import { useStatus } from '@/hooks/use-status'
 
 import {

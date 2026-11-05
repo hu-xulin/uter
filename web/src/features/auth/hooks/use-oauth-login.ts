@@ -39,7 +39,7 @@ import {
   buildLinuxDOOAuthUrl,
 } from '../lib/oauth'
 import { rememberOAuthLoginRedirect } from '../lib/oauth-callback-mode'
-import type { SystemStatus, CustomOAuthProviderInfo } from '../types'
+import type { SystemStatus, CustomOAuthProviderInfo } from '@/types/system'
 
 /**
  * Hook for managing OAuth login
