@@ -415,8 +415,18 @@ jobs:
       #
       # 图标几何、正文基准、焦点环那几组由上面的 `bun run test`
       # （design-system/__tests__/spec-guards.test.ts）兜底。
+      - name: Design token source sync
+        run: bun run design:tokens:check
+
+      - name: Brand contrast verification
+        run: bun run verify:contrast
+
       - name: Design tokens
         run: bun run lint:design:strict
+
+      # UAES P4-IV: canonical React UI component registry, contract shape and filesystem parity.
+      - name: React component registry
+        run: bun run components:registry:check
 
       # 版权头检查：只补缺失的 AGPL 头，不动任何代码格式，可安全设为必需。
       # 格式检查（format:check）**不要**设为必需：它按仓库根目录递归跑 oxfmt，

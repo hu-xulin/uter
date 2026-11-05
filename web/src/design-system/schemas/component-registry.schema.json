@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uter.ai/schemas/component-registry.schema.json",
+  "title": "UAES React Component Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "registryVersion",
+    "designSystem",
+    "implementationRoot",
+    "policy",
+    "components"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "registryVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "designSystem": {
+      "const": "UTER Design System 3.0"
+    },
+    "implementationRoot": {
+      "const": "src/components/ui"
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "singleImplementationRoot",
+        "forbidDuplicatePrimitives",
+        "requireRegisteredFiles",
+        "requireExplicitEvidenceStatus"
+      ],
+      "properties": {
+        "singleImplementationRoot": {
+          "const": true
+        },
+        "forbidDuplicatePrimitives": {
+          "const": true
+        },
+        "requireRegisteredFiles": {
+          "const": true
+        },
+        "requireExplicitEvidenceStatus": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "file",
+        "category",
+        "status",
+        "contract"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^UTER-CMP-[A-Z0-9_]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^src/components/ui/[a-z0-9-]+\\.tsx$"
+        },
+        "category": {
+          "enum": [
+            "action",
+            "input",
+            "form",
+            "navigation",
+            "overlay",
+            "disclosure",
+            "feedback",
+            "layout",
+            "data-display",
+            "content",
+            "utility"
+          ]
+        },
+        "status": {
+          "enum": [
+            "ACTIVE",
+            "DEPRECATED",
+            "EXPERIMENTAL",
+            "INTERNAL"
+          ]
+        },
+        "contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "states",
+            "accessibility",
+            "responsive",
+            "tokens",
+            "evidence"
+          ],
+          "properties": {
+            "states": {
+              "type": "array",
+              "uniqueItems": true,
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            },
+            "accessibility": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "accessibleName",
+                "keyboard",
+                "focusVisible",
+                "stateExposure",
+                "focusManagement"
+              ],
+              "properties": {
+                "accessibleName": {
+                  "enum": [
+                    "REQUIRED_WHEN_INTERACTIVE",
+                    "REQUIRED",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "keyboard": {
+                  "type": "string"
+                },
+                "focusVisible": {
+                  "enum": [
+                    "REQUIRED",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "stateExposure": {
+                  "type": "string"
+                },
+                "focusManagement": {
+                  "type": "string"
+                }
+              }
+            },
+            "responsive": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mustSupportNarrowViewport",
+                "overflow",
+                "touchTarget"
+              ],
+              "properties": {
+                "mustSupportNarrowViewport": {
+                  "const": true
+                },
+                "overflow": {
+                  "enum": [
+                    "MUST_BE_DEFINED",
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "touchTarget": {
+                  "type": "string"
+                }
+              }
+            },
+            "tokens": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mustUseSemanticTokens",
+                "allowArbitraryValues"
+              ],
+              "properties": {
+                "mustUseSemanticTokens": {
+                  "const": true
+                },
+                "allowArbitraryValues": {
+                  "const": false
+                }
+              }
+            },
+            "evidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "tests",
+                "browserTests",
+                "manualReview"
+              ],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "NOT_VERIFIED",
+                    "PARTIAL",
+                    "VERIFIED",
+                    "EXCEPTION"
+                  ]
+                },
+                "tests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "browserTests": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "manualReview": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

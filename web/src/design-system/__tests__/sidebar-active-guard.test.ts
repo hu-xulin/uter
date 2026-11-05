@@ -44,6 +44,8 @@ const NAV_GROUP = join(
   'src/components/layout/components/nav-group.tsx'
 )
 const THEME = join(process.cwd(), 'src/styles/theme.css')
+const BRAND_TOKENS = join(process.cwd(), 'src/design-system/source/brand.tokens.json')
+const brandTokens = JSON.parse(readFileSync(BRAND_TOKENS, 'utf8'))
 
 const sidebar = readFileSync(SIDEBAR, 'utf8')
 const navGroup = readFileSync(NAV_GROUP, 'utf8')
@@ -97,8 +99,9 @@ describe('sidebar active state', () => {
   it('defines the dedicated token in both themes', () => {
     // design-system-2.0 §17（2026-11-03 复裁定）给定的两个值；改任一值都要
     // 重算对比度（浅色 5.11:1 / 深色 4.97:1）。
-    expect(theme).toContain('--sidebar-active-foreground: #5558d8')
-    expect(theme).toContain('--sidebar-active-foreground: #b1b3ff')
+    expect(theme).toContain('--sidebar-active-foreground: var(--uaes-brand-soft-foreground)')
+    expect(brandTokens.themes.light.brand.softForeground.$value).toBe('#5558D8')
+    expect(brandTokens.themes.dark.brand.softForeground.$value).toBe('#B1B3FF')
     // 必须映射成 Tailwind 语义色，否则 `text-sidebar-active-foreground` 是空类名。
     expect(theme).toContain(
       '--color-sidebar-active-foreground: var(--sidebar-active-foreground)'
@@ -109,7 +112,8 @@ describe('sidebar active state', () => {
     // 专用 Token 解决的是「浅底上的文本对比度」，不是改品牌主色。
     // 若有人为了达线直接调 --primary，这条会失败 —— 那是品牌决策，要走评审。
     // 2026-11-03 终裁「柔和渐进式 Hover」：浅 #5B5EE6 / 深 #8B8DF5。
-    expect(theme).toMatch(/--primary:\s*#5558d8/i)
-    expect(theme).toMatch(/--primary:\s*#a1a3f7/i)
+    expect(theme).toContain('--primary: var(--uaes-brand-primary)')
+    expect(brandTokens.themes.light.brand.primary.$value).toBe('#5B5EE6')
+    expect(brandTokens.themes.dark.brand.primary.$value).toBe('#A1A3F7')
   })
 })
