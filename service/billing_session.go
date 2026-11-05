@@ -106,9 +106,9 @@ func (s *BillingSession) Settle(actualQuota int) error {
 	if !s.relayInfo.IsPlayground {
 		tokenFn := func() error {
 			if delta > 0 {
-				return model.DecreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, delta)
+				return model.DecreaseTokenQuotaPersisted(s.relayInfo.TokenId, s.relayInfo.TokenKey, delta)
 			}
-			return model.IncreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
+			return model.IncreaseTokenQuotaPersisted(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
 		}
 		// 资金来源已提交，令牌账本失败不可重试整个 Settle（否则会重复结算资金）。
 		// 但令牌额度本身必须尽量对齐：对令牌调整做有限次重试；仍失败则上报为
