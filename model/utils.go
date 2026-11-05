@@ -29,6 +29,7 @@ const maxBatchUpdateRetries = 5
 
 var batchUpdateStores []map[int]int
 var batchUpdateLocks []sync.Mutex
+var batchUpdateExecutionLock sync.Mutex
 
 // batchUpdateRetries counts consecutive persistence failures per (type, id) so
 // a failed flush can be re-queued instead of silently dropping the delta.
@@ -75,6 +76,9 @@ func addNewRecord(type_ int, id int, value int) {
 }
 
 func batchUpdate() {
+	batchUpdateExecutionLock.Lock()
+	defer batchUpdateExecutionLock.Unlock()
+
 	// check if there's any data to update
 	hasData := false
 	for i := range BatchUpdateTypeCount {
@@ -220,6 +224,9 @@ func ApplyTaskRefundUsage(userID, channelID, quota int) error {
 	if userID <= 0 || channelID <= 0 || quota <= 0 {
 		return errors.New("task refund usage adjustment requires positive user, channel, and quota")
 	}
+
+	batchUpdateExecutionLock.Lock()
+	defer batchUpdateExecutionLock.Unlock()
 
 	userType := BatchUpdateTypeUsedQuota
 	channelType := BatchUpdateTypeChannelUsedQuota
