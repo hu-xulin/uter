@@ -12,5 +12,7 @@ Rules:
 - Do not skip the Read because a previous turn mentioned AGENTS.md.
 - Do not replace the Read with a grep, glob, or partial skim.
 - After reading, follow every rule in `AGENTS.md` for the rest of the work.
+- Before planning or executing an engineering task, also Read `.ai/AIES.md` and `.ai/README.md` in full. Treat them as execution methodology and navigation aids; `AGENTS.md`, the applicable domain standards, and explicit user authorization retain precedence.
+- Load every task-specific standard routed by `AGENTS.md` before editing or reviewing the corresponding domain.
 - If the task touches `web/`, also Read `web/AGENTS.md` before editing frontend files.
 - If the task touches billing as defined under **Billing rules (mandatory read gate)** in `AGENTS.md`, also Read `.agents/rules/billing.md` in full before planning or editing. Tasks outside that definition may skip it.
