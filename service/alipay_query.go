@@ -146,6 +146,12 @@ func AlipayQueryOrder(ctx context.Context, outTradeNo string) (*AlipayQueryResul
 		}
 		return nil, fmt.Errorf("alipay query failed: code=%s sub_code=%s msg=%s", node.Code, node.SubCode, node.Msg)
 	}
+	// The response is signed, but it must still identify the exact order we
+	// queried. Never let a gateway/proxy response for another trade number
+	// drive local crediting, even when its signature is otherwise valid.
+	if node.OutTradeNo == "" || node.OutTradeNo != outTradeNo {
+		return nil, fmt.Errorf("alipay query out_trade_no mismatch: requested=%q returned=%q", outTradeNo, node.OutTradeNo)
+	}
 	return &AlipayQueryResult{
 		TradeStatus: node.TradeStatus,
 		TotalAmount: node.TotalAmount,
