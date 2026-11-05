@@ -33,7 +33,7 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	event := MidjourneyRefundOutbox{
 		EventKey:    "midjourney:123:refund-log",
 		EventType:   "midjourney.refund.completed",
-		PayloadJSON:       `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
+		PayloadJSON: `{"task_id":123,"mj_id":"mj-task-123","user_id":1,"token_id":2,"channel_id":3,"quota":40,"reason":"upstream failed","result":"refunded"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(event))
 	require.NoError(t, deliverMidjourneyRefundLog(event))
@@ -45,7 +45,7 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	reconciliation := MidjourneyRefundOutbox{
 		EventKey:    "midjourney:124:refund-reconciliation",
 		EventType:   "midjourney.refund.reconciliation_required",
-		PayloadJSON:       `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
+		PayloadJSON: `{"task_id":124,"mj_id":"mj-task-124","user_id":1,"reason_code":"missing_token","reason":"token missing","status":"reconciliation_required"}`,
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(reconciliation))
 
