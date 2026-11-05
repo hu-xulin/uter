@@ -49,7 +49,79 @@ task_lifecycle:
     - last_verified_commit
     - evidence_refs
 
+agents:
+  - id: "uter.agent.orchestration.main"
+    role: "orchestrator"
+    permission_profile: "orchestrator"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.product.requirement"
+    role: "product"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.research.technical"
+    role: "research"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.architecture.review"
+    role: "architecture"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.design.system"
+    role: "design"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.engineering.coding"
+    role: "coding"
+    permission_profile: "pull_request_creator"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.quality.review"
+    role: "review"
+    permission_profile: "independent_reviewer"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.quality.testing"
+    role: "testing"
+    permission_profile: "test_executor"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.security.audit"
+    role: "security"
+    permission_profile: "security_auditor"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.documentation"
+    role: "documentation"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.delivery"
+    role: "delivery"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+
 permission_profiles:
+  orchestrator:
+    allow:
+      - task.create
+      - task.delegate.scoped
+      - task.status.read
+      - report.read
+    deny:
+      - filesystem.write
+      - git.commit
+      - git.push
+      - git.merge
+      - deployment.execute
+      - production.database.write
+      - payment.configuration.write
+
   read_only:
     allow:
       - filesystem.read
