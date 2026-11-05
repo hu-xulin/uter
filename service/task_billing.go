@@ -553,6 +553,12 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		logger.LogInfo(ctx, common.LogText("task %s pre-consumed quota matches the actual quota (%s, %s)",
 			task.TaskID, logger.LogQuota(actualQuota), reason.Error()))
 		// 差额为零也要收口：否则任务会永远停在非终态，被对账任务反复捞起。
+		// 同时把预扣阶段仍留在批量队列中的用量增量落库，避免终态提交后
+		// 进程崩溃丢失这笔用量统计。
+		if err := model.ApplyTaskBillingUsageDelta(task.UserId, task.ChannelId, 0); err != nil {
+			markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("zero-delta settlement usage flush failed: %v", err))
+			return
+		}
 		finalized, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 			FromState: currentTaskBillingState(task),
 			ToState:   model.TaskBillingSettled,
