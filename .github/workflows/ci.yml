@@ -36,7 +36,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mapfile -t work_branches < <(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name' | grep -vx 'main' || true)
+          branch_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')"
+          mapfile -t work_branches < <(printf '%s\\n' "$branch_names" | grep -vx 'main' || true)
           printf 'Non-main branches (%s):\\n' "${#work_branches[@]}"
           printf '  %s\\n' "${work_branches[@]}"
           if [ "${#work_branches[@]}" -gt 1 ]; then
