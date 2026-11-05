@@ -207,7 +207,7 @@ AI 更新文档前必须核对：
 
 ### 14.4 ADR 现状
 
-仓库尚无 `docs/adr/` 目录；重大决策目前记录在 UTER-DESIGN-SYSTEM-3.0.md、MEMORY.md 与提交信息中。建立正式 ADR 目录属新增文件，须用户显式授权。
+`docs/adr/` 是 Uter 正式 ADR 注册目录，索引为 `docs/adr/README.md`。当前已登记 ADR-0001；其余历史重大决策仍须从代码、配置、文档和 Commit 历史逐项核实，未经批准不得补写为 Accepted。
 ---
 
 **文档是 Uter 工程知识的一部分，必须与代码同步维护。**
