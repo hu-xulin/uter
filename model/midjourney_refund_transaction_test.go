@@ -119,8 +119,8 @@ func TestRefundMidjourneyTaskBillingRollsBackOnUsageUnderflow(t *testing.T) {
 	user, token, channel, task := createMidjourneyRefundFixture(t, true)
 	require.NoError(t, DB.Model(&Channel{}).Where("id = ?", channel.Id).Update("used_quota", 1).Error)
 
-	err := RefundMidjourneyTaskBilling(task.Id, "should rollback")
-	require.Error(t, err)
+	err := RefundMidjourneyTaskBilling(task.Id, "usage ledger underflow")
+	require.ErrorIs(t, err, ErrMidjourneyRefundReconciliationRequired)
 	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
 	storedToken := getTokenFromDB(t, token.Id)
 	assert.Equal(t, 60, storedToken.RemainQuota)
@@ -128,10 +128,10 @@ func TestRefundMidjourneyTaskBillingRollsBackOnUsageUnderflow(t *testing.T) {
 	var storedTask Midjourney
 	require.NoError(t, DB.First(&storedTask, task.Id).Error)
 	assert.Equal(t, 40, storedTask.Quota)
-	var count int64
-	require.NoError(t, DB.Model(&MidjourneyRefundOperation{}).Where("midjourney_task_id = ?", task.Id).Count(&count).Error)
-	assert.Zero(t, count)
-	assert.False(t, errors.Is(err, ErrMidjourneyRefundReconciliationRequired))
+	assert.Equal(t, "reconciliation_required", storedTask.BillingStatus)
+	var op MidjourneyRefundOperation
+	require.NoError(t, DB.Where("midjourney_task_id = ?", task.Id).First(&op).Error)
+	assert.Equal(t, MidjourneyRefundReconciliationRequired, op.Status)
 }
 
 func TestFindPendingMidjourneyRefundTaskIDsStopsAfterRefundOrReconciliation(t *testing.T) {
