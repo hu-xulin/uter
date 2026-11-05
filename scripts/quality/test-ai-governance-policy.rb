@@ -34,6 +34,16 @@ check.call(policy["risk_levels"] == %w[R0 R1 R2 R3 R4], "risk levels must be R0-
 expected_states = %w[CREATED EXECUTING VERIFYING CLOSED BLOCKED FAILED INTERRUPTED]
 check.call(policy.dig("task_lifecycle", "states") == expected_states, "task lifecycle states are incomplete or out of order")
 
+agents = policy.fetch("agents")
+agent_ids = agents.map { |agent| agent.fetch("id") }
+check.call(agent_ids.uniq.length == agent_ids.length, "Agent IDs must be unique")
+check.call(agents.length >= 10, "all project Agent roles must be registered")
+agents.each do |agent|
+  check.call(agent["definition_status"] == "defined", "Agent #{agent["id"]} must have a role definition")
+  check.call(agent["runtime_status"] == "external_unverified", "Agent #{agent["id"]} runtime status must not be overstated")
+  check.call(policy.fetch("permission_profiles").key?(agent["permission_profile"]), "Agent #{agent["id"]} references an unknown permission profile")
+end
+
 profiles = policy.fetch("permission_profiles")
 pr = profiles.fetch("pull_request_creator")
 %w[git.commit git.push.feature_branch git.pull_request.create].each do |action|
@@ -56,6 +66,24 @@ check.call(schema.dig("properties", "risk_level", "enum") == %w[R0 R1 R2 R3 R4],
 check.call(schema.dig("properties", "lifecycle_status", "enum") == expected_states, "task schema lifecycle must match governance policy")
 check.call(schema.dig("properties", "authorization", "required") == %w[authorization_id allowed_actions forbidden_actions target_resources environment expires_at], "task authorization dimensions are incomplete")
 check.call(schema.dig("properties", "git_state", "properties", "work_branch_count", "maximum") == 1, "task schema must cap work branches at one")
+%w[execution_audit lifecycle_history].each do |key|
+  check.call(required.include?(key), "task schema must require #{key}")
+end
+aies = File.read(File.join(root, ".ai/AIES.md"))
+example = aies[/```json\\s*(.*?)\\s*```/m, 1]
+check.call(!example.nil?, "AIES must contain a machine-readable task example")
+if example
+  begin
+    task_example = JSON.parse(example)
+    (required - %w[execution_audit lifecycle_history]).each do |key|
+      check.call(task_example.key?(key), "AIES task example is missing required field #{key}")
+    end
+    check.call(schema.dig("properties", "task_type", "enum").include?(task_example["task_type"]), "AIES task example task_type must match schema")
+    check.call(schema.dig("properties", "acceptance_criteria", "items", "required").all? { |key| task_example.fetch("acceptance_criteria", []).all? { |item| item.key?(key) } }, "AIES acceptance criteria must match task schema")
+  rescue JSON::ParserError => e
+    errors << "AIES task example is invalid JSON: #{e.message}"
+  end
+end
 
 unless errors.empty?
   errors.each { |error| warn "FAIL: #{error}" }
