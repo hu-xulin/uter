@@ -1477,12 +1477,31 @@ func DecreaseUserQuota(id int, quota int, db bool) (err error) {
 	return nil
 }
 
-func decreaseUserQuota(id int, quota int) (err error) {
-	err = DB.Model(&User{}).Where("id = ?", id).Update("quota", gorm.Expr("quota - ?", quota)).Error
-	if err != nil {
+func decreaseUserQuota(id int, quota int) error {
+	if quota < 0 {
+		return errors.New("quota cannot be negative")
+	}
+	if quota == 0 {
+		return nil
+	}
+	result := DB.Model(&User{}).Where("id = ?", id).
+		Update("quota", gorm.Expr("quota - ?", quota))
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 1 {
+		return nil
+	}
+	// A missing user must not be reported as a successful debit: callers may
+	// otherwise commit the other billing legs and silently lose this ledger leg.
+	var count int64
+	if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
 		return err
 	}
-	return err
+	if count == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return errors.New("user quota debit did not affect exactly one row")
 }
 
 func DeltaUpdateUserQuota(id int, delta int) (err error) {
