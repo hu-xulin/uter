@@ -45,9 +45,10 @@ function Textarea({
         // 2px 会让「1px 边框 + 2px 环」看起来像双线框）。错误态同步收到 1px。
         // 悬停态与 Input 同源（规范 §11.2/§11.4）：border-strong Token。
         'border-input hover:border-border-strong placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-md border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
-        // 与 Input 一致：字号只有一个来源。`text-mono` 是自定义 token，
-        // twMerge 不会把 `text-sm` 删掉，两者并存时谁生效取决于 CSS 源顺序。
-        mono ? 'font-mono text-mono' : 'text-sm',
+        // 与 Input 一致：字号统一走 `text-long`（16px）满足 UAES P4 H5 无障碍
+        // （≥16px 防 iOS 聚焦自动缩放）；mono 仅额外叠 `font-mono` 字形族，
+        // 不再用 13px 的 `text-mono` 档，size 与字形拆开避免 twMerge 冲突。
+        mono ? 'font-mono text-long' : 'text-long',
         className
       )}
       {...props}
