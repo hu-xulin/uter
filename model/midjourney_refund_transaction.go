@@ -85,12 +85,12 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 				return nil
 			}
 			snapshot := map[string]any{
-				"billing_version": task.BillingVersion,
-				"billing_status": task.BillingStatus,
-				"wallet_applied": task.BillingWalletApplied,
-				"token_applied": task.BillingTokenApplied,
-				"task_quota": task.Quota,
-				"token_id": task.TokenId,
+				"billing_version":    task.BillingVersion,
+				"billing_status":     task.BillingStatus,
+				"wallet_applied":     task.BillingWalletApplied,
+				"token_applied":      task.BillingTokenApplied,
+				"task_quota":         task.Quota,
+				"token_id":           task.TokenId,
 				"billing_channel_id": task.GetBillingChannelId(),
 			}
 			if err := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_zero_quota_conflict", "task quota is zero while billing snapshot still records an applied wallet charge", snapshot); err != nil {
