@@ -134,15 +134,8 @@ func (w *WalletFunding) Settle(delta int) error {
 		return err
 	}
 	if orgId > 0 {
-		// 组织账本按差额 true-up（如实累加，不截断；防线在准入点 ReserveOrgQuota）。
-		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
-			return err
-		}
-		// 成员子额度同样只如实记账：准入门在 ReserveOrgQuota 内已完成「闸门 + 记账」的单条
-		// 条件 UPDATE（TOCTOU 已在此关闭），结算点若再按 sub_quota_limit 截断，会把超出部分
-		// 永久丢弃，使成员账本与 logs.Quota 脱节、GetOrgUsedQuota 少记。超支以
-		// used_quota > sub_quota_limit 显式暴露并由下一次准入拦住。
-		return model.AdjustUserUsedQuota(w.userId, delta)
+		// 组织账本与成员子额度账本必须原子 true-up，不能先提交一边再调整另一边。
+		return model.AdjustOrgAndMemberUsedQuota(orgId, w.userId, int64(delta))
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, true)
@@ -162,12 +155,8 @@ func (w *WalletFunding) Refund() error {
 		return err
 	}
 	if orgId > 0 {
-		if err := model.IncrOrgUsedQuota(orgId, -int64(w.consumed)); err != nil {
-			return fmt.Errorf("roll back organization %d reserve of %d: %w", orgId, w.consumed, err)
-		}
-		// 撤销预扣点在 members.used_quota 上的原子预留，避免成员用量被永久多记。
-		if err := model.AdjustUserUsedQuota(w.userId, -w.consumed); err != nil {
-			return fmt.Errorf("roll back member %d sub-quota reserve of %d: %w", w.userId, w.consumed, err)
+		if err := model.AdjustOrgAndMemberUsedQuota(orgId, w.userId, -int64(w.consumed)); err != nil {
+			return fmt.Errorf("roll back organization/member reserve (org=%d user=%d amount=%d): %w", orgId, w.userId, w.consumed, err)
 		}
 		w.consumed = 0
 		return nil
