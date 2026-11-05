@@ -80,3 +80,30 @@ func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) 
 	}
 	return tx.Create(event).Error
 }
+
+ // CreateMidjourneyRefundOperationWithOutboxTx atomically creates the refund
+ // operation and its durable log event. The nested transaction uses a savepoint
+ // when called inside a transaction, so an outbox failure cannot leave an
+ // orphaned operation even if the caller handles the returned error.
+ func CreateMidjourneyRefundOperationWithOutboxTx(
+  tx *gorm.DB,
+  op *MidjourneyRefundOperation,
+  event *MidjourneyRefundOutbox,
+ ) error {
+  if tx == nil {
+   return errors.New("Midjourney refund operation/outbox transaction is nil")
+  }
+  if op == nil {
+   return errors.New("Midjourney refund operation is nil")
+  }
+  if event == nil {
+   return errors.New("Midjourney refund outbox event is nil")
+  }
+  return tx.Transaction(func(nestedTx *gorm.DB) error {
+   if err := CreateMidjourneyRefundOperationTx(nestedTx, op); err != nil {
+    return err
+   }
+   event.RefundOperationID = op.ID
+   return CreateMidjourneyRefundOutboxTx(nestedTx, event)
+  })
+ }
