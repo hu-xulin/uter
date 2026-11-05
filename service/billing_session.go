@@ -177,7 +177,7 @@ func (s *BillingSession) Refund(c *gin.Context) {
 	// 一旦凭证落库，执行失败会保留 pending 状态，由独立恢复任务重放。
 	userId := s.relayInfo.UserId
 	intentId, intentErr := buildRefundIntent(
-		s.funding, userId, s.relayInfo.TokenId, s.tokenConsumed,
+		s.funding, userId, s.relayInfo.RequestId, s.relayInfo.TokenId, s.tokenConsumed,
 		!s.relayInfo.IsPlayground, s.extraReserved,
 	)
 	if intentErr != nil {
@@ -205,9 +205,13 @@ func (s *BillingSession) Refund(c *gin.Context) {
 // buildRefundIntent 把本次退款快照落为持久化凭证，返回凭证 id（0 表示没有
 // 需要持久化的退款内容）。钱包出资的归属解析失败必须上抛；调用方
 // 必须 fail-closed，禁止退回非幂等的旧进程内退款路径。
-func buildRefundIntent(funding FundingSource, userId, tokenId, tokenConsumed int, refundToken bool, extraReserved int) (int, error) {
+func buildRefundIntent(funding FundingSource, userId int, requestId string, tokenId, tokenConsumed int, refundToken bool, extraReserved int) (int, error) {
+	if strings.TrimSpace(requestId) == "" {
+		return 0, fmt.Errorf("refund intent requires the originating request id")
+	}
 	intent := &model.RefundIntent{
 		UserId:        userId,
+		IdempotencyKey: fmt.Sprintf("relay-refund:%d:%s:%s", userId, funding.Source(), requestId),
 		FundingSource: funding.Source(),
 	}
 	switch f := funding.(type) {
