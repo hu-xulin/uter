@@ -61,7 +61,7 @@ WorkBuddy 是本项目的**直接代码执行者**，而非仅代码审查顾问
 | 层 | 名称 | 职责 | 维护方式 |
 |---|---|---|---|
 | **L0** | 全局安全与授权规则 | 授权范围、隐私/密钥保护、数据完整性、生产环境保护、禁止伪造测试/证据、禁止未授权破坏性操作 | 长期维护，最高优先级 |
-| **L1** | 项目级强制规范 | 技术栈、架构/模块边界、目录结构、设计系统与组件、API 契约与数据模型、认证/权限/安全、错误处理/日志、测试/构建/部署 | 长期维护（Uter=`AGENTS.md`+`web/AGENTS.md`+`design-system.md`） |
+| **L1** | 项目级强制规范 | 技术栈、架构/模块边界、目录结构、设计系统与组件、API 契约与数据模型、认证/权限/安全、错误处理/日志、测试/构建/部署 | 长期维护（Uter=`AGENTS.md`+`web/AGENTS.md`+`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`） |
 | **L2** | 任务级执行合同 | 目标、修改范围、排除范围、必须保留的行为、实施计划、验收条件、测试计划、风险与审批 | 随任务生成（`.ai/task-schema.json`） |
 | **L3** | 自动化质量规则 | 格式化、Lint、类型检查、编译/构建、单元/集成/E2E 测试、安全扫描、依赖检查、视觉回归、CI 门禁 | 尽量自动执行 |
 | **L4** | 推荐实践 | 可读性、适度性能优化、消除重复、可维护性、非关键体验优化 | 渐进改善，不得凌驾于强制规则，也不得成为无关重构的理由 |
@@ -76,7 +76,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 - 禁止：为局部视觉效果随意创建重复或冲突的字号值；在 <p>/Card/DialogContent/SheetContent 上写 text-base(16px)。
 - 验证：bun run lint:design:strict（T1–T15）+ bunx vitest run src/design-system/__tests__（spec-guards）。
 - 例外：仅 group-title/设置页字段档/指标数值/body-long 四类 16px 用途；登录注册页不在例外（§21 D7）。
-- 依据：design-system.md §12、§21。
+- 依据：`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §12、§21。
 ```
 > 规范不仅要告诉 AI 什么是正确的，还必须告诉它**如何证明自己做对了**。
 
@@ -86,7 +86,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 > 用户要求"为方便先跳过支付验签"这类最新指令，**不能**覆盖安全底线（L0 高于一切普通需求）。
 
 ### 2.4 Uter 特有的规则权威来源
-- 设计值来自代码（`web/src/design-system/tokens/`、`theme.css`），规则与边界来自 `design-system.md`；二者冲突时不得静默择一。
+- 设计值来自代码（`web/src/design-system/tokens/`、`theme.css`），规则与边界来自 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`；二者冲突时不得静默择一。
 - 后端 JSON 必须走 `common/json.go` 的 `common.Marshal/Unmarshal/...`，不得在业务代码直接 `encoding/json`；`relaykit/` 用 `kitutil.*`，且保持 `cd relaykit && GOWORK=off go build ./...` 独立可编译。
 - 数据库代码必须同时兼容 SQLite / MySQL≥5.7.8 / PostgreSQL≥9.6；变更必须跑真实三库验证矩阵。
 - 认证相关改动必须遵循 OWASP ASVS 与 Cheat Sheet，服务端强制，前端校验不得替代。
@@ -150,7 +150,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
   "scope": { "include": ["login screen", "directly related auth components"],
              "exclude": ["unrelated screens", "unapproved auth architecture changes"] },
   "constraints": ["Follow project design tokens", "Preserve approved authentication behavior", "Do not bypass security verification"],
-  "applicable_specs": ["design-system.md §12/§14/§21", "AGENTS.md Authentication Security"],
+  "applicable_specs": ["`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §12/§14/§21", "AGENTS.md Authentication Security"],
   "required_evidence": ["Relevant source inspection", "Changed-file list", "Test results", "Acceptance checklist"],
   "execution_audit": [],
   "lifecycle_history": [{"state": "CREATED", "timestamp": "2026-11-05T00:00:00Z", "actor_id": "human-requester"}],
@@ -224,7 +224,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 ## 第六章 专项规则
 
 ### 6.1 UI / 设计系统任务
-必须：读 `design-system.md` 相关章节；检查现有组件/Token；复用已有组件不重复建同类体系；遵循字号/颜色/间距/边框/圆角/阴影/布局规则；检查加载/错误/空/禁用/交互态；按目标平台验证响应式；必要时浏览器截图或真机测试；检查键盘交互与可访问性；检查未经批准的硬编码样式；确认视觉与交互验收有真实证据。**不得仅凭源码编写完成就宣称视觉验收通过**（Uter 当前基线截图/Playwright 视觉回归**尚未实现**，必须如实说明）。
+必须：读 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 相关章节；检查现有组件/Token；复用已有组件不重复建同类体系；遵循字号/颜色/间距/边框/圆角/阴影/布局规则；检查加载/错误/空/禁用/交互态；按目标平台验证响应式；必要时浏览器截图或真机测试；检查键盘交互与可访问性；检查未经批准的硬编码样式；确认视觉与交互验收有真实证据。**不得仅凭源码编写完成就宣称视觉验收通过**（Uter 当前基线截图/Playwright 视觉回归**尚未实现**，必须如实说明）。
 
 ### 6.2 功能开发与 Bug 修复
 必须：尽可能复现问题；找到真实调用链；确认根因；优先添加暴露问题的测试；实施最小必要修复；覆盖正常/失败/边界；检查调用方；执行回归；确认没有通过隐藏错误或延迟执行掩盖问题。
@@ -301,7 +301,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 保护用户原有改动；避免无关批量替换；避免大范围格式化导致 diff 失控；不执行未授权清理/重置；不覆盖与任务无关的文件。若发生意外覆盖或删除，立即停止后续操作、优先恢复原有内容并如实报告。
 
 ### 8.3 修改后
-审查完整 diff；检查变更文件清单；检查临时文件/调试代码；检查是否泄露密钥；确认用户原有工作保留；报告当前工作区状态。**默认只做代码修改和验证，不自动提交、推送、合并或部署。**
+审查完整 diff；检查变更文件清单；检查临时文件/调试代码；检查是否泄露密钥；确认用户原有工作保留；报告当前工作区状态。**默认只做代码修改和验证；但 Uter 当前已获明确授权的工程修复任务，必须复用唯一非 main 工作分支，并可在验证达到门禁后 Commit、Push、创建/更新该分支现有 PR。不得创建第二分支、直接推送 main、force push、合并 PR 或部署。**
 
 ### 8.4 Uter 特有纪律（务必遵守）
 - 🔴 **工作区常有并发会话 WIP**：本次任务开工时 `git status --short` 出现大量非本次任务的改动（`AGENTS.md`(M)、支付文件、design tokens、设计文档删改、skills 删除等）。**只改自己负责的文件，严禁 `git add -A`、严禁混入他人 WIP、严禁在其未收尾时本地全量构建**（会把半成品编进 `uter-bin`）。提交用显式 `git add <路径>` + `git diff --cached --name-status` 复核，含 D 先 `go build ./...`。
@@ -343,7 +343,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 
 **Uter 真实案例（已固化）**：
 - 案例：AI 绕过现有设计系统，在页面直接写多个颜色/字号/间距值，未用现有 Token。原因：规范只写"尽量使用 Token"，无强制规则与自动检查。改进：① Token 使用改强制；② 为允许例外定义明确条件；③ 增 `check-design-tokens.mjs`（T1–T15）静态扫描未批准硬编码值；④ 接入 CI（`ci.yml`/`release-gate.yml`）+ pre-commit；⑤ `spec-guards.test.ts` 守卫图标几何/正文基准/焦点环/品牌色。回归：同类页面验证不再引入未批准 Token，且现有页面未被误改。
-- 案例：登录/注册页 14→16px 放大（`eb36a7dac`），守卫判违规、书面例外曾似放行，人工与自动结论打架。定论（§21 D7）：登录注册页**不在**放大例外，遵循全局 14px，已回退（`f90102572`）。改进：守卫保持严格、把定论登记进 `design-system.md` §21、旧记忆标注失效。
+- 案例：登录/注册页 14→16px 放大（`eb36a7dac`），守卫判违规、书面例外曾似放行，人工与自动结论打架。定论（§21 D7）：登录注册页**不在**放大例外，遵循全局 14px，已回退（`f90102572`）。改进：守卫保持严格、把定论登记进 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §21、旧记忆标注失效。
 
 ### 10.2 规则改进七步
 记录问题案例→分析根因→判断规范缺失/规则冲突/实现缺陷/测试不足→优先增自动化测试或静态检查→提出规范修改建议→明确影响与验证方法→按项目权限审批→更新相关规则与测试。
@@ -465,7 +465,7 @@ project/
 - `.ai/checklists/auth-payment.md`（AUTH_SECURITY / PAYMENT_FINANCIAL / DATABASE）
 - `.ai/checklists/test-audit.md`（TEST_QA / CODE_AUDIT）
 
-## 附录 D：违规记录库模板（登记到 `design-system.md` §26 与本文件第十章）
+## 附录 D：违规记录库模板（登记到 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §26 与本文件第十章）
 ```
 ## 案例 [编号] — [标题]
 - 发现：...（文件/行/命令/证据）
