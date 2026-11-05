@@ -1123,7 +1123,7 @@
     "/api/oauth/wechat": {
       "get": {
         "summary": "微信OAuth登录",
-        "deprecated": false,
+        "deprecated": true,
         "description": "🔓 无需鉴权（OAuth 回调）。创建本地登录 Session 时同样受 AUTH_SESSION_LIMIT 和 AUTH_SESSION_ISSUANCE_LIMIT 约束。",
         "tags": [
           "OAuth"
