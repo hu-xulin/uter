@@ -37,9 +37,9 @@ jobs:
         run: |
           set -euo pipefail
           branch_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')"
-          mapfile -t work_branches < <(printf '%s\\n' "$branch_names" | grep -vx 'main' || true)
-          printf 'Non-main branches (%s):\\n' "${#work_branches[@]}"
-          printf '  %s\\n' "${work_branches[@]}"
+          mapfile -t work_branches < <(printf '%s\n' "$branch_names" | grep -vx 'main' || true)
+          printf 'Non-main branches (%s):\n' "${#work_branches[@]}"
+          printf '  %s\n' "${work_branches[@]}"
           if [ "${#work_branches[@]}" -gt 1 ]; then
             echo 'FAIL: only one non-main work branch is permitted for this project.' >&2
             exit 1
