@@ -160,7 +160,6 @@ func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
 	require.Empty(t, persistedDead.LeaseOwner)
 }
 
-
 // TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions ensures an
 // unknown schema is retried/quarantined rather than decoded as version 1.
 func TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions(t *testing.T) {
@@ -181,9 +180,10 @@ func TestMidjourneyRefundOutboxRejectsUnsupportedPayloadVersions(t *testing.T) {
 	require.NoError(t, db.AutoMigrate(&Log{}, &User{}, &MidjourneyRefundLogReceipt{}))
 
 	event := MidjourneyRefundOutbox{
-		EventKey: "midjourney:version-test", EventType: "midjourney.refund.completed",
+		EventKey:       "midjourney:version-test",
+		EventType:      "midjourney.refund.completed",
 		PayloadVersion: 2,
-		PayloadJSON: `{"task_id":321,"mj_id":"mj-321","user_id":1,"quota":10,"result":"refunded"}`,
+		PayloadJSON:     `{"task_id":321,"mj_id":"mj-321","user_id":1,"quota":10,"result":"refunded"}`,
 	}
 	require.ErrorContains(t, deliverMidjourneyRefundLog(event), "unsupported Midjourney refund outbox payload version")
 	event.PayloadVersion = 1
@@ -203,12 +203,12 @@ func TestMidjourneyRefundOutboxCreationRejectsInvalidIdentityAndSchema(t *testin
 
 	base := MidjourneyRefundOutbox{
 		RefundOperationID: 1,
-		EventKey: "midjourney:valid",
-		EventType: "midjourney.refund.completed",
-		PayloadJSON: `{"task_id":1,"user_id":1,"quota":1,"result":"refunded"}`,
+		EventKey:          "midjourney:valid",
+		EventType:         "midjourney.refund.completed",
+		PayloadJSON:        `{"task_id":1,"user_id":1,"quota":1,"result":"refunded"}`,
 	}
 	invalid := []struct {
-		name string
+		name   string
 		mutate func(*MidjourneyRefundOutbox)
 	}{
 		{name: "blank event key", mutate: func(e *MidjourneyRefundOutbox) { e.EventKey = "  " }},
