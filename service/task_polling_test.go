@@ -1086,10 +1086,14 @@ func TestRunTaskPollingOnceFailsNullUpstreamTaskWithoutAdapter(t *testing.T) {
 	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
 	task.Status = model.TaskStatusInProgress
 	task.PrivateData.UpstreamTaskID = ""
+	// Legacy task rows may have NULL progress; SQL "progress != '100%'" would
+	// silently exclude them from polling because NULL comparisons are UNKNOWN.
 	require.NoError(t, model.DB.Model(task).Updates(map[string]any{
 		"status":       task.Status,
 		"private_data": task.PrivateData,
+		"progress":     nil,
 	}).Error)
+	require.Len(t, model.GetAllUnFinishSyncTasks(100), 1, "NULL-progress tasks must remain pollable")
 
 	previousAdaptor := GetTaskAdaptorFunc
 	GetTaskAdaptorFunc = nil
