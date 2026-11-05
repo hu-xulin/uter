@@ -9,25 +9,25 @@ import (
 )
 
 const (
-	refundIntentRecoveryInterval = time.Minute
+	refundIntentRecoveryInterval                = time.Minute
 	refundIntentRecoveryStaleAfterSeconds int64 = 60
-	refundIntentRecoveryBatchSize = 200
+	refundIntentRecoveryBatchSize               = 200
 )
 
 type refundIntentRecoveryHandler struct{}
 
 type refundIntentRecoveryResult struct {
-	Recovered int `json:"recovered"`
-	BatchSize int `json:"batch_size"`
+	Recovered         int   `json:"recovered"`
+	BatchSize         int   `json:"batch_size"`
 	StaleAfterSeconds int64 `json:"stale_after_seconds"`
 }
 
 func (refundIntentRecoveryHandler) Type() string { return model.SystemTaskTypeRefundIntentRecovery }
 
 // Always schedule the durable scan; it must not depend on upstream task polling.
-func (refundIntentRecoveryHandler) Enabled() bool { return true }
+func (refundIntentRecoveryHandler) Enabled() bool           { return true }
 func (refundIntentRecoveryHandler) Interval() time.Duration { return refundIntentRecoveryInterval }
-func (refundIntentRecoveryHandler) NewPayload() any { return nil }
+func (refundIntentRecoveryHandler) NewPayload() any         { return nil }
 
 func (refundIntentRecoveryHandler) Run(ctx context.Context, task *model.SystemTask, runnerID string) {
 	if err := ctx.Err(); err != nil {
