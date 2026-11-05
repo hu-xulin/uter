@@ -12,6 +12,49 @@ import (
 
 var ErrMidjourneyRefundReconciliationRequired = errors.New("Midjourney refund requires billing reconciliation")
 
+
+func markMidjourneyRefundReconciliationTx(tx *gorm.DB, task *Midjourney, reasonCode, reasonDetail string, snapshot map[string]any) error {
+	snapshot["reconciliation_reason"] = reasonDetail
+	snapshotJSON, err := json.Marshal(snapshot)
+	if err != nil {
+		return err
+	}
+	op := &MidjourneyRefundOperation{
+		MidjourneyTaskID:    task.Id,
+		OperationType:       MidjourneyRefundOperationTypeFull,
+		ReasonCode:          reasonCode,
+		ReasonDetail:        reasonDetail,
+		BillingVersion:      1,
+		BillingSnapshotJSON: string(snapshotJSON),
+		FundingSource:       MidjourneyRefundFundingUnknownLegacy,
+		FundingUserID:       task.UserId,
+		TokenID:             task.TokenId,
+		ChannelID:           task.GetBillingChannelId(),
+		Status:              MidjourneyRefundReconciliationRequired,
+	}
+	payload, err := json.Marshal(map[string]any{
+		"task_id": task.Id,
+		"mj_id": task.MjId,
+		"reason_code": reasonCode,
+		"reason": reasonDetail,
+		"status": MidjourneyRefundReconciliationRequired,
+	})
+	if err != nil {
+		return err
+	}
+	event := &MidjourneyRefundOutbox{
+		EventKey: fmt.Sprintf("midjourney:%d:refund-reconciliation", task.Id),
+		EventType: "midjourney.refund.reconciliation_required",
+		PayloadVersion: 1,
+		PayloadJSON: string(payload),
+	}
+	if err := CreateMidjourneyRefundOperationWithOutboxTx(tx, op, event); err != nil {
+		return err
+	}
+	return tx.Model(&Midjourney{}).Where("id = ?", task.Id).
+		Update("billing_status", "reconciliation_required").Error
+}
+
 // RefundMidjourneyTaskBilling atomically reverses a verifiably applied
 // Midjourney charge in the primary database. Legacy or ambiguous billing
 // snapshots are recorded for reconciliation and are never auto-refunded.
@@ -84,44 +127,7 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			task.UserId <= 0 || task.GetBillingChannelId() <= 0 ||
 			(task.BillingTokenApplied && task.TokenId <= 0) ||
 			(!task.BillingTokenApplied && task.TokenId > 0) {
-			snapshot["reconciliation_reason"] = "billing snapshot is absent, incomplete, or inconsistent"
-			snapshotJSON, marshalErr := json.Marshal(snapshot)
-			if marshalErr != nil {
-				return marshalErr
-			}
-			op := &MidjourneyRefundOperation{
-				MidjourneyTaskID:    task.Id,
-				OperationType:       MidjourneyRefundOperationTypeFull,
-				ReasonCode:          "midjourney_billing_snapshot_ambiguous",
-				ReasonDetail:        reasonDetail,
-				BillingVersion:      1,
-				BillingSnapshotJSON: string(snapshotJSON),
-				FundingSource:       MidjourneyRefundFundingUnknownLegacy,
-				FundingUserID:       task.UserId,
-				TokenID:             task.TokenId,
-				ChannelID:           task.GetBillingChannelId(),
-				Status:              MidjourneyRefundReconciliationRequired,
-			}
-			eventPayload, marshalErr := json.Marshal(map[string]any{
-				"task_id": task.Id,
-				"mj_id":   task.MjId,
-				"reason":  reasonDetail,
-				"status":  MidjourneyRefundReconciliationRequired,
-			})
-			if marshalErr != nil {
-				return marshalErr
-			}
-			event := &MidjourneyRefundOutbox{
-				EventKey:       fmt.Sprintf("midjourney:%d:refund-reconciliation", task.Id),
-				EventType:      "midjourney.refund.reconciliation_required",
-				PayloadVersion: 1,
-				PayloadJSON:    string(eventPayload),
-			}
-			if err := CreateMidjourneyRefundOperationWithOutboxTx(tx, op, event); err != nil {
-				return err
-			}
-			if err := tx.Model(&Midjourney{}).Where("id = ?", task.Id).
-				Update("billing_status", "reconciliation_required").Error; err != nil {
+			if err := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_billing_snapshot_ambiguous", "billing snapshot is absent, incomplete, or inconsistent", snapshot); err != nil {
 				return err
 			}
 			reconciliation = true
@@ -132,10 +138,46 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 		tokenID = task.TokenId
 		channelID = task.GetBillingChannelId()
 		quota = task.Quota
+		var user User
+		if err := tx.Select("id", "used_quota").First(&user, userID).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				if markErr := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_user_missing", "funding user no longer exists", snapshot); markErr != nil {
+					return markErr
+				}
+				reconciliation = true
+				return nil
+			}
+			return err
+		}
+		var channel Channel
+		if err := tx.Select("id", "used_quota").First(&channel, channelID).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				if markErr := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_channel_missing", "billing channel no longer exists", snapshot); markErr != nil {
+					return markErr
+				}
+				reconciliation = true
+				return nil
+			}
+			return err
+		}
+		if user.UsedQuota < quota || channel.UsedQuota < quota {
+			if err := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_usage_mismatch", "recorded usage is smaller than the refund reversal", snapshot); err != nil {
+				return err
+			}
+			reconciliation = true
+			return nil
+		}
 		if task.BillingTokenApplied {
 			var token Token
 			if err := tx.Select("id", "key").First(&token, tokenID).Error; err != nil {
-				return fmt.Errorf("%w: token %d cannot be loaded: %v", ErrMidjourneyRefundReconciliationRequired, tokenID, err)
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					if markErr := markMidjourneyRefundReconciliationTx(tx, &task, "midjourney_refund_token_missing", "charged Token no longer exists", snapshot); markErr != nil {
+						return markErr
+					}
+					reconciliation = true
+					return nil
+				}
+				return err
 			}
 			tokenKey = token.Key
 		}
@@ -268,7 +310,7 @@ func FindPendingMidjourneyRefundTaskIDs(limit int) ([]int, error) {
 	var taskIDs []int
 	err := DB.Model(&Midjourney{}).
 		Where("quota > 0 AND status = ?", "FAILURE").
-		Where("billing_status <> ?", "reconciliation_required").
+		Where("COALESCE(billing_status, '') <> ?", "reconciliation_required").
 		Order("id ASC").
 		Limit(limit).
 		Pluck("id", &taskIDs).Error
