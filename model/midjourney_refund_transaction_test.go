@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
 
 func createMidjourneyRefundFixture(t *testing.T, tokenApplied bool) (*User, *Token, *Channel, *Midjourney) {
