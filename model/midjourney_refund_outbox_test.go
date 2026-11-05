@@ -20,6 +20,7 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 		PayloadJSON: `{"operation_id":1,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&event).Error)
+	assert.Error(t, db.Model(&event).Update("payload_json", `{"result":"rewritten"}`).Error)
 	assert.Equal(t, MidjourneyRefundOutboxPending, event.Status)
 	assert.Equal(t, 1, event.PayloadVersion)
 	assert.NotZero(t, event.CreatedAt)
