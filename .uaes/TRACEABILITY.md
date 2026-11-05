@@ -92,3 +92,8 @@ No phase in this matrix is currently marked VERIFIED.
 ### Legacy API deprecation audit
 
 Option B was explicitly selected by the API contract owner on 2026-11-05. The two stale OpenAPI paths were removed after repository-local consumer review. The full evidence and limitations are recorded in `.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md`. This is an API contract cleanup only; it does not promote any UAES phase or the Uter integration status to VERIFIED.
+
+
+### Legacy API deprecation verification gate
+
+The owner-approved Option B cleanup is implemented in the Uter integration branch. OpenAPI has 134 paths / 159 operations; both obsolete paths are absent. All 14 affected locale API-reference files were checked and contain neither legacy path. The docs synchronization filter has positive/negative regression tests wired into Uter CI. The detailed consumer audit is in `.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md`. Exact-head CI and UAES route parity remain pending; no phase is marked VERIFIED.
