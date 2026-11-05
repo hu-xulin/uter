@@ -163,7 +163,7 @@ func ExecuteRefundIntent(id int) error {
 		// 1) 订阅原始预扣、补充预扣、令牌回退和意图完成标记共用一个事务。
 		// 任意账本腿失败都会整体回滚，避免订阅已退而 Token 仍未退的半笔退款。
 		if intent.FundingSource == RefundSourceSubscription && intent.SubRequestId != "" {
-			if err := refundSubscriptionPreConsumeForUserTx(tx, intent.SubRequestId, intent.UserId); err != nil {
+			if err := refundSubscriptionPreConsumeForUserTx(tx, intent.SubRequestId, intent.UserId, intent.SubId); err != nil {
 				return fmt.Errorf("refund subscription pre-consume (intent=%d, requestId=%s): %w", id, intent.SubRequestId, err)
 			}
 		}
