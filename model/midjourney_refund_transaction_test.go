@@ -101,7 +101,7 @@ func TestRefundMidjourneyTaskBillingQuarantinesLegacyAmbiguousTask(t *testing.T)
 	user := createReserveTestUser(t, 100)
 	channel := Channel{Name: "mj-refund-legacy", Key: "mj-refund-legacy-key", Status: 1, UsedQuota: 40}
 	require.NoError(t, DB.Create(&channel).Error)
-	task := &Midjourney{UserId: user.Id, MjId: "mj-legacy-ambiguous", Quota: 40, ChannelId: channel.Id}
+	task := &Midjourney{UserId:    user.Id, MjId: "mj-legacy-ambiguous", Quota: 40, ChannelId: channel.Id}
 	require.NoError(t, task.Insert())
 
 	err := RefundMidjourneyTaskBilling(task.Id, "legacy task")
@@ -134,7 +134,6 @@ func TestRefundMidjourneyTaskBillingRollsBackOnUsageUnderflow(t *testing.T) {
 	assert.False(t, errors.Is(err, ErrMidjourneyRefundReconciliationRequired))
 }
 
-
 func TestFindPendingMidjourneyRefundTaskIDsStopsAfterRefundOrReconciliation(t *testing.T) {
 	user, token, channel, task := createMidjourneyRefundFixture(t, true)
 	require.NoError(t, DB.Model(&Midjourney{}).Where("id = ?", task.Id).Update("status", "FAILURE").Error)
@@ -151,11 +150,11 @@ func TestFindPendingMidjourneyRefundTaskIDsStopsAfterRefundOrReconciliation(t *t
 	// A second failed task with no durable billing snapshot is quarantined,
 	// then excluded from automatic retry until an operator reconciles it.
 	legacy := &Midjourney{
-		UserId: user.Id,
-		MjId: "mj-refund-legacy-sweep",
-		Quota: 5,
+		UserId:    user.Id,
+		MjId:      "mj-refund-legacy-sweep",
+		Quota:     5,
 		ChannelId: channel.Id,
-		Status: "FAILURE",
+		Status:    "FAILURE",
 	}
 	require.NoError(t, legacy.Insert())
 	taskIDs, err = FindPendingMidjourneyRefundTaskIDs(10)
