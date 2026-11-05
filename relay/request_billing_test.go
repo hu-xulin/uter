@@ -16,9 +16,9 @@ func (r *recordingRefundWaiter) Settle(int) error { return nil }
 func (r *recordingRefundWaiter) Refund(*gin.Context) {
 	*r.events = append(*r.events, "refund")
 }
-func (r *recordingRefundWaiter) NeedsRefund() bool { return true }
-func (r *recordingRefundWaiter) GetPreConsumedQuota() int { return 1 }
-func (r *recordingRefundWaiter) Reserve(int) error { return nil }
+func (r *recordingRefundWaiter) NeedsRefund() bool             { return true }
+func (r *recordingRefundWaiter) GetPreConsumedQuota() int      { return 1 }
+func (r *recordingRefundWaiter) Reserve(int) error             { return nil }
 func (r *recordingRefundWaiter) ReserveBeforeSubmit(int) error { return nil }
 func (r *recordingRefundWaiter) WaitRefundDone() {
 	*r.events = append(*r.events, "refund_done")
