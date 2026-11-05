@@ -987,13 +987,23 @@ func incrOrgUsedQuotaTx(tx *gorm.DB, orgId int, amount int64) error {
 	if orgId == 0 || amount == 0 {
 		return nil
 	}
-	res := tx.Model(&Organization{}).Where("id = ?", orgId).
-		Update("used_quota", gorm.Expr("used_quota + ?", amount))
+	query := tx.Model(&Organization{}).Where("id = ?", orgId)
+	if amount < 0 {
+		query = query.Where("used_quota >= ?", -amount)
+	}
+	res := query.Update("used_quota", gorm.Expr("used_quota + ?", amount))
 	if res.Error != nil {
 		return res.Error
 	}
 	if res.RowsAffected == 0 {
-		return fmt.Errorf("organization %d not found when adjusting used quota (delta=%d)", orgId, amount)
+		var count int64
+		if err := tx.Model(&Organization{}).Where("id = ?", orgId).Count(&count).Error; err != nil {
+			return err
+		}
+		if count == 0 {
+			return fmt.Errorf("organization %d not found when adjusting used quota (delta=%d)", orgId, amount)
+		}
+		return fmt.Errorf("organization %d used quota is insufficient for adjustment (delta=%d)", orgId, amount)
 	}
 	if amount > 0 {
 		common.SysLog(fmt.Sprintf(
