@@ -673,7 +673,7 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaym
 	var topup TopUp
 	if err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-				paymentMethod := order.PaymentMethod
+			paymentMethod := order.PaymentMethod
 			if actualPaymentMethod != "" {
 				paymentMethod = actualPaymentMethod
 			}
