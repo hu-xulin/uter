@@ -93,7 +93,7 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 		provider         string
 		status           string
 		money            float64
-		providerAmount  int64
+		providerAmount   int64
 		providerCurrency string
 		wantErr          error
 	}{
