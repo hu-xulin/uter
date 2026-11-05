@@ -26,7 +26,7 @@ pass() { printf '✔ %s\n' "$1"; }
 
 check_review_date() {
   local file="$1" label="$2" due due_epoch today_epoch
-  due="$(sed -n 's/^\\*\\*下次复核：\\*\\*[[:space:]]*//p' "$file" | head -n 1)"
+  due="$(sed -n 's/^[*][*]下次复核：[*][*][[:space:]]*//p' "$file" | head -n 1)"
   if [[ ! "$due" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
     fail "$label 下次复核日期缺失或格式错误：$due"
     return
