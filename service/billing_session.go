@@ -210,9 +210,9 @@ func buildRefundIntent(funding FundingSource, userId int, requestId string, toke
 		return 0, fmt.Errorf("refund intent requires the originating request id")
 	}
 	intent := &model.RefundIntent{
-		UserId:        userId,
+		UserId:         userId,
 		IdempotencyKey: fmt.Sprintf("relay-refund:%d:%s:%s", userId, funding.Source(), requestId),
-		FundingSource: funding.Source(),
+		FundingSource:  funding.Source(),
 	}
 	switch f := funding.(type) {
 	case *WalletFunding:
@@ -717,7 +717,7 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 		}
 		session := &BillingSession{
 			relayInfo: relayInfo,
-			funding: &SubscriptionFunding{
+			funding:   &SubscriptionFunding{
 				requestId: relayInfo.RequestId,
 				userId:    relayInfo.UserId,
 				modelName: relayInfo.GetBillingModelName(),
