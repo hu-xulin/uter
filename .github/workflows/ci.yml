@@ -103,7 +103,7 @@ jobs:
             echo "以下文件未通过 gofmt，请执行 gofmt -w 后提交："
             echo "$unformatted"
             while IFS= read -r file; do
-              [ -n "$file" ] && gofmt -d "$file"
+              [ -n "$file" ] && gofmt -d "$file" || true
             done <<< "$unformatted"
             exit 1
           fi
