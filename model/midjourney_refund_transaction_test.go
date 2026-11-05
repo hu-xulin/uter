@@ -197,9 +197,9 @@ func TestMarkMidjourneyRefundReconciliationRequiresTaskRowUpdate(t *testing.T) {
 	require.NoError(t, DB.AutoMigrate(&Midjourney{}, &MidjourneyRefundOperation{}, &MidjourneyRefundOutbox{}))
 
 	missingTask := &Midjourney{
-		Id: 999999,
-		UserId: 1,
-		TokenId: 0,
+		Id:               999999,
+		UserId:           1,
+		TokenId:          0,
 		BillingChannelId: 1,
 	}
 	err := DB.Transaction(func(tx *gorm.DB) error {
