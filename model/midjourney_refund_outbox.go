@@ -10,28 +10,28 @@ import (
 )
 
 const (
-	MidjourneyRefundOutboxPending = "pending"
+	MidjourneyRefundOutboxPending    = "pending"
 	MidjourneyRefundOutboxDelivering = "delivering"
-	MidjourneyRefundOutboxDelivered = "delivered"
+	MidjourneyRefundOutboxDelivered  = "delivered"
 	MidjourneyRefundOutboxDeadLetter = "dead_letter"
 )
 
 type MidjourneyRefundOutbox struct {
-	ID                int `json:"id" gorm:"primaryKey"`
+	ID                int    `json:"id" gorm:"primaryKey"`
 	EventKey          string `json:"event_key" gorm:"type:varchar(128);not null;uniqueIndex"`
-	RefundOperationID int `json:"refund_operation_id" gorm:"not null;index"`
+	RefundOperationID int    `json:"refund_operation_id" gorm:"not null;index"`
 	EventType         string `json:"event_type" gorm:"type:varchar(64);not null"`
-	PayloadVersion    int `json:"payload_version" gorm:"not null;default:1"`
+	PayloadVersion    int    `json:"payload_version" gorm:"not null;default:1"`
 	PayloadJSON       string `json:"payload_json" gorm:"type:text;not null"`
 	Status            string `json:"status" gorm:"type:varchar(24);not null;default:pending;index"`
-	AttemptCount      int `json:"attempt_count" gorm:"not null;default:0"`
-	NextAttemptAt     int64 `json:"next_attempt_at" gorm:"bigint;not null;default:0;index"`
+	AttemptCount      int    `json:"attempt_count" gorm:"not null;default:0"`
+	NextAttemptAt     int64  `json:"next_attempt_at" gorm:"bigint;not null;default:0;index"`
 	LeaseOwner        string `json:"lease_owner" gorm:"type:varchar(128)"`
-	LeaseUntil        int64 `json:"lease_until" gorm:"bigint;not null;default:0;index"`
+	LeaseUntil        int64  `json:"lease_until" gorm:"bigint;not null;default:0;index"`
 	LastError         string `json:"last_error" gorm:"type:varchar(512)"`
-	CreatedAt         int64 `json:"created_at" gorm:"bigint;not null;index"`
-	UpdatedAt         int64 `json:"updated_at" gorm:"bigint;not null;index"`
-	DeliveredAt       int64 `json:"delivered_at" gorm:"bigint;not null;default:0"`
+	CreatedAt         int64  `json:"created_at" gorm:"bigint;not null;index"`
+	UpdatedAt         int64  `json:"updated_at" gorm:"bigint;not null;index"`
+	DeliveredAt       int64  `json:"delivered_at" gorm:"bigint;not null;default:0"`
 }
 
 func (MidjourneyRefundOutbox) TableName() string {
