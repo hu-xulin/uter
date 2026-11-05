@@ -24,6 +24,11 @@ func newRefundIntentFixture(t *testing.T) (User, Token, RefundIntent) {
 	// 直接 Create：User.Insert 会把 Quota 重置为新用户配额。
 	require.NoError(t, DB.Create(&user).Error)
 	token := createReserveTestToken(t, 50)
+	// The fixture represents a real pre-consumption: 20 quota was deducted
+	// from the Token, so a refund must restore it without driving used_quota
+	// below zero.
+	require.NoError(t, DB.Model(&Token{}).Where("id = ?", token.Id).
+		Update("used_quota", 20).Error)
 
 	intent := RefundIntent{
 		UserId:        user.Id,
@@ -47,7 +52,7 @@ func TestRefundIntentExecuteAppliesRefundOnce(t *testing.T) {
 	assert.Equal(t, 130, getUserQuotaFromDB(t, user.Id), "wallet refund applied exactly once")
 	reloaded := getTokenFromDB(t, token.Id)
 	assert.Equal(t, 70, reloaded.RemainQuota)
-	assert.Equal(t, -20, reloaded.UsedQuota)
+	assert.Equal(t, 0, reloaded.UsedQuota)
 
 	var done RefundIntent
 	require.NoError(t, DB.First(&done, intent.Id).Error)
@@ -114,6 +119,23 @@ func TestRefundIntentUnresolvedOrgRefusesExecution(t *testing.T) {
 		Update("org_resolved", false).Error)
 
 	require.Error(t, ExecuteRefundIntent(intent.Id))
+	var pending RefundIntent
+	require.NoError(t, DB.First(&pending, intent.Id).Error)
+	assert.Equal(t, RefundIntentPending, pending.Status)
+}
+
+// TestSweepPendingRefundIntentsSurfacesExecutionFailure ensures a stale intent
+// that cannot be safely refunded remains pending and makes the recovery pass fail.
+func TestSweepPendingRefundIntentsSurfacesExecutionFailure(t *testing.T) {
+	user, _, intent := newRefundIntentFixture(t)
+	require.NoError(t, DB.Model(&RefundIntent{}).Where("id = ?", intent.Id).
+		Updates(map[string]any{"org_resolved": false, "update_time": common.GetTimestamp() - 3600}).Error)
+
+	n, err := SweepPendingRefundIntents(120, 200)
+	require.Error(t, err)
+	assert.Equal(t, 0, n)
+	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
+
 	var pending RefundIntent
 	require.NoError(t, DB.First(&pending, intent.Id).Error)
 	assert.Equal(t, RefundIntentPending, pending.Status)

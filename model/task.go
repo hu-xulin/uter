@@ -209,9 +209,21 @@ func (t *Task) ResultRetrievable() bool {
 // GetUpstreamTaskID 获取上游真实 task ID（用于与 provider 通信）
 // 旧数据没有 UpstreamTaskID 时，TaskID 本身就是上游 ID
 func (t *Task) GetUpstreamTaskID() string {
+	if t == nil {
+		return ""
+	}
 	if t.PrivateData.UpstreamTaskID != "" {
 		return t.PrivateData.UpstreamTaskID
 	}
+	// New billing-aware tasks persist submit-time provenance. For these rows an
+	// empty upstream ID is genuinely missing; never substitute our local TaskID
+	// and accidentally poll/refund against a provider ID that was never issued.
+	if t.PrivateData.BillingSource != "" || t.PrivateData.BillingContext != nil ||
+		t.PrivateData.OrganizationId != nil || t.PrivateData.Execution != nil {
+		return ""
+	}
+	// Historical rows predate the upstream_task_id field and used TaskID as the
+	// provider ID. Preserve that compatibility only for legacy-shaped records.
 	return t.TaskID
 }
 
@@ -397,7 +409,10 @@ func TaskGetAllTasks(startIdx int, num int, queryParams SyncTaskQueryParams) []*
 
 func GetTimedOutUnfinishedTasks(cutoffUnix int64, limit int) []*Task {
 	var tasks []*Task
-	err := DB.Where("progress != ?", "100%").
+	if limit <= 0 {
+		limit = 100
+	}
+	err := DB.Where("COALESCE(progress, '') <> ?", "100%").
 		Where("status NOT IN ?", []string{TaskStatusFailure, TaskStatusSuccess}).
 		Where("submit_time < ?", cutoffUnix).
 		Order("submit_time").
@@ -411,9 +426,12 @@ func GetTimedOutUnfinishedTasks(cutoffUnix int64, limit int) []*Task {
 
 func GetAllUnFinishSyncTasks(limit int) []*Task {
 	var tasks []*Task
+	if limit <= 0 {
+		limit = 100
+	}
 	var err error
 	// get all tasks progress is not 100%
-	err = DB.Where("progress != ?", "100%").Where("status != ?", TaskStatusFailure).Where("status != ?", TaskStatusSuccess).Limit(limit).Order("id").Find(&tasks).Error
+	err = DB.Where("COALESCE(progress, '') <> ?", "100%").Where("status NOT IN ?", []string{TaskStatusFailure, TaskStatusSuccess}).Limit(limit).Order("id").Find(&tasks).Error
 	if err != nil {
 		return nil
 	}
@@ -427,7 +445,7 @@ func GetAllUnFinishSyncTasks(limit int) []*Task {
 func HasUnfinishedSyncTasks() bool {
 	var id int64
 	err := DB.Model(&Task{}).
-		Where("progress != ?", "100%").
+		Where("COALESCE(progress, '') <> ?", "100%").
 		Where("status != ?", TaskStatusFailure).
 		Where("status != ?", TaskStatusSuccess).
 		Limit(1).

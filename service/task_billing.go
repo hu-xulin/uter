@@ -314,9 +314,31 @@ var ErrTaskBillingPartialFailure = errors.New("task billing partially applied an
 // 请求（或上一轮重试）在处理同一笔退款，直接返回，绝不第二次动账——那正是
 // 「人工重试时发生重复退款」的成因。
 func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if task == nil {
+		logger.LogError(ctx, "cannot refund a nil task")
+		return false
+	}
 	quota := task.Quota
 	if quota == 0 {
-		return true
+		// A zero quota is a successful no-op only when the durable billing
+		// state is not an in-flight or quarantined operation. A claimed refund
+		// also sets quota to zero before the ledger work is complete.
+		if task.TaskID == "" {
+			return false
+		}
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh zero-quota task %s billing state: %s", task.TaskID, err.Error()))
+			return false
+		}
+		switch task.BillingState {
+		case "", model.TaskBillingPending, model.TaskBillingReserved, model.TaskBillingSettled, model.TaskBillingRefunded:
+			return true
+		default:
+			return false
+		}
 	}
 
 	// 抢占退款执行权。quota 条件一并纳入 CAS：只有任务记录的待退额度仍等于
@@ -338,11 +360,17 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 		return false
 	}
 	if !won {
-		// 已有人处理过这笔退款：不重复动账。任务记录的 quota 已被推进，
-		// 因此这里同步本地视图，避免调用方继续用旧值做判断。
-		syncTaskBillingView(task)
-		logger.LogInfo(ctx, common.LogText("task %s refund was already claimed by another attempt; skipping duplicate refund", task.TaskID))
-		return true
+		// A lost CAS is not proof that the refund completed. Refresh the durable
+		// state and report success only when another worker has reached refunded.
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh task %s billing state after losing refund claim: %s", task.TaskID, err.Error()))
+			return false
+		}
+		if task.BillingState == model.TaskBillingRefunded {
+			return true
+		}
+		logger.LogInfo(ctx, common.LogText("task %s refund is already claimed or requires reconciliation; skipping duplicate refund", task.TaskID))
+		return false
 	}
 
 	// 抢占已把任务 quota 归零（CAS 的一部分）：释放抢占时要拿这个「库里当前值」
@@ -398,13 +426,17 @@ func currentTaskBillingState(task *model.Task) string {
 //
 // 抢占失败时必须这样做：调用方接下来还会用 task.Quota / task.BillingState
 // 做判断（例如是否还要退款、按什么额度结算），拿过期快照继续算就会二次动账。
-func syncTaskBillingView(task *model.Task) {
+func syncTaskBillingView(task *model.Task) error {
+	if task == nil {
+		return errors.New("task is nil")
+	}
 	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
 	if err != nil {
-		return
+		return err
 	}
 	task.Quota = stored.Quota
 	task.BillingState = stored.BillingState
+	return nil
 }
 
 // applyTaskRefund 执行一次退款的实际资金动作。
@@ -490,7 +522,10 @@ func releaseTaskRefundClaim(ctx context.Context, task *model.Task, claimedQuota,
 // fromQuota/toQuota 一并纳入 CAS。抢占失败说明已有请求在处理同一笔结算，
 // 直接返回，不重复动账。
 func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int, reason *common.Message, clamps ...*common.QuotaClamp) {
-	if actualQuota < 0 {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if task == nil || actualQuota < 0 {
 		return
 	}
 	preConsumedQuota := task.Quota
@@ -538,7 +573,10 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 	}
 	if !won {
 		// 已有人抢占：以库里的真实状态刷新内存视图，避免调用方拿过期快照继续判断。
-		syncTaskBillingView(task)
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh task %s billing state after losing settlement claim: %s", task.TaskID, err.Error()))
+			return
+		}
 		logger.LogInfo(ctx, common.LogText("task %s settlement was already claimed by another attempt; skipping duplicate settlement", task.TaskID))
 		return
 	}
@@ -799,6 +837,12 @@ func reconcileUnfinishedTaskBilling(ctx context.Context, olderThan int64) {
 	}
 	for i := range tasks {
 		task := &tasks[i]
+		// The refund rollout boundary is intentionally fail-closed for historical
+		// terminal tasks: their legacy quota may already have been refunded by the
+		// pre-ledger implementation. Never infer a refundable balance from them.
+		if task.SubmitTime > 0 && task.SubmitTime < model.TaskRefundLegacyCutoff {
+			continue
+		}
 		switch {
 		case task.Quota == 0:
 			// 没有待结算的额度：直接收口，避免终态任务永远停在非终态。

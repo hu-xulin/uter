@@ -244,27 +244,30 @@ func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.Midj
 }
 
 func ConvertSimpleChangeParams(content string) *dto.MidjourneyRequest {
-	split := strings.Split(content, " ")
-	if len(split) != 2 {
+	parts := strings.Fields(content)
+	if len(parts) != 2 || parts[0] == "" {
 		return nil
 	}
 
-	action := strings.ToLower(split[1])
-	changeParams := &dto.MidjourneyRequest{}
-	changeParams.TaskId = split[0]
-
-	if action[0] == 'u' {
-		changeParams.Action = "UPSCALE"
-	} else if action[0] == 'v' {
-		changeParams.Action = "VARIATION"
-	} else if action == "r" {
+	action := strings.ToLower(parts[1])
+	changeParams := &dto.MidjourneyRequest{TaskId: parts[0]}
+	if action == "r" {
 		changeParams.Action = "REROLL"
 		return changeParams
-	} else {
+	}
+	if len(action) != 2 {
+		return nil
+	}
+	switch action[0] {
+	case 'u':
+		changeParams.Action = "UPSCALE"
+	case 'v':
+		changeParams.Action = "VARIATION"
+	default:
 		return nil
 	}
 
-	index, err := strconv.Atoi(action[1:2])
+	index, err := strconv.Atoi(action[1:])
 	if err != nil || index < 1 || index > 4 {
 		return nil
 	}
