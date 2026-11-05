@@ -476,11 +476,8 @@ func applyTaskRefund(ctx context.Context, task *model.Task, quota int, reason st
 
 	// 3. 回减预扣时累计的用户和渠道用量，请求次数保持不变。
 	// 这些统计账本也属于退款审计数据：数据库更新失败时不得吞错并标记退款完成。
-	if err := model.UpdateUserUsedQuotaWithError(task.UserId, -quota); err != nil {
-		return fmt.Errorf("%w: user usage rollback failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
-	}
-	if err := model.UpdateChannelUsedQuotaWithError(task.ChannelId, -quota); err != nil {
-		return fmt.Errorf("%w: channel usage rollback failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
+	if err := model.ApplyTaskRefundUsage(task.UserId, task.ChannelId, quota); err != nil {
+		return fmt.Errorf("%w: atomic usage rollback failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
 	}
 
 	// 4. 记录退款审计日志。日志落库失败不重放资金动作，转人工对账并保留错误。
