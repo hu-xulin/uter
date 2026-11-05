@@ -463,7 +463,7 @@ func increaseTokenQuotaTx(tx *gorm.DB, id int, quota int) error {
 		return nil
 	}
 
-	result := tx.Model(&Token{}).Where("id = ?", id).Updates(
+	result := tx.Model(&Token{}).Where("id = ? AND used_quota >= ?", id, quota).Updates(
 		map[string]any{
 			"remain_quota":  gorm.Expr("remain_quota + ?", quota),
 			"used_quota":    gorm.Expr("used_quota - ?", quota),
@@ -474,7 +474,11 @@ func increaseTokenQuotaTx(tx *gorm.DB, id int, quota int) error {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+		var token Token
+		if err := tx.Select("id").First(&token, id).Error; err != nil {
+			return err
+		}
+		return errors.New("token used quota is insufficient for refund")
 	}
 	return nil
 }
