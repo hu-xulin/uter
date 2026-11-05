@@ -10,7 +10,7 @@ import (
 type midjourneyRefundOutboxHandler struct{}
 
 func (midjourneyRefundOutboxHandler) Type() string            { return model.SystemTaskTypeMidjourneyRefundOutbox }
-func (midjourneyRefundOutboxHandler) Enabled() bool           { return true }
+func (midjourneyRefundOutboxHandler) Enabled() bool           { return model.HasPendingMidjourneyRefundOutbox() }
 func (midjourneyRefundOutboxHandler) Interval() time.Duration { return time.Minute }
 func (midjourneyRefundOutboxHandler) NewPayload() any         { return nil }
 
