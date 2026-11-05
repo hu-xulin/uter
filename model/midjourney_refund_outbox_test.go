@@ -14,20 +14,20 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
 
 	event := MidjourneyRefundOutbox{
-		EventKey: "mj-refund-op-1:task-billing-log",
+		EventKey:          "mj-refund-op-1:task-billing-log",
 		RefundOperationID: 1,
-		EventType: "task_billing_log",
-		PayloadJSON: `{"operation_id":1,"result":"refunded"}`,
+		EventType:         "task_billing_log",
+		PayloadJSON:       `{"operation_id":1,"result":"refunded"}`,
 	}
 	require.NoError(t, db.Create(&event).Error)
 	assert.Equal(t, MidjourneyRefundOutboxPending, event.Status)
 	assert.NotZero(t, event.CreatedAt)
 
 	duplicate := MidjourneyRefundOutbox{
-		EventKey: event.EventKey,
+		EventKey:          event.EventKey,
 		RefundOperationID: 2,
-		EventType: "task_billing_log",
-		PayloadJSON: `{"operation_id":2}`,
+		EventType:         "task_billing_log",
+		PayloadJSON:       `{"operation_id":2}`,
 	}
 	assert.Error(t, db.Create(&duplicate).Error)
 
