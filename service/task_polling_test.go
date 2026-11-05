@@ -949,6 +949,8 @@ func TestUpdateVideoSingleTaskPollClassification(t *testing.T) {
 			const initialQuota, preConsumed, tokenRemain = 10_000, 4_000, 7_000
 			seedUser(t, userID, initialQuota)
 			seedToken(t, tokenID, userID, "sk-poll-class", tokenRemain)
+			seedChannel(t, channelID)
+			seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 			ch := &model.Channel{Id: channelID, Type: constant.ChannelTypeKling, Name: "poll", Key: "sk-test", Status: common.ChannelStatusEnabled}
 
 			if testCase.maxFailures > 0 {
@@ -1037,6 +1039,7 @@ func TestUpdateBatchTasksPollClassification(t *testing.T) {
 			seedUser(t, userID, initialQuota)
 			seedToken(t, tokenID, userID, "sk-batch-class", tokenRemain)
 			seedTaskPollingChannel(t, channelID, true)
+			seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 
 			task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
 			task.TaskID = "task_batch_class"
