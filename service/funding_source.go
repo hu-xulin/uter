@@ -214,17 +214,9 @@ func (s *SubscriptionFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	overflow, err := model.PostConsumeUserSubscriptionDeltaCapped(s.subscriptionId, int64(delta))
-	if err != nil {
-		return err
-	}
-	if overflow > 0 {
-		// 订阅结算超额：订阅已封顶到总额，超出部分转为用户钱包欠费，避免平台少收。
-		common.SysLog(fmt.Sprintf("subscription settled over total, charging wallet overflow (userId=%d, subscriptionId=%d, overflow=%d)", s.userId, s.subscriptionId, overflow))
-		if werr := model.DecreaseUserQuota(s.userId, int(overflow), true); werr != nil {
-			// 钱包欠费记账失败：订阅侧已封顶，平台仍少收 overflow，必须告警对账。
-			return fmt.Errorf("subscription overflow wallet charge failed (userId=%d, subscriptionId=%d, overflow=%d): %w", s.userId, s.subscriptionId, overflow, werr)
-		}
+	if err := model.PostConsumeUserSubscriptionDeltaCappedWithWallet(s.subscriptionId, s.userId, int64(delta)); err != nil {
+		return fmt.Errorf("subscription settlement (including wallet overflow) failed atomically (userId=%d, subscriptionId=%d, delta=%d): %w",
+			s.userId, s.subscriptionId, delta, err)
 	}
 	return nil
 }
