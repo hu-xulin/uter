@@ -90,7 +90,6 @@ func CreateMidjourneyRefundOutboxTx(tx *gorm.DB, event *MidjourneyRefundOutbox) 
 	return tx.Create(event).Error
 }
 
-
 // CreateMidjourneyRefundOperationWithOutboxTx atomically creates the refund
 // operation and its durable log event. A savepoint prevents an orphaned
 // operation if outbox insertion fails and the caller handles the error.
