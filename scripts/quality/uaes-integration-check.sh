@@ -24,18 +24,30 @@ CLAUDE="$ROOT/CLAUDE.md"
 AGENTS_SKILL="$ROOT/.agents/skills/uaes-integration/SKILL.md"
 CLAUDE_SKILL="$ROOT/.claude/skills/uaes-integration/SKILL.md"
 GOVERNANCE_POLICY="$ROOT/.uaes/agent-governance.yaml"
+PIN_FILE="$ROOT/.uaes/uaes-pin.json"
 
-for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL" "$GOVERNANCE_POLICY" "$ROOT/.ai/task-schema.json"; do
+for file in "$INTEGRATION" "$TRACEABILITY" "$AGENTS" "$CLAUDE" "$AGENTS_SKILL" "$CLAUDE_SKILL" "$GOVERNANCE_POLICY" "$PIN_FILE" "$ROOT/.ai/task-schema.json"; do
   require_file "$file"
 done
 
 # Integration lifecycle and immutable audit-baseline identity.
+# The commit/blob/version/status are read from the machine-readable pin instead
+# of being hard-coded, so a reviewed pin refresh cannot silently desynchronise
+# the contract from the checker (P00 spec-version drift).
+pin_field() {
+  ruby -rjson -e 'print JSON.parse(File.read(ARGV[0]))[ARGV[1]].to_s' "$PIN_FILE" "$1"
+}
+PINNED_COMMIT="$(pin_field source_commit)" || fail "cannot read source_commit from $PIN_FILE"
+PINNED_BLOB="$(pin_field registry_blob_sha)" || fail "cannot read registry_blob_sha from $PIN_FILE"
+PINNED_VERSION="$(pin_field registry_version)" || fail "cannot read registry_version from $PIN_FILE"
+PINNED_STATUS="$(pin_field registry_status)" || fail "cannot read registry_status from $PIN_FILE"
+
 require_text "$INTEGRATION" "UAES Integration Contract"
 require_text "$INTEGRATION" "MIGRATION_PENDING"
-require_text "$INTEGRATION" "84416f7f55c1166e3f5adfa0575c1ea713ff20d2"
-require_text "$INTEGRATION" "1c74e918b84b8cc18d2806a936721852b823ca75"
-require_text "$INTEGRATION" '| Registry version | `1.7.0` |'
-require_text "$INTEGRATION" '| Registry status | `DRAFT` |'
+require_text "$INTEGRATION" "$PINNED_COMMIT"
+require_text "$INTEGRATION" "$PINNED_BLOB"
+require_text "$INTEGRATION" "| Registry version | \`$PINNED_VERSION\` |"
+require_text "$INTEGRATION" "| Registry status | \`$PINNED_STATUS\` |"
 require_text "$INTEGRATION" "payment, recharge, refund, balance"
 require_text "$INTEGRATION" "Token usage, pricing, quota"
 require_text "$INTEGRATION" "SQLite/MySQL/PostgreSQL"
