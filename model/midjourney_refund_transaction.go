@@ -53,8 +53,15 @@ func markMidjourneyRefundReconciliationTx(tx *gorm.DB, task *Midjourney, reasonC
 	if err := CreateMidjourneyRefundOperationWithOutboxTx(tx, op, event); err != nil {
 		return err
 	}
-	return tx.Model(&Midjourney{}).Where("id = ?", task.Id).
-		Update("billing_status", "reconciliation_required").Error
+	result := tx.Model(&Midjourney{}).Where("id = ?", task.Id).
+		Update("billing_status", "reconciliation_required")
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected != 1 {
+		return errors.New("Midjourney refund reconciliation task state was not persisted")
+	}
+	return nil
 }
 
 // RefundMidjourneyTaskBilling atomically reverses a verifiably applied
