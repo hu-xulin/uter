@@ -31,7 +31,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 import { useOAuthLogin } from '../hooks/use-oauth-login'
-import type { SystemStatus } from '../types'
+import type { SystemStatus } from '@/types/system'
 
 type OAuthProvidersProps = {
   status: SystemStatus | null
