@@ -111,7 +111,7 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 			require.NoError(t, db.Create(order).Error)
 			require.NoError(t, db.Create(topup).Error)
 
-			err := upsertSubscriptionTopUpTx(db, order)
+			err := upsertSubscriptionTopUpTx(db, order, "")
 			require.ErrorIs(t, err, tc.wantErr)
 			var stored TopUp
 			require.NoError(t, db.Where("trade_no = ?", tradeNo).First(&stored).Error)
@@ -153,4 +153,37 @@ func TestUpsertSubscriptionTopUpBackfillsLegacyProvider(t *testing.T) {
 	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
 	require.Equal(t, PaymentProviderEpay, stored.PaymentProvider)
 	require.Equal(t, common.TopUpStatusSuccess, stored.Status)
+}
+
+func TestUpsertSubscriptionTopUpPersistsActualPaymentMethod(t *testing.T) {
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	require.NoError(t, db.AutoMigrate(&SubscriptionOrder{}, &TopUp{}))
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+
+	order := &SubscriptionOrder{
+		UserId: 7, PlanId: 1, Money: 10, TradeNo: "subscription-link-method",
+		PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
+		Status: common.TopUpStatusPending,
+	}
+	topup := &TopUp{
+		UserId: 7, Money: 10, TradeNo: order.TradeNo,
+		PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
+		Status: common.TopUpStatusPending,
+	}
+	require.NoError(t, db.Create(order).Error)
+	require.NoError(t, db.Create(topup).Error)
+
+	require.NoError(t, upsertSubscriptionTopUpTx(db, order, "wxpay"))
+	var stored TopUp
+	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
+	require.Equal(t, "wxpay", stored.PaymentMethod)
 }
