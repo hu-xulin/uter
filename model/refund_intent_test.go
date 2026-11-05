@@ -218,16 +218,16 @@ func TestApplyTaskRefundUsageAtomicallyDrainsBatchDeltas(t *testing.T) {
 	channel := Channel{Key: "refund-usage-channel", Type: 1, Status: 1}
 	require.NoError(t, DB.Create(&channel).Error)
 
-	addNewRecord(BatchUpdateTypeUsedQuota, user.Id, 30)
-	addNewRecord(BatchUpdateTypeChannelUsedQuota, channel.Id, 30)
+	addNewRecord(BatchUpdateTypeUsedQuota, user.Id, 50)
+	addNewRecord(BatchUpdateTypeChannelUsedQuota, channel.Id, 50)
 	require.NoError(t, ApplyTaskRefundUsage(user.Id, channel.Id, 30))
 
 	var storedUser User
 	require.NoError(t, DB.Select("id", "used_quota").First(&storedUser, user.Id).Error)
 	var storedChannel Channel
 	require.NoError(t, DB.Select("id", "used_quota").First(&storedChannel, channel.Id).Error)
-	assert.EqualValues(t, 0, storedUser.UsedQuota)
-	assert.EqualValues(t, 0, storedChannel.UsedQuota)
+	assert.EqualValues(t, 20, storedUser.UsedQuota)
+	assert.EqualValues(t, 20, storedChannel.UsedQuota)
 	assert.NotContains(t, batchUpdateStores[BatchUpdateTypeUsedQuota], user.Id)
 	assert.NotContains(t, batchUpdateStores[BatchUpdateTypeChannelUsedQuota], channel.Id)
 }
