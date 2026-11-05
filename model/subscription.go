@@ -673,12 +673,13 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	var topup TopUp
 	if err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			topup = TopUp{
+				topup = TopUp{
 				UserId:           order.UserId,
 				Amount:           0,
 				Money:            order.Money,
 				TradeNo:          order.TradeNo,
 				PaymentMethod:    order.PaymentMethod,
+				PaymentProvider:  order.PaymentProvider,
 				ProviderAmount:   order.ProviderAmount,
 				ProviderCurrency: order.ProviderCurrency,
 				CreateTime:       order.CreateTime,
@@ -688,6 +689,21 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 			return tx.Create(&topup).Error
 		}
 		return err
+	}
+	// A trade number is the join key between two durable payment records. Do
+	// not let a colliding/stale top-up row for another user or gateway be
+	// silently rewritten as the successful subscription payment.
+	if topup.UserId != order.UserId {
+		return fmt.Errorf("%w: subscription/top-up user mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
+		return fmt.Errorf("%w: subscription/top-up provider mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.Status != common.TopUpStatusPending && topup.Status != common.TopUpStatusSuccess {
+		return fmt.Errorf("%w: linked top-up is not completable for trade %s", ErrTopUpStatusInvalid, order.TradeNo)
+	}
+	if topup.PaymentProvider == "" {
+		topup.PaymentProvider = order.PaymentProvider
 	}
 	topup.Money = order.Money
 	if order.ProviderAmount > 0 {
