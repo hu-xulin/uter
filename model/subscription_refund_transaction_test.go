@@ -112,3 +112,56 @@ func TestRefundSubscriptionPreConsumeTxRejectsMissingSubscriptionWithoutChanging
 	require.NoError(t, db.First(&saved, record.Id).Error)
 	require.Equal(t, "consumed", saved.Status, "a missing ledger target must not consume the refund receipt")
 }
+
+
+// TestRefundSubscriptionPreConsumeTxRequiresMatchingOwner ensures a receipt
+// cannot reverse quota from a subscription owned by a different user.
+func TestRefundSubscriptionPreConsumeTxRequiresMatchingOwner(t *testing.T) {
+	db := setupSubscriptionRefundTxTestDB(t)
+	require.NoError(t, db.AutoMigrate(&RefundIntent{}))
+
+	sub := UserSubscription{UserId: 7, PlanId: 1, AmountTotal: 100, AmountUsed: 40, Status: "active"}
+	require.NoError(t, db.Create(&sub).Error)
+	record := SubscriptionPreConsumeRecord{
+		RequestId: "subscription-owner-check", UserId: 7, UserSubscriptionId: sub.Id,
+		PreConsumed: 20, Status: "consumed",
+	}
+	require.NoError(t, db.Create(&record).Error)
+	intent := RefundIntent{
+		UserId: 8, IdempotencyKey: "subscription-owner-check-intent",
+		FundingSource: RefundSourceSubscription, SubRequestId: record.RequestId, SubId: sub.Id,
+	}
+	require.NoError(t, CreateRefundIntent(&intent))
+
+	require.ErrorContains(t, ExecuteRefundIntent(intent.Id), "belongs to user 7, not user 8")
+	var savedSub UserSubscription
+	require.NoError(t, db.First(&savedSub, sub.Id).Error)
+	require.EqualValues(t, 40, savedSub.AmountUsed)
+	var savedRecord SubscriptionPreConsumeRecord
+	require.NoError(t, db.First(&savedRecord, record.Id).Error)
+	require.Equal(t, "consumed", savedRecord.Status)
+	var savedIntent RefundIntent
+	require.NoError(t, db.First(&savedIntent, intent.Id).Error)
+	require.Equal(t, RefundIntentPending, savedIntent.Status)
+}
+
+// TestRefundSubscriptionPreConsumeTxRejectsReceiptSubscriptionMismatch ensures
+// the receipt owner must match the persisted subscription owner.
+func TestRefundSubscriptionPreConsumeTxRejectsReceiptSubscriptionMismatch(t *testing.T) {
+	db := setupSubscriptionRefundTxTestDB(t)
+	sub := UserSubscription{UserId: 9, PlanId: 1, AmountTotal: 100, AmountUsed: 40, Status: "active"}
+	require.NoError(t, db.Create(&sub).Error)
+	record := SubscriptionPreConsumeRecord{
+		RequestId: "subscription-record-owner-check", UserId: 8, UserSubscriptionId: sub.Id,
+		PreConsumed: 10, Status: "consumed",
+	}
+	require.NoError(t, db.Create(&record).Error)
+
+	require.ErrorContains(t, RefundSubscriptionPreConsume(record.RequestId), "owner mismatch")
+	var savedSub UserSubscription
+	require.NoError(t, db.First(&savedSub, sub.Id).Error)
+	require.EqualValues(t, 40, savedSub.AmountUsed)
+	var savedRecord SubscriptionPreConsumeRecord
+	require.NoError(t, db.First(&savedRecord, record.Id).Error)
+	require.Equal(t, "consumed", savedRecord.Status)
+}
