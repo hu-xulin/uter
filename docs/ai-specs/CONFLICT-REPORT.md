@@ -1,7 +1,7 @@
 # Uter AI 规范体系冲突检查报告
 
 **项目：** Uter
-**检查日期：** 2026-11-01
+**检查日期：** 2026-11-05
 **检查范围：** `docs/ai-specs/` 10 份规范 + `docs/ai-specs/engineering-quality/` 4 份工程质量规范 + `AGENTS.md` + `web/AGENTS.md` + `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（2026-11-03 起唯一标准，旧 design-system.md/2.0 已废止删除） + `.ai/AIES.md` + UEQE 实际实现（`scripts/quality/uter-quality.sh`）+ 真实技术栈（`go.mod` ×3、`web/package.json`）
 **检查方法：** 全文通读 10 份规范（共 2469 行）并与宪法文件、现有规范、UEQE 实现逐项比对；技术栈一致性以 `go.mod`/`package.json` 实际值为准。
 **原则：** 只报告与给出修改方案，不擅自删除任何已有安全限制。
@@ -10,11 +10,12 @@
 
 ## 一、发现的冲突与解决方案
 
-### C1. 分支策略：规范「禁推主分支」 vs 仓库 main 直推惯例（权限冲突）
+### C1. 分支策略：单一工作分支约束（已统一）
 
-- **来源：** AI-EXECUTION-STANDARD §5.3（「直接向受保护主分支提交代码」列为严禁）、CHANGE-MANAGEMENT-STANDARD §6 与 §12（「不得直接向受保护主分支提交」「不直接推送主分支」）。
-- **实际：** 本仓库为 owner 单人直推 `main` 的工作模式，历史上所有变更（含本规范体系落地）均经用户逐次授权后 `git push origin main`。
-- **解决（已实施）：** `AGENTS.md`「Branch strategy」节声明适配——用户逐次授权的 main 提交/推送视为已授权；独立分支 + PR 要求适用于无人值守自动化（Auto-Fix Engine、定时任务）与多人协作场景。**force push 与自动合并 PR 在任何模式下仍被禁止**，规范的安全限制本身未被删除。
+- **权威规则：** 根 `AGENTS.md`「Branch strategy」规定每个项目最多一个非 `main` 工作分支；所有审计、修复、测试和文档变更复用该分支及其现有 PR。
+- **本次核验：** 远端当前可见 `main` 与 `ai/uaes-uter-integration-2026-11-05`，满足单一工作分支要求。
+- **统一要求：** 不得为独立问题或自动修复创建第二分支；使用 Issue ID、Commit 和报告区分任务。若远端出现多个非 `main` 分支，必须停止并由用户决定保留项，不得自动删除或重写。
+- **权限边界：** 允许在唯一工作分支上按明确授权 Commit、Push、创建/更新现有 PR；禁止直接推送 `main`、force push、合并 PR、部署及生产写操作。
 
 ### C2. 执行状态语义不一致（定义冲突，轻微）
 
