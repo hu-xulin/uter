@@ -269,7 +269,6 @@ func TestAdjustUserUsedQuotaRejectsUnderflow(t *testing.T) {
 	assert.Zero(t, stored.UsedQuota)
 }
 
-
 // TestSubscriptionRefundIntentRollsBackAllLegs verifies that the original
 // subscription pre-consumption and its idempotency record roll back when a
 // later Token ledger leg fails.
