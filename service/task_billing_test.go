@@ -1515,6 +1515,9 @@ func TestSettle_NonPerCallBilling_AppliesAdaptorAdjustment(t *testing.T) {
 
 	seedUser(t, userID, initQuota)
 	seedToken(t, tokenID, userID, "sk-nonpercall-adj", tokenRemain)
+	// 退款结算会校验 token 已用额度不能被扣成负数；预扣对应的用量需先落账，
+	// 否则结算会被安全校验拒绝并整体回滚（fixture 不再是「0 用量的预扣」）。
+	require.NoError(t, model.DB.Model(&model.Token{}).Where("id = ?", tokenID).Update("used_quota", preConsumed).Error)
 	seedChannel(t, channelID)
 
 	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)

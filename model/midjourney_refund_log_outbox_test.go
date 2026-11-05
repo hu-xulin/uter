@@ -49,9 +49,11 @@ func TestMidjourneyRefundLogOutboxDeliveryIsIdempotent(t *testing.T) {
 	}
 	require.NoError(t, deliverMidjourneyRefundLog(reconciliation))
 
+	// receipt 以 event_key 为主键，重复投递只校验 payload hash 后返回，
+	// 因此幂等语义下每个事件恒为 1 条凭证（重复的是投递次数，不是凭证数）。
 	var receipts int64
 	require.NoError(t, db.Model(&MidjourneyRefundLogReceipt{}).Where("event_key = ?", event.EventKey).Count(&receipts).Error)
-	require.EqualValues(t, 2, receipts)
+	require.EqualValues(t, 1, receipts)
 	var logs int64
 	require.NoError(t, db.Model(&Log{}).Where("request_id = ?", event.EventKey).Count(&logs).Error)
 	require.EqualValues(t, 1, logs)

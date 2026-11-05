@@ -169,16 +169,19 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 		taskM := make(map[string]*model.Task)
 		nullTasks := make([]*model.Task, 0)
 		for _, task := range tasks {
-			upstreamID := task.GetUpstreamTaskID()
-			if upstreamID == "" {
-				// TASK-001: a task with no upstream ID can never be polled to a
-				// terminal state, so it must fail through the unified terminal
-				// path (CAS win + finalizeTerminalTask refund) rather than a blind
-				// bulk write that skips refund. Collect the objects so we can route
+			// TASK-001: 必须直接检查 PrivateData，不能走 GetUpstreamTaskID()——
+			// 后者在无上游 ID 时回退到 TaskID（恒非空），会让「永远无法轮询」的
+			// 任务看起来有上游 ID，从而绕过统一失败/退款路径，永久卡在 IN_PROGRESS。
+			if task.PrivateData.UpstreamTaskID == "" {
+				// No upstream ID means the task can never be polled to a terminal
+				// state, so it must fail through the unified terminal path
+				// (CAS win + finalizeTerminalTask refund) rather than a blind bulk
+				// write that skips refund. Collect the objects so we can route
 				// them through failTasksFromPoll below.
 				nullTasks = append(nullTasks, task)
 				continue
 			}
+			upstreamID := task.GetUpstreamTaskID()
 			taskM[upstreamID] = task
 			taskChannelM[task.ChannelId] = append(taskChannelM[task.ChannelId], upstreamID)
 		}

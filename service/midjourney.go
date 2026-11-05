@@ -186,13 +186,22 @@ func GetMjRequestModel(relayMode int, midjRequest *dto.MidjourneyRequest) (strin
 
 func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.MidjourneyResponse {
 	// "customId": "MJ::JOB::upsample::2::3dbbd469-36af-4a0f-8f02-df6c579e7011"
+	if midjRequest == nil {
+		return MidjourneyErrorWrapper(constant.MjRequestError, "midjourney_request_is_required")
+	}
 	customId := midjRequest.CustomId
 	if customId == "" {
 		return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_required")
 	}
 	splits := strings.Split(customId, "::")
+	if len(splits) < 2 {
+		return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_malformed")
+	}
 	var action string
 	if splits[1] == "JOB" {
+		if len(splits) < 3 {
+			return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_malformed")
+		}
 		action = splits[2]
 	} else {
 		action = splits[1]
@@ -201,9 +210,21 @@ func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.Midj
 	if action == "" {
 		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action")
 	}
-	if strings.Contains(action, "upsample") {
+	// 索引位固定为第 4 段且仅在 1..4 之间合法；缺段、非数字、越界都必须
+	// 显式拒绝，不能让 strings.Split 的下标访问在畸形 custom_id 上 panic。
+	actionIndex := func() (int, bool) {
+		if len(splits) < 4 {
+			return 0, false
+		}
 		index, err := strconv.Atoi(splits[3])
-		if err != nil {
+		if err != nil || index < 1 || index > 4 {
+			return 0, false
+		}
+		return index, true
+	}
+	if strings.Contains(action, "upsample") {
+		index, ok := actionIndex()
+		if !ok {
 			return MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
 		}
 		midjRequest.Index = index
@@ -211,8 +232,8 @@ func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.Midj
 	} else if strings.Contains(action, "variation") {
 		midjRequest.Index = 1
 		if action == "variation" {
-			index, err := strconv.Atoi(splits[3])
-			if err != nil {
+			index, ok := actionIndex()
+			if !ok {
 				return MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
 			}
 			midjRequest.Index = index

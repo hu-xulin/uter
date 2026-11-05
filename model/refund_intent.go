@@ -190,13 +190,17 @@ func SweepPendingRefundIntents(staleAfterSeconds int64, limit int) (int, error) 
 		return 0, err
 	}
 	done := 0
+	var sweepErr error
 	for i := range intents {
 		if err := ExecuteRefundIntent(intents[i].Id); err != nil {
 			common.SysError(fmt.Sprintf("refund intent %d sweep execution failed (userId=%d): %s",
 				intents[i].Id, intents[i].UserId, err.Error()))
+			// 单个凭证失败不能阻断其余凭证的重放，但必须让调用方感知到本轮
+			// 存在未收口的失败；静默返回 nil 会让滞留退款永久失联。
+			sweepErr = errors.Join(sweepErr, fmt.Errorf("refund intent %d: %w", intents[i].Id, err))
 			continue
 		}
 		done++
 	}
-	return done, nil
+	return done, sweepErr
 }
