@@ -147,3 +147,16 @@ Regression coverage added in `service/task_billing_funding_test.go` includes org
 - Aligned `AGENTS.md`, `.ai/AIES.md`, and `CHANGE-MANAGEMENT-STANDARD.md` with the authorized Uter repair workflow: Commit/Push/PR on the one work branch only; no direct main push, force-push, merge, deployment, or production writes.
 - Added `scripts/quality/test-ai-governance-policy.rb` and wired it into the UAES CI job. CI also checks the live GitHub branch inventory and fails when more than one non-main branch exists.
 - **Status: IMPLEMENTED / EXACT-HEAD-CI-PENDING / RUNTIME-UNVERIFIED.** Static policy tests do not prove that WorkBuddy/Claude external tool runtimes enforce the policy. GitHub main branch protection remains unconfigured/unverified because this integration connection does not expose an administrative write operation.
+
+### P11 DevOps & Delivery — Compose image immutability remediation (2026-11-05)
+
+- Production docker-compose.yml now pins Redis 7 and PostgreSQL 15 to verified multi-platform Docker Official Image index digests:
+  - Redis: `redis:7-alpine@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f`
+  - PostgreSQL: `postgres:15@sha256:c961aa287d8698297cb26cdfadfbe9fd2cbaf77e53cfffe9636e8d8a1e4d842c`
+- Development docker-compose.dev.yml now pins Redis 7 and PostgreSQL 15 Alpine to verified multi-platform index digests:
+  - Redis: same Redis 7 digest as production.
+  - PostgreSQL: `postgres:15-alpine@sha256:54e0dd8e8cddcdbb9156c2486eed5a43eccb7214d7c6828097d41ce049fb3984`
+- CI now validates both Compose files with `docker compose config --quiet` and rejects Redis/PostgreSQL image references without a complete 64-character SHA-256 digest. The digest matcher was exercised locally against all four service declarations; CI remains the authoritative environment-backed validation.
+- Docker Hub official image evidence: [Redis 7-alpine manifest](https://hub.docker.com/layers/library/redis/7-alpine/images/sha256-1cf73a2f04808e55a8bd2f5706c2aa0ebb0f71938f93deb7af79f48311cd5cb9) and [PostgreSQL 15 manifest](https://hub.docker.com/layers/library/postgres/15.19/images/sha256-d6c2fe0850b06b13764b81df8b5e9978aadae92fbf5c751999959a59cb55fb93), [PostgreSQL 15 Alpine manifest](https://hub.docker.com/layers/library/postgres/15-alpine/images/sha256-84f43042200e6feb307f42deb4cba37512f04c6398cf03b9fa5ba7ad03ab01b4).
+- **Status: IMPLEMENTED / LOCAL_PATTERN_CHECK_PASSED / EXACT_HEAD_CI_PENDING.** No database container was pulled or started in this session; no migration, backup, restore, production environment, or production data was touched.
+- **Remaining P11 blockers:** GitHub main-branch protection and required-check administration; actual Docker Compose pull/start/healthcheck on supported architectures; database migration backup/restore and interrupted-migration recovery drills; release rollback rehearsal; artifact digest/SBOM/provenance verification against the source Commit; and a complete exact-head CI PASS.
