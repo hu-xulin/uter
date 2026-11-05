@@ -170,3 +170,22 @@ func TestFindPendingMidjourneyRefundTaskIDsStopsAfterRefundOrReconciliation(t *t
 	storedToken := getTokenFromDB(t, token.Id)
 	assert.Equal(t, 100, storedToken.RemainQuota)
 }
+
+
+func TestRefundMidjourneyTaskBillingQuarantinesMissingToken(t *testing.T) {
+	user, token, _, task := createMidjourneyRefundFixture(t, true)
+	require.NoError(t, DB.Delete(&Token{}, token.Id).Error)
+
+	err := RefundMidjourneyTaskBilling(task.Id, "missing charged token")
+	require.ErrorIs(t, err, ErrMidjourneyRefundReconciliationRequired)
+	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
+
+	var storedTask Midjourney
+	require.NoError(t, DB.First(&storedTask, task.Id).Error)
+	assert.Equal(t, 40, storedTask.Quota)
+	assert.Equal(t, "reconciliation_required", storedTask.BillingStatus)
+
+	var op MidjourneyRefundOperation
+	require.NoError(t, DB.Where("midjourney_task_id = ?", task.Id).First(&op).Error)
+	assert.Equal(t, MidjourneyRefundReconciliationRequired, op.Status)
+}
