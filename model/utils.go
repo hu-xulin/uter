@@ -221,8 +221,8 @@ func shouldUpdateRedis(fromDB bool, err error) bool {
 // flushes so task billing cannot be finalized while its usage update is only
 // volatile in memory.
 func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
-	if userID <= 0 || channelID <= 0 {
-		return errors.New("task billing usage adjustment requires positive user and channel IDs")
+	if userID <= 0 || channelID < 0 {
+		return errors.New("task billing usage adjustment requires a positive user ID and non-negative channel ID")
 	}
 
 	batchUpdateExecutionLock.Lock()
@@ -231,12 +231,17 @@ func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
 	userType := BatchUpdateTypeUsedQuota
 	channelType := BatchUpdateTypeChannelUsedQuota
 	batchUpdateLocks[userType].Lock()
-	batchUpdateLocks[channelType].Lock()
-	defer batchUpdateLocks[channelType].Unlock()
 	defer batchUpdateLocks[userType].Unlock()
+	if channelID > 0 {
+		batchUpdateLocks[channelType].Lock()
+		defer batchUpdateLocks[channelType].Unlock()
+	}
 
 	userDelta := batchUpdateStores[userType][userID] + delta
-	channelDelta := batchUpdateStores[channelType][channelID] + delta
+	channelDelta := 0
+	if channelID > 0 {
+		channelDelta = batchUpdateStores[channelType][channelID] + delta
+	}
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		var userCount, channelCount int64
 		if err := tx.Model(&User{}).Where("id = ?", userID).Count(&userCount).Error; err != nil {
@@ -245,11 +250,13 @@ func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
 		if userCount != 1 {
 			return fmt.Errorf("user %d usage row does not exist", userID)
 		}
-		if err := tx.Model(&Channel{}).Where("id = ?", channelID).Count(&channelCount).Error; err != nil {
-			return err
-		}
-		if channelCount != 1 {
-			return fmt.Errorf("channel %d usage row does not exist", channelID)
+		if channelID > 0 {
+			if err := tx.Model(&Channel{}).Where("id = ?", channelID).Count(&channelCount).Error; err != nil {
+				return err
+			}
+			if channelCount != 1 {
+				return fmt.Errorf("channel %d usage row does not exist", channelID)
+			}
 		}
 		if userDelta != 0 {
 			if err := tx.Model(&User{}).Where("id = ?", userID).
@@ -257,7 +264,7 @@ func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
 				return err
 			}
 		}
-		if channelDelta != 0 {
+		if channelID > 0 && channelDelta != 0 {
 			if err := tx.Model(&Channel{}).Where("id = ?", channelID).
 				Update("used_quota", gorm.Expr("used_quota + ?", channelDelta)).Error; err != nil {
 				return err
@@ -269,9 +276,11 @@ func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
 		return err
 	}
 	delete(batchUpdateStores[userType], userID)
-	delete(batchUpdateStores[channelType], channelID)
+	if channelID > 0 {
+		delete(batchUpdateStores[channelType], channelID)
+		delete(batchUpdateRetries[channelType], channelID)
+	}
 	delete(batchUpdateRetries[userType], userID)
-	delete(batchUpdateRetries[channelType], channelID)
 	return nil
 }
 
