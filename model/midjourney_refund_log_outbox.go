@@ -213,6 +213,9 @@ func finishMidjourneyRefundOutboxEvent(event *MidjourneyRefundOutbox, owner stri
 // events. Delivery is idempotent for SQL LOG_DBs through the receipt table.
 func ProcessMidjourneyRefundOutboxOnce(ctx context.Context, owner string, limit int) (MidjourneyRefundOutboxBatchResult, error) {
 	result := MidjourneyRefundOutboxBatchResult{}
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	if strings.TrimSpace(owner) == "" {
 		return result, errors.New("outbox worker owner is required")
 	}
