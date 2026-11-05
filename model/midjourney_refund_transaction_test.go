@@ -225,10 +225,10 @@ func TestMarkMidjourneyRefundReconciliationRequiresTaskRowUpdate(t *testing.T) {
 func TestRefundMidjourneyTaskBillingQuarantinesZeroQuotaTokenOnlyPartialCharge(t *testing.T) {
 	user, token, _, task := createMidjourneyRefundFixture(t, true)
 	require.NoError(t, DB.Model(&Midjourney{}).Where("id = ?", task.Id).Updates(map[string]any{
-		"quota": 0,
-		"billing_status": "partial",
+		"quota":                  0,
+		"billing_status":         "partial",
 		"billing_wallet_applied": false,
-		"billing_token_applied": true,
+		"billing_token_applied":  true,
 	}).Error)
 
 	err := RefundMidjourneyTaskBilling(task.Id, "zero-quota token-only partial charge")
