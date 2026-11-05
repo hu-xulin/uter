@@ -82,25 +82,24 @@ WHERE constraint_meta.conrelid = to_regclass('options')
 func withOptionPrimaryKeyLock(db *gorm.DB, fn func(*gorm.DB) error) error {
 	switch db.Dialector.Name() {
 	case "mysql":
-		sqlDB, err := db.DB()
-		if err != nil {
-			return fmt.Errorf("lock options table: %w", err)
-		}
-		ctx := context.Background()
-		conn, err := sqlDB.Conn(ctx)
-		if err != nil {
-			return fmt.Errorf("lock options table: %w", err)
-		}
-		defer conn.Close()
-		var acquired int
-		if err := conn.QueryRowContext(ctx, "SELECT GET_LOCK(?, 60)", optionPrimaryKeyLockName).Scan(&acquired); err != nil {
-			return fmt.Errorf("lock options table: %w", err)
-		}
-		if acquired != 1 {
-			return fmt.Errorf("lock options table: timeout")
-		}
-		defer conn.ExecContext(ctx, "SELECT RELEASE_LOCK(?)", optionPrimaryKeyLockName)
-		return fn(db)
+		// MySQL named locks are scoped to one physical connection. Pin every
+		// migration statement to the same connection that owns GET_LOCK;
+		// acquiring the lock through sql.Conn and then calling fn(db) could
+		// run the rebuild on a different pooled connection without the lock.
+		return db.Connection(func(connDB *gorm.DB) error {
+			var acquired int
+			if err := connDB.Raw("SELECT GET_LOCK(?, 60)", optionPrimaryKeyLockName).Scan(&acquired).Error; err != nil {
+				return fmt.Errorf("lock options table: %w", err)
+			}
+			if acquired != 1 {
+				return fmt.Errorf("lock options table: timeout")
+			}
+			defer func() {
+				var released int
+				_ = connDB.Raw("SELECT RELEASE_LOCK(?)", optionPrimaryKeyLockName).Scan(&released).Error
+			}()
+			return fn(connDB)
+		})
 	case "postgres":
 		return db.Transaction(func(tx *gorm.DB) error {
 			if err := tx.Exec("SELECT pg_advisory_xact_lock(?)", optionPrimaryKeyLockID).Error; err != nil {
