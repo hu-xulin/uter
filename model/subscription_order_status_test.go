@@ -66,6 +66,7 @@ func TestFailPendingSubscriptionOrder(t *testing.T) {
 	saved = SubscriptionOrder{}
 	require.NoError(t, db.Where("trade_no = ?", success.TradeNo).First(&saved).Error)
 	require.Equal(t, common.TopUpStatusSuccess, saved.Status)
+	linkedTopUp = TopUp{}
 	require.NoError(t, db.Where("trade_no = ?", success.TradeNo).First(&linkedTopUp).Error)
 	require.Equal(t, common.TopUpStatusSuccess, linkedTopUp.Status, "late failure must not downgrade successful top-up")
 
