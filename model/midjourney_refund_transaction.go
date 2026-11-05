@@ -257,3 +257,21 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 	}
 	return nil
 }
+
+ 
+// FindPendingMidjourneyRefundTaskIDs returns terminal failed tasks whose
+// durable billing quota has not yet been cleared. Reconciliation-required
+// tasks are excluded because they need operator review, not automatic retries.
+func FindPendingMidjourneyRefundTaskIDs(limit int) ([]int, error) {
+	if limit <= 0 {
+		limit = 100
+	}
+	var taskIDs []int
+	err := DB.Model(&Midjourney{}).
+		Where("quota > 0 AND status = ?", "FAILURE").
+		Where("billing_status <> ?", "reconciliation_required").
+		Order("id ASC").
+		Limit(limit).
+		Pluck("id", &taskIDs).Error
+	return taskIDs, err
+}
