@@ -83,7 +83,6 @@ func adjustChannelUsedQuotaTx(tx *gorm.DB, channelID int, delta int) error {
 	return nil
 }
 
-
 // RecordMidjourneyTaskUsage synchronously persists the user request/usage and
 // channel usage in one primary-DB transaction. Midjourney refunds depend on
 // these values being durable before a failed task can be refunded; the generic
