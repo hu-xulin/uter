@@ -18,7 +18,9 @@
     "requester",
     "agent_id",
     "lifecycle_status",
-    "authorization"
+    "authorization",
+    "execution_audit",
+    "lifecycle_history"
   ],
   "properties": {
     "task_id": {
@@ -404,6 +406,70 @@
         },
         "additionalProperties": false
       }
+    },
+    "lifecycle_history": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "state",
+          "timestamp",
+          "actor_id"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "EXECUTING",
+              "VERIFYING",
+              "CLOSED",
+              "BLOCKED",
+              "FAILED",
+              "INTERRUPTED"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resume_checkpoint": {
+      "type": "object",
+      "required": [
+        "last_completed_step",
+        "evidence_refs"
+      ],
+      "properties": {
+        "last_completed_step": {
+          "type": "string"
+        },
+        "last_verified_commit": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interrupted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
     }
   }
 }
