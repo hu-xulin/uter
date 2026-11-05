@@ -82,12 +82,16 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 		name       string
 		userID     int
 		provider   string
-		status     string
-		wantErr    error
+		status          string
+		providerAmount  int64
+		providerCurrency string
+		wantErr         error
 	}{
 		{name: "different owner", userID: 99, provider: PaymentProviderEpay, status: common.TopUpStatusPending, wantErr: ErrPaymentMethodMismatch},
 		{name: "different provider", userID: 7, provider: PaymentProviderStripe, status: common.TopUpStatusPending, wantErr: ErrPaymentMethodMismatch},
 		{name: "terminal top-up", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusExpired, wantErr: ErrTopUpStatusInvalid},
+		{name: "different provider amount", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusPending, providerAmount: 999, providerCurrency: "CNY", wantErr: ErrPaymentMethodMismatch},
+		{name: "different provider currency", userID: 7, provider: PaymentProviderEpay, status: common.TopUpStatusPending, providerAmount: 1000, providerCurrency: "USD", wantErr: ErrPaymentMethodMismatch},
 	}
 	for i, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -95,11 +99,13 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 			order := &SubscriptionOrder{
 				UserId: 7, PlanId: 1, Money: 10, TradeNo: tradeNo,
 				PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
+				ProviderAmount: 1000, ProviderCurrency: "CNY",
 				Status: common.TopUpStatusPending,
 			}
 			topup := &TopUp{
 				UserId: tc.userID, Money: 10, TradeNo: tradeNo,
 				PaymentProvider: tc.provider, PaymentMethod: "alipay",
+				ProviderAmount: tc.providerAmount, ProviderCurrency: tc.providerCurrency,
 				Status: tc.status,
 			}
 			require.NoError(t, db.Create(order).Error)
