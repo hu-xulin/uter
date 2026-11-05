@@ -181,5 +181,18 @@ if [ "$FAILED" -gt 0 ]; then
   exit 1
 fi
 
+# Full mode is a release/PR gate: missing tools, omitted suites, or unavailable
+# project components must never be reported as a successful verification.
+# --quick is explicitly a partial developer convenience and remains non-authoritative.
+if [ "$SKIPPED" -gt 0 ] && [ "$QUICK" -eq 0 ]; then
+  printf '\n%s✗ 全量门禁不完整%s — 存在 %d 项 SKIP；补齐环境并重新执行全量检查。\n' "$C_RED" "$C_RESET" "$SKIPPED"
+  exit 2
+fi
+
+if [ "$QUICK" -eq 1 ]; then
+  printf '\n%s⚠ 快速检查完成（非完整质量验收）%s\n' "$C_YELLOW" "$C_RESET"
+  exit 0
+fi
+
 printf '\n%s✓ 全部门禁通过%s\n' "$C_GREEN" "$C_RESET"
 exit 0
