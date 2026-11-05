@@ -66,6 +66,9 @@ func TestMain(m *testing.M) {
 		&model.SystemTaskLock{},
 		&model.Organization{},
 		&model.RefundIntent{},
+		&model.MidjourneyRefundOperation{},
+		&model.MidjourneyRefundOutbox{},
+		&model.MidjourneyRefundLogReceipt{},
 	); err != nil {
 		panic("failed to migrate: " + err.Error())
 	}
@@ -92,6 +95,9 @@ func truncate(t *testing.T) {
 		model.DB.Exec("DELETE FROM organizations")
 		model.DB.Exec("DELETE FROM system_task_locks")
 		model.DB.Exec("DELETE FROM system_tasks")
+		model.DB.Exec("DELETE FROM midjourney_refund_log_receipts")
+		model.DB.Exec("DELETE FROM midjourney_refund_outbox")
+		model.DB.Exec("DELETE FROM midjourney_refund_operations")
 		model.DB.Exec("DELETE FROM refund_intents")
 	})
 }
