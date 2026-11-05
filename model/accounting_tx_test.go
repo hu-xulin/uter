@@ -136,3 +136,28 @@ func TestAccountingTransactionPrimitivesRejectUsageUnderflow(t *testing.T) {
 	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
 	assert.EqualValues(t, 5, storedChannel.UsedQuota)
 }
+
+
+func TestRecordMidjourneyTaskUsageIsSynchronousAndAtomic(t *testing.T) {
+	truncateTables(t)
+	resetBatchUpdateTestState(t)
+
+	user := createReserveTestUser(t, 100)
+	channel := Channel{Name: "mj-usage-atomic", Key: "mj-usage-atomic-key", Status: 1}
+	require.NoError(t, DB.Create(&channel).Error)
+
+	require.NoError(t, RecordMidjourneyTaskUsage(user.Id, channel.Id, 25))
+	var storedUser User
+	require.NoError(t, DB.Select("used_quota", "request_count").First(&storedUser, user.Id).Error)
+	assert.EqualValues(t, 25, storedUser.UsedQuota)
+	assert.EqualValues(t, 1, storedUser.RequestCount)
+	var storedChannel Channel
+	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
+	assert.EqualValues(t, 25, storedChannel.UsedQuota)
+
+	err := RecordMidjourneyTaskUsage(user.Id, 999999, 10)
+	assert.ErrorIs(t, err, gorm.ErrRecordNotFound)
+	require.NoError(t, DB.Select("used_quota", "request_count").First(&storedUser, user.Id).Error)
+	assert.EqualValues(t, 25, storedUser.UsedQuota)
+	assert.EqualValues(t, 1, storedUser.RequestCount)
+}
