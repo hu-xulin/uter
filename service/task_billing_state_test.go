@@ -336,3 +336,82 @@ func TestTaskBillingStateMachineRejectsInvalidTransition(t *testing.T) {
 func newTestMessage(text string) *common.Message {
 	return common.NewMessage(text)
 }
+
+func TestTaskBillingRetryCountIncrementsOnlyWithSuccessfulCAS(t *testing.T) {
+	truncate(t)
+	task := makeTask(t, 51, 151, 5000, 0, BillingSourceWallet, 0)
+	fromQuota, toQuota := 5000, 3000
+	transition := model.TaskBillingTransition{
+		FromState:           model.TaskBillingPending,
+		ToState:             model.TaskBillingSettlementPending,
+		FromQuota:           &fromQuota,
+		ToQuota:             &toQuota,
+		RetryCountIncrement: true,
+	}
+	won, err := model.TransitionTaskBilling(task.TaskID, transition)
+	require.NoError(t, err)
+	require.True(t, won)
+	won, err = model.TransitionTaskBilling(task.TaskID, transition)
+	require.NoError(t, err)
+	require.False(t, won)
+
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, 1, stored.BillingRetryCount, "one successful CAS must increment the retry counter exactly once")
+}
+
+func TestMarkTaskBillingForReconciliationDoesNotOverwriteTerminalState(t *testing.T) {
+	truncate(t)
+	task := makeTask(t, 52, 152, 5000, 0, BillingSourceWallet, 0)
+	fromQuota := 5000
+	won, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+		FromState: model.TaskBillingPending,
+		ToState:   model.TaskBillingSettled,
+		FromQuota: &fromQuota,
+	})
+	require.NoError(t, err)
+	require.True(t, won)
+
+	err = model.MarkTaskBillingForReconciliation(task.TaskID, "late stale reconciliation request")
+	require.ErrorIs(t, err, model.ErrTaskBillingStateConflict)
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingSettled, stored.BillingState)
+}
+
+func TestRefundTaskQuotaLostClaimIsNotReportedAsSuccess(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	task := makeTask(t, 53, 153, 5000, 0, BillingSourceWallet, 0)
+	fromQuota, toQuota := 5000, 0
+	won, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+		FromState: model.TaskBillingPending,
+		ToState:   model.TaskBillingRefundPending,
+		FromQuota: &fromQuota,
+		ToQuota:   &toQuota,
+	})
+	require.NoError(t, err)
+	require.True(t, won)
+
+	require.False(t, RefundTaskQuota(ctx, task, "duplicate request"), "refund_pending is not proof of a completed refund")
+	assert.Equal(t, 0, task.Quota)
+	assert.Equal(t, model.TaskBillingRefundPending, task.BillingState)
+}
+
+func TestRefundTaskQuotaReturnsFalseWhenLostClaimCannotRefreshSnapshot(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	task := makeTask(t, 54, 154, 5000, 0, BillingSourceWallet, 0)
+	require.NoError(t, model.DB.Delete(&model.Task{}, "task_id = ?", task.TaskID).Error)
+	require.False(t, RefundTaskQuota(ctx, task, "stale task snapshot"), "a failed snapshot refresh must never be reported as a successful refund")
+}
+
+
+func TestRefundTaskQuotaZeroQuotaStillChecksBillingState(t *testing.T) {
+	truncate(t)
+	task := makeTask(t, 56, 156, 0, 0, BillingSourceWallet, 0)
+	require.NoError(t, model.DB.Model(&model.Task{}).Where("task_id = ?", task.TaskID).
+		Update("billing_state", model.TaskBillingRefundPending).Error)
+	task.BillingState = model.TaskBillingRefundPending
+	require.False(t, RefundTaskQuota(context.Background(), task, "duplicate in-flight refund"))
+}
