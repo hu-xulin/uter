@@ -148,7 +148,7 @@ func TestUpsertSubscriptionTopUpBackfillsLegacyProvider(t *testing.T) {
 	require.NoError(t, db.Create(order).Error)
 	require.NoError(t, db.Create(topup).Error)
 
-	require.NoError(t, upsertSubscriptionTopUpTx(db, order))
+	require.NoError(t, upsertSubscriptionTopUpTx(db, order, ""))
 	var stored TopUp
 	require.NoError(t, db.Where("trade_no = ?", order.TradeNo).First(&stored).Error)
 	require.Equal(t, PaymentProviderEpay, stored.PaymentProvider)
