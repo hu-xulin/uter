@@ -175,3 +175,26 @@ func TestTaskAdjustFundingRejectsInvalidOrganizationID(t *testing.T) {
 	assert.Error(t, taskAdjustFunding(task, 1))
 	assert.Equal(t, common.UserStatusEnabled, loadUser(t, 812).Status)
 }
+
+func TestTaskFundingRejectsSubscriptionOwnedByAnotherUser(t *testing.T) {
+	truncate(t)
+	seedUser(t, 813, 1000)
+	seedUser(t, 814, 1000)
+	seedSubscription(t, 813, 814, 100, 90)
+	task := makeFundingTask(813, BillingSourceSubscription, 813, nil)
+	require.Error(t, taskAdjustFunding(task, 30))
+	assert.Equal(t, int64(90), loadSubscription(t, 813).AmountUsed)
+	assert.Equal(t, 1000, getUserQuota(t, 813))
+	assert.Equal(t, 1000, getUserQuota(t, 814))
+}
+
+func TestTaskFundingSubscriptionRefundCarryOver(t *testing.T) {
+	truncate(t)
+	seedUser(t, 815, 1000)
+	seedSubscription(t, 815, 815, 100, 10)
+	task := makeFundingTask(815, BillingSourceSubscription, 815, nil)
+	require.NoError(t, taskAdjustFunding(task, -25))
+	sub := loadSubscription(t, 815)
+	assert.Zero(t, sub.AmountUsed)
+	assert.Equal(t, int64(15), sub.RefundCarryOver)
+}
