@@ -18,6 +18,8 @@ class UaesIntegrationCheckTest < Minitest::Test
         Status: MIGRATION_PENDING
         UAES source commit: 84416f7f55c1166e3f5adfa0575c1ea713ff20d2
         Registry blob: 1c74e918b84b8cc18d2806a936721852b823ca75
+        | Registry version | `1.7.0` |
+        | Registry status | `DRAFT` |
         - payment, recharge, refund, balance
         - Token usage, pricing, quota
         - SQLite/MySQL/PostgreSQL
@@ -102,6 +104,28 @@ class UaesIntegrationCheckTest < Minitest::Test
     _out, err, status = run_checker(root)
     refute status.success?
     assert_match(/name: i18n-translate/, err)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+
+  def test_fails_when_registry_version_pin_is_removed
+    root = fixture
+    path = File.join(root, ".uaes/INTEGRATION.md")
+    File.write(path, File.read(path).sub("| Registry version | `1.7.0` |\n", ""))
+    _out, err, status = run_checker(root)
+    refute status.success?
+    assert_match(/Registry version/, err)
+  ensure
+    FileUtils.remove_entry(root) if root && File.exist?(root)
+  end
+
+  def test_fails_when_registry_status_pin_is_removed
+    root = fixture
+    path = File.join(root, ".uaes/INTEGRATION.md")
+    File.write(path, File.read(path).sub("| Registry status | `DRAFT` |\n", ""))
+    _out, err, status = run_checker(root)
+    refute status.success?
+    assert_match(/Registry status/, err)
   ensure
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
