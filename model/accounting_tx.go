@@ -20,13 +20,25 @@ func adjustUserUsedQuotaTx(tx *gorm.DB, userID int, delta int) error {
 		return nil
 	}
 
-	result := tx.Model(&User{}).
-		Where("id = ?", userID).
-		Update("used_quota", gorm.Expr("used_quota + ?", delta))
+	query := tx.Model(&User{}).Where("id = ?", userID)
+	if delta < 0 {
+		query = query.Where("used_quota >= ?", -delta)
+	}
+	result := query.Update("used_quota", gorm.Expr("used_quota + ?", delta))
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
+		var count int64
+		if err := tx.Model(&User{}).Where("id = ?", userID).Count(&count).Error; err != nil {
+			return err
+		}
+		if count == 0 {
+			return gorm.ErrRecordNotFound
+		}
+		if delta < 0 {
+			return errors.New("user used quota is insufficient for negative adjustment")
+		}
 		return gorm.ErrRecordNotFound
 	}
 	return nil
@@ -47,13 +59,25 @@ func adjustChannelUsedQuotaTx(tx *gorm.DB, channelID int, delta int) error {
 		return nil
 	}
 
-	result := tx.Model(&Channel{}).
-		Where("id = ?", channelID).
-		Update("used_quota", gorm.Expr("used_quota + ?", delta))
+	query := tx.Model(&Channel{}).Where("id = ?", channelID)
+	if delta < 0 {
+		query = query.Where("used_quota >= ?", -delta)
+	}
+	result := query.Update("used_quota", gorm.Expr("used_quota + ?", delta))
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected == 0 {
+		var count int64
+		if err := tx.Model(&Channel{}).Where("id = ?", channelID).Count(&count).Error; err != nil {
+			return err
+		}
+		if count == 0 {
+			return gorm.ErrRecordNotFound
+		}
+		if delta < 0 {
+			return errors.New("channel used quota is insufficient for negative adjustment")
+		}
 		return gorm.ErrRecordNotFound
 	}
 	return nil
