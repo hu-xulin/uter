@@ -21,6 +21,7 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 		WalletAppliedQuota: 25,
 	}
 	require.NoError(t, db.Create(&first).Error)
+	assert.Error(t, db.Model(&first).Update("billing_snapshot_json", `{"version":2}`).Error)
 	assert.Equal(t, "midjourney:101:full", first.IdempotencyKey)
 	assert.Equal(t, MidjourneyRefundPending, first.Status)
 	assert.Equal(t, 1, first.BillingVersion)
