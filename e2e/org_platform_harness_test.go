@@ -93,6 +93,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 		&model.Organization{}, &model.TwoFA{}, &model.TwoFABackupCode{},
 		&model.Checkin{}, &model.SubscriptionOrder{}, &model.UserSubscription{},
 		&model.SubscriptionPreConsumeRecord{}, &model.CustomOAuthProvider{},
+		&model.RefundIntent{},
 		&model.UserOAuthBinding{}, &model.PerfMetric{}, &model.SystemInstance{},
 		&model.SystemTask{}, &model.SystemTaskLock{}, &model.CasbinRule{},
 		&model.AuthzRole{}, &model.SubscriptionPlan{},
