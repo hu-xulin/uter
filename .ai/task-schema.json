@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://uter.ai/.ai/task-schema.json",
   "title": "Uter AIES Task Contract",
-  "description": "Standard task contract for AI-driven code execution on Uter. Convert natural-language requests into bounded, verifiable work items. See .ai/AIES.md chapter 4.",
+  "description": "Standard task contract for AI-driven code execution on Uter. Convert natural-language requests into bounded, verifiable work items. See .ai/AIES.md chapter 4. Requires agent identity, lifecycle state and scoped authorization for P01 governance.",
   "type": "object",
   "required": [
     "task_id",
@@ -14,7 +14,11 @@
     "applicable_specs",
     "acceptance_criteria",
     "test_plan",
-    "required_evidence"
+    "required_evidence",
+    "requester",
+    "agent_id",
+    "lifecycle_status",
+    "authorization"
   ],
   "properties": {
     "task_id": {
@@ -22,7 +26,9 @@
       "pattern": "^[A-Z][A-Z0-9_-]+$",
       "description": "Unique identifier, e.g. AUTH-UI-001."
     },
-    "title": { "type": "string" },
+    "title": {
+      "type": "string"
+    },
     "goal": {
       "type": "string",
       "minLength": 1,
@@ -47,7 +53,13 @@
     },
     "risk_level": {
       "type": "string",
-      "enum": ["R0", "R1", "R2", "R3"]
+      "enum": [
+        "R0",
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ]
     },
     "original_request": {
       "type": "string",
@@ -55,57 +67,88 @@
     },
     "scope": {
       "type": "object",
-      "required": ["include", "exclude"],
+      "required": [
+        "include",
+        "exclude"
+      ],
       "properties": {
         "include": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Allowed features/modules/files."
         },
         "exclude": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Explicitly out-of-scope items."
         },
         "preserve_behavior": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Existing behavior that must remain intact."
         }
       }
     },
     "applicable_specs": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Spec IDs or file paths, e.g. design-system.md §12, AGENTS.md Authentication Security."
     },
     "constraints": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "facts": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Verified from code/spec/config/tests."
     },
     "assumptions": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Reversible, documented defaults for low-risk ambiguity."
     },
     "unknowns": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "implementation_plan": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["step", "files"],
+        "required": [
+          "step",
+          "files"
+        ],
         "properties": {
-          "step": { "type": "string" },
-          "files": { "type": "array", "items": { "type": "string" } },
-          "reason": { "type": "string" }
+          "step": {
+            "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string"
+          }
         }
       }
     },
@@ -114,14 +157,32 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "criterion", "verification"],
+        "required": [
+          "id",
+          "criterion",
+          "verification"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "criterion": { "type": "string", "description": "Observable, judgeable condition." },
-          "verification": { "type": "string", "description": "Command or manual method." },
+          "id": {
+            "type": "string"
+          },
+          "criterion": {
+            "type": "string",
+            "description": "Observable, judgeable condition."
+          },
+          "verification": {
+            "type": "string",
+            "description": "Command or manual method."
+          },
           "status": {
             "type": "string",
-            "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"],
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "NOT_RUN",
+              "NOT_APPLICABLE"
+            ],
             "default": "NOT_RUN"
           }
         }
@@ -131,13 +192,26 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["command"],
+        "required": [
+          "command"
+        ],
         "properties": {
-          "command": { "type": "string", "description": "Real project command; never invented." },
-          "scope": { "type": "string" },
+          "command": {
+            "type": "string",
+            "description": "Real project command; never invented."
+          },
+          "scope": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
-            "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"],
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "NOT_RUN",
+              "NOT_APPLICABLE"
+            ],
             "default": "NOT_RUN"
           }
         }
@@ -145,25 +219,190 @@
     },
     "required_evidence": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "e.g. Changed-file list, actual test results, acceptance checklist."
     },
     "approval_gates": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Operations needing explicit authorization (commit/push/deploy/production/financial)."
     },
     "delivery_status": {
       "type": "string",
-      "enum": ["PASSED", "PARTIAL", "BLOCKED", "FAILED", "NOT_RUN"]
+      "enum": [
+        "PASSED",
+        "PARTIAL",
+        "BLOCKED",
+        "FAILED",
+        "NOT_RUN"
+      ]
     },
     "git_state": {
       "type": "object",
       "properties": {
-        "branch": { "type": "string" },
-        "commit_performed": { "type": "boolean", "default": false },
-        "push_performed": { "type": "boolean", "default": false },
-        "notes": { "type": "string", "description": "Concurrent WIP, protected files, etc." }
+        "branch": {
+          "type": "string"
+        },
+        "commit_performed": {
+          "type": "boolean",
+          "default": false
+        },
+        "push_performed": {
+          "type": "boolean",
+          "default": false
+        },
+        "notes": {
+          "type": "string",
+          "description": "Concurrent WIP, protected files, etc."
+        },
+        "work_branch_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Number of non-main project branches; maximum one."
+        },
+        "preexisting_worktree_state": {
+          "type": "string",
+          "enum": [
+            "CLEAN",
+            "DIRTY_PRESERVED",
+            "BLOCKED_UNKNOWN"
+          ],
+          "description": "Record the pre-existing workspace state before edits."
+        }
+      }
+    },
+    "requester": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human or system principal that originated the task."
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]+$",
+      "description": "Stable registered Agent identity executing this task."
+    },
+    "lifecycle_status": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "EXECUTING",
+        "VERIFYING",
+        "CLOSED",
+        "BLOCKED",
+        "FAILED",
+        "INTERRUPTED"
+      ],
+      "description": "Durable task lifecycle state; never infer CLOSED from an interrupted or failed run."
+    },
+    "authorization": {
+      "type": "object",
+      "required": [
+        "authorization_id",
+        "allowed_actions",
+        "forbidden_actions",
+        "target_resources",
+        "environment",
+        "expires_at"
+      ],
+      "properties": {
+        "authorization_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowed_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "forbidden_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "target_resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "environment": {
+          "type": "string",
+          "enum": [
+            "LOCAL_SANDBOX",
+            "DEVELOPMENT",
+            "TEST",
+            "STAGING",
+            "PRODUCTION"
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "approval_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "execution_audit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "agent_id",
+          "tool_id",
+          "action",
+          "resource",
+          "timestamp",
+          "result"
+        ],
+        "properties": {
+          "agent_id": {
+            "type": "string"
+          },
+          "tool_id": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "ALLOWED",
+              "DENIED",
+              "SUCCEEDED",
+              "FAILED",
+              "BLOCKED"
+            ]
+          },
+          "evidence_ref": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
       }
     }
   }
