@@ -43,7 +43,7 @@ const (
 var errRefundIntentAlreadyDone = errors.New("refund intent already done")
 
 type RefundIntent struct {
-	Id            int    `gorm:"primaryKey"`
+	Id             int    `gorm:"primaryKey"`
 	IdempotencyKey string `gorm:"size:128;not null;uniqueIndex"`
 	UserId        int    `gorm:"index"`
 	FundingSource string `gorm:"size:16"` // wallet | subscription
