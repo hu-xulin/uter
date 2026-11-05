@@ -21,6 +21,7 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 	}
 	require.NoError(t, db.Create(&event).Error)
 	assert.Equal(t, MidjourneyRefundOutboxPending, event.Status)
+	assert.Equal(t, 1, event.PayloadVersion)
 	assert.NotZero(t, event.CreatedAt)
 
 	duplicate := MidjourneyRefundOutbox{
@@ -37,6 +38,7 @@ func TestMidjourneyRefundOutboxIdentityAndValidation(t *testing.T) {
 		{EventKey: "missing-type", RefundOperationID: 1, PayloadJSON: `{}`},
 		{EventKey: "bad-json", RefundOperationID: 1, EventType: "task_billing_log", PayloadJSON: "{"},
 		{EventKey: "bad-status", RefundOperationID: 1, EventType: "task_billing_log", PayloadJSON: `{}`, Status: MidjourneyRefundOutboxDelivered},
+		{EventKey: "bad-version", RefundOperationID: 1, EventType: "task_billing_log", PayloadVersion: -1, PayloadJSON: `{}`},
 	} {
 		assert.Error(t, db.Create(invalid).Error)
 	}
