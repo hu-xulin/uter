@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/glebarez/sqlite"
@@ -92,4 +93,62 @@ func TestMidjourneyRefundOutboxLeaseIsExclusive(t *testing.T) {
 	var persisted MidjourneyRefundOutbox
 	require.NoError(t, db.First(&persisted, first.ID).Error)
 	require.Equal(t, MidjourneyRefundOutboxDelivered, persisted.Status)
+}
+
+
+func TestMidjourneyRefundOutboxRetriesThenDeadLetters(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{TablePrefix: "mj_refund_retry_test_"},
+	})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	previousDB := DB
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		require.NoError(t, sqlDB.Close())
+	})
+	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOutbox{}))
+
+	transient := MidjourneyRefundOutbox{
+		EventKey: "midjourney:789:refund-log",
+		RefundOperationID: 1,
+		EventType: "midjourney.refund.completed",
+		PayloadJSON: `{"task_id":789,"mj_id":"mj-task-789","user_id":1,"quota":10,"result":"refunded"}`,
+	}
+	require.NoError(t, db.Create(&transient).Error)
+	transient.Status = MidjourneyRefundOutboxDelivering
+	transient.LeaseOwner = "runner-a"
+	transient.AttemptCount = 1
+	require.NoError(t, db.Model(&MidjourneyRefundOutbox{}).Where("id = ?", transient.ID).Updates(map[string]any{
+		"status": MidjourneyRefundOutboxDelivering, "lease_owner": "runner-a", "attempt_count": 1,
+	}).Error)
+	require.NoError(t, finishMidjourneyRefundOutboxEvent(&transient, "runner-a", errors.New("temporary LOG_DB outage")))
+	var retry MidjourneyRefundOutbox
+	require.NoError(t, db.First(&retry, transient.ID).Error)
+	require.Equal(t, MidjourneyRefundOutboxPending, retry.Status)
+	require.Greater(t, retry.NextAttemptAt, common.GetTimestamp())
+	require.Empty(t, retry.LeaseOwner)
+
+	dead := MidjourneyRefundOutbox{
+		EventKey: "midjourney:790:refund-log",
+		RefundOperationID: 2,
+		EventType: "midjourney.refund.completed",
+		PayloadJSON: `{"task_id":790,"mj_id":"mj-task-790","user_id":1,"quota":10,"result":"refunded"}`,
+	}
+	require.NoError(t, db.Create(&dead).Error)
+	dead.Status = MidjourneyRefundOutboxDelivering
+	dead.LeaseOwner = "runner-a"
+	dead.AttemptCount = midjourneyRefundOutboxMaxAttempts
+	require.NoError(t, db.Model(&MidjourneyRefundOutbox{}).Where("id = ?", dead.ID).Updates(map[string]any{
+		"status": MidjourneyRefundOutboxDelivering, "lease_owner": "runner-a", "attempt_count": dead.AttemptCount,
+	}).Error)
+	require.NoError(t, finishMidjourneyRefundOutboxEvent(&dead, "runner-a", errors.New("permanent LOG_DB outage")))
+	var persistedDead MidjourneyRefundOutbox
+	require.NoError(t, db.First(&persistedDead, dead.ID).Error)
+	require.Equal(t, MidjourneyRefundOutboxDeadLetter, persistedDead.Status)
+	require.NotEmpty(t, persistedDead.LastError)
+	require.Empty(t, persistedDead.LeaseOwner)
 }
