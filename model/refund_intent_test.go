@@ -212,3 +212,32 @@ func TestUsageAdjustmentHelpersReturnMissingLedgerRows(t *testing.T) {
 	require.Error(t, UpdateUserUsedQuotaWithError(2147483000, -1))
 	require.Error(t, UpdateChannelUsedQuotaWithError(2147483000, -1))
 }
+
+func TestApplyTaskRefundUsageAtomicallyDrainsBatchDeltas(t *testing.T) {
+	user, _, _ := newRefundIntentFixture(t)
+	channel := Channel{Key: "refund-usage-channel", Type: 1, Status: common.ChannelStatusEnabled}
+	require.NoError(t, DB.Create(&channel).Error)
+
+	addNewRecord(BatchUpdateTypeUsedQuota, user.Id, 30)
+	addNewRecord(BatchUpdateTypeChannelUsedQuota, channel.Id, 30)
+	require.NoError(t, ApplyTaskRefundUsage(user.Id, channel.Id, 30))
+
+	var storedUser User
+	require.NoError(t, DB.Select("id", "used_quota").First(&storedUser, user.Id).Error)
+	var storedChannel Channel
+	require.NoError(t, DB.Select("id", "used_quota").First(&storedChannel, channel.Id).Error)
+	assert.EqualValues(t, 0, storedUser.UsedQuota)
+	assert.EqualValues(t, 0, storedChannel.UsedQuota)
+	assert.NotContains(t, batchUpdateStores[BatchUpdateTypeUsedQuota], user.Id)
+	assert.NotContains(t, batchUpdateStores[BatchUpdateTypeChannelUsedQuota], channel.Id)
+}
+
+func TestApplyTaskRefundUsageKeepsQueuedDeltasOnFailure(t *testing.T) {
+	user, _, _ := newRefundIntentFixture(t)
+	addNewRecord(BatchUpdateTypeUsedQuota, user.Id, 30)
+
+	err := ApplyTaskRefundUsage(user.Id, 2147483000, 30)
+	require.Error(t, err)
+	assert.Equal(t, 30, batchUpdateStores[BatchUpdateTypeUsedQuota][user.Id])
+	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
+}
