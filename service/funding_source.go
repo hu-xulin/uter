@@ -142,7 +142,7 @@ func (w *WalletFunding) Settle(delta int) error {
 		// 条件 UPDATE（TOCTOU 已在此关闭），结算点若再按 sub_quota_limit 截断，会把超出部分
 		// 永久丢弃，使成员账本与 logs.Quota 脱节、GetOrgUsedQuota 少记。超支以
 		// used_quota > sub_quota_limit 显式暴露并由下一次准入拦住。
-		return model.IncrUserUsedQuotaClamped(w.userId, delta)
+		return model.AdjustUserUsedQuota(w.userId, delta)
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, true)
@@ -166,7 +166,7 @@ func (w *WalletFunding) Refund() error {
 			return fmt.Errorf("roll back organization %d reserve of %d: %w", orgId, w.consumed, err)
 		}
 		// 撤销预扣点在 members.used_quota 上的原子预留，避免成员用量被永久多记。
-		if err := model.IncrUserUsedQuotaClamped(w.userId, -w.consumed); err != nil {
+		if err := model.AdjustUserUsedQuota(w.userId, -w.consumed); err != nil {
 			return fmt.Errorf("roll back member %d sub-quota reserve of %d: %w", w.userId, w.consumed, err)
 		}
 		w.consumed = 0
