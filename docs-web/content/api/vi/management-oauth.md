@@ -115,18 +115,6 @@
 |---|---|
 | `200` | Thành công |
 
-## Liên kết WeChat (Bind WeChat)
-
-🔓 Không cần xác thực
-
-`GET` `/api/oauth/wechat/bind`
-
-### Phản hồi
-
-| Mã trạng thái | Mô tả |
-|---|---|
-| `200` | Thành công |
-
 ## Đăng nhập WeChat OAuth (WeChat OAuth Login)
 
 🔓 Không cần xác thực (callback OAuth)
