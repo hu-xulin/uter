@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/uter-ai/uter/common"
@@ -41,6 +42,8 @@ import (
 //	m1        role=1    org=A  org_role=member    销售部成员
 //	m2        role=1    org=A  org_role=member    研发部成员
 //	outsider  role=1    org=0                     平台直管普通用户
+
+var orgE2EDatabaseSequence uint64
 
 const (
 	orgE2EPassword = "Test1234!"
@@ -79,7 +82,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	previousPasswordLogin := common.PasswordLoginEnabled
 	previousSSRF := *system_setting.GetFetchSetting()
 
-	database, err := gorm.Open(sqlite.Open("file:orge2e?mode=memory&cache=shared"), &gorm.Config{})
+	database, err := gorm.Open(sqlite.Open("file:orge2e-"+strconv.FormatUint(atomic.AddUint64(&orgE2EDatabaseSequence, 1), 10)+"?mode=memory&cache=shared"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, database.AutoMigrate(
 		&model.Channel{}, &model.Token{}, &model.User{}, &model.UserSession{},
