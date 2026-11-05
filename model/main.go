@@ -376,6 +376,9 @@ func migrateDB() error {
 		&Ability{},
 		&Log{},
 		&Midjourney{},
+		&MidjourneyRefundOperation{},
+		&MidjourneyRefundOutbox{},
+		&MidjourneyRefundLogReceipt{},
 		&TopUp{},
 		&QuotaData{},
 		&Task{},
@@ -445,7 +448,7 @@ func migrateLOGDB() error {
 	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
 		return migrateClickHouseLogDB()
 	}
-	if err := LOG_DB.AutoMigrate(&Log{}); err != nil {
+	if err := LOG_DB.AutoMigrate(&Log{}, &MidjourneyRefundLogReceipt{}); err != nil {
 		return err
 	}
 	// AutoMigrate 只建不删：存量库里被复合索引覆盖的单列索引要在这里补删，
