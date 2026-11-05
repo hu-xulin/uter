@@ -616,3 +616,43 @@ func likeContains(keyword string) (string, error) {
 	}
 	return "%" + pattern + "%", nil
 }
+
+ // IncreaseTokenQuotaPersisted applies a token refund directly to the durable
+ // ledger, bypassing the volatile batch queue. Cache synchronization happens
+ // only after the database update succeeds.
+func IncreaseTokenQuotaPersisted(tokenId int, key string, quota int) error {
+	if quota < 0 {
+		return errors.New("quota cannot be negative")
+	}
+	if err := increaseTokenQuota(tokenId, quota); err != nil {
+		return err
+	}
+	if common.RedisEnabled {
+		runCacheSync(func() {
+			if _, err := cacheApplyTokenQuotaDelta(tokenId, key, int64(quota)); err != nil {
+				common.SysLog(common.LogText("failed to sync persisted token refund to cache: %s", err.Error()))
+			}
+		})
+	}
+	return nil
+}
+
+// DecreaseTokenQuotaPersisted applies a token charge directly to the durable
+// ledger, bypassing the volatile batch queue. Cache synchronization happens
+// only after the database update succeeds.
+func DecreaseTokenQuotaPersisted(tokenId int, key string, quota int) error {
+	if quota < 0 {
+		return errors.New("quota cannot be negative")
+	}
+	if err := decreaseTokenQuota(tokenId, quota); err != nil {
+		return err
+	}
+	if common.RedisEnabled {
+		runCacheSync(func() {
+			if _, err := cacheApplyTokenQuotaDelta(tokenId, key, int64(-quota)); err != nil {
+				common.SysLog(common.LogText("failed to sync persisted token charge to cache: %s", err.Error()))
+			}
+		})
+	}
+	return nil
+}
