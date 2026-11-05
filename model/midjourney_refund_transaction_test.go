@@ -171,7 +171,6 @@ func TestFindPendingMidjourneyRefundTaskIDsStopsAfterRefundOrReconciliation(t *t
 	assert.Equal(t, 100, storedToken.RemainQuota)
 }
 
-
 func TestRefundMidjourneyTaskBillingQuarantinesMissingToken(t *testing.T) {
 	user, token, _, task := createMidjourneyRefundFixture(t, true)
 	require.NoError(t, DB.Delete(&Token{}, token.Id).Error)
