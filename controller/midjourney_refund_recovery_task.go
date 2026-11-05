@@ -10,17 +10,17 @@ import (
 )
 
 const (
-	midjourneyRefundRecoveryInterval = time.Minute
+	midjourneyRefundRecoveryInterval  = time.Minute
 	midjourneyRefundRecoveryBatchSize = 100
 )
 
 type midjourneyRefundRecoveryHandler struct{}
 
 type midjourneyRefundRecoveryResult struct {
-	Scanned int `json:"scanned"`
-	Refunded int `json:"refunded"`
+	Scanned                int `json:"scanned"`
+	Refunded               int `json:"refunded"`
 	ReconciliationRequired int `json:"reconciliation_required"`
-	Failed int `json:"failed"`
+	Failed                 int `json:"failed"`
 }
 
 func (midjourneyRefundRecoveryHandler) Type() string {
