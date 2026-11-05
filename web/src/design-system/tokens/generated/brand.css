@@ -1,0 +1,48 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+
+/*
+ * GENERATED FILE — DO NOT EDIT. UAES-05-002 §7 / UAES-05-011-006.
+ * Source: src/design-system/source/brand.tokens.json
+ * Source version: 1.0.0 (DRAFT)
+ * Generator: scripts/generate-design-tokens.mjs
+ * Generator version: 1.1.0
+ * Spec: UAES-05-002 §6, UAES-05-011-006, UAES-05-GATE-001 DQ-024
+ */
+:root {
+  --uaes-brand-primary: #5B5EE6;
+  --uaes-brand-primary-foreground: #FFFFFF;
+  --uaes-brand-hover: #4F52D1;
+  --uaes-brand-active: #4A4DC5;
+  --uaes-brand-soft: #F0F0FF;
+  --uaes-brand-soft-foreground: #5558D8;
+  --uaes-brand-border: #D9DAFF;
+  --uaes-brand-subtle-surface: #FAFBFC;
+}
+
+.dark {
+  --uaes-brand-primary: #A1A3F7;
+  --uaes-brand-primary-foreground: #020617;
+  --uaes-brand-hover: #B1B3FF;
+  --uaes-brand-active: #9294F7;
+  --uaes-brand-soft: #25264A;
+  --uaes-brand-soft-foreground: #B1B3FF;
+  --uaes-brand-border: #45466F;
+  --uaes-brand-subtle-surface: #0F172A;
+}
