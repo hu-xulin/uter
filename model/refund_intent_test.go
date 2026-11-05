@@ -241,3 +241,14 @@ func TestApplyTaskRefundUsageKeepsQueuedDeltasOnFailure(t *testing.T) {
 	assert.Equal(t, 30, batchUpdateStores[BatchUpdateTypeUsedQuota][user.Id])
 	assert.Equal(t, 100, getUserQuotaFromDB(t, user.Id))
 }
+
+func TestApplyTaskBillingUsageDeltaFlushesQueueForZeroDelta(t *testing.T) {
+	user, _, _ := newRefundIntentFixture(t)
+	addNewRecord(BatchUpdateTypeUsedQuota, user.Id, 3000)
+	require.NoError(t, ApplyTaskBillingUsageDelta(user.Id, 0, 0))
+
+	var stored User
+	require.NoError(t, DB.Select("id", "used_quota").First(&stored, user.Id).Error)
+	assert.EqualValues(t, 3000, stored.UsedQuota)
+	assert.NotContains(t, batchUpdateStores[BatchUpdateTypeUsedQuota], user.Id)
+}
