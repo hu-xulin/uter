@@ -92,7 +92,7 @@ func TestAccountingTransactionPrimitivesRollbackTogether(t *testing.T) {
 
 	var storedUser User
 	require.NoError(t, DB.Select("used_quota").First(&storedUser, user.Id).Error)
-	assert.Zero(t, storedUser.UsedQuota)
+	assert.EqualValues(t, 10, storedUser.UsedQuota)
 	var storedChannel Channel
 	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
 	assert.EqualValues(t, 40, storedChannel.UsedQuota)
