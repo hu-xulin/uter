@@ -113,7 +113,6 @@ func TestMigrateOptionPrimaryKeyRejectsNilDatabase(t *testing.T) {
 	require.ErrorContains(t, migrateOptionPrimaryKey(nil), "database is nil")
 }
 
-
 // TestMigrateDBAbortsStartupWhenOptionsPrimaryKeyCannotBeRebuilt protects
 // payment/security configuration from ambiguous duplicate option values.
 func TestMigrateDBAbortsStartupWhenOptionsPrimaryKeyCannotBeRebuilt(t *testing.T) {
