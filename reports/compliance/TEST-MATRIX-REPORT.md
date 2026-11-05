@@ -99,5 +99,19 @@ run `42056763863` 快照：`Go dependency vulnerability scan` / `Electron deskto
 - 三个后端 job 失败均指向 `TestFixedPriceBillingDatabaseMatrix/sqlite` 与 `refund intent requires the originating request id`，与 `P02-002` / `P09-002` / `P09-003` 同源；race detector 日志无 `WARNING: DATA RACE`。
 - exact-head CI 未通过，不宣称「CI 全绿」。
 
+## 收敛后 CI 复跑（head `0a7e73def`，run `42067958313` attempt 2）
+
+PR #31 工作并入唯一分支并删除第二条分支后复跑失败 job：
+
+| 项 | 结果 |
+|---|---|
+| `UAES integration contract`（job `127392710324`） | **success** — `Non-main branches (1): PASS: project has at most one non-main work branch.` |
+| `Frontend typecheck, tests, lint and production build` | success |
+| `UEQE review engine` / `Electron desktop secret persistence` / `Go dependency vulnerability scan` | success |
+| `Backend vet, build, and test` / `Backend race detector` / `Backend coverage report` | failure（预存 `TestFixedPriceBillingDatabaseMatrix/sqlite` 与 `refund intent requires the originating request id`） |
+| run 整体 conclusion | `failure`（5 success / 3 failure） |
+
+分支守卫的成功使 `UAES-AUDIT-P11-003` 正式销项（第 12 项）。本地合并后门禁另见 PR #15 收敛评论：Go gofmt/vet/build/定向测试、前端 typecheck/lint/design-tokens/copyright/i18n、`build:check`、全量 vitest 3022/3022、6 项 UAES/规范门禁，全部 exit 0。
+
 ## 禁止事项声明
 未使用 Mock 冒充集成验证、未删除失败测试、未降低门禁阈值、未排除文件/目录、未把 NOT_RUN 记为通过。
