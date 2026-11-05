@@ -70,3 +70,14 @@ The final Uter PR head and CI run must be rechecked after the audit and traceabi
 ## 8. Documentation-generator regression gate
 
 A regression helper `should_skip_api_path` now owns the retired-path filter. Added `docs-web/scripts/test_sync_upstream_docs.py` with positive assertions for both retired paths and negative assertions for current OAuth/verification paths. Uter CI's frontend job now runs both Python syntax validation and this regression test before frontend checks. The workflow change is part of the current PR branch; its exact-head CI result is pending.
+
+
+## 9. Final verification — 2026-11-05
+
+- UAES Architecture Source Checks [run 41971060421](https://github.com/hu-xulin/uaes/actions/runs/41971060421): **PASS** at UAES PR #1 head `88b96136d48cad65056918cac72a1ac6017fe139`, with Uter source pinned to `422caafffb7a64370700ddd4859a057911f5f9e0`.
+- API compatibility and approval fixtures: **PASS**. Exactly the two approved legacy removals are accepted; unapproved removal and stale approval negative controls remain blocking.
+- Live router/OpenAPI parity: **PASS** — 197 documented operations covered by 484 static Gin and built-in plugin routes (450 static Gin + 34 dynamic plugin routes).
+- UAES Database Migration Dialect Matrix [run 41971060428](https://github.com/hu-xulin/uaes/actions/runs/41971060428): **PASS** (selected tests only; not full migration recovery certification).
+- Uter CI [run 41970513914](https://github.com/hu-xulin/uter/actions/runs/41970513914): **PASS**, all 8 jobs, at Uter source commit `422caafffb7a64370700ddd4859a057911f5f9e0`. This includes the new docs-generator regression step, frontend typecheck/tests/lint/build, backend tests, coverage, dependency scan, race detector, Electron secret persistence, UAES integration, and UEQE review.
+
+These results resolve the two legacy route-parity discrepancies and validate the approved contract cleanup. They do not certify absence of third-party historical consumers, full database rollback/recovery, all UAES standards, or production behavior.
