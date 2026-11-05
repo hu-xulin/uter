@@ -11,15 +11,3 @@
 | Mã trạng thái | Mô tả |
 |---|---|
 | `200` | Thành công |
-
-## Lấy trạng thái xác minh (Get Verification Status)
-
-🔐 Yêu cầu đăng nhập (quyền User)
-
-`GET` `/api/verify/status`
-
-### Phản hồi
-
-| Mã trạng thái | Mô tả |
-|---|---|
-| `200` | Thành công |
