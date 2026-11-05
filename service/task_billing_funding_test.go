@@ -198,3 +198,23 @@ func TestTaskFundingSubscriptionRefundCarryOver(t *testing.T) {
 	assert.Zero(t, sub.AmountUsed)
 	assert.Equal(t, int64(15), sub.RefundCarryOver)
 }
+
+func TestTaskAdjustFundingPersonalWalletDebitPersists(t *testing.T) {
+	truncate(t)
+	seedUser(t, 816, 1000)
+	orgID := 0
+	task := makeFundingTask(816, BillingSourceWallet, 0, &orgID)
+
+	require.NoError(t, taskAdjustFunding(task, 125))
+	assert.Equal(t, 875, getUserQuota(t, 816))
+}
+
+func TestTaskAdjustFundingPersonalWalletRefundPersists(t *testing.T) {
+	truncate(t)
+	seedUser(t, 817, 1000)
+	orgID := 0
+	task := makeFundingTask(817, BillingSourceWallet, 0, &orgID)
+
+	require.NoError(t, taskAdjustFunding(task, -125))
+	assert.Equal(t, 1125, getUserQuota(t, 817))
+}
