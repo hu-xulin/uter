@@ -62,7 +62,7 @@ func TestTaskAdjustFundingOrganizationUpdatesBothLedgers(t *testing.T) {
 	require.NoError(t, taskAdjustFunding(task, 25))
 
 	assert.Equal(t, int64(125), loadOrganization(t, 801).UsedQuota)
-	assert.Equal(t, int64(65), loadUser(t, 801).UsedQuota)
+	assert.Equal(t, 65, loadUser(t, 801).UsedQuota)
 }
 
 func TestTaskAdjustFundingOrganizationRefundUpdatesBothLedgers(t *testing.T) {
@@ -72,7 +72,7 @@ func TestTaskAdjustFundingOrganizationRefundUpdatesBothLedgers(t *testing.T) {
 	require.NoError(t, taskAdjustFunding(task, -25))
 
 	assert.Equal(t, int64(75), loadOrganization(t, 802).UsedQuota)
-	assert.Equal(t, int64(15), loadUser(t, 802).UsedQuota)
+	assert.Equal(t, 15, loadUser(t, 802).UsedQuota)
 }
 
 func TestTaskAdjustFundingOrganizationMemberUnderflowRollsBackOrganization(t *testing.T) {
@@ -82,7 +82,7 @@ func TestTaskAdjustFundingOrganizationMemberUnderflowRollsBackOrganization(t *te
 	err := taskAdjustFunding(task, -10)
 	require.Error(t, err)
 	assert.Equal(t, int64(100), loadOrganization(t, 803).UsedQuota)
-	assert.Equal(t, int64(5), loadUser(t, 803).UsedQuota)
+	assert.Equal(t, 5, loadUser(t, 803).UsedQuota)
 }
 
 func TestTaskAdjustFundingOrganizationMissingMemberRollsBackOrganization(t *testing.T) {
@@ -156,7 +156,7 @@ func TestTaskAdjustFundingZeroDeltaIsNoop(t *testing.T) {
 	require.NoError(t, taskAdjustFunding(task, 0))
 
 	assert.Equal(t, int64(100), loadOrganization(t, 810).UsedQuota)
-	assert.Equal(t, int64(40), loadUser(t, 810).UsedQuota)
+	assert.Equal(t, 40, loadUser(t, 810).UsedQuota)
 }
 
 func TestTaskAdjustFundingNilTaskFailsClosed(t *testing.T) {
