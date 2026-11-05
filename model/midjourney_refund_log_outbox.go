@@ -251,3 +251,25 @@ func ProcessMidjourneyRefundOutboxOnce(ctx context.Context, owner string, limit 
 	}
 	return result, firstErr
 }
+
+
+// HasPendingMidjourneyRefundOutbox reports whether the independent delivery
+// worker has events ready now or abandoned leases that can be reclaimed.
+func HasPendingMidjourneyRefundOutbox() bool {
+	if DB == nil {
+		return true
+	}
+	var count int64
+	now := common.GetTimestamp()
+	err := DB.Model(&MidjourneyRefundOutbox{}).
+		Where(
+			"(status = ? AND next_attempt_at <= ?) OR (status = ? AND lease_until <= ? AND next_attempt_at <= ?)",
+			MidjourneyRefundOutboxPending, now,
+			MidjourneyRefundOutboxDelivering, now, now,
+		).Count(&count).Error
+	if err != nil {
+		common.SysError(common.LogText("failed to inspect Midjourney refund outbox: %s", err.Error()))
+		return true
+	}
+	return count > 0
+}
