@@ -37,6 +37,10 @@ func PrepareMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.
 	task.Quota = 0
 	task.TokenId = 0
 	task.BillingChannelId = 0
+	task.BillingVersion = 0
+	task.BillingStatus = "not_billable"
+	task.BillingWalletApplied = false
+	task.BillingTokenApplied = false
 	if !shouldBill {
 		return false, nil
 	}
@@ -52,6 +56,10 @@ func PrepareMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.
 
 	task.Quota = quota
 	task.BillingChannelId = task.ChannelId
+	task.BillingVersion = 1
+	task.BillingStatus = "prepared"
+	task.BillingWalletApplied = false
+	task.BillingTokenApplied = false
 	if relayInfo.ChannelMeta != nil && relayInfo.ChannelId > 0 {
 		task.BillingChannelId = relayInfo.ChannelId
 	}
@@ -70,20 +78,40 @@ func SettleMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.M
 		return false, errors.New("Midjourney task must be persisted before billing")
 	}
 
+	// Persist a charging marker before touching either wallet or token quota.
+	// If settlement succeeds but the following write fails, recovery can
+	// distinguish an ambiguous charge from a task that was never charged.
+	task.BillingStatus = "charging"
+	task.BillingWalletApplied = false
+	task.BillingTokenApplied = false
+	if err := task.UpdateBillingState(); err != nil {
+		return false, fmt.Errorf("persist Midjourney charging marker: %w", err)
+	}
+
 	result, billingErr := postConsumeQuotaWithResult(relayInfo, task.Quota, 0, true)
 	if !result.FundingApplied {
 		task.Quota = 0
 		task.TokenId = 0
 		task.BillingChannelId = 0
+		task.BillingStatus = "failed"
+		task.BillingWalletApplied = false
+		task.BillingTokenApplied = false
 		if updateErr := task.UpdateBillingState(); updateErr != nil {
 			return false, errors.Join(billingErr, fmt.Errorf("clear Midjourney billing state: %w", updateErr))
 		}
 		return false, billingErr
 	}
 
+	task.BillingWalletApplied = true
+	task.BillingTokenApplied = result.TokenApplied
 	task.TokenId = 0
 	if result.TokenApplied {
 		task.TokenId = relayInfo.TokenId
+	}
+	if result.TokenApplied {
+		task.BillingStatus = "applied"
+	} else {
+		task.BillingStatus = "partial"
 	}
 	if updateErr := task.UpdateBillingState(); updateErr != nil {
 		return true, errors.Join(billingErr, fmt.Errorf("update Midjourney billing state: %w", updateErr))
