@@ -73,3 +73,42 @@ func TestMigrateOptionPrimaryKeyFailsClosedOnConflictingDuplicateValues(t *testi
 	).Scan(&backups).Error)
 	assert.Zero(t, backups, "ambiguous data must not be moved to a backup as if migration succeeded")
 }
+
+func TestMigrateOptionPrimaryKeyRecoversFromStaleTemporaryTable(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.Exec("CREATE TABLE options (key TEXT, value TEXT)").Error)
+	require.NoError(t, db.Exec("INSERT INTO options (key, value) VALUES (?, ?)", "payment", "alipay").Error)
+	// Simulate a temporary table left behind by an interrupted earlier attempt.
+	require.NoError(t, db.Exec("CREATE TABLE options_pk_tmp (stale TEXT)").Error)
+	require.NoError(t, db.Exec("INSERT INTO options_pk_tmp (stale) VALUES (?)", "must-not-survive").Error)
+
+	require.NoError(t, migrateOptionPrimaryKey(db))
+	var active []Option
+	require.NoError(t, db.Find(&active).Error)
+	require.Equal(t, []Option{{Key: "payment", Value: "alipay"}}, active)
+	require.False(t, db.Migrator().HasTable(optionPrimaryKeyTmpTable))
+	unique, err := optionsKeyIsUnique(db)
+	require.NoError(t, err)
+	require.True(t, unique)
+}
+
+func TestMigrateOptionPrimaryKeyIsNoopWhenAlreadyUnique(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.Exec("CREATE TABLE options (key TEXT PRIMARY KEY, value TEXT)").Error)
+	require.NoError(t, db.Exec("INSERT INTO options (key, value) VALUES (?, ?)", "existing", "keep").Error)
+
+	require.NoError(t, migrateOptionPrimaryKey(db))
+	var count int64
+	require.NoError(t, db.Table("options").Count(&count).Error)
+	require.EqualValues(t, 1, count)
+	require.False(t, db.Migrator().HasTable(optionPrimaryKeyTmpTable))
+	var backupCount int64
+	require.NoError(t, db.Raw("SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name LIKE ?", optionLegacyTablePrefix+"%").Scan(&backupCount).Error)
+	require.Zero(t, backupCount, "a valid unique options table must not be rebuilt")
+}
+
+func TestMigrateOptionPrimaryKeyRejectsNilDatabase(t *testing.T) {
+	require.ErrorContains(t, migrateOptionPrimaryKey(nil), "database is nil")
+}
