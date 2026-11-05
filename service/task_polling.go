@@ -142,9 +142,7 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 	// 后者负责「永远不结束的任务」。即使当前没有任何平台 Adapter，也必须执行。
 	ReconcileStuckTaskBilling(ctx)
 	if GetTaskAdaptorFunc == nil {
-		logger.LogWarn(ctx, "task polling adapters are unavailable; billing reconciliation completed, upstream polling skipped")
-		common.SysLog(common.LogText("task progress polling finished"))
-		return summary
+		logger.LogWarn(ctx, "task polling adapters are unavailable; billing reconciliation and local terminal cleanup will continue, upstream polling will be skipped")
 	}
 	allTasks := model.GetAllUnFinishSyncTasks(constant.TaskQueryLimit)
 	summary.UnfinishedTasks = len(allTasks)
@@ -189,16 +187,14 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 			// Route through failTasksFromPoll so the CAS winner settles/refunds.
 			// The adaptor is only used for success settlement; failures refund
 			// regardless, so a nil adaptor here is safe to skip.
-			if adaptor := GetTaskAdaptorFunc(platform); adaptor != nil {
-				if err := failTasksFromPoll(ctx, adaptor, nullTasks, "No upstream task ID"); err != nil {
-					logger.LogError(ctx, common.LogText("Fix null task_id task error: %v", err))
-				}
-			} else {
-				// Failure finalization/refund does not require an upstream Adapter.
-				// The nil-adapter path is explicitly supported by finalizeTerminalTask.
-				if err := failTasksFromPoll(ctx, nil, nullTasks, "No upstream task ID"); err != nil {
-					logger.LogError(ctx, common.LogText("Fix null task_id task without adapter: %v", err))
-				}
+			var adaptor TaskPollingAdaptor
+			if GetTaskAdaptorFunc != nil {
+				adaptor = GetTaskAdaptorFunc(platform)
+			}
+			// Failure finalization/refund does not require an upstream Adapter.
+			// The nil-adapter path is explicitly supported by finalizeTerminalTask.
+			if err := failTasksFromPoll(ctx, adaptor, nullTasks, "No upstream task ID"); err != nil {
+				logger.LogError(ctx, common.LogText("Fix null task_id task error: %v", err))
 			}
 		}
 		if len(taskChannelM) == 0 {
@@ -221,6 +217,10 @@ func DispatchPlatformUpdate(ctx context.Context, platform constant.TaskPlatform,
 	}
 	if platform == constant.TaskPlatformMidjourney {
 		// MJ 轮询由其自身处理，这里预留入口
+		return
+	}
+	if GetTaskAdaptorFunc == nil {
+		logger.LogWarn(ctx, common.LogText("task polling skipped for platform %s: adapter registry is unavailable", platform))
 		return
 	}
 	adaptor := GetTaskAdaptorFunc(platform)
