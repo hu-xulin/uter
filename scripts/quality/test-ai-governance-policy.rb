@@ -75,7 +75,7 @@ check.call(!example.nil?, "AIES must contain a machine-readable task example")
 if example
   begin
     task_example = JSON.parse(example)
-    (required - %w[execution_audit lifecycle_history]).each do |key|
+    required.each do |key|
       check.call(task_example.key?(key), "AIES task example is missing required field #{key}")
     end
     check.call(schema.dig("properties", "task_type", "enum").include?(task_example["task_type"]), "AIES task example task_type must match schema")
