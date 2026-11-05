@@ -246,3 +246,25 @@ func TestRefundMidjourneyTaskBillingQuarantinesZeroQuotaTokenOnlyPartialCharge(t
 	require.NoError(t, DB.Where("midjourney_task_id = ?", task.Id).First(&operation).Error)
 	assert.Equal(t, MidjourneyRefundReconciliationRequired, operation.Status)
 }
+
+func TestRefundMidjourneyTaskBillingUsesLocalIDWhenUpstreamIDIsEmpty(t *testing.T) {
+	user, token, channel, task := createMidjourneyRefundFixture(t, true)
+	require.NoError(t, DB.Model(&Midjourney{}).Where("id = ?", task.Id).Update("mj_id", "").Error)
+
+	require.NoError(t, RefundMidjourneyTaskBilling(task.Id, "empty upstream id"))
+	require.NoError(t, RefundMidjourneyTaskBilling(task.Id, "duplicate empty upstream id retry"))
+
+	assert.Equal(t, 140, getUserQuotaFromDB(t, user.Id))
+	storedToken := getTokenFromDB(t, token.Id)
+	assert.Equal(t, 100, storedToken.RemainQuota)
+	assert.Zero(t, storedToken.UsedQuota)
+
+	var storedChannel Channel
+	require.NoError(t, DB.Select("used_quota").First(&storedChannel, channel.Id).Error)
+	assert.Zero(t, storedChannel.UsedQuota)
+
+	var storedTask Midjourney
+	require.NoError(t, DB.First(&storedTask, task.Id).Error)
+	assert.Equal(t, "refunded", storedTask.BillingStatus)
+	assert.Zero(t, storedTask.Quota)
+}
