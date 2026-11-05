@@ -263,12 +263,16 @@ func RefundMidjourneyTaskBilling(taskID int, reason string) error {
 			return err
 		}
 		now := common.GetTimestamp()
-		if err := tx.Model(&MidjourneyRefundOperation{}).Where("id = ?", op.ID).Updates(map[string]any{
+		operationResult := tx.Model(&MidjourneyRefundOperation{}).Where("id = ?", op.ID).Updates(map[string]any{
 			"status":       MidjourneyRefundCompleted,
 			"completed_at": now,
 			"updated_at":   now,
-		}).Error; err != nil {
-			return err
+		})
+		if operationResult.Error != nil {
+			return operationResult.Error
+		}
+		if operationResult.RowsAffected != 1 {
+			return errors.New("Midjourney refund operation completion state was not persisted")
 		}
 		applied = true
 		return nil
