@@ -2,6 +2,7 @@ package model
 
 import (
 	"testing"
+	"strconv"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -32,6 +33,7 @@ func newRefundIntentFixture(t *testing.T) (User, Token, RefundIntent) {
 
 	intent := RefundIntent{
 		UserId:        user.Id,
+		IdempotencyKey: "test-refund-intent:" + strconv.Itoa(user.Id),
 		FundingSource: RefundSourceWallet,
 		OrgResolved:   true,
 		OrgId:         0,
@@ -143,11 +145,11 @@ func TestSweepPendingRefundIntentsSurfacesExecutionFailure(t *testing.T) {
 
 func TestValidateRefundIntentRejectsMalformedLedgerSnapshots(t *testing.T) {
 	validWallet := RefundIntent{
-		UserId: 1, FundingSource: RefundSourceWallet,
+		UserId: 1, IdempotencyKey: "valid-wallet", FundingSource: RefundSourceWallet,
 		OrgResolved: true, WalletAmount: 10,
 	}
 	validSubscription := RefundIntent{
-		UserId: 1, FundingSource: RefundSourceSubscription,
+		UserId: 1, IdempotencyKey: "valid-subscription", FundingSource: RefundSourceSubscription,
 		SubRequestId: "request-1", SubId: 2, SubExtra: 5,
 	}
 	tests := []struct {
@@ -164,7 +166,7 @@ func TestValidateRefundIntentRejectsMalformedLedgerSnapshots(t *testing.T) {
 		{name: "subscription extra without subscription id", intent: func() RefundIntent { v := validSubscription; v.SubId = 0; return v }()},
 		{name: "subscription with wallet amount", intent: func() RefundIntent { v := validSubscription; v.WalletAmount = 1; return v }()},
 		{name: "negative subscription extra", intent: func() RefundIntent { v := validSubscription; v.SubExtra = -1; return v }()},
-		{name: "unknown funding source", intent: RefundIntent{UserId: 1, FundingSource: "unknown"}},
+		{name: "unknown funding source", intent: RefundIntent{UserId: 1, IdempotencyKey: "unknown", FundingSource: "unknown"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -175,7 +177,7 @@ func TestValidateRefundIntentRejectsMalformedLedgerSnapshots(t *testing.T) {
 
 func TestCreateRefundIntentRejectsNonPendingStatus(t *testing.T) {
 	intent := RefundIntent{
-		UserId: 1, FundingSource: RefundSourceWallet,
+		UserId: 1, IdempotencyKey: "non-pending", FundingSource: RefundSourceWallet,
 		OrgResolved: true, WalletAmount: 1, Status: RefundIntentDone,
 	}
 	require.Error(t, CreateRefundIntent(&intent))
