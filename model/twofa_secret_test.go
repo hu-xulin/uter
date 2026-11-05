@@ -133,6 +133,28 @@ func TestTwoFAUpgradeIsIdempotentAndConcurrencySafe(t *testing.T) {
 	migrated, err = stale.upgradePlainSecret(plainSecret)
 	require.NoError(t, err)
 	assert.False(t, migrated, "过期快照不得覆盖已写入的密文")
+
+	// 模拟用户重新绑定时写入了另一段明文：旧快照 CAS 未命中后，
+	// 重新读取不能把仍为明文的记录误计为已加密。
+	const reboundSecret = "ONSWG4TFOQXG2ZLS"
+	require.NoError(t, DB.Model(&TwoFA{}).Where("id = ?", legacy.Id).Update("secret", reboundSecret).Error)
+	migrated, err = stale.upgradePlainSecret(plainSecret)
+	require.NoError(t, err)
+	assert.False(t, migrated, "旧快照不得覆盖用户重新绑定的种子")
+	persistedEncrypted, err := isPersistedTwoFASecretEncrypted(legacy.Id)
+	require.NoError(t, err)
+	assert.False(t, persistedEncrypted, "CAS 未命中后仍为明文的记录不能被计为已加密")
+
+	// 下一次迁移调用应当读取并加密最新的绑定种子。
+	retry, err := MigrateTwoFASecretsToEncrypted(10)
+	require.NoError(t, err)
+	assert.Equal(t, 1, retry.Migrated)
+	assert.Zero(t, retry.Failed)
+	var stored TwoFA
+	require.NoError(t, DB.First(&stored, legacy.Id).Error)
+	plain, err := stored.PlainSecret()
+	require.NoError(t, err)
+	assert.Equal(t, reboundSecret, plain)
 }
 
 // TestTwoFAPlainSecretFailsClosedOnRotatedKey 覆盖验收标准「加密密钥缺失、
