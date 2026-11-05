@@ -63,8 +63,11 @@ func deliverMidjourneyRefundLog(event MidjourneyRefundOutbox) error {
 	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
 		return errors.New("Midjourney refund outbox delivery requires a transactional SQL LOG_DB; ClickHouse adapter is not implemented")
 	}
-	if event.EventKey == "" {
-		return errors.New("Midjourney refund outbox event key is required")
+	if strings.TrimSpace(event.EventKey) == "" || len(event.EventKey) > 128 {
+		return errors.New("Midjourney refund outbox event key must be non-empty and at most 128 characters")
+	}
+	if event.PayloadVersion != 1 {
+		return fmt.Errorf("unsupported Midjourney refund outbox payload version %d", event.PayloadVersion)
 	}
 	var payload midjourneyRefundLogPayload
 	if err := json.Unmarshal([]byte(event.PayloadJSON), &payload); err != nil {
