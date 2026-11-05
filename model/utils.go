@@ -216,10 +216,10 @@ func shouldUpdateRedis(fromDB bool, err error) bool {
 	return common.RedisEnabled && fromDB && err == nil
 }
 
- // ApplyTaskRefundUsage atomically reverses the usage counters associated with a
- // task refund. It also drains this user's/channel's queued batch deltas under
- // the same queue locks, so a refund cannot race a later batch flush or be lost
- // when the process exits before the next batch tick.
+// ApplyTaskBillingUsageDelta persists a task's usage delta together with any
+// queued batch deltas for the same user/channel. It serializes against batch
+// flushes so task billing cannot be finalized while its usage update is only
+// volatile in memory.
 func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
 	if userID <= 0 || channelID <= 0 {
 		return errors.New("task billing usage adjustment requires positive user and channel IDs")
