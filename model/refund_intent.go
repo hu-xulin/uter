@@ -159,15 +159,15 @@ func ExecuteRefundIntent(id int) error {
 	if err := validateRefundIntent(&intent); err != nil {
 		return fmt.Errorf("refund intent %d is invalid: %w", id, err)
 	}
-	// 订阅预扣退回：requestId 幂等，重复执行是空操作；放在事务外，失败时
-	// 凭证保持 pending 等待重放。与旧路径（funding.Refund）同一原语。
-	if intent.FundingSource == RefundSourceSubscription && intent.SubRequestId != "" {
-		if err := RefundSubscriptionPreConsume(intent.SubRequestId); err != nil {
-			return fmt.Errorf("refund subscription pre-consume (intent=%d, requestId=%s): %w", id, intent.SubRequestId, err)
-		}
-	}
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		// 1) 钱包出资回退（组织账本与成员子额度必须成对回退，与 WalletFunding.Refund 一致）。
+		// 1) 订阅原始预扣、补充预扣、令牌回退和意图完成标记共用一个事务。
+		// 任意账本腿失败都会整体回滚，避免订阅已退而 Token 仍未退的半笔退款。
+		if intent.FundingSource == RefundSourceSubscription && intent.SubRequestId != "" {
+			if err := refundSubscriptionPreConsumeTx(tx, intent.SubRequestId); err != nil {
+				return fmt.Errorf("refund subscription pre-consume (intent=%d, requestId=%s): %w", id, intent.SubRequestId, err)
+			}
+		}
+		// 2) 钱包出资回退（组织账本与成员子额度必须成对回退，与 WalletFunding.Refund 一致）。
 		if intent.FundingSource == RefundSourceWallet && intent.WalletAmount > 0 {
 			if !intent.OrgResolved {
 				return fmt.Errorf("refund intent %d: wallet funding org not resolved; refusing to guess refund target", id)
@@ -183,19 +183,19 @@ func ExecuteRefundIntent(id int) error {
 				return err
 			}
 		}
-		// 2) 订阅补充预扣回退（非幂等原语，必须与完成标记同事务）。
+		// 3) 订阅补充预扣回退（非幂等原语，必须与完成标记同事务）。
 		if intent.FundingSource == RefundSourceSubscription && intent.SubExtra > 0 && intent.SubId > 0 {
 			if err := postConsumeUserSubscriptionDeltaTx(tx, intent.SubId, -intent.SubExtra); err != nil {
 				return fmt.Errorf("roll back subscription %d extra reserved %d: %w", intent.SubId, intent.SubExtra, err)
 			}
 		}
-		// 3) 令牌额度退回。
+		// 4) 令牌额度退回。
 		if intent.TokenConsumed > 0 && intent.TokenId > 0 {
 			if err := increaseTokenQuotaTx(tx, intent.TokenId, intent.TokenConsumed); err != nil {
 				return fmt.Errorf("refund token %d quota %d: %w", intent.TokenId, intent.TokenConsumed, err)
 			}
 		}
-		// 4) 完成标记是本事务的幂等门：抢不到（已被并发执行）就整体回滚。
+		// 5) 完成标记是本事务的幂等门：抢不到（已被并发执行）就整体回滚。
 		res := tx.Model(&RefundIntent{}).
 			Where("id = ? AND status = ?", id, RefundIntentPending).
 			Updates(map[string]any{"status": RefundIntentDone, "update_time": common.GetTimestamp()})
