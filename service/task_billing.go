@@ -553,13 +553,20 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		logger.LogInfo(ctx, common.LogText("task %s pre-consumed quota matches the actual quota (%s, %s)",
 			task.TaskID, logger.LogQuota(actualQuota), reason.Error()))
 		// 差额为零也要收口：否则任务会永远停在非终态，被对账任务反复捞起。
-		if _, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+		finalized, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 			FromState: currentTaskBillingState(task),
 			ToState:   model.TaskBillingSettled,
 			FromQuota: &preConsumedQuota,
 			ToQuota:   &preConsumedQuota,
-		}); err != nil {
-			logger.LogWarn(ctx, common.LogText("failed to finalize the billing state for task %s: %s", task.TaskID, err.Error()))
+		})
+		if err != nil || !finalized {
+			if err == nil {
+				err = fmt.Errorf("zero-delta settlement finalization CAS did not match")
+			}
+			if syncErr := syncTaskBillingView(task); syncErr == nil && task.BillingState == model.TaskBillingSettled {
+				return
+			}
+			markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("zero-delta settlement could not be finalized: %v", err))
 		}
 		return
 	}
@@ -634,8 +641,12 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 	task.Quota = actualQuota
 
 	// 提交阶段已经累计过一次请求；结算阶段只调整最终用量。
-	model.UpdateUserUsedQuota(task.UserId, quotaDelta)
-	model.UpdateChannelUsedQuota(task.ChannelId, quotaDelta)
+	// 直接把该用户/渠道的待刷批量增量与本次差额在同一事务落库，避免
+	// settlement_pending → settled 后进程崩溃导致内存批量队列丢失。
+	if err := model.ApplyTaskBillingUsageDelta(task.UserId, task.ChannelId, quotaDelta); err != nil {
+		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement usage ledger update failed after funding/token adjustment: %v", err))
+		return
+	}
 
 	var logType int
 	var logQuota int
@@ -653,7 +664,7 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 	for _, clamp := range clamps {
 		attachQuotaSaturationToOther(other, clamp)
 	}
-	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
+	if err := model.RecordTaskBillingLogWithError(model.RecordTaskBillingLogParams{
 		UserId:    task.UserId,
 		LogType:   logType,
 		Content:   []*common.Message{reason},
@@ -664,14 +675,24 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		Group:     task.Group,
 		Other:     other,
 		NodeName:  task.PrivateData.NodeName,
-	})
+	}); err != nil {
+		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement audit log persistence failed after ledger adjustment: %v", err))
+		return
+	}
 
 	// 资金已动且任务记录已推进到 actualQuota：进入终态。
-	if _, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+	finalized, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 		FromState: model.TaskBillingSettlementPending,
 		ToState:   model.TaskBillingSettled,
-	}); serr != nil {
-		logger.LogError(ctx, common.LogText("settlement succeeded but the final state could not be recorded, task %s: %s", task.TaskID, serr.Error()))
+	})
+	if serr != nil || !finalized {
+		if serr == nil {
+			serr = fmt.Errorf("final settlement state CAS did not match")
+		}
+		if syncErr := syncTaskBillingView(task); syncErr == nil && task.BillingState == model.TaskBillingSettled {
+			return
+		}
+		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement ledger committed but final state transition failed: %v", serr))
 	}
 }
 
