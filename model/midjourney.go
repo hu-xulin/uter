@@ -140,9 +140,9 @@ func HasUnfinishedMidjourneyTasks() bool {
 		Limit(1).
 		Pluck("id", &id).Error
 	if err != nil {
-		// Fail open: a transient DB error must not make the scheduler conclude
-		// that no Midjourney work exists and silently stop polling.
-		common.SysError(common.LogText("failed to check unfinished Midjourney tasks: %s", err.Error()))
+		// Fail closed: a database error must not make the scheduler conclude
+		// that there are no unfinished tasks and permanently stop polling.
+		common.SysLog("failed to check unfinished Midjourney tasks: " + err.Error())
 		return true
 	}
 	return id != 0
@@ -205,8 +205,11 @@ func (midjourney *Midjourney) Update() error {
 }
 
 func (midjourney *Midjourney) UpdateBillingState() error {
-	if midjourney == nil || midjourney.Id <= 0 {
-		return gorm.ErrRecordNotFound
+	if midjourney == nil {
+		return errors.New("Midjourney task is nil")
+	}
+	if midjourney.Id <= 0 {
+		return errors.New("Midjourney task ID must be positive")
 	}
 	result := DB.Model(&Midjourney{}).
 		Where("id = ?", midjourney.Id).
