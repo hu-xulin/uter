@@ -75,7 +75,7 @@
     "marked": "^18.0.5",
     "motion": "^12.42.2",
     "nanoid": "^5.1.16",
-    "node-forge": "^1.4.0",
+    "node-forge": "^1.4.2",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.7",
     "react-day-picker": "^10.0.1",
