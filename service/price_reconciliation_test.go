@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -39,6 +40,12 @@ import (
 
 const priceTestModel = "gpt-4o-price-recon"
 
+// priceReqSeq 为每个 priceRelayInfo 实例生成唯一的 RequestId。BillingSession.Refund
+// 把退款持久化为 RefundIntent，其幂等键依赖 RequestId；测试装置若不提供会导致
+// 「refund intent requires the originating request id」而退款从不执行。生产路径由
+// relay 框架填 RequestId，这里在测试里显式补上。
+var priceReqSeq uint64
+
 func priceContext() *gin.Context {
 	gin.SetMode(gin.TestMode)
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
@@ -52,6 +59,7 @@ func priceContext() *gin.Context {
 func priceRelayInfo(groupRatio float64) *relaycommon.RelayInfo {
 	return &relaycommon.RelayInfo{
 		RelayFormat:     relaytypes.RelayFormatOpenAI,
+		RequestId:       fmt.Sprintf("price-req-%d", atomic.AddUint64(&priceReqSeq, 1)),
 		OriginModelName: priceTestModel,
 		UsingGroup:      "default",
 		UserGroup:       "default",

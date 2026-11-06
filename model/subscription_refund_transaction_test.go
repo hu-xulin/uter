@@ -190,8 +190,11 @@ func TestRefundSubscriptionIntentRequiresMatchingSubscriptionSnapshot(t *testing
 	var savedSub UserSubscription
 	require.NoError(t, db.First(&savedSub, sub.Id).Error)
 	require.EqualValues(t, 40, savedSub.AmountUsed)
-	require.NoError(t, db.First(&savedSub, otherSub.Id).Error)
-	require.EqualValues(t, 30, savedSub.AmountUsed)
+	// 必须用新的目标结构体：GORM 会把 dest 上已有的主键当成额外条件，
+	// 复用同一个结构体就会拼出 "id = 2 AND id = 1" 而永远查不到行。
+	var savedOtherSub UserSubscription
+	require.NoError(t, db.First(&savedOtherSub, otherSub.Id).Error)
+	require.EqualValues(t, 30, savedOtherSub.AmountUsed)
 }
 
 // TestRefundSubscriptionPreConsumeTxRejectsNegativeReceiptAmount ensures

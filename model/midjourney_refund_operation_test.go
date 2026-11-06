@@ -3,15 +3,40 @@ package model
 import (
 	"testing"
 
+	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
+
+// setupMidjourneyRefundOperationTestDB 建一个独立的内存库供本组测试使用。
+//
+// MidjourneyRefundOperation 带固定名的唯一索引（idx_mj_refund_task_operation），
+// 而 SQLite 的索引名是「整个库全局唯一」的：TestMain 已经把同名索引建在
+// midjourney_refund_operations 表上，测试若在同一个库里再建一张自定义表就会
+// 撞名，报 "index idx_mj_refund_task_operation already exists"。用独立库
+// 即可避开，且各用例之间互不干扰。
+func setupMidjourneyRefundOperationTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	previousDB := DB
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	sqlDB, err := db.DB()
+	require.NoError(t, err)
+	sqlDB.SetMaxOpenConns(1)
+	DB = db
+	t.Cleanup(func() {
+		DB = previousDB
+		_ = sqlDB.Close()
+	})
+	return db
+}
 
 func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 	table := "midjourney_refund_operations_contract_test"
-	db := DB.Table(table)
+	db := setupMidjourneyRefundOperationTestDB(t).Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOperation{}))
-	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
+	t.Cleanup(func() { _ = db.Migrator().DropTable(table) })
 
 	first := MidjourneyRefundOperation{
 		MidjourneyTaskID:    101,
@@ -47,9 +72,9 @@ func TestMidjourneyRefundOperationUniqueIdentity(t *testing.T) {
 
 func TestMidjourneyRefundOperationRejectsUnverifiableInput(t *testing.T) {
 	table := "midjourney_refund_operations_validation_test"
-	db := DB.Table(table)
+	db := setupMidjourneyRefundOperationTestDB(t).Table(table)
 	require.NoError(t, db.AutoMigrate(&MidjourneyRefundOperation{}))
-	t.Cleanup(func() { _ = DB.Migrator().DropTable(table) })
+	t.Cleanup(func() { _ = db.Migrator().DropTable(table) })
 
 	for _, op := range []*MidjourneyRefundOperation{
 		{MidjourneyTaskID: 0, ReasonCode: "failed", FundingSource: "personal_wallet", BillingSnapshotJSON: `{"version":1}`},

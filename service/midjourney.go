@@ -85,6 +85,14 @@ func SettleMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.M
 	if result.TokenApplied {
 		task.TokenId = relayInfo.TokenId
 	}
+	// 记录可核验的计费快照。退款守卫（model.RefundMidjourneyTaskBilling）是
+	// fail-closed 的：快照缺失或不自洽的历史任务一律转人工核对，绝不自动退款。
+	// 如果结算时不把「钱包已扣 / 令牌是否扣」写回任务，那张快照就永远不完整，
+	// 于是每一笔已结算的 Midjourney 任务都会被误判为「快照不明」而退款失败。
+	task.BillingVersion = 1
+	task.BillingStatus = "applied"
+	task.BillingWalletApplied = true
+	task.BillingTokenApplied = result.TokenApplied
 	if updateErr := task.UpdateBillingState(); updateErr != nil {
 		return true, errors.Join(billingErr, fmt.Errorf("update Midjourney billing state: %w", updateErr))
 	}
