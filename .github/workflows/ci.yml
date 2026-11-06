@@ -158,7 +158,7 @@ jobs:
         # （--new-from-patch），只拦本次变更引入的问题；存量 121 项问题为已知
         # 基线，不阻断（分批清理）。仅覆盖根模块；relaykit / tokenkit 为独立
         # Go 模块，暂沿用下方 go vet 门禁。嵌套 TokenKit 也是独立模块，必须单独验证。
-        uses: golangci/golangci-lint-action@db9de0fc1a667e1a49d2291a1a042dff081d78f6 # v9
+        uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9
         with:
           version: v2.15.0
           only-new-issues: true
