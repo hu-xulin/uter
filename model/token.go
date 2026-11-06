@@ -446,16 +446,41 @@ func increaseTokenQuota(id int, quota int) (err error) {
 	return increaseTokenQuotaTx(DB, id, quota)
 }
 
-// increaseTokenQuotaTx 是 increaseTokenQuota 的事务化变体，语义与公开版本一致。
-func increaseTokenQuotaTx(tx *gorm.DB, id int, quota int) (err error) {
-	err = tx.Model(&Token{}).Where("id = ?", id).Updates(
+// increaseTokenQuotaTx adjusts token accounting inside the caller's transaction.
+// It deliberately does not touch Redis or the batch-update queue: cache hydration
+// must happen only after the enclosing transaction commits.
+func increaseTokenQuotaTx(tx *gorm.DB, id int, quota int) error {
+	if tx == nil {
+		return errors.New("token quota transaction is nil")
+	}
+	if id <= 0 {
+		return errors.New("token ID must be positive")
+	}
+	if quota < 0 {
+		return errors.New("token quota increment cannot be negative")
+	}
+	if quota == 0 {
+		return nil
+	}
+
+	result := tx.Model(&Token{}).Where("id = ? AND used_quota >= ?", id, quota).Updates(
 		map[string]any{
 			"remain_quota":  gorm.Expr("remain_quota + ?", quota),
 			"used_quota":    gorm.Expr("used_quota - ?", quota),
 			"accessed_time": common.GetTimestamp(),
 		},
-	).Error
-	return err
+	)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		var token Token
+		if err := tx.Select("id").First(&token, id).Error; err != nil {
+			return err
+		}
+		return errors.New("token used quota is insufficient for refund")
+	}
+	return nil
 }
 
 func DecreaseTokenQuota(id int, key string, quota int) (err error) {
@@ -590,4 +615,44 @@ func likeContains(keyword string) (string, error) {
 		return "", err
 	}
 	return "%" + pattern + "%", nil
+}
+
+// IncreaseTokenQuotaPersisted applies a token refund directly to the durable
+// ledger, bypassing the volatile batch queue. Cache synchronization happens
+// only after the database update succeeds.
+func IncreaseTokenQuotaPersisted(tokenId int, key string, quota int) error {
+	if quota < 0 {
+		return errors.New("quota cannot be negative")
+	}
+	if err := increaseTokenQuota(tokenId, quota); err != nil {
+		return err
+	}
+	if common.RedisEnabled {
+		runCacheSync(func() {
+			if _, err := cacheApplyTokenQuotaDelta(tokenId, key, int64(quota)); err != nil {
+				common.SysLog(common.LogText("failed to sync persisted token refund to cache: %s", err.Error()))
+			}
+		})
+	}
+	return nil
+}
+
+// DecreaseTokenQuotaPersisted applies a token charge directly to the durable
+// ledger, bypassing the volatile batch queue. Cache synchronization happens
+// only after the database update succeeds.
+func DecreaseTokenQuotaPersisted(tokenId int, key string, quota int) error {
+	if quota < 0 {
+		return errors.New("quota cannot be negative")
+	}
+	if err := decreaseTokenQuota(tokenId, quota); err != nil {
+		return err
+	}
+	if common.RedisEnabled {
+		runCacheSync(func() {
+			if _, err := cacheApplyTokenQuotaDelta(tokenId, key, int64(-quota)); err != nil {
+				common.SysLog(common.LogText("failed to sync persisted token charge to cache: %s", err.Error()))
+			}
+		})
+	}
+	return nil
 }

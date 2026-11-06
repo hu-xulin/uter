@@ -5,7 +5,13 @@
 **文档类型：** 全仓库自动化测试、缺陷修复、回归验证规范  
 **适用对象：** AI Coding Agent、开发人员、测试工程师  
 **执行模式：** 实际测试 + 发现问题直接修复 + 回归测试  
-**默认提交权限：** 不允许擅自 Commit、Push、Merge 或部署
+**默认提交权限：** 遵循根 `AGENTS.md` 的用户授权；Uter 当前工程修复任务仅允许在唯一非 `main` 工作分支 Commit/Push/创建或更新 PR，不得创建第二分支、合并或部署
+**规范版本：** 1.0.0  
+**规范状态：** Active  
+**最后更新：** 2026-11-05  
+**下次复核：** 2027-02-03  
+**维护责任：** Uter Engineering Maintainers  
+**版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
 
 ---
 
@@ -1204,3 +1210,9 @@ govulncheck ./...
 不得擅自 Commit、Push、Merge 或部署。
 
 **最终目标：完成 Uter 全仓库自动化测试，发现并直接修复能够安全修复的问题，执行充分的回归验证，并交付真实、完整、可追溯的测试报告。**
+
+## 独立 Go Module 覆盖要求（2026-11-05）
+
+当前仓库存在四个独立 Go module：根模块、relaykit、tokenkit、tokenkit/tokenkit。尤其 tokenkit/tokenkit 拥有自己的 go.mod/go.sum，不能视为父 tokenkit 模块的普通子目录。
+
+每个 module 必须独立执行 vet、build、test；适用时执行 race、coverage 和 govulncheck。统一模块清单由 .quality/policy.env 的 UEQE_GO_MODULES 维护，CI、Makefile、verify-all.sh 与 UEQE 必须保持一致。任何模块新增或移除都必须同步更新模块清单和测试矩阵。

@@ -1,20 +1,21 @@
 # Uter AI 规范体系冲突检查报告
 
 **项目：** Uter
-**检查日期：** 2026-11-01
+**检查日期：** 2026-11-05
 **检查范围：** `docs/ai-specs/` 10 份规范 + `docs/ai-specs/engineering-quality/` 4 份工程质量规范 + `AGENTS.md` + `web/AGENTS.md` + `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（2026-11-03 起唯一标准，旧 design-system.md/2.0 已废止删除） + `.ai/AIES.md` + UEQE 实际实现（`scripts/quality/uter-quality.sh`）+ 真实技术栈（`go.mod` ×3、`web/package.json`）
-**检查方法：** 全文通读 10 份规范（共 2469 行）并与宪法文件、现有规范、UEQE 实现逐项比对；技术栈一致性以 `go.mod`/`package.json` 实际值为准。
+**检查方法：** 本报告保留 2026-11-01 的全文冲突审查记录；2026-11-05 复核并更新了 C1 单一工作分支策略、ADR 注册状态及 AIES 设计系统引用。其余历史结论属于原审查基线，未经本次逐项复核的内容不得视为当前实时验收证据；使用前须重新对照代码、规范与 CI。
 **原则：** 只报告与给出修改方案，不擅自删除任何已有安全限制。
 
 ---
 
 ## 一、发现的冲突与解决方案
 
-### C1. 分支策略：规范「禁推主分支」 vs 仓库 main 直推惯例（权限冲突）
+### C1. 分支策略：单一工作分支约束（已统一）
 
-- **来源：** AI-EXECUTION-STANDARD §5.3（「直接向受保护主分支提交代码」列为严禁）、CHANGE-MANAGEMENT-STANDARD §6 与 §12（「不得直接向受保护主分支提交」「不直接推送主分支」）。
-- **实际：** 本仓库为 owner 单人直推 `main` 的工作模式，历史上所有变更（含本规范体系落地）均经用户逐次授权后 `git push origin main`。
-- **解决（已实施）：** `AGENTS.md`「Branch strategy」节声明适配——用户逐次授权的 main 提交/推送视为已授权；独立分支 + PR 要求适用于无人值守自动化（Auto-Fix Engine、定时任务）与多人协作场景。**force push 与自动合并 PR 在任何模式下仍被禁止**，规范的安全限制本身未被删除。
+- **权威规则：** 根 `AGENTS.md`「Branch strategy」规定每个项目最多一个非 `main` 工作分支；所有审计、修复、测试和文档变更复用该分支及其现有 PR。
+- **本次核验：** 远端当前可见 `main` 与 `ai/uaes-uter-integration-2026-11-05`，满足单一工作分支要求。
+- **统一要求：** 不得为独立问题或自动修复创建第二分支；使用 Issue ID、Commit 和报告区分任务。若远端出现多个非 `main` 分支，必须停止并由用户决定保留项，不得自动删除或重写。
+- **权限边界：** 允许在唯一工作分支上按明确授权 Commit、Push、创建/更新现有 PR；禁止直接推送 `main`、force push、合并 PR、部署及生产写操作。
 
 ### C2. 执行状态语义不一致（定义冲突，轻微）
 
@@ -95,3 +96,30 @@
 | 2026-11-01 | 本报告 | 首次建立 |
 
 规范正文（10 份 + engineering-quality 4 份）保持 verbatim，未做任何删改。
+
+---
+
+## 五、UAES P00 跨仓库治理冲突审计（2026-11-05）
+
+**审计基线：** UAES 当前发布基线仍为 1.7.0 / DRAFT；Uter 集成锁定 commit 与 registry blob 以 `.uaes/INTEGRATION.md` 为准。UAES 1.8.0 仅存在于未批准的治理工作分支，不得作为已采用版本。
+
+| 对照项 | UAES 目标规则 | Uter 当前规则/事实 | 裁定与执行要求 |
+|---|---|---|---|
+| 权威层级 | UAES 负责通用治理；项目事实和授权仍受用户与项目边界约束 | Uter AGENTS.md、嵌套指令、领域规范及设计系统仍为当前项目宪法 | 无冲突。UAES DRAFT 不覆盖 Uter 当前规则；只有经批准、锁定版本并完成迁移验证后才可调整权威关系 |
+| 规则 ID | UAES 使用独立 UAES 命名空间，禁止与 Standard ID 冲突 | Uter 使用 DS-、AUTH-、UEQE- 等本地规则 ID | 无冲突。保留两套命名空间，跨仓库引用使用 Traceability Matrix，不重编号 Uter 既有规则 |
+| 验收状态 | PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE / NOT_VERIFIED | Uter AIES 使用 PASSED / PARTIAL / BLOCKED / FAILED / NOT_RUN；UEQE 使用聚合状态 | 采用显式映射：PASS→PASSED；FAIL→FAILED；BLOCKED→BLOCKED；NOT_RUN→NOT_RUN；NOT_APPLICABLE→SKIPPED 且必须记录 reason；NOT_VERIFIED→PARTIAL 且必须记录证据缺口。PARTIAL 不得满足强制门禁，聚合状态不得隐藏失败子项 |
+| 例外与豁免 | UAES E0–E4；E0 不得批准或激活；有效例外需审批、风险、补偿控制、到期与回滚证据 | Uter agent-governance.yaml 默认 deny，生产、真实支付、生产数据库、合并与部署均禁止自动执行 | Uter 当前更严格的拒绝策略继续生效。UAES 例外不能扩大 Uter 授权，也不能覆盖用户明确禁止项；未获用户/授权负责人批准不得改变 Uter 权限 |
+| 任务合同 Schema | UAES task.schema.json 是通用任务合同目标 | Uter .ai/task-schema.json 是当前 WorkBuddy/AIES 任务合同 | 保留 Uter 现有 Schema 与运行时消费者。迁移前必须完成字段映射、正负向兼容测试和 Agent 运行时验证，不得直接替换 |
+| 依赖关系 | UAES depends_on 表示通用标准前置关系 | Uter Go modules、前端、数据库、UEQE 及业务依赖以真实代码和本地架构规范为准 | UAES 依赖图不替代 Uter 产品架构图或模块依赖图；必须通过本地 ADR、架构事实和 Traceability Matrix 对应 |
+| 质量门禁 | UAES P09/P10/P11 规定通用质量、安全和交付治理 | Uter 已有 scripts/quality/uter-quality.sh、scripts/verify-all.sh、CI 与 UEQE | 复用并映射 Uter 现有门禁，不建立竞争性 Runner，不因 UAES 规范而降低既有阈值 |
+| 仓库职责 | UAES 为治理标准仓库 | Uter 为产品代码与项目事实仓库 | 无冲突。UAES 不承载 Uter 产品实现；Uter 保留支付、计费、认证、数据库、架构和 UTER Design System 3.0 项目覆盖层 |
+
+### 本轮发现与未决事项
+
+1. **已解决的口径映射：** UAES 的 NOT_APPLICABLE、NOT_VERIFIED 与 Uter AIES/UEQE 状态之间补充了显式映射；不得把 PARTIAL 视为 PASS。
+2. **已确认的权限边界：** Uter agent-governance.yaml 的 default deny、单一工作分支、禁止合并/部署/生产写入规则优先于 UAES 通用建议。
+3. **未完成：** 尚未逐条对照 Uter 全部 10 份领域规范、4 份 UEQE 规范和 UTER Design System 3.0 与 UAES 全部适用规则；不能将本表视为完整语义一致性验收。
+4. **未完成：** Uter 当前集成锁定检查及版本/状态负向测试必须在当前 PR head CI 中实际通过。
+5. **未完成：** 所有本地豁免、ADR、历史规则与运行时 Agent/WorkBuddy 的权限拒绝测试仍需独立盘点。
+
+**结论：** 当前无理由删除或弱化任何 Uter 本地规范。集成状态继续保持 MIGRATION_PENDING；UAES 1.8.0 不得被 Uter 采用，直至正式批准、不可变版本锁定、全量映射、CI 与独立审计全部通过。

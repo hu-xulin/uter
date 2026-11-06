@@ -604,7 +604,11 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 			return ErrPaymentMethodMismatch
 		}
 		if order.Status == common.TopUpStatusSuccess {
-			return nil
+			// Repair/verify the shadow top-up record on idempotent provider
+			// retries. Older deployments may have committed the subscription
+			// order before this linked record existed; returning early would
+			// leave that payment permanently absent from top-up reconciliation.
+			return upsertSubscriptionTopUpTx(tx, &order, actualPaymentMethod)
 		}
 		if order.Status != common.TopUpStatusPending {
 			return ErrSubscriptionOrderStatusInvalid
@@ -629,7 +633,7 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 		if subscription.PrevUserGroup != "" {
 			upgradeGroup = strings.TrimSpace(subscription.UpgradeGroup)
 		}
-		if err := upsertSubscriptionTopUpTx(tx, &order); err != nil {
+		if err := upsertSubscriptionTopUpTx(tx, &order, actualPaymentMethod); err != nil {
 			return err
 		}
 		order.Status = common.TopUpStatusSuccess
@@ -665,7 +669,7 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 	return nil
 }
 
-func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
+func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaymentMethod string) error {
 	if tx == nil || order == nil {
 		return errors.New("invalid subscription order")
 	}
@@ -673,12 +677,17 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	var topup TopUp
 	if err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			paymentMethod := order.PaymentMethod
+			if actualPaymentMethod != "" {
+				paymentMethod = actualPaymentMethod
+			}
 			topup = TopUp{
 				UserId:           order.UserId,
 				Amount:           0,
 				Money:            order.Money,
 				TradeNo:          order.TradeNo,
-				PaymentMethod:    order.PaymentMethod,
+				PaymentMethod:    paymentMethod,
+				PaymentProvider:  order.PaymentProvider,
 				ProviderAmount:   order.ProviderAmount,
 				ProviderCurrency: order.ProviderCurrency,
 				CreateTime:       order.CreateTime,
@@ -689,6 +698,34 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 		}
 		return err
 	}
+	// A trade number is the join key between two durable payment records. Do
+	// not let a colliding/stale top-up row for another user or gateway be
+	// silently rewritten as the successful subscription payment.
+	if topup.UserId != order.UserId {
+		return fmt.Errorf("%w: subscription/top-up user mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.Money > 0 && order.Money > 0 &&
+		!decimal.NewFromFloat(topup.Money).Round(2).Equal(decimal.NewFromFloat(order.Money).Round(2)) {
+		return fmt.Errorf("%w: subscription/top-up local amount mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
+		return fmt.Errorf("%w: subscription/top-up provider mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.ProviderAmount > 0 && order.ProviderAmount > 0 && topup.ProviderAmount != order.ProviderAmount {
+		return fmt.Errorf("%w: subscription/top-up provider amount mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if existingCurrency := strings.TrimSpace(topup.ProviderCurrency); existingCurrency != "" {
+		if orderCurrency := strings.TrimSpace(order.ProviderCurrency); orderCurrency != "" &&
+			!strings.EqualFold(existingCurrency, orderCurrency) {
+			return fmt.Errorf("%w: subscription/top-up provider currency mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+		}
+	}
+	if topup.Status != common.TopUpStatusPending && topup.Status != common.TopUpStatusSuccess {
+		return fmt.Errorf("%w: linked top-up is not completable for trade %s", ErrTopUpStatusInvalid, order.TradeNo)
+	}
+	if topup.PaymentProvider == "" {
+		topup.PaymentProvider = order.PaymentProvider
+	}
 	topup.Money = order.Money
 	if order.ProviderAmount > 0 {
 		topup.ProviderAmount = order.ProviderAmount
@@ -696,7 +733,11 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	if strings.TrimSpace(order.ProviderCurrency) != "" {
 		topup.ProviderCurrency = strings.ToLower(strings.TrimSpace(order.ProviderCurrency))
 	}
-	if topup.PaymentMethod == "" {
+	if actualPaymentMethod != "" {
+		// Epay can report the method actually used after the user leaves the
+		// checkout page; persist it consistently to both linked order records.
+		topup.PaymentMethod = actualPaymentMethod
+	} else if topup.PaymentMethod == "" {
 		topup.PaymentMethod = order.PaymentMethod
 	} else if topup.PaymentMethod != order.PaymentMethod {
 		return ErrPaymentMethodMismatch
@@ -706,6 +747,40 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	}
 	topup.CompleteTime = now
 	topup.Status = common.TopUpStatusSuccess
+	return tx.Save(&topup).Error
+}
+
+func transitionLinkedSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, targetStatus string) error {
+	if tx == nil || order == nil || order.TradeNo == "" {
+		return errors.New("invalid subscription order transition")
+	}
+	var topup TopUp
+	err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// Older installations may not have created the shadow top-up row.
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if topup.UserId != order.UserId {
+		return fmt.Errorf("%w: linked top-up owner mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
+		return fmt.Errorf("%w: linked top-up provider mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
+	}
+	if topup.Status == targetStatus {
+		return nil
+	}
+	if topup.Status != common.TopUpStatusPending {
+		// A successful or differently terminal top-up beside a pending
+		// subscription order is inconsistent. Preserve both records for
+		// reconciliation instead of silently making their states diverge.
+		return fmt.Errorf("%w: linked top-up status %q cannot transition to %q for trade %s",
+			ErrTopUpStatusInvalid, topup.Status, targetStatus, order.TradeNo)
+	}
+	topup.Status = targetStatus
+	topup.CompleteTime = common.GetTimestamp()
 	return tx.Save(&topup).Error
 }
 
@@ -730,6 +805,9 @@ func ExpireSubscriptionOrder(tradeNo string, expectedPaymentProvider string) err
 		}
 		if order.Status != common.TopUpStatusPending {
 			return nil
+		}
+		if err := transitionLinkedSubscriptionTopUpTx(tx, &order, common.TopUpStatusExpired); err != nil {
+			return err
 		}
 		order.Status = common.TopUpStatusExpired
 		order.CompleteTime = common.GetTimestamp()
@@ -760,6 +838,9 @@ func FailPendingSubscriptionOrder(tradeNo string, expectedPaymentProvider string
 		}
 		if order.Status != common.TopUpStatusPending {
 			return nil
+		}
+		if err := transitionLinkedSubscriptionTopUpTx(tx, &order, common.TopUpStatusFailed); err != nil {
+			return err
 		}
 		order.Status = common.TopUpStatusFailed
 		order.CompleteTime = common.GetTimestamp()
@@ -1475,29 +1556,61 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 	return returnValue, nil
 }
 
-// RefundSubscriptionPreConsume is idempotent and refunds pre-consumed subscription quota by requestId.
-func RefundSubscriptionPreConsume(requestId string) error {
+// refundSubscriptionPreConsumeTx refunds a subscription pre-consumption using
+// the caller's transaction. Keeping the ledger reversal and its idempotency
+// record in the same transaction lets compound refund intents remain atomic.
+func refundSubscriptionPreConsumeForUserTx(tx *gorm.DB, requestId string, expectedUserID, expectedSubscriptionID int) error {
+	if tx == nil {
+		return errors.New("subscription refund transaction is nil")
+	}
 	if strings.TrimSpace(requestId) == "" {
 		return errors.New("requestId is empty")
 	}
-	return DB.Transaction(func(tx *gorm.DB) error {
-		var record SubscriptionPreConsumeRecord
-		if err := lockForUpdate(tx).
-			Where("request_id = ?", requestId).First(&record).Error; err != nil {
-			return err
-		}
-		if record.Status == "refunded" {
-			return nil
-		}
-		if record.PreConsumed <= 0 {
-			record.Status = "refunded"
-			return tx.Save(&record).Error
-		}
-		if err := postConsumeUserSubscriptionDeltaTx(tx, record.UserSubscriptionId, -record.PreConsumed); err != nil {
-			return err
-		}
+	var record SubscriptionPreConsumeRecord
+	if err := lockForUpdate(tx).
+		Where("request_id = ?", requestId).First(&record).Error; err != nil {
+		return err
+	}
+	if expectedUserID > 0 && record.UserId != expectedUserID {
+		return fmt.Errorf("subscription pre-consume request %q belongs to user %d, not user %d", requestId, record.UserId, expectedUserID)
+	}
+	var subscription UserSubscription
+	if err := lockForUpdate(tx).Where("id = ?", record.UserSubscriptionId).First(&subscription).Error; err != nil {
+		return err
+	}
+	if subscription.UserId != record.UserId {
+		return fmt.Errorf("subscription pre-consume request %q owner mismatch: record user %d, subscription user %d", requestId, record.UserId, subscription.UserId)
+	}
+	if expectedSubscriptionID > 0 && record.UserSubscriptionId != expectedSubscriptionID {
+		return fmt.Errorf("subscription pre-consume request %q targets subscription %d, not expected subscription %d", requestId, record.UserSubscriptionId, expectedSubscriptionID)
+	}
+	if record.Status == "refunded" {
+		return nil
+	}
+	if record.PreConsumed < 0 {
+		return fmt.Errorf("subscription pre-consume request %q has negative amount %d", requestId, record.PreConsumed)
+	}
+	if record.PreConsumed == 0 {
 		record.Status = "refunded"
 		return tx.Save(&record).Error
+	}
+	if err := postConsumeUserSubscriptionDeltaTx(tx, record.UserSubscriptionId, -record.PreConsumed); err != nil {
+		return err
+	}
+	record.Status = "refunded"
+	return tx.Save(&record).Error
+}
+
+// refundSubscriptionPreConsumeTx is the legacy owner-agnostic entry point.
+// It still validates that the receipt and subscription belong to the same user.
+func refundSubscriptionPreConsumeTx(tx *gorm.DB, requestId string) error {
+	return refundSubscriptionPreConsumeForUserTx(tx, requestId, 0, 0)
+}
+
+// RefundSubscriptionPreConsume is idempotent and refunds pre-consumed subscription quota by requestId.
+func RefundSubscriptionPreConsume(requestId string) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		return refundSubscriptionPreConsumeTx(tx, requestId)
 	})
 }
 
@@ -1668,4 +1781,70 @@ func PostConsumeUserSubscriptionDeltaCapped(userSubscriptionId int, delta int64)
 		return tx.Save(&sub).Error
 	})
 	return overflow, err
+}
+
+// PostConsumeUserSubscriptionDeltaCappedWithWallet atomically caps the
+// subscription usage and charges any overflow to the user's wallet. The
+// previous two-transaction sequence could commit the subscription cap and
+// then fail the wallet charge, permanently losing the overflow.
+func PostConsumeUserSubscriptionDeltaCappedWithWallet(userSubscriptionId, userId int, delta int64) error {
+	if userSubscriptionId <= 0 || userId <= 0 {
+		return errors.New("invalid subscription or user ID")
+	}
+	if delta == 0 {
+		return nil
+	}
+	var overflow int64
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var sub UserSubscription
+		if err := lockForUpdate(tx).Where("id = ?", userSubscriptionId).First(&sub).Error; err != nil {
+			return err
+		}
+		if sub.UserId != userId {
+			return fmt.Errorf("subscription %d belongs to user %d, not user %d", userSubscriptionId, sub.UserId, userId)
+		}
+		newUsed := sub.AmountUsed + delta
+		if newUsed < 0 {
+			sub.RefundCarryOver += -newUsed
+			newUsed = 0
+		}
+		if sub.RefundCarryOver > 0 && newUsed > 0 {
+			applied := min(newUsed, sub.RefundCarryOver)
+			newUsed -= applied
+			sub.RefundCarryOver -= applied
+		}
+		if sub.AmountTotal > 0 && newUsed > sub.AmountTotal {
+			overflow = newUsed - sub.AmountTotal
+			newUsed = sub.AmountTotal
+		}
+		sub.AmountUsed = newUsed
+		if err := tx.Save(&sub).Error; err != nil {
+			return err
+		}
+		if overflow > 0 {
+			if overflow > int64(^uint(0)>>1) {
+				return errors.New("subscription wallet overflow exceeds int range")
+			}
+			result := tx.Model(&User{}).Where("id = ?", userId).
+				Update("quota", gorm.Expr("quota - ?", overflow))
+			if result.Error != nil {
+				return result.Error
+			}
+			if result.RowsAffected != 1 {
+				return gorm.ErrRecordNotFound
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if overflow > 0 {
+		runCacheSync(func() {
+			if err := cacheDecrUserQuota(userId, overflow); err != nil {
+				common.SysLog(common.LogText("failed to sync subscription overflow wallet charge to cache: %s", err.Error()))
+			}
+		})
+	}
+	return nil
 }

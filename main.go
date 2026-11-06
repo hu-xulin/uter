@@ -173,6 +173,11 @@ func main() {
 	// endpoint inference can read cached route settings on first request.
 	model.GetPricing()
 
+	// 主源 models.dev 与备用官方预设在启动时预热：冷缓存时 /api/pricing 的
+	// 非阻塞路径会先返回空参考价，首个访客就看不到官方价划线与折扣角标。
+	// WarmPresetRatios 内部异步执行，不阻塞启动。
+	controller.WarmPresetRatios()
+
 	// 热更新配置
 	go model.SyncOptions(common.SyncFrequency)
 	go controller.SyncTaskPlugins()

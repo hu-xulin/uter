@@ -14,7 +14,7 @@ AIES 是**上层方法论 + L2/L3 补齐**，不替代项目已批准的"宪法"
 | 优先级 | 权威来源 | 职责 |
 |---|---|---|
 | 最高 | 用户明确的操作授权、L0 安全底线 | 授权范围、数据/生产/资金安全 |
-| 高 | `AGENTS.md`（根，256 行执行入口） | 项目宪法：技术栈、OWASP、后端/前端规则、项目治理、Git/PR 规范 |
+| 高 | `AGENTS.md`（根，仓库级执行入口） | 项目宪法：技术栈、OWASP、后端/前端规则、项目治理、Git/PR 规范 |
 | 高 | `web/AGENTS.md` | 前端专属约定（组件复用、i18n、构建） |
 | 高 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` + `showcase-3.0.html` | 设计系统唯一真源（§2 色彩 / §1 字号 / §13 组件 / §16 响应式 / §0 执行原则） |
 | 中高 | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准） | 领域规范基线：架构/API 契约/数据库/支付计费/安全/UX/变更/文档/AI 执行，各文档含「Uter 代码事实锚点」章节（真实文件路径+符号名） |
@@ -61,7 +61,7 @@ WorkBuddy 是本项目的**直接代码执行者**，而非仅代码审查顾问
 | 层 | 名称 | 职责 | 维护方式 |
 |---|---|---|---|
 | **L0** | 全局安全与授权规则 | 授权范围、隐私/密钥保护、数据完整性、生产环境保护、禁止伪造测试/证据、禁止未授权破坏性操作 | 长期维护，最高优先级 |
-| **L1** | 项目级强制规范 | 技术栈、架构/模块边界、目录结构、设计系统与组件、API 契约与数据模型、认证/权限/安全、错误处理/日志、测试/构建/部署 | 长期维护（Uter=`AGENTS.md`+`web/AGENTS.md`+`design-system.md`） |
+| **L1** | 项目级强制规范 | 技术栈、架构/模块边界、目录结构、设计系统与组件、API 契约与数据模型、认证/权限/安全、错误处理/日志、测试/构建/部署 | 长期维护（Uter=`AGENTS.md`+`web/AGENTS.md`+`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`） |
 | **L2** | 任务级执行合同 | 目标、修改范围、排除范围、必须保留的行为、实施计划、验收条件、测试计划、风险与审批 | 随任务生成（`.ai/task-schema.json`） |
 | **L3** | 自动化质量规则 | 格式化、Lint、类型检查、编译/构建、单元/集成/E2E 测试、安全扫描、依赖检查、视觉回归、CI 门禁 | 尽量自动执行 |
 | **L4** | 推荐实践 | 可读性、适度性能优化、消除重复、可维护性、非关键体验优化 | 渐进改善，不得凌驾于强制规则，也不得成为无关重构的理由 |
@@ -76,7 +76,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 - 禁止：为局部视觉效果随意创建重复或冲突的字号值；在 <p>/Card/DialogContent/SheetContent 上写 text-base(16px)。
 - 验证：bun run lint:design:strict（T1–T15）+ bunx vitest run src/design-system/__tests__（spec-guards）。
 - 例外：仅 group-title/设置页字段档/指标数值/body-long 四类 16px 用途；登录注册页不在例外（§21 D7）。
-- 依据：design-system.md §12、§21。
+- 依据：`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §12、§21。
 ```
 > 规范不仅要告诉 AI 什么是正确的，还必须告诉它**如何证明自己做对了**。
 
@@ -86,7 +86,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 > 用户要求"为方便先跳过支付验签"这类最新指令，**不能**覆盖安全底线（L0 高于一切普通需求）。
 
 ### 2.4 Uter 特有的规则权威来源
-- 设计值来自代码（`web/src/design-system/tokens/`、`theme.css`），规则与边界来自 `design-system.md`；二者冲突时不得静默择一。
+- 设计值来自代码（`web/src/design-system/tokens/`、`theme.css`），规则与边界来自 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`；二者冲突时不得静默择一。
 - 后端 JSON 必须走 `common/json.go` 的 `common.Marshal/Unmarshal/...`，不得在业务代码直接 `encoding/json`；`relaykit/` 用 `kitutil.*`，且保持 `cd relaykit && GOWORK=off go build ./...` 独立可编译。
 - 数据库代码必须同时兼容 SQLite / MySQL≥5.7.8 / PostgreSQL≥9.6；变更必须跑真实三库验证矩阵。
 - 认证相关改动必须遵循 OWASP ASVS 与 Cheat Sheet，服务端强制，前端校验不得替代。
@@ -105,10 +105,11 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 | **R0 低** | 改文案、调局部间距、修复明显显示问题 | 基本检查、直接修改并验证 |
 | **R1 中** | 改多个关联组件、一般业务流程、共享组件、普通 API 调用逻辑 | 制定实施计划，执行相关回归测试 |
 | **R2 高** | 改认证/权限、数据库模型、关键 API 契约、并发处理、账户/业务状态机 | 专项分析 + 测试计划 + 实施后独立审查 + 关键失败路径验证 |
-| **R3 严重** | 改支付/资金到账、生产数据库、不可逆迁移、生产密钥/权限、生产部署、大规模数据丢失操作 | 明确范围与授权 + 恢复/回滚方案 + 专项验收；缺关键信息或授权必须暂停 |
+| **R3 严重** | 改支付/资金到账、重要数据库模型、不可逆迁移、关键安全策略 | 明确范围与授权 + 恢复/回滚方案 + 专项验收；缺关键信息或授权必须暂停 |
+| **R4 极高** | 生产环境写入、生产数据库操作、真实支付配置、生产密钥、生产部署、重大不可逆操作 | 默认禁止自动执行；必须停止并请求有权人工决策。当前 Uter 自动修复授权不包含任何 R4 写操作 |
 
 ### 3.3 必须额外授权的操作（普通代码修改授权 ≠ 全部授权）
-除非用户明确授权当前操作及目标，否则不得擅自：提交 Git Commit、推送、合并、发布版本、部署生产、改生产配置、执行生产数据库操作、删除数据/不可逆迁移、覆盖/重置/清理用户已有工作、轮换生产密钥、修改支付金额/退款策略/余额调整/账户合并规则，以及其他重大影响或难以恢复的操作。**不得将一次授权扩大解释为对其他操作的授权。**
+当前用户已明确授予 Uter 工程修复的持续任务范围授权：AI 可在唯一独立工作分支内修改授权范围代码、添加测试、执行验证；验证达到提交条件后可 Commit、Push 该工作分支并创建/更新 PR。该授权不包含合并 PR、部署、生产数据库写入、生产环境修改、真实支付配置/凭据修改、生产密钥读取或不可逆生产操作。禁止直接推送 main、force push、覆盖用户未提交修改。授权仅适用于当前 Uter 工程修复工作流；超出范围或无法确认授权时必须 fail-closed。
 
 ### 3.4 何时询问用户（风险分级，不必每次填表）
 - **低风险、信息完整**：直接解析并执行（如改一个按钮间距）。
@@ -129,15 +130,36 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 ```json
 {
   "task_id": "AUTH-UI-001",
+  "title": "Improve login UI and reliability",
   "goal": "Improve login UI and flow reliability",
-  "task_type": "feature_enhancement",
+  "task_type": "FEATURE",
+  "original_request": "Improve the login UI and make the login flow more reliable.",
+  "requester": "human-requester",
+  "agent_id": "uter.agent.engineering.coding",
   "risk_level": "R2",
+  "lifecycle_status": "CREATED",
+  "authorization": {
+    "authorization_id": "AUTH-EXAMPLE-001",
+    "allowed_actions": ["filesystem.write.scoped", "test.execute"],
+    "forbidden_actions": ["git.merge", "deployment.execute", "production.database.write", "payment.configuration.write"],
+    "target_resources": ["login screen", "directly related auth components"],
+    "environment": "LOCAL_SANDBOX",
+    "expires_at": "2026-12-31T23:59:59Z",
+    "approval_ids": []
+  },
   "scope": { "include": ["login screen", "directly related auth components"],
              "exclude": ["unrelated screens", "unapproved auth architecture changes"] },
   "constraints": ["Follow project design tokens", "Preserve approved authentication behavior", "Do not bypass security verification"],
-  "applicable_specs": ["design-system.md §12/§14/§21", "AGENTS.md Authentication Security"],
+  "applicable_specs": ["docs/design-system/UTER-DESIGN-SYSTEM-3.0.md §12/§14/§21", "AGENTS.md Authentication Security"],
   "required_evidence": ["Relevant source inspection", "Changed-file list", "Test results", "Acceptance checklist"],
-  "acceptance_criteria": ["Visual rules satisfied", "Existing auth methods remain functional", "Relevant tests pass"],
+  "execution_audit": [],
+  "lifecycle_history": [{"state": "CREATED", "timestamp": "2026-11-05T00:00:00Z", "actor_id": "human-requester"}],
+  "acceptance_criteria": [
+    {"id": "AUTH-AC-01", "criterion": "Visual rules are satisfied", "verification": "Run the applicable design-system checks."},
+    {"id": "AUTH-AC-02", "criterion": "Existing auth methods remain functional", "verification": "Run relevant authentication regression tests."},
+    {"id": "AUTH-AC-03", "criterion": "Relevant tests pass", "verification": "Run the test_plan commands."}
+  ],
+  "test_plan": [{"command": "Use the repository's verified authentication and design-system test commands", "scope": "login UI and directly related authentication behavior", "status": "NOT_RUN"}],
   "approval_gates": ["Confirm scope expansion before implementation"]
 }
 ```
@@ -202,7 +224,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 ## 第六章 专项规则
 
 ### 6.1 UI / 设计系统任务
-必须：读 `design-system.md` 相关章节；检查现有组件/Token；复用已有组件不重复建同类体系；遵循字号/颜色/间距/边框/圆角/阴影/布局规则；检查加载/错误/空/禁用/交互态；按目标平台验证响应式；必要时浏览器截图或真机测试；检查键盘交互与可访问性；检查未经批准的硬编码样式；确认视觉与交互验收有真实证据。**不得仅凭源码编写完成就宣称视觉验收通过**（Uter 当前基线截图/Playwright 视觉回归**尚未实现**，必须如实说明）。
+必须：读 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 相关章节；检查现有组件/Token；复用已有组件不重复建同类体系；遵循字号/颜色/间距/边框/圆角/阴影/布局规则；检查加载/错误/空/禁用/交互态；按目标平台验证响应式；必要时浏览器截图或真机测试；检查键盘交互与可访问性；检查未经批准的硬编码样式；确认视觉与交互验收有真实证据。**不得仅凭源码编写完成就宣称视觉验收通过**（Uter 当前基线截图/Playwright 视觉回归**尚未实现**，必须如实说明）。
 
 ### 6.2 功能开发与 Bug 修复
 必须：尽可能复现问题；找到真实调用链；确认根因；优先添加暴露问题的测试；实施最小必要修复；覆盖正常/失败/边界；检查调用方；执行回归；确认没有通过隐藏错误或延迟执行掩盖问题。
@@ -279,7 +301,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 保护用户原有改动；避免无关批量替换；避免大范围格式化导致 diff 失控；不执行未授权清理/重置；不覆盖与任务无关的文件。若发生意外覆盖或删除，立即停止后续操作、优先恢复原有内容并如实报告。
 
 ### 8.3 修改后
-审查完整 diff；检查变更文件清单；检查临时文件/调试代码；检查是否泄露密钥；确认用户原有工作保留；报告当前工作区状态。**默认只做代码修改和验证，不自动提交、推送、合并或部署。**
+审查完整 diff；检查变更文件清单；检查临时文件/调试代码；检查是否泄露密钥；确认用户原有工作保留；报告当前工作区状态。**默认只做代码修改和验证；但 Uter 当前已获明确授权的工程修复任务，必须复用唯一非 main 工作分支，并可在验证达到门禁后 Commit、Push、创建/更新该分支现有 PR。不得创建第二分支、直接推送 main、force push、合并 PR 或部署。**
 
 ### 8.4 Uter 特有纪律（务必遵守）
 - 🔴 **工作区常有并发会话 WIP**：本次任务开工时 `git status --short` 出现大量非本次任务的改动（`AGENTS.md`(M)、支付文件、design tokens、设计文档删改、skills 删除等）。**只改自己负责的文件，严禁 `git add -A`、严禁混入他人 WIP、严禁在其未收尾时本地全量构建**（会把半成品编进 `uter-bin`）。提交用显式 `git add <路径>` + `git diff --cached --name-status` 复核，含 D 先 `go build ./...`。
@@ -321,7 +343,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 
 **Uter 真实案例（已固化）**：
 - 案例：AI 绕过现有设计系统，在页面直接写多个颜色/字号/间距值，未用现有 Token。原因：规范只写"尽量使用 Token"，无强制规则与自动检查。改进：① Token 使用改强制；② 为允许例外定义明确条件；③ 增 `check-design-tokens.mjs`（T1–T15）静态扫描未批准硬编码值；④ 接入 CI（`ci.yml`/`release-gate.yml`）+ pre-commit；⑤ `spec-guards.test.ts` 守卫图标几何/正文基准/焦点环/品牌色。回归：同类页面验证不再引入未批准 Token，且现有页面未被误改。
-- 案例：登录/注册页 14→16px 放大（`eb36a7dac`），守卫判违规、书面例外曾似放行，人工与自动结论打架。定论（§21 D7）：登录注册页**不在**放大例外，遵循全局 14px，已回退（`f90102572`）。改进：守卫保持严格、把定论登记进 `design-system.md` §21、旧记忆标注失效。
+- 案例：登录/注册页 14→16px 放大（`eb36a7dac`），守卫判违规、书面例外曾似放行，人工与自动结论打架。定论（§21 D7）：登录注册页**不在**放大例外，遵循全局 14px，已回退（`f90102572`）。改进：守卫保持严格、把定论登记进 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §21、旧记忆标注失效。
 
 ### 10.2 规则改进七步
 记录问题案例→分析根因→判断规范缺失/规则冲突/实现缺陷/测试不足→优先增自动化测试或静态检查→提出规范修改建议→明确影响与验证方法→按项目权限审批→更新相关规则与测试。
@@ -358,7 +380,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 
 - 用户要求直接修改代码时，必须在授权范围内**实际完成修改**，而非只输出建议/方案/提示词。
 - 必须优先遵守项目已批准的设计规范、架构约束、API 契约、安全规则和测试约定；冲突按规则优先级与风险处理，不能擅自忽略强制约束。
-- 必须保护用户未提交代码和其他已有工作；最小必要修改；不得无故扩大范围；不得未经授权升级依赖、大规模重构、删除数据、生产操作或 Git 提交/推送/部署。
+- 必须保护用户未提交代码和其他已有工作；最小必要修改；不得无故扩大范围；不得未经授权升级依赖、大规模重构、删除数据、生产操作或超出本项目明确授权范围的 Git 操作；Uter 唯一工作分支内的 Commit/Push/PR 按本文件 §3.3 执行。
 - 必须按任务风险确定验证强度；认证/支付/数据库/权限/资金/生产环境任务须专项分析与测试。关键业务信息不明确时暂停相关高风险操作，但继续完成不受影响且已授权的工作。
 - 修改完成后执行实际可运行的测试与质量检查，并审查完整 diff；发现范围内且能安全修复的问题，修复后重新验证。
 - **不得伪造测试结果，不得声称未执行的测试已通过，不得通过删除测试、跳过断言或关闭安全控制制造成功。**
@@ -396,8 +418,8 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 - 导航与衔接：`.ai/README.md`。
 
 ### 13.4 待协调项（需用户决策，本次未执行）
-- **`AGENTS.md` 正被并发会话大幅修改（工作区标记 M）**：为避免覆盖他人 WIP，本次**未**改 `AGENTS.md`。建议由该会话维护者在收尾后，向 `AGENTS.md` 追加一行指向 `.ai/AIES.md` 的指针，或授权本会话在并发收尾后统一整合。
-- **未自动 git commit/push**：遵循"提交需额外授权"与"不混入并发 WIP"两条纪律，本次改动全部留未提交，待用户确认后再显式暂存提交。
+- **治理规则现状**：Agent 角色、权限配置和任务审计合同以 `.uaes/agent-governance.yaml` 与 `.ai/task-schema.json` 为准；第三方 Agent 的运行时工具阻断仍须通过 WorkBuddy/Claude 等实际运行环境单独验证，不得把静态策略测试描述为运行时验收。
+- **Git 授权现状**：Uter 自动修复可在唯一非 main 工作分支内 Commit、Push、创建/更新 PR；禁止直接推送 main、force push、合并 PR、部署和生产写操作。
 - **PandaMall 规范包**：平移本框架时需换成 React Native/Expo/Clerk 技术规则，不共用 Uter 的 Web 设计与支付规则。
 
 ---
@@ -443,7 +465,7 @@ project/
 - `.ai/checklists/auth-payment.md`（AUTH_SECURITY / PAYMENT_FINANCIAL / DATABASE）
 - `.ai/checklists/test-audit.md`（TEST_QA / CODE_AUDIT）
 
-## 附录 D：违规记录库模板（登记到 `design-system.md` §26 与本文件第十章）
+## 附录 D：违规记录库模板（登记到 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §26 与本文件第十章）
 ```
 ## 案例 [编号] — [标题]
 - 发现：...（文件/行/命令/证据）

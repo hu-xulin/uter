@@ -914,22 +914,38 @@ func EditChannelByTag(tag string, newTag *string, modelMapping *string, models *
 	return nil
 }
 
-func UpdateChannelUsedQuota(id int, quota int) {
+func UpdateChannelUsedQuotaWithError(id int, quota int) error {
+	if id <= 0 {
+		return fmt.Errorf("channel ID must be positive")
+	}
 	if common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeChannelUsedQuota, id, quota)
-		return
+		return nil
 	}
-	_ = updateChannelUsedQuota(id, quota)
+	return updateChannelUsedQuota(id, quota)
+}
+
+// UpdateChannelUsedQuota preserves the legacy best-effort API for non-accounting callers.
+func UpdateChannelUsedQuota(id int, quota int) {
+	if err := UpdateChannelUsedQuotaWithError(id, quota); err != nil {
+		common.SysLog(common.LogText("failed to update channel used quota: %s", err.Error()))
+	}
 }
 
 // updateChannelUsedQuota 返回错误而不是吞掉：批量写路径（model/utils.go 的
 // batchUpdate）依赖它把失败的增量重新入队，吞掉会让缓存已前进而数据库永久落后。
 func updateChannelUsedQuota(id int, quota int) error {
-	err := DB.Model(&Channel{}).Where("id = ?", id).Update("used_quota", gorm.Expr("used_quota + ?", quota)).Error
-	if err != nil {
-		common.SysLog(common.LogText("failed to update channel used quota: channel_id=%d, delta_quota=%d, error=%v", id, quota, err))
+	result := DB.Model(&Channel{}).Where("id = ?", id).Update("used_quota", gorm.Expr("used_quota + ?", quota))
+	if result.Error != nil {
+		common.SysLog(common.LogText("failed to update channel used quota: channel_id=%d, delta_quota=%d, error=%v", id, quota, result.Error))
+		return result.Error
 	}
-	return err
+	if result.RowsAffected != 1 {
+		err := fmt.Errorf("channel %d usage row was not updated", id)
+		common.SysLog(common.LogText("failed to update channel used quota: channel_id=%d, delta_quota=%d, error=%v", id, quota, err))
+		return err
+	}
+	return nil
 }
 
 func DeleteChannelByStatus(status int64) (int64, error) {

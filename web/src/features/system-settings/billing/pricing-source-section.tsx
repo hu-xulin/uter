@@ -60,7 +60,7 @@ type Values = z.infer<typeof schema>
 function normalizeSource(value: unknown): PricingSourceValue {
   return PRICING_SOURCE_VALUES.includes(value as PricingSourceValue)
     ? (value as PricingSourceValue)
-    : 'official'
+    : 'models.dev'
 }
 
 const SOURCE_OPTION_KEYS: Record<PricingSourceValue, string> = {

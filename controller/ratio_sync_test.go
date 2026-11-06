@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"encoding/json"
 	"math"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -217,4 +219,97 @@ func TestPricingSyncCompleteSourcesAndArrayFormats(t *testing.T) {
 	assert.NotContains(t, response.Data.Prices, "sync-unpriced")
 	assert.NotContains(t, response.Data.Prices, "sync-invalid-expression")
 	assert.NotContains(t, response.Data.Differences, "sync-already")
+}
+
+// modelsDevFixture mirrors the shapes found in models.dev/api.json: plain
+// token prices, reasoning, a >200K context override and a context tier.
+const modelsDevFixture = `{
+  "openai": {"models": {
+    "openai/gpt-4o": {"cost": {"input": 2.5, "output": 10, "cache_read": 0.25}},
+    "openai/gpt-6-luna": {"cost": {
+      "input": 0.1, "output": 0.5, "reasoning": 1.147,
+      "context_over_200k": {"input": 0.2, "output": 0.75},
+      "tiers": [{"input": 0.345, "output": 2.868, "reasoning": 3.441,
+                 "tier": {"type": "context", "size": 128000}}]
+    }}
+  }},
+  "bytedance": {"models": {
+    "bytedance/seedream-4.0": {"cost": {"input": 1, "output": 2}}
+  }}
+}`
+
+func TestParseModelsDevPricingKeepsExtraDimensions(t *testing.T) {
+	converted, dimensions, err := parseModelsDevPricing(strings.NewReader(modelsDevFixture))
+	require.NoError(t, err)
+	assert.Contains(t, converted, "model_ratio")
+
+	// A plain input/output model is fully described by its ratios; keeping it
+	// in the dimensions payload would only duplicate several thousand entries.
+	assert.NotContains(t, dimensions, "openai/gpt-4o")
+
+	luna, ok := dimensions["openai/gpt-6-luna"]
+	require.True(t, ok)
+	require.NotNil(t, luna.Base.Reasoning)
+	assert.Equal(t, 1.147, *luna.Base.Reasoning)
+	require.NotNil(t, luna.ContextOver200K)
+	require.NotNil(t, luna.ContextOver200K.Input)
+	assert.Equal(t, 0.2, *luna.ContextOver200K.Input)
+	require.Len(t, luna.Tiers, 1)
+	assert.Equal(t, "context", luna.Tiers[0].Type)
+	assert.Equal(t, int64(128000), luna.Tiers[0].Size)
+	require.NotNil(t, luna.Tiers[0].Reasoning)
+	assert.Equal(t, 3.441, *luna.Tiers[0].Reasoning)
+
+	// Aliases carry the same dimensions so a card can look them up by the
+	// station model name rather than the upstream "provider/id" key.
+	_, aliasOK := dimensions["gpt-6-luna"]
+	assert.True(t, aliasOK)
+}
+
+func TestConvertModelsDevToRatioDataPublishesNameAliases(t *testing.T) {
+	converted, err := convertModelsDevToRatioData(strings.NewReader(modelsDevFixture))
+	require.NoError(t, err)
+	ratios, ok := converted["model_ratio"].(map[string]any)
+	require.True(t, ok)
+
+	// Original upstream keys are never removed or renamed.
+	assert.Contains(t, ratios, "bytedance/seedream-4.0")
+	// Dotted version numbers normalize to the site-shaped hyphenated name.
+	assert.Contains(t, ratios, "seedream-4-0")
+	// Provider prefixes are stripped.
+	assert.Contains(t, ratios, "gpt-4o")
+}
+
+// TestModelsDevPriceDimensionsJSONShape pins the wire shape the pricing cards
+// will consume: the embedded cost struct must flatten into the tier object,
+// never appear as a nested "modelsDevDimensionCost" key.
+func TestModelsDevPriceDimensionsJSONShape(t *testing.T) {
+	_, dimensions, err := parseModelsDevPricing(strings.NewReader(modelsDevFixture))
+	require.NoError(t, err)
+	raw, err := json.Marshal(dimensions["openai/gpt-6-luna"])
+	require.NoError(t, err)
+	var decoded map[string]any
+	require.NoError(t, json.Unmarshal(raw, &decoded))
+
+	assert.Contains(t, decoded, "base")
+	assert.Contains(t, decoded, "context_over_200k")
+	tiers, ok := decoded["tiers"].([]any)
+	require.True(t, ok)
+	require.Len(t, tiers, 1)
+	first, ok := tiers[0].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "context", first["type"])
+	assert.Contains(t, first, "input")
+	assert.Contains(t, first, "reasoning")
+	assert.NotContains(t, first, "modelsDevDimensionCost")
+}
+
+func TestModelsDevAliasCandidatesNeverOverrideUpstreamKeys(t *testing.T) {
+	selected := map[string]modelsDevCandidate{
+		"provider/gpt-4o": {Input: 2.5},
+		"gpt-4o":          {Input: 9},
+	}
+	aliases := modelsDevAliasCandidates(selected)
+	_, overridden := aliases["gpt-4o"]
+	assert.False(t, overridden, "a real upstream key must keep its own candidate")
 }

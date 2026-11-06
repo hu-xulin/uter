@@ -175,7 +175,7 @@ For commercial licensing, please contact support@uter.ai
    *   text-fg-secondary    二级文字 #334155：描述、辅助说明、次级信息
    *   text-fg-tertiary     三级文字 #64748B：时间戳、元信息、次要标签
    *   text-fg-disabled     禁用文字 #94A3B8
-   *   text-fg-link         链接 #6366F1
+   *   text-fg-link         链接 #5B5EE6
    *   text-fg-placeholder  输入框占位符 #64748B
    *   text-fg-inverse      深色/品牌实心底上的反色文字
    * 一级文字直接用既有的 `text-foreground`，说明文字用
@@ -339,8 +339,8 @@ For commercial licensing, please contact support@uter.ai
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #5558d8;
-  --primary-foreground: #ffffff;
+  --primary: var(--uaes-brand-primary);
+  --primary-foreground: var(--uaes-brand-primary-foreground);
   --secondary: #f1f5f9;
   /* 次级按钮文字：规范 §1.1 是 #0F172A（近黑）。此前是 oklch(0.42 0.16 250)
    * 深蓝，次级按钮在灰底上呈现品牌蓝字，被误读成链接。 */
@@ -372,7 +372,7 @@ For commercial licensing, please contact support@uter.ai
   --border-strong: #cbd5e1; /* 3.0 §2.6 强调边界 */
   --subtle: #fafbfc; /* 3.0 §2.5 极浅表面 */
   --input: #d1d5e5;
-  --ring: #5558d8;
+  --ring: var(--uaes-brand-primary);
   --chart-1: oklch(0.72 0.18 250);
   --chart-2: oklch(0.65 0.15 200);
   --chart-3: oklch(0.7 0.12 280);
@@ -484,13 +484,12 @@ For commercial licensing, please contact support@uter.ai
   --sidebar-accent-foreground: #0f172a;
   /* 左侧导航选中态专用前景色（规范 2.0 §17）。
    *
-   * 取值即 3.0 brand-soft-foreground #5558D8（on #F0F0FF = 4.93:1）；
-   * 4.05:1，未达 WCAG AA 普通文本 4.5:1（导航文字 14px/500 不属大文本豁免）。
-   * 与 --primary 同值（3.0 §2.2 浅色 soft-foreground 就取主色本身）。
-   * —— 主按钮、链接、焦点环仍然是 #6366F1。
+   * 取值为独立的可读前景色 #5558D8（on #F0F0FF = 4.93:1），满足 WCAG AA。
+   * 它不与品牌主色完全相同：主色为 #5B5EE6，Soft 前景单独加深以保持对比度。
+   * 主按钮、链接和焦点环使用品牌主色 #5B5EE6。
    *
    * 只与 `primary-subtle` 浅底配对使用，不要拿它当通用强调色。 */
-  --sidebar-active-foreground: #5558d8;
+  --sidebar-active-foreground: var(--uaes-brand-soft-foreground);
   /* 品牌浅底上的**通用**可读前景色（与导航选中态同值同源）。
    *
    * 规范 §2.3 的验收条款要求：非导航组件里仍在使用
@@ -498,9 +497,9 @@ For commercial licensing, please contact support@uter.ai
    * 12–14px 文字不得用未达标组合（实算门槛 4.5:1）。
    * 这里补一个通用档，供徽标 / 胶囊 / 轻强调块使用；导航仍用
    * `sidebar-active-foreground`，两者取值相同但语义分工不同。 */
-  --primary-subtle-foreground: #5558d8;
+  --primary-subtle-foreground: var(--uaes-brand-soft-foreground);
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #5558d8;
+  --sidebar-ring: var(--uaes-brand-primary);
   --skeleton-base: oklch(0.97 0 0);
   --skeleton-highlight: oklch(0.985 0 0);
   --table-row: var(--background);
@@ -544,18 +543,17 @@ For commercial licensing, please contact support@uter.ai
   --fg-tertiary: #64748b;
   --fg-disabled: #94a3b8;
   --fg-inverse: #ffffff;
-  --fg-link: #5558d8;
+  --fg-link: var(--uaes-brand-primary);
   --fg-placeholder: #64748b;
   /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 品牌色阶）────────────────
-   * 2026-11-03 起以 3.0 规范为唯一标准：主色 #5558D8，小步压暗
-   * #5558D8 → #4F52D1 → #4A4DC5（hover / active，逐态对比度见
+   * 2026-11-04 起采用用户确认的主色 #5B5EE6；Hover #4F52D1 / Active #4A4DC5，逐态对比度见
    * scripts/verify-contrast.mjs 输出；不得以 Default 结果替代 Hover/Active）。
    * brand-soft = --primary-subtle #F0F0FF、brand-border = #D9DAFF。 */
-  --primary-strong: #5558d8;
-  --hover-primary: #4f52d1;
-  --primary-active: #4a4dc5;
-  --primary-subtle: #f0f0ff;
-  --primary-border: #d9daff;
+  --primary-strong: var(--uaes-brand-primary);
+  --hover-primary: var(--uaes-brand-hover);
+  --primary-active: var(--uaes-brand-active);
+  --primary-subtle: var(--uaes-brand-soft);
+  --primary-border: var(--uaes-brand-border);
   --hover-secondary: #e2e8f0;
   --hover-destructive: #ef4444;
   --hover-success: #15803d;
@@ -596,8 +594,8 @@ For commercial licensing, please contact support@uter.ai
    * hover #B1B3FF / active #9294F7。文字类出口：链接 --fg-link（#A1A3F7）、
    * 品牌浅底文字 --primary-subtle-foreground（#B1B3FF，on #25264A）。
    * 逐态对比度以 scripts/verify-contrast.mjs 实算为准。 */
-  --primary: #a1a3f7;
-  --primary-foreground: #020617;
+  --primary: var(--uaes-brand-primary);
+  --primary-foreground: var(--uaes-brand-primary-foreground);
   --secondary: #1e293b;
   --secondary-foreground: #f8fafc;
   --muted: #1e293b;
@@ -628,7 +626,7 @@ For commercial licensing, please contact support@uter.ai
   --subtle: #111c30; /* 3.0 §2.5 极浅表面 */
   --input: #45465f;
   /* 焦点环跟品牌（3.0 §15.1）：#A1A3F7 on 深底 ≥ 3:1 非文本线。 */
-  --ring: #a1a3f7;
+  --ring: var(--uaes-brand-primary);
   --chart-1: oklch(0.76 0.14 250);
   --chart-2: oklch(0.76 0.13 200);
   --chart-3: oklch(0.76 0.13 285);
@@ -708,11 +706,11 @@ For commercial licensing, please contact support@uter.ai
   /* 深色主题的选中态前景色（3.0 §14.3）：#B1B3FF on #25264A =
    * 4.97:1，达 AA。动作梯（按钮填充）为实色基底 + 提亮 hover/active，
    * 但选中态文字是文字出口，不跟动作梯走 —— 与 --fg-link 同理。 */
-  --sidebar-active-foreground: #b1b3ff;
+  --sidebar-active-foreground: var(--uaes-brand-soft-foreground);
   /* 品牌浅底通用前景色（深色档，3.0 §2.2 brand-soft-foreground）。 */
-  --primary-subtle-foreground: #b1b3ff;
+  --primary-subtle-foreground: var(--uaes-brand-soft-foreground);
   --sidebar-border: #1e293b;
-  --sidebar-ring: #a1a3f7;
+  --sidebar-ring: var(--uaes-brand-primary);
   --skeleton-base: oklch(0.335 0 0);
   --skeleton-highlight: oklch(0.44 0 0);
   --table-row: var(--background);
@@ -744,17 +742,17 @@ For commercial licensing, please contact support@uter.ai
   --fg-tertiary: #94a3b8;
   --fg-disabled: #64748b;
   --fg-inverse: #0f172a;
-  --fg-link: #a1a3f7;
+  --fg-link: var(--uaes-brand-primary);
   --fg-placeholder: #94a3b8;
   /* 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 Dark，2026-11-03 起唯一标准）：
    * 基底 #A1A3F7（on #020617 ≥ 7:1），hover #B1B3FF / active #9294F7；
    * 前景改深色 #020617（3.0 §10.4：Dark 主按钮不得默认白字）。
    * 浅底 #25264A、brand-border #45466F；文字出口 --fg-link 同为 #A1A3F7。 */
-  --primary-strong: #a1a3f7;
-  --hover-primary: #b1b3ff;
-  --primary-active: #9294f7;
-  --primary-subtle: #25264a;
-  --primary-border: #45466f;
+  --primary-strong: var(--uaes-brand-primary);
+  --hover-primary: var(--uaes-brand-hover);
+  --primary-active: var(--uaes-brand-active);
+  --primary-subtle: var(--uaes-brand-soft);
+  --primary-border: var(--uaes-brand-border);
   --hover-secondary: #334155;
   --hover-destructive: #991b1b;
   --hover-success: #16a34a;

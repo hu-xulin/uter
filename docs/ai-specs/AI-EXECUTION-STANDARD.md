@@ -5,6 +5,12 @@
 **文档类型：** AI Agent 行为与执行标准  
 **适用对象：** WorkBuddy、AI Coding Agent、自动化开发 Agent 及其他参与 Uter 开发的 AI 系统  
 **规范级别：** 强制执行
+**规范版本：** 1.0.0（统一版本登记）  
+**规范状态：** Active  
+**最后更新：** 2026-11-05  
+**下次复核：** 2027-02-03  
+**维护责任：** Uter Engineering Maintainers  
+**版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
 
 ---
 

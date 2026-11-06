@@ -1,7 +1,6 @@
 package model
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -82,25 +81,24 @@ WHERE constraint_meta.conrelid = to_regclass('options')
 func withOptionPrimaryKeyLock(db *gorm.DB, fn func(*gorm.DB) error) error {
 	switch db.Dialector.Name() {
 	case "mysql":
-		sqlDB, err := db.DB()
-		if err != nil {
-			return fmt.Errorf("lock options table: %w", err)
-		}
-		ctx := context.Background()
-		conn, err := sqlDB.Conn(ctx)
-		if err != nil {
-			return fmt.Errorf("lock options table: %w", err)
-		}
-		defer conn.Close()
-		var acquired int
-		if err := conn.QueryRowContext(ctx, "SELECT GET_LOCK(?, 60)", optionPrimaryKeyLockName).Scan(&acquired); err != nil {
-			return fmt.Errorf("lock options table: %w", err)
-		}
-		if acquired != 1 {
-			return fmt.Errorf("lock options table: timeout")
-		}
-		defer conn.ExecContext(ctx, "SELECT RELEASE_LOCK(?)", optionPrimaryKeyLockName)
-		return fn(db)
+		// MySQL named locks are scoped to one physical connection. Pin every
+		// migration statement to the same connection that owns GET_LOCK;
+		// acquiring the lock through sql.Conn and then calling fn(db) could
+		// run the rebuild on a different pooled connection without the lock.
+		return db.Connection(func(connDB *gorm.DB) error {
+			var acquired int
+			if err := connDB.Raw("SELECT GET_LOCK(?, 60)", optionPrimaryKeyLockName).Scan(&acquired).Error; err != nil {
+				return fmt.Errorf("lock options table: %w", err)
+			}
+			if acquired != 1 {
+				return fmt.Errorf("lock options table: timeout")
+			}
+			defer func() {
+				var released int
+				_ = connDB.Raw("SELECT RELEASE_LOCK(?)", optionPrimaryKeyLockName).Scan(&released).Error
+			}()
+			return fn(connDB)
+		})
 	case "postgres":
 		return db.Transaction(func(tx *gorm.DB) error {
 			if err := tx.Exec("SELECT pg_advisory_xact_lock(?)", optionPrimaryKeyLockID).Error; err != nil {
@@ -120,7 +118,10 @@ func repairOptionPrimaryKey(db *gorm.DB) error {
 	if err := db.Find(&rows).Error; err != nil {
 		return fmt.Errorf("read options rows: %w", err)
 	}
-	deduped, skippedEmpty := dedupeOptionRows(rows)
+	deduped, skippedEmpty, err := dedupeOptionRows(rows)
+	if err != nil {
+		return fmt.Errorf("refusing to rebuild options with conflicting duplicate keys: %w", err)
+	}
 	if db.Migrator().HasTable(optionPrimaryKeyTmpTable) {
 		if err := db.Migrator().DropTable(optionPrimaryKeyTmpTable); err != nil {
 			return fmt.Errorf("drop leftover %s: %w", optionPrimaryKeyTmpTable, err)
@@ -163,7 +164,7 @@ func repairOptionPrimaryKey(db *gorm.DB) error {
 	return nil
 }
 
-func dedupeOptionRows(rows []Option) ([]Option, int) {
+func dedupeOptionRows(rows []Option) ([]Option, int, error) {
 	seen := make(map[string]int)
 	deduped := make([]Option, 0, len(rows))
 	skippedEmpty := 0
@@ -174,18 +175,20 @@ func dedupeOptionRows(rows []Option) ([]Option, int) {
 		}
 		if i, ok := seen[row.Key]; ok {
 			if deduped[i].Value != row.Value {
-				common.SysError(common.LogText("options key %q had conflicting values; keeping the last row", row.Key))
+				// Find() has no stable row order across SQL dialects. Choosing
+				// "first" or "last" here could silently select a different live
+				// payment/security configuration on different deployments.
+				return nil, skippedEmpty, fmt.Errorf("conflicting values for duplicate options key %q", row.Key)
 			}
-			deduped[i].Value = row.Value
 			continue
 		}
 		seen[row.Key] = len(deduped)
 		deduped = append(deduped, Option{Key: row.Key, Value: row.Value})
 	}
 	if skippedEmpty > 0 {
-		common.SysError(common.LogText("skipped %d options rows with empty keys while rebuilding the primary key", skippedEmpty))
+		common.SysError(common.LogText("skipped %d options rows with empty keys while rebuilding the primary key; original rows remain in the legacy backup", skippedEmpty))
 	}
-	return deduped, skippedEmpty
+	return deduped, skippedEmpty, nil
 }
 
 func swapOptionTables(db *gorm.DB, tmp, backup string) error {

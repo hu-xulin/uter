@@ -125,28 +125,34 @@ func localizePricingDescriptions(pricing []model.Pricing, lang string) []model.P
 }
 
 // normalizePricingSource constrains the persisted `PricingSource` option to a
-// known value, degrading to the official preset for an empty or corrupt setting
-// so the plaza always renders a usable reference price.
+// known value. models.dev is the primary reference source: an empty, missing or
+// corrupt setting degrades to it so the plaza always renders a usable price.
+//
+// "official" (the basellm preset) and "channel" remain valid *explicit*
+// selections. An operator who deliberately picked them keeps that choice; the
+// migration only changes what a fresh or unset installation defaults to.
 func normalizePricingSource(raw string) string {
 	switch raw {
 	case "official", "models.dev", "channel":
 		return raw
 	default:
-		return "official"
+		return "models.dev"
 	}
 }
 
 // resolveOfficialPrices builds the per-model reference price map the plaza uses
 // for the strike-through official price and the discount badge.
 //
-// Priority:
-//  1. The upstream reference captured by the last channel sync (创梦 /
-//     DreamRouter). It is the channel's own catalogue price, so it covers every
-//     model the channel sells — including private and newly released names that
-//     no public preset knows. Without it those cards render no strike-through
-//     price and no discount badge at all ("some discounts never show up").
-//  2. The selected preset, which is the reference for models the channel does
-//     not carry.
+// Priority (models.dev is the primary reference source):
+//  1. The selected preset. models.dev is authoritative unless an operator
+//     explicitly selects the basellm "official" preset. Making the catalogue
+//     source win matters: the channel-sync reference used to be applied first
+//     and silently overrode the chosen source for every model the channel
+//     carries, which made the pricing-source setting inert in practice.
+//  2. The upstream reference captured by the last channel sync (创梦 /
+//     DreamRouter). It now only fills genuine gaps — private or newly released
+//     names no public catalogue knows — so those cards still get a
+//     strike-through price and a discount badge.
 //  3. The sibling preset, because their model coverage is complementary (e.g.
 //     the official preset lacks many Alibaba/Qwen entries that models.dev has).
 //
@@ -156,26 +162,33 @@ func normalizePricingSource(raw string) string {
 // preset, corrupt the admin preset editor (which serves the same cache) and make
 // the two presets converge, silently rendering the pricing-source choice inert.
 func resolveOfficialPrices(pricingSource string) map[string]map[string]float64 {
-	referencePresetID := officialRatioPresetID
-	if pricingSource == "models.dev" {
-		referencePresetID = modelsDevPresetID
+	pricingSource = normalizePricingSource(pricingSource)
+	referencePresetID := modelsDevPresetID
+	fallbackPresetID := officialRatioPresetID
+	if pricingSource == "official" {
+		referencePresetID, fallbackPresetID = officialRatioPresetID, modelsDevPresetID
 	}
-	// When the source is the platform channel, the canonical official preset
-	// (-100) is the reference for the discount comparison.
-	fallbackPresetID := modelsDevPresetID
-	if referencePresetID == modelsDevPresetID {
-		fallbackPresetID = officialRatioPresetID
-	}
-	merged := map[string]map[string]float64{}
-	for modelName, ratios := range service.LoadDreamRouterOfficialReference() {
+	return mergeOfficialPriceSources(
+		getPresetModelRatiosNonBlocking(referencePresetID),
+		service.LoadDreamRouterOfficialReference(),
+		getPresetModelRatiosNonBlocking(fallbackPresetID),
+	)
+}
+
+// mergeOfficialPriceSources applies the primary/fallback priority without
+// mutating any input map. It is kept separate from resolveOfficialPrices so the
+// "catalogue wins over channel" rule can be tested without a live snapshot.
+func mergeOfficialPriceSources(catalogue, channel, fallback map[string]map[string]float64) map[string]map[string]float64 {
+	merged := make(map[string]map[string]float64, len(catalogue)+len(channel)+len(fallback))
+	for modelName, ratios := range catalogue {
 		merged[modelName] = ratios
 	}
-	for modelName, ratios := range getPresetModelRatiosNonBlocking(referencePresetID) {
+	for modelName, ratios := range channel {
 		if _, ok := merged[modelName]; !ok {
 			merged[modelName] = ratios
 		}
 	}
-	for modelName, ratios := range getPresetModelRatiosNonBlocking(fallbackPresetID) {
+	for modelName, ratios := range fallback {
 		if _, ok := merged[modelName]; !ok {
 			merged[modelName] = ratios
 		}

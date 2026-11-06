@@ -6,7 +6,7 @@
 **适用范围：** PC Web、H5、响应式页面及全部业务组件  
 **技术基准：** Tailwind CSS v4、CSS Variables、组件化前端架构  
 **字体体系：** Inter + 思源黑体（Source Han Sans）  
-**品牌主色：** #5558D8  
+**品牌主色：** #5B5EE6  
 **中性色体系：** Slate  
 **基础圆角：** 10px  
 **最小字号：** 12px  
@@ -316,7 +316,7 @@ Uter 品牌主色采用紫蓝色。
 
 | Token | 色值 | 用途 |
 |---|---|---|
-| `brand-primary` | `#5558D8` | 主按钮、品牌链接、重要强调 |
+| `brand-primary` | `#5B5EE6` | 主按钮、品牌链接、重要强调 |
 | `brand-hover` | `#4F52D1` | Hover |
 | `brand-active` | `#4A4DC5` | Active |
 | `brand-foreground` | `#FFFFFF` | 主色实心背景上的文字 |
@@ -348,9 +348,9 @@ Uter 品牌主色采用紫蓝色。
 
 | 前景 | 背景 | 对比度 | 结果 |
 |---|---|---:|---|
-| `#5558D8` | `#FFFFFF` | 约 5.56:1 | AA 通过 |
+| `#5B5EE6` | `#FFFFFF` | 约 5.01:1 | AA 通过 |
 | `#5558D8` | `#F0F0FF` | 约 4.93:1 | AA 通过 |
-| `#FFFFFF` | `#5558D8` | 约 5.56:1 | AA 通过 |
+| `#FFFFFF` | `#5B5EE6` | 约 5.01:1 | AA 通过 |
 
 WorkBuddy 必须重新通过脚本验证最终代码中的实际值。
 
@@ -1551,7 +1551,7 @@ Token 分为三层：
 业务语义源变量使用独立名称，例如：
 
 ```css
---brand-primary: #5558D8;
+--brand-primary: #5B5EE6;
 ```
 
 再映射到 Tailwind：

@@ -149,21 +149,23 @@ describe('分组容器', () => {
 })
 
 describe('mono values', () => {
-  it('Input 的 mono 走 mono 档（14/20），且不与 text-sm 叠加', () => {
+  it('Input 的 mono 走等宽字形 + 16px（font-mono text-long），不再用 13px text-mono 档', () => {
     render(<Input mono aria-label='secret' />)
     const input = screen.getByLabelText('secret')
     const tokens = classes(input)
     expect(tokens).toContain('font-mono')
-    expect(tokens).toContain('text-mono')
-    // 规范 1.2：font-mono 旁边再写 text-sm 会让等宽文本脱离 mono 档。
+    expect(tokens).toContain('text-long')
+    // UAES P4：H5 输入框字号 ≥16px（防 iOS 聚焦自动缩放），等宽值不再用 13px
+    // 的 text-mono 档，size 统一走 text-long，字形族单独保留 font-mono。
     expect(tokens).not.toContain('text-sm')
+    expect(tokens).not.toContain('text-mono')
     expect(input.getAttribute('data-mono')).toBe('true')
   })
 
-  it('未开 mono 的输入框保持正文档', () => {
+  it('未开 mono 的输入框 ≥16px（text-long）以满足 H5 无障碍', () => {
     render(<Input aria-label='plain' />)
     const input = screen.getByLabelText('plain')
-    expect(classes(input)).toContain('text-sm')
+    expect(classes(input)).toContain('text-long')
     expect(classes(input)).not.toContain('font-mono')
   })
 })

@@ -97,7 +97,7 @@ printf '工作区: %s 处未提交改动（本脚本不会修改其中任何内�
 # ---------- Go 后端 ----------
 if command -v go >/dev/null 2>&1; then
   step "Go 格式"   'gofmt_files=$(gofmt -l . 2>/dev/null | grep -v "^vendor/" || true); if [ -n "$gofmt_files" ]; then echo "以下文件未 gofmt:"; echo "$gofmt_files"; exit 1; fi'
-  step "Go vet"    'go vet ./... 2>&1'
+  step "Go vet (all four modules)" 'GOWORK=off go vet ./... 2>&1 && (cd relaykit && GOWORK=off go vet ./...) && (cd tokenkit && GOWORK=off go vet ./...) && (cd tokenkit/tokenkit && GOWORK=off go vet ./...)'
   if [ "$QUICK" -eq 1 ]; then
     skip "Go 测试 (make test)" "--quick 模式跳过"
   else
@@ -179,6 +179,19 @@ fi
 if [ "$FAILED" -gt 0 ]; then
   printf '\n%s✗ 门禁未通过%s — 请修复后重跑：./scripts/verify-all.sh\n' "$C_RED" "$C_RESET"
   exit 1
+fi
+
+# Full mode is a release/PR gate: missing tools, omitted suites, or unavailable
+# project components must never be reported as a successful verification.
+# --quick is explicitly a partial developer convenience and remains non-authoritative.
+if [ "$SKIPPED" -gt 0 ] && [ "$QUICK" -eq 0 ]; then
+  printf '\n%s✗ 全量门禁不完整%s — 存在 %d 项 SKIP；补齐环境并重新执行全量检查。\n' "$C_RED" "$C_RESET" "$SKIPPED"
+  exit 2
+fi
+
+if [ "$QUICK" -eq 1 ]; then
+  printf '\n%s⚠ 快速检查完成（非完整质量验收）%s\n' "$C_YELLOW" "$C_RESET"
+  exit 0
 fi
 
 printf '\n%s✓ 全部门禁通过%s\n' "$C_GREEN" "$C_RESET"

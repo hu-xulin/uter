@@ -54,23 +54,23 @@ cd web && node scripts/check-i18n-keys.mjs
 # 数据库变更：真实 SQLite / MySQL / PostgreSQL 三库验证矩阵
 ```
 
-## 现状差距（2026-10-29）
+## 历史实施快照（截至 2026-10-29；不代表当前状态）
 
 | 层 | 已存在（复用） | 本次补齐 | 待建设（诚实标注，不可声称已实现） |
 |---|---|---|---|
-| L1 宪法 | `AGENTS.md`/`web/AGENTS.md`/`design-system.md` | — | — |
+| L1 宪法 | `AGENTS.md`/`web/AGENTS.md`/`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | — | — |
 | L2 合同 | — | `AIES.md` + `task-schema.json` + 4 清单 | 自动化需求编译（当前靠 AI 依合同人工编译） |
 | L3 门禁 | T1–T15、spec-guards 等、CI、pre-commit、i18n | 六层门禁分级映射 | Playwright 截图基线/视觉回归 |
 | 度量 | — | 评分维度/权重/指标 | 违规与返工的自动采集 |
 
-## 待协调项（本次未执行）
+## 历史协调记录（2026-10-29；不代表当前任务状态）
 
-- **`AGENTS.md` 正被并发会话大幅修改（工作区标记 M）**：为避免覆盖他人 WIP，本次**未**改 `AGENTS.md`。建议该会话收尾后追加一行指向 `.ai/AIES.md` 的指针，或授权本会话在并发收尾后统一整合。
-- **未自动 git commit/push**：遵循"提交需额外授权"与"不混入并发 WIP"两条纪律，本次改动全部留未提交，待用户确认后显式暂存提交。
+- **历史记录：** 当时 `AGENTS.md` 存在并发修改，因此未在该次任务中编辑。当前是否存在并发 WIP，必须以执行时工作区和 Git 状态为准。
+- **历史记录：** 当时未执行 commit/push。后续 Git 操作必须遵循当前用户授权、分支隔离和变更保护规则。
 - **PandaMall 规范包**：平移本框架时须换成 React Native/Expo/Clerk 技术规则，不共用 Uter 的 Web 设计与支付规则。
 
 ## 维护规则
 
-- 违规与返工 → 登记到 `AIES.md` 第十章 + `design-system.md` §26（用附录 D 模板），把可重复验证的要求转化为自动化测试/静态检查/CI 门禁。
+- 违规与返工 → 登记到 `AIES.md` 第十章 + `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §26（用附录 D 模板），把可重复验证的要求转化为自动化测试/静态检查/CI 门禁。
 - 已批准决策 → 用 `AIES.md` 附录 E 模板登记，防止 AI 反复推翻。
 - **未经负责人批准不得自动修改核心规范**；规则负责指导，工具负责检查，权限系统负责阻止未授权操作——三者不能互相替代。

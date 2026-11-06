@@ -36,6 +36,7 @@ For commercial licensing, please contact support@uter.ai
 @import '@fontsource-variable/noto-sans-sc';
 
 @import './theme.css';
+@import '../design-system/tokens/generated/brand.css';
 @import './theme-presets.css';
 
 /* ── Design system ────────────────────────────────────────────────────

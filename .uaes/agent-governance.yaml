@@ -1,0 +1,301 @@
+version: "1.0.0"
+policy_id: "UTER-AI-GOVERNANCE-P01"
+status: "active"
+default_effect: "deny"
+
+global_controls:
+  enforce_least_privilege: true
+  require_task_identity: true
+  require_tool_registration: true
+  require_audit: true
+  require_workspace_isolation: true
+  production_credentials_available: false
+  unrestricted_network: false
+  agent_can_modify_own_policy: false
+  delegated_permissions_can_escalate: false
+
+repository:
+  default_branch: "main"
+  max_non_main_branches: 1
+  work_branch_required_for_changes: true
+  reuse_existing_work_branch: true
+  force_push: false
+  direct_push_to_main: false
+  merge_pull_request: false
+
+risk_levels:
+  - R0
+  - R1
+  - R2
+  - R3
+  - R4
+
+task_lifecycle:
+  states:
+    - CREATED
+    - EXECUTING
+    - VERIFYING
+    - CLOSED
+    - BLOCKED
+    - FAILED
+    - INTERRUPTED
+  terminal_states:
+    - CLOSED
+    - FAILED
+  transitions:
+    CREATED: [EXECUTING, BLOCKED]
+    EXECUTING: [VERIFYING, BLOCKED, FAILED, INTERRUPTED]
+    VERIFYING: [CLOSED, EXECUTING, BLOCKED, FAILED, INTERRUPTED]
+    BLOCKED: [EXECUTING, FAILED]
+    INTERRUPTED: [EXECUTING, BLOCKED]
+    FAILED: []
+    CLOSED: []
+  close_requires:
+    - all_acceptance_criteria_pass
+    - required_tests_pass
+    - evidence_complete
+    - no_open_p0_issue
+  resume_requires:
+    - task_id
+    - agent_id
+    - last_completed_step
+    - last_verified_commit
+    - evidence_refs
+
+agents:
+  - id: "uter.agent.orchestration.main"
+    role: "orchestrator"
+    permission_profile: "orchestrator"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.product.requirement"
+    role: "product"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.research.technical"
+    role: "research"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.architecture.review"
+    role: "architecture"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.design.system"
+    role: "design"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.engineering.coding"
+    role: "coding"
+    permission_profile: "pull_request_creator"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.quality.review"
+    role: "review"
+    permission_profile: "independent_reviewer"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.quality.testing"
+    role: "testing"
+    permission_profile: "test_executor"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.security.audit"
+    role: "security"
+    permission_profile: "security_auditor"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.documentation"
+    role: "documentation"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+  - id: "uter.agent.delivery"
+    role: "delivery"
+    permission_profile: "read_only"
+    definition_status: "defined"
+    runtime_status: "external_unverified"
+
+permission_profiles:
+  orchestrator:
+    allow:
+      - task.create
+      - task.delegate.scoped
+      - task.status.read
+      - report.read
+    deny:
+      - filesystem.write
+      - git.commit
+      - git.push
+      - git.merge
+      - deployment.execute
+      - production.database.write
+      - payment.configuration.write
+
+  read_only:
+    allow:
+      - filesystem.read
+      - repository.inspect
+      - code.search
+      - approved_web.search
+    deny:
+      - filesystem.write
+      - shell.execute
+      - git.commit
+      - git.push
+      - git.pull_request.create
+      - git.merge
+      - deployment.execute
+      - production.database.write
+      - payment.configuration.write
+
+  workspace_developer:
+    allow:
+      - filesystem.read
+      - filesystem.write.scoped
+      - shell.execute.scoped
+      - test.execute
+      - build.execute
+      - git.diff
+    deny:
+      - git.merge
+      - deployment.execute
+      - production.database.write
+      - payment.configuration.write
+      - production.secrets.read
+
+  pull_request_creator:
+    allow:
+      - filesystem.read
+      - filesystem.write.scoped
+      - shell.execute.scoped
+      - test.execute
+      - build.execute
+      - git.diff
+      - git.branch.reuse
+      - git.commit
+      - git.push.feature_branch
+      - git.pull_request.create
+    deny:
+      - git.push.main
+      - git.force_push
+      - git.merge
+      - deployment.execute
+      - production.database.write
+      - payment.configuration.write
+      - production.secrets.read
+      - overwrite.user_uncommitted_changes
+
+  independent_reviewer:
+    allow:
+      - filesystem.read
+      - repository.inspect
+      - code.search
+      - test.execute
+      - report.write.scoped
+    deny:
+      - source.write
+      - git.commit
+      - git.push
+      - git.merge
+      - deployment.execute
+
+  test_executor:
+    allow:
+      - filesystem.read
+      - test.execute
+      - build.execute
+      - report.write.scoped
+    deny:
+      - production.database.write
+      - payment.configuration.write
+      - git.merge
+      - deployment.execute
+
+  security_auditor:
+    allow:
+      - filesystem.read
+      - code.search
+      - security.scan
+      - dependency.audit
+      - report.write.scoped
+    deny:
+      - production.database.write
+      - payment.configuration.write
+      - git.merge
+      - deployment.execute
+
+approval_rules:
+  production_change:
+    effect: "deny"
+  real_payment_change:
+    effect: "deny"
+  production_database_write:
+    effect: "deny"
+  merge_pull_request:
+    effect: "deny"
+  deployment:
+    effect: "deny"
+  irreversible_data_operation:
+    effect: "require_human_approval"
+  permission_escalation:
+    effect: "require_human_approval"
+  task_scope_expansion:
+    effect: "require_human_approval"
+
+workspace_protection:
+  preflight_required: true
+  preserve_preexisting_tracked_changes: true
+  preserve_untracked_files: true
+  explicit_path_staging_only: true
+  forbid_git_add_all: true
+  forbid_git_clean: true
+  forbid_force_push: true
+  overwrite_user_changes: false
+
+multi_agent_coordination:
+  task_id_unique: true
+  task_claim_required: true
+  delegated_authorization_must_not_expand: true
+  result_handoff_required: true
+  shared_resource_write_lock_required: true
+  max_concurrent_writers_per_resource: 1
+  conflicting_write_effect: "BLOCKED"
+  duplicate_task_effect: "DENY"
+
+manual_intervention_triggers:
+  - authorization_conflict
+  - approval_required
+  - production_or_real_payment_scope
+  - unconfirmed_irreversible_operation
+  - critical_business_rule_ambiguity
+  - verification_failure_with_damage_risk
+  - agent_cannot_resume_from_checkpoint
+  - unresolved_governance_conflict
+
+authorization_dimensions:
+  required:
+    - subject
+    - task_id
+    - action
+    - resource
+    - environment
+    - scope
+    - risk_level
+    - expires_at
+
+audit_fields:
+  required:
+    - task_id
+    - agent_id
+    - tool_id
+    - authorization_id
+    - action
+    - resource
+    - environment
+    - timestamp
+    - result
+    - evidence_ref

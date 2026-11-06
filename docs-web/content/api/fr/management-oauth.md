@@ -115,18 +115,6 @@
 |---|---|
 | `200` | Succès |
 
-## Lier WeChat
-
-🔓 Aucune authentification requise
-
-`GET` `/api/oauth/wechat/bind`
-
-### Réponse
-
-| Code d'état | Description |
-|---|---|
-| `200` | Succès |
-
 ## Connexion OAuth WeChat
 
 🔓 Aucune authentification requise (rappel OAuth)

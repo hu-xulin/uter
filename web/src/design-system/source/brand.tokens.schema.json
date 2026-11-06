@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uter.ai/schemas/brand.tokens.schema.json",
+  "title": "UTER Brand Tokens (DTCG-compatible)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$extensions",
+    "themes"
+  ],
+  "properties": {
+    "$extensions": {
+      "type": "object",
+      "required": [
+        "com.uter.uaes"
+      ],
+      "properties": {
+        "com.uter.uaes": {
+          "$ref": "#/$defs/metadata"
+        }
+      },
+      "additionalProperties": false
+    },
+    "themes": {
+      "type": "object",
+      "required": [
+        "light",
+        "dark"
+      ],
+      "properties": {
+        "light": {
+          "$ref": "#/$defs/theme"
+        },
+        "dark": {
+          "$ref": "#/$defs/theme"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "designSystem",
+        "status",
+        "sourceCommit",
+        "provenance",
+        "notes"
+      ],
+      "properties": {
+        "id": {
+          "const": "UTER-BRAND-TOKEN-SOURCE"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "designSystem": {
+          "const": "UTER Design System 3.0"
+        },
+        "status": {
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "DEPRECATED"
+          ]
+        },
+        "sourceCommit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "USER_CONFIRMED",
+              "EXISTING_3_0_IMPLEMENTATION",
+              "PROPOSED"
+            ]
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "registryPointer": {
+          "type": "string"
+        },
+        "governingStandard": {
+          "type": "string"
+        },
+        "governingColorStandard": {
+          "type": "string"
+        },
+        "governingSchema": {
+          "type": "string"
+        },
+        "changeApproval": {
+          "type": "string",
+          "enum": [
+            "NOT_VERIFIED",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "approvalNote": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "theme": {
+      "type": "object",
+      "required": [
+        "brand"
+      ],
+      "properties": {
+        "brand": {
+          "$ref": "#/$defs/colorGroup"
+        }
+      },
+      "additionalProperties": false
+    },
+    "colorGroup": {
+      "type": "object",
+      "required": [
+        "$type",
+        "primary",
+        "primaryForeground",
+        "hover",
+        "active",
+        "soft",
+        "softForeground",
+        "border",
+        "subtleSurface"
+      ],
+      "properties": {
+        "$type": {
+          "const": "color"
+        },
+        "primary": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "primaryForeground": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "hover": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "active": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "soft": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "softForeground": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "border": {
+          "$ref": "#/$defs/colorToken"
+        },
+        "subtleSurface": {
+          "$ref": "#/$defs/colorToken"
+        }
+      },
+      "additionalProperties": false
+    },
+    "colorToken": {
+      "type": "object",
+      "required": [
+        "$value",
+        "$description"
+      ],
+      "properties": {
+        "$value": {
+          "$ref": "#/$defs/hex"
+        },
+        "$description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    }
+  }
+}

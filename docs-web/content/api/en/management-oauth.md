@@ -115,18 +115,6 @@
 |---|---|
 | `200` | 成功 |
 
-## Bind WeChat
-
-🔓 无需鉴权
-
-`GET` `/api/oauth/wechat/bind`
-
-### 响应
-
-| 状态码 | 说明 |
-|---|---|
-| `200` | 成功 |
-
 ## WeChat OAuth Login
 
 🔓 无需鉴权（OAuth回调）

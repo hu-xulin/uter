@@ -31,7 +31,7 @@ import {
   type OAuthPopupExchange,
 } from '@/features/auth/lib/oauth-popup'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
-import type { CustomOAuthProviderInfo } from '@/features/auth/types'
+import type { CustomOAuthProviderInfo } from '@/types/system'
 import { getSelfOAuthBindings, unbindCustomOAuth } from '@/features/profile/api'
 import type {
   UserProfile,

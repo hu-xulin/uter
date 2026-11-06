@@ -16,12 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { AuthUser } from '@/stores/auth-store'
+import type { AdminCapabilities, AuthUser } from '@/types/auth'
+
+export type { AdminCapabilities } from '@/types/auth'
 
 import { ROLE } from './roles'
 
-export type AdminPermissionMatrix = Record<string, Record<string, boolean>>
-export type AdminCapabilities = AdminPermissionMatrix
+export type AdminPermissionMatrix = AdminCapabilities
 
 export const ADMIN_PERMISSION_RESOURCES = {
   AUDIT: 'audit',

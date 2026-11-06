@@ -173,6 +173,10 @@ const RAW_COLOR_OWNERS = [
   /^assets\//,
   // Token 定义文件本身就是颜色的落点：调色板、语义层、主题预设、语法色。
   /^design-system\/tokens\/[a-z-]+\.css$/,
+  // DTCG 源数据生成的 CSS Token 定义文件（generate-design-tokens.mjs 产物），
+  // 与上面的手写 Token 定义文件同为颜色落点，不是界面代码里的裸色值。
+  // 该文件禁止手工编辑：改色值必须改 design-system/source/*.tokens.json 后重新生成。
+  /^design-system\/tokens\/generated\/[a-z-]+\.css$/,
   /^styles\/(theme|theme-presets|globals)\.css$/,
 ]
 
