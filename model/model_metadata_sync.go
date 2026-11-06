@@ -38,7 +38,11 @@ func lockMetadataMutation(tx *gorm.DB) error {
 
 var ErrMetadataSyncConflict = errors.New("metadata changed; preview again before applying")
 
-var MetadataSyncFields = []string{"description", "icon", "tags", "vendor", "endpoints", "name_rule", "status"}
+var MetadataSyncFields = []string{
+	"description", "icon", "tags", "vendor", "endpoints", "name_rule", "status",
+	"context_length", "max_output_tokens", "knowledge_cutoff", "release_date",
+	"input_modalities", "output_modalities",
+}
 
 type MetadataValues struct {
 	Description string `json:"description"`
@@ -48,6 +52,13 @@ type MetadataValues struct {
 	Endpoints   string `json:"endpoints"`
 	NameRule    int    `json:"name_rule"`
 	Status      int    `json:"status"`
+	// 目录规格：0 / 空串表示上游未提供，合并时不得用它覆盖本地已有值。
+	ContextLength    int    `json:"context_length"`
+	MaxOutputTokens  int    `json:"max_output_tokens"`
+	KnowledgeCutoff  string `json:"knowledge_cutoff"`
+	ReleaseDate      string `json:"release_date"`
+	InputModalities  string `json:"input_modalities"`
+	OutputModalities string `json:"output_modalities"`
 }
 
 type MetadataSyncSelection struct {
@@ -228,6 +239,18 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 					fields[field] = update.Values.NameRule
 				case "status":
 					fields[field] = update.Values.Status
+				case "context_length":
+					fields[field] = update.Values.ContextLength
+				case "max_output_tokens":
+					fields[field] = update.Values.MaxOutputTokens
+				case "knowledge_cutoff":
+					fields[field] = update.Values.KnowledgeCutoff
+				case "release_date":
+					fields[field] = update.Values.ReleaseDate
+				case "input_modalities":
+					fields[field] = update.Values.InputModalities
+				case "output_modalities":
+					fields[field] = update.Values.OutputModalities
 				case "vendor":
 					// 已存在的供应商只取 Id，名称/简介/图标一律不回写：这三项是
 					// 运营在「模型-供应商」里逐条维护的配置，同步只负责把模型挂到

@@ -7773,6 +7773,14 @@
     "At least one sender account is required": "Cần ít nhất một tài khoản gửi",
     "Daily send limit must be a non-negative integer": "Giới hạn gửi mỗi ngày phải là số nguyên không âm",
     "new-api": "new-api",
-    "Frontend design and development by New API contributors.": "Thiết kế và phát triển giao diện bởi những người đóng góp cho New API."
+    "Frontend design and development by New API contributors.": "Thiết kế và phát triển giao diện bởi những người đóng góp cho New API.",
+    "Context window": "Cửa sổ ngữ cảnh",
+    "Max output tokens": "Token đầu ra tối đa",
+    "Release date": "Ngày phát hành",
+    "Input modalities": "Định dạng đầu vào",
+    "Output modalities": "Định dạng đầu ra",
+    "Spec source": "Nguồn thông số",
+    "Spec source unavailable": "Không thể truy cập nguồn thông số",
+    "{{count}} models matched": "Đã khớp {{count}} mô hình"
   }
 }

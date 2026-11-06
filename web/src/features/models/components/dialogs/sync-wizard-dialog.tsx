@@ -59,6 +59,12 @@ const FIELD_LABELS: Record<MetadataSyncField, string> = {
   endpoints: 'Custom endpoints',
   name_rule: 'Match Type',
   status: 'Model square visibility',
+  context_length: 'Context window',
+  max_output_tokens: 'Max output tokens',
+  knowledge_cutoff: 'Knowledge cutoff',
+  release_date: 'Release date',
+  input_modalities: 'Input modalities',
+  output_modalities: 'Output modalities',
 }
 const REASON_LABELS = {
   create: 'New metadata',
@@ -310,6 +316,17 @@ export function SyncWizardDialog(props: {
         String(value)
       )
     }
+    // Token counts as raw digits are unreadable at this width (200000 vs 1M),
+    // so both sides of the diff get the same compact formatting. Empty stays
+    // an em dash: the diff row already shows "unknown upstream", printing 0
+    // would read like a real fact.
+    if (field === 'context_length' || field === 'max_output_tokens') {
+      const count = Number(value)
+      if (!count) return '—'
+      if (count >= 1_000_000) return `${count / 1_000_000}M`
+      if (count >= 1_000) return `${Math.round(count / 1_000)}K`
+      return String(count)
+    }
     return String(value || '—')
   }
 
@@ -457,6 +474,25 @@ export function SyncWizardDialog(props: {
                 <p>
                   {t('Vendors source')}: {preview.source.vendors_url}
                 </p>
+                {preview.source.models_dev_url && (
+                  <p>
+                    {t('Spec source')}: {preview.source.models_dev_url}
+                    {preview.source.spec_match_count > 0 && (
+                      <>
+                        {' · '}
+                        {t('{{count}} models matched', {
+                          count: preview.source.spec_match_count,
+                        })}
+                      </>
+                    )}
+                  </p>
+                )}
+                {preview.source.models_dev_error && (
+                  <p className='text-warning break-words'>
+                    {t('Spec source unavailable')}:{' '}
+                    {preview.source.models_dev_error}
+                  </p>
+                )}
                 <p>
                   {t('Metadata language')}: {preview.source.locale}
                 </p>

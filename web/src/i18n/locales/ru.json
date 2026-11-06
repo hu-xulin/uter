@@ -7773,6 +7773,14 @@
     "At least one sender account is required": "Требуется хотя бы один аккаунт отправки",
     "Daily send limit must be a non-negative integer": "Дневной лимит отправки должен быть неотрицательным целым числом",
     "new-api": "new-api",
-    "Frontend design and development by New API contributors.": "Дизайн и разработка интерфейса — участники New API."
+    "Frontend design and development by New API contributors.": "Дизайн и разработка интерфейса — участники New API.",
+    "Context window": "Окно контекста",
+    "Max output tokens": "Макс. выходных токенов",
+    "Release date": "Дата выпуска",
+    "Input modalities": "Модальности ввода",
+    "Output modalities": "Модальности вывода",
+    "Spec source": "Источник характеристик",
+    "Spec source unavailable": "Источник характеристик недоступен",
+    "{{count}} models matched": "Совпадений моделей: {{count}}"
   }
 }

@@ -93,6 +93,15 @@ func deriveMetadataValuesFromCatalog(modelName string, catalog map[string]Metada
 			Endpoints: relative.Endpoints,
 			NameRule:  NameRuleExact,
 			Status:    defaultDerivedStatus(relative.Status),
+			// 规格字段随血缘继承：同一家族的变体（快照日期、thinking 后缀）
+			// 共用上游声明的窗口与模态，比留空更有信息量。继承来的值仍可被
+			// 后续真实匹配覆盖，因为 ApplyMetadataSync 只在字段为空时写入。
+			ContextLength:    relative.ContextLength,
+			MaxOutputTokens:  relative.MaxOutputTokens,
+			KnowledgeCutoff:  relative.KnowledgeCutoff,
+			ReleaseDate:      relative.ReleaseDate,
+			InputModalities:  relative.InputModalities,
+			OutputModalities: relative.OutputModalities,
 		}
 		values.Description = inheritedDescription(modelName, relative.Description, relativeName)
 		values.Tags = DerivedMetadataTags(modelName, values.Tags)
