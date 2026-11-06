@@ -140,7 +140,7 @@ require (
 	github.com/thanhpk/randstr v1.0.6
 	github.com/tidwall/gjson v1.20.0
 	github.com/tidwall/sjson v1.2.5
-	github.com/tiktoken-go/tokenizer v0.8.1
+	github.com/tiktoken-go/tokenizer v0.10.0
 	github.com/uter-ai/uter/relaykit v0.0.0
 	github.com/uter-ai/uter/tokenkit v0.0.0
 	github.com/waffo-com/waffo-go v1.3.2
