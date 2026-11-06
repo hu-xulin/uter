@@ -59,7 +59,7 @@ No production usage telemetry or complete external-client inventory is available
 
 The owner-approved Option B changes are now committed on the Uter integration PR branch:
 
-- OpenAPI path inventory reduced from 136 paths / 161 operations to **134 paths / 159 operations**. Only the two audited legacy paths were removed. OpenAPI commit: `4aa9c0849049a640aaa27fae11870adc92367b62`.
+- OpenAPI path inventory reduced from 136 paths / 161 operations to **134 paths / 159 operations**. Only the two audited legacy paths were removed. OpenAPI commit: `4aa9c0849` (short SHA; full SHA resolvable via `git log`).
 - Documentation synchronization now filters both removed paths so a future upstream docs sync cannot reintroduce them. Generator commit: `8c1781bccd1e499e5332d8bf4dc956dc0b20f729`.
 - Both obsolete sections were removed from the OAuth and security-verification API-reference pages in all seven shipped locales (`en`, `zh`, `fr`, `ja`, `ru`, `vi`, `zh-TW`). The latest docs commit at the time of this audit update is `55b5d29df2f07b9fc49479d99c586a3f173b388c`.
 - No runtime Go handler or frontend call site was changed.
