@@ -144,7 +144,7 @@ require (
 	github.com/uter-ai/uter/relaykit v0.0.0
 	github.com/uter-ai/uter/tokenkit v0.0.0
 	github.com/waffo-com/waffo-go v1.3.2
-	github.com/waffo-com/waffo-pancake-sdk-go v0.3.1
+	github.com/waffo-com/waffo-pancake-sdk-go v0.18.0
 	github.com/yapingcat/gomedia v0.0.0-20240906162731-17feea57090c
 	golang.org/x/crypto v0.58.0
 	golang.org/x/image v0.47.0
