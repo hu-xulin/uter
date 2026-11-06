@@ -632,6 +632,18 @@ func countLogs(t *testing.T) int64 {
 	return count
 }
 
+// drainMidjourneyRefundOutbox 投递一轮待发的 Midjourney 退款事件。
+//
+// 退款日志不是同步写的：退款事务只落一条 durable outbox 事件，真正的日志行由
+// 独立的 outbox worker 异步投递（controller/midjourney_refund_outbox_task.go）。
+// 测试必须显式跑一轮投递，否则断言退款日志时日志还不存在。
+func drainMidjourneyRefundOutbox(t *testing.T, ctx context.Context) model.MidjourneyRefundOutboxBatchResult {
+	t.Helper()
+	result, err := model.ProcessMidjourneyRefundOutboxOnce(ctx, "test-outbox-worker", 10)
+	require.NoError(t, err)
+	return result
+}
+
 // ===========================================================================
 // Legacy Midjourney billing tests
 // ===========================================================================
@@ -742,6 +754,9 @@ func TestMidjourneyRefundRestoresEveryAccountingElementOnBillingChannel(t *testi
 	assert.Zero(t, persisted.Quota)
 	assert.Equal(t, tokenID, persisted.TokenId)
 	assert.Equal(t, billingChannelID, persisted.BillingChannelId)
+	// 退款日志由 outbox worker 异步投递：显式跑一轮投递再断言日志内容。
+	delivered := drainMidjourneyRefundOutbox(t, ctx)
+	require.Positive(t, delivered.Delivered)
 	log := getLastLog(t)
 	require.NotNil(t, log)
 	assert.Equal(t, model.LogTypeRefund, log.Type)
@@ -750,6 +765,8 @@ func TestMidjourneyRefundRestoresEveryAccountingElementOnBillingChannel(t *testi
 	assert.Equal(t, billingChannelID, log.ChannelId)
 
 	assert.True(t, RefundMidjourneyQuota(ctx, task, "duplicate poll"))
+	// 重复退款是幂等的：不得再投递出第二条退款日志。
+	drainMidjourneyRefundOutbox(t, ctx)
 	assert.Equal(t, int64(1), countLogs(t))
 }
 
@@ -863,6 +880,8 @@ func TestSettleMidjourneyTaskBillingTokenFailureKeepsFundingRefundable(t *testin
 	assert.Zero(t, usedQuota)
 	assert.Equal(t, 1, requestCount)
 	assert.Zero(t, getChannelUsedQuota(t, channelID))
+	// 退款日志由 outbox worker 异步投递：显式跑一轮投递再断言日志内容。
+	require.Positive(t, drainMidjourneyRefundOutbox(t, ctx).Delivered)
 	log := getLastLog(t)
 	require.NotNil(t, log)
 	assert.Zero(t, log.TokenId)
@@ -891,14 +910,20 @@ func TestRefundMidjourneyQuotaUsesLegacyChannelFallbackWithoutTokenAdjustment(t 
 	seedToken(t, tokenID, userID, "sk-midjourney-legacy", tokenQuota)
 	seedChannel(t, channelID)
 	seedChargedAccounting(t, userID, channelID, 0, chargedQuota, 1)
+	// 该任务按「钱包已扣、令牌未扣」记账。退款守卫要求可核验的计费快照：
+	// 快照缺失或不自洽的任务一律转人工核对，不会自动退款。
 	task := &model.Midjourney{
-		UserId:    userID,
-		MjId:      "mj-legacy-fallback",
-		Action:    "IMAGINE",
-		ChannelId: channelID,
-		Quota:     chargedQuota,
-		TokenId:   0,
-		Progress:  "0%",
+		UserId:               userID,
+		MjId:                 "mj-legacy-fallback",
+		Action:               "IMAGINE",
+		ChannelId:            channelID,
+		Quota:                chargedQuota,
+		TokenId:              0,
+		Progress:             "0%",
+		BillingVersion:       1,
+		BillingStatus:        "applied",
+		BillingWalletApplied: true,
+		BillingTokenApplied:  false,
 	}
 	require.NoError(t, task.Insert())
 
@@ -911,6 +936,8 @@ func TestRefundMidjourneyQuotaUsesLegacyChannelFallbackWithoutTokenAdjustment(t 
 	assert.Zero(t, usedQuota)
 	assert.Equal(t, 1, requestCount)
 	assert.Zero(t, getChannelUsedQuota(t, channelID))
+	// 退款日志由 outbox worker 异步投递：显式跑一轮投递再断言日志内容。
+	require.Positive(t, drainMidjourneyRefundOutbox(t, ctx).Delivered)
 	log := getLastLog(t)
 	require.NotNil(t, log)
 	assert.Equal(t, channelID, log.ChannelId)

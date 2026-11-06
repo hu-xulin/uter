@@ -113,7 +113,7 @@ func TestTaskAdjustFundingSubscriptionOverflowChargesWalletAtomically(t *testing
 	require.NoError(t, taskAdjustFunding(task, 30))
 
 	assert.Equal(t, int64(100), loadSubscription(t, 806).AmountUsed)
-	assert.Equal(t, 990, getUserQuota(t, 806), "only the 20-unit overflow should debit the wallet")
+	assert.Equal(t, 980, getUserQuota(t, 806), "only the 20-unit overflow should debit the wallet")
 }
 
 func TestTaskAdjustFundingSubscriptionWithinBalanceDoesNotDebitWallet(t *testing.T) {

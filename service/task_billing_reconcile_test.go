@@ -72,7 +72,9 @@ func TestReconcileStuckTaskBillingRetriesReleasedRefund(t *testing.T) {
 
 	// 出资组织指向不存在的组织：第一次退款必然失败并被释放回 pending。
 	missingOrg := 999999
-	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	// 提交时间取现代时间：遗留任务（提交时间缺失或早于 TaskRefundLegacyCutoff）
+	// 没有可核验的退款快照，对账任务只把它们转人工核对，绝不自动退款。
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0, time.Now().Unix())
 	task.PrivateData.OrganizationId = &missingOrg
 	require.NoError(t, model.DB.Model(task).Update("private_data", task.PrivateData).Error)
 	setTaskTerminal(t, task, model.TaskStatusFailure)
@@ -125,7 +127,8 @@ func TestReconcileStuckTaskBillingReplaysSettlementTarget(t *testing.T) {
 	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 
 	missingOrg := 999999
-	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	// 现代任务：对账重试只对有可核验退款快照的任务自动执行。
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0, time.Now().Unix())
 	task.PrivateData.OrganizationId = &missingOrg
 	require.NoError(t, model.DB.Model(task).Update("private_data", task.PrivateData).Error)
 	setTaskTerminal(t, task, model.TaskStatusSuccess)
@@ -224,7 +227,8 @@ func TestReconcileStuckTaskBillingExhaustsRetryBudget(t *testing.T) {
 	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 
 	missingOrg := 999999
-	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	// 现代任务：预算用尽的判定必须先通过「非遗留任务」这道闸，才能走到重试预算分支。
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0, time.Now().Unix())
 	task.PrivateData.OrganizationId = &missingOrg
 	require.NoError(t, model.DB.Model(task).Update("private_data", task.PrivateData).Error)
 	setTaskTerminal(t, task, model.TaskStatusFailure)
@@ -416,7 +420,8 @@ func TestRunTaskPollingOnceReconcilesBillingWithoutAnyAdapter(t *testing.T) {
 	seedChannel(t, channelID)
 	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 
-	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	// 现代任务：没有适配器时，对账仍要对可核验的终态失败任务执行退款。
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0, time.Now().Unix())
 	setTaskTerminal(t, task, model.TaskStatusFailure)
 	backdateBillingUpdate(t, task.TaskID)
 

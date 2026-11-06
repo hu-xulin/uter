@@ -90,6 +90,7 @@ func newOrgFixture(t *testing.T, userId, tokenId, channelId, tokenQuota int) *or
 		relayInfo: &relaycommon.RelayInfo{
 			UserId:          userId,
 			TokenId:         tokenId,
+			RequestId:       fmt.Sprintf("org-req-%d", userId),
 			TokenKey:        fmt.Sprintf("orgkey%d", tokenId),
 			OriginModelName: orgTestModel,
 			UsingGroup:      "default",

@@ -165,6 +165,11 @@ func taskAdjustFunding(task *model.Task, delta int) error {
 	if err != nil {
 		return err
 	}
+	// 组织 id 必须是正整数或 0（0 = 个人钱包直管）。负数是无效快照：绝不能
+	// 把它当成「没有组织」而改扣个人钱包——那会让两本账同时错位且不可逆。
+	if orgId < 0 {
+		return fmt.Errorf("%w: invalid organization id %d", ErrTaskFundingSourceUnresolved, orgId)
+	}
 	if orgId > 0 {
 		return model.AdjustOrgAndMemberUsedQuota(orgId, task.UserId, int64(delta))
 	}
