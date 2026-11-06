@@ -24,7 +24,7 @@
     "unified": "^11.0.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.16",
+    "@tailwindcss/postcss": "^4.3.4",
     "@types/mdast": "^4.0.4",
     "@types/node": "^24.10.0",
     "@types/react": "^19.2.2",
