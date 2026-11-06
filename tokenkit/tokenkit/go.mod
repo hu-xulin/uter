@@ -5,7 +5,7 @@ go 1.27.3
 
 require (
 	github.com/stretchr/testify v1.11.1
-	github.com/tiktoken-go/tokenizer v0.8.1
+	github.com/tiktoken-go/tokenizer v0.10.0
 )
 
 require (
