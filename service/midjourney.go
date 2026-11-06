@@ -93,48 +93,35 @@ func SettleMidjourneyTaskBilling(relayInfo *relaycommon.RelayInfo, task *model.M
 
 // RefundMidjourneyQuota reverses every accounting element recorded for a billed legacy task.
 func RefundMidjourneyQuota(ctx context.Context, task *model.Midjourney, reason string) bool {
-	quota := task.Quota
-	if quota == 0 {
-		return true
-	}
-
-	if err := model.IncreaseUserQuota(task.UserId, quota, false); err != nil {
-		logger.LogWarn(ctx, common.LogText("failed to refund Midjourney user quota, task %s: %s", task.MjId, err.Error()))
+	if task == nil || task.Id <= 0 {
+		logger.LogError(ctx, "cannot refund a nil or unsaved Midjourney task")
 		return false
 	}
-
-	if task.TokenId > 0 {
-		tokenKey, keyErr := resolveTokenKey(ctx, task.TokenId, task.MjId)
-		if keyErr != nil {
-			logger.LogWarn(ctx, common.LogText("failed to resolve the token key for Midjourney task %s: %s", task.MjId, keyErr.Error()))
-		} else if tokenKey != "" {
-			if err := model.IncreaseTokenQuota(task.TokenId, tokenKey, quota); err != nil {
-				logger.LogWarn(ctx, common.LogText("failed to refund Midjourney token quota, task %s: %s", task.MjId, err.Error()))
-			}
-		}
+	if err := model.RefundMidjourneyTaskBilling(task.Id, reason); err != nil {
+		logger.LogError(ctx, common.LogText(
+			"durable Midjourney refund/reconciliation failed for local task %d: %v",
+			task.Id, err,
+		))
+		return false
 	}
-
-	billingChannelId := task.GetBillingChannelId()
-	model.UpdateUserUsedQuota(task.UserId, -quota)
-	model.UpdateChannelUsedQuota(billingChannelId, -quota)
-	other := model.NewLogOther()
-	other.SetPublic("task_id", task.MjId)
-	other.SetPublic("reason", reason)
-	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
-		UserId:    task.UserId,
-		LogType:   model.LogTypeRefund,
-		ChannelId: billingChannelId,
-		ModelName: CovertMjpActionToModelName(task.Action),
-		Quota:     quota,
-		TokenId:   task.TokenId,
-		Other:     other,
-	})
-
-	task.Quota = 0
-	if err := task.UpdateBillingState(); err != nil {
-		logger.LogError(ctx, common.LogText("Midjourney refund succeeded but clearing the quota failed, task %s: %s", task.MjId, err.Error()))
+	// Refresh only the in-memory view; the model transaction is the source of
+	// truth and has already persisted the refund state and accounting legs.
+	latest := model.GetMjByuId(task.Id)
+	if latest == nil {
+		logger.LogError(ctx, common.LogText("Midjourney task %d disappeared after durable refund", task.Id))
+		return false
 	}
-	return true
+	task.Quota = latest.Quota
+	task.BillingStatus = latest.BillingStatus
+	task.BillingWalletApplied = latest.BillingWalletApplied
+	task.BillingTokenApplied = latest.BillingTokenApplied
+	if latest.BillingStatus == "refunded" {
+		return true
+	}
+	return latest.Quota == 0 &&
+		!latest.BillingWalletApplied &&
+		!latest.BillingTokenApplied &&
+		latest.BillingStatus != "reconciliation_required"
 }
 
 func GetMjRequestModel(relayMode int, midjRequest *dto.MidjourneyRequest) (string, *dto.MidjourneyResponse, bool) {
@@ -186,85 +173,106 @@ func GetMjRequestModel(relayMode int, midjRequest *dto.MidjourneyRequest) (strin
 
 func CoverPlusActionToNormalAction(midjRequest *dto.MidjourneyRequest) *dto.MidjourneyResponse {
 	// "customId": "MJ::JOB::upsample::2::3dbbd469-36af-4a0f-8f02-df6c579e7011"
-	customId := midjRequest.CustomId
-	if customId == "" {
+	if midjRequest == nil {
 		return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_required")
 	}
-	splits := strings.Split(customId, "::")
-	var action string
-	if splits[1] == "JOB" {
-		action = splits[2]
-	} else {
-		action = splits[1]
+	customID := strings.TrimSpace(midjRequest.CustomId)
+	if customID == "" {
+		return MidjourneyErrorWrapper(constant.MjRequestError, "custom_id_is_required")
 	}
 
-	if action == "" {
+	parts := strings.Split(customID, "::")
+	if len(parts) < 2 || parts[0] != "MJ" || parts[1] == "" {
 		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action")
 	}
-	if strings.Contains(action, "upsample") {
-		index, err := strconv.Atoi(splits[3])
-		if err != nil {
-			return MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
+
+	action := parts[1]
+	if action == "JOB" {
+		if len(parts) < 3 || parts[2] == "" {
+			return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action")
 		}
-		midjRequest.Index = index
+		action = parts[2]
+		parts = parts[2:]
+	}
+
+	parseIndex := func() (int, *dto.MidjourneyResponse) {
+		if len(parts) < 2 || parts[1] == "" {
+			return 0, MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
+		}
+		index, err := strconv.Atoi(parts[1])
+		if err != nil || index < 1 || index > 4 {
+			return 0, MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
+		}
+		return index, nil
+	}
+
+	switch action {
+	case "upsample":
+		index, errResponse := parseIndex()
+		if errResponse != nil {
+			return errResponse
+		}
 		midjRequest.Action = constant.MjActionUpscale
-	} else if strings.Contains(action, "variation") {
-		midjRequest.Index = 1
-		if action == "variation" {
-			index, err := strconv.Atoi(splits[3])
-			if err != nil {
-				return MidjourneyErrorWrapper(constant.MjRequestError, "index_parse_failed")
-			}
-			midjRequest.Index = index
-			midjRequest.Action = constant.MjActionVariation
-		} else if action == "low_variation" {
-			midjRequest.Action = constant.MjActionLowVariation
-		} else if action == "high_variation" {
-			midjRequest.Action = constant.MjActionHighVariation
+		midjRequest.Index = index
+	case "variation":
+		index, errResponse := parseIndex()
+		if errResponse != nil {
+			return errResponse
 		}
-	} else if strings.Contains(action, "pan") {
+		midjRequest.Action = constant.MjActionVariation
+		midjRequest.Index = index
+	case "low_variation":
+		midjRequest.Action = constant.MjActionLowVariation
+		midjRequest.Index = 1
+	case "high_variation":
+		midjRequest.Action = constant.MjActionHighVariation
+		midjRequest.Index = 1
+	case "pan", "pan_left", "pan_right", "pan_up", "pan_down":
 		midjRequest.Action = constant.MjActionPan
 		midjRequest.Index = 1
-	} else if strings.Contains(action, "reroll") {
+	case "reroll":
 		midjRequest.Action = constant.MjActionReRoll
 		midjRequest.Index = 1
-	} else if action == "Outpaint" {
+	case "Outpaint":
 		midjRequest.Action = constant.MjActionZoom
 		midjRequest.Index = 1
-	} else if action == "CustomZoom" {
+	case "CustomZoom":
 		midjRequest.Action = constant.MjActionCustomZoom
 		midjRequest.Index = 1
-	} else if action == "Inpaint" {
+	case "Inpaint":
 		midjRequest.Action = constant.MjActionInPaint
 		midjRequest.Index = 1
-	} else {
-		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action:"+customId)
+	default:
+		return MidjourneyErrorWrapper(constant.MjRequestError, "unknown_action:"+customID)
 	}
 	return nil
 }
 
 func ConvertSimpleChangeParams(content string) *dto.MidjourneyRequest {
-	split := strings.Split(content, " ")
-	if len(split) != 2 {
+	parts := strings.Fields(content)
+	if len(parts) != 2 || parts[0] == "" {
 		return nil
 	}
 
-	action := strings.ToLower(split[1])
-	changeParams := &dto.MidjourneyRequest{}
-	changeParams.TaskId = split[0]
-
-	if action[0] == 'u' {
-		changeParams.Action = "UPSCALE"
-	} else if action[0] == 'v' {
-		changeParams.Action = "VARIATION"
-	} else if action == "r" {
+	action := strings.ToLower(parts[1])
+	changeParams := &dto.MidjourneyRequest{TaskId: parts[0]}
+	if action == "r" {
 		changeParams.Action = "REROLL"
 		return changeParams
-	} else {
+	}
+	if len(action) != 2 {
+		return nil
+	}
+	switch action[0] {
+	case 'u':
+		changeParams.Action = "UPSCALE"
+	case 'v':
+		changeParams.Action = "VARIATION"
+	default:
 		return nil
 	}
 
-	index, err := strconv.Atoi(action[1:2])
+	index, err := strconv.Atoi(action[1:])
 	if err != nil || index < 1 || index > 4 {
 		return nil
 	}

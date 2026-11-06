@@ -331,6 +331,14 @@ func applyAlipayQueryResult(ctx context.Context, topUp *model.TopUp, result *ser
 	if topUp == nil || result == nil {
 		return AlipayReconcileCreditFailed
 	}
+	if strings.TrimSpace(result.OutTradeNo) == "" || strings.TrimSpace(result.OutTradeNo) != strings.TrimSpace(topUp.TradeNo) {
+		logger.LogWarn(ctx, fmt.Sprintf("支付宝查单订单号不匹配 local=%s provider=%s", topUp.TradeNo, result.OutTradeNo))
+		return AlipayReconcileAmountMismatch
+	}
+	if currency := strings.TrimSpace(topUp.ProviderCurrency); currency != "" && !strings.EqualFold(currency, "CNY") {
+		logger.LogWarn(ctx, fmt.Sprintf("支付宝订单币种不受支持 trade_no=%s currency=%s", topUp.TradeNo, currency))
+		return AlipayReconcileAmountMismatch
+	}
 	if result.TradeStatus != "TRADE_SUCCESS" && result.TradeStatus != "TRADE_FINISHED" {
 		if result.TradeStatus == service.AlipayTradeStatusClosed {
 			// TRADE_CLOSED 是终态（超时未付款或用户主动关闭），不可能再付款成功，
@@ -451,6 +459,11 @@ func AlipayNotify(c *gin.Context) {
 	topUp := model.GetTopUpByTradeNo(tradeNo)
 	if topUp == nil {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调订单不存在 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
+		c.String(http.StatusOK, "failure")
+		return
+	}
+	if currency := strings.TrimSpace(topUp.ProviderCurrency); currency != "" && !strings.EqualFold(currency, "CNY") {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调订单币种不受支持 trade_no=%s currency=%s", tradeNo, currency))
 		c.String(http.StatusOK, "failure")
 		return
 	}

@@ -173,3 +173,30 @@ func TestAlipayQueryOrderSurfacesOtherBusinessFailures(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "ACQ.INVALID_PARAMETER")
 }
+
+func TestAlipayQueryOrderRejectsMismatchedTradeNumber(t *testing.T) {
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+
+	node := `{"code":"10000","msg":"Success","trade_status":"TRADE_SUCCESS","total_amount":"0.06","out_trade_no":"OTHER-ORDER"}`
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `{"alipay_trade_query_response":%s,"sign":%q}`, node, testSignContent(node, key))
+	}))
+	defer server.Close()
+
+	previousGateway := operation_setting.AlipayGateway
+	previousPrivate := operation_setting.AlipayPrivateKey
+	previousPublic := operation_setting.AlipayPublicKey
+	t.Cleanup(func() {
+		operation_setting.AlipayGateway = previousGateway
+		operation_setting.AlipayPrivateKey = previousPrivate
+		operation_setting.AlipayPublicKey = previousPublic
+	})
+	operation_setting.AlipayGateway = server.URL
+	operation_setting.AlipayPrivateKey = testPrivateKeyPEM(key)
+	operation_setting.AlipayPublicKey = testPublicKeyPEM(&key.PublicKey)
+
+	_, err = AlipayQueryOrder(context.Background(), "REQUESTED-ORDER")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "out_trade_no mismatch")
+}

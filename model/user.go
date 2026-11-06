@@ -1455,25 +1455,53 @@ func DecreaseUserQuota(id int, quota int, db bool) (err error) {
 	if quota < 0 {
 		return errors.New("quota cannot be negative")
 	}
+	if !db && common.BatchUpdateEnabled {
+		addNewRecord(BatchUpdateTypeUserQuota, id, -quota)
+		runCacheSync(func() {
+			if err := cacheDecrUserQuota(id, int64(quota)); err != nil {
+				common.SysLog(common.LogText("failed to decrease user quota: %s", err.Error()))
+			}
+		})
+		return nil
+	}
+	if err := decreaseUserQuota(id, quota); err != nil {
+		return err
+	}
+	// Keep the cache behind the durable ledger: a failed DB decrement must not
+	// make the cache look charged when the persisted wallet was not changed.
 	runCacheSync(func() {
-		err := cacheDecrUserQuota(id, int64(quota))
-		if err != nil {
+		if err := cacheDecrUserQuota(id, int64(quota)); err != nil {
 			common.SysLog(common.LogText("failed to decrease user quota: %s", err.Error()))
 		}
 	})
-	if !db && common.BatchUpdateEnabled {
-		addNewRecord(BatchUpdateTypeUserQuota, id, -quota)
-		return nil
-	}
-	return decreaseUserQuota(id, quota)
+	return nil
 }
 
-func decreaseUserQuota(id int, quota int) (err error) {
-	err = DB.Model(&User{}).Where("id = ?", id).Update("quota", gorm.Expr("quota - ?", quota)).Error
-	if err != nil {
+func decreaseUserQuota(id int, quota int) error {
+	if quota < 0 {
+		return errors.New("quota cannot be negative")
+	}
+	if quota == 0 {
+		return nil
+	}
+	result := DB.Model(&User{}).Where("id = ?", id).
+		Update("quota", gorm.Expr("quota - ?", quota))
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 1 {
+		return nil
+	}
+	// A missing user must not be reported as a successful debit: callers may
+	// otherwise commit the other billing legs and silently lose this ledger leg.
+	var count int64
+	if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
 		return err
 	}
-	return err
+	if count == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return errors.New("user quota debit did not affect exactly one row")
 }
 
 func DeltaUpdateUserQuota(id int, delta int) (err error) {
@@ -1507,13 +1535,31 @@ func UpdateUserUsedQuotaAndRequestCount(id int, quota int) {
 	updateUserUsedQuotaAndRequestCount(id, quota, 1)
 }
 
-// UpdateUserUsedQuota adjusts accumulated usage without changing request count.
-func UpdateUserUsedQuota(id int, quota int) {
+// UpdateUserUsedQuotaWithError adjusts accumulated usage without changing request count.
+// Batch mode preserves the existing queued-delta semantics; direct mode exposes DB errors
+// to accounting workflows that must quarantine partial ledger updates.
+func UpdateUserUsedQuotaWithError(id int, quota int) error {
+	if id <= 0 {
+		return fmt.Errorf("user ID must be positive")
+	}
 	if common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeUsedQuota, id, quota)
-		return
+		return nil
 	}
-	if err := DB.Model(&User{}).Where("id = ?", id).Update("used_quota", gorm.Expr("used_quota + ?", quota)).Error; err != nil {
+	result := DB.Model(&User{}).Where("id = ?", id).
+		Update("used_quota", gorm.Expr("used_quota + ?", quota))
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected != 1 {
+		return fmt.Errorf("user %d usage row was not updated", id)
+	}
+	return nil
+}
+
+// UpdateUserUsedQuota preserves the legacy best-effort API for non-accounting callers.
+func UpdateUserUsedQuota(id int, quota int) {
+	if err := UpdateUserUsedQuotaWithError(id, quota); err != nil {
 		common.SysLog(common.LogText("failed to update user used quota: %s", err.Error()))
 	}
 }
@@ -1688,4 +1734,11 @@ func admissionQuotaLowWater() int {
 		return 0
 	}
 	return int(trustUSD * common.QuotaPerUnit)
+}
+
+// AdjustUserUsedQuota applies an accounting usage delta immediately. Negative
+// adjustments are guarded against underflow instead of silently clamping the
+// ledger to zero; billing workflows must surface an inconsistent snapshot.
+func AdjustUserUsedQuota(id int, delta int) error {
+	return adjustUserUsedQuotaTx(DB, id, delta)
 }

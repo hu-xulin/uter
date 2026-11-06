@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "https://github.com/hu-xulin/uaes",
+  "default_branch": "main",
+  "source_commit": "9b1f5f19e480817c7717fff203aa6b4287602aeb",
+  "registry_path": ".uaes/STANDARD-REGISTRY.yaml",
+  "registry_blob_sha": "a73447a7206321976bcfcdcc2b58e70157703e5a",
+  "registry_version": "1.7.0",
+  "registry_status": "DRAFT",
+  "integration_status": "MIGRATION_PENDING",
+  "approval_state": "NOT_APPROVED",
+  "pinned_at": "2026-11-05T15:05:04Z",
+  "pinned_by": "UTER-UAES-FULL-COMPLIANCE-EXECUTION",
+  "notes": "Machine-readable pin for the UAES audit baseline. DRAFT status is authoritative: this pin is not a release approval and must not be used to mark any Uter requirement VERIFIED. Refresh only through a reviewed integration change."
+}

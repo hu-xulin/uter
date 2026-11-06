@@ -88,28 +88,65 @@ func TestResolveOfficialPricesIsRepeatable(t *testing.T) {
 		"switching the pricing source must actually change the reference price")
 }
 
-// TestResolveOfficialPricesChannelUsesOfficialPreset pins the documented
-// fallback: the platform ("channel") source still compares against the
-// canonical official preset.
-func TestResolveOfficialPricesChannelUsesOfficialPreset(t *testing.T) {
+// TestResolveOfficialPricesChannelUsesPrimaryPreset pins the new priority: the
+// platform ("channel") source compares against the models.dev primary preset,
+// not the basellm one.
+func TestResolveOfficialPricesChannelUsesPrimaryPreset(t *testing.T) {
 	official := map[string]map[string]float64{"m": {"p": 1}}
 	modelsDev := map[string]map[string]float64{"m": {"p": 99}}
 	seedPresetRatioCache(t, officialRatioPresetID, official)
 	seedPresetRatioCache(t, modelsDevPresetID, modelsDev)
 
 	merged := resolveOfficialPrices("channel")
-	assert.Equal(t, float64(1), merged["m"]["p"])
+	assert.Equal(t, float64(99), merged["m"]["p"])
 }
 
 // TestResolveOfficialPricesUnknownSourceFallsBack makes sure a corrupt or
-// missing option value degrades to the official preset instead of yielding an
-// empty reference map.
+// missing option value degrades to the models.dev primary preset instead of
+// yielding an empty reference map.
 func TestResolveOfficialPricesUnknownSourceFallsBack(t *testing.T) {
 	seedPresetRatioCache(t, officialRatioPresetID, map[string]map[string]float64{"m": {"p": 1}})
 	seedPresetRatioCache(t, modelsDevPresetID, map[string]map[string]float64{"m": {"p": 99}})
 
 	merged := resolveOfficialPrices("nonsense")
-	assert.Equal(t, float64(1), merged["m"]["p"])
+	assert.Equal(t, float64(99), merged["m"]["p"])
+}
+
+// TestNormalizePricingSourceDefaultsToModelsDev locks the primary-source
+// migration: fresh installs and corrupt option values use models.dev, while
+// every explicit operator selection remains selectable.
+func TestNormalizePricingSourceDefaultsToModelsDev(t *testing.T) {
+	for _, raw := range []string{"", "  ", "garbage", "MODELS.DEV"} {
+		assert.Equal(t, "models.dev", normalizePricingSource(raw), "raw=%q", raw)
+	}
+	for _, explicit := range []string{"official", "models.dev", "channel"} {
+		assert.Equal(t, explicit, normalizePricingSource(explicit))
+	}
+}
+
+// TestMergeOfficialPriceSourcesCatalogueWins guards the reason the source
+// setting exists at all: the chosen catalogue must win over the channel-sync
+// reference, which may only fill names the catalogue does not carry.
+func TestMergeOfficialPriceSourcesCatalogueWins(t *testing.T) {
+	catalogue := map[string]map[string]float64{"shared": {"p": 99}}
+	channel := map[string]map[string]float64{
+		"shared":       {"p": 1},
+		"channel-only": {"p": 3},
+	}
+	fallback := map[string]map[string]float64{
+		"shared":        {"p": 2},
+		"channel-only":  {"p": 4},
+		"fallback-only": {"p": 5},
+	}
+
+	merged := mergeOfficialPriceSources(catalogue, channel, fallback)
+
+	assert.Equal(t, float64(99), merged["shared"]["p"], "catalogue must win over the channel reference")
+	assert.Equal(t, float64(3), merged["channel-only"]["p"], "channel reference fills genuine gaps")
+	assert.Equal(t, float64(5), merged["fallback-only"]["p"])
+	// Inputs are shared cached maps in production; merging must not write to them.
+	assert.Len(t, catalogue, 1)
+	assert.Len(t, channel, 2)
 }
 
 // TestResolveOfficialPricesConcurrentCalls runs the lookup concurrently to

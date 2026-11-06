@@ -787,4 +787,46 @@ describe('model cards', () => {
     expect(spans[0]).toHaveClass('bg-warning')
     vi.useRealTimers()
   })
+
+  it('renders a resolution × video-input price matrix for video models', () => {
+    render(
+      <ModelCard
+        model={pricingModel({
+          billing_mode: 'tiered_expr',
+          billing_expr:
+            'u("resolution")=="480p" && u("video_input")=="none" ? tier("480p·none", u("tokens")*24/1000000)' +
+            ': u("resolution")=="480p" && u("video_input")=="video" ? tier("480p·video", u("tokens")*30/1000000)' +
+            ': u("resolution")=="1080p" && u("video_input")=="none" ? tier("1080p·none", u("tokens")*48/1000000)' +
+            ': u("resolution")=="1080p" && u("video_input")=="video" ? tier("1080p·video", u("tokens")*60/1000000)' +
+            ': u("resolution")=="4k" && u("video_input")=="none" ? tier("4k·none", u("tokens")*96/1000000)' +
+            ': u("resolution")=="4k" && u("video_input")=="video" ? tier("4k·video", u("tokens")*120/1000000)' +
+            ': tier("fallback", u("tokens")*10/1000000)',
+          billing_usage_schema: {
+            tokens: { type: 'number', unit: 'token' },
+            resolution: { enum: ['480p', '1080p', '4k'] },
+            video_input: { enum: ['none', 'video'] },
+          },
+        })}
+        onClick={vi.fn()}
+        tokenUnit='M'
+      />
+    )
+    // The generic 优特/官方 grid is replaced by the matrix for these models.
+    expect(screen.queryByText('Input')).not.toBeInTheDocument()
+    // Matrix axes: columns are video-input options, rows are resolutions.
+    expect(screen.getByText('No video input')).toBeVisible()
+    expect(screen.getByText('With video input')).toBeVisible()
+    expect(screen.getByText('480p')).toBeVisible()
+    expect(screen.getByText('1080p')).toBeVisible()
+    expect(screen.getByText('4k')).toBeVisible()
+    // Cell prices (per 1M tokens), one per resolution × video-input cell.
+    expect(screen.getAllByText('$24')).toHaveLength(1)
+    expect(screen.getAllByText('$30')).toHaveLength(1)
+    expect(screen.getAllByText('$48')).toHaveLength(1)
+    expect(screen.getAllByText('$60')).toHaveLength(1)
+    expect(screen.getAllByText('$96')).toHaveLength(1)
+    expect(screen.getAllByText('$120')).toHaveLength(1)
+    // Per-unit caption is shown.
+    expect(screen.getByText(/Prices shown per/)).toBeVisible()
+  })
 })

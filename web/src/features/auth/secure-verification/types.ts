@@ -16,7 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { AuthBundle } from '@/stores/auth-store'
+import type { AuthBundle, LoginChallenge } from '@/types/auth'
+
+export type { LoginChallenge } from '@/types/auth'
 
 export type VerificationMethod =
   | '2fa'
@@ -131,13 +133,6 @@ export type VerificationInput =
 export type RequestVerificationOptions = VerificationOperation & {
   title?: string
   description?: string
-}
-
-export interface LoginChallenge {
-  require_verification: true
-  flow_token: string
-  expires_at: number
-  methods: VerificationRequirements['methods']
 }
 
 export interface RequestLoginVerificationOptions {

@@ -297,3 +297,21 @@ func TestUnlimitedTokenReserveSkipsRemainGuard(t *testing.T) {
 	assert.False(t, reserved)
 	assert.Equal(t, 80, getTokenFromDB(t, bounded.Id).RemainQuota)
 }
+
+func TestQuotaCacheHelpersHandleNilRedisClient(t *testing.T) {
+	oldRedis := common.RDB
+	common.RDB = nil
+	defer func() { common.RDB = oldRedis }()
+
+	helpers := []func() (cacheQuotaResult, error){
+		func() (cacheQuotaResult, error) { return cacheTryReserveUserQuota(1, 1) },
+		func() (cacheQuotaResult, error) { return cacheApplyUserQuotaDelta(1, 1) },
+		func() (cacheQuotaResult, error) { return cacheTryReserveTokenQuota(1, "test-token", 1) },
+		func() (cacheQuotaResult, error) { return cacheApplyTokenQuotaDelta(1, "test-token", 1) },
+	}
+	for _, helper := range helpers {
+		result, err := helper()
+		assert.Equal(t, cacheQuotaMiss, result)
+		assert.Error(t, err)
+	}
+}

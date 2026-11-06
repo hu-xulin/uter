@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, 'audit/**']
+    branches: [main, 'audit/**', 'ai/**']
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -18,6 +18,94 @@ concurrency:
 # Checkout the event commit in both jobs. A PR merge ref can disappear while
 # queued runs start, and a base branch can advance after the merge event.
 jobs:
+  uaes-integration:
+    name: UAES integration contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Test UAES integration gate positive and negative fixtures
+        run: ruby scripts/quality/test-uaes-integration-check.rb
+      - name: Validate UAES integration wiring
+        run: bash scripts/quality/uaes-integration-check.sh
+      - name: Test UAES spec-version pin gate positive and negative fixtures
+        run: ruby scripts/quality/test-uaes-pin-check.rb
+      - name: Validate UAES spec-version pin against integration contract
+        run: bash scripts/quality/uaes-pin-check.sh
+      - name: Test P01 AI governance policy and task contract
+        run: ruby scripts/quality/test-ai-governance-policy.rb
+      - name: Validate production Docker Compose configuration and immutable service images
+        run: |
+          set -euo pipefail
+          docker compose --env-file .env.example -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.dev.yml config --quiet
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          for compose_path in ("docker-compose.yml", "docker-compose.dev.yml"):
+              compose = Path(compose_path).read_text()
+              for service in ("redis", "postgres"):
+                  match = re.search(
+                      rf"(?ms)^  {service}:\n(?:(?!^  [A-Za-z0-9_-]+:).)*?^    image: ([^\n]+)",
+                      compose,
+                  )
+                  if not match:
+                      raise SystemExit(f"FAIL: {compose_path}: {service} image declaration not found")
+                  image = match.group(1).strip()
+                  if not re.search(r"@sha256:[0-9a-f]{64}$", image):
+                      raise SystemExit(f"FAIL: {compose_path}: {service} image is not pinned by a full SHA-256 digest: {image}")
+                  print(f"PASS: {compose_path}: {service} image is digest-pinned")
+          PY
+
+      - name: Enforce one non-main branch per project
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')"
+          mapfile -t work_branches < <(printf '%s\n' "$branch_names" | grep -vx 'main' || true)
+          printf 'Non-main branches (%s):\n' "${#work_branches[@]}"
+          printf '  %s\n' "${work_branches[@]}"
+          if [ "${#work_branches[@]}" -gt 1 ]; then
+            echo 'FAIL: only one non-main work branch is permitted for this project.' >&2
+            exit 1
+          fi
+          echo 'PASS: project has at most one non-main work branch.'
+
+
+  ueqe-review:
+    name: UEQE review engine (all modules + AI spec integrity)
+    needs: uaes-integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOWORK: 'off'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.0'
+      - name: Install web dependencies
+        working-directory: web
+        run: bun install --frozen-lockfile
+      - name: Create frontend embed placeholder
+        run: ./scripts/make-frontend-placeholder.sh
+      - name: Run UEQE review stage
+        run: bash scripts/quality/uter-quality.sh review
+
   backend:
     name: Backend vet, build, and test
     if: github.event.action != 'closed' || github.event.pull_request.merged == true
@@ -41,6 +129,7 @@ jobs:
             go.sum
             relaykit/go.sum
             tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
 
       - name: Create frontend embed placeholder
         run: |
@@ -57,6 +146,9 @@ jobs:
           if [ -n "$unformatted" ]; then
             echo "以下文件未通过 gofmt，请执行 gofmt -w 后提交："
             echo "$unformatted"
+            while IFS= read -r file; do
+              [ -n "$file" ] && gofmt -d "$file" || true
+            done <<< "$unformatted"
             exit 1
           fi
 
@@ -65,7 +157,7 @@ jobs:
         # only-new-issues：push / pull_request 事件经 GitHub API 取 diff
         # （--new-from-patch），只拦本次变更引入的问题；存量 121 项问题为已知
         # 基线，不阻断（分批清理）。仅覆盖根模块；relaykit / tokenkit 为独立
-        # Go 模块，暂沿用下方 go vet 门禁。
+        # Go 模块，暂沿用下方 go vet 门禁。嵌套 TokenKit 也是独立模块，必须单独验证。
         uses: golangci/golangci-lint-action@db9de0fc1a667e1a49d2291a1a042dff081d78f6 # v9
         with:
           version: v2.15.0
@@ -80,7 +172,11 @@ jobs:
 
       - name: Vet tokenkit independently
         working-directory: tokenkit
-        run: go vet ./...
+        run: GOWORK=off go vet ./...
+
+      - name: Vet nested tokenkit/tokenkit independently
+        working-directory: tokenkit/tokenkit
+        run: GOWORK=off go vet ./...
 
       - name: Build root module
         run: go build ./...
@@ -91,9 +187,13 @@ jobs:
 
       - name: Build tokenkit independently
         working-directory: tokenkit
-        run: go build ./...
+        run: GOWORK=off go build ./...
 
-      - name: Test root, relaykit, and tokenkit modules
+      - name: Build nested tokenkit/tokenkit independently
+        working-directory: tokenkit/tokenkit
+        run: GOWORK=off go build ./...
+
+      - name: Test root, relaykit, tokenkit, and nested tokenkit/tokenkit modules
         run: make test
 
   # 竞态检测：覆盖并发敏感且已验证无竞争的包。计费/钱包/组织权限/中继都在
@@ -138,6 +238,7 @@ jobs:
             go.sum
             relaykit/go.sum
             tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
 
       - name: Create frontend embed placeholder
         run: |
@@ -153,6 +254,18 @@ jobs:
       # 数分钟，与上面的单元测试分开跑便于定位是哪一侧出的问题。
       - name: Race test end-to-end billing flows
         run: go test -race -count=1 ./e2e/...
+
+      - name: Race test relaykit module
+        working-directory: relaykit
+        run: GOWORK=off go test -race -count=1 ./...
+
+      - name: Race test tokenkit module
+        working-directory: tokenkit
+        run: GOWORK=off go test -race -count=1 ./...
+
+      - name: Race test nested TokenKit module
+        working-directory: tokenkit/tokenkit
+        run: GOWORK=off go test -race -count=1 ./...
 
   # 覆盖率报告 + 门禁：既产出可追踪的工件，也对关键包设下限。
   # 门槛只覆盖资金/权限所在的包，且取当前基线往下留 2 个点——总覆盖率会被
@@ -179,6 +292,7 @@ jobs:
             go.sum
             relaykit/go.sum
             tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
 
       - name: Create frontend embed placeholder
         run: |
@@ -196,6 +310,18 @@ jobs:
 
       - name: Coverage summary
         run: go tool cover -func=coverage.out | tail -1
+
+      - name: Collect independent Go module coverage
+        run: |
+          set -o pipefail
+          for module in relaykit tokenkit tokenkit/tokenkit; do
+            label="${module//\//-}"
+            (
+              cd "$module"
+              GOWORK=off go test -count=1 -covermode=atomic -coverprofile="$RUNNER_TEMP/${label}.coverage.out" ./...
+              go tool cover -func="$RUNNER_TEMP/${label}.coverage.out" | tail -1
+            )
+          done
 
       # F-15：关键路径覆盖率下限。基线（本次测量）：controller 41.6%、
       # model 47.7%、service 45.7%、middleware 66.4%。阈值各留约 2 个点余量，
@@ -215,7 +341,7 @@ jobs:
           path: coverage.out
           retention-days: 14
 
-  # Go 依赖漏洞扫描：覆盖三个模块各自的 go.mod。
+  # Go 依赖漏洞扫描：覆盖四个独立模块各自的 go.mod。
   vulnscan:
     name: Go dependency vulnerability scan
     runs-on: ubuntu-latest
@@ -303,6 +429,12 @@ jobs:
           repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
           ref: ${{ github.sha }}
 
+      - name: Validate API documentation deprecation filter
+        working-directory: .
+        run: |
+          python3 -m py_compile docs-web/scripts/sync-upstream-docs.py
+          python3 docs-web/scripts/test_sync_upstream_docs.py
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
@@ -330,8 +462,18 @@ jobs:
       #
       # 图标几何、正文基准、焦点环那几组由上面的 `bun run test`
       # （design-system/__tests__/spec-guards.test.ts）兜底。
+      - name: Design token source sync
+        run: bun run design:tokens:check
+
+      - name: Brand contrast verification
+        run: bun run verify:contrast
+
       - name: Design tokens
         run: bun run lint:design:strict
+
+      # UAES P4-IV: canonical React UI component registry, contract shape and filesystem parity.
+      - name: React component registry
+        run: bun run components:registry:check
 
       # 版权头检查：只补缺失的 AGPL 头，不动任何代码格式，可安全设为必需。
       # 格式检查（format:check）**不要**设为必需：它按仓库根目录递归跑 oxfmt，

@@ -48,6 +48,7 @@ const (
 )
 
 type orgPlatformEnv struct {
+	testID    string
 	engine    *gin.Engine
 	db        *gorm.DB
 	upstream  *httptest.Server
@@ -79,7 +80,8 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	previousPasswordLogin := common.PasswordLoginEnabled
 	previousSSRF := *system_setting.GetFetchSetting()
 
-	database, err := gorm.Open(sqlite.Open("file:orge2e?mode=memory&cache=shared"), &gorm.Config{})
+	testID := strings.NewReplacer("/", "-", " ", "-").Replace(t.Name())
+	database, err := gorm.Open(sqlite.Open("file:orge2e-"+testID+"?mode=memory&cache=shared"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, database.AutoMigrate(
 		&model.Channel{}, &model.Token{}, &model.User{}, &model.UserSession{},
@@ -91,6 +93,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 		&model.Organization{}, &model.TwoFA{}, &model.TwoFABackupCode{},
 		&model.Checkin{}, &model.SubscriptionOrder{}, &model.UserSubscription{},
 		&model.SubscriptionPreConsumeRecord{}, &model.CustomOAuthProvider{},
+		&model.RefundIntent{},
 		&model.UserOAuthBinding{}, &model.PerfMetric{}, &model.SystemInstance{},
 		&model.SystemTask{}, &model.SystemTaskLock{}, &model.CasbinRule{},
 		&model.AuthzRole{}, &model.SubscriptionPlan{},
@@ -111,6 +114,7 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	router.SetRelayRouter(engine)
 
 	env := &orgPlatformEnv{
+		testID:    testID,
 		engine:    engine,
 		db:        database,
 		users:     map[string]*model.User{},
@@ -191,7 +195,7 @@ func (env *orgPlatformEnv) createUser(t *testing.T, username string, role int) *
 		Role:     role,
 		Status:   common.UserStatusEnabled,
 		Group:    "default",
-		AffCode:  username + "-aff",
+		AffCode:  env.testID + "-" + username + "-aff",
 	}
 	require.NoError(t, model.DB.Create(user).Error)
 	env.users[username] = user

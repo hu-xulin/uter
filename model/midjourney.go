@@ -1,6 +1,11 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"github.com/uter-ai/uter/common"
+	"gorm.io/gorm"
+)
 
 type Midjourney struct {
 	Id          int    `json:"id"`
@@ -26,8 +31,12 @@ type Midjourney struct {
 	Buttons     string `json:"buttons"`
 	Properties  string `json:"properties"`
 
-	TokenId          int `json:"-" gorm:"default:0"`
-	BillingChannelId int `json:"-" gorm:"default:0"`
+	TokenId              int    `json:"-" gorm:"default:0"`
+	BillingChannelId     int    `json:"-" gorm:"default:0"`
+	BillingVersion       int    `json:"-" gorm:"default:0"`
+	BillingStatus        string `json:"-" gorm:"type:varchar(24);default:'';index"`
+	BillingWalletApplied bool   `json:"-" gorm:"default:false"`
+	BillingTokenApplied  bool   `json:"-" gorm:"default:false"`
 }
 
 // TaskQueryParams 用于包含所有搜索条件的结构体，可以根据需求添加更多字段
@@ -130,7 +139,13 @@ func HasUnfinishedMidjourneyTasks() bool {
 		Where("progress != ?", "100%").
 		Limit(1).
 		Pluck("id", &id).Error
-	return err == nil && id != 0
+	if err != nil {
+		// Fail closed: a database error must not make the scheduler conclude
+		// that there are no unfinished tasks and permanently stop polling.
+		common.SysLog("failed to check unfinished Midjourney tasks: " + err.Error())
+		return true
+	}
+	return id != 0
 }
 
 func GetByOnlyMJId(mjId string) *Midjourney {
@@ -190,9 +205,38 @@ func (midjourney *Midjourney) Update() error {
 }
 
 func (midjourney *Midjourney) UpdateBillingState() error {
-	return DB.Model(midjourney).
-		Select("quota", "token_id", "billing_channel_id").
-		Updates(midjourney).Error
+	if midjourney == nil {
+		return errors.New("Midjourney task is nil")
+	}
+	if midjourney.Id <= 0 {
+		return errors.New("Midjourney task ID must be positive")
+	}
+	result := DB.Model(&Midjourney{}).
+		Where("id = ?", midjourney.Id).
+		Select("quota", "token_id", "billing_channel_id", "billing_version", "billing_status", "billing_wallet_applied", "billing_token_applied").
+		Updates(midjourney)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		var persisted Midjourney
+		if err := DB.Select(
+			"id", "quota", "token_id", "billing_channel_id", "billing_version",
+			"billing_status", "billing_wallet_applied", "billing_token_applied",
+		).First(&persisted, midjourney.Id).Error; err != nil {
+			return err
+		}
+		if persisted.Quota != midjourney.Quota ||
+			persisted.TokenId != midjourney.TokenId ||
+			persisted.BillingChannelId != midjourney.BillingChannelId ||
+			persisted.BillingVersion != midjourney.BillingVersion ||
+			persisted.BillingStatus != midjourney.BillingStatus ||
+			persisted.BillingWalletApplied != midjourney.BillingWalletApplied ||
+			persisted.BillingTokenApplied != midjourney.BillingTokenApplied {
+			return errors.New("Midjourney billing state changed concurrently")
+		}
+	}
+	return nil
 }
 
 func (midjourney *Midjourney) GetBillingChannelId() int {

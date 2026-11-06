@@ -144,22 +144,34 @@ func taskFundingOrgId(task *model.Task) (int, error) {
 
 // taskAdjustFunding 调整任务的资金来源（钱包或订阅），delta > 0 表示扣费，delta < 0 表示退还。
 func taskAdjustFunding(task *model.Task, delta int) error {
-	if taskIsSubscription(task) {
-		return model.PostConsumeUserSubscriptionDelta(task.PrivateData.SubscriptionId, int64(delta))
+	if task == nil {
+		return errors.New("task funding adjustment requires a task")
 	}
-	// 组织成员的资金来源是组织共享预算：提交端按组织出资预扣，这里的退款/差额结算
-	// 必须对称地回到同一本账。退到个人钱包会让组织 used_quota 永不回减，对账破裂。
+	if delta == 0 {
+		return nil
+	}
+	if taskIsSubscription(task) {
+		// Task execution may outlive the subscription's remaining balance. Match
+		// synchronous BillingSession settlement: cap subscription usage and charge
+		// any positive overflow to the owner's wallet in the same transaction.
+		return model.PostConsumeUserSubscriptionDeltaCappedWithWallet(
+			task.PrivateData.SubscriptionId, task.UserId, int64(delta),
+		)
+	}
+	// Organization reservations update both the shared budget and the member
+	// sub-quota ledger. Settlement/refund must true-up both atomically as well;
+	// changing only organizations.used_quota silently desynchronizes member limits.
 	orgId, err := taskFundingOrgId(task)
 	if err != nil {
 		return err
 	}
 	if orgId > 0 {
-		return model.IncrOrgUsedQuota(orgId, int64(delta))
+		return model.AdjustOrgAndMemberUsedQuota(orgId, task.UserId, int64(delta))
 	}
 	if delta > 0 {
-		return model.DecreaseUserQuota(task.UserId, delta, false)
+		return model.DecreaseUserQuota(task.UserId, delta, true)
 	}
-	return model.IncreaseUserQuota(task.UserId, -delta, false)
+	return model.IncreaseUserQuota(task.UserId, -delta, true)
 }
 
 // taskAdjustTokenQuota 调整任务的令牌额度，delta > 0 表示扣费，delta < 0 表示退还。
@@ -182,9 +194,9 @@ func taskAdjustTokenQuota(ctx context.Context, task *model.Task, delta int) erro
 		return nil
 	}
 	if delta > 0 {
-		return model.DecreaseTokenQuota(task.PrivateData.TokenId, tokenKey, delta)
+		return model.DecreaseTokenQuotaPersisted(task.PrivateData.TokenId, tokenKey, delta)
 	}
-	return model.IncreaseTokenQuota(task.PrivateData.TokenId, tokenKey, -delta)
+	return model.IncreaseTokenQuotaPersisted(task.PrivateData.TokenId, tokenKey, -delta)
 }
 
 // taskBillingOther 从 task 的 BillingContext 构建日志 Other 字段。
@@ -314,9 +326,31 @@ var ErrTaskBillingPartialFailure = errors.New("task billing partially applied an
 // 请求（或上一轮重试）在处理同一笔退款，直接返回，绝不第二次动账——那正是
 // 「人工重试时发生重复退款」的成因。
 func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if task == nil {
+		logger.LogError(ctx, "cannot refund a nil task")
+		return false
+	}
 	quota := task.Quota
 	if quota == 0 {
-		return true
+		// A zero quota is a successful no-op only when the durable billing
+		// state is not an in-flight or quarantined operation. A claimed refund
+		// also sets quota to zero before the ledger work is complete.
+		if task.TaskID == "" {
+			return false
+		}
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh zero-quota task %s billing state: %s", task.TaskID, err.Error()))
+			return false
+		}
+		switch task.BillingState {
+		case "", model.TaskBillingPending, model.TaskBillingReserved, model.TaskBillingSettled, model.TaskBillingRefunded:
+			return true
+		default:
+			return false
+		}
 	}
 
 	// 抢占退款执行权。quota 条件一并纳入 CAS：只有任务记录的待退额度仍等于
@@ -338,11 +372,17 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 		return false
 	}
 	if !won {
-		// 已有人处理过这笔退款：不重复动账。任务记录的 quota 已被推进，
-		// 因此这里同步本地视图，避免调用方继续用旧值做判断。
-		syncTaskBillingView(task)
-		logger.LogInfo(ctx, common.LogText("task %s refund was already claimed by another attempt; skipping duplicate refund", task.TaskID))
-		return true
+		// A lost CAS is not proof that the refund completed. Refresh the durable
+		// state and report success only when another worker has reached refunded.
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh task %s billing state after losing refund claim: %s", task.TaskID, err.Error()))
+			return false
+		}
+		if task.BillingState == model.TaskBillingRefunded {
+			return true
+		}
+		logger.LogInfo(ctx, common.LogText("task %s refund is already claimed or requires reconciliation; skipping duplicate refund", task.TaskID))
+		return false
 	}
 
 	// 抢占已把任务 quota 归零（CAS 的一部分）：释放抢占时要拿这个「库里当前值」
@@ -352,11 +392,25 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 	switch err := applyTaskRefund(ctx, task, quota, reason); {
 	case err == nil:
 		// 资金已退且任务记录已归零：进入终态。
-		if _, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+		finalized, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 			FromState: model.TaskBillingRefundPending,
 			ToState:   model.TaskBillingRefunded,
-		}); serr != nil {
+		})
+		if serr != nil || !finalized {
+			// Ledger refund has already committed. A zero-row CAS is just as
+			// dangerous as a database error: never return success unless the
+			// durable state is actually refunded. Quarantine instead of retrying
+			// the non-idempotent refund operation.
+			if serr == nil {
+				serr = fmt.Errorf("final refund state CAS did not match")
+			}
 			logger.LogError(ctx, common.LogText("refund succeeded but the final state could not be recorded, task %s: %s", task.TaskID, serr.Error()))
+			if merr := model.MarkTaskBillingForReconciliation(task.TaskID,
+				fmt.Sprintf("refund ledger committed but final state transition failed: %v", serr)); merr != nil {
+				logger.LogError(ctx, common.LogText("failed to quarantine task %s after committed refund: %s", task.TaskID, merr.Error()))
+			}
+			task.Quota = claimedQuota
+			return false
 		}
 		return true
 	case errors.Is(err, ErrTaskBillingPartialFailure):
@@ -398,13 +452,17 @@ func currentTaskBillingState(task *model.Task) string {
 //
 // 抢占失败时必须这样做：调用方接下来还会用 task.Quota / task.BillingState
 // 做判断（例如是否还要退款、按什么额度结算），拿过期快照继续算就会二次动账。
-func syncTaskBillingView(task *model.Task) {
+func syncTaskBillingView(task *model.Task) error {
+	if task == nil {
+		return errors.New("task is nil")
+	}
 	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
 	if err != nil {
-		return
+		return err
 	}
 	task.Quota = stored.Quota
 	task.BillingState = stored.BillingState
+	return nil
 }
 
 // applyTaskRefund 执行一次退款的实际资金动作。
@@ -432,15 +490,17 @@ func applyTaskRefund(ctx context.Context, task *model.Task, quota int, reason st
 		return fmt.Errorf("refund the token quota (funding already compensated): %w", err)
 	}
 
-	// 3. 回减预扣时累计的用户和渠道用量，请求次数保持不变
-	model.UpdateUserUsedQuota(task.UserId, -quota)
-	model.UpdateChannelUsedQuota(task.ChannelId, -quota)
+	// 3. 回减预扣时累计的用户和渠道用量，请求次数保持不变。
+	// 这些统计账本也属于退款审计数据：数据库更新失败时不得吞错并标记退款完成。
+	if err := model.ApplyTaskRefundUsage(task.UserId, task.ChannelId, quota); err != nil {
+		return fmt.Errorf("%w: atomic usage rollback failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
+	}
 
-	// 4. 记录日志
+	// 4. 记录退款审计日志。日志落库失败不重放资金动作，转人工对账并保留错误。
 	other := taskBillingOther(task)
 	other.SetPublic("task_id", task.TaskID)
 	other.SetPublic("reason", reason)
-	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
+	if err := model.RecordTaskBillingLogWithError(model.RecordTaskBillingLogParams{
 		UserId:    task.UserId,
 		LogType:   model.LogTypeRefund,
 		ChannelId: task.ChannelId,
@@ -449,7 +509,9 @@ func applyTaskRefund(ctx context.Context, task *model.Task, quota int, reason st
 		TokenId:   task.PrivateData.TokenId,
 		Group:     task.Group,
 		Other:     other,
-	})
+	}); err != nil {
+		return fmt.Errorf("%w: refund audit log persistence failed after quota refund: %v", ErrTaskBillingPartialFailure, err)
+	}
 
 	// 5. 任务记录的 quota 已由调用方的 CAS 一并归零，这里只需同步内存视图。
 	task.Quota = 0
@@ -490,7 +552,10 @@ func releaseTaskRefundClaim(ctx context.Context, task *model.Task, claimedQuota,
 // fromQuota/toQuota 一并纳入 CAS。抢占失败说明已有请求在处理同一笔结算，
 // 直接返回，不重复动账。
 func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int, reason *common.Message, clamps ...*common.QuotaClamp) {
-	if actualQuota < 0 {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if task == nil || actualQuota < 0 {
 		return
 	}
 	preConsumedQuota := task.Quota
@@ -500,13 +565,26 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		logger.LogInfo(ctx, common.LogText("task %s pre-consumed quota matches the actual quota (%s, %s)",
 			task.TaskID, logger.LogQuota(actualQuota), reason.Error()))
 		// 差额为零也要收口：否则任务会永远停在非终态，被对账任务反复捞起。
-		if _, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+		// 同时把预扣阶段仍留在批量队列中的用量增量落库，避免终态提交后
+		// 进程崩溃丢失这笔用量统计。
+		if err := model.ApplyTaskBillingUsageDelta(task.UserId, task.ChannelId, 0); err != nil {
+			markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("zero-delta settlement usage flush failed: %v", err))
+			return
+		}
+		finalized, err := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 			FromState: currentTaskBillingState(task),
 			ToState:   model.TaskBillingSettled,
 			FromQuota: &preConsumedQuota,
 			ToQuota:   &preConsumedQuota,
-		}); err != nil {
-			logger.LogWarn(ctx, common.LogText("failed to finalize the billing state for task %s: %s", task.TaskID, err.Error()))
+		})
+		if err != nil || !finalized {
+			if err == nil {
+				err = fmt.Errorf("zero-delta settlement finalization CAS did not match")
+			}
+			if syncErr := syncTaskBillingView(task); syncErr == nil && task.BillingState == model.TaskBillingSettled {
+				return
+			}
+			markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("zero-delta settlement could not be finalized: %v", err))
 		}
 		return
 	}
@@ -538,7 +616,10 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 	}
 	if !won {
 		// 已有人抢占：以库里的真实状态刷新内存视图，避免调用方拿过期快照继续判断。
-		syncTaskBillingView(task)
+		if err := syncTaskBillingView(task); err != nil {
+			logger.LogError(ctx, common.LogText("failed to refresh task %s billing state after losing settlement claim: %s", task.TaskID, err.Error()))
+			return
+		}
 		logger.LogInfo(ctx, common.LogText("task %s settlement was already claimed by another attempt; skipping duplicate settlement", task.TaskID))
 		return
 	}
@@ -578,8 +659,12 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 	task.Quota = actualQuota
 
 	// 提交阶段已经累计过一次请求；结算阶段只调整最终用量。
-	model.UpdateUserUsedQuota(task.UserId, quotaDelta)
-	model.UpdateChannelUsedQuota(task.ChannelId, quotaDelta)
+	// 直接把该用户/渠道的待刷批量增量与本次差额在同一事务落库，避免
+	// settlement_pending → settled 后进程崩溃导致内存批量队列丢失。
+	if err := model.ApplyTaskBillingUsageDelta(task.UserId, task.ChannelId, quotaDelta); err != nil {
+		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement usage ledger update failed after funding/token adjustment: %v", err))
+		return
+	}
 
 	var logType int
 	var logQuota int
@@ -597,7 +682,7 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 	for _, clamp := range clamps {
 		attachQuotaSaturationToOther(other, clamp)
 	}
-	model.RecordTaskBillingLog(model.RecordTaskBillingLogParams{
+	if err := model.RecordTaskBillingLogWithError(model.RecordTaskBillingLogParams{
 		UserId:    task.UserId,
 		LogType:   logType,
 		Content:   []*common.Message{reason},
@@ -608,14 +693,24 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		Group:     task.Group,
 		Other:     other,
 		NodeName:  task.PrivateData.NodeName,
-	})
+	}); err != nil {
+		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement audit log persistence failed after ledger adjustment: %v", err))
+		return
+	}
 
 	// 资金已动且任务记录已推进到 actualQuota：进入终态。
-	if _, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
+	finalized, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 		FromState: model.TaskBillingSettlementPending,
 		ToState:   model.TaskBillingSettled,
-	}); serr != nil {
-		logger.LogError(ctx, common.LogText("settlement succeeded but the final state could not be recorded, task %s: %s", task.TaskID, serr.Error()))
+	})
+	if serr != nil || !finalized {
+		if serr == nil {
+			serr = fmt.Errorf("final settlement state CAS did not match")
+		}
+		if syncErr := syncTaskBillingView(task); syncErr == nil && task.BillingState == model.TaskBillingSettled {
+			return
+		}
+		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement ledger committed but final state transition failed: %v", serr))
 	}
 }
 
@@ -799,6 +894,16 @@ func reconcileUnfinishedTaskBilling(ctx context.Context, olderThan int64) {
 	}
 	for i := range tasks {
 		task := &tasks[i]
+		// The refund rollout boundary is intentionally fail-closed for historical
+		// terminal tasks: their legacy quota may already have been refunded by the
+		// pre-ledger implementation. A missing submit timestamp is equally
+		// ambiguous. Do not silently skip these rows forever; persist them in the
+		// reconciliation queue so an operator can verify the historical ledger.
+		if task.SubmitTime <= 0 || task.SubmitTime < model.TaskRefundLegacyCutoff {
+			markTaskBillingForReconciliation(ctx, task,
+				"historical terminal task has no verifiable durable refund snapshot; automatic refund is disabled")
+			continue
+		}
 		switch {
 		case task.Quota == 0:
 			// 没有待结算的额度：直接收口，避免终态任务永远停在非终态。

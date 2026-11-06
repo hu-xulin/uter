@@ -65,6 +65,10 @@ func TestMain(m *testing.M) {
 		&model.SystemTask{},
 		&model.SystemTaskLock{},
 		&model.Organization{},
+		&model.RefundIntent{},
+		&model.MidjourneyRefundOperation{},
+		&model.MidjourneyRefundOutbox{},
+		&model.MidjourneyRefundLogReceipt{},
 	); err != nil {
 		panic("failed to migrate: " + err.Error())
 	}
@@ -91,6 +95,10 @@ func truncate(t *testing.T) {
 		model.DB.Exec("DELETE FROM organizations")
 		model.DB.Exec("DELETE FROM system_task_locks")
 		model.DB.Exec("DELETE FROM system_tasks")
+		model.DB.Exec("DELETE FROM midjourney_refund_log_receipts")
+		model.DB.Exec("DELETE FROM midjourney_refund_outbox")
+		model.DB.Exec("DELETE FROM midjourney_refund_operations")
+		model.DB.Exec("DELETE FROM refund_intents")
 	})
 }
 
@@ -1515,7 +1523,11 @@ func TestSettle_NonPerCallBilling_AppliesAdaptorAdjustment(t *testing.T) {
 
 	seedUser(t, userID, initQuota)
 	seedToken(t, tokenID, userID, "sk-nonpercall-adj", tokenRemain)
+	// 退款结算会校验 token 已用额度不能被扣成负数；预扣对应的用量需先落账，
+	// 否则结算会被安全校验拒绝并整体回滚（fixture 不再是「0 用量的预扣」）。
+	require.NoError(t, model.DB.Model(&model.Token{}).Where("id = ?", tokenID).Update("used_quota", preConsumed).Error)
 	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
 
 	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
 	// PerCallBilling defaults to false

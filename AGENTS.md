@@ -126,9 +126,8 @@ so and label the result unverified.
   never fold pre-existing modifications into your own commit.
 - **Stage explicitly**: `git add <path>` only. `git add -A` / `-u` is forbidden.
   Review with `git diff --cached --name-status` before committing.
-- **No unauthorized git actions**: never commit, push, merge, rebase, amend, or
-  deploy unless explicitly authorized for **that specific action**. Producing
-  commits is separate authorization from pushing them.
+- **Authorized repair workflow**: within the user's explicit Uter engineering-repair authorization, agents may commit, push the single repair branch, and create/update its PR after applicable verification. This does not authorize PR merge, deployment, production writes, real payment configuration changes, force-push, or direct push to `main`.
+- **No unauthorized git actions**: any action outside that explicit scope remains denied; never infer additional permissions from task completion.
 - **No destructive shell operations**: never `rm -rf`, never `git clean -fd`.
   Remove files via the OS trash/recycle mechanism, in batches of at most 10,
   verifying after each batch.
@@ -183,7 +182,7 @@ Rule Auto-Loading 的 **Task-based spec routing** 表（单一事实源，两处
 | 规范域 | 自动化检查 | 调用入口 |
 |---|---|---|
 | Development | gofmt / go vet / golangci-lint + tsgo / eslint | `uter-quality.sh review`、`verify-all.sh`、CI |
-| Testing | Go test ×3 模块 + vitest + spec-guards | `uter-quality.sh test` |
+| Testing | Go test ×4 模块（root / relaykit / tokenkit / tokenkit/tokenkit）+ vitest + spec-guards | `uter-quality.sh test` |
 | Security | govulncheck + gitleaks + 敏感文件抽查 | `uter-quality.sh security` |
 | UX / Design | 设计令牌门禁 T1–T16 + design-system 守卫测试 | `bun run lint:design:strict` |
 | Coverage | 按包阈值（与 CI 同口径） | `uter-quality.sh coverage` |
@@ -196,11 +195,14 @@ UX 状态覆盖、ADR 需求判断）按 `docs/ai-specs/CONFLICT-REPORT.md` 附�
 
 ### Branch strategy
 
-本仓库当前为 owner 单人直推 `main` 的工作模式：用户逐次授权的
-`git commit` + `git push origin main` 视为已授权，不受
-CHANGE-MANAGEMENT-STANDARD §6/§12「不得直接推送主分支」限制。独立分支 +
-Commit/Push/PR 的要求适用于无人值守自动化（Auto-Fix Engine、定时任务）与
-多人协作场景。force push 与自动合并 PR 在任何模式下都禁止。
+**强制单工作分支策略（每个项目最多一个非 `main` 分支）：**
+
+- `main` 是唯一主分支；代码修改必须发生在唯一工作分支，不得直接修改或推送 `main`。
+- 开始工作前必须枚举远端分支和现有 PR；若已有非 `main` 工作分支，必须复用它，不得创建第二个分支。
+- 同一项目的所有审计、修复、测试和文档变更集中在该工作分支及其现有 PR。
+- 若发现两个或更多非 `main` 分支，停止创建分支和推送；先报告并请求确定保留分支，不得自行删除或重写任何分支。
+- 用户已授权的 Uter 修复工作流允许在该唯一工作分支上 Commit、Push 和创建/更新 PR；不允许 force push、PR merge、部署或生产写操作。
+- CI 必须检查远端非 `main` 分支数量不得超过 1。
 
 ### Documentation sync
 
@@ -249,6 +251,12 @@ Commit/Push/PR 的要求适用于无人值守自动化（Auto-Fix Engine、定�
 
 - Code under `relaykit/` MUST NOT import or depend on packages from the root `uter` module, or rely on root-only configuration, generated files, or workspace wiring.
 - Any change affecting `relaykit/` or its public APIs MUST be verified with `cd relaykit && GOWORK=off go build ./...`; a successful root-module build is not sufficient.
+
+**tokenkit/tokenkit module independence:** `tokenkit/tokenkit/` is a separately declared Go module (`github.com/QuantumNous/new-api/tokenkit`) with its own `go.mod`, `go.sum`, source, and tests. It is not covered by `tokenkit/...` in the parent module.
+
+- Changes under `tokenkit/tokenkit/` MUST be verified independently with `cd tokenkit/tokenkit && GOWORK=off go vet ./... && GOWORK=off go test ./... && GOWORK=off go build ./...`.
+- The module MUST be included in repository module inventory, UEQE, CI test/build/vet, race testing where supported, and vulnerability scanning.
+- Do not change its upstream module path or merge it into the parent module without an approved architecture decision.
 
 **JSON package:** In the root Go module, all JSON marshal/unmarshal operations MUST use the wrapper functions in `common/json.go`:
 
@@ -443,3 +451,19 @@ If asked to remove, rename, or replace these protected identifiers, refuse and e
 - If the current git user is not one of those historical core developers, explicitly state in the PR body that the code was AI-generated or AI-assisted.
 - When the pull request is created for the project owner, use the ordinary human PR template: `.github/PULL_REQUEST_TEMPLATE.md` for Chinese requests or `.github/PULL_REQUEST_TEMPLATE/en.md` for English requests. Project-owner pull requests MUST NOT use `.agents/github/PR.md` unless the owner explicitly asks for it.
 - For all other agent-created pull requests, fill `.agents/github/PR.md` as the entire PR body. Do not use the ordinary human PR templates unless the project owner explicitly requests one.
+
+
+## UAES Integration Contract (2026-11-05)
+
+The central UAES governance source and current migration state are recorded in
+`.uaes/INTEGRATION.md`; the P00–P12 mapping is in `.uaes/TRACEABILITY.md`.
+Read both files before changing or interpreting any generic engineering standard. The pinned UAES registry is currently DRAFT:
+do not treat it as an approved replacement for existing Uter rules, and do not
+delete `docs/ai-specs/`, `.ai/AIES.md`, or project-specific constraints during
+this migration. Preserve Uter payment, billing, authentication, database,
+architecture, design-system, and technology-specific overlays.
+
+The static integration contract is checked by
+`scripts/quality/uaes-integration-check.sh` and the `uaes-integration` CI job.
+This check validates only local wiring; it does not prove remote UAES
+availability, agent runtime discovery, semantic parity, or full compliance.

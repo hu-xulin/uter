@@ -57,16 +57,16 @@ function Input({
         // 会出现两种粗细。悬停态（规范 §11.2）：边框加深一档走 border-strong
         // Token，不用透明度凑；aria-invalid / focus-visible 的变体序在 hover
         // 之后，仍会覆盖这里的边框色。
-        //
         // 焦点态**不**改边框色（不设 focus-visible:border-ring）：边框保持
         // 中性的 border-input，1px 满色焦点环贴着边框外沿，二者颜色不同即可
         // 清楚区分。若边框也跟着变成 ring 色，会和同色同位的焦点环融成一条
-        // 更粗的线，焦点环反而「消失」——这正是截图里看到的问题。
+        // 更粗的线，焦点环反而「消失」（PR #31 focus-ring 修复）。
         'border-input hover:border-border-strong file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-(--ds-control-height-md) w-full min-w-0 rounded-md border bg-background px-3 py-2.5 transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
-        // 字号只能有一个来源。`text-mono` 是自定义 token，twMerge 不认它属于
-        // 字号类，因此无法靠「后写覆盖」去掉 text-sm —— 两者会同时存在，
-        // 最终生效哪一个取决于 CSS 源顺序。这里改成二选一。
-        useMono ? 'font-mono text-mono' : 'text-sm',
+        // 字号统一走 `text-long`（16px）：满足 UAES P4 的 H5 无障碍要求
+        // （输入框字号 ≥16px 可阻止 iOS 在聚焦时自动缩放）。mono 只额外叠加
+        // `font-mono` 字形族，不再使用 13px 的 `text-mono` 档 —— size 与字形
+        // 拆成两件事，twMerge 不会再出现「两个字号类并存、源顺序定生死」。
+        useMono ? 'font-mono text-long' : 'text-long',
         className
       )}
       {...props}

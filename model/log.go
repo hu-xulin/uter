@@ -448,8 +448,16 @@ type RecordTaskBillingLogParams struct {
 }
 
 func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
+	if err := RecordTaskBillingLogWithError(params); err != nil {
+		common.SysLog(common.LogText("failed to record task billing log: %s", err.Error()))
+	}
+}
+
+// RecordTaskBillingLogWithError is used by financial workflows that must not
+// silently report completion when the audit record could not be persisted.
+func RecordTaskBillingLogWithError(params RecordTaskBillingLogParams) error {
 	if params.LogType == LogTypeConsume && !common.LogConsumeEnabled {
-		return
+		return nil
 	}
 	username, _ := GetUsernameById(params.UserId, false)
 	tokenName := ""
@@ -474,9 +482,8 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 		Group:     params.Group,
 		Other:     other.JSONString(),
 	}
-	err := createLog(log)
-	if err != nil {
-		common.SysLog(common.LogText("failed to record task billing log: %s", err.Error()))
+	if err := createLog(log); err != nil {
+		return err
 	}
 	if params.LogType == LogTypeConsume && common.DataExportEnabled {
 		nodeName := params.NodeName
@@ -495,6 +502,7 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 			NodeName:  nodeName,
 		})
 	}
+	return nil
 }
 
 // LogFilter is the usage-log search shared by the log list and the log export.

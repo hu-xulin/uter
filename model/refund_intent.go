@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
@@ -23,8 +24,8 @@ import (
 //     事务里提交——崩溃在提交前，事务整体回滚，凭证回到 pending，可安全重放；
 //     崩溃在提交后，凭证已是 done，重放是空操作。条件更新影响行数为 0（已被
 //     其他实例执行完）时整体回滚，杜绝并发双退。
-//  3. 订阅预扣退回（RefundSubscriptionPreConsume）本身按 requestId 幂等，
-//     放在意图事务之外先执行；失败时凭证保持 pending，重放安全。
+//  3. 订阅预扣退回、补充预扣、令牌回退与完成标记共用同一事务；
+//     任意账本腿失败都会整体回滚。
 //  4. SweepPendingRefundIntents 周期扫描滞留的 pending 凭证并重放。
 //
 // 注意：凭证不是「先退款后补记录」的日志，而是「同事务提交」的门——这是唯一
@@ -42,9 +43,10 @@ const (
 var errRefundIntentAlreadyDone = errors.New("refund intent already done")
 
 type RefundIntent struct {
-	Id            int    `gorm:"primaryKey"`
-	UserId        int    `gorm:"index"`
-	FundingSource string `gorm:"size:16"` // wallet | subscription
+	Id             int    `gorm:"primaryKey"`
+	IdempotencyKey string `gorm:"size:128;not null;uniqueIndex"`
+	UserId         int    `gorm:"index"`
+	FundingSource  string `gorm:"size:16"` // wallet | subscription
 	// 钱包出资：OrgResolved=false 表示出资归属尚未解析，不可执行（防止把组织
 	// 预扣退成个人余额）；OrgId>0 表示组织共享预算出资。
 	OrgResolved  bool
@@ -67,17 +69,78 @@ type RefundIntent struct {
 func (RefundIntent) TableName() string { return "refund_intents" }
 
 // CreateRefundIntent 落一条 pending 凭证，返回后即可安全地把退款交给后台执行。
+func validateRefundIntent(intent *RefundIntent) error {
+	if intent == nil || intent.UserId <= 0 {
+		return errors.New("refund intent requires a positive user id")
+	}
+	if strings.TrimSpace(intent.IdempotencyKey) == "" || len(intent.IdempotencyKey) > 128 {
+		return errors.New("refund intent requires an idempotency key of at most 128 characters")
+	}
+	if intent.WalletAmount < 0 || intent.SubExtra < 0 || intent.TokenConsumed < 0 {
+		return errors.New("refund intent amounts cannot be negative")
+	}
+	if intent.TokenConsumed > 0 && intent.TokenId <= 0 {
+		return errors.New("refund intent token amount requires a positive token id")
+	}
+	switch intent.FundingSource {
+	case RefundSourceWallet:
+		if intent.SubRequestId != "" || intent.SubId != 0 || intent.SubExtra != 0 {
+			return errors.New("wallet refund intent cannot contain subscription fields")
+		}
+		if intent.WalletAmount > 0 && (!intent.OrgResolved || intent.OrgId < 0) {
+			return errors.New("wallet refund intent requires a resolved, non-negative funding organization")
+		}
+	case RefundSourceSubscription:
+		if intent.WalletAmount != 0 || intent.OrgResolved || intent.OrgId != 0 {
+			return errors.New("subscription refund intent cannot contain wallet fields")
+		}
+		if intent.SubRequestId == "" {
+			return errors.New("subscription refund intent requires an idempotency request id")
+		}
+		if intent.SubExtra > 0 && intent.SubId <= 0 {
+			return errors.New("subscription extra refund requires a positive subscription id")
+		}
+	default:
+		return fmt.Errorf("unknown refund funding source %q", intent.FundingSource)
+	}
+	return nil
+}
+
+// CreateRefundIntent persists only a valid pending recovery credential.
 func CreateRefundIntent(intent *RefundIntent) error {
-	if intent == nil || intent.UserId == 0 {
-		return errors.New("refund intent requires a user id")
+	if err := validateRefundIntent(intent); err != nil {
+		return err
+	}
+	if intent.Status != "" && intent.Status != RefundIntentPending {
+		return fmt.Errorf("invalid initial refund intent status %q", intent.Status)
 	}
 	now := common.GetTimestamp()
 	intent.CreateTime = now
 	intent.UpdateTime = now
-	if intent.Status == "" {
-		intent.Status = RefundIntentPending
+	intent.Status = RefundIntentPending
+	if err := DB.Create(intent).Error; err != nil {
+		// A concurrent request may have inserted the same logical refund first.
+		// Reuse it only when its immutable accounting snapshot is byte-for-byte
+		// equivalent; never treat an idempotency-key collision as a valid replay.
+		var existing RefundIntent
+		if lookupErr := DB.Where("idempotency_key = ?", intent.IdempotencyKey).First(&existing).Error; lookupErr != nil {
+			return err
+		}
+		if existing.UserId != intent.UserId ||
+			existing.FundingSource != intent.FundingSource ||
+			existing.OrgResolved != intent.OrgResolved ||
+			existing.OrgId != intent.OrgId ||
+			existing.WalletAmount != intent.WalletAmount ||
+			existing.SubRequestId != intent.SubRequestId ||
+			existing.SubId != intent.SubId ||
+			existing.SubExtra != intent.SubExtra ||
+			existing.TokenId != intent.TokenId ||
+			existing.TokenConsumed != intent.TokenConsumed {
+			return fmt.Errorf("refund idempotency key %q collides with a different accounting snapshot", intent.IdempotencyKey)
+		}
+		intent.Id = existing.Id
 	}
-	return DB.Create(intent).Error
+	return nil
 }
 
 // ExecuteRefundIntent 执行一笔退款意图：所有非幂等退款原语与完成标记在同一
@@ -90,18 +153,21 @@ func ExecuteRefundIntent(id int) error {
 	if intent.Status == RefundIntentDone {
 		return nil
 	}
-	if intent.FundingSource != RefundSourceWallet && intent.FundingSource != RefundSourceSubscription {
-		return fmt.Errorf("refund intent %d has unknown funding source %q", id, intent.FundingSource)
+	if intent.Status != RefundIntentPending {
+		return fmt.Errorf("refund intent %d has invalid executable status %q", id, intent.Status)
 	}
-	// 订阅预扣退回：requestId 幂等，重复执行是空操作；放在事务外，失败时
-	// 凭证保持 pending 等待重放。与旧路径（funding.Refund）同一原语。
-	if intent.FundingSource == RefundSourceSubscription && intent.SubRequestId != "" {
-		if err := RefundSubscriptionPreConsume(intent.SubRequestId); err != nil {
-			return fmt.Errorf("refund subscription pre-consume (intent=%d, requestId=%s): %w", id, intent.SubRequestId, err)
-		}
+	if err := validateRefundIntent(&intent); err != nil {
+		return fmt.Errorf("refund intent %d is invalid: %w", id, err)
 	}
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		// 1) 钱包出资回退（组织账本与成员子额度必须成对回退，与 WalletFunding.Refund 一致）。
+		// 1) 订阅原始预扣、补充预扣、令牌回退和意图完成标记共用一个事务。
+		// 任意账本腿失败都会整体回滚，避免订阅已退而 Token 仍未退的半笔退款。
+		if intent.FundingSource == RefundSourceSubscription && intent.SubRequestId != "" {
+			if err := refundSubscriptionPreConsumeForUserTx(tx, intent.SubRequestId, intent.UserId, intent.SubId); err != nil {
+				return fmt.Errorf("refund subscription pre-consume (intent=%d, requestId=%s): %w", id, intent.SubRequestId, err)
+			}
+		}
+		// 2) 钱包出资回退（组织账本与成员子额度必须成对回退，与 WalletFunding.Refund 一致）。
 		if intent.FundingSource == RefundSourceWallet && intent.WalletAmount > 0 {
 			if !intent.OrgResolved {
 				return fmt.Errorf("refund intent %d: wallet funding org not resolved; refusing to guess refund target", id)
@@ -110,26 +176,26 @@ func ExecuteRefundIntent(id int) error {
 				if err := incrOrgUsedQuotaTx(tx, intent.OrgId, -int64(intent.WalletAmount)); err != nil {
 					return fmt.Errorf("roll back organization %d reserve of %d: %w", intent.OrgId, intent.WalletAmount, err)
 				}
-				if err := incrUserUsedQuotaClampedTx(tx, intent.UserId, -intent.WalletAmount); err != nil {
+				if err := adjustUserUsedQuotaTx(tx, intent.UserId, -intent.WalletAmount); err != nil {
 					return fmt.Errorf("roll back member %d sub-quota reserve of %d: %w", intent.UserId, intent.WalletAmount, err)
 				}
 			} else if err := increaseUserQuotaTx(tx, intent.UserId, intent.WalletAmount); err != nil {
 				return err
 			}
 		}
-		// 2) 订阅补充预扣回退（非幂等原语，必须与完成标记同事务）。
+		// 3) 订阅补充预扣回退（非幂等原语，必须与完成标记同事务）。
 		if intent.FundingSource == RefundSourceSubscription && intent.SubExtra > 0 && intent.SubId > 0 {
 			if err := postConsumeUserSubscriptionDeltaTx(tx, intent.SubId, -intent.SubExtra); err != nil {
 				return fmt.Errorf("roll back subscription %d extra reserved %d: %w", intent.SubId, intent.SubExtra, err)
 			}
 		}
-		// 3) 令牌额度退回。
+		// 4) 令牌额度退回。
 		if intent.TokenConsumed > 0 && intent.TokenId > 0 {
 			if err := increaseTokenQuotaTx(tx, intent.TokenId, intent.TokenConsumed); err != nil {
 				return fmt.Errorf("refund token %d quota %d: %w", intent.TokenId, intent.TokenConsumed, err)
 			}
 		}
-		// 4) 完成标记是本事务的幂等门：抢不到（已被并发执行）就整体回滚。
+		// 5) 完成标记是本事务的幂等门：抢不到（已被并发执行）就整体回滚。
 		res := tx.Model(&RefundIntent{}).
 			Where("id = ? AND status = ?", id, RefundIntentPending).
 			Updates(map[string]any{"status": RefundIntentDone, "update_time": common.GetTimestamp()})
@@ -190,13 +256,17 @@ func SweepPendingRefundIntents(staleAfterSeconds int64, limit int) (int, error) 
 		return 0, err
 	}
 	done := 0
+	var firstErr error
 	for i := range intents {
 		if err := ExecuteRefundIntent(intents[i].Id); err != nil {
 			common.SysError(fmt.Sprintf("refund intent %d sweep execution failed (userId=%d): %s",
 				intents[i].Id, intents[i].UserId, err.Error()))
+			if firstErr == nil {
+				firstErr = fmt.Errorf("refund intent %d failed: %w", intents[i].Id, err)
+			}
 			continue
 		}
 		done++
 	}
-	return done, nil
+	return done, firstErr
 }

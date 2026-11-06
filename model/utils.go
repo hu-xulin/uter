@@ -29,6 +29,7 @@ const maxBatchUpdateRetries = 5
 
 var batchUpdateStores []map[int]int
 var batchUpdateLocks []sync.Mutex
+var batchUpdateExecutionLock sync.Mutex
 
 // batchUpdateRetries counts consecutive persistence failures per (type, id) so
 // a failed flush can be re-queued instead of silently dropping the delta.
@@ -75,6 +76,9 @@ func addNewRecord(type_ int, id int, value int) {
 }
 
 func batchUpdate() {
+	batchUpdateExecutionLock.Lock()
+	defer batchUpdateExecutionLock.Unlock()
+
 	// check if there's any data to update
 	hasData := false
 	for i := range BatchUpdateTypeCount {
@@ -107,7 +111,16 @@ func batchUpdate() {
 		for key, value := range store {
 			switch i {
 			case BatchUpdateTypeTokenQuota:
-				if err := increaseTokenQuota(key, value); err != nil {
+				// The accumulator stores signed quota deltas: a positive value is a
+				// refund, while a negative value is a reservation/charge. Route each
+				// direction through its matching guarded persistence primitive.
+				var err error
+				if value > 0 {
+					err = increaseTokenQuota(key, value)
+				} else if value < 0 {
+					err = decreaseTokenQuota(key, -value)
+				}
+				if err != nil {
 					common.SysLog("failed to batch update token quota, requeueing: " + err.Error())
 					requeueBatchUpdate(i, key, value)
 					continue
@@ -201,4 +214,80 @@ func RecordExist(err error) (bool, error) {
 
 func shouldUpdateRedis(fromDB bool, err error) bool {
 	return common.RedisEnabled && fromDB && err == nil
+}
+
+// ApplyTaskBillingUsageDelta persists a task's usage delta together with any
+// queued batch deltas for the same user/channel. It serializes against batch
+// flushes so task billing cannot be finalized while its usage update is only
+// volatile in memory.
+func ApplyTaskBillingUsageDelta(userID, channelID, delta int) error {
+	if userID <= 0 || channelID < 0 {
+		return errors.New("task billing usage adjustment requires a positive user ID and non-negative channel ID")
+	}
+
+	batchUpdateExecutionLock.Lock()
+	defer batchUpdateExecutionLock.Unlock()
+
+	userType := BatchUpdateTypeUsedQuota
+	channelType := BatchUpdateTypeChannelUsedQuota
+	batchUpdateLocks[userType].Lock()
+	defer batchUpdateLocks[userType].Unlock()
+	if channelID > 0 {
+		batchUpdateLocks[channelType].Lock()
+		defer batchUpdateLocks[channelType].Unlock()
+	}
+
+	userDelta := batchUpdateStores[userType][userID] + delta
+	channelDelta := 0
+	if channelID > 0 {
+		channelDelta = batchUpdateStores[channelType][channelID] + delta
+	}
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var userCount, channelCount int64
+		if err := tx.Model(&User{}).Where("id = ?", userID).Count(&userCount).Error; err != nil {
+			return err
+		}
+		if userCount != 1 {
+			return fmt.Errorf("user %d usage row does not exist", userID)
+		}
+		if channelID > 0 {
+			if err := tx.Model(&Channel{}).Where("id = ?", channelID).Count(&channelCount).Error; err != nil {
+				return err
+			}
+			if channelCount != 1 {
+				return fmt.Errorf("channel %d usage row does not exist", channelID)
+			}
+		}
+		if userDelta != 0 {
+			if err := tx.Model(&User{}).Where("id = ?", userID).
+				Update("used_quota", gorm.Expr("used_quota + ?", userDelta)).Error; err != nil {
+				return err
+			}
+		}
+		if channelID > 0 && channelDelta != 0 {
+			if err := tx.Model(&Channel{}).Where("id = ?", channelID).
+				Update("used_quota", gorm.Expr("used_quota + ?", channelDelta)).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	delete(batchUpdateStores[userType], userID)
+	if channelID > 0 {
+		delete(batchUpdateStores[channelType], channelID)
+		delete(batchUpdateRetries[channelType], channelID)
+	}
+	delete(batchUpdateRetries[userType], userID)
+	return nil
+}
+
+// ApplyTaskRefundUsage reverses the usage delta associated with a task refund.
+func ApplyTaskRefundUsage(userID, channelID, quota int) error {
+	if quota <= 0 {
+		return errors.New("task refund usage adjustment requires a positive quota")
+	}
+	return ApplyTaskBillingUsageDelta(userID, channelID, -quota)
 }

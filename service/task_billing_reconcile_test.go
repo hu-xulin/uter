@@ -403,3 +403,147 @@ func TestRefundUncompensatableFailureGoesToReconciliation(t *testing.T) {
 	require.Len(t, listed, 1)
 	assert.Equal(t, task.TaskID, listed[0].TaskID)
 }
+
+func TestRunTaskPollingOnceReconcilesBillingWithoutAnyAdapter(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+
+	const userID, tokenID, channelID = 55, 55, 155
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-no-poll-adapter", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+	backdateBillingUpdate(t, task.TaskID)
+
+	previousAdaptor := GetTaskAdaptorFunc
+	GetTaskAdaptorFunc = nil
+	t.Cleanup(func() { GetTaskAdaptorFunc = previousAdaptor })
+
+	summary := RunTaskPollingOnce(ctx, nil)
+	assert.Zero(t, summary.PlatformsScanned, "upstream polling should be skipped when no adapter registry exists")
+	assert.Equal(t, initQuota+preConsumed, getUserQuota(t, userID), "billing reconciliation must still refund terminal failed tasks")
+	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID), "billing reconciliation must still restore Token quota")
+
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingRefunded, stored.BillingState)
+	assert.Zero(t, stored.Quota)
+}
+
+func TestReconcileStuckTaskBillingQuarantinesLegacyTerminalTask(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 61, 61, 161
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-legacy-refund", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+	require.NoError(t, model.DB.Model(&model.Task{}).Where("task_id = ?", task.TaskID).
+		Update("submit_time", model.TaskRefundLegacyCutoff-1).Error)
+	backdateBillingUpdate(t, task.TaskID)
+
+	ReconcileStuckTaskBilling(ctx)
+
+	assert.Equal(t, initQuota, getUserQuota(t, userID), "legacy task must never be automatically refunded")
+	assert.Equal(t, tokenRemain, getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+	assert.Contains(t, stored.BillingLastError, "historical terminal task")
+}
+
+func TestReconcileStuckTaskBillingQuarantinesMissingSubmitTimestamp(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 62, 62, 162
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-missing-submit-time", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+	require.NoError(t, model.DB.Model(&model.Task{}).Where("task_id = ?", task.TaskID).
+		Update("submit_time", 0).Error)
+	backdateBillingUpdate(t, task.TaskID)
+
+	ReconcileStuckTaskBilling(ctx)
+
+	assert.Equal(t, initQuota, getUserQuota(t, userID), "missing timestamp is ambiguous and must fail closed")
+	assert.Equal(t, tokenRemain, getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+}
+
+func TestRefundFinalStateCASFailureQuarantinesCommittedRefund(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 71, 71, 171
+	const initQuota, preConsumed = 10000, 3000
+	const tokenRemain = 5000
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-refund-final-cas", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusFailure)
+
+	var taskUpdates atomic.Int32
+	const callbackName = "fail_refund_final_state_cas"
+	require.NoError(t, model.DB.Callback().Update().Before("gorm:update").Register(callbackName, func(tx *gorm.DB) {
+		if tx.Statement.Table == "tasks" && taskUpdates.Add(1) == 2 {
+			tx.AddError(errors.New("injected final refund state failure"))
+		}
+	}))
+	t.Cleanup(func() { model.DB.Callback().Update().Remove(callbackName) })
+
+	require.False(t, RefundTaskQuota(ctx, task, "final CAS failure"))
+	assert.Equal(t, initQuota+preConsumed, getUserQuota(t, userID))
+	assert.Equal(t, tokenRemain+preConsumed, getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+}
+
+func TestSettlementFinalStateCASFailureQuarantinesCommittedSettlement(t *testing.T) {
+	truncate(t)
+	ctx := context.Background()
+	const userID, tokenID, channelID = 72, 72, 172
+	const initQuota, preConsumed, actualQuota = 10000, 2000, 3000
+	const tokenRemain = 5000
+	seedUser(t, userID, initQuota)
+	seedToken(t, tokenID, userID, "sk-settle-final-cas", tokenRemain)
+	seedChannel(t, channelID)
+	seedChargedAccounting(t, userID, channelID, tokenID, preConsumed, 1)
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	setTaskTerminal(t, task, model.TaskStatusSuccess)
+
+	var taskUpdates atomic.Int32
+	const callbackName = "fail_settlement_final_state_cas"
+	require.NoError(t, model.DB.Callback().Update().Before("gorm:update").Register(callbackName, func(tx *gorm.DB) {
+		if tx.Statement.Table == "tasks" && taskUpdates.Add(1) == 2 {
+			tx.AddError(errors.New("injected final settlement state failure"))
+		}
+	}))
+	t.Cleanup(func() { model.DB.Callback().Update().Remove(callbackName) })
+
+	RecalculateTaskQuota(ctx, task, actualQuota, newTestMessage("final CAS failure"))
+	assert.Equal(t, initQuota-(actualQuota-preConsumed), getUserQuota(t, userID))
+	assert.Equal(t, tokenRemain-(actualQuota-preConsumed), getTokenRemainQuota(t, tokenID))
+	stored, err := model.LoadTaskBillingSnapshot(task.TaskID)
+	require.NoError(t, err)
+	assert.Equal(t, model.TaskBillingReconciliationRequired, stored.BillingState)
+}

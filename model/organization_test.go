@@ -703,3 +703,26 @@ func TestCreateOrganizationRejectsDisabledOwner(t *testing.T) {
 	assert.Zero(t, saved.OrganizationId, "a disabled account must remain outside organizations")
 	assert.Empty(t, saved.OrgRole, "a disabled account must not receive the owner role")
 }
+
+func TestIncrOrgUsedQuotaRejectsRefundUnderflow(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 9, 0)
+	insertOrgUserForTest(t, 9, 9, OrgRoleMember, 0, 0, "")
+
+	require.NoError(t, IncrOrgUsedQuota(9, 100))
+	require.Error(t, IncrOrgUsedQuota(9, -101))
+	assert.Equal(t, int64(100), orgUsedQuotaForTest(t, 9), "failed refund must not drive the org usage ledger negative")
+}
+
+func TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 90, 0)
+	insertOrgUserForTest(t, 91, 90, OrgRoleMember, 50, 0, "")
+	require.NoError(t, IncrOrgUsedQuota(90, 100))
+
+	require.Error(t, AdjustOrgAndMemberUsedQuota(90, 91, -75))
+	assert.Equal(t, int64(100), orgUsedQuotaForTest(t, 90), "organization ledger update must roll back when member usage is insufficient")
+	var member User
+	require.NoError(t, DB.Select("id", "used_quota").First(&member, 91).Error)
+	assert.EqualValues(t, 50, member.UsedQuota)
+}

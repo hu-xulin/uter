@@ -47,6 +47,8 @@ import {
   isUnconfiguredTaskUsageModel,
   type DynamicPriceEntry,
 } from '../lib/dynamic-price'
+import { getTaskPricingDisplayTiers } from '../lib/task-matrix-display'
+import { getTaskEnumFields, getTaskNumberFields } from '../lib/task-expr'
 import { parseTags } from '../lib/filters'
 import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
 import {
@@ -61,11 +63,94 @@ import {
   getMarkupMultiplier,
   getTokenPriceUSD,
 } from '../lib/price'
-import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
+import {
+  taskEnumLabel,
+  taskPriceLabel,
+  taskUsageUnitLabel,
+} from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
 import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelPerfBadge, type ModelPerfBadgeData } from './model-perf-badge'
+
+/** Shape of the resolution × video-input price matrix rendered for video models. */
+export type ResolutionVideoMatrix = {
+  resField: string
+  videoField: string
+  numberField: string
+  resFieldLabel: string
+  rows: { value: string; label: string }[]
+  cols: { value: string; label: string }[]
+  cell: (resolution: string, videoInput: string) => string | null
+}
+
+/**
+ * Compact price matrix shown on a model card for video-generation models with a
+ * resolution × video-input usage schema. Mirrors the upstream dreamrouter
+ * layout: one row per resolution, one column per video-input option, cells hold
+ * the matched tier's per-unit price.
+ */
+function ResolutionVideoPriceMatrix(props: {
+  className?: string
+  matrix: ResolutionVideoMatrix
+  tokenUnitLabel: string
+}) {
+  const { t } = useTranslation()
+  const { rows, cols, cell, resFieldLabel } = props.matrix
+  return (
+    <div className={cn('min-w-0', props.className)}>
+      <table className='w-full border-collapse text-sm'>
+        <caption className='text-muted-foreground mt-1 text-left text-sm'>
+          {t('Prices shown per {{unit}} tokens', {
+            unit: props.tokenUnitLabel,
+          })}
+        </caption>
+        <thead>
+          <tr>
+            <th
+              scope='col'
+              className='text-muted-foreground py-1 pr-3 text-left font-medium'
+            >
+              {resFieldLabel}
+            </th>
+            {cols.map((col) => (
+              <th
+                key={col.value}
+                scope='col'
+                className='text-muted-foreground py-1 pl-3 text-right font-medium'
+              >
+                {col.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.value} className='border-border/60 border-t'>
+              <th
+                scope='row'
+                className='py-1.5 pr-3 text-left font-medium whitespace-nowrap'
+              >
+                {row.label}
+              </th>
+              {cols.map((col) => {
+                const formatted = cell(row.value, col.value)
+                return (
+                  <td
+                    key={col.value}
+                    className='py-1.5 pl-3 text-right font-semibold tabular-nums'
+                  >
+                    {formatted ?? '—'}
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
 export interface ModelCardProps {
   model: PricingModel
@@ -168,6 +253,79 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     () => ({ ...dynamicPriceOptions, groupRatioMultiplier: 1 }),
     [dynamicPriceOptions]
   )
+  /**
+   * Resolution × video-input price matrix for video-generation models whose
+   * usage schema exposes exactly two enum fields — a `resolution` axis and a
+   * `video_input` axis (e.g. dreamrouter-style seedance tiers). When present we
+   * replace the generic 优特/官方 grid with a compact matrix that mirrors the
+   * upstream layout: rows are resolutions, columns are video-input options, and
+   * each cell is the matched tier's per-unit price.
+   */
+  const resolutionVideoMatrix = useMemo((): ResolutionVideoMatrix | null => {
+    const schema = props.model.billing_usage_schema
+    if (!schema) return null
+    const enumFields = getTaskEnumFields(schema)
+    if (enumFields.length !== 2) return null
+    const resEntry = enumFields.find(([name]) => /^resolution$|^res$/i.test(name))
+    const videoEntry = enumFields.find(([name]) => /video/i.test(name))
+    if (!resEntry || !videoEntry || resEntry[0] === videoEntry[0]) return null
+    const [resField, resDef] = resEntry
+    const [videoField, videoDef] = videoEntry
+    const resValues = resDef.enum ?? []
+    const videoValues = videoDef.enum ?? []
+    if (resValues.length === 0 || videoValues.length === 0) return null
+    const numberField = getTaskNumberFields(schema)[0]
+    if (!numberField) return null
+    const tiers = getTaskPricingDisplayTiers(
+      props.model.billing_expr,
+      schema
+    )
+    if (tiers.length === 0) return null
+    // First-match wins, mirroring the billing expression: the first tier whose
+    // conditions are all satisfied by the (resolution, video) combination, or
+    // the trailing fallback tier when nothing matches.
+    const matchTier = (res: string, video: string) =>
+      tiers.find((tier) =>
+        tier.conditions.every(
+          (condition) =>
+            (condition.field === resField && condition.value === res) ||
+            (condition.field === videoField && condition.value === video)
+        )
+      ) ?? null
+    const videoColumnLabel = (value: string): string => {
+      const normalized = value.toLowerCase()
+      if (normalized === 'none' || normalized === 'no') return t('No video input')
+      if (
+        normalized === 'video' ||
+        normalized === 'with_video' ||
+        normalized === 'with-video'
+      ) {
+        return t('With video input')
+      }
+      return taskEnumLabel(videoDef, value, i18n.language)
+    }
+    return {
+      resField,
+      videoField,
+      numberField: numberField[0],
+      resFieldLabel: taskPriceLabel(resDef.description, resField, i18n.language),
+      rows: resValues.map((value) => ({
+        value,
+        label: taskEnumLabel(resDef, value, i18n.language),
+      })),
+      cols: videoValues.map((value) => ({
+        value,
+        label: videoColumnLabel(value),
+      })),
+      cell: (res: string, video: string): string | null => {
+        const tier = matchTier(res, video)
+        if (!tier) return null
+        const raw = Number(tier.unitPrices[numberField[0]])
+        if (!Number.isFinite(raw) || raw <= 0) return null
+        return formatTaskUsageUnitPrice(raw, dynamicPriceOptions)
+      },
+    }
+  }, [props.model, dynamicPriceOptions, i18n.language, t])
   /**
    * Official preset USD price behind a dynamic pricing entry, or null when
    * the preset has no counterpart for that dimension (the official cell then
@@ -617,6 +775,18 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     )
   }
 
+  // Video-generation models with a resolution × video-input usage schema get a
+  // compact matrix instead of the generic 优特/官方 grid.
+  if (resolutionVideoMatrix) {
+    priceSummary = (
+      <ResolutionVideoPriceMatrix
+        className='col-span-full'
+        matrix={resolutionVideoMatrix}
+        tokenUnitLabel={tokenUnitSuffix}
+      />
+    )
+  }
+
   return (
     <Card className='hover:ring-foreground/20 h-full min-w-0 gap-3 transition-colors'>
       <CardHeader className='flex flex-row items-start gap-3'>
@@ -710,7 +880,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               </span>
             )}
           </div>
-          {dynamicSummary?.providerCount && (
+          {dynamicSummary?.providerCount && !resolutionVideoMatrix && (
             <span className='text-muted-foreground text-sm break-words'>
               {t('{{count}} providers', {
                 count: dynamicSummary.providerCount,

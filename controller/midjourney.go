@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -57,14 +58,46 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 	}
 	if len(nullTaskIds) > 0 {
 		summary.NullTasksFailed = len(nullTaskIds)
-		err := model.MjBulkUpdateByTaskIds(nullTaskIds, map[string]any{
-			"status":   "FAILURE",
-			"progress": "100%",
-		})
-		if err != nil {
-			logger.LogError(ctx, common.LogText("Fix null mj_id task error: %v", err))
-		} else {
-			logger.LogInfo(ctx, common.LogText("Fix null mj_id task success: %v", nullTaskIds))
+		// An empty upstream ID cannot be polled again. Hand each task to the
+		// durable local-ID refund operation now: verifiable applied charges are
+		// refunded atomically; ambiguous legacy/partial charges are quarantined
+		// for reconciliation. Never leave these rows in an endless poll loop.
+		for _, taskID := range nullTaskIds {
+			refundErr := model.RefundMidjourneyTaskBilling(taskID, "local Midjourney task has an empty upstream mj_id")
+			if refundErr != nil && !errors.Is(refundErr, model.ErrMidjourneyRefundReconciliationRequired) {
+				logger.LogError(ctx, common.LogText(
+					"Midjourney task %d refund/reconciliation handoff failed: %v",
+					taskID, refundErr,
+				))
+				continue
+			}
+
+			// Reload after the billing transaction so UpdateWithStatus cannot
+			// overwrite its newly persisted refund/reconciliation fields with the
+			// stale polling snapshot.
+			latest := model.GetMjByuId(taskID)
+			if latest == nil {
+				logger.LogError(ctx, common.LogText("Midjourney task %d disappeared after refund handoff", taskID))
+				continue
+			}
+			preStatus := latest.Status
+			latest.Status = "FAILURE"
+			latest.Progress = "100%"
+			if latest.FailReason == "" {
+				latest.FailReason = "Missing upstream task ID; refund/reconciliation handled"
+			}
+			won, updateErr := latest.UpdateWithStatus(preStatus)
+			if updateErr != nil || !won {
+				logger.LogError(ctx, common.LogText(
+					"Midjourney task %d terminal status update failed after refund handoff (won=%t): %v",
+					taskID, won, updateErr,
+				))
+				continue
+			}
+			logger.LogInfo(ctx, common.LogText(
+				"Midjourney task %d refund/reconciliation handoff completed; task marked terminal",
+				taskID,
+			))
 		}
 	}
 	if len(taskChannelM) == 0 {
@@ -88,15 +121,13 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 		}
 		midjourneyChannel, err := model.CacheGetChannel(channelId)
 		if err != nil {
-			logger.LogError(ctx, common.LogText("CacheGetChannel: %v", err))
-			err := model.MjBulkUpdate(taskIds, map[string]any{
-				"fail_reason": "Failed to get the channel information. Please contact the administrator",
-				"status":      "FAILURE",
-				"progress":    "100%",
-			})
-			if err != nil {
-				logger.LogInfo(ctx, common.LogText("UpdateMidjourneyTask error: %v", err))
-			}
+			// A transient channel-cache failure is not an upstream task failure.
+			// Keep tasks unfinished so the next polling/recovery pass can retry;
+			// marking them 100% here would bypass billing compensation.
+			logger.LogError(ctx, common.LogText(
+				"CacheGetChannel failed; preserving unfinished Midjourney tasks for retry (channel=%d, tasks=%v): %v",
+				channelId, taskIds, err,
+			))
 			continue
 		}
 		requestUrl := fmt.Sprintf("%s/mj/task/list-by-condition", *midjourneyChannel.BaseURL)
@@ -212,7 +243,15 @@ func runMidjourneyTaskUpdateOnce(ctx context.Context, report func(processed, tot
 			if err != nil {
 				logger.LogError(ctx, common.LogText("UpdateMidjourneyTask task error: %s", err.Error()))
 			} else if won && shouldReturnQuota {
-				service.RefundMidjourneyQuota(ctx, task, "Composition failed")
+				// Route every terminal failure through the durable local-task refund
+				// transaction. The legacy helper performs independent writes and
+				// cannot safely recover partial success or LOG_DB delivery.
+				if refundErr := model.RefundMidjourneyTaskBilling(task.Id, "Composition failed"); refundErr != nil {
+					logger.LogError(ctx, common.LogText(
+						"Midjourney task %d durable refund/reconciliation failed: %v",
+						task.Id, refundErr,
+					))
+				}
 			}
 		}
 	}

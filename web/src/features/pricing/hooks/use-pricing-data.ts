@@ -79,7 +79,7 @@ export function usePricingData(enabled = true) {
     usableGroup: data?.usable_group ?? {},
     endpointMap: data?.supported_endpoint ?? {},
     autoGroups: data?.auto_groups ?? [],
-    pricingSource: (data?.pricing_source as string) ?? 'official',
+    pricingSource: (data?.pricing_source as string) ?? 'models.dev',
     officialPrices,
     isLoading,
     error,

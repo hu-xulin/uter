@@ -106,9 +106,9 @@ func (s *BillingSession) Settle(actualQuota int) error {
 	if !s.relayInfo.IsPlayground {
 		tokenFn := func() error {
 			if delta > 0 {
-				return model.DecreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, delta)
+				return model.DecreaseTokenQuotaPersisted(s.relayInfo.TokenId, s.relayInfo.TokenKey, delta)
 			}
-			return model.IncreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
+			return model.IncreaseTokenQuotaPersisted(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
 		}
 		// 资金来源已提交，令牌账本失败不可重试整个 Settle（否则会重复结算资金）。
 		// 但令牌额度本身必须尽量对齐：对令牌调整做有限次重试；仍失败则上报为
@@ -173,60 +173,46 @@ func (s *BillingSession) Refund(c *gin.Context) {
 		s.funding.Source(),
 	))
 
-	// 复制需要的值到闭包中
-	tokenId := s.relayInfo.TokenId
-	tokenKey := s.relayInfo.TokenKey
-	isPlayground := s.relayInfo.IsPlayground
-	tokenConsumed := s.tokenConsumed
-	extraReserved := s.extraReserved
-	subscriptionId := s.relayInfo.SubscriptionId
-	funding := s.funding
+	// 持久化退款意图必须先成功；否则绝不能退回旧的非幂等进程内路径。
+	// 一旦凭证落库，执行失败会保留 pending 状态，由独立恢复任务重放。
 	userId := s.relayInfo.UserId
-
-	// 持久化退款意图：异步执行前先落凭证。退款原语与完成标记在
-	// ExecuteRefundIntent 内同事务提交，进程在执行窗口内崩溃时凭证保持
-	// pending，由 SweepPendingRefundIntents 安全重放（不会多退）。落库失败
-	// 时回退旧的进程内路径，行为与历史版本一致（尽力而为 + SysError 告警）。
-	intentId, intentErr := buildRefundIntent(funding, userId, tokenId, tokenConsumed, !isPlayground, extraReserved)
+	intentId, intentErr := buildRefundIntent(
+		s.funding, userId, s.relayInfo.RequestId, s.relayInfo.TokenId, s.tokenConsumed,
+		!s.relayInfo.IsPlayground, s.extraReserved,
+	)
 	if intentErr != nil {
-		common.SysLog(fmt.Sprintf("refund intent persist failed, falling back to in-process refund (userId=%d): %s",
-			userId, intentErr.Error()))
+		common.SysError(fmt.Sprintf(
+			"refund intent persistence failed; refund was NOT applied and requires operator recovery (userId=%d): %s",
+			userId, intentErr.Error(),
+		))
+		close(refundDone)
+		return
+	}
+	if intentId == 0 {
+		close(refundDone)
+		return
 	}
 
 	gopool.Go(func() {
 		defer close(refundDone)
-		if intentId > 0 {
-			if err := model.ExecuteRefundIntent(intentId); err != nil {
-				common.SysError(fmt.Sprintf("refund intent %d execution failed (userId=%d), stays pending for sweep: %s",
-					intentId, userId, err.Error()))
-			}
-			return
-		}
-		// 1) 退还资金来源
-		if err := funding.Refund(); err != nil {
-			common.SysLog("error refunding billing source: " + err.Error())
-		}
-		if extraReserved > 0 && funding.Source() == BillingSourceSubscription && subscriptionId > 0 {
-			if err := model.PostConsumeUserSubscriptionDelta(subscriptionId, -int64(extraReserved)); err != nil {
-				common.SysLog("error refunding subscription extra reserved quota: " + err.Error())
-			}
-		}
-		// 2) 退还令牌额度
-		if tokenConsumed > 0 && !isPlayground {
-			if err := model.IncreaseTokenQuota(tokenId, tokenKey, tokenConsumed); err != nil {
-				common.SysLog("error refunding token quota: " + err.Error())
-			}
+		if err := model.ExecuteRefundIntent(intentId); err != nil {
+			common.SysError(fmt.Sprintf("refund intent %d execution failed (userId=%d), stays pending for sweep: %s",
+				intentId, userId, err.Error()))
 		}
 	})
 }
 
 // buildRefundIntent 把本次退款快照落为持久化凭证，返回凭证 id（0 表示没有
-// 需要持久化的退款内容）。钱包出资的归属解析失败必须上抛——宁可回退旧路径
-// 告警，也不能把组织预扣猜成个人钱包退掉。
-func buildRefundIntent(funding FundingSource, userId, tokenId, tokenConsumed int, refundToken bool, extraReserved int) (int, error) {
+// 需要持久化的退款内容）。钱包出资的归属解析失败必须上抛；调用方
+// 必须 fail-closed，禁止退回非幂等的旧进程内退款路径。
+func buildRefundIntent(funding FundingSource, userId int, requestId string, tokenId, tokenConsumed int, refundToken bool, extraReserved int) (int, error) {
+	if strings.TrimSpace(requestId) == "" {
+		return 0, fmt.Errorf("refund intent requires the originating request id")
+	}
 	intent := &model.RefundIntent{
-		UserId:        userId,
-		FundingSource: funding.Source(),
+		UserId:         userId,
+		IdempotencyKey: fmt.Sprintf("relay-refund:%d:%s:%s", userId, funding.Source(), requestId),
+		FundingSource:  funding.Source(),
 	}
 	switch f := funding.(type) {
 	case *WalletFunding:

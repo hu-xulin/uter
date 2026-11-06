@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -134,20 +133,13 @@ func (w *WalletFunding) Settle(delta int) error {
 		return err
 	}
 	if orgId > 0 {
-		// 组织账本按差额 true-up（如实累加，不截断；防线在准入点 ReserveOrgQuota）。
-		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
-			return err
-		}
-		// 成员子额度同样只如实记账：准入门在 ReserveOrgQuota 内已完成「闸门 + 记账」的单条
-		// 条件 UPDATE（TOCTOU 已在此关闭），结算点若再按 sub_quota_limit 截断，会把超出部分
-		// 永久丢弃，使成员账本与 logs.Quota 脱节、GetOrgUsedQuota 少记。超支以
-		// used_quota > sub_quota_limit 显式暴露并由下一次准入拦住。
-		return model.IncrUserUsedQuotaClamped(w.userId, delta)
+		// 组织账本与成员子额度账本必须原子 true-up，不能先提交一边再调整另一边。
+		return model.AdjustOrgAndMemberUsedQuota(orgId, w.userId, int64(delta))
 	}
 	if delta > 0 {
-		return model.DecreaseUserQuota(w.userId, delta, false)
+		return model.DecreaseUserQuota(w.userId, delta, true)
 	}
-	return model.IncreaseUserQuota(w.userId, -delta, false)
+	return model.IncreaseUserQuota(w.userId, -delta, true)
 }
 
 func (w *WalletFunding) Refund() error {
@@ -162,12 +154,8 @@ func (w *WalletFunding) Refund() error {
 		return err
 	}
 	if orgId > 0 {
-		if err := model.IncrOrgUsedQuota(orgId, -int64(w.consumed)); err != nil {
-			return fmt.Errorf("roll back organization %d reserve of %d: %w", orgId, w.consumed, err)
-		}
-		// 撤销预扣点在 members.used_quota 上的原子预留，避免成员用量被永久多记。
-		if err := model.IncrUserUsedQuotaClamped(w.userId, -w.consumed); err != nil {
-			return fmt.Errorf("roll back member %d sub-quota reserve of %d: %w", w.userId, w.consumed, err)
+		if err := model.AdjustOrgAndMemberUsedQuota(orgId, w.userId, -int64(w.consumed)); err != nil {
+			return fmt.Errorf("roll back organization/member reserve (org=%d user=%d amount=%d): %w", orgId, w.userId, w.consumed, err)
 		}
 		w.consumed = 0
 		return nil
@@ -176,7 +164,7 @@ func (w *WalletFunding) Refund() error {
 	// 订阅的 RefundSubscriptionPreConsume 有 requestId 幂等保护所以可以重试。
 	// 成功后将 consumed 归零，使本对象的二次 Refund（如 defer + 显式调用并存）成为空操作，
 	// 与 BillingSession.refunded 标志形成双重幂等保护。
-	if err := model.IncreaseUserQuota(w.userId, w.consumed, false); err != nil {
+	if err := model.IncreaseUserQuota(w.userId, w.consumed, true); err != nil {
 		return err
 	}
 	w.consumed = 0
@@ -225,17 +213,9 @@ func (s *SubscriptionFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	overflow, err := model.PostConsumeUserSubscriptionDeltaCapped(s.subscriptionId, int64(delta))
-	if err != nil {
-		return err
-	}
-	if overflow > 0 {
-		// 订阅结算超额：订阅已封顶到总额，超出部分转为用户钱包欠费，避免平台少收。
-		common.SysLog(fmt.Sprintf("subscription settled over total, charging wallet overflow (userId=%d, subscriptionId=%d, overflow=%d)", s.userId, s.subscriptionId, overflow))
-		if werr := model.DecreaseUserQuota(s.userId, int(overflow), false); werr != nil {
-			// 钱包欠费记账失败：订阅侧已封顶，平台仍少收 overflow，必须告警对账。
-			return fmt.Errorf("subscription overflow wallet charge failed (userId=%d, subscriptionId=%d, overflow=%d): %w", s.userId, s.subscriptionId, overflow, werr)
-		}
+	if err := model.PostConsumeUserSubscriptionDeltaCappedWithWallet(s.subscriptionId, s.userId, int64(delta)); err != nil {
+		return fmt.Errorf("subscription settlement (including wallet overflow) failed atomically (userId=%d, subscriptionId=%d, delta=%d): %w",
+			s.userId, s.subscriptionId, delta, err)
 	}
 	return nil
 }
