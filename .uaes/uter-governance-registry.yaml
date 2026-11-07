@@ -1,0 +1,248 @@
+# Uter Project Governance Registry
+# Layer B of UTER-UAES-GOV-001 §1.1. This file lives ONLY in the Uter repository.
+# It declares how Uter inherits UAES P00-P12 and registers the UTER P13 extension.
+# It MUST NOT be copied into, or registered by, the UAES universal standards registry.
+
+registry:
+  id: "UTER-PROJECT-GOVERNANCE-REGISTRY"
+  name: "Uter Project Governance Registry"
+  version: "1.0.0"
+  status: "PROPOSED_BASELINE"
+  owner: "Uter Engineering Governance"
+  governing_specification:
+    document_id: "UTER-UAES-GOV-001"
+    path: "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
+    status: "PROPOSED_EXECUTION_BASELINE_PENDING_VALIDATION"
+  repository_scope: "uter"
+  uaes_repository_scope: "uaes"
+
+# ---------------------------------------------------------------------------
+# §1.1 three-layer architecture / §1.3 separation of responsibilities
+# ---------------------------------------------------------------------------
+governance_layers:
+  layer_a:
+    id: "UAES_UNIVERSAL_ENGINEERING_GOVERNANCE"
+    repository: "uaes"
+    responsibility: "Define reusable universal engineering governance requirements (P00-P12)"
+    must_not_contain:
+      - "Uter-specific payment flow"
+      - "Uter-specific token billing rules"
+      - "Uter-specific model routing business"
+      - "Uter-specific wallet/balance logic"
+      - "Uter-specific order state machine"
+      - "Uter-specific channel management rules"
+      - "UTER P13 specification or registration"
+  layer_b:
+    id: "UTER_PROJECT_GOVERNANCE"
+    repository: "uter"
+    responsibility: "Apply UAES to Uter; own project policies, business rules and UTER P13"
+    entrypoints:
+      - "AGENTS.md"
+      - ".uaes/AI-GOVERNANCE-ENTRY.md"
+      - ".uaes/INTEGRATION.md"
+      - ".uaes/uter-governance-registry.yaml"
+    must_not_do:
+      - "Weaken or redefine any mandatory UAES requirement"
+      - "Copy UAES generic standard text into a competing local standard"
+      - "Register UTER P13 as a UAES universal domain"
+  layer_c:
+    id: "EXECUTION_AND_ASSURANCE"
+    responsibility: "WorkBuddy executes authorized work; CI/CD, automated tests and independent reviewers verify"
+    agent: "WorkBuddy"
+    assurance:
+      - "CI/CD workflows"
+      - "scripts/quality/ gates"
+      - "Independent assessment (Phase 7)"
+
+# ---------------------------------------------------------------------------
+# §6.4 / §18 step 1-2 — pinned UAES inheritance (re-verified 2026-11-07)
+# ---------------------------------------------------------------------------
+uaes_inheritance:
+  source_repository: "https://github.com/hu-xulin/uaes"
+  source_default_branch: "main"
+  source_commit: "74e5d2eea215c96b845d7a0b2111b7fa011c540f"
+  registry_path: ".uaes/STANDARD-REGISTRY.yaml"
+  registry_blob_sha: "a806eef48e6242d82dcb1d39d5c094e0d7d981a1"
+  registry_version: "1.12.1"
+  registry_status: "ACTIVE"
+  approval_record: "UAES-APPROVAL-2026-11-07-004"
+  integration_status: "MIGRATION_PENDING"
+  inherited_domains:
+    - P00
+    - P01
+    - P02
+    - P03
+    - P04
+    - P05
+    - P06
+    - P07
+    - P08
+    - P09
+    - P10
+    - P11
+    - P12
+  inheritance_rules:
+    - "Project policies MUST NOT weaken an applicable mandatory UAES requirement"
+    - "Project policies MAY add stricter project-level requirements"
+    - "Project policies MUST explicitly reference the UAES requirement"
+    - "Conflicts MUST be documented and escalated; no AI Agent may waive a mandatory requirement"
+    - "Registry ACTIVE status is NOT evidence of Uter conformance (§0.3)"
+  machine_pin: ".uaes/uaes-pin.json"
+
+# ---------------------------------------------------------------------------
+# §4.1 — UTER P13 is registered HERE (Uter project registry), never in UAES
+# ---------------------------------------------------------------------------
+project_extensions:
+  - id: "UTER-P13"
+    name: "Business Domain Engineering"
+    classification: "PROJECT_SPECIFIC_GOVERNANCE_EXTENSION"
+    specification_path: ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
+    registered_in: "UTER-PROJECT-GOVERNANCE-REGISTRY"
+    inherits: "UAES P00-P12 (all applicable mandatory requirements)"
+    domain_count: 10
+    domains:
+      - "P13.1 Product and business requirements"
+      - "P13.2 Identity and account domain"
+      - "P13.3 Model and provider domain"
+      - "P13.4 AI relay domain"
+      - "P13.5 Usage and pricing domain"
+      - "P13.6 Wallet and accounting domain"
+      - "P13.7 Payment domain"
+      - "P13.8 Task and scheduler domain"
+      - "P13.9 Data consistency domain"
+      - "P13.10 Business observability"
+    status: "PROPOSED_BASELINE"
+    conformance_status: "NOT_ASSESSED"
+    forbidden_registration_locations:
+      - "uaes/standards/"
+      - "uaes/.uaes/registry/"
+      - "uaes/.uaes/STANDARD-REGISTRY.yaml"
+    notes:
+      - "UAES reports/ UAES-P13-* files are historical 'Repository Integration phase' derived reports, not this extension"
+      - "No UTER P13 content may be written into UAES universal standard directories"
+
+# ---------------------------------------------------------------------------
+# User emphasis #2 + §1.3 / §8 / §9 / §10 / §16.3 — P09 and P10 must be genuinely separated
+# ---------------------------------------------------------------------------
+domain_ownership:
+  P09:
+    name: "Quality Engineering"
+    role: "PROVE"
+    responsibility: "Prove whether engineering quality meets the defined requirements"
+    owns:
+      - "Quality policy and objectives"
+      - "Code review process"
+      - "Test strategy, test execution, test evidence"
+      - "Defect management and closure"
+      - "Quality metrics and measurement definitions"
+      - "Quality gates operation and quality acceptance"
+    must_not_own:
+      - "Defining security control targets or reliability objectives"
+    primary_reports:
+      - "D14 Quality Engineering Assessment"
+      - "D19 Test Strategy and Test Results"
+      - "D21 Quality Gate Assessment"
+  P10:
+    name: "Security & Reliability"
+    role: "DEFINE"
+    responsibility: "Define what security and reliability requirements the system MUST meet"
+    owns:
+      - "Security governance and threat modeling"
+      - "Identity, API, data, infrastructure security requirements"
+      - "Security testing REQUIREMENTS"
+      - "Reliability requirements, SLI/SLO, recovery objectives"
+      - "Backup, disaster recovery, incident response requirements"
+      - "Observability requirements"
+    must_not_own:
+      - "Organizing the test execution system or defect closure workflow"
+    primary_reports:
+      - "D15 Security Assessment"
+      - "D16 Reliability Assessment"
+      - "D22 Security Gate Assessment"
+  shared_gate:
+    description: "Security testing is REQUIRED by P10 and EXECUTED/RECORDED by the P09 test engineering system"
+    rule: "P09 and P10 together form mandatory gates; neither may substitute for the other"
+    forbidden:
+      - "Treating a clean scanner report as security conformity (§10.7)"
+      - "Treating a single passing test as system conformity (§0.3)"
+      - "Duplicating a conflicting management system between P09 and P10"
+
+# ---------------------------------------------------------------------------
+# §8.2 / §16.3 / §16.4 — gate architecture and acceptance
+# ---------------------------------------------------------------------------
+gate_architecture:
+  change_gate: "L1_CHANGE_GATE"
+  integration_gate: "L2_INTEGRATION_GATE"
+  domain_acceptance_gate: "L3_DOMAIN_ACCEPTANCE_GATE"
+  global_conformance_gate: "L4_GLOBAL_CONFORMANCE_GATE"
+  independently_assessed_domains: 14
+  domain_ids:
+    - P00
+    - P01
+    - P02
+    - P03
+    - P04
+    - P05
+    - P06
+    - P07
+    - P08
+    - P09
+    - P10
+    - P11
+    - P12
+    - UTER-P13
+  gate_result_vocabulary:
+    - PASS
+    - FAIL
+    - BLOCKED
+    - NOT_RUN
+    - NOT_APPLICABLE
+    - APPROVED_EXCEPTION
+  rule: "NOT_RUN MUST NEVER be reported as PASS"
+
+requirement_status_vocabulary:
+  - NOT_ASSESSED
+  - APPLICABLE
+  - NOT_APPLICABLE
+  - GAP_IDENTIFIED
+  - PLANNED
+  - IMPLEMENTED
+  - VERIFIED
+  - APPROVED_EXCEPTION
+  - BLOCKED
+  - SUPERSEDED
+
+finding_severity_vocabulary:
+  - Critical
+  - High
+  - Medium
+  - Low
+  - Observation
+  - Improvement Opportunity
+
+conformance_status_vocabulary:
+  - CONFORMANT
+  - PARTIALLY_CONFORMANT
+  - NON_CONFORMANT
+  - NOT_ASSESSED
+  - NOT_APPLICABLE
+  - BLOCKED
+
+# ---------------------------------------------------------------------------
+# §2.1 external standards catalogue (26 items, reference only — not certification)
+# ---------------------------------------------------------------------------
+external_standards_catalogue_count: 26
+external_standards_applicability_register: "reports/compliance/D01-STANDARDS-APPLICABILITY-REGISTER.md"
+certification_disclaimer: "Internal assessment against UAES-GOV-001 is NOT certification against ISO/IEC/IEEE/NIST/OWASP or any external standard (§16.5)"
+
+# ---------------------------------------------------------------------------
+# Enforcement hooks
+# ---------------------------------------------------------------------------
+enforcement:
+  separation_check: "scripts/quality/uter-governance-separation-check.rb"
+  p09_p10_boundary_check: "scripts/quality/uter-p09-p10-boundary-check.rb"
+  pin_check: "scripts/quality/uaes-pin-check.sh"
+  integration_check: "scripts/quality/uaes-integration-check.sh"
+  spec_check: "scripts/quality/ai-specs-check.sh"
+  policy_test: "scripts/quality/test-ai-governance-policy.rb"
+  independent_assessment: "scripts/quality/uter-independent-assessment.rb"

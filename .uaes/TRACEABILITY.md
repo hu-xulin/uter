@@ -1,10 +1,26 @@
 # UAES → Uter Standard Traceability Matrix
 
-**Audit date:** 2026-11-05  
-**UAES source:** hu-xulin/uaes  
-**UAES lifecycle:** DRAFT  
-**Uter integration:** MIGRATION_PENDING  
-**This matrix is an inventory, not a compliance certificate.** A path being present does not prove a rule is implemented or enforced.
+**Governing specification:** `UTER-UAES-GOV-001` (`docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`)  
+**Audit date:** 2026-11-05 (refreshed 2026-11-06)  
+**UAES source:** hu-xulin/uaes — universal P00–P12 only  
+**UAES lifecycle:** ACTIVE — registry `1.12.1`, `UAES-APPROVAL-2026-11-07-004`, commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`  
+**Uter integration:** MIGRATION_PENDING — UAES domain gates remain `NOT_RUN`, global gate `BLOCKED`, Requirement→Evidence mapping incomplete  
+**This matrix is an inventory, not a conformance certificate.** A path being present does not prove a rule is implemented, enforced or verified. Registry approval is a normative baseline, not a Uter conformance certificate; see `.uaes/APPROVAL-RECORD.md` §4 in the UAES repository.
+
+**Repository separation:** this table covers UAES P00–P12 (Layer A, owned by the
+`uaes` repository). UTER P13 is a **Uter project-specific extension** (Layer B),
+registered only in `.uaes/uter-governance-registry.yaml` and specified in
+`.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`. It is assessed as an independent
+14th domain and must never be registered in the UAES universal registry.
+
+**P09 / P10 division (§1.3 / §8 / §9 / §10 / §16.3):** P09 *proves* whether engineering quality meets
+requirements; P10 *defines* the security and reliability requirements. Security
+testing is required by P10 and executed/recorded by the P09 test system. The
+earlier `SPEC-001` finding (an older execution order labelled P09 as Security and
+P10 as Business Domain) is **resolved**: `UTER-UAES-GOV-001` formally adopts
+P09 Quality Engineering and P10 Security & Reliability, matching the actual UAES
+`09-quality-engineering/` / `10-security-reliability/` layout, and moves business
+domain rules to UTER P13. UAES was never modified to accommodate Uter.
 
 ## Phase mapping
 
@@ -24,6 +40,17 @@
 | P11 DevOps & Delivery | .github/workflows/ci.yml, Dockerfiles, Compose files, deploy/, release scripts | PARTIAL | Release promotion, rollback, artifact provenance, environment approval, and branch protection evidence |
 | P12 Lifecycle & Evolution | docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md, migration scripts, versioning and release docs | PARTIAL | Technical-debt, deprecation, schema-evolution, postmortem, and retirement evidence |
 
+## UTER P13 — project-specific extension (Layer B, Uter only)
+
+| P13 domain | Uter current implementation (inventory) | Mapping status | Required next evidence |
+|---|---|---|---|
+| P13.1–P13.10 (10 business domains) | `.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md` §2 inventory: `controller/topup_*`, `service/billing*`, `model/quota_reserve.go`, `relay/`, `plugins/tasks/`, `web/src/features/wallet|pricing|models|channels/` | `IMPLEMENTED` (code located) / **NOT VERIFIED** | Approved business requirements + owners, domain invariants, state transitions, 10 payment exception scenarios, independent domain acceptance |
+| Inheritance of P00–P12 | `.uaes/uter-governance-registry.yaml` `uaes_inheritance` | `IMPLEMENTED` / NOT VERIFIED | Per-domain Requirement→Implementation→Verification→Evidence mapping |
+| Registration boundary | P13 absent from UAES `standards/` and `.uaes/registry/` (verified 0 hits) | `IMPLEMENTED` | `uter-governance-separation-check.rb` gate evidence |
+
+**P13 conformance status: `NOT_ASSESSED`** (§16.2). Code presence is not business
+rule approval and is not verification (§0.3 / §4.2).
+
 ## 2026-11-05 integration audit evidence
 
 The following evidence supplements the phase inventory above. It does **not** promote any phase to VERIFIED.
@@ -35,7 +62,7 @@ The following evidence supplements the phase inventory above. It does **not** pr
 | API contract | Owner-approved Option B consumer audit: `.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md`. Removed only `POST /api/oauth/wechat/bind` and `GET /api/verify/status`; OpenAPI now contains 134 paths / 159 operations. UAES Architecture Source Checks [run 41971060421](https://github.com/hu-xulin/uaes/actions/runs/41971060421) PASS: 197 documented operations covered by 484 static Gin and built-in plugin routes. | Repository-local consumer survey found no runtime/frontend callers; external API usage telemetry is unavailable, so external-client absence is not asserted. |
 | Database migrations | Inventory covers 20 custom migration steps and 2 manual SQL files. Selected migration tests passed on SQLite, MySQL 8.4.4, and PostgreSQL 17.4 against Uter source `422caafffb7a64370700ddd4859a057911f5f9e0` in [UAES run 41971060428](https://github.com/hu-xulin/uaes/actions/runs/41971060428). | Not full replay of all 20 steps, not ClickHouse log-database coverage, and not full rollback/recovery certification. Migration safety remains NOT_VERIFIED. |
 | Frontend module graph | Revalidated against Uter commit `008ec53adc9652ee454090b4fb1152536dd45bf3` in [UAES Architecture Source Checks run 41968779803](https://github.com/hu-xulin/uaes/actions/runs/41968779803): 1,500 source files (1,217 production, 282 test, 1 generated), 2 generated route-tree imports excluded; 5,444 production runtime / 518 type-only / 16 dynamic imports; 698 test runtime / 104 type-only / 33 dynamic imports. The 21 lower-level-to-feature edges remain 18 runtime and 3 type-only; positive/negative fixtures passed. | Inventory is not an approved dependency policy. Symbol-level consumer inventory is not exhaustive; boundary migration remains in progress; no boundary gate is enforced. |
-| UAES governance | UAES governance validation, including static integrity checks for 8 canonical skills and 16 Claude Code / Agents Runtime adapters, passed on the current UAES PR #1 head `946315e996473732d2b7c02cea329d6ca56b84d7` in [run 41969390442](https://github.com/hu-xulin/uaes/actions/runs/41969390442). Uter's integration pin still targets the recorded `main` audit baseline, not this unmerged DRAFT branch; this is governance-branch evidence, not an adopted immutable release. | UAES PR #1 is not merged or approved; its registry remains DRAFT and is not an immutable release. |
+| UAES governance | Re-verified 2026-11-08 against UAES `main` `74e5d2eea215c96b845d7a0b2111b7fa011c540f` — the current pinned commit of the unified governance run, following release commit `6c78ab50dc2b1adfedc035c88a70a906564318e4` which published the 178 standards as ACTIVE: registry `1.12.1 / ACTIVE` under `UAES-APPROVAL-2026-11-07-004`, blob `a806eef48e6242d82dcb1d39d5c094e0d7d981a1`, 178 standards formally published. Registry `1.12.1` is a normative correction release (registry signature record repaired, project authorisation baseline removed from UAES-09-014 §3, three independent-verifier defects fixed) and carries the re-sealed digest `c49d3938fd9f` and a re-verified detached release signature. Uter's `.uaes/uaes-pin.json`, `INTEGRATION.md` and this matrix were refreshed to that commit on 2026-11-07 (earlier baseline `3bc8285` was `1.9.0 / APPROVED`; `0c9386b` carried none of the six declared artefacts). | Publication is an **upstream** lifecycle event, not Uter conformance: the 14 Uter domain gates remain 0/14 PASS, L4 global gate `BLOCKED`, 42 manual acceptances unsigned, Requirement→Evidence mapping incomplete, integration status `MIGRATION_PENDING`. The pin notes disclose a single-machine separation-of-duties exception for the release signature (non-independent authority environment) that the UAES Authority has not yet adjudicated; the UAES working tree also still has uncommitted changes. |
 
 ### Current integration gate scope
 

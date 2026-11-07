@@ -12,6 +12,23 @@
 **维护责任：** Uter Engineering Maintainers  
 **版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
 
+**上位标准（Normative parent）：**
+本文件是 **Uter 项目执行层**的工程质量引擎实施说明，不是企业级标准。
+企业级的质量治理与门禁要求由 UAES P09 / P10 定义，本文件只描述 Uter 如何
+用本地脚本、CI 与命令去**执行**这些要求。
+
+| 归属 | 来源 | 关系 |
+|---|---|---|
+| 质量模型、风险分级、门禁判定 | UAES `UAES-09-001-QUALITY-MODEL-AND-GOVERNANCE` | 上位 |
+| 代码审查 / 测试 / 自动修复 / 报告 | UAES `UAES-09-002` ~ `UAES-09-015` | 上位 |
+| 安全与可靠性要求 | UAES P10（`UAES-10-001` ~ `UAES-10-016`） | 上位；P10 定义要求，P09 证明符合 |
+| 构建、CI/CD 与交付证据 | UAES P11（`UAES-11-005`、`UAES-11-015`） | 上位 |
+
+UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`。
+本目录下的 CODE-REVIEW / AUTOMATED-TEST / AUTO-FIX / QUALITY-GATE 四份文件是
+**Uter 实施细则**，不得被视为与 UAES 平行并列的企业级标准来源。
+P09 / P10 分工见 `scripts/quality/uter-p09-p10-boundary-check.rb`。
+
 ---
 
 # 第一部分：项目目标与实施原则
@@ -767,14 +784,14 @@ Testing Engine 必须验证：
 
 ## 5.6 测试结果状态
 
-统一使用：
+统一使用（与 UAES `UAES-09-001` §11 状态词汇对齐，见 QUALITY-GATE-STANDARD.md §3）：
 
 - PASS：实际执行并通过。
 - FAIL：实际执行但失败。
 - BLOCKED：因环境、权限或依赖条件无法执行。
-- SKIPPED：按明确规则跳过。
-- NOT RUN：尚未执行。
-- NOT APPLICABLE：经确认不适用。
+- NOT_RUN：尚未执行。
+- NOT_VERIFIED：已声明或已配置但没有可核验的执行证据。
+- NOT_APPLICABLE：经确认不适用。
 
 每项测试必须记录命令、环境、耗时、结果和日志位置。
 
@@ -1246,8 +1263,8 @@ automated-test-report.md
 - PASS。
 - FAIL。
 - BLOCKED。
-- SKIPPED。
-- NOT RUN。
+- NOT_RUN。
+- NOT_VERIFIED。
 - 覆盖率。
 - 失败日志。
 - 遗留问题。
@@ -1317,7 +1334,7 @@ uter-quality-report.json
 6. 安全扫描没有未处理的阻断性问题。
 7. 修复内容已经重新审查。
 8. 没有未记录的失败项。
-9. 所有 BLOCKED、SKIPPED 项均有原因。
+9. 所有 BLOCKED、NOT_RUN、NOT_VERIFIED 项均有原因。
 10. 测试证据可以追溯。
 
 注意：允许创建用于人工审核的 P1 修复 PR，但不得将其标记为可自动合并或质量完全通过。
@@ -1604,7 +1621,7 @@ Push
 - 仅生成 Workflow 就声称 GitHub Actions 已成功运行。
 - 仅编写测试用例就声称测试通过。
 - 将 BLOCKED 标记为 PASS。
-- 将 SKIPPED 标记为 PASS。
+- 将 NOT_RUN 或 NOT_VERIFIED 标记为 PASS。
 - 使用模拟测试结果冒充真实测试结果。
 - 伪造 PR 地址、Commit SHA 或 CI 记录。
 
@@ -1661,10 +1678,9 @@ uter/
 │           └── QUALITY-GATE-STANDARD.md
 │
 ├── .quality/
-│   ├── policy.yml
-│   ├── modules.yml
-│   ├── review-rules.yml
-│   └── test-rules.yml
+│   ├── policy.env
+│   ├── gitleaks.toml
+│   └── gates/
 │
 ├── scripts/
 │   └── quality/

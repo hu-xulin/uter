@@ -13,6 +13,22 @@
 **维护责任：** Uter Engineering Maintainers  
 **版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
 
+**上位标准（Normative parent）：**
+本文件是 **Uter 项目执行层**规范，不是企业级标准。企业级的代码审查要求由 UAES
+定义，本文件只补充 Uter 的仓库结构、工具链与可直接引用的命令。
+
+| 归属 | 来源 | 关系 |
+|---|---|---|
+| 代码审查工程（范围、基线、工作流、检查清单） | UAES `UAES-09-002-CODE-REVIEW-ENGINEERING` | 上位；本文件为 Uter 实施细则 |
+| 代码质量与可维护性 | UAES `UAES-06-013-CODE-REVIEW-AND-MAINTAINABILITY` | 上位 |
+| 缺陷与回归管理 | UAES `UAES-09-013-DEFECT-AND-REGRESSION-MANAGEMENT` | 上位 |
+| 质量报告与证据 | UAES `UAES-09-015-QUALITY-REPORT-AND-EVIDENCE` | 上位 |
+| Agent 修复权限 | UAES `UAES-09-014` + `UAES-01-002` | 上位；本文件不得扩大权限 |
+
+UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`。
+冲突处理：与 UAES 冲突时以 UAES 为准；Uter 专属业务约束按 `UAES-00-002` 顺序处理，
+并登记至 `.uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml`。
+
 ---
 
 # 1. 项目目标与执行原则

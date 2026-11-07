@@ -13,6 +13,26 @@
 **维护责任：** Uter Engineering Maintainers  
 **版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
 
+**上位标准（Normative parent）：**
+本文件是 **Uter 项目执行层**规范，不是企业级标准。企业级测试要求由 UAES 定义，
+本文件只补充 Uter 的实际模块、测试命令、环境与 CI 接线。
+
+| 归属 | 来源 | 关系 |
+|---|---|---|
+| 测试策略与规划 | UAES `UAES-09-003-TEST-STRATEGY-AND-PLANNING` | 上位 |
+| 单元/组件测试 | UAES `UAES-09-004-UNIT-AND-COMPONENT-TESTING` | 上位 |
+| 集成与契约测试 | UAES `UAES-09-005-INTEGRATION-AND-CONTRACT-TESTING` | 上位 |
+| E2E 与 UI 测试 | UAES `UAES-09-006-END-TO-END-AND-UI-TESTING` | 上位 |
+| 性能与可靠性测试 | UAES `UAES-09-008-PERFORMANCE-AND-RELIABILITY-TESTING` | 上位 |
+| 测试数据与环境 | UAES `UAES-09-010-TEST-DATA-AND-ENVIRONMENT` | 上位 |
+| Flaky 测试治理 | UAES `UAES-09-011-FLAKY-TEST-AND-TEST-MAINTENANCE` | 上位 |
+| 覆盖率与风险质量 | UAES `UAES-09-012-COVERAGE-AND-RISK-BASED-QUALITY` | 上位 |
+| 质量报告与证据 | UAES `UAES-09-015-QUALITY-REPORT-AND-EVIDENCE` | 上位 |
+
+UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`。
+冲突处理：与 UAES 冲突时以 UAES 为准；Uter 专属业务约束按 `UAES-00-002` 顺序处理，
+并登记至 `.uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml`。
+
 ---
 
 # 1. 测试目标
@@ -1064,15 +1084,16 @@ govulncheck ./...
 - 失败原因。
 - 关联问题 ID。
 
-状态统一使用：
+状态统一使用（与 UAES `UAES-09-001` §11 状态词汇对齐，见 QUALITY-GATE-STANDARD.md §3）：
 
 - PASS。
 - FAIL。
 - BLOCKED。
-- SKIPPED。
-- NOT RUN。
+- NOT_RUN。
+- NOT_VERIFIED。
+- NOT_APPLICABLE。
 
-不得将 BLOCKED、SKIPPED 或 NOT RUN 标记为 PASS。
+不得将 BLOCKED、NOT_RUN 或 NOT_VERIFIED 标记为 PASS。
 
 ## 17.4 缺陷报告
 
