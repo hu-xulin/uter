@@ -1,0 +1,280 @@
+# Uter local AI specification disposition registry
+# Authority: UAES skills/uaes-uter-integration/SKILL.md Procedure 10; AGENTS.md UAES section.
+# Rule: deletion/stubbing is PROHIBITED until all five prerequisites are met.
+# Generated: 2026-11-07 (real repository inspection). Remediated: 2026-11-08. No file was deleted by this registry.
+
+registry_id: UTER-AI-SPEC-DISPOSITION-REGISTRY
+version: 1.0.0
+generated_at: '2026-11-08'
+uaes_pinned_commit: 74e5d2eea215c96b845d7a0b2111b7fa011c540f
+uaes_registry_status: ACTIVE
+deletion_prerequisites_met: 1/5 (semantic_parity=false, approved_lifecycle=true, project_mapping=false, runtime_discovery=false, ci_enforcement=false)
+deletion_allowed: false
+total_files: 18
+semantic_class_counts:
+  exact_duplicate: 0
+  partial_duplicate_with_uter_specific_content: 18
+  competing_enterprise_standard: 0
+  conflicting: 0
+  obsolete: 0
+  undetermined: 0
+conflicts_registered:
+- id: C-01
+  location: AUTO-FIX-STANDARD.md section 4 step 4
+  issue: independent fix branch conflicts with Uter single-branch mode
+  status: RESOLVED
+  resolution: §9.1 用语改为「唯一工作分支」；§7.1 已是强制唯一分支规则。2026-11-08
+- id: C-02
+  location: QUALITY-GATE-STANDARD.md
+  issue: status/risk/coverage vocabulary differs from UAES-09-015
+  status: RESOLVED
+  resolution: QUALITY-GATE/AUTOMATED-TEST/README 状态词汇统一为 PASS/FAIL/BLOCKED/NOT_RUN/NOT_VERIFIED/NOT_APPLICABLE，与 UAES-09-001 §11 对齐。2026-11-08
+- id: C-03
+  location: QUALITY-GATE-STANDARD.md
+  issue: references .quality/policy.yml; real file is .quality/policy.env
+  status: RESOLVED
+  resolution: QUALITY-GATE §18 与 README 目录树改为 .quality/policy.env（磁盘实际文件，被 uter-quality.sh source）。2026-11-08
+- id: C-04
+  location: AUTO-FIX-STANDARD.md
+  issue: claims CI is stopped; current CI configuration contradicts it
+- id: C-05
+  location: UAES standards/09-quality-engineering/UAES-09-002, -014, -015
+  issue: upstream generic standards embed Uter-specific owner and test matrix
+review_trigger: UAES formally published in an immutable commit AND semantic parity report completed AND full requirement-to-evidence mapping closed AND runtime skill discovery proven AND CI enforcement verified AND independent approval recorded.
+files:
+- path: docs/ai-specs/AI-EXECUTION-STANDARD.md
+  doc_id: UTER-AI-EXEC-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P00/P01
+  uter_specific_content: Task-based spec routing; AGENTS.md priority; Uter gate list
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md
+  doc_id: UTER-PRD-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P02
+  uter_specific_content: Pricing FX+0.2; QuotaPerUnit=500000; VIP 0-5 groups
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/ARCHITECTURE-STANDARD.md
+  doc_id: UTER-ARCH-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P04
+  uter_specific_content: Go/React/Electron boundaries; relaykit/tokenkit; three databases
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/UX-INTERACTION-STANDARD.md
+  doc_id: UTER-UX-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P05
+  uter_specific_content: Uter page/interaction contracts
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/API-CONTRACT-STANDARD.md
+  doc_id: UTER-API-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P04
+  uter_specific_content: 134 paths/159 ops; /api/status single source
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/SECURITY-STANDARD.md
+  doc_id: UTER-SEC-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P10
+  uter_specific_content: Login 429 refund; WeChat web login; step-up email code
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/DATABASE-STANDARD.md
+  doc_id: UTER-DB-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P04
+  uter_specific_content: SQLite/MySQL/PostgreSQL + ClickHouse migration matrix
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/DEVELOPMENT-STANDARD.md
+  doc_id: UTER-DEV-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P06
+  uter_specific_content: Go/Bun engineering conventions
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md
+  doc_id: UTER-CHG-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P11/P12
+  uter_specific_content: Single-branch mode; change protection; identity guard
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/DOCUMENTATION-STANDARD.md
+  doc_id: UTER-DOC-001
+  version: v1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P03
+  uter_specific_content: docs/ no-new-file rule; i18n 7-locale sync
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/CONFLICT-REPORT.md
+  doc_id: UTER-CONFLICT-001
+  version: Active
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P00
+  uter_specific_content: Section 98 verbatim rule; section 121 semantic-parity gap
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/ENGINEERING-SYSTEM-ACCEPTANCE-REPORT.md
+  doc_id: UTER-UEQE-ACC-001
+  version: Active
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P09
+  uter_specific_content: UEQE implementation acceptance records
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md
+  doc_id: UTER-UAES-GOV-001
+  version: Active
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: P00-P12
+  uter_specific_content: Three-layer/two-repo; UTER P13; WorkBuddy 20-step directive
+  disposition: KEEP_AND_MARK_FOR_REVIEW
+  action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
+  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+- path: docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md
+  doc_id: UTER-ENG-001
+  version: 1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: UAES-09-002
+  uter_specific_content: Uter review checklist; gate hooks
+  disposition: KEEP_AS_UTER_EXECUTION_LAYER_WITH_UAES_PARENTAGE
+  action_taken: REMEDIATED_2026-11-08
+  blocking_reason: 'retained by design: ai-specs-check.sh requires the file and it carries Uter-specific commands/modules not present in UAES'
+  remediation_detail: 已声明 UAES 上位溯源（09-002/06-013/09-013/09-015）；补 Uter 执行细则定位说明
+- path: docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md
+  doc_id: UTER-ENG-002
+  version: 1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: UAES-09-003~09-013
+  uter_specific_content: Four Go modules / web / Electron test matrix
+  disposition: KEEP_AS_UTER_EXECUTION_LAYER_WITH_UAES_PARENTAGE
+  action_taken: REMEDIATED_2026-11-08
+  blocking_reason: 'retained by design: ai-specs-check.sh requires the file and it carries Uter-specific commands/modules not present in UAES'
+  remediation_detail: 已声明 UAES 上位溯源；状态词汇对齐 UAES（删除 SKIPPED / NOT RUN 别名，改用 NOT_RUN / NOT_VERIFIED）
+- path: docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md
+  doc_id: UTER-ENG-003
+  version: 1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: UAES-09-014
+  uter_specific_content: .quality/policy.env; fix risk grading
+  disposition: KEEP_AS_UTER_EXECUTION_LAYER_WITH_UAES_PARENTAGE
+  action_taken: REMEDIATED_2026-11-08
+  blocking_reason: 'retained by design: ai-specs-check.sh requires the file and it carries Uter-specific commands/modules not present in UAES'
+  remediation_detail: 已声明 UAES 上位溯源与权限不得扩大条款；C-01 修正 §9.1 独立分支表述为唯一工作分支
+- path: docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md
+  doc_id: UTER-ENG-004
+  version: 1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: UAES-09-001/09-015
+  uter_specific_content: L1-L4 gates; blocking conditions
+  disposition: KEEP_AS_UTER_EXECUTION_LAYER_WITH_UAES_PARENTAGE
+  action_taken: REMEDIATED_2026-11-08
+  blocking_reason: 'retained by design: ai-specs-check.sh requires the file and it carries Uter-specific commands/modules not present in UAES'
+  remediation_detail: 已声明 UAES 上位溯源；C-02 状态词汇统一为六值；C-03 policy.yml→policy.env
+- path: docs/ai-specs/engineering-quality/README.md
+  doc_id: UTER-UEQE-README
+  version: 1.0.0
+  semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
+  uaes_counterpart: UAES-09-001~09-015
+  uter_specific_content: UEQE dual-engine implementation spec
+  disposition: KEEP_AS_UTER_EXECUTION_LAYER_WITH_UAES_PARENTAGE
+  action_taken: REMEDIATED_2026-11-08
+  blocking_reason: 'retained by design: ai-specs-check.sh requires the file and it carries Uter-specific commands/modules not present in UAES'
+  remediation_detail: 已声明 UEQE 为 Uter 执行层说明；状态词汇对齐；C-03 目录树 policy.env/gitleaks.toml
+remediated_at: '2026-11-08'
+remediation_note: 按用户 2026-11-08 最高优先级授权执行：登记项由 REGISTERED_ONLY 推进为 REMEDIATED。仅修改文档内容（上位溯源、状态词汇、配置路径、分支用语），未删除任何文件；四份工程质量标准保留为 Uter 执行层规范，不再构成与 UAES 平行的企业级标准源。
+parallel_enterprise_standard_count: 0
+resolved_conflicts: 3
+open_conflicts: 2
+
+# ---------------------------------------------------------------------------
+# 2026-11-08 第二轮：UAES 基线由 1.12.0/46c6488 升为 1.12.1/74e5d2e 后的联动整改
+# ---------------------------------------------------------------------------
+baseline_sync_2026_11_08:
+  uaes_baseline_before: '1.12.0 / 46c648836ee4cf06e285712ae2504da7ccab5602'
+  uaes_baseline_after: '1.12.1 / 74e5d2eea215c96b845d7a0b2111b7fa011c540f'
+  defect: >-
+    UAES 已升级到 1.12.1，但 Uter 仍有 9 个执行入口硬编码 1.12.0 / 46c6488。
+    这正是"规范已经更新、执行入口仍然引用旧版本"的漂移形态，属于 P00 禁止的状态失配。
+  files_synchronised:
+    - .uaes/uaes-pin.json
+    - .uaes/INTEGRATION.md
+    - .uaes/AI-GOVERNANCE-ENTRY.md
+    - .uaes/uter-governance-registry.yaml
+    - .uaes/TRACEABILITY.md
+    - .uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md
+    - .uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml
+    - AGENTS.md
+    - .claude/skills/uaes-integration/SKILL.md
+    - docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md
+    - docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md
+    - docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md
+    - docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md
+    - docs/ai-specs/engineering-quality/README.md
+  verification:
+    uaes_pin_check: PASS
+    uaes_integration_check: '8 PASS'
+    ai_specs_check: PASS
+  residual_1_12_0_mentions: 仅保留在准确的历史叙述中（INTEGRATION.md 第 46/48 行、pin notes），作为变更溯源，不作为现行版本声明。
+
+enforcement_scripts_2026_11_08:
+  defect: >-
+    AGENTS.md 第 130/131 行把两条强制分离规则的执行责任明确交给
+    uter-governance-separation-check.rb 与 uter-p09-p10-boundary-check.rb，
+    但两个文件均未被 Git 跟踪，且缺可执行位（直接按路径调用报 `require: command not found`）。
+    全新克隆后这两条规则将只剩文字声明。
+  files_tracked:
+    - scripts/quality/uter-governance-separation-check.rb
+    - scripts/quality/uter-p09-p10-boundary-check.rb
+    - scripts/quality/uaes-agent-runtime-check.rb
+  executable_bit: 已补 chmod +x
+  verification:
+    separation: 'overall=PASS checks=13 failed=0'
+    p09_p10_boundary: 'overall=PASS checks=11 failed=0'
+    direct_invocation: exit 0
+
+runtime_harness_2026_11_08:
+  defect: >-
+    uaes-agent-runtime-check.rb 按数组读取 scope/plan/verification，
+    而 .ai/task-schema.json 把 scope 定义为 {include,exclude} 对象，
+    且字段名为 implementation_plan / test_plan。
+    因此 preflight 第 7/8/9 步在 schema 合法的任务合同上恒 FAIL —— 检查器与规范互相矛盾。
+  fix: harness 按 schema 读取，保留旧数组形式作为别名，两者都支持。
+  verification:
+    preflight: 'overall=PASS 10/10'
+    selftest: 'overall=PASS passed=20/20'
+    task_contract: '.uaes/tasks/UAES-UTER-UNIFIED-GOVERNANCE-2026-11-08.json 通过 schema 校验'
+
+worktree_hygiene_2026_11_08:
+  removed:
+    - '.DS_Store（两仓共 78 个，均未被跟踪且已被 gitignore）'
+    - 'coverage.out（3.2 MB go test 产物，未被跟踪且无忽略规则；已补 /coverage.out 到 .gitignore）'
+  not_removed: 零完全重复文件、零空占位文件，故无可删除项；不为此创建删除记录。

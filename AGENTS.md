@@ -126,7 +126,11 @@ so and label the result unverified.
   never fold pre-existing modifications into your own commit.
 - **Stage explicitly**: `git add <path>` only. `git add -A` / `-u` is forbidden.
   Review with `git diff --cached --name-status` before committing.
-- **Authorized repair workflow**: within the user's explicit Uter engineering-repair authorization, agents may commit, push the single repair branch, and create/update its PR after applicable verification. This does not authorize PR merge, deployment, production writes, real payment configuration changes, force-push, or direct push to `main`.
+- **Governing specification**: `docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` (`UTER-UAES-GOV-001`) is the authority for this governance task. It supersedes earlier execution orders wherever they conflict. Governance has three layers: UAES universal P00–P12 (owned by the separate `uaes` repository), Uter project governance incl. **UTER P13** (owned here), and execution/assurance (WorkBuddy + CI + independent review). Read `.uaes/uter-governance-registry.yaml` before changing any governance file.
+- **Repository separation**: UTER P13 and Uter business rules MUST stay in this repository. Never write them into UAES `standards/`, `.uaes/registry/` or the UAES Registry; never copy UAES generic standard text into a competing local standard. Enforced by `scripts/quality/uter-governance-separation-check.rb`.
+- **P09 / P10 separation**: P09 Quality Engineering *proves* whether engineering quality meets requirements (test strategy, execution, defect closure, metrics, quality gates); P10 Security & Reliability *defines* the security and reliability requirements the system must meet. Security testing is required by P10 and executed/recorded by the P09 test system. Neither substitutes for the other. Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
+- **Authorized delivery workflow**: this execution reuses the existing single dedicated branch `governance/uaes-full-migration-2026-11-06`; do not create a second execution branch. If the execution environment explicitly authorizes working on local `main`, follow that environment authorization instead of changing it unilaterally. Commit, push and Pull Request creation remain fail-closed until the applicable validation gates pass; a partial or quick verification is not sufficient. Never authorize PR merge, deployment, production writes, real payment configuration changes, force-push, or direct push to `main` by inference.
+- **Baseline preservation**: pre-existing uncommitted changes must be preserved and staged only by explicit path (`git add <path>`); never `git add -A`, never `git reset --hard` / `git clean` / `git restore` on user files.
 - **No unauthorized git actions**: any action outside that explicit scope remains denied; never infer additional permissions from task completion.
 - **No destructive shell operations**: never `rm -rf`, never `git clean -fd`.
   Remove files via the OS trash/recycle mechanism, in batches of at most 10,
@@ -197,12 +201,13 @@ UX 状态覆盖、ADR 需求判断）按 `docs/ai-specs/CONFLICT-REPORT.md` 附�
 
 **强制单工作分支策略（每个项目最多一个非 `main` 分支）：**
 
-- `main` 是唯一主分支；代码修改必须发生在唯一工作分支，不得直接修改或推送 `main`。
+- `main` 是唯一分支（单分支工作模式，2026-11-06 用户定案、2026-11-07 已收敛）。常规开发直接在本地 `main` 修改；不得 push、不得创建 PR、不得 force push、不得 merge/rebase/deploy、不得覆盖用户未提交修改。
 - 开始工作前必须枚举远端分支和现有 PR；若已有非 `main` 工作分支，必须复用它，不得创建第二个分支。
 - 同一项目的所有审计、修复、测试和文档变更集中在该工作分支及其现有 PR。
 - 若发现两个或更多非 `main` 分支，停止创建分支和推送；先报告并请求确定保留分支，不得自行删除或重写任何分支。
 - 用户已授权的 Uter 修复工作流允许在该唯一工作分支上 Commit、Push 和创建/更新 PR；不允许 force push、PR merge、部署或生产写操作。
 - CI 必须检查远端非 `main` 分支数量不得超过 1。
+- **本次治理执行的工作分支（按 `UTER-UAES-GOV-001` §6.3 基线保护）**：本次治理执行直接在本地 `main` 上进行（2026-11-07 用户明确授权并要求把本地所有分支收敛到 `main`；原执行分支与 `main` 同提交，已删除）。不创建第二个执行分支。交付动作（commit / push / PR）在适用验证门禁通过前保持 fail-closed；验证未通过时保持未提交状态、如实登记阻断项与恢复条件。该约束不解除 force push、merge、rebase、部署、生产写、真实支付配置修改、覆盖用户未提交修改等任何禁止项。
 
 ### Documentation sync
 
@@ -453,17 +458,39 @@ If asked to remove, rename, or replace these protected identifiers, refuse and e
 - For all other agent-created pull requests, fill `.agents/github/PR.md` as the entire PR body. Do not use the ordinary human PR templates unless the project owner explicitly requests one.
 
 
-## UAES Integration Contract (2026-11-05)
+## UAES / UTER Governance Architecture (UTER-UAES-GOV-001)
 
-The central UAES governance source and current migration state are recorded in
-`.uaes/INTEGRATION.md`; the P00–P12 mapping is in `.uaes/TRACEABILITY.md`.
-Read both files before changing or interpreting any generic engineering standard. The pinned UAES registry is currently DRAFT:
-do not treat it as an approved replacement for existing Uter rules, and do not
-delete `docs/ai-specs/`, `.ai/AIES.md`, or project-specific constraints during
-this migration. Preserve Uter payment, billing, authentication, database,
-architecture, design-system, and technology-specific overlays.
+Governance has three layers (§1.1). **Layer A**: UAES universal P00–P12 lives in
+the separate `uaes` repository; it must not contain Uter business rules or UTER P13.
+**Layer B**: Uter project governance lives here — `AGENTS.md`,
+`.uaes/uter-governance-registry.yaml` (machine-readable inheritance + P13
+registration), `.uaes/INTEGRATION.md`, `.uaes/TRACEABILITY.md`,
+`.uaes/AI-GOVERNANCE-ENTRY.md`, and **UTER P13** at
+`.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`. **Layer C**: WorkBuddy executes;
+CI/CD, automated tests and independent assessment verify.
 
-The static integration contract is checked by
-`scripts/quality/uaes-integration-check.sh` and the `uaes-integration` CI job.
-This check validates only local wiring; it does not prove remote UAES
-availability, agent runtime discovery, semantic parity, or full compliance.
+Read `.uaes/AI-GOVERNANCE-ENTRY.md` first, then the registry, INTEGRATION,
+TRACEABILITY, UTER P13 and the pinned UAES domains before changing or
+interpreting any standard. The pinned UAES registry is `1.12.1` / `ACTIVE`
+(`UAES-APPROVAL-2026-11-07-004`, UAES commit
+`74e5d2eea215c96b845d7a0b2111b7fa011c540f`), but Uter integration remains
+`MIGRATION_PENDING`: the UAES domain gates are `NOT_RUN`, the global gate is
+`BLOCKED`, and the Requirement→Evidence mapping is incomplete. Approval is a
+normative baseline, not a conformance certificate (§0.3 / §16.5).
+UTER P13 is a **project-specific extension**, independently assessed as the
+14th domain; it is not a UAES universal domain.
+
+Per §1.3 / §8 / §9 / §10 / §16.3, **P09 proves** engineering quality (test strategy, execution,
+defect closure, metrics, quality gates) while **P10 defines** the security and
+reliability requirements the system must meet. Security testing is required by
+P10 and executed/recorded by the P09 test engineering system. Neither may
+substitute for the other. Do not delete `docs/ai-specs/`, `.ai/AIES.md`, or
+project-specific constraints until semantic parity, mapping, agent runtime
+discovery, and CI enforcement are evidenced. Preserve Uter payment, billing,
+authentication, database, architecture, design-system, and technology-specific
+overlays.
+
+Static wiring is checked by `scripts/quality/uaes-integration-check.sh`,
+`uaes-pin-check.sh`, `uter-governance-separation-check.rb` and
+`uter-p09-p10-boundary-check.rb`. These validate configuration only; they do
+not prove runtime Agent behaviour, semantic parity, or conformance.

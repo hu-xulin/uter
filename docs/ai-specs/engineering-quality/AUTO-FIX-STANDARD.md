@@ -17,6 +17,24 @@
 - AUTOMATED-TEST-STANDARD.md
 - QUALITY-GATE-STANDARD.md
 
+**上位标准（Normative parent）：**
+本文件是 **Uter 项目执行层**规范，不是企业级标准。自动修复的权限、生命周期与
+验证闭包由 UAES 定义，本文件只补充 Uter 的分支策略、PR 流程与工具命令。
+**本文件不得扩大 Agent 权限**；权限以 `UAES-01-002` 与 `.uaes/agent-governance.yaml` 为准。
+
+| 归属 | 来源 | 关系 |
+|---|---|---|
+| 自动修复生命周期与修复验证 | UAES `UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION` | 上位；本文件为 Uter 实施细则 |
+| Agent 权限与授权边界 | UAES `UAES-01-002-AGENT-AUTHORITY-AND-PERMISSIONS` | 上位；最高约束 |
+| 人工审批与升级 | UAES `UAES-01-003-HUMAN-APPROVAL-AND-ESCALATION` | 上位 |
+| 代码修改与重构 | UAES `UAES-06-010-REFACTORING-AND-MIGRATION` | 上位 |
+| 安全缺陷修复 | UAES `UAES-10-011-SECURITY-TESTING-AND-VULNERABILITY-MANAGEMENT` | 上位 |
+| Git / PR 与 CI 交付 | UAES `UAES-11-003`、`UAES-11-004` | 上位 |
+
+UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`。
+冲突处理：与 UAES 冲突时以 UAES 为准，尤其权限相关条款不得放宽；Uter 专属
+业务约束按 `UAES-00-002` 顺序处理，并登记至 `.uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml`。
+
 ---
 
 # 1. 规范目标
@@ -623,7 +641,7 @@ Commit SHA:
 - 普通代码审查：只读权限。
 - 自动测试：只读源码和测试环境权限。
 - 自动修复：隔离工作区写权限。
-- 自动 Push：独立修复分支写权限。
+- 自动 Push：**唯一工作分支**写权限（见 §7.1；不得为此新建第二分支）。
 - PR 创建：Pull Request 创建权限。
 
 不应将所有权限授予所有 Workflow。

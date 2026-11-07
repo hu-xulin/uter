@@ -18,6 +18,25 @@
 - AUTOMATED-TEST-STANDARD.md
 - AUTO-FIX-STANDARD.md
 
+**上位标准（Normative parent）：**
+本规范是 **Uter 项目执行层**规范，不是企业级标准。企业级要求由 UAES 定义，
+本文件不得重新定义、削弱或平行维护 UAES 已定义的质量治理要求。
+
+| 归属 | 来源 | 关系 |
+|---|---|---|
+| 企业级质量治理、质量模型、风险分级 | UAES `UAES-09-001-QUALITY-MODEL-AND-GOVERNANCE` | 上位；本规范必须遵循 |
+| 代码审查工程 | UAES `UAES-09-002-CODE-REVIEW-ENGINEERING` | 上位；本规范补充 Uter 执行细则 |
+| 测试策略与执行 | UAES `UAES-09-003` ~ `UAES-09-013` | 上位；本规范补充 Uter 工具与命令 |
+| 自动修复与修复验证 | UAES `UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION` | 上位；本规范补充 Uter 权限边界 |
+| 质量报告与证据 | UAES `UAES-09-015-QUALITY-REPORT-AND-EVIDENCE` | 上位；本规范补充 Uter 报告位置 |
+
+UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`，
+审批记录 `UAES-APPROVAL-2026-11-07-004`（见 `.uaes/uaes-pin.json`）。
+
+冲突处理：本规范与 UAES 冲突时，以 UAES 为准；Uter 专属的业务、支付、资金、
+渠道约束不受影响，按 UAES `UAES-00-002` 的冲突解决顺序处理，并登记在
+`.uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml` 的 `conflicts_registered` 中。
+
 ---
 
 # 1. 规范目标
@@ -103,16 +122,21 @@ Quality Gate 不负责代替各引擎执行具体检查。
 
 # 3. 统一状态定义
 
-所有质量检查必须采用统一状态。
+所有质量检查必须采用统一状态。本表与 UAES `UAES-09-001` §11 及
+`UAES-09-015` 的状态词汇严格对齐（C-02 已修正）：UAES 使用 `NOT_RUN` 与
+`NOT_VERIFIED`，本文件此前使用 `NOT RUN`（含空格）与 `SKIPPED`，造成同一
+门禁在两套词汇下产生不同判定，现统一为下表。`SKIPPED` 作为 UAES 词汇中
+不存在的一档已删除；原先记为 `SKIPPED` 的情形按真实语义拆分为
+`NOT_APPLICABLE`（经确认不适用）或 `NOT_VERIFIED`（已声明但无证据）。
 
 | 状态 | 含义 |
 |---|---|
-| PASS | 已实际执行并满足要求 |
+| PASS | 已实际执行并满足要求，且存在真实执行证据 |
 | FAIL | 已实际执行但不满足要求 |
 | BLOCKED | 因权限、环境或依赖缺失无法执行 |
-| SKIPPED | 根据明确规则跳过 |
-| NOT RUN | 尚未执行 |
-| NOT APPLICABLE | 经确认不适用 |
+| NOT_RUN | 尚未执行 |
+| NOT_VERIFIED | 已声明或已配置，但没有可核验的执行证据 |
+| NOT_APPLICABLE | 经确认不适用，且理由可追溯 |
 
 ## 3.1 状态使用规则
 
@@ -128,19 +152,23 @@ BLOCKED：
 
 必须说明阻塞原因、影响范围和解除条件。
 
-SKIPPED：
-
-必须说明跳过依据。
-
-NOT RUN：
+NOT_RUN：
 
 不得当作通过。
 
-NOT APPLICABLE：
+NOT_VERIFIED：
+
+不得当作通过；配置存在不等于执行通过。
+
+NOT_APPLICABLE：
 
 必须有合理依据。
 
-不得把 BLOCKED、SKIPPED 或 NOT RUN 自动转换为 PASS。
+不得把 BLOCKED、NOT_RUN 或 NOT_VERIFIED 自动转换为 PASS。
+
+**词汇一致性自检**：任何报告、脚本或 YAML 中出现的状态值必须是上表六值之一。
+出现 `SKIPPED`、`NOT RUN`（含空格）或其他别名即视为不合规，由
+`scripts/quality/ai-specs-check.sh` 与 UAES 侧状态校验共同拦截。
 
 ## 3.2 总体状态计算
 
@@ -149,7 +177,7 @@ NOT APPLICABLE：
 1. 存在阻断性风险：FAIL。
 2. 必需检查失败：FAIL。
 3. 必需检查被阻塞：BLOCKED。
-4. 必需检查未执行：BLOCKED 或 NOT RUN。
+4. 必需检查未执行：BLOCKED 或 NOT_RUN。
 5. 所有必需检查通过：PASS。
 
 可选检查不应阻断普通 PR，但必须在报告中保留状态。
@@ -251,9 +279,9 @@ Quality Gate 包含八个检查维度。
 | PASS | 满足对应测试要求 |
 | FAIL | 阻断相关质量门禁 |
 | BLOCKED | 记录阻塞，不得视为通过 |
-| SKIPPED | 必须提供合理原因 |
-| NOT RUN | 必需测试未完成 |
-| NOT APPLICABLE | 必须说明原因 |
+| NOT_RUN | 必需测试未完成 |
+| NOT_VERIFIED | 已声明但无执行证据，不得视为通过 |
+| NOT_APPLICABLE | 必须说明原因 |
 
 ## 6.3 关键测试要求
 
@@ -888,9 +916,13 @@ API 不可用（HTTP 403），「必需状态检查」无法在平台层强制�
 
 # 18. 质量策略配置
 
-建议使用统一配置文件：
+使用统一配置文件：
 
-`.quality/policy.yml`
+`.quality/policy.env`
+
+（C-03 已修正：本文件此前写为 `.quality/policy.yml`，仓库中实际存在并被
+`scripts/quality/uter-quality.sh:34` 真实 `source` 的是 `.quality/policy.env`。
+语义等价，但文件名必须与磁盘一致，否则引用即为悬空。）
 
 参考结构：
 
@@ -904,8 +936,8 @@ quality_gate:
     pass: PASS
     fail: FAIL
     blocked: BLOCKED
-    skipped: SKIPPED
     not_run: NOT_RUN
+    not_verified: NOT_VERIFIED
     not_applicable: NOT_APPLICABLE
 
   pull_request:
@@ -1012,7 +1044,7 @@ Quality Gate 必须通过以下验收：
 8. 能够正确识别 P1。
 9. 能够阻断必需测试失败。
 10. 能够识别 BLOCKED。
-11. 能够识别 NOT RUN。
+11. 能够识别 NOT_RUN。
 12. 能够阻止虚假 PASS。
 13. 能够生成 Markdown 报告。
 14. 能够生成 JSON 报告。
