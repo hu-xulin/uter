@@ -144,7 +144,7 @@ add.call("B08", "pinned UAES baseline itself keeps P09=Quality / P10=Security",
          { "uaes_P09" => phases.dig("P09", "name"), "uaes_P10" => phases.dig("P10", "name"),
            "uaes_gate_09" => gates_by_id.dig("UAES-09-GATE-001", "name"),
            "uaes_gate_10" => gates_by_id.dig("UAES-10-GATE-001", "name") },
-         "§1.3 / §16.3 / UAES 1.9.0 registry")
+         "§1.3 / §16.3 / UAES #{uaes_registry.is_a?(Hash) ? uaes_registry.dig('registry', 'version') : 'UNKNOWN'} registry (version read live, not hard-coded)")
 
 add.call("B09", "local 14-domain gate evaluator labels P09/P10/P13 correctly",
          gates_rb.include?('"id" => "P09", "name" => "Quality Engineering"') &&
