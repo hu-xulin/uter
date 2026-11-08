@@ -44,46 +44,6 @@ export function toStartOfDay(tsSec: number): number {
 }
 
 /**
- * Get start of day for a Date object
- * Returns new Date with time set to 00:00:00
- */
-export function getStartOfDay(date: Date = new Date()): Date {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
-/**
- * Get end of day for a Date object
- * Returns new Date with time set to 23:59:59.999
- */
-export function getEndOfDay(date: Date = new Date()): Date {
-  const d = new Date(date)
-  d.setHours(23, 59, 59, 999)
-  return d
-}
-
-/**
- * Calculate date range with start and end of day normalization
- * @param days Number of days to go back
- * @param fromDate Starting point (defaults to now)
- * @returns Object with normalized start (00:00:00) and end (23:59:59) dates
- */
-export function getNormalizedDateRange(
-  days: number,
-  fromDate: Date = new Date()
-): { start: Date; end: Date } {
-  const end = new Date(fromDate)
-  const start = new Date(fromDate)
-  start.setDate(end.getDate() - days)
-
-  return {
-    start: getStartOfDay(start),
-    end: getEndOfDay(end),
-  }
-}
-
-/**
  * Calculate a rolling date range ending at the current moment.
  * Example: 1 day means the last 24 hours, not yesterday 00:00 to today 23:59.
  */
@@ -137,13 +97,6 @@ export function computeTimeRange(
     : end - days * 24 * 3600
 
   return { start_timestamp: start, end_timestamp: end }
-}
-
-/**
- * Format Unix timestamp (seconds) to YYYY-MM-DD
- */
-export function formatDate(tsSec: number): string {
-  return dayjs(tsSec * 1000).format('YYYY-MM-DD')
 }
 
 /**

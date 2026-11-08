@@ -32,8 +32,6 @@ export const channelInfoSchema = z.object({
   multi_key_mode: z.enum(['random', 'polling']).default('random'),
 })
 
-export type ChannelInfo = z.infer<typeof channelInfoSchema>
-
 export const channelSchema = z.object({
   id: z.number(),
   type: z.number(),
@@ -322,10 +320,6 @@ export interface SearchChannelsParams {
   page_size?: number
 }
 
-export interface ChannelTestParams {
-  test_model?: string
-}
-
 export interface CopyChannelParams {
   suffix?: string
   reset_balance?: boolean
@@ -369,34 +363,6 @@ export interface TagOperationParams {
 // ============================================================================
 // Form Data Types
 // ============================================================================
-
-export interface ChannelFormData {
-  name: string
-  type: number
-  base_url: string
-  key: string
-  openai_organization?: string
-  models: string
-  group: string
-  model_mapping?: string
-  priority?: number
-  weight?: number
-  test_model?: string
-  auto_ban?: number
-  status: number
-  status_code_mapping?: string
-  tag?: string
-  remark?: string
-  setting?: string
-  param_override?: string
-  header_override?: string
-  settings?: string
-  other?: string
-  // Multi-key specific
-  multi_key_mode?: 'single' | 'batch' | 'multi_to_single'
-  multi_key_type?: 'random' | 'polling'
-  batch_add_set_key_prefix_2_name?: boolean
-}
 
 // ============================================================================
 // Add Channel Request (special structure)

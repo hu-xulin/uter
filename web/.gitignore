@@ -42,3 +42,4 @@ src/i18n/locales/_reports/
 .auth/
 /playwright-report/
 /test-results/
+.axe-e2e/

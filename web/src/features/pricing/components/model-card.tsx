@@ -47,8 +47,6 @@ import {
   isUnconfiguredTaskUsageModel,
   type DynamicPriceEntry,
 } from '../lib/dynamic-price'
-import { getTaskPricingDisplayTiers } from '../lib/task-matrix-display'
-import { getTaskEnumFields, getTaskNumberFields } from '../lib/task-expr'
 import { parseTags } from '../lib/filters'
 import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
 import {
@@ -63,6 +61,8 @@ import {
   getMarkupMultiplier,
   getTokenPriceUSD,
 } from '../lib/price'
+import { getTaskEnumFields, getTaskNumberFields } from '../lib/task-expr'
+import { getTaskPricingDisplayTiers } from '../lib/task-matrix-display'
 import {
   taskEnumLabel,
   taskPriceLabel,
@@ -266,7 +266,9 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     if (!schema) return null
     const enumFields = getTaskEnumFields(schema)
     if (enumFields.length !== 2) return null
-    const resEntry = enumFields.find(([name]) => /^resolution$|^res$/i.test(name))
+    const resEntry = enumFields.find(([name]) =>
+      /^resolution$|^res$/i.test(name)
+    )
     const videoEntry = enumFields.find(([name]) => /video/i.test(name))
     if (!resEntry || !videoEntry || resEntry[0] === videoEntry[0]) return null
     const [resField, resDef] = resEntry
@@ -276,10 +278,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     if (resValues.length === 0 || videoValues.length === 0) return null
     const numberField = getTaskNumberFields(schema)[0]
     if (!numberField) return null
-    const tiers = getTaskPricingDisplayTiers(
-      props.model.billing_expr,
-      schema
-    )
+    const tiers = getTaskPricingDisplayTiers(props.model.billing_expr, schema)
     if (tiers.length === 0) return null
     // First-match wins, mirroring the billing expression: the first tier whose
     // conditions are all satisfied by the (resolution, video) combination, or
@@ -294,7 +293,9 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       ) ?? null
     const videoColumnLabel = (value: string): string => {
       const normalized = value.toLowerCase()
-      if (normalized === 'none' || normalized === 'no') return t('No video input')
+      if (normalized === 'none' || normalized === 'no') {
+        return t('No video input')
+      }
       if (
         normalized === 'video' ||
         normalized === 'with_video' ||
@@ -308,7 +309,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       resField,
       videoField,
       numberField: numberField[0],
-      resFieldLabel: taskPriceLabel(resDef.description, resField, i18n.language),
+      resFieldLabel: taskPriceLabel(
+        resDef.description,
+        resField,
+        i18n.language
+      ),
       rows: resValues.map((value) => ({
         value,
         label: taskEnumLabel(resDef, value, i18n.language),

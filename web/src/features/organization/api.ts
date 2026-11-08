@@ -26,7 +26,6 @@ import type {
   OrgMembersResponse,
   OrgRole,
   OrgStats,
-  Organization,
 } from './types'
 
 // ============================================================================
@@ -52,14 +51,6 @@ export async function createOrganization(payload: {
   member_limit?: number
 }): Promise<MyOrgResponse> {
   const res = await api.post('/api/organizations', payload)
-  return res.data
-}
-
-export async function getOrganization(id: number): Promise<{
-  success: boolean
-  data?: Organization
-}> {
-  const res = await api.get(`/api/organization/${id}`)
   return res.data
 }
 
@@ -133,12 +124,5 @@ export async function updateOrganization(
   const res = await api.put(`/api/organization/${id}`, payload)
   return res.data
 }
-
-export const ORG_ROLES: OrgRole[] = [
-  'owner',
-  'admin',
-  'department_admin',
-  'member',
-]
 
 export type { OrgMember }

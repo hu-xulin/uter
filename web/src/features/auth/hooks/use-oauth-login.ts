@@ -24,6 +24,7 @@ import { clearAuthentication } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
 import { createServerError } from '@/lib/server-error-message'
+import type { SystemStatus, CustomOAuthProviderInfo } from '@/types/system'
 
 import { buildWeChatWebOAuthUrl } from '../../../lib/oauth'
 import {
@@ -39,7 +40,6 @@ import {
   buildLinuxDOOAuthUrl,
 } from '../lib/oauth'
 import { rememberOAuthLoginRedirect } from '../lib/oauth-callback-mode'
-import type { SystemStatus, CustomOAuthProviderInfo } from '@/types/system'
 
 /**
  * Hook for managing OAuth login

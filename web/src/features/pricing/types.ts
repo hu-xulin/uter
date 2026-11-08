@@ -38,7 +38,10 @@ export type PricingVendor = {
 export type BillingUsageUnit = 'second' | 'count' | 'token' | 'credit'
 
 export type BillingUsageFieldSchema = {
-  type?: 'number' | 'boolean'
+  // Backend jsplugin.UsageFieldSchema.Type is an unconstrained string on the
+  // wire. Enum fields may explicitly declare `string`; every consumer treats
+  // non-number/non-boolean fields as enum fields, so this stays exhaustive.
+  type?: 'number' | 'boolean' | 'string'
   unit?: BillingUsageUnit
   unitLabel?: string | Record<string, string>
   enum?: string[]
@@ -162,4 +165,4 @@ export type PriceType =
   | 'image'
   | 'audio_input'
   | 'audio_output'
-export type QuotaType = 0 | 1 // 0: token-based, 1: per-request
+// 0: token-based, 1: per-request

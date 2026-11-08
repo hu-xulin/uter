@@ -158,17 +158,6 @@ export function getModuleAccessFromStatus(
 }
 
 /**
- * Read module access synchronously from the persisted status snapshot.
- *
- * For render paths that cannot await, such as deciding whether to show a nav
- * item. Never issues a request; use {@link getModuleAccessForGuard} when the
- * caller can await.
- */
-export function getModuleAccess(module: HeaderNavModule): ModuleAccess {
-  return getModuleAccessFromStatus(readCachedStatus(), module)
-}
-
-/**
  * Resolve module access for a router `beforeLoad` guard.
  *
  * Reads through the shared `['status']` cache, so a guard on a fresh page load

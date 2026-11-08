@@ -17,9 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import type { BillingUsageSchema } from '../../types'
-import type { TaskTier } from './display'
+import { flattenBinary, type TaskTier } from './display'
 import { compileBillingExpression } from './parser'
-import { TIME_FUNCTIONS, visitExpression, type ExpressionNode } from './types'
+import {
+  TIME_FUNCTIONS,
+  expressionDependencies,
+  visitExpression,
+  type ExpressionNode,
+} from './types'
 
 type PriceBranch = {
   label?: string
@@ -35,6 +40,147 @@ type TaskDisplayContext = {
   remaining: number
 }
 const MAX_DISPLAY_ROWS = 128
+
+// Request-parameter helpers an expression may use to pick a tier without any
+// usage fact. Upstream-synced video models branch on the requested size and
+// resolution this way, so their price rows must stay showable.
+const REQUEST_PROBE_FUNCTIONS = new Set([
+  'param',
+  'header',
+  'has',
+  'lower',
+  'upper',
+])
+
+/** True for a condition built only from request probes and literals. */
+function isRequestProbeCondition(node: ExpressionNode): boolean {
+  const { functions, variables } = expressionDependencies(node)
+  if (variables.size > 0) return false
+  return [...functions].every((name) => REQUEST_PROBE_FUNCTIONS.has(name))
+}
+
+/** Keep the original text of a condition the schema cannot enumerate. */
+function conditionSource(
+  node: ExpressionNode,
+  context: TaskDisplayContext
+): string {
+  return context.source
+    .slice(node.start, node.end)
+    .replaceAll(/\s+/g, ' ')
+    .trim()
+}
+
+/** `param("size")`, optionally wrapped in lower()/upper(). */
+function probeName(node: ExpressionNode): string | null {
+  if (node.kind !== 'call') return null
+  if (node.name === 'lower' || node.name === 'upper') {
+    return probeName(node.args[0])
+  }
+  if (node.name !== 'param' && node.name !== 'header') return null
+  const key = node.args[0]
+  if (key.kind !== 'literal' || typeof key.value !== 'string') return null
+  return key.value
+}
+
+function literalText(node: ExpressionNode): string | null {
+  if (node.kind !== 'literal') return null
+  return typeof node.value === 'string' ? node.value : String(node.value)
+}
+
+/**
+ * Render a request-probe condition compactly. The source form
+ * `has(lower(param("size")), "1080")` becomes `size contains 1080`, which is
+ * what a reader needs to tell the rows apart; the expression itself stays
+ * untouched.
+ *
+ * Returns null for anything outside this grammar so the caller can fall back to
+ * the original source text instead of inventing a description.
+ */
+function describeRequestCondition(node: ExpressionNode): string | null {
+  if (node.kind === 'unary' && node.operator === '!') {
+    const inner = describeRequestCondition(node.operand)
+    return inner === null ? null : `not ${inner}`
+  }
+  if (node.kind === 'call' && node.name === 'has') {
+    // has(lower(param("k")), "v") — a substring probe, not an equality test.
+    const name = probeName(node.args[0])
+    const value = literalText(node.args[1])
+    return name === null || value === null ? null : `${name} contains ${value}`
+  }
+  if (
+    node.kind === 'binary' &&
+    (node.operator === '&&' || node.operator === '||')
+  ) {
+    const parts: string[] = []
+    for (const part of flattenBinary(node, node.operator)) {
+      const text = describeRequestCondition(part)
+      if (text === null) return null
+      parts.push(text)
+    }
+    return parts.join(` ${node.operator === '&&' ? 'and' : 'or'} `)
+  }
+  if (
+    node.kind === 'binary' &&
+    (node.operator === '==' || node.operator === '!=')
+  ) {
+    for (const [probe, other] of [
+      [node.left, node.right],
+      [node.right, node.left],
+    ]) {
+      const name = probeName(probe)
+      const value = literalText(other)
+      if (name !== null && value !== null) {
+        return `${name} ${node.operator === '==' ? '=' : '!='} ${value}`
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * Text a price row carries for a condition the schema cannot enumerate. A
+ * request probe gets a compact description; everything else keeps its source.
+ */
+function displayCondition(
+  node: ExpressionNode,
+  context: TaskDisplayContext
+): string {
+  return describeRequestCondition(node) ?? conditionSource(node, context)
+}
+
+/** The schema field that counts billable seconds, when the plugin declares one. */
+function secondsField(schema: BillingUsageSchema): string | null {
+  const fields = Object.entries(schema).filter(
+    ([, definition]) =>
+      definition.type === 'number' && definition.unit === 'second'
+  )
+  return fields.length === 1 ? fields[0][0] : null
+}
+
+/** `<seconds>` or `(duration > 0 ? duration : 5)` as a per-second quantity. */
+function durationQuantityField(
+  node: ExpressionNode,
+  schema: BillingUsageSchema
+): string | null {
+  if (node.kind === 'variable' && node.name === 'duration') {
+    return secondsField(schema)
+  }
+  if (node.kind !== 'conditional') return null
+  const { condition, yes, no } = node
+  if (yes.kind !== 'variable' || yes.name !== 'duration') return null
+  if (no.kind !== 'literal' || typeof no.value !== 'number') return null
+  if (
+    condition.kind !== 'binary' ||
+    !['>', '>=', '!='].includes(condition.operator) ||
+    condition.right.kind !== 'literal' ||
+    typeof condition.right.value !== 'number'
+  ) {
+    return null
+  }
+  const probe = condition.left
+  if (probe.kind !== 'variable' || probe.name !== 'duration') return null
+  return secondsField(schema)
+}
 
 /** Resolve only declared categorical facts. Time predicates remain explicit. */
 function taskDisplayCondition(
@@ -52,6 +198,9 @@ function taskDisplayCondition(
   }
   if (node.kind !== 'binary') return null
   if (node.operator === '&&' || node.operator === '||') {
+    // Request probes stay symbolic: the row keeps the request it came from
+    // instead of collapsing into a condition the schema cannot enumerate.
+    if (isRequestProbeCondition(node)) return displayCondition(node, context)
     const left = taskDisplayCondition(node.left, context)
     const right = taskDisplayCondition(node.right, context)
     if (left === null || right === null) return null
@@ -60,6 +209,9 @@ function taskDisplayCondition(
     if (typeof left === 'boolean') return right
     if (typeof right === 'boolean') return left
     return `(${left}) ${node.operator} (${right})`
+  }
+  if (['==', '!=', '<', '<=', '>', '>='].includes(node.operator)) {
+    if (isRequestProbeCondition(node)) return displayCondition(node, context)
   }
   if (['==', '!='].includes(node.operator)) {
     for (const [probe, literal] of [
@@ -120,6 +272,13 @@ function taskPriceBranches(
     node.value >= 0
   ) {
     return [{ constant: node.value, prices: {}, times: new Map() }]
+  }
+  // `duration` and its `(duration > 0 ? duration : 5)` fallback are the
+  // billable seconds the plugin reports as a usage fact, so a per-second price
+  // becomes a per-second unit price on that field.
+  const seconds = durationQuantityField(node, context.schema)
+  if (seconds) {
+    return [{ constant: 0, prices: { [seconds]: 1 }, times: new Map() }]
   }
   if (
     node.kind === 'call' &&
@@ -295,13 +454,15 @@ export function readConditionalTaskPricing(
     }
     for (const branch of branches) {
       if (branch.label === undefined) return null
+      // A per-second price is expressed over the duration/seconds quantity,
+      // which is a schema field rather than a u() reference, so every priced
+      // numeric dimension has to be collected here.
       const unitPrices: Record<string, number> = {}
-      for (const field of fields) {
-        const definition = schema[field]
+      for (const [field, definition] of Object.entries(schema)) {
         if (definition.type !== 'number' || !definition.unit) continue
+        if (!Object.hasOwn(branch.prices, field)) continue
         unitPrices[field] =
-          (branch.prices[field] ?? 0) *
-          (definition.unit === 'token' ? 1_000_000 : 1)
+          branch.prices[field] * (definition.unit === 'token' ? 1_000_000 : 1)
       }
       if (
         !Object.keys(unitPrices).length ||

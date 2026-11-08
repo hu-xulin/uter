@@ -69,30 +69,6 @@ export const colorToBgClass: Record<SemanticColor, string> = {
   slate: 'bg-neutral',
 }
 
-export const avatarColorMap: Record<SemanticColor, string> = {
-  blue: 'bg-chart-1/10 text-chart-1',
-  green: 'bg-success-soft text-success',
-  cyan: 'bg-chart-2/10 text-chart-2',
-  purple: 'bg-chart-4/10 text-chart-4',
-  pink: 'bg-chart-5/10 text-chart-5',
-  red: 'bg-destructive-subtle text-destructive',
-  orange: 'bg-warning-soft text-warning',
-  amber: 'bg-warning-soft text-warning',
-  yellow: 'bg-warning-soft text-warning',
-  lime: 'bg-chart-3/10 text-chart-3',
-  'light-green': 'bg-success-soft text-success',
-  teal: 'bg-chart-2/10 text-chart-2',
-  'light-blue': 'bg-info-soft text-info',
-  indigo: 'bg-chart-1/10 text-chart-1',
-  violet: 'bg-chart-4/10 text-chart-4',
-  grey: 'bg-muted text-muted-foreground',
-  slate: 'bg-muted text-muted-foreground',
-}
-
-export function getAvatarColorClass(name: string): string {
-  return avatarColorMap[stringToColor(name)]
-}
-
 export function getBgColorClass(color?: string): string {
   if (!color) return colorToBgClass.blue
   return (

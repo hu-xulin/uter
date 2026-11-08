@@ -22,7 +22,7 @@ import {
   CHART_OTHER_SERIES_COLOR,
   CATEGORICAL_CHART_PALETTE,
 } from '@/design-system/tokens/brand-colors'
-import { CHART_LABEL_FONT_SIZE } from '@/design-system/tokens/chart-typography'
+import { CHART_FONT_SIZE } from '@/design-system/tokens/chart-typography'
 import { MAX_CHART_TREND_POINTS } from '@/features/dashboard/constants'
 import type {
   QuotaDataItem,
@@ -867,7 +867,7 @@ export function processUserChartData(
         visible: true,
         position: 'outside',
         formatMethod: (value: number) => formatVal(value),
-        style: { fontSize: CHART_LABEL_FONT_SIZE },
+        style: { fontSize: CHART_FONT_SIZE },
       },
       axes: [
         { orient: 'left', type: 'band' },

@@ -113,6 +113,16 @@ function billingString(value: unknown, depth = 0): string {
   return String(value)
 }
 
+/** Go's strings.ToLower/ToUpper applied to fmt.Sprint(value); nil is "". */
+function billingCase(value: unknown, mode: 'lower' | 'upper'): string {
+  // fmt.Sprint(nil) is "<nil>", but the engine's override returns "" for nil
+  // before formatting. Mirroring that order is what keeps missing request
+  // fields from matching a substring in "<nil>".
+  if (value == null) return ''
+  const text = billingString(value)
+  return mode === 'lower' ? text.toLowerCase() : text.toUpperCase()
+}
+
 export function timeInBillingZone(
   now: Date,
   zone: string
@@ -254,6 +264,19 @@ class BillingRuntime {
           throw new BillingExpressionError({
             code: 'number',
             detail: 'image_count must be between 1 and 128',
+            position: node.start,
+          })
+        }
+        return { value }
+      }
+      if (node.name === 'duration') {
+        // run.go registers duration as derefFloat(request.Duration): an
+        // unsupplied duration is 0, never a missing-context failure.
+        const value = this.context.duration ?? 0
+        if (typeof value !== 'number' || !Number.isFinite(value)) {
+          throw new BillingExpressionError({
+            code: 'number',
+            detail: 'duration',
             position: node.start,
           })
         }
@@ -480,6 +503,14 @@ class BillingRuntime {
             billingString(source).includes(substring),
         }
       }
+      // run.go overrides the expr builtins with func(any) string: a missing
+      // param()/u() (nil) is "", and every other value formats through
+      // fmt.Sprint. billingString reproduces exactly that formatting, so the
+      // simulator and the engine agree on has(lower(param(...)), "1080").
+      case 'lower':
+        return { value: billingCase(this.evaluate(args[0]).value, 'lower') }
+      case 'upper':
+        return { value: billingCase(this.evaluate(args[0]).value, 'upper') }
       case 'min':
         return {
           value: Math.min(

@@ -162,6 +162,95 @@ describe('DiscountTag', () => {
     )
     expect(screen.getByText('x1.05')).toBeVisible()
   })
+
+  /**
+   * 回归背景（2026-11-04 用户反馈）：wan3.0-video 卡片显示 `×586.25`，
+   * wan3.0-video-prime 显示 `×390.83`，实际都是 -30% 折扣。
+   *
+   * 根因是按秒计费模型的官方价（美元/秒）被当成「美元/1M tokens」÷2 换算成
+   * model_ratio，前端再拿名义 model_ratio=26.25 去除它 → 586 倍溢价。
+   *
+   * 修好后：官方秒价走 `official_price_per_second`，与 billing_expr 里的
+   * 秒价同单位相比，得到 0.7 → x0.7（-30%）。
+   */
+  it('compares per-second video models by the same per-second unit', () => {
+    const perSecondModel = pricingModel({
+      model_ratio: 26.25,
+      model_price: 0,
+      billing_mode: 'tiered_expr',
+      // 兜底档（720p）就是后端视为「官方秒价」的那一档：表达式最右侧的系数。
+      billing_expr:
+        'u("resolution") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315) : (u("resolution") == "480P" ? tier("480p", (duration > 0 ? duration : 5) * 0.03134327) : tier("720p", (duration > 0 ? duration : 5) * 0.06268654))',
+      billing_usage_schema: {
+        seconds: { type: 'number', unit: 'second' },
+        resolution: { type: 'string', enum: ['480P', '720P', '1080P'] },
+      },
+    })
+    render(
+      <DiscountTag
+        model={perSecondModel}
+        officialPrices={{
+          'example-model': { official_price_per_second: 0.0895522 },
+        }}
+      />
+    )
+    // 0.06268654 / 0.0895522 = 0.7 → x0.7，而不是 ×586.25。
+    expect(screen.getByText('x0.7')).toBeVisible()
+    expect(screen.queryByText('x586.25')).not.toBeInTheDocument()
+  })
+
+  /**
+   * 没有官方秒价时不得退化成拿 model_ratio 硬比（那会重现 ×586 的荒谬值）。
+   */
+  it('never falls back to the token ratio for a per-second model without an official per-second price', () => {
+    const perSecondModel = pricingModel({
+      model_ratio: 26.25,
+      billing_mode: 'tiered_expr',
+      billing_expr: 'tier("720p", (duration > 0 ? duration : 5) * 0.06268654)',
+      billing_usage_schema: { seconds: { type: 'number', unit: 'second' } },
+      group_ratio: { default: 1 },
+    })
+    const { container } = render(
+      <DiscountTag
+        model={perSecondModel}
+        officialPrices={{ 'example-model': { model_ratio: 0.0447761 } }}
+      />
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  /**
+   * `wan3.0-video-prime` 的实测比价是 `0.09402988 / 0.1343284`，浮点结果正好是
+   * `0.7000000000000001`。`badgeFromRatio` 存的是 `ratio * 10 = 7.000000000000001`，
+   * `discount-tag` 再 `/10` 还原，误差会一路留到渲染 —— 必须靠 `formatMultiplier`
+   * 的两位小数取整吃掉，不允许把 `x0.7000000000000001` 泄露给用户。
+   */
+  it('rounds the multiplier so float noise never reaches the badge text', () => {
+    const primeModel = pricingModel({
+      model_name: 'wan3.0-video-prime',
+      model_ratio: 26.25,
+      model_price: 0,
+      billing_mode: 'tiered_expr',
+      billing_expr:
+        'u("resolution") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.18805969) : (u("resolution") == "480P" ? tier("480p", (duration > 0 ? duration : 5) * 0.04701494) : tier("720p", (duration > 0 ? duration : 5) * 0.09402988))',
+      billing_usage_schema: {
+        seconds: { type: 'number', unit: 'second' },
+        resolution: { type: 'string', enum: ['480P', '720P', '1080P'] },
+      },
+    })
+    render(
+      <DiscountTag
+        model={primeModel}
+        officialPrices={{
+          'wan3.0-video-prime': { official_price_per_second: 0.1343284 },
+        }}
+      />
+    )
+    const badge = screen.getByText('x0.7')
+    expect(badge).toHaveAttribute('title', '-30%')
+    expect(badge).toHaveClass('bg-success-hover')
+    expect(screen.queryByText(/x0\.7000000/)).not.toBeInTheDocument()
+  })
 })
 
 describe('getMarkupMultiplier', () => {

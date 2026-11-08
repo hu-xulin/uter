@@ -61,16 +61,6 @@ export type WaffoPancakePaymentResponse = ApiResponse<
 >
 
 /**
- * Official China payment (Alipay / WeChat website payment) response.
- * `url` carries the primary identifier: Alipay returns a cashier pay_url,
- * WeChat PC returns code_url and mobile returns h5_url.
- */
-export type CnPayPaymentResponse = ApiResponse<{
-  trade_no?: string
-  url?: string
-}> & { url?: string }
-
-/**
  * Website payment (web cashier) request.
  * `client` selects the cashier form: "pc" or "mobile".
  * The server whitelists the value and falls back to "pc" for anything unknown.

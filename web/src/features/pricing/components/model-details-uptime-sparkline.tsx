@@ -16,10 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Activity, AlertCircle, CheckCircle2 } from 'lucide-react'
-import { useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
-
 import {
   Tooltip,
   TooltipContent,
@@ -32,7 +28,7 @@ import {
 } from '@/features/performance-metrics/lib/format'
 import { cn } from '@/lib/utils'
 
-import { aggregateUptime, type UptimeDayPoint } from '../lib/mock-stats'
+import type { UptimeDayPoint } from '../lib/mock-stats'
 
 // ---------------------------------------------------------------------------
 // Uptime sparkline
@@ -145,76 +141,3 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
 // ---------------------------------------------------------------------------
 // Uptime status row — sparkline + summary text + status icon
 // ---------------------------------------------------------------------------
-
-export function UptimeStatusRow(props: {
-  series: UptimeDayPoint[]
-  className?: string
-}) {
-  const { t } = useTranslation()
-  const summary = useMemo(() => aggregateUptime(props.series), [props.series])
-  const status = useMemo(() => {
-    if (summary.uptime_pct >= 99.9) return 'operational'
-    if (summary.uptime_pct >= 99.0) return 'minor'
-    if (summary.uptime_pct >= 95.0) return 'degraded'
-    return 'major'
-  }, [summary.uptime_pct])
-
-  let StatusIcon = AlertCircle
-  if (status === 'operational') {
-    StatusIcon = CheckCircle2
-  } else if (status === 'minor') {
-    StatusIcon = Activity
-  }
-
-  let statusColour = 'text-destructive'
-  if (status === 'operational') {
-    statusColour = 'text-success'
-  } else if (status === 'minor') {
-    statusColour = 'text-success'
-  } else if (status === 'degraded') {
-    statusColour = 'text-warning'
-  }
-
-  let statusLabel = t('Significant outages detected')
-  if (status === 'operational') {
-    statusLabel = t('All systems operational')
-  } else if (status === 'minor') {
-    statusLabel = t('Minor blips in the last 30 days')
-  } else if (status === 'degraded') {
-    statusLabel = t('Degraded performance recently')
-  }
-
-  return (
-    <div
-      className={cn(
-        'border-border/60 bg-muted/30 flex flex-wrap items-center gap-3 rounded-lg border px-3 py-2 sm:gap-4 sm:px-4',
-        props.className
-      )}
-    >
-      <div className='flex items-center gap-2'>
-        <StatusIcon className={cn('size-4 shrink-0', statusColour)} />
-        <span className='text-sm font-medium'>{t('Last 30 days uptime')}</span>
-      </div>
-
-      <UptimeSparkline series={props.series} className='ml-auto' />
-
-      <div className='flex items-center gap-3 text-sm'>
-        <span className={cn('font-medium', statusColour)}>{statusLabel}</span>
-        {summary.incidents > 0 && (
-          <span className='text-muted-foreground'>
-            {summary.incidents}{' '}
-            {summary.incidents === 1 ? t('incident') : t('incidents')}
-          </span>
-        )}
-        {summary.outage_minutes > 0 && (
-          <span className='text-muted-foreground'>
-            {summary.outage_minutes} {t('min downtime')}
-          </span>
-        )}
-        <span className='text-muted-foreground hidden sm:inline'>
-          {formatUptimePct(summary.uptime_pct)} {t('overall')}
-        </span>
-      </div>
-    </div>
-  )
-}

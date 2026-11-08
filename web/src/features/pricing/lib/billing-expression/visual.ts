@@ -171,12 +171,14 @@ function readVisualPricing(node: ExpressionNode): VisualPricingNode | null {
     }
   }
   for (const term of flattenBinary(node.args[1], '+')) {
+    // `duration` is a per-second task variable, not a token price variable.
     if (
       term.kind !== 'binary' ||
       term.operator !== '*' ||
       term.left.kind !== 'variable' ||
       term.left.name === 'len' ||
       term.left.name === 'image_count' ||
+      term.left.name === 'duration' ||
       term.right.kind !== 'literal' ||
       typeof term.right.value !== 'number' ||
       term.right.value < 0

@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { AuthBundle } from '@/types/auth'
 import type { LoginResult } from './secure-verification/types'
 
 export type { AuthBundle } from '@/types/auth'
@@ -33,11 +32,6 @@ export interface LoginPayload {
   passwordEncryptionEnabled?: boolean
 }
 
-export interface TwoFAPayload {
-  code: string
-  flow_token: string
-}
-
 export interface RegisterPayload {
   username: string
   password: string
@@ -45,22 +39,6 @@ export interface RegisterPayload {
   verification_code?: string
   aff_code?: string
   turnstile?: string
-}
-
-export interface PasswordResetPayload {
-  email: string
-  turnstile?: string
-}
-
-export interface EmailVerificationPayload {
-  email: string
-  turnstile?: string
-}
-
-export interface BindEmailPayload {
-  flow_token: string
-  new_code: string
-  old_code?: string
 }
 
 // ============================================================================
@@ -73,12 +51,6 @@ export interface LoginResponse {
   data?: LoginResult
 }
 
-export interface Login2FAResponse {
-  success: boolean
-  message: string
-  data?: AuthBundle
-}
-
 export interface ApiResponse<T = unknown> {
   success: boolean
   message: string
@@ -88,14 +60,6 @@ export interface ApiResponse<T = unknown> {
 // ============================================================================
 // OAuth
 // ============================================================================
-
-export interface OAuthProvider {
-  name: string
-  type: 'github' | 'discord' | 'oidc' | 'linuxdo' | 'telegram' | 'wechat_web'
-  enabled: boolean
-  clientId?: string
-  authEndpoint?: string
-}
 
 // ============================================================================
 // Form Props

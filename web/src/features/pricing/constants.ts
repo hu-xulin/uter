@@ -109,18 +109,6 @@ export function getEndpointTypeLabels(
   }
 }
 
-/** Filter section keys */
-export const FILTER_SECTIONS = {
-  PRICING_TYPE: 'pricingType',
-  ENDPOINT_TYPE: 'endpointType',
-  VENDOR: 'vendor',
-  GROUP: 'group',
-  TAG: 'tag',
-} as const
-
-/** Maximum number of tags to display in model row */
-export const MAX_TAGS_DISPLAY = 5
-
 /**
  * Context-window size labels, e.g. `8K`, `200K`, `1M`, `1.1M`, `204.8K`.
  * They describe a model's input limit rather than a capability, so they are
@@ -129,12 +117,6 @@ export const MAX_TAGS_DISPLAY = 5
  * capability tags such as `推理` or `PDF` are never affected.
  */
 export const CONTEXT_SIZE_TAG_PATTERN = /^\d+(?:\.\d+)?[kKmM]$/
-
-/** Maximum number of filter items to display before showing "More..." */
-export const MAX_FILTER_ITEMS = 5
-
-/** Sidebar width */
-export const SIDEBAR_WIDTH = 'w-64'
 
 /** Excluded groups */
 export const EXCLUDED_GROUPS = ['', 'auto']

@@ -1503,5 +1503,3 @@ function EditMemberDialog({
     </Dialog>
   )
 }
-
-export default OrganizationPage

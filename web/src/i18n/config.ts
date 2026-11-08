@@ -135,5 +135,3 @@ const initialized = i18n
   .catch(() => {})
 
 export { initialized }
-
-export default i18n

@@ -59,4 +59,3 @@ export const USAGE_LOGS_DEFAULT_SECTION = usageLogsRegistry.defaultSection
 export function isUsageLogsSectionId(s: string): s is UsageLogsSectionId {
   return (USAGE_LOGS_SECTION_IDS as readonly string[]).includes(s)
 }
-export const getUsageLogsSectionNavItems = usageLogsRegistry.getSectionNavItems

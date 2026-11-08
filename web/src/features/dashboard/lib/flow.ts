@@ -21,7 +21,7 @@ import {
   CHART_NO_THEME_STROKE_COLOR,
   CHART_NO_THEME_TEXT_COLOR,
 } from '@/design-system/tokens/brand-colors'
-import { CHART_LABEL_FONT_SIZE } from '@/design-system/tokens/chart-typography'
+import { CHART_FONT_SIZE } from '@/design-system/tokens/chart-typography'
 import type {
   DashboardFlowGraph,
   DashboardFlowLink,
@@ -1241,7 +1241,7 @@ export function buildFlowSankeySpec(
       interactive: false,
       style: {
         fill: labelColor,
-        fontSize: CHART_LABEL_FONT_SIZE,
+        fontSize: CHART_FONT_SIZE,
         fontWeight: 600,
       },
     },

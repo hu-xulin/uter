@@ -4,16 +4,11 @@
   "title": "UTER Brand Tokens (DTCG-compatible)",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "$extensions",
-    "themes"
-  ],
+  "required": ["$extensions", "themes"],
   "properties": {
     "$extensions": {
       "type": "object",
-      "required": [
-        "com.uter.uaes"
-      ],
+      "required": ["com.uter.uaes"],
       "properties": {
         "com.uter.uaes": {
           "$ref": "#/$defs/metadata"
@@ -23,10 +18,7 @@
     },
     "themes": {
       "type": "object",
-      "required": [
-        "light",
-        "dark"
-      ],
+      "required": ["light", "dark"],
       "properties": {
         "light": {
           "$ref": "#/$defs/theme"
@@ -62,11 +54,7 @@
           "const": "UTER Design System 3.0"
         },
         "status": {
-          "enum": [
-            "DRAFT",
-            "ACTIVE",
-            "DEPRECATED"
-          ]
+          "enum": ["DRAFT", "ACTIVE", "DEPRECATED"]
         },
         "sourceCommit": {
           "type": "string",
@@ -99,11 +87,7 @@
         },
         "changeApproval": {
           "type": "string",
-          "enum": [
-            "NOT_VERIFIED",
-            "APPROVED",
-            "REJECTED"
-          ]
+          "enum": ["NOT_VERIFIED", "APPROVED", "REJECTED"]
         },
         "approvalNote": {
           "type": "string"
@@ -113,9 +97,7 @@
     },
     "theme": {
       "type": "object",
-      "required": [
-        "brand"
-      ],
+      "required": ["brand"],
       "properties": {
         "brand": {
           "$ref": "#/$defs/colorGroup"
@@ -169,10 +151,7 @@
     },
     "colorToken": {
       "type": "object",
-      "required": [
-        "$value",
-        "$description"
-      ],
+      "required": ["$value", "$description"],
       "properties": {
         "$value": {
           "$ref": "#/$defs/hex"

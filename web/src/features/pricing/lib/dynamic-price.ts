@@ -174,13 +174,6 @@ export function isUnconfiguredTaskUsageModel(model: PricingModel): boolean {
   )
 }
 
-export function getTaskPricingUnit(
-  model: PricingModel
-): BillingUsageUnit | null {
-  const primaryField = getTaskNumberFields(model.billing_usage_schema)[0]
-  return primaryField?.[1].unit ?? null
-}
-
 export function getDynamicDisplayGroupRatio(
   model: PricingModel,
   selectedGroup?: string

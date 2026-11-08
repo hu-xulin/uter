@@ -21,8 +21,6 @@ export type SystemOption = {
   value: string
 }
 
-export type SystemOptionKey = string
-
 export type SystemOptionsResponse = {
   success: boolean
   message: string
@@ -603,24 +601,6 @@ export type DreamRouterSyncModelsResponse = {
       drifted?: number
       all_aligned?: boolean
     }
-  }
-}
-
-export type DreamRouterSyncStatusResponse = {
-  success: boolean
-  message: string
-  data: {
-    enabled: boolean
-    channel_id: number
-    step: number
-    username: string
-    provider: string
-    rule_direction: string
-    rule_amount: number
-    password_configured: boolean
-    last_run_at: string
-    last_error: string
-    last_result: string
   }
 }
 

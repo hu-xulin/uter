@@ -20,17 +20,12 @@ import { VChart } from '@visactor/react-vchart'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useThemeCustomization } from '@/context/theme-customization-provider'
-import {
-  CHART_FONT_SIZE,
-  CHART_LABEL_FONT_SIZE,
-} from '@/design-system/tokens/chart-typography'
+import { CHART_FONT_SIZE } from '@/design-system/tokens/chart-typography'
 import {
   getSuccessRateColor,
   SUCCESS_RATE_COLOR_EXPR,
 } from '@/features/performance-metrics/lib/format'
 import { useThemeColors } from '@/lib/theme-color'
-import { useThemeRadiusPx } from '@/lib/theme-radius'
 import { useChartAxisColors, useChartTheme } from '@/lib/use-chart-theme'
 import { cn } from '@/lib/utils'
 import { VCHART_OPTION } from '@/lib/vchart'
@@ -317,92 +312,3 @@ export function UptimeTrendChart(props: {
 // ---------------------------------------------------------------------------
 // Throughput by group (horizontal bar)
 // ---------------------------------------------------------------------------
-
-export function ThroughputBarChart(props: {
-  rows: { group: string; throughput_tps: number }[]
-  className?: string
-}) {
-  const { t } = useTranslation()
-  const { resolvedTheme, themeReady } = useChartTheme()
-  const { textColor, gridColor, primaryColor } = useChartAxisColors()
-  const { customization } = useThemeCustomization()
-  const barRadius = useThemeRadiusPx(
-    '--radius-sm',
-    `${customization.preset}:${customization.radius}`
-  )
-
-  const filtered = useMemo(
-    () => props.rows.filter((r) => r.throughput_tps > 0),
-    [props.rows]
-  )
-
-  const spec = useMemo(() => {
-    if (filtered.length === 0) return null
-    return {
-      type: 'bar' as const,
-      direction: 'horizontal' as const,
-      data: [{ id: 'tput', values: filtered.map((r) => ({ ...r })) }],
-      xField: 'throughput_tps',
-      yField: 'group',
-      bar: {
-        style: {
-          fill: primaryColor,
-          ...(barRadius == null ? {} : { cornerRadius: barRadius }),
-        },
-      },
-      label: {
-        visible: true,
-        position: 'right',
-        style: { fontSize: CHART_LABEL_FONT_SIZE, fill: textColor },
-        formatMethod: (text: string) => `${text} t/s`,
-      },
-      axes: [
-        {
-          orient: 'left',
-          label: { style: { fill: textColor, fontSize: CHART_FONT_SIZE } },
-          tick: { visible: false },
-        },
-        {
-          orient: 'bottom',
-          label: { style: { fill: textColor, fontSize: CHART_FONT_SIZE } },
-          grid: {
-            visible: true,
-            style: { lineDash: [3, 3], stroke: gridColor },
-          },
-        },
-      ],
-      tooltip: {
-        mark: {
-          title: { value: (d: { group: string }) => d.group },
-          content: [
-            {
-              key: t('Throughput'),
-              value: (d: { throughput_tps: number }) =>
-                `${d.throughput_tps.toFixed(1)} t/s`,
-            },
-          ],
-        },
-      },
-    }
-  }, [barRadius, filtered, gridColor, primaryColor, t, textColor])
-
-  if (filtered.length === 0) {
-    return null
-  }
-
-  return (
-    <div className={cn('h-48 sm:h-56', props.className)}>
-      {themeReady && spec && (
-        <VChart
-          key={`tput-${resolvedTheme}`}
-          spec={{
-            ...spec,
-            theme: resolvedTheme === 'dark' ? 'dark' : 'light',
-            background: 'transparent',
-          }}
-          option={VCHART_OPTION}
-        />
-      )}
-    </div>
-  )
-}

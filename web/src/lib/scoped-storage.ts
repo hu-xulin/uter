@@ -38,27 +38,6 @@ export function scopedKey(baseKey: string): string {
   return userId ? `${baseKey}:${userId}` : baseKey
 }
 
-export function getScopedItem<T = unknown>(baseKey: string): T | null {
-  try {
-    const raw = localStorage.getItem(scopedKey(baseKey))
-    return raw ? (JSON.parse(raw) as T) : null
-  } catch {
-    return null
-  }
-}
-
-export function setScopedItem(baseKey: string, value: unknown): void {
-  try {
-    localStorage.setItem(scopedKey(baseKey), JSON.stringify(value))
-  } catch {
-    /* storage unavailable or quota exceeded — ignore */
-  }
-}
-
-export function removeScopedItem(baseKey: string): void {
-  localStorage.removeItem(scopedKey(baseKey))
-}
-
 /**
  * StateStorage adapter for zustand's `persist` middleware.
  *

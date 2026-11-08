@@ -402,7 +402,11 @@ function checkExpressionTypes(ast: ExpressionNode): void {
         requireType(node.args[0], 'string')
       }
       if (node.name === 'header') result = 'string'
-      else if (node.name === 'has') {
+      else if (node.name === 'lower' || node.name === 'upper') {
+        // The backend overrides these as func(any) string, so they accept a
+        // missing param()/u() (nil) and any scalar; the result is always text.
+        result = 'string'
+      } else if (node.name === 'has') {
         requireType(node.args[1], 'string')
         result = 'boolean'
       } else if (node.name === 'tier') {

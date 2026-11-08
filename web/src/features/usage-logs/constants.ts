@@ -21,7 +21,7 @@ For commercial licensing, please contact support@uter.ai
  */
 import type { StatusBadgeProps } from '@/components/status-badge'
 
-import type { LogStatistics, LogCategory } from './types'
+import type { LogStatistics } from './types'
 
 // ============================================================================
 // Default Values
@@ -73,16 +73,6 @@ export const LOG_TYPE_ALL_VALUE = '0' as const
 // ============================================================================
 // Time Range Presets
 // ============================================================================
-
-/**
- * Quick time range presets for filter dialog
- */
-export const TIME_RANGE_PRESETS = [
-  { days: 1, label: '24 Hours' },
-  { days: 7, label: '7 Days' },
-  { days: 14, label: '14 Days' },
-  { days: 30, label: '30 Days' },
-] as const
 
 // ============================================================================
 // Common Logs Configuration
@@ -205,18 +195,6 @@ export const TASK_STATUS = {
   UNKNOWN: 'UNKNOWN', // 未知
 } as const
 
-/**
- * Task platforms
- */
-export const TASK_PLATFORMS = {
-  SUNO: 'suno',
-  SUNOAPI: 'sunoapi',
-  KLING: 'kling',
-  RUNWAY: 'runway',
-  LUMA: 'luma',
-  VIGGLE: 'viggle',
-} as const
-
 // ============================================================================
 // Status Mappings
 // ============================================================================
@@ -321,30 +299,9 @@ export const TASK_STATUS_MAPPINGS: Record<string, StatusMapping> = {
   [TASK_STATUS.UNKNOWN]: { label: 'Unknown', variant: 'neutral' },
 }
 
-/**
- * Task platform mappings
- */
-export const TASK_PLATFORM_MAPPINGS: Record<string, StatusMapping> = {
-  [TASK_PLATFORMS.SUNO]: { label: 'suno', variant: 'green' },
-  [TASK_PLATFORMS.SUNOAPI]: { label: 'sunoapi', variant: 'green' },
-  [TASK_PLATFORMS.KLING]: { label: 'kling', variant: 'blue' },
-  [TASK_PLATFORMS.RUNWAY]: { label: 'runway', variant: 'violet' },
-  [TASK_PLATFORMS.LUMA]: { label: 'luma', variant: 'orange' },
-  [TASK_PLATFORMS.VIGGLE]: { label: 'viggle', variant: 'pink' },
-}
-
 // ============================================================================
 // Log Category Labels
 // ============================================================================
-
-/**
- * Log category display labels
- */
-export const LOG_CATEGORY_LABELS: Record<LogCategory, string> = {
-  common: 'Common',
-  drawing: 'Drawing',
-  task: 'Task',
-}
 
 // ============================================================================
 // Log Type Checkers (Constants)
