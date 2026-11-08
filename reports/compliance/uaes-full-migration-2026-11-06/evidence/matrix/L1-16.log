@@ -2,19 +2,19 @@
 # layer: L1
 # command: ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/uaes-agent-runtime-check.rb workspace --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-07T15:03:30Z
+# started_at: 2026-11-08T08:33:41Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
 {
   "report_id": "D09-RUNTIME-PREFLIGHT",
-  "generated_at": "2026-11-07T15:03:31Z",
+  "generated_at": "2026-11-08T08:33:42Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
   "harness": "scripts/quality/uaes-agent-runtime-check.rb",
-  "uaes_version": "1.12.0",
+  "uaes_version": "1.12.1",
   "uaes_status": "ACTIVE",
-  "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
+  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
   "branch": "main",
   "overall": "PASS",
   "failed_steps": [],
@@ -35,7 +35,7 @@
       "status": "PASS",
       "observation": {
         "path": ".uaes/AI-GOVERNANCE-ENTRY.md",
-        "sha256": "d54bf466d0b18c8e26e66732fcd79fd9ae7c9c67382fb0920439ed67e7defb13"
+        "sha256": "3d59c6b6bb8eb1bb6082ac2d91ac207d6553e4c21f8d34bab337b05592a886b1"
       }
     },
     {
@@ -44,16 +44,24 @@
       "status": "PASS",
       "observation": {
         "pin": {
-          "registry_version": "1.12.0",
+          "schema_version": "3.0.0",
+          "registry_version": "1.12.1",
           "registry_status": "ACTIVE",
-          "source_commit": "46c648836ee4cf06e285712ae2504da7ccab5602",
-          "registry_blob_sha": "03424d878aa1a9ce7b064f92e123ad73d3d1e984",
-          "approval_record": "UAES-APPROVAL-2026-11-07-004"
+          "source_commit": "586f6227d1248e57173ac785e1b8537cb880362f",
+          "registry_blob_sha": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
+          "approval_record": "UAES-APPROVAL-2026-11-07-004",
+          "governed_fingerprint": "4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c"
         },
-        "registry_blob_sha_actual": "03424d878aa1a9ce7b064f92e123ad73d3d1e984",
-        "uaes_head_actual": "46c648836ee4cf06e285712ae2504da7ccab5602",
-        "registry_version_actual": "1.12.0",
-        "registry_status_actual": "ACTIVE"
+        "registry_blob_sha_actual": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
+        "uaes_head_actual": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
+        "registry_version_actual": "1.12.1",
+        "registry_status_actual": "ACTIVE",
+        "governed_verification": {
+          "governed_fingerprint_pinned": "4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c",
+          "governed_fingerprint_actual": "4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c",
+          "fingerprint_exit": 0
+        },
+        "source_commit_is": "provenance-only"
       }
     },
     {
@@ -94,8 +102,8 @@
       "name": "check workspace",
       "status": "PASS",
       "observation": {
-        "dirty_entries": 192,
-        "untracked": 35,
+        "dirty_entries": 35,
+        "untracked": 1,
         "staged_files": [],
         "user_wip_preserved": true
       }
@@ -147,7 +155,51 @@
           "docs-web/",
           "electron/",
           "reports/compliance/"
-        ]
+        ],
+        "include": [
+          ".uaes/",
+          "AGENTS.md",
+          "scripts/quality/",
+          "reports/compliance/uaes-full-migration-2026-11-06/",
+          ".github/workflows/ci.yml",
+          "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+          "web/.oxfmtrc.json",
+          "web/scripts/check-component-registry.mjs",
+          "web/scripts/generate-design-tokens.mjs",
+          "web/scripts/verify-contrast.mjs",
+          "web/src/components/layout/components/footer.tsx",
+          "web/src/components/ui/native-select.tsx",
+          "web/src/design-system/__tests__/sidebar-active-guard.test.ts",
+          "web/src/design-system/__tests__/status-badge-contrast.test.ts",
+          "web/src/design-system/__tests__/token-source.test.ts",
+          "web/src/design-system/component-registry.json",
+          "web/src/design-system/schemas/component-registry.schema.json",
+          "web/src/design-system/source/brand.tokens.schema.json",
+          "web/src/design-system/tokens/generated/brand.css",
+          "web/src/features/auth/components/oauth-providers.tsx",
+          "web/src/features/auth/hooks/use-oauth-login.ts",
+          "web/src/features/auth/secure-verification/api.ts",
+          "web/src/features/auth/types.ts",
+          "web/src/features/chat/hooks/use-chat-presets.ts",
+          "web/src/features/pricing/components/model-card.tsx",
+          "web/src/features/pricing/lib/billing-expression/display.ts",
+          "web/src/features/pricing/lib/billing-expression/visual.ts",
+          "web/src/features/pricing/types.ts",
+          "web/src/features/security/components/account-bindings.tsx",
+          "web/src/hooks/use-status.ts",
+          "web/src/",
+          "web/scripts/",
+          "web/package.json",
+          "web/knip.jsonc",
+          "web/knip.config.ts",
+          "web/.gitignore",
+          "web/bun.lock",
+          "web/e2e/axe/",
+          "docs-web/",
+          "electron/",
+          "reports/compliance/"
+        ],
+        "exclude": []
       }
     },
     {
@@ -207,7 +259,7 @@
       "status": "PASS",
       "observation": {
         "branch": "main",
-        "head": "ec6501adceb008d46140a7e5ab6508eb78006731",
+        "head": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
         "governing_specification": "UTER-UAES-GOV-001",
         "baseline_preservation_required": true
       }
@@ -215,12 +267,12 @@
   ]
 }
 evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-preflight.json
-FAIL W1  all new changes stay within declared task scope
+PASS W1  all new changes stay within declared task scope
 PASS W2  nothing staged before complete validation
 PASS W3  no commit created before complete validation
 PASS W4  pre-existing user WIP preserved
 PASS W5  UAES approved normative standards untouched
 PASS W6  no secret-like file introduced
 evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-workspace.json
-# exit_code: 1
-# duration_seconds: 1
+# exit_code: 0
+# duration_seconds: 2

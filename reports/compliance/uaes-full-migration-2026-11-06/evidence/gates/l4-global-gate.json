@@ -1,20 +1,20 @@
 {
   "evidence_id": "GATE-L4-GLOBAL-CONFORMANCE",
-  "generated_at": "2026-11-07T16:56:25Z",
+  "generated_at": "2026-11-08T08:41:21Z",
   "related_requirement": "§8.2 Global Conformance Gate / §16.4 Global acceptance",
   "source_system": "scripts/quality/uaes-governance-gates.rb",
   "repository_revision": {
-    "uter_head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-    "uaes_head": "46c648836ee4cf06e285712ae2504da7ccab5602"
+    "uter_head": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+    "uaes_head": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7"
   },
-  "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
-  "uaes_commit": "46c648836ee4cf06e285712ae2504da7ccab5602",
-  "uaes_version": "1.12.0",
+  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+  "uaes_commit": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
+  "uaes_version": "1.12.1",
   "uaes_status": "ACTIVE",
   "uaes_global_gate": "NOT_RUN",
   "mandatory_conditions": 16,
-  "met": 9,
-  "not_met": 7,
+  "met": 11,
+  "not_met": 5,
   "status": "BLOCKED",
   "conditions": [
     {
@@ -55,9 +55,9 @@
     {
       "id": "L4-06",
       "description": "L1_CHANGE_GATE PASS",
-      "status": "NOT_MET",
+      "status": "MET",
       "evidence": "test-matrix.json L1 rows",
-      "note": "1 L1 failure(s)"
+      "note": "0 L1 failure(s)"
     },
     {
       "id": "L4-07",
@@ -76,7 +76,7 @@
     {
       "id": "L4-09",
       "description": "WorkBuddy runtime behaviour validated incl. over-privilege denial (§18 step 14)",
-      "status": "NOT_MET",
+      "status": "MET",
       "evidence": "agent-runtime-*.json",
       "note": "preflight/selftest/verify/workspace all required"
     },

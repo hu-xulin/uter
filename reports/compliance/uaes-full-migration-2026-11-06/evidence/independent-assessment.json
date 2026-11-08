@@ -1,6 +1,6 @@
 {
   "evidence_id": "D26-INDEPENDENT-ASSESSMENT",
-  "generated_at": "2026-11-08T08:09:07Z",
+  "generated_at": "2026-11-08T08:41:24Z",
   "related_requirement": "§12 Phase 7 / §16.1 / §16.4 / §14.3-14.4 / §15 D26",
   "source_system": "scripts/quality/uter-independent-assessment.rb",
   "execution_environment": {
@@ -9,32 +9,32 @@
     "uaes_root": "/Users/lincolnhu/uaes"
   },
   "repository_revision": {
-    "uter_head": "2a1059d608b2b2bd5f298a6dea74645d5e35bb73",
-    "uaes_head": "68e9710c0516a13475cfc9379d9725d584ce06db"
+    "uter_head": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+    "uaes_head": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7"
   },
   "collector": "WorkBuddy (Tencent Hunyuan Hy) — independent assessment pass, re-derived from source, not from remediation self-declarations",
-  "collection_time": "2026-11-08T08:09:07Z",
+  "collection_time": "2026-11-08T08:41:24Z",
   "integrity": {
     "evidence_hashes": [
       {
         "file": "governance-separation.json",
         "present": true,
-        "sha256": "88295989419f6335843bd302bcf0d580b38e45ff23bdd6bceee4280eafec8136",
-        "generated_at": "2026-11-08T06:55:11Z",
+        "sha256": "07263f1d3e74ef3bc1bc3b1975f9f69b0fd6dc4d2066365ab78e20dd012f89dd",
+        "generated_at": "2026-11-08T08:33:41Z",
         "missing_fields": []
       },
       {
         "file": "p09-p10-boundary.json",
         "present": true,
-        "sha256": "a8c341eb2250572e33f4b548a3863ab275a1e0d142469519ab66450f0abeea94",
-        "generated_at": "2026-11-07T21:40:46Z",
+        "sha256": "3ba865b7129bd6a09b4933a22568754b8383c97120d59e430115d00ce2705875",
+        "generated_at": "2026-11-08T08:33:41Z",
         "missing_fields": []
       },
       {
         "file": "independent-assessment.json",
         "present": true,
-        "sha256": "01a9d49d3f11c86555e18df8a57d95837f1f5cd7a5be6f8f8bc0fac4d705def7",
-        "generated_at": "2026-11-08T08:08:28Z",
+        "sha256": "ee232f975135fba58130bbabda42842dbf32d3b83c88d71d671f7a6f536666f2",
+        "generated_at": "2026-11-08T08:09:07Z",
         "missing_fields": []
       }
     ],
@@ -64,7 +64,7 @@
         "status": "ACTIVE",
         "registry_status": "ACTIVE",
         "pinned_commit": "586f6227d1248e57173ac785e1b8537cb880362f",
-        "actual_commit": "68e9710c0516a13475cfc9379d9725d584ce06db",
+        "actual_commit": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
         "provenance": "source_commit names a different tree, but the governed fingerprint is identical, so no governed rule changed",
         "method": "governed-content fingerprint recomputed from UAES bytes (pin schema 3.0.0)"
       }
@@ -87,7 +87,7 @@
       "control": "no PASS without a real exit code in its raw log",
       "status": "PASS",
       "detail": {
-        "pass_count": 28,
+        "pass_count": 30,
         "unverifiable_pass_rows": [],
         "explicit_skips": [],
         "note": "Skips are recorded explicitly and are never counted as PASS (§8.3)."
@@ -133,7 +133,7 @@
       "status": "PASS",
       "detail": {
         "l4_status": "BLOCKED",
-        "not_met_conditions": 7,
+        "not_met_conditions": 5,
         "d27_claims": [
           {
             "file": "D27-FINAL-CONFORMANCE-STATEMENT.md",
@@ -148,22 +148,22 @@
     {
       "file": "governance-separation.json",
       "present": true,
-      "sha256": "88295989419f6335843bd302bcf0d580b38e45ff23bdd6bceee4280eafec8136",
-      "generated_at": "2026-11-08T06:55:11Z",
+      "sha256": "07263f1d3e74ef3bc1bc3b1975f9f69b0fd6dc4d2066365ab78e20dd012f89dd",
+      "generated_at": "2026-11-08T08:33:41Z",
       "missing_fields": []
     },
     {
       "file": "p09-p10-boundary.json",
       "present": true,
-      "sha256": "a8c341eb2250572e33f4b548a3863ab275a1e0d142469519ab66450f0abeea94",
-      "generated_at": "2026-11-07T21:40:46Z",
+      "sha256": "3ba865b7129bd6a09b4933a22568754b8383c97120d59e430115d00ce2705875",
+      "generated_at": "2026-11-08T08:33:41Z",
       "missing_fields": []
     },
     {
       "file": "independent-assessment.json",
       "present": true,
-      "sha256": "01a9d49d3f11c86555e18df8a57d95837f1f5cd7a5be6f8f8bc0fac4d705def7",
-      "generated_at": "2026-11-08T08:08:28Z",
+      "sha256": "ee232f975135fba58130bbabda42842dbf32d3b83c88d71d671f7a6f536666f2",
+      "generated_at": "2026-11-08T08:09:07Z",
       "missing_fields": []
     }
   ],
@@ -189,18 +189,9 @@
     {
       "finding_id": "FIND-IA-08",
       "severity": "High",
-      "title": "7 L4 global conditions remain NOT_MET",
+      "title": "5 L4 global conditions remain NOT_MET",
       "detail": "Global acceptance cannot be granted (§16.4)",
       "source_requirement": "§16.4",
-      "lifecycle_status": "IDENTIFIED",
-      "verification_status": "NOT_VERIFIED"
-    },
-    {
-      "finding_id": "FIND-IA-09",
-      "severity": "Medium",
-      "title": "1 test-matrix commands FAIL",
-      "detail": "Each failure is recorded with its raw log and exit code; no failure is masked or reinterpreted as a skip",
-      "source_requirement": "§8.2 / §9.3",
       "lifecycle_status": "IDENTIFIED",
       "verification_status": "NOT_VERIFIED"
     },

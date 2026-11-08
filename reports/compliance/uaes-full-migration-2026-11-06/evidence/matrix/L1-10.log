@@ -2,12 +2,12 @@
 # layer: L1
 # command: bun run format:check
 # workdir: /Users/lincolnhu/uter/web
-# started_at: 2026-11-07T15:03:22Z
+# started_at: 2026-11-08T08:33:29Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
 $ node scripts/format-with-protected-headers.mjs --check
-Finished in 850ms on 1621 files using 16 threads.
+Finished in 1111ms on 1621 files using 16 threads.
 # exit_code: 0
 # duration_seconds: 4

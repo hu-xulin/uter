@@ -2,12 +2,12 @@
 # layer: UAES
 # command: node quality/scripts/uaes/quality-gate-runner.mjs
 # workdir: /Users/lincolnhu/uaes
-# started_at: 2026-11-07T15:11:13Z
+# started_at: 2026-11-08T08:41:05Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
-registry checks : 23 PASS=23 FAIL=0 NOT_RUN=0
+registry checks : 26 PASS=26 FAIL=0 NOT_RUN=0
 impact modules  : 0
 domain gates    : 13 (all NOT_RUN)
 report schema   : PASS
