@@ -285,7 +285,11 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		} else {
 			facts = provider.ExtractUsageFacts(c, info)
 		}
-		cost, trace, runErr := billingexpr.RunExprWithRequest(exprStr, billingexpr.TokenParams{}, billingexpr.RequestInput{Usage: facts})
+		// 任务表达式只拿到用量事实，但按秒计费的表达式读的是 `duration`
+		// 变量：不把插件汇报的秒数绑定回去，`duration` 恒为 0，表达式永远
+		// 走自己的兜底秒数（wan3.0-video 的 `: 5`），高分辨率长视频会被按
+		// 兜底价少收。见 billingexpr.RequestInputForUsage。
+		cost, trace, runErr := billingexpr.RunExprWithRequest(exprStr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(facts))
 		if runErr != nil || cost < 0 {
 			if runErr == nil {
 				runErr = fmt.Errorf("negative task expression result")

@@ -110,6 +110,66 @@ func TestLoadDreamRouterOfficialReferenceFromSnapshot(t *testing.T) {
 	}
 }
 
+// TestLoadDreamRouterOfficialReferenceSkipsPerSecondModels 锁定「按秒计费的
+// 视频模型不能被换算成 token 倍率」。
+//
+// 回归背景（2026-11-04 用户反馈）：wan3.0-video 与 wan3.0-video-prime 的
+// 卡片角标显示 `×586.25` / `×390.83`，实际是 -30% 折扣。根因是快照里
+// Official.Input 的单位是**美元/秒**（0.0895522），却被按「美元/1M tokens」
+// 的规则 ÷2 得到 model_ratio=0.0447761；前端再拿真实的 model_ratio=26.25
+// 去除它，就是 586 倍溢价。
+//
+// 正确行为：按秒模型下发独立的 `official_price_per_second`（原值，不缩放），
+// 且**绝不**写入 model_ratio。
+func TestLoadDreamRouterOfficialReferenceSkipsPerSecondModels(t *testing.T) {
+	setDreamRouterSnapshot(t, `{
+		"pricing_version": "test-persecond",
+		"synced_at": "2026-11-04T09:31:19+08:00",
+		"rule_direction": "increase",
+		"rule_amount": 0.1,
+		"channel_id": 20,
+		"models": [
+			{"upstream_name":"wan3.0-video","local_name":"wan3.0-video",
+			 "billing_class":"tiered","per_second":true,"quota_type":0,
+			 "group_ratio":0.6,
+			 "official":{"input":0.0895522,"output":0,"cache":0,"create_cache":0},
+			 "upstream":{"input":0.05373132,"output":0,"cache":0,"create_cache":0},
+			 "uter":{"input":0.06268654,"output":0,"cache":0,"create_cache":0}},
+			{"upstream_name":"wan3.0-video-prime","local_name":"wan3.0-video-prime",
+			 "billing_class":"tiered","per_second":true,"quota_type":0,
+			 "group_ratio":0.6,
+			 "official":{"input":0.1343284,"output":0,"cache":0,"create_cache":0},
+			 "upstream":{"input":0.08059704,"output":0,"cache":0,"create_cache":0},
+			 "uter":{"input":0.09402988,"output":0,"cache":0,"create_cache":0}}
+		]
+	}`)
+
+	reference := LoadDreamRouterOfficialReference()
+	if reference == nil {
+		t.Fatal("reference is nil")
+	}
+
+	for name, wantPerSecond := range map[string]float64{
+		"wan3.0-video":       0.0895522,
+		"wan3.0-video-prime": 0.1343284,
+	} {
+		entry, ok := reference[name]
+		if !ok {
+			t.Fatalf("%s 缺失：按秒模型也必须有官方参照价", name)
+		}
+		// 官方秒价必须原值下发，不能被 /2 缩放。
+		if !nearlyEqualSync(entry[officialPerSecondField], wantPerSecond) {
+			t.Errorf("%s %s = %v, want %v（原值，不缩放）",
+				name, officialPerSecondField, entry[officialPerSecondField], wantPerSecond)
+		}
+		// 关键断言：绝不能出现 model_ratio —— 那正是 ×586 倍溢价的来源。
+		if _, found := entry["model_ratio"]; found {
+			t.Errorf("%s 不得下发 model_ratio（单位是美元/秒，与 token 倍率不同构）",
+				name)
+		}
+	}
+}
+
 // TestLoadDreamRouterOfficialReferenceEmpty 锁定「没同步过就没有参照」：
 // 不能返回空 map 之外的任何默认值，否则定价页会拿平台自己的价当官方价。
 func TestLoadDreamRouterOfficialReferenceEmpty(t *testing.T) {

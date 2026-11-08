@@ -107,6 +107,17 @@ const (
 	//  2. 管理端「渠道登录与同步」页的上游 / uter 逐模型对照表。
 	dreamRouterSyncSnapshotKey = "DreamRouterSyncSnapshot"
 
+	// officialPerSecondField 是「官方价：美元/秒」在 official_prices 里的键名。
+	//
+	// 其余维度的官方价都用倍率字段（model_ratio / model_price / …）表达，
+	// 因为这些模型按 token 或按次计费，倍率空间与价格一一对应。按秒计费的
+	// 视频模型（wan3.0-video 等）没有这种对应关系：它的计价系数是
+	// 「每秒多少美元」，与 $2/1M tokens 的基线无关。硬塞进 model_ratio 会
+	// 被前端当成 token 倍率去比，算出 ×586 这种荒谬溢价。
+	//
+	// 这个字段**不是倍率**，就是美元/秒的原始值，前端必须按秒价比秒价。
+	officialPerSecondField = "official_price_per_second"
+
 	// ── 渠道登录与同步（前端「系统设置 → 模型 → 渠道登录与同步」）──────
 	//
 	// 上游渠道：目前仅创梦（DreamRouter）一种实现。新增渠道时在此登记
@@ -215,10 +226,13 @@ type DreamRouterPriceLine struct {
 
 // DreamRouterModelChange 描述单个模型的目标值。
 type DreamRouterModelChange struct {
-	Name             string  `json:"name"`
-	VendorName       string  `json:"vendor_name,omitempty"`
-	GroupRatio       float64 `json:"group_ratio"`     // 创梦 default 组倍率 r
-	BillingClass     string  `json:"billing_class"`   // per_token / per_call / tiered / tiered_unparsable
+	Name         string  `json:"name"`
+	VendorName   string  `json:"vendor_name,omitempty"`
+	GroupRatio   float64 `json:"group_ratio"`   // 创梦 default 组倍率 r
+	BillingClass string  `json:"billing_class"` // per_token / per_call / tiered / tiered_unparsable
+	// PerSecond 表示 Official/Upstream 等价格行的单位是美元/秒（按秒计费的
+	// 视频模型），而非美元/1M tokens 或美元/次。
+	PerSecond        bool    `json:"per_second,omitempty"`
 	OldModelRatio    float64 `json:"old_model_ratio"` // 0 表示此前未配置
 	NewModelRatio    float64 `json:"new_model_ratio"`
 	OldModelPrice    float64 `json:"old_model_price"` // 0 表示此前未配置
@@ -269,6 +283,16 @@ type DreamRouterModelRow struct {
 	// 折数：0.6 → 6 折（中文界面展示用）。
 	UpstreamZhe float64 `json:"upstream_zhe"`
 	UterZhe     float64 `json:"uter_zhe"`
+	// PerSecond 表示这一行的 Official/Upstream/Uter 三个价格行单位是
+	// **美元 / 秒**（按秒计费的视频模型，如 wan3.0-video），而不是
+	// 「美元 / 1M tokens」或「美元 / 次」。
+	//
+	// 为什么必须显式标记：这三种单位在快照里都是裸 float64，下游
+	// （LoadDreamRouterOfficialReference）把它们统一换算成倍率空间时
+	// 只能靠这个标记区分。缺了标记，按秒的 0.0895522 会被当成
+	// 「$0.0895522 / 1M tokens」除以 2 得到 model_ratio=0.0448，
+	// 与真实的 model_ratio=26.25 相比就是 ×586 的荒谬溢价角标。
+	PerSecond bool `json:"per_second,omitempty"`
 	// Aligned 表示 uter 现值与「官方价 × 规则系数」一致（容差 1e-9 相对误差）。
 	Aligned bool `json:"aligned"`
 	// Note 记录无法比对的维度（例如 billing_expr 解析失败、上游时段折扣）。
@@ -525,6 +549,8 @@ func dreamRouterComputeTarget(rec dreamRouterRecord, r, factor float64) DreamRou
 				change.BillingClass = "tiered_unparsable"
 				return change
 			}
+			// 单价单位是美元/秒，下游换算官方参照价时必须按同一单位处理。
+			change.PerSecond = true
 			// 倍率只做兜底与展示：上游给了名义 model_ratio，随规则系数
 			// 同步缩放，保证表达式落库失败时仍有与上游一致的兜底价。
 			change.NewModelRatio = roundRatioValue(rec.ModelRatio * factor)
@@ -532,8 +558,14 @@ func dreamRouterComputeTarget(rec dreamRouterRecord, r, factor float64) DreamRou
 			// 本地落库后的表达式解出的同档系数 ≈ 上游系数 × factor 即对齐。
 			change.Official = DreamRouterPriceLine{Input: perSec.Input}
 			// 表达式才是这类模型的真实计价来源（见下方 token 分支的说明）。
+			//
+			// 落库前还要过一遍「任务表达式适配」：任务结算只传用量事实，
+			// `param()` 恒为 nil，上游表达式原样落库会让每个请求都命中兜底
+			// 档（1080P 按 720p 收费）。适配不成功就整条不写，宁可本轮不改价。
 			if scaled, scaledOK := dreamRouterScaleExpr(rec.BillingExpr, factor); scaledOK {
-				change.NewBillingExpr = scaled
+				if adapted, adaptOK := dreamRouterAdaptTaskExpr(scaled, rec.ModelName); adaptOK {
+					change.NewBillingExpr = adapted
+				}
 			}
 			change.Upstream = scaleDreamRouterPriceLine(change.Official, r)
 			return change
@@ -801,7 +833,7 @@ func SyncDreamRouterPricing(ctx context.Context, opts DreamRouterSyncOptions) (*
 		case "tiered":
 			if change.NewBillingExpr == "" {
 				result.Warnings = append(result.Warnings,
-					fmt.Sprintf("模型 %s 的上游 billing_expr 没有可缩放的计价项，已跳过不改表达式：%s",
+					fmt.Sprintf("模型 %s 的上游 billing_expr 没有可安全落库的计价项（无法缩放，或请求参数选档改写失败），已跳过不改表达式：%s",
 						rec.ModelName, truncateExprForLog(rec.BillingExpr)))
 				break
 			}
@@ -1038,6 +1070,7 @@ func buildDreamRouterSnapshot(result *DreamRouterSyncResult, cfg DreamRouterSync
 			UpstreamName: change.Name,
 			LocalName:    change.Name,
 			BillingClass: change.BillingClass,
+			PerSecond:    change.PerSecond,
 			GroupRatio:   change.GroupRatio,
 			Official:     change.Official,
 			Upstream:     change.Upstream,
@@ -1189,6 +1222,32 @@ func LoadDreamRouterSnapshot() *DreamRouterSnapshot {
 	return &snapshot
 }
 
+// dreamRouterRowBillsPerSecond 判定快照里这一行的价格单位是否是「美元/秒」。
+//
+// 优先看显式标记（新快照会写）；旧的快照没有这个字段，此时回退到
+// **本地 billing_expr 的结构**判断：能解出 duration 计价项的就是按秒模型。
+//
+// 为什么要这层回退：快照是历史数据，升级后不会自动重写。只认显式标记的话，
+// 老快照里的按秒模型会继续被当成 token 模型换算，×586 的溢价角标要等到
+// 下一轮同步（最长 10 分钟，且同步失败则永远不消失）才会修好。
+func dreamRouterRowBillsPerSecond(row DreamRouterModelRow) bool {
+	if row.PerSecond {
+		return true
+	}
+	if row.BillingClass != "tiered" {
+		return false
+	}
+	expr, ok := billing_setting.GetBillingExpr(row.LocalName)
+	if !ok || strings.TrimSpace(expr) == "" {
+		expr, ok = billing_setting.GetBillingExpr(row.UpstreamName)
+	}
+	if !ok || strings.TrimSpace(expr) == "" {
+		return false
+	}
+	_, perSecond := dreamRouterDurationUnitPrices(expr)
+	return perSecond
+}
+
 // LoadDreamRouterOfficialReference 把快照里的官方基准价换算成「倍率空间」
 // （与 ratio 表同构：model_ratio 1 = $2 / 1M tokens），供定价页当官方价参照。
 //
@@ -1197,6 +1256,17 @@ func LoadDreamRouterSnapshot() *DreamRouterSnapshot {
 // 的私有/新发布模型在预设里查不到 → 卡片没有划线原价、也没有折扣徽标，
 // 表现为「折扣没获取到」。快照里的官方价是上游自己的目录价，覆盖全部同步
 // 模型，语义也最准。
+//
+// 🔴 **单位必须逐行判定，不能一律 /2**。快照里的 Official.Input 有三种单位：
+//   - 美元 / 1M tokens（per_token 与 token 型 tiered）→ model_ratio = input / 2
+//   - 美元 / 次（per_call）→ model_price
+//   - 美元 / 秒（按秒计费的视频模型，如 wan3.0-video）→ **不能换算成倍率**
+//
+// 第三种过去被按第一种处理：0.0895522（$/秒）÷ 2 = 0.0447761 被当成
+// 「每百万 token 的倍率」，前端再拿真实的 model_ratio=26.25 去除它，
+// 得出 ×586.25 的荒谬溢价角标（实际是 -40% 折扣）。按秒模型没有与倍率
+// 同构的表达方式，因此改用独立的 `official_price_per_second` 字段**如实
+// 下发美元/秒**，由前端按同一维度（每秒价）比价，而不是伪造一个倍率。
 func LoadDreamRouterOfficialReference() map[string]map[string]float64 {
 	snapshot := LoadDreamRouterSnapshot()
 	if snapshot == nil || len(snapshot.Models) == 0 {
@@ -1205,6 +1275,20 @@ func LoadDreamRouterOfficialReference() map[string]map[string]float64 {
 	reference := make(map[string]map[string]float64, len(snapshot.Models))
 	for _, row := range snapshot.Models {
 		if row.Official.Input <= 0 {
+			continue
+		}
+		// 按秒计费：单位与倍率空间不同构。写下同一单位的官方秒价，
+		// 前端据此与 billing_expr 里的秒价直接相比。
+		//
+		// 绝不能用 model_ratio 承载它（×586 溢价的根因），也不能像
+		// 早先那样整条跳过——跳过会让卡片退化成「无官方参照」，
+		// 只剩一个来自分组倍率的 -40%，用户无从判断真实价差。
+		if dreamRouterRowBillsPerSecond(row) {
+			entry := map[string]float64{officialPerSecondField: row.Official.Input}
+			reference[row.LocalName] = entry
+			if row.LocalName != row.UpstreamName {
+				reference[row.UpstreamName] = entry
+			}
 			continue
 		}
 		entry := map[string]float64{}

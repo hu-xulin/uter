@@ -24,6 +24,9 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+
+	_ "github.com/uter-ai/uter/plugins"
 )
 
 // TestDreamRouterScaleExpr 锁定「表达式系数 × 价格规则系数」的改写结果。
@@ -276,5 +279,260 @@ func TestDreamRouterComputeTargetDurationVideo(t *testing.T) {
 	}, 0.9, 1.0)
 	if change.BillingClass != "tiered_unparsable" {
 		t.Errorf("billing class = %q, want tiered_unparsable", change.BillingClass)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// 请求探测改写（任务表达式）
+// ---------------------------------------------------------------------------
+
+// wan3VideoProbeExpr 是上游 wan3.0-video 的真实表达式形态：按请求参数
+// （size / metadata.size / *.resolution）选分辨率档，每档 `(duration > 0 ?
+// duration : 5) * 美元每秒`。
+const wan3VideoProbeExpr = `has(lower(param("size")), "1080") || has(lower(param("metadata.size")), "1080") || lower(param("metadata.resolution")) == "1080p" || lower(param("parameters.resolution")) == "1080p" || has(lower(param("parameters.size")), "1080")
+  ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315)
+  : has(lower(param("size")), "480") || has(lower(param("metadata.size")), "480") || lower(param("metadata.resolution")) == "480p" || lower(param("parameters.resolution")) == "480p" || has(lower(param("parameters.size")), "480")
+  ? tier("480p", (duration > 0 ? duration : 5) * 0.03134327)
+  : tier("720p", (duration > 0 ? duration : 5) * 0.06268654)`
+
+// wan3VideoUsageSchema 是 alibaba 插件为 wan3.0-video 声明的用量事实。
+func wan3VideoUsageSchema() map[string]jsplugin.UsageFieldSchema {
+	return map[string]jsplugin.UsageFieldSchema{
+		"seconds":    {Type: "number", Unit: "second"},
+		"resolution": {Enum: []string{"480P", "720P", "1080P"}},
+	}
+}
+
+// TestDreamRouterTaskProbeRewrite 锁定「请求参数选档 → 用量事实选档」的改写。
+//
+// 为什么必须改：任务结算只把用量事实传给表达式（relay_task / task_polling
+// 都只传 Usage），`param()` 恒为 nil。上游表达式原样落库的结果是每个请求
+// 都命中兜底档——1080P 按 720p 收钱，不报错、也不体现在任何告警里。
+func TestDreamRouterTaskProbeRewrite(t *testing.T) {
+	schema := wan3VideoUsageSchema()
+	rewritten, ok := dreamRouterTaskProbeRewrite(wan3VideoProbeExpr, schema)
+	if !ok {
+		t.Fatal("rewrite failed on the wan3.0-video expression")
+	}
+	if strings.Contains(rewritten, "param(") {
+		t.Errorf("rewritten expression still probes the request: %s", rewritten)
+	}
+	if !strings.Contains(rewritten, `u("resolution") == "1080P"`) {
+		t.Errorf("1080P tier condition was not rewritten: %s", rewritten)
+	}
+	if !strings.Contains(rewritten, `u("resolution") == "480P"`) {
+		t.Errorf("480P tier condition was not rewritten: %s", rewritten)
+	}
+	// 兜底档不带条件，必须原样保留（它是默认分辨率档）。
+	if !strings.Contains(rewritten, `tier("720p"`) {
+		t.Errorf("fallback tier was dropped: %s", rewritten)
+	}
+
+	cases := []struct {
+		name     string
+		usage    map[string]any
+		wantCost float64
+		wantTier string
+	}{
+		{"1080P ten seconds", map[string]any{"seconds": float64(10), "resolution": "1080P"}, 1.2537315, "1080p"},
+		{"480P ten seconds", map[string]any{"seconds": float64(10), "resolution": "480P"}, 0.3134327, "480p"},
+		{"720P ten seconds", map[string]any{"seconds": float64(10), "resolution": "720P"}, 0.6268654, "720p"},
+		// 没有分辨率事实时落到兜底档（与上游「什么都没给就是默认档」一致）。
+		{"no resolution fact", map[string]any{"seconds": float64(10)}, 0.6268654, "720p"},
+	}
+	for _, tc := range cases {
+		cost, trace, err := billingexpr.RunExprWithRequest(rewritten, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(tc.usage))
+		if err != nil {
+			t.Fatalf("%s: run failed: %v", tc.name, err)
+		}
+		if trace.MatchedTier != tc.wantTier {
+			t.Errorf("%s: tier = %q, want %q", tc.name, trace.MatchedTier, tc.wantTier)
+		}
+		if !nearlyEqualSync(cost, tc.wantCost) {
+			t.Errorf("%s: cost = %v, want %v", tc.name, cost, tc.wantCost)
+		}
+	}
+
+	// 改写前（上游原样表达式）在同一份用量事实下的结果——这就是被修掉的
+	// 少收费：1080P 十秒本该 1.2537315，实际只收 0.3134327。
+	original, trace, err := billingexpr.RunExprWithRequest(wan3VideoProbeExpr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(cases[0].usage))
+	if err != nil {
+		t.Fatalf("original expression should still run: %v", err)
+	}
+	if trace.MatchedTier != "720p" || !nearlyEqualSync(original, 0.6268654) {
+		t.Fatalf("regression premise changed: original gives cost=%v tier=%q", original, trace.MatchedTier)
+	}
+}
+
+// TestDreamRouterTaskProbeRewriteRejectsAmbiguous 锁定「证据不唯一就不改写」。
+//
+// 这些情况都会让改写结果无法确定档位，或者改写后引用了运行时拿不到的字段。
+// 一律返回 ok=false，由调用方放弃写这条表达式——宁可本轮不改价，也不能写
+// 一条会把请求判错档的表达式。
+func TestDreamRouterTaskProbeRewriteRejectsAmbiguous(t *testing.T) {
+	schema := wan3VideoUsageSchema()
+
+	cases := []struct {
+		name string
+		expr string
+	}{
+		{
+			// header 探测在任务结算里同样拿不到，无法用枚举事实等价表达。
+			name: "header probe",
+			expr: `header("X-Resolution") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.1) : tier("720p", (duration > 0 ? duration : 5) * 0.05)`,
+		},
+		{
+			// 条件里的字面量指向不同枚举值，无法判断该映射到哪一档。
+			name: "conflicting literals",
+			expr: `lower(param("resolution")) == "1080p" && lower(param("size")) == "720p" ? tier("a", duration * 0.1) : tier("b", duration * 0.05)`,
+		},
+		{
+			// 两个档位映射到同一个枚举值，兜底档位永远不可达。
+			name: "duplicate tier mapping",
+			expr: `lower(param("resolution")) == "1080p" ? tier("1080p", duration * 0.1) : (lower(param("size")) == "1080P" ? tier("x", duration * 0.1) : tier("720p", duration * 0.05))`,
+		},
+		{
+			// 字面量对不上任何枚举值（例如上游用了一个插件没声明的档位名）。
+			name: "unknown enum value",
+			expr: `lower(param("resolution")) == "4k" ? tier("4k", duration * 0.4) : tier("720p", duration * 0.05)`,
+		},
+	}
+	for _, tc := range cases {
+		if rewritten, ok := dreamRouterTaskProbeRewrite(tc.expr, schema); ok {
+			t.Errorf("%s: rewrite should have failed, got %s", tc.name, rewritten)
+		}
+	}
+
+	// 没有 schema 就无法判断枚举值，同样不改写。
+	if _, ok := dreamRouterTaskProbeRewrite(wan3VideoProbeExpr, nil); ok {
+		t.Error("rewrite without a usage schema should fail")
+	}
+}
+
+// TestDreamRouterTaskProbeRewriteKeepsFactExpressions 锁定「已经是用量事实
+// 形态的表达式不被无谓改动」。
+func TestDreamRouterTaskProbeRewriteKeepsFactExpressions(t *testing.T) {
+	const factExpr = `u("resolution") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315) : tier("720p", (duration > 0 ? duration : 5) * 0.06268654)`
+	rewritten, ok := dreamRouterTaskProbeRewrite(factExpr, wan3VideoUsageSchema())
+	if !ok {
+		t.Fatal("fact-shaped expression should pass through")
+	}
+	if rewritten != factExpr {
+		t.Errorf("fact-shaped expression was modified:\n got %s\nwant %s", rewritten, factExpr)
+	}
+
+	// token 表达式没有任何探测条件，也不该被拒绝。
+	const tokenExpr = `tier("base", p * 0.4 + cr * 0.08 + cc * 0.5 + c * 1.2)`
+	rewritten, ok = dreamRouterTaskProbeRewrite(tokenExpr, wan3VideoUsageSchema())
+	if !ok || rewritten != tokenExpr {
+		t.Errorf("token expression should pass through unchanged, got (%q, %v)", rewritten, ok)
+	}
+}
+
+// TestDreamRouterComputeTargetRewritesProbeExpr 锁定同步目标计算把改写接进了
+// 「落库表达式」这条通道：NewBillingExpr 必须已是用量事实形态。
+func TestDreamRouterComputeTargetRewritesProbeExpr(t *testing.T) {
+	rec := dreamRouterRecord{
+		ModelName:       "wan3.0-video",
+		QuotaType:       0,
+		ModelRatio:      37.5,
+		CompletionRatio: 1,
+		EnableGroups:    []string{"wan3"},
+		BillingMode:     "tiered_expr",
+		BillingExpr:     wan3VideoProbeExpr,
+	}
+	change := dreamRouterComputeTarget(rec, 0.9, 1.0)
+	if change.BillingClass != "tiered" {
+		t.Fatalf("billing class = %q, want tiered", change.BillingClass)
+	}
+	if strings.Contains(change.NewBillingExpr, "param(") {
+		t.Fatalf("NewBillingExpr still probes the request: %s", change.NewBillingExpr)
+	}
+	if !strings.Contains(change.NewBillingExpr, `u("resolution") == "1080P"`) {
+		t.Errorf("NewBillingExpr was not rewritten to facts: %s", change.NewBillingExpr)
+	}
+}
+
+// TestDreamRouterTaskProbeRewriteKeepsVersionPrefix 锁定 `v1:` 版本前缀在
+// 改写后仍然保留：丢了前缀，表达式会被按默认版本解释，计费口径整个变化。
+func TestDreamRouterTaskProbeRewriteKeepsVersionPrefix(t *testing.T) {
+	rewritten, ok := dreamRouterTaskProbeRewrite("v1:"+wan3VideoProbeExpr, wan3VideoUsageSchema())
+	if !ok {
+		t.Fatal("rewrite failed on a version-prefixed expression")
+	}
+	if !strings.HasPrefix(rewritten, "v1:") {
+		t.Errorf("version prefix was dropped: %s", rewritten)
+	}
+	if strings.Contains(rewritten, "param(") {
+		t.Errorf("rewritten expression still probes the request: %s", rewritten)
+	}
+	if _, err := billingexpr.CompileFromCache(rewritten); err != nil {
+		t.Errorf("rewritten expression does not compile: %v", err)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// 适配分派：只有任务插件模型才改写
+// ---------------------------------------------------------------------------
+
+// chatProbeExpr 是聊天模型常见的按请求参数计价形态。它与任务表达式的
+// 区别不在写法，而在**运行时能不能求值**：聊天结算会把请求 Body 一起
+// 传给表达式（relay/helper + tiered_settle 都走 BillingRequestInput），
+// `param()` 有值。
+const chatProbeExpr = `param("enable_thinking") == true ? tier("thinking", input * 3 + output * 15) : tier("standard", input * 1 + output * 8)`
+
+// TestDreamRouterAdaptTaskExprLeavesChatModelsAlone 锁定「改写只针对任务
+// 插件模型」这条边界。
+//
+// 判据不能用「表达式里有没有 param()」：聊天模型的 param() 是**有效**的，
+// 统一改写会把它换成一个永远读不到的 `u()` 字段（聊天结算的用量里没有
+// 这个 key），结果是把「开了思考就多收」变成「永远按标准档收」——静默
+// 少收，且没有任何告警。分派必须按「模型是否绑定任务插件」来判。
+func TestDreamRouterAdaptTaskExprLeavesChatModelsAlone(t *testing.T) {
+	for _, model := range []string{"qwen-plus", "gpt-4o", "deepseek-chat"} {
+		if schema := dreamRouterTaskUsageSchema(model); len(schema) != 0 {
+			t.Fatalf("%s unexpectedly declares a task usage schema: %v", model, schema)
+		}
+		adapted, ok := dreamRouterAdaptTaskExpr(chatProbeExpr, model)
+		if !ok {
+			t.Errorf("%s: adapt rejected a chat expression it should leave alone", model)
+			continue
+		}
+		if adapted != chatProbeExpr {
+			t.Errorf("%s: chat expression was rewritten:\n got: %s\nwant: %s", model, adapted, chatProbeExpr)
+		}
+	}
+}
+
+// TestDreamRouterAdaptTaskExprRewritesTaskModels 是上一条的反面：任务插件
+// 模型的探测条件必须被改写，且改写结果能编译。
+func TestDreamRouterAdaptTaskExprRewritesTaskModels(t *testing.T) {
+	adapted, ok := dreamRouterAdaptTaskExpr(wan3VideoProbeExpr, "wan3.0-video")
+	if !ok {
+		t.Fatal("adapt failed on the wan3.0-video expression")
+	}
+	if strings.Contains(adapted, "param(") {
+		t.Errorf("task expression still probes the request: %s", adapted)
+	}
+	if !strings.Contains(adapted, `u("resolution") == "1080P"`) {
+		t.Errorf("task expression was not rewritten to facts: %s", adapted)
+	}
+	if _, err := billingexpr.CompileFromCache(adapted); err != nil {
+		t.Errorf("adapted expression does not compile: %v", err)
+	}
+}
+
+// TestDreamRouterAdaptTaskExprFailsClosedOnTaskModels 覆盖「是任务模型但
+// 改不动」：必须 ok=false，让同步侧放弃写这条表达式，而不是把改不动的
+// 原文落库（那会让每个请求都命中兜底档）。
+func TestDreamRouterAdaptTaskExprFailsClosedOnTaskModels(t *testing.T) {
+	headerProbe := `header("X-Res") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315) : tier("720p", (duration > 0 ? duration : 5) * 0.06268654)`
+	if _, ok := dreamRouterAdaptTaskExpr(headerProbe, "wan3.0-video"); ok {
+		t.Error("header-probing task expression should not be adapted")
+	}
+	// 同一表达式在聊天模型上不受影响：聊天结算带 Headers，header() 能求值。
+	adapted, ok := dreamRouterAdaptTaskExpr(headerProbe, "qwen-plus")
+	if !ok || adapted != headerProbe {
+		t.Errorf("header probe should pass through untouched for chat models (ok=%v): %s", ok, adapted)
 	}
 }

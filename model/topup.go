@@ -288,8 +288,25 @@ func UpdatePendingTopUpStatus(tradeNo string, expectedPaymentProvider string, ta
 			return ErrTopUpStatusInvalid
 		}
 
-		topUp.Status = targetStatus
-		return tx.Save(topUp).Error
+		// F-13: decide the transition in the database, not from the in-memory
+		// copy. Under the supported defaults this read-modify-write is already
+		// serialized: the default SQLite DSN enables BEGIN IMMEDIATE
+		// (`_txlock=immediate`), and MySQL/PostgreSQL take a FOR UPDATE row
+		// lock. The conditional UPDATE aligns this path with
+		// DATABASE-STANDARD.md and removes the implicit dependency on that
+		// transaction/lock configuration (e.g. a custom SQLITE_PATH that
+		// drops `_txlock=immediate`). Updating a single column also avoids
+		// clobbering sibling fields with stale in-memory values.
+		result := tx.Model(&TopUp{}).
+			Where(refCol+" = ? AND status = ?", tradeNo, common.TopUpStatusPending).
+			Update("status", targetStatus)
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected != 1 {
+			return ErrTopUpStatusInvalid
+		}
+		return nil
 	})
 }
 
