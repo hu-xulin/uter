@@ -26,11 +26,9 @@ import type { AdminPermissionMatrix } from '@/lib/admin-permissions'
 
 /** User status: 1 = enabled, 2 = disabled, 3+ = other states */
 export const userStatusSchema = z.number()
-export type UserStatus = z.infer<typeof userStatusSchema>
 
 /** User role: 1 = common user, 10 = admin, 100 = root */
 export const userRoleSchema = z.number()
-export type UserRole = z.infer<typeof userRoleSchema>
 
 export const userSchema = z.object({
   id: z.number(),
@@ -65,8 +63,6 @@ export const userSchema = z.object({
     .optional(),
 })
 export type User = z.infer<typeof userSchema>
-
-export const userListSchema = z.array(userSchema)
 
 // ============================================================================
 // API Request/Response Types

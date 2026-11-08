@@ -634,12 +634,6 @@ export function getAdvancedCustomLogo(
   return config?.logo?.trim() || ''
 }
 
-export function getAdvancedCustomLogoDark(
-  config: AdvancedCustomConfig | null | undefined
-): string {
-  return config?.logo_dark?.trim() || ''
-}
-
 export function parseAdvancedCustomRouteModels(value: string): string[] {
   return [
     ...new Set(

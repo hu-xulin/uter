@@ -16,10 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-/**
- * Utility functions for usage logs filters
- */
-import { LOG_CATEGORY_LABELS } from '../constants'
 import type {
   LogCategory,
   LogFilters,
@@ -80,11 +76,4 @@ export function buildSearchParams(
     default:
       return baseParams
   }
-}
-
-/**
- * Get log category display name
- */
-export function getLogCategoryLabel(category: LogCategory): string {
-  return LOG_CATEGORY_LABELS[category]
 }

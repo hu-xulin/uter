@@ -102,24 +102,6 @@ export function getUserRoleDisplayKey(
   return 'User'
 }
 
-export const USER_ROLES = {
-  [USER_ROLE.USER]: {
-    labelKey: 'User',
-    value: USER_ROLE.USER,
-    icon: User,
-  },
-  [USER_ROLE.ADMIN]: {
-    labelKey: 'Uter Admin',
-    value: USER_ROLE.ADMIN,
-    icon: Users,
-  },
-  [USER_ROLE.ROOT]: {
-    labelKey: 'Uter Root',
-    value: USER_ROLE.ROOT,
-    icon: Shield,
-  },
-} as const
-
 export const getUserRoleOptions = (t: (key: string) => string) => [
   { label: t('User'), value: String(USER_ROLE.USER), icon: User },
   { label: t('Uter Admin'), value: String(USER_ROLE.ADMIN), icon: Users },

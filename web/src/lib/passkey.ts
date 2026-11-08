@@ -254,12 +254,3 @@ export async function createCredential(
 ) {
   return navigator.credentials.create({ publicKey: options, signal })
 }
-
-/**
- * Execute an async Passkey credential request flow.
- */
-export async function getCredential(
-  options: PublicKeyCredentialRequestOptions
-) {
-  return navigator.credentials.get({ publicKey: options })
-}

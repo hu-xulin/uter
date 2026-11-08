@@ -65,29 +65,6 @@ const ORPHAN_SWITCH_TIER: FormLabelTier = 'field'
 const settingsSwitchRowClassName =
   'flex min-w-0 flex-row items-center justify-between gap-4 py-2.5'
 
-/* ── 设置页的字号契约（两层 + 一个值档） ─────────────────────────────
- *
- * 设置页是「名称 + 说明」成对出现的列表结构，两层必须一眼分开：
- *
- *   条目标题    16/600 —— 每个配置项的标题（「启用 Turnstile」「站点密钥」
- *                       「首页」「密码登录」），与 `Heading variant='group-title'`
- *                       同档；分组容器的首行标题也走这一档
- *   子项标题    14/600 —— 分组容器里再缩进一层的子开关（「游乐场」
- *                       「要求登录才能查看模型」），与它上面 16/600 的
- *                       分组标题、下面 14/400 的说明构成三层
- *   说明文字    14/400 —— FormDescription / 手写 <p>
- *
- * 历史问题是各层全挤在 14px，只靠字重区分，整页读起来就是「一堆同号小字」。
- * 这两层靠 280 个调用点自觉守不住，所以在容器层声明一次、由上下文下发给
- * 所有后代（`FormLabelTierProvider`）。新增字段不需要任何额外类名。
- *
- * 值与标题是两回事：URL、域名、密钥、邮箱、ID 这类**机器可读的值**用等宽
- * （`SETTINGS_MONO_VALUE_CLASS`），人读的名称（站点名、发送者名称）不用。
- */
-
-/** 机器可读的值（链接 / 域名 / 密钥 / 邮箱 / 代码 / ID）的等宽类。 */
-export const SETTINGS_MONO_VALUE_CLASS = 'font-mono'
-
 const FIELD_LABEL_TIER: FormLabelTier = 'field'
 const ROW_LABEL_TIER: FormLabelTier = 'row'
 

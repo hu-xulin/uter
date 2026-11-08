@@ -44,7 +44,10 @@ const NAV_GROUP = join(
   'src/components/layout/components/nav-group.tsx'
 )
 const THEME = join(process.cwd(), 'src/styles/theme.css')
-const BRAND_TOKENS = join(process.cwd(), 'src/design-system/source/brand.tokens.json')
+const BRAND_TOKENS = join(
+  process.cwd(),
+  'src/design-system/source/brand.tokens.json'
+)
 const brandTokens = JSON.parse(readFileSync(BRAND_TOKENS, 'utf8'))
 
 const sidebar = readFileSync(SIDEBAR, 'utf8')
@@ -99,7 +102,9 @@ describe('sidebar active state', () => {
   it('defines the dedicated token in both themes', () => {
     // design-system-2.0 §17（2026-11-03 复裁定）给定的两个值；改任一值都要
     // 重算对比度（浅色 5.11:1 / 深色 4.97:1）。
-    expect(theme).toContain('--sidebar-active-foreground: var(--uaes-brand-soft-foreground)')
+    expect(theme).toContain(
+      '--sidebar-active-foreground: var(--uaes-brand-soft-foreground)'
+    )
     expect(brandTokens.themes.light.brand.softForeground.$value).toBe('#5558D8')
     expect(brandTokens.themes.dark.brand.softForeground.$value).toBe('#B1B3FF')
     // 必须映射成 Tailwind 语义色，否则 `text-sidebar-active-foreground` 是空类名。

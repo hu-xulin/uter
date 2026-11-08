@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { createInstance } from 'i18next'
 import { assert, afterEach, describe, expect, test, vi } from 'vitest'
 
+import type { BillingUsageSchema } from '@/features/pricing/types'
 import { getTieredBillingSummary } from '@/features/usage-logs/lib/format'
 import zh from '@/i18n/locales/zh.json'
 
@@ -41,6 +42,7 @@ import {
   visualNodeId,
   type VisualCondition,
 } from '../billing-expression/visual'
+import { getTaskPricingDisplayTiers } from '../task-matrix-display'
 import {
   buildEstimatorTokens,
   evalExprLocally,
@@ -51,6 +53,7 @@ const extras: ExtraTokenValues = {
   cacheReadTokens: 100,
   cacheCreateTokens: 0,
   cacheCreate1hTokens: 0,
+  cacheCreate12hTokens: 0,
   imageTokens: 0,
   imageOutputTokens: 0,
   imageCacheTokens: 0,
@@ -507,5 +510,47 @@ describe('visual billing document', () => {
         'hour("UTC") > 9 ? max(p * 2, 1) : tier("off", p * 1)'
       )
     ).toBeNull()
+  })
+})
+
+describe('task price rows from request-probe tiers', () => {
+  // 上游 wan3.0-video 的真实表达式：按请求参数选分辨率档，每档按秒计价。
+  const wan3Expr = `has(lower(param("size")), "1080") || has(lower(param("metadata.size")), "1080") || lower(param("metadata.resolution")) == "1080p" || lower(param("parameters.resolution")) == "1080p" || has(lower(param("parameters.size")), "1080")
+  ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315)
+  : has(lower(param("size")), "480") || has(lower(param("metadata.size")), "480") || lower(param("metadata.resolution")) == "480p" || lower(param("parameters.resolution")) == "480p" || has(lower(param("parameters.size")), "480")
+  ? tier("480p", (duration > 0 ? duration : 5) * 0.03134327)
+  : tier("720p", (duration > 0 ? duration : 5) * 0.06268654)`
+  const schema: BillingUsageSchema = {
+    seconds: { type: 'number', unit: 'second' },
+    resolution: { enum: ['480P', '720P', '1080P'] },
+  }
+
+  test('expands every resolution tier with a per-second unit price', () => {
+    const tiers = getTaskPricingDisplayTiers(wan3Expr, schema)
+    expect(tiers.map((tier) => tier.label)).toEqual(['1080p', '480p', '720p'])
+    expect(tiers.map((tier) => tier.unitPrices)).toEqual([
+      { seconds: 0.12537315 },
+      { seconds: 0.03134327 },
+      { seconds: 0.06268654 },
+    ])
+  })
+
+  test('describes the probe condition instead of dumping the raw source', () => {
+    const [first] = getTaskPricingDisplayTiers(wan3Expr, schema)
+    // 关键回归：整段 param()/has() 源码不该出现在价格表里。
+    expect(first.conditionText).not.toContain('param(')
+    expect(first.conditionText).not.toContain('has(')
+    expect(first.conditionText).toContain('size contains 1080')
+    expect(first.conditionText).toContain('metadata.resolution = 1080p')
+  })
+
+  test('keeps an unknown probe condition readable via its source', () => {
+    // 条件里出现了 schema 无法列出的探测（numeric param），价格行仍要能展示，
+    // 且退回源码而不是凭空编一个描述。
+    const expr =
+      'param("n") == 2 ? tier("double", (duration > 0 ? duration : 5) * 0.2) : tier("single", (duration > 0 ? duration : 5) * 0.1)'
+    const tiers = getTaskPricingDisplayTiers(expr, schema)
+    expect(tiers.map((tier) => tier.label)).toEqual(['double', 'single'])
+    expect(tiers[0].conditionText).toBeTruthy()
   })
 })

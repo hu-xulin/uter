@@ -63,7 +63,10 @@ export function SidebarSearchButton() {
     >
       <SearchIcon className='size-4.5 shrink-0' />
       <span className='truncate'>{copy.trigger}</span>
-      <span className='ms-auto inline-flex shrink-0 gap-0.5'>
+      {/* 键位提示是纯视觉装饰（动作已由 aria-label 完整表达）。若不加
+          aria-hidden，kbd 可见文本（如 ⌘K）不属于可访问名称，会触发
+          axe label-content-name-mismatch（WCAG 2.5.3，serious）。 */}
+      <span aria-hidden='true' className='ms-auto inline-flex shrink-0 gap-0.5'>
         {hotKey.map((key, i) => (
           <kbd
             key={i}

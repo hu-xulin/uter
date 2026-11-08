@@ -357,38 +357,6 @@ export function formatOfficialRequestPrice(
 }
 
 /**
- * Official price for token models at an explicit reference ratio (e.g. the
- * selected pricing preset's model_ratio), used by the plaza discount badge.
- */
-export function formatOfficialPriceAtRatio(
-  model: PricingModel,
-  type: PriceType,
-  ratio: number,
-  tokenUnit: TokenUnit,
-  showWithRecharge = false,
-  priceRate = 1,
-  usdExchangeRate = 1,
-  showCurrencySymbol = true
-): string {
-  if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) {
-    return '-'
-  }
-  const priceInUSD = calculateTokenPrice(model, type, ratio)
-  const price = applyRechargeRate(
-    priceInUSD,
-    showWithRecharge,
-    priceRate,
-    usdExchangeRate
-  )
-  return formatBillingCurrencyFromUSD(price / TOKEN_UNIT_DIVISORS[tokenUnit], {
-    showSymbol: showCurrencySymbol,
-    digitsLarge: 4,
-    digitsSmall: 6,
-    abbreviate: false,
-  })
-}
-
-/**
  * Official reference ratio (model_ratio) for a model from the selected pricing
  * preset. Used by the plaza discount badge. Returns undefined when the preset
  * has no entry for the model.
@@ -406,6 +374,31 @@ export function getOfficialReferenceRatio(
     return ref.model_ratio
   }
   return undefined
+}
+
+/**
+ * `official_prices` 里「美元/秒」官方价的键名，与后端
+ * `service.dreamrouter_sync.go` 的 `officialPerSecondField` 必须逐字一致。
+ *
+ * 按秒计费的视频模型（wan3.0-video / wan3.0-video-prime 等）的计价系数是
+ * 「每秒多少美元」，与 $2/1M tokens 的倍率空间无关，因此不能借用
+ * `model_ratio` 承载。两者混用会让前端拿 26.25 的 token 倍率去除一个
+ * 按秒的官方价，得出 ×586 这种荒谬溢价角标。
+ */
+export const OFFICIAL_PRICE_PER_SECOND_FIELD = 'official_price_per_second'
+
+/**
+ * 官方价（美元/秒），仅按秒计费的视频模型才有。缺失时返回 null。
+ */
+export function getOfficialPerSecondUSD(
+  entry: Record<string, number> | undefined
+): number | null {
+  if (!entry) return null
+  const value = entry[OFFICIAL_PRICE_PER_SECOND_FIELD]
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+    return null
+  }
+  return value
 }
 
 // ----------------------------------------------------------------------------
@@ -531,6 +524,33 @@ function getDynamicInputPriceUSD(model: PricingModel): number | null {
   return values.length > 0 ? Math.min(...values) : null
 }
 
+/**
+ * Uter 的「美元/秒」报价，取自按秒计费的 billing_expr。非按秒计费的模型
+ * 返回 null。
+ *
+ * 取哪个系数必须与后端 `dreamRouterDurationUnitPrices` **逐字同口径**：
+ * 后端用 `\(([^()]*\bduration\b[^()]*)\)\s*\*\s*(数字)` 遍历全部匹配并取
+ * **最后一个**，即表达式最右侧的 fallback 档（wan3.0-video 是 720p 的
+ * 0.06268654），因为三元链按「前面的档位 → 最后的兜底档」书写。
+ *
+ * 不能改成读 `getDynamicPricingTiers` 的最后一个元素：那个数组被
+ * `getTaskPricingDisplayTiers` 重排过（实测顺序为 480p/720p/1080p），
+ * 末尾是 1080p。两边取到不同档位会让「折扣」变成虚假值——例如把
+ * 1080p 的本地价与 720p 的官方价相比，64% 的折扣完全是错的。
+ */
+function getTaskPerSecondUSD(model: PricingModel): number | null {
+  const expression = model.billing_expr
+  if (!expression) return null
+  const durationTerm =
+    /\(([^()]*\bduration\b[^()]*)\)\s*\*\s*([0-9]+(?:\.[0-9]+)?)/g
+  let perSecond: number | null = null
+  for (const match of expression.matchAll(durationTerm)) {
+    const value = Number(match[2])
+    if (Number.isFinite(value) && value > 0) perSecond = value
+  }
+  return perSecond
+}
+
 export type DiscountInfo = {
   hasDiscount: boolean
   /** Percentage saved vs official, e.g. 10 for "省 10%". */
@@ -636,6 +656,31 @@ export function getDiscountInfo(
   const official = getOfficialReferenceRatio(model, officialPrices)
   const platform = model.model_ratio
   const displayRatio = getDisplayGroupRatio(model, selectedGroup)
+
+  // 按秒计费的视频模型（wan3.0-video / wan3.0-video-prime 等）必须走这条
+  // 分支，且必须排在下面所有 token 路径之前：它们的 `model_ratio`（26.25）
+  // 只是一个名义兜底值，真实计价在 billing_expr 的「每秒多少美元」里。
+  // 拿它去和按秒的官方价比，历史上算出了 ×586.25 / ×390.83 的荒谬溢价。
+  const officialPerSecond = getOfficialPerSecondUSD(
+    officialPrices?.[model.model_name]
+  )
+  const uterPerSecond = getTaskPerSecondUSD(model)
+  if (officialPerSecond != null && uterPerSecond != null && uterPerSecond > 0) {
+    return badgeFromRatio((uterPerSecond * displayRatio) / officialPerSecond)
+  }
+  // 按秒计费但没有官方秒价（例如尚未同步到上游目录价）：**必须停在这里**。
+  // 继续往下走会命中 token 分支，拿名义 model_ratio（26.25）去除官方的
+  // 倍率字段，凭空造出 ×586 这种溢价。无从比价就不显示角标，而不是给一个
+  // 错误的天价溢价。
+  if (uterPerSecond != null) {
+    return {
+      hasDiscount: false,
+      percent: 0,
+      zhe: 10,
+      markup: null,
+      ratio: null,
+    }
+  }
 
   // Pay-per-request models (image / video) carry their price in `model_price`
   // rather than `model_ratio`, so the ratio comparison below can never see

@@ -43,7 +43,3 @@ export const CHART_FONT_SIZE = 12
  * 规范阶梯最小就是 12px，且图表标签属于「必须能读」的信息，不是装饰，
  * 因此统一回到 caption 档。
  */
-export const CHART_LABEL_FONT_SIZE = CHART_FONT_SIZE
-
-/** 图表轴标题/单位这类比轴标签再弱一级的文字，仍走 caption 档。 */
-export const CHART_AXIS_TITLE_FONT_SIZE = CHART_FONT_SIZE

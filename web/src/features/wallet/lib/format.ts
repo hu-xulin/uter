@@ -49,21 +49,6 @@ export function formatQuotaShort(quota: number): string {
 }
 
 /**
- * Format currency amount that is already in local currency.
- * This is used for payment amounts that have been calculated via priceRatio.
- */
-export function formatCurrency(amount: number | string): string {
-  const numeric =
-    typeof amount === 'number' ? amount : Number.parseFloat(String(amount))
-  if (!Number.isFinite(numeric)) return '-'
-
-  return new Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: Math.abs(numeric) >= 1 ? 2 : 4,
-  }).format(numeric)
-}
-
-/**
  * Format an amount in CNY (RMB), always with the ¥ symbol.
  *
  * 为什么不能跟随 quotaDisplayType：regular 通道（易支付 Epay / 官方直连

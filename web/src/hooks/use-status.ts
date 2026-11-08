@@ -18,8 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
 
-import type { SystemStatus } from '@/types/system'
 import { readCachedStatus, statusQueryOptions } from '@/lib/status-query'
+import type { SystemStatus } from '@/types/system'
 
 /** Seed value from the persisted snapshot, so the first render is not empty. */
 function getInitialStatus(): SystemStatus | undefined {

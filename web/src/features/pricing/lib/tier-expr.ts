@@ -258,6 +258,7 @@ const ESTIMATOR_VARS = [
   { var: 'cr', stateKey: 'cacheReadTokens' },
   { var: 'cc', stateKey: 'cacheCreateTokens' },
   { var: 'cc1h', stateKey: 'cacheCreate1hTokens' },
+  { var: 'cc12h', stateKey: 'cacheCreate12hTokens' },
   { var: 'img', stateKey: 'imageTokens' },
   { var: 'img_cr', stateKey: 'imageCacheTokens' },
   { var: 'img_o', stateKey: 'imageOutputTokens' },
@@ -320,7 +321,8 @@ export function buildEstimatorTokens(
       extraTokenValues.imageTokens +
       extraTokenValues.audioInputTokens +
       extraTokenValues.cacheCreateTokens +
-      extraTokenValues.cacheCreate1hTokens,
+      extraTokenValues.cacheCreate1hTokens +
+      extraTokenValues.cacheCreate12hTokens,
     ...Object.fromEntries(
       ESTIMATOR_VARS.map((field) => [
         field.var,

@@ -18,10 +18,19 @@ For commercial licensing, please contact support@uter.ai
 */
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+
 import { describe, expect, it } from 'vitest'
 
-const source = JSON.parse(readFileSync(join(process.cwd(), 'src/design-system/source/brand.tokens.json'), 'utf8'))
-const generated = readFileSync(join(process.cwd(), 'src/design-system/tokens/generated/brand.css'), 'utf8')
+const source = JSON.parse(
+  readFileSync(
+    join(process.cwd(), 'src/design-system/source/brand.tokens.json'),
+    'utf8'
+  )
+)
+const generated = readFileSync(
+  join(process.cwd(), 'src/design-system/tokens/generated/brand.css'),
+  'utf8'
+)
 const metadata = source.$extensions['com.uter.uaes']
 
 describe('structured brand token source', () => {
@@ -31,7 +40,9 @@ describe('structured brand token source', () => {
   })
   it('preserves existing Dark palette provenance', () => {
     expect(source.themes.dark.brand.primary.$value).toBe('#A1A3F7')
-    expect(metadata.provenance['themes.dark.primary']).toBe('EXISTING_3_0_IMPLEMENTATION')
+    expect(metadata.provenance['themes.dark.primary']).toBe(
+      'EXISTING_3_0_IMPLEMENTATION'
+    )
   })
   it('has generated CSS for both themes', () => {
     expect(generated).toContain('--uaes-brand-primary: #5B5EE6;')

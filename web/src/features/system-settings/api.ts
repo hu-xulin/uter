@@ -33,7 +33,6 @@ import type {
   UpstreamChannelsResponse,
   UpstreamRatiosResponse,
   DreamRouterSyncModelsResponse,
-  DreamRouterSyncStatusResponse,
   DreamRouterRunResponse,
 } from './types'
 
@@ -129,13 +128,6 @@ export async function listSystemTasks(
   return res.data
 }
 
-export async function resetModelRatios() {
-  const res = await api.post<UpdateOptionResponse>(
-    '/api/option/rest_model_ratio'
-  )
-  return res.data
-}
-
 export async function getUpstreamChannels() {
   const res = await api.get<UpstreamChannelsResponse>(
     '/api/ratio_sync/channels'
@@ -156,13 +148,6 @@ export async function fetchUpstreamRatios(request: FetchUpstreamRatiosRequest) {
 export async function getDreamRouterSyncModels() {
   const res = await api.get<DreamRouterSyncModelsResponse>(
     '/api/ratio_sync/dreamrouter/models'
-  )
-  return res.data
-}
-
-export async function getDreamRouterSyncStatus() {
-  const res = await api.get<DreamRouterSyncStatusResponse>(
-    '/api/ratio_sync/dreamrouter/status'
   )
   return res.data
 }

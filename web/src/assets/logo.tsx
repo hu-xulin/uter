@@ -16,10 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { SVGProps } from 'react'
-
-import { cn } from '@/lib/utils'
-
 /**
  * The Uter brand mark, inline so it inherits the surrounding layout box.
  *
@@ -68,22 +64,5 @@ export function UterLogoPaths() {
         transform='translate(31.6289 21.8788)'
       />
     </>
-  )
-}
-
-export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      id='Uter-logo'
-      viewBox='0 0 200 200'
-      xmlns='http://www.w3.org/2000/svg'
-      height='24'
-      width='24'
-      className={cn('size-6', className)}
-      {...props}
-    >
-      <title>Uter</title>
-      <UterLogoPaths />
-    </svg>
   )
 }

@@ -17,11 +17,7 @@
       "category": "disclosure",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -53,12 +49,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -90,11 +81,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -126,9 +113,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -160,9 +145,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -194,9 +177,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -228,11 +209,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -264,11 +241,7 @@
       "category": "action",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -300,11 +273,7 @@
       "category": "action",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -323,9 +292,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/button-loading.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/button-loading.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -338,11 +305,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -374,9 +337,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -408,11 +369,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -444,9 +401,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -478,11 +433,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -514,11 +465,7 @@
       "category": "disclosure",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -550,11 +497,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -586,11 +529,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -609,9 +548,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/combobox.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/combobox.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -624,11 +561,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -660,12 +593,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -697,12 +625,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -721,9 +644,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/dialog-layout.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/dialog-layout.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -736,9 +657,7 @@
       "category": "utility",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -770,9 +689,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -804,12 +721,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -841,12 +753,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -865,9 +772,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/dropdown-menu.test.tsx"
-          ],
+          "tests": ["src/components/ui/dropdown-menu.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -880,11 +785,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -916,9 +817,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -950,9 +849,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -971,9 +868,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/form-label-tier.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/form-label-tier.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -986,9 +881,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1020,12 +913,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1057,9 +945,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1091,9 +977,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1112,9 +996,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/input-group.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/input-group.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1127,11 +1009,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1163,11 +1041,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1199,9 +1073,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1233,9 +1105,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1267,9 +1137,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1288,9 +1156,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/label.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/label.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1303,9 +1169,7 @@
       "category": "content",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1337,11 +1201,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1373,11 +1233,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1409,11 +1265,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1445,11 +1297,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1481,12 +1329,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1518,11 +1361,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1554,11 +1393,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1590,9 +1425,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1624,9 +1457,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1658,11 +1489,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1681,9 +1508,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/secret-file-input.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/secret-file-input.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1696,11 +1521,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1732,11 +1553,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1768,11 +1585,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1804,9 +1617,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1838,12 +1649,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1875,11 +1681,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1911,11 +1713,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1947,11 +1745,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1983,11 +1777,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -2019,11 +1809,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -2055,11 +1841,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2091,9 +1873,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -2125,11 +1905,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2161,11 +1937,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2197,9 +1969,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -2231,11 +2001,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2254,9 +2020,7 @@
         },
         "evidence": {
           "status": "PARTIAL",
-          "tests": [
-            "src/components/ui/__tests__/toggle-group.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/toggle-group.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -2269,11 +2033,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2305,12 +2065,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",

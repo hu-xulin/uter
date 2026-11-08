@@ -42,39 +42,77 @@ function collectTsx(dir) {
   })
 }
 
-if (registry.designSystem !== 'UTER Design System 3.0') errors.push('Registry designSystem must be UTER Design System 3.0')
-if (registry.implementationRoot !== 'src/components/ui') errors.push('Unexpected implementation root')
-if (!Array.isArray(registry.components)) errors.push('components must be an array')
+if (registry.designSystem !== 'UTER Design System 3.0') {
+  errors.push('Registry designSystem must be UTER Design System 3.0')
+}
+if (registry.implementationRoot !== 'src/components/ui') {
+  errors.push('Unexpected implementation root')
+}
+if (!Array.isArray(registry.components)) {
+  errors.push('components must be an array')
+}
 
 for (const component of registry.components ?? []) {
-  if (ids.has(component.id)) errors.push('Duplicate component ID: ' + component.id)
-  ids.add(component.id)
-  if (files.has(component.file)) errors.push('Duplicate component file: ' + component.file)
-  files.add(component.file)
-  if (!existsSync(join(ROOT, component.file))) errors.push('Missing component file: ' + component.file)
-  if (!component.contract?.states?.length) errors.push('Missing states: ' + component.id)
-  for (const section of ['accessibility', 'responsive', 'tokens', 'evidence']) {
-    if (!component.contract?.[section]) errors.push('Missing contract section ' + section + ': ' + component.id)
+  if (ids.has(component.id)) {
+    errors.push('Duplicate component ID: ' + component.id)
   }
-  if (!['NOT_VERIFIED', 'PARTIAL', 'VERIFIED', 'EXCEPTION'].includes(component.contract?.evidence?.status)) {
+  ids.add(component.id)
+  if (files.has(component.file)) {
+    errors.push('Duplicate component file: ' + component.file)
+  }
+  files.add(component.file)
+  if (!existsSync(join(ROOT, component.file))) {
+    errors.push('Missing component file: ' + component.file)
+  }
+  if (!component.contract?.states?.length) {
+    errors.push('Missing states: ' + component.id)
+  }
+  for (const section of ['accessibility', 'responsive', 'tokens', 'evidence']) {
+    if (!component.contract?.[section]) {
+      errors.push('Missing contract section ' + section + ': ' + component.id)
+    }
+  }
+  if (
+    !['NOT_VERIFIED', 'PARTIAL', 'VERIFIED', 'EXCEPTION'].includes(
+      component.contract?.evidence?.status
+    )
+  ) {
     errors.push('Invalid evidence status: ' + component.id)
   }
   for (const test of component.contract?.evidence?.tests ?? []) {
-    if (!existsSync(join(ROOT, test))) errors.push('Missing test evidence file ' + test + ' for ' + component.id)
+    if (!existsSync(join(ROOT, test))) {
+      errors.push('Missing test evidence file ' + test + ' for ' + component.id)
+    }
   }
-  if (component.contract?.evidence?.status !== 'VERIFIED') warnings.push('Evidence not verified: ' + component.id)
+  if (component.contract?.evidence?.status !== 'VERIFIED') {
+    warnings.push('Evidence not verified: ' + component.id)
+  }
 }
 
 const actual = new Set(collectTsx(UI_ROOT))
-for (const file of actual) if (!files.has(file)) errors.push('Unregistered UI component file: ' + file)
-for (const file of files) if (!actual.has(file)) errors.push('Registry entry is not an eligible UI component: ' + file)
+for (const file of actual) {
+  if (!files.has(file)) {
+    errors.push('Unregistered UI component file: ' + file)
+  }
+}
+for (const file of files) {
+  if (!actual.has(file)) {
+    errors.push('Registry entry is not an eligible UI component: ' + file)
+  }
+}
 
 const summary = {
   registered: registry.components.length,
   discovered: actual.size,
-  evidenceVerified: registry.components.filter((x) => x.contract.evidence.status === 'VERIFIED').length,
-  evidencePartial: registry.components.filter((x) => x.contract.evidence.status === 'PARTIAL').length,
-  evidenceNotVerified: registry.components.filter((x) => x.contract.evidence.status === 'NOT_VERIFIED').length,
+  evidenceVerified: registry.components.filter(
+    (x) => x.contract.evidence.status === 'VERIFIED'
+  ).length,
+  evidencePartial: registry.components.filter(
+    (x) => x.contract.evidence.status === 'PARTIAL'
+  ).length,
+  evidenceNotVerified: registry.components.filter(
+    (x) => x.contract.evidence.status === 'NOT_VERIFIED'
+  ).length,
   errors: errors.length,
   warnings: warnings.length,
 }
@@ -83,7 +121,9 @@ for (const error of errors) console.error('ERROR:', error)
 for (const warning of warnings) console.warn('WARN:', warning)
 if (errors.length) process.exit(1)
 if (process.argv.includes('--strict') && warnings.length) {
-  console.error('Strict mode: all registered components must have VERIFIED evidence.')
+  console.error(
+    'Strict mode: all registered components must have VERIFIED evidence.'
+  )
   process.exit(1)
 }
 console.log('Component registry structure and filesystem inventory are valid.')

@@ -139,10 +139,13 @@ function tokenTier(
       input = term.right
     }
     let variable: TokenVariable
+    // `duration` and `image_count` are task billing variables handled by
+    // task-display.ts; they must never enter the token price table.
     if (
       input.kind === 'variable' &&
       input.name !== 'len' &&
-      input.name !== 'image_count'
+      input.name !== 'image_count' &&
+      input.name !== 'duration'
     ) {
       variable = input.name
     } else {

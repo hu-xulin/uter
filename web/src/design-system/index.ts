@@ -25,7 +25,6 @@ For commercial licensing, please contact support@uter.ai
  * tokens/       设计值（CSS 变量）：字号、间距、颜色、圆角、阴影
  * foundations/  全局基础样式：排版工具类、无障碍、动效
  * components/   语义组件：Text / Heading
- * patterns/     交互模式：PageHeader
  * ```
  *
  * ## 与 `components/ui/` 的边界（重要）
@@ -45,4 +44,3 @@ For commercial licensing, please contact support@uter.ai
  */
 
 export * from './components'
-export * from './patterns'

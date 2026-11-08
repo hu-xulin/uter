@@ -18,34 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { LinkProps } from '@tanstack/react-router'
 
-import {
-  DOCS_LOCALE_PAIRS,
-  docsPathForSpaLocale,
-  type DocsLocaleCode,
-} from '@/lib/docs-link'
-
 import type { NavItem, NavCollapsible, TopNavLink } from '../types'
-
-/**
- * Cache the docs-site prefixes so `isServerRenderedHref` doesn't have
- * to recompute them on every navigation call. The set is tiny (one
- * entry per supported docs locale) but the function runs on every
- * link render.
- */
-const DOCS_PATH_PREFIXES: ReadonlySet<string> = (() => {
-  const out = new Set<string>()
-  for (const locale of Object.keys(DOCS_LOCALE_PAIRS) as DocsLocaleCode[]) {
-    out.add(docsPathFor(locale))
-  }
-  return out
-})()
-
-function docsPathFor(locale: DocsLocaleCode): string {
-  // Local mirror of `docs-link.ts#docsPathFor` — we keep it here so
-  // url-utils stays free of the SPA's i18n instance and only depends
-  // on the static locale map. The two implementations must agree.
-  return docsPathForSpaLocale(locale)
-}
 
 /**
  * In-app legal document routes rendered inside the docs shell. The footer
@@ -111,21 +84,6 @@ export function fullPageAnchorProps(href: string): {
   return isExternalHref(href)
     ? { target: '_blank', rel: 'noopener noreferrer' }
     : {}
-}
-
-/**
- * Whether an href is a same-origin path served outside the SPA router.
- *
- * Matches every supported docs locale — `/docs/zh/...`, `/docs/en/...`,
- * etc. — so a switch of language in the docs button doesn't sneak the
- * link past this classifier and into the SPA router, which has no
- * matching route.
- */
-export function isServerRenderedHref(href: string): boolean {
-  for (const prefix of DOCS_PATH_PREFIXES) {
-    if (href === prefix || href.startsWith(`${prefix}/`)) return true
-  }
-  return false
 }
 
 /**

@@ -309,7 +309,9 @@ function UpstreamAttribution(props: { className?: string }) {
         {t('new-api')}
       </a>
       <span aria-hidden='true'>·</span>
-      <span>{t('Frontend design and development by New API contributors.')}</span>
+      <span>
+        {t('Frontend design and development by New API contributors.')}
+      </span>
     </span>
   )
 }

@@ -18,8 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMemo } from 'react'
 
-import type { SystemStatus } from '@/types/system'
 import { useStatus } from '@/hooks/use-status'
+import type { SystemStatus } from '@/types/system'
 
 import {
   type ChatPreset,

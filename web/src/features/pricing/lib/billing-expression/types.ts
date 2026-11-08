@@ -23,6 +23,7 @@ export const TOKEN_VARIABLES = [
   'cr',
   'cc',
   'cc1h',
+  'cc12h',
   'img',
   'img_cr',
   'img_o',
@@ -30,7 +31,16 @@ export const TOKEN_VARIABLES = [
   'ao',
 ] as const
 export type TokenVariable = (typeof TOKEN_VARIABLES)[number]
-export const BILLING_VARIABLES = [...TOKEN_VARIABLES, 'image_count'] as const
+/**
+ * Bare identifiers, in the same order as the backend env in run.go. `duration`
+ * is the media length a task expression bills against; it has no token price
+ * of its own and is resolved from the simulation context.
+ */
+export const BILLING_VARIABLES = [
+  ...TOKEN_VARIABLES,
+  'duration',
+  'image_count',
+] as const
 export type BillingVariable = (typeof BILLING_VARIABLES)[number]
 export const TIME_FUNCTIONS = [
   'hour',
@@ -47,6 +57,8 @@ export const BILLING_FUNCTIONS: Readonly<Record<string, number>> = {
   header: 1,
   has: 2,
   u: 1,
+  lower: 1,
+  upper: 1,
   hour: 1,
   minute: 1,
   weekday: 1,
@@ -128,6 +140,8 @@ export type BillingSimulationContext = {
   imageCount?: number
   /** Already normalized billable counts; no implicit cache subtraction. */
   tokens?: Partial<Record<TokenVariable, number>>
+  /** Media length in seconds for `duration`; absent matches the backend's nil. */
+  duration?: number
   /** Absent means unknown. An explicitly provided empty request means empty. */
   request?: { body?: unknown; headers?: Record<string, string> }
   usage?: Record<string, unknown>

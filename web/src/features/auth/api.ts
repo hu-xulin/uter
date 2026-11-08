@@ -31,13 +31,10 @@ import {
   encryptPassword,
 } from './lib/password-encryption'
 import { getAffiliateCode } from './lib/storage'
-import type { TelegramAuthorization } from './lib/telegram-login'
 import type { VerificationOperation } from './secure-verification/types'
 import type {
   LoginPayload,
   LoginResponse,
-  Login2FAResponse,
-  TwoFAPayload,
   RegisterPayload,
   ApiResponse,
 } from './types'
@@ -87,12 +84,6 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 }
 
 // Two-factor authentication login
-export async function login2fa(payload: TwoFAPayload) {
-  const res = await api.post<Login2FAResponse>('/api/user/login/2fa', payload, {
-    skipAuthRefresh: true,
-  })
-  return res.data
-}
 
 // 请求登录验证码（purpose "l"）。后端对未注册邮箱返回同样的成功响应
 // （防枚举），因此这里不做「邮箱不存在」的分支处理。
@@ -198,10 +189,6 @@ export async function sendPasswordResetEmail(
 // ----------------------------------------------------------------------------
 
 // Start GitHub OAuth flow
-export async function githubOAuthStart(clientId: string, state: string) {
-  const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&state=${state}&scope=user:email`
-  window.open(url)
-}
 
 // Get OAuth state for CSRF protection
 export async function createOAuthAuthorization(
@@ -308,19 +295,6 @@ export async function getWeChatWebFlowOrigin(
   return null
 }
 
-export async function telegramLogin(
-  authorization: TelegramAuthorization
-): Promise<ApiResponse> {
-  const res = await api.get('/api/oauth/telegram/login', {
-    params: authorization,
-    disableDuplicate: true,
-    skipAuthRefresh: true,
-    skipBusinessError: true,
-    skipErrorHandler: true,
-  })
-  return res.data
-}
-
 // ----------------------------------------------------------------------------
 // Registration
 // ----------------------------------------------------------------------------
@@ -345,20 +319,3 @@ export async function sendEmailVerification(
 }
 
 // Confirm an authenticated, server-owned email binding flow.
-export async function bindEmail(
-  flowToken: string,
-  newCode: string,
-  oldCode = '',
-  signal?: AbortSignal
-): Promise<ApiResponse> {
-  const res = await api.post(
-    '/api/oauth/email/bind',
-    {
-      flow_token: flowToken,
-      new_code: newCode,
-      old_code: oldCode,
-    },
-    { singleUseAuthorization: true, signal }
-  )
-  return res.data
-}

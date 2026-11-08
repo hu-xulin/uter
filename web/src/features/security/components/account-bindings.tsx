@@ -31,7 +31,6 @@ import {
   type OAuthPopupExchange,
 } from '@/features/auth/lib/oauth-popup'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
-import type { CustomOAuthProviderInfo } from '@/types/system'
 import { getSelfOAuthBindings, unbindCustomOAuth } from '@/features/profile/api'
 import type {
   UserProfile,
@@ -51,6 +50,7 @@ import {
   authRequestOptions,
   authResult,
 } from '@/lib/secure-verification'
+import type { CustomOAuthProviderInfo } from '@/types/system'
 
 import { useAccountSecurity } from '../hooks/use-account-security'
 import { EmailBindDialog } from './dialogs/email-bind-dialog'
