@@ -827,7 +827,10 @@ func EvaluateTaskCompletionUsage(snap *billingexpr.BillingSnapshot, facts map[st
 	usage := make(map[string]any, len(snap.UsageFacts)+len(facts))
 	maps.Copy(usage, snap.UsageFacts)
 	maps.Copy(usage, facts)
-	result, err := billingexpr.ComputeTieredQuotaWithRequest(snap, billingexpr.TokenParams{}, billingexpr.RequestInput{Usage: usage})
+	// 与提交时同口径：按秒计费的表达式读 `duration` 变量，结算必须把
+	// 插件汇报的秒数绑定回去，否则 `duration` 恒为 0，表达式只会走自己的
+	// 兜底秒数。见 billingexpr.RequestInputForUsage。
+	result, err := billingexpr.ComputeTieredQuotaWithRequest(snap, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(usage))
 	if err == nil && (result.ActualQuotaBeforeGroup < 0 || math.IsNaN(result.ActualQuotaBeforeGroup)) {
 		err = fmt.Errorf("task completion expression produced an invalid cost")
 	}

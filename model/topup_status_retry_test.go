@@ -97,3 +97,81 @@ func TestRechargeTopUpDistinguishesMissingOrderFromDatabaseFailure(t *testing.T)
 		})
 	}
 }
+
+// TestUpdatePendingTopUpStatusUsesConditionalUpdate locks in F-13: the
+// pending -> failed/expired transition must be decided by a conditional UPDATE
+// that touches only the status column. A whole-struct Save from an in-memory
+// copy would overwrite sibling columns written by a concurrent callback, and
+// on SQLite (where lockForUpdate degrades to a plain SELECT) could let a loser
+// resurrect or downgrade an order the winner already completed.
+func TestUpdatePendingTopUpStatusUsesConditionalUpdate(t *testing.T) {
+	setupTopUpStatusRetryTestDB(t, true)
+
+	order := TopUp{
+		UserId:          901,
+		Amount:          2,
+		Money:           10.0,
+		TradeNo:         "cas-pending-order",
+		PaymentMethod:   "alipay",
+		PaymentProvider: PaymentProviderStripe,
+		CreateTime:      common.GetTimestamp(),
+		Status:          common.TopUpStatusPending,
+	}
+	if err := DB.Create(&order).Error; err != nil {
+		t.Fatalf("create order: %v", err)
+	}
+
+	if err := UpdatePendingTopUpStatus(order.TradeNo, PaymentProviderStripe, common.TopUpStatusExpired); err != nil {
+		t.Fatalf("first transition failed: %v", err)
+	}
+
+	// A repeat callback (or a racer that read pending before the winner wrote)
+	// must not be able to move the row a second time.
+	err := UpdatePendingTopUpStatus(order.TradeNo, PaymentProviderStripe, common.TopUpStatusFailed)
+	if !errors.Is(err, ErrTopUpStatusInvalid) {
+		t.Fatalf("repeat transition error = %v, want ErrTopUpStatusInvalid", err)
+	}
+
+	var stored TopUp
+	if err := DB.Where("trade_no = ?", order.TradeNo).First(&stored).Error; err != nil {
+		t.Fatalf("reload order: %v", err)
+	}
+	if stored.Status != common.TopUpStatusExpired {
+		t.Fatalf("status = %q, want %q", stored.Status, common.TopUpStatusExpired)
+	}
+	if stored.PaymentMethod != "alipay" || stored.Amount != 2 || stored.Money != 10.0 ||
+		stored.PaymentProvider != PaymentProviderStripe {
+		t.Fatalf("sibling columns were overwritten by a whole-struct save: %+v", stored)
+	}
+}
+
+// TestUpdatePendingTopUpStatusKeepsProviderGuard verifies the conditional
+// update did not bypass the payment-provider guard that precedes it.
+func TestUpdatePendingTopUpStatusKeepsProviderGuard(t *testing.T) {
+	setupTopUpStatusRetryTestDB(t, true)
+
+	order := TopUp{
+		UserId:          902,
+		Amount:          1,
+		Money:           5.0,
+		TradeNo:         "cas-provider-guard",
+		PaymentMethod:   "alipay",
+		PaymentProvider: PaymentProviderCreem,
+		CreateTime:      common.GetTimestamp(),
+		Status:          common.TopUpStatusPending,
+	}
+	if err := DB.Create(&order).Error; err != nil {
+		t.Fatalf("create order: %v", err)
+	}
+
+	if err := UpdatePendingTopUpStatus(order.TradeNo, PaymentProviderStripe, common.TopUpStatusFailed); !errors.Is(err, ErrPaymentMethodMismatch) {
+		t.Fatalf("error = %v, want ErrPaymentMethodMismatch", err)
+	}
+	var stored TopUp
+	if err := DB.Where("trade_no = ?", order.TradeNo).First(&stored).Error; err != nil {
+		t.Fatalf("reload order: %v", err)
+	}
+	if stored.Status != common.TopUpStatusPending {
+		t.Fatalf("rejected transition changed status to %q", stored.Status)
+	}
+}

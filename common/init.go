@@ -29,6 +29,45 @@ func printHelp() {
 	fmt.Println("Usage: Uter [--port <port>] [--log-dir <log directory>] [--version] [--help]")
 }
 
+// ensureSQLiteConcurrencyPragmas keeps the two DSN parameters that are
+// mandatory for concurrent-correct SQLite writes: `_txlock=immediate`
+// (BEGIN IMMEDIATE) and `_pragma=busy_timeout(...)`. It is used only for the
+// SQLITE_PATH environment override, so operator intent (a custom file path or
+// extra pragmas) is preserved while the transaction guarantees cannot be
+// weakened by omission. An explicit `_txlock=deferred` is upgraded, because
+// allowing it would reintroduce SQLITE_BUSY_SNAPSHOT under concurrent writers.
+//
+// Returns (normalizedDSN, upgraded) — upgraded reports whether any parameter
+// was added or corrected, for a startup warning.
+func ensureSQLiteConcurrencyPragmas(dsn string) (string, bool) {
+	base, query, found := strings.Cut(dsn, "?")
+	params := make([]string, 0, 4)
+	if found && query != "" {
+		params = append(params, strings.Split(query, "&")...)
+	}
+	hasTxLock, hasBusyTimeout := false, false
+	for i, p := range params {
+		switch key := strings.SplitN(p, "=", 2)[0]; {
+		case key == "_txlock":
+			// Never honour a weaker transaction lock mode.
+			if p != "_txlock=immediate" {
+				params[i] = "_txlock=immediate"
+			}
+			hasTxLock = true
+		case key == "_pragma" && strings.HasPrefix(p, "_pragma=busy_timeout"):
+			hasBusyTimeout = true
+		}
+	}
+	if !hasTxLock {
+		params = append(params, "_txlock=immediate")
+	}
+	if !hasBusyTimeout {
+		params = append(params, "_pragma=busy_timeout(30000)")
+	}
+	normalized := base + "?" + strings.Join(params, "&")
+	return normalized, normalized != dsn
+}
+
 func InitEnv() {
 	flag.Parse()
 
@@ -58,8 +97,21 @@ func InitEnv() {
 		log.Fatal(err)
 	}
 	initUserSessionSettings()
-	if os.Getenv("SQLITE_PATH") != "" {
-		SQLitePath = os.Getenv("SQLITE_PATH")
+	if p := os.Getenv("SQLITE_PATH"); p != "" {
+		// SQLITE_PATH overrides the default DSN. The default carries
+		// `_txlock=immediate` (BEGIN IMMEDIATE) and
+		// `_pragma=busy_timeout(30000)`; both are required for concurrent
+		// correctness of payment/balance writes (see database.go). A bare path
+		// used to silently drop them and reintroduce SQLITE_BUSY_SNAPSHOT under
+		// concurrent writers. Normalize instead of rejecting so existing
+		// deployments keep starting, but never let the override weaken the
+		// transaction guarantees. Tests that assign common.SQLitePath directly
+		// are unaffected because this only runs in the env-var branch.
+		normalized, upgraded := ensureSQLiteConcurrencyPragmas(p)
+		if upgraded {
+			log.Printf("WARNING: SQLITE_PATH omitted concurrency pragmas; normalized to preserve BEGIN IMMEDIATE and busy timeout")
+		}
+		SQLitePath = normalized
 	}
 	if *LogDir != "" {
 		var err error
