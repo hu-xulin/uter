@@ -25,6 +25,8 @@ require "time"
 require "digest"
 require "open3"
 require "fileutils"
+require "timeout"
+require "tmpdir"
 
 ROOT = File.expand_path("../..", __dir__)
 UAES_ROOT = File.expand_path(ENV.fetch("UAES_REPO", File.join(ROOT, "..", "uaes")))
@@ -230,17 +232,47 @@ if ma_exec
   end
 end
 ma_signed = ma_inv ? ma_inv.fetch("items", []).count { |i| i["acceptance_status"] == "VERIFIED" } : nil
+
+# The control's real subject is "no delegated / self-promoted sign-off", NOT
+# "no sign-off at all". The old clause `ma_signed == 0` was a deadlock: the
+# gate evaluator's L4-05/10/13 require all 42 items to be VERIFIED, so a
+# genuinely completed item-by-item acceptance would make this independent
+# control FAIL. Both states must be admissible, with different requirements:
+#   * 0 signed  -> the authority must NOT claim a grant (today's state);
+#   * 42 signed -> GRANTED decision, signed_item_ids exactly matches the
+#                  VERIFIED set, and every item carries a named signer + time.
+# A DELEGATED / blanket sign-off is rejected in BOTH states. This is a logic
+# correction, not a relaxation: it still refuses any auto-promotion, and it
+# adds checks the old clause did not have.
+authority_h = authority.is_a?(Hash) ? authority : {}
+ma_items = ma_inv.is_a?(Hash) ? Array(ma_inv["items"]) : []
+verified_rows = ma_items.select { |i| i["acceptance_status"] == "VERIFIED" }
+signed_ids = Array(authority_h["signed_item_ids"])
+no_delegated_signoff =
+  authority_h["decision"] != "DELEGATED_BLANKET_SIGNOFF" &&
+  authority_h["signoff_basis"] != "DELEGATION" &&
+  ma_items.none? { |i| i["signoff_nature"] == "DELEGATED" }
+grant_consistent = if verified_rows.empty?
+  authority_h["signoff_granted"] == false && signed_ids.empty?
+else
+  authority_h["signoff_granted"] == true &&
+    authority_h["decision"] == "GRANTED" &&
+    signed_ids.sort == verified_rows.map { |i| i["id"] }.sort &&
+    verified_rows.all? { |i| !i["verified_by"].to_s.empty? &&
+                              i["verified_by"] == authority_h["authority_name"] &&
+                              !i["verified_at"].to_s.empty? }
+end
+
 authority_ok = authority.is_a?(Hash) &&
   authority["source"] == "USER_EXPLICIT_DESIGNATION" &&
   !authority["authority_name"].to_s.empty? &&
-  authority["signoff_granted"] == false &&
-  Array(authority["signed_item_ids"]).empty? &&
+  no_delegated_signoff && grant_consistent &&
   ma_exec.is_a?(Hash) && ma_integrity.is_a?(Hash) && ma_state.is_a?(Hash) && ma_inv.is_a?(Hash) &&
   ma_integrity["status"] == "PASS" && ma_state["state"] == "COMPLETED" &&
   ma_state["run_id"] == ma_exec["run_id"] && ma_inv["run_id"] == ma_exec["run_id"] &&
-  ma_hash_bad.empty? && ma_signed == 0 &&
+  ma_hash_bad.empty? && ma_signed == verified_rows.length &&
   l4.dig("acceptance", "authority_recorded") == true &&
-  l4.dig("acceptance", "signoff_granted") == false
+  l4.dig("acceptance", "signoff_granted") == verified_rows.any?
 add_observation.call("IA-07", "acceptance authority + manual evidence independently re-derived", authority_ok ? "PASS" : "FAIL",
                      { "authority_source" => authority && authority["source"],
                        "run_state" => ma_state && ma_state["state"],
@@ -266,6 +298,129 @@ end
 # This assessment file is written at the end of this run, so its own hash is
 # computed after writing; record that explicitly instead of faking it.
 integrity_note = "SHA-256 values support evidence integrity only; they do not prove the underlying activity was performed correctly (§14.4). The independent-assessment.json row is self-referential and is re-hashed by the next assessment run."
+
+# ---- 6b. Control effectiveness (§16.1 dimension 4) ----------------------
+# Dimensions 1-3 of §16.1 ask "did the control run?" — matrix exit codes,
+# re-derived hashes, re-checked deny decisions. Dimension 4 asks a DIFFERENT
+# question: "would the control actually catch a violation?" A green matrix
+# cannot answer that. The assessor therefore executes fault-injection probes
+# itself and records real exit codes; it never consumes a WorkBuddy-authored
+# PASS declaration as effectiveness evidence.
+#
+# CE-05 is a direct injection performed by THIS assessor (not delegated to a
+# test script): the same corpus must yield zero findings before the injected
+# secret and at least one after it. That proves the gitleaks allowlist did not
+# silently widen into a blanket suppression.
+effectiveness_probes = [
+  { "id" => "CE-01", "control" => "registry DRAFT/ACTIVE live derivation",
+    "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-registry-draft-state.rb"],
+    "marker" => /0 failures, 0 errors/, "negative_case" => "hard-coded 304 / stale registry fixture" },
+  { "id" => "CE-02", "control" => "manual-acceptance evidence fail-closed",
+    "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-uaes-manual-acceptance-boundary.rb"],
+    "marker" => /0 failures, 0 errors/, "negative_case" => "auto-promoted VERIFIED item / broken integrity chain" },
+  { "id" => "CE-03", "control" => "two-repository governance boundary deny paths",
+    "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-uter-governance-boundaries.rb"],
+    "marker" => /0 failures, 0 errors/, "negative_case" => "governance rules duplicated into product repo" },
+  { "id" => "CE-04", "control" => "gitleaks allowlist narrowness regression",
+    "cwd" => ROOT, "cmd" => ["bash", "scripts/quality/gitleaks-allowlist.test.sh"],
+    "marker" => /injected real-form secret still detected/, "negative_case" => "real-form secret injected into an exempted-pattern file" },
+  { "id" => "CE-06", "control" => "requirement resolver two-level coverage",
+    "cwd" => UAES_ROOT, "cmd" => ["node", "quality/scripts/uaes/standards-for.test.mjs"],
+    "marker" => /regression probe bites/, "negative_case" => "rule-only mapping resolves fewer requirements" },
+]
+
+effectiveness_rows = effectiveness_probes.map do |probe|
+  t0 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+  output, stderr, exit_code = "", "", nil
+  begin
+    Timeout.timeout(300) do
+      output, stderr, st = Open3.capture3(*probe["cmd"], chdir: probe["cwd"])
+      exit_code = st.exitstatus
+    end
+  rescue Timeout::Error, StandardError => e
+    stderr = "#{e.class}: #{e.message}"
+  end
+  combined = "#{output}#{stderr}"
+  marker_found = combined.match?(probe["marker"])
+  { "id" => probe["id"], "control" => probe["control"],
+    "method" => "assessor executes the control's negative case and checks its real exit code + assertion marker",
+    "command" => probe["cmd"].join(" "), "cwd" => probe["cwd"],
+    "negative_case" => probe["negative_case"],
+    "exit_code" => exit_code, "marker_found" => marker_found,
+    "duration_seconds" => (Process.clock_gettime(Process::CLOCK_MONOTONIC) - t0).round(3),
+    "output_tail" => combined.strip.lines.last(4).join.strip.slice(0, 300),
+    "status" => exit_code == 0 && marker_found ? "PASS" : "FAIL" }
+end
+
+# CE-05: assessor's own fault injection against the live gitleaks config.
+ce05 = { "id" => "CE-05", "control" => "secret-scan allowlist does not mask a real leak",
+         "method" => "assessor writes a corpus, scans it, injects a real-form secret, scans again" }
+Dir.mktmpdir("uter-ia-ce-") do |dir|
+  corpus = File.join(dir, "corpus.md")
+  config = File.join(ROOT, ".quality/gitleaks.toml")
+  report = File.join(dir, "report.json")
+  File.write(corpus, "threat modeling, identity/access, application/API security, data protection.\n")
+  scan = lambda do
+    File.delete(report) if File.file?(report)
+    _o, _e, st = Open3.capture3("gitleaks", "dir", corpus, "--no-banner", "--config", config,
+                                 "--report-format", "json", "--report-path", report)
+    found = File.file?(report) ? (JSON.parse(File.read(report)) rescue []) : []
+    { "exit" => st.exitstatus, "findings" => found.length,
+      "rules" => found.map { |f| f["RuleID"] }.uniq }
+  end
+  clean = scan.call
+  # Assemble the probe token at runtime: a literal credential-shaped string in
+  # this source file would itself be a (correctly detected) MA-06 finding once
+  # committed. The two fragments are not a matchable token on their own.
+  probe_token = "glpat-" + "1234567890abcdefghij"
+  File.open(corpus, "a") { |f| f.puts "PROBE gitlab_token = \"#{probe_token}\"" }
+  injected = scan.call
+  ok = clean["exit"] == 0 && clean["findings"] == 0 &&
+       injected["exit"] != 0 && injected["findings"] >= 1 &&
+       injected["rules"].include?("gitlab-pat")
+  ce05.merge!("clean_scan" => clean, "injected_scan" => injected,
+              "status" => ok ? "PASS" : "FAIL")
+end
+effectiveness_rows << ce05
+
+effectiveness_rows.sort_by! { |r| r["id"] }
+effectiveness_ok = effectiveness_rows.all? { |r| r["status"] == "PASS" }
+out_of_scope_controls = [
+  "42 item-by-item human acceptance sign-offs (§14.3 / §18)",
+  "independent third-party review conclusions for M00-02/M01-01/M06-01/M08-01/M08-02/M13-05",
+  "human risk-owner residual-risk acceptance or APPROVED_EXCEPTION (§13.4)",
+  "three-database / multi-instance / production-like DR drills",
+  "CI/CD green run at the exact committed head (§11)",
+]
+control_effectiveness = {
+  "status" => effectiveness_ok ? "PASS" : "FAIL",
+  "distinguishes_operation_from_effectiveness" => true,
+  "dimension_1_to_3_operation" => {
+    "question" => "did the control run?",
+    "evidence" => "test-matrix.json raw exit codes (IA-03), evidence hashes (§6), re-derived DENY decisions (IA-04)",
+    "matrix_passed" => matrix["passed"], "matrix_failed" => matrix["failed"],
+  },
+  "dimension_4_effectiveness" => {
+    "question" => "would the control catch a violation?",
+    "method" => "assessor-executed fault injection / negative-case suites with real exit codes",
+    "probes" => effectiveness_rows,
+    "passed" => effectiveness_rows.count { |r| r["status"] == "PASS" },
+    "total" => effectiveness_rows.length,
+  },
+  "scope" => "machine-executable controls in the Uter + pinned UAES repositories",
+  "scope_limited" => true,
+  "out_of_scope_controls" => out_of_scope_controls,
+  "note" => "PASS here means the executed controls demonstrably reject injected violations. It does NOT mean human sign-off, third-party review, external-environment drills or risk-owner acceptance were performed; those remain NOT_MET in L4-05/10/11/13.",
+}
+add_observation.call("IA-08", "control effectiveness re-evaluated by fault injection", effectiveness_ok ? "PASS" : "FAIL",
+                     { "probes" => effectiveness_rows.length,
+                       "passed" => effectiveness_rows.count { |r| r["status"] == "PASS" },
+                       "failed" => effectiveness_rows.reject { |r| r["status"] == "PASS" }.map { |r| r["id"] },
+                       "distinguishes_operation_from_effectiveness" => true,
+                       "scope" => control_effectiveness["scope"] })
+add_finding.call("FIND-IA-12", "High", "control effectiveness fault-injection probe failed",
+                 "An assessor-executed negative case did not behave as required: #{effectiveness_rows.reject { |r| r['status'] == 'PASS' }.map { |r| r['id'] }.join(', ')}",
+                 "§16.1 dimension 4") unless effectiveness_ok
 
 # ---- 7. Open findings / exceptions / conformance claims (§16.4) ----------
 open_manual = (l3["domains"] || []).sum { |d| (d["open_manual_acceptance"] || []).length }
@@ -302,7 +457,8 @@ add_finding.call("FIND-IA-09", "Medium", "#{matrix_fail} test-matrix commands FA
 add_finding.call("FIND-IA-10", "Low", "no APPROVED_EXCEPTION records granted",
                  "All unmet requirements remain open; no risk-owner acceptance exists (§13.4 / §16.4)", "§13.4") if exceptions_found.empty?
 
-assessment_ok = pin_ok && scope_ok && matrix_ok && runtime_ok && l3_ok && authority_ok && !unsupported_claim
+assessment_ok = pin_ok && scope_ok && matrix_ok && runtime_ok && l3_ok && authority_ok &&
+               effectiveness_ok && !unsupported_claim
 
 payload = {
   "evidence_id" => EVIDENCE_ID, "generated_at" => now,
@@ -316,12 +472,14 @@ payload = {
   "storage_reference" => EVIDENCE,
   "access_restrictions" => "local repository evidence; no credentials or production data",
   "assessment_scope" => {
-    "system_boundary" => "Uter repository (Layer B) + pinned UAES 1.9.0 baseline (Layer A, read-only) + WorkBuddy/CI assurance (Layer C)",
-    "standards_baseline" => "UTER-UAES-GOV-001 + UAES 1.9.0 APPROVED + §2.1 external standards catalogue",
-    "domains" => 14
+    "system_boundary" => "Uter repository (Layer B) + pinned UAES #{uaes_registry_version} #{uaes_registry_status} baseline (Layer A, read-only) + WorkBuddy/CI assurance (Layer C)",
+    "standards_baseline" => "UTER-UAES-GOV-001 + UAES #{uaes_registry_version} #{uaes_registry_status} + §2.1 external standards catalogue",
+    "domains" => 14,
+    "baseline_source" => "read live from UAES/.uaes/STANDARD-REGISTRY.yaml; never hard-coded",
   },
   "independent_assessment_completed" => true,
   "independent_re_evaluation" => observations,
+  "control_effectiveness" => control_effectiveness,
   "evidence_integrity_review" => integrity_rows,
   "open_findings" => findings,
   "exception_approvals" => { "count" => exceptions_found.length, "note" => "No risk-owner approval may be assumed (§13.4 / §18)." },
@@ -332,7 +490,7 @@ payload = {
   "verdict" => {
     "independent_assessment" => "COMPLETED",
     "conformance_claim_supported" => false,
-    "reason" => "The independent re-evaluation completed, but 14 domain acceptances, control-effectiveness evaluation, evidence sufficiency, risk-owner acceptance and L4_GLOBAL_CONFORMANCE_GATE remain open. A completed assessment report is NOT an approval.",
+    "reason" => "The independent re-evaluation (including machine-executable control-effectiveness fault injection) completed, but 14 domain acceptances, 42 item-level human sign-offs, independent third-party review conclusions, evidence sufficiency, risk-owner acceptance and L4_GLOBAL_CONFORMANCE_GATE remain open. A completed assessment report is NOT an approval.",
     "recommended_conformance_status" => "PARTIALLY CONFORMANT (§16.2), with L4 BLOCKED"
   }
 }
@@ -356,6 +514,16 @@ findings.each { |f| md << "| #{f['finding_id']} | #{f['severity']} | #{f['title'
 md << "\n## Evidence integrity (§14.4)\n\n"
 integrity_rows.each { |r| md << "- `#{r['file']}` present=#{r['present']} sha256=`#{r['sha256'] || 'n/a'}` missing_fields=#{(r['missing_fields'] || []).join(',')}\n" }
 md << "\n#{integrity_note}\n\n"
+md << "## Control effectiveness (§16.1 dimension 4)\n\n"
+md << "**Operation (dimensions 1-3):** did the control run? Verified via raw exit codes, hashes and re-derived DENY decisions above. "
+md << "**Effectiveness (dimension 4):** would it catch a violation? Verified by assessor-executed fault injection — these are different questions.\n\n"
+md << "| Probe | Control | Negative case | Exit | Marker | Status |\n|---|---|---|---|---|---|\n"
+effectiveness_rows.each do |r|
+  md << "| #{r['id']} | #{r['control']} | #{r['negative_case']} | #{r['exit_code'].inspect} | #{r['marker_found'].inspect} | #{r['status']} |\n"
+end
+md << "\n- Result: **#{control_effectiveness['status']}** (#{control_effectiveness.dig('dimension_4_effectiveness', 'passed')}/#{control_effectiveness.dig('dimension_4_effectiveness', 'total')} probes), distinguishes operation from effectiveness = **true**.\n"
+md << "- Scope: #{control_effectiveness['scope']}. **This PASS is scope-limited** and does not certify human sign-off, third-party review, external-environment drills or risk-owner acceptance.\n"
+md << "- Out of scope (remain NOT_MET): #{out_of_scope_controls.join('; ')}.\n\n"
 md << "## Conformance claim review\n\n"
 md << "- L4_GLOBAL_CONFORMANCE_GATE: **#{l4['status']}** (#{l4['not_met']}/#{l4['mandatory_conditions']} NOT_MET)\n"
 md << "- Unsupported CONFORMANT claim: **#{unsupported_claim}**\n"

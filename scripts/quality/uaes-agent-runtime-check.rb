@@ -424,15 +424,30 @@ def workspace(task_file:, uaes_repo:)
 
   normative_prefixes = %w[standards/ .uaes/STANDARD-REGISTRY.yaml .uaes/registry/ .uaes/APPROVAL-RECORD.md
                          .uaes/policies/ quality/gates/ quality/policies/ agents/policies/]
+  # `.uaes/registry/` also contains two DERIVED indices, declared as such in
+  # UAES/quality/scripts/uaes/verify-derived-indices.mjs (DERIVED list). They are
+  # regenerated, non-normative projections of STANDARD-REGISTRY.yaml; correcting
+  # a stale projection is the DI-01..DI-11 drift gate WORKING, not an edit to an
+  # approved normative standard. Treating them as normative made W5 fail on the
+  # very action the drift gate requires (2026-11-08: rule_ids_total 590 -> 595).
+  # This is not a blanket exemption: only the two named files are excluded, and
+  # their content is independently re-derived by verify-derived-indices.mjs.
+  derived_index_exemptions = %w[.uaes/registry/standards.yaml .uaes/registry/gates.yaml]
   uaes_status = ""
   if File.directory?(uaes_repo)
     uaes_status, = Open3.capture2("git", "-C", uaes_repo, "status", "--porcelain=v1")
   end
   normative_changes = uaes_status.lines.map { |l| l[3..].to_s.strip }
+                                 .reject { |p| derived_index_exemptions.include?(p) }
                                  .select { |p| normative_prefixes.any? { |pre| p.start_with?(pre) } }
+  derived_changes = uaes_status.lines.map { |l| l[3..].to_s.strip }
+                               .select { |p| derived_index_exemptions.include?(p) }
   add.call("W5", "UAES approved normative standards untouched", normative_changes.empty?,
            { "normative_changes" => normative_changes,
-             "note" => "generated report artifacts may be refreshed; normative standards/gates/policies may not" })
+             "derived_index_changes" => derived_changes,
+             "derived_index_exemptions" => derived_index_exemptions,
+             "derived_index_authority" => "UAES/quality/scripts/uaes/verify-derived-indices.mjs (DI-01..DI-11)",
+             "note" => "generated report artifacts and the two declared DERIVED indices may be refreshed; normative standards/gates/policies may not" })
 
   secret_like = added.select { |p| p =~ /(\.env|\.pem|\.key|credential|secret|\.db$)/i && !p.start_with?("reports/compliance/") }
   add.call("W6", "no secret-like file introduced", secret_like.empty?, { "matches" => secret_like })

@@ -369,10 +369,54 @@ independent_done = independent && independent["independent_assessment_completed"
 ma_summary = (MANUAL_EXECUTION && MANUAL_EXECUTION["summary"]) || {}
 ma_gaps = []
 ma_gaps << "MA FAIL=#{ma_summary['FAIL']}" if ma_summary["FAIL"].to_i > 0
-ma_gaps << "MA NOT_RUN=#{ma_summary['NOT_RUN']} (axe toolchain unavailable)" if ma_summary["NOT_RUN"].to_i > 0
+ma_gaps << "MA NOT_RUN=#{ma_summary['NOT_RUN']}" if ma_summary["NOT_RUN"].to_i > 0
 ma_gaps << "MA TIMEOUT=#{ma_summary['TIMEOUT']}" if ma_summary["TIMEOUT"].to_i > 0
 ma_gaps << "integrity=#{MANUAL_INTEGRITY && MANUAL_INTEGRITY['status'] || 'MISSING'}"
 ma_gaps << "verified_items=#{l3.dig('manual_acceptance_evidence', 'verified_item_count')}/42"
+
+# §16.4 L4-11 / L4-12 used to be literal `false`, which made them impossible
+# to satisfy even after the real evidence arrived. That is a gate defect, not
+# an honest status: a condition that can never flip cannot decide anything.
+# Both are now derived from evidence and remain NOT_MET today — the point of
+# the change is that they are *decidable*, not that they pass.
+#
+# L4-11 requires a human risk-owner acceptance. A structured APPROVED_EXCEPTION
+# row (authority + review date, §13.4) or an explicit owner decision to ACCEPT
+# residual risk counts. The owner's actual 2026-11-08 decision O-11 was "补齐"
+# (remediate), NOT "接受残留风险" (accept), so this stays NOT_MET.
+EXCEPTION_ROW = /^\|\s*EXC-[A-Z0-9-]+\s*\|.*APPROVED_EXCEPTION/.freeze
+approved_exceptions = Dir.glob(File.join(REPORTS, "D28-*.md")).flat_map do |p|
+  File.readlines(p).grep(EXCEPTION_ROW)
+end
+owner_decision_o11 = ACCEPTANCE_AUTHORITY.is_a?(Hash) ?
+  (ACCEPTANCE_AUTHORITY.dig("owner_decisions_2026_11_08", "O-11") || "") : ""
+risk_owner_accepted = owner_decision_o11.include?("接受残留风险")
+open_findings_reviewed = report?("D10") && report?("D11") && report?("D28")
+l4_11_met = open_findings_reviewed &&
+  (approved_exceptions.any? || risk_owner_accepted) &&
+  # Even with an exception, an unresolved finding cannot be reviewed-away.
+  Array(independent && independent["open_findings"]).empty?
+
+# L4-12 asks for control *effectiveness* (§16.1 dimension 4), a different
+# question from "did the control run" (dimensions 1-3). It can only be MET
+# when the independent assessment records an effectiveness re-evaluation that
+# explicitly distinguishes the two; today's assessment does not, so NOT_MET.
+effectiveness = independent.is_a?(Hash) ? independent["control_effectiveness"] : nil
+l4_12_met = effectiveness.is_a?(Hash) &&
+  effectiveness["status"] == "PASS" &&
+  effectiveness["distinguishes_operation_from_effectiveness"] == true &&
+  effectiveness.dig("dimension_4_effectiveness", "total").to_i > 0 &&
+  effectiveness.dig("dimension_4_effectiveness", "passed") == effectiveness.dig("dimension_4_effectiveness", "total")
+effectiveness_note = if effectiveness.is_a?(Hash)
+  probes = effectiveness.dig("dimension_4_effectiveness", "passed")
+  total = effectiveness.dig("dimension_4_effectiveness", "total")
+  "control_effectiveness=#{effectiveness['status']} (#{probes}/#{total} assessor-executed fault-injection probes); " \
+    "scope=#{effectiveness['scope']}; scope_limited=#{effectiveness['scope_limited']}; " \
+    "human/third-party/external-environment controls are explicitly OUT OF SCOPE and remain NOT_MET"
+else
+  "control operation vs effectiveness not independently evaluated (control_effectiveness=ABSENT)"
+end
+
 evidence_sufficiency = MANUAL_TRUSTED && l3["pass_count"] == 14 &&
   ma_summary["FAIL"].to_i.zero? && ma_summary["NOT_RUN"].to_i.zero? &&
   ma_summary["TIMEOUT"].to_i.zero? &&
@@ -412,12 +456,14 @@ conditions = [
    report?("D05") && report?("D08") && report?("D09") && l3["pass_count"] == 14,
    "D05 / D08 / D09", "material applicable requirements remain unassessed"],
   ["L4-11", "approved exclusions, open findings and residual risks reviewed (D10/D11/D28, §16.4)",
-   false, "D10 / D11 / D28", "no human risk-owner acceptance; exceptions require APPROVED_EXCEPTION with authority and review date (§13.4)"],
+   l4_11_met, "D10 / D11 / D28 / acceptance-authority.json",
+   "no human risk-owner acceptance: owner decision O-11 = 补齐 (remediate), not 接受残留风险; approved_exceptions=#{approved_exceptions.length}; open_findings=#{Array(independent && independent['open_findings']).length}"],
   ["L4-12", "control effectiveness verified (§16.1 dimension 4)",
-   false, "§16.1 / Phase 6", "control operation vs effectiveness not independently evaluated"],
+   l4_12_met, "§16.1 / Phase 6 / independent-assessment.json",
+   effectiveness_note],
   ["L4-13", "evidence sufficiency confirmed (D25 / §14.1-14.4)",
    evidence_sufficiency, "D25 / manual-acceptance/execution.json / inventory.json / integrity.json",
-   "open evidence gaps: #{ma_gaps.join(', ')}; axe / keyboard / three-database / human sign-off remain OPEN"],
+   "open evidence gaps: #{ma_gaps.join(', ')}; MA-12 axe is now a real executed audit (not a toolchain probe); keyboard / three-database / human sign-off remain OPEN"],
   ["L4-14", "independent assessment completed (D26 / Phase 7 / §12)",
    independent_done, "independent-assessment.json / D26", "Phase 7 report must re-evaluate controls, evidence integrity and conformance claims"],
   ["L4-15", "acceptance authority recorded (§16.4)",
