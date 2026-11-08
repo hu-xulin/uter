@@ -31,7 +31,11 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 # shellcheck source=/dev/null
+# A preset state dir is honoured for isolated regression fixtures only; the
+# production default still comes from policy.env when nothing is preset.
+_PRESET_STATE_DIR="${UEQE_STATE_DIR:-}"
 source "$ROOT/.quality/policy.env"
+[ -n "$_PRESET_STATE_DIR" ] && UEQE_STATE_DIR="$_PRESET_STATE_DIR"
 
 WITH_E2E=0
 STAGE=""
@@ -127,11 +131,29 @@ stage_review() {
 }
 
 stage_test() {
+  # `go build ./...` / `go test` compile package `main`, whose //go:embed
+  # patterns require web/dist to exist. Without a front-end build in this
+  # worktree the Go leg fails with "no matching files found" — an assembly gap,
+  # not a code defect, and (worse) it masks the real test results behind a
+  # compile error. The placeholder step is idempotent and preserves real
+  # artefacts when they are already present.
+  if command -v go >/dev/null 2>&1; then
+    "$ROOT/scripts/quality/ensure-go-embed-artifacts.sh" >/dev/null 2>&1 || true
+  fi
   for m in $UEQE_GO_MODULES; do
     local_label="${m//\//_}"
     run_check test "go:$local_label" bash -c "cd '$m' && GOWORK=off go build ./... && GOWORK=off go test -count=1 -timeout ${UEQE_GO_TEST_TIMEOUT}s ./..." || true
   done
   run_check test "web:vitest" bash -c "cd web && bun run test" || true
+
+  # A scaffolded web/dist satisfies //go:embed but is NOT a front-end build: the
+  # docs export is missing and main_docs_test.go fails on purpose. Say so here
+  # rather than letting the Go leg report a bare exit 1 with no explanation.
+  if [ -d "$ROOT/docs-web" ] && [ ! -s "$ROOT/web/dist/docs-content/docs/zh/index.html" ]; then
+    echo "NOTE: web/dist/docs-content has no real docs export. The Go leg above" >&2
+    echo "      treats this as a FAIL by design (main_docs_test.go). Build it with:" >&2
+    echo "        (cd docs-web && bun run build)" >&2
+  fi
 }
 
 stage_security() {
@@ -246,22 +268,30 @@ stage_status_print() {
 #   PASS            所有必需子项均 PASSED
 #   NOT_RUN          没有可验证子项（阻断）
 # 结果落盘 .quality/.state/verdict，并设 UEQE_VERDICT 变量。
+#
+# 作用域修复（2026-11-07）：单阶段执行（如 `uter-quality.sh security`）此前
+# 会扫描所有阶段的**历史** .status 文件，于是其他阶段遗留的 FAILED/NOT_RUN
+# 会把本阶段的真实全绿污染成 FAIL（假阴性）。现在只统计本次执行的阶段；
+# `full` 仍统计全部六个阶段，严格度不放宽，FAILED/BLOCKED/NOT_RUN 依旧阻断。
 compute_verdict() {
   local s f failed=0 blocked=0 notrun=0 passed=0
-  for f in "$ROOT/$UEQE_STATE_DIR"/inventory.*.status \
-           "$ROOT/$UEQE_STATE_DIR"/review.*.status \
-           "$ROOT/$UEQE_STATE_DIR"/test.*.status \
-           "$ROOT/$UEQE_STATE_DIR"/security.*.status \
-           "$ROOT/$UEQE_STATE_DIR"/coverage.*.status \
-           "$ROOT/$UEQE_STATE_DIR"/regression.*.status; do
-    [ -f "$f" ] || continue
-    s=$(cat "$f")
-    case "$s" in
-      PASSED)  passed=$((passed + 1)) ;;
-      FAILED)  failed=$((failed + 1)) ;;
-      BLOCKED) blocked=$((blocked + 1)) ;;
-      NOT_RUN) notrun=$((notrun + 1)) ;;
-    esac
+  local stages stg
+  if [ "${STAGE:-full}" = "full" ]; then
+    stages="inventory review test security coverage regression"
+  else
+    stages="$STAGE"
+  fi
+  for stg in $stages; do
+    for f in "$ROOT/$UEQE_STATE_DIR"/"$stg".*.status; do
+      [ -f "$f" ] || continue
+      s=$(cat "$f")
+      case "$s" in
+        PASSED)  passed=$((passed + 1)) ;;
+        FAILED)  failed=$((failed + 1)) ;;
+        BLOCKED) blocked=$((blocked + 1)) ;;
+        NOT_RUN) notrun=$((notrun + 1)) ;;
+      esac
+    done
   done
   if [ $((failed + blocked + notrun)) -gt 0 ]; then
     UEQE_VERDICT=FAIL
