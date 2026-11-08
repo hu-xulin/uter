@@ -81,9 +81,21 @@ run L1-17 L1 "ruby scripts/quality/test-uter-governance-boundaries.rb"
 # §14.3 / §16.4 negative fixtures: manual-acceptance evidence must never
 # auto-promote an item and a broken integrity chain must fail closed.
 run L1-18 L1 "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb"
+# §14.3 / §16.1 evidence must not carry frozen facts: a hard-coded registry
+# DRAFT total is wrong evidence that looks verified. Locks the live reader in.
+run L1-19 L1 "ruby scripts/quality/test-registry-draft-state.rb"
 
 # ---------------- L2 Integration Gate ----------------
+# §8.3 build-order precondition: main.go embeds both `web/dist` and
+# `all:web/dist/docs-content/_next`, so ANY Go compilation fails with
+# "pattern all:web/dist/docs-content/_next: no matching files found" unless both
+# targets resolve. That is a prerequisite defect, not a Go code defect — it made
+# L2-01/L2-05 report FAIL for a reason unrelated to what they measure.
+# verify-all.sh already runs this same idempotent, non-destructive script before
+# its Go gates; the matrix was missing it. The script never truncates existing
+# real output, so this cannot mask a genuinely broken frontend build.
 if [ "$QUICK" -eq 0 ]; then
+  run L2-00 L2 "bash scripts/quality/ensure-go-embed-artifacts.sh" "$ROOT"
   run L2-01 L2 "GOWORK=off go test ./..." "$ROOT"
   run L2-02 L2 "GOWORK=off go test ./..." "$ROOT/relaykit"
   run L2-03 L2 "GOWORK=off go test ./..." "$ROOT/tokenkit"

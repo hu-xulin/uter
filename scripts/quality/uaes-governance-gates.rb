@@ -37,6 +37,25 @@ OUT = File.join(EVIDENCE, "gates")
 
 def now = Time.now.utc.iso8601
 
+# Live DRAFT/ACTIVE split of the pinned UAES registry.
+#
+# This used to be the literal "304 registry entries remain DRAFT", which was
+# accurate at registry 1.9.0 and then silently froze while the registry moved
+# to 1.12.1 (real count: 130). A stale hard-coded count inside an evidence
+# generator makes the evidence wrong, and wrong evidence is worse than missing
+# evidence because it looks verified.
+#
+# The reader lives in scripts/quality/lib/registry_draft_state.rb so it can be
+# required by fixtures without executing this evaluator's main body.
+require_relative "lib/registry_draft_state"
+
+REGISTRY_DRAFT = RegistryDraftState.read(UAES_REPO)
+
+def draft_state_note
+  REGISTRY_DRAFT["available"] ? REGISTRY_DRAFT["note"] :
+    "UAES registry could not be read, so the DRAFT/ACTIVE split is UNKNOWN"
+end
+
 def read_json(path)
   abort "FAIL: missing evidence #{path}" unless File.file?(path)
   JSON.parse(File.read(path))
@@ -171,7 +190,7 @@ DOMAINS = [
     "automated" => %w[U-01 L1-01 L1-02 L1-04 L1-05 L1-06 L1-07],
     "manual" => manual([
       ["M00-01", "governance responsibility and approval workflow sign-off", "no signed owner approval for this execution's domain acceptance exists"],
-      ["M00-02", "formal-standard vs draft isolation review", "304 registry entries remain DRAFT; isolation review not signed off"]
+      ["M00-02", "formal-standard vs draft isolation review", "isolation review needs an independent reviewer; #{draft_state_note}"]
     ]) },
   { "id" => "P01", "name" => "AI Governance", "uaes_gate" => "UAES-01-GATE-001",
     "automated" => %w[L1-01 L1-02 L1-03 L1-16],
