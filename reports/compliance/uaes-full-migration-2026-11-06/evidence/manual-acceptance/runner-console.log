@@ -1,17 +1,17 @@
-[MA-01] PASS     exit=0 9.463s  visual regression baseline (local headless Chrome)
-[MA-02] PASS     exit=0 23.071s  govulncheck root module
-[MA-03] PASS     exit=0 13.281s  govulncheck tokenkit module
-[MA-04] PASS     exit=0 11.589s  govulncheck relaykit module
-[MA-05] PASS     exit=0 11.752s  govulncheck tokenkit/tokenkit module
-[MA-06] PASS     exit=0 6.289s  gitleaks secret scan on tracked HEAD tree
-[MA-07] PASS     exit=0 0.04s  forbidden tracked file check (.env / *.db / *.sqlite3)
-[MA-08] PASS     exit=0 24.294s  payment idempotency + concurrency tests with -race
-[MA-09] PASS     exit=0 4.7s  unused-code / duplication signal (knip)
-[MA-10] PASS     exit=0 33.535s  docs-web build
-[MA-11] PASS     exit=0 26.277s  electron build
-[MA-12] PASS     exit=0 0.031s  axe accessibility toolchain availability probe
-[MA-13] PASS     exit=0 148.301s  Go root-module coverage profile + coverage gate
-[MA-14] PASS     exit=0 0.856s  AI spec / documentation reference integrity
+[MA-01] PASS     exit=0 9.103s  visual regression baseline (local headless Chrome)
+[MA-02] PASS     exit=0 28.25s  govulncheck root module
+[MA-03] PASS     exit=0 13.95s  govulncheck tokenkit module
+[MA-04] PASS     exit=0 13.822s  govulncheck relaykit module
+[MA-05] PASS     exit=0 13.064s  govulncheck tokenkit/tokenkit module
+[MA-06] PASS     exit=0 6.819s  gitleaks secret scan on tracked HEAD tree
+[MA-07] PASS     exit=0 0.038s  forbidden tracked file check (.env / *.db / *.sqlite3)
+[MA-08] PASS     exit=0 18.532s  payment idempotency + concurrency tests with -race
+[MA-09] PASS     exit=0 4.998s  unused-code / duplication signal (knip)
+[MA-10] PASS     exit=0 29.484s  docs-web build
+[MA-11] PASS     exit=0 28.896s  electron build
+[MA-12] PASS     exit=0 0.016s  axe accessibility toolchain availability probe
+[MA-13] PASS     exit=0 127.199s  Go root-module coverage profile + coverage gate
+[MA-14] PASS     exit=0 1.058s  AI spec / documentation reference integrity
 {
   "execution": {
     "total": 14,

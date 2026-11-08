@@ -1,10 +1,10 @@
 # D26 — Independent Assessment Report
 
 - Evidence ID: `D26-INDEPENDENT-ASSESSMENT`
-- Generated: 2026-11-08T00:08:38Z
+- Generated: 2026-11-08T08:09:07Z
 - Collector: WorkBuddy independent assessment pass (re-derived from source, not from remediation self-declarations)
-- Uter HEAD: `11455133b7f45bb9149bac4413e24aedf0bcf0b1`
-- UAES HEAD: `74e5d2eea215c96b845d7a0b2111b7fa011c540f`
+- Uter HEAD: `2a1059d608b2b2bd5f298a6dea74645d5e35bb73`
+- UAES HEAD: `68e9710c0516a13475cfc9379d9725d584ce06db`
 
 ## Assessment scope (§16.4)
 
@@ -16,7 +16,7 @@
 
 | ID | Control | Status | Detail |
 |---|---|---|---|
-| IA-01 | pinned UAES approved baseline re-derived | FAIL | {"pinned_commit" => "74e5d2eea215c96b845d7a0b2111b7fa011c540f", "actual_commit" => "74e5d2eea215c96b845d7a0b2111b7fa011c540f", "pinned_blob" => "a806eef48e6242d82dcb1d39d5c094e0d7d981a1", "computed_blob" => "a806eef48e6242d82dcb1d39d5c094e0d7d981a1", "version" |
+| IA-01 | pinned UAES approved baseline re-derived | PASS | {"pinned_fingerprint" => "4713310d9f51a175", "live_fingerprint" => "4713310d9f51a175", "seal_intact" => true, "pinned_blob" => "a806eef48e6242d82dcb1d39d5c094e0d7d981a1", "computed_blob" => "a806eef48e6242d82dcb1d39d5c094e0d7d981a1", "version" => "1.12.1", "re |
 | IA-02 | 14 independently assessed domains re-derived from source | PASS | {"uaes_phases" => 13, "uter_registry_domains" => 14, "extra_domain" => ["UTER-P13"], "gate_evaluator_domain_count" => 14} |
 | IA-03 | no PASS without a real exit code in its raw log | PASS | {"pass_count" => 28, "unverifiable_pass_rows" => [], "explicit_skips" => [], "note" => "Skips are recorded explicitly and are never counted as PASS (§8.3)."} |
 | IA-04 | over-privilege DENY expectations re-checked | PASS | {"cases" => 20, "passed" => 20, "mismatches" => []} |
@@ -28,7 +28,6 @@
 
 | ID | Severity | Finding | Verification |
 |---|---|---|---|
-| FIND-IA-01 | Critical | UAES baseline pin does not match the repository | NOT_VERIFIED |
 | FIND-IA-11 | Critical | acceptance authority or manual-acceptance evidence chain is not trustworthy | NOT_VERIFIED |
 | FIND-IA-07 | High | 42 domain acceptance items remain unverified | NOT_VERIFIED |
 | FIND-IA-08 | High | 7 L4 global conditions remain NOT_MET | NOT_VERIFIED |
@@ -37,9 +36,9 @@
 
 ## Evidence integrity (§14.4)
 
-- `governance-separation.json` present=true sha256=`7a1ea1d299a22b1719efcb8d8d46dac48c414da009b8859b1aa9cee70db9a29d` missing_fields=
+- `governance-separation.json` present=true sha256=`88295989419f6335843bd302bcf0d580b38e45ff23bdd6bceee4280eafec8136` missing_fields=
 - `p09-p10-boundary.json` present=true sha256=`a8c341eb2250572e33f4b548a3863ab275a1e0d142469519ab66450f0abeea94` missing_fields=
-- `independent-assessment.json` present=true sha256=`2e2552bc6e2f67803ada5946ef606b2143431d9e236c03d6bd4526c317ae0677` missing_fields=
+- `independent-assessment.json` present=true sha256=`01a9d49d3f11c86555e18df8a57d95837f1f5cd7a5be6f8f8bc0fac4d705def7` missing_fields=
 
 SHA-256 values support evidence integrity only; they do not prove the underlying activity was performed correctly (§14.4). The independent-assessment.json row is self-referential and is re-hashed by the next assessment run.
 
