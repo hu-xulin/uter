@@ -1003,3 +1003,16 @@ html[data-docs-embed='true'] #nd-subnav > a {
 .prose :where(table tbody tr:last-child td:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
   border-bottom-right-radius: 9px;
 }
+
+/*
+ * 键位字形（⌘ / K 等）由伪元素从 data-key 生成，而不是写成真实文本节点。
+ *
+ * 原因见 `docs-search.tsx` 中 SidebarSearchButton 的注释：axe-core 4.14 的
+ * WCAG 2.5.3 label-content-name-mismatch 规则会把按钮内的真实文本节点
+ * （包括 aria-hidden 的）都算作 visible text，与 aria-label 不一致就报
+ * serious 违规。伪元素文本不进入 DOM 文本节点，因此既能保留视觉键位提示，
+ * 又不污染可访问名称；快捷键语义由按钮自身的 aria-keyshortcuts 承载。
+ */
+.docs-kbd::before {
+  content: attr(data-key);
+}

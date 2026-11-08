@@ -177,6 +177,75 @@ function rehypeDocsAssetBasePath() {
 }
 
 /**
+ * Gives GFM task-list checkboxes an accessible name.
+ *
+ * `remark-gfm` renders `- [x] done` as
+ *
+ *     <li class="task-list-item">
+ *       <input type="checkbox" checked disabled> done
+ *
+ * The `<input>` carries no `<label>`, no `aria-label` and no `aria-labelledby`,
+ * and because it is `disabled` the surrounding list text is *not* treated as
+ * its name either. axe-core therefore flags it as `critical / label`
+ * ("Form elements must have labels"). It is a real defect rather than a false
+ * positive: a screen reader user reaches the checkbox and hears only
+ * "checkbox, checked, dimmed", with nothing saying what is checked.
+ *
+ * The item's own text is the only sensible name, so it is copied onto the
+ * input as `aria-label`. Wrapping the text in a `<label>` would also satisfy
+ * the rule but would put a label around the status word, changing how the
+ * item reads back; `aria-label` names the control without restructuring the
+ * prose. Note the input sits *outside* the text node, so the name has to be
+ * read from the parent `<li>`'s remaining text children.
+ *
+ * Runs as a rehype plugin (not on the raw Markdown) so raw `<input>` tags
+ * typed into a document are covered too, matching
+ * {@link rehypeDocsAssetBasePath}.
+ */
+function rehypeTaskListCheckboxLabels() {
+  return (tree: HastNode): void => {
+    visit(tree, (node) => {
+      if (node.type !== 'element' || node.tagName !== 'li') return;
+
+      const classes = (node.properties as Record<string, unknown> | undefined)?.className;
+      const isTaskItem =
+        Array.isArray(classes) && classes.some((c) => String(c) === 'task-list-item');
+      if (!isTaskItem) return;
+
+      const text = collectText(node.children ?? []).replace(/\s+/g, ' ').trim();
+      if (!text) return;
+
+      for (const child of node.children ?? []) {
+        if (child.type !== 'element' || child.tagName !== 'input') continue;
+        const props = (child.properties ?? {}) as Record<string, unknown>;
+        // Only label the task checkbox, and never overwrite an author's name.
+        if (props.type !== 'checkbox') continue;
+        if (typeof props['aria-label'] === 'string' && props['aria-label']) continue;
+        if (typeof props['aria-labelledby'] === 'string' && props['aria-labelledby']) continue;
+        props['aria-label'] = text;
+        child.properties = props;
+      }
+    });
+  };
+}
+
+/** Concatenates the text content of a hast subtree. */
+function collectText(nodes: HastNode[]): string {
+  let out = '';
+  for (const node of nodes) {
+    if (node.type === 'text') {
+      // `type: 'text'` carries its content on `value`, which {@link HastNode}
+      // does not describe because nothing else here needs it.
+      const value = (node as unknown as { value?: unknown }).value;
+      if (typeof value === 'string') out += value;
+    } else if (node.children) {
+      out += collectText(node.children);
+    }
+  }
+  return out;
+}
+
+/**
  * A hast node, narrowed to what this walk needs.
  *
  * `@types/hast` reaches this project only transitively (through
@@ -256,6 +325,7 @@ export function renderMarkdown(source: string): MarkdownPage {
     .use(remarkPageMeta, { description, headings })
     .use(remarkRehype)
     .use(rehypeDocsAssetBasePath)
+    .use(rehypeTaskListCheckboxLabels)
     .use(rehypeStringify);
 
   const file = processor.processSync(source);
