@@ -32,11 +32,11 @@ Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
 |---|---|
 | Repository | `hu-xulin/uaes` (https://github.com/hu-xulin/uaes) |
 | Branch | `main` |
-| Pinned commit | `663a3335f0bf9652cc70d7d54e6fd94e4d7669cc` |
+| Pinned commit | `5f566b24b799daaa744d9501da7211bae0613a04` |
 | Registry | `.uaes/STANDARD-REGISTRY.yaml` |
 | Registry blob SHA | `a806eef48e6242d82dcb1d39d5c094e0d7d981a1` |
 | Registry version / status | `1.12.1` / `ACTIVE` |
-| Approval record | `UAES-APPROVAL-2026-11-07-004` + `663a333` (governed content unchanged from `74e5d2e`: registry blob `a806eef4`, 178/178 ACTIVE, registry 1.12.1 normative correction release; release-signature separation-of-duties caveat recorded in `INTEGRATION.md` §1) |
+| Approval record | `UAES-APPROVAL-2026-11-07-004` + `5f566b2` (governed content unchanged from `74e5d2e`: registry blob `a806eef4`, 178/178 ACTIVE, registry 1.12.1 normative correction release; release-signature separation-of-duties caveat recorded in `INTEGRATION.md` §1) |
 | Integration status | `MIGRATION_PENDING` (UAES domain gates remain `NOT_RUN`) |
 
 Machine-readable pin: `.uaes/uaes-pin.json`.
