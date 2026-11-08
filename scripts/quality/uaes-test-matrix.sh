@@ -84,6 +84,9 @@ run L1-18 L1 "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb"
 # §14.3 / §16.1 evidence must not carry frozen facts: a hard-coded registry
 # DRAFT total is wrong evidence that looks verified. Locks the live reader in.
 run L1-19 L1 "ruby scripts/quality/test-registry-draft-state.rb"
+# MA-06 gitleaks false-positive exemptions must stay narrow: a real-form secret
+# injected into the same file has to remain detectable (§14.3 negative fixture).
+run L1-20 L1 "bash scripts/quality/gitleaks-allowlist.test.sh"
 
 # ---------------- L2 Integration Gate ----------------
 # §8.3 build-order precondition. main.go embeds BOTH `web/dist` and

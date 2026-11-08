@@ -5,8 +5,26 @@
 [extend]
 useDefault = true
 
+# 2026-11-08 人工复核补充（核验人：WorkBuddy，逐行核对 6 条 generic-api-key 命中，均为误报）：
+#   (a) ED25519 key SHA256:<43 chars> 是「公钥指纹」，出现在 UAES 规范签名验证结果中，
+#       可追溯至 uaes/.uaes/spec-registry/SPECIFICATION-REGISTRY.yaml:151，不是私钥或凭据。
+#       命中文件：.uaes/reports/uaes-integration-status.json:43、
+#       reports/.../governance-refresh-verification.log:63、reports/.../re-audit.log:262。
+#   (b) application/API security 是 D15 安全评估与报告生成器里的散文措辞，
+#       被 generic-api-key 误当作 key=value 赋值。命中文件：D15-SECURITY-ASSESSMENT.md:22、
+#       scripts/quality/uaes-governance-reports.py:491。
+#   (c) OpenAPI commit: `<40hex>` 是 MA-06 历史证据文件内引用的 Git commit SHA（证据自引用），
+#       命中文件：evidence/manual-acceptance/MA-06-finding.json:14。
+# 采用「行级精确正则」而非「整文件放行」，并用 scripts/quality/gitleaks-allowlist.test.sh
+# 做负向探针：同一个文件里注入真实形态密钥仍必须被检出。
 [allowlist]
-description = "误报豁免：文档示例 / 测试夹具 / 密钥处理代码 / 插件运行时逻辑（2026-10-31 全量人工核验）"
+description = "误报豁免：文档示例 / 测试夹具 / 密钥处理代码 / 已核验误报文本（2026-10-31 全量核验 + 2026-11-08 6 条复核）"
+regexTarget = "line"
+regexes = [
+  '''ED25519 key SHA256:[A-Za-z0-9+/=]{43}''',
+  '''application/API security''',
+  '''OpenAPI commit: `[0-9a-f]{40}`''',
+]
 paths = [
   # API 文档中的 curl 调用示例（占位 token，如 sk-xxxx / YOUR_API_KEY）
   '''^docs-web/content/''',
