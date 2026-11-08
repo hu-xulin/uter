@@ -1,0 +1,291 @@
+{
+  "report_id": "D09-RUNTIME-PREFLIGHT",
+  "generated_at": "2026-11-08T06:54:42Z",
+  "agent": "WorkBuddy (Tencent Hunyuan Hy)",
+  "harness": "scripts/quality/uaes-agent-runtime-check.rb",
+  "uaes_version": "1.12.1",
+  "uaes_status": "ACTIVE",
+  "uter_commit": "b736f399535029b1cad234b28e74a2addd1733c5",
+  "branch": "main",
+  "overall": "PASS",
+  "failed_steps": [],
+  "steps": [
+    {
+      "step": 1,
+      "name": "identify project",
+      "status": "PASS",
+      "observation": {
+        "origin": "git@github-huxulin:hu-xulin/uter.git",
+        "go_module": "github.com/uter-ai/uter",
+        "workspace": "/Users/lincolnhu/uter"
+      }
+    },
+    {
+      "step": 2,
+      "name": "read governance entry",
+      "status": "PASS",
+      "observation": {
+        "path": ".uaes/AI-GOVERNANCE-ENTRY.md",
+        "sha256": "4575895abaf2e5a5508492a80d4b89f1d30d89772fe97a14811541fd21d4182b"
+      }
+    },
+    {
+      "step": 3,
+      "name": "confirm UAES version",
+      "status": "PASS",
+      "observation": {
+        "pin": {
+          "registry_version": "1.12.1",
+          "registry_status": "ACTIVE",
+          "source_commit": "36b62d27758ccbfaa44ce45b951bb3a4791b7f54",
+          "registry_blob_sha": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
+          "approval_record": "UAES-APPROVAL-2026-11-07-004"
+        },
+        "registry_blob_sha_actual": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
+        "uaes_head_actual": "36b62d27758ccbfaa44ce45b951bb3a4791b7f54",
+        "registry_version_actual": "1.12.1",
+        "registry_status_actual": "ACTIVE"
+      }
+    },
+    {
+      "step": 4,
+      "name": "load applicable standards",
+      "status": "PASS",
+      "observation": {
+        "missing": [],
+        "p_domains_in_traceability": [
+          "P00",
+          "P01",
+          "P02",
+          "P03",
+          "P04",
+          "P05",
+          "P06",
+          "P07",
+          "P08",
+          "P09",
+          "P10",
+          "P11",
+          "P12"
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "name": "confirm task permissions",
+      "status": "PASS",
+      "observation": {
+        "default_effect": "deny",
+        "task_id": "UAES-UTER-UNIFIED-GOVERNANCE-2026-11-08",
+        "risk_level": "R3"
+      }
+    },
+    {
+      "step": 6,
+      "name": "check workspace",
+      "status": "PASS",
+      "observation": {
+        "dirty_entries": 275,
+        "untracked": 119,
+        "staged_files": [
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-workspace.json",
+          "scripts/quality/uaes-agent-runtime-check.rb"
+        ],
+        "user_wip_preserved": true
+      }
+    },
+    {
+      "step": 7,
+      "name": "confirm impact scope",
+      "status": "PASS",
+      "observation": {
+        "scope": {
+          "include": [
+            ".uaes/",
+            "AGENTS.md",
+            "CLAUDE.md",
+            "docs/ai-specs/",
+            "scripts/quality/",
+            "scripts/verify-all.sh",
+            "tools/uaes/",
+            "reports/compliance/",
+            ".gitignore",
+            ".github/workflows/ci.yml"
+          ],
+          "exclude": [
+            "production configuration and credentials",
+            "real payment merchant configuration",
+            "production database",
+            "UAES approved normative standards authored to accommodate Uter implementation",
+            "user pre-existing uncommitted product work outside the governance surface",
+            "git push, merge, deployment, production writes"
+          ],
+          "preserve_behavior": [
+            "user pre-existing uncommitted product work",
+            "Uter payment, billing, wallet, order, channel and auth business rules",
+            "UTER P13 registration inside the Uter project registry only"
+          ]
+        },
+        "include": [
+          ".uaes/",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "docs/ai-specs/",
+          "scripts/quality/",
+          "scripts/verify-all.sh",
+          "tools/uaes/",
+          "reports/compliance/",
+          ".gitignore",
+          ".github/workflows/ci.yml",
+          "user pre-existing uncommitted product work",
+          "Uter payment, billing, wallet, order, channel and auth business rules",
+          "UTER P13 registration inside the Uter project registry only"
+        ],
+        "exclude": [
+          "production configuration and credentials",
+          "real payment merchant configuration",
+          "production database",
+          "UAES approved normative standards authored to accommodate Uter implementation",
+          "user pre-existing uncommitted product work outside the governance surface",
+          "git push, merge, deployment, production writes"
+        ]
+      }
+    },
+    {
+      "step": 8,
+      "name": "establish task plan",
+      "status": "PASS",
+      "observation": {
+        "steps": [
+          {
+            "step": "Establish the unified ledger and the two-repository baseline",
+            "files": [
+              "UAES-UTER-UNIFIED-EXECUTION-PLAN.md"
+            ]
+          },
+          {
+            "step": "Repair UAES registry-integrity defects and release 1.12.1",
+            "files": [
+              ".uaes/STANDARD-REGISTRY.yaml",
+              ".uaes/spec-registry/SPECIFICATION-REGISTRY.yaml",
+              ".uaes/registry/mappings.yaml",
+              "quality/scripts/uaes/independent-verifier.mjs",
+              "standards/09-quality-engineering/UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION.md"
+            ]
+          },
+          {
+            "step": "Give the four Uter engineering-quality standards an explicit UAES parent",
+            "files": [
+              "docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md",
+              "docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md",
+              "docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md",
+              "docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md",
+              "docs/ai-specs/engineering-quality/README.md"
+            ]
+          },
+          {
+            "step": "Refresh the Uter pin and governance registry to the new UAES baseline",
+            "files": [
+              ".uaes/uaes-pin.json",
+              ".uaes/INTEGRATION.md",
+              ".uaes/AI-GOVERNANCE-ENTRY.md",
+              ".uaes/uter-governance-registry.yaml"
+            ]
+          },
+          {
+            "step": "Track the governance enforcement scripts and repair the runtime harness field contract",
+            "files": [
+              "scripts/quality/uter-governance-separation-check.rb",
+              "scripts/quality/uter-p09-p10-boundary-check.rb",
+              "scripts/quality/uaes-agent-runtime-check.rb"
+            ]
+          },
+          {
+            "step": "Clean duplicated and dead governance artifacts in both repositories",
+            "files": [
+              ".gitignore"
+            ]
+          },
+          {
+            "step": "Run the joint acceptance and publish the final report",
+            "files": [
+              "UAES-UTER-UNIFIED-GOVERNANCE-FINAL-ACCEPTANCE-REPORT.md"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "step": 9,
+      "name": "determine verification method",
+      "status": "PASS",
+      "observation": {
+        "methods": [
+          {
+            "command": "node quality/scripts/uaes/validate-registry.mjs",
+            "scope": "UAES registry schema and referential integrity"
+          },
+          {
+            "command": "node quality/scripts/uaes/verify-derived-indices.mjs",
+            "scope": "derived indices agree with the authoritative registry"
+          },
+          {
+            "command": "node quality/scripts/uaes/run-release-tests.mjs",
+            "scope": "UAES release test suites"
+          },
+          {
+            "command": "node quality/scripts/uaes/spec-integrity.mjs check",
+            "scope": "specification seal and gates"
+          },
+          {
+            "command": "bash scripts/quality/uaes-pin-check.sh",
+            "scope": "Uter pin static integrity"
+          },
+          {
+            "command": "bash scripts/quality/uaes-integration-check.sh",
+            "scope": "Uter integration wiring"
+          },
+          {
+            "command": "ruby scripts/quality/uter-governance-separation-check.rb",
+            "scope": "three-layer two-repository separation"
+          },
+          {
+            "command": "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
+            "scope": "P09 proves / P10 defines boundary"
+          },
+          {
+            "command": "ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task .uaes/tasks/UAES-UTER-UNIFIED-GOVERNANCE-2026-11-08.json",
+            "scope": "Agent runtime preflight"
+          },
+          {
+            "command": "ruby scripts/quality/uaes-agent-runtime-check.rb selftest",
+            "scope": "fail-closed authorization decisions"
+          },
+          {
+            "command": "node tools/uaes/integration-adapter.test.mjs",
+            "scope": "UAES integration adapter"
+          },
+          {
+            "command": "go test ./...",
+            "scope": "Go test suites across the module"
+          },
+          {
+            "command": "go build ./...",
+            "scope": "Go build incl. embed directives"
+          }
+        ]
+      }
+    },
+    {
+      "step": 10,
+      "name": "begin execution with recorded baseline",
+      "status": "PASS",
+      "observation": {
+        "branch": "main",
+        "head": "b736f399535029b1cad234b28e74a2addd1733c5",
+        "governing_specification": "UTER-UAES-GOV-001",
+        "baseline_preservation_required": true
+      }
+    }
+  ]
+}
