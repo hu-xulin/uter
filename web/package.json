@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "rsbuild dev",
-    "build": "UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
-    "build:check": "tsgo -b && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
+    "build": "rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
+    "build:check": "tsgo -b && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
     "prepare": "node scripts/setup-git-hooks.mjs",
     "typecheck": "tsgo -b",
     "lint": "node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .",
