@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 # Positive and negative fixtures for the UAES spec-version pin gate.
+# Covers both lifecycle states: APPROVED (current pinned baseline, UAES 1.9.0)
+# and DRAFT (the pre-approval baseline). An approved registry is a normative
+# baseline, never a Uter compliance certificate; the gate rejects any fixture
+# that uses approval to promote integration_status to VERIFIED.
 require "fileutils"
 require "json"
 require "minitest/autorun"
@@ -9,8 +13,8 @@ require "tmpdir"
 class UaesPinCheckTest < Minitest::Test
   REPO_ROOT = File.expand_path("../..", __dir__)
   CHECKER = File.join(REPO_ROOT, "scripts/quality/uaes-pin-check.sh")
-  COMMIT = "9b1f5f19e480817c7717fff203aa6b4287602aeb"
-  BLOB = "a73447a7206321976bcfcdcc2b58e70157703e5a"
+  COMMIT = "ff7cf878d43061f263e301cad09ff19d03e906c4"
+  BLOB = "5090c84f6b71d520ca0181f9da4e77be69ebcbf5"
 
   def pin
     {
@@ -20,11 +24,11 @@ class UaesPinCheckTest < Minitest::Test
       "source_commit" => COMMIT,
       "registry_path" => ".uaes/STANDARD-REGISTRY.yaml",
       "registry_blob_sha" => BLOB,
-      "registry_version" => "1.7.0",
-      "registry_status" => "DRAFT",
+      "registry_version" => "1.9.0",
+      "registry_status" => "APPROVED",
       "integration_status" => "MIGRATION_PENDING",
-      "approval_state" => "NOT_APPROVED",
-      "pinned_at" => "2026-11-05T15:05:04Z"
+      "approval_state" => "APPROVED",
+      "pinned_at" => "2026-11-06T02:50:38Z"
     }
   end
 
@@ -36,11 +40,28 @@ class UaesPinCheckTest < Minitest::Test
 
       | UAES source commit | `#{COMMIT}` |
       | Registry blob SHA at audit baseline | `#{BLOB}` |
-      | Registry version | `1.7.0` |
-      | Registry status | `DRAFT` |
+      | Registry version | `1.9.0` |
+      | Registry status | `APPROVED` |
 
       Do not change this status to VERIFIED without approval and evidence.
     MD
+  end
+
+  # Contract text for the pre-approval DRAFT baseline; used to prove the gate
+  # still accepts a correctly declared DRAFT pin after the APPROVED migration.
+  def draft_contract
+    contract
+      .sub("| Registry version | `1.9.0` |", "| Registry version | `1.7.0` |")
+      .sub("| Registry status | `APPROVED` |", "| Registry status | `DRAFT` |")
+  end
+
+  def draft_pin_overrides(extra = {})
+    {
+      "registry_version" => "1.7.0",
+      "registry_status" => "DRAFT",
+      "approval_state" => "NOT_APPROVED",
+      "integration_status" => "MIGRATION_PENDING"
+    }.merge(extra)
   end
 
   def fixture(pin_overrides: {}, contract_body: nil)
@@ -54,7 +75,14 @@ class UaesPinCheckTest < Minitest::Test
   end
 
   def run_checker(root)
-    Open3.capture3({ "UAES_PIN_ROOT" => root }, "bash", CHECKER)
+    # These fixtures exercise the lifecycle / contract rules on a schema 1.0.0
+    # pin, which predates governed fingerprints. The checker refuses a sub-3.0
+    # pin by default because dropping below 3.0.0 disables fingerprint
+    # verification entirely; the opt-in below is the deliberate, documented
+    # exception for historical fixtures. Do not remove it to make the suite
+    # green -- the fingerprint gate has its own fixtures against the real 3.0.0
+    # pin shape in uaes-pin-check.sh.
+    Open3.capture3({ "UAES_PIN_ROOT" => root, "UAES_PIN_LEGACY_OK" => "1" }, "bash", CHECKER)
   end
 
   def assert_rejected(root, pattern)
@@ -65,8 +93,7 @@ class UaesPinCheckTest < Minitest::Test
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
 
-  def test_accepts_consistent_pinned_baseline
-    root = fixture
+  def assert_accepted(root)
     out, err, status = run_checker(root)
     assert status.success?, "#{err}\n#{out}"
     assert_match(/pin contains all 11 required fields/, out)
@@ -76,44 +103,71 @@ class UaesPinCheckTest < Minitest::Test
     FileUtils.remove_entry(root) if root && File.exist?(root)
   end
 
+  def test_accepts_consistent_approved_pinned_baseline
+    assert_accepted(fixture)
+  end
+
+  def test_accepts_consistent_draft_pinned_baseline
+    assert_accepted(fixture(pin_overrides: draft_pin_overrides, contract_body: draft_contract))
+  end
+
   def test_rejects_missing_required_field
-    root = fixture(pin_overrides: { "registry_blob_sha" => :delete })
-    assert_rejected(root, /missing required field: registry_blob_sha/)
+    assert_rejected(fixture(pin_overrides: { "registry_blob_sha" => :delete }),
+                    /missing required field: registry_blob_sha/)
   end
 
   def test_rejects_malformed_commit_id
-    root = fixture(pin_overrides: { "source_commit" => "not-a-sha" })
-    assert_rejected(root, /source_commit must be a 40-character/)
+    assert_rejected(fixture(pin_overrides: { "source_commit" => "not-a-sha" }),
+                    /source_commit must be a 40-character/)
   end
 
   def test_rejects_malformed_registry_blob_id
-    root = fixture(pin_overrides: { "registry_blob_sha" => "ABC" })
-    assert_rejected(root, /registry_blob_sha must be a 40-character/)
+    assert_rejected(fixture(pin_overrides: { "registry_blob_sha" => "ABC" }),
+                    /registry_blob_sha must be a 40-character/)
   end
 
   def test_rejects_commit_drift_between_pin_and_contract
-    root = fixture(contract_body: contract.sub(COMMIT, "0" * 40))
-    assert_rejected(root, /missing pinned value: #{COMMIT}/)
+    assert_rejected(fixture(contract_body: contract.sub(COMMIT, "0" * 40)),
+                    /missing pinned value: #{COMMIT}/)
   end
 
   def test_rejects_registry_blob_drift
-    root = fixture(contract_body: contract.sub(BLOB, "1" * 40))
-    assert_rejected(root, /missing pinned value: #{BLOB}/)
+    assert_rejected(fixture(contract_body: contract.sub(BLOB, "1" * 40)),
+                    /missing pinned value: #{BLOB}/)
   end
 
-  def test_rejects_unapproved_status_upgrade
-    root = fixture(pin_overrides: { "registry_status" => "APPROVED" })
-    assert_rejected(root, /APPROVED registry requires approval_state=APPROVED/)
+  def test_rejects_registry_version_drift
+    assert_rejected(fixture(contract_body: contract.sub("| Registry version | `1.9.0` |",
+                                                       "| Registry version | `1.7.0` |")),
+                    /Registry version/)
+  end
+
+  def test_rejects_registry_status_drift
+    assert_rejected(fixture(contract_body: contract.sub("| Registry status | `APPROVED` |",
+                                                       "| Registry status | `DRAFT` |")),
+                    /Registry status/)
+  end
+
+  def test_rejects_approved_registry_without_approval_state
+    assert_rejected(fixture(pin_overrides: { "approval_state" => "NOT_APPROVED" }),
+                    /requires approval_state=APPROVED or ACTIVE/)
+  end
+
+  def test_rejects_approved_registry_declaring_integration_verified
+    assert_rejected(fixture(pin_overrides: { "integration_status" => "VERIFIED" }),
+                    /does not authorise integration_status=VERIFIED/)
   end
 
   def test_rejects_draft_declared_verified
-    root = fixture(pin_overrides: { "integration_status" => "VERIFIED" })
-    assert_rejected(root, /DRAFT registry must keep integration_status=MIGRATION_PENDING/)
+    assert_rejected(fixture(pin_overrides: draft_pin_overrides("integration_status" => "VERIFIED"),
+                            contract_body: draft_contract),
+                    /DRAFT registry must keep integration_status=MIGRATION_PENDING/)
   end
 
   def test_rejects_contract_claiming_verified
-    root = fixture(contract_body: contract.sub("**Status:** MIGRATION_PENDING", "**Status:** VERIFIED"))
-    assert_rejected(root, /contract claims VERIFIED/)
+    assert_rejected(fixture(contract_body: contract.sub("**Status:** MIGRATION_PENDING",
+                                                       "**Status:** VERIFIED")),
+                    /contract claims VERIFIED/)
   end
 
   def test_rejects_unparseable_pin
