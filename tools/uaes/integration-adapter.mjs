@@ -30,7 +30,11 @@ import { fileURLToPath } from 'node:url'
 
 const SELF = dirname(new URL(import.meta.url).pathname)
 const UTER_ROOT = resolve(SELF, '..', '..')
-const UAES_ROOT = resolve(process.env.UAES_REPO_ROOT || '/Users/lincolnhu/uaes')
+// CI checks out the pinned UAES baseline into <workspace>/uaes-pinned and sets
+// UAES_REPO (governance scripts) / UAES_REPO_ROOT (this adapter). Accept both
+// names so a step that only sets one of them cannot silently fall back to a
+// developer-machine absolute path and produce a false "registry not found".
+const UAES_ROOT = resolve(process.env.UAES_REPO_ROOT || process.env.UAES_REPO || '/Users/lincolnhu/uaes')
 
 const UAES_SPEC_REGISTRY = join(UAES_ROOT, '.uaes/spec-registry/SPECIFICATION-REGISTRY.yaml')
 const UAES_REQ_REGISTRY = join(UAES_ROOT, '.uaes/registry/requirements.yaml')

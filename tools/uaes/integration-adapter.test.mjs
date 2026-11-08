@@ -58,7 +58,7 @@ test('the UTER P13 extension is project-owned and present', () => {
 
 test('P13 is NOT registered in the UAES universal registry', () => {
   // Layer separation: the universal standard must not absorb project rules.
-  const uaesReq = process.env.UAES_REPO_ROOT || '/Users/lincolnhu/uaes'
+  const uaesReq = process.env.UAES_REPO_ROOT || process.env.UAES_REPO || '/Users/lincolnhu/uaes'
   const standards = join(uaesReq, '.uaes/registry/requirements.yaml')
   if (!existsSync(standards)) return
   const text = readFileSync(standards, 'utf8')
