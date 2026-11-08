@@ -14,7 +14,10 @@
 #
 # 退出码：0 = 全部通过；1 = 至少一个门禁失败；2 = 环境不满足（命令缺失）
 #
-# 注意：本脚本只做「检查」，不做任何修改，也不会执行 git 写操作。
+# 注意：本脚本只做「检查」，不执行 git 写操作。唯一例外是 Go embed 前置步骤
+#      （scripts/quality/ensure-go-embed-artifacts.sh）——它只在缺失时补两个
+#      空骨架文件，让 //go:embed 可被解析；与 CI 后端作业的做法一致，且不会
+#      覆盖已有真实前端产物。前端构建步骤本身也会写 web/dist。
 
 set -uo pipefail
 
@@ -94,6 +97,17 @@ HEAD_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo '(unknown)')
 printf '分支:   %s @ %s\n' "$BRANCH" "$HEAD_SHA"
 printf '工作区: %s 处未提交改动（本脚本不会修改其中任何内容）\n' "$DIRTY_COUNT"
 
+# ---------- Go //go:embed 前置产物（必须先于 Go vet / Go test） ----------
+# main.go 的 //go:embed web/dist/index.html 与 all:web/dist/docs-content/_next
+# 要求两个路径在编译期可读。CI 后端作业在 go vet 前调用
+# make-frontend-placeholder.sh；本地此前没有这一步，导致 Go vet 因「前端尚未
+# 构建」而报 no matching files found（假阴性，与 UEQE compute_verdict 同类）。
+# 这里与 CI 对齐：先补最小骨架，再跑 Go 门禁；真实前端产物仍由 build:check 负责，
+# 骨架不覆盖已有产物、也不代表前端构建通过。
+if command -v go >/dev/null 2>&1; then
+  step "Go embed 前置产物" '"$ROOT/scripts/quality/ensure-go-embed-artifacts.sh" 2>&1'
+fi
+
 # ---------- Go 后端 ----------
 if command -v go >/dev/null 2>&1; then
   step "Go 格式"   'gofmt_files=$(gofmt -l . 2>/dev/null | grep -v "^vendor/" || true); if [ -n "$gofmt_files" ]; then echo "以下文件未 gofmt:"; echo "$gofmt_files"; exit 1; fi'
@@ -120,6 +134,21 @@ if command -v bun >/dev/null 2>&1 && [ -d "$ROOT/web" ]; then
   else
     step "前端 单元测试 (vitest)"      "bun run test 2>&1"                 "$ROOT/web"
     step "前端 生产构建 (build:check)" "bun run build:check 2>&1"          "$ROOT/web"
+    # build:check 会清空并重建 web/dist，而文档站产物（docs-content）是
+    # docs-web 的 postbuild 拷进来的——它不在 web 工程里。web/dist 是这两个
+    # 构建共享的输出目录，所以只跑 build:check 之后，docs-content 已经被删掉，
+    # 只剩上面那步补的空骨架。此时 main.go 的
+    # //go:embed all:web/dist/docs-content/_next 仍能编译（骨架文件满足模式），
+    # 于是嵌入一个空文档站：编译通过、服务能起、/docs 全空白。
+    # main_docs_test.go 的两个用例正是为此存在，它们会因此 FAIL。
+    # 因此重建文档站，并用项目自带的 verify-docs-artifacts.sh 把「缺产物」
+    # 变成硬失败，而不是交给下游测试去间接暴露。
+    if [ -d "$ROOT/docs-web" ]; then
+      step "文档站 生产构建 (docs-web)" "bun run build 2>&1"               "$ROOT/docs-web"
+      step "文档产物完整性"            '"$ROOT/scripts/verify-docs-artifacts.sh" 2>&1'
+    else
+      skip "文档站 生产构建" "未检测到 docs-web/ 目录"
+    fi
   fi
 else
   skip "前端全部门禁" "未检测到 bun 或 web/ 目录"
