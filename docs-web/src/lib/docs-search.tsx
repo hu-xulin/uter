@@ -24,6 +24,10 @@ import { useSearchContext } from 'fumadocs-ui/contexts/search';
 import { useMemo } from 'react';
 
 import { DOCS_SEARCH_COPY } from '@/lib/docs-copy';
+import {
+  SEARCH_HOTKEY_ARIA,
+  SEARCH_HOTKEY_DISPLAY,
+} from '@/lib/docs-search-hotkey';
 import { useDocsLocale } from '@/lib/docs-locale';
 import {
   docsRootFromPath,
@@ -50,7 +54,7 @@ export function EmptySidebarSearchSlot() {
  * and in `docs-sidebar-header.tsx` so the split survives any panel width.
  */
 export function SidebarSearchButton() {
-  const { setOpenSearch, hotKey } = useSearchContext();
+  const { setOpenSearch } = useSearchContext();
   const copy = DOCS_SEARCH_COPY[useDocsLocale()];
 
   return (
@@ -58,22 +62,38 @@ export function SidebarSearchButton() {
       type='button'
       data-docs-sidebar-search=''
       aria-label={copy.trigger}
+      // The shortcut is declared once in `docs-search-hotkey.ts`, which also feeds
+      // Fumadocs' keydown handler — the hint and the working key cannot diverge.
+      aria-keyshortcuts={SEARCH_HOTKEY_ARIA}
       onClick={() => setOpenSearch(true)}
       className='inline-flex h-9 min-w-0 flex-[3] items-center gap-2 rounded-lg border bg-fd-secondary/50 p-1.5 ps-2 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground'
     >
       <SearchIcon className='size-4.5 shrink-0' />
       <span className='truncate'>{copy.trigger}</span>
-      {/* 键位提示是纯视觉装饰（动作已由 aria-label 完整表达）。若不加
-          aria-hidden，kbd 可见文本（如 ⌘K）不属于可访问名称，会触发
-          axe label-content-name-mismatch（WCAG 2.5.3，serious）。 */}
+      {/* The keycap hint is purely visual: the real shortcut reaches assistive
+          tech through `aria-keyshortcuts`, while the glyphs are painted by CSS
+          `::before` from the `data-key` attribute.
+
+          The glyphs are deliberately **not** a text node. Measured on axe-core
+          4.14 (WCAG 2.5.3, `label-content-name-mismatch`):
+            · `aria-hidden` does not exempt this rule — the hidden `kbd` text is
+              still counted as "visible text", so it contradicts `aria-label`
+              and raises a serious violation;
+            · folding the glyphs into `aria-label` passes the rule but makes a
+              screen reader announce "search the docs ⌘ K", trading real
+              accessibility for a passing check;
+            · dropping the `kbd` passes the rule but removes the only keyboard
+              affordance sighted users get.
+          Pseudo-element content is not a DOM text node, so it keeps the visual
+          hint, keeps the accessible name clean, and passes the rule — the only
+          option that satisfies all three at once. */}
       <span aria-hidden='true' className='ms-auto inline-flex shrink-0 gap-0.5'>
-        {hotKey.map((key, i) => (
+        {SEARCH_HOTKEY_DISPLAY.map((glyph, i) => (
           <kbd
             key={i}
-            className='rounded-md border bg-fd-background px-1.5 font-sans text-xs'
-          >
-            {key.display}
-          </kbd>
+            data-key={glyph}
+            className='docs-kbd rounded-md border bg-fd-background px-1.5 font-sans text-xs'
+          />
         ))}
       </span>
     </button>

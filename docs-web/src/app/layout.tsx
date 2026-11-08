@@ -1,8 +1,7 @@
 import './global.css';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import { DocsSearchDialog } from '@/lib/docs-search';
+import { DocsRootProvider } from '@/lib/docs-root-provider';
 import { withDocsBasePath } from '@/lib/docs-base-path';
 
 /**
@@ -67,17 +66,19 @@ window.localStorage.setItem('theme',theme);
 }catch(e){}})();`;
 
 /**
- * Root layout — Fumadocs-UI's `RootProvider` ships the theme toggles
- * and base providers. The per-locale `I18nProvider` is set up in the
- * nested `[lang]/layout.tsx` so it knows the current locale from the
- * URL segment and can redirect correctly on language switch.
+ * Root layout — the provider stack comes from `DocsRootProvider` (a
+ * client component, since the search hotkey list holds a function and
+ * functions cannot cross the server/client boundary). The per-locale
+ * `I18nProvider` is set up in the nested `[lang]/layout.tsx` so it knows
+ * the current locale from the URL segment and can redirect correctly on
+ * language switch.
  *
- * `search.SearchDialog` replaces Fumadocs' default dialog. The default
- * one queries a search *server* at `/api/search`, which this deployment
- * does not have (the Go gateway owns that namespace), so search would
- * open and then show nothing. `DocsSearchDialog` keeps Fumadocs' dialog
- * shell but reads a statically generated index instead — see
- * `docs-search-index.ts`.
+ * `DocsRootProvider` also swaps in `DocsSearchDialog` for Fumadocs'
+ * default dialog. The default one queries a search *server* at
+ * `/api/search`, which this deployment does not have (the Go gateway
+ * owns that namespace), so search would open and then show nothing.
+ * `DocsSearchDialog` keeps Fumadocs' dialog shell but reads a statically
+ * generated index instead — see `docs-search-index.ts`.
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -86,9 +87,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: EMBED_BOOTSTRAP }} />
       </head>
       <body className='min-h-screen bg-fd-background text-fd-foreground antialiased'>
-        <RootProvider search={{ SearchDialog: DocsSearchDialog }}>
-          {children}
-        </RootProvider>
+        <DocsRootProvider>{children}</DocsRootProvider>
       </body>
     </html>
   );
