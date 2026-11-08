@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "action": "git.commit",
+      "exit_code": 2,
+      "decision": "DENY",
+      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
+      "blocked": true
+    },
+    {
+      "action": "git.push.feature_branch",
+      "exit_code": 2,
+      "decision": "DENY",
+      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
+      "blocked": true
+    },
+    {
+      "action": "git.pull_request.create",
+      "exit_code": 2,
+      "decision": "DENY",
+      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
+      "blocked": true
+    }
+  ]
+}

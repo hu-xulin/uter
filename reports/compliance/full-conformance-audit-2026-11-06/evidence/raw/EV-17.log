@@ -1,0 +1,14 @@
+# evidence_id=EV-17
+# started_at=2026-11-07T02:53:37Z
+# cwd=/Users/lincolnhu/uter
+# command=GOWORK=off go build ./...
+# timeout=900
+# exit_code=1
+# timed_out=False
+
+===== STDOUT =====
+
+
+===== STDERR =====
+main.go:60:12: pattern web/dist/index.html: no matching files found
+

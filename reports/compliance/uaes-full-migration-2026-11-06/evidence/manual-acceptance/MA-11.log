@@ -1,0 +1,19 @@
+  • electron-builder  version=26.15.3 os=25.6.0
+  • loaded configuration  file=package.json ("build" field)
+  • executing @electron/rebuild  electronVersion=42.11.18 arch=x64 buildFromSource=false workspaceRoot=/Users/lincolnhu/uter/electron projectDir=./ appDir=./
+  • installing native dependencies  arch=x64
+  • completed installing native dependencies
+  • packaging       platform=darwin arch=x64 electron=42.11.18 appOutDir=dist/mac
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=/Users/lincolnhu/uter/electron/dist/mac
+  • searching for node modules  pm=npm searchDir=/Users/lincolnhu/uter/electron
+  • searching for node modules  pm=traversal searchDir=/Users/lincolnhu/uter/electron
+  • using manual traversal of node_modules to build dependency tree
+  • no node modules returned while searching directories  searchDirectories=[""]
+  • file source doesn't exist  from=/Users/lincolnhu/uter/uter
+  • file source doesn't exist  from=/Users/lincolnhu/uter/electron/node_modules/electron/dist/LICENSE
+  • file source doesn't exist  from=/Users/lincolnhu/uter/electron/node_modules/electron/dist/LICENSES.chromium.html
+  • file source doesn't exist  from=/Users/lincolnhu/uter/uter
+  • file source doesn't exist  from=/Users/lincolnhu/uter/electron/node_modules/electron/dist/LICENSE
+  • file source doesn't exist  from=/Users/lincolnhu/uter/electron/node_modules/electron/dist/LICENSES.chromium.html
+  • skipped macOS code signing  reason=identity explicitly is set to null

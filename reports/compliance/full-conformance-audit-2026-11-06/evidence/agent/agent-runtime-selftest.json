@@ -1,0 +1,207 @@
+{
+  "report_id": "D09-RUNTIME-SELFTEST",
+  "generated_at": "2026-11-07T02:57:12Z",
+  "agent": "WorkBuddy (Tencent Hunyuan Hy)",
+  "overall": "PASS",
+  "total_cases": 20,
+  "passed": 20,
+  "failed_cases": [],
+  "cases": [
+    {
+      "case": "allowed read",
+      "action": "filesystem.read",
+      "profile": "read_only",
+      "validation_passed": false,
+      "expected": "ALLOW",
+      "actual": "ALLOW",
+      "reason": "profile read_only explicitly allows filesystem.read",
+      "status": "PASS"
+    },
+    {
+      "case": "allowed scoped test",
+      "action": "test.execute",
+      "profile": "test_executor",
+      "validation_passed": false,
+      "expected": "ALLOW",
+      "actual": "ALLOW",
+      "reason": "profile test_executor explicitly allows test.execute",
+      "status": "PASS"
+    },
+    {
+      "case": "deny push to main",
+      "action": "git.push.main",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: git.push.main",
+      "status": "PASS"
+    },
+    {
+      "case": "deny PR merge",
+      "action": "git.pull_request.merge",
+      "profile": "orchestrator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: git.pull_request.merge",
+      "status": "PASS"
+    },
+    {
+      "case": "deny merge",
+      "action": "git.merge",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: git.merge",
+      "status": "PASS"
+    },
+    {
+      "case": "deny production DB write",
+      "action": "production.database.write",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: production.database.write",
+      "status": "PASS"
+    },
+    {
+      "case": "deny payment config write",
+      "action": "payment.configuration.write",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: payment.configuration.write",
+      "status": "PASS"
+    },
+    {
+      "case": "deny overwriting user WIP",
+      "action": "overwrite.user_uncommitted_changes",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: overwrite.user_uncommitted_changes",
+      "status": "PASS"
+    },
+    {
+      "case": "deny falsified evidence",
+      "action": "falsify.verification_result",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: falsify.verification_result",
+      "status": "PASS"
+    },
+    {
+      "case": "deny reading production secrets",
+      "action": "production.secrets.read",
+      "profile": "workspace_developer",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "profile workspace_developer explicitly denies production.secrets.read",
+      "status": "PASS"
+    },
+    {
+      "case": "deny worktree escape",
+      "action": "git.worktree.create",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: git.worktree.create",
+      "status": "PASS"
+    },
+    {
+      "case": "deny destructive reset",
+      "action": "git.reset.hard",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: git.reset.hard",
+      "status": "PASS"
+    },
+    {
+      "case": "deny restoring user files",
+      "action": "git.restore.user_files",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "execution_policy.forbidden: git.restore.user_files",
+      "status": "PASS"
+    },
+    {
+      "case": "deny commit before full validation",
+      "action": "git.commit",
+      "profile": "pull_request_creator",
+      "validation_passed": false,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
+      "status": "PASS"
+    },
+    {
+      "case": "deny push before full validation",
+      "action": "git.push.feature_branch",
+      "profile": "pull_request_creator",
+      "validation_passed": false,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
+      "status": "PASS"
+    },
+    {
+      "case": "deny PR before full validation",
+      "action": "git.pull_request.create",
+      "profile": "pull_request_creator",
+      "validation_passed": false,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
+      "status": "PASS"
+    },
+    {
+      "case": "allow commit only after full validation",
+      "action": "git.commit",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "ALLOW",
+      "actual": "ALLOW",
+      "reason": "profile pull_request_creator explicitly allows git.commit",
+      "status": "PASS"
+    },
+    {
+      "case": "deny unknown action (fail-closed)",
+      "action": "some.unregistered.action",
+      "profile": "pull_request_creator",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "default_effect=deny; some.unregistered.action is not granted to pull_request_creator",
+      "status": "PASS"
+    },
+    {
+      "case": "deny unregistered profile",
+      "action": "filesystem.read",
+      "profile": "does_not_exist",
+      "validation_passed": true,
+      "expected": "DENY",
+      "actual": "DENY",
+      "reason": "default_effect=deny; filesystem.read is not granted to does_not_exist",
+      "status": "PASS"
+    },
+    {
+      "case": "failing test cannot be reported as PASS",
+      "expected": "overall=FAILED, report_success=false",
+      "actual": "overall=FAILED, report_success=false",
+      "status": "PASS"
+    }
+  ]
+}

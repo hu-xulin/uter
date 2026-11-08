@@ -22,6 +22,50 @@ repository:
   force_push: false
   direct_push_to_main: false
   merge_pull_request: false
+  commit_requires_full_verification: true
+  push_requires_full_verification: true
+  pull_request_requires_full_verification: true
+
+# Execution contract per UTER-UAES-GOV-001 §6.3 / §6.6 / §18.
+# Baseline preservation and fail-closed delivery are mandatory. Branch strategy
+# follows the execution environment: this execution runs on local main after the 2026-11-07 branch convergence;
+# where the environment explicitly authorizes working on local main, that
+# authorization governs and must not be changed unilaterally
+# (UTER-UAES-GOV-001 §6.3 baseline preservation / §18). Earlier task-scoped V2
+# constraints on the exact branch mode were superseded by UTER-UAES-GOV-001 and
+# are not permanent policy.
+execution_policy:
+  governing_specification: "UTER-UAES-GOV-001"
+  baseline_preservation_required: true
+  max_execution_branches_per_project: 1
+  current_execution_branch: "main"
+  environment_authorized_local_main_must_be_respected: true
+  full_validation_required_before:
+    - git.commit
+    - git.push.feature_branch
+    - git.pull_request.create
+  validation_layers:
+    - L1_CHANGE_GATE
+    - L2_INTEGRATION_GATE
+    - L3_DOMAIN_ACCEPTANCE_GATE
+    - L4_GLOBAL_CONFORMANCE_GATE
+  independently_assessed_domains: 14
+  runtime_agent_verification_required: true
+  independent_assessment_required: true
+  forbidden:
+    - git.push.main
+    - git.force_push
+    - git.merge
+    - git.pull_request.merge
+    - git.worktree.create
+    - git.reset.hard
+    - git.clean
+    - git.restore.user_files
+    - deployment.execute
+    - production.database.write
+    - payment.configuration.write
+    - overwrite.user_uncommitted_changes
+    - falsify.verification_result
 
 risk_levels:
   - R0

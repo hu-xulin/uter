@@ -1,0 +1,28 @@
+# id: L2-02
+# layer: L2
+# command: GOWORK=off go test ./...
+# workdir: /Users/lincolnhu/uter/relaykit
+# started_at: 2026-11-07T15:05:42Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+ok  	github.com/uter-ai/uter/relaykit/dto	(cached)
+?   	github.com/uter-ai/uter/relaykit/reasonmap	[no test files]
+ok  	github.com/uter-ai/uter/relaykit/relayconvert	(cached)
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/convmeta	(cached)
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/internal/claude_messages	(cached)
+?   	github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag	[no test files]
+?   	github.com/uter-ai/uter/relaykit/relayconvert/internal/gemini_chat	[no test files]
+?   	github.com/uter-ai/uter/relaykit/relayconvert/internal/jsonutil	[no test files]
+?   	github.com/uter-ai/uter/relaykit/relayconvert/internal/media	[no test files]
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_chat	(cached)
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_responses	(cached)
+?   	github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude	[no test files]
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/gemini	(cached)
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/internal/toolconv	(cached)
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/kitutil	(cached)
+ok  	github.com/uter-ai/uter/relaykit/relayconvert/reasoning	(cached)
+?   	github.com/uter-ai/uter/relaykit/types	[no test files]
+# exit_code: 0
+# duration_seconds: 0

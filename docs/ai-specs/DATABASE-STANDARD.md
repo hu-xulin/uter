@@ -288,6 +288,8 @@ Uter **没有独立迁移脚本体系**，采用「GORM AutoMigrate + 手写迁�
 
 `SQL_DSN` 未设置时默认 SQLite：`SQLitePath = "one-api.db?_pragma=busy_timeout(30000)&_pragma=journal_mode(WAL)&_txlock=immediate"`（`common/database.go`）。生产以 `SQL_DSN` 切换 MySQL/PostgreSQL（参考 docker-compose.multidb.yml）。本地开发直接读写仓库根 `one-api.db`——它是真实状态载体，不属于可随意重建的临时文件。
 
+**`SQLITE_PATH` 覆盖入口与参数校验（2026-11-07 补）**：`common/init.go` 在 `SQLITE_PATH` 非空时用它覆盖默认 DSN。该入口此前无校验，裸路径会静默丢掉 `_txlock=immediate`（`BEGIN IMMEDIATE`）与 `_pragma=busy_timeout(30000)`，在并发写者下重新引入 `SQLITE_BUSY_SNAPSHOT` / `database is locked`。现由 `ensureSQLiteConcurrencyPragmas()` 规范化：保留运维自定义路径与其他 pragma，缺失的两个并发正确性参数自动补齐，`_txlock=deferred` 等更弱设置强制升级为 `immediate`，并在启动时打印 WARNING。规范化而非拒绝启动，避免破坏既有部署；守卫为 `common/sqlite_dsn_override_test.go`。**禁止绕过该函数直接拼接 SQLite DSN**，测试代码对 `common.SQLitePath` 的直接赋值不经过此分支（仅内存/临时库用例，不进入生产启动路径）。
+
 ## 16. 完成定义
 
 数据库修改必须满足：

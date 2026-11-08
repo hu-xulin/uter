@@ -1,0 +1,18 @@
+# evidence_id=AG-09-real-task
+# started_at=2026-11-07T02:57:12Z
+# cwd=/Users/lincolnhu/uter
+# command=ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt
+# timeout=600
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+exit=0  bash scripts/quality/ai-specs-check.sh
+exit=0  ruby scripts/quality/test-ai-governance-policy.rb
+exit=0  python3 scripts/quality/uaes-manual-acceptance.py --verify-only
+overall=PASS report_success=true
+evidence: /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/agent-runtime-test-execution.json
+
+
+===== STDERR =====
+

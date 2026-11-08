@@ -1,0 +1,22 @@
+# evidence_id=EV-06
+# started_at=2026-11-07T02:40:58Z
+# cwd=/Users/lincolnhu/uter
+# command=ruby scripts/quality/test-uaes-integration-check.rb
+# timeout=240
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+Run options: --seed 47766
+
+# Running:
+
+.................
+
+Finished in 20.010853s, 0.8495 runs/s, 2.8485 assertions/s.
+
+17 runs, 57 assertions, 0 failures, 0 errors, 0 skips
+
+
+===== STDERR =====
+

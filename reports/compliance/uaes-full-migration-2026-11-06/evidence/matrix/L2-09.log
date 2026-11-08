@@ -1,0 +1,1014 @@
+# id: L2-09
+# layer: L2
+# command: bun run test -- src/features/wallet src/features/pricing
+# workdir: /Users/lincolnhu/uter/web
+# started_at: 2026-11-07T15:10:56Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+$ vitest run src/features/wallet src/features/pricing
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/lincolnhu/uter/web[39m
+
+ [32m✓[39m src/features/wallet/lib/__tests__/payment-icons.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 444[2mms[22m[39m
+ [32m✓[39m src/features/wallet/components/__tests__/recharge-form-card.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 561[2mms[22m[39m
+   [32m✓[39m RechargeFormCard custom amount [2m(2)[22m
+     [33m[2m✓[22m[39m keeps the decimal part the user types[33m 387[2mms[22m[39m
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx
+[22m[39mi18next: languageChanged en
+i18next: initialized {
+  debug: [33mtrue[39m,
+  initAsync: [33mtrue[39m,
+  ns: [ [32m'translation'[39m ],
+  defaultNS: [ [32m'translation'[39m ],
+  fallbackLng: [ [32m'en'[39m ],
+  fallbackNS: [33mfalse[39m,
+  supportedLngs: [
+    [32m'en'[39m,   [32m'zhCN'[39m,
+    [32m'fr'[39m,   [32m'ru'[39m,
+    [32m'ja'[39m,   [32m'vi'[39m,
+    [32m'zhTW'[39m, [32m'cimode'[39m
+  ],
+  nonExplicitSupportedLngs: [33mfalse[39m,
+  load: [32m'currentOnly'[39m,
+  preload: [33mfalse[39m,
+  keySeparator: [32m'.'[39m,
+  nsSeparator: [33mfalse[39m,
+  pluralSeparator: [32m'_'[39m,
+  contextSeparator: [32m'_'[39m,
+  enableSelector: [33mfalse[39m,
+  partialBundledLanguages: [33mfalse[39m,
+  saveMissing: [33mfalse[39m,
+  updateMissing: [33mfalse[39m,
+  saveMissingTo: [32m'fallback'[39m,
+  saveMissingPlurals: [33mtrue[39m,
+  missingKeyHandler: [33mfalse[39m,
+  missingInterpolationHandler: [33mfalse[39m,
+  postProcess: [33mfalse[39m,
+  postProcessPassResolved: [33mfalse[39m,
+  returnNull: [33mfalse[39m,
+  returnEmptyString: [33mtrue[39m,
+  returnObjects: [33mfalse[39m,
+  joinArrays: [33mfalse[39m,
+  returnedObjectHandler: [33mfalse[39m,
+  parseMissingKeyHandler: [33mfalse[39m,
+  appendNamespaceToMissingKey: [33mfalse[39m,
+  appendNamespaceToCIMode: [33mfalse[39m,
+  overloadTranslationOptionHandler: [36m[Function: overloadTranslationOptionHandler][39m,
+  interpolation: {
+    escapeValue: [33mfalse[39m,
+    prefix: [32m'{{'[39m,
+    suffix: [32m'}}'[39m,
+    formatSeparator: [32m','[39m,
+    unescapePrefix: [32m'-'[39m,
+    nestingPrefix: [32m'$t('[39m,
+    nestingSuffix: [32m')'[39m,
+    nestingOptionsSeparator: [32m','[39m,
+    maxReplaces: [33m1000[39m,
+    skipOnVariables: [33mtrue[39m,
+    format: [36m[Function: bound format][39m
+  },
+  cacheInBuiltFormats: [33mtrue[39m,
+  resources: { en: { translation: [36m[Object][39m } },
+  detection: {
+    order: [ [32m'localStorage'[39m, [32m'navigator'[39m ],
+    caches: [ [32m'localStorage'[39m ],
+    convertDetectedLanguage: [36m[Function: convertDetectedLanguage][39m,
+    lookupQuerystring: [32m'lng'[39m,
+    lookupCookie: [32m'i18next'[39m,
+    lookupLocalStorage: [32m'i18nextLng'[39m,
+    lookupSessionStorage: [32m'i18nextLng'[39m,
+    excludeCacheFor: [ [32m'cimode'[39m ]
+  },
+  react: { bindI18n: [32m'languageChanged loaded'[39m },
+  userDefinedNsSeparator: [33mfalse[39m,
+  ignoreJSONStructure: [33mtrue[39m
+}
+
+ [32m✓[39m src/features/wallet/__tests__/copy.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1028[2mms[22m[39m
+   [33m[2m✓[22m[39m translates billing history statuses and updates them when the language changes[33m 716[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/discount-tag.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 311[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/model-cards.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 3413[2mms[22m[39m
+   [32m✓[39m model cards [2m(33)[22m
+     [33m[2m✓[22m[39m copies the complete long model name without opening details[33m 307[2mms[22m[39m
+     [33m[2m✓[22m[39m paginates the model cards and disables navigation at both boundaries[33m 1190[2mms[22m[39m
+ [32m✓[39m src/features/wallet/components/dialogs/__tests__/cn-pay-web-dialog.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 358[2mms[22m[39m
+   [32m✓[39m CnPayWebDialog order amount [2m(1)[22m
+     [33m[2m✓[22m[39m sends the sub-dollar amount as-is instead of truncating to 0[33m 347[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/pricing-controls.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 3092[2mms[22m[39m
+   [32m✓[39m pricing controls [2m(9)[22m
+     [33m[2m✓[22m[39m counts each model once per filter and updates counts when the catalog changes[33m 948[2mms[22m[39m
+     [33m[2m✓[22m[39m selects price sorting from the shared dropdown[33m 318[2mms[22m[39m
+     [33m[2m✓[22m[39m opens mobile filters from the left, selects a group, and restores focus on close[33m 685[2mms[22m[39m
+ [32m✓[39m src/features/pricing/lib/__tests__/billing-expression.test.ts [2m([22m[2m81 tests[22m[2m)[22m[32m 163[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/dynamic-price.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 123[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-matrix.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/sorting.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-expr.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-matrix-display.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/vendor-order.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/breakdown-tier-match.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/context-size-tags.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/features/pricing/lib/__tests__/time-rule-expr.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/features/wallet/lib/payment-redirect.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/features/wallet/lib/__tests__/alipay-return.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx
+[22m[39mi18next: languageChanged en
+i18next: initialized {
+  debug: [33mtrue[39m,
+  initAsync: [33mtrue[39m,
+  ns: [ [32m'translation'[39m ],
+  defaultNS: [ [32m'translation'[39m ],
+  fallbackLng: [ [32m'en'[39m ],
+  fallbackNS: [33mfalse[39m,
+  supportedLngs: [
+    [32m'en'[39m,   [32m'zhCN'[39m,
+    [32m'fr'[39m,   [32m'ru'[39m,
+    [32m'ja'[39m,   [32m'vi'[39m,
+    [32m'zhTW'[39m, [32m'cimode'[39m
+  ],
+  nonExplicitSupportedLngs: [33mfalse[39m,
+  load: [32m'currentOnly'[39m,
+  preload: [33mfalse[39m,
+  keySeparator: [32m'.'[39m,
+  nsSeparator: [33mfalse[39m,
+  pluralSeparator: [32m'_'[39m,
+  contextSeparator: [32m'_'[39m,
+  enableSelector: [33mfalse[39m,
+  partialBundledLanguages: [33mfalse[39m,
+  saveMissing: [33mfalse[39m,
+  updateMissing: [33mfalse[39m,
+  saveMissingTo: [32m'fallback'[39m,
+  saveMissingPlurals: [33mtrue[39m,
+  missingKeyHandler: [33mfalse[39m,
+  missingInterpolationHandler: [33mfalse[39m,
+  postProcess: [33mfalse[39m,
+  postProcessPassResolved: [33mfalse[39m,
+  returnNull: [33mfalse[39m,
+  returnEmptyString: [33mtrue[39m,
+  returnObjects: [33mfalse[39m,
+  joinArrays: [33mfalse[39m,
+  returnedObjectHandler: [33mfalse[39m,
+  parseMissingKeyHandler: [33mfalse[39m,
+  appendNamespaceToMissingKey: [33mfalse[39m,
+  appendNamespaceToCIMode: [33mfalse[39m,
+  overloadTranslationOptionHandler: [36m[Function: overloadTranslationOptionHandler][39m,
+  interpolation: {
+    escapeValue: [33mfalse[39m,
+    prefix: [32m'{{'[39m,
+    suffix: [32m'}}'[39m,
+    formatSeparator: [32m','[39m,
+    unescapePrefix: [32m'-'[39m,
+    nestingPrefix: [32m'$t('[39m,
+    nestingSuffix: [32m')'[39m,
+    nestingOptionsSeparator: [32m','[39m,
+    maxReplaces: [33m1000[39m,
+    skipOnVariables: [33mtrue[39m,
+    format: [36m[Function: bound format][39m
+  },
+  cacheInBuiltFormats: [33mtrue[39m,
+  resources: { en: { translation: {} } },
+  detection: {
+    order: [ [32m'localStorage'[39m, [32m'navigator'[39m ],
+    caches: [ [32m'localStorage'[39m ],
+    convertDetectedLanguage: [36m[Function: convertDetectedLanguage][39m,
+    lookupQuerystring: [32m'lng'[39m,
+    lookupCookie: [32m'i18next'[39m,
+    lookupLocalStorage: [32m'i18nextLng'[39m,
+    lookupSessionStorage: [32m'i18nextLng'[39m,
+    excludeCacheFor: [ [32m'cimode'[39m ]
+  },
+  react: { bindI18n: [32m'languageChanged loaded'[39m },
+  userDefinedNsSeparator: [33mfalse[39m,
+  ignoreJSONStructure: [33mtrue[39m,
+  lng: [32m'en'[39m
+}
+
+[90mstderr[2m | src/features/pricing/__tests__/task-price-display.test.tsx
+[22m[39mi18next: init: i18next is already initialized. You should call init just once!
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows an explicit free request price alongside token prices with distinct units
+[22m[39mi18next::translator: missingKey en translation Dynamic Pricing Dynamic Pricing
+i18next::translator: missingKey en translation Prices vary by usage tier and request conditions Prices vary by usage tier and request conditions
+i18next::translator: missingKey en translation Tiered price table Tiered price table
+i18next::translator: missingKey en translation Full input length Full input length
+i18next::translator: missingKey en translation Matched Matched
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Price per request Price per request
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Price per request Price per request
+i18next::translator: missingKey en translation Tier Tier
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Price per request Price per request
+i18next::translator: missingKey en translation Full input length Full input length
+i18next::translator: missingKey en translation Matched Matched
+i18next::translator: missingKey en translation request request
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows an explicit free request price alongside token prices with distinct units
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mrenders weekday and hour conditions as time windows instead of expression source
+[22m[39mi18next::translator: missingKey en translation Dynamic Pricing Dynamic Pricing
+i18next::translator: missingKey en translation Prices vary by usage tier and request conditions Prices vary by usage tier and request conditions
+i18next::translator: missingKey en translation Tiered price table Tiered price table
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{first}} or {{second}} {{first}} or {{second}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cache Read Cache Read
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{first}} or {{second}} {{first}} or {{second}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cache Read Cache Read
+i18next::translator: missingKey en translation Tier Tier
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cache Read Cache Read
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{first}} or {{second}} {{first}} or {{second}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{first}} or {{second}} {{first}} or {{second}}
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mrenders weekday and hour conditions as time windows instead of expression source
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows nested task conditions and prices in detail and group tables without ambiguous log matches
+[22m[39mi18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation No description available. No description available.
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Details Details
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation No performance data available No performance data available
+i18next::translator: missingKey en translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey en translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey en translation Status Status
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Latency short Latency short
+i18next::translator: missingKey en translation Throughput Throughput
+i18next::translator: missingKey en translation Throughput short Throughput short
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{count}} tiers_other {{count}} tiers
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{start}}–{{end}} {{start}}–{{end}}
+i18next::translator: missingKey en translation Outside these times: {{condition}} Outside these times: {{condition}}
+i18next::translator: missingKey en translation {{condition}} ({{timezone}}) {{condition}} ({{timezone}})
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation No description available. No description available.
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Details Details
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation No performance data available No performance data available
+i18next::translator: missingKey en translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey en translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey en translation Status Status
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Latency short Latency short
+i18next::translator: missingKey en translation Throughput Throughput
+i18next::translator: missingKey en translation Throughput short Throughput short
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{count}} tiers_other {{count}} tiers
+i18next::translator: missingKey en translation Official Official
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows nested task conditions and prices in detail and group tables without ambiguous log matches
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mexplains missing task metadata while retaining the original expression
+[22m[39mi18next::translator: missingKey en translation Special billing expression Special billing expression
+i18next::translator: missingKey en translation Task usage metadata is unavailable. Pricing details cannot be displayed. Task usage metadata is unavailable. Pricing details cannot be displayed.
+i18next::translator: missingKey en translation Raw expression Raw expression
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mexplains missing task metadata while retaining the original expression
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mfalls back for omitted count labels and preserves canonical units for other quantities
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows localized image labels and units in base and group pricing when configured=false
+[22m[39mi18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cached input Cached input
+i18next::translator: missingKey en translation Cache write Cache write
+i18next::translator: missingKey en translation Image input Image input
+i18next::translator: missingKey en translation Audio input Audio input
+i18next::translator: missingKey en translation Audio output Audio output
+i18next::translator: missingKey en translation Base Price Base Price
+i18next::translator: missingKey en translation This model is billed by usage, but the administrator has not configured its pricing yet. This model is billed by usage, but the administrator has not configured its pricing yet.
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation This model is billed by usage, but the administrator has not configured its pricing yet. This model is billed by usage, but the administrator has not configured its pricing yet.
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+i18next: languageChanged zhCN
+i18next::translator: missingKey zhCN translation Overview Overview
+i18next::translator: missingKey zhCN translation Performance Performance
+i18next::translator: missingKey zhCN translation API API
+i18next::translator: missingKey zhCN translation Pricing Pricing
+i18next::translator: missingKey zhCN translation Official price Official price
+i18next::translator: missingKey zhCN translation Copy model name Copy model name
+i18next::translator: missingKey zhCN translation Copied! Copied!
+i18next::translator: missingKey zhCN translation Copy model name Copy model name
+i18next::translator: missingKey zhCN translation Copied Copied
+i18next::translator: missingKey zhCN translation Task billing Task billing
+i18next::translator: missingKey zhCN translation Average latency Average latency
+i18next::translator: missingKey zhCN translation Success rate Success rate
+i18next::translator: missingKey zhCN translation Input Input
+i18next::translator: missingKey zhCN translation Output Output
+i18next::translator: missingKey zhCN translation Cached input Cached input
+i18next::translator: missingKey zhCN translation Cache write Cache write
+i18next::translator: missingKey zhCN translation Image input Image input
+i18next::translator: missingKey zhCN translation Audio input Audio input
+i18next::translator: missingKey zhCN translation Audio output Audio output
+i18next::translator: missingKey zhCN translation Base Price Base Price
+i18next::translator: missingKey zhCN translation This model is billed by usage, but the administrator has not configured its pricing yet. This model is billed by usage, but the administrator has not configured its pricing yet.
+i18next::translator: missingKey zhCN translation unit unit
+i18next::translator: missingKey zhCN translation Pricing by Group Pricing by Group
+i18next::translator: missingKey zhCN translation This model is billed by usage, but the administrator has not configured its pricing yet. This model is billed by usage, but the administrator has not configured its pricing yet.
+i18next::translator: missingKey zhCN translation unit unit
+i18next::translator: missingKey zhCN translation Type Type
+i18next::translator: missingKey zhCN translation Groups Groups
+i18next::translator: missingKey zhCN translation Model Model
+i18next::translator: missingKey zhCN translation Task billing Task billing
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows localized image labels and units in base and group pricing when configured=false
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows localized image labels and units in base and group pricing when configured=true
+[22m[39mi18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cached input Cached input
+i18next::translator: missingKey en translation Cache write Cache write
+i18next::translator: missingKey en translation Image input Image input
+i18next::translator: missingKey en translation Audio input Audio input
+i18next::translator: missingKey en translation Audio output Audio output
+i18next::translator: missingKey en translation Base Price Base Price
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+i18next: languageChanged zhCN
+i18next::translator: missingKey zhCN translation Overview Overview
+i18next::translator: missingKey zhCN translation Performance Performance
+i18next::translator: missingKey zhCN translation API API
+i18next::translator: missingKey zhCN translation Pricing Pricing
+i18next::translator: missingKey zhCN translation Official price Official price
+i18next::translator: missingKey zhCN translation Copy model name Copy model name
+i18next::translator: missingKey zhCN translation Copied! Copied!
+i18next::translator: missingKey zhCN translation Copy model name Copy model name
+i18next::translator: missingKey zhCN translation Copied Copied
+i18next::translator: missingKey zhCN translation Task billing Task billing
+i18next::translator: missingKey zhCN translation Average latency Average latency
+i18next::translator: missingKey zhCN translation Success rate Success rate
+i18next::translator: missingKey zhCN translation Input Input
+i18next::translator: missingKey zhCN translation Output Output
+i18next::translator: missingKey zhCN translation Cached input Cached input
+i18next::translator: missingKey zhCN translation Cache write Cache write
+i18next::translator: missingKey zhCN translation Image input Image input
+i18next::translator: missingKey zhCN translation Audio input Audio input
+i18next::translator: missingKey zhCN translation Audio output Audio output
+i18next::translator: missingKey zhCN translation Base Price Base Price
+i18next::translator: missingKey zhCN translation unit unit
+i18next::translator: missingKey zhCN translation Pricing by Group Pricing by Group
+i18next::translator: missingKey zhCN translation Official price (1x) Official price (1x)
+i18next::translator: missingKey zhCN translation unit unit
+i18next::translator: missingKey zhCN translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey zhCN translation Type Type
+i18next::translator: missingKey zhCN translation Groups Groups
+i18next::translator: missingKey zhCN translation Model Model
+i18next::translator: missingKey zhCN translation Task billing Task billing
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows localized image labels and units in base and group pricing when configured=true
+[22m[39mi18next: languageChanged en
+
+ [32m✓[39m src/features/pricing/__tests__/group-ratio-badge.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mupdates count unit labels across cards, table cells and breakdowns with locale fallback
+[22m[39mi18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation No description available. No description available.
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Details Details
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation No performance data available No performance data available
+i18next::translator: missingKey en translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey en translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey en translation Status Status
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Latency short Latency short
+i18next::translator: missingKey en translation Throughput Throughput
+i18next::translator: missingKey en translation Throughput short Throughput short
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation All requests All requests
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation All requests All requests
+i18next::translator: missingKey en translation unit unit
+i18next: languageChanged en
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation No description available. No description available.
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Details Details
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation No performance data available No performance data available
+i18next::translator: missingKey en translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey en translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey en translation Status Status
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Latency short Latency short
+i18next::translator: missingKey en translation Throughput Throughput
+i18next::translator: missingKey en translation Throughput short Throughput short
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation All requests All requests
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation All requests All requests
+i18next::translator: missingKey en translation unit unit
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mupdates count unit labels across cards, table cells and breakdowns with locale fallback
+[22m[39mi18next: languageChanged zhTW
+i18next::translator: missingKey zhTW translation Official Official
+i18next::translator: missingKey zhTW translation unit unit
+i18next::translator: missingKey zhTW translation unit unit
+i18next::translator: missingKey zhTW translation Copy model name Copy model name
+i18next::translator: missingKey zhTW translation No description available. No description available.
+i18next::translator: missingKey zhTW translation Pricing Pricing
+i18next::translator: missingKey zhTW translation Groups Groups
+i18next::translator: missingKey zhTW translation Details Details
+i18next::translator: missingKey zhTW translation Copied! Copied!
+i18next::translator: missingKey zhTW translation Copied Copied
+i18next::translator: missingKey zhTW translation Task billing Task billing
+i18next::translator: missingKey zhTW translation No performance data available No performance data available
+i18next::translator: missingKey zhTW translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey zhTW translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey zhTW translation Status Status
+i18next::translator: missingKey zhTW translation Average latency Average latency
+i18next::translator: missingKey zhTW translation Latency short Latency short
+i18next::translator: missingKey zhTW translation Throughput Throughput
+i18next::translator: missingKey zhTW translation Throughput short Throughput short
+i18next::translator: missingKey zhTW translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey zhTW translation unit unit
+i18next::translator: missingKey zhTW translation Official Official
+i18next::translator: missingKey zhTW translation All requests All requests
+i18next::translator: missingKey zhTW translation unit unit
+i18next::translator: missingKey zhTW translation Applicable conditions Applicable conditions
+i18next::translator: missingKey zhTW translation All requests All requests
+i18next::translator: missingKey zhTW translation unit unit
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mupdates count unit labels across cards, table cells and breakdowns with locale fallback
+[22m[39mi18next: languageChanged zhCN
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mupdates count unit labels across cards, table cells and breakdowns with locale fallback
+[22m[39mi18next: languageChanged fr
+i18next::translator: missingKey fr translation Official Official
+i18next::translator: missingKey fr translation unit unit
+i18next::translator: missingKey fr translation unit unit
+i18next::translator: missingKey fr translation Copy model name Copy model name
+i18next::translator: missingKey fr translation No description available. No description available.
+i18next::translator: missingKey fr translation Pricing Pricing
+i18next::translator: missingKey fr translation Groups Groups
+i18next::translator: missingKey fr translation Details Details
+i18next::translator: missingKey fr translation Copied! Copied!
+i18next::translator: missingKey fr translation Copied Copied
+i18next::translator: missingKey fr translation Task billing Task billing
+i18next::translator: missingKey fr translation No performance data available No performance data available
+i18next::translator: missingKey fr translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey fr translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey fr translation Status Status
+i18next::translator: missingKey fr translation Average latency Average latency
+i18next::translator: missingKey fr translation Latency short Latency short
+i18next::translator: missingKey fr translation Throughput Throughput
+i18next::translator: missingKey fr translation Throughput short Throughput short
+i18next::translator: missingKey fr translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey fr translation unit unit
+i18next::translator: missingKey fr translation Official Official
+i18next::translator: missingKey fr translation All requests All requests
+i18next::translator: missingKey fr translation unit unit
+i18next::translator: missingKey fr translation Applicable conditions Applicable conditions
+i18next::translator: missingKey fr translation All requests All requests
+i18next::translator: missingKey fr translation unit unit
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mupdates count unit labels across cards, table cells and breakdowns with locale fallback
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mrefreshes memoized provider prices when the group or display currency changes
+[22m[39mi18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Official Official
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mrefreshes memoized provider prices when the group or display currency changes
+[22m[39mi18next: languageChanged en
+
+ [32m✓[39m src/features/wallet/lib/__tests__/min-topup.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/features/wallet/lib/payment.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/features/wallet/hooks/use-payment.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows one standard task price and a localized group price without duplicate tiers
+[22m[39mi18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cached input Cached input
+i18next::translator: missingKey en translation Cache write Cache write
+i18next::translator: missingKey en translation Image input Image input
+i18next::translator: missingKey en translation Audio input Audio input
+i18next::translator: missingKey en translation Audio output Audio output
+i18next::translator: missingKey en translation Base Price Base Price
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+i18next: languageChanged zhCN
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows one standard task price and a localized group price without duplicate tiers
+[22m[39mi18next: languageChanged fr
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows one standard task price and a localized group price without duplicate tiers
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mlabels even a single task price on model cards
+[22m[39mi18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation unit unit
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation No description available. No description available.
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Details Details
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation No performance data available No performance data available
+i18next::translator: missingKey en translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey en translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey en translation Status Status
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Latency short Latency short
+i18next::translator: missingKey en translation Throughput Throughput
+i18next::translator: missingKey en translation Throughput short Throughput short
+i18next: languageChanged zhCN
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mlabels even a single task price on model cards
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mpreserves condition tables, boolean states and additional charges
+[22m[39mi18next::translator: missingKey en translation Yes Yes
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Additional charge Additional charge
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation No No
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Additional charge Additional charge
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation Additional charge Additional charge
+i18next::translator: missingKey en translation Yes Yes
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation No No
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation request request
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mpreserves condition tables, boolean states and additional charges
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mkeeps rules and custom expressions out of the simple price layout
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2muses plugin option labels and infers a unique fallback without expanding unrelated fields
+[22m[39mi18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation 1M token 1M token
+i18next: languageChanged zhCN
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2muses plugin option labels and infers a unique fallback without expanding unrelated fields
+[22m[39mi18next: languageChanged ja
+i18next::translator: missingKey ja translation 1M token 1M token
+i18next::translator: missingKey ja translation 1M token 1M token
+i18next::translator: missingKey ja translation Applicable conditions Applicable conditions
+i18next::translator: missingKey ja translation 1M token 1M token
+i18next::translator: missingKey ja translation 1M token 1M token
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2muses plugin option labels and infers a unique fallback without expanding unrelated fields
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mnames ambiguous fallback rows other cases and keeps unmatched enum values readable
+[22m[39mi18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Other cases Other cases
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Other cases Other cases
+i18next::translator: missingKey en translation 1M token 1M token
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mnames ambiguous fallback rows other cases and keeps unmatched enum values readable
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mpreserves all conditions and leaves multiple possible fallback combinations unspecified
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2muses the same recharge conversion and token unit in task condition prices
+[22m[39mi18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation 1M token 1M token
+i18next::translator: missingKey en translation 1M token 1M token
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2muses the same recharge conversion and token unit in task condition prices
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cached input Cached input
+i18next::translator: missingKey en translation Cache write Cache write
+i18next::translator: missingKey en translation Image input Image input
+i18next::translator: missingKey en translation Audio input Audio input
+i18next::translator: missingKey en translation Audio output Audio output
+i18next::translator: missingKey en translation Base Price Base Price
+i18next::translator: missingKey en translation {{count}} providers_other {{count}} providers
+i18next::translator: missingKey en translation Not configured for some providers Not configured for some providers
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation credit credit
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation Per-call Per-call
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation Provider Provider
+i18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Price examples Price examples
+i18next::translator: missingKey en translation Spec Spec
+i18next::translator: missingKey en translation Example price Example price
+i18next::translator: missingKey en translation Approximate prices for common specs. Approximate prices for common specs.
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cached input Cached input
+i18next::translator: missingKey en translation Cache write Cache write
+i18next::translator: missingKey en translation Image input Image input
+i18next::translator: missingKey en translation Audio input Audio input
+i18next::translator: missingKey en translation Audio output Audio output
+i18next::translator: missingKey en translation Base Price Base Price
+i18next::translator: missingKey en translation {{count}} providers_other {{count}} providers
+i18next::translator: missingKey en translation Not configured for some providers Not configured for some providers
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation credit credit
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation Per-call Per-call
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation Provider Provider
+i18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Price examples Price examples
+i18next::translator: missingKey en translation Spec Spec
+i18next::translator: missingKey en translation Example price Example price
+i18next::translator: missingKey en translation Approximate prices for common specs. Approximate prices for common specs.
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation credit credit
+i18next::translator: missingKey en translation Price examples Price examples
+i18next::translator: missingKey en translation Spec Spec
+i18next::translator: missingKey en translation Example price Example price
+i18next::translator: missingKey en translation Approximate prices for common specs. Approximate prices for common specs.
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next: languageChanged zhCN
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next: languageChanged en
+i18next::translator: missingKey en translation Overview Overview
+i18next::translator: missingKey en translation Performance Performance
+i18next::translator: missingKey en translation API API
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation Official price Official price
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Success rate Success rate
+i18next::translator: missingKey en translation Input Input
+i18next::translator: missingKey en translation Output Output
+i18next::translator: missingKey en translation Cached input Cached input
+i18next::translator: missingKey en translation Cache write Cache write
+i18next::translator: missingKey en translation Image input Image input
+i18next::translator: missingKey en translation Audio input Audio input
+i18next::translator: missingKey en translation Audio output Audio output
+i18next::translator: missingKey en translation Base Price Base Price
+i18next::translator: missingKey en translation {{count}} providers_other {{count}} providers
+i18next::translator: missingKey en translation Not configured for some providers Not configured for some providers
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation credit credit
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation Per-call Per-call
+i18next::translator: missingKey en translation Pricing by Group Pricing by Group
+i18next::translator: missingKey en translation Provider Provider
+i18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation Applicable conditions Applicable conditions
+i18next::translator: missingKey en translation credit credit
+i18next::translator: missingKey en translation Price examples Price examples
+i18next::translator: missingKey en translation Spec Spec
+i18next::translator: missingKey en translation Example price Example price
+i18next::translator: missingKey en translation Approximate prices for common specs. Approximate prices for common specs.
+i18next::translator: missingKey en translation Prices shown per usage unit Prices shown per usage unit
+i18next::translator: missingKey en translation Type Type
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Model Model
+i18next::translator: missingKey en translation Task billing Task billing
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next::translator: missingKey en translation This model is billed by usage, but the administrator has not configured its pricing yet. This model is billed by usage, but the administrator has not configured its pricing yet.
+i18next::translator: missingKey en translation unit unit
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next::translator: missingKey en translation Official price (1x) Official price (1x)
+i18next::translator: missingKey en translation request request
+i18next::translator: missingKey en translation Group Group
+i18next::translator: missingKey en translation Ratio Ratio
+i18next::translator: missingKey en translation Price Price
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mswitches provider group prices, localized conditions and examples, and shows unconfigured providers
+[22m[39mi18next: languageChanged en
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows provider count, price range and missing-price status in both list and card views
+[22m[39mi18next::translator: missingKey en translation {{count}} providers_other {{count}} providers
+i18next::translator: missingKey en translation Not configured for some providers Not configured for some providers
+i18next::translator: missingKey en translation {{currency}} / {{unit}} tokens {{currency}} / {{unit}} tokens
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation {{count}} tiers_other {{count}} tiers
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation Official Official
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation s s
+i18next::translator: missingKey en translation Copy model name Copy model name
+i18next::translator: missingKey en translation No description available. No description available.
+i18next::translator: missingKey en translation Pricing Pricing
+i18next::translator: missingKey en translation {{count}} providers_other {{count}} providers
+i18next::translator: missingKey en translation Not configured for some providers Not configured for some providers
+i18next::translator: missingKey en translation Groups Groups
+i18next::translator: missingKey en translation Details Details
+i18next::translator: missingKey en translation Copied! Copied!
+i18next::translator: missingKey en translation Copied Copied
+i18next::translator: missingKey en translation Task billing Task billing
+i18next::translator: missingKey en translation No performance data available No performance data available
+i18next::translator: missingKey en translation Performance metrics for the last 24 hours Performance metrics for the last 24 hours
+i18next::translator: missingKey en translation Success rate excludes business rejections and includes the current partial hour. Success rate excludes business rejections and includes the current partial hour.
+i18next::translator: missingKey en translation Status Status
+i18next::translator: missingKey en translation Average latency Average latency
+i18next::translator: missingKey en translation Latency short Latency short
+i18next::translator: missingKey en translation Throughput Throughput
+i18next::translator: missingKey en translation Throughput short Throughput short
+
+[90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows provider count, price range and missing-price status in both list and card views
+[22m[39mi18next: languageChanged en
+
+ [32m✓[39m src/features/pricing/__tests__/task-price-display.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 2773[2mms[22m[39m
+   [33m[2m✓[22m[39m shows localized image labels and units in base and group pricing when configured=true[33m 325[2mms[22m[39m
+   [33m[2m✓[22m[39m shows one standard task price and a localized group price without duplicate tiers[33m 384[2mms[22m[39m
+   [33m[2m✓[22m[39m switches provider group prices, localized conditions and examples, and shows unconfigured providers[33m 758[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m24 passed[39m[22m[90m (24)[39m
+[2m      Tests [22m [1m[32m363 passed[39m[22m[90m (363)[39m
+[2m   Start at [22m 23:10:57
+[2m   Duration [22m 15.09s[2m (environment 45%, import 22%, tests 17%, setup 12%, transform 4%)[22m
+
+[2mEnvironment [22m [33mjsdom was created 24 times[39m[2m · 33.87s total, 45% of tracked time[22m
+[2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
+[2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
+
+# exit_code: 0
+# duration_seconds: 17

@@ -1,0 +1,15 @@
+# evidence_id=EV-15
+# started_at=2026-11-07T02:42:09Z
+# cwd=/Users/lincolnhu/uter/web
+# command=bun run design:tokens:check
+# timeout=300
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+Design token source and generated CSS are in sync.
+
+
+===== STDERR =====
+$ node scripts/generate-design-tokens.mjs --check
+

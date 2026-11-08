@@ -1,11 +1,11 @@
 {
   "report_id": "D09-RUNTIME-PREFLIGHT",
-  "generated_at": "2026-11-08T06:54:42Z",
+  "generated_at": "2026-11-08T07:01:35Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
   "harness": "scripts/quality/uaes-agent-runtime-check.rb",
   "uaes_version": "1.12.1",
   "uaes_status": "ACTIVE",
-  "uter_commit": "b736f399535029b1cad234b28e74a2addd1733c5",
+  "uter_commit": "f6b83382ad25820d27273468a8e135d9e5f9288c",
   "branch": "main",
   "overall": "PASS",
   "failed_steps": [],
@@ -26,7 +26,7 @@
       "status": "PASS",
       "observation": {
         "path": ".uaes/AI-GOVERNANCE-ENTRY.md",
-        "sha256": "4575895abaf2e5a5508492a80d4b89f1d30d89772fe97a14811541fd21d4182b"
+        "sha256": "ac0141c32cbc31d25912f584bfe19b75eb1b79ebe6ee5837af7297333f6224ac"
       }
     },
     {
@@ -37,12 +37,12 @@
         "pin": {
           "registry_version": "1.12.1",
           "registry_status": "ACTIVE",
-          "source_commit": "36b62d27758ccbfaa44ce45b951bb3a4791b7f54",
+          "source_commit": "586f6227d1248e57173ac785e1b8537cb880362f",
           "registry_blob_sha": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
           "approval_record": "UAES-APPROVAL-2026-11-07-004"
         },
         "registry_blob_sha_actual": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
-        "uaes_head_actual": "36b62d27758ccbfaa44ce45b951bb3a4791b7f54",
+        "uaes_head_actual": "586f6227d1248e57173ac785e1b8537cb880362f",
         "registry_version_actual": "1.12.1",
         "registry_status_actual": "ACTIVE"
       }
@@ -85,12 +85,9 @@
       "name": "check workspace",
       "status": "PASS",
       "observation": {
-        "dirty_entries": 275,
-        "untracked": 119,
-        "staged_files": [
-          "reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-workspace.json",
-          "scripts/quality/uaes-agent-runtime-check.rb"
-        ],
+        "dirty_entries": 271,
+        "untracked": 117,
+        "staged_files": [],
         "user_wip_preserved": true
       }
     },
@@ -282,7 +279,7 @@
       "status": "PASS",
       "observation": {
         "branch": "main",
-        "head": "b736f399535029b1cad234b28e74a2addd1733c5",
+        "head": "f6b83382ad25820d27273468a8e135d9e5f9288c",
         "governing_specification": "UTER-UAES-GOV-001",
         "baseline_preservation_required": true
       }

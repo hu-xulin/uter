@@ -1,0 +1,177 @@
+ M .claude/skills/uaes-integration/SKILL.md
+ M .github/workflows/ci.yml
+ M .uaes/INTEGRATION.md
+ M .uaes/TRACEABILITY.md
+ M .uaes/agent-governance.yaml
+ M .uaes/uaes-pin.json
+ M AGENTS.md
+ M VERSION
+ M docs-web/package.json
+ M docs-web/src/lib/docs-search.tsx
+ M electron/package.json
+ M relay/relay_task.go
+ M scripts/quality/ai-specs-check.sh
+ M scripts/quality/test-ai-governance-policy.rb
+ M scripts/quality/test-uaes-integration-check.rb
+ M scripts/quality/test-uaes-pin-check.rb
+ M scripts/quality/uaes-integration-check.sh
+ M scripts/quality/uaes-pin-check.sh
+ M service/dreamrouter_pricing_expr.go
+ M service/dreamrouter_pricing_expr_test.go
+ M service/dreamrouter_snapshot_test.go
+ M service/dreamrouter_sync.go
+ M service/task_billing.go
+ M web/.gitignore
+ M web/.oxfmtrc.json
+ M web/bun.lock
+ D web/knip.config.ts
+ M web/package.json
+ M web/scripts/check-component-registry.mjs
+ M web/scripts/generate-design-tokens.mjs
+ M web/scripts/verify-contrast.mjs
+ M web/src/assets/logo.tsx
+ M web/src/components/data-table/core/column-pinning.ts
+ M web/src/components/layout/components/footer.tsx
+ D web/src/components/layout/components/mobile-drawer.tsx
+ D web/src/components/layout/components/nav-link-item.tsx
+ D web/src/components/layout/components/public-navigation.tsx
+ D web/src/components/layout/constants.ts
+ M web/src/components/layout/index.ts
+ M web/src/components/layout/lib/url-utils.ts
+ M web/src/components/page-transition.tsx
+ M web/src/components/status-badge.tsx
+ M web/src/components/ui/native-select.tsx
+ M web/src/context/font-provider.tsx
+ M web/src/design-system/__tests__/sidebar-active-guard.test.ts
+ M web/src/design-system/__tests__/status-badge-contrast.test.ts
+ M web/src/design-system/__tests__/token-source.test.ts
+ M web/src/design-system/component-registry.json
+ M web/src/design-system/index.ts
+ D web/src/design-system/patterns/index.ts
+ D web/src/design-system/patterns/page-header/index.ts
+ D web/src/design-system/patterns/page-header/page-header.tsx
+ M web/src/design-system/schemas/component-registry.schema.json
+ M web/src/design-system/source/brand.tokens.schema.json
+ M web/src/design-system/tokens/chart-typography.ts
+ M web/src/features/auth/api.ts
+ M web/src/features/auth/components/oauth-providers.tsx
+ M web/src/features/auth/constants.ts
+ M web/src/features/auth/hooks/use-oauth-login.ts
+ M web/src/features/auth/lib/oauth.ts
+ M web/src/features/auth/secure-verification/api.ts
+ M web/src/features/auth/types.ts
+ M web/src/features/channels/api.ts
+ D web/src/features/channels/components/drawers/sections/channel-advanced-section.tsx
+ M web/src/features/channels/components/drawers/sections/index.ts
+ M web/src/features/channels/constants.ts
+ M web/src/features/channels/lib/advanced-custom.ts
+ M web/src/features/channels/lib/branded-channel-providers.ts
+ D web/src/features/channels/lib/channel-form-errors.ts
+ M web/src/features/channels/lib/channel-form.ts
+ M web/src/features/channels/lib/channel-type-config.ts
+ M web/src/features/channels/lib/channel-utils.ts
+ M web/src/features/channels/lib/index.ts
+ M web/src/features/channels/lib/model-mapping-validation.ts
+ M web/src/features/channels/types.ts
+ M web/src/features/chat/hooks/use-chat-presets.ts
+ M web/src/features/dashboard/lib/charts.ts
+ M web/src/features/dashboard/lib/flow.ts
+ M web/src/features/dashboard/section-registry.tsx
+ M web/src/features/keys/components/auto-group-visuals.tsx
+ M web/src/features/models/api.ts
+ M web/src/features/models/constants.ts
+ M web/src/features/models/lib/index.ts
+ M web/src/features/models/lib/model-form.ts
+ M web/src/features/models/lib/model-utils.ts
+ D web/src/features/models/lib/vendor-actions.ts
+ M web/src/features/models/section-registry.tsx
+ M web/src/features/models/types.ts
+ M web/src/features/organization/api.ts
+ M web/src/features/organization/index.tsx
+ M web/src/features/playground/lib/message/message-utils.ts
+ M web/src/features/playground/lib/state/playground-state-utils.ts
+ M web/src/features/pricing/__tests__/discount-tag.test.tsx
+ M web/src/features/pricing/components/model-card.tsx
+ M web/src/features/pricing/components/model-details-api.tsx
+ M web/src/features/pricing/components/model-details-charts.tsx
+ M web/src/features/pricing/components/model-details-uptime-sparkline.tsx
+ M web/src/features/pricing/constants.ts
+ M web/src/features/pricing/lib/__tests__/billing-expression.test.ts
+ M web/src/features/pricing/lib/billing-expr.ts
+ M web/src/features/pricing/lib/billing-expression/display.ts
+ M web/src/features/pricing/lib/billing-expression/parser.ts
+ M web/src/features/pricing/lib/billing-expression/runtime.ts
+ M web/src/features/pricing/lib/billing-expression/task-display.ts
+ M web/src/features/pricing/lib/billing-expression/types.ts
+ M web/src/features/pricing/lib/billing-expression/visual.ts
+ M web/src/features/pricing/lib/dynamic-price.ts
+ M web/src/features/pricing/lib/mock-stats.ts
+ M web/src/features/pricing/lib/price.ts
+ M web/src/features/pricing/lib/seed.ts
+ M web/src/features/pricing/lib/tier-expr.ts
+ M web/src/features/pricing/types.ts
+ M web/src/features/profile/api.ts
+ M web/src/features/profile/lib/format.ts
+ M web/src/features/rankings/lib/format.ts
+ M web/src/features/redemption-codes/constants.ts
+ M web/src/features/security/components/account-bindings.tsx
+ M web/src/features/subscriptions/api.ts
+ M web/src/features/system-settings/api.ts
+ M web/src/features/system-settings/auth/custom-oauth/api.ts
+ M web/src/features/system-settings/components/settings-form-layout.tsx
+ M web/src/features/system-settings/integrations/utils.ts
+ M web/src/features/system-settings/models/constants.ts
+ M web/src/features/system-settings/models/cost-optimization-fields.ts
+ M web/src/features/system-settings/models/tiered-pricing-editor.tsx
+ M web/src/features/system-settings/types.ts
+ M web/src/features/system-settings/utils/json-parser.ts
+ M web/src/features/system-settings/utils/json-validators.ts
+ M web/src/features/usage-logs/components/columns/column-helpers.tsx
+ M web/src/features/usage-logs/constants.ts
+ M web/src/features/usage-logs/lib/filter.ts
+ M web/src/features/usage-logs/lib/mappers.ts
+ M web/src/features/usage-logs/section-registry.tsx
+ M web/src/features/users/constants.ts
+ M web/src/features/users/types.ts
+ M web/src/features/wallet/lib/format.ts
+ M web/src/features/wallet/types.ts
+ M web/src/hooks/use-dialog.ts
+ M web/src/hooks/use-status.ts
+ M web/src/i18n/config.ts
+ M web/src/lib/build-metadata.ts
+ M web/src/lib/colors.ts
+ M web/src/lib/constants.ts
+ M web/src/lib/format.ts
+ M web/src/lib/motion.ts
+ M web/src/lib/nav-modules.ts
+ M web/src/lib/passkey.ts
+ M web/src/lib/scoped-storage.ts
+ M web/src/lib/time.ts
+ M web/src/lib/utils.ts
+ M web/src/stores/system-config-store.ts
+?? .uaes/AI-GOVERNANCE-ENTRY.md
+?? .uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md
+?? .uaes/uter-governance-registry.yaml
+?? docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md
+?? pkg/billingexpr/usage_duration.go
+?? pkg/billingexpr/usage_duration_test.go
+?? reports/compliance/full-conformance-audit-2026-11-06/
+?? reports/compliance/uaes-full-migration-2026-11-06/
+?? scripts/quality/full-conformance-audit.py
+?? scripts/quality/full-conformance-execution.py
+?? scripts/quality/full_conformance_deliver.py
+?? scripts/quality/test-uaes-manual-acceptance-boundary.rb
+?? scripts/quality/test-uter-governance-boundaries.rb
+?? scripts/quality/uaes-agent-runtime-check.rb
+?? scripts/quality/uaes-evidence-closure.py
+?? scripts/quality/uaes-governance-gates.rb
+?? scripts/quality/uaes-governance-reports.py
+?? scripts/quality/uaes-manual-acceptance.py
+?? scripts/quality/uaes-test-matrix.sh
+?? scripts/quality/uter-governance-separation-check.rb
+?? scripts/quality/uter-independent-assessment.rb
+?? scripts/quality/uter-p09-p10-boundary-check.rb
+?? service/dreamrouter_persecond_fallback_test.go
+?? web/e2e/axe/
+?? web/knip.jsonc
+?? web/scripts/axe-audit.mjs

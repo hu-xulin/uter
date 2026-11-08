@@ -1,0 +1,26 @@
+# evidence_id=EV-11
+# started_at=2026-11-07T02:41:42Z
+# cwd=/Users/lincolnhu/uter
+# command=python3 scripts/quality/uaes-manual-acceptance.py --verify-only
+# timeout=180
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+{
+  "run_id": "RUN-20261106T105821Z",
+  "run_state": "COMPLETED",
+  "cases": {
+    "total": 14,
+    "PASS": 14,
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "TIMEOUT": 0
+  },
+  "integrity": "PASS",
+  "problems": []
+}
+
+
+===== STDERR =====
+

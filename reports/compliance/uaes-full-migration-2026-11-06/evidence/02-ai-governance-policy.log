@@ -1,0 +1,10 @@
+PASS: fail-closed Agent governance policy
+PASS: least privilege, task identity, scoped authorization and audit requirements
+PASS: R0-R4 risk classification and durable task lifecycle
+PASS: one non-main branch maximum; main push, force-push and PR merge denied
+PASS: delivery is gated on complete validation; branch strategy follows UTER-UAES-GOV-001 baseline preservation
+PASS: PR repair workflow allows verified branch commit/push/PR only
+PASS: task lifecycle prevents unverified closure and supports checkpointed recovery
+PASS: delegated Agent permissions cannot escalate
+PASS: production, real-payment and production-database changes denied
+NOTE: static policy/schema tests do not replace live Agent runtime denial tests.

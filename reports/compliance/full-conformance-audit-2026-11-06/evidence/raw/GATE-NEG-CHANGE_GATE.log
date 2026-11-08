@@ -1,0 +1,42 @@
+# evidence_id=GATE-NEG-CHANGE_GATE
+# started_at=2026-11-07T02:57:16Z
+# cwd=/Users/lincolnhu/uter
+# command=python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/CHANGE_GATE-nonconforming-state.json' --gate CHANGE_GATE
+# timeout=120
+# exit_code=2
+# timed_out=False
+
+===== STDOUT =====
+{
+  "gate": "CHANGE_GATE",
+  "verdict": "BLOCK",
+  "checks": {
+    "workspace_overall_PASS": false,
+    "workspace_W1_PASS": false,
+    "workspace_W2_PASS": false,
+    "workspace_W3_PASS": true,
+    "workspace_W4_PASS": true,
+    "workspace_W5_PASS": false,
+    "workspace_W6_PASS": true,
+    "L1_CHANGE_GATE_PASS": false,
+    "ai_specs_recheck_PASS": true,
+    "no_staged_changes": false
+  },
+  "failed_checks": [
+    "workspace_overall_PASS",
+    "workspace_W1_PASS",
+    "workspace_W2_PASS",
+    "workspace_W5_PASS",
+    "L1_CHANGE_GATE_PASS",
+    "no_staged_changes"
+  ],
+  "passed_checks": 4,
+  "total_checks": 10,
+  "notes": {
+    "scope": "workspace/branch/WIP protection + spec completeness"
+  }
+}
+
+
+===== STDERR =====
+

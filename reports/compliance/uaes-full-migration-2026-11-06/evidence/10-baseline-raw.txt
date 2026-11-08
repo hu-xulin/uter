@@ -1,0 +1,150 @@
+=== BASELINE RAW 2026-11-06T03:18:16Z ===
+--- tool versions ---
+go version go1.27.3 darwin/amd64
+v22.22.2
+1.4.2
+ruby 4.0.6 (2026-07-14 revision 03b6d3f889) +PRISM [x86_64-darwin23]
+--- go modules ---
+./.quality/.state/head-tree/go.mod
+./.quality/.state/head-tree/relaykit/go.mod
+./.quality/.state/head-tree/tokenkit/go.mod
+./.quality/.state/head-tree/tokenkit/tokenkit/go.mod
+./go.mod
+./relaykit/go.mod
+./tokenkit/go.mod
+./tokenkit/tokenkit/go.mod
+--- go.work ---
+ls: go.work*: No such file or directory
+--- top level ---
+AGENTS.md
+CLAUDE.md
+Dockerfile
+Dockerfile.dev
+LICENSE
+NOTICE
+README.en.md
+README.zh_CN.md
+THIRD-PARTY-LICENSES.md
+VERSION
+_reports
+assets
+bin
+build-prod.sh
+common
+constant
+controller
+data
+deploy
+dev-all.sh
+docker-compose.dev.yml
+docker-compose.multidb.yml
+docker-compose.yml
+docs
+docs-dev
+docs-web
+dto
+e2e
+electron
+go.mod
+go.sum
+i18n
+logger
+logs
+main.go
+main_docs_test.go
+makefile
+middleware
+model
+node_modules
+oauth
+one-api.db
+one-api.db-shm
+one-api.db-wal
+pkg
+plugins
+quality
+rebuild-all.sh
+relay
+relaykit
+reports
+router
+scripts
+service
+setting
+tokenkit
+types
+uter-bin
+uter.db
+web
+--- electron ---
+./electron
+--- DB drivers in go.mod ---
+	modernc.org/sqlite v1.40.1 // indirect
+	github.com/ClickHouse/clickhouse-go/v2 v2.46.0
+	github.com/glebarez/go-sqlite v1.21.2
+	github.com/glebarez/sqlite v1.11.0
+	github.com/go-sql-driver/mysql v1.7.0
+	gorm.io/driver/clickhouse v0.6.0
+	gorm.io/driver/mysql v1.5.7
+	gorm.io/driver/postgres v1.5.9
+--- migrations ---
+./reports/compliance/uaes-full-migration-2026-11-06
+--- OpenAPI ---
+./docs-dev/openapi
+--- CI workflows ---
+ci.yml
+docker-build.yml
+docker-image-branch.yml
+electron-build.yml
+nightly-full-audit.yml
+release-gate.yml
+release.yml
+sync-release-to-gitcode.yml
+weekly-security-audit.yml
+--- test frameworks ---
+    "typecheck": "tsgo -b",
+    "lint": "node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .",
+    "lint:design": "node scripts/check-design-tokens.mjs",
+    "lint:design:strict": "node scripts/check-design-tokens.mjs --strict",
+    "lint:design:baseline": "node scripts/check-design-tokens.mjs --baseline",
+    "lint:design:baseline:update": "node scripts/check-design-tokens.mjs --write-baseline",
+    "lint:fix": "oxlint -c .oxlintrc.json . --fix",
+    "lint:plugins": "cd ../plugins && oxlint -c .oxlintrc.json .",
+    "format:plugins": "cd ../plugins && oxfmt -c .oxfmtrc.json --write .",
+    "format:plugins:check": "cd ../plugins && oxfmt -c .oxfmtrc.json --check .",
+    "test": "vitest run",
+    "test:visual": "node scripts/visual-regression.mjs",
+    "test:visual:update": "node scripts/visual-regression.mjs --update",
+    "test:visual:e2e": "playwright test --config e2e/visual/playwright.config.ts",
+    "test:visual:e2e:update": "playwright test --config e2e/visual/playwright.config.ts --update-snapshots",
+    "test:visual:e2e:auth": "playwright test --config e2e/visual/playwright.config.ts --project=auth-setup",
+    "test:watch": "vitest",
+    "format:check": "node scripts/format-with-protected-headers.mjs --check",
+    "format": "node scripts/format-with-protected-headers.mjs --write",
+    "vitest": "^5.0.4"
+--- design system ---
+docs/adr/0001-uter-design-system-single-source-of-truth.md
+docs/design-system
+docs/design-system/UTER-DESIGN-SYSTEM-3.0.md
+--- AI agent config ---
+.agents
+.ai
+.claude
+.uaes
+--- security scan config ---
+weekly-security-audit.yml
+--- coverage artifacts ---
+./.quality/.state/coverage.go-tokenkit-collect.log
+./.quality/.state/coverage.go-relaykit-collect.status
+./.quality/.state/coverage.go-tokenkit-collect.status
+./.quality/.state/coverage.go-relaykit-collect.log
+./.quality/.state/coverage.out
+./.quality/.state/coverage.go-root.status
+./.quality/.state/coverage.go-root.log
+./_reports/quality/coverage
+./common/email_coverage_test.go
+./scripts/coverage-gate.sh
+--- go test counts ---
+    1023
+--- ts test counts ---
+     283

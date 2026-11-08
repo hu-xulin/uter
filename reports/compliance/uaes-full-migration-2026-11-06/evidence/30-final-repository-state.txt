@@ -1,0 +1,26 @@
+# Final repository state snapshot (§14.3)
+generated_at=2026-11-06T08:21:17Z
+branch=governance/uaes-full-migration-2026-11-06
+uter_head=ef778bf08f335aaf16f4c8805be02b1111336fbe
+staged_count=0
+worktree_count=72
+commit_created=false
+push_performed=false
+pull_request_created=false
+merge_performed=false
+deploy_performed=false
+go=go version go1.27.3 darwin/amd64
+node=v22.22.2
+bun=1.4.2
+ruby=4.0.6
+python=Python 3.13.12
+matrix=29/29 PASS / 0 FAIL / 0 SKIP (MATRIX_EXIT=0)
+L1=PASS 18/18
+L2=PASS 9/9
+L3=BLOCKED 0/14 PASS
+L4=BLOCKED 11/16 MET
+runtime_verify=12/12 real commands exit 0
+acceptance_authority=RECORDED / NOT ACCEPTED (42 items NOT_VERIFIED)
+final_conformance_status=PARTIALLY CONFORMANT
+docs_artifact_gate=PASS
+note=evidence-closure.json is regenerated immediately after this snapshot and is self-excluded.

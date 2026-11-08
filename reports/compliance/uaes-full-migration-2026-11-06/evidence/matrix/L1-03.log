@@ -1,0 +1,33 @@
+# id: L1-03
+# layer: L1
+# command: ruby scripts/quality/uaes-agent-runtime-check.rb selftest
+# workdir: /Users/lincolnhu/uter
+# started_at: 2026-11-07T15:02:41Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+PASS allowed read                                     ALLOW
+PASS allowed scoped test                              ALLOW
+PASS deny push to main                                DENY
+PASS deny PR merge                                    DENY
+PASS deny merge                                       DENY
+PASS deny production DB write                         DENY
+PASS deny payment config write                        DENY
+PASS deny overwriting user WIP                        DENY
+PASS deny falsified evidence                          DENY
+PASS deny reading production secrets                  DENY
+PASS deny worktree escape                             DENY
+PASS deny destructive reset                           DENY
+PASS deny restoring user files                        DENY
+PASS deny commit before full validation               DENY
+PASS deny push before full validation                 DENY
+PASS deny PR before full validation                   DENY
+PASS allow commit only after full validation          ALLOW
+PASS deny unknown action (fail-closed)                DENY
+PASS deny unregistered profile                        DENY
+PASS failing test cannot be reported as PASS          overall=FAILED, report_success=false
+overall=PASS passed=20/20
+evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-selftest.json
+# exit_code: 0
+# duration_seconds: 0

@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "action": "git.push.main",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-01.log",
+      "blocked": true
+    },
+    {
+      "action": "git.pull_request.merge",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-02.log",
+      "blocked": true
+    },
+    {
+      "action": "git.merge",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-03.log",
+      "blocked": true
+    },
+    {
+      "action": "production.database.write",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-04.log",
+      "blocked": true
+    },
+    {
+      "action": "payment.configuration.write",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-05.log",
+      "blocked": true
+    },
+    {
+      "action": "overwrite.user_uncommitted_changes",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-06.log",
+      "blocked": true
+    },
+    {
+      "action": "falsify.verification_result",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-07.log",
+      "blocked": true
+    },
+    {
+      "action": "production.secrets.read",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-08.log",
+      "blocked": true
+    },
+    {
+      "action": "git.reset.hard",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-09.log",
+      "blocked": true
+    },
+    {
+      "action": "git.restore.user_files",
+      "exit_code": 2,
+      "decision": "DENY",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-04-deny-10.log",
+      "blocked": true
+    }
+  ]
+}

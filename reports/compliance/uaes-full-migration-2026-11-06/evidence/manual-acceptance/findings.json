@@ -1,0 +1,75 @@
+{
+  "evidence_id": "MANUAL-ACCEPTANCE-FINDINGS",
+  "evidence_class": "ANALYST_DISCLOSURE",
+  "generated_at": "2026-11-06T11:04:30Z",
+  "run_id": "RUN-20261106T105821Z",
+  "scope": "Final clean collector run: all 14 locally executable checks PASS (execution summary PASS=14 FAIL=0 NOT_RUN=0 TIMEOUT=0, integrity=PASS).",
+  "policy": {
+    "waiver_granted": false,
+    "allowlist_modified": false,
+    "assertion_relaxed": false,
+    "status_rewritten": false,
+    "auto_promotion_to_verified": false,
+    "rule": "Only the recorded acceptance authority may sign items; local PASS evidence remains NOT_VERIFIED until then."
+  },
+  "open_findings": [],
+  "resolved": [
+    {
+      "id": "MA-06",
+      "previous_status": "FAIL / NOT_RUN (run RUN-20261106T064420Z, 2026-11-06 15:01)",
+      "current_status": "PASS",
+      "current_exit_code": 0,
+      "log_sha256": "4d2211236776e428111400ca1ce14790c340e2c8be9abcc36fd41b63b228e062",
+      "resolution": "FIX-09: re-verification only — HEAD line 62 already redacted to short SHA (worktree == HEAD, no diff); old observed leak was stale content from the previous run. No waiver, no allowlist change, no doc edit."
+    },
+    {
+      "id": "MA-09",
+      "previous_status": "FAIL / NOT_RUN (run RUN-20261106T064420Z, 2026-11-06 15:01)",
+      "current_status": "PASS",
+      "current_exit_code": 0,
+      "log_sha256": "daa78c62defd32cfe45e8193016880c25efa2229e923d0018ab14d0f327f4a65",
+      "resolution": "knip re-run PASS with zero cleanup action from this audit; stale ignoreDependencies entry (axe-core) removed and playwright (ad-hoc evidence script) declared, per user-adjudicated plan."
+    },
+    {
+      "id": "MA-10",
+      "previous_status": "FAIL / NOT_RUN (run RUN-20261106T064420Z, 2026-11-06 15:01)",
+      "current_status": "PASS",
+      "current_exit_code": 0,
+      "log_sha256": "4cc65b3f0cf46447eee4a8b7ff033d306d6c23118989ce8acd5f0c58617d8886",
+      "resolution": "FIX-06: documented mv-hygiene prep (stale .next/out/docs-content moved aside pre-build); MA-10 command and assertions unchanged; shim not bypassed."
+    },
+    {
+      "id": "MA-11",
+      "previous_status": "FAIL / NOT_RUN (run RUN-20261106T064420Z, 2026-11-06 15:01)",
+      "current_status": "PASS",
+      "current_exit_code": 0,
+      "log_sha256": "3a21eb1e5aeb7717c3972a51616d9fba91beab107fb6497ba53a601843dad443",
+      "resolution": "FIX-07: electron-v42.11.18-darwin-x64.zip (125627718 bytes, SHA-256 matches official SHASUMS256.txt) seeded into @electron/get cache after 8-way parallel resumable download; MA-11 original command unchanged, no env needed."
+    },
+    {
+      "id": "MA-12",
+      "previous_status": "FAIL / NOT_RUN (run RUN-20261106T064420Z, 2026-11-06 15:01)",
+      "current_status": "PASS",
+      "current_exit_code": 0,
+      "log_sha256": "127f24bd7fc76aab262b5223c32629d6a78aed8bc8218ee6133f6a87b359cdb4",
+      "resolution": "FIX-08: axe-core 4.14.0 + @axe-core/playwright 4.14.0 installed; real scan suite added (web/e2e/axe). Real serious violation found and fixed (docs sidebar search kbd label-content-name-mismatch, WCAG 2.5.3); rescan 8 passed / 1 skipped / 0 failed."
+    }
+  ],
+  "disclosures": [
+    {
+      "id": "AXE-AUTHED-SKIP",
+      "status": "DISCLOSED",
+      "detail": "The authenticated axe scan (web/e2e/axe/authed.spec.ts) is explicitly skipped: the product currently disables password login ('Password login has been disabled by administrator'), so no session can be established. Skipped-with-reason is recorded, never counted as PASS. Requires product session config or an OAuth test session."
+    },
+    {
+      "id": "AUTHORIZED-ENVIRONMENT-ITEMS",
+      "status": "OPEN",
+      "detail": "DAST / penetration testing / API security / three-database migration / DR / backup-restore / performance testing remain NOT_RUN: they require an authorized environment (FIND-FCA-004). Not covered by MA cases."
+    },
+    {
+      "id": "HUMAN-SIGN-OFF",
+      "status": "OPEN",
+      "detail": "All 14 local PASS results remain LOCAL_EXECUTED evidence; 42 acceptance items stay NOT_VERIFIED until the recorded acceptance authority signs them item by item (FIND-FCA-003)."
+    }
+  ]
+}

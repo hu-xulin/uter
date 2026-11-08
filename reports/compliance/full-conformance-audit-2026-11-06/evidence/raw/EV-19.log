@@ -1,0 +1,31 @@
+# evidence_id=EV-19
+# started_at=2026-11-07T02:54:08Z
+# cwd=/Users/lincolnhu/uter
+# command=GOWORK=off go test -race -count=1 ./model/ -run 'TestRechargeEpayConcurrentCallbacksCreditOnce|TestRechargeOfficialCreditsQuotaExactlyOnce|TestRechargeEpayCreditsQuotaExactlyOnce|TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects' -v
+# timeout=600
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+=== RUN   TestRechargeEpayCreditsQuotaExactlyOnce
+[SYS] 2026/11/07 - 10:54:20 | 易支付充值成功 trade_no=EPAYTESTONCE user_id=501 quota_to_add=1000000 money=10.00 
+--- PASS: TestRechargeEpayCreditsQuotaExactlyOnce (0.02s)
+=== RUN   TestRechargeEpayConcurrentCallbacksCreditOnce
+[SYS] 2026/11/07 - 10:54:20 | 易支付充值成功 trade_no=CLAIM-CONCURRENT user_id=804 quota_to_add=1000000 money=10.00 
+--- PASS: TestRechargeEpayConcurrentCallbacksCreditOnce (0.03s)
+=== RUN   TestRechargeOfficialCreditsQuotaExactlyOnce
+=== RUN   TestRechargeOfficialCreditsQuotaExactlyOnce/alipay
+[SYS] 2026/11/07 - 10:54:20 | alipay_official 充值成功 trade_no=OFFICIAL-alipay user_id=601 quota_to_add=1000000 money=10.00 
+=== RUN   TestRechargeOfficialCreditsQuotaExactlyOnce/wechat
+[SYS] 2026/11/07 - 10:54:20 | wechat_pay_official 充值成功 trade_no=OFFICIAL-wechat user_id=601 quota_to_add=1000000 money=10.00 
+--- PASS: TestRechargeOfficialCreditsQuotaExactlyOnce (0.05s)
+    --- PASS: TestRechargeOfficialCreditsQuotaExactlyOnce/alipay (0.03s)
+    --- PASS: TestRechargeOfficialCreditsQuotaExactlyOnce/wechat (0.02s)
+=== RUN   TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects
+--- PASS: TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects (0.03s)
+PASS
+ok  	github.com/uter-ai/uter/model	4.119s
+
+
+===== STDERR =====
+

@@ -1,0 +1,19 @@
+# evidence_id=EV-03
+# started_at=2026-11-07T02:40:21Z
+# cwd=/Users/lincolnhu/uter
+# command=bash scripts/quality/uaes-pin-check.sh
+# timeout=180
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+PASS: pin contains all 11 required fields
+PASS: source commit and registry blob are valid 40-character object ids
+PASS: registry lifecycle is consistent (status=ACTIVE, approval=ACTIVE, integration=MIGRATION_PENDING)
+PASS: contract does not claim unverified compliance
+PASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle
+uaes-pin-check: PASS scope=static-integrity status=ACTIVE version=1.9.0 commit=0c9386b19209
+
+
+===== STDERR =====
+

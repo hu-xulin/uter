@@ -1,0 +1,98 @@
+{
+  "evidence_id": "FCA-FINAL-ASSESSMENT",
+  "generated_at": "2026-11-06T17:41:59Z",
+  "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
+  "uaes_commit_sha": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
+  "related_requirement": "§10 / §12",
+  "conditions": [
+    {
+      "id": "C01",
+      "description": "所有适用要求均完成审计",
+      "met": true
+    },
+    {
+      "id": "C02",
+      "description": "所有强制性要求均 PASS",
+      "met": false
+    },
+    {
+      "id": "C03",
+      "description": "所有 N/A 均有适用性依据",
+      "met": true
+    },
+    {
+      "id": "C04",
+      "description": "不存在未解决的 P0/P1 不符合项",
+      "met": false
+    },
+    {
+      "id": "C05",
+      "description": "不存在未经授权的重大风险例外",
+      "met": true
+    },
+    {
+      "id": "C06",
+      "description": "所有整改均完成有效性复测",
+      "met": true
+    },
+    {
+      "id": "C07",
+      "description": "所有关键测试和安全验证通过",
+      "met": false
+    },
+    {
+      "id": "C08",
+      "description": "AI Agent 实际执行验证通过",
+      "met": true
+    },
+    {
+      "id": "C09",
+      "description": "CI/CD 门禁验证通过",
+      "met": false
+    },
+    {
+      "id": "C10",
+      "description": "审计证据完整且可追溯",
+      "met": true
+    },
+    {
+      "id": "C11",
+      "description": "最终审计报告通过独立复核",
+      "met": false
+    }
+  ],
+  "met": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C08",
+    "C10"
+  ],
+  "unmet": [
+    "C02",
+    "C04",
+    "C07",
+    "C09",
+    "C11"
+  ],
+  "final_verdict": "BLOCKED",
+  "rationale": "§10 的 11 项条件中 6 项满足、5 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。",
+  "allowed_vocabulary": [
+    "CONFORMANT",
+    "PARTIALLY CONFORMANT",
+    "NON-CONFORMANT",
+    "BLOCKED",
+    "NOT ASSESSED"
+  ],
+  "not_conformant_because": [
+    "0 requirement-specific PASS out of 2868 applicable requirements",
+    "178/178 UAES standards are DRAFT and UAES APPROVAL-RECORD §4 does not approve them",
+    "13 UAES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS",
+    "42 manual acceptance items remain NOT_VERIFIED with signoff_granted=false",
+    "security verification is incomplete: MA-06 gitleaks and MA-12 axe are now PASS (user commit ec6501adc + installed axe-core/@axe-core/playwright real scan), but DAST / penetration / API security / three-database migration / DR / backup-restore / performance testing remain NOT_RUN (authorised environment required, see FIND-FCA-004)",
+    "several of the eight §8 gates are BLOCK"
+  ],
+  "conclusion_boundary": "Locally-executable MA items are now resolved (MA-06 gitleaks PASS via user commit ec6501adc, MA-09 knip PASS, MA-10 docs-web build PASS, MA-11 electron build PASS, MA-12 axe PASS with a real serious violation found and fixed); a NON-CONFORMANT classification would also be defensible only if the authorised-environment items were counted as failures. BLOCKED is selected because the dominant, evidence-backed condition is that key verification cannot be completed at all due to an unapproved normative baseline and missing authorised environments. In no case may CONFORMANT be used.",
+  "internal_assessment_is_not_external_certification": true
+}
