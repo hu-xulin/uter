@@ -228,11 +228,19 @@ test('the adapter refuses to run when no YAML parser is available', () => {
   const dir = mkdtempSync(join(tmpdir(), 'uaes-noparser-'))
   try {
     mkdirSync(join(dir, 'tools/uaes'), { recursive: true })
+    // A deliberately EMPTY bin directory. Using '/usr/bin:/bin' here used to
+    // work on macOS but silently broke on GitHub runners: their system
+    // /usr/bin/python3 ships PyYAML, so the "no parser" scenario was never
+    // actually constructed and the adapter correctly parsed the registry.
+    // Pointing PATH at a directory we just created guarantees `python3` cannot
+    // be found, so this negative probe means the same thing on every host.
+    const emptyBin = join(dir, 'bin')
+    mkdirSync(emptyBin, { recursive: true })
     cpSync(join(ROOT, 'tools/uaes/integration-adapter.mjs'), join(dir, 'tools/uaes/integration-adapter.mjs'))
     const r = spawnSync(process.execPath, [join(dir, 'tools/uaes/integration-adapter.mjs'), 'map'], {
       cwd: dir, encoding: 'utf8', timeout: 120000,
-      // No web/node_modules sibling, and a PATH without a PyYAML-capable python.
-      env: { ...process.env, PATH: '/usr/bin:/bin' },
+      // No web/node_modules sibling, and a PATH with no python3 at all.
+      env: { ...process.env, PATH: emptyBin },
     })
     const out = `${r.stdout || ''}${r.stderr || ''}`
     assert.notEqual(r.status, 0, 'the adapter must fail rather than report zero requirements')
