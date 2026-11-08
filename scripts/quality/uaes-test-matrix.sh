@@ -86,16 +86,36 @@ run L1-18 L1 "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb"
 run L1-19 L1 "ruby scripts/quality/test-registry-draft-state.rb"
 
 # ---------------- L2 Integration Gate ----------------
-# §8.3 build-order precondition: main.go embeds both `web/dist` and
-# `all:web/dist/docs-content/_next`, so ANY Go compilation fails with
-# "pattern all:web/dist/docs-content/_next: no matching files found" unless both
-# targets resolve. That is a prerequisite defect, not a Go code defect — it made
-# L2-01/L2-05 report FAIL for a reason unrelated to what they measure.
-# verify-all.sh already runs this same idempotent, non-destructive script before
-# its Go gates; the matrix was missing it. The script never truncates existing
-# real output, so this cannot mask a genuinely broken frontend build.
+# §8.3 build-order precondition. main.go embeds BOTH `web/dist` and
+# `all:web/dist/docs-content/_next`, so Go compilation fails outright when either
+# target is missing — a prerequisite defect, not a Go code defect.
+#
+# Do NOT paper over this with scripts/quality/ensure-go-embed-artifacts.sh. That
+# helper is correct for a backend-only CI job that never runs main_docs_test.go,
+# but here it actively corrupts the evidence: it creates an empty docs skeleton
+# while web/dist/index.html may be a REAL build. isPlaceholderFrontend() keys off
+# index.html being empty, so that combination is judged "not a placeholder" and
+# TestEmbeddedBinaryCarriesTheDocsSite then fails on a docs export that this
+# script itself reduced to a stub. The failure would be caused by the harness,
+# not by the product.
+#
+# Instead restore the real artifacts the way the project itself does: reuse the
+# docs-web export if it exists (it is a shared output, not rebuilt on every run),
+# then hard-fail on incomplete artifacts rather than letting a downstream test
+# discover the gap indirectly.
 if [ "$QUICK" -eq 0 ]; then
-  run L2-00 L2 "bash scripts/quality/ensure-go-embed-artifacts.sh" "$ROOT"
+  DOCS_OUT="$ROOT/docs-web/out"
+  DIST_DOCS="$ROOT/web/dist/docs-content"
+  if [ -d "$DOCS_OUT" ] && [ ! -s "$DIST_DOCS/docs/zh/index.html" ]; then
+    node "$ROOT/docs-web/scripts/copy-to-web.mjs" || exit 4
+    echo "# restored docs export from docs-web/out into web/dist/docs-content" >&2
+  fi
+  if [ ! -s "$ROOT/web/dist/index.html" ] || [ ! -d "$DIST_DOCS" ]; then
+    # Neither a real frontend build nor a docs export is present. Fail loudly
+    # here instead of emitting misleading FAILs from L2-01/L2-05.
+    echo "# FATAL: web/dist is not buildable for go:embed (spa=$ROOT/web/dist/index.html docs=$DIST_DOCS)" >&2
+    exit 6
+  fi
   run L2-01 L2 "GOWORK=off go test ./..." "$ROOT"
   run L2-02 L2 "GOWORK=off go test ./..." "$ROOT/relaykit"
   run L2-03 L2 "GOWORK=off go test ./..." "$ROOT/tokenkit"
