@@ -1,10 +1,10 @@
 {
   "evidence_id": "D25-MANIFEST",
-  "generated_at": "2026-11-06T11:04:20.850321+00:00",
+  "generated_at": "2026-11-08T18:42:15.299631+00:00",
   "governing_specification": "UTER-UAES-GOV-001",
   "repository_revision": {
-    "uter_head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-    "uaes_head": "ff7cf878d43061f263e301cad09ff19d03e906c4"
+    "uter_head": "424dfa2c55c534bf110fa5871420fe3fd679d307",
+    "uaes_head": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7"
   },
   "collector": "WorkBuddy (Tencent Hunyuan Hy)",
   "deliverable_count": 28,
@@ -14,170 +14,170 @@
     {
       "id": "D01",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D01-STANDARDS-APPLICABILITY-REGISTER.md",
-      "sha256": "7d77fde519ff3e0c62609be872e7d0c61fe6fb121a134bda8c7ff57fcb0b1eab",
+      "sha256": "e53e94cf16b8bd5013960f514c69372f0e4ea8f85e1470fe0f58d8e0e3ab05af",
       "bytes": 7347
     },
     {
       "id": "D02",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D02-UAES-VERSION-AND-REGISTRY-BASELINE.md",
-      "sha256": "eb5a5b4bc63116f47a8c8ae7c1ab0384d22188e0f3ca90681799139d37844313",
-      "bytes": 2115
+      "sha256": "98544ae759805a8e7049b40fbe72786e108559c0a83c6a7f7367df506e5d67c6",
+      "bytes": 2147
     },
     {
       "id": "D03",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D03-UTER-ENGINEERING-BASELINE.md",
-      "sha256": "54b4233bc6e05aaac6bf5382e225a8be22112053c5c79d91f7f6835225403fca",
-      "bytes": 2584
+      "sha256": "248d2f19f23751c2c5bb8cc0f13fba5f0e1cab49b92f8f581a45ed24c6530be1",
+      "bytes": 2546
     },
     {
       "id": "D04",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D04-GOVERNANCE-ARCHITECTURE.md",
-      "sha256": "a8bff0a10c9e6a2dab12428255a0426367a2e316e686f41e0201c5660b812d19",
+      "sha256": "4b6c93f3b59f8f9789744599d5af7de5658d3e26f94e48e72fb1a67e89a9c13d",
       "bytes": 2942
     },
     {
       "id": "D05",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D05-UAES-REQUIREMENT-MAPPING.md",
-      "sha256": "6625ef43747c996d8bbad127604fc3e9a415e070150cf19d4ad296478a151a5f",
+      "sha256": "3d7b0610e7ddc083efa45a532cefb06aa5943fd0f8b7b45da9cccb6699abb9e9",
       "bytes": 2724
     },
     {
       "id": "D06",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D06-UTER-P13-SPECIFICATION.md",
-      "sha256": "5a25fcdd35496cc9867c3000bca857ef95ba2986cdf5d86bbf879b17431253ea",
+      "sha256": "a58895daeef4b384021d1e2cd38d4110846b48c7786a559b2ef33ffd5decb677",
       "bytes": 1924
     },
     {
       "id": "D07",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D07-GOVERNANCE-OWNERSHIP-MATRIX.md",
-      "sha256": "136708ea46291ad144025e803be2ba0e291973f2272bbfd7bd84f9d4fbdc620a",
+      "sha256": "d574b30bdd687e07f1c87614dee367ead0590506bc71c05b675e207573037284",
       "bytes": 2198
     },
     {
       "id": "D08",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D08-P00-P12-ASSESSMENT-REPORT.md",
-      "sha256": "e0d9d430a2c2d068e4dfb39cdf1d57c66bfe0d636d0f5d66abde56ca113e3af5",
-      "bytes": 2989
+      "sha256": "b5e0d3be16217343096cfa83fd3ff9098cf55ab63d2c3fba135794b842a8645e",
+      "bytes": 3065
     },
     {
       "id": "D09",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D09-P13-BUSINESS-DOMAIN-ASSESSMENT.md",
-      "sha256": "d259f0f5c8b8b9a0f773ded91efd8f451b8efdb68de442f223444a9c27fad462",
+      "sha256": "1758a48322497f30235dc2aa6a637e65b9da7d5d8b5d1462f7fc4551afce8da9",
       "bytes": 2526
     },
     {
       "id": "D10",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D10-GOVERNANCE-GAP-REGISTER.md",
-      "sha256": "236071117c2390e92186a22e6f37d6d8b0a980f4798ffe4147868f1073375752",
-      "bytes": 2860
+      "sha256": "341cdab23b62db485219c0742fc45d1c1ae0e0cfbf1e1345313bbaa7ed2c2b71",
+      "bytes": 2770
     },
     {
       "id": "D11",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D11-RISK-REGISTER.md",
-      "sha256": "d8cbdf92fd52a6dc20d4deb73d7d34d40ed4072c7555551aadffe3cac77362fb",
-      "bytes": 2754
+      "sha256": "a405c255818c60284338c7b426079b852c9848a8ffe647d71c0bc60dc51b8fcd",
+      "bytes": 2751
     },
     {
       "id": "D12",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D12-ARCHITECTURE-ASSESSMENT.md",
-      "sha256": "7f4a8c186d2cc3735248a0bcd3ec4262f1ff81618d8150cf036528ae2d1f711d",
-      "bytes": 1909
+      "sha256": "610c3a16a2e1fecb0b0c0e202efa9ed3903424474040cea543547502b08d99ea",
+      "bytes": 1872
     },
     {
       "id": "D13",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D13-SOFTWARE-ENGINEERING-ASSESSMENT.md",
-      "sha256": "dc50d9f9e8a146a070412a32f62653705fc2461d70908f1b9e01a0e0205d996c",
-      "bytes": 3905
+      "sha256": "eb2735a4b862d7daed64c20aea588bf73e709ec4d81e433a6b7d2d50ddc27ef4",
+      "bytes": 4093
     },
     {
       "id": "D14",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D14-QUALITY-ENGINEERING-ASSESSMENT.md",
-      "sha256": "ed1fa8c848bb407e030d334293c37b493020623bfaf5f5cf9fcd7b794ded3484",
+      "sha256": "5ca66e02fd24c500bf1a233fe41c57a8b3850c7bc74043dc5a7d7afbf70ee250",
       "bytes": 2605
     },
     {
       "id": "D15",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D15-SECURITY-ASSESSMENT.md",
-      "sha256": "cd740ebb8b5eb9535e7982b2550ac93b5a1848b6d9f85d68cf8fee096ef184e7",
+      "sha256": "3ef276f685f9204ec215eaecc802bdbab559fb3f1aa605b5152d15a46a6d1007",
       "bytes": 2604
     },
     {
       "id": "D16",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D16-RELIABILITY-ASSESSMENT.md",
-      "sha256": "1262b01a922ed2ba635859e1a465ca31b526cbac609850320559b0180709d1c7",
+      "sha256": "d6e039f562a20ad1ebe6264b0c116ffa15a50dd58b1741528558c361763d01bc",
       "bytes": 1840
     },
     {
       "id": "D17",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D17-AI-GOVERNANCE-ASSESSMENT.md",
-      "sha256": "0fcedb9f8ce32bceebf35284b85cf3a8a2a7c8c35d9517d5b4ff1b7e62353eee",
+      "sha256": "5428e9913c2b8bb3c04a45727610979b534a8cb7cdcff597ebb2ad90a7fff8fc",
       "bytes": 1743
     },
     {
       "id": "D18",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D18-AGENT-RUNTIME-ASSESSMENT.md",
-      "sha256": "bccafa374438e680ddd53550b61e861c64ae40e16a259707141df1a6b2dcbf02",
+      "sha256": "65ba07a293cb2a804c301d747388bfb94267e025acab1c75fe62f643ad331b87",
       "bytes": 1932
     },
     {
       "id": "D19",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D19-TEST-STRATEGY-AND-TEST-RESULTS.md",
-      "sha256": "4e505207c1b1a849bf78f8d75216f898e50b55a135dfced2678f347818ebee30",
-      "bytes": 6660
+      "sha256": "8eb31e068179eec89d1cf6418aaf4950207891d613badffba2e5cb259462ba7c",
+      "bytes": 6829
     },
     {
       "id": "D20",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D20-CORRECTIVE-ACTION-REGISTER.md",
-      "sha256": "c55a0f36bc613497a9f862cf246e8586657b49b8e760e2672762164a1fec2b7a",
-      "bytes": 6280
+      "sha256": "6e5cbe436ae6b48c28f4c4d0050a2c386dd84aac5a6a9fcb16a31e7cdc2d3709",
+      "bytes": 6279
     },
     {
       "id": "D21",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D21-QUALITY-GATE-ASSESSMENT.md",
-      "sha256": "22f66388f5b15b208fa930d05d42916a7678eda94e372be1330976c042f74ed6",
-      "bytes": 2474
+      "sha256": "1ff7237c848ae9ab3e473003709ffa7b6c67c67ac72e73cc82720713b09b338f",
+      "bytes": 2475
     },
     {
       "id": "D22",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D22-SECURITY-GATE-ASSESSMENT.md",
-      "sha256": "60a7cf9c74416b942f272f537a4fac46b8b5b7730621fa972ea78e3d5fd84b64",
+      "sha256": "9f142f271837ee581f839799947c7c46fcb9b305454cd4fc46a671c2514254da",
       "bytes": 2294
     },
     {
       "id": "D23",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D23-SUPPLY-CHAIN-ASSESSMENT.md",
-      "sha256": "1a5b16eb2eab1a1aff6963d56738176911c428011bf0d630c890f6258ab2cfc8",
+      "sha256": "420a1274b375c8b5d112f1f7d60bc52a058c4ab463b6fab5097581d1a2d5e742",
       "bytes": 1969
     },
     {
       "id": "D24",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D24-OPERATIONAL-READINESS-ASSESSMENT.md",
-      "sha256": "4702747b6a40af9b70d193a71aa6a4d0f22b16bdfb6edc61b15c7681d57d8bf8",
+      "sha256": "9ba91c0b9c2a484826014a9651bef43087809c975d1c374e8598108bb0350a6b",
       "bytes": 1644
     },
     {
       "id": "D25",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D25-EVIDENCE-INDEX.md",
-      "sha256": "09d3eb37103f6aee2c994cf84aebe1a208a7c33ab9ac0f1a642117364ce7c42a",
-      "bytes": 16845
+      "sha256": "cf5132497580ee4a5a0096eca53d01f2625335faead4dd58c2494eaff5636683",
+      "bytes": 17379
     },
     {
       "id": "D26",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D26-INDEPENDENT-ASSESSMENT-REPORT.md",
-      "sha256": "aefb4ad3047d579901a4f0b41c06bce084a7fd707992817eb17106941fda8336",
-      "bytes": 3895
+      "sha256": "c9819b10cf0621ffa2b1daa71251b96a5391bfd5344ad930c694504a84dac792",
+      "bytes": 5859
     },
     {
       "id": "D27",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D27-FINAL-CONFORMANCE-STATEMENT.md",
-      "sha256": "92e811cb4179dc9367ed8d9f79c2553ecd8c07c40cade60c2e64e276bff5283a",
-      "bytes": 7354
+      "sha256": "7e679db7ea1fd04e17a9f787aee1719da4ef02b88b6ad567bbe9bd698780a491",
+      "bytes": 7102
     },
     {
       "id": "D28",
       "path": "reports/compliance/uaes-full-migration-2026-11-06/D28-RESIDUAL-RISK-AND-EXCEPTION-REGISTER.md",
-      "sha256": "293460a275e6ac3cc38470916757d4b5ec22a3b80966cff97461449f861a72fb",
-      "bytes": 10217
+      "sha256": "7d815323d97b97be6076064d84241729028eac28737d186766f170f3801660e5",
+      "bytes": 9981
     }
   ]
 }

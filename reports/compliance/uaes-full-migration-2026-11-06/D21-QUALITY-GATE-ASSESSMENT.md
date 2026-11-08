@@ -7,10 +7,10 @@
 | Evidence ID | `D21` |
 | Related requirement | §8.2 / §8.3 / §16.3 |
 | Related finding | D10 gap register / D28 residual risk register |
-| Repository revision | Uter `ec6501adceb008d46140a7e5ab6508eb78006731` / UAES `ff7cf878d43061f263e301cad09ff19d03e906c4` |
+| Repository revision | Uter `424dfa2c55c534bf110fa5871420fe3fd679d307` / UAES `4344979777433fbcdbe23ef2aa0111fe2e8a52e7` |
 | Source system | `scripts/quality/uaes-governance-reports.py` + on-disk gate evidence |
 | Execution environment | local non-production; Python 3.13.12; Go go version go1.27.3 darwin/amd64; Node v22.22.2; Bun 1.4.2 |
-| Collection time | 2026-11-06T11:04:20.850321+00:00 |
+| Collection time | 2026-11-08T18:42:15.299631+00:00 |
 | Collector | WorkBuddy (Tencent Hunyuan Hy) |
 | Integrity | SHA-256 of source evidence is recorded in D25 (Evidence Index) |
 | Storage reference | `/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence` |
@@ -23,10 +23,10 @@ Gate result vocabulary (§8.3): PASS / FAIL / BLOCKED / NOT_RUN / NOT_APPLICABLE
 
 | Gate | Status | Detail |
 |---|---|---|
-| L1_CHANGE_GATE | FAIL | 18 checks, 3 failed |
+| L1_CHANGE_GATE | PASS | 20 checks, 0 failed |
 | L2_INTEGRATION_GATE | PASS | 9 checks, 0 failed |
 | L3_DOMAIN_ACCEPTANCE_GATE | BLOCKED | 0/14 domains PASS |
-| L4_GLOBAL_CONFORMANCE_GATE | BLOCKED | 9/16 §16.4 conditions MET |
+| L4_GLOBAL_CONFORMANCE_GATE | BLOCKED | 12/16 §16.4 conditions MET |
 
 | Domain | Classification | Status | UAES gate execution |
 |---|---|---|---|

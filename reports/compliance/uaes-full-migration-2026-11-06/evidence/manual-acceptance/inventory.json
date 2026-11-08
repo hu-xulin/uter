@@ -1,16 +1,15 @@
 {
   "evidence_id": "MANUAL-ACCEPTANCE-INVENTORY",
-  "generated_at": "2026-11-08T08:08:09Z",
-  "run_id": "RUN-20261108T080313Z",
+  "generated_at": "2026-11-08T18:33:26Z",
+  "run_id": "RUN-20261108T182747Z",
   "related_requirement": "UTER-UAES-GOV-001 §16.3 / §16.4",
   "domain_count": 14,
   "item_count": 42,
   "category_summary": {
     "EXTERNAL_ENVIRONMENT": 14,
     "HUMAN_SIGNOFF": 17,
-    "LOCAL_EXECUTED": 3,
-    "LOCAL_PARTIAL": 7,
-    "TOOL_UNAVAILABLE": 1
+    "LOCAL_EXECUTED": 4,
+    "LOCAL_PARTIAL": 7
   },
   "acceptance_authority": {
     "evidence_id": "ACCEPTANCE-AUTHORITY",
@@ -18,84 +17,99 @@
     "recorded_at": "2026-11-07T01:33:20Z",
     "source": "USER_EXPLICIT_DESIGNATION",
     "authority_role": "Project Owner / Acceptance Authority",
-    "authority_name": "项目 Owner / Acceptance Authority（用户本人）",
+    "authority_name": "胡旭林（项目所有者 / Acceptance Authority）",
     "designation_channel": "In-session explicit user selection (AskUserQuestion)",
     "designation_answers": {
       "authority": "由您本人担任",
       "signoff_scope": "等我逐项复核后决定"
     },
-    "decision": "DELEGATED_BLANKET_SIGNOFF",
-    "signoff_granted": true,
-    "signed_item_ids": [
-      "M00-01",
-      "M00-02",
-      "M01-01",
-      "M01-02",
-      "M02-01",
-      "M02-02",
-      "M02-03",
-      "M03-01",
-      "M03-02",
-      "M03-03",
-      "M04-01",
-      "M04-02",
-      "M05-01",
-      "M05-02",
-      "M05-03",
-      "M05-04",
-      "M06-01",
-      "M06-02",
-      "M07-01",
-      "M07-02",
-      "M07-03",
-      "M08-01",
-      "M08-02",
-      "M08-03",
-      "M09-01",
-      "M09-02",
-      "M09-03",
-      "M09-04",
-      "M10-01",
-      "M10-02",
-      "M10-03",
-      "M10-04",
-      "M13-01",
-      "M13-02",
-      "M13-03",
-      "M13-04",
-      "M13-05",
-      "M11-01",
-      "M11-02",
-      "M12-01",
-      "M12-02",
-      "M12-03"
-    ],
+    "decision": "PENDING_ITEM_BY_ITEM_REVIEW",
+    "signoff_granted": false,
+    "signed_item_ids": [],
     "scope": {
       "domains": 14,
       "manual_acceptance_items": 42,
       "auto_promotion_allowed": false,
-      "prior_auto_promotion_prohibition_still_applies": "auto_promotion_allowed stays False: local execution PASS is still never auto-promoted to VERIFIED. The signoff below is an explicit delegated act, recorded as such, not an automatic promotion."
+      "prior_auto_promotion_prohibition_still_applies": "auto_promotion_allowed stays False: local execution PASS is never auto-promoted to VERIFIED. After the 2026-11-08 owner signoff voided the delegated blanket signoff, no item is signed at all."
     },
-    "note": "Owner delegated blanket signoff on 2026-11-07. All 42 items are signed with signoff_nature=DELEGATED. No human item-by-item review is claimed. This does not constitute a global conformity claim (§16.4 / §18).",
+    "note": "The 2026-11-07 DELEGATED_BLANKET_SIGNOFF record was VOIDED by the owner's own decision O-06=A on the signed page UAES-OWNER-SIGNOFF-2026-11-08.md. The owner chose 'A. 作废该记录，改为您本人逐项或分类签署' (void the record and replace it with the owner's own item-by-item or category sign-off). No item-by-item sign-off has been recorded yet, so all 42 manual acceptance items remain NOT_VERIFIED. The signed page also records O-05: the signoff explicitly does NOT promote any requirement or domain to VERIFIED. This is not a global conformity claim (§16.4 / §18).",
+    "voided_record": {
+      "evidence_id": "ACCEPTANCE-AUTHORITY-DELEGATION-2026-11-07",
+      "status": "VOIDED",
+      "voided_at": "2026-11-08T16:20:00+08:00",
+      "voided_by": "胡旭林（项目所有者本人，亲笔签署）",
+      "void_authority_document": "UAES-OWNER-SIGNOFF-2026-11-08.md §2 O-06 = A",
+      "void_reason": "Independent assessment control IA-07 requires signoff_granted=false and an empty signed_item_ids set. The delegated blanket signoff declared 42 items signed by an agent on the owner's behalf, which FIND-IA-11 (Critical) judged to be an untrustworthy acceptance evidence chain. The owner voided it rather than accepting a lasting FAIL.",
+      "original_decision": "DELEGATED_BLANKET_SIGNOFF",
+      "original_signoff_granted": true,
+      "original_signed_item_count": 42,
+      "original_instruction_verbatim": "3、FCA-003 42 项未签，我授权你替我签署；",
+      "original_recorded_at": "2026-11-07T01:33:20Z",
+      "original_delegation_nature": "The owner delegated the ACT of signing to the agent; no claim that the owner personally reviewed each item. Residual risk: item-level acceptance rested on delegated authority rather than first-hand owner review.",
+      "retained_for": "audit trail only; this object must never be read as a live acceptance decision"
+    },
+    "owner_decisions_2026_11_08": {
+      "document": "UAES-OWNER-SIGNOFF-2026-11-08.md",
+      "document_number": "OWNER-SIGNOFF-2026-11-08-001",
+      "signer": "胡旭林",
+      "signed_date": "2026-11-08",
+      "signed_place": "深圳",
+      "O-06": "A — 作废代签记录（本文件据此更新）",
+      "O-07": "维持 4 项 CONDITIONAL 条件批准",
+      "O-08": "限期补齐 4 项 DEFERRED",
+      "O-09": "指定人：胡旭林（13 个 L3 域门禁）",
+      "O-10": "胡旭林（P10 六项环境控制责任人）",
+      "O-11": "补齐 24 项需真实环境/工具的事项，而非接受残留风险",
+      "effect_boundary": "签署不提升任何需求/域为 VERIFIED；不替代独立第三方评审；integration_status 保持 MIGRATION_PENDING"
+    },
+    "owner_decision_ledger_reconciliation": {
+      "status": "DISCREPANCY_RECORDED_FOR_OWNER_CLARIFICATION",
+      "signed_page_claim": "O-07 says 4 CONDITIONAL items; O-08 says 4 DEFERRED items",
+      "authoritative_ledger": "UAES/UAES-HUMAN-SIGNATURE-LEDGER.md §1 (22 decisions: S-01..S-22)",
+      "ledger_actual_counts": {
+        "CONDITIONAL": 1,
+        "DEFERRED": 2,
+        "GRANTED": 19,
+        "total": 22
+      },
+      "conditional_items": [
+        "S-08 (发布签批：四项前置满足后可批准；发布记录仍须授权方签名)"
+      ],
+      "deferred_items": [
+        "S-18 (P08 Agent Engineering：真实运行时发现 NOT_RUN)",
+        "S-20 (P10 Security & Reliability：D 族 FAIL + 6 族 NOT_RUN)"
+      ],
+      "handling": "The signed page is immutable and is NOT edited. WorkBuddy does not invent the missing 3 CONDITIONAL / 2 DEFERRED items, and does not silently rewrite the owner's numbers. Both figures are recorded side by side; the owner must confirm which set O-07/O-08 refers to before any of them can be closed.",
+      "O-08_deadline": "NOT_SPECIFIED — the owner chose 限期补齐 but wrote no date; no date is invented here",
+      "O-09_O-10_assignment": "Owner designated 胡旭林 as the L3 domain-gate executor and P10 environment-control owner. This is an assignment of responsibility, not evidence that the gates/controls were executed."
+    },
+    "third_party_review_record": {
+      "document": "UAES/THIRD-PARTY-SIGNOFF-2026-11-08-001.md",
+      "signer": "杨辉 / 创梦天地",
+      "signed_date": "2026-11-08",
+      "signature_present": true,
+      "review_conclusions_present": false,
+      "independence_self_check_completed": false,
+      "blanks": [
+        "§0 独立性自查 4 项勾选全空",
+        "§2.1–§2.6 六项评审结论勾选全空",
+        "§2.1–§2.6 条件/理由与评审依据栏全空",
+        "§2.3 抽查提交 SHA 栏全空",
+        "§2.4/§2.5 第二任务类型 / 第二运行时 / 指纹栏全空",
+        "§2.6 10 个业务域逐域结论全空",
+        "§3 汇总表 6 项结论与通过项合计全空"
+      ],
+      "verification_status": "NOT_VERIFIED",
+      "conclusion": "A signature is not a review conclusion. WorkBuddy must not fill in a third party's conclusions. Consequently M00-02 / M01-01 / M06-01 / M08-01 / M08-02 / M13-05 remain NOT_VERIFIED, and this document cannot serve as the independent review required by §13.4 / §16.4."
+    },
     "integrity": {
       "declared_by": "user",
-      "written_by": "WorkBuddy as evidence recorder only",
+      "written_by": "WorkBuddy as evidence recorder only; no signature forged and no acceptance decision invented",
       "not_a_certification": "§16.5: internal assessment is not ISO/IEC/IEEE/NIST/OWASP/SLSA certification"
-    },
-    "signoff_basis": "DELEGATION",
-    "delegation": {
-      "granted_by": "项目 Owner / Acceptance Authority（用户本人）",
-      "granted_at": "2026-11-07T01:33:20Z",
-      "channel": "In-session explicit written instruction",
-      "instruction_verbatim": "3、FCA-003 42 项未签，我授权你替我签署；",
-      "scope": "全部 42 项 M* 人工验收记录",
-      "nature": "The owner delegated the ACT of signing to the agent. This is NOT a claim that the owner personally reviewed each item; every record is marked signoff_nature=DELEGATED to keep the evidence truthful.",
-      "supersedes": "Prior decision PENDING_ITEM_BY_ITEM_REVIEW with signoff_granted=false",
-      "residual_risk": "Item-level acceptance now rests on delegated authority rather than first-hand owner review. An independent reviewer must treat these as DELEGATED_SIGNOFF, not HUMAN_REVIEWED_SIGNOFF."
     }
   },
   "acceptance_decision": {
-    "status": "DELEGATED_BLANKET_SIGNOFF",
+    "status": "PENDING_ITEM_BY_ITEM_REVIEW",
     "signed_item_count": 0,
     "note": "No item is auto-promoted by local execution evidence. Only an explicit per-item sign-off from the recorded acceptance authority can set VERIFIED."
   },
@@ -123,7 +137,7 @@
       "verified_by": null,
       "verified_at": null,
       "linked_evidence": [],
-      "open_reason": "304 UAES registry entries remain DRAFT; isolation review needs an independent reviewer"
+      "open_reason": "isolation review needs an independent reviewer; 130 UAES registry entries remain DRAFT (acceptance=13, gates=13, phases=13, schemas=76, system_files=10, tool_adapters=5); 179 entries are ACTIVE."
     },
     {
       "domain": "P01",
@@ -294,7 +308,7 @@
       "domain": "P05",
       "id": "M05-02",
       "description": "axe accessibility audit (WCAG 2.2 / WAI-ARIA)",
-      "category": "TOOL_UNAVAILABLE",
+      "category": "LOCAL_EXECUTED",
       "acceptance_status": "NOT_VERIFIED",
       "evidence_collected": true,
       "verified_by": null,
@@ -308,7 +322,7 @@
           "source": "manual-acceptance/execution.json"
         }
       ],
-      "open_reason": "explicitly NOT waived by UAES approval §4; no axe toolchain in this workspace"
+      "open_reason": "explicitly NOT waived by UAES approval §4; axe-core 4.14 + @axe-core/playwright are installed and the full public-page suite is executed by MA-12"
     },
     {
       "domain": "P05",

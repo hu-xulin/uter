@@ -1,11 +1,11 @@
 {
   "report_id": "D09-RUNTIME-PREFLIGHT",
-  "generated_at": "2026-11-08T08:33:42Z",
+  "generated_at": "2026-11-08T18:34:23Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
   "harness": "scripts/quality/uaes-agent-runtime-check.rb",
   "uaes_version": "1.12.1",
   "uaes_status": "ACTIVE",
-  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+  "uter_commit": "424dfa2c55c534bf110fa5871420fe3fd679d307",
   "branch": "main",
   "overall": "PASS",
   "failed_steps": [],
@@ -93,8 +93,8 @@
       "name": "check workspace",
       "status": "PASS",
       "observation": {
-        "dirty_entries": 35,
-        "untracked": 1,
+        "dirty_entries": 105,
+        "untracked": 0,
         "staged_files": [],
         "user_wip_preserved": true
       }
@@ -145,7 +145,10 @@
           "web/e2e/axe/",
           "docs-web/",
           "electron/",
-          "reports/compliance/"
+          "reports/compliance/",
+          ".quality/gitleaks.toml",
+          "tools/uaes/integration-adapter.mjs",
+          "tools/uaes/integration-adapter.test.mjs"
         ],
         "include": [
           ".uaes/",
@@ -188,7 +191,10 @@
           "web/e2e/axe/",
           "docs-web/",
           "electron/",
-          "reports/compliance/"
+          "reports/compliance/",
+          ".quality/gitleaks.toml",
+          "tools/uaes/integration-adapter.mjs",
+          "tools/uaes/integration-adapter.test.mjs"
         ],
         "exclude": []
       }
@@ -250,7 +256,7 @@
       "status": "PASS",
       "observation": {
         "branch": "main",
-        "head": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+        "head": "424dfa2c55c534bf110fa5871420fe3fd679d307",
         "governing_specification": "UTER-UAES-GOV-001",
         "baseline_preservation_required": true
       }

@@ -1,6 +1,6 @@
 {
   "report_id": "D09-RUNTIME-WORKSPACE",
-  "generated_at": "2026-11-08T08:33:43Z",
+  "generated_at": "2026-11-08T18:34:23Z",
   "overall": "PASS",
   "failed_checks": [],
   "checks": [
@@ -10,14 +10,67 @@
       "status": "PASS",
       "observation": {
         "new_paths": [
+          ".github/workflows/ci.yml",
+          ".quality/gitleaks.toml",
+          "docs-web/src/app/global.css",
+          "docs-web/src/app/layout.tsx",
+          "docs-web/src/lib/content/markdown-page.ts",
+          "docs-web/src/lib/docs-root-provider.tsx",
+          "docs-web/src/lib/docs-search-hotkey.ts",
+          "docs-web/src/lib/docs-search.tsx",
+          "reports/compliance/full-conformance-audit-2026-11-06/00-ACCEPTANCE-BOARD.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D01-STANDARDS-APPLICABILITY-REGISTER.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D02-UAES-VERSION-AND-REGISTRY-BASELINE.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D03-UTER-ENGINEERING-BASELINE.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D04-GOVERNANCE-ARCHITECTURE.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D05-UAES-REQUIREMENT-MAPPING.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D06-UTER-P13-SPECIFICATION.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D07-GOVERNANCE-OWNERSHIP-MATRIX.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D08-P00-P12-ASSESSMENT-REPORT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D09-P13-BUSINESS-DOMAIN-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D10-GOVERNANCE-GAP-REGISTER.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D11-RISK-REGISTER.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D12-ARCHITECTURE-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D13-SOFTWARE-ENGINEERING-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D14-QUALITY-ENGINEERING-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D15-SECURITY-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D16-RELIABILITY-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D17-AI-GOVERNANCE-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D18-AGENT-RUNTIME-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D19-TEST-STRATEGY-AND-TEST-RESULTS.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D20-CORRECTIVE-ACTION-REGISTER.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D21-QUALITY-GATE-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D22-SECURITY-GATE-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D23-SUPPLY-CHAIN-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D24-OPERATIONAL-READINESS-ASSESSMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D25-EVIDENCE-INDEX.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D26-INDEPENDENT-ASSESSMENT-REPORT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D27-FINAL-CONFORMANCE-STATEMENT.md",
+          "reports/compliance/uaes-full-migration-2026-11-06/D28-RESIDUAL-RISK-AND-EXCEPTION-REGISTER.md",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-preflight.json",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-selftest.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-workspace.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/deliverables-manifest.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/evidence-closure.json",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/GATES-SUMMARY.md",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l1-l2-gates.json",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/governance-separation.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/independent-assessment.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/execution.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/integrity.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/run-state.json",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/runner-console.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-01.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-02.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-03.log",
@@ -36,15 +89,32 @@
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-16.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-17.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-18.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-19.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-20.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-01.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-02.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-03.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-04.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-05.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-06.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-07.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-08.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-09.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/U-01.log",
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/U-02.log",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/results.tsv",
           "reports/compliance/uaes-full-migration-2026-11-06/evidence/p09-p10-boundary.json",
-          "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-19.log"
+          "reports/compliance/uaes-full-migration-2026-11-06/evidence/test-matrix.json",
+          "scripts/quality/gitleaks-allowlist.test.sh",
+          "scripts/quality/uaes-agent-runtime-check.rb",
+          "scripts/quality/uaes-governance-gates.rb",
+          "scripts/quality/uaes-governance-reports.py",
+          "scripts/quality/uaes-manual-acceptance.py",
+          "scripts/quality/uaes-test-matrix.sh",
+          "scripts/quality/uter-independent-assessment.rb",
+          "scripts/quality/uter-p09-p10-boundary-check.rb",
+          "tools/uaes/integration-adapter.mjs",
+          "tools/uaes/integration-adapter.test.mjs"
         ],
         "outside_scope": []
       }
@@ -62,8 +132,8 @@
       "name": "no commit created before complete validation",
       "status": "PASS",
       "observation": {
-        "main": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
-        "head": "73583896df2cf4db27eb0ba9d31a4819a239be0a"
+        "main": "424dfa2c55c534bf110fa5871420fe3fd679d307",
+        "head": "424dfa2c55c534bf110fa5871420fe3fd679d307"
       }
     },
     {
@@ -149,7 +219,15 @@
       "status": "PASS",
       "observation": {
         "normative_changes": [],
-        "note": "generated report artifacts may be refreshed; normative standards/gates/policies may not"
+        "derived_index_changes": [
+          ".uaes/registry/standards.yaml"
+        ],
+        "derived_index_exemptions": [
+          ".uaes/registry/standards.yaml",
+          ".uaes/registry/gates.yaml"
+        ],
+        "derived_index_authority": "UAES/quality/scripts/uaes/verify-derived-indices.mjs (DI-01..DI-11)",
+        "note": "generated report artifacts and the two declared DERIVED indices may be refreshed; normative standards/gates/policies may not"
       }
     },
     {

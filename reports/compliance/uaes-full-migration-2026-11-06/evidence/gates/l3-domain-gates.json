@@ -1,8 +1,8 @@
 {
   "evidence_id": "GATE-L3-DOMAINS",
-  "generated_at": "2026-11-08T08:41:21Z",
+  "generated_at": "2026-11-08T18:42:15Z",
   "related_requirement": "§8.2 Domain Acceptance Gate / §16.3 independent domain acceptance",
-  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+  "uter_commit": "424dfa2c55c534bf110fa5871420fe3fd679d307",
   "uaes_commit": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
   "domain_count": 14,
   "uaes_domain_count": 13,
@@ -12,7 +12,7 @@
   "uaes_governance_layer_note": "All 13 UAES governance-layer L3 gates remain execution=NOT_RUN per UAES .uaes/registry/gates.yaml. UTER-P13 is a Uter Layer B extension and has no UAES gate. Uter-side evaluations above do not rewrite the UAES gate status.",
   "manual_acceptance_evidence": {
     "trusted": true,
-    "run_id": "RUN-20261108T080313Z",
+    "run_id": "RUN-20261108T182747Z",
     "integrity_status": "PASS",
     "run_state": "COMPLETED",
     "execution_summary": {
@@ -25,12 +25,11 @@
     "category_summary": {
       "EXTERNAL_ENVIRONMENT": 14,
       "HUMAN_SIGNOFF": 17,
-      "LOCAL_EXECUTED": 3,
-      "LOCAL_PARTIAL": 7,
-      "TOOL_UNAVAILABLE": 1
+      "LOCAL_EXECUTED": 4,
+      "LOCAL_PARTIAL": 7
     },
     "acceptance_authority_recorded": true,
-    "acceptance_decision": "DELEGATED_BLANKET_SIGNOFF",
+    "acceptance_decision": "PENDING_ITEM_BY_ITEM_REVIEW",
     "verified_item_count": 0,
     "note": "Execution evidence is recorded per item (§14.3) but does NOT constitute human acceptance. Only an explicit per-item sign-off from the recorded acceptance authority can set VERIFIED."
   },
@@ -94,11 +93,11 @@
           "id": "M00-02",
           "description": "formal-standard vs draft isolation review",
           "status": "NOT_VERIFIED",
-          "reason": "304 UAES registry entries remain DRAFT; isolation review needs an independent reviewer",
+          "reason": "isolation review needs an independent reviewer; 130 UAES registry entries remain DRAFT (acceptance=13, gates=13, phases=13, schemas=76, system_files=10, tool_adapters=5); 179 entries are ACTIVE.",
           "evidence_category": "HUMAN_SIGNOFF",
           "evidence_collected": false,
           "linked_evidence": [],
-          "open_reason": "304 UAES registry entries remain DRAFT; isolation review needs an independent reviewer"
+          "open_reason": "isolation review needs an independent reviewer; 130 UAES registry entries remain DRAFT (acceptance=13, gates=13, phases=13, schemas=76, system_files=10, tool_adapters=5); 179 entries are ACTIVE."
         }
       ],
       "acceptance_criteria": "§16.3: requirement coverage + implementation + control effectiveness + verification results + exceptions + evidence completeness all satisfied",
@@ -374,8 +373,8 @@
           "id": "M05-02",
           "description": "axe accessibility audit (WCAG 2.2 / WAI-ARIA)",
           "status": "NOT_VERIFIED",
-          "reason": "explicitly NOT waived by UAES approval §4; no axe toolchain in this workspace",
-          "evidence_category": "TOOL_UNAVAILABLE",
+          "reason": "explicitly NOT waived by UAES approval §4; axe-core 4.14 + @axe-core/playwright are installed and the full public-page suite is executed by MA-12",
+          "evidence_category": "LOCAL_EXECUTED",
           "evidence_collected": true,
           "linked_evidence": [
             {
@@ -386,7 +385,7 @@
               "source": "manual-acceptance/execution.json"
             }
           ],
-          "open_reason": "explicitly NOT waived by UAES approval §4; no axe toolchain in this workspace"
+          "open_reason": "explicitly NOT waived by UAES approval §4; axe-core 4.14 + @axe-core/playwright are installed and the full public-page suite is executed by MA-12"
         },
         {
           "id": "M05-03",

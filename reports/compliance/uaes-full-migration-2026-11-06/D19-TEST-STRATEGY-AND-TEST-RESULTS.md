@@ -7,10 +7,10 @@
 | Evidence ID | `D19` |
 | Related requirement | §9 / §15 D19 |
 | Related finding | D10 gap register / D28 residual risk register |
-| Repository revision | Uter `ec6501adceb008d46140a7e5ab6508eb78006731` / UAES `ff7cf878d43061f263e301cad09ff19d03e906c4` |
+| Repository revision | Uter `424dfa2c55c534bf110fa5871420fe3fd679d307` / UAES `4344979777433fbcdbe23ef2aa0111fe2e8a52e7` |
 | Source system | `scripts/quality/uaes-governance-reports.py` + on-disk gate evidence |
 | Execution environment | local non-production; Python 3.13.12; Go go version go1.27.3 darwin/amd64; Node v22.22.2; Bun 1.4.2 |
-| Collection time | 2026-11-06T11:04:20.850321+00:00 |
+| Collection time | 2026-11-08T18:42:15.299631+00:00 |
 | Collector | WorkBuddy (Tencent Hunyuan Hy) |
 | Integrity | SHA-256 of source evidence is recorded in D25 (Evidence Index) |
 | Storage reference | `/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence` |
@@ -21,7 +21,7 @@
 
 Test strategy (§9.1): L1_CHANGE_GATE covers formatting, compilation, type checking, static analysis, governance gates and secret-like file detection; L2_INTEGRATION_GATE covers four Go module test suites, `go vet`, full vitest, build check and UTER P13 targeted business suites; UAES registry validation is read-only.
 
-Result: total **29**, PASS **26**, FAIL **3**, SKIP **0**, overall `FAIL`.
+Result: total **31**, PASS **31**, FAIL **0**, SKIP **0**, overall `PASS`.
 
 | ID | Layer | Status | Exit | Duration (s) | Command |
 |---|---|---|---|---|---|
@@ -30,30 +30,32 @@ Result: total **29**, PASS **26**, FAIL **3**, SKIP **0**, overall `FAIL`.
 | `L1-03` | L1 | PASS | 0 | 1 | `ruby scripts/quality/uaes-agent-runtime-check.rb selftest` |
 | `L1-04` | L1 | PASS | 0 | 2 | `bash scripts/quality/uaes-pin-check.sh` |
 | `L1-05` | L1 | PASS | 0 | 1 | `bash scripts/quality/uaes-integration-check.sh` |
-| `L1-06` | L1 | PASS | 0 | 33 | `ruby scripts/quality/test-uaes-pin-check.rb` |
-| `L1-07` | L1 | PASS | 0 | 12 | `ruby scripts/quality/test-uaes-integration-check.rb` |
-| `L1-08` | L1 | PASS | 0 | 8 | `bun run typecheck` |
+| `L1-06` | L1 | PASS | 0 | 22 | `ruby scripts/quality/test-uaes-pin-check.rb` |
+| `L1-07` | L1 | PASS | 0 | 10 | `ruby scripts/quality/test-uaes-integration-check.rb` |
+| `L1-08` | L1 | PASS | 0 | 7 | `bun run typecheck` |
 | `L1-09` | L1 | PASS | 0 | 2 | `bun run lint` |
 | `L1-10` | L1 | PASS | 0 | 3 | `bun run format:check` |
-| `L1-11` | L1 | FAIL | 1 | 1 | `bun run copyright:check` |
+| `L1-11` | L1 | PASS | 0 | 0 | `bun run copyright:check` |
 | `L1-12` | L1 | PASS | 0 | 0 | `bun run design:tokens:check` |
-| `L1-13` | L1 | PASS | 0 | 20 | `gofmt -l $(find . -name '*.go' -not -path './.git/*' -not -path './node_modules/*' -not -path './.qu` |
-| `L1-14` | L1 | PASS | 0 | 1 | `ruby scripts/quality/uter-governance-separation-check.rb` |
-| `L1-15` | L1 | PASS | 0 | 1 | `ruby scripts/quality/uter-p09-p10-boundary-check.rb` |
-| `L1-16` | L1 | FAIL | 1 | 2 | `ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migra` |
-| `L1-17` | L1 | PASS | 0 | 10 | `ruby scripts/quality/test-uter-governance-boundaries.rb` |
-| `L1-18` | L1 | FAIL | 1 | 3 | `ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb` |
-| `L2-01` | L2 | PASS | 0 | 60 | `GOWORK=off go test ./...` |
-| `L2-02` | L2 | PASS | 0 | 0 | `GOWORK=off go test ./...` |
-| `L2-03` | L2 | PASS | 0 | 1 | `GOWORK=off go test ./...` |
-| `L2-04` | L2 | PASS | 0 | 0 | `GOWORK=off go test ./...` |
-| `L2-05` | L2 | PASS | 0 | 7 | `GOWORK=off go vet ./...` |
-| `L2-06` | L2 | PASS | 0 | 318 | `bun run test` |
-| `L2-07` | L2 | PASS | 0 | 26 | `bun run build:check` |
-| `L2-08` | L2 | PASS | 0 | 13 | `GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay/TopUp/Recharge/Billing/Ga` |
-| `L2-09` | L2 | PASS | 0 | 28 | `bun run test -- src/features/wallet src/features/pricing` |
-| `U-01` | UAES | PASS | 0 | 2 | `node quality/scripts/uaes/validate-registry.mjs` |
-| `U-02` | UAES | PASS | 0 | 2 | `node quality/scripts/uaes/quality-gate-runner.mjs` |
+| `L1-13` | L1 | PASS | 0 | 7 | `gofmt -l $(find . -name '*.go' -not -path './.git/*' -not -path './node_modules/*' -not -path './.qu` |
+| `L1-14` | L1 | PASS | 0 | 0 | `ruby scripts/quality/uter-governance-separation-check.rb` |
+| `L1-15` | L1 | PASS | 0 | 0 | `ruby scripts/quality/uter-p09-p10-boundary-check.rb` |
+| `L1-16` | L1 | PASS | 0 | 1 | `ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migra` |
+| `L1-17` | L1 | PASS | 0 | 16 | `ruby scripts/quality/test-uter-governance-boundaries.rb` |
+| `L1-18` | L1 | PASS | 0 | 3 | `ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb` |
+| `L1-19` | L1 | PASS | 0 | 2 | `ruby scripts/quality/test-registry-draft-state.rb` |
+| `L1-20` | L1 | PASS | 0 | 0 | `bash scripts/quality/gitleaks-allowlist.test.sh` |
+| `L2-01` | L2 | PASS | 0 | 50 | `GOWORK=off go test ./...` |
+| `L2-02` | L2 | PASS | 0 | 1 | `GOWORK=off go test ./...` |
+| `L2-03` | L2 | PASS | 0 | 0 | `GOWORK=off go test ./...` |
+| `L2-04` | L2 | PASS | 0 | 1 | `GOWORK=off go test ./...` |
+| `L2-05` | L2 | PASS | 0 | 6 | `GOWORK=off go vet ./...` |
+| `L2-06` | L2 | PASS | 0 | 306 | `bun run test` |
+| `L2-07` | L2 | PASS | 0 | 22 | `bun run build:check` |
+| `L2-08` | L2 | PASS | 0 | 12 | `GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay/TopUp/Recharge/Billing/Ga` |
+| `L2-09` | L2 | PASS | 0 | 18 | `bun run test -- src/features/wallet src/features/pricing` |
+| `U-01` | UAES | PASS | 0 | 0 | `node quality/scripts/uaes/validate-registry.mjs` |
+| `U-02` | UAES | PASS | 0 | 1 | `node quality/scripts/uaes/quality-gate-runner.mjs` |
 
 Raw logs: `evidence/matrix/<ID>.log` (stdout, stderr, exit code, duration, toolchain versions). Skips are explicit and never counted as PASS (§8.3). Failures are listed in D10 / D28, not waived.
 

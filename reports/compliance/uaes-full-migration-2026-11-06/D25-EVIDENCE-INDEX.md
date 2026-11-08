@@ -7,10 +7,10 @@
 | Evidence ID | `D25` |
 | Related requirement | §14.1-14.4 / §15 D25 |
 | Related finding | D10 gap register / D28 residual risk register |
-| Repository revision | Uter `ec6501adceb008d46140a7e5ab6508eb78006731` / UAES `ff7cf878d43061f263e301cad09ff19d03e906c4` |
+| Repository revision | Uter `424dfa2c55c534bf110fa5871420fe3fd679d307` / UAES `4344979777433fbcdbe23ef2aa0111fe2e8a52e7` |
 | Source system | `scripts/quality/uaes-governance-reports.py` + on-disk gate evidence |
 | Execution environment | local non-production; Python 3.13.12; Go go version go1.27.3 darwin/amd64; Node v22.22.2; Bun 1.4.2 |
-| Collection time | 2026-11-06T11:04:20.850321+00:00 |
+| Collection time | 2026-11-08T18:42:15.299631+00:00 |
 | Collector | WorkBuddy (Tencent Hunyuan Hy) |
 | Integrity | SHA-256 of source evidence is recorded in D25 (Evidence Index) |
 | Storage reference | `/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence` |
@@ -19,7 +19,7 @@
 
 ## Content
 
-**168** evidence files under `/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence`.
+**175** evidence files under `/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence`.
 
 | Path | Bytes | SHA-256 (prefix) |
 |---|---|---|
@@ -78,20 +78,25 @@
 | `evidence/33-reports-closure.exit` | 2 | `9a271f2a916b0b6e…` |
 | `evidence/33-reports-closure.log` | 433 | `20ec34609a7acc92…` |
 | `evidence/agent-runtime-commands.txt` | 758 | `32cfc4c52b1b53a9…` |
-| `evidence/agent-runtime-preflight.json` | 7408 | `1484bc87329177b9…` |
-| `evidence/agent-runtime-selftest.json` | 6649 | `a6142cfb6cfb53e1…` |
-| `evidence/agent-runtime-task.json` | 7589 | `5b41ba236f5ff5c1…` |
+| `evidence/agent-runtime-preflight.json` | 10439 | `e2227db7f28080a7…` |
+| `evidence/agent-runtime-selftest.json` | 6649 | `64b81ec291607fee…` |
+| `evidence/agent-runtime-task.json` | 9682 | `66930dd3f655371b…` |
 | `evidence/agent-runtime-test-execution.json` | 9247 | `3987724d8f16d6a2…` |
-| `evidence/agent-runtime-workspace.json` | 14994 | `4a615843923279d1…` |
-| `evidence/deliverables-manifest.json` | 7098 | `eb1d5a6cb5da1d4d…` |
-| `evidence/evidence-closure.json` | 29092 | `d1c9ad4ebf5ce31b…` |
-| `evidence/gates/GATES-SUMMARY.md` | 4077 | `1b1944afb2d29b15…` |
-| `evidence/gates/l1-l2-gates.json` | 1404 | `39f76da952bed2f8…` |
-| `evidence/gates/l3-domain-gates.json` | 40608 | `cb8ea64d75b40c66…` |
-| `evidence/gates/l4-global-gate.json` | 5907 | `8f66a3cb41ccba80…` |
+| `evidence/agent-runtime-workspace.json` | 14390 | `9e21a2b3e4056856…` |
+| `evidence/deliverables-manifest.json` | 7097 | `a71dd09c674107db…` |
+| `evidence/disaster-recovery/ch.tsv` | 44 | `3d6c600175cad518…` |
+| `evidence/disaster-recovery/dr-drill-evidence.json` | 3762 | `df9202469f7de01f…` |
+| `evidence/disaster-recovery/dr-drill.sh` | 7825 | `828d04b0dd09c8d3…` |
+| `evidence/disaster-recovery/mysql.sql` | 2228 | `84b26713e24d8b53…` |
+| `evidence/disaster-recovery/postgres.sql` | 1289 | `2a854fcc5cc42455…` |
+| `evidence/evidence-closure.json` | 30281 | `6662c25c05b3d7e3…` |
+| `evidence/gates/GATES-SUMMARY.md` | 4427 | `444bc08cdb1e01b3…` |
+| `evidence/gates/l1-l2-gates.json` | 549 | `3692d200259bfb9b…` |
+| `evidence/gates/l3-domain-gates.json` | 40913 | `446a9281c9ac2a37…` |
+| `evidence/gates/l4-global-gate.json` | 6239 | `94616415dcdb09f4…` |
 | `evidence/gates/l4-round-B.json` | 5152 | `7074100733783a46…` |
-| `evidence/governance-separation.json` | 7896 | `227effd46253262d…` |
-| `evidence/independent-assessment.json` | 7833 | `769f3070e9adec2d…` |
+| `evidence/governance-separation.json` | 7896 | `8cbe6a4306933146…` |
+| `evidence/independent-assessment.json` | 13965 | `674f5994244fc4ef…` |
 | `evidence/manual-acceptance/MA-01.exit` | 1 | `5feceb66ffc86f38…` |
 | `evidence/manual-acceptance/MA-01.log` | 114 | `732167023122c6b4…` |
 | `evidence/manual-acceptance/MA-02.exit` | 1 | `5feceb66ffc86f38…` |
@@ -104,62 +109,64 @@
 | `evidence/manual-acceptance/MA-05.log` | 26 | `3016e51e4eac0d42…` |
 | `evidence/manual-acceptance/MA-06-finding.json` | 1024 | `9a24efaf11ae4406…` |
 | `evidence/manual-acceptance/MA-06.exit` | 1 | `5feceb66ffc86f38…` |
-| `evidence/manual-acceptance/MA-06.log` | 172 | `4d2211236776e428…` |
+| `evidence/manual-acceptance/MA-06.log` | 172 | `044edcc1aa657cb6…` |
 | `evidence/manual-acceptance/MA-07.exit` | 1 | `5feceb66ffc86f38…` |
 | `evidence/manual-acceptance/MA-07.log` | 27 | `f0a74123d3251e18…` |
 | `evidence/manual-acceptance/MA-08.exit` | 1 | `5feceb66ffc86f38…` |
-| `evidence/manual-acceptance/MA-08.log` | 1313 | `2f86471de1521588…` |
+| `evidence/manual-acceptance/MA-08.log` | 1313 | `5968d50bc2f2c980…` |
 | `evidence/manual-acceptance/MA-09.exit` | 1 | `5feceb66ffc86f38…` |
 | `evidence/manual-acceptance/MA-09.log` | 7 | `daa78c62defd32cf…` |
 | `evidence/manual-acceptance/MA-10.exit` | 1 | `5feceb66ffc86f38…` |
-| `evidence/manual-acceptance/MA-10.log` | 3227 | `4cc65b3f0cf46447…` |
+| `evidence/manual-acceptance/MA-10.log` | 3228 | `ae623332a54cbe99…` |
 | `evidence/manual-acceptance/MA-11.exit` | 1 | `5feceb66ffc86f38…` |
-| `evidence/manual-acceptance/MA-11.log` | 1577 | `3a21eb1e5aeb7717…` |
+| `evidence/manual-acceptance/MA-11.log` | 1577 | `2af02d02e5953434…` |
 | `evidence/manual-acceptance/MA-12.exit` | 1 | `5feceb66ffc86f38…` |
-| `evidence/manual-acceptance/MA-12.log` | 22 | `127f24bd7fc76aab…` |
+| `evidence/manual-acceptance/MA-12.log` | 3117 | `48127aa60eac8069…` |
 | `evidence/manual-acceptance/MA-13.exit` | 1 | `5feceb66ffc86f38…` |
-| `evidence/manual-acceptance/MA-13.log` | 7080 | `1736a555392427a7…` |
+| `evidence/manual-acceptance/MA-13.log` | 7080 | `85c197d00eb7fce3…` |
 | `evidence/manual-acceptance/MA-14.exit` | 1 | `5feceb66ffc86f38…` |
 | `evidence/manual-acceptance/MA-14.log` | 140 | `7edaad7a486df586…` |
-| `evidence/manual-acceptance/acceptance-authority.json` | 1323 | `b90ad7e000ae8318…` |
-| `evidence/manual-acceptance/execution.json` | 9422 | `943960b9aef56bf0…` |
+| `evidence/manual-acceptance/acceptance-authority.json` | 6273 | `269b2c25f90a7e9f…` |
+| `evidence/manual-acceptance/execution.json` | 9284 | `37e0d2ad537f76a9…` |
 | `evidence/manual-acceptance/findings.json` | 4166 | `0c57edbf023e1872…` |
-| `evidence/manual-acceptance/integrity.json` | 190 | `31c48278606a044d…` |
-| `evidence/manual-acceptance/inventory.json` | 25762 | `08e68590d2acd0a6…` |
-| `evidence/manual-acceptance/run-state.json` | 256 | `003aca2e5d0ab855…` |
-| `evidence/manual-acceptance/runner-console.log` | 1322 | `56c2cafe56aa0859…` |
-| `evidence/matrix/L1-01.log` | 436 | `7112a70e667841cc…` |
-| `evidence/matrix/L1-02.log` | 1032 | `dbaadcdbf83d5827…` |
-| `evidence/matrix/L1-03.log` | 1675 | `355998c27511603f…` |
-| `evidence/matrix/L1-04.log` | 743 | `3ef635460c06e68f…` |
-| `evidence/matrix/L1-05.log` | 1273 | `0b1f2551d3a1409b…` |
-| `evidence/matrix/L1-06.log` | 472 | `f0eecec23cc10226…` |
-| `evidence/matrix/L1-07.log` | 483 | `a99245d8a1cb7da1…` |
-| `evidence/matrix/L1-08.log` | 289 | `0673c6a6013d3146…` |
-| `evidence/matrix/L1-09.log` | 28050 | `5292648bd3b994ff…` |
-| `evidence/matrix/L1-10.log` | 390 | `fbf484b6d90a3b06…` |
-| `evidence/matrix/L1-11.log` | 534 | `10d2f0473ea17238…` |
-| `evidence/matrix/L1-12.log` | 390 | `8167520f8e65a94e…` |
-| `evidence/matrix/L1-13.log` | 448 | `734b2f7385f27cad…` |
-| `evidence/matrix/L1-14.log` | 1285 | `ae740e30035365f5…` |
-| `evidence/matrix/L1-15.log` | 1218 | `299cd5c8cb753fb7…` |
-| `evidence/matrix/L1-16.log` | 8502 | `3478bb05dc6278b1…` |
-| `evidence/matrix/L1-17.log` | 482 | `6b09a56bc3a59f6e…` |
-| `evidence/matrix/L1-18.log` | 898 | `f0c370db92e2c49d…` |
-| `evidence/matrix/L2-01.log` | 5390 | `88c4cea68503063b…` |
-| `evidence/matrix/L2-02.log` | 1570 | `98c29e36866edbba…` |
-| `evidence/matrix/L2-03.log` | 338 | `68e780a2e359f9b7…` |
-| `evidence/matrix/L2-04.log` | 354 | `79879e6efd752c53…` |
-| `evidence/matrix/L2-05.log` | 281 | `5bf8865ebb29ba92…` |
-| `evidence/matrix/L2-06.log` | 1313933 | `c15f64e5c2bb91a3…` |
-| `evidence/matrix/L2-07.log` | 175547 | `bfa49c69e04cafbe…` |
-| `evidence/matrix/L2-08.log` | 656 | `09a9ab26360d7476…` |
-| `evidence/matrix/L2-09.log` | 74251 | `53a2e587c188e21a…` |
-| `evidence/matrix/U-01.log` | 2304 | `a808fceece1984f2…` |
-| `evidence/matrix/U-02.log` | 551 | `13db7c84645fe2b9…` |
-| `evidence/matrix/results.tsv` | 2676 | `94c8f7ac21fc9123…` |
-| `evidence/p09-p10-boundary.json` | 6518 | `798aa0450b25c570…` |
-| `evidence/test-matrix.json` | 10225 | `c4c74fc8ac571372…` |
+| `evidence/manual-acceptance/integrity.json` | 190 | `0972dfc99fd73caa…` |
+| `evidence/manual-acceptance/inventory.json` | 31029 | `d14694a8651c6d51…` |
+| `evidence/manual-acceptance/run-state.json` | 256 | `4050e3a4f2ecff46…` |
+| `evidence/manual-acceptance/runner-console.log` | 1318 | `d7749ecfe518201e…` |
+| `evidence/matrix/L1-01.log` | 436 | `470e2b40415daca2…` |
+| `evidence/matrix/L1-02.log` | 1032 | `69e55592b844c3a9…` |
+| `evidence/matrix/L1-03.log` | 1675 | `4bbbd71141dffe6d…` |
+| `evidence/matrix/L1-04.log` | 897 | `b2ad62c9282e26d5…` |
+| `evidence/matrix/L1-05.log` | 1553 | `fc1ce542e9e6bd13…` |
+| `evidence/matrix/L1-06.log` | 472 | `c20968352819d051…` |
+| `evidence/matrix/L1-07.log` | 483 | `3e22c9bcfff8da26…` |
+| `evidence/matrix/L1-08.log` | 289 | `2c7acd7492fde539…` |
+| `evidence/matrix/L1-09.log` | 28073 | `9c4c12c5b9b300d6…` |
+| `evidence/matrix/L1-10.log` | 390 | `db065f411b097c9d…` |
+| `evidence/matrix/L1-11.log` | 417 | `98db4c892ab05f80…` |
+| `evidence/matrix/L1-12.log` | 390 | `89cbdcede6350fe0…` |
+| `evidence/matrix/L1-13.log` | 447 | `e04f0dacf96b8c69…` |
+| `evidence/matrix/L1-14.log` | 1285 | `3902a30bebb28643…` |
+| `evidence/matrix/L1-15.log` | 1218 | `343a9d582dfb42fe…` |
+| `evidence/matrix/L1-16.log` | 11533 | `3312375d301bf558…` |
+| `evidence/matrix/L1-17.log` | 482 | `ddc3db0c702191e1…` |
+| `evidence/matrix/L1-18.log` | 482 | `bbe82dddcdef97ff…` |
+| `evidence/matrix/L1-19.log` | 468 | `9dfd1a262a82e368…` |
+| `evidence/matrix/L1-20.log` | 453 | `ca98ae2be5236ded…` |
+| `evidence/matrix/L2-01.log` | 5389 | `4d3bcee1030d36b0…` |
+| `evidence/matrix/L2-02.log` | 1570 | `6fd47ff9ebcced0b…` |
+| `evidence/matrix/L2-03.log` | 338 | `1b5d97bf56ed770e…` |
+| `evidence/matrix/L2-04.log` | 354 | `2cbf67b917ff77ff…` |
+| `evidence/matrix/L2-05.log` | 281 | `418c230ac61c51ae…` |
+| `evidence/matrix/L2-06.log` | 1315956 | `718298dc4ec347d8…` |
+| `evidence/matrix/L2-07.log` | 175610 | `46a06bb43d40a01b…` |
+| `evidence/matrix/L2-08.log` | 656 | `12c7f947896504cf…` |
+| `evidence/matrix/L2-09.log` | 73745 | `801ae78c95005f06…` |
+| `evidence/matrix/U-01.log` | 2696 | `84665420eea0a7f2…` |
+| `evidence/matrix/U-02.log` | 551 | `fc8ec733d6aec849…` |
+| `evidence/matrix/results.tsv` | 2843 | `dcbbea07785c05de…` |
+| `evidence/p09-p10-boundary.json` | 6555 | `5f82c603b78c555c…` |
+| `evidence/test-matrix.json` | 10888 | `f70f35f31b8ea3af…` |
 | `evidence/wip-remediation/L2-01-after-docs-restore.exit` | 2 | `9a271f2a916b0b6e…` |
 | `evidence/wip-remediation/L2-01-after-docs-restore.log` | 5109 | `c1ddd3dce6381b58…` |
 | `evidence/wip-remediation/L2-01-environment-finding.json` | 3646 | `a753cebb3cf419c6…` |
@@ -196,26 +203,26 @@ Full SHA-256 values are computed at generation time; integrity hashes support ev
 
 ### 14-domain manual-acceptance evidence (§14.3 / §16.3)
 
-Acceptance authority **项目 Owner / Acceptance Authority（用户本人）** (`USER_EXPLICIT_DESIGNATION`, recorded 2026-11-06T06:43:53Z). Decision: `PENDING_ITEM_BY_ITEM_REVIEW`; sign-off granted: **false**. decision `PENDING_ITEM_BY_ITEM_REVIEW`, signed items 0/42.
+Acceptance authority **胡旭林（项目所有者 / Acceptance Authority）** (`USER_EXPLICIT_DESIGNATION`, recorded 2026-11-07T01:33:20Z). Decision: `PENDING_ITEM_BY_ITEM_REVIEW`; sign-off granted: **false**. decision `PENDING_ITEM_BY_ITEM_REVIEW`, signed items 0/42.
 
-Collector run `RUN-20261106T105821Z` (state `COMPLETED`, integrity `PASS`, trusted=True). Executed 14 local checks: PASS 14, FAIL 0, NOT_RUN 0, TIMEOUT 0.
+Collector run `RUN-20261108T182747Z` (state `COMPLETED`, integrity `PASS`, trusted=True). Executed 14 local checks: PASS 14, FAIL 0, NOT_RUN 0, TIMEOUT 0.
 
 | ID | Check | Status | Exit | Duration | Log SHA-256 (prefix) |
 |---|---|---|---|---|---|
-| `MA-01` | visual regression baseline (local headless Chrome) | PASS | 0 | 8.974s | `732167023122c6b4…` |
-| `MA-02` | govulncheck root module | PASS | 0 | 27.43s | `b5ae54ddcfa4cb39…` |
-| `MA-03` | govulncheck tokenkit module | PASS | 0 | 12.212s | `3016e51e4eac0d42…` |
-| `MA-04` | govulncheck relaykit module | PASS | 0 | 10.107s | `3016e51e4eac0d42…` |
-| `MA-05` | govulncheck tokenkit/tokenkit module | PASS | 0 | 11.404s | `3016e51e4eac0d42…` |
-| `MA-06` | gitleaks secret scan on tracked HEAD tree | PASS | 0 | 13.597s | `4d2211236776e428…` |
-| `MA-07` | forbidden tracked file check (.env / *.db / *.sqlite3) | PASS | 0 | 0.046s | `f0a74123d3251e18…` |
-| `MA-08` | payment idempotency + concurrency tests with -race | PASS | 0 | 15.808s | `2f86471de1521588…` |
-| `MA-09` | unused-code / duplication signal (knip) | PASS | 0 | 7.966s | `daa78c62defd32cf…` |
-| `MA-10` | docs-web build | PASS | 0 | 49.095s | `4cc65b3f0cf46447…` |
-| `MA-11` | electron build | PASS | 0 | 24.539s | `3a21eb1e5aeb7717…` |
-| `MA-12` | axe accessibility toolchain availability probe | PASS | 0 | 0.015s | `127f24bd7fc76aab…` |
-| `MA-13` | Go root-module coverage profile + coverage gate | PASS | 0 | 122.073s | `1736a555392427a7…` |
-| `MA-14` | AI spec / documentation reference integrity | PASS | 0 | 0.7s | `7edaad7a486df586…` |
+| `MA-01` | visual regression baseline (local headless Chrome) | PASS | 0 | 5.452s | `732167023122c6b4…` |
+| `MA-02` | govulncheck root module | PASS | 0 | 21.444s | `b5ae54ddcfa4cb39…` |
+| `MA-03` | govulncheck tokenkit module | PASS | 0 | 9.129s | `3016e51e4eac0d42…` |
+| `MA-04` | govulncheck relaykit module | PASS | 0 | 8.703s | `3016e51e4eac0d42…` |
+| `MA-05` | govulncheck tokenkit/tokenkit module | PASS | 0 | 9.12s | `3016e51e4eac0d42…` |
+| `MA-06` | gitleaks secret scan on tracked HEAD tree | PASS | 0 | 13.756s | `044edcc1aa657cb6…` |
+| `MA-07` | forbidden tracked file check (.env / *.db / *.sqlite3) | PASS | 0 | 0.047s | `f0a74123d3251e18…` |
+| `MA-08` | payment idempotency + concurrency tests with -race | PASS | 0 | 11.203s | `5968d50bc2f2c980…` |
+| `MA-09` | unused-code / duplication signal (knip) | PASS | 0 | 4.645s | `daa78c62defd32cf…` |
+| `MA-10` | docs-web build | PASS | 0 | 27.641s | `ae623332a54cbe99…` |
+| `MA-11` | electron build | PASS | 0 | 27.297s | `2af02d02e5953434…` |
+| `MA-12` | axe accessibility audit (WCAG 2.2 / WAI-ARIA, real public-page suite) | PASS | 0 | 96.104s | `48127aa60eac8069…` |
+| `MA-13` | Go root-module coverage profile + coverage gate | PASS | 0 | 104.017s | `85c197d00eb7fce3…` |
+| `MA-14` | AI spec / documentation reference integrity | PASS | 0 | 0.759s | `7edaad7a486df586…` |
 
 Local execution evidence is **not** human acceptance. All 42 `M*` items remain `NOT_VERIFIED` until the recorded authority signs them individually. `NOT_RUN` / `TIMEOUT` / `FAIL` are never reported as `PASS`.
 
