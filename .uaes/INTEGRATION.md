@@ -33,7 +33,7 @@ Enforcement: `scripts/quality/uter-p09-p10-boundary-check.rb`.
 |---|---|
 | UAES repository | https://github.com/hu-xulin/uaes |
 | UAES default branch at audit baseline | `main` |
-| UAES source commit | `5f566b24b799daaa744d9501da7211bae0613a04` |
+| UAES source commit | `586f6227d1248e57173ac785e1b8537cb880362f` |
 | Registry path | `.uaes/STANDARD-REGISTRY.yaml` |
 | Registry blob SHA at audit baseline | `a806eef48e6242d82dcb1d39d5c094e0d7d981a1` |
 | Registry version | `1.12.1` |
