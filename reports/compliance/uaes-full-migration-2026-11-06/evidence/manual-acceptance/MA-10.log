@@ -6,7 +6,7 @@
 ✓ Running next.config.mjs took 25ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 1946ms
+✓ Compiled successfully in 1573ms
   Running TypeScript ...
   Finished TypeScript in 2.5s ...
   Collecting page data using 15 workers ...
@@ -14,7 +14,7 @@
   Generating static pages using 15 workers (163/654) 
   Generating static pages using 15 workers (326/654) 
   Generating static pages using 15 workers (490/654) 
-✓ Generating static pages using 15 workers (654/654) in 17.5s
+✓ Generating static pages using 15 workers (654/654) in 14.9s
   Finalizing page optimization ...
 
 Route (app)

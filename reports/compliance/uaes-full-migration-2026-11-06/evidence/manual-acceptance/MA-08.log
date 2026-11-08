@@ -1,18 +1,18 @@
 === RUN   TestRechargeEpayCreditsQuotaExactlyOnce
-[SYS] 2026/11/08 - 00:52:40 | 易支付充值成功 trade_no=EPAYTESTONCE user_id=501 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/08 - 16:04:51 | 易支付充值成功 trade_no=EPAYTESTONCE user_id=501 quota_to_add=1000000 money=10.00 
 --- PASS: TestRechargeEpayCreditsQuotaExactlyOnce (0.02s)
 === RUN   TestRechargeEpayConcurrentCallbacksCreditOnce
-[SYS] 2026/11/08 - 00:52:40 | 易支付充值成功 trade_no=CLAIM-CONCURRENT user_id=804 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/08 - 16:04:51 | 易支付充值成功 trade_no=CLAIM-CONCURRENT user_id=804 quota_to_add=1000000 money=10.00 
 --- PASS: TestRechargeEpayConcurrentCallbacksCreditOnce (0.02s)
 === RUN   TestRechargeOfficialCreditsQuotaExactlyOnce
 === RUN   TestRechargeOfficialCreditsQuotaExactlyOnce/alipay
-[SYS] 2026/11/08 - 00:52:40 | alipay_official 充值成功 trade_no=OFFICIAL-alipay user_id=601 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/08 - 16:04:51 | alipay_official 充值成功 trade_no=OFFICIAL-alipay user_id=601 quota_to_add=1000000 money=10.00 
 === RUN   TestRechargeOfficialCreditsQuotaExactlyOnce/wechat
-[SYS] 2026/11/08 - 00:52:40 | wechat_pay_official 充值成功 trade_no=OFFICIAL-wechat user_id=601 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/08 - 16:04:51 | wechat_pay_official 充值成功 trade_no=OFFICIAL-wechat user_id=601 quota_to_add=1000000 money=10.00 
 --- PASS: TestRechargeOfficialCreditsQuotaExactlyOnce (0.04s)
     --- PASS: TestRechargeOfficialCreditsQuotaExactlyOnce/alipay (0.02s)
     --- PASS: TestRechargeOfficialCreditsQuotaExactlyOnce/wechat (0.02s)
 === RUN   TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects
 --- PASS: TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects (0.02s)
 PASS
-ok  	github.com/uter-ai/uter/model	4.718s
+ok  	github.com/uter-ai/uter/model	5.113s
