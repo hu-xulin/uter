@@ -80,6 +80,28 @@ loaded or followed it (§6.4). Runtime evidence must come from an actual task.
 
 ## 4. Verification entry points
 
+### 4.1 Keeping in step with UAES — one direction
+
+UAES is the only place a rule is maintained. Do **not** hand-edit Uter's pin or the prose contracts when a UAES standard changes: run the propagation command in the UAES repository and it updates exactly the fields UAES owns.
+
+| Step | Command (run in the UAES repository) |
+|---|---|
+| Is Uter behind? | `node quality/scripts/uaes/uaes.mjs propagate --check` — `NOOP` when in sync, `DRIFTED` with the affected standards and a remediation checklist when not |
+| Bring Uter up to date | `node quality/scripts/uaes/uaes.mjs propagate --execute` |
+| Which standards apply to these files? | `node quality/scripts/uaes/uaes.mjs standards --files <paths>` |
+| Full chain, from both sides | `bash quality/scripts/uaes/e2e-propagation.sh` |
+
+`propagate` exits `0` when in sync, `1` when drift was reported, `2` when it refused to write. It refuses when the UAES seal does not verify — that means a covered standard, schema, gate or requirement file was edited without re-sealing, and copying that downstream would launder a tampered tree into this repository.
+
+Two things propagation will **never** do, by design:
+
+1. **It never touches Uter's own declarations.** `integration_status`, `approval_state`, `approval_record` and the Uter verdicts are this repository's to state. A tool that could flip them would be a way to fabricate compliance evidence.
+2. **It never marks anything VERIFIED.** A propagated pin means Uter now *knows* the new rules. It does not mean Uter complies. The 14 domain gates, the 42 manual acceptances and the Requirement→Evidence mapping remain this repository's responsibility.
+
+`source_commit` in the pin is provenance only. It records which UAES tree the fingerprint was taken from. UAES HEAD moves on every governance report and verifier fix, and no gate may fail on that difference alone — the governed fingerprint is what decides whether the rules changed.
+
+### 4.2 Gates
+
 | Gate | Command |
 |---|---|
 | UAES pin integrity | `bash scripts/quality/uaes-pin-check.sh` |

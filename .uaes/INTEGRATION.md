@@ -33,7 +33,8 @@ Enforcement: `scripts/quality/uter-p09-p10-boundary-check.rb`.
 |---|---|
 | UAES repository | https://github.com/hu-xulin/uaes |
 | UAES default branch at audit baseline | `main` |
-| UAES source commit | `586f6227d1248e57173ac785e1b8537cb880362f` |
+| **Governed fingerprint (identifies the rules in force)** | **`4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c`** |
+| UAES source commit (provenance only) | `586f6227d1248e57173ac785e1b8537cb880362f` |
 | Registry path | `.uaes/STANDARD-REGISTRY.yaml` |
 | Registry blob SHA at audit baseline | `a806eef48e6242d82dcb1d39d5c094e0d7d981a1` |
 | Registry version | `1.12.1` |
@@ -42,6 +43,12 @@ Enforcement: `scripts/quality/uter-p09-p10-boundary-check.rb`.
 | Approval record | `UAES-APPROVAL-2026-11-07-004` (`.uaes/APPROVAL-RECORD.md` in the UAES repository) |
 | Uter project governance registry | `.uaes/uter-governance-registry.yaml` (Layer B; registers UTER P13) |
 | UTER P13 specification | `.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md` (Uter only) |
+
+The **governed fingerprint** is what identifies the UAES rules in force. It is computed by `quality/scripts/uaes/governed-fingerprint.mjs` in the UAES repository over exactly the content that defines the rules — the registry blob, registry version and status, the ACTIVE specification record, the `UAES-SPEC-CORE` seal digest both as declared and as recomputed from the covered bytes, and the count plus id-digest of all 2150 requirements — and over nothing else. It excludes HEAD, commit timestamps, report files, verifier scripts and the fingerprint script itself, because none of those can change which rules apply.
+
+This replaced the previous `source_commit` equality test under pin schema `3.0.0`. That test was itself a defect: it made *any* commit expire the pin, including commits that governed nothing, and it forced four manual re-pins during this governance run (`74e5d2e -> 36b62d2 -> 663a333 -> 5f566b2 -> 586f622`) whose sole cause was the moving pointer, never a change to a rule. `source_commit` is retained as provenance — it names the tree the fingerprint was taken from — and no check may fail on it alone. If UAES HEAD differs while the fingerprint matches, the rules are unchanged and the pin is current by definition.
+
+The substitution is stricter, not looser, and was verified in both directions before adoption: editing a single standard without re-sealing changes the fingerprint (`4713310d… -> b894f97b…`) and also reports `seal_intact=false`, so the tampering path a recorded-digest-only fingerprint would have missed is caught; adding or removing report files leaves the fingerprint byte-identical at `4713310d…`, which is the false alarm that used to force a re-pin.
 
 The commit and blob SHA above identify the inspected audit baseline. They are immutable for this pin and must be updated only through a reviewed integration change. This pin was advanced from `46c6488` (registry `1.12.0`) to `74e5d2e` (registry `1.12.1`) by the UAES x Uter unified governance run; registry `1.12.1` is a normative correction release that repairs the specification-registry signature record, removes a project authorisation baseline that had been embedded inside enterprise standard UAES-09-014, and fixes three independent-verifier defects. The requirement map advanced from 2132 to 2150 items because the rewritten UAES-09-014 section states additional explicit MUST clauses; no existing requirement was deleted or weakened.
 
