@@ -113,8 +113,22 @@ def preflight(task_file:, uaes_repo:)
            { "path" => ".uaes/AI-GOVERNANCE-ENTRY.md", "sha256" => (File.file?(ENTRY_PATH) ? Digest::SHA256.file(ENTRY_PATH).hexdigest : nil) })
 
   # 3. Confirm UAES version against the real governance repository
+  #
+  # This step used to require `uaes HEAD == pin.source_commit`, which made the
+  # pin falsely expire on every unrelated documentation commit. The governed
+  # fingerprint replaces that: it hashes only the content that DEFINES the
+  # rules (registry blob/version/status, ACTIVE specification, seal
+  # declared+computed, requirement count and ID digest) and deliberately
+  # excludes HEAD, timestamps, reports and scripts.
+  #
+  # source_commit is kept as PROVENANCE ONLY — it records where the pin was
+  # taken, it does not gate anything. A pin schema below 3.0.0 has no
+  # fingerprint, so governed verification is impossible and the check fails
+  # closed instead of silently degrading to HEAD equality.
   registry = File.join(uaes_repo, ".uaes/STANDARD-REGISTRY.yaml")
-  version_obs = { "pin" => pin.slice("registry_version", "registry_status", "source_commit", "registry_blob_sha", "approval_record") }
+  version_obs = { "pin" => pin.slice("schema_version", "registry_version", "registry_status",
+                                      "source_commit", "registry_blob_sha", "approval_record",
+                                      "governed_fingerprint") }
   version_ok = false
   if File.file?(registry)
     blob, _e, blob_rc = Open3.capture3("git", "-C", uaes_repo, "hash-object", ".uaes/STANDARD-REGISTRY.yaml")
@@ -126,10 +140,52 @@ def preflight(task_file:, uaes_repo:)
       "registry_version_actual" => text[/^\s*version:\s*"([^"]+)"/, 1],
       "registry_status_actual" => text[/^\s*status:\s*"([^"]+)"/, 1]
     )
+
+    schema = pin.fetch("schema_version", "0.0.0").to_s
+    fingerprint_script = File.join(uaes_repo, "quality/scripts/uaes/governed-fingerprint.mjs")
+    fingerprint_obs = {}
+    fingerprint_ok = false
+
+    unless schema.start_with?("3.")
+      version_obs["governed_verification"] =
+        "REFUSED: pin schema #{schema} predates governed fingerprints; " \
+        "dropping below 3.0.0 disables content verification, so it is not accepted"
+    end
+
+    if schema.start_with?("3.") && File.file?(fingerprint_script)
+      fp_out, fp_err, fp_st = Open3.capture3(
+        "node", fingerprint_script, "--require-intact", "--fingerprint-only",
+        chdir: uaes_repo
+      )
+      actual_fp = fp_out.strip
+      fingerprint_obs = {
+        "governed_fingerprint_pinned" => pin["governed_fingerprint"],
+        "governed_fingerprint_actual" => (actual_fp.empty? ? nil : actual_fp),
+        # exit 3 is the script's own "seal broken" signal — that is a real
+        # integrity failure, not a missing-tool situation.
+        "fingerprint_exit" => fp_st.exitstatus
+      }
+      fingerprint_obs["fingerprint_error"] = fp_err.strip unless fp_err.to_s.strip.empty?
+      fingerprint_ok = fp_st.exitstatus.zero? && actual_fp == pin["governed_fingerprint"].to_s
+      if fp_st.exitstatus == 3
+        fingerprint_obs["verdict"] = "SEAL BROKEN: declared integrity digest does not match recomputed content"
+      end
+    elsif schema.start_with?("3.") && !File.file?(fingerprint_script)
+      fingerprint_obs = {
+        "governed_fingerprint_pinned" => pin["governed_fingerprint"],
+        "governed_fingerprint_actual" => nil,
+        "verdict" => "fingerprint script missing at #{fingerprint_script}; content cannot be verified"
+      }
+    end
+
+    version_obs["governed_verification"] ||= fingerprint_obs
+    version_obs["source_commit_is"] = pin["source_commit_role"] || "provenance-only"
+
     version_ok = blob_rc.exitstatus.zero? && head_rc.exitstatus.zero? &&
-                 blob.strip == pin["registry_blob_sha"] && head.strip == pin["source_commit"] &&
+                 blob.strip == pin["registry_blob_sha"] &&
                  version_obs["registry_version_actual"] == pin["registry_version"] &&
-                 version_obs["registry_status_actual"] == pin["registry_status"]
+                 version_obs["registry_status_actual"] == pin["registry_status"] &&
+                 fingerprint_ok
   end
   add.call(3, "confirm UAES version", version_ok, version_obs)
 

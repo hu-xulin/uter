@@ -46,6 +46,26 @@ EV = Path(os.environ.get(
 ))
 EV.mkdir(parents=True, exist_ok=True)
 
+# The pinned UAES checkout. Same default as uaes-governance-gates.rb so both
+# evaluators read the same baseline.
+UAES_REPO = Path(os.environ.get("UAES_REPO", str(ROOT.parent / "uaes")))
+
+# Live DRAFT/ACTIVE reader lives in a shared, side-effect-free module so the
+# evaluator and the fixtures that test it read the registry the same way.
+# See scripts/quality/lib/registry_draft_state.py for why this is not a literal.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib import registry_draft_state as _draft_state  # noqa: E402
+
+
+def registry_draft_state() -> dict:
+    """Count DRAFT/ACTIVE entries in the pinned UAES registry, live."""
+    return _draft_state.read(UAES_REPO)
+
+
+def draft_state_note() -> str:
+    """One-line, always-current wording for open_reason strings."""
+    return _draft_state.note(UAES_REPO)
+
 
 def utc() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -139,7 +159,7 @@ def verify_integrity(execution: dict) -> list[str]:
 #                  EXTERNAL_ENVIRONMENT / TOOL_UNAVAILABLE
 INVENTORY = [
     ("P00", "M00-01", "governance responsibility and approval workflow sign-off", "HUMAN_SIGNOFF", [], "requires a named acceptance authority and a signed decision"),
-    ("P00", "M00-02", "formal-standard vs draft isolation review", "HUMAN_SIGNOFF", [], "304 UAES registry entries remain DRAFT; isolation review needs an independent reviewer"),
+    ("P00", "M00-02", "formal-standard vs draft isolation review", "HUMAN_SIGNOFF", [], "isolation review needs an independent reviewer; " + draft_state_note()),
     ("P01", "M01-01", "Agent permission audit with independent reviewer", "HUMAN_SIGNOFF", [], "independent reviewer evidence not recorded"),
     ("P01", "M01-02", "AI decision record and exception-behaviour detection", "LOCAL_PARTIAL", ["L1-03"], "runtime selftest covers deny/allow honesty, not a live anomaly-detection sweep"),
     ("P02", "M02-01", "requirement / user-story traceability audit", "HUMAN_SIGNOFF", [], "needs a reviewer comparing requirements to implementation"),
