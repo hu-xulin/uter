@@ -2,19 +2,19 @@
 # layer: L1
 # command: ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/uaes-agent-runtime-check.rb workspace --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-08T08:33:41Z
+# started_at: 2026-11-08T18:34:22Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
 {
   "report_id": "D09-RUNTIME-PREFLIGHT",
-  "generated_at": "2026-11-08T08:33:42Z",
+  "generated_at": "2026-11-08T18:34:23Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
   "harness": "scripts/quality/uaes-agent-runtime-check.rb",
   "uaes_version": "1.12.1",
   "uaes_status": "ACTIVE",
-  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+  "uter_commit": "424dfa2c55c534bf110fa5871420fe3fd679d307",
   "branch": "main",
   "overall": "PASS",
   "failed_steps": [],
@@ -102,8 +102,8 @@
       "name": "check workspace",
       "status": "PASS",
       "observation": {
-        "dirty_entries": 35,
-        "untracked": 1,
+        "dirty_entries": 105,
+        "untracked": 0,
         "staged_files": [],
         "user_wip_preserved": true
       }
@@ -154,7 +154,10 @@
           "web/e2e/axe/",
           "docs-web/",
           "electron/",
-          "reports/compliance/"
+          "reports/compliance/",
+          ".quality/gitleaks.toml",
+          "tools/uaes/integration-adapter.mjs",
+          "tools/uaes/integration-adapter.test.mjs"
         ],
         "include": [
           ".uaes/",
@@ -197,7 +200,10 @@
           "web/e2e/axe/",
           "docs-web/",
           "electron/",
-          "reports/compliance/"
+          "reports/compliance/",
+          ".quality/gitleaks.toml",
+          "tools/uaes/integration-adapter.mjs",
+          "tools/uaes/integration-adapter.test.mjs"
         ],
         "exclude": []
       }
@@ -259,7 +265,7 @@
       "status": "PASS",
       "observation": {
         "branch": "main",
-        "head": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+        "head": "424dfa2c55c534bf110fa5871420fe3fd679d307",
         "governing_specification": "UTER-UAES-GOV-001",
         "baseline_preservation_required": true
       }
@@ -275,4 +281,4 @@ PASS W5  UAES approved normative standards untouched
 PASS W6  no secret-like file introduced
 evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-workspace.json
 # exit_code: 0
-# duration_seconds: 2
+# duration_seconds: 1

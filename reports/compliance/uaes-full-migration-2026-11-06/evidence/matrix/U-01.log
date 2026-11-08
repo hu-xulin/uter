@@ -2,7 +2,7 @@
 # layer: UAES
 # command: node quality/scripts/uaes/validate-registry.mjs
 # workdir: /Users/lincolnhu/uaes
-# started_at: 2026-11-08T08:41:04Z
+# started_at: 2026-11-08T18:41:46Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
@@ -32,9 +32,9 @@ PASS     G-022  declared standards resolve at content level 178 declared standar
 PASS     G-023  no duplicate declared artefact paths   76 unique paths; 0 runtime schemas unregistered (informational)
 PASS     G-024  catalogue execution fields are honest  20 catalogue entries: domains, timeout budgets and precondition scripts all resolve
 PASS     G-025  catalogue executables are tracked in Git 1 governance-domain catalogue executables are present and tracked
-PASS     G-026  top-level governance records are tracked in Git 19 top-level UAES records and governance/ entries are all tracked
+PASS     G-026  top-level governance records are tracked in Git 20 top-level UAES records and governance/ entries are all tracked
 
 scope=all checks=26 PASS=26 FAIL=0 NOT_RUN=0
 written: reports/quality/UAES-P13-REGISTRY-VALIDATION.json
 # exit_code: 0
-# duration_seconds: 1
+# duration_seconds: 0

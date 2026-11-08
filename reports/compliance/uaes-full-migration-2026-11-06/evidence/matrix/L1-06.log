@@ -2,19 +2,19 @@
 # layer: L1
 # command: ruby scripts/quality/test-uaes-pin-check.rb
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-08T08:32:44Z
+# started_at: 2026-11-08T18:33:31Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
-Run options: --seed 4870
+Run options: --seed 54781
 
 # Running:
 
 ..............
 
-Finished in 22.593997s, 0.6196 runs/s, 2.2130 assertions/s.
+Finished in 21.301915s, 0.6572 runs/s, 2.3472 assertions/s.
 
 14 runs, 50 assertions, 0 failures, 0 errors, 0 skips
 # exit_code: 0
-# duration_seconds: 23
+# duration_seconds: 22

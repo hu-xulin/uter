@@ -2,7 +2,7 @@
 # layer: L2
 # command: bun run build:check
 # workdir: /Users/lincolnhu/uter/web
-# started_at: 2026-11-08T08:40:07Z
+# started_at: 2026-11-08T18:40:48Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
@@ -29,7 +29,7 @@ Current configuration:
   routeFileIgnorePrefix: "-"
   routeFileIgnorePattern: undefined
 info    build started...
-ready   built in 10.7s
+ready   built in 11.0s
 
 File (web)                                                              Size         Gzip   
 dist/static/js/async/87250.ddade7228c.js                                0.10 kB      0.10 kB
@@ -1941,4 +1941,4 @@ dist/static/js/async/79926.228d6236ae.js                                6827.3 k
                                                                Total:   72666.0 kB   25458.0 kB
 
 # exit_code: 0
-# duration_seconds: 21
+# duration_seconds: 22

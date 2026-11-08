@@ -2,7 +2,7 @@
 # layer: L1
 # command: ruby scripts/quality/uaes-agent-runtime-check.rb selftest
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-08T08:32:40Z
+# started_at: 2026-11-08T18:33:27Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
@@ -30,4 +30,4 @@ PASS failing test cannot be reported as PASS          overall=FAILED, report_suc
 overall=PASS passed=20/20
 evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-selftest.json
 # exit_code: 0
-# duration_seconds: 0
+# duration_seconds: 1

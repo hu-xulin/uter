@@ -1,16 +1,16 @@
 # Gate evaluation summary (UTER-UAES-GOV-001 §8.2 / §16)
 
-- Generated: 2026-11-08T08:41:21Z
-- Uter commit: `73583896df2cf4db27eb0ba9d31a4819a239be0a`
+- Generated: 2026-11-08T18:42:15Z
+- Uter commit: `424dfa2c55c534bf110fa5871420fe3fd679d307`
 - UAES commit: `4344979777433fbcdbe23ef2aa0111fe2e8a52e7` (1.12.1 / ACTIVE)
 - Conformance status vocabulary (§16.2): CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED
 
 | Gate | Status | Detail |
 |---|---|---|
-| L1_CHANGE_GATE | PASS | 19 checks, 0 failed |
+| L1_CHANGE_GATE | PASS | 20 checks, 0 failed |
 | L2_INTEGRATION_GATE | PASS | 9 checks, 0 failed |
 | L3_DOMAIN_ACCEPTANCE_GATE (14 domains) | BLOCKED | 0/14 PASS |
-| L4_GLOBAL_CONFORMANCE_GATE | BLOCKED | 11/16 mandatory conditions MET |
+| L4_GLOBAL_CONFORMANCE_GATE | BLOCKED | 12/16 mandatory conditions MET |
 
 | Domain | Classification | Status | UAES gate | Blocking reason |
 |---|---|---|---|---|
@@ -43,9 +43,9 @@
 | L4-08 | MET | neither domain may substitute for the other |
 | L4-09 | MET | preflight/selftest/verify/workspace all required |
 | L4-10 | NOT_MET | material applicable requirements remain unassessed |
-| L4-11 | NOT_MET | no human risk-owner acceptance; exceptions require APPROVED_EXCEPTION with authority and review date (§13.4) |
-| L4-12 | NOT_MET | control operation vs effectiveness not independently evaluated |
-| L4-13 | NOT_MET | open evidence gaps: integrity=PASS, verified_items=0/42; axe / keyboard / three-database / human sign-off remain OPEN |
+| L4-11 | NOT_MET | no human risk-owner acceptance: owner decision O-11 = 补齐 (remediate), not 接受残留风险; approved_exceptions=0; open_findings=3 |
+| L4-12 | MET | control_effectiveness=PASS (6/6 assessor-executed fault-injection probes); scope=machine-executable controls in the Uter + pinned UAES repositories; scope_limited=true; human/third-party/external-environment controls are explicitly OUT OF SCOPE and remain NOT_MET |
+| L4-13 | NOT_MET | open evidence gaps: integrity=PASS, verified_items=0/42; MA-12 axe is now a real executed audit (not a toolchain probe); keyboard / three-database / human sign-off remain OPEN |
 | L4-14 | MET | Phase 7 report must re-evaluate controls, evidence integrity and conformance claims |
-| L4-15 | MET | authority recorded = 项目 Owner / Acceptance Authority（用户本人） (USER_EXPLICIT_DESIGNATION); acceptance decision = DELEGATED_BLANKET_SIGNOFF; no item-level sign-off and no global conformity claim (§18) |
+| L4-15 | MET | authority recorded = 胡旭林（项目所有者 / Acceptance Authority） (USER_EXPLICIT_DESIGNATION); acceptance decision = PENDING_ITEM_BY_ITEM_REVIEW; no item-level sign-off and no global conformity claim (§18) |
 | L4-16 | MET | must distinguish implemented / verified / accepted / not applicable / blocked; no certification claim (§16.5) |

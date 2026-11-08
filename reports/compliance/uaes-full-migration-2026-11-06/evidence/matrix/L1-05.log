@@ -2,13 +2,13 @@
 # layer: L1
 # command: bash scripts/quality/uaes-integration-check.sh
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-08T08:32:42Z
+# started_at: 2026-11-08T18:33:30Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
 PASS: governed fingerprint matches the live UAES checkout (4713310d9f51)
-NOTE: UAES HEAD 68e9710c0516 differs from pinned source_commit 586f6227d124, but the governed fingerprint is identical, so no rule changed. source_commit is provenance only and no gate may fail on it alone.
+NOTE: UAES HEAD 434497977743 differs from pinned source_commit 586f6227d124, but the governed fingerprint is identical, so no rule changed. source_commit is provenance only and no gate may fail on it alone.
 PASS: UAES integration lifecycle and source pins are present
 PASS: governance entry point is a thin, pinned pointer (no duplicated UAES text)
 PASS: all Uter-owned canonical project skills have delegating Claude adapters
@@ -19,4 +19,4 @@ PASS: Agent entrypoints and both runtime skill adapters route to the canonical c
 PASS: P01 fail-closed permission policy and task schema are registered
 NOTE: static wiring only; remote commit reachability, semantic parity, runtime skill discovery, CI policy enforcement, 14 independent domain acceptances, independent assessment and L4_GLOBAL_CONFORMANCE_GATE remain separate acceptance requirements. This check makes no conformance claim (§16.5).
 # exit_code: 0
-# duration_seconds: 2
+# duration_seconds: 1

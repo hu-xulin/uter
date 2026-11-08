@@ -2,31 +2,13 @@
 # layer: L1
 # command: bun run lint
 # workdir: /Users/lincolnhu/uter/web
-# started_at: 2026-11-08T08:33:26Z
+# started_at: 2026-11-08T18:34:10Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
 $ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .
 i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts）在 7 份语言包中全部存在。
-
-  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
-    ,-[src/features/system-settings/integrations/amount-discount-visual-editor.tsx:62:26]
- 61 |       }))
- 62 |       .filter((item) => !isNaN(item.amount) && !isNaN(item.discountRate))
-    :                          ^^^^^
- 63 |       .sort((a, b) => a.amount - b.amount)
-    `----
-  help: Replace it with `Number.isNaN`
-
-  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
-    ,-[src/features/system-settings/integrations/amount-discount-visual-editor.tsx:62:49]
- 61 |       }))
- 62 |       .filter((item) => !isNaN(item.amount) && !isNaN(item.discountRate))
-    :                                                 ^^^^^
- 63 |       .sort((a, b) => a.amount - b.amount)
-    `----
-  help: Replace it with `Number.isNaN`
 
   ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
     ,-[src/features/system-settings/integrations/amount-options-visual-editor.tsx:52:54]
@@ -43,6 +25,24 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
  59 |     if (isNaN(amount) || amount <= 0) {
     :         ^^^^^
  60 |       return
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/system-settings/integrations/amount-discount-visual-editor.tsx:62:26]
+ 61 |       }))
+ 62 |       .filter((item) => !isNaN(item.amount) && !isNaN(item.discountRate))
+    :                          ^^^^^
+ 63 |       .sort((a, b) => a.amount - b.amount)
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/system-settings/integrations/amount-discount-visual-editor.tsx:62:49]
+ 61 |       }))
+ 62 |       .filter((item) => !isNaN(item.amount) && !isNaN(item.discountRate))
+    :                                                 ^^^^^
+ 63 |       .sort((a, b) => a.amount - b.amount)
     `----
   help: Replace it with `Number.isNaN`
 
@@ -82,6 +82,15 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
     `----
   help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
 
+  ! unicorn(prefer-structured-clone): Use `structuredClone(…)` to create a deep clone.
+     ,-[src/features/system-settings/general/channel-affinity/constants.ts:133:10]
+ 132 | export function cloneTemplate<T>(template: T): T {
+ 133 |   return JSON.parse(JSON.stringify(template))
+     :          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 134 | }
+     `----
+  help: Switch to `structuredClone(…)`.
+
   ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
     ,-[src/features/system-settings/utils/json-parser.ts:72:22]
  71 | ): { line: number; column: number } {
@@ -97,15 +106,6 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
     :                              ^^^^^^^^^
  57 |     return {
     `----
-
-  ! unicorn(prefer-structured-clone): Use `structuredClone(…)` to create a deep clone.
-     ,-[src/features/system-settings/general/channel-affinity/constants.ts:133:10]
- 132 | export function cloneTemplate<T>(template: T): T {
- 133 |   return JSON.parse(JSON.stringify(template))
-     :          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 134 | }
-     `----
-  help: Switch to `structuredClone(…)`.
 
   ! import(first): Import statements must come first
     ,-[src/lib/admin-permissions.ts:23:1]
@@ -141,6 +141,14 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
  31 |   const factor = Math.pow(10, precision)
     `----
   help: Replace it with `Number.isFinite`
+
+  ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
+    ,-[src/features/system-settings/models/utils.ts:72:30]
+ 71 |     const position = Number.parseInt(positionMatch[1], 10)
+ 72 |     const lines = jsonString.substring(0, position).split('\n')
+    :                              ^^^^^^^^^
+ 73 |     return {
+    `----
 
   ! unicorn(prefer-query-selector): Prefer `.querySelector()` over `.getElementById()`.
      ,-[src/features/dashboard/components/overview/__tests__/setup-guide.test.tsx:123:28]
@@ -187,14 +195,6 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
       `----
   help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
 
-  ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
-    ,-[src/features/system-settings/models/utils.ts:72:30]
- 71 |     const position = Number.parseInt(positionMatch[1], 10)
- 72 |     const lines = jsonString.substring(0, position).split('\n')
-    :                              ^^^^^^^^^
- 73 |     return {
-    `----
-
   ! unicorn(prefer-set-has): should be a `Set`, and use `.has()` to check existence or non-existence.
     ,-[src/design-system/__tests__/semantic-colors.test.ts:39:7]
  38 | /** 语义状态键：它们的取值必须来自语义 Token，不得是 chart-N。 */
@@ -223,53 +223,33 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
   help: Switch to `Set`
 
   ! eslint(no-console): Unexpected console statement.
-    ,-[e2e/axe/public.spec.ts:90:9]
- 89 |       for (const v of advisory) {
- 90 |         console.log(
-    :         ^^^^^^^^^^^
- 91 |           `[axe:advisory][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
+    ,-[e2e/axe/authed.spec.ts:82:7]
+ 81 |         v.impact && BLOCKING_IMPACTS.has(v.impact) ? 'blocking' : 'advisory'
+ 82 |       console.log(
+    :       ^^^^^^^^^^^
+ 83 |         `[axe:${tag}][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
     `----
   help: Delete this console statement.
 
   ! eslint(prefer-template): Unexpected string concatenation.
-     ,-[e2e/axe/public.spec.ts:99:7]
-  98 |           blocking,
-  99 | ,->       `${route.path} 存在 critical/serious 可访问性违规：` +
- 100 | |           blocking
- 101 | |             .map(
- 102 | |               (v) =>
- 103 | |                 `${v.impact}/${v.id} "${v.help}" -> ` +
- 104 | |                 v.nodes
- 105 | |                   .slice(0, 5)
- 106 | |                   .map((n) => n.target.join(' '))
- 107 | |                   .join('; ')
- 108 | |             )
- 109 | `->           .join('\n')
- 110 |         ).toEqual([])
+    ,-[e2e/axe/authed.spec.ts:89:9]
+ 88 |           blockingByRoute.push(
+ 89 | ,->         `${route.path} ${v.impact}/${v.id} "${v.help}" -> ` +
+ 90 | |             v.nodes
+ 91 | |               .slice(0, 5)
+ 92 | |               .map((n) => n.target.join(' '))
+ 93 | `->             .join('; ')
+ 94 |           )
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[e2e/axe/authed.spec.ts:100:5]
+  99 |     blockingByRoute,
+ 100 |     '鉴权页存在 critical/serious 可访问性违规：\n' + blockingByRoute.join('\n')
+     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 101 |   ).toEqual([])
      `----
-  help: Use template literals instead of string concatenation.
-
-  ! eslint(prefer-template): Unexpected string concatenation.
-    ,-[scripts/gen-lobe-icon-variants.cjs:8:7]
-  7 |         (e) =>
-  8 | ,->       '\t"' +
-  9 | |         e.id +
- 10 | |         '": {' +
- 11 | |         (e.param.hasColor ? 'true' : 'false') +
- 12 | |         ', ' +
- 13 | |         (e.param.hasAvatar ? 'true' : 'false') +
- 14 | `->       '},'
- 15 |       )
-    `----
-  help: Use template literals instead of string concatenation.
-
-  ! eslint(prefer-template): Unexpected string concatenation.
-    ,-[scripts/gen-lobe-icon-variants.cjs:58:17]
- 57 | 
- 58 | const content = header + entries.join('\n') + '\n}\n'
-    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 59 | fs.writeFileSync('/Users/lincolnhu/uter/model/lobe_icon_variants.go', content)
-    `----
   help: Use template literals instead of string concatenation.
 
   ! eslint(prefer-template): Unexpected string concatenation.
@@ -363,22 +343,37 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
   help: Use template literals instead of string concatenation.
 
   ! eslint(prefer-template): Unexpected string concatenation.
-     ,-[scripts/add-showcase-anchors.mjs:138:27]
- 137 | for (const { heading, block } of ANCHORS) {
- 138 |   const idx = src.indexOf(heading + '\n')
-     :                           ^^^^^^^^^^^^^^
- 139 |   if (idx < 0) {
-     `----
+    ,-[scripts/gen-lobe-icon-variants.cjs:8:7]
+  7 |         (e) =>
+  8 | ,->       '\t"' +
+  9 | |         e.id +
+ 10 | |         '": {' +
+ 11 | |         (e.param.hasColor ? 'true' : 'false') +
+ 12 | |         ', ' +
+ 13 | |         (e.param.hasAvatar ? 'true' : 'false') +
+ 14 | `->       '},'
+ 15 |       )
+    `----
   help: Use template literals instead of string concatenation.
 
   ! eslint(prefer-template): Unexpected string concatenation.
-     ,-[scripts/add-showcase-anchors.mjs:152:9]
- 151 |   const insertAt = src.indexOf('\n', idx + heading.length) + 1
- 152 |   src = src.slice(0, insertAt) + '\n' + block + '\n' + src.slice(insertAt)
-     :         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 153 |   inserted++
-     `----
+    ,-[scripts/gen-lobe-icon-variants.cjs:58:17]
+ 57 | 
+ 58 | const content = header + entries.join('\n') + '\n}\n'
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 59 | fs.writeFileSync('/Users/lincolnhu/uter/model/lobe_icon_variants.go', content)
+    `----
   help: Use template literals instead of string concatenation.
+
+  ! eslint(no-unused-vars): Variable 'depth' is declared but never used. Unused variables should start with a '_'.
+    ,-[scripts/audit-settings-input-hints.mjs:45:9]
+ 44 |   let i = startIdx
+ 45 |   const depth = 0
+    :         ^^|^^
+    :           `-- 'depth' is declared here
+ 46 |   while (i < src.length) {
+    `----
+  help: Consider removing this declaration.
 
   ! eslint(prefer-template): Unexpected string concatenation.
     ,-[scripts/generate-design-tokens.mjs:48:21]
@@ -431,15 +426,23 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
      `----
   help: Use template literals instead of string concatenation.
 
-  ! eslint(no-unused-vars): Variable 'depth' is declared but never used. Unused variables should start with a '_'.
-    ,-[scripts/audit-settings-input-hints.mjs:45:9]
- 44 |   let i = startIdx
- 45 |   const depth = 0
-    :         ^^|^^
-    :           `-- 'depth' is declared here
- 46 |   while (i < src.length) {
-    `----
-  help: Consider removing this declaration.
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/add-showcase-anchors.mjs:138:27]
+ 137 | for (const { heading, block } of ANCHORS) {
+ 138 |   const idx = src.indexOf(heading + '\n')
+     :                           ^^^^^^^^^^^^^^
+ 139 |   if (idx < 0) {
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/add-showcase-anchors.mjs:152:9]
+ 151 |   const insertAt = src.indexOf('\n', idx + heading.length) + 1
+ 152 |   src = src.slice(0, insertAt) + '\n' + block + '\n' + src.slice(insertAt)
+     :         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 153 |   inserted++
+     `----
+  help: Use template literals instead of string concatenation.
 
   ! eslint(no-console): Unexpected console statement.
     ,-[e2e/visual/lib/service-gate.ts:72:5]
@@ -467,36 +470,6 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
  2 | 
    `----
   help: Consider removing this import.
-
-  ! eslint(no-console): Unexpected console statement.
-    ,-[e2e/axe/authed.spec.ts:82:7]
- 81 |         v.impact && BLOCKING_IMPACTS.has(v.impact) ? 'blocking' : 'advisory'
- 82 |       console.log(
-    :       ^^^^^^^^^^^
- 83 |         `[axe:${tag}][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
-    `----
-  help: Delete this console statement.
-
-  ! eslint(prefer-template): Unexpected string concatenation.
-    ,-[e2e/axe/authed.spec.ts:89:9]
- 88 |           blockingByRoute.push(
- 89 | ,->         `${route.path} ${v.impact}/${v.id} "${v.help}" -> ` +
- 90 | |             v.nodes
- 91 | |               .slice(0, 5)
- 92 | |               .map((n) => n.target.join(' '))
- 93 | `->             .join('; ')
- 94 |           )
-    `----
-  help: Use template literals instead of string concatenation.
-
-  ! eslint(prefer-template): Unexpected string concatenation.
-     ,-[e2e/axe/authed.spec.ts:100:5]
-  99 |     blockingByRoute,
- 100 |     '鉴权页存在 critical/serious 可访问性违规：\n' + blockingByRoute.join('\n')
-     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 101 |   ).toEqual([])
-     `----
-  help: Use template literals instead of string concatenation.
 
   ! unicorn(prefer-number-properties): Use `Number.parseInt` instead of the global `parseInt`
     ,-[scripts/verify-contrast.mjs:40:15]
@@ -642,7 +615,34 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
      `----
   help: Use template literals instead of string concatenation.
 
+  ! eslint(no-console): Unexpected console statement.
+    ,-[e2e/axe/public.spec.ts:90:9]
+ 89 |       for (const v of advisory) {
+ 90 |         console.log(
+    :         ^^^^^^^^^^^
+ 91 |           `[axe:advisory][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
+    `----
+  help: Delete this console statement.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[e2e/axe/public.spec.ts:99:7]
+  98 |           blocking,
+  99 | ,->       `${route.path} 存在 critical/serious 可访问性违规：` +
+ 100 | |           blocking
+ 101 | |             .map(
+ 102 | |               (v) =>
+ 103 | |                 `${v.impact}/${v.id} "${v.help}" -> ` +
+ 104 | |                 v.nodes
+ 105 | |                   .slice(0, 5)
+ 106 | |                   .map((n) => n.target.join(' '))
+ 107 | |                   .join('; ')
+ 108 | |             )
+ 109 | `->           .join('\n')
+ 110 |         ).toEqual([])
+     `----
+  help: Use template literals instead of string concatenation.
+
 Found 65 warnings and 0 errors.
-Finished in 1.1s on 1446 files with 186 rules using 16 threads.
+Finished in 984ms on 1446 files with 186 rules using 16 threads.
 # exit_code: 0
-# duration_seconds: 3
+# duration_seconds: 2
