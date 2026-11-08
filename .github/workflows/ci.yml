@@ -79,8 +79,14 @@ jobs:
         # unmapped requirements, pin matching the ACTIVE digest, and the PINNED
         # COMMIT actually carrying the declared artefacts). Copying files is not
         # integration, and neither is a pin that names a commit without them.
+        # UAES_REPO_ROOT must point at the pinned checkout; without it the
+        # adapter falls back to /Users/lincolnhu/uaes and 10+ cases fail in CI.
+        env:
+          UAES_REPO_ROOT: ${{ github.workspace }}/uaes-pinned
         run: node --test tools/uaes/integration-adapter.test.mjs
       - name: Verify the pinned commit carries the governance artefacts
+        env:
+          UAES_REPO_ROOT: ${{ github.workspace }}/uaes-pinned
         # A pin is only meaningful if `git checkout <source_commit>` yields the
         # registry, policy and trust roster. Otherwise CI validates an empty tree
         # while the project looks governed. This is a real gate, not a formality:
@@ -131,15 +137,41 @@ jobs:
                   print(f"PASS: {compose_path}: {service} image is digest-pinned")
           PY
 
-      - name: Enforce one non-main branch per project
+      - name: Enforce one non-main work branch per project
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # AUTO-FIX-STANDARD.md §7.1 and AGENTS.md constrain the single
+          # non-main *work branch* used for audit/fix tasks. Automated
+          # dependency-update branches (Dependabot / Renovate) and merge-queue
+          # refs are created by bots, are not human work branches, and must not
+          # be counted. Counting them made this gate permanently unsatisfiable
+          # (45+ Dependabot branches live on this repo) and therefore unable to
+          # detect the case it exists for: a genuine second work branch.
+          # The exclusion is a narrow prefix filter, and is asserted below so
+          # it cannot be widened into "count nothing".
+          work_branch_names() {
+            grep -vx 'main' | grep -v '^$' \
+              | grep -Ev '^(dependabot|renovate|gh-readonly-queue)/'
+          }
+          # Negative self-test: bot refs are excluded, real work refs are NOT.
+          sample=$'main\ndependabot/go_modules/example-1.2.3\nfeature/audit-fix\nfeature/second-fix'
+          sample_count="$(printf '%s\n' "$sample" | work_branch_names | grep -c . || true)"
+          if [ "$sample_count" -ne 2 ]; then
+            echo "FAIL: work-branch filter self-test expected 2 real work branches, saw $sample_count" >&2
+            exit 1
+          fi
+          echo 'PASS: work-branch filter excludes bot refs but still counts real work branches'
           branch_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')"
-          mapfile -t work_branches < <(printf '%s\n' "$branch_names" | grep -vx 'main' || true)
-          printf 'Non-main branches (%s):\n' "${#work_branches[@]}"
-          printf '  %s\n' "${work_branches[@]}"
+          # bash 3.2-compatible (no mapfile) so the same logic can be verified
+          # locally as well as on the ubuntu runner.
+          work_branches=()
+          while IFS= read -r b; do
+            [ -n "$b" ] && work_branches+=("$b")
+          done < <(printf '%s\n' "$branch_names" | work_branch_names || true)
+          printf 'Non-main work branches (%s):\n' "${#work_branches[@]}"
+          if [ "${#work_branches[@]}" -gt 0 ]; then printf '  %s\n' "${work_branches[@]}"; fi
           if [ "${#work_branches[@]}" -gt 1 ]; then
             echo 'FAIL: only one non-main work branch is permitted for this project.' >&2
             exit 1
