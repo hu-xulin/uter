@@ -1,0 +1,126 @@
+=== UTER GOVERNANCE ASSET INVENTORY 2026-11-06T03:29:38Z ===
+--- Uter skills ---
+.agents/skills/.DS_Store
+.agents/skills/i18n-translate/SKILL.md
+.agents/skills/shadcn-ui/SKILL.md
+.agents/skills/shadcn-ui/vendor/shadcn/UPSTREAM.txt
+.agents/skills/shadcn-ui/vendor/shadcn/cli.md
+.agents/skills/shadcn-ui/vendor/shadcn/customization.md
+.agents/skills/shadcn-ui/vendor/shadcn/mcp.md
+.agents/skills/shadcn-ui/vendor/shadcn/official-shadcn-ui-workflow.md
+.agents/skills/shadcn-ui/vendor/shadcn/rules/base-vs-radix.md
+.agents/skills/shadcn-ui/vendor/shadcn/rules/composition.md
+.agents/skills/shadcn-ui/vendor/shadcn/rules/forms.md
+.agents/skills/shadcn-ui/vendor/shadcn/rules/icons.md
+.agents/skills/shadcn-ui/vendor/shadcn/rules/styling.md
+.agents/skills/uaes-integration/SKILL.md
+.agents/skills/vercel-react-best-practices/SKILL.md
+.agents/skills/vercel-react-best-practices/references/full-guide.md
+--- Claude adapters ---
+.claude/skills/i18n-translate/SKILL.md
+.claude/skills/shadcn-ui/SKILL.md
+.claude/skills/uaes-integration/SKILL.md
+.claude/skills/vercel-react-best-practices/SKILL.md
+--- ai specs ---
+docs/ai-specs/.DS_Store
+docs/ai-specs/AI-EXECUTION-STANDARD.md
+docs/ai-specs/API-CONTRACT-STANDARD.md
+docs/ai-specs/ARCHITECTURE-STANDARD.md
+docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md
+docs/ai-specs/CONFLICT-REPORT.md
+docs/ai-specs/DATABASE-STANDARD.md
+docs/ai-specs/DEVELOPMENT-STANDARD.md
+docs/ai-specs/DOCUMENTATION-STANDARD.md
+docs/ai-specs/ENGINEERING-SYSTEM-ACCEPTANCE-REPORT.md
+docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md
+docs/ai-specs/SECURITY-STANDARD.md
+docs/ai-specs/UX-INTERACTION-STANDARD.md
+docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md
+docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md
+docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md
+docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md
+docs/ai-specs/engineering-quality/README.md
+--- ADR ---
+0001-uter-design-system-single-source-of-truth.md
+README.md
+--- CI jobs ---
+22:    name: UAES integration contract
+100:    name: UEQE review engine (all modules + AI spec integrity)
+131:    name: Backend vet, build, and test
+241:    name: Backend race detector
+295:    name: Backend coverage report
+367:    name: Go dependency vulnerability scan
+412:    name: Electron desktop secret persistence
+438:    name: Frontend typecheck, tests, lint and production build
+--- OpenAPI files ---
+--- design system docs ---
+docs/adr/0001-uter-design-system-single-source-of-truth.md
+docs/design-system
+docs/design-system/UTER-DESIGN-SYSTEM-3.0.md
+docs/design-system/audit/UTER-DESIGN-COMPLIANCE-AUDIT-REPORT.md
+docs/design-system/UTER Design Compliance Audit.md
+--- coverage gate script ---
+#!/usr/bin/env bash
+#
+# 覆盖率门禁：按包检查语句覆盖率，跌破阈值即失败（F-15）。
+#
+# 为什么不是「总覆盖率一个数字」：总覆盖率会被体量大的低风险包稀释，
+# 资金、权限相关的包即使掉十几个点，总量也可能几乎不动。这里对关键包
+# 逐个设阈值，把「这批测试被削弱」直接变成 CI 红灯。
+#
+# 阈值取当前基线往下留 2 个点左右，避免正常重构（删掉一段被测代码、
+# 新增少量未覆盖分支）造成误报，同时仍能挡住成批删除测试。
+#
+# 用法：
+#   scripts/coverage-gate.sh <coverage.out> <module-path> <pkg-suffix>=<min-percent> ...
+#
+# 示例：
+#   scripts/coverage-gate.sh coverage.out github.com/uter-ai/uter \
+#     controller=39 model=45 service=43
+set -euo pipefail
+
+if [ "$#" -lt 3 ]; then
+  echo "usage: $0 <coverage-profile> <module-path> <pkg-suffix>=<min-percent> ..." >&2
+  exit 2
+fi
+
+profile=$1
+--- git changed files ---
+ M .claude/skills/uaes-integration/SKILL.md
+ M .github/workflows/ci.yml
+ M .uaes/INTEGRATION.md
+ M .uaes/TRACEABILITY.md
+ M .uaes/agent-governance.yaml
+ M .uaes/uaes-pin.json
+ M AGENTS.md
+ M VERSION
+ M relay/relay_task.go
+ M scripts/quality/ai-specs-check.sh
+ M scripts/quality/test-ai-governance-policy.rb
+ M scripts/quality/test-uaes-integration-check.rb
+ M scripts/quality/test-uaes-pin-check.rb
+ M scripts/quality/uaes-integration-check.sh
+ M scripts/quality/uaes-pin-check.sh
+ M service/dreamrouter_pricing_expr.go
+ M service/dreamrouter_pricing_expr_test.go
+ M service/dreamrouter_snapshot_test.go
+ M service/dreamrouter_sync.go
+ M service/task_billing.go
+ M web/src/features/pricing/__tests__/discount-tag.test.tsx
+ M web/src/features/pricing/lib/__tests__/billing-expression.test.ts
+ M web/src/features/pricing/lib/billing-expr.ts
+ M web/src/features/pricing/lib/billing-expression/parser.ts
+ M web/src/features/pricing/lib/billing-expression/runtime.ts
+ M web/src/features/pricing/lib/billing-expression/task-display.ts
+ M web/src/features/pricing/lib/billing-expression/types.ts
+ M web/src/features/pricing/lib/price.ts
+ M web/src/features/pricing/lib/tier-expr.ts
+ M web/src/features/system-settings/models/tiered-pricing-editor.tsx
+?? .uaes/AI-GOVERNANCE-ENTRY.md
+?? pkg/billingexpr/usage_duration.go
+?? pkg/billingexpr/usage_duration_test.go
+?? reports/compliance/uaes-full-migration-2026-11-06/
+?? scripts/quality/uaes-agent-runtime-check.rb
+?? scripts/quality/uaes-governance-gates.rb
+?? scripts/quality/uaes-test-matrix.sh
+?? service/dreamrouter_persecond_fallback_test.go

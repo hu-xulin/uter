@@ -1,0 +1,38 @@
+# evidence_id=GATE-NEG-SECURITY_GATE
+# started_at=2026-11-07T02:57:16Z
+# cwd=/Users/lincolnhu/uter
+# command=python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/SECURITY_GATE-nonconforming-state.json' --gate SECURITY_GATE
+# timeout=120
+# exit_code=2
+# timed_out=False
+
+===== STDOUT =====
+{
+  "gate": "SECURITY_GATE",
+  "verdict": "BLOCK",
+  "checks": {
+    "govulncheck_root_PASS": true,
+    "govulncheck_all_modules_PASS": true,
+    "gitleaks_PASS": true,
+    "no_forbidden_tracked_files": true,
+    "secret_scan_no_open_finding": true,
+    "axe_accessibility_executed": true,
+    "DAST_penetration_API_security_executed": false,
+    "three_database_and_recovery_executed": false,
+    "no_unapproved_risk_exception": true
+  },
+  "failed_checks": [
+    "DAST_penetration_API_security_executed",
+    "three_database_and_recovery_executed"
+  ],
+  "passed_checks": 7,
+  "total_checks": 9,
+  "notes": {
+    "scope": "§6 security verification; DAST/penetration/API security/three-DB/DR require authorised environments",
+    "fail_closed": "NOT_RUN and FAIL are never promoted to PASS; no allowlist suppression applied"
+  }
+}
+
+
+===== STDERR =====
+

@@ -1,0 +1,103 @@
+# evidence_id=EV-24
+# started_at=2026-11-07T02:55:06Z
+# cwd=/Users/lincolnhu/uter
+# command=GOWORK=off go test -count=1 -coverprofile='/Users/lincolnhu/uter/.quality/.state/fca-coverage.out' -timeout 600s ./... && bash scripts/coverage-gate.sh '/Users/lincolnhu/uter/.quality/.state/fca-coverage.out' "$(go list -m)" controller=39 model=45 service=43
+# timeout=900
+# exit_code=1
+# timed_out=False
+
+===== STDOUT =====
+FAIL	github.com/uter-ai/uter [setup failed]
+ok  	github.com/uter-ai/uter/common	9.832s	coverage: 32.4% of statements
+ok  	github.com/uter-ai/uter/common/limiter	1.501s	coverage: 87.5% of statements
+ok  	github.com/uter-ai/uter/constant	3.043s	coverage: 54.5% of statements
+ok  	github.com/uter-ai/uter/controller	96.543s	coverage: 43.3% of statements
+ok  	github.com/uter-ai/uter/dto	7.550s	coverage: 84.2% of statements
+ok  	github.com/uter-ai/uter/e2e	46.017s	coverage: [no statements]
+ok  	github.com/uter-ai/uter/i18n	7.882s	coverage: 81.2% of statements
+	github.com/uter-ai/uter/logger		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/middleware	10.551s	coverage: 65.9% of statements
+ok  	github.com/uter-ai/uter/model	20.979s	coverage: 48.7% of statements
+ok  	github.com/uter-ai/uter/oauth	14.311s	coverage: 6.0% of statements
+ok  	github.com/uter-ai/uter/pkg/billingexpr	15.464s	coverage: 83.6% of statements
+	github.com/uter-ai/uter/pkg/cachex		coverage: 0.0% of statements
+	github.com/uter-ai/uter/pkg/ionet		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/pkg/jsplugin	17.822s	coverage: 78.7% of statements
+ok  	github.com/uter-ai/uter/pkg/perf_metrics	18.008s	coverage: 74.4% of statements
+ok  	github.com/uter-ai/uter/pkg/wsmanager	19.106s	coverage: 76.4% of statements
+ok  	github.com/uter-ai/uter/plugins	22.948s	coverage: 53.6% of statements
+ok  	github.com/uter-ai/uter/relay	24.156s	coverage: 31.9% of statements
+ok  	github.com/uter-ai/uter/relay/channel	25.639s	coverage: 43.6% of statements
+	github.com/uter-ai/uter/relay/channel/Uter		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/advancedcustom	27.045s	coverage: 65.6% of statements
+?   	github.com/uter-ai/uter/relay/channel/ai360	[no test files]
+ok  	github.com/uter-ai/uter/relay/channel/ali	28.654s	coverage: 69.1% of statements
+ok  	github.com/uter-ai/uter/relay/channel/aws	30.328s	coverage: 58.1% of statements
+	github.com/uter-ai/uter/relay/channel/baidu		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/baidu_v2		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/claude	28.262s	coverage: 28.9% of statements
+	github.com/uter-ai/uter/relay/channel/cloudflare		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/codex	27.047s	coverage: 17.4% of statements
+	github.com/uter-ai/uter/relay/channel/cohere		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/coze		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/deepseek	23.661s	coverage: 74.7% of statements
+	github.com/uter-ai/uter/relay/channel/dify		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/gemini	24.791s	coverage: 43.0% of statements
+	github.com/uter-ai/uter/relay/channel/jimeng		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/jina		coverage: 0.0% of statements
+?   	github.com/uter-ai/uter/relay/channel/lingyiwanwu	[no test files]
+ok  	github.com/uter-ai/uter/relay/channel/minimax	23.437s	coverage: 25.0% of statements
+	github.com/uter-ai/uter/relay/channel/mistral		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/mokaai		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/moonshot	25.208s	coverage: 34.8% of statements
+ok  	github.com/uter-ai/uter/relay/channel/ollama	26.780s	coverage: 25.2% of statements
+ok  	github.com/uter-ai/uter/relay/channel/openai	28.039s	coverage: 30.7% of statements
+?   	github.com/uter-ai/uter/relay/channel/openrouter	[no test files]
+	github.com/uter-ai/uter/relay/channel/palm		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/perplexity		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/replicate		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/siliconflow		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/sub2api	24.799s	coverage: 100.0% of statements
+	github.com/uter-ai/uter/relay/channel/submodel		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/task/jsplugin	27.458s	coverage: 82.8% of statements
+	github.com/uter-ai/uter/relay/channel/task/taskcommon		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/channel/tencent	26.467s	coverage: 6.2% of statements
+ok  	github.com/uter-ai/uter/relay/channel/vertex	26.426s	coverage: 14.4% of statements
+	github.com/uter-ai/uter/relay/channel/volcengine		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/xai		coverage: 0.0% of statements
+?   	github.com/uter-ai/uter/relay/channel/xinference	[no test files]
+	github.com/uter-ai/uter/relay/channel/xunfei		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/zhipu		coverage: 0.0% of statements
+	github.com/uter-ai/uter/relay/channel/zhipu_4v		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/common	23.897s	coverage: 64.8% of statements
+	github.com/uter-ai/uter/relay/common_handler		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/relay/constant	24.124s	coverage: 23.7% of statements
+ok  	github.com/uter-ai/uter/relay/costopt	25.685s	coverage: 27.3% of statements
+ok  	github.com/uter-ai/uter/relay/helper	27.303s	coverage: 59.7% of statements
+ok  	github.com/uter-ai/uter/router	25.519s	coverage: 90.7% of statements
+ok  	github.com/uter-ai/uter/service	29.875s	coverage: 46.2% of statements
+ok  	github.com/uter-ai/uter/service/authz	25.433s	coverage: 74.6% of statements
+ok  	github.com/uter-ai/uter/service/passkey	24.062s	coverage: 24.2% of statements
+ok  	github.com/uter-ai/uter/setting	23.928s	coverage: 38.0% of statements
+ok  	github.com/uter-ai/uter/setting/billing_setting	20.670s	coverage: 65.5% of statements
+ok  	github.com/uter-ai/uter/setting/channel_weight	21.236s	coverage: 93.2% of statements
+ok  	github.com/uter-ai/uter/setting/config	21.634s	coverage: 16.7% of statements
+	github.com/uter-ai/uter/setting/console_setting		coverage: 0.0% of statements
+	github.com/uter-ai/uter/setting/costopt		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/setting/custom_pricing	20.549s	coverage: 94.8% of statements
+ok  	github.com/uter-ai/uter/setting/model_setting	21.222s	coverage: 69.0% of statements
+ok  	github.com/uter-ai/uter/setting/operation_setting	20.647s	coverage: 65.6% of statements
+	github.com/uter-ai/uter/setting/perf_metrics_setting		coverage: 0.0% of statements
+	github.com/uter-ai/uter/setting/performance_setting		coverage: 0.0% of statements
+ok  	github.com/uter-ai/uter/setting/ratio_setting	18.577s	coverage: 7.5% of statements
+ok  	github.com/uter-ai/uter/setting/reasoning	19.325s	coverage: 76.4% of statements
+ok  	github.com/uter-ai/uter/setting/system_setting	17.256s	coverage: 45.9% of statements
+ok  	github.com/uter-ai/uter/setting/task_pricing_setting	14.729s	coverage: 93.8% of statements
+	github.com/uter-ai/uter/types		coverage: 0.0% of statements
+FAIL
+
+
+===== STDERR =====
+# github.com/uter-ai/uter
+main.go:60:12: pattern web/dist/index.html: no matching files found
+

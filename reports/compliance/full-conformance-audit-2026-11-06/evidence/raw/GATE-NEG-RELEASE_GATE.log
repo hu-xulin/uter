@@ -1,0 +1,37 @@
+# evidence_id=GATE-NEG-RELEASE_GATE
+# started_at=2026-11-07T02:57:17Z
+# cwd=/Users/lincolnhu/uter
+# command=python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/RELEASE_GATE-nonconforming-state.json' --gate RELEASE_GATE
+# timeout=120
+# exit_code=2
+# timed_out=False
+
+===== STDOUT =====
+{
+  "gate": "RELEASE_GATE",
+  "verdict": "BLOCK",
+  "checks": {
+    "L1_PASS": false,
+    "L2_PASS": true,
+    "L3_all_14_PASS": false,
+    "L4_not_BLOCKED": true,
+    "no_open_P0_P1": false,
+    "no_delivery_action_performed": false,
+    "ci_gate_wiring_PASS": true
+  },
+  "failed_checks": [
+    "L1_PASS",
+    "L3_all_14_PASS",
+    "no_open_P0_P1",
+    "no_delivery_action_performed"
+  ],
+  "passed_checks": 3,
+  "total_checks": 7,
+  "notes": {
+    "scope": "full validation before any commit/push/PR/merge/deploy"
+  }
+}
+
+
+===== STDERR =====
+

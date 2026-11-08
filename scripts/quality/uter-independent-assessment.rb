@@ -70,17 +70,65 @@ uter_registry = YAML.safe_load_file(File.join(ROOT, ".uaes/uter-governance-regis
 uaes_registry = YAML.safe_load_file(File.join(UAES_ROOT, ".uaes/STANDARD-REGISTRY.yaml"))
 
 # ---- 1. Re-derive the pinned UAES baseline (§18 step 1, §2.3) ------------
+#
+# Pin schema 3.0.0 identifies the governed content by fingerprint, not by HEAD.
+# The previous version of this check compared `git rev-parse HEAD` to
+# source_commit, which is the defect that forced four manual re-pins during this
+# governance run: every commit that governed nothing -- a report, a verifier fix
+# -- expired the pin. An independent assessor reproducing that comparison would
+# report FAIL for a baseline whose rules never changed, which is a false finding
+# in exactly the control that is supposed to be trustworthy evidence.
+#
+# Two further defects were live here: the version and status literals were
+# pinned to 1.9.0 / APPROVED, so the check had been asserting a baseline three
+# releases old and could not pass at all. Both are now read from the pin and
+# verified against the UAES registry rather than hard-coded.
 uaes_head = Open3.capture3("git", "-C", UAES_ROOT, "rev-parse", "HEAD")[0].strip
 blob_out, _blob_err, blob_st = Open3.capture3("git", "-C", UAES_ROOT, "hash-object", ".uaes/STANDARD-REGISTRY.yaml")
 computed_blob = blob_st.success? ? blob_out.strip : nil
-pin_ok = uaes_head == pin["source_commit"] && computed_blob == pin["registry_blob_sha"] &&
-         pin["registry_version"] == "1.9.0" && pin["registry_status"] == "APPROVED"
+
+uaes_registry_version = uaes_registry.dig("registry", "version").to_s
+uaes_registry_status  = uaes_registry.dig("registry", "status").to_s
+
+# Independently recompute the governed fingerprint from the UAES bytes. The
+# algorithm is NOT reimplemented here: a second implementation of "what counts
+# as governed" would drift from the first and the drift would be unreviewable.
+fp_out, fp_err, fp_st = Open3.capture3(
+  "node", File.join(UAES_ROOT, "quality/scripts/uaes/governed-fingerprint.mjs"),
+  "--require-intact", "--fingerprint-only"
+)
+live_fp = fp_st.success? ? fp_out.strip : nil
+seal_intact = fp_st.exitstatus == 0
+pinned_fp = pin["governed_fingerprint"].to_s
+
+fingerprint_ok = !pinned_fp.empty? && live_fp == pinned_fp && seal_intact
+# source_commit is provenance only: it names the tree the fingerprint came from.
+# A differing HEAD with an identical fingerprint means no rule changed, and must
+# not fail an independent assessment.
+provenance_note =
+  if uaes_head == pin["source_commit"]
+    "source_commit matches HEAD"
+  else
+    "source_commit names a different tree, but the governed fingerprint is identical, so no governed rule changed"
+  end
+
+pin_ok = fingerprint_ok &&
+         computed_blob == pin["registry_blob_sha"] &&
+         pin["registry_version"] == uaes_registry_version &&
+         pin["registry_status"] == uaes_registry_status
+
 add_observation.call("IA-01", "pinned UAES approved baseline re-derived", pin_ok ? "PASS" : "FAIL",
-                     { "pinned_commit" => pin["source_commit"], "actual_commit" => uaes_head,
+                     { "pinned_fingerprint" => pinned_fp.empty? ? "(none)" : pinned_fp[0, 16],
+                       "live_fingerprint" => live_fp ? live_fp[0, 16] : "(recompute failed: #{fp_err.to_s.strip[0, 120]})",
+                       "seal_intact" => seal_intact,
                        "pinned_blob" => pin["registry_blob_sha"], "computed_blob" => computed_blob,
-                       "version" => pin["registry_version"], "status" => pin["registry_status"] })
+                       "version" => pin["registry_version"], "registry_version" => uaes_registry_version,
+                       "status" => pin["registry_status"], "registry_status" => uaes_registry_status,
+                       "pinned_commit" => pin["source_commit"], "actual_commit" => uaes_head,
+                       "provenance" => provenance_note,
+                       "method" => "governed-content fingerprint recomputed from UAES bytes (pin schema 3.0.0)" })
 add_finding.call("FIND-IA-01", "Critical", "UAES baseline pin does not match the repository",
-                 "Independent recomputation of commit / registry blob disagrees with .uaes/uaes-pin.json",
+                 "Independent recomputation of the governed fingerprint / registry blob / version / status disagrees with .uaes/uaes-pin.json",
                  "§2.3 / §18 step 1") unless pin_ok
 
 # ---- 2. Re-derive the 14-domain assessment scope (§16.3) ----------------

@@ -1,0 +1,20 @@
+# evidence_id=AG-04-deny-03
+# started_at=2026-11-07T02:57:09Z
+# cwd=/Users/lincolnhu/uter
+# command=ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.merge --profile pull_request_creator --validation-passed
+# timeout=90
+# exit_code=2
+# timed_out=False
+
+===== STDOUT =====
+{
+  "action": "git.merge",
+  "profile": "pull_request_creator",
+  "decision": "DENY",
+  "reason": "execution_policy.forbidden: git.merge",
+  "generated_at": "2026-11-07T02:57:09Z"
+}
+
+
+===== STDERR =====
+

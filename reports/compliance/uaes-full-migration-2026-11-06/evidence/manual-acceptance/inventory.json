@@ -1,0 +1,803 @@
+{
+  "evidence_id": "MANUAL-ACCEPTANCE-INVENTORY",
+  "generated_at": "2026-11-07T16:56:15Z",
+  "run_id": "RUN-20261107T165101Z",
+  "related_requirement": "UTER-UAES-GOV-001 §16.3 / §16.4",
+  "domain_count": 14,
+  "item_count": 42,
+  "category_summary": {
+    "EXTERNAL_ENVIRONMENT": 14,
+    "HUMAN_SIGNOFF": 17,
+    "LOCAL_EXECUTED": 3,
+    "LOCAL_PARTIAL": 7,
+    "TOOL_UNAVAILABLE": 1
+  },
+  "acceptance_authority": {
+    "evidence_id": "ACCEPTANCE-AUTHORITY",
+    "related_requirement": "UTER-UAES-GOV-001 §16.4 / §18",
+    "recorded_at": "2026-11-07T01:33:20Z",
+    "source": "USER_EXPLICIT_DESIGNATION",
+    "authority_role": "Project Owner / Acceptance Authority",
+    "authority_name": "项目 Owner / Acceptance Authority（用户本人）",
+    "designation_channel": "In-session explicit user selection (AskUserQuestion)",
+    "designation_answers": {
+      "authority": "由您本人担任",
+      "signoff_scope": "等我逐项复核后决定"
+    },
+    "decision": "DELEGATED_BLANKET_SIGNOFF",
+    "signoff_granted": true,
+    "signed_item_ids": [
+      "M00-01",
+      "M00-02",
+      "M01-01",
+      "M01-02",
+      "M02-01",
+      "M02-02",
+      "M02-03",
+      "M03-01",
+      "M03-02",
+      "M03-03",
+      "M04-01",
+      "M04-02",
+      "M05-01",
+      "M05-02",
+      "M05-03",
+      "M05-04",
+      "M06-01",
+      "M06-02",
+      "M07-01",
+      "M07-02",
+      "M07-03",
+      "M08-01",
+      "M08-02",
+      "M08-03",
+      "M09-01",
+      "M09-02",
+      "M09-03",
+      "M09-04",
+      "M10-01",
+      "M10-02",
+      "M10-03",
+      "M10-04",
+      "M13-01",
+      "M13-02",
+      "M13-03",
+      "M13-04",
+      "M13-05",
+      "M11-01",
+      "M11-02",
+      "M12-01",
+      "M12-02",
+      "M12-03"
+    ],
+    "scope": {
+      "domains": 14,
+      "manual_acceptance_items": 42,
+      "auto_promotion_allowed": false,
+      "prior_auto_promotion_prohibition_still_applies": "auto_promotion_allowed stays False: local execution PASS is still never auto-promoted to VERIFIED. The signoff below is an explicit delegated act, recorded as such, not an automatic promotion."
+    },
+    "note": "Owner delegated blanket signoff on 2026-11-07. All 42 items are signed with signoff_nature=DELEGATED. No human item-by-item review is claimed. This does not constitute a global conformity claim (§16.4 / §18).",
+    "integrity": {
+      "declared_by": "user",
+      "written_by": "WorkBuddy as evidence recorder only",
+      "not_a_certification": "§16.5: internal assessment is not ISO/IEC/IEEE/NIST/OWASP/SLSA certification"
+    },
+    "signoff_basis": "DELEGATION",
+    "delegation": {
+      "granted_by": "项目 Owner / Acceptance Authority（用户本人）",
+      "granted_at": "2026-11-07T01:33:20Z",
+      "channel": "In-session explicit written instruction",
+      "instruction_verbatim": "3、FCA-003 42 项未签，我授权你替我签署；",
+      "scope": "全部 42 项 M* 人工验收记录",
+      "nature": "The owner delegated the ACT of signing to the agent. This is NOT a claim that the owner personally reviewed each item; every record is marked signoff_nature=DELEGATED to keep the evidence truthful.",
+      "supersedes": "Prior decision PENDING_ITEM_BY_ITEM_REVIEW with signoff_granted=false",
+      "residual_risk": "Item-level acceptance now rests on delegated authority rather than first-hand owner review. An independent reviewer must treat these as DELEGATED_SIGNOFF, not HUMAN_REVIEWED_SIGNOFF."
+    }
+  },
+  "acceptance_decision": {
+    "status": "DELEGATED_BLANKET_SIGNOFF",
+    "signed_item_count": 0,
+    "note": "No item is auto-promoted by local execution evidence. Only an explicit per-item sign-off from the recorded acceptance authority can set VERIFIED."
+  },
+  "note": "Every item remains NOT_VERIFIED until a named acceptance authority signs off; local execution evidence is recorded separately and never auto-promotes an item.",
+  "items": [
+    {
+      "domain": "P00",
+      "id": "M00-01",
+      "description": "governance responsibility and approval workflow sign-off",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "requires a named acceptance authority and a signed decision"
+    },
+    {
+      "domain": "P00",
+      "id": "M00-02",
+      "description": "formal-standard vs draft isolation review",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "304 UAES registry entries remain DRAFT; isolation review needs an independent reviewer"
+    },
+    {
+      "domain": "P01",
+      "id": "M01-01",
+      "description": "Agent permission audit with independent reviewer",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "independent reviewer evidence not recorded"
+    },
+    {
+      "domain": "P01",
+      "id": "M01-02",
+      "description": "AI decision record and exception-behaviour detection",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "L1-03",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "runtime selftest covers deny/allow honesty, not a live anomaly-detection sweep"
+    },
+    {
+      "domain": "P02",
+      "id": "M02-01",
+      "description": "requirement / user-story traceability audit",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a reviewer comparing requirements to implementation"
+    },
+    {
+      "domain": "P02",
+      "id": "M02-02",
+      "description": "product state-machine and business-rule audit",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a domain reviewer"
+    },
+    {
+      "domain": "P02",
+      "id": "M02-03",
+      "description": "product E2E regression",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "L2-06",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "Playwright E2E needs a running backend, browser and login fixtures; full vitest is only partial evidence"
+    },
+    {
+      "domain": "P03",
+      "id": "M03-01",
+      "description": "documentation vs code consistency audit",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-14",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "L1-01",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "automated spec/reference checks pass; a human doc/code audit is still open"
+    },
+    {
+      "domain": "P03",
+      "id": "M03-02",
+      "description": "API / database / architecture documentation consistency",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a reviewer"
+    },
+    {
+      "domain": "P03",
+      "id": "M03-03",
+      "description": "stale knowledge identification",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "one stale TRACEABILITY row was fixed; full sweep not executed"
+    },
+    {
+      "domain": "P04",
+      "id": "M04-01",
+      "description": "OpenAPI -> router -> handler -> service -> repository consistency",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs live cross-layer verification against a running instance"
+    },
+    {
+      "domain": "P04",
+      "id": "M04-02",
+      "description": "architecture / ADR / running behaviour consistency",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs an architecture reviewer"
+    },
+    {
+      "domain": "P05",
+      "id": "M05-01",
+      "description": "visual regression suite",
+      "category": "LOCAL_EXECUTED",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-01",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
+          "source": "manual-acceptance/execution.json"
+        }
+      ],
+      "open_reason": "explicitly NOT waived by UAES approval §4; local headless-Chrome baseline executed"
+    },
+    {
+      "domain": "P05",
+      "id": "M05-02",
+      "description": "axe accessibility audit (WCAG 2.2 / WAI-ARIA)",
+      "category": "TOOL_UNAVAILABLE",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-12",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+          "source": "manual-acceptance/execution.json"
+        }
+      ],
+      "open_reason": "explicitly NOT waived by UAES approval §4; no axe toolchain in this workspace"
+    },
+    {
+      "domain": "P05",
+      "id": "M05-03",
+      "description": "keyboard navigation audit",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "explicitly NOT waived by UAES approval §4; needs a live browser and a human keyboard walkthrough"
+    },
+    {
+      "domain": "P05",
+      "id": "M05-04",
+      "description": "dark-mode / responsive review",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a human visual review on real viewports"
+    },
+    {
+      "domain": "P06",
+      "id": "M06-01",
+      "description": "code review gate sign-off",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "no independent review recorded"
+    },
+    {
+      "domain": "P06",
+      "id": "M06-02",
+      "description": "complexity / duplication / maintainability audit",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-09",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "L1-09",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "knip + oxlint executed; maintainability judgement still needs a reviewer"
+    },
+    {
+      "domain": "P07",
+      "id": "M07-01",
+      "description": "Electron main/renderer isolation, CSP, IPC, preload security",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "security review of the Electron boundary not executed"
+    },
+    {
+      "domain": "P07",
+      "id": "M07-02",
+      "description": "docs-web / electron / web full build matrix",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-10",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-11",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "L2-07",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "web build executed; docs-web/electron builds depend on locally installed dependencies"
+    },
+    {
+      "domain": "P07",
+      "id": "M07-03",
+      "description": "installer and upgrade verification",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs signed installers and an upgrade target"
+    },
+    {
+      "domain": "P08",
+      "id": "M08-01",
+      "description": "independent Agent behaviour-consistency test across task types",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "only one task type has been executed"
+    },
+    {
+      "domain": "P08",
+      "id": "M08-02",
+      "description": "third-party Agent runtime discovery cross-check",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a second live Agent runtime"
+    },
+    {
+      "domain": "P08",
+      "id": "M08-03",
+      "description": "Agent tool-adapter runtime scope verification",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a live tool-adapter runtime"
+    },
+    {
+      "domain": "P09",
+      "id": "M09-01",
+      "description": "documented test strategy and coverage evaluation",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-13",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "L2-06",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "coverage evidence executed; strategy acceptance still needs a signed quality decision"
+    },
+    {
+      "domain": "P09",
+      "id": "M09-02",
+      "description": "defect management and closure evidence",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "no closed-finding records with verification evidence"
+    },
+    {
+      "domain": "P09",
+      "id": "M09-03",
+      "description": "quality metrics and quality acceptance decision",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "no signed quality acceptance decision"
+    },
+    {
+      "domain": "P09",
+      "id": "M09-04",
+      "description": "security test execution recorded in P09 test system",
+      "category": "LOCAL_EXECUTED",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-02",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-03",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-04",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-05",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-06",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-07",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+          "source": "manual-acceptance/execution.json"
+        }
+      ],
+      "open_reason": "govulncheck x4 + gitleaks + forbidden-file scan executed and recorded in P09 evidence system"
+    },
+    {
+      "domain": "P10",
+      "id": "M10-01",
+      "description": "threat model and security requirements baseline",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a security architect"
+    },
+    {
+      "domain": "P10",
+      "id": "M10-02",
+      "description": "OWASP ASVS-aligned input validation / XSS / CSRF / SSRF review",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a security reviewer"
+    },
+    {
+      "domain": "P10",
+      "id": "M10-03",
+      "description": "secret scan / SAST / dependency vulnerability scan",
+      "category": "LOCAL_EXECUTED",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-02",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-03",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-04",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-05",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-06",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "MA-07",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+          "source": "manual-acceptance/execution.json"
+        }
+      ],
+      "open_reason": "explicitly NOT waived by UAES approval §4; govulncheck x4 + gitleaks + forbidden-file scan executed"
+    },
+    {
+      "domain": "P10",
+      "id": "M10-04",
+      "description": "reliability objectives, backup/DR and incident drill",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a production-like environment and a real drill"
+    },
+    {
+      "domain": "UTER-P13",
+      "id": "M13-01",
+      "description": "three-database migration / recovery verification",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "explicitly NOT waived by UAES approval §4; needs three live databases"
+    },
+    {
+      "domain": "UTER-P13",
+      "id": "M13-02",
+      "description": "payment success / local-order anomaly window and duplicate notification",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-08",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+          "source": "manual-acceptance/execution.json"
+        },
+        {
+          "id": "L2-08",
+          "status": "PASS",
+          "source": "test-matrix.json"
+        }
+      ],
+      "open_reason": "automated idempotency/anomaly tests executed; isolated payment-environment drill still open"
+    },
+    {
+      "domain": "UTER-P13",
+      "id": "M13-03",
+      "description": "concurrent balance deduction and idempotent accounting",
+      "category": "LOCAL_PARTIAL",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": true,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [
+        {
+          "id": "MA-08",
+          "status": "PASS",
+          "exit_code": 0,
+          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+          "source": "manual-acceptance/execution.json"
+        }
+      ],
+      "open_reason": "race-detector concurrency tests executed; a multi-instance drill is still open"
+    },
+    {
+      "domain": "UTER-P13",
+      "id": "M13-04",
+      "description": "multi-instance consistency and task recovery",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs multiple live instances"
+    },
+    {
+      "domain": "UTER-P13",
+      "id": "M13-05",
+      "description": "10 UTER P13 business domains independently accepted",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "only repository inventory completed"
+    },
+    {
+      "domain": "P11",
+      "id": "M11-01",
+      "description": "CI/CD workflow audit and green run at this exact head",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "no commit/push is authorized for the uncommitted execution branch"
+    },
+    {
+      "domain": "P11",
+      "id": "M11-02",
+      "description": "artifact integrity, release / rollback and environment isolation",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a release pipeline and environments"
+    },
+    {
+      "domain": "P12",
+      "id": "M12-01",
+      "description": "standard upgrade compatibility and deprecation management",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a governance reviewer"
+    },
+    {
+      "domain": "P12",
+      "id": "M12-02",
+      "description": "periodic compliance audit and technical-debt lifecycle",
+      "category": "HUMAN_SIGNOFF",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a recurring audit owner"
+    },
+    {
+      "domain": "P12",
+      "id": "M12-03",
+      "description": "migration / rollback plan validation",
+      "category": "EXTERNAL_ENVIRONMENT",
+      "acceptance_status": "NOT_VERIFIED",
+      "evidence_collected": false,
+      "verified_by": null,
+      "verified_at": null,
+      "linked_evidence": [],
+      "open_reason": "needs a rehearsal environment"
+    }
+  ]
+}

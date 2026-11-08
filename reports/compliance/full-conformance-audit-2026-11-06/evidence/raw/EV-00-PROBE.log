@@ -1,0 +1,46 @@
+# evidence_id=EV-00-PROBE
+# started_at=2026-11-07T02:57:05Z
+# cwd=/Users/lincolnhu/uter
+# command=
+python3 - <<'PY'
+import json, os, pathlib, shutil
+root = pathlib.Path('/Users/lincolnhu/uter')
+def exists(*parts): return (root.joinpath(*parts)).exists()
+print(json.dumps({
+  'axe_toolchain': exists('web/node_modules/@axe-core') or exists('web/node_modules/axe-core'),
+  'playwright_config': exists('web/e2e/visual/playwright.config.ts'),
+  'playwright_installed': exists('web/node_modules/@playwright/test'),
+  'docs_web_node_modules': exists('docs-web/node_modules'),
+  'electron_node_modules': exists('electron/node_modules'),
+  'dast_tool': any(shutil.which(t) for t in ('zap','zaproxy','nikto','burp')),
+  'load_tool': any(shutil.which(t) for t in ('k6','wrk','hey','locust')),
+  'db_binaries': {b: bool(shutil.which(b)) for b in ('mysql','psql','sqlite3','redis-cli')},
+  'ci_workflow': exists('.github/workflows/ci.yml'),
+}, indent=2))
+PY
+
+# timeout=120
+# exit_code=0
+# timed_out=False
+
+===== STDOUT =====
+{
+  "axe_toolchain": true,
+  "playwright_config": true,
+  "playwright_installed": true,
+  "docs_web_node_modules": true,
+  "electron_node_modules": true,
+  "dast_tool": false,
+  "load_tool": false,
+  "db_binaries": {
+    "mysql": false,
+    "psql": false,
+    "sqlite3": true,
+    "redis-cli": true
+  },
+  "ci_workflow": true
+}
+
+
+===== STDERR =====
+

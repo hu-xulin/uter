@@ -1,0 +1,148 @@
+{
+  "generated_at": "2026-11-07T01:25:08Z",
+  "reports": [
+    {
+      "domain": "P00",
+      "name": "Foundation",
+      "file": "DOMAIN-P00-AUDIT.md",
+      "requirements": 130,
+      "results": {
+        "NOT_ASSESSED": 130
+      },
+      "sha256": "7667cda4bc87ae4cdb1397828ecbf7069c05f19eaf41382a2278201050a1d476"
+    },
+    {
+      "domain": "P01",
+      "name": "AI Governance",
+      "file": "DOMAIN-P01-AUDIT.md",
+      "requirements": 105,
+      "results": {
+        "NOT_ASSESSED": 105
+      },
+      "sha256": "e98bec2d95cd9d95ddf4a019c8a2c92ef97123bfc26008090cecaeea740cec5b"
+    },
+    {
+      "domain": "P02",
+      "name": "Product Engineering",
+      "file": "DOMAIN-P02-AUDIT.md",
+      "requirements": 124,
+      "results": {
+        "NOT_ASSESSED": 124
+      },
+      "sha256": "7990a26d5d599aca259b0572b433af7ddc14e94091d314c9445472a52931f87c"
+    },
+    {
+      "domain": "P03",
+      "name": "Knowledge Engineering",
+      "file": "DOMAIN-P03-AUDIT.md",
+      "requirements": 137,
+      "results": {
+        "NOT_ASSESSED": 137
+      },
+      "sha256": "28a2809ab121dbeba75b9f53cffe36ee7ba5ac8de8d60973d512b1d41ad5b3b5"
+    },
+    {
+      "domain": "P04",
+      "name": "System Architecture",
+      "file": "DOMAIN-P04-AUDIT.md",
+      "requirements": 418,
+      "results": {
+        "NOT_ASSESSED": 406,
+        "NOT_APPLICABLE": 12
+      },
+      "sha256": "34cd5c1d0da88705984d1425f7d0a9b5c750604d8f0e049aaa4673be74922ac0"
+    },
+    {
+      "domain": "P05",
+      "name": "Experience & Design Engineering",
+      "file": "DOMAIN-P05-AUDIT.md",
+      "requirements": 244,
+      "results": {
+        "NOT_ASSESSED": 244
+      },
+      "sha256": "176beeb1cd3cc45e49c71ea6129a06459557b2c98db3b9272846a1552af0f6d5"
+    },
+    {
+      "domain": "P06",
+      "name": "Software Engineering",
+      "file": "DOMAIN-P06-AUDIT.md",
+      "requirements": 297,
+      "results": {
+        "NOT_ASSESSED": 297
+      },
+      "sha256": "99ca7d1cb389950d11dc8102ce44c3a049664c1369b73df03b1a431757bdf85a"
+    },
+    {
+      "domain": "P07",
+      "name": "Cross-Platform Engineering",
+      "file": "DOMAIN-P07-AUDIT.md",
+      "requirements": 238,
+      "results": {
+        "NOT_ASSESSED": 238
+      },
+      "sha256": "e33e714251d45a0cd7293f01514708436ff74dd44e1946e8521e81c1b66929a8"
+    },
+    {
+      "domain": "P08",
+      "name": "AI Agent Engineering",
+      "file": "DOMAIN-P08-AUDIT.md",
+      "requirements": 298,
+      "results": {
+        "NOT_ASSESSED": 298
+      },
+      "sha256": "2463cd05b3b5ac052dc8f2e2e89f1c2b749e6b4d95062813736107081073bc7e"
+    },
+    {
+      "domain": "P09",
+      "name": "Quality Engineering",
+      "file": "DOMAIN-P09-AUDIT.md",
+      "requirements": 220,
+      "results": {
+        "NOT_ASSESSED": 220
+      },
+      "sha256": "c2b066754fe9fa49fbf29c3d8c3e8d8b35d12d79421059f1c4e33582c6bad348"
+    },
+    {
+      "domain": "P10",
+      "name": "Security & Reliability",
+      "file": "DOMAIN-P10-AUDIT.md",
+      "requirements": 209,
+      "results": {
+        "NOT_ASSESSED": 209
+      },
+      "sha256": "e35d0a3abf9c6c23be08e98554a547af1a928ee41ef8ab47f98bc14a1b05b3b8"
+    },
+    {
+      "domain": "P11",
+      "name": "DevOps & Delivery",
+      "file": "DOMAIN-P11-AUDIT.md",
+      "requirements": 196,
+      "results": {
+        "NOT_ASSESSED": 196
+      },
+      "sha256": "be2dbb085394b57091d6c7b621bfb275874a144d5c4616dd9d2e8c38b4e5ad3f"
+    },
+    {
+      "domain": "P12",
+      "name": "Lifecycle & Evolution",
+      "file": "DOMAIN-P12-AUDIT.md",
+      "requirements": 239,
+      "results": {
+        "NOT_ASSESSED": 239
+      },
+      "sha256": "4bf1281cb73b61b9428a2a0e019ad8fa5fc377529fa9d145db18f394d7fd3f37"
+    },
+    {
+      "domain": "UTER-P13",
+      "name": "UTER Business Domain Engineering",
+      "file": "DOMAIN-UTER-P13-AUDIT.md",
+      "requirements": 29,
+      "results": {
+        "BLOCKED": 29
+      },
+      "sha256": "af38d599c6d57148d1ad241f72f8caa694568fa692df63f6c5ca0505dde37daf"
+    }
+  ],
+  "count": 14,
+  "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731"
+}

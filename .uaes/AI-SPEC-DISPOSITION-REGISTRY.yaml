@@ -278,3 +278,53 @@ worktree_hygiene_2026_11_08:
     - '.DS_Store（两仓共 78 个，均未被跟踪且已被 gitignore）'
     - 'coverage.out（3.2 MB go test 产物，未被跟踪且无忽略规则；已补 /coverage.out 到 .gitignore）'
   not_removed: 零完全重复文件、零空占位文件，故无可删除项；不为此创建删除记录。
+
+build_order_and_untracked_enforcement_2026_11_08:
+  defect_web_dist_shared_output: >-
+    web/dist 是 web/（rsbuild）与 docs-web/（Next 导出 postbuild 拷贝）两个独立工程
+    的共享输出目录。任一次 web 构建都会清空 dist，从而删掉 docs-content。
+    catalogue 里 web-build → docs-web-build 的顺序只能维持到下一个触发 web 构建的
+    目标为止，而 scripts/verify-all.sh 自己就内部跑 build:check。
+    后果：//go:embed 因骨架文件仍能编译，但 main_docs_test.go 的两个用例断言真实
+    文档导出，于是 go test / uter-quality.sh test / coverage-gate 全部失败。
+  defect_untracked_enforcement_scripts: >-
+    四个被真实流程引用、却从未纳入 Git 的执行脚本。这与 U-13 同类：
+    声明了执行责任，执行体却只存在于本地。
+  fix:
+    verify_all: 在 build:check 之后补 docs-web build，并调用项目自带 verify-docs-artifacts.sh 作硬校验
+    uter_quality: stage_test 补 embed 前置，并在文档站缺失时打印原因与修复命令，而非只抛裸 exit 1
+    new_script: scripts/quality/ensure-embed-for-verification.sh（补骨架保编译 + 从 docs-web/out 秒级恢复真实导出）
+  files_tracked_this_round:
+    - scripts/quality/ensure-go-embed-artifacts.sh
+    - scripts/quality/ensure-embed-for-verification.sh
+    - scripts/quality/test-uter-governance-boundaries.rb
+    - scripts/quality/uter-independent-assessment.rb
+    - scripts/quality/test-verify-all-embed-precondition.rb
+    - scripts/quality/test-ueqe-verdict-scope.rb
+    - scripts/quality/test-uaes-manual-acceptance-boundary.rb
+    - scripts/quality/uaes-test-matrix.sh
+  why_these_eight: >-
+    它们被 CI（ci.yml 第 60 行直接执行 test-uter-governance-boundaries.rb）、
+    治理注册表（independent_assessment 字段）或其它脚本真实引用。
+    全新克隆后若不入库，CI 立即红、注册表字段指向不存在的文件。
+  verification:
+    ensure_embed_restore: '删空 docs-content 后 5 秒恢复 3687 文件，落地页 69,860 字节'
+    governance_boundaries: '13 runs / 51 assertions / 0 failures'
+    independent_assessment: 'COMPLETED re_evaluation=5/7 open_findings=6 conformance_claim_supported=false'
+    embed_precondition_guard: '7 runs / 32 assertions / 0 failures'
+
+retained_but_not_tracked_2026_11_08:
+  rationale: >-
+    以下脚本零 CI 引用、零 .uaes/ 引用、零 AGENTS.md 与 docs/ai-specs/ 引用，
+    是历史轮次的一次性执行器。按指令「禁止为保留历史而无限增文档」不入库；
+    但按「不覆盖/不删除有价值资料」也绝不删除，保留在本地工作区。
+    若后续需要复现某轮历史证据，它们仍在原路径。
+  files:
+    - scripts/quality/full-conformance-audit.py
+    - scripts/quality/full-conformance-execution.py
+    - scripts/quality/full_conformance_acceptance_board.py
+    - scripts/quality/full_conformance_deliver.py
+    - scripts/quality/uaes-evidence-closure.py
+    - scripts/quality/uaes-governance-gates.rb
+    - scripts/quality/uaes-governance-reports.py
+    - scripts/quality/uaes-manual-acceptance.py

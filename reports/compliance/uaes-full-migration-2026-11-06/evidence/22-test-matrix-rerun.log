@@ -1,0 +1,29 @@
+L1-01  L1    exit=0      1s  bash scripts/quality/ai-specs-check.sh
+L1-02  L1    exit=0      0s  ruby scripts/quality/test-ai-governance-policy.rb
+L1-03  L1    exit=0      1s  ruby scripts/quality/uaes-agent-runtime-check.rb selftest
+L1-04  L1    exit=0      1s  bash scripts/quality/uaes-pin-check.sh
+L1-05  L1    exit=0      1s  bash scripts/quality/uaes-integration-check.sh
+L1-06  L1    exit=0     21s  ruby scripts/quality/test-uaes-pin-check.rb
+L1-07  L1    exit=0      9s  ruby scripts/quality/test-uaes-integration-check.rb
+L1-08  L1    exit=1      5s  bun run typecheck
+L1-09  L1    exit=0      1s  bun run lint
+L1-10  L1    exit=1      3s  bun run format:check
+L1-11  L1    exit=0      0s  bun run copyright:check
+L1-12  L1    exit=0      1s  bun run design:tokens:check
+L1-13  L1    exit=1      8s  gofmt -l $(find . -name '*.go' -not -path './.git/*' -not -path './node_modules/*' -not -path './.quality/*' | head -4000) | tee /tmp/uaes-gofmt-list.txt; test ! -s /tmp/uaes-gofmt-list.txt
+L1-14  L1    exit=0      1s  ruby scripts/quality/uter-governance-separation-check.rb
+L1-15  L1    exit=0      0s  ruby scripts/quality/uter-p09-p10-boundary-check.rb
+L1-16  L1    exit=0      1s  ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/uaes-agent-runtime-check.rb workspace --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json
+L2-01  L2    exit=0     20s  GOWORK=off go test ./...
+L2-02  L2    exit=0      1s  GOWORK=off go test ./...
+L2-03  L2    exit=0      0s  GOWORK=off go test ./...
+L2-04  L2    exit=0      1s  GOWORK=off go test ./...
+L2-05  L2    exit=0      5s  GOWORK=off go vet ./...
+L2-06  L2    exit=0    253s  bun run test
+L2-07  L2    exit=1      6s  bun run build:check
+L2-08  L2    exit=0     12s  GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay|TopUp|Recharge|Billing|Gateway|DreamRouter'
+L2-09  L2    exit=0     12s  bun run test -- src/features/wallet src/features/pricing
+U-01   UAES  exit=0      0s  node quality/scripts/uaes/validate-registry.mjs
+U-02   UAES  exit=0      1s  node quality/scripts/uaes/quality-gate-runner.mjs
+test-matrix: total=27 passed=23 failed=4 skipped=0 overall=FAIL
+evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/test-matrix.json

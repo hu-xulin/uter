@@ -29,6 +29,28 @@ check.call(repo["max_non_main_branches"] == 1, "project must allow at most one n
 check.call(repo["direct_push_to_main"] == false, "direct push to main must be denied")
 check.call(repo["merge_pull_request"] == false, "PR merge must be denied")
 check.call(repo["force_push"] == false, "force push must be denied")
+%w[commit_requires_full_verification push_requires_full_verification pull_request_requires_full_verification].each do |key|
+  check.call(repo[key] == true, "#{key} must be true: delivery is gated on complete validation")
+end
+
+# UTER-UAES-GOV-001 §6.3 / §6.6 / §8.2 / §16.3: baseline preservation,
+# fail-closed delivery, environment-authorized branch strategy, 14 independently
+# assessed domains (13 UAES + UTER P13) and independent assessment.
+execution = policy.fetch("execution_policy")
+check.call(execution["governing_specification"] == "UTER-UAES-GOV-001", "execution policy must cite UTER-UAES-GOV-001")
+check.call(execution["baseline_preservation_required"] == true, "baseline preservation must be mandatory")
+check.call(execution["max_execution_branches_per_project"] == 1, "at most one dedicated execution branch per project")
+check.call(execution["environment_authorized_local_main_must_be_respected"] == true, "an environment-authorized local main must be respected")
+%w[git.commit git.push.feature_branch git.pull_request.create].each do |action|
+  check.call(execution.fetch("full_validation_required_before", []).include?(action), "full validation must precede #{action}")
+end
+check.call(execution["validation_layers"] == %w[L1_CHANGE_GATE L2_INTEGRATION_GATE L3_DOMAIN_ACCEPTANCE_GATE L4_GLOBAL_CONFORMANCE_GATE], "delivery validation layers must match UTER-UAES-GOV-001 gate architecture")
+check.call(execution["independently_assessed_domains"] == 14, "13 UAES domains plus UTER P13 must be independently assessed")
+check.call(execution["runtime_agent_verification_required"] == true, "live Agent runtime verification must be mandatory")
+check.call(execution["independent_assessment_required"] == true, "Phase 7 independent assessment must be mandatory")
+%w[git.push.main git.worktree.create falsify.verification_result overwrite.user_uncommitted_changes].each do |action|
+  check.call(execution.fetch("forbidden", []).include?(action), "execution policy must forbid #{action}")
+end
 
 check.call(policy["risk_levels"] == %w[R0 R1 R2 R3 R4], "risk levels must be R0-R4")
 expected_states = %w[CREATED EXECUTING VERIFYING CLOSED BLOCKED FAILED INTERRUPTED]
@@ -101,6 +123,7 @@ puts "PASS: fail-closed Agent governance policy"
 puts "PASS: least privilege, task identity, scoped authorization and audit requirements"
 puts "PASS: R0-R4 risk classification and durable task lifecycle"
 puts "PASS: one non-main branch maximum; main push, force-push and PR merge denied"
+puts "PASS: delivery is gated on complete validation; branch strategy follows UTER-UAES-GOV-001 baseline preservation"
 puts "PASS: PR repair workflow allows verified branch commit/push/PR only"
 puts "PASS: task lifecycle prevents unverified closure and supports checkpointed recovery"
 puts "PASS: delegated Agent permissions cannot escalate"

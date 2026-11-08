@@ -1,0 +1,25 @@
+{
+  "evidence_id": "GATE-L1-L2",
+  "generated_at": "2026-11-07T16:56:25Z",
+  "related_requirement": "§8.2 Change Gate / Integration Gate; §8.3 gate result vocabulary",
+  "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
+  "uaes_commit": "46c648836ee4cf06e285712ae2504da7ccab5602",
+  "L1_CHANGE_GATE": {
+    "status": "FAIL",
+    "checks": 18,
+    "failed": [
+      {
+        "id": "L1-16",
+        "command": "ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/uaes-agent-runtime-check.rb workspace --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
+        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-16.log"
+      }
+    ]
+  },
+  "L2_INTEGRATION_GATE": {
+    "status": "PASS",
+    "checks": 9,
+    "failed": []
+  },
+  "skipped": [],
+  "note": "Skips are explicit and never counted as PASS (§8.3)."
+}
