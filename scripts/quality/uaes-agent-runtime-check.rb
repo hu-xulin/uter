@@ -328,6 +328,20 @@ def workspace(task_file:, uaes_repo:)
   added = current - baseline
   removed = baseline - current
 
+  # A baseline path disappearing from `git status` is ambiguous on its own: the
+  # work-in-progress may have been LOST, or it may have been COMMITTED (which is
+  # the normal, correct outcome once validation passes and the owner's changes
+  # are recorded in history). Comparing only against the status list therefore
+  # reports a committed change as a destroyed one. A path counts as lost only if
+  # it is neither present on disk nor reachable from HEAD.
+  def preserved?(rel_path)
+    abs = File.join(ROOT, rel_path)
+    return true if File.exist?(abs) || File.symlink?(abs)
+    _out, _err, code = Open3.capture3("git", "-C", ROOT, "cat-file", "-e", "HEAD:#{rel_path}")
+    code.exitstatus.zero?
+  end
+  lost = removed.reject { |p| preserved?(p) }
+
   checks = []
   add = ->(id, name, ok, observation) do
     checks << { "check" => id, "name" => name, "status" => ok ? "PASS" : "FAIL", "observation" => observation }
@@ -346,8 +360,11 @@ def workspace(task_file:, uaes_repo:)
   add.call("W3", "no commit created before complete validation", main_head == branch_head,
            { "main" => main_head, "head" => branch_head })
 
-  add.call("W4", "pre-existing user WIP preserved", removed.empty?,
-           { "baseline_entries" => baseline.length, "missing_entries" => removed })
+  add.call("W4", "pre-existing user WIP preserved", lost.empty?,
+           { "baseline_entries" => baseline.length,
+             "no_longer_dirty" => removed,
+             "still_dirty_or_committed" => removed - lost,
+             "missing_entries" => lost })
 
   normative_prefixes = %w[standards/ .uaes/STANDARD-REGISTRY.yaml .uaes/registry/ .uaes/APPROVAL-RECORD.md
                          .uaes/policies/ quality/gates/ quality/policies/ agents/policies/]
