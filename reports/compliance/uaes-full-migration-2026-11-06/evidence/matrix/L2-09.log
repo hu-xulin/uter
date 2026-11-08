@@ -2,7 +2,7 @@
 # layer: L2
 # command: bun run test -- src/features/wallet src/features/pricing
 # workdir: /Users/lincolnhu/uter/web
-# started_at: 2026-11-07T15:10:56Z
+# started_at: 2026-11-08T08:40:47Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
@@ -11,10 +11,10 @@ $ vitest run src/features/wallet src/features/pricing
 
 [1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/lincolnhu/uter/web[39m
 
- [32m✓[39m src/features/wallet/lib/__tests__/payment-icons.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 444[2mms[22m[39m
- [32m✓[39m src/features/wallet/components/__tests__/recharge-form-card.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 561[2mms[22m[39m
+ [32m✓[39m src/features/wallet/lib/__tests__/payment-icons.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 374[2mms[22m[39m
+ [32m✓[39m src/features/wallet/components/__tests__/recharge-form-card.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 527[2mms[22m[39m
    [32m✓[39m RechargeFormCard custom amount [2m(2)[22m
-     [33m[2m✓[22m[39m keeps the decimal part the user types[33m 387[2mms[22m[39m
+     [33m[2m✓[22m[39m keeps the decimal part the user types[33m 360[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx
 [22m[39mi18next: languageChanged en
 i18next: initialized {
@@ -86,33 +86,31 @@ i18next: initialized {
   ignoreJSONStructure: [33mtrue[39m
 }
 
- [32m✓[39m src/features/wallet/__tests__/copy.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1028[2mms[22m[39m
-   [33m[2m✓[22m[39m translates billing history statuses and updates them when the language changes[33m 716[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/discount-tag.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 311[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/model-cards.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 3413[2mms[22m[39m
-   [32m✓[39m model cards [2m(33)[22m
-     [33m[2m✓[22m[39m copies the complete long model name without opening details[33m 307[2mms[22m[39m
-     [33m[2m✓[22m[39m paginates the model cards and disables navigation at both boundaries[33m 1190[2mms[22m[39m
- [32m✓[39m src/features/wallet/components/dialogs/__tests__/cn-pay-web-dialog.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 358[2mms[22m[39m
+ [32m✓[39m src/features/wallet/__tests__/copy.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 995[2mms[22m[39m
+   [33m[2m✓[22m[39m translates billing history statuses and updates them when the language changes[33m 701[2mms[22m[39m
+ [32m✓[39m src/features/wallet/components/dialogs/__tests__/cn-pay-web-dialog.test.tsx [2m([22m[2m1 test[22m[2m)[22m[33m 386[2mms[22m[39m
    [32m✓[39m CnPayWebDialog order amount [2m(1)[22m
-     [33m[2m✓[22m[39m sends the sub-dollar amount as-is instead of truncating to 0[33m 347[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/pricing-controls.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 3092[2mms[22m[39m
+     [33m[2m✓[22m[39m sends the sub-dollar amount as-is instead of truncating to 0[33m 376[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/discount-tag.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 360[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/model-cards.test.tsx [2m([22m[2m33 tests[22m[2m)[22m[33m 3499[2mms[22m[39m
+   [32m✓[39m model cards [2m(33)[22m
+     [33m[2m✓[22m[39m paginates the model cards and disables navigation at both boundaries[33m 1242[2mms[22m[39m
+ [32m✓[39m src/features/pricing/lib/__tests__/billing-expression.test.ts [2m([22m[2m81 tests[22m[2m)[22m[32m 158[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/pricing-controls.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 3232[2mms[22m[39m
    [32m✓[39m pricing controls [2m(9)[22m
-     [33m[2m✓[22m[39m counts each model once per filter and updates counts when the catalog changes[33m 948[2mms[22m[39m
-     [33m[2m✓[22m[39m selects price sorting from the shared dropdown[33m 318[2mms[22m[39m
-     [33m[2m✓[22m[39m opens mobile filters from the left, selects a group, and restores focus on close[33m 685[2mms[22m[39m
- [32m✓[39m src/features/pricing/lib/__tests__/billing-expression.test.ts [2m([22m[2m81 tests[22m[2m)[22m[32m 163[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/dynamic-price.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 123[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/task-matrix.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 63[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/sorting.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 73[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/task-expr.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 58[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/task-matrix-display.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 67[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/vendor-order.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 40[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/breakdown-tier-match.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 39[2mms[22m[39m
- [32m✓[39m src/features/pricing/__tests__/context-size-tags.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 38[2mms[22m[39m
- [32m✓[39m src/features/pricing/lib/__tests__/time-rule-expr.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 34[2mms[22m[39m
- [32m✓[39m src/features/wallet/lib/payment-redirect.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+     [33m[2m✓[22m[39m counts each model once per filter and updates counts when the catalog changes[33m 942[2mms[22m[39m
+     [33m[2m✓[22m[39m selects price sorting from the shared dropdown[33m 342[2mms[22m[39m
+     [33m[2m✓[22m[39m opens mobile filters from the left, selects a group, and restores focus on close[33m 803[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/dynamic-price.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-matrix-display.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/sorting.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-expr.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-matrix.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/vendor-order.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/breakdown-tier-match.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/context-size-tags.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 43[2mms[22m[39m
  [32m✓[39m src/features/wallet/lib/__tests__/alipay-return.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/features/pricing/lib/__tests__/time-rule-expr.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 36[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx
 [22m[39mi18next: languageChanged en
 i18next: initialized {
@@ -218,6 +216,7 @@ i18next::translator: missingKey en translation request request
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows an explicit free request price alongside token prices with distinct units
 [22m[39mi18next: languageChanged en
 
+ [32m✓[39m src/features/wallet/lib/payment-redirect.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 26[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mrenders weekday and hour conditions as time windows instead of expression source
 [22m[39mi18next::translator: missingKey en translation Dynamic Pricing Dynamic Pricing
 i18next::translator: missingKey en translation Prices vary by usage tier and request conditions Prices vary by usage tier and request conditions
@@ -398,6 +397,7 @@ i18next::translator: missingKey en translation Official Official
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows nested task conditions and prices in detail and group tables without ambiguous log matches
 [22m[39mi18next: languageChanged en
 
+ [32m✓[39m src/features/wallet/hooks/use-payment.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 28[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mexplains missing task metadata while retaining the original expression
 [22m[39mi18next::translator: missingKey en translation Special billing expression Special billing expression
 i18next::translator: missingKey en translation Task usage metadata is unavailable. Pricing details cannot be displayed. Task usage metadata is unavailable. Pricing details cannot be displayed.
@@ -534,10 +534,11 @@ i18next::translator: missingKey zhCN translation Groups Groups
 i18next::translator: missingKey zhCN translation Model Model
 i18next::translator: missingKey zhCN translation Task billing Task billing
 
+ [32m✓[39m src/features/pricing/__tests__/group-ratio-badge.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows localized image labels and units in base and group pricing when configured=true
 [22m[39mi18next: languageChanged en
 
- [32m✓[39m src/features/pricing/__tests__/group-ratio-badge.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/features/wallet/lib/__tests__/min-topup.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 18[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mupdates count unit labels across cards, table cells and breakdowns with locale fallback
 [22m[39mi18next::translator: missingKey en translation Official Official
 i18next::translator: missingKey en translation unit unit
@@ -678,9 +679,7 @@ i18next::translator: missingKey en translation Official Official
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mrefreshes memoized provider prices when the group or display currency changes
 [22m[39mi18next: languageChanged en
 
- [32m✓[39m src/features/wallet/lib/__tests__/min-topup.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 21[2mms[22m[39m
- [32m✓[39m src/features/wallet/lib/payment.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m src/features/wallet/hooks/use-payment.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/features/wallet/lib/payment.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows one standard task price and a localized group price without duplicate tiers
 [22m[39mi18next::translator: missingKey en translation Overview Overview
 i18next::translator: missingKey en translation Performance Performance
@@ -996,17 +995,17 @@ i18next::translator: missingKey en translation Throughput short Throughput short
 [90mstdout[2m | src/features/pricing/__tests__/task-price-display.test.tsx[2m > [22m[2mshows provider count, price range and missing-price status in both list and card views
 [22m[39mi18next: languageChanged en
 
- [32m✓[39m src/features/pricing/__tests__/task-price-display.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 2773[2mms[22m[39m
-   [33m[2m✓[22m[39m shows localized image labels and units in base and group pricing when configured=true[33m 325[2mms[22m[39m
-   [33m[2m✓[22m[39m shows one standard task price and a localized group price without duplicate tiers[33m 384[2mms[22m[39m
-   [33m[2m✓[22m[39m switches provider group prices, localized conditions and examples, and shows unconfigured providers[33m 758[2mms[22m[39m
+ [32m✓[39m src/features/pricing/__tests__/task-price-display.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 2596[2mms[22m[39m
+   [33m[2m✓[22m[39m shows nested task conditions and prices in detail and group tables without ambiguous log matches[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m shows one standard task price and a localized group price without duplicate tiers[33m 431[2mms[22m[39m
+   [33m[2m✓[22m[39m switches provider group prices, localized conditions and examples, and shows unconfigured providers[33m 688[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m24 passed[39m[22m[90m (24)[39m
 [2m      Tests [22m [1m[32m363 passed[39m[22m[90m (363)[39m
-[2m   Start at [22m 23:10:57
-[2m   Duration [22m 15.09s[2m (environment 45%, import 22%, tests 17%, setup 12%, transform 4%)[22m
+[2m   Start at [22m 16:40:49
+[2m   Duration [22m 14.55s[2m (environment 45%, import 22%, tests 18%, setup 11%, transform 4%)[22m
 
-[2mEnvironment [22m [33mjsdom was created 24 times[39m[2m · 33.87s total, 45% of tracked time[22m
+[2mEnvironment [22m [33mjsdom was created 24 times[39m[2m · 32.40s total, 45% of tracked time[22m
 [2m            [22m [2mcreate it once per worker with [22m[33mpool: 'vmThreads'[39m[2m (keeps per-file isolation) or [22m[33misolate: false[39m[2m (shares it across files)[22m
 [2m            [22m [2mlearn more: https://vitest.dev/guide/improving-performance#test-environments[22m
 

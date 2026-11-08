@@ -2,19 +2,19 @@
 # layer: L1
 # command: ruby scripts/quality/test-uter-governance-boundaries.rb
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-07T15:03:31Z
+# started_at: 2026-11-08T08:33:43Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
-Run options: --seed 1054
+Run options: --seed 21305
 
 # Running:
 
 .............
 
-Finished in 13.171528s, 0.9870 runs/s, 3.8720 assertions/s.
+Finished in 13.401624s, 0.9700 runs/s, 3.8055 assertions/s.
 
 13 runs, 51 assertions, 0 failures, 0 errors, 0 skips
 # exit_code: 0
-# duration_seconds: 14
+# duration_seconds: 13

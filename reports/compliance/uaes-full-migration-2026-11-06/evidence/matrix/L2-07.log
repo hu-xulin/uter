@@ -2,12 +2,12 @@
 # layer: L2
 # command: bun run build:check
 # workdir: /Users/lincolnhu/uter/web
-# started_at: 2026-11-07T15:10:12Z
+# started_at: 2026-11-08T08:40:07Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
-$ tsgo -b && rsbuild build
+$ tsgo -b && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/
 Rsbuild v2.1.6
 
 Warning: Route file "/Users/lincolnhu/uter/web/src/routes/__tests__/public-routes-render.test.tsx" does not export a Route. This file will not be included in the route tree.
@@ -29,7 +29,7 @@ Current configuration:
   routeFileIgnorePrefix: "-"
   routeFileIgnorePattern: undefined
 info    build started...
-ready   built in 10.9s
+ready   built in 10.7s
 
 File (web)                                                              Size         Gzip   
 dist/static/js/async/87250.ddade7228c.js                                0.10 kB      0.10 kB

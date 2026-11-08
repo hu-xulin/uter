@@ -1,11 +1,11 @@
 {
   "report_id": "D09-RUNTIME-PREFLIGHT",
-  "generated_at": "2026-11-08T07:01:35Z",
+  "generated_at": "2026-11-08T08:33:42Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
   "harness": "scripts/quality/uaes-agent-runtime-check.rb",
   "uaes_version": "1.12.1",
   "uaes_status": "ACTIVE",
-  "uter_commit": "f6b83382ad25820d27273468a8e135d9e5f9288c",
+  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
   "branch": "main",
   "overall": "PASS",
   "failed_steps": [],
@@ -26,7 +26,7 @@
       "status": "PASS",
       "observation": {
         "path": ".uaes/AI-GOVERNANCE-ENTRY.md",
-        "sha256": "ac0141c32cbc31d25912f584bfe19b75eb1b79ebe6ee5837af7297333f6224ac"
+        "sha256": "3d59c6b6bb8eb1bb6082ac2d91ac207d6553e4c21f8d34bab337b05592a886b1"
       }
     },
     {
@@ -35,16 +35,24 @@
       "status": "PASS",
       "observation": {
         "pin": {
+          "schema_version": "3.0.0",
           "registry_version": "1.12.1",
           "registry_status": "ACTIVE",
           "source_commit": "586f6227d1248e57173ac785e1b8537cb880362f",
           "registry_blob_sha": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
-          "approval_record": "UAES-APPROVAL-2026-11-07-004"
+          "approval_record": "UAES-APPROVAL-2026-11-07-004",
+          "governed_fingerprint": "4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c"
         },
         "registry_blob_sha_actual": "a806eef48e6242d82dcb1d39d5c094e0d7d981a1",
-        "uaes_head_actual": "586f6227d1248e57173ac785e1b8537cb880362f",
+        "uaes_head_actual": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
         "registry_version_actual": "1.12.1",
-        "registry_status_actual": "ACTIVE"
+        "registry_status_actual": "ACTIVE",
+        "governed_verification": {
+          "governed_fingerprint_pinned": "4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c",
+          "governed_fingerprint_actual": "4713310d9f51a17576b904a5ec3e185c64e6f23547c05c51c2a4d0158106450c",
+          "fingerprint_exit": 0
+        },
+        "source_commit_is": "provenance-only"
       }
     },
     {
@@ -76,8 +84,8 @@
       "status": "PASS",
       "observation": {
         "default_effect": "deny",
-        "task_id": "UAES-UTER-UNIFIED-GOVERNANCE-2026-11-08",
-        "risk_level": "R3"
+        "task_id": "UTER-UAES-FULL-GOVERNANCE-MIGRATION-2026-11-06",
+        "risk_level": "R2"
       }
     },
     {
@@ -85,8 +93,8 @@
       "name": "check workspace",
       "status": "PASS",
       "observation": {
-        "dirty_entries": 271,
-        "untracked": 117,
+        "dirty_entries": 35,
+        "untracked": 1,
         "staged_files": [],
         "user_wip_preserved": true
       }
@@ -96,56 +104,93 @@
       "name": "confirm impact scope",
       "status": "PASS",
       "observation": {
-        "scope": {
-          "include": [
-            ".uaes/",
-            "AGENTS.md",
-            "CLAUDE.md",
-            "docs/ai-specs/",
-            "scripts/quality/",
-            "scripts/verify-all.sh",
-            "tools/uaes/",
-            "reports/compliance/",
-            ".gitignore",
-            ".github/workflows/ci.yml"
-          ],
-          "exclude": [
-            "production configuration and credentials",
-            "real payment merchant configuration",
-            "production database",
-            "UAES approved normative standards authored to accommodate Uter implementation",
-            "user pre-existing uncommitted product work outside the governance surface",
-            "git push, merge, deployment, production writes"
-          ],
-          "preserve_behavior": [
-            "user pre-existing uncommitted product work",
-            "Uter payment, billing, wallet, order, channel and auth business rules",
-            "UTER P13 registration inside the Uter project registry only"
-          ]
-        },
+        "scope": [
+          ".uaes/",
+          "AGENTS.md",
+          "scripts/quality/",
+          "reports/compliance/uaes-full-migration-2026-11-06/",
+          ".github/workflows/ci.yml",
+          "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+          "web/.oxfmtrc.json",
+          "web/scripts/check-component-registry.mjs",
+          "web/scripts/generate-design-tokens.mjs",
+          "web/scripts/verify-contrast.mjs",
+          "web/src/components/layout/components/footer.tsx",
+          "web/src/components/ui/native-select.tsx",
+          "web/src/design-system/__tests__/sidebar-active-guard.test.ts",
+          "web/src/design-system/__tests__/status-badge-contrast.test.ts",
+          "web/src/design-system/__tests__/token-source.test.ts",
+          "web/src/design-system/component-registry.json",
+          "web/src/design-system/schemas/component-registry.schema.json",
+          "web/src/design-system/source/brand.tokens.schema.json",
+          "web/src/design-system/tokens/generated/brand.css",
+          "web/src/features/auth/components/oauth-providers.tsx",
+          "web/src/features/auth/hooks/use-oauth-login.ts",
+          "web/src/features/auth/secure-verification/api.ts",
+          "web/src/features/auth/types.ts",
+          "web/src/features/chat/hooks/use-chat-presets.ts",
+          "web/src/features/pricing/components/model-card.tsx",
+          "web/src/features/pricing/lib/billing-expression/display.ts",
+          "web/src/features/pricing/lib/billing-expression/visual.ts",
+          "web/src/features/pricing/types.ts",
+          "web/src/features/security/components/account-bindings.tsx",
+          "web/src/hooks/use-status.ts",
+          "web/src/",
+          "web/scripts/",
+          "web/package.json",
+          "web/knip.jsonc",
+          "web/knip.config.ts",
+          "web/.gitignore",
+          "web/bun.lock",
+          "web/e2e/axe/",
+          "docs-web/",
+          "electron/",
+          "reports/compliance/"
+        ],
         "include": [
           ".uaes/",
           "AGENTS.md",
-          "CLAUDE.md",
-          "docs/ai-specs/",
           "scripts/quality/",
-          "scripts/verify-all.sh",
-          "tools/uaes/",
-          "reports/compliance/",
-          ".gitignore",
+          "reports/compliance/uaes-full-migration-2026-11-06/",
           ".github/workflows/ci.yml",
-          "user pre-existing uncommitted product work",
-          "Uter payment, billing, wallet, order, channel and auth business rules",
-          "UTER P13 registration inside the Uter project registry only"
+          "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+          "web/.oxfmtrc.json",
+          "web/scripts/check-component-registry.mjs",
+          "web/scripts/generate-design-tokens.mjs",
+          "web/scripts/verify-contrast.mjs",
+          "web/src/components/layout/components/footer.tsx",
+          "web/src/components/ui/native-select.tsx",
+          "web/src/design-system/__tests__/sidebar-active-guard.test.ts",
+          "web/src/design-system/__tests__/status-badge-contrast.test.ts",
+          "web/src/design-system/__tests__/token-source.test.ts",
+          "web/src/design-system/component-registry.json",
+          "web/src/design-system/schemas/component-registry.schema.json",
+          "web/src/design-system/source/brand.tokens.schema.json",
+          "web/src/design-system/tokens/generated/brand.css",
+          "web/src/features/auth/components/oauth-providers.tsx",
+          "web/src/features/auth/hooks/use-oauth-login.ts",
+          "web/src/features/auth/secure-verification/api.ts",
+          "web/src/features/auth/types.ts",
+          "web/src/features/chat/hooks/use-chat-presets.ts",
+          "web/src/features/pricing/components/model-card.tsx",
+          "web/src/features/pricing/lib/billing-expression/display.ts",
+          "web/src/features/pricing/lib/billing-expression/visual.ts",
+          "web/src/features/pricing/types.ts",
+          "web/src/features/security/components/account-bindings.tsx",
+          "web/src/hooks/use-status.ts",
+          "web/src/",
+          "web/scripts/",
+          "web/package.json",
+          "web/knip.jsonc",
+          "web/knip.config.ts",
+          "web/.gitignore",
+          "web/bun.lock",
+          "web/e2e/axe/",
+          "docs-web/",
+          "electron/",
+          "reports/compliance/"
         ],
-        "exclude": [
-          "production configuration and credentials",
-          "real payment merchant configuration",
-          "production database",
-          "UAES approved normative standards authored to accommodate Uter implementation",
-          "user pre-existing uncommitted product work outside the governance surface",
-          "git push, merge, deployment, production writes"
-        ]
+        "exclude": []
       }
     },
     {
@@ -154,61 +199,26 @@
       "status": "PASS",
       "observation": {
         "steps": [
-          {
-            "step": "Establish the unified ledger and the two-repository baseline",
-            "files": [
-              "UAES-UTER-UNIFIED-EXECUTION-PLAN.md"
-            ]
-          },
-          {
-            "step": "Repair UAES registry-integrity defects and release 1.12.1",
-            "files": [
-              ".uaes/STANDARD-REGISTRY.yaml",
-              ".uaes/spec-registry/SPECIFICATION-REGISTRY.yaml",
-              ".uaes/registry/mappings.yaml",
-              "quality/scripts/uaes/independent-verifier.mjs",
-              "standards/09-quality-engineering/UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION.md"
-            ]
-          },
-          {
-            "step": "Give the four Uter engineering-quality standards an explicit UAES parent",
-            "files": [
-              "docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md",
-              "docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md",
-              "docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md",
-              "docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md",
-              "docs/ai-specs/engineering-quality/README.md"
-            ]
-          },
-          {
-            "step": "Refresh the Uter pin and governance registry to the new UAES baseline",
-            "files": [
-              ".uaes/uaes-pin.json",
-              ".uaes/INTEGRATION.md",
-              ".uaes/AI-GOVERNANCE-ENTRY.md",
-              ".uaes/uter-governance-registry.yaml"
-            ]
-          },
-          {
-            "step": "Track the governance enforcement scripts and repair the runtime harness field contract",
-            "files": [
-              "scripts/quality/uter-governance-separation-check.rb",
-              "scripts/quality/uter-p09-p10-boundary-check.rb",
-              "scripts/quality/uaes-agent-runtime-check.rb"
-            ]
-          },
-          {
-            "step": "Clean duplicated and dead governance artifacts in both repositories",
-            "files": [
-              ".gitignore"
-            ]
-          },
-          {
-            "step": "Run the joint acceptance and publish the final report",
-            "files": [
-              "UAES-UTER-UNIFIED-GOVERNANCE-FINAL-ACCEPTANCE-REPORT.md"
-            ]
-          }
+          "§18-1: verify UAES repository and approved release",
+          "§18-2: verify Uter repository and actual project structure",
+          "§18-3: establish and preserve the baseline",
+          "§18-4: identify applicable external standards (§2.1 catalogue)",
+          "§18-5: establish standards applicability register (D01)",
+          "§18-6: establish UAES P00-P12 traceability (D05)",
+          "§18-7: establish UTER P13 as a Uter project-specific extension (D06)",
+          "§18-8: assess all applicable requirements across 14 independent domains",
+          "§18-9: identify governance and implementation gaps (D10)",
+          "§18-10: establish corrective actions (D20)",
+          "§18-11: implement authorized changes with baseline preservation",
+          "§18-12: integrate engineering and security controls (P09 proves / P10 defines)",
+          "§18-13: establish automated verification incl. two-repository separation gate",
+          "§18-14: validate WorkBuddy runtime behavior with live task evidence",
+          "§18-15: execute required tests (D19)",
+          "§18-16: verify control effectiveness (D21 / D22)",
+          "§18-17: conduct independent assessment (D26)",
+          "§18-18: produce D01-D28 evidence package (D25 index)",
+          "§18-19: obtain required acceptance decisions",
+          "§18-20: report final conformity status per §16.2 (D27)"
         ]
       }
     },
@@ -218,58 +228,19 @@
       "status": "PASS",
       "observation": {
         "methods": [
-          {
-            "command": "node quality/scripts/uaes/validate-registry.mjs",
-            "scope": "UAES registry schema and referential integrity"
-          },
-          {
-            "command": "node quality/scripts/uaes/verify-derived-indices.mjs",
-            "scope": "derived indices agree with the authoritative registry"
-          },
-          {
-            "command": "node quality/scripts/uaes/run-release-tests.mjs",
-            "scope": "UAES release test suites"
-          },
-          {
-            "command": "node quality/scripts/uaes/spec-integrity.mjs check",
-            "scope": "specification seal and gates"
-          },
-          {
-            "command": "bash scripts/quality/uaes-pin-check.sh",
-            "scope": "Uter pin static integrity"
-          },
-          {
-            "command": "bash scripts/quality/uaes-integration-check.sh",
-            "scope": "Uter integration wiring"
-          },
-          {
-            "command": "ruby scripts/quality/uter-governance-separation-check.rb",
-            "scope": "three-layer two-repository separation"
-          },
-          {
-            "command": "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
-            "scope": "P09 proves / P10 defines boundary"
-          },
-          {
-            "command": "ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task .uaes/tasks/UAES-UTER-UNIFIED-GOVERNANCE-2026-11-08.json",
-            "scope": "Agent runtime preflight"
-          },
-          {
-            "command": "ruby scripts/quality/uaes-agent-runtime-check.rb selftest",
-            "scope": "fail-closed authorization decisions"
-          },
-          {
-            "command": "node tools/uaes/integration-adapter.test.mjs",
-            "scope": "UAES integration adapter"
-          },
-          {
-            "command": "go test ./...",
-            "scope": "Go test suites across the module"
-          },
-          {
-            "command": "go build ./...",
-            "scope": "Go build incl. embed directives"
-          }
+          "node quality/scripts/uaes/validate-registry.mjs",
+          "bash scripts/quality/ai-specs-check.sh",
+          "ruby scripts/quality/test-ai-governance-policy.rb",
+          "ruby scripts/quality/test-uaes-pin-check.rb && bash scripts/quality/uaes-pin-check.sh",
+          "ruby scripts/quality/test-uaes-integration-check.rb && bash scripts/quality/uaes-integration-check.sh",
+          "ruby scripts/quality/uter-governance-separation-check.rb",
+          "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
+          "ruby scripts/quality/uaes-agent-runtime-check.rb preflight/workspace/verify/selftest",
+          "bash scripts/quality/uaes-test-matrix.sh",
+          "ruby scripts/quality/uaes-governance-gates.rb",
+          "ruby scripts/quality/uter-independent-assessment.rb",
+          "Go tests across 4 modules, gofmt, go vet",
+          "frontend typecheck / vitest / format / build"
         ]
       }
     },
@@ -279,7 +250,7 @@
       "status": "PASS",
       "observation": {
         "branch": "main",
-        "head": "f6b83382ad25820d27273468a8e135d9e5f9288c",
+        "head": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
         "governing_specification": "UTER-UAES-GOV-001",
         "baseline_preservation_required": true
       }

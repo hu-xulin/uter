@@ -2,15 +2,15 @@
 # layer: L2
 # command: GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay|TopUp|Recharge|Billing|Gateway|DreamRouter'
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-07T15:10:39Z
+# started_at: 2026-11-08T08:40:34Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
-ok  	github.com/uter-ai/uter/controller	6.277s
-ok  	github.com/uter-ai/uter/service	8.528s
+ok  	github.com/uter-ai/uter/controller	4.534s
+ok  	github.com/uter-ai/uter/service	5.869s
 ok  	github.com/uter-ai/uter/service/authz	(cached) [no tests to run]
 ok  	github.com/uter-ai/uter/service/passkey	(cached) [no tests to run]
-ok  	github.com/uter-ai/uter/model	2.422s
+ok  	github.com/uter-ai/uter/model	(cached)
 # exit_code: 0
-# duration_seconds: 17
+# duration_seconds: 13

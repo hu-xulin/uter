@@ -2,22 +2,22 @@
 # layer: L2
 # command: GOWORK=off go test ./...
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-07T15:03:47Z
+# started_at: 2026-11-08T08:34:00Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
 # ---------------------------------------------
-ok  	github.com/uter-ai/uter	5.688s
-ok  	github.com/uter-ai/uter/common	10.165s
+ok  	github.com/uter-ai/uter	(cached)
+ok  	github.com/uter-ai/uter/common	6.938s
 ok  	github.com/uter-ai/uter/common/limiter	(cached)
 ok  	github.com/uter-ai/uter/constant	(cached)
-ok  	github.com/uter-ai/uter/controller	76.475s
+ok  	github.com/uter-ai/uter/controller	(cached)
 ok  	github.com/uter-ai/uter/dto	(cached)
-ok  	github.com/uter-ai/uter/e2e	28.465s
+ok  	github.com/uter-ai/uter/e2e	(cached)
 ok  	github.com/uter-ai/uter/i18n	(cached)
 ?   	github.com/uter-ai/uter/logger	[no test files]
 ok  	github.com/uter-ai/uter/middleware	(cached)
-ok  	github.com/uter-ai/uter/model	14.063s
+ok  	github.com/uter-ai/uter/model	18.043s
 ok  	github.com/uter-ai/uter/oauth	(cached)
 ok  	github.com/uter-ai/uter/pkg/billingexpr	(cached)
 ?   	github.com/uter-ai/uter/pkg/cachex	[no test files]
@@ -74,8 +74,8 @@ ok  	github.com/uter-ai/uter/relay/common	(cached)
 ok  	github.com/uter-ai/uter/relay/constant	(cached)
 ok  	github.com/uter-ai/uter/relay/costopt	(cached)
 ok  	github.com/uter-ai/uter/relay/helper	(cached)
-ok  	github.com/uter-ai/uter/router	6.719s
-ok  	github.com/uter-ai/uter/service	10.202s
+ok  	github.com/uter-ai/uter/router	(cached)
+ok  	github.com/uter-ai/uter/service	8.080s
 ok  	github.com/uter-ai/uter/service/authz	(cached)
 ok  	github.com/uter-ai/uter/service/passkey	(cached)
 ok  	github.com/uter-ai/uter/setting	(cached)
@@ -95,4 +95,4 @@ ok  	github.com/uter-ai/uter/setting/system_setting	(cached)
 ok  	github.com/uter-ai/uter/setting/task_pricing_setting	(cached)
 ?   	github.com/uter-ai/uter/types	[no test files]
 # exit_code: 0
-# duration_seconds: 115
+# duration_seconds: 34

@@ -1,29 +1,29 @@
 # Gate evaluation summary (UTER-UAES-GOV-001 §8.2 / §16)
 
-- Generated: 2026-11-07T16:56:25Z
-- Uter commit: `ec6501adceb008d46140a7e5ab6508eb78006731`
-- UAES commit: `46c648836ee4cf06e285712ae2504da7ccab5602` (1.12.0 / ACTIVE)
+- Generated: 2026-11-08T08:41:21Z
+- Uter commit: `73583896df2cf4db27eb0ba9d31a4819a239be0a`
+- UAES commit: `4344979777433fbcdbe23ef2aa0111fe2e8a52e7` (1.12.1 / ACTIVE)
 - Conformance status vocabulary (§16.2): CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED
 
 | Gate | Status | Detail |
 |---|---|---|
-| L1_CHANGE_GATE | FAIL | 18 checks, 1 failed |
+| L1_CHANGE_GATE | PASS | 19 checks, 0 failed |
 | L2_INTEGRATION_GATE | PASS | 9 checks, 0 failed |
 | L3_DOMAIN_ACCEPTANCE_GATE (14 domains) | BLOCKED | 0/14 PASS |
-| L4_GLOBAL_CONFORMANCE_GATE | BLOCKED | 9/16 mandatory conditions MET |
+| L4_GLOBAL_CONFORMANCE_GATE | BLOCKED | 11/16 mandatory conditions MET |
 
 | Domain | Classification | Status | UAES gate | Blocking reason |
 |---|---|---|---|---|
 | P00 Foundation | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 2 manual acceptance item(s) lack real verification evidence |
-| P01 AI Governance | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | automated checks not passing: L1-16=FAIL |
+| P01 AI Governance | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 2 manual acceptance item(s) lack real verification evidence |
 | P02 Product Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 3 manual acceptance item(s) lack real verification evidence |
 | P03 Knowledge Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 3 manual acceptance item(s) lack real verification evidence |
 | P04 System Architecture | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 2 manual acceptance item(s) lack real verification evidence |
 | P05 Experience & Design | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 4 manual acceptance item(s) lack real verification evidence |
 | P06 Software Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 2 manual acceptance item(s) lack real verification evidence |
 | P07 Cross-Platform Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 3 manual acceptance item(s) lack real verification evidence |
-| P08 AI Agent Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | automated checks not passing: L1-16=FAIL |
-| P09 Quality Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | automated checks not passing: L1-16=FAIL |
+| P08 AI Agent Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 3 manual acceptance item(s) lack real verification evidence |
+| P09 Quality Engineering | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 4 manual acceptance item(s) lack real verification evidence |
 | P10 Security & Reliability | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 4 manual acceptance item(s) lack real verification evidence |
 | UTER-P13 Business Domain Engineering | UTER_PROJECT_SPECIFIC_EXTENSION | BLOCKED | NOT_APPLICABLE | 5 manual acceptance item(s) lack real verification evidence |
 | P11 DevOps & Delivery | UAES_UNIVERSAL_DOMAIN | BLOCKED | NOT_RUN | 2 manual acceptance item(s) lack real verification evidence |
@@ -38,10 +38,10 @@
 | L4-03 | MET | separation gate must inspect both real repositories |
 | L4-04 | MET | assessment != acceptance |
 | L4-05 | NOT_MET | 0/14 PASS; NOT_RUN never counted as PASS |
-| L4-06 | NOT_MET | 1 L1 failure(s) |
+| L4-06 | MET | 0 L1 failure(s) |
 | L4-07 | MET | 0 L2 failure(s) |
 | L4-08 | MET | neither domain may substitute for the other |
-| L4-09 | NOT_MET | preflight/selftest/verify/workspace all required |
+| L4-09 | MET | preflight/selftest/verify/workspace all required |
 | L4-10 | NOT_MET | material applicable requirements remain unassessed |
 | L4-11 | NOT_MET | no human risk-owner acceptance; exceptions require APPROVED_EXCEPTION with authority and review date (§13.4) |
 | L4-12 | NOT_MET | control operation vs effectiveness not independently evaluated |

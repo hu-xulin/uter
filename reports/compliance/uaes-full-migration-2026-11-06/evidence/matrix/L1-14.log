@@ -2,7 +2,7 @@
 # layer: L1
 # command: ruby scripts/quality/uter-governance-separation-check.rb
 # workdir: /Users/lincolnhu/uter
-# started_at: 2026-11-07T15:03:29Z
+# started_at: 2026-11-08T08:33:41Z
 # go: go version go1.27.3 darwin/amd64
 # node: v22.22.2
 # bun: 1.4.2
@@ -23,4 +23,4 @@ PASS S12  historical UAES-P13-* files are confined to derived reports/
 overall=PASS checks=13 failed=0
 evidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/governance-separation.json
 # exit_code: 0
-# duration_seconds: 1
+# duration_seconds: 0

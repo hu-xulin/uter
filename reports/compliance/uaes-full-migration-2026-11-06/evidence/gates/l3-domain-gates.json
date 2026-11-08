@@ -1,9 +1,9 @@
 {
   "evidence_id": "GATE-L3-DOMAINS",
-  "generated_at": "2026-11-07T16:56:25Z",
+  "generated_at": "2026-11-08T08:41:21Z",
   "related_requirement": "§8.2 Domain Acceptance Gate / §16.3 independent domain acceptance",
-  "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
-  "uaes_commit": "46c648836ee4cf06e285712ae2504da7ccab5602",
+  "uter_commit": "73583896df2cf4db27eb0ba9d31a4819a239be0a",
+  "uaes_commit": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
   "domain_count": 14,
   "uaes_domain_count": 13,
   "uter_project_domain_count": 1,
@@ -12,7 +12,7 @@
   "uaes_governance_layer_note": "All 13 UAES governance-layer L3 gates remain execution=NOT_RUN per UAES .uaes/registry/gates.yaml. UTER-P13 is a Uter Layer B extension and has no UAES gate. Uter-side evaluations above do not rewrite the UAES gate status.",
   "manual_acceptance_evidence": {
     "trusted": true,
-    "run_id": "RUN-20261107T165101Z",
+    "run_id": "RUN-20261108T080313Z",
     "integrity_status": "PASS",
     "run_state": "COMPLETED",
     "execution_summary": {
@@ -76,7 +76,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -126,18 +126,16 @@
         },
         {
           "id": "L1-16",
-          "status": "FAIL"
+          "status": "PASS"
         }
       ],
       "live_agent_runtime_evidence": {
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
-      "failed_automated": [
-        "L1-16"
-      ],
+      "failed_automated": [],
       "open_manual_acceptance": [
         {
           "id": "M01-01",
@@ -167,7 +165,7 @@
         }
       ],
       "acceptance_criteria": "§16.3: requirement coverage + implementation + control effectiveness + verification results + exceptions + evidence completeness all satisfied",
-      "blocking_reason": "automated checks not passing: L1-16=FAIL"
+      "blocking_reason": "2 manual acceptance item(s) lack real verification evidence"
     },
     {
       "id": "P02",
@@ -181,7 +179,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -242,7 +240,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -305,7 +303,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -350,7 +348,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -467,7 +465,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -520,7 +518,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -592,18 +590,16 @@
         },
         {
           "id": "L1-16",
-          "status": "FAIL"
+          "status": "PASS"
         }
       ],
       "live_agent_runtime_evidence": {
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
-      "failed_automated": [
-        "L1-16"
-      ],
+      "failed_automated": [],
       "open_manual_acceptance": [
         {
           "id": "M08-01",
@@ -637,7 +633,7 @@
         }
       ],
       "acceptance_criteria": "§16.3: requirement coverage + implementation + control effectiveness + verification results + exceptions + evidence completeness all satisfied",
-      "blocking_reason": "automated checks not passing: L1-16=FAIL"
+      "blocking_reason": "3 manual acceptance item(s) lack real verification evidence"
     },
     {
       "id": "P09",
@@ -657,7 +653,7 @@
         },
         {
           "id": "L1-16",
-          "status": "FAIL"
+          "status": "PASS"
         },
         {
           "id": "L2-06",
@@ -668,11 +664,9 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
-      "failed_automated": [
-        "L1-16"
-      ],
+      "failed_automated": [],
       "open_manual_acceptance": [
         {
           "id": "M09-01",
@@ -772,7 +766,7 @@
         }
       ],
       "acceptance_criteria": "§16.3: requirement coverage + implementation + control effectiveness + verification results + exceptions + evidence completeness all satisfied",
-      "blocking_reason": "automated checks not passing: L1-16=FAIL"
+      "blocking_reason": "4 manual acceptance item(s) lack real verification evidence"
     },
     {
       "id": "P10",
@@ -791,7 +785,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -907,7 +901,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -1007,7 +1001,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
@@ -1047,7 +1041,7 @@
         "preflight": "PASS",
         "selftest": "PASS",
         "verify": "PASS",
-        "workspace": "FAIL"
+        "workspace": "PASS"
       },
       "failed_automated": [],
       "open_manual_acceptance": [
