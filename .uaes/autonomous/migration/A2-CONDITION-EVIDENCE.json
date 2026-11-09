@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UTER-A2-CONDITION-EVIDENCE",
+  "project": "Uter",
+  "created_at": "2026-11-09T03:30:28.220Z",
+  "conditions": {
+    "SAFETY": {
+      "satisfied": true,
+      "evidence": ".uaes/agent-governance.yaml"
+    },
+    "TEST": {
+      "satisfied": true,
+      "evidence": ".uaes/autonomous/records/LAST-SYNC.json"
+    },
+    "BACKUP": {
+      "satisfied": true,
+      "evidence": ".uaes/autonomous/backup/uaes-pin.json.snapshot"
+    },
+    "ROLLBACK": {
+      "satisfied": true,
+      "evidence": ".uaes/autonomous/migration/ROLLBACK-MANIFEST.json"
+    }
+  },
+  "note": "这些是 Uter 仓内真实存在、sha256 已复算的文件；仅证明治理审批环节的条件，不表示任何高风险业务变更已被执行。"
+}

@@ -1,14 +1,14 @@
 {
-  "check_id": "DS-8abbf81d354b",
+  "check_id": "DS-1e97fddda0e6",
   "engine": "UTER-AUTONOMOUS-DOWNSTREAM-SYNC",
   "policy_version": "1.0.0",
-  "executed_at": "2026-11-09T03:09:20.166Z",
+  "executed_at": "2026-11-09T03:38:24.151Z",
   "simulated": false,
   "uaes_registry_version": "1.12.1",
   "uter_pin_registry_version": "1.12.1",
   "version_drift": false,
   "version_change_detected": false,
-  "upstream_events_seen": 0,
+  "upstream_events_seen": 1,
   "upstream_events_processed": 0,
   "processed_event_ids": [],
   "applicability": {
@@ -49,7 +49,7 @@
   },
   "downstream_check": {
     "status": "PROCESSED",
-    "processed_at": "2026-11-09T03:09:20.166Z",
+    "processed_at": "2026-11-09T03:38:24.151Z",
     "meaning": "UAES 版本变化已被检测并处理；本状态不表示 Uter 符合 UAES、不表示验收通过、不表示任何批准",
     "integration_status_preserved": "MIGRATION_PENDING",
     "pin_modified": false,
