@@ -419,6 +419,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 
 ### 13.4 待协调项（需用户决策，本次未执行）
 - **治理规则现状**：Agent 角色、权限配置和任务审计合同以 `.uaes/agent-governance.yaml` 与 `.ai/task-schema.json` 为准；第三方 Agent 的运行时工具阻断仍须通过 WorkBuddy/Claude 等实际运行环境单独验证，不得把静态策略测试描述为运行时验收。
+- **自治治理继承（UAES-00-006）**：Uter 完全继承 UAES 的「内部事项自主、真实外部约束机器检查」统一规则（见 UAES 仓库 `standards/00-foundation/UAES-00-006-AUTONOMOUS-GOVERNANCE.md`）。Uter 不再建立独立的人工审批体系；本文件 §R4（生产写入 / 生产库 / 真实支付 / 生产密钥 / 生产部署 / 重大不可逆操作）作为真实外部约束默认禁止自动执行，须真实权限与凭据，不靠文书签字放行。
 - **Git 授权现状**：Uter 自动修复可在唯一非 main 工作分支内 Commit、Push、创建/更新 PR；禁止直接推送 main、force push、合并 PR、部署和生产写操作。
 - **PandaMall 规范包**：平移本框架时需换成 React Native/Expo/Clerk 技术规则，不共用 Uter 的 Web 设计与支付规则。
 
