@@ -1,7 +1,7 @@
 # UAES × Uter 全量符合性矩阵
 
 - **Document:** `1/14` of §11 (14 mandated deliverables)
-- **Generated:** 2026-11-06T17:41:59Z
+- **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
 - **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
@@ -18,12 +18,12 @@
 
 | 指标 | 值 |
 |---|---|
-| 唯一 Requirement ID 总数 | **2880** |
-| 适用要求 (APPLICABLE) | 2868 |
+| 唯一 Requirement ID 总数 | **2884** |
+| 适用要求 (APPLICABLE) | 2872 |
 | 不适用 (NOT_APPLICABLE，均附书面依据) | 12 |
 | 逐条验证为 PASS | **0** |
-| 审计结果分布 | `{"NOT_ASSESSED": 2839, "NOT_APPLICABLE": 12, "BLOCKED": 29}` |
-| 源标准状态 | `{"APPROVED": 2851, "PROPOSED_BASELINE": 29}` |
+| 审计结果分布 | `{"NOT_ASSESSED": 2843, "NOT_APPLICABLE": 12, "BLOCKED": 29}` |
+| 源标准状态 | `{"APPROVED": 2855, "PROPOSED_BASELINE": 29}` |
 | UAES DRAFT 标准文件 | 0/178 |
 | 域级测试矩阵（同 SHA） | 28/29 PASS，overall `FAIL` |
 | 绑定的真实 Commit SHA | `ec6501adceb008d46140a7e5ab6508eb78006731` |
@@ -41,7 +41,7 @@ Audit Result、Finding ID、Corrective Action、Revalidation Result，以及补�
 source_line / source_status / normative_level / keyword_class / commit_sha /
 applicability_justification / linked_real_commands / linked_manual_cases。
 
-完整 2880 行同时导出为 `evidence/matrix-export.csv`（UTF-8），
+完整 2884 行同时导出为 `evidence/matrix-export.csv`（UTF-8），
 可用任意表格工具按 `source_standard + source_line` 回查 UAES 原文重新核验。
 
 ## 3. 逐域要求数
@@ -51,7 +51,7 @@ applicability_justification / linked_real_commands / linked_manual_cases。
 | P00 | Foundation | 130 | 0 | 0 | 0 |
 | P01 | AI Governance | 105 | 0 | 0 | 0 |
 | P02 | Product Engineering | 124 | 0 | 0 | 0 |
-| P03 | Knowledge Engineering | 133 | 0 | 0 | 0 |
+| P03 | Knowledge Engineering | 137 | 0 | 0 | 0 |
 | P04 | System Architecture | 418 | 0 | 0 | 12 |
 | P05 | Experience & Design Engineering | 244 | 0 | 0 | 0 |
 | P06 | Software Engineering | 297 | 0 | 0 | 0 |
@@ -75,10 +75,10 @@ applicability_justification / linked_real_commands / linked_manual_cases。
 | 分类 | 行数 |
 |---|---|
 | lines_scanned | 19179 |
-| skipped_non_normative | 10045 |
+| skipped_non_normative | 10041 |
 | skipped_blank | 5298 |
 | recorded_cn_mandatory | 1246 |
-| recorded_en_mandatory | 1592 |
+| recorded_en_mandatory | 1596 |
 | skipped_fence_marker | 130 |
 | skipped_fence_content | 680 |
 | skipped_short_fragment | 146 |

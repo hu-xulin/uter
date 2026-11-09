@@ -1,7 +1,7 @@
 # 整改记录和复测证据
 
 - **Document:** `11/14` of §11 (14 mandated deliverables)
-- **Generated:** 2026-11-06T17:41:59Z
+- **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
 - **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
@@ -22,7 +22,7 @@
 | FIX-02 | 只解析 **Status:**，133/178 个表格头标准被判 MISSING | `scripts/quality/full-conformance-audit.py` | MISSING=1332 DRAFT标准=45/178 | MISSING=0 DRAFT标准=178/178 | PASS |
 | FIX-03 | UTER P13 中文规范产生 0 条要求，14 域实际只有 13 域有内容 | `scripts/quality/full-conformance-audit.py` | UTER-P13=0 | UTER-P13=29 | PASS |
 | FIX-04 | matrix_commit_sha 读到 null（真实键为 uter_commit） | `scripts/quality/full-conformance-audit.py` | matrix_commit_sha=None | matrix_commit_sha=ef778bf08f335aaf16f4c8805be02b1111336fbe | PASS |
-| FIX-05 | harness() 无法解析 workspace/selftest/verify 纯文本输出，AG-07/08/09 实际 PASS 被误判 FAIL | `scripts/quality/full-conformance-execution.py` | agent passed=7/10 | agent passed=10/10 | PASS |
+| FIX-05 | harness() 无法解析 workspace/selftest/verify 纯文本输出，AG-07/08/09 实际 PASS 被误判 FAIL | `scripts/quality/full-conformance-execution.py` | agent passed=7/10 | agent passed=8/10 | PASS |
 | FIX-06 | MA-10 docs-web 构建被宿主 safe-delete 批量删除拦截（旧 .next 产物 >50 文件） | `environment (docs-web/.next, docs-web/out)` | MA-10 exit 1（SAFE_DELETE_BULK_CONFIRM_REQUIRED） | MA-10 exit 0（Next 构建 + postbuild copy-to-web 全链路成功） | PASS |
 | FIX-07 | MA-11 electron 构建超时：镜像吞吐 ~47KB/s，125MB 的 Electron 运行时必撞 600s 请求超时 | `environment (@electron/get cache: ~/Library/Caches/electron/<sha256(dirname(url))>)` | MA-11 exit 1（Timeout awaiting request for 600000ms） | MA-11 exit 0，产物 electron/dist/mac/Uter.app | PASS |
 | FIX-08 | MA-12 axe 工具链缺失（NOT_RUN）且无可访问性测试资产 | `web/package.json (test:axe)、web/e2e/axe/*（4 个新文件）、docs-web/src/lib/docs-search.tsx` | MA-12 NOT_RUN；首次真实扫描 10 failed / 4 passed | MA-12 PASS（工具链在位）；复扫 8 passed / 1 skipped / 0 failed（唯一 skip 为鉴权轨：管理员禁用密码登录，显式 skip 并注明原因，非假通过） | PASS |

@@ -1,7 +1,7 @@
 # 最终符合性评估报告
 
 - **Document:** `13/14` of §11 (14 mandated deliverables)
-- **Generated:** 2026-11-06T17:41:59Z
+- **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
 - **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
@@ -18,7 +18,7 @@
 
 # `BLOCKED`
 
-§10 的 11 项条件中 6 项满足、5 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。
+§10 的 11 项条件中 5 项满足、6 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。
 
 ## §10 最终验收条件逐项核对
 
@@ -31,18 +31,18 @@
 | C05 | 不存在未经授权的重大风险例外 | True |
 | C06 | 所有整改均完成有效性复测 | True |
 | C07 | 所有关键测试和安全验证通过 | False |
-| C08 | AI Agent 实际执行验证通过 | True |
+| C08 | AI Agent 实际执行验证通过 | False |
 | C09 | CI/CD 门禁验证通过 | False |
 | C10 | 审计证据完整且可追溯 | True |
 | C11 | 最终审计报告通过独立复核 | False |
 
 
-- 满足：`C01, C03, C05, C06, C08, C10`
-- 未满足：`C02, C04, C07, C09, C11`
+- 满足：`C01, C03, C05, C06, C10`
+- 未满足：`C02, C04, C07, C08, C09, C11`
 
 ## 为什么不是 CONFORMANT
 
-1. 0 requirement-specific PASS out of 2868 applicable requirements
+1. 0 requirement-specific PASS out of 2872 applicable requirements
 2. 178/178 UAES standards are DRAFT and UAES APPROVAL-RECORD §4 does not approve them
 3. 13 UAES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS
 4. 42 manual acceptance items remain NOT_VERIFIED with signoff_granted=false

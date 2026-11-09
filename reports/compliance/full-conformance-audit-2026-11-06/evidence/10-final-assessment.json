@@ -1,6 +1,6 @@
 {
   "evidence_id": "FCA-FINAL-ASSESSMENT",
-  "generated_at": "2026-11-06T17:41:59Z",
+  "generated_at": "2026-11-09T05:04:20Z",
   "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
   "uaes_commit_sha": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
   "related_requirement": "§10 / §12",
@@ -43,7 +43,7 @@
     {
       "id": "C08",
       "description": "AI Agent 实际执行验证通过",
-      "met": true
+      "met": false
     },
     {
       "id": "C09",
@@ -66,18 +66,18 @@
     "C03",
     "C05",
     "C06",
-    "C08",
     "C10"
   ],
   "unmet": [
     "C02",
     "C04",
     "C07",
+    "C08",
     "C09",
     "C11"
   ],
   "final_verdict": "BLOCKED",
-  "rationale": "§10 的 11 项条件中 6 项满足、5 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。",
+  "rationale": "§10 的 11 项条件中 5 项满足、6 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。",
   "allowed_vocabulary": [
     "CONFORMANT",
     "PARTIALLY CONFORMANT",
@@ -86,7 +86,7 @@
     "NOT ASSESSED"
   ],
   "not_conformant_because": [
-    "0 requirement-specific PASS out of 2868 applicable requirements",
+    "0 requirement-specific PASS out of 2872 applicable requirements",
     "178/178 UAES standards are DRAFT and UAES APPROVAL-RECORD §4 does not approve them",
     "13 UAES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS",
     "42 manual acceptance items remain NOT_VERIFIED with signoff_granted=false",

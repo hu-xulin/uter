@@ -1,6 +1,6 @@
 {
   "evidence_id": "FCA-EVIDENCE-CLOSURE",
-  "generated_at": "2026-11-06T17:41:59Z",
+  "generated_at": "2026-11-09T05:04:20Z",
   "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
   "self_excluded": [
     "10-evidence-closure.json",
@@ -9,8 +9,8 @@
   "evidence_files": [
     {
       "path": "evidence/00-baseline.json",
-      "sha256": "221e6ee3a81ca2042024707a9d3a08d9eaadd2ae6307b4cf9ccee23078560e76",
-      "bytes": 30068,
+      "sha256": "49669decf5c7178267e7eded75969bcb606be841f6cb88643bbc129b6207b4fd",
+      "bytes": 31239,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -20,7 +20,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -39,7 +39,7 @@
     },
     {
       "path": "evidence/01-conflict-register.json",
-      "sha256": "ac799e13243940f8eb137fbbf8827f8c8570c600cbe64b769f321e8c077070af",
+      "sha256": "6bae049c597898cf3f94d14b3da1acfad8a6e708b37b58deb10af574106ec2cf",
       "bytes": 4425,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
@@ -50,7 +50,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -69,8 +69,8 @@
     },
     {
       "path": "evidence/02-compliance-matrix.json",
-      "sha256": "7ceee8fe167ab218f4bcb2c3378366b10be4fd2e9a4ade87e8f3c1cbe483e782",
-      "bytes": 5703922,
+      "sha256": "a0f032b6428b4d54e36c16d74b6f9cca28ad3419e63d236ea1d84bf4682b454d",
+      "bytes": 5710652,
       "requirement_linkage": {
         "group": "§3 all requirement IDs",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -80,7 +80,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -99,7 +99,7 @@
     },
     {
       "path": "evidence/03-domain-audits.json",
-      "sha256": "1c7cdf9a694c206d8dea025a2f159ca693ea104fbfe569a18f151c200be6a3ec",
+      "sha256": "891eb7a7a03c6264f4ceb84fbd2869f7c3e703685d6b6cbee6cf630efd635207",
       "bytes": 4060,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
@@ -110,7 +110,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -129,8 +129,8 @@
     },
     {
       "path": "evidence/04-engineering-verification.json",
-      "sha256": "3b920ab20ca7dbec581d7faf6b0b0732da8428e597638addb5aeb65a3caf709f",
-      "bytes": 47076,
+      "sha256": "2f903f4ae29f8ad1efc5bc6e26950e5013076a176f779ae2694bc2f8a4091117",
+      "bytes": 46933,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -140,7 +140,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -159,8 +159,8 @@
     },
     {
       "path": "evidence/05-agent-verification.json",
-      "sha256": "0764f9a0216cc2127bc6b148a3d7e55bcbdc090ca4a4f7edf2195ef0d1770c6f",
-      "bytes": 10278,
+      "sha256": "a7d1b77abc9d24cc5162486e27fd8be35138189b4f07ec03dd763f02605a5c07",
+      "bytes": 10315,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -170,7 +170,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -189,8 +189,8 @@
     },
     {
       "path": "evidence/06-gates-verification.json",
-      "sha256": "9d94ce720ff416145f0df07d37ac55fd7dbdea00d9b8c4d786ebce4b829df765",
-      "bytes": 13117,
+      "sha256": "644c00ef45cbc989592989b91a8befce67bd22de091001c72ab35a29a9652551",
+      "bytes": 13471,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -200,7 +200,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -219,8 +219,8 @@
     },
     {
       "path": "evidence/07-findings-register.json",
-      "sha256": "ca80b520eeb9503de75dd9533fe4691c51024c8f26a4736313d3730a2d643303",
-      "bytes": 15208,
+      "sha256": "78e6f8cf4c63663514849662bf3291ba0a785ae97c69cdc1a5ea3cca8b510b91",
+      "bytes": 15326,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -230,7 +230,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -249,8 +249,8 @@
     },
     {
       "path": "evidence/08-remediation-register.json",
-      "sha256": "6b5a2a45c0da215ecd3980064cefd31d08c110f9bd766f7d5ced53956200bf14",
-      "bytes": 8537,
+      "sha256": "08ffbac49736cde180417e3a1ba433a4c1d370791772219b1c9d11402075a985",
+      "bytes": 8536,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -260,7 +260,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -279,8 +279,8 @@
     },
     {
       "path": "evidence/10-final-assessment.json",
-      "sha256": "465c48b235978191b6f1d03e33327bc9feee5b102d2e745afde906375595eb0c",
-      "bytes": 3604,
+      "sha256": "0b0989ae7c27364bb0185645633fea190040f8f13afa87d4f45e7490e98fdd3e",
+      "bytes": 3605,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -290,7 +290,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -320,7 +320,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -350,7 +350,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -380,7 +380,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -399,8 +399,8 @@
     },
     {
       "path": "evidence/agent/agent-runtime-preflight.json",
-      "sha256": "d0a89c665304ba437d75c7ec1068432ca1d3fbf3d5861c3cd2941753cca41037",
-      "bytes": 3372,
+      "sha256": "5afa533f1cdad6ba030797442448ffce1d735524adcd29a3f275613cfc583030",
+      "bytes": 3375,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -410,7 +410,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -429,7 +429,7 @@
     },
     {
       "path": "evidence/agent/agent-runtime-selftest.json",
-      "sha256": "0b1e33e3623dcf28184e5fbdb3bef79f754bfa0a77ffff315f52211006247022",
+      "sha256": "e0dda343f9165d03dd8f2adaac5945efe5ad446a92e351d65743f792a35e1ed2",
       "bytes": 6649,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -440,7 +440,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -459,7 +459,7 @@
     },
     {
       "path": "evidence/agent/agent-runtime-test-execution.json",
-      "sha256": "14bb39ac8c86a723292ddd63323640ddabbc24c06639b1a4503b463f4671b3e6",
+      "sha256": "3bf87e3be5cb98b9182625fc56b83898f23ce0fdf11b7c09109f8291395694fc",
       "bytes": 1844,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -470,7 +470,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -489,8 +489,8 @@
     },
     {
       "path": "evidence/agent/agent-runtime-workspace.json",
-      "sha256": "e48ac755e7b7cf50ae63cd4e3c82e22a082d6798cb1117b1dcdd3398a9779746",
-      "bytes": 1448,
+      "sha256": "220b4598092825b0d5d201194c90a6167f0a78f5cf2ce9a61b70e69c74fdf6fa",
+      "bytes": 13880,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -500,7 +500,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -530,7 +530,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -549,8 +549,8 @@
     },
     {
       "path": "evidence/agent/fixtures/task-bypass-attempt.json",
-      "sha256": "b81533414527bd859d83f2b4fc19cb6af65bc43670736ac18f1393fb05245409",
-      "bytes": 15369,
+      "sha256": "dabad36251c92aafe00789d9652c794e5b4685143b02793bbc9dd652298904d1",
+      "bytes": 15465,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -560,7 +560,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -590,7 +590,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -609,8 +609,8 @@
     },
     {
       "path": "evidence/agent/fixtures/uaes-registry-version-drift.yaml",
-      "sha256": "2cdf259fc8aece0874c8b562a9cebeb2e70995ee6e9e3b249485b9684283f62d",
-      "bytes": 96421,
+      "sha256": "3e614e3d0f777b338489de33362769a77fe769facf33140a17a711366564c42a",
+      "bytes": 98446,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -620,7 +620,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -650,7 +650,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -680,7 +680,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -710,7 +710,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -740,7 +740,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -770,7 +770,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -789,8 +789,8 @@
     },
     {
       "path": "evidence/gates/fixtures/ARCHITECTURE_GATE-nonconforming-state.json",
-      "sha256": "772f816697017036804f02d9fcd06891e67e7788a02ea10556addc6e202c914f",
-      "bytes": 206167,
+      "sha256": "747261e63932621df9991e710b03fbbc5b8d7b1205d853f89b1285785c8c1df4",
+      "bytes": 225152,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -800,7 +800,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -819,8 +819,8 @@
     },
     {
       "path": "evidence/gates/fixtures/BUSINESS_ACCEPTANCE_GATE-nonconforming-state.json",
-      "sha256": "cfb39f6d2b8b10290aaaedbd7269c62644ba6a834ce6e2ea28d3e9cdb64508fa",
-      "bytes": 206156,
+      "sha256": "29c885920a86ecc0b2a2805bb284ac94c16891c26ce48877d43ec8f1b1154435",
+      "bytes": 225144,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -830,7 +830,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -849,8 +849,8 @@
     },
     {
       "path": "evidence/gates/fixtures/CHANGE_GATE-nonconforming-state.json",
-      "sha256": "2204a91e0982f94400340c6c0b18176c0e099346bf1436195f5e40b763deff78",
-      "bytes": 206150,
+      "sha256": "40dbcfc480a17348f09ac5970d98261a970b26ae0abf507b9c6852b90f91f163",
+      "bytes": 225135,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -860,7 +860,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -879,8 +879,8 @@
     },
     {
       "path": "evidence/gates/fixtures/CODE_REVIEW_GATE-nonconforming-state.json",
-      "sha256": "70a2bc3703843e137ff41a08e8e5666aa6cb01e163d49ce6ba45caddad482fc4",
-      "bytes": 206203,
+      "sha256": "0fa8e67739f5717b87923195c84da3a8476b97b24994d0a1fe94a24931b312e4",
+      "bytes": 225188,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -890,7 +890,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -909,8 +909,8 @@
     },
     {
       "path": "evidence/gates/fixtures/GLOBAL_UAES_CONFORMANCE_GATE-nonconforming-state.json",
-      "sha256": "f080fac3a875031138e89586f1322ca7108ffd5b54f2dc47a0aef15de4f44bdb",
-      "bytes": 206117,
+      "sha256": "433dc4557d911fd6fa88c0245001b44e28cb8d9207c8b2cff93657e5b8f21a7d",
+      "bytes": 225074,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -920,7 +920,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -939,8 +939,8 @@
     },
     {
       "path": "evidence/gates/fixtures/RELEASE_GATE-nonconforming-state.json",
-      "sha256": "4d9da4400216f4cd50000fa8a60b114f1a1e81dceb2867c17e60afb0b3012122",
-      "bytes": 206147,
+      "sha256": "52b12f5d34cdebb6c760010e6a348d05abc543add8fd9ab7778270aeec13931b",
+      "bytes": 225132,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -950,7 +950,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -969,8 +969,8 @@
     },
     {
       "path": "evidence/gates/fixtures/SECURITY_GATE-nonconforming-state.json",
-      "sha256": "923c406d507a284496224127619d7e9fdc6f2419de06cabaaae7a5313486f5fd",
-      "bytes": 206150,
+      "sha256": "117cbcfa3db52c02fd059e2bb8e3bc83806aaa628f83487b197991d58a8c45ae",
+      "bytes": 225135,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -980,7 +980,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -999,8 +999,8 @@
     },
     {
       "path": "evidence/gates/fixtures/TESTING_GATE-nonconforming-state.json",
-      "sha256": "8817b351bdd55f67b2e40c9127cdbabfddf57be5d0da54d4b354e7ba2514ad7c",
-      "bytes": 206150,
+      "sha256": "117cbcfa3db52c02fd059e2bb8e3bc83806aaa628f83487b197991d58a8c45ae",
+      "bytes": 225135,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -1010,7 +1010,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1029,8 +1029,8 @@
     },
     {
       "path": "evidence/matrix-export.csv",
-      "sha256": "590b4717230243843b18f7696ccffb421517e4f7181ce3eb2cdc5ae3b4976114",
-      "bytes": 3037247,
+      "sha256": "b2a479bf1ba4758dec59eee3a02f64c5dbf6f7f4f6d9c7a6d8509bfdd8414050",
+      "bytes": 3040448,
       "requirement_linkage": {
         "group": "§2/§4/§9/§10",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -1040,7 +1040,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1059,7 +1059,7 @@
     },
     {
       "path": "evidence/raw/AG-01-preflight.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1070,7 +1070,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1089,8 +1089,8 @@
     },
     {
       "path": "evidence/raw/AG-01-preflight.log",
-      "sha256": "c61cb2bc3511518b5dfc54ff8ea23ff41d886d03eb1c9448476fa9c885e61064",
-      "bytes": 7923,
+      "sha256": "7ee60b201cd6dd8f29e5d538999d74b8502277ebc979a64be3002507820c5733",
+      "bytes": 7928,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -1100,7 +1100,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1112,7 +1112,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json  |  exit_code=0",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1130,7 +1130,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1149,8 +1149,8 @@
     },
     {
       "path": "evidence/raw/AG-02-spec-drift.log",
-      "sha256": "9f709dc286ecbe5d0f28d82ae3dc815c7a0294a217fa2984a169c61cc6f98b61",
-      "bytes": 8036,
+      "sha256": "93c6994a4b3647013557e2ff22005093c80ca9ab8c068bd7823257723c31432d",
+      "bytes": 8032,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -1160,7 +1160,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1172,7 +1172,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --uaes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-ri_v67gs  |  exit_code=1",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --uaes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-7jj8830q  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1190,7 +1190,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1209,8 +1209,8 @@
     },
     {
       "path": "evidence/raw/AG-03-empty-applicability.log",
-      "sha256": "62fa5e4de4b6b158cce7c85c194d9fd818646cd51fddc21c3af1d64b5f95a920",
-      "bytes": 3920,
+      "sha256": "13dfe5ace90a26fb2b968b71f7c1d68b3a812f7c0bda7042b33a974242b0b63f",
+      "bytes": 3923,
       "requirement_linkage": {
         "group": "§5 Agent",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -1220,7 +1220,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1250,7 +1250,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1269,7 +1269,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-01.log",
-      "sha256": "dc1fe56020e994fa2a026fe8f2df2f9ab76d7b26fff24164ef0777004b141d99",
+      "sha256": "cc01a106306a2b6c37dedb4c51f9af1d6ae7ff87da194ef32e3069d7eaa38c97",
       "bytes": 532,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1280,7 +1280,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1310,7 +1310,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1329,7 +1329,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-02.log",
-      "sha256": "9ea09fc588a2e766bcf845e4a162e644182d946b12da9e54b2b72a6dbb2ae874",
+      "sha256": "d0c2a142cfcdb16bd51b767e4b1323d82b71d964b94b5bacf800e9734da4e894",
       "bytes": 559,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1340,7 +1340,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1370,7 +1370,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1389,7 +1389,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-03.log",
-      "sha256": "dab087f0d3d8231080273f38302d76399ef4f03da910336ff5ef219e8776074e",
+      "sha256": "20b72564967cf24c6b9ed46713d3df80906729c29a00de4f615babab40d4ca52",
       "bytes": 520,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1400,7 +1400,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1430,7 +1430,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1449,7 +1449,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-04.log",
-      "sha256": "397c3f7b4e3a8b3487b976fcda1b684f44fd6c159999743b8015f0e4863c323e",
+      "sha256": "1cfa16bda0a4c498118a541e9072d8b594d4c1c50c701101ce865e4108365107",
       "bytes": 568,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1460,7 +1460,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1490,7 +1490,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1509,7 +1509,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-05.log",
-      "sha256": "3e7a8119fbb0c4130a9de7409aba2e2914670bbe1afc6f7c120b33c27feda202",
+      "sha256": "481c378ef83f37abaca2837c98c82a558881c68397ffe3ce3511ed66d2fc8db0",
       "bytes": 574,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1520,7 +1520,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1550,7 +1550,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1569,7 +1569,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-06.log",
-      "sha256": "d6cceabb0aea15045e3a7e1b1744b0bd46910c117e699aabd78cb97b6f4f0017",
+      "sha256": "c183e829c78b8bcb041cb1e2a852e9367210e97b633a8fbb4bbae6376def4b85",
       "bytes": 595,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1580,7 +1580,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1610,7 +1610,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1629,7 +1629,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-07.log",
-      "sha256": "7cf6657a41917577df4f0b26c25235d97c4365a9c371536d7e28019271f1bcc4",
+      "sha256": "aa6c57271009207eb9ee3140d42555cfe6b5647fac8cf745cef13b34b291493a",
       "bytes": 574,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1640,7 +1640,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1670,7 +1670,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1689,7 +1689,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-08.log",
-      "sha256": "345efe5b2ebad2e0248be06c0fc85fe8c17ff00f0dadb94854085ca8d1705e3e",
+      "sha256": "9a961fb7f7572ab883a06f7b83a12cc1114d7d6af362e750e8eae2d2cdd90480",
       "bytes": 581,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1700,7 +1700,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1730,7 +1730,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1749,7 +1749,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-09.log",
-      "sha256": "349a0b2a01cbb316d236eab8d1f0571cdf639c7ed9065716f58f24615195b280",
+      "sha256": "270913c968a0a20bf32ac3809faab2085417cbfb4b10913cd0c528cb03395898",
       "bytes": 535,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1760,7 +1760,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1790,7 +1790,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1809,7 +1809,7 @@
     },
     {
       "path": "evidence/raw/AG-04-deny-10.log",
-      "sha256": "784bbdcceeecb2688cd890a60dd9521f279731f741711f9c6be87f447eafddc6",
+      "sha256": "82dd32d24d9696e75d92e5ed7a0832f08d0fe32ee7bc3d618f5041f0c9c098d1",
       "bytes": 559,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1820,7 +1820,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1850,7 +1850,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1869,7 +1869,7 @@
     },
     {
       "path": "evidence/raw/AG-05-gate-01.log",
-      "sha256": "d2bc22a209b9294a58d07e2068f47e8ea443c454bb643e50d55727b882f05008",
+      "sha256": "3143dfe940e7fa73fadac56d7bd03fc09c93f34808b92dcbbe12bff76e948d0e",
       "bytes": 597,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1880,7 +1880,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1910,7 +1910,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1929,7 +1929,7 @@
     },
     {
       "path": "evidence/raw/AG-05-gate-02.log",
-      "sha256": "a73910ad77412ac282a4ffb935604465266fd4427d3670e31684d2eedbcd1ac5",
+      "sha256": "34bad2b00493ef046c2c8579dae6dd1e12329eb5106e36e09c606c586a3c4ac0",
       "bytes": 623,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -1940,7 +1940,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1970,7 +1970,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -1989,7 +1989,7 @@
     },
     {
       "path": "evidence/raw/AG-05-gate-03.log",
-      "sha256": "fc1026f5339c251c0f4d077eee0f186a012dcb9213fb45601f357dace8b88ee2",
+      "sha256": "e15f2d4f6741dd24a1b080fb334eb4e2414319549dff86e4608abe4c94f8520b",
       "bytes": 623,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2000,7 +2000,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2030,7 +2030,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2049,7 +2049,7 @@
     },
     {
       "path": "evidence/raw/AG-06-allow-read.log",
-      "sha256": "717d21310934adfe5afdceb7624ee39f916098a76745dbbbd2b2a38713aae3c2",
+      "sha256": "434596e774d533871eaafe7cb494be317989cce3d3611e22d949a755ef016486",
       "bytes": 508,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2060,7 +2060,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2079,7 +2079,7 @@
     },
     {
       "path": "evidence/raw/AG-07-alternate-path.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2090,7 +2090,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2109,7 +2109,7 @@
     },
     {
       "path": "evidence/raw/AG-07-alternate-path.log",
-      "sha256": "f3e5fddac820364aad252b749ab5b835eb9f72ce3b8b2145f4b8f8451c5a53a9",
+      "sha256": "54c944e779ada20bf0ab0df7124ecb266449b150e841d103aa4ed23b59723364",
       "bytes": 832,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2120,7 +2120,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2132,7 +2132,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb workspace --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-bypass-attempt.json  |  exit_code=0",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb workspace --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-bypass-attempt.json  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2150,7 +2150,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2169,7 +2169,7 @@
     },
     {
       "path": "evidence/raw/AG-07-prompt-bypass.log",
-      "sha256": "c4edd27e18072b3a50c44a986857b410380bb9787e4c7f642edf7a99e51fe5c1",
+      "sha256": "1e89e3384abbfa205ef466d85da69375ae288bcc14f644a332036a8741ea12f9",
       "bytes": 565,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2180,7 +2180,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2210,7 +2210,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2229,7 +2229,7 @@
     },
     {
       "path": "evidence/raw/AG-07-task-switch.log",
-      "sha256": "defcb733a7defbade26b8f281eb4ae706e3f62119e9164fbe4a3fbc84bd39d1b",
+      "sha256": "f40a46dc8e14463510b20e5329f255ba291a28ac01c67d243e5ba251def9fe45",
       "bytes": 574,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2240,7 +2240,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2270,7 +2270,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2289,7 +2289,7 @@
     },
     {
       "path": "evidence/raw/AG-08-selftest.log",
-      "sha256": "7208b7eaf587edd619b93a81ba81de55e34be7ac3fbf884df25dca7b32b54c9e",
+      "sha256": "9d1946dd191d9a3ed50c9f502f476197b9c2b2723fd4aff741fc9116d797b5d8",
       "bytes": 1638,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2300,7 +2300,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2330,7 +2330,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2349,7 +2349,7 @@
     },
     {
       "path": "evidence/raw/AG-09-real-task.log",
-      "sha256": "eca218119c116132374299c2b1d8f6747547c0b4e2157ba58e24f79a47830d76",
+      "sha256": "955e6c5621f4f369de770c5fe78b3807528c4437ddaef907e3291d73620b717a",
       "bytes": 748,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2360,7 +2360,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2390,7 +2390,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2409,7 +2409,7 @@
     },
     {
       "path": "evidence/raw/AG-10-ci-denial-loop.log",
-      "sha256": "bc7937c67ca6373143199378cd873c2df9f45018f8e93c7bbf87dc8dec13d216",
+      "sha256": "e0bd460755a014d7a35c0f29e40adeda449f7a605c4141cb3a3e7a084cef3a40",
       "bytes": 1480,
       "requirement_linkage": {
         "group": "§5 Agent",
@@ -2420,7 +2420,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2450,7 +2450,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2469,7 +2469,7 @@
     },
     {
       "path": "evidence/raw/EV-00-PROBE.log",
-      "sha256": "b714a6bf08faa3421b33a4c171d2d7d3be3cbd3e343e3773719d83ae9890f212",
+      "sha256": "2f9ec6df98fd5c7851a69f844c5d68358b81559bb490bbcdb843d63af2cc26cb",
       "bytes": 1363,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -2480,7 +2480,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2510,7 +2510,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2529,7 +2529,7 @@
     },
     {
       "path": "evidence/raw/EV-01.log",
-      "sha256": "a05fbcc9fd52d5a4e833fd3e10f2a64acca08d6597aa37e5fff345c6c7863b95",
+      "sha256": "ef600323cbfefd682fa4d1373132918f095e0219f552ea64c2130850e173e760",
       "bytes": 359,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -2540,7 +2540,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2570,7 +2570,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2589,7 +2589,7 @@
     },
     {
       "path": "evidence/raw/EV-02.log",
-      "sha256": "8f216c3df42426d56f7e4fb300ad0a6e99e449671d7b329ee4bd5287220c673a",
+      "sha256": "c00ad0d7e5ed7ee6de6786c3749417215e2b58a61c78c60e0c0e14c66f440e71",
       "bytes": 955,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -2600,7 +2600,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2630,7 +2630,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2649,8 +2649,8 @@
     },
     {
       "path": "evidence/raw/EV-03.log",
-      "sha256": "094903adb4c7a4b2ebde9267031d062c0ef7360ec7a315c5cd644d7df4b32875",
-      "bytes": 666,
+      "sha256": "6434610518e080a5344bc2cd40c8ea49a7bcfca143a119df15873ade0e3e656b",
+      "bytes": 660,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -2660,7 +2660,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2679,7 +2679,7 @@
     },
     {
       "path": "evidence/raw/EV-04.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -2690,7 +2690,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2709,8 +2709,8 @@
     },
     {
       "path": "evidence/raw/EV-04.log",
-      "sha256": "01cf9933a92c9ba71cf166e493f2966d9972fa6c9c23d5b925025d38174b7709",
-      "bytes": 394,
+      "sha256": "fb9caa4d4c11d8185ff3f34d97adb2ebe18d35cb99eadcae1c37dc58b7507441",
+      "bytes": 791,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -2720,7 +2720,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2732,7 +2732,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby scripts/quality/test-uaes-pin-check.rb  |  exit_code=0",
+      "command": "ruby scripts/quality/test-uaes-pin-check.rb  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2750,7 +2750,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2769,7 +2769,7 @@
     },
     {
       "path": "evidence/raw/EV-05.log",
-      "sha256": "ad5d1f7dc2cd63f33b66dc0ff743cda299a2c38318ca974d811532737c4640b0",
+      "sha256": "9598eb44dfe6f434789084056dc7097006446c3397e57da78605e4f660b268fd",
       "bytes": 1196,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -2780,7 +2780,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2810,7 +2810,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2829,8 +2829,8 @@
     },
     {
       "path": "evidence/raw/EV-06.log",
-      "sha256": "e02e531f6e94fe5fce58e6616696b1f34bdd267d2cfdf178f2fb96dd45ceffd9",
-      "bytes": 404,
+      "sha256": "6cbf2dabd1ea185a611f3c8703ab03eda21f6e88671ccf84ec4643d0f606561d",
+      "bytes": 405,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -2840,7 +2840,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2870,7 +2870,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2889,8 +2889,8 @@
     },
     {
       "path": "evidence/raw/EV-09.log",
-      "sha256": "b14072adcb506af4d9177b36f82ee5ed84e8f4ac78f87b83f1ab9ae72dec1347",
-      "bytes": 404,
+      "sha256": "7e22e647e192acb1555c68a4ea9bc08ec9bced853f784aee325889ef916a582d",
+      "bytes": 405,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -2900,7 +2900,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2930,7 +2930,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2949,8 +2949,8 @@
     },
     {
       "path": "evidence/raw/EV-10.log",
-      "sha256": "741cc8961d19902856b3f449e657d463a19e3ced76502c12e2c01605ceb13938",
-      "bytes": 405,
+      "sha256": "4d5ef372460a8dfc4f0eedf2261e56405a8b72c1dd0c85481b74269bc2e1a367",
+      "bytes": 404,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -2960,7 +2960,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -2990,7 +2990,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3009,7 +3009,7 @@
     },
     {
       "path": "evidence/raw/EV-11.log",
-      "sha256": "634d38af0fdc94069bf290a4c3c9acd334221f9e7a4c6bbedbe57c3ef912f397",
+      "sha256": "5c84db0c5d3ca2d994661c8405af872b17d99b143d166539578a1144c77dd422",
       "bytes": 453,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3020,7 +3020,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3050,7 +3050,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3069,7 +3069,7 @@
     },
     {
       "path": "evidence/raw/EV-12.log",
-      "sha256": "fc6c85e392704012892bcbc0a1b1816f660dda6dda4df8d319769019e2719b75",
+      "sha256": "678325bab2f774213520e21405a57bee2c97cc5afcbe16e8f2d72f1c62ab9072",
       "bytes": 212,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3080,7 +3080,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3110,7 +3110,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3129,7 +3129,7 @@
     },
     {
       "path": "evidence/raw/EV-13.log",
-      "sha256": "1fcd4d3d8097fe7ef8a28efd1b9ec93dfe8ded770efbed2bf381452e572c5230",
+      "sha256": "f9b10bcd68ff07c82be60289192fdfcd0470f2403c2e4826df68f71c3b596cb3",
       "bytes": 27995,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3140,7 +3140,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3170,7 +3170,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3189,7 +3189,7 @@
     },
     {
       "path": "evidence/raw/EV-14.log",
-      "sha256": "cb046503589ea68ed367ddf28bff65f607ad3a1f96993934213c1021b75ae426",
+      "sha256": "1c1c3ef2f4c803f3d23125be77e4bd2dca84e772540cb6f0593bc5638f4f70d1",
       "bytes": 313,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3200,7 +3200,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3230,7 +3230,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3249,7 +3249,7 @@
     },
     {
       "path": "evidence/raw/EV-15.log",
-      "sha256": "cad1669f1e94d2a67166edcb9cac9a753936c4c5b9358e05096eb2af2bc78252",
+      "sha256": "eda491cdb75240b0c4fc925807e3ddcab3e8438e31eb5aa6c7a4a90671651fda",
       "bytes": 313,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3260,7 +3260,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3279,7 +3279,7 @@
     },
     {
       "path": "evidence/raw/EV-16.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3290,7 +3290,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3309,8 +3309,8 @@
     },
     {
       "path": "evidence/raw/EV-16.log",
-      "sha256": "44738b8f208a5fefaae47b78e8176752770098a973e58d88ddf2bfd3b340a885",
-      "bytes": 1309224,
+      "sha256": "09a459973edcf843c7f95b2bc3a67cc75a7655a896bf968328edbbda19b57237",
+      "bytes": 1352436,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -3320,7 +3320,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3332,14 +3332,14 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "bun run test  |  exit_code=0",
+      "command": "bun run test  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
     },
     {
       "path": "evidence/raw/EV-17.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3350,7 +3350,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3369,8 +3369,8 @@
     },
     {
       "path": "evidence/raw/EV-17.log",
-      "sha256": "d769ea1341043c3dbb9a18b76fe89129126544f0b550d0c2351fd28892344c3c",
-      "bytes": 206,
+      "sha256": "41685a35dd931574cbd8d50835777ce599e60cc2a891ab5e3519b3fd4bbc4f50",
+      "bytes": 274,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -3380,7 +3380,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3392,14 +3392,14 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "GOWORK=off go build ./...  |  exit_code=0",
+      "command": "GOWORK=off go build ./...  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
     },
     {
       "path": "evidence/raw/EV-18.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3410,7 +3410,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3429,8 +3429,8 @@
     },
     {
       "path": "evidence/raw/EV-18.log",
-      "sha256": "dea6be02e6141741219284eaef5ead67a6e4bd2c529d59b9c0d807a0c0a99068",
-      "bytes": 5312,
+      "sha256": "22793525493dc4720c9f3587eafd0994c67cfaa52d63572d0782f590fd37cad3",
+      "bytes": 5416,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -3440,7 +3440,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3452,7 +3452,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "GOWORK=off go test ./...  |  exit_code=0",
+      "command": "GOWORK=off go test ./...  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -3470,7 +3470,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3489,7 +3489,7 @@
     },
     {
       "path": "evidence/raw/EV-19.log",
-      "sha256": "c93d3763a230ff385d13e179efc702079a50bd5f51acb38ec29eebc57cf2ea94",
+      "sha256": "d836a3e5ea4d131de4e8976ca9aa1ebf1bf9c9572111ef9ac163501650526b3c",
       "bytes": 1735,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3500,7 +3500,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3530,7 +3530,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3549,7 +3549,7 @@
     },
     {
       "path": "evidence/raw/EV-20.log",
-      "sha256": "a0a6be9a029574051340fc42704cbb23543dbc37d8c478b75586566a8d1e7918",
+      "sha256": "7b67ac8321683c41d2d4e8dfedfa940c3d475c51d0dee2a3f2c90508cbb783de",
       "bytes": 508,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3560,7 +3560,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3590,7 +3590,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3609,7 +3609,7 @@
     },
     {
       "path": "evidence/raw/EV-21.log",
-      "sha256": "e463d96c397b4004f2a7d23595b1f3489afe3d7b2fa195209583f0f5d70807ba",
+      "sha256": "e0d1b71bddf1e1daf8271889cddc376ae129cb5a40177e7b59099472694c854c",
       "bytes": 565,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3620,7 +3620,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3650,7 +3650,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3669,7 +3669,7 @@
     },
     {
       "path": "evidence/raw/EV-22.log",
-      "sha256": "7c7d90339f2300e10f85a8bebf383b06bc125089ffcef4e5d1adb99d792ef0bb",
+      "sha256": "a863fecfcf39641cba6d1057a9934d02100fb1f5dc342b3861158507e4fdbe53",
       "bytes": 204,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3680,7 +3680,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3710,7 +3710,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3729,7 +3729,7 @@
     },
     {
       "path": "evidence/raw/EV-23.log",
-      "sha256": "183dde1d0ed4a82c948f4e37d2437093a9c6fde07038d8514f8b21d824075b98",
+      "sha256": "3347c03e123a3861f7457cbd8bee805d41501975c4e11a809ebeb45e27be70c8",
       "bytes": 318,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3740,7 +3740,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3759,7 +3759,7 @@
     },
     {
       "path": "evidence/raw/EV-24.exit",
-      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
       "bytes": 2,
       "requirement_linkage": {
         "group": "§6 verification",
@@ -3770,7 +3770,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3789,8 +3789,8 @@
     },
     {
       "path": "evidence/raw/EV-24.log",
-      "sha256": "791085aa3938d95bdcbf095eeb86c95c50fc719488797c5427dc4ff1bcd33cb9",
-      "bytes": 7524,
+      "sha256": "1e2a5b609341f9c42f931e01dc58fe0d8629efbaa88dfa4a3f77b37919c7e43f",
+      "bytes": 7433,
       "requirement_linkage": {
         "group": "§6 verification",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -3800,7 +3800,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3812,7 +3812,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "GOWORK=off go test -count=1 -coverprofile='/Users/lincolnhu/uter/.quality/.state/fca-coverage.out' -timeout 600s ./... && bash scripts/coverage-gate.sh '/Users/lincolnhu/uter/.quality/.state/fca-coverage.out' \"$(go list -m)\" controller=39 model=45 service=43  |  exit_code=0",
+      "command": "GOWORK=off go test -count=1 -coverprofile='/Users/lincolnhu/uter/.quality/.state/fca-coverage.out' -timeout 600s ./... && bash scripts/coverage-gate.sh '/Users/lincolnhu/uter/.quality/.state/fca-coverage.out' \"$(go list -m)\" controller=39 model=45 service=43  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -3830,7 +3830,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3849,7 +3849,7 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-ARCHITECTURE_GATE.log",
-      "sha256": "b89f603afd09818659909842a4b9fe34431af14c0087f0ae5f2dc0532434cba7",
+      "sha256": "5f3bdf83a3a28747325ff33f6857453937c8814b59dee3ed36977950f5308cec",
       "bytes": 988,
       "requirement_linkage": {
         "group": "§8 gates",
@@ -3860,7 +3860,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3890,7 +3890,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3909,8 +3909,8 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-BUSINESS_ACCEPTANCE_GATE.log",
-      "sha256": "f8b510618720c02cd80d358eb2c68851a1c91376e98cabd685e6be40fe7196b5",
-      "bytes": 1018,
+      "sha256": "512ac7fda55d16a7d60f84f76fecbac0a0dd154ba0b955d4591c1f0b2502956c",
+      "bytes": 984,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -3920,7 +3920,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3950,7 +3950,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -3969,8 +3969,8 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-CHANGE_GATE.log",
-      "sha256": "ba7236a224bd921b5cf2d15110da9427c89197915e6f363a383e16d6626958f1",
-      "bytes": 1025,
+      "sha256": "b2409036b934c6e80a4c63aa458c77fef69e20c8d7901d0ed81d67eb9f3060c4",
+      "bytes": 1131,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -3980,7 +3980,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4010,7 +4010,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4029,8 +4029,8 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-CODE_REVIEW_GATE.log",
-      "sha256": "1d441be451bce126bc0fe653e155a6ec9e07a5bce613306eb825e017a253e62d",
-      "bytes": 961,
+      "sha256": "cbf457372a978f029b96955c9d86a7038eabb97cf2bf43b6342682a574265c86",
+      "bytes": 995,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -4040,7 +4040,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4070,7 +4070,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4089,7 +4089,7 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-GLOBAL_UAES_CONFORMANCE_GATE.log",
-      "sha256": "e4e3f9ed08deb7235e22ada80129ce7571d4eb8cdea742ad097e2fcc0f664cc7",
+      "sha256": "3dba0fa10c36919d76666982ae9dfc7b2215490df834950a3680814ad359f3d3",
       "bytes": 1249,
       "requirement_linkage": {
         "group": "§8 gates",
@@ -4100,7 +4100,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4130,7 +4130,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4149,8 +4149,8 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-RELEASE_GATE.log",
-      "sha256": "5d722efcc4f47297609b23e9a2ce8b5a2d026c629efe8cd84fb3f7a71ebecbfb",
-      "bytes": 898,
+      "sha256": "c497783ba1cd3eb13691e1d0e1a4a4eff44a270107fddb4859fc8cbf2a8bfabd",
+      "bytes": 951,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -4160,7 +4160,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4190,7 +4190,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4209,7 +4209,7 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-SECURITY_GATE.log",
-      "sha256": "f32c69007141ad1a63b54133abccd048fca5f0da8a6626d59322cdf1e1c1dd5d",
+      "sha256": "d0f1ef3848cd968e7df5650e6fc62b885d26d77edb44d1cba94fc28c66da03cc",
       "bytes": 1264,
       "requirement_linkage": {
         "group": "§8 gates",
@@ -4220,7 +4220,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4250,7 +4250,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4269,8 +4269,8 @@
     },
     {
       "path": "evidence/raw/GATE-NEG-TESTING_GATE.log",
-      "sha256": "2ca448f2c4750aea2eccb9235f211077a8bc5ec80be080a2aead2163a960fc27",
-      "bytes": 1027,
+      "sha256": "2f12f8cf0586e61c6868569e824f189d2a74567b745667da752bf0d5b5e6272a",
+      "bytes": 1068,
       "requirement_linkage": {
         "group": "§8 gates",
         "scope": "INDIRECT unless a requirement-specific case exists (none at present)",
@@ -4280,7 +4280,7 @@
         ]
       },
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "generated_at": "2026-11-06T17:41:59Z",
+      "generated_at": "2026-11-09T05:04:20Z",
       "execution_environment": "macOS-26.7.2-x86_64-i386-64bit-Mach-O",
       "tool_versions": {
         "go": "go version go1.27.3 darwin/amd64",
@@ -4301,68 +4301,68 @@
   "deliverables": [
     {
       "path": "01-FULL-COMPLIANCE-MATRIX.md",
-      "sha256": "775e848b094d6a382fd05920d7f21dc76fd6c65ee744761a9a82a46571deedc3",
+      "sha256": "223764707b81adb99d79b4be7f8428549b6b70a5d8f56d2b11ef59e438f8a02b",
       "bytes": 4255
     },
     {
       "path": "02-P00-P13-DOMAIN-AUDITS.md",
-      "sha256": "a2732b817c86d120916bbfbea4324c571f13b93e9c1273ee003224e32833d14d",
+      "sha256": "8e1338b010f767fb564c320a2a07d9a5d68b157f9263bcf48afae348f9526280",
       "bytes": 2749
     },
     {
       "path": "03-EXTERNAL-STANDARDS-MAPPING.md",
-      "sha256": "ebb6b1a1abc61abef377d154176dc4997eb806e1835b8bc834f2964ee241c39e",
+      "sha256": "bd38b427c261ce1340fa5e1c4d0d0c8774b50f5737b0e251e5537c0955e6855e",
       "bytes": 6603
     },
     {
       "path": "04-AI-AGENT-EXECUTION-REPORT.md",
-      "sha256": "726f9dd5881e3932b1adbd8e729e0263f6f48811eaba6e3dd68b646a8000716c",
-      "bytes": 4202
+      "sha256": "b8ef0989584b28c1cf96c6cbcf6b978a22f240e147f29d2c076e3705ecf2bf72",
+      "bytes": 4217
     },
     {
       "path": "05-ARCHITECTURE-COMPLIANCE-REPORT.md",
-      "sha256": "ba41635c425d09d3bd7edd37a9979c78e720165a3ca82f48c04fd45a43f8c34a",
+      "sha256": "84fc2fd54badda4cbb8e3450aad346ffec14d18d36e1fb38003cd2ff09ccb6db",
       "bytes": 1990
     },
     {
       "path": "06-SOFTWARE-QUALITY-AUDIT-REPORT.md",
-      "sha256": "a89e95033b2719fe2a71a707685bfe9c4affb67062699b358f087b9cec4d7455",
-      "bytes": 5197
+      "sha256": "fc729dc8b109abef7544b01ca6374943d38abd7dd9d2638163a7fde21ac662bc",
+      "bytes": 6892
     },
     {
       "path": "07-SECURITY-RELIABILITY-AUDIT-REPORT.md",
-      "sha256": "e544f1527234741e3472b52ba17b58812810d1d6267cef62296788e60cb347d5",
-      "bytes": 5951
+      "sha256": "c52ff235779fc3c0814a8552de0d1fda380486cfa5993a9a9038aea09dd6c4a7",
+      "bytes": 5351
     },
     {
       "path": "08-TEST-EXECUTION-REPORT.md",
-      "sha256": "2342247f4aed37be0c579fb5787de9964f0b02b06d32ee6555018e92f0f3fa1b",
-      "bytes": 8214
+      "sha256": "418c3a11c438e7fc30193e9a0051dc71e20d27752eda76c4c35865ef33b9341c",
+      "bytes": 7787
     },
     {
       "path": "09-CICD-GATE-VERIFICATION-REPORT.md",
-      "sha256": "22c76d308bafa18913c5c73bd3029a099c31b757591ffd00075dd0983867a735",
-      "bytes": 4697
+      "sha256": "ad61220a97830b2e133681d28ee827de7f4ef4aecf45f61d9e12988dd12f36fb",
+      "bytes": 4917
     },
     {
       "path": "10-NONCONFORMITIES-AND-RISKS.md",
-      "sha256": "75c605f6e05d895d62c827bb57c4421bc497decad8b2edcd952198f306a9d9b1",
-      "bytes": 16103
+      "sha256": "8085a353a2e20d7fde602339b0735aeb7141be6affaf2a7b2f4167c323788421",
+      "bytes": 16359
     },
     {
       "path": "11-REMEDIATION-AND-REVALIDATION.md",
-      "sha256": "9e88d43d1afb466620e12284841fe77a4a68c782e4defd94f5955eb30effb9ae",
-      "bytes": 5264
+      "sha256": "d24d1d1994a4cd54c2e86cf1b47b5ad439b1cb4a6d639d92fdf4ec09a78dead0",
+      "bytes": 5263
     },
     {
       "path": "13-FINAL-CONFORMANCE-ASSESSMENT.md",
-      "sha256": "621e011ceaf3a23de6f0802e9a7cf56885a8e16706053daa77c12b767f649580",
-      "bytes": 3594
+      "sha256": "95e655cc0b1095540b590edd74c4a8fce6585e20280be41d6b89ef945b22256e",
+      "bytes": 3595
     },
     {
       "path": "14-OPEN-ITEMS-AND-EXCEPTIONS.md",
-      "sha256": "397d4498105f627d876329b25f17f6513c0c1a95cd9aee80950a1e4f322d031d",
-      "bytes": 3455
+      "sha256": "c749a11725001c90d7246fa58d61069933ec2962db976c4739d94d96ea573c07",
+      "bytes": 3038
     }
   ],
   "total_listed": 156

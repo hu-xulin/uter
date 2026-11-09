@@ -1,7 +1,7 @@
 # CI/CD 门禁验证报告（§8 八类门禁）
 
 - **Document:** `9/14` of §11 (14 mandated deliverables)
-- **Generated:** 2026-11-06T17:41:59Z
+- **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
 - **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
@@ -24,13 +24,13 @@
 
 | 门禁 | 真实 verdict | 通过检查数 | 未通过检查 | 判定说明 |
 |---|---|---|---|---|
-| CHANGE_GATE | ALLOW | 10/10 |  | workspace/branch/WIP protection + spec completeness |
-| CODE_REVIEW_GATE | ALLOW | 6/6 |  | positive + negative fixtures, independent re-evaluation, Agent bypass resistance |
-| TESTING_GATE | ALLOW | 6/6 |  | compile / unit / integration / regression / race / coverage; excludes security FAILs owned by SECURITY_GATE |
+| CHANGE_GATE | BLOCK | 5/10 | workspace_overall_PASS, workspace_W1_PASS, workspace_W5_PASS, L1_CHANGE_GATE_PASS, no_staged_changes | workspace/branch/WIP protection + spec completeness |
+| CODE_REVIEW_GATE | BLOCK | 5/6 | agent_reverse_bypass_PASS | positive + negative fixtures, independent re-evaluation, Agent bypass resistance |
+| TESTING_GATE | BLOCK | 2/6 | final_matrix_PASS, final_matrix_all_pass, final_matrix_no_fail_skip, recheck_compile_static_unit_PASS | compile / unit / integration / regression / race / coverage; excludes security FAILs owned by SECURITY_GATE |
 | SECURITY_GATE | BLOCK | 7/9 | DAST_penetration_API_security_executed, three_database_and_recovery_executed | §6 security verification; DAST/penetration/API security/three-DB/DR require authorised environments |
 | ARCHITECTURE_GATE | ALLOW | 6/6 |  | two-repository separation, P09 proves / P10 defines, 14-domain scope, build wiring |
-| BUSINESS_ACCEPTANCE_GATE | BLOCK | 4/7 | all_items_VERIFIED, signoff_granted, signed_item_count_matches | §16.3/§16.4 human acceptance; WorkBuddy must not self-sign |
-| RELEASE_GATE | BLOCK | 4/7 | L3_all_14_PASS, L4_not_BLOCKED, no_open_P0_P1 | full validation before any commit/push/PR/merge/deploy |
+| BUSINESS_ACCEPTANCE_GATE | BLOCK | 6/7 | all_items_VERIFIED | §16.3/§16.4 human acceptance; WorkBuddy must not self-sign |
+| RELEASE_GATE | BLOCK | 2/7 | L1_PASS, L3_all_14_PASS, L4_not_BLOCKED, no_open_P0_P1, no_delivery_action_performed | full validation before any commit/push/PR/merge/deploy |
 | GLOBAL_UAES_CONFORMANCE_GATE | BLOCK | 2/7 | requirement_specific_verification_exists, all_applicable_requirements_PASS, no_unresolved_P0_P1, independent_review_supports_claim, all_eight_gates_ALLOW | §10 final acceptance conditions; §12 vocabulary |
 
 

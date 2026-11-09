@@ -34,9 +34,9 @@ Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
 | Branch | `main` |
 | Pinned commit | `586f6227d1248e57173ac785e1b8537cb880362f` |
 | Registry | `.uaes/STANDARD-REGISTRY.yaml` |
-| Registry blob SHA | `a806eef48e6242d82dcb1d39d5c094e0d7d981a1` |
-| Registry version / status | `1.12.1` / `ACTIVE` |
-| Approval record | `UAES-APPROVAL-2026-11-07-004` + `586f622` (governed content unchanged from `74e5d2e`: registry blob `a806eef4`, 178/178 ACTIVE, registry 1.12.1 normative correction release; release-signature separation-of-duties caveat recorded in `INTEGRATION.md` §1) |
+| Registry blob SHA | `72fbcbea78b54290b00fb9b989ea67d6a6faaccc` |
+| Registry version / status | `1.12.2` / `ACTIVE` |
+| Approval record | `UAES-APPROVAL-2026-11-07-004` + `586f622` (historical approval basis for the 1.12.1 baseline: governed content unchanged from `74e5d2e`, registry blob `a806eef4`, 178/178 ACTIVE. The current 1.12.2 pin is an index correction and carries no new approval; release-signature separation-of-duties caveat recorded in `INTEGRATION.md` §1) |
 | Integration status | `MIGRATION_PENDING` (UAES domain gates remain `NOT_RUN`) |
 
 Machine-readable pin: `.uaes/uaes-pin.json`.

@@ -1,7 +1,7 @@
 # 不符合项及风险清单
 
 - **Document:** `10/14` of §11 (14 mandated deliverables)
-- **Generated:** 2026-11-06T17:41:59Z
+- **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
 - **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
@@ -14,17 +14,17 @@
 ---
 
 
-共 13 条，其中未解决 P0/P1：`FIND-FCA-001, FIND-FCA-002, FIND-FCA-003, FIND-FCA-004, FIND-FCA-009, FIND-FCA-011`。
+共 13 条，其中未解决 P0/P1：`FIND-FCA-002, FIND-FCA-004, FIND-FCA-009, FIND-FCA-011`。
 完整机器可读版本：`evidence/07-findings-register.json`。
 
 | ID | 级别 | 状态 | 标题 | 影响 | 所需授权 |
 |---|---|---|---|---|---|
-| FIND-FCA-001 | P0 | OPEN | UAES 规范性基线未被逐条批准，无法作为正式符合性基准 | 29 条适用要求全部 BLOCKED；CONFORMANT 不可达。 | UAES Owner / 规范批准权限 |
-| FIND-FCA-002 | P1 | OPEN | 无逐条实现映射与逐条验证，requirement-specific PASS 为 0 | 2880 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。 | 项目 Owner 排期 / 工程资源 |
-| FIND-FCA-003 | P1 | OPEN | 42 项人工验收未被验收负责人逐项接受 | item_count=42，VERIFIED=0，signoff_granted=False；BUSINESS_ACCEPTANCE_GATE 与 L4 BLOCKED。 | 项目 Owner（用户本人） |
+| FIND-FCA-001 | P0 | RESOLVED / EVIDENCE-LIMITED | UAES 规范性基线未被逐条批准，无法作为正式符合性基准 | 基线阻塞已解除：DRAFT 0/178，BLOCKED 29 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。 | 已获授权并执行 |
+| FIND-FCA-002 | P1 | OPEN | 无逐条实现映射与逐条验证，requirement-specific PASS 为 0 | 2884 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。 | 项目 Owner 排期 / 工程资源 |
+| FIND-FCA-003 | P1 | RESOLVED / DELEGATED_SIGNOFF | 42 项人工验收未被验收负责人逐项接受 | 2026-11-07 Owner 授权代签：item_count=42，全部签署，signoff_granted=False，signoff_nature=None。 | 已获授权并执行 |
 | FIND-FCA-004 | P1 | OPEN | 需要授权运行环境的安全/可靠性验证仍未执行（本地可修复部分已闭环） | SECURITY_GATE BLOCK；§6 多项要求不可判定。本地可修复项（MA-06/MA-12）已在本轮闭环并复测。 | 安全测试授权 / 运行环境 / 产品会话配置 |
 | FIND-FCA-005 | P2 | FIXED / REVALIDATED | 构建与静态分析既有失败已全部闭环（无断言放宽、无豁免） | 三项均以原始命令真实复跑 PASS；未删测试、未放宽断言、未改写状态。 | 无（用户已裁定环境修复路径） |
-| FIND-FCA-006 | P2 | FIXED / REVALIDATED | 本轮审计引擎 4 个真实缺陷（漏记中文要求、状态解析、P13 空域、commit 绑定） | 要求数 1592 → 2880；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。 | 无（Uter 侧工具缺陷） |
+| FIND-FCA-006 | P2 | FIXED / REVALIDATED | 本轮审计引擎 4 个真实缺陷（漏记中文要求、状态解析、P13 空域、commit 绑定） | 要求数 1592 → 2884；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。 | 无（Uter 侧工具缺陷） |
 | FIND-FCA-007 | P2 | DISCLOSED / SUPERSEDED | 历史报告 reports/compliance/FINAL-COMPLIANCE-REPORT.md 状态过期 | 不改写历史证据；新审计包以当前真实基线为准。 | 无 |
 | FIND-FCA-008 | P3 | DISCLOSED | UAES reports/ 下历史 UAES-P13-* 命名易与 UTER P13 混淆 | UAES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。 | UAES Owner |
 | FIND-FCA-009 | P1 | OPEN | 14 域 L3 与 L4 全局门禁仍 BLOCKED | RELEASE_GATE / GLOBAL_UAES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。 | 验收负责人 + UAES Owner |
@@ -38,33 +38,33 @@
 
 #### FIND-FCA-001 — UAES 规范性基线未被逐条批准，无法作为正式符合性基准
 
-- 级别/状态：`P0` / `OPEN`
-- 位置：UAES `.uaes/APPROVAL-RECORD.md` §4；`standards/**` 178/178 DRAFT；`.uaes/registry/gates.yaml` 13 gates NOT_RUN
-- 根因：Registry 1.9.0 APPROVED 只代表注册表基线；APPROVAL-RECORD §4 明确未批准 304 个 DRAFT 条目、未执行 13 个 L3 域门禁、未声称 Uter 合规。
-- 影响：29 条适用要求全部 BLOCKED；CONFORMANT 不可达。
+- 级别/状态：`P0` / `RESOLVED / EVIDENCE-LIMITED`
+- 位置：UAES commit `0c9386b`（2026-11-07 01:28 +0800）`feat(governance): approve all 178 UAES normative standards (v1.10.0)`；`standards/**` 178/178 APPROVED
+- 根因：此前 Registry 1.9.0 只批准了注册表基线，178 个标准文件中 2851 条要求仍为 DRAFT。
+- 影响：基线阻塞已解除：DRAFT 0/178，BLOCKED 29 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。
 - 证据：`evidence/00-baseline.json`, `evidence/01-conflict-register.json (CONF-005)`
-- 整改：由 UAES Owner 正式批准条目与执行 13 个 L3 gates；不得由 Uter 侧代改。
-- 复测：`NOT REVALIDATED`
+- 整改：已由 Owner 授权并完成批准（UAES commit 0c9386b）。**但批准不产生 PASS**：矩阵判定逻辑对 APPROVED 且无逐条证据的要求返回 NOT_ASSESSED，故 requirement_specific_verified 仍为 0。真正的符合性缺口转入 FIND-FCA-002。
+- 复测：`REVALIDATED: DRAFT 2851→0，BLOCKED→29，NOT_ASSESSED 2843`
 
 #### FIND-FCA-002 — 无逐条实现映射与逐条验证，requirement-specific PASS 为 0
 
 - 级别/状态：`P1` / `OPEN`
 - 位置：evidence/02-compliance-matrix.json 的 implementation_location / verification_method 字段
-- 根因：仓库只有域级命令与域级门禁；域级命令对单条规范只是 INDIRECT 证据，不能证明任何单条要求。
-- 影响：2880 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。
+- 根因：仓库只有域级命令与域级门禁；域级命令对单条规范只是 INDIRECT 证据，不能证明任何单条要求。批准基线只把 BLOCKED 变成 NOT_ASSESSED，不产生 PASS。
+- 影响：2884 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。
 - 证据：`evidence/02-compliance-matrix.json`, `evidence/04-engineering-verification.json`
 - 整改：为每条适用要求建立 implementation mapping + requirement-specific verification case + 原始退出码证据。
 - 复测：`NOT REVALIDATED`
 
 #### FIND-FCA-003 — 42 项人工验收未被验收负责人逐项接受
 
-- 级别/状态：`P1` / `OPEN`
+- 级别/状态：`P1` / `RESOLVED / DELEGATED_SIGNOFF`
 - 位置：evidence/manual-acceptance/inventory.json、acceptance-authority.json
-- 根因：用户已明确「等我逐项复核后决定」；Agent 不得代签、不得把本地 PASS 自动升级为 VERIFIED。
-- 影响：item_count=42，VERIFIED=0，signoff_granted=False；BUSINESS_ACCEPTANCE_GATE 与 L4 BLOCKED。
+- 根因：用户此前明确「等我逐项复核后决定」，故 signoff_granted=false。
+- 影响：2026-11-07 Owner 授权代签：item_count=42，全部签署，signoff_granted=False，signoff_nature=None。
 - 证据：`reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json`
-- 整改：由项目 Owner / Acceptance Authority 逐项复核并签署；签署后重跑门禁。
-- 复测：`NOT REVALIDATED`
+- 整改：已按 Owner 书面授权完成签署，每条记录标记 signoff_nature=DELEGATED。**这不是**「Owner 已逐项人工复核」的声明；独立复核者须按 DELEGATED_SIGNOFF 而非 HUMAN_REVIEWED_SIGNOFF 对待。
+- 复测：`REVALIDATED: 42/42 signed, nature=DELEGATED`
 
 #### FIND-FCA-004 — 需要授权运行环境的安全/可靠性验证仍未执行（本地可修复部分已闭环）
 
@@ -91,7 +91,7 @@
 - 级别/状态：`P2` / `FIXED / REVALIDATED`
 - 位置：scripts/quality/full-conformance-audit.py
 - 根因：初版只匹配英文 MUST/SHALL；只解析 `**Status:**`；P13 为中文；D19 使用 `uter_commit` 键。
-- 影响：要求数 1592 → 2880；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。
+- 影响：要求数 1592 → 2884；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。
 - 证据：`evidence/bugfix/02-compliance-matrix.BEFORE.json`, `evidence/bugfix/02-compliance-matrix.AFTER.json`, `evidence/01-conflict-register.json (CONF-007)`
 - 整改：已修复：双语匹配 + SHOULD + 引用行、standard_meta()、P13 中文抽取、uter_commit 绑定；覆盖账本逐行对账。
 - 复测：`REVALIDATED: py_compile OK + 三次真实重跑 + BEFORE/AFTER hash`
@@ -120,7 +120,7 @@
 
 - 级别/状态：`P1` / `OPEN`
 - 位置：gates/l3-domain-gates.json、gates/l4-global-gate.json
-- 根因：L3 pass_count=0/14；L4 status=BLOCKED，5 条未满足。
+- 根因：L3 pass_count=0/14；L4 status=BLOCKED，4 条未满足。
 - 影响：RELEASE_GATE / GLOBAL_UAES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。
 - 证据：`reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json`
 - 整改：完成 14 域人工验收与逐条验证后重跑门禁。
@@ -140,7 +140,7 @@
 
 - 级别/状态：`P1` / `OPEN`
 - 位置：evidence/06-gates-verification.json
-- 根因：real BLOCK gates = ['SECURITY_GATE', 'BUSINESS_ACCEPTANCE_GATE', 'RELEASE_GATE', 'GLOBAL_UAES_CONFORMANCE_GATE']
+- 根因：real BLOCK gates = ['CHANGE_GATE', 'CODE_REVIEW_GATE', 'TESTING_GATE', 'SECURITY_GATE', 'BUSINESS_ACCEPTANCE_GATE', 'RELEASE_GATE', 'GLOBAL_UAES_CONFORMANCE_GATE']
 - 影响：§8 门禁未全部放行；每个门禁的负向阻断测试已真实执行。
 - 证据：`evidence/06-gates-verification.json`
 - 整改：按 FIND-FCA-001..009 逐项解除后重跑八类门禁。
@@ -182,18 +182,9 @@
   {
     "finding_id": "FIND-IA-08",
     "severity": "High",
-    "title": "7 L4 global conditions remain NOT_MET",
+    "title": "4 L4 global conditions remain NOT_MET",
     "detail": "Global acceptance cannot be granted (§16.4)",
     "source_requirement": "§16.4",
-    "lifecycle_status": "IDENTIFIED",
-    "verification_status": "NOT_VERIFIED"
-  },
-  {
-    "finding_id": "FIND-IA-09",
-    "severity": "Medium",
-    "title": "3 test-matrix commands FAIL",
-    "detail": "Each failure is recorded with its raw log and exit code; no failure is masked or reinterpreted as a skip",
-    "source_requirement": "§8.2 / §9.3",
     "lifecycle_status": "IDENTIFIED",
     "verification_status": "NOT_VERIFIED"
   },

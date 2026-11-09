@@ -1,10 +1,10 @@
 {
   "evidence_id": "EVIDENCE-CLOSURE",
-  "generated_at": "2026-11-08T18:42:15.713754+00:00",
+  "generated_at": "2026-11-09T04:36:21.754869+00:00",
   "governing_specification": "UTER-UAES-GOV-001",
   "repository_revision": {
-    "uter_head": "424dfa2c55c534bf110fa5871420fe3fd679d307",
-    "uaes_head": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7"
+    "uter_head": "1ca18a6818db4f867d96a897ac4ec24a49e9383d",
+    "uaes_head": "e798e65c3eacdb56bb3c4f49d71d87303bcea0b4"
   },
   "collector": "WorkBuddy (Tencent Hunyuan Hy)",
   "source_system": "scripts/quality/uaes-evidence-closure.py",
@@ -296,7 +296,7 @@
     {
       "path": "evidence/agent-runtime-selftest.json",
       "bytes": 6649,
-      "sha256": "64b81ec291607fee695438928c08dd41919ee2199d8dc44772a421dc4853b564"
+      "sha256": "5a371a7e1f9e26f59cf78402399533adf1b20a0ba5cd0f4710a0b7abddd05df4"
     },
     {
       "path": "evidence/agent-runtime-task.json",
@@ -346,22 +346,22 @@
     {
       "path": "evidence/gates/GATES-SUMMARY.md",
       "bytes": 4427,
-      "sha256": "444bc08cdb1e01b32f2e66f53a0daa400cac49116522a2a88c1b90c52ccfea00"
+      "sha256": "f315f6dbf7b64f24ce69b10e3c18ebb4cc7101b6fd1fdcbb48274ad5705f0ab2"
     },
     {
       "path": "evidence/gates/l1-l2-gates.json",
       "bytes": 549,
-      "sha256": "3692d200259bfb9b90b8be5d6186dd6168d102dcaf47c9f378080f19dea765e9"
+      "sha256": "e7fef9986769cd25bb538a248a5981b98b8cdf08e9c4c27d14c2b9b8acf9a586"
     },
     {
       "path": "evidence/gates/l3-domain-gates.json",
       "bytes": 40913,
-      "sha256": "446a9281c9ac2a37f4e6ee2fe4f59f531fa6665ea614f1ef57219e232c5cb4c8"
+      "sha256": "5ac1d7ef6449dfe7e3a962ee654da273f13125aa24ad18e60f8655ac5c2094db"
     },
     {
       "path": "evidence/gates/l4-global-gate.json",
       "bytes": 6239,
-      "sha256": "94616415dcdb09f443b4b95aff4b86b7008e19f2db98c65f0f0c271cef66f0fb"
+      "sha256": "50b0810666208cc1b7d26a49d0504f3444c084fd45cd28f750b2f4afd02faa32"
     },
     {
       "path": "evidence/gates/l4-round-B.json",
@@ -371,7 +371,7 @@
     {
       "path": "evidence/governance-separation.json",
       "bytes": 7896,
-      "sha256": "8cbe6a4306933146675a1b14a88055014117e8f66d636005fbcec1db3cf97a6c"
+      "sha256": "53a5ce325b13bc4141a8991c4c4298cb64d3c734a889fcaff088ee137c660140"
     },
     {
       "path": "evidence/independent-assessment.json",
@@ -721,7 +721,7 @@
     {
       "path": "evidence/p09-p10-boundary.json",
       "bytes": 6555,
-      "sha256": "5f82c603b78c555c5bc511f08860912849351b1881b27e2b2a2e6df90edcd6c9"
+      "sha256": "a65b0801445973d73adac174e35bc2468d0b2be6f298a38e0d6df39f8e1b0067"
     },
     {
       "path": "evidence/test-matrix.json",

@@ -1,7 +1,7 @@
 # 安全与可靠性审计报告（§6 安全部分）
 
 - **Document:** `7/14` of §11 (14 mandated deliverables)
-- **Generated:** 2026-11-06T17:41:59Z
+- **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
 - **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
@@ -69,9 +69,6 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
 | NR-07 | 故障恢复 / DR 演练 | NOT_RUN | 需要生产等价环境、故障注入与恢复窗口授权。 | 项目 Owner / 环境授权 / UAES Owner（按类别） |
 | NR-08 | 备份与恢复测试 | NOT_RUN | 需要真实数据库备份与恢复目标实例。 | 项目 Owner / 环境授权 / UAES Owner（按类别） |
 | NR-09 | CI/CD 与发布流程真实执行 | NOT_RUN | 本地仅有 workflow 静态定义；未授权 push / PR / merge / deploy，无法产生真实 CI 运行记录。 | 项目 Owner / 环境授权 / UAES Owner（按类别） |
-| NR-10 | 端到端 Playwright 视觉测试 | NOT_RUN | 需浏览器二进制与显示环境；以 probe 结果为准。 | 项目 Owner / 环境授权 / UAES Owner（按类别） |
-| NR-11 | axe 无障碍扫描 | NOT_RUN | web/node_modules 下无 @axe-core/axe-core（MA-12 已记录 NOT_RUN）。 | 项目 Owner / 环境授权 / UAES Owner（按类别） |
-| NR-12 | docs-web / electron 构建 | NOT_RUN | MA-10 受宿主 safe-delete 拦截、MA-11 为 Electron 下载网络超时，均为已执行的真实 FAIL，不改写为 NOT_RUN。 | 项目 Owner / 环境授权 / UAES Owner（按类别） |
 
 
 **结论：安全与可靠性验证不完整，SECURITY_GATE BLOCK。**
