@@ -1,6 +1,6 @@
 {
   "evidence_id": "FCA-REMEDIATION-REGISTER",
-  "generated_at": "2026-11-06T17:41:58Z",
+  "generated_at": "2026-11-09T05:04:20Z",
   "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
   "before_sha256": "7f949a39628c8fbd0333aab011a644d4f5954901ae31c1f291e9d5c4c96af067",
   "after_sha256": "51d3d8d99604f55cfbff34ab44a4d9ddefbf8c34e8c344ea8ee3312617600bfe",
@@ -116,7 +116,7 @@
       "file": "scripts/quality/full-conformance-execution.py",
       "change": "harness() 增加证据文件回退解析（`evidence:` 行指向 harness 写出的结构化 JSON）",
       "before": "agent passed=7/10",
-      "after": "agent passed=10/10",
+      "after": "agent passed=8/10",
       "risk": "仅修正审计器自身解析；底层 harness 与被测控制未改动",
       "revalidation": "PASS"
     },

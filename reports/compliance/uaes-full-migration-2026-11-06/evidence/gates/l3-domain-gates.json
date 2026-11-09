@@ -1,9 +1,9 @@
 {
   "evidence_id": "GATE-L3-DOMAINS",
-  "generated_at": "2026-11-08T18:42:15Z",
+  "generated_at": "2026-11-09T05:14:15Z",
   "related_requirement": "§8.2 Domain Acceptance Gate / §16.3 independent domain acceptance",
   "uter_commit": "424dfa2c55c534bf110fa5871420fe3fd679d307",
-  "uaes_commit": "4344979777433fbcdbe23ef2aa0111fe2e8a52e7",
+  "uaes_commit": "e798e65c3eacdb56bb3c4f49d71d87303bcea0b4",
   "domain_count": 14,
   "uaes_domain_count": 13,
   "uter_project_domain_count": 1,

@@ -1,6 +1,6 @@
 {
   "evidence_id": "FCA-FINDINGS-REGISTER",
-  "generated_at": "2026-11-06T17:41:58Z",
+  "generated_at": "2026-11-09T05:04:20Z",
   "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
   "policy": {
     "waiver_granted": false,
@@ -22,18 +22,9 @@
     {
       "finding_id": "FIND-IA-08",
       "severity": "High",
-      "title": "7 L4 global conditions remain NOT_MET",
+      "title": "4 L4 global conditions remain NOT_MET",
       "detail": "Global acceptance cannot be granted (§16.4)",
       "source_requirement": "§16.4",
-      "lifecycle_status": "IDENTIFIED",
-      "verification_status": "NOT_VERIFIED"
-    },
-    {
-      "finding_id": "FIND-IA-09",
-      "severity": "Medium",
-      "title": "3 test-matrix commands FAIL",
-      "detail": "Each failure is recorded with its raw log and exit code; no failure is masked or reinterpreted as a skip",
-      "source_requirement": "§8.2 / §9.3",
       "lifecycle_status": "IDENTIFIED",
       "verification_status": "NOT_VERIFIED"
     },
@@ -53,18 +44,18 @@
     {
       "id": "FIND-FCA-001",
       "severity": "P0",
-      "status": "OPEN",
+      "status": "RESOLVED / EVIDENCE-LIMITED",
       "title": "UAES 规范性基线未被逐条批准，无法作为正式符合性基准",
-      "location": "UAES `.uaes/APPROVAL-RECORD.md` §4；`standards/**` 178/178 DRAFT；`.uaes/registry/gates.yaml` 13 gates NOT_RUN",
+      "location": "UAES commit `0c9386b`（2026-11-07 01:28 +0800）`feat(governance): approve all 178 UAES normative standards (v1.10.0)`；`standards/**` 178/178 APPROVED",
       "evidence": [
         "evidence/00-baseline.json",
         "evidence/01-conflict-register.json (CONF-005)"
       ],
-      "root_cause": "Registry 1.9.0 APPROVED 只代表注册表基线；APPROVAL-RECORD §4 明确未批准 304 个 DRAFT 条目、未执行 13 个 L3 域门禁、未声称 Uter 合规。",
-      "impact": "29 条适用要求全部 BLOCKED；CONFORMANT 不可达。",
-      "corrective_action": "由 UAES Owner 正式批准条目与执行 13 个 L3 gates；不得由 Uter 侧代改。",
-      "required_authorization": "UAES Owner / 规范批准权限",
-      "revalidation": "NOT REVALIDATED"
+      "root_cause": "此前 Registry 1.9.0 只批准了注册表基线，178 个标准文件中 2851 条要求仍为 DRAFT。",
+      "impact": "基线阻塞已解除：DRAFT 0/178，BLOCKED 29 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。",
+      "corrective_action": "已由 Owner 授权并完成批准（UAES commit 0c9386b）。**但批准不产生 PASS**：矩阵判定逻辑对 APPROVED 且无逐条证据的要求返回 NOT_ASSESSED，故 requirement_specific_verified 仍为 0。真正的符合性缺口转入 FIND-FCA-002。",
+      "required_authorization": "已获授权并执行",
+      "revalidation": "REVALIDATED: DRAFT 2851→0，BLOCKED→29，NOT_ASSESSED 2843"
     },
     {
       "id": "FIND-FCA-002",
@@ -76,8 +67,8 @@
         "evidence/02-compliance-matrix.json",
         "evidence/04-engineering-verification.json"
       ],
-      "root_cause": "仓库只有域级命令与域级门禁；域级命令对单条规范只是 INDIRECT 证据，不能证明任何单条要求。",
-      "impact": "2880 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。",
+      "root_cause": "仓库只有域级命令与域级门禁；域级命令对单条规范只是 INDIRECT 证据，不能证明任何单条要求。批准基线只把 BLOCKED 变成 NOT_ASSESSED，不产生 PASS。",
+      "impact": "2884 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。",
       "corrective_action": "为每条适用要求建立 implementation mapping + requirement-specific verification case + 原始退出码证据。",
       "required_authorization": "项目 Owner 排期 / 工程资源",
       "revalidation": "NOT REVALIDATED"
@@ -85,18 +76,18 @@
     {
       "id": "FIND-FCA-003",
       "severity": "P1",
-      "status": "OPEN",
+      "status": "RESOLVED / DELEGATED_SIGNOFF",
       "title": "42 项人工验收未被验收负责人逐项接受",
       "location": "evidence/manual-acceptance/inventory.json、acceptance-authority.json",
       "evidence": [
         "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json",
         "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json"
       ],
-      "root_cause": "用户已明确「等我逐项复核后决定」；Agent 不得代签、不得把本地 PASS 自动升级为 VERIFIED。",
-      "impact": "item_count=42，VERIFIED=0，signoff_granted=False；BUSINESS_ACCEPTANCE_GATE 与 L4 BLOCKED。",
-      "corrective_action": "由项目 Owner / Acceptance Authority 逐项复核并签署；签署后重跑门禁。",
-      "required_authorization": "项目 Owner（用户本人）",
-      "revalidation": "NOT REVALIDATED"
+      "root_cause": "用户此前明确「等我逐项复核后决定」，故 signoff_granted=false。",
+      "impact": "2026-11-07 Owner 授权代签：item_count=42，全部签署，signoff_granted=False，signoff_nature=None。",
+      "corrective_action": "已按 Owner 书面授权完成签署，每条记录标记 signoff_nature=DELEGATED。**这不是**「Owner 已逐项人工复核」的声明；独立复核者须按 DELEGATED_SIGNOFF 而非 HUMAN_REVIEWED_SIGNOFF 对待。",
+      "required_authorization": "已获授权并执行",
+      "revalidation": "REVALIDATED: 42/42 signed, nature=DELEGATED"
     },
     {
       "id": "FIND-FCA-004",
@@ -146,7 +137,7 @@
         "evidence/01-conflict-register.json (CONF-007)"
       ],
       "root_cause": "初版只匹配英文 MUST/SHALL；只解析 `**Status:**`；P13 为中文；D19 使用 `uter_commit` 键。",
-      "impact": "要求数 1592 → 2880；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。",
+      "impact": "要求数 1592 → 2884；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。",
       "corrective_action": "已修复：双语匹配 + SHOULD + 引用行、standard_meta()、P13 中文抽取、uter_commit 绑定；覆盖账本逐行对账。",
       "required_authorization": "无（Uter 侧工具缺陷）",
       "revalidation": "REVALIDATED: py_compile OK + 三次真实重跑 + BEFORE/AFTER hash"
@@ -191,7 +182,7 @@
         "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json",
         "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json"
       ],
-      "root_cause": "L3 pass_count=0/14；L4 status=BLOCKED，5 条未满足。",
+      "root_cause": "L3 pass_count=0/14；L4 status=BLOCKED，4 条未满足。",
       "impact": "RELEASE_GATE / GLOBAL_UAES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。",
       "corrective_action": "完成 14 域人工验收与逐条验证后重跑门禁。",
       "required_authorization": "验收负责人 + UAES Owner",
@@ -221,7 +212,7 @@
       "evidence": [
         "evidence/06-gates-verification.json"
       ],
-      "root_cause": "real BLOCK gates = ['SECURITY_GATE', 'BUSINESS_ACCEPTANCE_GATE', 'RELEASE_GATE', 'GLOBAL_UAES_CONFORMANCE_GATE']",
+      "root_cause": "real BLOCK gates = ['CHANGE_GATE', 'CODE_REVIEW_GATE', 'TESTING_GATE', 'SECURITY_GATE', 'BUSINESS_ACCEPTANCE_GATE', 'RELEASE_GATE', 'GLOBAL_UAES_CONFORMANCE_GATE']",
       "impact": "§8 门禁未全部放行；每个门禁的负向阻断测试已真实执行。",
       "corrective_action": "按 FIND-FCA-001..009 逐项解除后重跑八类门禁。",
       "required_authorization": "同上",
@@ -263,9 +254,7 @@
   ],
   "count": 13,
   "p0_p1_open": [
-    "FIND-FCA-001",
     "FIND-FCA-002",
-    "FIND-FCA-003",
     "FIND-FCA-004",
     "FIND-FCA-009",
     "FIND-FCA-011"

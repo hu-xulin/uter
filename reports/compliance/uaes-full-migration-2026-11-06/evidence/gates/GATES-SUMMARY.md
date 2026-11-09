@@ -1,8 +1,8 @@
 # Gate evaluation summary (UTER-UAES-GOV-001 §8.2 / §16)
 
-- Generated: 2026-11-08T18:42:15Z
+- Generated: 2026-11-09T05:14:15Z
 - Uter commit: `424dfa2c55c534bf110fa5871420fe3fd679d307`
-- UAES commit: `4344979777433fbcdbe23ef2aa0111fe2e8a52e7` (1.12.1 / ACTIVE)
+- UAES commit: `e798e65c3eacdb56bb3c4f49d71d87303bcea0b4` (1.12.2 / ACTIVE)
 - Conformance status vocabulary (§16.2): CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED
 
 | Gate | Status | Detail |

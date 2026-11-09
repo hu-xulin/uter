@@ -12,6 +12,7 @@ Exit:
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import pathlib
 import sys
@@ -132,18 +133,44 @@ def build():
         evidence="evidence/08-remediation-register.json, evidence/07-findings-register.json",
     ))
 
-    files = clo.get("evidence_files", [])
-    listed = clo.get("total_listed", len(files))
-    missing = [f for f in files if f.get("exists") is False or f.get("missing")]
-    hash_mm = [f for f in files if f.get("sha256_match") is False]
-    size_mm = [f for f in files if f.get("size_match") is False]
-    problems = clo.get("problems", [])
+    # Condition 9 must be a REAL integrity check, not a trust exercise.
+    #
+    # The closure manifest written by full_conformance_deliver.py stores only
+    # path / sha256 / bytes per row. It never writes `exists`, `sha256_match`,
+    # `size_match` or `problems`, so filtering on those keys always produced
+    # zero mismatches -- a vacuous PASS that hid 82 stale hashes. Recompute
+    # every hash and size from the on-disk bytes here, and also detect files
+    # present in evidence/ but absent from the manifest (undeclared evidence).
+    closure_rows = clo.get("evidence_files", []) + clo.get("deliverables", [])
+    listed = len(closure_rows)
+    missing, hash_mm, size_mm = [], [], []
+    for row in closure_rows:
+        rel = row.get("path", "")
+        p = OUT / rel
+        if not p.is_file():
+            missing.append(rel)
+            continue
+        if hashlib.sha256(p.read_bytes()).hexdigest() != row.get("sha256", ""):
+            hash_mm.append(rel)
+        if p.stat().st_size != row.get("bytes", -1):
+            size_mm.append(rel)
+    listed_paths = {r.get("path", "") for r in closure_rows}
+    closure_excluded = {
+        "evidence/09-evidence-index.json",
+        "evidence/10-evidence-closure.json",
+        "12-FINAL-EVIDENCE-INDEX.md",
+    }
+    actual_paths = {p.relative_to(OUT).as_posix() for p in EV.rglob("*")
+                    if p.is_file() and not p.name.endswith(".tmp")}
+    extras = sorted(actual_paths - listed_paths - closure_excluded)
+    problems = missing + hash_mm + size_mm + ["extra:" + x for x in extras]
     rows.append(dict(
         n=9, name="证据完整且可追溯",
-        ok=(len(missing) == 0 and len(hash_mm) == 0 and len(size_mm) == 0
-            and len(problems) == 0 and listed > 0),
+        ok=(len(problems) == 0 and listed > 0),
         detail=(f"证据闭包 total_listed={listed} missing={len(missing)} "
-                f"hash_mismatch={len(hash_mm)} size_mismatch={len(size_mm)} problems={len(problems)}"),
+                f"hash_mismatch={len(hash_mm)} size_mismatch={len(size_mm)} "
+                f"extra={len(extras)} problems={len(problems)}"
+                "（按磁盘 sha256/bytes 实算，与 --verify-only 同口径）"),
         evidence="evidence/10-evidence-closure.json",
     ))
 
