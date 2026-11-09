@@ -46,6 +46,18 @@ jobs:
           repository: hu-xulin/uaes
           ref: ${{ steps.uaes_pin.outputs.commit }}
           path: uaes-pinned
+
+      # Autonomous downstream gate: Uter must detect and process every upstream
+      # UAES version change. --check is detect-only and exits 1 when a change is
+      # still pending, so an unprocessed upstream change blocks the build rather
+      # than being silently absorbed. It never promotes integration_status,
+      # never marks items VERIFIED and never marks L3/L4 gates PASS (see
+      # .uaes/autonomous/config/downstream-policy.json hard_constraints).
+      - name: Autonomous UAES downstream version check
+        env:
+          UAES_ROOT: ${{ github.workspace }}/uaes-pinned
+        run: node .uaes/autonomous/engine/sync.mjs --check
+
       - name: Validate UAES / Uter two-repository separation
         env:
           UAES_REPO: ${{ github.workspace }}/uaes-pinned
