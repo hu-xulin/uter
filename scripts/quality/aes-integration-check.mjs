@@ -53,6 +53,21 @@ const agents = read(join(ROOT,'AGENTS.md')), claude = read(join(ROOT,'CLAUDE.md'
 check('AES-AGENT-001', agents.includes('AES_AUTONOMOUS_GOVERNANCE') && agents.includes('governed-fingerprint.mjs'), 'AGENTS.md bootstraps canonical AES')
 check('AES-AGENT-002', claude.includes('AES_AUTONOMOUS_GOVERNANCE') && claude.includes('governed-fingerprint.mjs'), 'CLAUDE.md bootstraps canonical AES')
 check('AES-AGENT-003', !agents.includes('uaes/governance') && !claude.includes('uaes/governance'), 'no stale UAES canonical-source bootstrap')
-const report = { schema_version:'1.0.0', engine:'UTER-AES-INTEGRATION-CHECK', executed_at:new Date().toISOString(), aes_root:AES_ROOT, aes_commit:execFileSync('git',['-C',AES_ROOT,'rev-parse','HEAD'],{encoding:'utf8'}).trim(), pin_fingerprint:pin.governed_fingerprint, live_fingerprint:live.fingerprint, checks, verdict:failures.length?'FAIL':'PASS', failed_checks:failures }
+const report = {
+  schema_version:'1.1.0',
+  engine:'UTER-AES-INTEGRATION-CHECK',
+  executed_at:new Date().toISOString(),
+  aes_root:AES_ROOT,
+  aes_commit:execFileSync('git',['-C',AES_ROOT,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),
+  pin_fingerprint:pin.governed_fingerprint,
+  live_fingerprint:live.fingerprint,
+  seal_intact:live.seal_intact,
+  pin_registry_blob_sha:pin.registry_blob_sha,
+  live_components:live.components,
+  pin_components:pin.governed_components,
+  checks,
+  verdict:failures.length?'FAIL':'PASS',
+  failed_checks:failures
+}
 console.log(JSON.stringify(report,null,2))
 if (failures.length) process.exitCode=1
