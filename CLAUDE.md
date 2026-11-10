@@ -17,13 +17,7 @@ Rules:
 - If the task touches `web/`, also Read `web/AGENTS.md` before editing frontend files.
 - If the task touches billing as defined under **Billing rules (mandatory read gate)** in `AGENTS.md`, also Read `.agents/rules/billing.md` in full before planning or editing. Tasks outside that definition may skip it.
 
-# AES Autonomous Governance Bootstrap Block
-
-This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
-
-# AES Autonomous Governance Bootstrap Block
-
-This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
+- Before any local commit, release candidate or artifact publication, run `node scripts/quality/l4-global-conformance-gate.mjs` with `AES_ROOT` set to the canonical AES checkout. A missing P13 report or any non-PASS evidence blocks the action.
 
 # AES Autonomous Governance Bootstrap Block
 
