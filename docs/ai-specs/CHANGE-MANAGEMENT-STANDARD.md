@@ -112,24 +112,22 @@ Commit 信息必须说明实际变更内容。
 
 不得将未完成或未经验证的工作描述为已完成。
 
-## 8. Pull Request 规范
+## 8. 本地 main 变更证据
 
-PR 至少应包含：
+每次变更必须生成机器可读的本地变更记录，至少包含：
 
-- 标题。
-- 变更目的。
-- 需求或问题来源。
-- 基线 SHA。
-- 修改文件。
-- 核心实现说明。
-- 测试结果。
+- Task ID 和需求/问题来源。
+- 基线 SHA 与当前 Head SHA。
+- 变更文件及内容摘要。
+- 核心实现与影响范围。
+- 实际测试命令和结果。
+- 独立机器 Review 结果。
 - Quality Gate 结果。
-- 安全影响。
-- 兼容性影响。
-- 未解决风险。
-- 回滚说明。
+- 安全和兼容性影响。
+- 未解决风险、回滚/恢复说明。
+- 本地 Commit SHA（如机器策略允许创建）。
 
-不得伪造测试证据。
+不得伪造测试、审查、覆盖率或证据；不得把自然语言报告替代实际执行结果。
 
 ## 9. 数据库变更
 
@@ -163,7 +161,7 @@ AI 不得未经授权操作生产数据库。
 
 ## 11. 质量门禁
 
-提交 PR 前必须通过 Uter Engineering Quality Engine。
+创建本地 main Commit 前必须通过 Uter Engineering Quality Engine 和 AES 独立机器验证。
 
 至少检查：
 
@@ -180,32 +178,28 @@ AI 不得未经授权操作生产数据库。
 
 ## 12. 自动提交权限
 
-在用户已经授权的范围内，AI 可以：
+在 AES 机器策略和本地 main-only 项目策略授权范围内，AI 可以：
 
-- 复用项目唯一的独立工作分支；仅当不存在工作分支时才可创建。
-- 每个项目最多一个非 main 工作分支；不得为不同任务、审计阶段或 Agent 创建第二个分支。
-- 创建隔离 Worktree，但不得借 Worktree 规避单工作分支策略。
-- 修改代码。
-- 添加测试。
-- 执行质量检查。
-- 创建 Commit。
-- Push 独立分支。
-- 创建 Pull Request。
+- 在本地现有 `main` 工作树修改代码。
+- 添加和更新自动化测试。
+- 执行全部适用质量检查。
+- 在全部门禁 PASS 且独立复验通过后创建本地 Commit。
+- 生成机器证据和审计报告。
 
-必须满足：
+强制限制：
 
-- 不覆盖用户未提交修改。
-- 不直接修改或推送 main。
-- 不使用 force push。
-- 不创建第二个非 main 工作分支；发现分支数量超限时先停止并升级处理。
-- 不提交真实密钥。
-- 不绕过质量门禁。
+- 禁止创建、切换或复用执行分支及 linked worktree。
+- 禁止 Push、Pull Request、Merge、Rebase、Force Push 和 Deploy。
+- 不覆盖用户未提交修改；不得使用破坏性清理命令。
+- 不提交真实密钥或生产数据。
+- 不绕过质量门禁；NOT_RUN、UNKNOWN、BLOCKED、NOT_VERIFIED 均不是 PASS。
 
 ## 13. 禁止操作
 
 未经额外明确授权，AI 不得：
 
-- 自动合并 PR。
+- 创建或更新 Pull Request。
+- Push、Merge、Rebase 或 Force Push。
 - 部署生产环境。
 - 修改生产数据库。
 - 修改真实支付配置。
@@ -232,9 +226,8 @@ AI 不得未经授权操作生产数据库。
 
 - 原始任务。
 - 基线 SHA。
-- 分支。
+- 本地 main 基线。
 - Commit。
-- PR。
 - 测试报告。
 - Quality Gate 报告。
 
@@ -248,7 +241,7 @@ AI 不得未经授权操作生产数据库。
 - 测试已执行。
 - Quality Gate 已完成。
 - 文档已同步。
-- Commit / PR 信息可追溯。
+- 本地 Commit 和机器证据可追溯。
 - 未解决风险已披露。
 
 ## 17. Uter 代码事实锚点（2026-11-01 校准）
@@ -257,15 +250,15 @@ AI 不得未经授权操作生产数据库。
 
 - **变更前检查**：`git status --short` 记录脏区——仓库常有并发 WIP，预存在修改绝不混入本次提交。
 - **显式暂存**：只允许 `git add <路径>`，禁止 `git add -A` / `-u`；提交前一刻必须复查暂存区（`git diff --cached --name-status`）——并发会话共享同一 index，曾在 add 与 commit 之间混入他人暂存内容（2026-10-30 实测）。
-- **授权基线**：用户已明确授权 Uter 工程修复可在唯一工作分支上 Commit、Push 和创建/更新 PR；该授权不包含合并、部署、生产数据库写入、生产环境修改或真实支付配置修改。超出该范围的操作仍须独立明确授权，且禁止项不得由普通任务授权覆盖。
+- **授权基线**：当前项目采用本地 main-only。AI 只可在本地 main 工作树执行，机器策略 PASS 后允许本地 Commit；禁止分支、Push、PR、Merge、Rebase、Deploy、生产数据库写入、生产环境修改和真实支付配置修改。
 - **禁用破坏性操作**：无 `rm -rf`、无 `git clean -fd`；删文件走废纸篓，每批 ≤10。
 - **禁止入库物**：`.env`、`*.db`/`-shm`/`-wal`、`logs/`、构建产物（`web/dist`）不进提交、代码与文档。
 - **提交身份**：`Uter.ai <huxulin.hxl@gmail.com>`；被 pre-commit 拒绝 = 身份不对，**禁止 `--no-verify`**。
-- **远端**：origin = `git@github-huxulin:hu-xulin/uter.git`（必须 SSH，全局 gitconfig 会改写 https 为 proxy）；push 前 `git remote -v` 核对、push 后 `git ls-remote` 复核；公司仓 `git@github-uter` 无权勿推。
+- **远端**：只读核对 origin 和远程 main 基线；禁止远程写入。远程 main 与本地基线漂移时自动 BLOCKED，不自动推送或覆盖。
 - **Commit 风格**（仓库历史实际用法）：`feat(scope): 描述` / `fix(scope): 描述` / `refactor(web): 描述` / `style: 描述`，scope 用实际域（design-system、monitor、brand、web、auth…）。
 - **四步闭环**：改动 → 回归（verify-all.sh，🚫不带 --no-docs）→ `./rebuild-all.sh` → 提交。
-- **分支与 PR**：所有 AI 代码修复复用项目唯一非 main 工作分支 + 单一 PR；CI 检查非 main 分支数量不得超过 1。AI 可在授权范围内 Commit、Push 和创建/更新 PR，但不得合并 PR、部署或修改生产环境。CI 状态必须按当前提交的真实结果报告。
+- **分支与 PR**：本地 main-only，不创建任何执行分支、linked worktree 或 PR；不得 Push、Merge、Rebase 或 Deploy。CI 状态必须按当前提交的真实结果报告。
 
 ---
 
-**变更管理的核心目标是让每一次 AI 修改都可控、可审查、可恢复。**
+**变更管理的核心目标是让每一次 AI 修改都可机器审查、可验证、可追溯、可恢复；内部验收不依赖人工或第三方。**
