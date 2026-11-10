@@ -467,6 +467,12 @@ jobs:
       - name: Design tokens
         run: bun run lint:design:strict
 
+      - name: Install pinned Playwright Chromium
+        run: bunx playwright install chromium
+
+      - name: Visual layout, keyboard and accessibility audit
+        run: bun run test:visual
+
       # UAES P4-IV: canonical React UI component registry, contract shape and filesystem parity.
       - name: React component registry
         run: bun run components:registry:check
