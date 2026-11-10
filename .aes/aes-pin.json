@@ -2,7 +2,7 @@
   "schema_version": "3.1.0",
   "repository": "https://github.com/hu-xulin/aes",
   "default_branch": "main",
-  "governed_fingerprint": "4815f3f38c79b3030954dc4077132ba4b098c0759fd8eee989f223a9b74b0872",
+  "governed_fingerprint": "fd29fa67406c0a3e9a7a5a8a5df580bb5bb75783157e401e7379968840519633",
   "governed_fingerprint_algorithm": "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1",
   "governed_components": {
     "registry_blob_sha": "2ee9a7c70c1bbf67645a301de9662a8de9937bdb",
@@ -31,6 +31,6 @@
   "requirement_count": 2150,
   "integration_status": "MIGRATION_PENDING",
   "machine_authorization_state": "ACTIVE",
-  "pinned_at": "2026-11-10T13:34:00+08:00",
+  "pinned_at": "2026-11-10T13:36:00+08:00",
   "note": "AES governed fingerprint and seal recomputed by the canonical AES verifier. This pin identifies the normative rule content only; Uter product conformance remains MIGRATION_PENDING until all applicable requirements, runtime controls, business invariants and CI gates have current independent machine PASS evidence."
 }
