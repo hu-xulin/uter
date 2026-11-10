@@ -21,18 +21,18 @@ Rules:
 
 This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
 
+# AES Autonomous Governance Bootstrap Block
+
+This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
+
 ## AES_AUTONOMOUS_GOVERNANCE / AI_NATIVE_GOVERNANCE — Canonical AES machine policy
 
-- marker: AES_AUTONOMOUS_GOVERNANCE
+- marker: AUTONOMOUS_GOVERNANCE
+- canonical_marker: AES_AUTONOMOUS_GOVERNANCE
 - compatibility_marker: AI_NATIVE_GOVERNANCE
 - canonical_repository: https://github.com/hu-xulin/aes
 - governed_rule_identity_verifier: quality/scripts/aes/governed-fingerprint.mjs
 - canonical_engine_entrypoint: governance/ai-native/engine/cli.mjs
-- resolve AES_ROOT from the explicit environment variable (or the sibling `../aes` checkout); execute the engine with AES_ROOT as the working directory.
-- Before any governance decision, recompute the governed fingerprint with `node quality/scripts/aes/governed-fingerprint.mjs --json --require-intact` from AES_ROOT; reject missing, stale, or broken seals.
-
-## Canonical machine policy
-
 - governance_mode: AUTONOMOUS_MACHINE_ONLY
 - decision_engine: governance/ai-native/engine/cli.mjs
 - policy_engine: governance/ai-native/engine/policy-engine.mjs
@@ -44,14 +44,16 @@ This block binds every Agent to the single machine governance engine. It grants 
 
 ## Mandatory load order
 
-1. Load the canonical AES governance standard and registry.
-2. Load the Agent's repository entrypoint and project policy.
-3. Run `node governance/ai-native/engine/cli.mjs self-check`.
-4. Verify task identity, scope, permission envelope and repository baseline.
-5. Execute only declared actions and commands.
-6. Run all required acceptance rules.
-7. Invoke independent machine verification.
-8. Append evidence and recompute status.
+1. Resolve AES_ROOT from an explicit environment variable or the sibling `../aes` checkout; never silently treat a Uter-local copy as the canonical AES source.
+2. Load the canonical AES governance standard and registry from AES_ROOT.
+3. Load the Agent's repository entrypoint and project policy.
+4. Run `node governance/ai-native/engine/cli.mjs self-check` with AES_ROOT as the working directory.
+5. Recompute the governed rule identity using `node quality/scripts/aes/governed-fingerprint.mjs --json --require-intact`; reject missing, stale, or broken seals.
+6. Verify task identity, scope, permission envelope and repository baseline.
+7. Execute only declared actions and commands.
+8. Run all required acceptance rules.
+9. Invoke independent machine verification.
+10. Append evidence and recompute status.
 
 ## Action boundaries
 
@@ -67,6 +69,7 @@ This block binds every Agent to the single machine governance engine. It grants 
 - The executor cannot write or override its own success state.
 - NOT_RUN, UNKNOWN, SKIPPED, BLOCKED, FAILED and NOT_VERIFIED never count as PASS.
 - Internal release readiness is computed from current mandatory requirement evidence only.
+- Internal machine verification is not a human signature, legal authorization or third-party certification.
 
 ## Protected invariants
 
