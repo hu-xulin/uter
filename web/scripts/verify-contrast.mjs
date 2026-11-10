@@ -153,12 +153,6 @@ add('GRADIENT_TEXT_SINGLE_OWNER',
   gradientOwners.length === 1 && gradientOwners[0] === 'design-system/foundations/typography.css',
   `gradient text declarations=${gradientOwners.join(',') || 'NONE'}`)
 
-// Runtime theme switching, keyboard navigation, responsive layout and axe WCAG checks
-// are executed by test:visual in the same required design-verification mapping.
-add('RUNTIME_VISUAL_A11Y_DELEGATION',
-  true,
-  'required companion verifier: bun run test:visual (light/dark × desktop/mobile, keyboard focus, responsive overflow and axe WCAG 2.2)')
-
 // Print machine-readable rows and a strict final decision. There are no NOT_RUN-as-PASS cases.
 console.log(rows.join('\n'))
 console.log(`\nAutomated contrast/gradient audit: ${failures.length === 0 ? 'PASS' : 'FAIL'}; checks=${rows.length}; failed=${failures.length}`)
