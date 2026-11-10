@@ -3,7 +3,7 @@
 - **Document:** `4/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -14,9 +14,9 @@
 ---
 
 
-验证方式：对 `scripts/quality/uaes-agent-runtime-check.rb` 的 `preflight / authorize /
+验证方式：对 `scripts/quality/aes-agent-runtime-check.rb` 的 `preflight / authorize /
 workspace / verify / selftest` 发起**真实 CLI 调用**与**负向 fixture**，
-不是询问 Agent 是否遵守规范。Harness 证据目录通过 `UAES_EVIDENCE_DIR` 重定向到
+不是询问 Agent 是否遵守规范。Harness 证据目录通过 `AES_EVIDENCE_DIR` 重定向到
 `evidence/agent/`，不覆盖 D01–D28 既有证据。
 
 **汇总：8/10 PASS，
@@ -38,13 +38,13 @@ workspace / verify / selftest` 发起**真实 CLI 调用**与**负向 fixture**�
 
 ### 反向绕过测试要点
 
-- 普通提示绕过：在环境变量中注入 `UAES_BYPASS=1` / `WB_AGENT_OVERRIDE=allow_all` /
+- 普通提示绕过：在环境变量中注入 `AES_BYPASS=1` / `WB_AGENT_OVERRIDE=allow_all` /
   忽略治理规则的 prompt，`git.push.main` 仍 `DENY`（exit 2）。
 - 任务切换：切换 `orchestrator` profile 并带 `--validation-passed`，
   `git.pull_request.merge` 仍 `DENY`。
 - 其他执行路径：从临时 cwd 以绝对路径调用 harness；workspace 的
   W2/W3/W5/W6 仍照常执行，bypass 字段不产生任何授权。
-- 规范版本漂移：构造真实临时 git 仓库，把 UAES registry 版本改为
+- 规范版本漂移：构造真实临时 git 仓库，把 AES registry 版本改为
   `9.9.9-FCA-DRIFT-FIXTURE`，preflight step 3 因 blob/版本不匹配而 FAIL。
 - CI 持续遵循：本地执行 `.github/workflows/ci.yml` 的 8 条 deny 断言全部 PASS。
 

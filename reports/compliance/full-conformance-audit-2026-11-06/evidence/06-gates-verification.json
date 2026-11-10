@@ -13,7 +13,7 @@
     "ARCHITECTURE_GATE": "ALLOW",
     "BUSINESS_ACCEPTANCE_GATE": "BLOCK",
     "RELEASE_GATE": "BLOCK",
-    "GLOBAL_UAES_CONFORMANCE_GATE": "BLOCK"
+    "GLOBAL_AES_CONFORMANCE_GATE": "BLOCK"
   },
   "real": {
     "CHANGE_GATE": {
@@ -119,7 +119,7 @@
         "repository_separation_PASS": true,
         "P09_P10_boundary_PASS": true,
         "14_domains_registered": true,
-        "UTER_P13_not_in_UAES": true,
+        "UTER_P13_not_in_AES": true,
         "architecture_matrix_rows_PASS": true,
         "governance_wiring_PASS": true
       },
@@ -176,8 +176,8 @@
         "scope": "full validation before any commit/push/PR/merge/deploy"
       }
     },
-    "GLOBAL_UAES_CONFORMANCE_GATE": {
-      "gate": "GLOBAL_UAES_CONFORMANCE_GATE",
+    "GLOBAL_AES_CONFORMANCE_GATE": {
+      "gate": "GLOBAL_AES_CONFORMANCE_GATE",
       "verdict": "BLOCK",
       "checks": {
         "matrix_complete": true,
@@ -282,13 +282,13 @@
       "mutation": "L4 declared PASS while 0/14 L3 domains passed"
     },
     {
-      "gate": "GLOBAL_UAES_CONFORMANCE_GATE",
-      "fixture": "reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/GLOBAL_UAES_CONFORMANCE_GATE-nonconforming-state.json",
+      "gate": "GLOBAL_AES_CONFORMANCE_GATE",
+      "fixture": "reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/GLOBAL_AES_CONFORMANCE_GATE-nonconforming-state.json",
       "fixture_sha256": "433dc4557d911fd6fa88c0245001b44e28cb8d9207c8b2cff93657e5b8f21a7d",
-      "command": "python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/GLOBAL_UAES_CONFORMANCE_GATE-nonconforming-state.json' --gate GLOBAL_UAES_CONFORMANCE_GATE",
+      "command": "python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/GLOBAL_AES_CONFORMANCE_GATE-nonconforming-state.json' --gate GLOBAL_AES_CONFORMANCE_GATE",
       "exit_code": 2,
       "parsed_verdict": "BLOCK",
-      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/GATE-NEG-GLOBAL_UAES_CONFORMANCE_GATE.log",
+      "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/GATE-NEG-GLOBAL_AES_CONFORMANCE_GATE.log",
       "blocking_proven": true,
       "mutation": "matrix by_result faked to all-PASS with 0 requirement-specific verifications"
     }
@@ -304,7 +304,7 @@
       "SECURITY_GATE",
       "BUSINESS_ACCEPTANCE_GATE",
       "RELEASE_GATE",
-      "GLOBAL_UAES_CONFORMANCE_GATE"
+      "GLOBAL_AES_CONFORMANCE_GATE"
     ],
     "negative_blocking_proven": 8,
     "negative_total": 8

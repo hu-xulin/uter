@@ -43,6 +43,14 @@ import type { SidebarData } from '@/components/layout/types'
 import { ROLE } from '@/lib/roles'
 
 /**
+ * 产品规格中心（PRD × Prototype 双向同步）目前以仅本机可访问的内部服务运行，
+ * 默认指向本地端口；接入生产 Go 二进制前可通过构建环境变量覆盖。
+ * 入口只对超级管理员开放，避免内部 PRD / 架构资料向普通用户暴露。
+ */
+const PRODUCT_WORKSPACE_URL =
+  import.meta.env.VITE_PRODUCT_WORKSPACE_URL || 'http://127.0.0.1:7788/'
+
+/**
  * Root navigation groups for the application sidebar.
  *
  * These are shown when the URL does not match any nested sidebar view
@@ -189,6 +197,12 @@ export function useSidebarData(): SidebarData {
             url: '/system-settings/site',
             activeUrls: ['/system-settings'],
             icon: Settings,
+            requiredRole: ROLE.SUPER_ADMIN,
+          },
+          {
+            title: t('Product Workspace'),
+            url: PRODUCT_WORKSPACE_URL,
+            icon: FileText,
             requiredRole: ROLE.SUPER_ADMIN,
           },
         ],

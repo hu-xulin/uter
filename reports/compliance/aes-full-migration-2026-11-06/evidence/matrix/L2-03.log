@@ -1,0 +1,12 @@
+# id: L2-03
+# layer: L2
+# command: GOWORK=off go test ./...
+# workdir: /Users/lincolnhu/uter/tokenkit
+# started_at: 2026-11-08T18:35:35Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+ok  	github.com/uter-ai/uter/tokenkit	(cached)
+# exit_code: 0
+# duration_seconds: 0

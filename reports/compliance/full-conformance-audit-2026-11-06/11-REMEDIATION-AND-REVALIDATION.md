@@ -3,7 +3,7 @@
 - **Document:** `11/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -61,7 +61,7 @@ python3 scripts/quality/full-conformance-execution.py all
 
 | Finding | 原因 | 风险 | 所需授权 |
 |---|---|---|---|
-| FIND-FCA-001 | UAES 规范批准属于 UAES Owner 权限；双仓库分别治理 | 越权修改通用标准 | UAES Owner |
+| FIND-FCA-001 | AES 规范批准属于 AES Owner 权限；双仓库分别治理 | 越权修改通用标准 | AES Owner |
 | FIND-FCA-003 | 人工验收接受权属于用户本人，且用户明确要求逐项复核 | 代签导致虚假合规 | 项目 Owner |
 | FIND-FCA-004 | DAST/渗透/三库/DR 需授权运行环境；MA-06 误报需负责人裁定 | 越出风险边界 / 自动豁免 | 安全授权 + 负责人裁定 |
 | FIND-FCA-005 | 批量删除 unused files 会触碰用户 WIP 与运营数据，且不得靠放宽规则关闭 | 不可逆数据丢失 | 项目 Owner 逐项确认 |
@@ -80,5 +80,5 @@ python3 scripts/quality/full-conformance-execution.py all
 | failed_result_hidden | False |
 
 
-未覆盖任何用户未提交修改；未修改 UAES 仓库；未改动业务代码；
+未覆盖任何用户未提交修改；未修改 AES 仓库；未改动业务代码；
 未 commit / push / PR / merge / deploy。

@@ -1,9 +1,9 @@
- M .claude/skills/uaes-integration/SKILL.md
+ M .claude/skills/aes-integration/SKILL.md
  M .github/workflows/ci.yml
- M .uaes/INTEGRATION.md
- M .uaes/TRACEABILITY.md
- M .uaes/agent-governance.yaml
- M .uaes/uaes-pin.json
+ M .aes/INTEGRATION.md
+ M .aes/TRACEABILITY.md
+ M .aes/agent-governance.yaml
+ M .aes/aes-pin.json
  M AGENTS.md
  M VERSION
  M docs-web/package.json
@@ -12,10 +12,10 @@
  M relay/relay_task.go
  M scripts/quality/ai-specs-check.sh
  M scripts/quality/test-ai-governance-policy.rb
- M scripts/quality/test-uaes-integration-check.rb
- M scripts/quality/test-uaes-pin-check.rb
- M scripts/quality/uaes-integration-check.sh
- M scripts/quality/uaes-pin-check.sh
+ M scripts/quality/test-aes-integration-check.rb
+ M scripts/quality/test-aes-pin-check.rb
+ M scripts/quality/aes-integration-check.sh
+ M scripts/quality/aes-pin-check.sh
  M service/dreamrouter_pricing_expr.go
  M service/dreamrouter_pricing_expr_test.go
  M service/dreamrouter_snapshot_test.go
@@ -149,25 +149,25 @@
  M web/src/lib/time.ts
  M web/src/lib/utils.ts
  M web/src/stores/system-config-store.ts
-?? .uaes/AI-GOVERNANCE-ENTRY.md
-?? .uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md
-?? .uaes/uter-governance-registry.yaml
-?? docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md
+?? .aes/AI-GOVERNANCE-ENTRY.md
+?? .aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md
+?? .aes/uter-governance-registry.yaml
+?? docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md
 ?? pkg/billingexpr/usage_duration.go
 ?? pkg/billingexpr/usage_duration_test.go
 ?? reports/compliance/full-conformance-audit-2026-11-06/
-?? reports/compliance/uaes-full-migration-2026-11-06/
+?? reports/compliance/aes-full-migration-2026-11-06/
 ?? scripts/quality/full-conformance-audit.py
 ?? scripts/quality/full-conformance-execution.py
 ?? scripts/quality/full_conformance_deliver.py
-?? scripts/quality/test-uaes-manual-acceptance-boundary.rb
+?? scripts/quality/test-aes-manual-acceptance-boundary.rb
 ?? scripts/quality/test-uter-governance-boundaries.rb
-?? scripts/quality/uaes-agent-runtime-check.rb
-?? scripts/quality/uaes-evidence-closure.py
-?? scripts/quality/uaes-governance-gates.rb
-?? scripts/quality/uaes-governance-reports.py
-?? scripts/quality/uaes-manual-acceptance.py
-?? scripts/quality/uaes-test-matrix.sh
+?? scripts/quality/aes-agent-runtime-check.rb
+?? scripts/quality/aes-evidence-closure.py
+?? scripts/quality/aes-governance-gates.rb
+?? scripts/quality/aes-governance-reports.py
+?? scripts/quality/aes-manual-acceptance.py
+?? scripts/quality/aes-test-matrix.sh
 ?? scripts/quality/uter-governance-separation-check.rb
 ?? scripts/quality/uter-independent-assessment.rb
 ?? scripts/quality/uter-p09-p10-boundary-check.rb

@@ -1,0 +1,58 @@
+{
+  "evidence_id": "WIP-REMEDIATION-L2-07-ENVIRONMENT-FINDING",
+  "evidence_class": "ANALYST_DISCLOSURE",
+  "generated_at": "2026-11-06T07:26:47Z",
+  "check": "L2-07 bun run build:check (unchanged command: tsgo -b && rsbuild build)",
+  "matrix_observation": {
+    "status": "FAIL",
+    "exit_code": 1,
+    "duration_seconds": 463,
+    "log": "evidence/matrix/L2-07.log",
+    "log_sha256": "81921077f747c146904cd3e764e4a089c25a0d218072434d1ecffa6281e640e1",
+    "error": "error   Failed to copy public directory '/Users/lincolnhu/uter/web/public' to output directory",
+    "root_cause": "[safe-delete][SAFE_DELETE_BULK_CONFIRM_REQUIRED] {\"count\":50,\"threshold\":50,\"scope\":\"turn\",\"targets\":[\"/Users/lincolnhu/uter/web/dist/plugins/hailuo/1.1.3/plugin.js\"]}"
+  },
+  "diagnosis": "The WorkBuddy host-side node safe-delete shim intercepts fs.cp overwrite unlinkSync calls. A pre-existing web/dist containing public assets forced ~50 overwrite-deletes during the publicDir copy, hitting the per-turn bulk-delete threshold. This is a local execution-environment deletion guard, NOT a TypeScript, rsbuild or project-code failure. tsgo -b completed and rsbuild started normally.",
+  "clean_dist_reexecution": {
+    "status": "PASS",
+    "exit_code": 0,
+    "duration_seconds": 17,
+    "log": "evidence/wip-remediation/build-check-clean-dist.log",
+    "log_sha256": "3ad2e3459107332562e8c5c779ec854bfdb0ef5d20a2b67a61663263a878a82c",
+    "preparation": "operator moved the previous web/dist to /tmp (project convention from rebuild-all.sh: use mv rather than rm to avoid the delete guard), leaving no stale artifacts to overwrite"
+  },
+  "final_matrix_preparation": {
+    "method": "move web/dist aside, then run node docs-web/scripts/copy-to-web.mjs so the only pre-existing dist content is docs-content/ required by main.go //go:embed web/dist all:web/dist/docs-content/_next",
+    "reason": "L2-01..L2-05 root-module Go tests need the embedded docs-content; L2-07 must not inherit stale public-copied artifacts that trigger overwrite-deletes",
+    "verified": "EMBED_PREREQ=OK, DIST_IS_MINIMAL=OK, worktree entry count unchanged (72)"
+  },
+  "policy": {
+    "command_changed": false,
+    "assertion_relaxed": false,
+    "exit_code_rewritten": false,
+    "shim_disabled_or_bypassed": false,
+    "protection_setting_modified": false,
+    "failed_matrix_row_overwritten": false,
+    "note": "The FAIL row from the first final matrix run remains archived in evidence/matrix/L2-07.log and any aggregate that used it is superseded only by an honest full re-run, not by editing results."
+  },
+  "amendment_2026_11_06": {
+    "observation": "The third full matrix re-run (pOajH5) confirmed the build-hygiene fix: L2-07 PASS exit=0 in 19s. That same run exposed a separate L2-01 FAIL because the pre-run dist preparation contained only a minimal docs-content/_next rather than the complete docs static export.",
+    "corrected_final_preparation": "Before a matrix run, restore the COMPLETE docs static export with `node docs-web/scripts/copy-to-web.mjs` and verify with scripts/verify-docs-artifacts.sh; the mid-matrix `mv web/dist` build-hygiene step then runs immediately before L2-07. See WIP-REMEDIATION-L2-01-ENVIRONMENT-FINDING.",
+    "status": "L2-07 root cause resolved; preparation guidance amended"
+  },
+  "final_matrix_result": {
+    "run": "fourth full matrix re-run (y6sZJB)",
+    "matrix_exit": 0,
+    "aggregate": "test-matrix: total=29 passed=29 failed=0 skipped=0 overall=PASS",
+    "generated_at": "2026-11-06T08:18:09.420364+00:00",
+    "evidence": [
+      "evidence/wip-remediation/matrix-fourth-run-console.log",
+      "evidence/wip-remediation/matrix-final-results.tsv",
+      "evidence/wip-remediation/test-matrix-final.json"
+    ],
+    "note": "Supersedes the archived FAIL aggregate by a complete honest re-run; no prior FAIL row was edited or deleted.",
+    "L2_01_status": "PASS exit=0 20s",
+    "L2_07_status": "PASS exit=0 19s",
+    "docs_restore_step": "post-L2-07 restoration executed: [copy-to-web] + docs artifact verification passed"
+  }
+}

@@ -3,7 +3,7 @@
 - **生成方式**：在 `audit/api-contract-drift` 分支新增 `router/route_dump_test.go`
   （env `UTER_DUMP_ROUTES=1` 时 dump `engine.Routes()`），得到**权威路由表 357 条**，
   与 `docs-dev/openapi/api.json`（136 路径）/ `relay.json`（38 路径）做机器比对。
-- **目的**：把"路由↔OpenAPI 实现漂移"这一 UAES PR #15 未完门禁，从静态扫描的噪声
+- **目的**：把"路由↔OpenAPI 实现漂移"这一 AES PR #15 未完门禁，从静态扫描的噪声
   收敛为可复核的真值表；并为后续按路由表自动生成 OpenAPI 提供工具。
 - **状态**：本审计只报事实，不替 API 合同负责人做 A/B/C 业务决策。
 
@@ -14,7 +14,7 @@
 - 前提复核：消费者调查结论不变——`web/src` / `electron` 零引用三个遗留端点，
   唯一"消费者"是文档站自身的 `docs-web/content/api/*` markdown；故方案 C 的兼容期
   对外部调用方收益极低，方案 A（保留双 API 补齐实现）无外部硬合同依据，均不采纳。
-- **执行结果（已落地 PR #15 分支 `ai/uaes-uter-integration-2026-11-05`）**：
+- **执行结果（已落地 PR #15 分支 `ai/aes-uter-integration-2026-11-05`）**：
   - `POST /api/oauth/wechat/bind`、`GET /api/verify/status` —— 已从 `api.json` 删除；
   - `GET /api/oauth/wechat`（旧微信 OAuth，已被 `/api/oauth/wechat-web` 取代）——
     标记 `deprecated: true`。

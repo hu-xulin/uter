@@ -1,0 +1,7 @@
+▶ [security/govulncheck:.] bash -c set -o pipefail; cd '.' && GOWORK=off govulncheck ./... 2>&1 | tail -40
+▶ [security/govulncheck:tokenkit] bash -c set -o pipefail; cd 'tokenkit' && GOWORK=off govulncheck ./... 2>&1 | tail -40
+▶ [security/govulncheck:relaykit] bash -c set -o pipefail; cd 'relaykit' && GOWORK=off govulncheck ./... 2>&1 | tail -40
+▶ [security/govulncheck:tokenkit_tokenkit] bash -c set -o pipefail; cd 'tokenkit/tokenkit' && GOWORK=off govulncheck ./... 2>&1 | tail -40
+▶ [security/gitleaks] bash -c rm -rf '/Users/lincolnhu/uter/.quality/.state/head-tree' && mkdir -p '/Users/lincolnhu/uter/.quality/.state/head-tree' && git archive HEAD | tar -x -C '/Users/lincolnhu/uter/.quality/.state/head-tree' && cd '/Users/lincolnhu/uter/.quality/.state/head-tree' && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml'
+· [security/forbidden-files] PASSED 
+verdict: PASS（FAILED/BLOCKED/NOT_RUN→exit 1；仅全部必需检查 PASSED 才放行）

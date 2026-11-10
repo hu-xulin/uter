@@ -1,0 +1,13 @@
+# id: L1-11
+# layer: L1
+# command: bun run copyright:check
+# workdir: /Users/lincolnhu/uter/web
+# started_at: 2026-11-08T18:34:15Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+$ node scripts/add-copyright.mjs --check
+copyright: checked 1528, added 0, updated 0, skipped generated 5, skipped third-party 1523
+# exit_code: 0
+# duration_seconds: 0

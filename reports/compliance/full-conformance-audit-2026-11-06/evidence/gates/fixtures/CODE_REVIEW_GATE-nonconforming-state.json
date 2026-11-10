@@ -138,23 +138,23 @@
             "web/src/lib/time.ts",
             "web/src/lib/utils.ts",
             "web/src/stores/system-config-store.ts",
-            ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
-            ".uaes/reports/",
-            ".uaes/uter-governance-registry.yaml",
-            "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+            ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
+            ".aes/reports/",
+            ".aes/uter-governance-registry.yaml",
+            "docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
             "reports/compliance/full-conformance-audit-2026-11-06/",
             "scripts/quality/full-conformance-audit.py",
             "scripts/quality/full-conformance-execution.py",
             "scripts/quality/full_conformance_acceptance_board.py",
             "scripts/quality/full_conformance_deliver.py",
-            "scripts/quality/test-uaes-manual-acceptance-boundary.rb",
+            "scripts/quality/test-aes-manual-acceptance-boundary.rb",
             "scripts/quality/test-uter-governance-boundaries.rb",
-            "scripts/quality/uaes-agent-runtime-check.rb",
-            "scripts/quality/uaes-evidence-closure.py",
-            "scripts/quality/uaes-governance-gates.rb",
-            "scripts/quality/uaes-governance-reports.py",
-            "scripts/quality/uaes-manual-acceptance.py",
-            "scripts/quality/uaes-test-matrix.sh",
+            "scripts/quality/aes-agent-runtime-check.rb",
+            "scripts/quality/aes-evidence-closure.py",
+            "scripts/quality/aes-governance-gates.rb",
+            "scripts/quality/aes-governance-reports.py",
+            "scripts/quality/aes-manual-acceptance.py",
+            "scripts/quality/aes-test-matrix.sh",
             "scripts/quality/uter-governance-separation-check.rb",
             "scripts/quality/uter-independent-assessment.rb",
             "scripts/quality/uter-p09-p10-boundary-check.rb",
@@ -298,151 +298,151 @@
       },
       {
         "check": "W5",
-        "name": "UAES approved normative standards untouched",
+        "name": "AES approved normative standards untouched",
         "status": "FAIL",
         "observation": {
           "normative_changes": [
-            "standards/00-foundation/UAES-00-001-STANDARD-GOVERNANCE.md",
-            "standards/00-foundation/UAES-00-002-NORMATIVE-RULES.md",
-            "standards/00-foundation/UAES-00-003-STANDARD-LIFECYCLE.md",
-            "standards/00-foundation/UAES-00-004-REGISTRY-AND-DEPENDENCIES.md",
-            "standards/00-foundation/UAES-00-005-EXCEPTION-MANAGEMENT.md",
-            "standards/00-foundation/UAES-00-006-AI-ENGINEERING-EXECUTION-MODEL.md",
-            "standards/01-ai-governance/UAES-01-001-AI-GOVERNANCE-ROLES.md",
-            "standards/01-ai-governance/UAES-01-002-AGENT-AUTHORITY-AND-PERMISSIONS.md",
-            "standards/01-ai-governance/UAES-01-003-HUMAN-APPROVAL-AND-ESCALATION.md",
-            "standards/01-ai-governance/UAES-01-004-AI-RISK-CLASSIFICATION.md",
-            "standards/01-ai-governance/UAES-01-005-HUMAN-OVERSIGHT.md",
-            "standards/01-ai-governance/UAES-01-007-AI-DATA-AND-CONTEXT-GOVERNANCE.md",
-            "standards/01-ai-governance/UAES-01-008-MODEL-AND-PROVIDER-GOVERNANCE.md",
-            "standards/02-product-engineering/UAES-02-001-REQUIREMENT-ENGINEERING.md",
-            "standards/02-product-engineering/UAES-02-002-USER-STORY.md",
-            "standards/02-product-engineering/UAES-02-003-BUSINESS-RULES.md",
-            "standards/02-product-engineering/UAES-02-004-ACCEPTANCE-CRITERIA.md",
-            "standards/02-product-engineering/UAES-02-005-PRODUCT-FLOW.md",
-            "standards/02-product-engineering/UAES-02-007-PRODUCT-DOCUMENTATION.md",
-            "standards/02-product-engineering/UAES-02-008-REQUIREMENT-TRACEABILITY.md",
-            "standards/03-knowledge-engineering/UAES-03-001-PROJECT-CONTEXT-MODEL.md",
-            "standards/03-knowledge-engineering/UAES-03-002-KNOWLEDGE-SOURCE-AND-PROVENANCE.md",
-            "standards/03-knowledge-engineering/UAES-03-003-KNOWLEDGE-CLASSIFICATION.md",
-            "standards/03-knowledge-engineering/UAES-03-007-KNOWLEDGE-CONFLICT-RESOLUTION.md",
-            "standards/03-knowledge-engineering/UAES-03-008-KNOWLEDGE-TRACEABILITY.md",
-            "standards/03-knowledge-engineering/UAES-03-012-KNOWLEDGE-REPOSITORY-AND-INDEX.md",
-            "standards/04-system-architecture/UAES-04-001-ARCHITECTURE-PRINCIPLES.md",
-            "standards/04-system-architecture/UAES-04-002-ARCHITECTURE-DECISION-RECORD.md",
-            "standards/04-system-architecture/UAES-04-003-MODULE-BOUNDARIES.md",
-            "standards/04-system-architecture/UAES-04-004-GO-BACKEND-ARCHITECTURE.md",
-            "standards/04-system-architecture/UAES-04-005-REACT-FRONTEND-ARCHITECTURE.md",
-            "standards/04-system-architecture/UAES-04-007-API-CONTRACT.md",
-            "standards/04-system-architecture/UAES-04-008-DATABASE-AND-DATA-MODELING.md",
-            "standards/04-system-architecture/UAES-04-009-CACHE-AND-CONSISTENCY.md",
-            "standards/04-system-architecture/UAES-04-010-ASYNC-AND-EVENT-ARCHITECTURE.md",
-            "standards/04-system-architecture/UAES-04-011-CONCURRENCY-AND-IDEMPOTENCY.md",
-            "standards/04-system-architecture/UAES-04-012-THIRD-PARTY-INTEGRATION.md",
-            "standards/04-system-architecture/UAES-04-013-OBSERVABILITY-AND-ARCHITECTURE-VERIFICATION.md",
-            "standards/05-experience-design/UAES-05-001-DESIGN-SYSTEM-GOVERNANCE.md",
-            "standards/05-experience-design/UAES-05-002-DESIGN-TOKEN-ARCHITECTURE.md",
-            "standards/05-experience-design/UAES-05-003-COLOR-AND-CONTRAST.md",
-            "standards/05-experience-design/UAES-05-004-TYPOGRAPHY-AND-CONTENT.md",
-            "standards/05-experience-design/UAES-05-005-SPACING-AND-VISUAL-HIERARCHY.md",
-            "standards/05-experience-design/UAES-05-006-COMPONENT-CONTRACT.md",
-            "standards/05-experience-design/UAES-05-007-INTERACTION-PATTERNS.md",
-            "standards/05-experience-design/UAES-05-008-RESPONSIVE-AND-ADAPTIVE-DESIGN.md",
-            "standards/05-experience-design/UAES-05-009-ACCESSIBILITY.md",
-            "standards/05-experience-design/UAES-05-010-MOTION-AND-ANIMATION.md",
-            "standards/05-experience-design/UAES-05-011-DESIGN-TO-CODE-SYNC.md",
-            "standards/05-experience-design/UAES-05-012-VISUAL-REGRESSION.md",
-            "standards/05-experience-design/UAES-05-013-DESIGN-AI-EXECUTION.md",
-            "standards/06-software-engineering/UAES-06-001-CODING-PRINCIPLES.md",
-            "standards/06-software-engineering/UAES-06-002-REPOSITORY-AND-MODULE-STRUCTURE.md",
-            "standards/06-software-engineering/UAES-06-003-NAMING-AND-CODE-ORGANIZATION.md",
-            "standards/06-software-engineering/UAES-06-004-GO-ENGINEERING-STANDARD.md",
-            "standards/06-software-engineering/UAES-06-005-TYPESCRIPT-AND-REACT-ENGINEERING.md",
-            "standards/06-software-engineering/UAES-06-006-ELECTRON-ENGINEERING.md",
-            "standards/06-software-engineering/UAES-06-007-ERROR-AND-LOGGING-STANDARD.md",
-            "standards/06-software-engineering/UAES-06-008-CONFIGURATION-AND-DEPENDENCY-MANAGEMENT.md",
-            "standards/06-software-engineering/UAES-06-009-API-CLIENT-AND-CODE-GENERATION.md",
-            "standards/06-software-engineering/UAES-06-010-REFACTORING-AND-MIGRATION.md",
-            "standards/06-software-engineering/UAES-06-011-CODE-DOCUMENTATION-AND-COMMENTS.md",
-            "standards/06-software-engineering/UAES-06-012-STATE-AND-ASYNC-PROGRAMMING.md",
-            "standards/06-software-engineering/UAES-06-013-CODE-REVIEW-AND-MAINTAINABILITY.md",
-            "standards/06-software-engineering/UAES-06-014-PERFORMANCE-ENGINEERING.md",
-            "standards/07-cross-platform/UAES-07-001-PLATFORM-CAPABILITY-MATRIX.md",
-            "standards/07-cross-platform/UAES-07-002-SHARED-CORE-AND-PLATFORM-ADAPTER.md",
-            "standards/07-cross-platform/UAES-07-003-PLATFORM-APPLICATION-ARCHITECTURE.md",
-            "standards/07-cross-platform/UAES-07-004-ROUTING-AND-NAVIGATION.md",
-            "standards/07-cross-platform/UAES-07-005-RESPONSIVE-AND-ADAPTIVE-ENGINEERING.md",
-            "standards/07-cross-platform/UAES-07-006-DEVICE-AND-PLATFORM-API.md",
-            "standards/07-cross-platform/UAES-07-007-OFFLINE-AND-PERSISTENCE.md",
-            "standards/07-cross-platform/UAES-07-008-DEVICE-COMPATIBILITY.md",
-            "standards/07-cross-platform/UAES-07-009-INPUT-AND-ACCESSIBILITY-ADAPTATION.md",
-            "standards/07-cross-platform/UAES-07-010-LOCALIZATION-AND-INTERNATIONALIZATION.md",
-            "standards/07-cross-platform/UAES-07-011-PLATFORM-BUILD-AND-PACKAGING.md",
-            "standards/07-cross-platform/UAES-07-012-PLATFORM-INTEGRATION-AND-COMPATIBILITY.md",
-            "standards/07-cross-platform/UAES-07-013-CROSS-PLATFORM-AI-EXECUTION.md",
-            "standards/08-agent-engineering/UAES-08-001-AGENT-IDENTITY-AND-LIFECYCLE.md",
-            "standards/08-agent-engineering/UAES-08-002-AGENT-MANIFEST-AND-REGISTRY.md",
-            "standards/08-agent-engineering/UAES-08-003-SKILL-ENGINEERING.md",
-            "standards/08-agent-engineering/UAES-08-004-TOOL-AND-MCP-CONTRACT.md",
-            "standards/08-agent-engineering/UAES-08-005-TASK-PLANNING-AND-DECOMPOSITION.md",
-            "standards/08-agent-engineering/UAES-08-006-AGENT-ROUTING-AND-HANDOFF.md",
-            "standards/08-agent-engineering/UAES-08-007-MULTI-AGENT-ORCHESTRATION.md",
-            "standards/08-agent-engineering/UAES-08-008-CONTEXT-LOADING-AND-BUDGET.md",
-            "standards/08-agent-engineering/UAES-08-009-EXECUTION-WORKSPACE-ISOLATION.md",
-            "standards/08-agent-engineering/UAES-08-010-EXECUTION-STATE-AND-RECOVERY.md",
-            "standards/08-agent-engineering/UAES-08-011-AGENT-MEMORY-AND-STATE.md",
-            "standards/08-agent-engineering/UAES-08-012-TOOL-SAFETY-AND-PROMPT-INJECTION.md",
-            "standards/08-agent-engineering/UAES-08-013-AGENT-EVALUATION-AND-TESTING.md",
-            "standards/08-agent-engineering/UAES-08-014-AGENT-OBSERVABILITY-AND-AUDIT.md",
-            "standards/09-quality-engineering/UAES-09-001-QUALITY-MODEL-AND-GOVERNANCE.md",
-            "standards/09-quality-engineering/UAES-09-002-CODE-REVIEW-ENGINEERING.md",
-            "standards/09-quality-engineering/UAES-09-003-TEST-STRATEGY-AND-PLANNING.md",
-            "standards/09-quality-engineering/UAES-09-004-UNIT-AND-COMPONENT-TESTING.md",
-            "standards/09-quality-engineering/UAES-09-005-INTEGRATION-AND-CONTRACT-TESTING.md",
-            "standards/09-quality-engineering/UAES-09-006-END-TO-END-AND-UI-TESTING.md",
-            "standards/09-quality-engineering/UAES-09-007-VISUAL-AND-ACCESSIBILITY-TESTING.md",
-            "standards/09-quality-engineering/UAES-09-008-PERFORMANCE-AND-RELIABILITY-TESTING.md",
-            "standards/09-quality-engineering/UAES-09-009-SECURITY-TESTING-COORDINATION.md",
-            "standards/09-quality-engineering/UAES-09-010-TEST-DATA-AND-ENVIRONMENT.md",
-            "standards/09-quality-engineering/UAES-09-011-FLAKY-TEST-AND-TEST-MAINTENANCE.md",
-            "standards/09-quality-engineering/UAES-09-012-COVERAGE-AND-RISK-BASED-QUALITY.md",
-            "standards/09-quality-engineering/UAES-09-013-DEFECT-AND-REGRESSION-MANAGEMENT.md",
-            "standards/09-quality-engineering/UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION.md",
-            "standards/09-quality-engineering/UAES-09-015-QUALITY-REPORT-AND-EVIDENCE.md",
-            "standards/10-security-reliability/UAES-10-001-SECURITY-GOVERNANCE-AND-SECURE-SDLC.md",
-            "standards/10-security-reliability/UAES-10-002-THREAT-MODELING-AND-SECURITY-REQUIREMENTS.md",
-            "standards/10-security-reliability/UAES-10-003-IDENTITY-AUTHENTICATION-AND-AUTHORIZATION.md",
-            "standards/10-security-reliability/UAES-10-004-SESSION-TOKEN-AND-SECRET-MANAGEMENT.md",
-            "standards/10-security-reliability/UAES-10-005-DATA-PRIVACY-AND-PROTECTION.md",
-            "standards/10-security-reliability/UAES-10-006-INPUT-VALIDATION-AND-INJECTION-DEFENSE.md",
-            "standards/10-security-reliability/UAES-10-007-API-AND-APPLICATION-SECURITY.md",
-            "standards/10-security-reliability/UAES-10-008-PLATFORM-AND-RUNTIME-SECURITY.md",
-            "standards/10-security-reliability/UAES-10-009-DEPENDENCY-AND-SUPPLY-CHAIN-SECURITY.md",
-            "standards/10-security-reliability/UAES-10-010-CRYPTOGRAPHY-AND-DATA-INTEGRITY.md",
-            "standards/10-security-reliability/UAES-10-011-SECURITY-TESTING-AND-VULNERABILITY-MANAGEMENT.md",
-            "standards/10-security-reliability/UAES-10-012-RELIABILITY-AND-RESILIENCE-ENGINEERING.md",
-            "standards/10-security-reliability/UAES-10-013-BACKUP-RECOVERY-AND-BUSINESS-CONTINUITY.md",
-            "standards/10-security-reliability/UAES-10-014-SECURITY-INCIDENT-RESPONSE.md",
-            "standards/10-security-reliability/UAES-10-015-FINANCIAL-AND-PAYMENT-SECURITY.md",
-            "standards/10-security-reliability/UAES-10-016-SECURITY-EXCEPTIONS-AND-CONTINUOUS-ASSURANCE.md",
-            "standards/12-lifecycle-evolution/UAES-12-001-PRODUCT-AND-SYSTEM-LIFECYCLE.md",
-            "standards/12-lifecycle-evolution/UAES-12-002-TECHNICAL-DEBT-GOVERNANCE.md",
-            "standards/12-lifecycle-evolution/UAES-12-003-REFACTORING-GOVERNANCE.md",
-            "standards/12-lifecycle-evolution/UAES-12-004-DEPENDENCY-LIFECYCLE-AND-UPGRADE.md",
-            "standards/12-lifecycle-evolution/UAES-12-005-ARCHITECTURE-EVOLUTION.md",
-            "standards/12-lifecycle-evolution/UAES-12-006-API-AND-CONTRACT-DEPRECATION.md",
-            "standards/12-lifecycle-evolution/UAES-12-007-DATA-AND-SCHEMA-EVOLUTION.md",
-            "standards/12-lifecycle-evolution/UAES-12-008-FEATURE-LIFECYCLE-AND-ROLLOUT.md",
-            "standards/12-lifecycle-evolution/UAES-12-009-OBSERVABILITY-AND-FEEDBACK-LOOP.md",
-            "standards/12-lifecycle-evolution/UAES-12-010-INCIDENT-LEARNING-AND-POSTMORTEM.md",
-            "standards/12-lifecycle-evolution/UAES-12-011-DOCUMENTATION-AND-KNOWLEDGE-DRIFT.md",
-            "standards/12-lifecycle-evolution/UAES-12-012-STANDARD-LIFECYCLE-AND-CHANGE-CONTROL.md",
-            "standards/12-lifecycle-evolution/UAES-12-013-CONTINUOUS-IMPROVEMENT-AND-METRICS.md",
-            "standards/12-lifecycle-evolution/UAES-12-014-SYSTEM-SUNSET-AND-DECOMMISSION.md",
-            "standards/12-lifecycle-evolution/UAES-12-015-PLATFORM-AND-TECHNOLOGY-STRATEGY.md",
-            "standards/12-lifecycle-evolution/UAES-12-016-AI-ASSISTED-LIFECYCLE-GOVERNANCE.md",
-            ".uaes/policies/release-policy.yaml",
-            ".uaes/registry/requirements.yaml"
+            "standards/00-foundation/AES-00-001-STANDARD-GOVERNANCE.md",
+            "standards/00-foundation/AES-00-002-NORMATIVE-RULES.md",
+            "standards/00-foundation/AES-00-003-STANDARD-LIFECYCLE.md",
+            "standards/00-foundation/AES-00-004-REGISTRY-AND-DEPENDENCIES.md",
+            "standards/00-foundation/AES-00-005-EXCEPTION-MANAGEMENT.md",
+            "standards/00-foundation/AES-00-006-AI-ENGINEERING-EXECUTION-MODEL.md",
+            "standards/01-ai-governance/AES-01-001-AI-GOVERNANCE-ROLES.md",
+            "standards/01-ai-governance/AES-01-002-AGENT-AUTHORITY-AND-PERMISSIONS.md",
+            "standards/01-ai-governance/AES-01-003-HUMAN-APPROVAL-AND-ESCALATION.md",
+            "standards/01-ai-governance/AES-01-004-AI-RISK-CLASSIFICATION.md",
+            "standards/01-ai-governance/AES-01-005-HUMAN-OVERSIGHT.md",
+            "standards/01-ai-governance/AES-01-007-AI-DATA-AND-CONTEXT-GOVERNANCE.md",
+            "standards/01-ai-governance/AES-01-008-MODEL-AND-PROVIDER-GOVERNANCE.md",
+            "standards/02-product-engineering/AES-02-001-REQUIREMENT-ENGINEERING.md",
+            "standards/02-product-engineering/AES-02-002-USER-STORY.md",
+            "standards/02-product-engineering/AES-02-003-BUSINESS-RULES.md",
+            "standards/02-product-engineering/AES-02-004-ACCEPTANCE-CRITERIA.md",
+            "standards/02-product-engineering/AES-02-005-PRODUCT-FLOW.md",
+            "standards/02-product-engineering/AES-02-007-PRODUCT-DOCUMENTATION.md",
+            "standards/02-product-engineering/AES-02-008-REQUIREMENT-TRACEABILITY.md",
+            "standards/03-knowledge-engineering/AES-03-001-PROJECT-CONTEXT-MODEL.md",
+            "standards/03-knowledge-engineering/AES-03-002-KNOWLEDGE-SOURCE-AND-PROVENANCE.md",
+            "standards/03-knowledge-engineering/AES-03-003-KNOWLEDGE-CLASSIFICATION.md",
+            "standards/03-knowledge-engineering/AES-03-007-KNOWLEDGE-CONFLICT-RESOLUTION.md",
+            "standards/03-knowledge-engineering/AES-03-008-KNOWLEDGE-TRACEABILITY.md",
+            "standards/03-knowledge-engineering/AES-03-012-KNOWLEDGE-REPOSITORY-AND-INDEX.md",
+            "standards/04-system-architecture/AES-04-001-ARCHITECTURE-PRINCIPLES.md",
+            "standards/04-system-architecture/AES-04-002-ARCHITECTURE-DECISION-RECORD.md",
+            "standards/04-system-architecture/AES-04-003-MODULE-BOUNDARIES.md",
+            "standards/04-system-architecture/AES-04-004-GO-BACKEND-ARCHITECTURE.md",
+            "standards/04-system-architecture/AES-04-005-REACT-FRONTEND-ARCHITECTURE.md",
+            "standards/04-system-architecture/AES-04-007-API-CONTRACT.md",
+            "standards/04-system-architecture/AES-04-008-DATABASE-AND-DATA-MODELING.md",
+            "standards/04-system-architecture/AES-04-009-CACHE-AND-CONSISTENCY.md",
+            "standards/04-system-architecture/AES-04-010-ASYNC-AND-EVENT-ARCHITECTURE.md",
+            "standards/04-system-architecture/AES-04-011-CONCURRENCY-AND-IDEMPOTENCY.md",
+            "standards/04-system-architecture/AES-04-012-THIRD-PARTY-INTEGRATION.md",
+            "standards/04-system-architecture/AES-04-013-OBSERVABILITY-AND-ARCHITECTURE-VERIFICATION.md",
+            "standards/05-experience-design/AES-05-001-DESIGN-SYSTEM-GOVERNANCE.md",
+            "standards/05-experience-design/AES-05-002-DESIGN-TOKEN-ARCHITECTURE.md",
+            "standards/05-experience-design/AES-05-003-COLOR-AND-CONTRAST.md",
+            "standards/05-experience-design/AES-05-004-TYPOGRAPHY-AND-CONTENT.md",
+            "standards/05-experience-design/AES-05-005-SPACING-AND-VISUAL-HIERARCHY.md",
+            "standards/05-experience-design/AES-05-006-COMPONENT-CONTRACT.md",
+            "standards/05-experience-design/AES-05-007-INTERACTION-PATTERNS.md",
+            "standards/05-experience-design/AES-05-008-RESPONSIVE-AND-ADAPTIVE-DESIGN.md",
+            "standards/05-experience-design/AES-05-009-ACCESSIBILITY.md",
+            "standards/05-experience-design/AES-05-010-MOTION-AND-ANIMATION.md",
+            "standards/05-experience-design/AES-05-011-DESIGN-TO-CODE-SYNC.md",
+            "standards/05-experience-design/AES-05-012-VISUAL-REGRESSION.md",
+            "standards/05-experience-design/AES-05-013-DESIGN-AI-EXECUTION.md",
+            "standards/06-software-engineering/AES-06-001-CODING-PRINCIPLES.md",
+            "standards/06-software-engineering/AES-06-002-REPOSITORY-AND-MODULE-STRUCTURE.md",
+            "standards/06-software-engineering/AES-06-003-NAMING-AND-CODE-ORGANIZATION.md",
+            "standards/06-software-engineering/AES-06-004-GO-ENGINEERING-STANDARD.md",
+            "standards/06-software-engineering/AES-06-005-TYPESCRIPT-AND-REACT-ENGINEERING.md",
+            "standards/06-software-engineering/AES-06-006-ELECTRON-ENGINEERING.md",
+            "standards/06-software-engineering/AES-06-007-ERROR-AND-LOGGING-STANDARD.md",
+            "standards/06-software-engineering/AES-06-008-CONFIGURATION-AND-DEPENDENCY-MANAGEMENT.md",
+            "standards/06-software-engineering/AES-06-009-API-CLIENT-AND-CODE-GENERATION.md",
+            "standards/06-software-engineering/AES-06-010-REFACTORING-AND-MIGRATION.md",
+            "standards/06-software-engineering/AES-06-011-CODE-DOCUMENTATION-AND-COMMENTS.md",
+            "standards/06-software-engineering/AES-06-012-STATE-AND-ASYNC-PROGRAMMING.md",
+            "standards/06-software-engineering/AES-06-013-CODE-REVIEW-AND-MAINTAINABILITY.md",
+            "standards/06-software-engineering/AES-06-014-PERFORMANCE-ENGINEERING.md",
+            "standards/07-cross-platform/AES-07-001-PLATFORM-CAPABILITY-MATRIX.md",
+            "standards/07-cross-platform/AES-07-002-SHARED-CORE-AND-PLATFORM-ADAPTER.md",
+            "standards/07-cross-platform/AES-07-003-PLATFORM-APPLICATION-ARCHITECTURE.md",
+            "standards/07-cross-platform/AES-07-004-ROUTING-AND-NAVIGATION.md",
+            "standards/07-cross-platform/AES-07-005-RESPONSIVE-AND-ADAPTIVE-ENGINEERING.md",
+            "standards/07-cross-platform/AES-07-006-DEVICE-AND-PLATFORM-API.md",
+            "standards/07-cross-platform/AES-07-007-OFFLINE-AND-PERSISTENCE.md",
+            "standards/07-cross-platform/AES-07-008-DEVICE-COMPATIBILITY.md",
+            "standards/07-cross-platform/AES-07-009-INPUT-AND-ACCESSIBILITY-ADAPTATION.md",
+            "standards/07-cross-platform/AES-07-010-LOCALIZATION-AND-INTERNATIONALIZATION.md",
+            "standards/07-cross-platform/AES-07-011-PLATFORM-BUILD-AND-PACKAGING.md",
+            "standards/07-cross-platform/AES-07-012-PLATFORM-INTEGRATION-AND-COMPATIBILITY.md",
+            "standards/07-cross-platform/AES-07-013-CROSS-PLATFORM-AI-EXECUTION.md",
+            "standards/08-agent-engineering/AES-08-001-AGENT-IDENTITY-AND-LIFECYCLE.md",
+            "standards/08-agent-engineering/AES-08-002-AGENT-MANIFEST-AND-REGISTRY.md",
+            "standards/08-agent-engineering/AES-08-003-SKILL-ENGINEERING.md",
+            "standards/08-agent-engineering/AES-08-004-TOOL-AND-MCP-CONTRACT.md",
+            "standards/08-agent-engineering/AES-08-005-TASK-PLANNING-AND-DECOMPOSITION.md",
+            "standards/08-agent-engineering/AES-08-006-AGENT-ROUTING-AND-HANDOFF.md",
+            "standards/08-agent-engineering/AES-08-007-MULTI-AGENT-ORCHESTRATION.md",
+            "standards/08-agent-engineering/AES-08-008-CONTEXT-LOADING-AND-BUDGET.md",
+            "standards/08-agent-engineering/AES-08-009-EXECUTION-WORKSPACE-ISOLATION.md",
+            "standards/08-agent-engineering/AES-08-010-EXECUTION-STATE-AND-RECOVERY.md",
+            "standards/08-agent-engineering/AES-08-011-AGENT-MEMORY-AND-STATE.md",
+            "standards/08-agent-engineering/AES-08-012-TOOL-SAFETY-AND-PROMPT-INJECTION.md",
+            "standards/08-agent-engineering/AES-08-013-AGENT-EVALUATION-AND-TESTING.md",
+            "standards/08-agent-engineering/AES-08-014-AGENT-OBSERVABILITY-AND-AUDIT.md",
+            "standards/09-quality-engineering/AES-09-001-QUALITY-MODEL-AND-GOVERNANCE.md",
+            "standards/09-quality-engineering/AES-09-002-CODE-REVIEW-ENGINEERING.md",
+            "standards/09-quality-engineering/AES-09-003-TEST-STRATEGY-AND-PLANNING.md",
+            "standards/09-quality-engineering/AES-09-004-UNIT-AND-COMPONENT-TESTING.md",
+            "standards/09-quality-engineering/AES-09-005-INTEGRATION-AND-CONTRACT-TESTING.md",
+            "standards/09-quality-engineering/AES-09-006-END-TO-END-AND-UI-TESTING.md",
+            "standards/09-quality-engineering/AES-09-007-VISUAL-AND-ACCESSIBILITY-TESTING.md",
+            "standards/09-quality-engineering/AES-09-008-PERFORMANCE-AND-RELIABILITY-TESTING.md",
+            "standards/09-quality-engineering/AES-09-009-SECURITY-TESTING-COORDINATION.md",
+            "standards/09-quality-engineering/AES-09-010-TEST-DATA-AND-ENVIRONMENT.md",
+            "standards/09-quality-engineering/AES-09-011-FLAKY-TEST-AND-TEST-MAINTENANCE.md",
+            "standards/09-quality-engineering/AES-09-012-COVERAGE-AND-RISK-BASED-QUALITY.md",
+            "standards/09-quality-engineering/AES-09-013-DEFECT-AND-REGRESSION-MANAGEMENT.md",
+            "standards/09-quality-engineering/AES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION.md",
+            "standards/09-quality-engineering/AES-09-015-QUALITY-REPORT-AND-EVIDENCE.md",
+            "standards/10-security-reliability/AES-10-001-SECURITY-GOVERNANCE-AND-SECURE-SDLC.md",
+            "standards/10-security-reliability/AES-10-002-THREAT-MODELING-AND-SECURITY-REQUIREMENTS.md",
+            "standards/10-security-reliability/AES-10-003-IDENTITY-AUTHENTICATION-AND-AUTHORIZATION.md",
+            "standards/10-security-reliability/AES-10-004-SESSION-TOKEN-AND-SECRET-MANAGEMENT.md",
+            "standards/10-security-reliability/AES-10-005-DATA-PRIVACY-AND-PROTECTION.md",
+            "standards/10-security-reliability/AES-10-006-INPUT-VALIDATION-AND-INJECTION-DEFENSE.md",
+            "standards/10-security-reliability/AES-10-007-API-AND-APPLICATION-SECURITY.md",
+            "standards/10-security-reliability/AES-10-008-PLATFORM-AND-RUNTIME-SECURITY.md",
+            "standards/10-security-reliability/AES-10-009-DEPENDENCY-AND-SUPPLY-CHAIN-SECURITY.md",
+            "standards/10-security-reliability/AES-10-010-CRYPTOGRAPHY-AND-DATA-INTEGRITY.md",
+            "standards/10-security-reliability/AES-10-011-SECURITY-TESTING-AND-VULNERABILITY-MANAGEMENT.md",
+            "standards/10-security-reliability/AES-10-012-RELIABILITY-AND-RESILIENCE-ENGINEERING.md",
+            "standards/10-security-reliability/AES-10-013-BACKUP-RECOVERY-AND-BUSINESS-CONTINUITY.md",
+            "standards/10-security-reliability/AES-10-014-SECURITY-INCIDENT-RESPONSE.md",
+            "standards/10-security-reliability/AES-10-015-FINANCIAL-AND-PAYMENT-SECURITY.md",
+            "standards/10-security-reliability/AES-10-016-SECURITY-EXCEPTIONS-AND-CONTINUOUS-ASSURANCE.md",
+            "standards/12-lifecycle-evolution/AES-12-001-PRODUCT-AND-SYSTEM-LIFECYCLE.md",
+            "standards/12-lifecycle-evolution/AES-12-002-TECHNICAL-DEBT-GOVERNANCE.md",
+            "standards/12-lifecycle-evolution/AES-12-003-REFACTORING-GOVERNANCE.md",
+            "standards/12-lifecycle-evolution/AES-12-004-DEPENDENCY-LIFECYCLE-AND-UPGRADE.md",
+            "standards/12-lifecycle-evolution/AES-12-005-ARCHITECTURE-EVOLUTION.md",
+            "standards/12-lifecycle-evolution/AES-12-006-API-AND-CONTRACT-DEPRECATION.md",
+            "standards/12-lifecycle-evolution/AES-12-007-DATA-AND-SCHEMA-EVOLUTION.md",
+            "standards/12-lifecycle-evolution/AES-12-008-FEATURE-LIFECYCLE-AND-ROLLOUT.md",
+            "standards/12-lifecycle-evolution/AES-12-009-OBSERVABILITY-AND-FEEDBACK-LOOP.md",
+            "standards/12-lifecycle-evolution/AES-12-010-INCIDENT-LEARNING-AND-POSTMORTEM.md",
+            "standards/12-lifecycle-evolution/AES-12-011-DOCUMENTATION-AND-KNOWLEDGE-DRIFT.md",
+            "standards/12-lifecycle-evolution/AES-12-012-STANDARD-LIFECYCLE-AND-CHANGE-CONTROL.md",
+            "standards/12-lifecycle-evolution/AES-12-013-CONTINUOUS-IMPROVEMENT-AND-METRICS.md",
+            "standards/12-lifecycle-evolution/AES-12-014-SYSTEM-SUNSET-AND-DECOMMISSION.md",
+            "standards/12-lifecycle-evolution/AES-12-015-PLATFORM-AND-TECHNOLOGY-STRATEGY.md",
+            "standards/12-lifecycle-evolution/AES-12-016-AI-ASSISTED-LIFECYCLE-GOVERNANCE.md",
+            ".aes/policies/release-policy.yaml",
+            ".aes/registry/requirements.yaml"
           ],
           "note": "generated report artifacts may be refreshed; normative standards/gates/policies may not"
         }
@@ -684,7 +684,7 @@
         "command": "bash scripts/quality/ai-specs-check.sh",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-01.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-01.log"
       },
       {
         "id": "L1-02",
@@ -694,57 +694,57 @@
         "command": "ruby scripts/quality/test-ai-governance-policy.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-02.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-02.log"
       },
       {
         "id": "L1-03",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 0,
-        "command": "ruby scripts/quality/uaes-agent-runtime-check.rb selftest",
+        "command": "ruby scripts/quality/aes-agent-runtime-check.rb selftest",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-03.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-03.log"
       },
       {
         "id": "L1-04",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 2,
-        "command": "bash scripts/quality/uaes-pin-check.sh",
+        "command": "bash scripts/quality/aes-pin-check.sh",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-04.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-04.log"
       },
       {
         "id": "L1-05",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 1,
-        "command": "bash scripts/quality/uaes-integration-check.sh",
+        "command": "bash scripts/quality/aes-integration-check.sh",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-05.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-05.log"
       },
       {
         "id": "L1-06",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 20,
-        "command": "ruby scripts/quality/test-uaes-pin-check.rb",
+        "command": "ruby scripts/quality/test-aes-pin-check.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-06.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-06.log"
       },
       {
         "id": "L1-07",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 10,
-        "command": "ruby scripts/quality/test-uaes-integration-check.rb",
+        "command": "ruby scripts/quality/test-aes-integration-check.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-07.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-07.log"
       },
       {
         "id": "L1-08",
@@ -754,7 +754,7 @@
         "command": "bun run typecheck",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-08.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-08.log"
       },
       {
         "id": "L1-09",
@@ -764,7 +764,7 @@
         "command": "bun run lint",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-09.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-09.log"
       },
       {
         "id": "L1-10",
@@ -774,7 +774,7 @@
         "command": "bun run format:check",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-10.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-10.log"
       },
       {
         "id": "L1-11",
@@ -784,7 +784,7 @@
         "command": "bun run copyright:check",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-11.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-11.log"
       },
       {
         "id": "L1-12",
@@ -794,17 +794,17 @@
         "command": "bun run design:tokens:check",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-12.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-12.log"
       },
       {
         "id": "L1-13",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 8,
-        "command": "gofmt -l $(find . -name '*.go' -not -path './.git/*' -not -path './node_modules/*' -not -path './.quality/*' | head -4000) | tee /tmp/uaes-gofmt-list.txt; test ! -s /tmp/uaes-gofmt-list.txt",
+        "command": "gofmt -l $(find . -name '*.go' -not -path './.git/*' -not -path './node_modules/*' -not -path './.quality/*' | head -4000) | tee /tmp/aes-gofmt-list.txt; test ! -s /tmp/aes-gofmt-list.txt",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-13.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-13.log"
       },
       {
         "id": "L1-14",
@@ -814,7 +814,7 @@
         "command": "ruby scripts/quality/uter-governance-separation-check.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-14.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-14.log"
       },
       {
         "id": "L1-15",
@@ -824,17 +824,17 @@
         "command": "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-15.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-15.log"
       },
       {
         "id": "L1-16",
         "layer": "L1",
         "exit_code": 1,
         "duration_seconds": 0,
-        "command": "ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/uaes-agent-runtime-check.rb workspace --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
+        "command": "ruby scripts/quality/aes-agent-runtime-check.rb preflight --task reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/aes-agent-runtime-check.rb workspace --task reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
         "workdir": "/Users/lincolnhu/uter",
         "status": "FAIL",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-16.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-16.log"
       },
       {
         "id": "L1-17",
@@ -844,17 +844,17 @@
         "command": "ruby scripts/quality/test-uter-governance-boundaries.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-17.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-17.log"
       },
       {
         "id": "L1-18",
         "layer": "L1",
         "exit_code": 0,
         "duration_seconds": 3,
-        "command": "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb",
+        "command": "ruby scripts/quality/test-aes-manual-acceptance-boundary.rb",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-18.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-18.log"
       },
       {
         "id": "L2-01",
@@ -864,7 +864,7 @@
         "command": "GOWORK=off go test ./...",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-01.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-01.log"
       },
       {
         "id": "L2-02",
@@ -874,7 +874,7 @@
         "command": "GOWORK=off go test ./...",
         "workdir": "/Users/lincolnhu/uter/relaykit",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-02.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-02.log"
       },
       {
         "id": "L2-03",
@@ -884,7 +884,7 @@
         "command": "GOWORK=off go test ./...",
         "workdir": "/Users/lincolnhu/uter/tokenkit",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-03.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-03.log"
       },
       {
         "id": "L2-04",
@@ -894,7 +894,7 @@
         "command": "GOWORK=off go test ./...",
         "workdir": "/Users/lincolnhu/uter/tokenkit/tokenkit",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-04.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-04.log"
       },
       {
         "id": "L2-05",
@@ -904,7 +904,7 @@
         "command": "GOWORK=off go vet ./...",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-05.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-05.log"
       },
       {
         "id": "L2-06",
@@ -914,7 +914,7 @@
         "command": "bun run test",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-06.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-06.log"
       },
       {
         "id": "L2-07",
@@ -924,7 +924,7 @@
         "command": "bun run build:check",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-07.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-07.log"
       },
       {
         "id": "L2-08",
@@ -934,7 +934,7 @@
         "command": "GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay|TopUp|Recharge|Billing|Gateway|DreamRouter'",
         "workdir": "/Users/lincolnhu/uter",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-08.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-08.log"
       },
       {
         "id": "L2-09",
@@ -944,27 +944,27 @@
         "command": "bun run test -- src/features/wallet src/features/pricing",
         "workdir": "/Users/lincolnhu/uter/web",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L2-09.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-09.log"
       },
       {
         "id": "U-01",
-        "layer": "UAES",
+        "layer": "AES",
         "exit_code": 0,
         "duration_seconds": 1,
-        "command": "node quality/scripts/uaes/validate-registry.mjs",
-        "workdir": "/Users/lincolnhu/uaes",
+        "command": "node quality/scripts/aes/validate-registry.mjs",
+        "workdir": "/Users/lincolnhu/aes",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/U-01.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/U-01.log"
       },
       {
         "id": "U-02",
-        "layer": "UAES",
+        "layer": "AES",
         "exit_code": 0,
         "duration_seconds": 1,
-        "command": "node quality/scripts/uaes/quality-gate-runner.mjs",
-        "workdir": "/Users/lincolnhu/uaes",
+        "command": "node quality/scripts/aes/quality-gate-runner.mjs",
+        "workdir": "/Users/lincolnhu/aes",
         "status": "PASS",
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/U-02.log"
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/U-02.log"
       }
     ],
     "note": "Exit codes come from real command execution. Skips are explicit and never counted as PASS."
@@ -974,15 +974,15 @@
     "generated_at": "2026-11-07T02:44:02Z",
     "related_requirement": "§8.2 Change Gate / Integration Gate; §8.3 gate result vocabulary",
     "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
-    "uaes_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
+    "aes_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
     "L1_CHANGE_GATE": {
       "status": "FAIL",
       "checks": 18,
       "failed": [
         {
           "id": "L1-16",
-          "command": "ruby scripts/quality/uaes-agent-runtime-check.rb preflight --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/uaes-agent-runtime-check.rb workspace --task reports/compliance/uaes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
-          "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/matrix/L1-16.log"
+          "command": "ruby scripts/quality/aes-agent-runtime-check.rb preflight --task reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/aes-agent-runtime-check.rb workspace --task reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
+          "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-16.log"
         }
       ]
     },
@@ -999,13 +999,13 @@
     "generated_at": "2026-11-07T02:44:02Z",
     "related_requirement": "§8.2 Domain Acceptance Gate / §16.3 independent domain acceptance",
     "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
-    "uaes_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
+    "aes_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
     "domain_count": 14,
-    "uaes_domain_count": 13,
+    "aes_domain_count": 13,
     "uter_project_domain_count": 1,
     "pass_count": 0,
     "status": "BLOCKED",
-    "uaes_governance_layer_note": "All 13 UAES governance-layer L3 gates remain execution=NOT_RUN per UAES .uaes/registry/gates.yaml. UTER-P13 is a Uter Layer B extension and has no UAES gate. Uter-side evaluations above do not rewrite the UAES gate status.",
+    "aes_governance_layer_note": "All 13 AES governance-layer L3 gates remain execution=NOT_RUN per AES .aes/registry/gates.yaml. UTER-P13 is a Uter Layer B extension and has no AES gate. Uter-side evaluations above do not rewrite the AES gate status.",
     "manual_acceptance_evidence": {
       "trusted": true,
       "run_id": "RUN-20261106T105821Z",
@@ -1035,9 +1035,9 @@
         "id": "P00",
         "name": "Foundation",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-00-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-00-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "U-01",
@@ -1104,9 +1104,9 @@
         "id": "P01",
         "name": "AI Governance",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-01-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-01-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-01",
@@ -1169,9 +1169,9 @@
         "id": "P02",
         "name": "Product Engineering",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-02-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-02-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [],
         "live_agent_runtime_evidence": {
           "preflight": "FAIL",
@@ -1225,9 +1225,9 @@
         "id": "P03",
         "name": "Knowledge Engineering",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-03-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-03-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-01",
@@ -1254,7 +1254,7 @@
                 "id": "MA-14",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
@@ -1293,9 +1293,9 @@
         "id": "P04",
         "name": "System Architecture",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-04-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-04-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [],
         "live_agent_runtime_evidence": {
           "preflight": "FAIL",
@@ -1333,9 +1333,9 @@
         "id": "P05",
         "name": "Experience & Design",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-05-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-05-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-12",
@@ -1362,7 +1362,7 @@
                 "id": "MA-01",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
                 "source": "manual-acceptance/execution.json"
               }
             ],
@@ -1380,7 +1380,7 @@
                 "id": "MA-12",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
                 "source": "manual-acceptance/execution.json"
               }
             ],
@@ -1414,9 +1414,9 @@
         "id": "P06",
         "name": "Software Engineering",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-06-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-06-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L2-01",
@@ -1489,7 +1489,7 @@
                 "id": "MA-09",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
@@ -1508,9 +1508,9 @@
         "id": "P07",
         "name": "Cross-Platform Engineering",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-07-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-07-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [],
         "live_agent_runtime_evidence": {
           "preflight": "FAIL",
@@ -1542,14 +1542,14 @@
                 "id": "MA-10",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-11",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
@@ -1578,9 +1578,9 @@
         "id": "P08",
         "name": "AI Agent Engineering",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-08-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-08-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-03",
@@ -1639,9 +1639,9 @@
         "id": "P09",
         "name": "Quality Engineering",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-09-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-09-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-03",
@@ -1682,7 +1682,7 @@
                 "id": "MA-13",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
@@ -1725,42 +1725,42 @@
                 "id": "MA-02",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-03",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-04",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-05",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-06",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-07",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
                 "source": "manual-acceptance/execution.json"
               }
             ],
@@ -1774,9 +1774,9 @@
         "id": "P10",
         "name": "Security & Reliability",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-10-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-10-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-15",
@@ -1823,42 +1823,42 @@
                 "id": "MA-02",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-03",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-04",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-05",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-06",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
                 "id": "MA-07",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
                 "source": "manual-acceptance/execution.json"
               }
             ],
@@ -1883,8 +1883,8 @@
         "name": "Business Domain Engineering",
         "status": "BLOCKED",
         "classification": "UTER_PROJECT_SPECIFIC_EXTENSION",
-        "uaes_gate_id": null,
-        "uaes_gate_execution": "NOT_APPLICABLE",
+        "aes_gate_id": null,
+        "aes_gate_execution": "NOT_APPLICABLE",
         "automated_evidence": [
           {
             "id": "L1-14",
@@ -1929,7 +1929,7 @@
                 "id": "MA-08",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
                 "source": "manual-acceptance/execution.json"
               },
               {
@@ -1952,7 +1952,7 @@
                 "id": "MA-08",
                 "status": "PASS",
                 "exit_code": 0,
-                "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+                "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
                 "source": "manual-acceptance/execution.json"
               }
             ],
@@ -1986,9 +1986,9 @@
         "id": "P11",
         "name": "DevOps & Delivery",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-11-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-11-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [
           {
             "id": "L1-01",
@@ -2035,9 +2035,9 @@
         "id": "P12",
         "name": "Lifecycle & Evolution",
         "status": "BLOCKED",
-        "classification": "UAES_UNIVERSAL_DOMAIN",
-        "uaes_gate_id": "UAES-12-GATE-001",
-        "uaes_gate_execution": "NOT_RUN",
+        "classification": "AES_UNIVERSAL_DOMAIN",
+        "aes_gate_id": "AES-12-GATE-001",
+        "aes_gate_execution": "NOT_RUN",
         "automated_evidence": [],
         "live_agent_runtime_evidence": {
           "preflight": "FAIL",
@@ -2087,16 +2087,16 @@
     "evidence_id": "GATE-L4-GLOBAL-CONFORMANCE",
     "generated_at": "2026-11-07T02:44:02Z",
     "related_requirement": "§8.2 Global Conformance Gate / §16.4 Global acceptance",
-    "source_system": "scripts/quality/uaes-governance-gates.rb",
+    "source_system": "scripts/quality/aes-governance-gates.rb",
     "repository_revision": {
       "uter_head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "uaes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
+      "aes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
     },
     "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
-    "uaes_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
-    "uaes_version": "1.9.0",
-    "uaes_status": "ACTIVE",
-    "uaes_global_gate": "NOT_RUN",
+    "aes_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
+    "aes_version": "1.9.0",
+    "aes_status": "ACTIVE",
+    "aes_global_gate": "NOT_RUN",
     "mandatory_conditions": 16,
     "met": 9,
     "not_met": 7,
@@ -2104,9 +2104,9 @@
     "conditions": [
       {
         "id": "L4-01",
-        "description": "UAES approved baseline pinned and re-verified (§18 step 1)",
+        "description": "AES approved baseline pinned and re-verified (§18 step 1)",
         "status": "MET",
-        "evidence": "uaes-pin-check.sh + validate-registry.mjs",
+        "evidence": "aes-pin-check.sh + validate-registry.mjs",
         "note": "integration status is MIGRATION_PENDING, not conformance"
       },
       {
@@ -2230,7 +2230,7 @@
     "evidence_id": "MANUAL-ACCEPTANCE-EXECUTION",
     "generated_at": "2026-11-06T11:03:25Z",
     "run_id": "RUN-20261106T105821Z",
-    "related_requirement": "UTER-UAES-GOV-001 §14.3 / §16.3",
+    "related_requirement": "UTER-AES-GOV-001 §14.3 / §16.3",
     "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
     "toolchain": {
       "go": "go version go1.27.3 darwin/amd64",
@@ -2256,7 +2256,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:58:21Z",
         "duration_seconds": 8.974,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
         "log_sha256": "732167023122c6b465fdaa3f126c2dc7b03694ec08bd3da17c29853eaceb4855",
         "log_bytes": 114,
         "timeout_seconds": 420
@@ -2270,7 +2270,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:58:30Z",
         "duration_seconds": 27.43,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
         "log_sha256": "b5ae54ddcfa4cb39e85f84ad2d9e43556bd817c480eaab2a71bab63bfc29353b",
         "log_bytes": 299,
         "timeout_seconds": 900
@@ -2284,7 +2284,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:58:57Z",
         "duration_seconds": 12.212,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
         "log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5",
         "log_bytes": 26,
         "timeout_seconds": 900
@@ -2298,7 +2298,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:59:10Z",
         "duration_seconds": 10.107,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
         "log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5",
         "log_bytes": 26,
         "timeout_seconds": 900
@@ -2312,7 +2312,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:59:20Z",
         "duration_seconds": 11.404,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
         "log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5",
         "log_bytes": 26,
         "timeout_seconds": 900
@@ -2320,13 +2320,13 @@
       {
         "evidence_id": "MA-06",
         "title": "gitleaks secret scan on tracked HEAD tree",
-        "command": "tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
+        "command": "tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
         "cwd": ".",
         "status": "PASS",
         "exit_code": 0,
         "started_at": "2026-11-06T10:59:31Z",
         "duration_seconds": 13.597,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
         "log_sha256": "4d2211236776e428111400ca1ce14790c340e2c8be9abcc36fd41b63b228e062",
         "log_bytes": 172,
         "timeout_seconds": 420
@@ -2340,7 +2340,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:59:45Z",
         "duration_seconds": 0.046,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
         "log_sha256": "f0a74123d3251e18da087313dbd7af6ee27d0a62c57d88d5b6a9978b41a24698",
         "log_bytes": 27,
         "timeout_seconds": 120
@@ -2354,7 +2354,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T10:59:45Z",
         "duration_seconds": 15.808,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
         "log_sha256": "2f86471de1521588fcade7304ca6ea38c661943067942c7e9487aab8ee667e20",
         "log_bytes": 1313,
         "timeout_seconds": 900
@@ -2368,7 +2368,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T11:00:00Z",
         "duration_seconds": 7.966,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
         "log_sha256": "daa78c62defd32cfe45e8193016880c25efa2229e923d0018ab14d0f327f4a65",
         "log_bytes": 7,
         "timeout_seconds": 420
@@ -2382,7 +2382,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T11:00:08Z",
         "duration_seconds": 49.095,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
         "log_sha256": "4cc65b3f0cf46447eee4a8b7ff033d306d6c23118989ce8acd5f0c58617d8886",
         "log_bytes": 3227,
         "timeout_seconds": 900
@@ -2396,7 +2396,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T11:00:58Z",
         "duration_seconds": 24.539,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
         "log_sha256": "3a21eb1e5aeb7717c3972a51616d9fba91beab107fb6497ba53a601843dad443",
         "log_bytes": 1577,
         "timeout_seconds": 900
@@ -2410,7 +2410,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T11:01:22Z",
         "duration_seconds": 0.015,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
         "log_sha256": "127f24bd7fc76aab262b5223c32629d6a78aed8bc8218ee6133f6a87b359cdb4",
         "log_bytes": 22,
         "timeout_seconds": 60
@@ -2424,7 +2424,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T11:01:22Z",
         "duration_seconds": 122.073,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
         "log_sha256": "1736a555392427a7e52c5fc081bb4fa0c9a87319cadc887a17d3ed7d6f60715b",
         "log_bytes": 7080,
         "timeout_seconds": 1200
@@ -2438,7 +2438,7 @@
         "exit_code": 0,
         "started_at": "2026-11-06T11:03:24Z",
         "duration_seconds": 0.7,
-        "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
+        "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
         "log_sha256": "7edaad7a486df586829cf26d8eae0b1b7f3e18e1e4978bf6f758ef3eba100212",
         "log_bytes": 140,
         "timeout_seconds": 180
@@ -2456,7 +2456,7 @@
     "evidence_id": "MANUAL-ACCEPTANCE-INVENTORY",
     "generated_at": "2026-11-06T11:03:25Z",
     "run_id": "RUN-20261106T105821Z",
-    "related_requirement": "UTER-UAES-GOV-001 §16.3 / §16.4",
+    "related_requirement": "UTER-AES-GOV-001 §16.3 / §16.4",
     "domain_count": 14,
     "item_count": 42,
     "category_summary": {
@@ -2598,7 +2598,7 @@
             "id": "MA-14",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
             "source": "manual-acceptance/execution.json"
           },
           {
@@ -2681,7 +2681,7 @@
             "id": "MA-01",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
             "source": "manual-acceptance/execution.json"
           }
         ],
@@ -2703,7 +2703,7 @@
             "id": "MA-12",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
             "source": "manual-acceptance/execution.json"
           }
         ],
@@ -2767,7 +2767,7 @@
             "id": "MA-09",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
             "source": "manual-acceptance/execution.json"
           },
           {
@@ -2808,14 +2808,14 @@
             "id": "MA-10",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-11",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
             "source": "manual-acceptance/execution.json"
           },
           {
@@ -2898,7 +2898,7 @@
             "id": "MA-13",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
             "source": "manual-acceptance/execution.json"
           },
           {
@@ -2953,42 +2953,42 @@
             "id": "MA-02",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-03",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-04",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-05",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-06",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-07",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
             "source": "manual-acceptance/execution.json"
           }
         ],
@@ -3038,42 +3038,42 @@
             "id": "MA-02",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-03",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-04",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-05",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-06",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
             "source": "manual-acceptance/execution.json"
           },
           {
             "id": "MA-07",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
             "source": "manual-acceptance/execution.json"
           }
         ],
@@ -3123,7 +3123,7 @@
             "id": "MA-08",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
             "source": "manual-acceptance/execution.json"
           },
           {
@@ -3150,7 +3150,7 @@
             "id": "MA-08",
             "status": "PASS",
             "exit_code": 0,
-            "log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+            "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
             "source": "manual-acceptance/execution.json"
           }
         ],
@@ -3262,7 +3262,7 @@
   },
   "authority": {
     "evidence_id": "ACCEPTANCE-AUTHORITY",
-    "related_requirement": "UTER-UAES-GOV-001 §16.4 / §18",
+    "related_requirement": "UTER-AES-GOV-001 §16.4 / §18",
     "recorded_at": "2026-11-07T01:33:20Z",
     "source": "USER_EXPLICIT_DESIGNATION",
     "authority_role": "Project Owner / Acceptance Authority",
@@ -3361,39 +3361,39 @@
   "separation": {
     "evidence_id": "D04-GOVERNANCE-SEPARATION",
     "generated_at": "2026-11-06T17:42:53Z",
-    "related_requirement": "UTER-UAES-GOV-001 §1.1 / §1.3 / §1.4 / §4.3 / §16.3",
+    "related_requirement": "UTER-AES-GOV-001 §1.1 / §1.3 / §1.4 / §4.3 / §16.3",
     "related_finding": null,
     "source_system": "scripts/quality/uter-governance-separation-check.rb",
     "execution_environment": {
       "ruby": "4.0.6",
       "uter_root": "/Users/lincolnhu/uter",
-      "uaes_root": "/Users/lincolnhu/uaes"
+      "aes_root": "/Users/lincolnhu/aes"
     },
     "repository_revision": {
       "uter_head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "uaes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
+      "aes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
     },
     "collector": "WorkBuddy (Tencent Hunyuan Hy)",
     "collection_time": "2026-11-06T17:42:53Z",
     "integrity": {
       "uter_registry_sha256": "1248c3d20ea7ab360f017a6670d7ad76368c6a7830ae3dfb54b9e120dd8d2feb",
-      "uaes_registry_sha256": "78ab6fcc0737f1afb93446bbd9bb78146a3b6f95ffd9687af2f7a2d3e23e7a1f",
-      "uaes_gates_sha256": "adadc8d44521f6496f34b5e634f44b9dc3e50423ffb945a0f8bd491414ed18b0",
+      "aes_registry_sha256": "78ab6fcc0737f1afb93446bbd9bb78146a3b6f95ffd9687af2f7a2d3e23e7a1f",
+      "aes_gates_sha256": "adadc8d44521f6496f34b5e634f44b9dc3e50423ffb945a0f8bd491414ed18b0",
       "note": "Hashes support evidence integrity only; they do not prove the underlying activity was performed correctly (§14.4)."
     },
-    "storage_reference": "/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence",
+    "storage_reference": "/Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence",
     "access_restrictions": "local repository evidence; no credentials or production data",
     "overall": "PASS",
     "failed_checks": [],
     "checks": [
       {
         "check": "S00",
-        "name": "UAES repository reachable",
+        "name": "AES repository reachable",
         "requirement": "§18 step 1",
         "status": "PASS",
         "observation": {
-          "uaes_root": "/Users/lincolnhu/uaes",
-          "uaes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
+          "aes_root": "/Users/lincolnhu/aes",
+          "aes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
         }
       },
       {
@@ -3403,10 +3403,10 @@
         "status": "PASS",
         "observation": {
           "paths": [
-            "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
-            ".uaes/uter-governance-registry.yaml",
-            ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
-            ".uaes/AI-GOVERNANCE-ENTRY.md"
+            "docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+            ".aes/uter-governance-registry.yaml",
+            ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
+            ".aes/AI-GOVERNANCE-ENTRY.md"
           ],
           "missing": []
         }
@@ -3418,8 +3418,8 @@
         "status": "PASS",
         "observation": {
           "repository_scope": "uter",
-          "uaes_repository_scope": "uaes",
-          "governing_document_id": "UTER-UAES-GOV-001"
+          "aes_repository_scope": "aes",
+          "governing_document_id": "UTER-AES-GOV-001"
         }
       },
       {
@@ -3432,30 +3432,30 @@
           "id": "UTER-P13",
           "registered_in": "UTER-PROJECT-GOVERNANCE-REGISTRY",
           "classification": "PROJECT_SPECIFIC_GOVERNANCE_EXTENSION",
-          "inherits": "UAES P00-P12 (all applicable mandatory requirements)"
+          "inherits": "AES P00-P12 (all applicable mandatory requirements)"
         }
       },
       {
         "check": "S04",
-        "name": "registry explicitly forbids UAES registration locations",
+        "name": "registry explicitly forbids AES registration locations",
         "requirement": "§1.3 / §4.3",
         "status": "PASS",
         "observation": {
           "declared": [
-            "uaes/standards/",
-            "uaes/.uaes/registry/",
-            "uaes/.uaes/STANDARD-REGISTRY.yaml"
+            "aes/standards/",
+            "aes/.aes/registry/",
+            "aes/.aes/STANDARD-REGISTRY.yaml"
           ],
           "required": [
-            "uaes/standards/",
-            "uaes/.uaes/registry/",
-            "uaes/.uaes/STANDARD-REGISTRY.yaml"
+            "aes/standards/",
+            "aes/.aes/registry/",
+            "aes/.aes/STANDARD-REGISTRY.yaml"
           ]
         }
       },
       {
         "check": "S05",
-        "name": "UAES registry contains exactly P00-P12 (no UTER P13 phase)",
+        "name": "AES registry contains exactly P00-P12 (no UTER P13 phase)",
         "requirement": "§1.1 Layer A / §16.3",
         "status": "PASS",
         "observation": {
@@ -3494,31 +3494,31 @@
       },
       {
         "check": "S06",
-        "name": "UAES domain gates are exactly 13 with no P13 gate",
+        "name": "AES domain gates are exactly 13 with no P13 gate",
         "requirement": "§1.1 Layer A / §16.3",
         "status": "PASS",
         "observation": {
           "gate_count": 13,
           "gate_ids": [
-            "UAES-00-GATE-001",
-            "UAES-01-GATE-001",
-            "UAES-03-GATE-001",
-            "UAES-02-GATE-001",
-            "UAES-04-GATE-001",
-            "UAES-05-GATE-001",
-            "UAES-07-GATE-001",
-            "UAES-08-GATE-001",
-            "UAES-06-GATE-001",
-            "UAES-09-GATE-001",
-            "UAES-10-GATE-001",
-            "UAES-11-GATE-001",
-            "UAES-12-GATE-001"
+            "AES-00-GATE-001",
+            "AES-01-GATE-001",
+            "AES-03-GATE-001",
+            "AES-02-GATE-001",
+            "AES-04-GATE-001",
+            "AES-05-GATE-001",
+            "AES-07-GATE-001",
+            "AES-08-GATE-001",
+            "AES-06-GATE-001",
+            "AES-09-GATE-001",
+            "AES-10-GATE-001",
+            "AES-11-GATE-001",
+            "AES-12-GATE-001"
           ]
         }
       },
       {
         "check": "S07",
-        "name": "UAES standards/ has 13 universal domain directories only",
+        "name": "AES standards/ has 13 universal domain directories only",
         "requirement": "§1.1 Layer A / §4.3",
         "status": "PASS",
         "observation": {
@@ -3541,8 +3541,8 @@
       },
       {
         "check": "S08",
-        "name": "no Uter business rules or UTER P13 inside UAES normative standards",
-        "requirement": "§1.3 'No project-specific business rule shall be introduced into UAES'",
+        "name": "no Uter business rules or UTER P13 inside AES normative standards",
+        "requirement": "§1.3 'No project-specific business rule shall be introduced into AES'",
         "status": "PASS",
         "observation": {
           "scanned_files": 196,
@@ -3562,8 +3562,8 @@
       },
       {
         "check": "S09",
-        "name": "no UTER-P13 artifact exists anywhere in the UAES repository",
-        "requirement": "§4.3 / user directive: UTER P13 must not be committed to UAES",
+        "name": "no UTER-P13 artifact exists anywhere in the AES repository",
+        "requirement": "§4.3 / user directive: UTER P13 must not be committed to AES",
         "status": "PASS",
         "observation": {
           "matches": []
@@ -3571,12 +3571,12 @@
       },
       {
         "check": "S10",
-        "name": "Uter holds no competing copy of UAES normative standards",
+        "name": "Uter holds no competing copy of AES normative standards",
         "requirement": "§1.3 / §1.4 standards hierarchy",
         "status": "PASS",
         "observation": {
           "unexpected_paths": [],
-          "note": "Uter inherits UAES through .uaes/uaes-pin.json + INTEGRATION.md, not by copying standards"
+          "note": "Uter inherits AES through .aes/aes-pin.json + INTEGRATION.md, not by copying standards"
         }
       },
       {
@@ -3586,25 +3586,25 @@
         "status": "PASS",
         "observation": {
           "bytes": 5365,
-          "pins_uaes": true
+          "pins_aes": true
         }
       },
       {
         "check": "S12",
-        "name": "historical UAES-P13-* files are confined to derived reports/",
+        "name": "historical AES-P13-* files are confined to derived reports/",
         "requirement": "§1.3 / §4.3 / §14.2",
         "status": "PASS",
         "observation": {
           "count": 6,
           "paths": [
-            "reports/baseline/UAES-P13-REPOSITORY-INVENTORY.json",
-            "reports/baseline/UAES-P13-REPOSITORY-INVENTORY.md",
-            "reports/quality/UAES-P13-CHANGE-IMPACT.json",
-            "reports/quality/UAES-P13-GOVERNANCE-LAYER-IMPLEMENTATION.md",
-            "reports/quality/UAES-P13-GOVERNANCE-VERIFICATION.json",
-            "reports/quality/UAES-P13-REGISTRY-VALIDATION.json"
+            "reports/baseline/AES-P13-REPOSITORY-INVENTORY.json",
+            "reports/baseline/AES-P13-REPOSITORY-INVENTORY.md",
+            "reports/quality/AES-P13-CHANGE-IMPACT.json",
+            "reports/quality/AES-P13-GOVERNANCE-LAYER-IMPLEMENTATION.md",
+            "reports/quality/AES-P13-GOVERNANCE-VERIFICATION.json",
+            "reports/quality/AES-P13-REGISTRY-VALIDATION.json"
           ],
-          "finding": "FINDING-SEP-001 (Low / Naming ambiguity): 'UAES-P13-*' denotes the Repository Integration phase, not a UAES P13 domain. Keep outside standards/ and registry; consider renaming in a separately approved UAES-repository change."
+          "finding": "FINDING-SEP-001 (Low / Naming ambiguity): 'AES-P13-*' denotes the Repository Integration phase, not a AES P13 domain. Keep outside standards/ and registry; consider renaming in a separately approved AES-repository change."
         }
       }
     ]
@@ -3612,27 +3612,27 @@
   "p09p10": {
     "evidence_id": "D07-P09-P10-BOUNDARY",
     "generated_at": "2026-11-06T17:42:53Z",
-    "related_requirement": "UTER-UAES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
+    "related_requirement": "UTER-AES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
     "related_finding": null,
     "source_system": "scripts/quality/uter-p09-p10-boundary-check.rb",
     "execution_environment": {
       "ruby": "4.0.6",
       "uter_root": "/Users/lincolnhu/uter",
-      "uaes_root": "/Users/lincolnhu/uaes"
+      "aes_root": "/Users/lincolnhu/aes"
     },
     "repository_revision": {
       "uter_head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "uaes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
+      "aes_head": "0c9386b192090e901ccc5de6df1f2aebe3f5c618"
     },
     "collector": "WorkBuddy (Tencent Hunyuan Hy)",
     "collection_time": "2026-11-06T17:42:53Z",
     "integrity": {
       "governing_spec_sha256": "5fd0e271263dc07e5230e92b75505023ee8bc7dcf0400cc348979f79cb787af1",
       "uter_registry_sha256": "1248c3d20ea7ab360f017a6670d7ad76368c6a7830ae3dfb54b9e120dd8d2feb",
-      "uaes_registry_sha256": "78ab6fcc0737f1afb93446bbd9bb78146a3b6f95ffd9687af2f7a2d3e23e7a1f",
+      "aes_registry_sha256": "78ab6fcc0737f1afb93446bbd9bb78146a3b6f95ffd9687af2f7a2d3e23e7a1f",
       "note": "Hashes support evidence integrity only; they do not prove correctness of the underlying activity (§14.4)."
     },
-    "storage_reference": "/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence",
+    "storage_reference": "/Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence",
     "access_restrictions": "local repository evidence; no credentials or production data",
     "division_of_responsibility": {
       "P09": "PROVE — quality engineering: test strategy, execution, defect closure, metrics, quality gates",
@@ -3743,14 +3743,14 @@
       },
       {
         "check": "B08",
-        "name": "pinned UAES baseline itself keeps P09=Quality / P10=Security",
-        "requirement": "§1.3 / §16.3 / UAES 1.9.0 registry",
+        "name": "pinned AES baseline itself keeps P09=Quality / P10=Security",
+        "requirement": "§1.3 / §16.3 / AES 1.9.0 registry",
         "status": "PASS",
         "observation": {
-          "uaes_P09": "Quality Engineering",
-          "uaes_P10": "Security and Reliability Engineering",
-          "uaes_gate_09": "UAES-09-GATE-001-QUALITY-ENGINEERING-GATE",
-          "uaes_gate_10": "UAES-10-GATE-001-SECURITY-RELIABILITY-GATE"
+          "aes_P09": "Quality Engineering",
+          "aes_P10": "Security and Reliability Engineering",
+          "aes_gate_09": "AES-09-GATE-001-QUALITY-ENGINEERING-GATE",
+          "aes_gate_10": "AES-10-GATE-001-SECURITY-RELIABILITY-GATE"
         }
       },
       {
@@ -3759,8 +3759,8 @@
         "requirement": "§8.2 / §16.3",
         "status": "PASS",
         "observation": {
-          "evaluator": "scripts/quality/uaes-governance-gates.rb",
-          "note": "V2 evaluator mislabelled P09/P10 and put business rules in P10; UTER-UAES-GOV-001 assigns them to P09/P10/UTER-P13."
+          "evaluator": "scripts/quality/aes-governance-gates.rb",
+          "note": "V2 evaluator mislabelled P09/P10 and put business rules in P10; UTER-AES-GOV-001 assigns them to P09/P10/UTER-P13."
         }
       },
       {
@@ -3771,10 +3771,10 @@
         "observation": {
           "checked": {
             "AGENTS.md": "P09 proves",
-            ".uaes/INTEGRATION.md": "P09 / P10 division",
-            ".uaes/AI-GOVERNANCE-ENTRY.md": "P09 proves",
-            ".uaes/TRACEABILITY.md": "P09 / P10 division",
-            ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md": "P09 / P10 分工"
+            ".aes/INTEGRATION.md": "P09 / P10 division",
+            ".aes/AI-GOVERNANCE-ENTRY.md": "P09 proves",
+            ".aes/TRACEABILITY.md": "P09 / P10 division",
+            ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md": "P09 / P10 分工"
           },
           "missing": []
         }
@@ -3802,11 +3802,11 @@
     "execution_environment": {
       "ruby": "4.0.6",
       "uter_root": "/Users/lincolnhu/uter",
-      "uaes_root": "/Users/lincolnhu/uaes"
+      "aes_root": "/Users/lincolnhu/aes"
     },
     "repository_revision": {
       "uter_head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "uaes_head": "ff7cf878d43061f263e301cad09ff19d03e906c4"
+      "aes_head": "ff7cf878d43061f263e301cad09ff19d03e906c4"
     },
     "collector": "WorkBuddy (Tencent Hunyuan Hy) — independent assessment pass, re-derived from source, not from remediation self-declarations",
     "collection_time": "2026-11-06T11:04:20Z",
@@ -3836,18 +3836,18 @@
       ],
       "note": "SHA-256 values support evidence integrity only; they do not prove the underlying activity was performed correctly (§14.4). The independent-assessment.json row is self-referential and is re-hashed by the next assessment run."
     },
-    "storage_reference": "/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence",
+    "storage_reference": "/Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence",
     "access_restrictions": "local repository evidence; no credentials or production data",
     "assessment_scope": {
-      "system_boundary": "Uter repository (Layer B) + pinned UAES 1.9.0 baseline (Layer A, read-only) + WorkBuddy/CI assurance (Layer C)",
-      "standards_baseline": "UTER-UAES-GOV-001 + UAES 1.9.0 APPROVED + §2.1 external standards catalogue",
+      "system_boundary": "Uter repository (Layer B) + pinned AES 1.9.0 baseline (Layer A, read-only) + WorkBuddy/CI assurance (Layer C)",
+      "standards_baseline": "UTER-AES-GOV-001 + AES 1.9.0 APPROVED + §2.1 external standards catalogue",
       "domains": 14
     },
     "independent_assessment_completed": true,
     "independent_re_evaluation": [
       {
         "id": "IA-01",
-        "control": "pinned UAES approved baseline re-derived",
+        "control": "pinned AES approved baseline re-derived",
         "status": "PASS",
         "detail": {
           "pinned_commit": "ff7cf878d43061f263e301cad09ff19d03e906c4",
@@ -3863,7 +3863,7 @@
         "control": "14 independently assessed domains re-derived from source",
         "status": "PASS",
         "detail": {
-          "uaes_phases": 13,
+          "aes_phases": 13,
           "uter_registry_domains": 14,
           "extra_domain": [
             "UTER-P13"
@@ -4155,8 +4155,8 @@
         },
         "files_scanned": 179
       },
-      "uaes_draft_standard_files": 0,
-      "uaes_standard_md_files": 178
+      "aes_draft_standard_files": 0,
+      "aes_standard_md_files": 178
     }
   },
   "verify": {
@@ -4244,7 +4244,7 @@
         "status": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-01.log",
         "raw_log_sha256": "ef600323cbfefd682fa4d1373132918f095e0219f552ea64c2130850e173e760",
-        "stdout_tail": "ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-UAES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n",
+        "stdout_tail": "ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-AES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n",
         "stderr_tail": "",
         "category": "compile/static",
         "description": "spec completeness + governance wiring"
@@ -4263,14 +4263,14 @@
         "status": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-02.log",
         "raw_log_sha256": "c00ad0d7e5ed7ee6de6786c3749417215e2b58a61c78c60e0c0e14c66f440e71",
-        "stdout_tail": "ASS: R0-R4 risk classification and durable task lifecycle\nPASS: one non-main branch maximum; main push, force-push and PR merge denied\nPASS: delivery is gated on complete validation; branch strategy follows UTER-UAES-GOV-001 baseline preservation\nPASS: PR repair workflow allows verified branch commit/push/PR only\nPASS: task lifecycle prevents unverified closure and supports checkpointed recovery\nPASS: delegated Agent permissions cannot escalate\nPASS: production, real-payment and production-database changes denied\nNOTE: static policy/schema tests do not replace live Agent runtime denial tests.\n",
+        "stdout_tail": "ASS: R0-R4 risk classification and durable task lifecycle\nPASS: one non-main branch maximum; main push, force-push and PR merge denied\nPASS: delivery is gated on complete validation; branch strategy follows UTER-AES-GOV-001 baseline preservation\nPASS: PR repair workflow allows verified branch commit/push/PR only\nPASS: task lifecycle prevents unverified closure and supports checkpointed recovery\nPASS: delegated Agent permissions cannot escalate\nPASS: production, real-payment and production-database changes denied\nNOTE: static policy/schema tests do not replace live Agent runtime denial tests.\n",
         "stderr_tail": "",
         "category": "unit",
         "description": "P01 policy positive/negative fixtures"
       },
       {
         "evidence_id": "EV-03",
-        "command": "bash scripts/quality/uaes-pin-check.sh",
+        "command": "bash scripts/quality/aes-pin-check.sh",
         "cwd": ".",
         "started_at": "2026-11-07T02:40:21Z",
         "duration_seconds": 4.218,
@@ -4282,14 +4282,14 @@
         "status": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-03.log",
         "raw_log_sha256": "6434610518e080a5344bc2cd40c8ea49a7bcfca143a119df15873ade0e3e656b",
-        "stdout_tail": "PASS: pin contains all 11 required fields\nPASS: source commit and registry blob are valid 40-character object ids\nPASS: registry lifecycle is consistent (status=ACTIVE, approval=ACTIVE, integration=MIGRATION_PENDING)\nPASS: contract does not claim unverified compliance\nPASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle\nuaes-pin-check: PASS scope=static-integrity status=ACTIVE version=1.9.0 commit=0c9386b19209\n",
+        "stdout_tail": "PASS: pin contains all 11 required fields\nPASS: source commit and registry blob are valid 40-character object ids\nPASS: registry lifecycle is consistent (status=ACTIVE, approval=ACTIVE, integration=MIGRATION_PENDING)\nPASS: contract does not claim unverified compliance\nPASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle\naes-pin-check: PASS scope=static-integrity status=ACTIVE version=1.9.0 commit=0c9386b19209\n",
         "stderr_tail": "",
         "category": "config",
-        "description": "UAES pinned version re-verification"
+        "description": "AES pinned version re-verification"
       },
       {
         "evidence_id": "EV-04",
-        "command": "ruby scripts/quality/test-uaes-pin-check.rb",
+        "command": "ruby scripts/quality/test-aes-pin-check.rb",
         "cwd": ".",
         "started_at": "2026-11-07T02:40:25Z",
         "duration_seconds": 31.945,
@@ -4301,14 +4301,14 @@
         "status": "FAIL",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-04.log",
         "raw_log_sha256": "fb9caa4d4c11d8185ff3f34d97adb2ebe18d35cb99eadcae1c37dc58b7507441",
-        "stdout_tail": "Run options: --seed 8415\n\n# Running:\n\n......F.......\n\nFinished in 31.501146s, 0.4444 runs/s, 1.5872 assertions/s.\n\n  1) Failure:\nUaesPinCheckTest#test_rejects_approved_registry_without_approval_state [scripts/quality/test-uaes-pin-check.rb:145]:\nExpected /APPROVED registry requires approval_state=APPROVED/ to match \"FAIL: approved/active registry requires approval_state=APPROVED or ACTIVE\\nPASS: pin contains all 11 required fields\\nPASS: source commit and registry blob are valid 40-character object ids\\n\".\n\n14 runs, 50 assertions, 1 failures, 0 errors, 0 skips\n",
+        "stdout_tail": "Run options: --seed 8415\n\n# Running:\n\n......F.......\n\nFinished in 31.501146s, 0.4444 runs/s, 1.5872 assertions/s.\n\n  1) Failure:\nAesPinCheckTest#test_rejects_approved_registry_without_approval_state [scripts/quality/test-aes-pin-check.rb:145]:\nExpected /APPROVED registry requires approval_state=APPROVED/ to match \"FAIL: approved/active registry requires approval_state=APPROVED or ACTIVE\\nPASS: pin contains all 11 required fields\\nPASS: source commit and registry blob are valid 40-character object ids\\n\".\n\n14 runs, 50 assertions, 1 failures, 0 errors, 0 skips\n",
         "stderr_tail": "",
         "category": "unit",
         "description": "pin gate positive/negative fixtures"
       },
       {
         "evidence_id": "EV-05",
-        "command": "bash scripts/quality/uaes-integration-check.sh",
+        "command": "bash scripts/quality/aes-integration-check.sh",
         "cwd": ".",
         "started_at": "2026-11-07T02:40:57Z",
         "duration_seconds": 1.159,
@@ -4323,11 +4323,11 @@
         "stdout_tail": "itory architecture and P09/P10 ownership are registered\nPASS: Uter payment, billing, auth, database, and Design System overlays remain protected\nPASS: Agent entrypoints and both runtime skill adapters route to the canonical contract\nPASS: P01 fail-closed permission policy and task schema are registered\nNOTE: static wiring only; remote commit reachability, semantic parity, runtime skill discovery, CI policy enforcement, 14 independent domain acceptances, independent assessment and L4_GLOBAL_CONFORMANCE_GATE remain separate acceptance requirements. This check makes no conformance claim (§16.5).\n",
         "stderr_tail": "",
         "category": "config",
-        "description": "Uter/UAES integration wiring"
+        "description": "Uter/AES integration wiring"
       },
       {
         "evidence_id": "EV-06",
-        "command": "ruby scripts/quality/test-uaes-integration-check.rb",
+        "command": "ruby scripts/quality/test-aes-integration-check.rb",
         "cwd": ".",
         "started_at": "2026-11-07T02:40:58Z",
         "duration_seconds": 20.217,
@@ -4365,7 +4365,7 @@
       },
       {
         "evidence_id": "EV-10",
-        "command": "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb",
+        "command": "ruby scripts/quality/test-aes-manual-acceptance-boundary.rb",
         "cwd": ".",
         "started_at": "2026-11-07T02:41:36Z",
         "duration_seconds": 6.246,
@@ -4384,7 +4384,7 @@
       },
       {
         "evidence_id": "EV-11",
-        "command": "python3 scripts/quality/uaes-manual-acceptance.py --verify-only",
+        "command": "python3 scripts/quality/aes-manual-acceptance.py --verify-only",
         "cwd": ".",
         "started_at": "2026-11-07T02:41:42Z",
         "duration_seconds": 0.257,
@@ -4574,7 +4574,7 @@
       },
       {
         "evidence_id": "EV-21",
-        "command": "tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
+        "command": "tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
         "cwd": ".",
         "started_at": "2026-11-07T02:54:41Z",
         "duration_seconds": 9.376,
@@ -4586,7 +4586,7 @@
         "status": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-21.log",
         "raw_log_sha256": "e0d1b71bddf1e1daf8271889cddc376ae129cb5a40177e7b59099472694c854c",
-        "stdout_tail": "scanned_tree=/tmp/uaes-gitleaks-zrM9YK\n",
+        "stdout_tail": "scanned_tree=/tmp/aes-gitleaks-zrM9YK\n",
         "stderr_tail": "\u001b[90m10:54AM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mscanned ~39023540 bytes (39.02 MB) in 6.94s\u001b[0m\n\u001b[90m10:54AM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mno leaks found\u001b[0m\n",
         "category": "secret",
         "description": "secret scan on committed tree"
@@ -4660,7 +4660,7 @@
         "duration_seconds": 8.974,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
         "raw_log_sha256": "732167023122c6b465fdaa3f126c2dc7b03694ec08bd3da17c29853eaceb4855"
       },
       {
@@ -4673,7 +4673,7 @@
         "duration_seconds": 27.43,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
         "raw_log_sha256": "b5ae54ddcfa4cb39e85f84ad2d9e43556bd817c480eaab2a71bab63bfc29353b"
       },
       {
@@ -4686,7 +4686,7 @@
         "duration_seconds": 12.212,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
         "raw_log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5"
       },
       {
@@ -4699,7 +4699,7 @@
         "duration_seconds": 10.107,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
         "raw_log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5"
       },
       {
@@ -4712,20 +4712,20 @@
         "duration_seconds": 11.404,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
         "raw_log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5"
       },
       {
         "evidence_id": "MA-06",
         "title": "gitleaks secret scan on tracked HEAD tree",
-        "command": "tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
+        "command": "tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
         "status": "PASS",
         "exit_code": 0,
         "started_at": "2026-11-06T10:59:31Z",
         "duration_seconds": 13.597,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
         "raw_log_sha256": "4d2211236776e428111400ca1ce14790c340e2c8be9abcc36fd41b63b228e062"
       },
       {
@@ -4738,7 +4738,7 @@
         "duration_seconds": 0.046,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
         "raw_log_sha256": "f0a74123d3251e18da087313dbd7af6ee27d0a62c57d88d5b6a9978b41a24698"
       },
       {
@@ -4751,7 +4751,7 @@
         "duration_seconds": 15.808,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
         "raw_log_sha256": "2f86471de1521588fcade7304ca6ea38c661943067942c7e9487aab8ee667e20"
       },
       {
@@ -4764,7 +4764,7 @@
         "duration_seconds": 7.966,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
         "raw_log_sha256": "daa78c62defd32cfe45e8193016880c25efa2229e923d0018ab14d0f327f4a65"
       },
       {
@@ -4777,7 +4777,7 @@
         "duration_seconds": 49.095,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
         "raw_log_sha256": "4cc65b3f0cf46447eee4a8b7ff033d306d6c23118989ce8acd5f0c58617d8886"
       },
       {
@@ -4790,7 +4790,7 @@
         "duration_seconds": 24.539,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
         "raw_log_sha256": "3a21eb1e5aeb7717c3972a51616d9fba91beab107fb6497ba53a601843dad443"
       },
       {
@@ -4803,7 +4803,7 @@
         "duration_seconds": 0.015,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
         "raw_log_sha256": "127f24bd7fc76aab262b5223c32629d6a78aed8bc8218ee6133f6a87b359cdb4"
       },
       {
@@ -4816,7 +4816,7 @@
         "duration_seconds": 122.073,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
         "raw_log_sha256": "1736a555392427a7e52c5fc081bb4fa0c9a87319cadc887a17d3ed7d6f60715b"
       },
       {
@@ -4829,7 +4829,7 @@
         "duration_seconds": 0.7,
         "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
         "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
+        "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
         "raw_log_sha256": "7edaad7a486df586829cf26d8eae0b1b7f3e18e1e4978bf6f758ef3eba100212"
       }
     ],
@@ -4839,8 +4839,8 @@
         "category": "DAST / 动态应用安全测试",
         "status": "NOT_RUN",
         "reason": "DAST、渗透与 API 安全测试需一个已授权的运行中目标环境与书面授权；本机只有源码与测试套件。",
-        "linked_requirement": "UAES P10 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P10 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -4864,8 +4864,8 @@
         "category": "渗透测试",
         "status": "NOT_RUN",
         "reason": "同上；未授权对运行服务做主动探测会越出风险边界（§13）。",
-        "linked_requirement": "UAES P10 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P10 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -4889,8 +4889,8 @@
         "category": "API 安全测试",
         "status": "NOT_RUN",
         "reason": "需要授权运行实例、真实凭据与测试数据；当前无该环境。",
-        "linked_requirement": "UAES P10 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P10 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -4914,8 +4914,8 @@
         "category": "权限与访问控制端到端测试",
         "status": "NOT_RUN",
         "reason": "需要真实账号体系与多租户环境；不得使用测试号绕过登录（项目红线），且不得创建任何账号。",
-        "linked_requirement": "UAES P10 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P10 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -4939,8 +4939,8 @@
         "category": "三数据库迁移验证",
         "status": "NOT_RUN",
         "reason": "需要 MySQL / PostgreSQL / SQLite 三套真实实例与迁移快照。",
-        "linked_requirement": "UAES P11 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P11 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -4964,8 +4964,8 @@
         "category": "性能与压力测试",
         "status": "NOT_RUN",
         "reason": "无 k6/wrk/locust 类工具链与性能基线；不得用替代命令冒充。",
-        "linked_requirement": "UAES P09 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P09 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -4989,8 +4989,8 @@
         "category": "故障恢复 / DR 演练",
         "status": "NOT_RUN",
         "reason": "需要生产等价环境、故障注入与恢复窗口授权。",
-        "linked_requirement": "UAES P10/P11 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P10/P11 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -5014,8 +5014,8 @@
         "category": "备份与恢复测试",
         "status": "NOT_RUN",
         "reason": "需要真实数据库备份与恢复目标实例。",
-        "linked_requirement": "UAES P10/P11 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P10/P11 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -5039,8 +5039,8 @@
         "category": "CI/CD 与发布流程真实执行",
         "status": "NOT_RUN",
         "reason": "本地仅有 workflow 静态定义；未授权 push / PR / merge / deploy，无法产生真实 CI 运行记录。",
-        "linked_requirement": "UAES P11 / §6",
-        "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+        "linked_requirement": "AES P11 / §6",
+        "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
         "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
         "probe": {
           "axe_toolchain": true,
@@ -5066,7 +5066,7 @@
         "category": "端到端 Playwright 视觉回归（真实执行）",
         "status": "EXECUTED_NOT_PASS",
         "reason": "命令 `bun run test:visual:e2e` 真实执行：19 passed / 10 failed (3.0m)。Playwright 与 chromium-1248 均在本机可用，此前的 NOT_RUN 理由（缺浏览器二进制）已被推翻。10 个失败均为 `expect(page).toHaveScreenshot(expected)` 像素基线不匹配，属基线漂移，需按批准流程更新快照后复跑，不得直接 --update-snapshots 掩盖。",
-        "linked_requirement": "UAES P09 / §6",
+        "linked_requirement": "AES P09 / §6",
         "required_authorization": "项目 Owner（基线更新 / 二进制重建授权）"
       },
       {
@@ -5074,7 +5074,7 @@
         "category": "axe 无障碍扫描（真实执行）",
         "status": "EXECUTED_NOT_PASS",
         "reason": "命令 `bun run test:axe` 真实执行：8 passed / 5 failed / 1 skipped (1.8m)。此前的 NOT_RUN 理由（web/node_modules 下无 @axe-core）不成立：@axe-core/cli、@axe-core/playwright、@axe-core/webdriverjs 均已安装。5 个失败全部同源：/about、/docs、/privacy-policy、/user-agreement、/recharge-agreement 的文档站 iframe 内 `[data-docs-sidebar-search]` 触发 serious/label-content-name-mismatch。根因已定位：:3000 由 launchd 托管，运行中的 uter-bin 编译于 2026-11-04 09:21，go:embed 固化了当时的 web/dist，因此 2026-11-06 18:11 的源码修复（kbd 加 aria-hidden）未被伺服；产物 web/dist/docs-content 内代码本身是正确的。需重建二进制后复跑。",
-        "linked_requirement": "UAES P05/P09 / §6",
+        "linked_requirement": "AES P05/P09 / §6",
         "required_authorization": "项目 Owner（基线更新 / 二进制重建授权）"
       }
     ]
@@ -5084,7 +5084,7 @@
     "generated_at": "2026-11-07T02:57:15Z",
     "related_requirement": "§5 / §9 / §10",
     "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-    "harness": "scripts/quality/uaes-agent-runtime-check.rb",
+    "harness": "scripts/quality/aes-agent-runtime-check.rb",
     "method": "real CLI invocations + negative fixtures; not a self-declaration questionnaire",
     "summary": {
       "total": 10,
@@ -5104,8 +5104,8 @@
         "result": "FAIL",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-01-preflight.log",
         "raw_log_sha256": "7ee60b201cd6dd8f29e5d538999d74b8502277ebc979a64be3002507820c5733",
-        "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json",
-        "note": "uaes_version=1.9.0 steps=10 failed=[3]"
+        "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json",
+        "note": "aes_version=1.9.0 steps=10 failed=[3]"
       },
       {
         "case_id": "AG-02",
@@ -5116,8 +5116,8 @@
         "result": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-02-spec-drift.log",
         "raw_log_sha256": "93c6994a4b3647013557e2ff22005093c80ca9ab8c068bd7823257723c31432d",
-        "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --uaes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-7jj8830q",
-        "note": "fixture_repo=/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-7jj8830q version_actual=9.9.9-FCA-DRIFT-FIXTURE failed_steps=[3]"
+        "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --aes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-aes-drift-7jj8830q",
+        "note": "fixture_repo=/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-aes-drift-7jj8830q version_actual=9.9.9-FCA-DRIFT-FIXTURE failed_steps=[3]"
       },
       {
         "case_id": "AG-03",
@@ -5128,7 +5128,7 @@
         "result": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-03-empty-applicability.log",
         "raw_log_sha256": "13dfe5ace90a26fb2b968b71f7c1d68b3a812f7c0bda7042b33a974242b0b63f",
-        "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json",
+        "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json",
         "note": "failed_steps=[3, 7, 8, 9]"
       },
       {
@@ -5164,7 +5164,7 @@
         "result": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-06-allow-read.log",
         "raw_log_sha256": "434596e774d533871eaafe7cb494be317989cce3d3611e22d949a755ef016486",
-        "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action filesystem.read --profile read_only",
+        "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action filesystem.read --profile read_only",
         "note": ""
       },
       {
@@ -5188,7 +5188,7 @@
         "result": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-08-selftest.log",
         "raw_log_sha256": "9d1946dd191d9a3ed50c9f502f476197b9c2b2723fd4aff741fc9116d797b5d8",
-        "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb selftest",
+        "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb selftest",
         "note": "passed=20/20"
       },
       {
@@ -5200,7 +5200,7 @@
         "result": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-09-real-task.log",
         "raw_log_sha256": "955e6c5621f4f369de770c5fe78b3807528c4437ddaef907e3291d73620b717a",
-        "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt",
+        "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt",
         "note": "overall=PASS commands=3"
       },
       {
@@ -5212,12 +5212,12 @@
         "result": "PASS",
         "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-10-ci-denial-loop.log",
         "raw_log_sha256": "e0bd460755a014d7a35c0f29e40adeda449f7a605c4141cb3a3e7a084cef3a40",
-        "command": "\nset -euo pipefail\nfor action in git.commit git.push.feature_branch git.pull_request.create; do\n  if ruby scripts/quality/uaes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator >/dev/null 2>&1; then\n    echo \"FAIL: $action was allowed without complete validation\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied before complete validation\"\ndone\nfor action in git.push.main git.pull_request.merge production.database.write payment.configuration.write overwrite.user_uncommitted_changes; do\n  if ruby scripts/quality/uaes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator --validation-passed >/dev/null 2>&1; then\n    echo \"FAIL: forbidden action $action was allowed\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied even after validation\"\ndone\n",
+        "command": "\nset -euo pipefail\nfor action in git.commit git.push.feature_branch git.pull_request.create; do\n  if ruby scripts/quality/aes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator >/dev/null 2>&1; then\n    echo \"FAIL: $action was allowed without complete validation\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied before complete validation\"\ndone\nfor action in git.push.main git.pull_request.merge production.database.write payment.configuration.write overwrite.user_uncommitted_changes; do\n  if ruby scripts/quality/aes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator --validation-passed >/dev/null 2>&1; then\n    echo \"FAIL: forbidden action $action was allowed\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied even after validation\"\ndone\n",
         "note": "workflow_bytes=21485 denial_lines=8"
       }
     ],
     "fixtures": {
-      "uaes_registry_version_drift": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/uaes-registry-version-drift.yaml",
+      "aes_registry_version_drift": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/aes-registry-version-drift.yaml",
       "task_missing_applicability": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json",
       "task_bypass_attempt": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-bypass-attempt.json",
       "agent_verify_commands": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt"
@@ -5231,6 +5231,6 @@
     "ARCHITECTURE_GATE": "ALLOW",
     "BUSINESS_ACCEPTANCE_GATE": "BLOCK",
     "RELEASE_GATE": "BLOCK",
-    "GLOBAL_UAES_CONFORMANCE_GATE": "BLOCK"
+    "GLOBAL_AES_CONFORMANCE_GATE": "BLOCK"
   }
 }

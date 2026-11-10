@@ -1,0 +1,14 @@
+# id: L1-20
+# layer: L1
+# command: bash scripts/quality/gitleaks-allowlist.test.sh
+# workdir: /Users/lincolnhu/uter
+# started_at: 2026-11-08T18:34:44Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+PASS: documented false positives are suppressed
+PASS: injected real-form secret still detected (findings=1)
+gitleaks-allowlist: 2 passed / 0 failed
+# exit_code: 0
+# duration_seconds: 0

@@ -1,0 +1,185 @@
+{
+  "evidence_id": "D07-P09-P10-BOUNDARY",
+  "generated_at": "2026-11-09T10:57:58Z",
+  "related_requirement": "UTER-AES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
+  "related_finding": null,
+  "source_system": "scripts/quality/uter-p09-p10-boundary-check.rb",
+  "execution_environment": {
+    "ruby": "4.0.6",
+    "uter_root": "/Users/lincolnhu/uter",
+    "aes_root": "/Users/lincolnhu/aes"
+  },
+  "repository_revision": {
+    "uter_head": "775e9eb50bbc0c99541da63b28d2779624f03bed",
+    "aes_head": "9d727f6685db3d6e341f487138a59fc732f8d8b7"
+  },
+  "collector": "WorkBuddy (Tencent Hunyuan Hy)",
+  "collection_time": "2026-11-09T10:57:58Z",
+  "integrity": {
+    "governing_spec_sha256": "ec3bbe7a9bd3df1b53162dd5fbc039faca7ec5034976dcd54ab5046a21676503",
+    "uter_registry_sha256": "48f0cd5678ff60e8b88a811a920dc8cc6caced640e411eceaa3082c6fed2c3c6",
+    "aes_registry_sha256": "c4b667fe3ca5ad89ce5eeffa93fdad03ab27c7f753c97251f0561e2aaa34ba64",
+    "note": "Hashes support evidence integrity only; they do not prove correctness of the underlying activity (§14.4)."
+  },
+  "storage_reference": "/Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence",
+  "access_restrictions": "local repository evidence; no credentials or production data",
+  "division_of_responsibility": {
+    "P09": "PROVE — quality engineering: test strategy, execution, defect closure, metrics, quality gates",
+    "P10": "DEFINE — security and reliability requirements: threat modeling, controls, reliability, backup/DR, incident"
+  },
+  "overall": "PASS",
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "B01",
+      "name": "P09 owns the PROOF system (7 quality-engineering clauses)",
+      "requirement": "§3 P09 / §9",
+      "status": "PASS",
+      "observation": {
+        "p09_bytes": 4193,
+        "missing_headings": [],
+        "expected_headings": [
+          "P09.1 Quality management",
+          "P09.2 Code review and verification",
+          "P09.3 Testing engineering",
+          "P09.4 Defect management",
+          "P09.5 Automated repair",
+          "P09.6 Quality measurement",
+          "P09.7 Quality acceptance"
+        ]
+      }
+    },
+    {
+      "check": "B02",
+      "name": "P10 owns the REQUIREMENT baseline (11 security/reliability clauses)",
+      "requirement": "§3 P10 / §10",
+      "status": "PASS",
+      "observation": {
+        "p10_bytes": 4682,
+        "missing_headings": [],
+        "expected_headings": [
+          "P10.1 Security governance",
+          "P10.2 Threat modeling",
+          "P10.3 Identity and access security",
+          "P10.4 Application and API security",
+          "P10.5 Data protection and privacy",
+          "P10.6 Infrastructure and supply chain security",
+          "P10.7 Security testing",
+          "P10.8 Reliability engineering",
+          "P10.9 Observability",
+          "P10.10 Backup and disaster recovery",
+          "P10.11 Incident management"
+        ]
+      }
+    },
+    {
+      "check": "B03",
+      "name": "P09 text describes proving; P10 text describes defining",
+      "requirement": "§3 P09 / §3 P10",
+      "status": "PASS",
+      "observation": {
+        "p09_missing_tokens": [],
+        "p10_missing_tokens": []
+      }
+    },
+    {
+      "check": "B04",
+      "name": "no clause crosses the P09/P10 responsibility boundary",
+      "requirement": "§1.3 / §8.2",
+      "status": "PASS",
+      "observation": {
+        "crossings": []
+      }
+    },
+    {
+      "check": "B05",
+      "name": "security testing is required by P10 and executed/recorded by P09",
+      "requirement": "§3 P10.7 / §9 / user directive",
+      "status": "PASS",
+      "observation": {
+        "shared_gate_description": "Security testing is REQUIRED by P10 and EXECUTED/RECORDED by the P09 test engineering system"
+      }
+    },
+    {
+      "check": "B06",
+      "name": "Uter registry assigns PROVE to P09 and DEFINE to P10",
+      "requirement": "§1.3 / §8.2",
+      "status": "PASS",
+      "observation": {
+        "P09": {
+          "name": "Quality Engineering",
+          "role": "PROVE"
+        },
+        "P10": {
+          "name": "Security & Reliability",
+          "role": "DEFINE"
+        },
+        "shared_rule": "P09 and P10 together form mandatory gates; neither may substitute for the other"
+      }
+    },
+    {
+      "check": "B07",
+      "name": "duplicate/conflicting management system is explicitly forbidden",
+      "requirement": "§8.2 / user directive",
+      "status": "PASS",
+      "observation": {
+        "forbidden": [
+          "Treating a clean scanner report as security conformity (§10.7)",
+          "Treating a single passing test as system conformity (§0.3)",
+          "Duplicating a conflicting management system between P09 and P10"
+        ]
+      }
+    },
+    {
+      "check": "B08",
+      "name": "pinned AES baseline itself keeps P09=Quality / P10=Security",
+      "requirement": "§1.3 / §16.3 / AES 1.12.2 registry (version read live, not hard-coded)",
+      "status": "PASS",
+      "observation": {
+        "aes_P09": "Quality Engineering",
+        "aes_P10": "Security and Reliability Engineering",
+        "aes_gate_09": "AES-09-GATE-001-QUALITY-ENGINEERING-GATE",
+        "aes_gate_10": "AES-10-GATE-001-SECURITY-RELIABILITY-GATE"
+      }
+    },
+    {
+      "check": "B09",
+      "name": "local 14-domain gate evaluator labels P09/P10/P13 correctly",
+      "requirement": "§8.2 / §16.3",
+      "status": "PASS",
+      "observation": {
+        "evaluator": "scripts/quality/aes-governance-gates.rb",
+        "note": "V2 evaluator mislabelled P09/P10 and put business rules in P10; UTER-AES-GOV-001 assigns them to P09/P10/UTER-P13."
+      }
+    },
+    {
+      "check": "B10",
+      "name": "all governance entrypoints state the same P09/P10 division",
+      "requirement": "§1.3 / §6.4",
+      "status": "PASS",
+      "observation": {
+        "checked": {
+          "AGENTS.md": "P09 proves",
+          ".aes/INTEGRATION.md": "P09 / P10 division",
+          ".aes/AI-GOVERNANCE-ENTRY.md": "P09 proves",
+          ".aes/TRACEABILITY.md": "P09 / P10 division",
+          ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md": "P09 / P10 分工"
+        },
+        "missing": []
+      }
+    },
+    {
+      "check": "B11",
+      "name": "D14 and D15 are separate quality / security assessments",
+      "requirement": "§15 / §16.1",
+      "status": "PASS",
+      "observation": {
+        "deliverables": [
+          "D14",
+          "D15",
+          "D16"
+        ]
+      }
+    }
+  ]
+}

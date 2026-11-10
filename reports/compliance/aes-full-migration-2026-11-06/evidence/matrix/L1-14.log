@@ -1,0 +1,26 @@
+# id: L1-14
+# layer: L1
+# command: ruby scripts/quality/uter-governance-separation-check.rb
+# workdir: /Users/lincolnhu/uter
+# started_at: 2026-11-08T18:34:22Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+PASS S00  AES repository reachable
+PASS S01  Uter Layer B governance assets present
+PASS S02  project registry declares separate repository scopes
+PASS S03  UTER P13 registered ONLY in Uter project governance registry
+PASS S04  registry explicitly forbids AES registration locations
+PASS S05  AES registry contains exactly P00-P12 (no UTER P13 phase)
+PASS S06  AES domain gates are exactly 13 with no P13 gate
+PASS S07  AES standards/ has 13 universal domain directories only
+PASS S08  no Uter business rules or UTER P13 inside AES normative standards
+PASS S09  no UTER-P13 artifact exists anywhere in the AES repository
+PASS S10  Uter holds no competing copy of AES normative standards
+PASS S11  Uter governance entry remains a thin pointer
+PASS S12  historical AES-P13-* files are confined to derived reports/
+overall=PASS checks=13 failed=0
+evidence: /Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence/governance-separation.json
+# exit_code: 0
+# duration_seconds: 0

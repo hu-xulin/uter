@@ -1,0 +1,2 @@
+$ node scripts/visual-regression.mjs
+✓ 视觉回归通过：2 个目标/视口组合与基线逐字节一致。

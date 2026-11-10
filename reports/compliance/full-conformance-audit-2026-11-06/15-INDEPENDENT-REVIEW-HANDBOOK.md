@@ -1,10 +1,10 @@
-# UTER × UAES 最终验收结果包 — 独立复核手册
+# UTER × AES 最终验收结果包 — 独立复核手册
 
 - **生成时间:** 2026-11-06T14:30Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **分支:** `governance/uaes-full-migration-2026-11-06`
-- **UAES commit SHA:** `ff7cf878d43061f263e301cad09ff19d03e906c4`
-- **UAES 注册表:** `1.9.0` / `APPROVED`
+- **分支:** `governance/aes-full-migration-2026-11-06`
+- **AES commit SHA:** `ff7cf878d43061f263e301cad09ff19d03e906c4`
+- **AES 注册表:** `1.9.0` / `APPROVED`
 - **当前结论:** `BLOCKED`
 
 > 本手册面向**未参与本次工作的独立审查者**。按下列步骤重跑，即可自行核验本包中
@@ -71,7 +71,7 @@ python3 scripts/quality/full-conformance-execution.py verify agent gates
 
 - 要求总数 **2880**：适用 **2868** / N/A **12**
 - 审计结果：BLOCKED **2868** / N/A **12** / **PASS 0**
-- UAES 标准状态：**DRAFT 2851 条**（178 个标准文件）/ PROPOSED_BASELINE 29 条
+- AES 标准状态：**DRAFT 2851 条**（178 个标准文件）/ PROPOSED_BASELINE 29 条
 - 工程验证：本地可执行 **22/22 PASS**，**12 项 NOT_RUN**（需授权环境）
 - Agent 验证：**10/10 PASS**（含 10 个 forbidden action DENY、env 绕过双 DENY exit 2）
 - 门禁：ALLOW 4（CHANGE / CODE_REVIEW / **TESTING** / ARCHITECTURE）· BLOCK 4（SECURITY / BUSINESS_ACCEPTANCE / RELEASE / GLOBAL）
@@ -84,10 +84,10 @@ python3 scripts/quality/full-conformance-execution.py verify agent gates
 
 根因有三层，均**不由本会话权限可解**：
 
-1. **规范基线未批准**：178 个 UAES 标准文件中 2851 条要求状态为 `DRAFT`，
-   UAES `APPROVAL-RECORD` §4 未逐条批准。因此在"强制性要求"口径上，
+1. **规范基线未批准**：178 个 AES 标准文件中 2851 条要求状态为 `DRAFT`，
+   AES `APPROVAL-RECORD` §4 未逐条批准。因此在"强制性要求"口径上，
    没有任何一条可以判 PASS → `requirement_specific_verified = 0`。
-   解除需 **UAES Owner** 批准。
+   解除需 **AES Owner** 批准。
 2. **授权环境缺失**：DAST / 渗透测试 / API 安全 / 三库迁移 / DR / 备份恢复 / 性能压测
    共 12 项 `NOT_RUN`。解除需**安全测试授权 + 可用环境**。
 3. **人工验收未签署**：42 项 M* 验收记录 `signoff_granted=false`；
@@ -128,7 +128,7 @@ python3 scripts/quality/full-conformance-execution.py verify agent gates
 
 按依赖顺序，只有这三件事：
 
-1. **UAES 侧**：由 UAES Owner 批准（或逐条降级）178 个 DRAFT 标准，
+1. **AES 侧**：由 AES Owner 批准（或逐条降级）178 个 DRAFT 标准，
    或明确以 `PROPOSED_BASELINE` 作为验收口径 —— 这决定 C02 能否成立。
 2. **环境侧**：提供授权环境跑完 12 项 NOT_RUN（DAST / 渗透 / API 安全 / 三库 / DR / 备份 / 性能）。
 3. **签署侧**：你本人逐项签署 42 项 M* 验收记录，并把 `signoff_granted` 置 true。

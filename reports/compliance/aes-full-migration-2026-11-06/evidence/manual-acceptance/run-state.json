@@ -1,0 +1,8 @@
+{
+  "run_id": "RUN-20261108T182747Z",
+  "state": "COMPLETED",
+  "started_at": "2026-11-08T18:27:47Z",
+  "finished_at": "2026-11-08T18:33:26Z",
+  "integrity_status": "PASS",
+  "note": "A COMPLETED marker is required before execution.json may be trusted."
+}

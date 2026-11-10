@@ -1,0 +1,31 @@
+[MA-01] PASS     exit=0 5.452s  visual regression baseline (local headless Chrome)
+[MA-02] PASS     exit=0 21.444s  govulncheck root module
+[MA-03] PASS     exit=0 9.129s  govulncheck tokenkit module
+[MA-04] PASS     exit=0 8.703s  govulncheck relaykit module
+[MA-05] PASS     exit=0 9.12s  govulncheck tokenkit/tokenkit module
+[MA-06] PASS     exit=0 13.756s  gitleaks secret scan on tracked HEAD tree
+[MA-07] PASS     exit=0 0.047s  forbidden tracked file check (.env / *.db / *.sqlite3)
+[MA-08] PASS     exit=0 11.203s  payment idempotency + concurrency tests with -race
+[MA-09] PASS     exit=0 4.645s  unused-code / duplication signal (knip)
+[MA-10] PASS     exit=0 27.641s  docs-web build
+[MA-11] PASS     exit=0 27.297s  electron build
+[MA-12] PASS     exit=0 96.104s  axe accessibility audit (WCAG 2.2 / WAI-ARIA, real public-page suite)
+[MA-13] PASS     exit=0 104.017s  Go root-module coverage profile + coverage gate
+[MA-14] PASS     exit=0 0.759s  AI spec / documentation reference integrity
+{
+  "execution": {
+    "total": 14,
+    "PASS": 14,
+    "FAIL": 0,
+    "NOT_RUN": 0,
+    "TIMEOUT": 0
+  },
+  "categories": {
+    "EXTERNAL_ENVIRONMENT": 14,
+    "HUMAN_SIGNOFF": 17,
+    "LOCAL_EXECUTED": 4,
+    "LOCAL_PARTIAL": 7
+  },
+  "acceptance_decision": "PENDING_ITEM_BY_ITEM_REVIEW",
+  "integrity": "PASS"
+}

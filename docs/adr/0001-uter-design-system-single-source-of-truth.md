@@ -19,7 +19,7 @@ Uter 的视觉 Token、字号、颜色、组件与设计约束曾分散在多个
 ## 决策依据
 
 - `AGENTS.md` 将 UTER Design System 3.0 标记为单一权威设计文件。
-- `docs/ai-specs/DOCUMENTATION-STANDARD.md` §14.1、§14.2 明确记录设计系统唯一真源及目录纪律。
+- `uaes/standards/DOCUMENTATION-STANDARD.md` §14.1、§14.2 明确记录设计系统唯一真源及目录纪律。
 - `.ai/README.md` 将 UTER Design System 3.0 列为设计系统唯一真源。
 - 上述规范记录的生效日期为 2026-11-03。
 
@@ -36,7 +36,7 @@ Uter 的视觉 Token、字号、颜色、组件与设计约束曾分散在多个
 |---|---|
 | 权威设计文档 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` |
 | 项目宪法引用 | `AGENTS.md` |
-| 文档治理规则 | `docs/ai-specs/DOCUMENTATION-STANDARD.md` §14.1–§14.2 |
+| 文档治理规则 | `uaes/standards/DOCUMENTATION-STANDARD.md` §14.1–§14.2 |
 | 方法论入口 | `.ai/README.md` |
 
 本 ADR 记录的是已经在项目规范中明确批准的决策；它不声称所有历史设计相关实现已经完成独立运行时审计。实施符合性仍由对应设计门禁和后续审计验证。

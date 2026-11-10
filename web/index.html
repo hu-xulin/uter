@@ -29,19 +29,18 @@
         }
       })()
     </script>
-    <!-- Bump the `?v=` below together with LOGO_ASSET_VERSION in
-         `src/lib/constants.ts` whenever `public/logo.png` is replaced.
-         The version is what evicts an already-cached copy in the browser.
+    <!-- Tab favicon: the brand .ico (`public/favicon-legacy.ico`), cache-busted
+         with `?v=`. Bump FAVICON_ICO_VERSION in `src/lib/constants.ts` whenever the
+         .ico changes. It is deliberately NOT named `favicon.ico`: Rsbuild's dev
+         server answers `/favicon.ico` with 204 and would otherwise auto-inject an
+         unversioned link, so a browser that cached the old bitmap keeps showing it.
+         The in-page logo is a separate asset (`/logo.png`, see DEFAULT_LOGO) and is
+         applied to <img> tags, never to the tab icon.
 
-         Keep this the ONLY icon declaration. Rsbuild auto-detects
-         `public/favicon.{ico,png,svg}` and injects an un-versioned
-         `<link rel="icon" href="/favicon.ico">` ahead of everything here.
-         That extra URL cannot be cache-busted, so a browser that captured
-         the old bitmap for it keeps showing the stale tab icon after a
-         logo swap — the file is therefore shipped as
-         `public/favicon-legacy.ico` (still fetchable at
-         `/favicon-legacy.ico`) and deliberately not named `favicon.ico`. -->
-    <link rel="icon" type="image/png" sizes="any" href="/logo.png?v=8" />
+         At runtime `applyFaviconToDom(FAVICON_URL)` re-applies this same .ico
+         (see `src/main.tsx` and `src/hooks/use-system-config.ts`), so the tab icon
+         stays the brand .ico even after the dynamic system config loads. -->
+    <link rel="icon" type="image/x-icon" href="/favicon-legacy.ico?v=2" />
     <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />

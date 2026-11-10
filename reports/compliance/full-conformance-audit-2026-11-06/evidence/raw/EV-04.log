@@ -1,7 +1,7 @@
 # evidence_id=EV-04
 # started_at=2026-11-07T02:40:25Z
 # cwd=/Users/lincolnhu/uter
-# command=ruby scripts/quality/test-uaes-pin-check.rb
+# command=ruby scripts/quality/test-aes-pin-check.rb
 # timeout=180
 # exit_code=1
 # timed_out=False
@@ -16,7 +16,7 @@ Run options: --seed 8415
 Finished in 31.501146s, 0.4444 runs/s, 1.5872 assertions/s.
 
   1) Failure:
-UaesPinCheckTest#test_rejects_approved_registry_without_approval_state [scripts/quality/test-uaes-pin-check.rb:145]:
+AesPinCheckTest#test_rejects_approved_registry_without_approval_state [scripts/quality/test-aes-pin-check.rb:145]:
 Expected /APPROVED registry requires approval_state=APPROVED/ to match "FAIL: approved/active registry requires approval_state=APPROVED or ACTIVE\nPASS: pin contains all 11 required fields\nPASS: source commit and registry blob are valid 40-character object ids\n".
 
 14 runs, 50 assertions, 1 failures, 0 errors, 0 skips

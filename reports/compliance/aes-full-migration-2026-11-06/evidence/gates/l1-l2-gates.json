@@ -1,0 +1,19 @@
+{
+  "evidence_id": "GATE-L1-L2",
+  "generated_at": "2026-11-09T05:57:19Z",
+  "related_requirement": "§8.2 Change Gate / Integration Gate; §8.3 gate result vocabulary",
+  "uter_commit": "424dfa2c55c534bf110fa5871420fe3fd679d307",
+  "aes_commit": "9d727f6685db3d6e341f487138a59fc732f8d8b7",
+  "L1_CHANGE_GATE": {
+    "status": "PASS",
+    "checks": 20,
+    "failed": []
+  },
+  "L2_INTEGRATION_GATE": {
+    "status": "PASS",
+    "checks": 9,
+    "failed": []
+  },
+  "skipped": [],
+  "note": "Skips are explicit and never counted as PASS (§8.3)."
+}
