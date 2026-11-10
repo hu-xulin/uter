@@ -31,7 +31,7 @@ conflicts_registered:
   location: QUALITY-GATE-STANDARD.md
   issue: status/risk/coverage vocabulary differs from AES-09-015
   status: RESOLVED
-  resolution: QUALITY-GATE/AUTOMATED-TEST/README 状态词汇统一为 PASS/FAIL/BLOCKED/NOT_RUN/NOT_VERIFIED/NOT_APPLICABLE，与 AES-09-001 §11 对齐。2026-11-08
+  resolution: QUALITY-GATE/AUTOMATED-TEST/README status vocabulary aligned to PASS/FAIL/BLOCKED/NOT_RUN/NOT_VERIFIED/NOT_APPLICABLE; CI validates the same enum.
 - id: C-03
   location: QUALITY-GATE-STANDARD.md
   issue: references .quality/policy.yml; real file is .quality/policy.env
@@ -51,117 +51,117 @@ files:
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P00/P01
   uter_specific_content: Task-based spec routing; AGENTS.md priority; Uter gate list
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md
   doc_id: UTER-PRD-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P02
   uter_specific_content: Pricing FX+0.2; QuotaPerUnit=500000; VIP 0-5 groups
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/ARCHITECTURE-STANDARD.md
   doc_id: UTER-ARCH-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P04
   uter_specific_content: Go/React/Electron boundaries; relaykit/tokenkit; three databases
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/UX-INTERACTION-STANDARD.md
   doc_id: UTER-UX-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P05
   uter_specific_content: Uter page/interaction contracts
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/API-CONTRACT-STANDARD.md
   doc_id: UTER-API-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P04
   uter_specific_content: 134 paths/159 ops; /api/status single source
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/SECURITY-STANDARD.md
   doc_id: UTER-SEC-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P10
   uter_specific_content: Login 429 refund; WeChat web login; step-up email code
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/DATABASE-STANDARD.md
   doc_id: UTER-DB-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P04
   uter_specific_content: SQLite/MySQL/PostgreSQL + ClickHouse migration matrix
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/DEVELOPMENT-STANDARD.md
   doc_id: UTER-DEV-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P06
   uter_specific_content: Go/Bun engineering conventions
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md
   doc_id: UTER-CHG-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P11/P12
   uter_specific_content: Single-branch mode; change protection; identity guard
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/DOCUMENTATION-STANDARD.md
   doc_id: UTER-DOC-001
   version: v1.0.0
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P03
   uter_specific_content: docs/ no-new-file rule; i18n 7-locale sync
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/CONFLICT-REPORT.md
   doc_id: UTER-CONFLICT-001
   version: Active
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P00
   uter_specific_content: Section 98 verbatim rule; section 121 semantic-parity gap
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/ENGINEERING-SYSTEM-ACCEPTANCE-REPORT.md
   doc_id: UTER-UEQE-ACC-001
   version: Active
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P09
   uter_specific_content: UEQE implementation acceptance records
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md
   doc_id: UTER-AES-GOV-001
   version: Active
   semantic_class: PARTIAL_DUPLICATE_WITH_UTER_SPECIFIC_CONTENT
   aes_counterpart: P00-P12
   uter_specific_content: Three-layer/two-repo; UTER P13; WorkBuddy 20-step directive
-  disposition: KEEP_AND_MARK_FOR_REVIEW
+  disposition: KEEP_AS_PROJECT_OVERLAY
   action_taken: REGISTERED_ONLY_NO_FILE_MODIFIED
-  blocking_reason: deletion_prerequisites_met=1/5; ai-specs-check.sh hard-requires this file
+  blocking_reason: Contains Uter-specific requirements or active project references; retain as a non-authoritative project overlay mapped to AES; no manual review or approval is required.
 - path: docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md
   doc_id: UTER-ENG-001
   version: 1.0.0
@@ -215,8 +215,8 @@ files:
 remediated_at: '2026-11-08'
 remediation_note: 按用户 2026-11-08 最高优先级授权执行：登记项由 REGISTERED_ONLY 推进为 REMEDIATED。仅修改文档内容（上位溯源、状态词汇、配置路径、分支用语），未删除任何文件；四份工程质量标准保留为 Uter 执行层规范，不再构成与 AES 平行的企业级标准源。
 parallel_enterprise_standard_count: 0
-resolved_conflicts: 3
-open_conflicts: 2
+resolved_conflicts: 4
+open_conflicts: 1
 
 # ---------------------------------------------------------------------------
 # 2026-11-08 第二轮：AES 基线由 1.12.0/46c6488 升为 1.12.1/74e5d2e 后的联动整改
@@ -331,3 +331,17 @@ retained_but_not_tracked_2026_11_08:
     - scripts/quality/aes-governance-gates.rb
     - scripts/quality/aes-governance-reports.py
     - scripts/quality/ai-native-internal-gate.rb
+
+
+# 2026-11-10 autonomous governance reconciliation
+machine_disposition:
+  exact_duplicate_files: 0
+  partial_duplicate_project_overlays: 18
+  human_review_dependency: NONE
+  third_party_acceptance_dependency: NONE
+  local_main_only: true
+  branch_creation: FORBIDDEN
+  remote_push: FORBIDDEN
+  pull_request: FORBIDDEN
+  delete_only_when: "A machine verifier proves exact content equivalence, zero active inbound references, complete requirement mapping and a verified archival copy."
+  current_decision: "Keep all 18 project-specific overlays; no file meets the exact-duplicate deletion predicate."
