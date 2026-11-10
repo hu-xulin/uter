@@ -60,7 +60,7 @@ governance_layers:
 aes_inheritance:
   source_repository: "https://github.com/hu-xulin/aes"
   source_default_branch: "main"
-  source_commit: "7a44bf5ce153f4e169e84334d0bba28b49ba2712"
+  source_commit: "f7d018f061e27e153a62a820160d429e72a38ae4"
   source_commit_role: "provenance-only; governed fingerprint defines rule identity"
   registry_path: ".aes/STANDARD-REGISTRY.yaml"
   registry_blob_sha: "2ee9a7c70c1bbf67645a301de9662a8de9937bdb"
