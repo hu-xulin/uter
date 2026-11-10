@@ -40,9 +40,13 @@ conflicts_registered:
 - id: C-04
   location: AUTO-FIX-STANDARD.md
   issue: claims CI is stopped; current CI configuration contradicts it
+  status: RESOLVED
+  resolution: AUTO-FIX standard now requires automated CI execution, local-main-only remediation and no PR or human-review state. 2026-11-10
 - id: C-05
   location: AES standards/09-quality-engineering/AES-09-002, -014, -015
   issue: upstream generic standards embed Uter-specific owner and test matrix
+  status: OPEN_MACHINE_REMEDIATION
+  resolution: Remove Uter-specific project ownership, repository paths, test matrix and local policy details from AES universal standards; retain generic requirements and map Uter implementation details in Uter overlays.
 review_trigger: AES formally published in an immutable commit AND semantic parity report completed AND full requirement-to-evidence mapping closed AND runtime skill discovery proven AND CI enforcement verified AND independent machine verification PASS recorded.
 files:
 - path: docs/ai-specs/AI-EXECUTION-STANDARD.md
