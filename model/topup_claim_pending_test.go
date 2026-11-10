@@ -145,9 +145,8 @@ func TestManualCompleteTopUpIsDisabledForPendingOrder(t *testing.T) {
 	user := insertUserForPaymentGuardTest(t, 805, 0)
 	order := createEpayTestOrder(t, user.Id, "CLAIM-MANUAL-DISABLED", PaymentProviderEpay, common.TopUpStatusPending)
 
-	outcome, err := ManualCompleteTopUp(order.TradeNo, "127.0.0.1")
+	err := ManualCompleteTopUp(order.TradeNo, "127.0.0.1")
 	require.ErrorIs(t, err, ErrManualTopUpDisabled)
-	assert.False(t, outcome.Completed)
 	assert.Equal(t, 0, getUserQuotaForPaymentGuardTest(t, user.Id), "manual completion must never credit balance")
 
 	reloaded := GetTopUpByTradeNo(order.TradeNo)
