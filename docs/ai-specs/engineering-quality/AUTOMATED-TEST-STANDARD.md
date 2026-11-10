@@ -3,9 +3,9 @@
 **文件名：** `UTER-AUTOMATED-TEST-STANDARD.md`  
 **项目名称：** Uter  
 **文档类型：** 全仓库自动化测试、缺陷修复、回归验证规范  
-**适用对象：** AI Coding Agent、开发人员、测试工程师  
-**执行模式：** 实际测试 + 发现问题直接修复 + 回归测试  
-**默认提交权限：** 遵循根 `AGENTS.md` 的用户授权；Uter 当前工程修复任务仅允许在唯一非 `main` 工作分支 Commit/Push/创建或更新 PR，不得创建第二分支、合并或部署
+**适用对象：** WorkBuddy、Claude Code、Codex 及其他受 AES 约束的 AI Agent  
+**执行模式：** 实际自动测试 + 授权范围内自动修复 + 独立回归验证  
+**默认提交权限：** 仅在本地现有 `main` 工作树执行；按 AES 机器策略与独立复验结果决定是否创建本地 Commit；禁止创建/切换分支、Push、PR、Merge、Rebase 和 Deploy
 **规范版本：** 1.0.0  
 **规范状态：** Active  
 **最后更新：** 2026-11-05  
