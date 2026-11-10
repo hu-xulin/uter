@@ -4,7 +4,7 @@ module github.com/QuantumNous/new-api/tokenkit
 go 1.27.3
 
 require (
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.1
 	github.com/tiktoken-go/tokenizer v0.10.0
 )
 
