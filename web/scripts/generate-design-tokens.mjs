@@ -25,7 +25,7 @@ const SOURCE = resolve(WEB_ROOT, 'src/design-system/source/brand.tokens.json')
 const OUTPUT = resolve(WEB_ROOT, 'src/design-system/tokens/generated/brand.css')
 const CHECK_ONLY = process.argv.includes('--check')
 const source = JSON.parse(readFileSync(SOURCE, 'utf8'))
-const metadata = source.$extensions?.['com.uter.uaes']
+const metadata = source.$extensions?.['com.uter.aes']
 if (
   metadata?.id !== 'UTER-BRAND-TOKEN-SOURCE' ||
   !/^\d+\.\d+\.\d+$/.test(metadata.version ?? '')
