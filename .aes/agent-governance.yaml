@@ -206,3 +206,14 @@ authorization_dimensions:
 
 audit_fields:
   required: [task_id, agent_id, tool_id, authorization_id, action, resource, environment, timestamp, result, evidence_ref]
+
+# ---- Phase 2 runtime verification (2026-11-10, additive record from local main integration) ----
+phase2_runtime_verification:
+  performed_at: "2026-11-10T11:55:00Z"
+  method: "tools/aes/agent-skills-runtime-verify.mjs — real disk reads: frontmatter parse (incl. folded scalars), canonical delegation resolution, referenced-file expansion and existence"
+  evidence: ".aes/reports/UTER-AGENT-SKILLS-RUNTIME-VERIFICATION.json"
+  canonical_skills: 4
+  loaded_skills: 4
+  verdict: "PASS"
+  negative_tests: "tools/aes/agent-skills-runtime-verify.negative.test.mjs — 4/4 (broken frontmatter / missing delegation / missing referenced file / set divergence all fail closed)"
+  note: "Definition-level runtime loading is machine verified. Autonomous behaviour of external agent runtimes remains external_unverified by design; agents[].runtime_status entries are intentionally unchanged by this record."

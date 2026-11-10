@@ -1,0 +1,29 @@
+{
+  "manifest_version": "1.0.0",
+  "manifest_id": "UTER-AUTONOMOUS-A2-ROLLBACK-MANIFEST",
+  "project": "Uter",
+  "entry_count": 2,
+  "rule": "Uter 侧 A2 条件自动事项的 BACKUP / ROLLBACK 证据；AC-14 与 checkA2Conditions 会按 UTER_ROOT 复验文件存在与 sha256。",
+  "entries": [
+    {
+      "id": "UTER-A2-BKP-001",
+      "active_path": ".aes/aes-pin.json",
+      "backup_path": ".aes/autonomous/backup/aes-pin.json.snapshot",
+      "sha256": "54ee8b1172d8411fa1ad4e11febe3d83c00a12f9de1a975b173daaf855837a39",
+      "bytes": 4418,
+      "restore_command": "cp .aes/autonomous/backup/aes-pin.json.snapshot .aes/aes-pin.json",
+      "verified": true,
+      "created_at": "2026-11-09T03:30:28.217Z"
+    },
+    {
+      "id": "UTER-A2-BKP-002",
+      "active_path": ".aes/autonomous/config/downstream-policy.json",
+      "backup_path": ".aes/autonomous/backup/downstream-policy.json.snapshot",
+      "sha256": "b548fecb1c0d7b5ea7b96801c3bff823cad45a42379a791ac0f1b24a12cf3402",
+      "bytes": 2910,
+      "restore_command": "cp .aes/autonomous/backup/downstream-policy.json.snapshot .aes/autonomous/config/downstream-policy.json",
+      "verified": true,
+      "created_at": "2026-11-09T03:30:28.219Z"
+    }
+  ]
+}
