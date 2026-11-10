@@ -47,6 +47,6 @@ PASS requires a real successful execution and current evidence. FAIL, BLOCKED, N
 The former `.uaes/` tree is a migration source only. No active gate, policy or runtime entrypoint may read it after migration. Its unique business documents have been moved to `.aes/business/`; historical machine records are retained as immutable archive evidence before the old directory is removed.
 
 
-## P09 / P10 responsibility boundary
+## P09 / P10 division — responsibility boundary
 
 P09 Quality Engineering **proves** whether engineering quality meets the requirements. P10 Security & Reliability **defines** the security and reliability requirements. Security testing is required by P10 and executed and recorded by the P09 quality system; neither domain substitutes for the other.
