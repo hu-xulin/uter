@@ -107,11 +107,10 @@ if grep -Fq '仓库尚无 `docs/adr/`' "$SPECS/CONFLICT-REPORT.md"; then
   fail "CONFLICT-REPORT.md 的 ADR 状态已过期"
 fi
 
-# 7. Single non-main work branch policy must be reflected in governing docs.
-grep -Fq '最多一个非' "$AGENTS" || fail "AGENTS.md 未声明每项目最多一个非 main 分支"
-grep -Fq '不得创建第二个分支' "$AGENTS" || fail "AGENTS.md 未禁止创建第二个工作分支"
-grep -Fq '禁止创建第二分支' "$AUTO_FIX" || fail "AUTO-FIX-STANDARD.md 未执行唯一工作分支策略"
-grep -Fq '禁止创建第二分支' "$EQ_README" || fail "工程质量入口未执行唯一工作分支策略"
+# 7. Main-only governance execution policy must be reflected in governing docs.
+grep -Fq 'do not create branches or PRs' "$AGENTS" || fail "AGENTS.md 未声明本治理迁移不得创建分支或 PR"
+grep -Fq 'main-only' "$AUTO_FIX" || fail "AUTO-FIX-STANDARD.md 未声明 main-only 执行模式"
+grep -Fq '不创建分支或 PR' "$EQ_README" || fail "工程质量入口未声明不创建分支或 PR"
 
 # 7b. UTER-AES-GOV-001 治理架构一致性（替代上一轮任务级分支执行断言）。
 #     规范以落盘文件为准：三层架构、两仓库分别治理、UTER P13 注册在 Uter、
