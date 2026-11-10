@@ -8,7 +8,7 @@
 | Registered in | Uter project governance registry: `.aes/uter-governance-registry.yaml` |
 | **Not registered in** | AES universal standards registry (`.aes/STANDARD-REGISTRY.yaml` in the AES repository) |
 | AES baseline at initial inventory (historical) | `1.12.2 / ACTIVE`; source commit `0c00bc9aaee9e40494b342590d21ae4ecd13f1e8`; registry blob `2a9695d29831144c49c1ef5f02360e6d2858449a`; governed fingerprint `13210ef04852a792a3e46b886a9a5960d05a35fa64bfc191e3af7b1bb6f175b3` |
-| Current AES machine pin | `1.12.2 / ACTIVE`; source commit `6269c6b91bf7494dfc180ecceb1f492fc1445b7d` (provenance only); registry blob `2ee9a7c70c1bbf67645a301de9662a8de9937bdb`; governed fingerprint `9178e4258d4ce797be9af58fad6cf4d7d6739cadd83b2e01fce4de5b5593f6c0`; sealed specification digest `cbe70cea90001a72e27f56f8bf21d1d4a970eeed7ce5a4f3b19ec5e08767c0c2` |
+| Current AES machine pin | Read dynamically from `.aes/aes-pin.json`; the canonical AES verifier recomputes the current governed fingerprint and seal on every CI run; `integration_status` remains `MIGRATION_PENDING` until product conformance is independently proven |
 | Uter revision at inventory | `ef778bf08f335aaf16f4c8805be02b1111336fbe` |
 | Status | `MACHINE_VERIFICATION_PENDING` — project-domain rules are registered; conformance is computed only from current executable evidence |
 | Language | 中文（术语保留英文） |
@@ -62,8 +62,8 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 | P13.10 业务可观测性 | Business observability | `web/src/features/usage-logs/`, `performance-metrics/`, `system-info/`, `rankings/`, `logger/`, `model/` 日志相关表 | `IMPLEMENTED` / 脱敏与审计完整性未独立验收 |
 
 **盘点结论**：10 个业务域在代码层均有可定位实现，但按 §4.2「业务规则不得仅从代码推断」，
-本执行**不把这些实现当作已批准的业务需求**；可追溯的机器规范来源、业务所有者与验收准则尚未逐域确认，
-已登记为 `P13-REQ-001`。
+本执行**不把这些实现当作已批准的业务需求**；可追溯的机器规范来源与验收准则尚未逐域闭合，
+已登记为 `P13-REQ-001`。该事项由自动化规则提取器从有效产品需求、API 契约、配置、数据库模型、状态机、迁移脚本和测试中建立来源链；不得创建人工确认任务。若来源冲突或证据无法机器验证，自动保持 `BLOCKED` / `NOT_VERIFIED`。
 
 ---
 
@@ -71,7 +71,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 | # | 要求 | 当前处置 |
 |---|---|---|
-| 1 | 明确的机器责任域与源文件归属 | 未确认 → `P13-REQ-001` |
+| 1 | 明确的机器责任域与源文件归属 | 由模块边界、注册表、代码路径和执行器角色自动推导；冲突时 `BLOCKED` → `P13-REQ-001` |
 | 2 | 可追溯的机器规范来源 | 未确认 → `P13-REQ-001` |
 | 3 | 领域模型或等价规格 | 部分存在于代码与 `docs/ai-specs/`，需生成来源映射并验证 |
 | 4 | 业务不变量 | 部分有测试覆盖，未条款化 |
