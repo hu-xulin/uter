@@ -45,8 +45,8 @@ conflicts_registered:
 - id: C-05
   location: AES standards/09-quality-engineering/AES-09-002, -014, -015
   issue: upstream generic standards embed Uter-specific owner and test matrix
-  status: OPEN_MACHINE_REMEDIATION
-  resolution: Remove Uter-specific project ownership, repository paths, test matrix and local policy details from AES universal standards; retain generic requirements and map Uter implementation details in Uter overlays.
+  status: RESOLVED
+  resolution: AES P09 standards now use AES Governance ownership and technology-neutral requirements; Uter-specific module, payment, user-journey and coverage details remain only in Uter project overlays. 2026-11-10
 review_trigger: AES formally published in an immutable commit AND semantic parity report completed AND full requirement-to-evidence mapping closed AND runtime skill discovery proven AND CI enforcement verified AND independent machine verification PASS recorded.
 files:
 - path: docs/ai-specs/AI-EXECUTION-STANDARD.md
@@ -219,8 +219,8 @@ files:
 remediated_at: '2026-11-08'
 remediation_note: 按用户 2026-11-08 最高优先级授权执行：登记项由 REGISTERED_ONLY 推进为 REMEDIATED。仅修改文档内容（上位溯源、状态词汇、配置路径、分支用语），未删除任何文件；四份工程质量标准保留为 Uter 执行层规范，不再构成与 AES 平行的企业级标准源。
 parallel_enterprise_standard_count: 0
-resolved_conflicts: 4
-open_conflicts: 1
+resolved_conflicts: 5
+open_conflicts: 0
 
 # ---------------------------------------------------------------------------
 # 2026-11-08 第二轮：AES 基线由 1.12.0/46c6488 升为 1.12.1/74e5d2e 后的联动整改
