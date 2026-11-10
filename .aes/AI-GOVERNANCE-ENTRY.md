@@ -32,10 +32,9 @@ Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
 |---|---|
 | Repository | `hu-xulin/aes` (https://github.com/hu-xulin/aes) |
 | Branch | `main` |
-| Pinned source commit | `8e1c72d9015f600ea541ef84c8530753d65fc4e7` (provenance only) |
-| Registry | `.aes/STANDARD-REGISTRY.yaml` |
-| Registry blob SHA | `308d9610c679f1c75a049953feb1341d7b55c365` |
-| Registry version / status | `1.12.2` / `ACTIVE` |
+| Machine pin | `.aes/aes-pin.json` (current fingerprint, registry version and source provenance; never hard-code a commit or digest here) |
+| Registry | AES `.aes/STANDARD-REGISTRY.yaml` (read from the pinned AES checkout) |
+| Registry version / status | Derived from the live machine pin and AES registry at execution time |
 | Machine authorization | `AES-AUTONOMOUS-GOVERNANCE-POLICY` + recomputable machine evidence; no human/third-party sign-off dependency |
 | Integration status | `MIGRATION_PENDING` (AES domain gates remain `NOT_RUN`) |
 
@@ -80,40 +79,40 @@ loaded or followed it (§6.4). Runtime evidence must come from an actual task.
 
 ## 4. Verification entry points
 
-### 4.1 Keeping in step with AES — one direction
+### 4.1 Keeping in step with AES — machine-pinned inheritance
 
-AES is the only place universal rules are maintained. The Uter pin is updated only from a machine-recomputed AES governed fingerprint and intact seal; a registry version or commit SHA alone is insufficient.
+AES is the sole owner of universal P00–P12 rules. Uter keeps a content-addressed pin and project-specific overlays. The pin is updated only after AES's own seal is verified; source commit SHA is provenance, while the governed fingerprint identifies the normative content.
 
-| Step | Command (run in the AES repository) |
-|---|---|
-| Is Uter behind? | `node quality/scripts/aes/aes.mjs propagate --check` — `NOOP` when in sync, `DRIFTED` with the affected standards and a remediation checklist when not |
-| Bring Uter up to date | `node quality/scripts/aes/aes.mjs propagate --execute` |
-| Which standards apply to these files? | `node quality/scripts/aes/aes.mjs standards --files <paths>` |
-| Full chain, from both sides | `bash quality/scripts/aes/e2e-propagation.sh` |
+Run from the Uter repository:
 
-`propagate` exits `0` when in sync, `1` when drift was reported, `2` when it refused to write. It refuses when the AES seal does not verify — that means a covered standard, schema, gate or requirement file was edited without re-sealing, and copying that downstream would launder a tampered tree into this repository.
+```bash
+AES_ROOT="${AES_ROOT:-../aes}"
+node "$AES_ROOT/quality/scripts/aes/governed-fingerprint.mjs" --json --require-intact
+node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
+node .aes/autonomous/engine/sync.mjs --check
+```
 
-Two things propagation will **never** do, by design:
+A successful pin check proves only that Uter references the exact sealed AES rule set. It does not prove product conformance. Any fingerprint mismatch, invalid seal, missing requirement mapping, missing verifier, or stale evidence blocks integration and is repaired before the pin can be accepted.
 
-1. **It never touches Uter's own declarations.** `integration_status` and Uter conformance verdicts are computed from Uter's own executed evidence; no source-side sync may promote them. A tool that could flip them would be a way to fabricate compliance evidence.
-2. **It never marks anything VERIFIED.** A propagated pin means Uter now *knows* the new rules. It does not mean Uter complies. The 14 domain gates, the 42 manual acceptances and the Requirement→Evidence mapping remain this repository's responsibility.
+Internal governance, standard lifecycle, code review, test acceptance, defect closure and release-readiness are decided by executable machine policy plus independent machine verification. No human approval, human signature, third-party review or third-party certification is an internal acceptance prerequisite. External legal/regulatory/contractual acts and real production/funds actions are not fabricated or auto-authorized: if machine-verifiable authority is absent, the action is automatically denied without blocking internal engineering verification.
 
-`source_commit` in the pin is provenance only. It records which AES tree the fingerprint was taken from. AES HEAD moves on every governance report and verifier fix, and no gate may fail on that difference alone — the governed fingerprint is what decides whether the rules changed.
-
-### 4.2 Gates
+`NOT_RUN`, `UNKNOWN`, `BLOCKED`, `NOT_VERIFIED` and missing evidence are never PASS. Historical records under `reports/compliance/legacy-uaes-archive/` are provenance only and MUST NOT be loaded as active policy or current acceptance evidence.
+### 4.2 Executable gates
 
 | Gate | Command |
 |---|---|
-| AES pin integrity | `bash scripts/quality/aes-pin-check.sh` |
-| AES wiring / overlays | `bash scripts/quality/aes-integration-check.sh` |
-| Repository separation (AES vs Uter) | `ruby scripts/quality/uter-governance-separation-check.rb` |
-| P09 / P10 boundary | `ruby scripts/quality/uter-p09-p10-boundary-check.rb` |
-| Spec integrity | `bash scripts/quality/ai-specs-check.sh` |
-| P01 policy contract | `ruby scripts/quality/test-ai-governance-policy.rb` |
-| WorkBuddy runtime | `ruby scripts/quality/aes-agent-runtime-check.rb preflight` / `selftest` / `workspace` / `verify` |
-| Independent assessment | `ruby scripts/quality/uter-independent-assessment.rb` |
-| Unified quality gate | `./scripts/verify-all.sh` |
+| AES pin, seal, registry and requirement mapping | `node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"` |
+| AES pin negative/positive tests | `node --test scripts/quality/aes-integration-check.test.mjs` |
+| AES downstream event sync | `node .aes/autonomous/engine/sync.mjs --check` |
+| Uter internal machine acceptance (11 checks) | `AES_ROOT="$AES_ROOT" ruby scripts/quality/ai-native-internal-gate.rb` |
+| P09/P10 responsibility boundary | `ruby scripts/quality/uter-p09-p10-boundary-check.rb` |
+| Project AI-spec integrity | `bash scripts/quality/ai-specs-check.sh` |
+| P01 permission policy fixtures | `ruby scripts/quality/test-ai-governance-policy.rb` |
+| Independent AES machine review | `UTER_ROOT="$PWD" node "$AES_ROOT/governance/ai-native/engine/cli.mjs" review` |
+| AES Agent execution self-check | `node "$AES_ROOT/governance/ai-native/engine/cli.mjs" self-check` |
+| Full Uter engineering verification | `./scripts/verify-all.sh` |
 
+A gate is complete only when its command actually executes and produces current evidence. A missing tool, missing report, skipped suite or unverified requirement is a failure/blocked state, never an implicit pass. The independent machine review is an internal technical control, not a third-party certification.
 ## 5. Status
 
 `MIGRATION_PENDING` / conformance `NOT_ASSESSED`. This entry point does not claim
