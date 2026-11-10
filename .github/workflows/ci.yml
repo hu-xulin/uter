@@ -45,14 +45,18 @@ jobs:
         env:
           AES_ROOT: ${{ github.workspace }}/aes-pinned
         run: node .aes/autonomous/engine/sync.mjs
-      - name: Verify AES registry, seal, governed fingerprint and Uter mapping
-        env:
-          AES_ROOT: ${{ github.workspace }}/aes-pinned
-        run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
-      - name: Execute Uter machine governance acceptance
+      - name: Execute Uter machine governance acceptance and refresh ephemeral pin
+        # The gate recomputes the canonical AES fingerprint and refreshes the
+        # ephemeral CI pin only when the upstream seal is intact. It never
+        # promotes integration_status; this ordering is required so the
+        # following independent pin verifier sees the current machine pin.
         env:
           AES_ROOT: ${{ github.workspace }}/aes-pinned
         run: ruby scripts/quality/ai-native-internal-gate.rb
+      - name: Independently verify AES registry, seal, governed fingerprint and Uter mapping
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
       - name: Test AES pin and seal fail-closed behavior
         run: node --test scripts/quality/aes-integration-check.test.mjs
       - name: Detect and process AES downstream version events
