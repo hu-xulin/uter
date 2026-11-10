@@ -14,7 +14,7 @@ require "time"
 
 UTER_ROOT = File.expand_path("../..", __dir__)
 AES_ROOT = ENV.fetch("AES_ROOT") { ENV.fetch("AES_REPO") { File.expand_path("../../aes", UTER_ROOT) } }
-REPORT = File.join(UTER_ROOT, "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/ai-native-internal-gate.json")
+REPORT = File.join(UTER_ROOT, ".aes/reports/ai-native-internal-gate.json")
 PIN = File.join(UTER_ROOT, ".aes/aes-pin.json")
 REGISTRY = File.join(UTER_ROOT, ".aes/uter-governance-registry.yaml")
 INTEGRATION = File.join(UTER_ROOT, ".aes/INTEGRATION.md")
