@@ -110,14 +110,12 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-primary-border: var(--primary-border, var(--border));
 
   /* ── 品牌渐变（首屏标题 / CTA）──────────────────────────────────────
-   * 三个停靠站 = 蓝 → 紫 → 洋红，是**对外传播资产**，不是界面状态色：
-   * 取值必须与上游 new-api 渲染一致，因此刻意不分成深浅两套、也不接
-   * `chart-*`（那会让渐变跟着主题预设变成绿的、橙的）。
-   * 只经由 `@utility ds-text-gradient-brand` 消费，禁止在组件里手写
-   * `from-… via-… to-…`。详见规范 §11.5。 */
-  --ds-color-brand-gradient-from: #60a5fa; /* blue-400 */
-  --ds-color-brand-gradient-via: #a78bfa; /* violet-400 */
-  --ds-color-brand-gradient-to: #a855f7; /* purple-500 */
+   * 蓝 → 紫 → 紫罗兰；浅色主题三个停靠站均满足 WCAG AA 文本对比度。
+   * 渐变只经由 `@utility ds-text-gradient-brand` 消费，禁止组件手写渐变。
+   * 深色主题在 :root.dark 中覆盖为浅色停靠站，确保两种主题均可读。 */
+  --ds-color-brand-gradient-from: #494cc7;
+  --ds-color-brand-gradient-via: #5558d8;
+  --ds-color-brand-gradient-to: #6b4fc8;
 
   /* ── 描边 ──────────────────────────────────────────────────────────── */
   --ds-color-border: var(--border);
@@ -126,4 +124,12 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-border-destructive: var(--destructive);
   /* 焦点环色不在这里 —— 语义层的 `--ds-focus-ring-color` 是唯一来源，
      两者曾同时存在（一个零引用），见 `tokens/semantic.css`。 */
+}
+
+
+/* Dark-theme brand gradient: preserve the blue-violet identity with AA contrast. */
+:root.dark {
+  --ds-color-brand-gradient-from: #8b8df5;
+  --ds-color-brand-gradient-via: #a1a3f7;
+  --ds-color-brand-gradient-to: #b7b8fa;
 }
