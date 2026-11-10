@@ -511,9 +511,11 @@ Operating rules for WorkBuddy, Claude Code, Codex and every other Agent:
 
 ## AES_AUTONOMOUS_GOVERNANCE — 强制加载与执行块
 
+- P09 Quality Engineering proves whether engineering quality meets requirements; P10 Security & Reliability defines the security and reliability requirements. Security tests are executed and recorded by P09 against P10 controls.
+
 - 唯一规范源：独立仓库 `https://github.com/hu-xulin/aes`；AES 通用规范注册表为 `aes/.aes/STANDARD-REGISTRY.yaml`，正式规范注册表为 `aes/.aes/spec-registry/SPECIFICATION-REGISTRY.yaml`。
 - Uter 项目集成入口：`.aes/INTEGRATION.md`、`.aes/aes-pin.json`、`.aes/uter-governance-registry.yaml`、`.aes/AI-GOVERNANCE-ENTRY.md`。
-- 强制加载：任何 Agent 在产品、架构、代码、规范、整改、测试或发布准备任务开始前，必须加载 AES ACTIVE 规范、当前机器 Pin、Uter 项目注册表和本文件；运行 `node aes/quality/scripts/aes/governed-fingerprint.mjs --json --require-intact` 及 `node .aes/autonomous/engine/sync.mjs --check`。
+- 强制加载：任何 Agent 在产品、架构、代码、规范、整改、测试或发布准备任务开始前，必须加载 AES ACTIVE 规范、当前机器 Pin、Uter 项目注册表和本文件；运行 `node ${AES_ROOT:-../aes}/quality/scripts/aes/governed-fingerprint.mjs --json --require-intact` 及 `node .aes/autonomous/engine/sync.mjs --check`。
 - 执行入口：AES `governance/ai-native/engine/cli.mjs`；Uter 集成检查 `scripts/quality/aes-integration-check.mjs`；UEQE 质量门禁 `scripts/quality/uter-quality.sh`。
 - 内部规范审核、代码审核、测试验收、整改关闭、发布准入和项目符合性判定全部由可执行机器规则自动完成；必须有真实执行、独立复验、内容哈希和追加式证据。不得要求用户逐项签批或第三方为内部工程验收签署。
 - AI 可在仓库既有权限范围内自动执行审计、修改、测试和修复；不得自行扩大权限、修改自身授权策略、绕过职责分离或将未执行项目标记为 PASS。
