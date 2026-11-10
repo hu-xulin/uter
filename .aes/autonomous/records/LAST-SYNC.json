@@ -1,0 +1,42 @@
+{
+  "check_id": "AES-DS-9070e51b7278",
+  "engine": "UTER-AES-AUTONOMOUS-DOWNSTREAM-SYNC",
+  "executed_at": "2026-11-10T12:52:03.836Z",
+  "simulated": false,
+  "aes_registry_version": "1.12.2",
+  "uter_pin_registry_version": "1.12.2",
+  "version_drift": false,
+  "version_change_detected": false,
+  "upstream_events_seen": 0,
+  "upstream_events_processed": 0,
+  "processed_event_ids": [],
+  "compliance_audit": {
+    "status": "NOT_CONFORMANT",
+    "integration_status": "MIGRATION_PENDING",
+    "findings": [
+      {
+        "finding_id": "AES-UTER-003",
+        "severity": "BLOCKING",
+        "description": "Uter AES conformance has not been machine-verified",
+        "evidence": "/home/runner/work/uter/uter/.aes/aes-pin.json",
+        "auto_promotion_allowed": false
+      }
+    ],
+    "auto_promotion_applied": false,
+    "items_marked_verified": 0,
+    "gates_marked_pass": 0,
+    "prohibit_implicit_approval": true
+  },
+  "downstream_check": {
+    "status": "PROCESSED",
+    "processed_at": "2026-11-10T12:52:03.836Z",
+    "meaning": "AES version event detection and processing only; this does not assert Uter conformance or acceptance.",
+    "integration_status_preserved": "MIGRATION_PENDING",
+    "pin_modified": false,
+    "items_marked_verified": 0,
+    "gates_marked_pass": 0
+  },
+  "ai_decision_subject_type": "AI_AUTOMATED",
+  "is_human_signature": false,
+  "is_third_party_signature": false
+}

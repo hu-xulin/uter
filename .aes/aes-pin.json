@@ -16,7 +16,7 @@
     "requirement_count": 2150,
     "requirement_ids_digest": "d6782a6925fdb5afbbb1de6184e4b956e204c7e626ff72b3053243374988ab5b"
   },
-  "source_commit": "94dcc3409e45cba1688de552b3bba1ede60570bc",
+  "source_commit": "7a44bf5ce153f4e169e84334d0bba28b49ba2712",
   "source_commit_role": "provenance-only; governed fingerprint defines rule identity",
   "registry_path": ".aes/STANDARD-REGISTRY.yaml",
   "registry_blob_sha": "2ee9a7c70c1bbf67645a301de9662a8de9937bdb",
@@ -31,6 +31,6 @@
   "requirement_count": 2150,
   "integration_status": "MIGRATION_PENDING",
   "machine_authorization_state": "ACTIVE",
-  "pinned_at": "2026-11-10T13:36:00+08:00",
+  "pinned_at": "2026-11-10T12:52:07Z",
   "note": "AES governed fingerprint and normative seal digest synchronized from the current AES main registry. This pin identifies the normative rule content only; Uter product conformance remains MIGRATION_PENDING until every applicable requirement, runtime control, business invariant and CI gate has current independent machine PASS evidence. Fingerprint is recomputed from the canonical governed-components descriptor."
 }
