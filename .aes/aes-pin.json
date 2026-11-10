@@ -2,7 +2,7 @@
   "schema_version": "3.1.0",
   "repository": "https://github.com/hu-xulin/aes",
   "default_branch": "main",
-  "governed_fingerprint": "8e1a58148d1139a2c7613a1f837098e660b0b9dbe82a72f3928dd54a9e6a9404",
+  "governed_fingerprint": "13210ef04852a792a3e46b886a9a5960d05a35fa64bfc191e3af7b1bb6f175b3",
   "governed_fingerprint_algorithm": "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1",
   "governed_components": {
     "registry_blob_sha": "2a9695d29831144c49c1ef5f02360e6d2858449a",
@@ -11,12 +11,12 @@
     "specification_id": "AES-SPEC-CORE",
     "specification_version": "2.0.0",
     "specification_status": "ACTIVE",
-    "specification_integrity_digest": "2fe091a0a4bc5c017f6f5a7f1d91b810fb89966b10d3d91793d16dc0a901155a",
-    "specification_integrity_computed": "2fe091a0a4bc5c017f6f5a7f1d91b810fb89966b10d3d91793d16dc0a901155a",
+    "specification_integrity_digest": "c1ae64ec6a727777c646eebff2a5102a3968e0a19a0ad47b1e5eaa288b51fdb0",
+    "specification_integrity_computed": "c1ae64ec6a727777c646eebff2a5102a3968e0a19a0ad47b1e5eaa288b51fdb0",
     "requirement_count": 2150,
-    "requirement_ids_digest": "d6782a6925fdb5afbbb1de6184e4b956e204c7e626ff72b3053243374988ab5b"
+    "requirement_ids_digest": "e78d9c4dbe96f556fd37ffdc116f123e7b18a6c9a704add3046650f255f8dbf7"
   },
-  "source_commit": "8a0b0432ac7f298e6cf372fa7646f1c38c8eca08",
+  "source_commit": "0c00bc9aaee9e40494b342590d21ae4ecd13f1e8",
   "source_commit_role": "provenance-only; governed fingerprint defines rule identity",
   "registry_path": ".aes/STANDARD-REGISTRY.yaml",
   "registry_blob_sha": "2a9695d29831144c49c1ef5f02360e6d2858449a",
@@ -26,11 +26,11 @@
   "specification_id": "AES-SPEC-CORE",
   "specification_version": "2.0.0",
   "specification_status": "ACTIVE",
-  "specification_integrity_digest": "2fe091a0a4bc5c017f6f5a7f1d91b810fb89966b10d3d91793d16dc0a901155a",
+  "specification_integrity_digest": "c1ae64ec6a727777c646eebff2a5102a3968e0a19a0ad47b1e5eaa288b51fdb0",
   "requirement_registry_path": ".aes/registry/requirements.yaml",
   "requirement_count": 2150,
   "integration_status": "MIGRATION_PENDING",
   "machine_authorization_state": "ACTIVE",
-  "pinned_at": "2026-11-10T10:58:00+08:00",
-  "note": "The governed fingerprint and every component were recomputed from the live AES main content. This pin identifies the normative rule content, not Uter conformance. Uter remains MIGRATION_PENDING until all applicable requirements, runtime controls, business invariants and CI gates have current PASS evidence."
+  "pinned_at": "2026-11-10T11:20:00+08:00",
+  "note": "Governed components are recomputed from the current AES main corpus. The fingerprint identifies normative rule content, not Uter product conformance. Uter remains MIGRATION_PENDING until every applicable requirement, runtime control, business invariant and CI gate has current machine PASS evidence."
 }
