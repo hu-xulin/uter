@@ -16,12 +16,12 @@ AIES="$ROOT/.ai/AIES.md"
 AUTO_FIX="$EQ/AUTO-FIX-STANDARD.md"
 EQ_README="$EQ/README.md"
 ADR_DIR="$ROOT/docs/adr"
-POLICY="$ROOT/.uaes/agent-governance.yaml"
-GOV_SPEC="$SPECS/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
-GOV_REGISTRY="$ROOT/.uaes/uter-governance-registry.yaml"
-GOV_ENTRY="$ROOT/.uaes/AI-GOVERNANCE-ENTRY.md"
-GOV_INTEGRATION="$ROOT/.uaes/INTEGRATION.md"
-GOV_P13="$ROOT/.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
+POLICY="$ROOT/ .aes/agent-governance.yaml"
+GOV_SPEC="$SPECS/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
+GOV_REGISTRY="$ROOT/ .aes/uter-governance-registry.yaml"
+GOV_ENTRY="$ROOT/ .aes/AI-GOVERNANCE-ENTRY.md"
+GOV_INTEGRATION="$ROOT/ .aes/INTEGRATION.md"
+GOV_P13="$ROOT/ .aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
 
 errors=0
 fail() {
@@ -113,22 +113,22 @@ grep -Fq '不得创建第二个分支' "$AGENTS" || fail "AGENTS.md 未禁止创
 grep -Fq '禁止创建第二分支' "$AUTO_FIX" || fail "AUTO-FIX-STANDARD.md 未执行唯一工作分支策略"
 grep -Fq '禁止创建第二分支' "$EQ_README" || fail "工程质量入口未执行唯一工作分支策略"
 
-# 7b. UTER-UAES-GOV-001 治理架构一致性（替代上一轮任务级分支执行断言）。
+# 7b. UTER-AES-GOV-001 治理架构一致性（替代上一轮任务级分支执行断言）。
 #     规范以落盘文件为准：三层架构、两仓库分别治理、UTER P13 注册在 Uter、
 #     P09 证明 / P10 定义、交付动作仍 fail-closed。
-[ -s "$GOV_SPEC" ] || fail "UTER-UAES-GOV-001 规范文件缺失"
-[ -s "$GOV_REGISTRY" ] || fail "Uter 项目治理注册表缺失（.uaes/uter-governance-registry.yaml）"
-[ -s "$GOV_P13" ] || fail "UTER P13 规范缺失（.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md）"
-[ -s "$GOV_ENTRY" ] || fail "AI 治理入口缺失（.uaes/AI-GOVERNANCE-ENTRY.md）"
+[ -s "$GOV_SPEC" ] || fail "UTER-AES-GOV-001 规范文件缺失"
+[ -s "$GOV_REGISTRY" ] || fail "Uter 项目治理注册表缺失（ .aes/uter-governance-registry.yaml）"
+[ -s "$GOV_P13" ] || fail "UTER P13 规范缺失（ .aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md）"
+[ -s "$GOV_ENTRY" ] || fail "AI 治理入口缺失（ .aes/AI-GOVERNANCE-ENTRY.md）"
 
-grep -Fq 'UTER-UAES-GOV-001' "$AGENTS" || fail "AGENTS.md 未指向 UTER-UAES-GOV-001 治理规范"
+grep -Fq 'UTER-AES-GOV-001' "$AGENTS" || fail "AGENTS.md 未指向 UTER-AES-GOV-001 治理规范"
 grep -Fq 'uter-governance-registry.yaml' "$AGENTS" || fail "AGENTS.md 未指向 Uter 项目治理注册表"
 grep -Fq 'P09' "$AGENTS" || fail "AGENTS.md 未声明 P09 质量工程职责"
 grep -Fq 'P10' "$AGENTS" || fail "AGENTS.md 未声明 P10 安全与可靠性职责"
 grep -Fq 'UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md' "$GOV_ENTRY" || fail "治理入口未在 Agent 加载顺序中加载 UTER P13"
 grep -Fq 'UTER-P13' "$GOV_INTEGRATION" || fail "INTEGRATION.md 未登记 UTER P13 为项目专属扩展"
 grep -Fq 'registered_in: "UTER-PROJECT-GOVERNANCE-REGISTRY"' "$GOV_REGISTRY" || fail "UTER P13 未注册在 Uter 项目治理注册表"
-grep -Fq 'uaes/standards/' "$GOV_REGISTRY" || fail "治理注册表未禁止把 UTER P13 写入 UAES standards/"
+grep -Fq 'aes/standards/' "$GOV_REGISTRY" || fail "治理注册表未禁止把 UTER P13 写入 AES standards/"
 grep -Fq 'role: "PROVE"' "$GOV_REGISTRY" || fail "治理注册表未声明 P09 负责证明工程质量"
 grep -Fq 'role: "DEFINE"' "$GOV_REGISTRY" || fail "治理注册表未声明 P10 负责定义安全可靠性要求"
 grep -Fq 'full_validation_required_before' "$POLICY" || fail "交付动作未保持完整验证前置（fail-closed）"
@@ -147,4 +147,4 @@ if [ "$errors" -gt 0 ]; then
   printf 'ai-specs-check: %s 项不通过\n' "$errors"
   exit 1
 fi
-printf 'ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-UAES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n'
+printf 'ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-AES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n'
