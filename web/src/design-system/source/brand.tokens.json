@@ -1,6 +1,6 @@
 {
   "$extensions": {
-    "com.uter.uaes": {
+    "com.uter.aes": {
       "id": "UTER-BRAND-TOKEN-SOURCE",
       "version": "1.0.0",
       "designSystem": "UTER Design System 3.0",
@@ -22,13 +22,26 @@
         "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
       },
-      "notes": "Light primary is user-confirmed on 2026-11-04. Remaining state values are migrated from the existing UTER Design System 3.0 implementation and remain subject to full contrast and visual revalidation.",
-      "registryPointer": "UAES standard library: .uaes/STANDARD-REGISTRY.yaml",
-      "governingStandard": "UAES-05-002",
-      "governingColorStandard": "UAES-05-003",
-      "governingSchema": "UAES standard library: .uaes/schemas/design-token.schema.json",
+      "notes": "Light primary is user-confirmed. Remaining values are carried forward from the UTER Design System 3.0 source and are subject to automated contrast, responsive visual-layout, keyboard-focus and WCAG 2.2 verification. No human approval or third-party sign-off is required; DRAFT remains until machine evidence passes.",
+      "registryPointer": ".aes/uter-governance-registry.yaml",
+      "governingStandard": "AES-05-002",
+      "governingColorStandard": "AES-05-003",
+      "governingSchema": "web/src/design-system/source/brand.tokens.schema.json",
       "changeApproval": "NOT_VERIFIED",
-      "approvalNote": "UAES-05-001-009: high-impact brand colour changes require human approval. No Exception ID, approver or approval date has been supplied."
+      "approvalNote": "UAES-05-001-009: high-impact brand colour changes require human approval. No Exception ID, approver or approval date has been supplied.",
+      "machineAuthorization": {
+        "policy": "AES-AUTONOMOUS-GOVERNANCE-POLICY",
+        "mode": "AUTONOMOUS_MACHINE_EVIDENCE",
+        "decision": "AUTO_BLOCKED",
+        "evidence": [
+          "web/scripts/verify-contrast.mjs",
+          "web/scripts/visual-regression.mjs",
+          "scripts/quality/ai-specs-check.sh"
+        ],
+        "human_signature_dependency": "NONE",
+        "third_party_signature_dependency": "NONE",
+        "note": "Automatically blocked pending current CI evidence; this is not a human approval queue."
+      }
     }
   },
   "themes": {
