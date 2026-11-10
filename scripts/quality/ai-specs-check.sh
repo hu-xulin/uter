@@ -2,7 +2,7 @@
 #
 # ai-specs-check.sh — AI 规范体系完整性检查（UEQE review.ai-specs 子项）
 #
-# 检查规范清单、版本元数据、Agent 入口、文档引用、ADR 注册和唯一工作分支策略。
+# 检查规范清单、版本元数据、Agent 入口、文档引用、ADR 注册和本地 main-only 执行策略。
 # 退出码：0=全部通过；1=存在缺失/不一致。
 #
 set -uo pipefail
@@ -12,7 +12,8 @@ SPECS="$ROOT/docs/ai-specs"
 EQ="$SPECS/engineering-quality"
 AGENTS="$ROOT/AGENTS.md"
 AI_README="$ROOT/.ai/README.md"
-AIES="$ROOT/.ai/AIES.md"
+EXEC_METHOD="$ROOT/.ai/UTER-EXECUTION-METHOD.md"
+TASK_SCHEMA="$ROOT/.ai/task-schema.json"
 AUTO_FIX="$EQ/AUTO-FIX-STANDARD.md"
 EQ_README="$EQ/README.md"
 ADR_DIR="$ROOT/docs/adr"
@@ -100,8 +101,33 @@ done < <(grep -oE 'docs/ai-specs/[A-Za-z0-9_./-]+' "$AGENTS" | sort -u || true)
 if grep -Fq '`design-system.md`' "$AI_README"; then
   fail ".ai/README.md 仍引用废弃 design-system.md 路径"
 fi
-if grep -Fq '`design-system.md`' "$AIES"; then
-  fail ".ai/AIES.md 仍引用废弃 design-system.md 路径"
+[ -s "$EXEC_METHOD" ] || fail "Uter 执行方法缺失：$EXEC_METHOD"
+if grep -Fq '`design-system.md`' "$EXEC_METHOD"; then
+  fail ".ai/UTER-EXECUTION-METHOD.md 仍引用废弃 design-system.md 路径"
+fi
+[ ! -e "$ROOT/.ai/AIES.md" ] || fail "旧 AIES 入口仍存在，必须只保留 AES 对齐后的 Uter 执行方法"
+[ -s "$TASK_SCHEMA" ] || fail "机器任务合同 Schema 缺失：$TASK_SCHEMA"
+if [ -s "$TASK_SCHEMA" ]; then
+  node - "$TASK_SCHEMA" <<'NODE' || fail "task-schema.json 未强制机器授权与 main-only Git 策略"
+const fs = require('node:fs')
+const s = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'))
+const auth = s.properties?.authorization
+const git = s.properties?.git_state?.properties
+const ok =
+  !s.properties?.approval_gates &&
+  !auth?.properties?.approval_ids &&
+  auth?.required?.includes('policy_id') &&
+  auth?.required?.includes('decision') &&
+  auth?.required?.includes('evidence_refs') &&
+  auth?.properties?.decision?.enum?.includes('AUTO_AUTHORIZED') &&
+  auth?.properties?.decision?.enum?.includes('AUTO_BLOCKED') &&
+  s.properties?.machine_authorization_checks &&
+  git?.branch?.enum?.length === 1 &&
+  git?.branch?.enum?.[0] === 'main' &&
+  git?.work_branch_count?.maximum === 0 &&
+  git?.push_performed?.const === false
+if (!ok) process.exit(1)
+NODE
 fi
 if grep -Fq '仓库尚无 `docs/adr/`' "$SPECS/CONFLICT-REPORT.md"; then
   fail "CONFLICT-REPORT.md 的 ADR 状态已过期"
