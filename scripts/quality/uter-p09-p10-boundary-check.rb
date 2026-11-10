@@ -158,7 +158,7 @@ add.call("B09", "AES project registry labels P09/P10/P13 correctly",
          "§1.3 / §8.2 / §16.3")
 
 docs = {
-  "AGENTS.md" => "P09 proves",
+  "AGENTS.md" => "P09 Quality Engineering proves",
   ".aes/INTEGRATION.md" => "P09 / P10 division",
   ".aes/AI-GOVERNANCE-ENTRY.md" => "P09 proves",
   ".aes/TRACEABILITY.md" => "P09 / P10 division",
