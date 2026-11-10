@@ -34,6 +34,27 @@ global_controls:
   unknown_is_pass: false
   not_run_is_pass: false
 
+delivery_controls:
+  full_validation_required_before:
+    - git.commit.local
+    - release_candidate
+    - release
+    - artifact_publication
+  required_gate: "L4_GLOBAL_CONFORMANCE_GATE"
+  gate_scope:
+    - AES_PIN_AND_SEAL
+    - AES_P00_P12_REQUIREMENTS
+    - UTER_P13_BUSINESS_INVARIANTS
+    - AGENT_RUNTIME_AND_PERMISSION_ENFORCEMENT
+    - P09_QUALITY_ENGINEERING
+    - P10_SECURITY_AND_RELIABILITY
+    - BACKEND_FRONTEND_CROSS_PLATFORM_TESTS
+    - INDEPENDENT_MACHINE_VERIFICATION
+    - CURRENT_EVIDENCE_AND_DRIFT_CHECK
+  incomplete_or_unknown_effect: "AUTO_BLOCK"
+  NOT_RUN_is_PASS: false
+  gate_verdict_source: "computed_from_current_machine_evidence_only"
+
 task_lifecycle:
   states: [CREATED, EXECUTING, VERIFYING, CLOSED, BLOCKED, FAILED, INTERRUPTED]
   terminal_states: [CLOSED, FAILED]
