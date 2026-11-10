@@ -479,6 +479,10 @@ This block binds every Agent to the single machine governance engine. It grants 
 
 This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
 
+# AES Autonomous Governance Bootstrap Block
+
+This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
+
 ## AES_AUTONOMOUS_GOVERNANCE / AI_NATIVE_GOVERNANCE — Canonical AES machine policy
 
 - marker: AUTONOMOUS_GOVERNANCE
@@ -488,6 +492,7 @@ This block binds every Agent to the single machine governance engine. It grants 
 - governed_rule_identity_verifier: quality/scripts/aes/governed-fingerprint.mjs
 - canonical_engine_entrypoint: governance/ai-native/engine/cli.mjs
 - governance_mode: AUTONOMOUS_MACHINE_ONLY
+- governance_dependency: ZERO_HUMAN_DEPENDENCY
 - decision_engine: governance/ai-native/engine/cli.mjs
 - policy_engine: governance/ai-native/engine/policy-engine.mjs
 - acceptance_engine: governance/ai-native/engine/acceptance-engine.mjs
