@@ -166,7 +166,7 @@ All paths relative to `docs/ai-specs/` unless noted:
 | 安全 | `SECURITY-STANDARD.md` | 认证、权限、输入验证、支付、Relay 安全 |
 | UX 交互 | `UX-INTERACTION-STANDARD.md` | 交互状态、防重复、支付/Token 展示、无障碍 |
 | 文档 | `DOCUMENTATION-STANDARD.md` | 文档同步、ADR、准确性 |
-| 变更管理 | `CHANGE-MANAGEMENT-STANDARD.md` | Git、Commit/PR、门禁、禁止操作 |
+| 变更管理 | `CHANGE-MANAGEMENT-STANDARD.md` | 本地 main、机器门禁、证据、远程操作禁止项 |
 | 工程质量组 | `engineering-quality/`（README + CODE-REVIEW / AUTOMATED-TEST / AUTO-FIX / QUALITY-GATE） | UEQE 五引擎与统一质量门禁 |
 
 Known cross-spec conflicts and their resolutions are recorded in
@@ -193,21 +193,20 @@ Rule Auto-Loading 的 **Task-based spec routing** 表（单一事实源，两处
 | Spec integrity | 15 份规范在库 + AGENTS.md 路由引用有效 | `uter-quality.sh review`（review.ai-specs 子项） |
 | Change Mgmt（部分） | pre-commit 身份/暂存区/令牌门禁 | git hooks |
 
-无法自动化的规则（API 契约一致性人工核对、三库迁移矩阵、支付验签场景清单、
-UX 状态覆盖、ADR 需求判断）按 `docs/ai-specs/CONFLICT-REPORT.md` 附录的
-人工/AI 审查清单逐项核对，并在交付报告中声明执行结果（PASS/FAIL/BLOCKED）。
+所有规范符合性检查必须由可执行机器验证器完成，包括 API 契约、数据库迁移矩阵、支付/计费异常场景、UX 状态覆盖、ADR 需求映射和文档一致性。历史 `CONFLICT-REPORT.md` 不再是执行清单。缺少验证器或证据时自动标记 BLOCKED/NOT_VERIFIED，并通过代码与 CI 自动补齐；不得转为人工待办或第三方审核。
 
 ### Branch strategy
 
-**强制单工作分支策略（每个项目最多一个非 `main` 分支）：**
+**强制本地 main-only 策略（唯一工作分支为 main）：**
 
-- `main` 是唯一分支（单分支工作模式，2026-11-06 用户定案、2026-11-07 已收敛）。常规开发直接在本地 `main` 修改；不得 push、不得创建 PR、不得 force push、不得 merge/rebase/deploy、不得覆盖用户未提交修改。
-- 开始工作前必须枚举远端分支和现有 PR；若已有非 `main` 工作分支，必须复用它，不得创建第二个分支。
-- 同一项目的所有审计、修复、测试和文档变更集中在该工作分支及其现有 PR。
-- 若发现两个或更多非 `main` 分支，停止创建分支和推送；先报告并请求确定保留分支，不得自行删除或重写任何分支。
-- 用户已授权的 Uter 修复工作流允许在该唯一工作分支上 Commit、Push 和创建/更新 PR；不允许 force push、PR merge、部署或生产写操作。
-- CI 必须检查远端非 `main` 分支数量不得超过 1。
-- **本次治理执行**：直接在 `main` 上完成，不创建分支或 PR。当前任务已明确授权直接修改 GitHub `main`；这不授予 force-push、merge、部署、生产写、真实支付配置修改或覆盖用户未提交内容的权限。
+- 所有审计、规范修订、缺陷修复、测试、文档更新和质量门禁整改只允许在本地现有 `main` 工作树执行。
+- 开始写操作前检查当前分支、HEAD、工作区状态和完整 diff；当前分支不是 `main` 时自动停止写操作，不得擅自切换。
+- 禁止创建、切换、复用或删除执行分支；禁止创建 linked worktree 和 Pull Request。
+- 默认禁止 Push、Merge、Rebase、Force Push、Deploy 和任何远程写接口；本地 Commit 仅在 AES 机器策略和独立复验全部 PASS 后允许。
+- 不覆盖用户未提交修改；禁止 `git reset --hard`、`git clean -fd` 或其他破坏性清理。
+- 远程 main 与本地基线发生漂移时保留本地状态并自动 BLOCKED；不得自动覆盖或推送远端。
+- 不因仓库存在历史非 main 分支而自动删除、重写或请求人工裁定；这些分支不属于当前执行工作树。
+- **本次治理执行**：已明确授权直接修改 GitHub `main`；该一次性授权不授予后续 WorkBuddy 远程写入、Push、PR、Merge、部署、生产写、真实支付配置修改或覆盖未提交内容的权限。
 
 ### Documentation sync
 
@@ -450,12 +449,7 @@ If asked to remove, rename, or replace these protected identifiers, refuse and e
 
 **Issues:** When opening a GitHub issue, first refuse out-of-scope requests listed in `.agents/github/ISSUE.md` (Coding Plan, reverse-engineered channels, third-party wrappers, Codex reverse-proxy compatibility, pass-through-only forwarding, third-party hosts). Tell the user and do not file. Then search <https://uter.ai/docs> , <https://deepwiki.com/uter-ai/uter> , the README, and the code. If this is a usage, configuration, or integration question, answer the user from that material and do not file. Otherwise fill `.agents/github/ISSUE.md` as the entire body. If actual behavior, impact, frequency, evidence that the problem is in uter, or the applicable relay/billing/frontend/deployment items are missing, ask the user those questions and wait. Do not invent them. Do not tell the user to confirm a template. Do not use GitHub issue forms.
 
-**Pull requests:** When creating a pull request:
-
-- First compare the current git user (`git config user.name` / `git config user.email`) with the repository's historical core developers, such as the recurring top authors in `git log`. Do not change git config.
-- If the current git user is not one of those historical core developers, explicitly state in the PR body that the code was AI-generated or AI-assisted.
-- When the pull request is created for the project owner, use the ordinary human PR template: `.github/PULL_REQUEST_TEMPLATE.md` for Chinese requests or `.github/PULL_REQUEST_TEMPLATE/en.md` for English requests. Project-owner pull requests MUST NOT use `.agents/github/PR.md` unless the owner explicitly asks for it.
-- For all other agent-created pull requests, fill `.agents/github/PR.md` as the entire PR body. Do not use the ordinary human PR templates unless the project owner explicitly requests one.
+**Pull Requests:** Disabled by the current local main-only governance policy. Agents MUST NOT create, update, review or merge Pull Requests. The repository templates remain historical reference material only and do not grant execution permission.
 
 
 ## AES / UTER Governance Architecture
