@@ -43,7 +43,7 @@
 | UTER-P13.9 Data consistency | migrations and persistence models | SQLite/MySQL/PostgreSQL/ClickHouse migration and recovery matrix | NOT_VERIFIED |
 | UTER-P13.10 Observability | usage logs, audit events and metrics | redaction, audit integrity and metrics contract tests | NOT_VERIFIED |
 
-## Requirement-level evidence contract
+## P09 / P10 division\n\nP09 proves whether engineering quality meets requirements. P10 defines the security and reliability requirements. Security testing is required by P10 and executed and recorded by the P09 quality system.\n\n## Requirement-level evidence contract
 
 Each AES requirement and each UTER-P13 requirement must have a unique ID and the following machine record:
 
