@@ -471,13 +471,7 @@ All internal governance, specification review, acceptance, remediation closure a
 
 The AES machine governance engine, independent verifier and CI gates are the only accepted internal decision path. Every Agent must load the canonical governance block and the AI-Native execution block below before work.
  
-# AES Autonomous Governance Bootstrap Block
-
-This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
-
-# AES Autonomous Governance Bootstrap Block
-
-This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
+- Before any local commit, release candidate or artifact publication, run `node scripts/quality/l4-global-conformance-gate.mjs` with `AES_ROOT` set to the canonical AES checkout. A missing P13 report or any non-PASS evidence blocks the action.
 
 # AES Autonomous Governance Bootstrap Block
 
@@ -528,7 +522,6 @@ This block binds every Agent to the single machine governance engine. It grants 
 - The executor cannot write or override its own success state.
 - NOT_RUN, UNKNOWN, SKIPPED, BLOCKED, FAILED and NOT_VERIFIED never count as PASS.
 - Internal release readiness is computed from current mandatory requirement evidence only.
-- Before any local commit, release candidate or artifact publication, run `node scripts/quality/l4-global-conformance-gate.mjs` with `AES_ROOT` set to the canonical AES checkout. A missing P13 report or any non-PASS evidence blocks the action.
 - Internal machine verification is not a human signature, legal authorization or third-party certification.
 
 ## Protected invariants
