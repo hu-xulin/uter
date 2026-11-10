@@ -25,7 +25,7 @@ AES registry ACTIVE means the normative baseline is published. It does not by it
 - Uter MUST NOT create a competing copy of AES universal standards.
 - UTER-P13 MUST remain in this repository and MUST NOT be registered as an AES universal domain.
 
-P09 Quality Engineering proves whether engineering quality meets requirements. P10 Security & Reliability defines the required security and reliability properties. Security tests are executed and recorded by the P09 quality system.
+P09 proves whether engineering quality meets requirements; P09 Quality Engineering is the execution system. P10 Security & Reliability defines the required security and reliability properties. Security tests are executed and recorded by the P09 quality system.
 
 ## 3. Mandatory agent load order
 
