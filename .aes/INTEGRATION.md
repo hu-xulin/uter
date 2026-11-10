@@ -1,52 +1,51 @@
 # AES Integration Contract — Uter
 
-**Normative authority:** [AES](https://github.com/hu-xulin/aes), main branch.  
+**Normative authority:** AES, `https://github.com/hu-xulin/aes`, `main`.  
 **Machine pin:** `.aes/aes-pin.json`.  
 **Project registry:** `.aes/uter-governance-registry.yaml`.  
 **Project extension:** `.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`.  
-**Status:** MIGRATION_PENDING until the live AES fingerprint, Uter requirement mapping, runtime enforcement and all applicable product gates are machine-verified.
+**Current conformance:** `MIGRATION_PENDING` until every applicable AES and UTER-P13 requirement has current executable PASS evidence.
 
 ## Repository separation
 
 - AES owns universal enterprise governance P00–P12.
 - Uter owns implementation, product requirements, project-specific business constraints and UTER-P13.
 - Uter MUST NOT copy or fork AES universal standards as a second normative source.
-- Uter local overlays MAY retain product-specific facts and enforcement details, but MUST map to AES requirements and MUST NOT weaken them.
+- Uter local overlays MUST map to AES requirements and MUST NOT weaken them.
 
-## Autonomous internal acceptance
+## Autonomous execution and acceptance
 
-All internal specification review, registry validation, code review, test acceptance, remediation closure and release-readiness decisions MUST be performed by executable machine checks and independent machine verification. Human approval and third-party signatures are not internal acceptance prerequisites.
+All specification lifecycle decisions, registry validation, code review, test acceptance, remediation closure and release-readiness decisions MUST be produced by executable machine policy and independently rerun machine verifiers.
 
-The engine MUST preserve the distinction between internal machine verification and external legal/regulatory acts. No external signature, certificate or production authorization may be fabricated. An external action that lacks machine-verifiable authority is automatically denied; this does not block internal engineering acceptance.
+The execution policy is default-deny. Operations outside the authorized repository workspace are automatically denied. Ambiguous requirements, missing evidence, policy conflicts and failed checks automatically produce BLOCKED or FAIL; they never create an interactive approval queue and never become PASS by timeout or omission.
 
 ## Mandatory evidence
 
-Each applicable AES requirement MUST map to:
-Requirement → Rule → Executable verifier → Actual execution → Evidence → Decision.
+Every applicable requirement MUST map to:
 
-PASS requires a real successful execution and current evidence. FAIL, BLOCKED, NOT_RUN, UNKNOWN and NOT_VERIFIED are not PASS. A content fingerprint or a registry pin proves which rules are in force; it does not prove Uter product conformance.
+`Requirement → Rule → Executable verifier → Actual execution → Evidence → Independent verification → Decision`.
 
-## Required continuous checks
+PASS requires a real successful execution against the current repository revision. FAIL, BLOCKED, NOT_RUN, UNKNOWN, NOT_VERIFIED and missing evidence are not PASS. A content fingerprint proves which AES rules are in force; it does not prove Uter product conformance.
 
-1. Verify AES pin and recompute the governed fingerprint using the AES-owned verifier.
-2. Resolve all applicable P00–P12 requirements and UTER-P13 project requirements.
-3. Verify Agent bootstrap and policy enforcement for WorkBuddy, Claude Code and Codex.
-4. Run product tests, security tests, quality gates and business invariants.
+## Continuous checks
+
+1. Recompute and verify the AES governed fingerprint and seal.
+2. Resolve every applicable P00–P12 requirement and UTER-P13 project requirement.
+3. Verify Agent bootstrap, runtime policy loading and permission-denial behavior.
+4. Run backend, frontend, cross-platform, security, quality and business-invariant tests.
 5. Independently re-read changed files and rerun all affected checks.
-6. Compute Uter conformance status from evidence; never hand-edit a success status.
-
+6. Derive conformance only from complete current evidence; never hand-edit a success state.
 
 ## Canonical Uter governance artifacts
 
-- Agent permission policy: `.aes/agent-governance.yaml`.
-- Requirement traceability inventory: `.aes/TRACEABILITY.md`.
-- Legacy AI-spec disposition inventory: `.aes/AI-SPEC-DISPOSITION-REGISTRY.yaml` (historical inventory; machine reassessment required before deleting any local spec).
+- Agent execution policy: `.aes/agent-governance.yaml`.
+- Requirement traceability: `.aes/TRACEABILITY.md`.
+- Local overlay inventory: `.aes/AI-SPEC-DISPOSITION-REGISTRY.yaml`.
 - Uter-specific business controls: `.aes/business/`, registered through P13.
-- Downstream version-event synchronization policy: `.aes/autonomous/config/downstream-policy.json`.
+- AES pin synchronization: `.aes/autonomous/config/downstream-policy.json`.
 
-The former `.uaes/` tree is a migration source only. No active gate, policy or runtime entrypoint may read it after migration. Its unique business documents have been moved to `.aes/business/`; historical machine records are retained as immutable archive evidence before the old directory is removed.
+The former `.uaes/` tree is a migration source only. No active gate, policy or runtime entrypoint may read it after migration. Unique project business documents are maintained under `.aes/business/`; archived records are not active normative sources.
 
+## P09 / P10 boundary
 
-## P09 / P10 division — responsibility boundary
-
-P09 Quality Engineering **proves** whether engineering quality meets the requirements. P10 Security & Reliability **defines** the security and reliability requirements. Security testing is required by P10 and executed and recorded by the P09 quality system; neither domain substitutes for the other.
+P09 Quality Engineering proves whether engineering quality meets the requirements. P10 Security & Reliability defines the security and reliability requirements. Security testing is required by P10 and executed and recorded by the P09 quality system.
