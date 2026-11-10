@@ -4,13 +4,18 @@
   "title": "UTER Brand Tokens (DTCG-compatible)",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$extensions", "themes"],
+  "required": [
+    "$extensions",
+    "themes"
+  ],
   "properties": {
     "$extensions": {
       "type": "object",
-      "required": ["com.uter.uaes"],
+      "required": [
+        "com.uter.aes"
+      ],
       "properties": {
-        "com.uter.uaes": {
+        "com.uter.aes": {
           "$ref": "#/$defs/metadata"
         }
       },
@@ -18,7 +23,10 @@
     },
     "themes": {
       "type": "object",
-      "required": ["light", "dark"],
+      "required": [
+        "light",
+        "dark"
+      ],
       "properties": {
         "light": {
           "$ref": "#/$defs/theme"
@@ -40,7 +48,8 @@
         "status",
         "sourceCommit",
         "provenance",
-        "notes"
+        "notes",
+        "machineAuthorization"
       ],
       "properties": {
         "id": {
@@ -54,7 +63,11 @@
           "const": "UTER Design System 3.0"
         },
         "status": {
-          "enum": ["DRAFT", "ACTIVE", "DEPRECATED"]
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "DEPRECATED"
+          ]
         },
         "sourceCommit": {
           "type": "string",
@@ -85,19 +98,17 @@
         "governingSchema": {
           "type": "string"
         },
-        "changeApproval": {
-          "type": "string",
-          "enum": ["NOT_VERIFIED", "APPROVED", "REJECTED"]
-        },
-        "approvalNote": {
-          "type": "string"
+        "machineAuthorization": {
+          "$ref": "#/$defs/machineAuthorization"
         }
       },
       "additionalProperties": false
     },
     "theme": {
       "type": "object",
-      "required": ["brand"],
+      "required": [
+        "brand"
+      ],
       "properties": {
         "brand": {
           "$ref": "#/$defs/colorGroup"
@@ -151,7 +162,10 @@
     },
     "colorToken": {
       "type": "object",
-      "required": ["$value", "$description"],
+      "required": [
+        "$value",
+        "$description"
+      ],
       "properties": {
         "$value": {
           "$ref": "#/$defs/hex"
@@ -165,6 +179,50 @@
     "hex": {
       "type": "string",
       "pattern": "^#[0-9A-Fa-f]{6}$"
+    },
+    "machineAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "mode",
+        "decision",
+        "evidence",
+        "human_signature_dependency",
+        "third_party_signature_dependency"
+      ],
+      "properties": {
+        "policy": {
+          "const": "AES-AUTONOMOUS-GOVERNANCE-POLICY"
+        },
+        "mode": {
+          "const": "AUTONOMOUS_MACHINE_EVIDENCE"
+        },
+        "decision": {
+          "enum": [
+            "AUTO_ACCEPTED",
+            "AUTO_REJECTED",
+            "AUTO_BLOCKED"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "human_signature_dependency": {
+          "const": "NONE"
+        },
+        "third_party_signature_dependency": {
+          "const": "NONE"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
     }
   }
 }
