@@ -336,7 +336,7 @@ Scope:
 5. AI risk management.
 6. Data governance.
 7. Transparency and explainability.
-8. Human oversight.
+8. Autonomous machine oversight.
 9. Accountability.
 10. AI lifecycle management.
 11. Monitoring and incident management.
@@ -346,7 +346,7 @@ Required controls:
 
 - AI systems MUST have identified owners and intended purposes.
 - Material AI risks MUST be assessed.
-- Human oversight MUST be defined according to risk.
+- Machine oversight MUST be defined according to risk. Oversight is performed by policy engines, independent verifiers and runtime monitors; no human approval step is part of internal engineering acceptance.
 - AI data sources and limitations MUST be documented.
 - Material AI decisions MUST be traceable where technically and legally appropriate.
 - AI incidents MUST have defined reporting and response procedures.
@@ -358,7 +358,7 @@ Acceptance evidence:
 - AI risk register.
 - Impact assessments.
 - Governance policies.
-- Human oversight records.
+- Machine oversight records.
 - Monitoring and incident records.
 
 ## P02 — Product Engineering
@@ -927,7 +927,7 @@ Security testing shall be risk-based and may include:
 - Configuration review.
 - Penetration testing.
 - Security regression testing.
-- Manual security assessment.
+- Automated security assessment and adversarial regression testing in isolated non-production environments; results are machine-recorded and independently re-executed.
 
 A clean scanner report alone shall not establish security conformity.
 
@@ -1719,7 +1719,7 @@ The project shall establish proportionate supply-chain controls, including:
 - Artifact integrity verification.
 - Source access control.
 - Build environment protection.
-- Third-party component review.
+- Automated third-party component and software-supply-chain review.
 
 ## 10.3 Reliability objectives
 
@@ -1801,7 +1801,7 @@ Material AI-generated outputs MUST be verified against:
 - Security requirements.
 - Applicable policies.
 - Test results.
-- Human review where required.
+- Independent machine review and verification wherever required by policy. If an external legal, regulatory or contractual act requires a human or third-party action, the affected external action MUST be automatically denied; it MUST NOT become an internal acceptance dependency.
 
 ## 11.4 AI auditability
 
