@@ -92,7 +92,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 | # | 场景 | 现有可定位证据 | 本执行状态 |
 |---|---|---|---|
-| 1 | 支付成功但本地订单保存失败 | `controller/refund_intent_recovery_task.go`, `controller/payment_reconcile_task.go` | `NOT_RUN` |
+| 1 | 支付成功但本地订单保存失败 | `controller/payment_reconcile_task.go`, `controller/payment_webhook_availability.go`, `service/alipay_query.go` | `NOT_VERIFIED` — 当前查单可恢复已存在的 pending 订单；尚无故障注入测试证明“网关成功但本地订单记录完全未落库”可自动恢复 |
 | 2 | 支付通知重复 | `model/topup_claim_pending_test.go`, `controller/topup_callback_security_matrix_test.go` | 单元测试存在，端到端 `NOT_RUN` |
 | 3 | 通知乱序 | `model/topup_order_state_matrix_test.go` | 单元测试存在，端到端 `NOT_RUN` |
 | 4 | 金额不一致 | `controller/topup_amount_match_test.go`, `topup_cn_amount_snapshot_test.go`, `topup_pay_money_rounding_test.go` | 单元测试存在，端到端 `NOT_RUN` |
@@ -101,7 +101,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 | 7 | 退款重复 | `model/midjourney_refund_transaction_test.go`, `refund_intent_test.go` | 单元测试存在，端到端 `NOT_RUN` |
 | 8 | 支付渠道异常 | `controller/topup_wechat_query_test.go`, `topup_alipay_query_test.go` | 单元测试存在，端到端 `NOT_RUN` |
 | 9 | 回调丢失 | `service/alipay_query.go`, `controller/payment_reconcile_task.go`, `web/src/features/wallet/lib/alipay-return.ts` | 主动查单/对账链路存在，端到端 `NOT_RUN` |
-| 10 | 订单恢复失败 | `controller/payment_reconcile_task_test.go`, `refund_intent_recovery_task_test.go` | 单元测试存在，端到端 `NOT_RUN` |
+| 10 | 订单恢复失败 | `controller/payment_reconcile_task_test.go`, `controller/refund_intent_recovery_task_test.go` | 单元测试存在；支付订单与退款意图恢复须分别验证，端到端证据尚未闭合 |
 
 ---
 
@@ -155,6 +155,14 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 但 §3 的 10 项、§4 的 10 个异常场景、独立机器验证与证据链均未完成。
 
 ---
+
+## 6.1 禁止人工补单与资金状态手工推进
+
+- 管理员不得通过 API 手工将 pending 充值订单改为 success 或直接增加用户余额。
+- `/topup/complete` 仅保留兼容路由，必须返回禁用结果；`ManualCompleteTopUp` 必须 fail-closed，不得写订单状态、余额或缓存。
+- 余额只能由验签成功、订单金额匹配、幂等状态转换成功的支付回调，或机器查单确认支付成功且金额一致的自动对账任务入账。
+- 无法自动确认支付结果时，订单保持 pending / BLOCKED；不得用人工补单绕过验证。
+- 自动负向测试：pending 订单调用旧补单 API 后，订单状态不变、用户余额不变、返回 `ErrManualTopUpDisabled`。
 
 ## 7. 禁止项
 
