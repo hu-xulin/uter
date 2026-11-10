@@ -55,7 +55,7 @@ certificate (§0.3 / §16.5).
 - `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` — design tokens and UI rules.
 - `docs/ai-specs/` — project engineering standards (keep/migrate/deprecate
   disposition recorded in TRACEABILITY.md).
-- `.ai/AIES.md`, `.ai/README.md`, `.ai/task-schema.json`, `.ai/checklists/` — execution methodology.
+- `.ai/UTER-EXECUTION-METHOD.md`, `.ai/README.md`, `.ai/task-schema.json`, `.ai/checklists/` — execution methodology.
 - `.agents/rules/billing.md`, `.agents/skills/` — project-specific rules and canonical skills.
 - `.aes/agent-governance.yaml` — P01 permission profile.
 - `scripts/quality/`, `scripts/verify-all.sh`, `.github/workflows/` — executable gates.
