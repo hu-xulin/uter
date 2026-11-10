@@ -7,7 +7,7 @@
 | Governing specification | `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` (`UTER-AES-GOV-001`) |
 | Registered in | Uter project governance registry: `.aes/uter-governance-registry.yaml` |
 | **Not registered in** | AES universal standards registry (`.aes/STANDARD-REGISTRY.yaml` in the AES repository) |
-| AES baseline inherited | `1.12.2 / ACTIVE`, source commit `8e1c72d9015f600ea541ef84c8530753d65fc4e7` (provenance only), registry blob `308d9610c679f1c75a049953feb1341d7b55c365`; governed fingerprint pending machine recomputation |
+| AES baseline inherited | `1.12.2 / ACTIVE`, source commit `8a0b0432ac7f298e6cf372fa7646f1c38c8eca08` (provenance only), registry blob `2a9695d29831144c49c1ef5f02360e6d2858449a`; governed fingerprint `8e1a58148d1139a2c7613a1f837098e660b0b9dbe82a72f3928dd54a9e6a9404` (machine-recomputed) |
 | Uter revision at inventory | `ef778bf08f335aaf16f4c8805be02b1111336fbe` |
 | Status | `PROPOSED_BASELINE` — repository inventory completed; domain acceptance **not** performed |
 | Language | 中文（术语保留英文） |
