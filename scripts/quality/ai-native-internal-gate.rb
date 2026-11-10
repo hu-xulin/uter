@@ -192,10 +192,16 @@ def main
     index_path = File.join(AES_ROOT, "governance/ai-native/reports/EVIDENCE-INDEX.json")
     out, err, status = File.file?(cli) ? Open3.capture3("node", cli, "chain", chdir: AES_ROOT) : ["", "missing CLI", nil]
     result = begin
-      last_json_line = out.lines.reverse.find { |line| !line.strip.empty? }
-      JSON.parse(last_json_line || "{}")
+      # The AES CLI emits pretty-printed multi-line JSON; parse the complete
+      # document rather than its final line (which is only a closing brace).
+      JSON.parse(out)
     rescue JSON::ParserError
-      {}
+      begin
+        start = out.index("{")
+        start ? JSON.parse(out[start..]) : {}
+      rescue JSON::ParserError
+        {}
+      end
     end
     index = File.file?(index_path) ? JSON.parse(File.read(index_path)) : {}
     broken = Array(index["broken"])
