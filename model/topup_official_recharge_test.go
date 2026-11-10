@@ -277,11 +277,9 @@ func countTopupLogsForUser(t *testing.T, userId int) int64 {
 	return count
 }
 
-// TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects covers F-06/F-19:
-// a repeat call to ManualCompleteTopUp on an already-completed order must be a
-// clean no-op. Previously the idempotent early-return left userId / quotaToAdd /
-// payMoney at their zero values, so the post-transaction cache sync and audit
-// log still ran against user 0 and emitted a false "completed" log.
+// Manual completion is a retired human-operated funds path. Repeated
+// calls must remain fail-closed and must not credit quota, mutate order state
+// or emit misleading audit logs.
 func TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects(t *testing.T) {
 	truncateTables(t)
 	useFixedQuotaPerUnitForOfficialTest(t, 500000)
@@ -289,21 +287,14 @@ func TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects(t *testing.T) {
 	user := insertUserForPaymentGuardTest(t, 707, 0)
 	order := createOfficialTestOrder(t, user.Id, "MANUAL-F0619", PaymentProviderAlipay, PaymentMethodAlipay, 2, 10.0)
 
-	first, err := ManualCompleteTopUp(order.TradeNo, "127.0.0.1")
-	require.NoError(t, err)
-	assert.True(t, first.Completed, "first completion must report Completed")
-	assert.Equal(t, user.Id, first.UserId)
-	assert.Equal(t, 2*500000, first.QuotaAdded)
-	expectedQuota := 2 * 500000
-	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id))
-	assert.Equal(t, int64(1), countTopupLogsForUser(t, user.Id), "first completion writes one log for the real user")
+	for range 2 {
+		err := ManualCompleteTopUp(order.TradeNo, "127.0.0.1")
+		require.ErrorIs(t, err, ErrManualTopUpDisabled)
+	}
+	assert.Equal(t, 0, getUserQuotaForPaymentGuardTest(t, user.Id), "manual completion must never credit quota")
+	assert.Equal(t, int64(0), countTopupLogsForUser(t, user.Id), "disabled manual completion must not emit a credit log")
 
-	// The repeat call must not credit again and must not touch user 0.
-	second, err := ManualCompleteTopUp(order.TradeNo, "127.0.0.1")
-	require.NoError(t, err)
-	assert.False(t, second.Completed, "repeat call must report that nothing was credited")
-	assert.Zero(t, second.UserId, "repeat call must not report a credit target")
-	assert.Zero(t, second.QuotaAdded)
-	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id), "repeat call must not double-credit")
-	assert.Equal(t, int64(0), countTopupLogsForUser(t, 0), "idempotent repeat must not write a false log for user 0")
+	reloaded := GetTopUpByTradeNo(order.TradeNo)
+	require.NotNil(t, reloaded)
+	assert.Equal(t, common.TopUpStatusPending, reloaded.Status, "manual completion must not mutate order state")
 }
