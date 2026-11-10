@@ -82,7 +82,7 @@ const render = (theme) =>
   keys
     .map(
       (key) =>
-        '  --uaes-brand-' +
+        '  --aes-brand-' +
         names[key] +
         ': ' +
         source.themes[theme].brand[key].$value +
