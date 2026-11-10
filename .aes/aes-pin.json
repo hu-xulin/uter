@@ -2,7 +2,7 @@
   "schema_version": "3.1.0",
   "repository": "https://github.com/hu-xulin/aes",
   "default_branch": "main",
-  "governed_fingerprint": "fd29fa67406c0a3e9a7a5a8a5df580bb5bb75783157e401e7379968840519633",
+  "governed_fingerprint": "3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
   "governed_fingerprint_algorithm": "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1",
   "governed_components": {
     "registry_blob_sha": "2ee9a7c70c1bbf67645a301de9662a8de9937bdb",
@@ -11,8 +11,8 @@
     "specification_id": "AES-SPEC-CORE",
     "specification_version": "2.0.0",
     "specification_status": "ACTIVE",
-    "specification_integrity_digest": "43b3d8f42b6dd2583324c7782bba9f431a2d75894a2b3d95bff2b3a9c9e7db6f",
-    "specification_integrity_computed": "43b3d8f42b6dd2583324c7782bba9f431a2d75894a2b3d95bff2b3a9c9e7db6f",
+    "specification_integrity_digest": "4e2ca6da5f36c74806a58bec5c2c54fcc38daeb1ab1523a4d2ce2821ba1f0488",
+    "specification_integrity_computed": "4e2ca6da5f36c74806a58bec5c2c54fcc38daeb1ab1523a4d2ce2821ba1f0488",
     "requirement_count": 2150,
     "requirement_ids_digest": "d6782a6925fdb5afbbb1de6184e4b956e204c7e626ff72b3053243374988ab5b"
   },
@@ -26,11 +26,11 @@
   "specification_id": "AES-SPEC-CORE",
   "specification_version": "2.0.0",
   "specification_status": "ACTIVE",
-  "specification_integrity_digest": "43b3d8f42b6dd2583324c7782bba9f431a2d75894a2b3d95bff2b3a9c9e7db6f",
+  "specification_integrity_digest": "4e2ca6da5f36c74806a58bec5c2c54fcc38daeb1ab1523a4d2ce2821ba1f0488",
   "requirement_registry_path": ".aes/registry/requirements.yaml",
   "requirement_count": 2150,
   "integration_status": "MIGRATION_PENDING",
   "machine_authorization_state": "ACTIVE",
   "pinned_at": "2026-11-10T13:36:00+08:00",
-  "note": "AES governed fingerprint and seal recomputed by the canonical AES verifier. This pin identifies the normative rule content only; Uter product conformance remains MIGRATION_PENDING until all applicable requirements, runtime controls, business invariants and CI gates have current independent machine PASS evidence."
+  "note": "AES governed fingerprint and normative seal digest synchronized from the current AES main registry. This pin identifies the normative rule content only; Uter product conformance remains MIGRATION_PENDING until every applicable requirement, runtime control, business invariant and CI gate has current independent machine PASS evidence. Fingerprint is recomputed from the canonical governed-components descriptor."
 }
