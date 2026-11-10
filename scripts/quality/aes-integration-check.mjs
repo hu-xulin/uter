@@ -29,7 +29,13 @@ const fp = execFileSync(process.execPath,[join(AES_ROOT,'quality/scripts/aes/gov
 const live = JSON.parse(fp)
 check('AES-PIN-005', live.seal_intact === true, 'ACTIVE specification seal recomputes from governed bytes')
 check('AES-PIN-006', pin.governed_fingerprint !== 'PENDING_MACHINE_RECOMPUTATION' && pin.governed_fingerprint === live.fingerprint, 'governed fingerprint matches machine pin')
-check('AES-PIN-007', JSON.stringify(pin.governed_components) === JSON.stringify(live.components), 'all fingerprint components match machine pin')
+const canonical = (value) => JSON.stringify(value && typeof value === 'object' && !Array.isArray(value)
+  ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalValue(value[key])]))
+  : value)
+const canonicalValue = (value) => value && typeof value === 'object' && !Array.isArray(value)
+  ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalValue(value[key])]))
+  : Array.isArray(value) ? value.map(canonicalValue) : value
+check('AES-PIN-007', canonicalValue(pin.governed_components) && canonical(pin.governed_components) === canonical(live.components), 'all fingerprint components match machine pin independent of JSON key order')
 const specRegistry = read(join(AES_ROOT,'.aes/spec-registry/SPECIFICATION-REGISTRY.yaml'))
 const activeSpecs = [...specRegistry.matchAll(/^\s*normative_status:\s*ACTIVE\s*$/gm)].length
 check('AES-PIN-008', activeSpecs === 1 && specRegistry.includes('specification_id: AES-SPEC-CORE'), 'exactly one ACTIVE formal specification')
