@@ -3,7 +3,7 @@
   "generated_at": "2026-11-07T02:57:15Z",
   "related_requirement": "§5 / §9 / §10",
   "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-  "harness": "scripts/quality/uaes-agent-runtime-check.rb",
+  "harness": "scripts/quality/aes-agent-runtime-check.rb",
   "method": "real CLI invocations + negative fixtures; not a self-declaration questionnaire",
   "summary": {
     "total": 10,
@@ -23,8 +23,8 @@
       "result": "FAIL",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-01-preflight.log",
       "raw_log_sha256": "7ee60b201cd6dd8f29e5d538999d74b8502277ebc979a64be3002507820c5733",
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json",
-      "note": "uaes_version=1.9.0 steps=10 failed=[3]"
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json",
+      "note": "aes_version=1.9.0 steps=10 failed=[3]"
     },
     {
       "case_id": "AG-02",
@@ -35,8 +35,8 @@
       "result": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-02-spec-drift.log",
       "raw_log_sha256": "93c6994a4b3647013557e2ff22005093c80ca9ab8c068bd7823257723c31432d",
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --uaes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-7jj8830q",
-      "note": "fixture_repo=/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-7jj8830q version_actual=9.9.9-FCA-DRIFT-FIXTURE failed_steps=[3]"
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --aes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-aes-drift-7jj8830q",
+      "note": "fixture_repo=/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-aes-drift-7jj8830q version_actual=9.9.9-FCA-DRIFT-FIXTURE failed_steps=[3]"
     },
     {
       "case_id": "AG-03",
@@ -47,7 +47,7 @@
       "result": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-03-empty-applicability.log",
       "raw_log_sha256": "13dfe5ace90a26fb2b968b71f7c1d68b3a812f7c0bda7042b33a974242b0b63f",
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json",
       "note": "failed_steps=[3, 7, 8, 9]"
     },
     {
@@ -83,7 +83,7 @@
       "result": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-06-allow-read.log",
       "raw_log_sha256": "434596e774d533871eaafe7cb494be317989cce3d3611e22d949a755ef016486",
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action filesystem.read --profile read_only",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action filesystem.read --profile read_only",
       "note": ""
     },
     {
@@ -107,7 +107,7 @@
       "result": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-08-selftest.log",
       "raw_log_sha256": "9d1946dd191d9a3ed50c9f502f476197b9c2b2723fd4aff741fc9116d797b5d8",
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb selftest",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb selftest",
       "note": "passed=20/20"
     },
     {
@@ -119,7 +119,7 @@
       "result": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-09-real-task.log",
       "raw_log_sha256": "955e6c5621f4f369de770c5fe78b3807528c4437ddaef907e3291d73620b717a",
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt",
       "note": "overall=PASS commands=3"
     },
     {
@@ -131,12 +131,12 @@
       "result": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/AG-10-ci-denial-loop.log",
       "raw_log_sha256": "e0bd460755a014d7a35c0f29e40adeda449f7a605c4141cb3a3e7a084cef3a40",
-      "command": "\nset -euo pipefail\nfor action in git.commit git.push.feature_branch git.pull_request.create; do\n  if ruby scripts/quality/uaes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator >/dev/null 2>&1; then\n    echo \"FAIL: $action was allowed without complete validation\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied before complete validation\"\ndone\nfor action in git.push.main git.pull_request.merge production.database.write payment.configuration.write overwrite.user_uncommitted_changes; do\n  if ruby scripts/quality/uaes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator --validation-passed >/dev/null 2>&1; then\n    echo \"FAIL: forbidden action $action was allowed\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied even after validation\"\ndone\n",
+      "command": "\nset -euo pipefail\nfor action in git.commit git.push.feature_branch git.pull_request.create; do\n  if ruby scripts/quality/aes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator >/dev/null 2>&1; then\n    echo \"FAIL: $action was allowed without complete validation\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied before complete validation\"\ndone\nfor action in git.push.main git.pull_request.merge production.database.write payment.configuration.write overwrite.user_uncommitted_changes; do\n  if ruby scripts/quality/aes-agent-runtime-check.rb authorize --action \"$action\" --profile pull_request_creator --validation-passed >/dev/null 2>&1; then\n    echo \"FAIL: forbidden action $action was allowed\" >&2; exit 1\n  fi\n  echo \"PASS: $action denied even after validation\"\ndone\n",
       "note": "workflow_bytes=21485 denial_lines=8"
     }
   ],
   "fixtures": {
-    "uaes_registry_version_drift": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/uaes-registry-version-drift.yaml",
+    "aes_registry_version_drift": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/aes-registry-version-drift.yaml",
     "task_missing_applicability": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json",
     "task_bypass_attempt": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-bypass-attempt.json",
     "agent_verify_commands": "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt"

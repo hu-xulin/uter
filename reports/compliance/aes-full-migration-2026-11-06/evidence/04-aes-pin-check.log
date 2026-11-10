@@ -1,0 +1,6 @@
+PASS: pin contains all 11 required fields
+PASS: source commit and registry blob are valid 40-character object ids
+PASS: registry lifecycle is consistent (status=APPROVED, approval=APPROVED, integration=MIGRATION_PENDING)
+PASS: contract does not claim unverified compliance
+PASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle
+aes-pin-check: PASS scope=static-integrity status=APPROVED version=1.9.0 commit=ff7cf878d430

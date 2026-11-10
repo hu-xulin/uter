@@ -25,12 +25,12 @@ const SOURCE = resolve(WEB_ROOT, 'src/design-system/source/brand.tokens.json')
 const OUTPUT = resolve(WEB_ROOT, 'src/design-system/tokens/generated/brand.css')
 const CHECK_ONLY = process.argv.includes('--check')
 const source = JSON.parse(readFileSync(SOURCE, 'utf8'))
-const metadata = source.$extensions?.['com.uter.uaes']
+const metadata = source.$extensions?.['com.uter.aes']
 if (
   metadata?.id !== 'UTER-BRAND-TOKEN-SOURCE' ||
   !/^\d+\.\d+\.\d+$/.test(metadata.version ?? '')
 ) {
-  throw new Error('Invalid UAES token source metadata')
+  throw new Error('Invalid AES token source metadata')
 }
 const keys = [
   'primary',
@@ -82,7 +82,7 @@ const render = (theme) =>
   keys
     .map(
       (key) =>
-        '  --uaes-brand-' +
+        '  --aes-brand-' +
         names[key] +
         ': ' +
         source.themes[theme].brand[key].$value +
@@ -110,12 +110,12 @@ const output = [
   '*/',
   '',
   '/*',
-  ' * GENERATED FILE — DO NOT EDIT. UAES-05-002 §7 / UAES-05-011-006.',
+  ' * GENERATED FILE — DO NOT EDIT. AES-05-002 §7 / AES-05-011-006.',
   ' * Source: src/design-system/source/brand.tokens.json',
   ' * Source version: ' + metadata.version + ' (' + metadata.status + ')',
   ' * Generator: scripts/generate-design-tokens.mjs',
   ' * Generator version: 1.1.0',
-  ' * Spec: UAES-05-002 §6, UAES-05-011-006, UAES-05-GATE-001 DQ-024',
+  ' * Spec: AES-05-002 §6, AES-05-011-006, AES-05-GATE-001 DQ-024',
   ' */',
   ':root {',
   render('light'),

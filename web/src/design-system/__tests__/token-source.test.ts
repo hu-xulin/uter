@@ -31,7 +31,7 @@ const generated = readFileSync(
   join(process.cwd(), 'src/design-system/tokens/generated/brand.css'),
   'utf8'
 )
-const metadata = source.$extensions['com.uter.uaes']
+const metadata = source.$extensions['com.uter.aes']
 
 describe('structured brand token source', () => {
   it('records the user-confirmed Light brand primary', () => {
@@ -45,11 +45,11 @@ describe('structured brand token source', () => {
     )
   })
   it('has generated CSS for both themes', () => {
-    expect(generated).toContain('--uaes-brand-primary: #5B5EE6;')
-    expect(generated).toContain('--uaes-brand-primary: #A1A3F7;')
+    expect(generated).toContain('--aes-brand-primary: #5B5EE6;')
+    expect(generated).toContain('--aes-brand-primary: #A1A3F7;')
   })
-  it('declares UAES-05-002 governance and does not claim approval', () => {
-    expect(metadata.governingStandard).toBe('UAES-05-002')
+  it('declares AES-05-002 governance and does not claim approval', () => {
+    expect(metadata.governingStandard).toBe('AES-05-002')
     expect(metadata.changeApproval).toBe('NOT_VERIFIED')
   })
   it('declares generator and source versions in the generated file', () => {

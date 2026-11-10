@@ -24,9 +24,9 @@ from datetime import datetime, timezone
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "reports/compliance/full-conformance-audit-2026-11-06"
 EV = OUT / "evidence"
-LEGACY = ROOT / "reports/compliance/uaes-full-migration-2026-11-06/evidence"
+LEGACY = ROOT / "reports/compliance/aes-full-migration-2026-11-06/evidence"
 MA = LEGACY / "manual-acceptance"
-UAES = pathlib.Path("/Users/lincolnhu/uaes")
+AES = pathlib.Path("/Users/lincolnhu/aes")
 
 DOMAIN_NAMES = {
     "00": "Foundation", "01": "AI Governance", "02": "Product Engineering",
@@ -117,7 +117,7 @@ def head(title: str, section: str, commit: str) -> str:
             f"- **Document:** `{section}` of §11 (14 mandated deliverables)\n"
             f"- **Generated:** {now()}\n"
             f"- **Uter commit SHA:** `{commit}`\n"
-            f"- **UAES commit SHA:** `{jread(EV / '00-baseline.json', {}).get('uaes', {}).get('commit_sha', 'UNKNOWN')}`\n"
+            f"- **AES commit SHA:** `{jread(EV / '00-baseline.json', {}).get('aes', {}).get('commit_sha', 'UNKNOWN')}`\n"
             f"- **Execution environment:** {platform.platform()}\n"
             f"- **Collector:** WorkBuddy (Tencent Hunyuan Hy)\n"
             f"- **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`\n\n"
@@ -146,12 +146,12 @@ def build_findings(baseline: dict, matrix: dict, verify: dict, gates: dict,
     non_pass = [c for c in ma_exec.get("cases", []) if c.get("status") != "PASS"]
     items = [
         {"id": "FIND-FCA-001", "severity": "P0", "status": "RESOLVED / EVIDENCE-LIMITED",
-         "title": "UAES 规范性基线未被逐条批准，无法作为正式符合性基准",
-         "location": "UAES commit `0c9386b`（2026-11-07 01:28 +0800）`feat(governance): approve all 178 UAES normative standards (v1.10.0)`；`standards/**` 178/178 APPROVED",
+         "title": "AES 规范性基线未被逐条批准，无法作为正式符合性基准",
+         "location": "AES commit `0c9386b`（2026-11-07 01:28 +0800）`feat(governance): approve all 178 AES normative standards (v1.10.0)`；`standards/**` 178/178 APPROVED",
          "evidence": ["evidence/00-baseline.json", "evidence/01-conflict-register.json (CONF-005)"],
          "root_cause": "此前 Registry 1.9.0 只批准了注册表基线，178 个标准文件中 2851 条要求仍为 DRAFT。",
          "impact": f"基线阻塞已解除：DRAFT 0/178，BLOCKED {s['by_result'].get('BLOCKED', 0)} 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。",
-         "corrective_action": ("已由 Owner 授权并完成批准（UAES commit 0c9386b）。**但批准不产生 PASS**："
+         "corrective_action": ("已由 Owner 授权并完成批准（AES commit 0c9386b）。**但批准不产生 PASS**："
                               "矩阵判定逻辑对 APPROVED 且无逐条证据的要求返回 NOT_ASSESSED，"
                               f"故 requirement_specific_verified 仍为 {s['requirement_specific_verified']}。"
                               "真正的符合性缺口转入 FIND-FCA-002。"),
@@ -167,8 +167,8 @@ def build_findings(baseline: dict, matrix: dict, verify: dict, gates: dict,
         {"id": "FIND-FCA-003", "severity": "P1", "status": "RESOLVED / DELEGATED_SIGNOFF",
          "title": "42 项人工验收未被验收负责人逐项接受",
          "location": "evidence/manual-acceptance/inventory.json、acceptance-authority.json",
-         "evidence": ["reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json",
-                      "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json"],
+         "evidence": ["reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json",
+                      "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json"],
          "root_cause": "用户此前明确「等我逐项复核后决定」，故 signoff_granted=false。",
          "impact": (f"2026-11-07 Owner 授权代签：item_count={inv.get('item_count')}，"
                     f"全部签署，signoff_granted={auth.get('signoff_granted')}，"
@@ -181,7 +181,7 @@ def build_findings(baseline: dict, matrix: dict, verify: dict, gates: dict,
          "title": "需要授权运行环境的安全/可靠性验证仍未执行（本地可修复部分已闭环）",
          "location": "DAST / 渗透 / API 安全 / 三库迁移 / DR / 备份恢复 / 性能测试 NOT_RUN；鉴权页 axe 扫描因管理员禁用密码登录而显式 skip",
          "evidence": ["evidence/04-engineering-verification.json", "evidence/06-gates-verification.json",
-                      "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/findings.json",
+                      "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/findings.json",
                       "web/e2e/axe/authed.spec.ts"],
          "root_cause": "这些验证需要授权运行环境（DAST 工具、三库环境、真实备份目标、压力负载）或产品侧会话配置；本地已无工具链类阻塞（axe 已安装并真实执行）。",
          "impact": "SECURITY_GATE BLOCK；§6 多项要求不可判定。本地可修复项（MA-06/MA-12）已在本轮闭环并复测。",
@@ -191,9 +191,9 @@ def build_findings(baseline: dict, matrix: dict, verify: dict, gates: dict,
          "title": "构建与静态分析既有失败已全部闭环（无断言放宽、无豁免）",
          "location": "MA-09 knip、MA-10 docs-web build、MA-11 electron build；修复记录见 evidence/08-remediation-register.json FIX-06..FIX-08",
          "evidence": ["evidence/04-engineering-verification.json",
-                      "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/execution.json",
-                      "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
-                      "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log"],
+                      "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/execution.json",
+                      "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+                      "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log"],
          "root_cause": "MA-09 knip 复跑 PASS（本审计未做任何清理动作）；MA-10 受宿主 safe-delete 批量删除拦截（旧 .next 产物）；MA-11 为 Electron 运行时下载网络超时（镜像吞吐 ~47KB/s，撞 600s 请求超时）。",
          "impact": "三项均以原始命令真实复跑 PASS；未删测试、未放宽断言、未改写状态。",
          "corrective_action": "FIX-06 mv 卫生预置；FIX-07 8 路并行续传下载并 SHA-256 校验后种子 @electron/get 缓存；FIX-08 安装 axe 工具链并修复真实违规。",
@@ -212,32 +212,32 @@ def build_findings(baseline: dict, matrix: dict, verify: dict, gates: dict,
          "title": "历史报告 reports/compliance/FINAL-COMPLIANCE-REPORT.md 状态过期",
          "location": "reports/compliance/FINAL-COMPLIANCE-REPORT.md",
          "evidence": ["evidence/01-conflict-register.json (CONF-004)"],
-         "root_cause": "该报告基于 PR #15 基线写 UAES registry DRAFT / 13 gates NOT_RUN。",
+         "root_cause": "该报告基于 PR #15 基线写 AES registry DRAFT / 13 gates NOT_RUN。",
          "impact": "不改写历史证据；新审计包以当前真实基线为准。",
          "corrective_action": "标记 SUPERSEDED，保留原文以供复核。",
          "required_authorization": "无", "revalidation": "DISCLOSURE VERIFIED"},
         {"id": "FIND-FCA-008", "severity": "P3", "status": "DISCLOSED",
-         "title": "UAES reports/ 下历史 UAES-P13-* 命名易与 UTER P13 混淆",
-         "location": "UAES 仓库 reports/（非 standards/、非 .uaes/registry/）",
-         "evidence": ["reports/compliance/uaes-full-migration-2026-11-06/evidence/governance-separation.json"],
+         "title": "AES reports/ 下历史 AES-P13-* 命名易与 UTER P13 混淆",
+         "location": "AES 仓库 reports/（非 standards/、非 .aes/registry/）",
+         "evidence": ["reports/compliance/aes-full-migration-2026-11-06/evidence/governance-separation.json"],
          "root_cause": "Repository Integration 阶段派生报告的历史命名。",
-         "impact": "UAES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。",
-         "corrective_action": "不修改 UAES 仓库（含 5 项未提交用户修改）；仅披露并持续由分离门禁监控。",
-         "required_authorization": "UAES Owner", "revalidation": "MONITORED BY GATE"},
+         "impact": "AES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。",
+         "corrective_action": "不修改 AES 仓库（含 5 项未提交用户修改）；仅披露并持续由分离门禁监控。",
+         "required_authorization": "AES Owner", "revalidation": "MONITORED BY GATE"},
         {"id": "FIND-FCA-009", "severity": "P1", "status": "OPEN",
          "title": "14 域 L3 与 L4 全局门禁仍 BLOCKED",
          "location": "gates/l3-domain-gates.json、gates/l4-global-gate.json",
-         "evidence": ["reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json",
-                      "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json"],
+         "evidence": ["reports/compliance/aes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json",
+                      "reports/compliance/aes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json"],
          "root_cause": f"L3 pass_count={l3.get('pass_count')}/14；L4 status={l4.get('status')}，{l4.get('not_met')} 条未满足。",
-         "impact": "RELEASE_GATE / GLOBAL_UAES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。",
+         "impact": "RELEASE_GATE / GLOBAL_AES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。",
          "corrective_action": "完成 14 域人工验收与逐条验证后重跑门禁。",
-         "required_authorization": "验收负责人 + UAES Owner", "revalidation": "NOT REVALIDATED"},
+         "required_authorization": "验收负责人 + AES Owner", "revalidation": "NOT REVALIDATED"},
         {"id": "FIND-FCA-010", "severity": "P3", "status": "CLOSED BY JUSTIFICATION",
          "title": f"{s['by_result'].get('NOT_APPLICABLE', 0)} 条 N/A 引用行",
          "location": "evidence/02-compliance-matrix.json (keyword_class=REFERENCE_ROW)",
          "evidence": ["evidence/02-compliance-matrix.json"],
-         "root_cause": "交叉引用索引行带 native UAES ID 但无规范性谓词。",
+         "root_cause": "交叉引用索引行带 native AES ID 但无规范性谓词。",
          "impact": "不构成义务；每条均附书面适用性依据（§10）。",
          "corrective_action": "已记录且不跳过；无进一步整改。",
          "required_authorization": "无", "revalidation": "JUSTIFICATION RECORDED"},
@@ -261,7 +261,7 @@ def build_findings(baseline: dict, matrix: dict, verify: dict, gates: dict,
          "required_authorization": "无（审计器自身缺陷）", "revalidation": "REVALIDATED: agent cases=10 passed=10 failed=[]"},
         {"id": "FIND-FCA-013", "severity": "P2", "status": "OPEN / EXTERNAL ACTION",
          "title": "执行分支出现完整验证前的 commit（非本审计会话所为），workspace W3 保持 fail-closed FAIL",
-         "location": "commit ec6501adc（HEAD 领先 main 1 个提交）；scripts/quality/uaes-agent-runtime-check.rb W3（HEAD == main）",
+         "location": "commit ec6501adc（HEAD 领先 main 1 个提交）；scripts/quality/aes-agent-runtime-check.rb W3（HEAD == main）",
          "evidence": ["reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/agent-runtime-workspace.json",
                       "reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json"],
          "root_cause": "2026-11-06 17:12:30，用户账号（Uter.ai <huxulin.hxl@gmail.com>）通过并行会话提交 ec6501adc「fix(governance): abbreviate commit SHA misdetected as API key by gitleaks」——内容正是 MA-06 gitleaks 误报的正式修复（缩短审计文档中的完整 SHA 并提交）。本审计会话自始至终零 commit；依并发红线不得 reset/merge 撤销他人提交，W3 断言亦不得放宽。",
@@ -296,8 +296,8 @@ def build_remediation(baseline: dict, matrix: dict) -> dict:
         {"fix_id": "FIX-02", "finding_id": "FIND-FCA-006", "defect": "只解析 **Status:**，133/178 个表格头标准被判 MISSING",
          "file": "scripts/quality/full-conformance-audit.py",
          "change": "shared standard_meta() 同时支持 bold 与 `| Status | `DRAFT` |` 表头",
-         "before": f"MISSING={b.get('by_source_status', {}).get('MISSING', 0)} DRAFT标准={b.get('uaes_draft_standard_files', 45)}/178",
-         "after": f"MISSING={a.get('by_source_status', {}).get('MISSING', 0)} DRAFT标准={a.get('uaes_draft_standard_files', 178)}/178",
+         "before": f"MISSING={b.get('by_source_status', {}).get('MISSING', 0)} DRAFT标准={b.get('aes_draft_standard_files', 45)}/178",
+         "after": f"MISSING={a.get('by_source_status', {}).get('MISSING', 0)} DRAFT标准={a.get('aes_draft_standard_files', 178)}/178",
          "risk": "只读解析修正；暴露了更严重的真实基线限制", "revalidation": "PASS"},
         {"fix_id": "FIX-03", "finding_id": "FIND-FCA-006", "defect": "UTER P13 中文规范产生 0 条要求，14 域实际只有 13 域有内容",
          "file": "scripts/quality/full-conformance-audit.py",
@@ -319,7 +319,7 @@ def build_remediation(baseline: dict, matrix: dict) -> dict:
          "risk": "仅修正审计器自身解析；底层 harness 与被测控制未改动", "revalidation": "PASS"},
         {"fix_id": "FIX-06", "finding_id": "FIND-FCA-005", "defect": "MA-10 docs-web 构建被宿主 safe-delete 批量删除拦截（旧 .next 产物 >50 文件）",
          "file": "environment (docs-web/.next, docs-web/out)",
-         "change": "构建前用 mv 把旧产物移出工作区（与 uaes-test-matrix.sh L2-07 build hygiene 同一既有策略）；MA-10 命令与断言零改动、未绕过 shim",
+         "change": "构建前用 mv 把旧产物移出工作区（与 aes-test-matrix.sh L2-07 build hygiene 同一既有策略）；MA-10 命令与断言零改动、未绕过 shim",
          "before": "MA-10 exit 1（SAFE_DELETE_BULK_CONFIRM_REQUIRED）",
          "after": "MA-10 exit 0（Next 构建 + postbuild copy-to-web 全链路成功）",
          "risk": "无", "revalidation": "PASS"},
@@ -356,7 +356,7 @@ def build_remediation(baseline: dict, matrix: dict) -> dict:
                        "test_deleted": False, "assertion_relaxed": False,
                        "exit_code_rewritten": False, "failed_result_hidden": False},
             "not_auto_fixed": [
-                {"finding_id": "FIND-FCA-001", "reason": "UAES 规范批准属于 UAES Owner 权限；双仓库分别治理", "risk": "越权修改通用标准", "required_authorization": "UAES Owner"},
+                {"finding_id": "FIND-FCA-001", "reason": "AES 规范批准属于 AES Owner 权限；双仓库分别治理", "risk": "越权修改通用标准", "required_authorization": "AES Owner"},
                 {"finding_id": "FIND-FCA-003", "reason": "人工验收接受权属于用户本人，且用户明确要求逐项复核", "risk": "代签导致虚假合规", "required_authorization": "项目 Owner"},
                 {"finding_id": "FIND-FCA-004", "reason": "DAST/渗透/三库/DR 需授权运行环境；MA-06 误报需负责人裁定", "risk": "越出风险边界 / 自动豁免", "required_authorization": "安全授权 + 负责人裁定"},
                 {"finding_id": "FIND-FCA-005", "reason": "批量删除 unused files 会触碰用户 WIP 与运营数据，且不得靠放宽规则关闭", "risk": "不可逆数据丢失", "required_authorization": "项目 Owner 逐项确认"},
@@ -366,11 +366,11 @@ def build_remediation(baseline: dict, matrix: dict) -> dict:
 
 
 # ------------------------------------------------------------------ deliverables
-def deliver(baseline: dict, matrix: dict, root: pathlib.Path, uaes: pathlib.Path,
+def deliver(baseline: dict, matrix: dict, root: pathlib.Path, aes: pathlib.Path,
             out: pathlib.Path, ev: pathlib.Path, legacy: pathlib.Path,
             domain_names: dict) -> None:
-    global ROOT, OUT, EV, LEGACY, MA, UAES
-    ROOT, OUT, EV, LEGACY, UAES = root, out, ev, legacy, uaes
+    global ROOT, OUT, EV, LEGACY, MA, AES
+    ROOT, OUT, EV, LEGACY, AES = root, out, ev, legacy, aes
     MA = legacy / "manual-acceptance"
     verify = jread(EV / "04-engineering-verification.json", {})
     agent = jread(EV / "05-agent-verification.json", {})
@@ -387,7 +387,7 @@ def deliver(baseline: dict, matrix: dict, root: pathlib.Path, uaes: pathlib.Path
     jwrite(EV / "08-remediation-register.json", remediation)
 
     # ---- CSV export of ALL requirement rows (independent re-verification)
-    fields = ["requirement_id", "uaes_domain", "requirement_description", "source_standard",
+    fields = ["requirement_id", "aes_domain", "requirement_description", "source_standard",
               "source_line", "source_version", "source_status", "normative_level", "keyword_class",
               "applicability", "applicability_justification", "implementation_location",
               "verification_method", "acceptance_criteria", "evidence_location", "audit_result",
@@ -405,7 +405,7 @@ def deliver(baseline: dict, matrix: dict, root: pathlib.Path, uaes: pathlib.Path
     cov = s.get("coverage_ledger", {}).get("totals", {})
     scanned = cov.get("lines_scanned", 0)
     accounted = sum(v for k, v in cov.items() if k != "lines_scanned")
-    md(D_FILES[0], head("UAES × Uter 全量符合性矩阵", "1/14", commit) + f"""
+    md(D_FILES[0], head("AES × Uter 全量符合性矩阵", "1/14", commit) + f"""
 ## 1. 结论摘要
 
 | 指标 | 值 |
@@ -416,17 +416,17 @@ def deliver(baseline: dict, matrix: dict, root: pathlib.Path, uaes: pathlib.Path
 | 逐条验证为 PASS | **{s['requirement_specific_verified']}** |
 | 审计结果分布 | `{json.dumps(s['by_result'], ensure_ascii=False)}` |
 | 源标准状态 | `{json.dumps(s['by_source_status'], ensure_ascii=False)}` |
-| UAES DRAFT 标准文件 | {s.get('uaes_draft_standard_files')}/{s.get('uaes_standard_md_files')} |
+| AES DRAFT 标准文件 | {s.get('aes_draft_standard_files')}/{s.get('aes_standard_md_files')} |
 | 域级测试矩阵（同 SHA） | {s['matrix_passed']}/{s['matrix_total']} PASS，overall `{s['matrix_overall']}` |
 | 绑定的真实 Commit SHA | `{s['matrix_commit_sha']}` |
 
-**结论：适用要求全部 `BLOCKED`。** 根因是 UAES 规范性基线未逐条批准（FIND-FCA-001），
+**结论：适用要求全部 `BLOCKED`。** 根因是 AES 规范性基线未逐条批准（FIND-FCA-001），
 且仓库不存在逐条实现映射与逐条验证（FIND-FCA-002）。域级命令仅登记为 `INDIRECT`，
 绝不提升任何单条要求为 PASS。
 
 ## 2. §3 十五字段
 
-`evidence/02-compliance-matrix.json` 每条记录包含：Requirement ID、UAES Domain、
+`evidence/02-compliance-matrix.json` 每条记录包含：Requirement ID、AES Domain、
 Requirement Description、Source Standard、Source Version、Applicability、
 Implementation Location、Verification Method、Acceptance Criteria、Evidence Location、
 Audit Result、Finding ID、Corrective Action、Revalidation Result，以及补充的
@@ -434,7 +434,7 @@ source_line / source_status / normative_level / keyword_class / commit_sha /
 applicability_justification / linked_real_commands / linked_manual_cases。
 
 完整 {s['total_requirements']} 行同时导出为 `evidence/matrix-export.csv`（UTF-8），
-可用任意表格工具按 `source_standard + source_line` 回查 UAES 原文重新核验。
+可用任意表格工具按 `source_standard + source_line` 回查 AES 原文重新核验。
 
 ## 3. 逐域要求数
 
@@ -482,14 +482,14 @@ python3 -c "import json;d=json.load(open('reports/compliance/full-conformance-au
          f"`{d['sha256'][:16]}…`"] for d in domains.get('reports', [])])}
 
 所有域的 `Requirement-specific verified rows` 均为 0，`Revalidation result` 均为
-`NOT REVALIDATED`。UTER-P13 只存在于 Uter 仓库，不写入 UAES `standards/`。
+`NOT REVALIDATED`。UTER-P13 只存在于 Uter 仓库，不写入 AES `standards/`。
 """)
 
     # ---- 03 external standards
     probe = verify.get("probe_result", {})
     md(D_FILES[2], head("外部标准适用性及映射清单", "3/14", commit) + f"""
-来源：权威规范 `docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`
-`UTER-UAES-GOV-001` §2.1，共 **{len(EXTERNAL_STANDARDS)}** 项；§2.2 要求逐项记录标识、
+来源：权威规范 `uaes/standards/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`
+`UTER-AES-GOV-001` §2.1，共 **{len(EXTERNAL_STANDARDS)}** 项；§2.2 要求逐项记录标识、
 官方名称、发布者、版本、发布日期、现行状态、修订、适用范围、相关要求、适用性决定、
 裁剪决定、责任人、验证方法、证据位置。
 
@@ -518,9 +518,9 @@ amendments` 一律记为 `NOT_VERIFIED`，**不虚构**；`applicability` 为基
     # ---- 04 AI Agent
     acases = agent.get("cases", [])
     md(D_FILES[3], head("AI Agent 实际执行验证报告（§5）", "4/14", commit) + f"""
-验证方式：对 `scripts/quality/uaes-agent-runtime-check.rb` 的 `preflight / authorize /
+验证方式：对 `scripts/quality/aes-agent-runtime-check.rb` 的 `preflight / authorize /
 workspace / verify / selftest` 发起**真实 CLI 调用**与**负向 fixture**，
-不是询问 Agent 是否遵守规范。Harness 证据目录通过 `UAES_EVIDENCE_DIR` 重定向到
+不是询问 Agent 是否遵守规范。Harness 证据目录通过 `AES_EVIDENCE_DIR` 重定向到
 `evidence/agent/`，不覆盖 D01–D28 既有证据。
 
 **汇总：{agent.get('summary', {}).get('passed', 0)}/{agent.get('summary', {}).get('total', 0)} PASS，
@@ -532,13 +532,13 @@ workspace / verify / selftest` 发起**真实 CLI 调用**与**负向 fixture**�
 
 ### 反向绕过测试要点
 
-- 普通提示绕过：在环境变量中注入 `UAES_BYPASS=1` / `WB_AGENT_OVERRIDE=allow_all` /
+- 普通提示绕过：在环境变量中注入 `AES_BYPASS=1` / `WB_AGENT_OVERRIDE=allow_all` /
   忽略治理规则的 prompt，`git.push.main` 仍 `DENY`（exit 2）。
 - 任务切换：切换 `orchestrator` profile 并带 `--validation-passed`，
   `git.pull_request.merge` 仍 `DENY`。
 - 其他执行路径：从临时 cwd 以绝对路径调用 harness；workspace 的
   W2/W3/W5/W6 仍照常执行，bypass 字段不产生任何授权。
-- 规范版本漂移：构造真实临时 git 仓库，把 UAES registry 版本改为
+- 规范版本漂移：构造真实临时 git 仓库，把 AES registry 版本改为
   `9.9.9-FCA-DRIFT-FIXTURE`，preflight step 3 因 blob/版本不匹配而 FAIL。
 - CI 持续遵循：本地执行 `.github/workflows/ci.yml` 的 8 条 deny 断言全部 PASS。
 
@@ -555,8 +555,8 @@ workspace / verify / selftest` 发起**真实 CLI 调用**与**负向 fixture**�
 
 | 层 | 归属仓库 | 内容 |
 |---|---|---|
-| A. UAES 通用工程治理 | UAES (`{baseline['uaes']['commit_sha'][:12]}`) | P00–P12，178 份标准 |
-| B. UTER 项目治理 | Uter (`{commit[:12]}`) | 治理入口、UAES 继承配置、UTER P13 |
+| A. AES 通用工程治理 | AES (`{baseline['aes']['commit_sha'][:12]}`) | P00–P12，178 份标准 |
+| B. UTER 项目治理 | Uter (`{commit[:12]}`) | 治理入口、AES 继承配置、UTER P13 |
 | C. 执行与保障 | Uter + CI | WorkBuddy、质量门禁、独立评估、证据体系 |
 
 ## 真实验证
@@ -637,7 +637,7 @@ ARCHITECTURE_GATE 逐项检查：
         for p in prior if p['evidence_id'] in
         ('MA-02','MA-03','MA-04','MA-05','MA-06','MA-07','MA-08','MA-10','MA-11','MA-12','MA-13')])}
 
-MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md`
+MA-06 `gitleaks` 命中 1 项：`.aes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md`
 第 62 行的 40 位 OpenAPI commit SHA，判定为候选误报。**未豁免、未改 allowlist、
 未改状态**，需验收负责人裁定。
 
@@ -673,7 +673,7 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
 ### 最终矩阵（同 Commit SHA）
 
 `{s['matrix_commit_sha']}` 的 `29/29 PASS` 来自
-`reports/compliance/uaes-full-migration-2026-11-06/evidence/test-matrix.json`，
+`reports/compliance/aes-full-migration-2026-11-06/evidence/test-matrix.json`，
 逐条原始日志在同级 `matrix/L*.log`。该矩阵是**域级**证据，
 不能替代本审计 §3 的 {s['total_requirements']} 条逐条验证。
 
@@ -705,15 +705,15 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
 
 ## CI 接线
 
-`.github/workflows/ci.yml` 含 `test-uaes-integration-check.rb`、`test-uaes-pin-check.rb`、
+`.github/workflows/ci.yml` 含 `test-aes-integration-check.rb`、`test-aes-pin-check.rb`、
 `test-ai-governance-policy.rb`、`test-uter-governance-boundaries.rb`、
-`uaes-agent-runtime-check.rb selftest` 与 authorize deny 循环。
+`aes-agent-runtime-check.rb selftest` 与 authorize deny 循环。
 本轮在本地真实执行了同一 deny 循环（AG-10）与 8 条门禁负向测试。
 **未在 GitHub 上产生真实 CI 运行**：无授权 push / PR，记为 `NOT_RUN`（NR-09）。
 
 ## 与四层门禁的关系
 
-`UTER-UAES-GOV-001` 的 L1/L2/L3/L4 继续保留；本指令 §8 的八类门禁作为
+`UTER-AES-GOV-001` 的 L1/L2/L3/L4 继续保留；本指令 §8 的八类门禁作为
 额外的可执行层映射到它（CONF-002），两者不互相替代。
 """)
 
@@ -779,7 +779,7 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
 
 {table(['禁止手段', '是否使用'], [[k, v] for k, v in remediation['policy'].items()])}
 
-未覆盖任何用户未提交修改；未修改 UAES 仓库；未改动业务代码；
+未覆盖任何用户未提交修改；未修改 AES 仓库；未改动业务代码；
 未 commit / push / PR / merge / deploy。
 """)
 
@@ -807,14 +807,14 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
         verdict = "PARTIALLY CONFORMANT"
     rationale = (
         f"§10 的 {len(conditions)} 项条件中 {len(met)} 项满足、{len(unmet)} 项未满足。"
-        f"{s['by_result'].get('BLOCKED', 0)} 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；"
+        f"{s['by_result'].get('BLOCKED', 0)} 条适用要求因 AES 规范基线未逐条批准且缺逐条验证而 BLOCKED；"
         f"42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；"
         f"逐条 PASS 数为 {s['requirement_specific_verified']}。"
         "关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。"
     )
     assessment = {
         "evidence_id": "FCA-FINAL-ASSESSMENT", "generated_at": now(),
-        "commit_sha": commit, "uaes_commit_sha": baseline["uaes"]["commit_sha"],
+        "commit_sha": commit, "aes_commit_sha": baseline["aes"]["commit_sha"],
         "related_requirement": "§10 / §12",
         "conditions": [{"id": c, "description": d, "met": ok} for c, d, ok in conditions],
         "met": met, "unmet": unmet,
@@ -822,8 +822,8 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
         "allowed_vocabulary": ["CONFORMANT", "PARTIALLY CONFORMANT", "NON-CONFORMANT", "BLOCKED", "NOT ASSESSED"],
         "not_conformant_because": [
             "0 requirement-specific PASS out of " + str(s["by_applicability"].get("APPLICABLE", 0)) + " applicable requirements",
-            "178/178 UAES standards are DRAFT and UAES APPROVAL-RECORD §4 does not approve them",
-            "13 UAES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS",
+            "178/178 AES standards are DRAFT and AES APPROVAL-RECORD §4 does not approve them",
+            "13 AES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS",
             "42 manual acceptance items remain NOT_VERIFIED with signoff_granted=false",
             "security verification is incomplete: MA-06 gitleaks and MA-12 axe are now PASS (user commit ec6501adc + installed axe-core/@axe-core/playwright real scan), but DAST / penetration / API security / three-database migration / DR / backup-restore / performance testing remain NOT_RUN (authorised environment required, see FIND-FCA-004)",
             "several of the eight §8 gates are BLOCK",
@@ -886,9 +886,9 @@ MA-06 `gitleaks` 命中 1 项：`.uaes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-202
        [[f['id'], f['severity'], f['status'], f['root_cause'][:160], f['corrective_action']]
         for f in findings['findings'] if f['status'] == 'OPEN'])}
 
-## 需要用户 / UAES Owner 决定的事项
+## 需要用户 / AES Owner 决定的事项
 
-1. **UAES Owner**：批准 178 份 DRAFT 标准条目并执行 13 个 L3 域门禁（FIND-FCA-001）。
+1. **AES Owner**：批准 178 份 DRAFT 标准条目并执行 13 个 L3 域门禁（FIND-FCA-001）。
 2. **项目 Owner（用户本人）**：逐项复核并签署 42 项人工验收（FIND-FCA-003）。
 3. **安全授权**：提供 DAST / 渗透 / API 安全 / 三库 / DR / 备份恢复的授权环境，
    并裁定 MA-06 gitleaks 候选误报（FIND-FCA-004）。
@@ -985,7 +985,7 @@ sha256sum reports/compliance/full-conformance-audit-2026-11-06/evidence/02-compl
 ```
 
 复核者可用 `evidence/matrix-export.csv` 的 `source_standard:source_line` 直接回查
-UAES 仓库 `ff7cf878...` 的规范原文，逐条重放审计结论。
+AES 仓库 `ff7cf878...` 的规范原文，逐条重放审计结论。
 """)
 
     print(f"[deliver] deliverables={len(D_FILES)} evidence_files={len(index_rows)} "
@@ -1040,7 +1040,7 @@ def main(argv: list[str]) -> int:
     # identical canonical domain-name table declared in this module instead.
     # When invoked through `full-conformance-audit.py deliver`, the engine passes
     # its own DOMAIN_NAMES, which is byte-for-byte the same mapping.
-    deliver(baseline, matrix, ROOT, UAES, OUT, EV, LEGACY, DOMAIN_NAMES)
+    deliver(baseline, matrix, ROOT, AES, OUT, EV, LEGACY, DOMAIN_NAMES)
     return 0
 
 

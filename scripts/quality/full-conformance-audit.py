@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UTER x UAES FULL CONFORMANCE AUDIT & ACCEPTANCE -- reproducible audit engine.
+"""UTER x AES FULL CONFORMANCE AUDIT & ACCEPTANCE -- reproducible audit engine.
 
 This program is deliberately evidence-driven. It NEVER invents a PASS. Every
 requirement record points at the exact source file/line, and an audit result of
@@ -15,7 +15,7 @@ Phases:
 
 Usage:
   python3 scripts/quality/full-conformance-audit.py all
-  UAES_REPO=/path/to/uaes python3 scripts/quality/full-conformance-audit.py all
+  AES_REPO=/path/to/aes python3 scripts/quality/full-conformance-audit.py all
 """
 from __future__ import annotations
 
@@ -31,10 +31,10 @@ from collections import Counter, defaultdict
 from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-UAES = pathlib.Path(os.environ.get("UAES_REPO", "/Users/lincolnhu/uaes"))
+AES = pathlib.Path(os.environ.get("AES_REPO", "/Users/lincolnhu/aes"))
 OUT = ROOT / "reports/compliance/full-conformance-audit-2026-11-06"
 EV = OUT / "evidence"
-LEGACY = ROOT / "reports/compliance/uaes-full-migration-2026-11-06/evidence"
+LEGACY = ROOT / "reports/compliance/aes-full-migration-2026-11-06/evidence"
 DOMAIN_NAMES = {
     "00": "Foundation", "01": "AI Governance", "02": "Product Engineering",
     "03": "Knowledge Engineering", "04": "System Architecture",
@@ -53,15 +53,15 @@ DOMAIN_DIRS = {
     "10": "10-security-reliability", "11": "11-devops-delivery",
     "12": "12-lifecycle-evolution",
 }
-# §3 "任何要求都不得在没有记录的情况下被跳过": UAES standards are bilingual.
+# §3 "任何要求都不得在没有记录的情况下被跳过": AES standards are bilingual.
 # The first engine version only recognised English MUST/SHALL and therefore
 # silently dropped 1333 Chinese normative lines (不得/必须/禁止/应当/严禁).
 # FIND-FCA-005 records that coverage defect and this is the corrected matcher.
 NORMATIVE = re.compile(r"\b(?:MUST(?:\s+NOT)?|SHALL(?:\s+NOT)?|REQUIRED|PROHIBITED)\b")
 CN_NORMATIVE = re.compile(r"(?:不得|必须|禁止|严禁|应当|不应)")
 SHOULD = re.compile(r"\bSHOULD(?:\s+NOT)?\b")
-TABLE_ID = re.compile(r"^\|\s*(UAES-\d{2}-\d{3}(?:-\d{3})?)\s*\|")
-ID_ANY = re.compile(r"UAES-\d{2}-\d{3}(?:-\d{3})?")
+TABLE_ID = re.compile(r"^\|\s*(AES-\d{2}-\d{3}(?:-\d{3})?)\s*\|")
+ID_ANY = re.compile(r"AES-\d{2}-\d{3}(?:-\d{3})?")
 STATUS_BOLD = re.compile(r"\*\*Status:\*\*\s*(\S+)")
 STATUS_TABLE = re.compile(r"^\|\s*Status\s*\|\s*([^|]+?)\s*\|", re.M)
 VERSION_BOLD = re.compile(r"\*\*Version:\*\*\s*(\S+)")
@@ -79,7 +79,7 @@ def _cell(m) -> str:
 
 
 def standard_meta(path: pathlib.Path) -> tuple[str, str]:
-    """Read Status/Version from BOTH header styles used by UAES standards.
+    """Read Status/Version from BOTH header styles used by AES standards.
 
     45 files use `**Status:** DRAFT`, 133 use a markdown table row
     `| Status | `DRAFT` |`. The old bold-only parser mislabelled 1332
@@ -151,21 +151,21 @@ def phase_baseline() -> dict:
     rc_u, branch_u = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     _, remote_u = run(["git", "remote", "-v"])
     _, status_u = run(["git", "status", "--porcelain=v1"])
-    rc_a, branch_a = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], UAES)
-    _, remote_a = run(["git", "remote", "-v"], UAES)
-    _, status_a = run(["git", "status", "--porcelain=v1"], UAES)
+    rc_a, branch_a = run(["git", "rev-parse", "--abbrev-ref", "HEAD"], AES)
+    _, remote_a = run(["git", "remote", "-v"], AES)
+    _, status_a = run(["git", "status", "--porcelain=v1"], AES)
 
-    standards = sorted((UAES / "standards").rglob("*.md"))
+    standards = sorted((AES / "standards").rglob("*.md"))
     status_counter, versions, meta = Counter(), Counter(), {}
     for p in standards:
         st, ver = standard_meta(p)
-        meta[str(p.relative_to(UAES))] = {"status": st, "version": ver}
+        meta[str(p.relative_to(AES))] = {"status": st, "version": ver}
         status_counter[st] += 1
         versions[ver] += 1
 
-    gates = (UAES / ".uaes/registry/gates.yaml").read_text(encoding="utf-8")
+    gates = (AES / ".aes/registry/gates.yaml").read_text(encoding="utf-8")
     gate_not_run = len(re.findall(r"^\s*execution:\s*NOT_RUN", gates, re.M))
-    registry = (UAES / ".uaes/STANDARD-REGISTRY.yaml").read_text(encoding="utf-8")
+    registry = (AES / ".aes/STANDARD-REGISTRY.yaml").read_text(encoding="utf-8")
     reg_version = re.search(r'^\s*version:\s*"([^"]+)"', registry, re.M)
     reg_status = re.search(r'^\s*status:\s*"([^"]+)"', registry, re.M)
 
@@ -182,27 +182,27 @@ def phase_baseline() -> dict:
             "modified_count": len([l for l in status_u.splitlines() if l.startswith(" M")]),
             "wip_policy": "PRESERVE - no reset/clean/overwrite; staged=0",
         },
-        "uaes": {
-            "path": str(UAES), "branch": branch_a.strip(), "commit_sha": git_head(UAES),
+        "aes": {
+            "path": str(AES), "branch": branch_a.strip(), "commit_sha": git_head(AES),
             "remotes": [l for l in remote_a.splitlines() if "github" in l][:4],
             "worktree_count": len(status_a.splitlines()),
             "uncommitted_paths": [l[3:] for l in status_a.splitlines()],
-            "wip_policy": "PRESERVE - UAES repository NOT modified by this audit",
+            "wip_policy": "PRESERVE - AES repository NOT modified by this audit",
         },
-        "uaes_registry": {
+        "aes_registry": {
             "version": reg_version.group(1) if reg_version else None,
             "status": reg_status.group(1) if reg_status else None,
-            "sha256": sha256(UAES / ".uaes/STANDARD-REGISTRY.yaml"),
+            "sha256": sha256(AES / ".aes/STANDARD-REGISTRY.yaml"),
         },
-        "uaes_standards": {
+        "aes_standards": {
             "md_files": len(standards), "status_distribution": dict(status_counter),
             "version_distribution": dict(versions),
             "draft_files": status_counter.get("DRAFT", 0),
             "parser": "standard_meta(): supports **Status:** and | Status | `DRAFT` | headers",
             "per_file": meta,
         },
-        "uaes_gates": {"domain_gate_NOT_RUN_count": gate_not_run,
-                       "sha256": sha256(UAES / ".uaes/registry/gates.yaml")},
+        "aes_gates": {"domain_gate_NOT_RUN_count": gate_not_run,
+                       "sha256": sha256(AES / ".aes/registry/gates.yaml")},
         "toolchain": toolchain(),
         "collector": "WorkBuddy (Tencent Hunyuan Hy)",
         "integrity": "real git/FS reads only; no inferred state",
@@ -212,38 +212,38 @@ def phase_baseline() -> dict:
     # §2.6 conflicts / duplicates / stale / invalid content
     conflicts = [
         {"id": "CONF-001", "type": "DELIVERABLE_SCOPE",
-         "old": "UTER-UAES-GOV-001 §15: D01-D28 (28 deliverables)",
+         "old": "UTER-AES-GOV-001 §15: D01-D28 (28 deliverables)",
          "new": "This directive §11: 14 deliverables including a full compliance matrix and P00-P13 per-domain reports",
          "resolution": "Produce a NEW independent audit package in reports/compliance/full-conformance-audit-2026-11-06/; keep D01-D28 intact as prior-stage evidence. No overwrite.",
          "authority": "latest explicit user instruction"},
         {"id": "CONF-002", "type": "GATE_TAXONOMY",
-         "old": "UTER-UAES-GOV-001 §8.2: L1_CHANGE_GATE / L2_INTEGRATION_GATE / L3_DOMAIN_ACCEPTANCE_GATE / L4_GLOBAL_CONFORMANCE_GATE",
-         "new": "This directive §8: 8 gates (Change, Code Review, Testing, Security, Architecture, Business Acceptance, Release, Global UAES Conformance)",
+         "old": "UTER-AES-GOV-001 §8.2: L1_CHANGE_GATE / L2_INTEGRATION_GATE / L3_DOMAIN_ACCEPTANCE_GATE / L4_GLOBAL_CONFORMANCE_GATE",
+         "new": "This directive §8: 8 gates (Change, Code Review, Testing, Security, Architecture, Business Acceptance, Release, Global AES Conformance)",
          "resolution": "Implement the 8 named gates as an additional executable layer; map each to the existing 4-layer evaluator; keep both, do not delete the 4-layer gate.",
          "authority": "latest explicit user instruction"},
         {"id": "CONF-003", "type": "CONCLUSION_VOCABULARY",
-         "old": "UTER-UAES-GOV-001 §16.2: CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED",
+         "old": "UTER-AES-GOV-001 §16.2: CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED",
          "new": "This directive §12: CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / BLOCKED / NOT ASSESSED",
          "resolution": "Use ONLY the 5 §12 terms in this audit's final verdict. NOT_APPLICABLE is retained as a per-requirement applicability value (§10 requires justification for every N/A), not as a report-level verdict.",
          "authority": "latest explicit user instruction"},
         {"id": "CONF-004", "type": "STALE_DOCUMENT",
-         "old": "reports/compliance/FINAL-COMPLIANCE-REPORT.md states UAES registry is DRAFT and 13 gates NOT_RUN under PR #15 baseline",
-         "new": "UAES registry is 1.9.0 APPROVED; a 29/29 PASS matrix exists at the current commit",
+         "old": "reports/compliance/FINAL-COMPLIANCE-REPORT.md states AES registry is DRAFT and 13 gates NOT_RUN under PR #15 baseline",
+         "new": "AES registry is 1.9.0 APPROVED; a 29/29 PASS matrix exists at the current commit",
          "resolution": "Do NOT rewrite the historical report (evidence preservation). Mark it SUPERSEDED in the new evidence index and cite the current baseline instead.",
          "authority": "real repository state"},
         {"id": "CONF-005", "type": "NORMATIVE_BASELINE_LIMITATION",
          "old": "Assumption: an APPROVED registry is an approved normative baseline for all requirements",
-         "new": "UAES .uaes/APPROVAL-RECORD.md §4 explicitly does NOT approve 304 DRAFT entries, does NOT execute 13 domain gates, and does NOT claim Uter conforms",
-         "resolution": "Register as P0 finding FIND-FCA-001. No requirement may be reported as formally approved against a published baseline. CONFORMANT is impossible until the UAES owner approves the entries and gates.",
-         "authority": "UAES approval record (real file)"},
+         "new": "AES .aes/APPROVAL-RECORD.md §4 explicitly does NOT approve 304 DRAFT entries, does NOT execute 13 domain gates, and does NOT claim Uter conforms",
+         "resolution": "Register as P0 finding FIND-FCA-001. No requirement may be reported as formally approved against a published baseline. CONFORMANT is impossible until the AES owner approves the entries and gates.",
+         "authority": "AES approval record (real file)"},
         {"id": "CONF-006", "type": "REPOSITORY_SEPARATION",
          "old": "This directive §7 asks to fix every non-conformity",
-         "new": "Prior binding instruction: UAES and Uter must be governed separately; UTER P13 must not enter UAES; UAES has 5 uncommitted user changes",
-         "resolution": "Fix ONLY Uter-side issues. UAES-side DRAFT/NOT_RUN issues are registered as findings with required authorisation, not silently edited.",
+         "new": "Prior binding instruction: AES and Uter must be governed separately; UTER P13 must not enter AES; AES has 5 uncommitted user changes",
+         "resolution": "Fix ONLY Uter-side issues. AES-side DRAFT/NOT_RUN issues are registered as findings with required authorisation, not silently edited.",
          "authority": "prior explicit user instruction + WIP protection"},
         {"id": "CONF-007", "type": "AUDIT_ENGINE_DEFECT",
          "old": "First engine run: English MUST/SHALL matcher only; bold-only Status parser; P13 produced 0 rows; matrix commit key guessed as commit_sha",
-         "new": "UAES standards are bilingual (1333 Chinese mandatory lines were dropped); 133/178 standards use a table Status header; P13 is written in Chinese; D19-TEST-MATRIX writes `uter_commit`",
+         "new": "AES standards are bilingual (1333 Chinese mandatory lines were dropped); 133/178 standards use a table Status header; P13 is written in Chinese; D19-TEST-MATRIX writes `uter_commit`",
          "resolution": "FIND-FCA-005..008: fixed matcher (EN+CN+SHOULD+reference rows), shared standard_meta(), P13 Chinese extraction, and uter_commit binding. Before/after matrix snapshots preserved in evidence/bugfix/. Requirement count is therefore NOT comparable between the two runs.",
          "authority": "real repository content + §3 no-skip rule"},
     ]
@@ -302,8 +302,8 @@ def extract_requirements() -> tuple[list[dict], dict]:
         any_id = ID_ANY.search(stripped)
         rec = {
             "requirement_id": rid,
-            "native_uaes_id": native.group(1) if native else (any_id.group(0) if any_id else None),
-            "uaes_domain": ("UTER-P13" if dom == "13" else f"P{dom}"),
+            "native_aes_id": native.group(1) if native else (any_id.group(0) if any_id else None),
+            "aes_domain": ("UTER-P13" if dom == "13" else f"P{dom}"),
             "domain_name": DOMAIN_NAMES[dom],
             "requirement_description": stripped[:400],
             "source_standard": rel,
@@ -319,14 +319,14 @@ def extract_requirements() -> tuple[list[dict], dict]:
         cov[f"recorded_{kc.lower()}"] += 1
 
     for dom, sub in DOMAIN_DIRS.items():
-        d = UAES / "standards" / sub
+        d = AES / "standards" / sub
         if not d.is_dir():
             cov["missing_domain_dir"] += 1
             continue
         for p in sorted(d.rglob("*.md")):
             text = p.read_text(encoding="utf-8", errors="replace")
             std_status, std_version = standard_meta(p)
-            rel = str(p.relative_to(UAES))
+            rel = str(p.relative_to(AES))
             in_fence, file_lines, file_reqs = False, 0, 0
             for lineno, line in enumerate(text.splitlines(), 1):
                 cov["lines_scanned"] += 1
@@ -356,10 +356,10 @@ def extract_requirements() -> tuple[list[dict], dict]:
                              "version": std_version, "lines": file_lines,
                              "requirements_recorded": file_reqs})
 
-    # UTER P13 (Uter-owned, NOT in UAES). Its normative statements are Chinese.
-    p13 = ROOT / ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
+    # UTER P13 (Uter-owned, NOT in AES). Its normative statements are Chinese.
+    p13 = ROOT / ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
     if p13.is_file():
-        rel = ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
+        rel = ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
         std_status, std_version = standard_meta(p13)
         text = p13.read_text(encoding="utf-8", errors="replace")
         in_fence, file_reqs = False, 0
@@ -429,17 +429,17 @@ def applicability(rec: dict) -> tuple[str, str]:
     txt = rec["requirement_description"]
     if rec.get("keyword_class") == "REFERENCE_ROW":
         return ("NOT_APPLICABLE",
-                "This line is a cross-reference/index table row carrying a native UAES ID "
+                "This line is a cross-reference/index table row carrying a native AES ID "
                 "but no normative predicate. It is recorded (not skipped) for completeness, "
                 "yet it asserts no obligation and therefore cannot be audited for conformance.")
-    uaes_internal = ("registry" in s.lower() and "publish" in txt.lower()) or \
-                    ("UAES repository" in txt and "Uter" not in txt)
-    if uaes_internal:
+    aes_internal = ("registry" in s.lower() and "publish" in txt.lower()) or \
+                    ("AES repository" in txt and "Uter" not in txt)
+    if aes_internal:
         return ("NOT_APPLICABLE",
-                "Normative statement governs the UAES governance repository's own publication "
+                "Normative statement governs the AES governance repository's own publication "
                 "workflow; Uter is a downstream consumer and is not the actor for this rule "
                 "(two-repository separation). Tracked as an out-of-scope actor, not skipped.")
-    return ("APPLICABLE", "UAES P00-P12 are inherited by Uter per .uaes/uter-governance-registry.yaml; "
+    return ("APPLICABLE", "AES P00-P12 are inherited by Uter per .aes/uter-governance-registry.yaml; "
             "UTER-P13 is Uter-owned. No exclusion claimed.")
 
 
@@ -491,8 +491,8 @@ def phase_matrix(baseline: dict) -> dict:
 
     findings = []
     for rec in reqs:
-        dom = rec["uaes_domain"].replace("P", "").replace("UTER-", "")
-        dom = "13" if rec["uaes_domain"] == "UTER-P13" else dom
+        dom = rec["aes_domain"].replace("P", "").replace("UTER-", "")
+        dom = "13" if rec["aes_domain"] == "UTER-P13" else dom
         app, why = applicability(rec)
         vb = verification_binding(dom, ev)
         # Honest result: no requirement-specific evidence exists in this repository.
@@ -521,7 +521,7 @@ def phase_matrix(baseline: dict) -> dict:
             "commit_sha": commit,
             "standard_status_limitation": (
                 f"Source status {rec['source_status']} is not an approved baseline; "
-                "UAES APPROVAL-RECORD §4 does not approve individual DRAFT entries"
+                "AES APPROVAL-RECORD §4 does not approve individual DRAFT entries"
                 if rec["source_status"] != "APPROVED" else ""),
             "linked_real_commands": vb["linked_real_commands"],
             "linked_manual_cases": vb["linked_manual_cases"],
@@ -529,7 +529,7 @@ def phase_matrix(baseline: dict) -> dict:
         })
     summary = {
         "total_requirements": len(reqs),
-        "by_domain": dict(sorted(Counter(r["uaes_domain"] for r in reqs).items())),
+        "by_domain": dict(sorted(Counter(r["aes_domain"] for r in reqs).items())),
         "by_result": dict(Counter(r["audit_result"] for r in reqs)),
         "by_source_status": dict(Counter(r["source_status"] for r in reqs)),
         "by_applicability": dict(Counter(r["applicability"] for r in reqs)),
@@ -543,15 +543,15 @@ def phase_matrix(baseline: dict) -> dict:
         "by_keyword_class": dict(Counter(r["keyword_class"] for r in reqs)),
         "by_normative_level": dict(Counter(r["normative_level"] for r in reqs)),
         "coverage_ledger": {"totals": ledger["totals"], "files_scanned": ledger["files_scanned"]},
-        "uaes_draft_standard_files": baseline["uaes_standards"]["draft_files"],
-        "uaes_standard_md_files": baseline["uaes_standards"]["md_files"],
+        "aes_draft_standard_files": baseline["aes_standards"]["draft_files"],
+        "aes_standard_md_files": baseline["aes_standards"]["md_files"],
     }
     matrix = {
         "evidence_id": "FCA-COMPLIANCE-MATRIX", "generated_at": now(),
         "related_requirement": "§3 / §9 / §10", "commit_sha": commit,
-        "uaes_commit_sha": baseline["uaes"]["commit_sha"],
-        "source_of_requirements": "every MUST/MUST NOT/SHALL/REQUIRED/PROHIBITED line in UAES standards/*.md plus UTER-P13, keyed by source file + line + text hash",
-        "field_names": ["Requirement ID", "UAES Domain", "Requirement Description", "Source Standard",
+        "aes_commit_sha": baseline["aes"]["commit_sha"],
+        "source_of_requirements": "every MUST/MUST NOT/SHALL/REQUIRED/PROHIBITED line in AES standards/*.md plus UTER-P13, keyed by source file + line + text hash",
+        "field_names": ["Requirement ID", "AES Domain", "Requirement Description", "Source Standard",
                         "Source Version", "Applicability", "Implementation Location", "Verification Method",
                         "Acceptance Criteria", "Evidence Location", "Audit Result", "Finding ID",
                         "Corrective Action", "Revalidation Result"],
@@ -576,7 +576,7 @@ def phase_domains(matrix: dict, baseline: dict) -> None:
     ev = matrix["evidence_index"]
     by_dom = defaultdict(list)
     for r in matrix["requirements"]:
-        by_dom[r["uaes_domain"]].append(r)
+        by_dom[r["aes_domain"]].append(r)
     execj = jread(LEGACY / "manual-acceptance/execution.json", {})
     ma = {c["evidence_id"]: c for c in execj.get("cases", [])}
     reports = []
@@ -590,19 +590,19 @@ def phase_domains(matrix: dict, baseline: dict) -> None:
             f"# §4 Domain Audit — {dom} {name}", "",
             f"**Generated:** {now()}  ",
             f"**Commit SHA:** `{baseline['uter']['commit_sha']}`  ",
-            f"**UAES baseline:** `{baseline['uaes']['commit_sha']}` (registry {baseline['uaes_registry']['version']} / {baseline['uaes_registry']['status']})  ",
-            f"**Normative source status:** {baseline['uaes_standards']['draft_files']}/{baseline['uaes_standards']['md_files']} UAES standards are DRAFT  ",
+            f"**AES baseline:** `{baseline['aes']['commit_sha']}` (registry {baseline['aes_registry']['version']} / {baseline['aes_registry']['status']})  ",
+            f"**Normative source status:** {baseline['aes_standards']['draft_files']}/{baseline['aes_standards']['md_files']} AES standards are DRAFT  ",
             f"**Requirements recorded:** {len(rows)} (none skipped)  ",
             f"**Audit results:** {dict(results)}", "",
             "## 1. 规范审计 (Specification)", "",
-            f"- Source: `UAES standards/{DOMAIN_DIRS.get(key,'(Uter-owned P13)')}` " if key != "13" else "- Source: `.uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md` (Uter Layer B, NOT in UAES)",
+            f"- Source: `AES standards/{DOMAIN_DIRS.get(key,'(Uter-owned P13)')}` " if key != "13" else "- Source: `.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md` (Uter Layer B, NOT in AES)",
             f"- Every normative statement is keyed by source file + line in `evidence/02-compliance-matrix.json`.",
-            "- UAES `.uaes/APPROVAL-RECORD.md` §4 explicitly does NOT approve individual DRAFT entries; see FIND-FCA-001.", "",
+            "- AES `.aes/APPROVAL-RECORD.md` §4 explicitly does NOT approve individual DRAFT entries; see FIND-FCA-001.", "",
             "## 2. 实际实现审计 (Implementation)", "",
             "- No per-requirement implementation mapping exists in the repository. Recorded as `NOT MAPPED` for every row.",
             "- This is a genuine gap, not a hidden skip: the mapping is enumerable from the matrix.", "",
             "## 3. 流程审计 (Process)", "",
-            "- Governing entry: `AGENTS.md`, `.uaes/AI-GOVERNANCE-ENTRY.md`, `.uaes/uter-governance-registry.yaml`.",
+            "- Governing entry: `AGENTS.md`, `.aes/AI-GOVERNANCE-ENTRY.md`, `.aes/uter-governance-registry.yaml`.",
             "- Historical `reports/compliance/FINAL-COMPLIANCE-REPORT.md` is SUPERSEDED (CONF-004); current evidence is this package.", "",
             "## 4. 自动化控制审计 (Automated controls)", "",
             f"- Domain-linked REAL commands (indirect evidence only): {', '.join('`'+c+'`' for c in real_cmds) or 'none'}.",
@@ -610,17 +610,17 @@ def phase_domains(matrix: dict, baseline: dict) -> None:
             "- `evidence/matrix/<ID>.log` holds raw stdout/stderr/exit code.", "",
             "## 5. 证据审计 (Evidence)", "",
             f"- Matrix aggregate at this commit: {ev['matrix'].get('passed')}/{ev['matrix'].get('total')} PASS, overall `{ev['matrix'].get('overall')}`.",
-            "- Manual-acceptance run integrity is separately verified by `python3 scripts/quality/uaes-manual-acceptance.py --verify-only`.", "",
+            "- Manual-acceptance run integrity is separately verified by `python3 scripts/quality/aes-manual-acceptance.py --verify-only`.", "",
             "## 6. 有效性验证 (Effectiveness)", "",
             "- Domain-level commands are INDIRECT for individual normative statements; they do NOT prove any single requirement.",
             f"- Requirement-specific verified rows in this domain: **{results.get('PASS',0)}/{len(rows)}**.", "",
             "## 7. 不符合项 (Findings)", "",
-            f"- FIND-FCA-001 (P0): UAES normative baseline not individually approved; 13 domain gates NOT_RUN.",
+            f"- FIND-FCA-001 (P0): AES normative baseline not individually approved; 13 domain gates NOT_RUN.",
             f"- FIND-FCA-002 (High): {results.get('BLOCKED',0)} rows in this domain are BLOCKED by DRAFT/PROPOSED source status.",
             f"- FIND-FCA-003 (High): {results.get('NOT_ASSESSED',0)} rows lack requirement-specific verification.",
             f"- Non-PASS local evidence (unchanged, not waived): {', '.join(matrix['summary']['ma_non_pass'])}.", "",
             "## 8. 整改和复测 (Remediation & revalidation)", "",
-            "- Required authorisation: UAES owner approval of DRAFT entries + execution of 13 L3 domain gates.",
+            "- Required authorisation: AES owner approval of DRAFT entries + execution of 13 L3 domain gates.",
             "- Required engineering: per-requirement implementation mapping + requirement-specific verification with raw evidence.",
             "- Revalidation result: **NOT REVALIDATED**. No row may be reported as PASS until the above exists.", "",
             "## Requirement extract (first 25 rows; full set in JSON)", "",
@@ -648,8 +648,8 @@ def main(argv: list[str]) -> int:
     if "baseline" in phases or "matrix" in phases or "domains" in phases or "deliver" in phases:
         state["baseline"] = phase_baseline()
         print(f"[baseline] Uter {state['baseline']['uter']['commit_sha'][:12]} "
-              f"UAES {state['baseline']['uaes']['commit_sha'][:12]} "
-              f"DRAFT={state['baseline']['uaes_standards']['draft_files']}/{state['baseline']['uaes_standards']['md_files']}")
+              f"AES {state['baseline']['aes']['commit_sha'][:12]} "
+              f"DRAFT={state['baseline']['aes_standards']['draft_files']}/{state['baseline']['aes_standards']['md_files']}")
     if "matrix" in phases or "domains" in phases or "deliver" in phases:
         state["matrix"] = phase_matrix(state["baseline"])
         s = state["matrix"]["summary"]
@@ -660,7 +660,7 @@ def main(argv: list[str]) -> int:
         print("[domains] 14 per-domain audit reports written")
     if "deliver" in phases:
         from full_conformance_deliver import deliver
-        deliver(state["baseline"], state["matrix"], ROOT, UAES, OUT, EV, LEGACY, DOMAIN_NAMES)
+        deliver(state["baseline"], state["matrix"], ROOT, AES, OUT, EV, LEGACY, DOMAIN_NAMES)
     return 0
 
 

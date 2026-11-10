@@ -35,9 +35,9 @@
   "not_auto_fixed": [
     {
       "finding_id": "FIND-FCA-001",
-      "reason": "UAES 规范批准属于 UAES Owner 权限；双仓库分别治理",
+      "reason": "AES 规范批准属于 AES Owner 权限；双仓库分别治理",
       "risk": "越权修改通用标准",
-      "required_authorization": "UAES Owner"
+      "required_authorization": "AES Owner"
     },
     {
       "finding_id": "FIND-FCA-003",
@@ -125,7 +125,7 @@
       "finding_id": "FIND-FCA-005",
       "defect": "MA-10 docs-web 构建被宿主 safe-delete 批量删除拦截（旧 .next 产物 >50 文件）",
       "file": "environment (docs-web/.next, docs-web/out)",
-      "change": "构建前用 mv 把旧产物移出工作区（与 uaes-test-matrix.sh L2-07 build hygiene 同一既有策略）；MA-10 命令与断言零改动、未绕过 shim",
+      "change": "构建前用 mv 把旧产物移出工作区（与 aes-test-matrix.sh L2-07 build hygiene 同一既有策略）；MA-10 命令与断言零改动、未绕过 shim",
       "before": "MA-10 exit 1（SAFE_DELETE_BULK_CONFIRM_REQUIRED）",
       "after": "MA-10 exit 0（Next 构建 + postbuild copy-to-web 全链路成功）",
       "risk": "无",

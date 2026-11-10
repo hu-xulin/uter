@@ -608,7 +608,7 @@
       "revalidation_record": "evidence/08-remediation-register.json"
     },
     {
-      "path": "evidence/agent/fixtures/uaes-registry-version-drift.yaml",
+      "path": "evidence/agent/fixtures/aes-registry-version-drift.yaml",
       "sha256": "3e614e3d0f777b338489de33362769a77fe769facf33140a17a711366564c42a",
       "bytes": 98446,
       "requirement_linkage": {
@@ -908,7 +908,7 @@
       "revalidation_record": "evidence/08-remediation-register.json"
     },
     {
-      "path": "evidence/gates/fixtures/GLOBAL_UAES_CONFORMANCE_GATE-nonconforming-state.json",
+      "path": "evidence/gates/fixtures/GLOBAL_AES_CONFORMANCE_GATE-nonconforming-state.json",
       "sha256": "433dc4557d911fd6fa88c0245001b44e28cb8d9207c8b2cff93657e5b8f21a7d",
       "bytes": 225074,
       "requirement_linkage": {
@@ -1112,7 +1112,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json  |  exit_code=1",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1172,7 +1172,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --uaes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-uaes-drift-7jj8830q  |  exit_code=1",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json --aes-repo /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/fca-aes-drift-7jj8830q  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1232,7 +1232,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json  |  exit_code=1",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-missing-applicability.json  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1292,7 +1292,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.push.main --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.push.main --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1352,7 +1352,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.pull_request.merge --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.pull_request.merge --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1412,7 +1412,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.merge --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.merge --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1472,7 +1472,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action production.database.write --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action production.database.write --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1532,7 +1532,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action payment.configuration.write --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action payment.configuration.write --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1592,7 +1592,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action overwrite.user_uncommitted_changes --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action overwrite.user_uncommitted_changes --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1652,7 +1652,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action falsify.verification_result --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action falsify.verification_result --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1712,7 +1712,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action production.secrets.read --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action production.secrets.read --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1772,7 +1772,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.reset.hard --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.reset.hard --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1832,7 +1832,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.restore.user_files --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.restore.user_files --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1892,7 +1892,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.commit --profile pull_request_creator  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.commit --profile pull_request_creator  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -1952,7 +1952,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.push.feature_branch --profile pull_request_creator  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.push.feature_branch --profile pull_request_creator  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2012,7 +2012,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.pull_request.create --profile pull_request_creator  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.pull_request.create --profile pull_request_creator  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2072,7 +2072,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action filesystem.read --profile read_only  |  exit_code=0",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action filesystem.read --profile read_only  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2132,7 +2132,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb workspace --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-bypass-attempt.json  |  exit_code=1",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb workspace --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/task-bypass-attempt.json  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2192,7 +2192,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.push.main --profile pull_request_creator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.push.main --profile pull_request_creator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2252,7 +2252,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.pull_request.merge --profile orchestrator --validation-passed  |  exit_code=2",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.pull_request.merge --profile orchestrator --validation-passed  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2312,7 +2312,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb selftest  |  exit_code=0",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb selftest  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2372,7 +2372,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt  |  exit_code=0",
+      "command": "ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/fixtures/agent-verify-commands.txt  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2672,7 +2672,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "bash scripts/quality/uaes-pin-check.sh  |  exit_code=0",
+      "command": "bash scripts/quality/aes-pin-check.sh  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2732,7 +2732,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby scripts/quality/test-uaes-pin-check.rb  |  exit_code=1",
+      "command": "ruby scripts/quality/test-aes-pin-check.rb  |  exit_code=1",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2792,7 +2792,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "bash scripts/quality/uaes-integration-check.sh  |  exit_code=0",
+      "command": "bash scripts/quality/aes-integration-check.sh  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2852,7 +2852,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby scripts/quality/test-uaes-integration-check.rb  |  exit_code=0",
+      "command": "ruby scripts/quality/test-aes-integration-check.rb  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -2972,7 +2972,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb  |  exit_code=0",
+      "command": "ruby scripts/quality/test-aes-manual-acceptance-boundary.rb  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -3032,7 +3032,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "python3 scripts/quality/uaes-manual-acceptance.py --verify-only  |  exit_code=0",
+      "command": "python3 scripts/quality/aes-manual-acceptance.py --verify-only  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -3632,7 +3632,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"  |  exit_code=0",
+      "command": "tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"  |  exit_code=0",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"
@@ -4058,7 +4058,7 @@
       "revalidation_record": "evidence/08-remediation-register.json"
     },
     {
-      "path": "evidence/raw/GATE-NEG-GLOBAL_UAES_CONFORMANCE_GATE.exit",
+      "path": "evidence/raw/GATE-NEG-GLOBAL_AES_CONFORMANCE_GATE.exit",
       "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
       "bytes": 2,
       "requirement_linkage": {
@@ -4088,7 +4088,7 @@
       "revalidation_record": "evidence/08-remediation-register.json"
     },
     {
-      "path": "evidence/raw/GATE-NEG-GLOBAL_UAES_CONFORMANCE_GATE.log",
+      "path": "evidence/raw/GATE-NEG-GLOBAL_AES_CONFORMANCE_GATE.log",
       "sha256": "3dba0fa10c36919d76666982ae9dfc7b2215490df834950a3680814ad359f3d3",
       "bytes": 1249,
       "requirement_linkage": {
@@ -4112,7 +4112,7 @@
         "govulncheck": "Go: go1.27.3",
         "os": "macOS-26.7.2-x86_64-i386-64bit-Mach-O"
       },
-      "command": "python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/GLOBAL_UAES_CONFORMANCE_GATE-nonconforming-state.json' --gate GLOBAL_UAES_CONFORMANCE_GATE  |  exit_code=2",
+      "command": "python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/gates/fixtures/GLOBAL_AES_CONFORMANCE_GATE-nonconforming-state.json' --gate GLOBAL_AES_CONFORMANCE_GATE  |  exit_code=2",
       "raw_result": "see log",
       "audit_conclusion": "referenced by §11 deliverables; never a self-declared PASS",
       "revalidation_record": "evidence/08-remediation-register.json"

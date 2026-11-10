@@ -18,60 +18,60 @@ concurrency:
 # Checkout the event commit in both jobs. A PR merge ref can disappear while
 # queued runs start, and a base branch can advance after the merge event.
 jobs:
-  uaes-integration:
-    name: UAES integration contract
+  aes-integration:
+    name: AES integration contract
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Test UAES integration gate positive and negative fixtures
-        run: ruby scripts/quality/test-uaes-integration-check.rb
-      - name: Validate UAES integration wiring
-        run: bash scripts/quality/uaes-integration-check.sh
-      - name: Test UAES spec-version pin gate positive and negative fixtures
-        run: ruby scripts/quality/test-uaes-pin-check.rb
-      - name: Validate UAES spec-version pin against integration contract
-        run: bash scripts/quality/uaes-pin-check.sh
+      - name: Test AES integration gate positive and negative fixtures
+        run: ruby scripts/quality/test-aes-integration-check.rb
+      - name: Validate AES integration wiring
+        run: bash scripts/quality/aes-integration-check.sh
+      - name: Test AES spec-version pin gate positive and negative fixtures
+        run: ruby scripts/quality/test-aes-pin-check.rb
+      - name: Validate AES spec-version pin against integration contract
+        run: bash scripts/quality/aes-pin-check.sh
       - name: Test P01 AI governance policy and task contract
         run: ruby scripts/quality/test-ai-governance-policy.rb
-      - name: Read pinned UAES baseline commit
-        id: uaes_pin
+      - name: Read pinned AES baseline commit
+        id: aes_pin
         run: |
-          commit="$(ruby -rjson -e 'print JSON.parse(File.read(".uaes/uaes-pin.json")).fetch("source_commit")')"
+          commit="$(ruby -rjson -e 'print JSON.parse(File.read(".aes/aes-pin.json")).fetch("source_commit")')"
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
-      - name: Checkout pinned UAES universal standards baseline
+      - name: Checkout pinned AES universal standards baseline
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: hu-xulin/uaes
-          ref: ${{ steps.uaes_pin.outputs.commit }}
-          path: uaes-pinned
+          repository: hu-xulin/aes
+          ref: ${{ steps.aes_pin.outputs.commit }}
+          path: aes-pinned
 
       # Autonomous downstream gate: Uter must detect and process every upstream
-      # UAES version change. --check is detect-only and exits 1 when a change is
+      # AES version change. --check is detect-only and exits 1 when a change is
       # still pending, so an unprocessed upstream change blocks the build rather
       # than being silently absorbed. It never promotes integration_status,
       # never marks items VERIFIED and never marks L3/L4 gates PASS (see
-      # .uaes/autonomous/config/downstream-policy.json hard_constraints).
-      - name: Autonomous UAES downstream version check
+      # .aes/autonomous/config/downstream-policy.json hard_constraints).
+      - name: Autonomous AES downstream version check
         env:
-          UAES_ROOT: ${{ github.workspace }}/uaes-pinned
-        run: node .uaes/autonomous/engine/sync.mjs --check
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: node .aes/autonomous/engine/sync.mjs --check
 
-      - name: Validate UAES / Uter two-repository separation
+      - name: Validate AES / Uter two-repository separation
         env:
-          UAES_REPO: ${{ github.workspace }}/uaes-pinned
+          AES_REPO: ${{ github.workspace }}/aes-pinned
         run: ruby scripts/quality/uter-governance-separation-check.rb
       - name: Validate P09 proves / P10 defines boundary
         env:
-          UAES_REPO: ${{ github.workspace }}/uaes-pinned
+          AES_REPO: ${{ github.workspace }}/aes-pinned
         run: ruby scripts/quality/uter-p09-p10-boundary-check.rb
       - name: Test separation and P09/P10 gate negative fixtures
         env:
-          UAES_REPO: ${{ github.workspace }}/uaes-pinned
+          AES_REPO: ${{ github.workspace }}/aes-pinned
         run: ruby scripts/quality/test-uter-governance-boundaries.rb
       - name: Test P08 fail-closed Agent runtime denials
-        run: ruby scripts/quality/uaes-agent-runtime-check.rb selftest
+        run: ruby scripts/quality/aes-agent-runtime-check.rb selftest
 
       - name: Set up Python for the integration adapter's YAML fallback
         # The adapter parses YAML with the hoisted js-yaml when present, and
@@ -85,32 +85,32 @@ jobs:
       - name: Install pinned PyYAML
         run: python -m pip install --disable-pip-version-check --no-input PyYAML==6.0.2
 
-      - name: Prove the UAES integration adapter cannot report a false INTEGRATED
+      - name: Prove the AES integration adapter cannot report a false INTEGRATED
         # The adapter's own suite proves §8's hard rule: integration is a
         # conjunction of four independent conditions (authentic ACTIVE spec, zero
         # unmapped requirements, pin matching the ACTIVE digest, and the PINNED
         # COMMIT actually carrying the declared artefacts). Copying files is not
         # integration, and neither is a pin that names a commit without them.
-        # UAES_REPO_ROOT must point at the pinned checkout; without it the
-        # adapter falls back to /Users/lincolnhu/uaes and 10+ cases fail in CI.
+        # AES_REPO_ROOT must point at the pinned checkout; without it the
+        # adapter falls back to /Users/lincolnhu/aes and 10+ cases fail in CI.
         env:
-          UAES_REPO_ROOT: ${{ github.workspace }}/uaes-pinned
-        run: node --test tools/uaes/integration-adapter.test.mjs
+          AES_REPO_ROOT: ${{ github.workspace }}/aes-pinned
+        run: node --test tools/aes/integration-adapter.test.mjs
       - name: Verify the pinned commit carries the governance artefacts
         env:
-          UAES_REPO_ROOT: ${{ github.workspace }}/uaes-pinned
+          AES_REPO_ROOT: ${{ github.workspace }}/aes-pinned
         # A pin is only meaningful if `git checkout <source_commit>` yields the
         # registry, policy and trust roster. Otherwise CI validates an empty tree
         # while the project looks governed. This is a real gate, not a formality:
-        # it fails today and stays failed until source_commit advances to a UAES
+        # it fails today and stays failed until source_commit advances to a AES
         # commit that contains the formal specification registry.
-        run: node tools/uaes/integration-adapter.mjs verify-pin
+        run: node tools/aes/integration-adapter.mjs verify-pin
 
       - name: Block delivery actions until full validation passes
         run: |
           set -euo pipefail
           for action in git.commit git.push.feature_branch git.pull_request.create; do
-            if ruby scripts/quality/uaes-agent-runtime-check.rb authorize \
+            if ruby scripts/quality/aes-agent-runtime-check.rb authorize \
                 --action "$action" --profile pull_request_creator >/dev/null 2>&1; then
               echo "FAIL: $action was allowed without complete L1+L2+14xL3+L4_GLOBAL_CONFORMANCE_GATE validation" >&2
               exit 1
@@ -118,7 +118,7 @@ jobs:
             echo "PASS: $action denied before complete validation"
           done
           for action in git.push.main git.pull_request.merge production.database.write payment.configuration.write overwrite.user_uncommitted_changes; do
-            if ruby scripts/quality/uaes-agent-runtime-check.rb authorize \
+            if ruby scripts/quality/aes-agent-runtime-check.rb authorize \
                 --action "$action" --profile pull_request_creator --validation-passed >/dev/null 2>&1; then
               echo "FAIL: forbidden action $action was allowed" >&2
               exit 1
@@ -193,7 +193,7 @@ jobs:
 
   ueqe-review:
     name: UEQE review engine (all modules + AI spec integrity)
-    needs: uaes-integration
+    needs: aes-integration
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -587,7 +587,7 @@ jobs:
       - name: Design tokens
         run: bun run lint:design:strict
 
-      # UAES P4-IV: canonical React UI component registry, contract shape and filesystem parity.
+      # AES P4-IV: canonical React UI component registry, contract shape and filesystem parity.
       - name: React component registry
         run: bun run components:registry:check
 

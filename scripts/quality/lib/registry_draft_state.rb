@@ -1,17 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# UTER-UAES-GOV-001 §14.3 / §16.1 — live registry state reader (Ruby side).
+# UTER-AES-GOV-001 §14.3 / §16.1 — live registry state reader (Ruby side).
 #
 # WHY THIS FILE EXISTS
 #
 # The gate evaluator used to state "304 registry entries remain DRAFT" as a
-# literal. That was true at UAES registry 1.9.0; by registry 1.12.1 the real
+# literal. That was true at AES registry 1.9.0; by registry 1.12.1 the real
 # count was 130. A frozen number inside an evidence generator makes the evidence
 # wrong, and wrong evidence is more dangerous than missing evidence because it
 # looks verified.
 #
-# The count must therefore be derived from the pinned UAES checkout on every
+# The count must therefore be derived from the pinned AES checkout on every
 # run, and must fail closed (report UNKNOWN) rather than fall back to a stale
 # or invented value when the registry cannot be read.
 #
@@ -23,11 +23,11 @@
 module RegistryDraftState
   module_function
 
-  # @param uaes_repo [String] path to the pinned UAES checkout
+  # @param aes_repo [String] path to the pinned AES checkout
   # @return [Hash] { "available", "path", "draft_total", "active_total",
   #                  "by_section", "active_by_section", "note" }
-  def read(uaes_repo)
-    path = File.join(uaes_repo.to_s, ".uaes/STANDARD-REGISTRY.yaml")
+  def read(aes_repo)
+    path = File.join(aes_repo.to_s, ".aes/STANDARD-REGISTRY.yaml")
 
     unless File.file?(path) && File.readable?(path)
       return {
@@ -37,7 +37,7 @@ module RegistryDraftState
         "active_total" => nil,
         "by_section" => {},
         "active_by_section" => {},
-        "note" => "UAES registry not readable at #{path}; " \
+        "note" => "AES registry not readable at #{path}; " \
                   "DRAFT/ACTIVE counts are UNKNOWN, not assumed."
       }
     end
@@ -69,17 +69,17 @@ module RegistryDraftState
       "active_total" => active_total1,
       "by_section" => by_section.select { |_, v| v.positive? },
       "active_by_section" => active_by_section.select { |_, v| v.positive? },
-      "note" => "#{draft_total} UAES registry entries remain DRAFT (#{detail}); " \
+      "note" => "#{draft_total} AES registry entries remain DRAFT (#{detail}); " \
                 "#{active_total1} entries are ACTIVE."
     }
   end
 
   # One-line wording that is always current, for open_reason strings.
   # @return [String]
-  def note(uaes_repo)
-    state = read(uaes_repo)
+  def note(aes_repo)
+    state = read(aes_repo)
     return state["note"] if state["available"]
 
-    "UAES registry could not be read, so the DRAFT/ACTIVE split is UNKNOWN"
+    "AES registry could not be read, so the DRAFT/ACTIVE split is UNKNOWN"
   end
 end

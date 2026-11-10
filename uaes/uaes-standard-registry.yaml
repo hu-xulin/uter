@@ -1,0 +1,112 @@
+# UAES — Uter Project-Level Standard Registry
+# 仅登记 Uter 项目级规范；企业级规范统一登记在 AES 仓库（AES-SPEC-CORE）。
+document_id: UAES-STANDARD-REGISTRY
+version: 1.0.0
+status: ACTIVE
+enterprise_authority:
+  name: AES
+  repository: https://github.com/hu-xulin/aes
+  specification_id: AES-SPEC-CORE
+  specification_version: 2.0.0
+  pin_file: .aes/aes-pin.json
+relationship: "UAES extends AES for the Uter project; it MUST NOT lower any AES mandatory requirement. On conflict, AES wins."
+layering:
+  - "L1: AES enterprise P00-P12 (owns the aes repo)"
+  - "L2: UAES Uter project-level + UTER P13 business-domain engineering (owns this directory)"
+  - "L3: execution & assurance (WorkBuddy + CI + independent automated review)"
+standards:
+  - id: UAES-01
+    title: AI Execution Standard
+    path: uaes/standards/AI-EXECUTION-STANDARD.md
+    parent: AES-P01
+    status: ACTIVE
+  - id: UAES-02
+    title: API Contract Standard
+    path: uaes/standards/API-CONTRACT-STANDARD.md
+    parent: AES-P04
+    status: ACTIVE
+  - id: UAES-03
+    title: Architecture Standard
+    path: uaes/standards/ARCHITECTURE-STANDARD.md
+    parent: AES-P04
+    status: ACTIVE
+  - id: UAES-04
+    title: Change Management Standard
+    path: uaes/standards/CHANGE-MANAGEMENT-STANDARD.md
+    parent: AES-P12
+    status: ACTIVE
+  - id: UAES-05
+    title: Conflict Report (normative conflict rulings)
+    path: uaes/standards/CONFLICT-REPORT.md
+    parent: AES-P12
+    status: ACTIVE
+  - id: UAES-06
+    title: Database Standard
+    path: uaes/standards/DATABASE-STANDARD.md
+    parent: AES-P04
+    status: ACTIVE
+  - id: UAES-07
+    title: Development Standard
+    path: uaes/standards/DEVELOPMENT-STANDARD.md
+    parent: AES-P06
+    status: ACTIVE
+  - id: UAES-08
+    title: Documentation Standard
+    path: uaes/standards/DOCUMENTATION-STANDARD.md
+    parent: AES-P03
+    status: ACTIVE
+  - id: UAES-09
+    title: Product Requirements Standard (payment / refund / idempotency / reconciliation)
+    path: uaes/standards/PRODUCT-REQUIREMENTS-STANDARD.md
+    parent: AES-P02
+    status: ACTIVE
+    business_critical: true
+  - id: UAES-10
+    title: Security Standard
+    path: uaes/standards/SECURITY-STANDARD.md
+    parent: AES-P10
+    status: ACTIVE
+  - id: UAES-11
+    title: UX Interaction Standard
+    path: uaes/standards/UX-INTERACTION-STANDARD.md
+    parent: AES-P05
+    status: ACTIVE
+  - id: UAES-12
+    title: Engineering System Acceptance Report
+    path: uaes/standards/ENGINEERING-SYSTEM-ACCEPTANCE-REPORT.md
+    parent: AES-P09
+    status: ACTIVE
+  - id: UAES-13
+    title: Uter x AES Governance Architecture & WorkBuddy Execution Specification
+    path: uaes/standards/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md
+    parent: AES-P01
+    status: ACTIVE
+  - id: UAES-EQ-01
+    title: Code Review Standard (Uter implementation)
+    path: uaes/standards/engineering-quality/CODE-REVIEW-STANDARD.md
+    parent: AES-P09
+    status: ACTIVE
+  - id: UAES-EQ-02
+    title: Automated Test Standard (Uter implementation)
+    path: uaes/standards/engineering-quality/AUTOMATED-TEST-STANDARD.md
+    parent: AES-P09
+    status: ACTIVE
+  - id: UAES-EQ-03
+    title: Auto-Fix Standard (Uter implementation)
+    path: uaes/standards/engineering-quality/AUTO-FIX-STANDARD.md
+    parent: AES-P09
+    status: ACTIVE
+  - id: UAES-EQ-04
+    title: Quality Gate Standard (Uter implementation)
+    path: uaes/standards/engineering-quality/QUALITY-GATE-STANDARD.md
+    parent: AES-P09
+    status: ACTIVE
+validation:
+  - rule: all_paths_exist
+  - rule: no_duplicate_ids
+  - rule: all_parents_reference_aes
+  - rule: no_requirement_lowers_aes
+notes: >
+  This registry intentionally lists only Uter project-level standards. Enterprise
+  requirements live in AES-SPEC-CORE and are pinned via .aes/aes-pin.json. UAES
+  standards marked business_critical must be preserved during any cleanup.

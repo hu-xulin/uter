@@ -1,0 +1,51 @@
+$ go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v
+exit=0
+=== RUN   TestAccessTokenLifecycleAndLateRequests
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /api/verify/methods       --> github.com/uter-ai/uter/controller.GetVerificationMethods (4 handlers)
+[GIN-debug] POST   /api/verify               --> github.com/uter-ai/uter/controller.UniversalVerify (4 handlers)
+[GIN-debug] GET    /api/user/self            --> github.com/uter-ai/uter/controller.newAccessTokenTestRouter.func1 (4 handlers)
+[GIN-debug] POST   /api/user/2fa/setup       --> github.com/uter-ai/uter/controller.Setup2FA (4 handlers)
+[GIN-debug] POST   /api/user/2fa/disable     --> github.com/uter-ai/uter/controller.Disable2FA (4 handlers)
+[GIN-debug] GET    /api/user/access_tokens   --> github.com/uter-ai/uter/controller.ListAccessTokens (4 handlers)
+[GIN-debug] GET    /api/user/access_tokens/catalog --> github.com/uter-ai/uter/controller.GetAccessTokenCatalog (4 handlers)
+[GIN-debug] GET    /api/user/access_tokens/scopes --> github.com/uter-ai/uter/controller.GetAccessTokenScopes (4 handlers)
+[GIN-debug] POST   /api/user/access_tokens   --> github.com/uter-ai/uter/controller.CreateAccessToken (4 handlers)
+[GIN-debug] PATCH  /api/user/access_tokens/:id --> github.com/uter-ai/uter/controller.UpdateAccessToken (4 handlers)
+[GIN-debug] DELETE /api/user/access_tokens/:id --> github.com/uter-ai/uter/controller.DeleteAccessToken (4 handlers)
+[GIN-debug] DELETE /api/user/access_tokens/legacy --> github.com/uter-ai/uter/controller.RevokeLegacyAccessToken (4 handlers)
+[GIN-debug] DELETE /api/user/:id             --> github.com/uter-ai/uter/controller.DeleteUser (4 handlers)
+
+2026/11/10 19:42:06 [31;1m/tmp/uter-product-ci/model/user_access_token.go:102 [35;1mrecord not found
+[0m[33m[0.038ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE id = 2 AND user_id = 1 ORDER BY `user_access_tokens`.`id` LIMIT 1
+
+2026/11/10 19:42:06 [31;1m/tmp/uter-product-ci/model/user_access_token.go:90 [35;1mrecord not found
+[0m[33m[0.039ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE token_hash = "8a09f2135f717788231783f33dfb72a9bdad68c497c8de0f880bc36f0389d36c" ORDER BY `user_access_tokens`.`id` LIMIT 1
+
+2026/11/10 19:42:06 [31;1m/tmp/uter-product-ci/model/user_access_token.go:102 [35;1mrecord not found
+[0m[33m[0.034ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE id = 1 AND user_id = 1 ORDER BY `user_access_tokens`.`id` LIMIT 1
+
+2026/11/10 19:42:06 [31;1m/tmp/uter-product-ci/model/user.go:1302 [35;1mrecord not found
+[0m[33m[0.078ms] [34;1m[rows:0][0m SELECT * FROM `users` WHERE access_token = "legacy-opaque-token" AND `users`.`deleted_at` IS NULL ORDER BY `users`.`id` LIMIT 1
+--- PASS: TestAccessTokenLifecycleAndLateRequests (0.04s)
+=== RUN   TestEmailCodeLogin_SuspendedAccountSilent
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+--- PASS: TestEmailCodeLogin_SuspendedAccountSilent (0.01s)
+PASS
+ok  	github.com/uter-ai/uter/controller	2.532s
+
+
+$ go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v
+exit=0
+=== RUN   TestAccessTokenRejectsTampering
+--- PASS: TestAccessTokenRejectsTampering (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/service	1.735s
+
+

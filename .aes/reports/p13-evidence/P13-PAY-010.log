@@ -1,0 +1,15 @@
+=== RUN   TestAlipayReconcileRetriesAfterGatewayFailureRound
+[WARN] 2026/11/10 - 19:44:04 | SYSTEM | 支付宝订单对账：查单失败 trade_no=ALIPAY-FAULT-RETRY user_id=1 error="alipay query failed: code=20000 sub_code=isp.unknow-error msg=Service Currently Unavailable" 
+[INFO] 2026/11/10 - 19:44:04 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=0 query_failed=1 
+[SYS] 2026/11/10 - 19:44:04 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-RETRY user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/10 - 19:44:04 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-RETRY user_id=1 source=reconcile 
+[INFO] 2026/11/10 - 19:44:04 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileRetriesAfterGatewayFailureRound (0.04s)
+=== RUN   TestAlipayReconcileWorkerSingleFlightExactOnceCredit
+[SYS] 2026/11/10 - 19:44:04 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-SF user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/10 - 19:44:04 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-SF user_id=1 source=reconcile 
+[INFO] 2026/11/10 - 19:44:04 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileWorkerSingleFlightExactOnceCredit (0.10s)
+PASS
+ok  	github.com/uter-ai/uter/controller	2.034s
+

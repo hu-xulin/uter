@@ -3,7 +3,7 @@
 - **Document:** `5/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -18,8 +18,8 @@
 
 | 层 | 归属仓库 | 内容 |
 |---|---|---|
-| A. UAES 通用工程治理 | UAES (`0c9386b19209`) | P00–P12，178 份标准 |
-| B. UTER 项目治理 | Uter (`ec6501adceb0`) | 治理入口、UAES 继承配置、UTER P13 |
+| A. AES 通用工程治理 | AES (`0c9386b19209`) | P00–P12，178 份标准 |
+| B. UTER 项目治理 | Uter (`ec6501adceb0`) | 治理入口、AES 继承配置、UTER P13 |
 | C. 执行与保障 | Uter + CI | WorkBuddy、质量门禁、独立评估、证据体系 |
 
 ## 真实验证
@@ -37,7 +37,7 @@ ARCHITECTURE_GATE 逐项检查：
 | repository_separation_PASS | True |
 | P09_P10_boundary_PASS | True |
 | 14_domains_registered | True |
-| UTER_P13_not_in_UAES | True |
+| UTER_P13_not_in_AES | True |
 | architecture_matrix_rows_PASS | True |
 | governance_wiring_PASS | True |
 

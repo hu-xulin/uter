@@ -6,7 +6,7 @@
 # 复用既有门禁而非重建（宪法 AGENTS.md 与规范第三部分均要求）。五个引擎：
 #
 #   review     静态审查：gofmt/go vet × 4 模块 + 前端 lint/i18n/design-strict/copyright
-#              + ai-specs（docs/ai-specs/ 规范体系完整性，见 ai-specs-check.sh）
+#              + ai-specs（uaes/standards/ 规范体系完整性，见 ai-specs-check.sh）
 #   test       自动化测试：Go test × 4 模块 + vitest（含 spec-guards 92 项）
 #   security   安全扫描：govulncheck/gitleaks（缺工具=NOT_RUN，绝不伪通过）+ 敏感文件入库抽查
 #   coverage   覆盖率门禁：按包阈值 controller=39 model=45 service=43（与 CI 同口径）

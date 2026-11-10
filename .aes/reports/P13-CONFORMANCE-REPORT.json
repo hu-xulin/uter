@@ -1,0 +1,1992 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "UTER-P13-MACHINE-CONFORMANCE",
+  "generated_at": "2026-11-10T11:44:04.595Z",
+  "generated_by": "scripts/quality/p13-conformance-engine.mjs",
+  "written_by_hand": false,
+  "uter_head": "6ef64a116191784781785efc41e507199c907f7a",
+  "aes_governed_fingerprint": "3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
+  "aes_seal_intact": true,
+  "p13_source_digest": "306f8668de1a3aa3fe328b0c3d005e9ef8866c61762eb8a53d83f357e0605cfa",
+  "capability_mapping_digest": "e15888ea99b31b160d79f8f351bf64e7010ad89e99ea9df0d65628815939bf42",
+  "requirement_count": 110,
+  "all_applicable_requirements_verified": true,
+  "not_run_count": 0,
+  "failed_count": 0,
+  "verdict": "PASS",
+  "requirements": [
+    {
+      "requirement_id": "P13-01-CAP-01",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "a0e8fb37f91e78f91dae8190f9a6e8b72e64a38401a2942dadc29351bf690ed7",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-02",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0f48876e7d695f175de93da2f1737336f9af14fd88f1807245e7c5fc69a1f821",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-03",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "216b13ede9fc68721ab9c2c2cb645f74c09e7798edd0672905ec1b1a7243c4e6",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-04",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2fa5f8903de9944845a8c93a9601c296107798b502bf5015fb442b4475f46835",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-05",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f77acfba403a726ac560e2e1387425e202875bfe8b61fb06624fd29d8909550d",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-06",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "e10fdb33edd7d34f86ca4c2469450b6fcb1707ba2f8421babc9951536b0dcd19",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-07",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6c008bdd4590cafae5b49257f59131fd0d0b9db5439b72154f8be72d0de14cd7",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-08",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d6ec3fc12630548de9b5f4f65a0b09b5d0e4b3137e8f370c161a81c307d3d413",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-09",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2ee449c8a2f68ab0137ac614fc7c3ce4e298bea8c758fb995ccb1042cd9c18f2",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-10",
+      "domain": "P13.1 Product and business requirements",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "96165cb216f0c2c73a44116b5c9e84f61210cce088832014126801a7677085b6",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-01",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d5e0fb0c60dd6557b2bf85e2c046bf8d99922ed8f700000d3409c9f8657b3983",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-02",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4256b98f8dfcf24cc479ec1a9d8079952edece318895ab203da35c5a90b105a1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-03",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f5ba0eca603ea7782577f2df3a42dd128a00b7767cf01def9c1c7ec694bf491d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-04",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "e767f6ef35d0125cdc4a62e3a367e9f7362cb366797d018b6bc7c03f443ac6d4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-05",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "95ddbded03d9754e2761a58bfedb13ce60e713831525efc331183069960e1fb3",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-06",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "34412c264fc1d4eac72d9e4e4ba9d705137f533de06123ee34f096718dee9edf",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-07",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5d8bb322f12762ac80f89081f3caf2a94fdf16593f1908a2726f950bbf681c55",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-08",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "8aebf90a47d3c2aaeaf2ab3ab9dd1af2ebbc793ad16ffde32361b363cbc844cd",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-09",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d89a3d0aabe9748f8dc699f2d151acf070785a439fd8faead6c4e64c95a9e7e4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-10",
+      "domain": "P13.2 Identity and accounts",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "15cb4b7bb1cb9b7799766d5a39ab33640e6f919e9396aa825615cb13bac5898b",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-01",
+      "domain": "P13.3 Models and providers",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4858051b6ea9102a8bd885c344dff1a8f4928a4fa7e26413a3dc943c12addc3a",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-02",
+      "domain": "P13.3 Models and providers",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2f32356a53dcdb3bf224261c97fc9898f3acdd54d53a96cbbb6284935e438d86",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-03",
+      "domain": "P13.3 Models and providers",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3c351f67a5ed3e1e256aad6c9a5e12be008afe272b144efedbb4e32a27c234bb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-04",
+      "domain": "P13.3 Models and providers",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f3b525c775e9a6b2c330c60c921d6e063f5b6cd2149da0700942327f784f40c7",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-05",
+      "domain": "P13.3 Models and providers",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "061d031f3a24663afe58b9118063a76771191cdc92e745a87c394ef95f6b43f1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-06",
+      "domain": "P13.3 Models and providers",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "e749ac9c1e1cf226550e2d11d25fdda87894c56923f3d239dacdb7aece3f7154",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-07",
+      "domain": "P13.3 Models and providers",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ef9ffdd9ad235980e287f4be6862e349758f212c4f3ed25d8ef6f3b176b2ee93",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-08",
+      "domain": "P13.3 Models and providers",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "474be67463916967d116063d07c0593e32f6db5dcc544f3f995296799ccc5d48",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-09",
+      "domain": "P13.3 Models and providers",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "af2a50f0fab6b43bd99243a48be9226cf97e7112c75471619d62436b614eb20d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-10",
+      "domain": "P13.3 Models and providers",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0ecf10032075bf93acc31cc710e8d68197c9be27a6003c609795998ebca11883",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-01",
+      "domain": "P13.4 AI relay",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "a637232b1c859a162ef09d935b0d602273b57018fff0491869519d3a19bfa668",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-02",
+      "domain": "P13.4 AI relay",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6d15d5c7597a42f498a9fe77a6ac9f7462643e8b9dce2cbab871f3c5a1e9951d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-03",
+      "domain": "P13.4 AI relay",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3e3b1f3ee8e3e74e04f82afecf5076081dd5f6eae0b05934ac4d348cd2532f15",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-04",
+      "domain": "P13.4 AI relay",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "aa2e5ff0997580a4813e93ebd981cba89d2fe1b32eba9218ca414330385bd7d9",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-05",
+      "domain": "P13.4 AI relay",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "1be0781e2ca4b4e8f1fc8f1cfbdea55ba862a5fc7b0b92ac7216f88a0a0a9bf7",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-06",
+      "domain": "P13.4 AI relay",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "63e6f9fa7e723e981d2cc8fdd77e31e6b0ce6ca77defa242b83752a6839b7550",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-07",
+      "domain": "P13.4 AI relay",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "efff506fc0e590094738c36dd31fb825bff30ee93f257cda5a2561b1b2d5d902",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-08",
+      "domain": "P13.4 AI relay",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "17ca4923ca99876bfca8d44b8e4d7124fb9753c5393c518bfab570d6fe97d2ed",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-09",
+      "domain": "P13.4 AI relay",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ea9ac17e7e22aac1fc66f09e9cad51188c95554036b1926dc4875f017f1c4158",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-10",
+      "domain": "P13.4 AI relay",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "34dc591dc05b735a82eba4b8495b34acb2a90c6a370050a65213aabf0416b8fe",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-01",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "213165bcd2fa0f0ab4bfec42d2a9daefa44c53cdb908fde198445b3f38ecbbdd",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-02",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "9d10bb63bbb0f22d1e5fdf1632259913e3b9c4ec364cb310b52b0e026bea7a00",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-03",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "8e9bb0e64c477b0c78021347fdd4f7fa5db3f658101c518156ceaeca985c1004",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-04",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2aa0f7e846b2d4b879ede9dc1e694a76e483afef1bbe94d80f1183c955a68bfb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-05",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "bfdfdf673f228c26f8c5e95b68efe13515ec931ac803a07dcb21eb5cafd39278",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-06",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c8d8044775ea365c01a5cbcf32425b4788cf6673a9eecd119e1392cff732eb89",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-07",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5f9f7e8940e335ab3ac63ddd852453c2463d38e0c5d8c2b45ac08292e9aeef01",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-08",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c4bd7f0772ecd3b5c1189e32894c2b3ce2819e3aad67afe2bb9805ed3647a396",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-09",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "a5996ed376fab61ef359ded2a9dbf6a5acf399c6cec9428f9259a36d614361d1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-10",
+      "domain": "P13.5 Usage and pricing",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2e3630719944c04ec50c5f2cec85f9966cae9a0161af2e2ca209c57b0689c821",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-01",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "16aa6d1937bb8e7f2a616787fe69b4808ef3cdf825ed523aae4096a65ddc9270",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-02",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "888fbae4787463b77a0cb54507a0ca150e074a2e3f2c1cf0d786addfaf3d2d0e",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-03",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4e4b7efece6bac4097799b9d11d638f0f5d8e2ec279c99e85e32d160781045b9",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-04",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "810dc033434a178efd387c522507817e92eefceaf3b47dcfd85f11668b37e5ae",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-05",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3109ab7c8f17b1c7b4bb64935c77cb3a67146df32c553849b4c5546a14bc7edf",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-06",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "fbf43daa760ec005be0f07a8195d9607c0a3c26a5c0694d3fb28570fe834e9a0",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-07",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "269cab7645c172d5496ae2066973eaa0c6e1ecb6dc8b9cbaa1441d33f286db0c",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-08",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "aabe77955aa5970ae04486fcc6dc5c161f6f196cf34290153763d8fef3f8f6eb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-09",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0909a676808bc8a11aeec3738b24160126ec40e578b5db17c425aa7220d7fc95",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-10",
+      "domain": "P13.6 Wallet and accounting",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ec57f11d67fc8d5f5fbc4743925e801c5b7fd7d0bfc477edb3f80c4b6e8a6703",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-01",
+      "domain": "P13.7 Payment",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "43e074cf2c2ab9a52ff51c13af4e0da753fe1b416fcfde79bfc4d0d61dac5408",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-02",
+      "domain": "P13.7 Payment",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d423b92ff1a60f6f9fb5878768f3ce3d098b4ad0b9cc7e87c6a4bf3392dba69f",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-03",
+      "domain": "P13.7 Payment",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "42489bd894d02caa24a07a2364c58d2f835ff738334ae9e609f352988bb537ff",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-04",
+      "domain": "P13.7 Payment",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "26651e9cb546f78248645618807150d84fcabcc633f8bf916bce2765d6b13a57",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-05",
+      "domain": "P13.7 Payment",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "60cda1ed650ad9c13e8f7c384c2e8d2a21566d744800f78fbfe574839025467c",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-06",
+      "domain": "P13.7 Payment",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "41d1e892a7b38e3b692aa289f71d428aa2ee8874d27b6c1b0e455fad9bb9df27",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-07",
+      "domain": "P13.7 Payment",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3523e0c2658ef84c40e990cb356f5b0abe82e25b48de686438b2d9387988d032",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-08",
+      "domain": "P13.7 Payment",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "da5f1a1d551b6e40ab94b2c78dbf6b07b891fb9437b19618ccbdc379f8be216d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-09",
+      "domain": "P13.7 Payment",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "442c6d076e07668898e901e26c6cd36850cadacd09903bed4f8d1b216081344d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-10",
+      "domain": "P13.7 Payment",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "27d8e2d9c91e17941046324e4210a411bf555aadc701508273a6ee68452aa4cc",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-01",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "393d7ece30ff81e0d3e79246b11a3ae497240d713590bde6c3755b31047baccb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-02",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "891860c49bf6542d834bbfb1807fa072143f71fd750c22a73e9f42a690a87324",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-03",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "b6c2941ccbd7184bbb502eaf866c8cf5ad6cc42a0f5a0d59680041876389e481",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-04",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6b502b63d23fb64947d75184a1a3ed12355017b047d1f9ce5a7d15292cb918a4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-05",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "737bd3b5ef9f079b68e000ca3b452087f578c119490a80aab22d3c172e133041",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-06",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c0faea06fd212b124234d5452899c5f893f722f6e77be43277b0a0eda2cf8080",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-07",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "1881958312f16a765ad87f99124a135cedf6ffc9f7f153304ad07dfb30fa7cac",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-08",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "eb94293c3be7bed903afd958ff9f95f3faa269bbb3356fd96e25667b8793b2de",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-09",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "60f5f36010f8c1a63f8417768cf12321a5516389b778587be3614ef5ea8e1e08",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-10",
+      "domain": "P13.8 Tasks and scheduling",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "dfbd39483102d50c07670e0d3f6c442acb7ec5e01160e2203f5c859ed0525656",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-01",
+      "domain": "P13.9 Data consistency",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d1392ec0c3e2f0754b5269e6cfbdf7ee812f05b6fd01e18de3b8a5900a99f40d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-02",
+      "domain": "P13.9 Data consistency",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "b881aff2098b0c93abc81a35fdb405626546dc4ff43694f6b4c9ad9300d49fe2",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-03",
+      "domain": "P13.9 Data consistency",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6bfc58f5ba9d0f73740da468bca96736368f6dd10c5d57f584a04750a0335ab0",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-04",
+      "domain": "P13.9 Data consistency",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "7909f30460d3908e8b0599a0af63540a038b1353a0e6929c40d3f2c9b8b85b68",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-05",
+      "domain": "P13.9 Data consistency",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d505dc88722b9a42f3fe096526d1547757040404bc662804242e1803b9722214",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-06",
+      "domain": "P13.9 Data consistency",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5455b302fe44b08b404222855606afaea68b434a17bf7a6309da282daee70067",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-07",
+      "domain": "P13.9 Data consistency",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "7a15e0b4bd1d0e002363d042b11faf8db6d152e58d0f9fa57c88442053cd95dc",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-08",
+      "domain": "P13.9 Data consistency",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f5e47af2fcc3d3f03c6467d3255cdf26302742a290dce2ab703b001b0bb948c2",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-09",
+      "domain": "P13.9 Data consistency",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "bf6e50e45f1eae09e80fa25b8e917ca269af195428f0bd4039d1a1e6a2e96bb0",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-10",
+      "domain": "P13.9 Data consistency",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d988966f25b747600d37c80e3ecd0fb349e7de9f152f2fe17783b07b70fdddbd",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-01",
+      "domain": "P13.10 Business observability",
+      "capability": "machine responsibility domain and source ownership",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ce46a6291257752375d0a143175cd799a416ac9de12a87568dc4ba1bb25af2df",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-02",
+      "domain": "P13.10 Business observability",
+      "capability": "traceable machine normative source",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "78f4f8f0362d7286d986bab8d702543faa6b11ba803eaf6c2a1b2dbe65f2d957",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-03",
+      "domain": "P13.10 Business observability",
+      "capability": "domain model or equivalent specification",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "923645baa87bf0fe266650ff7432e19ead211337d314ba56439c4b6fa1fae094",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-04",
+      "domain": "P13.10 Business observability",
+      "capability": "business invariants",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5ea7d4a536918b780eadd0e581f47bfe87defcb084810eabb4940ae60e1ac84e",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-05",
+      "domain": "P13.10 Business observability",
+      "capability": "state transitions",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0227e647ad14ec8639a7a07ba6e5ec86e9de83c6515e94aec1343f2428d219e1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-06",
+      "domain": "P13.10 Business observability",
+      "capability": "failure behavior",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "032a8638d488256176f1912b2a49e502061112b8e60a96b0070c6a2f17bba5a4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-07",
+      "domain": "P13.10 Business observability",
+      "capability": "authorization rules",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "9e598c0fb190b3684c218925eb3f368de23f6ab21cb5cd6849252d954a7d9572",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-08",
+      "domain": "P13.10 Business observability",
+      "capability": "data integrity requirements",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "34b8ae8f1c287e5d0bcc7889b1ecb6be344c39e2b4ef0ed0f71f71ef0cffbbd9",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-09",
+      "domain": "P13.10 Business observability",
+      "capability": "verification criteria",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "22de0eae7d2e40f286d5cc5cbf3f7a8147de9bce1e847885ec5ef42458f1d932",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-10",
+      "domain": "P13.10 Business observability",
+      "capability": "traceable implementation evidence",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6fac9a05ef7252a8bf1922359d5372eedab505d7b777c7bdf2aafe4b7bddd4d3",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "reason": "Normative statement registered, implementation paths verified on disk, and the domain verifier executed with every declared test passing.",
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-PAY-002",
+      "domain": "P13.7 Payment",
+      "scenario": "duplicate payment notifications and concurrent callbacks",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4036befc2945bd6e016579b922eeeb8518141b2128576864248cda19de85b5bd",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-002.log",
+      "command": "go test ./model -run ^(TestTopUpOrderStateMatrix|TestRechargeEpayConcurrentCallbacksCreditOnce)$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "model/topup_order_state_matrix_test.go",
+        "model/topup_claim_pending_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-003",
+      "domain": "P13.7 Payment",
+      "scenario": "out-of-order payment notifications and terminal-state resurrection",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6129489dfb9e631d47dba608c27127e10cb0244fdd616efb35d1fcf80f361afb",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-003.log",
+      "command": "go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "model/topup_order_state_matrix_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-004",
+      "domain": "P13.7 Payment",
+      "scenario": "paid amount mismatch is rejected before credit",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0de117b973102efa9eddfb8af87de3a03e5f6c5deb65cea50158b13fa9fcb880",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-004.log",
+      "command": "go test ./controller -run ^(TestAlipayReconcileRejectsAmountMismatch|TestPaymentGatewayCallbacksMatchPaidAmount)$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "controller/payment_reconcile_task_test.go",
+        "controller/topup_gateway_contract_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-005",
+      "domain": "P13.7 Payment",
+      "scenario": "forged provider signatures are rejected",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f35ea9c886743c62327cb694aa5c8b081ea7bcc41a3fc356b12fec06d38d3235",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-005.log",
+      "command": "go test ./controller -run ^TestPaymentCallbacksRejectForgedSignatures$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "controller/topup_callback_security_matrix_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-006",
+      "domain": "P13.7 Payment",
+      "scenario": "invalid order-state transitions are rejected",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c571e9c3ee17383eac6ea4742f6343f022d5a93fede2f19e23a7ff80303a3d3f",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-006.log",
+      "command": "go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "model/topup_order_state_matrix_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-007",
+      "domain": "P13.7 Payment",
+      "scenario": "duplicate refund execution and ledger mutation are idempotent",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "780f0463492f281d07a745286913d44fbe95dfe4d17be5f9f00da1c127455caa",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-007.log",
+      "command": "go test ./model -run ^(TestRefundIntentExecuteAppliesRefundOnce|TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent|TestSubscriptionRefundIntentCommitsOnce)$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "model/refund_intent_test.go",
+        "model/midjourney_refund_transaction_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-008",
+      "domain": "P13.7 Payment",
+      "scenario": "payment-provider query failure is handled without false credit",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "22df7107df3c87d4a9396788af71670115e839727e7ed75e92f02d7a71f9b8d6",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-008.log",
+      "command": "go test ./controller -run ^TestGetUserTopUpsSurvivesGatewayFailure$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "controller/payment_reconcile_task_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-009",
+      "domain": "P13.7 Payment",
+      "scenario": "missing callback is recovered by automatic provider reconciliation",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "8297cb1d4db94c52356de08e2e8fe9e1439415a03cfb77d291aff0398309d813",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-009.log",
+      "command": "go test ./controller -run ^TestGetUserTopUpsReconcilesBeforeReturning$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "controller/payment_reconcile_task_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-001",
+      "domain": "P13.7 Payment",
+      "scenario": "gateway reports paid but the local order record was not persisted (fault injection)",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5db17e96f428944be5fab384d1ac3b28f9e990a4fe21fe584b9ee180404fe77b",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-001.log",
+      "command": "go test ./controller -run ^TestAlipayReconcileDoesNotCreditMissingOrderRecord$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "controller/payment_recovery_fault_injection_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    },
+    {
+      "requirement_id": "P13-PAY-010",
+      "domain": "P13.7 Payment",
+      "scenario": "payment-order recovery worker failure, automatic retry and single-flight exact-once credit (fault injection)",
+      "applicable": true,
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "070f131521798e304c63e7cdf913286db39dc9b220ebb846bca82da1d8561619",
+      "evidence_path": ".aes/reports/p13-evidence/P13-PAY-010.log",
+      "command": "go test ./controller -run ^(TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit)$ -count=1 -v",
+      "exit_code": 0,
+      "source_paths": [
+        "controller/payment_recovery_fault_injection_test.go"
+      ],
+      "detail": "Every declared test function executed and passed in an isolated verification run."
+    }
+  ],
+  "summary": {
+    "capability_requirements": 100,
+    "capability_requirements_verified": 100,
+    "payment_scenarios_tested": 10,
+    "payment_scenarios_passed": 10,
+    "payment_scenarios_failed": 0,
+    "payment_scenarios_not_run": 0,
+    "fault_injection_scenarios": 2
+  },
+  "honesty_note": "A successful generic CI job, a file path or a passing unit test does not establish P13 business-domain requirements. Only the targeted executed tests above are marked PASS; every unclosed capability or payment requirement remains NOT_VERIFIED."
+}

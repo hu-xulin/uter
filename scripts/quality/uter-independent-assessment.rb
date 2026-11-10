@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# UTER-UAES-GOV-001 §12 Phase 7 / §16.1 / §16.4 / §14.3-14.4 / §15 D26
+# UTER-AES-GOV-001 §12 Phase 7 / §16.1 / §16.4 / §14.3-14.4 / §15 D26
 #
 # Independent assessment. It does NOT trust the implementing Agent's own PASS
 # declarations. It independently re-derives selected controls from source data:
-#   * UAES pin (commit + registry blob SHA) computed with git hash-object.
-#   * 14-domain count computed from the Uter registry and 13 UAES phases.
+#   * AES pin (commit + registry blob SHA) computed with git hash-object.
+#   * 14-domain count computed from the Uter registry and 13 AES phases.
 #   * every PASS in the test matrix matched to a real exit code in its raw log.
 #   * every runtime DENY expectation matched to the recorded decision.
 #   * no NOT_RUN / unexecuted item silently promoted to PASS in gate results.
@@ -29,9 +29,9 @@ require "timeout"
 require "tmpdir"
 
 ROOT = File.expand_path("../..", __dir__)
-UAES_ROOT = File.expand_path(ENV.fetch("UAES_REPO", File.join(ROOT, "..", "uaes")))
-EVIDENCE = ENV.fetch("UAES_EVIDENCE_DIR", File.join(ROOT, "reports/compliance/uaes-full-migration-2026-11-06/evidence"))
-REPORTS = ENV.fetch("UAES_REPORTS_DIR", File.dirname(EVIDENCE))
+AES_ROOT = File.expand_path(ENV.fetch("AES_REPO", File.join(ROOT, "..", "aes")))
+EVIDENCE = ENV.fetch("AES_EVIDENCE_DIR", File.join(ROOT, "reports/compliance/aes-full-migration-2026-11-06/evidence"))
+REPORTS = ENV.fetch("AES_REPORTS_DIR", File.dirname(EVIDENCE))
 EVIDENCE_ID = "D26-INDEPENDENT-ASSESSMENT"
 
 def now = Time.now.utc.iso8601
@@ -67,11 +67,11 @@ matrix = load_json("test-matrix.json")
 l3 = load_json("gates/l3-domain-gates.json")
 l4 = load_json("gates/l4-global-gate.json")
 selftest = load_json("agent-runtime-selftest.json")
-pin = JSON.parse(File.read(File.join(ROOT, ".uaes/uaes-pin.json")))
-uter_registry = YAML.safe_load_file(File.join(ROOT, ".uaes/uter-governance-registry.yaml"))
-uaes_registry = YAML.safe_load_file(File.join(UAES_ROOT, ".uaes/STANDARD-REGISTRY.yaml"))
+pin = JSON.parse(File.read(File.join(ROOT, ".aes/aes-pin.json")))
+uter_registry = YAML.safe_load_file(File.join(ROOT, ".aes/uter-governance-registry.yaml"))
+aes_registry = YAML.safe_load_file(File.join(AES_ROOT, ".aes/STANDARD-REGISTRY.yaml"))
 
-# ---- 1. Re-derive the pinned UAES baseline (§18 step 1, §2.3) ------------
+# ---- 1. Re-derive the pinned AES baseline (§18 step 1, §2.3) ------------
 #
 # Pin schema 3.0.0 identifies the governed content by fingerprint, not by HEAD.
 # The previous version of this check compared `git rev-parse HEAD` to
@@ -84,19 +84,19 @@ uaes_registry = YAML.safe_load_file(File.join(UAES_ROOT, ".uaes/STANDARD-REGISTR
 # Two further defects were live here: the version and status literals were
 # pinned to 1.9.0 / APPROVED, so the check had been asserting a baseline three
 # releases old and could not pass at all. Both are now read from the pin and
-# verified against the UAES registry rather than hard-coded.
-uaes_head = Open3.capture3("git", "-C", UAES_ROOT, "rev-parse", "HEAD")[0].strip
-blob_out, _blob_err, blob_st = Open3.capture3("git", "-C", UAES_ROOT, "hash-object", ".uaes/STANDARD-REGISTRY.yaml")
+# verified against the AES registry rather than hard-coded.
+aes_head = Open3.capture3("git", "-C", AES_ROOT, "rev-parse", "HEAD")[0].strip
+blob_out, _blob_err, blob_st = Open3.capture3("git", "-C", AES_ROOT, "hash-object", ".aes/STANDARD-REGISTRY.yaml")
 computed_blob = blob_st.success? ? blob_out.strip : nil
 
-uaes_registry_version = uaes_registry.dig("registry", "version").to_s
-uaes_registry_status  = uaes_registry.dig("registry", "status").to_s
+aes_registry_version = aes_registry.dig("registry", "version").to_s
+aes_registry_status  = aes_registry.dig("registry", "status").to_s
 
-# Independently recompute the governed fingerprint from the UAES bytes. The
+# Independently recompute the governed fingerprint from the AES bytes. The
 # algorithm is NOT reimplemented here: a second implementation of "what counts
 # as governed" would drift from the first and the drift would be unreviewable.
 fp_out, fp_err, fp_st = Open3.capture3(
-  "node", File.join(UAES_ROOT, "quality/scripts/uaes/governed-fingerprint.mjs"),
+  "node", File.join(AES_ROOT, "quality/scripts/aes/governed-fingerprint.mjs"),
   "--require-intact", "--fingerprint-only"
 )
 live_fp = fp_st.success? ? fp_out.strip : nil
@@ -108,7 +108,7 @@ fingerprint_ok = !pinned_fp.empty? && live_fp == pinned_fp && seal_intact
 # A differing HEAD with an identical fingerprint means no rule changed, and must
 # not fail an independent assessment.
 provenance_note =
-  if uaes_head == pin["source_commit"]
+  if aes_head == pin["source_commit"]
     "source_commit matches HEAD"
   else
     "source_commit names a different tree, but the governed fingerprint is identical, so no governed rule changed"
@@ -116,34 +116,34 @@ provenance_note =
 
 pin_ok = fingerprint_ok &&
          computed_blob == pin["registry_blob_sha"] &&
-         pin["registry_version"] == uaes_registry_version &&
-         pin["registry_status"] == uaes_registry_status
+         pin["registry_version"] == aes_registry_version &&
+         pin["registry_status"] == aes_registry_status
 
-add_observation.call("IA-01", "pinned UAES approved baseline re-derived", pin_ok ? "PASS" : "FAIL",
+add_observation.call("IA-01", "pinned AES approved baseline re-derived", pin_ok ? "PASS" : "FAIL",
                      { "pinned_fingerprint" => pinned_fp.empty? ? "(none)" : pinned_fp[0, 16],
                        "live_fingerprint" => live_fp ? live_fp[0, 16] : "(recompute failed: #{fp_err.to_s.strip[0, 120]})",
                        "seal_intact" => seal_intact,
                        "pinned_blob" => pin["registry_blob_sha"], "computed_blob" => computed_blob,
-                       "version" => pin["registry_version"], "registry_version" => uaes_registry_version,
-                       "status" => pin["registry_status"], "registry_status" => uaes_registry_status,
-                       "pinned_commit" => pin["source_commit"], "actual_commit" => uaes_head,
+                       "version" => pin["registry_version"], "registry_version" => aes_registry_version,
+                       "status" => pin["registry_status"], "registry_status" => aes_registry_status,
+                       "pinned_commit" => pin["source_commit"], "actual_commit" => aes_head,
                        "provenance" => provenance_note,
-                       "method" => "governed-content fingerprint recomputed from UAES bytes (pin schema 3.0.0)" })
-add_finding.call("FIND-IA-01", "Critical", "UAES baseline pin does not match the repository",
-                 "Independent recomputation of the governed fingerprint / registry blob / version / status disagrees with .uaes/uaes-pin.json",
+                       "method" => "governed-content fingerprint recomputed from AES bytes (pin schema 3.0.0)" })
+add_finding.call("FIND-IA-01", "Critical", "AES baseline pin does not match the repository",
+                 "Independent recomputation of the governed fingerprint / registry blob / version / status disagrees with .aes/aes-pin.json",
                  "§2.3 / §18 step 1") unless pin_ok
 
 # ---- 2. Re-derive the 14-domain assessment scope (§16.3) ----------------
 uter_domains = (uter_registry.dig("gate_architecture", "domain_ids") || []).map(&:to_s)
-uaes_phases = (uaes_registry["phases"] || {}).keys
-scope_ok = uaes_phases.length == 13 && uaes_phases.sort == (0..12).map { |n| format("P%02d", n) } &&
+aes_phases = (aes_registry["phases"] || {}).keys
+scope_ok = aes_phases.length == 13 && aes_phases.sort == (0..12).map { |n| format("P%02d", n) } &&
            uter_domains.length == 14 && uter_domains.count("UTER-P13") == 1 &&
-           (uter_domains - uaes_phases) == ["UTER-P13"] &&
+           (uter_domains - aes_phases) == ["UTER-P13"] &&
            (l3["domain_count"] == 14 rescue false)
 add_observation.call("IA-02", "14 independently assessed domains re-derived from source", scope_ok ? "PASS" : "FAIL",
-                     { "uaes_phases" => uaes_phases.length, "uter_registry_domains" => uter_domains.length,
-                       "extra_domain" => (uter_domains - uaes_phases), "gate_evaluator_domain_count" => (l3["domain_count"] rescue nil) })
-add_finding.call("FIND-IA-02", "High", "assessment scope is not 13 UAES + 1 UTER-P13",
+                     { "aes_phases" => aes_phases.length, "uter_registry_domains" => uter_domains.length,
+                       "extra_domain" => (uter_domains - aes_phases), "gate_evaluator_domain_count" => (l3["domain_count"] rescue nil) })
+add_finding.call("FIND-IA-02", "High", "assessment scope is not 13 AES + 1 UTER-P13",
                  "Independent recomputation disagrees with the declared 14-domain scope", "§16.3") unless scope_ok
 
 # ---- 3. Re-derive every PASS from its raw exit code (§8.3 / §9.3) --------
@@ -316,7 +316,7 @@ effectiveness_probes = [
     "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-registry-draft-state.rb"],
     "marker" => /0 failures, 0 errors/, "negative_case" => "hard-coded 304 / stale registry fixture" },
   { "id" => "CE-02", "control" => "manual-acceptance evidence fail-closed",
-    "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-uaes-manual-acceptance-boundary.rb"],
+    "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-aes-manual-acceptance-boundary.rb"],
     "marker" => /0 failures, 0 errors/, "negative_case" => "auto-promoted VERIFIED item / broken integrity chain" },
   { "id" => "CE-03", "control" => "two-repository governance boundary deny paths",
     "cwd" => ROOT, "cmd" => ["ruby", "scripts/quality/test-uter-governance-boundaries.rb"],
@@ -325,7 +325,7 @@ effectiveness_probes = [
     "cwd" => ROOT, "cmd" => ["bash", "scripts/quality/gitleaks-allowlist.test.sh"],
     "marker" => /injected real-form secret still detected/, "negative_case" => "real-form secret injected into an exempted-pattern file" },
   { "id" => "CE-06", "control" => "requirement resolver two-level coverage",
-    "cwd" => UAES_ROOT, "cmd" => ["node", "quality/scripts/uaes/standards-for.test.mjs"],
+    "cwd" => AES_ROOT, "cmd" => ["node", "quality/scripts/aes/standards-for.test.mjs"],
     "marker" => /regression probe bites/, "negative_case" => "rule-only mapping resolves fewer requirements" },
 ]
 
@@ -407,7 +407,7 @@ control_effectiveness = {
     "passed" => effectiveness_rows.count { |r| r["status"] == "PASS" },
     "total" => effectiveness_rows.length,
   },
-  "scope" => "machine-executable controls in the Uter + pinned UAES repositories",
+  "scope" => "machine-executable controls in the Uter + pinned AES repositories",
   "scope_limited" => true,
   "out_of_scope_controls" => out_of_scope_controls,
   "note" => "PASS here means the executed controls demonstrably reject injected violations. It does NOT mean human sign-off, third-party review, external-environment drills or risk-owner acceptance were performed; those remain NOT_MET in L4-05/10/11/13.",
@@ -464,18 +464,18 @@ payload = {
   "evidence_id" => EVIDENCE_ID, "generated_at" => now,
   "related_requirement" => "§12 Phase 7 / §16.1 / §16.4 / §14.3-14.4 / §15 D26",
   "source_system" => "scripts/quality/uter-independent-assessment.rb",
-  "execution_environment" => { "ruby" => RUBY_VERSION, "uter_root" => ROOT, "uaes_root" => UAES_ROOT },
-  "repository_revision" => { "uter_head" => git("rev-parse", "HEAD")[0], "uaes_head" => uaes_head },
+  "execution_environment" => { "ruby" => RUBY_VERSION, "uter_root" => ROOT, "aes_root" => AES_ROOT },
+  "repository_revision" => { "uter_head" => git("rev-parse", "HEAD")[0], "aes_head" => aes_head },
   "collector" => "WorkBuddy (Tencent Hunyuan Hy) — independent assessment pass, re-derived from source, not from remediation self-declarations",
   "collection_time" => now,
   "integrity" => { "evidence_hashes" => integrity_rows, "note" => integrity_note },
   "storage_reference" => EVIDENCE,
   "access_restrictions" => "local repository evidence; no credentials or production data",
   "assessment_scope" => {
-    "system_boundary" => "Uter repository (Layer B) + pinned UAES #{uaes_registry_version} #{uaes_registry_status} baseline (Layer A, read-only) + WorkBuddy/CI assurance (Layer C)",
-    "standards_baseline" => "UTER-UAES-GOV-001 + UAES #{uaes_registry_version} #{uaes_registry_status} + §2.1 external standards catalogue",
+    "system_boundary" => "Uter repository (Layer B) + pinned AES #{aes_registry_version} #{aes_registry_status} baseline (Layer A, read-only) + WorkBuddy/CI assurance (Layer C)",
+    "standards_baseline" => "UTER-AES-GOV-001 + AES #{aes_registry_version} #{aes_registry_status} + §2.1 external standards catalogue",
     "domains" => 14,
-    "baseline_source" => "read live from UAES/.uaes/STANDARD-REGISTRY.yaml; never hard-coded",
+    "baseline_source" => "read live from AES/.aes/STANDARD-REGISTRY.yaml; never hard-coded",
   },
   "independent_assessment_completed" => true,
   "independent_re_evaluation" => observations,
@@ -502,7 +502,7 @@ File.write(json_path, JSON.pretty_generate(payload) + "\n")
 md = +"# D26 — Independent Assessment Report\n\n"
 md << "- Evidence ID: `#{EVIDENCE_ID}`\n- Generated: #{now}\n"
 md << "- Collector: WorkBuddy independent assessment pass (re-derived from source, not from remediation self-declarations)\n"
-md << "- Uter HEAD: `#{git('rev-parse', 'HEAD')[0]}`\n- UAES HEAD: `#{uaes_head}`\n\n"
+md << "- Uter HEAD: `#{git('rev-parse', 'HEAD')[0]}`\n- AES HEAD: `#{aes_head}`\n\n"
 md << "## Assessment scope (§16.4)\n\n"
 md << "- System boundary: #{payload['assessment_scope']['system_boundary']}\n"
 md << "- Standards baseline: #{payload['assessment_scope']['standards_baseline']}\n"

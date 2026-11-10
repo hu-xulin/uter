@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# UTER-UAES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §9 / §10 / §15 / §16.3
+# UTER-AES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §9 / §10 / §15 / §16.3
 #
 # P09 / P10 division-of-responsibility gate (user emphasis #2):
 #   * P09 Quality Engineering PROVES whether engineering quality meets the
@@ -27,14 +27,14 @@ require "open3"
 require "fileutils"
 
 ROOT = File.expand_path("../..", __dir__)
-UAES_ROOT = File.expand_path(ENV.fetch("UAES_REPO", File.join(ROOT, "..", "uaes")))
+AES_ROOT = File.expand_path(ENV.fetch("AES_REPO", File.join(ROOT, "..", "aes")))
 EVIDENCE_DIR = ENV.fetch(
-  "UAES_EVIDENCE_DIR",
-  File.join(ROOT, "reports/compliance/uaes-full-migration-2026-11-06/evidence")
+  "AES_EVIDENCE_DIR",
+  File.join(ROOT, "reports/compliance/aes-full-migration-2026-11-06/evidence")
 )
-SPEC = File.join(ROOT, "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md")
-REGISTRY = File.join(ROOT, ".uaes/uter-governance-registry.yaml")
-GATE_EVALUATOR = File.join(ROOT, "scripts/quality/uaes-governance-gates.rb")
+SPEC = File.join(ROOT, "uaes/standards/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md")
+REGISTRY = File.join(ROOT, ".aes/uter-governance-registry.yaml")
+GATE_EVALUATOR = File.join(ROOT, "scripts/quality/aes-governance-gates.rb")
 EVIDENCE_ID = "D07-P09-P10-BOUNDARY"
 
 P09_PROOF_HEADINGS = [
@@ -130,21 +130,21 @@ add.call("B07", "duplicate/conflicting management system is explicitly forbidden
          forbidden_dup.any? { |f| f.include?("conflicting management system") },
          { "forbidden" => forbidden_dup }, "§8.2 / user directive")
 
-uaes_registry_path = File.join(UAES_ROOT, ".uaes/STANDARD-REGISTRY.yaml")
-uaes_gates_path = File.join(UAES_ROOT, ".uaes/registry/gates.yaml")
-uaes_registry = File.file?(uaes_registry_path) ? (YAML.safe_load_file(uaes_registry_path) rescue nil) : nil
-uaes_gates = File.file?(uaes_gates_path) ? (YAML.safe_load_file(uaes_gates_path) rescue nil) : nil
-phases = uaes_registry.is_a?(Hash) ? (uaes_registry["phases"] || {}) : {}
-gates_by_id = uaes_gates.is_a?(Hash) ? (uaes_gates["gates"] || []).to_h { |g| [g["id"], g] } : {}
-add.call("B08", "pinned UAES baseline itself keeps P09=Quality / P10=Security",
+aes_registry_path = File.join(AES_ROOT, ".aes/STANDARD-REGISTRY.yaml")
+aes_gates_path = File.join(AES_ROOT, ".aes/registry/gates.yaml")
+aes_registry = File.file?(aes_registry_path) ? (YAML.safe_load_file(aes_registry_path) rescue nil) : nil
+aes_gates = File.file?(aes_gates_path) ? (YAML.safe_load_file(aes_gates_path) rescue nil) : nil
+phases = aes_registry.is_a?(Hash) ? (aes_registry["phases"] || {}) : {}
+gates_by_id = aes_gates.is_a?(Hash) ? (aes_gates["gates"] || []).to_h { |g| [g["id"], g] } : {}
+add.call("B08", "pinned AES baseline itself keeps P09=Quality / P10=Security",
          phases.dig("P09", "name").to_s.include?("Quality") &&
            phases.dig("P10", "name").to_s.include?("Security") &&
-           gates_by_id.dig("UAES-09-GATE-001", "name").to_s.include?("QUALITY-ENGINEERING") &&
-           gates_by_id.dig("UAES-10-GATE-001", "name").to_s.include?("SECURITY-RELIABILITY"),
-         { "uaes_P09" => phases.dig("P09", "name"), "uaes_P10" => phases.dig("P10", "name"),
-           "uaes_gate_09" => gates_by_id.dig("UAES-09-GATE-001", "name"),
-           "uaes_gate_10" => gates_by_id.dig("UAES-10-GATE-001", "name") },
-         "§1.3 / §16.3 / UAES #{uaes_registry.is_a?(Hash) ? uaes_registry.dig('registry', 'version') : 'UNKNOWN'} registry (version read live, not hard-coded)")
+           gates_by_id.dig("AES-09-GATE-001", "name").to_s.include?("QUALITY-ENGINEERING") &&
+           gates_by_id.dig("AES-10-GATE-001", "name").to_s.include?("SECURITY-RELIABILITY"),
+         { "aes_P09" => phases.dig("P09", "name"), "aes_P10" => phases.dig("P10", "name"),
+           "aes_gate_09" => gates_by_id.dig("AES-09-GATE-001", "name"),
+           "aes_gate_10" => gates_by_id.dig("AES-10-GATE-001", "name") },
+         "§1.3 / §16.3 / AES #{aes_registry.is_a?(Hash) ? aes_registry.dig('registry', 'version') : 'UNKNOWN'} registry (version read live, not hard-coded)")
 
 add.call("B09", "local 14-domain gate evaluator labels P09/P10/P13 correctly",
          gates_rb.include?('"id" => "P09", "name" => "Quality Engineering"') &&
@@ -153,15 +153,15 @@ add.call("B09", "local 14-domain gate evaluator labels P09/P10/P13 correctly",
            !gates_rb.include?('"id" => "P10", "name" => "Business Domain Engineering"') &&
            !gates_rb.include?('"id" => "P09", "name" => "Security & Reliability"'),
          { "evaluator" => GATE_EVALUATOR.sub("#{ROOT}/", ""),
-           "note" => "V2 evaluator mislabelled P09/P10 and put business rules in P10; UTER-UAES-GOV-001 assigns them to P09/P10/UTER-P13." },
+           "note" => "V2 evaluator mislabelled P09/P10 and put business rules in P10; UTER-AES-GOV-001 assigns them to P09/P10/UTER-P13." },
          "§8.2 / §16.3")
 
 docs = {
   "AGENTS.md" => "P09 proves",
-  ".uaes/INTEGRATION.md" => "P09 / P10 division",
-  ".uaes/AI-GOVERNANCE-ENTRY.md" => "P09 proves",
-  ".uaes/TRACEABILITY.md" => "P09 / P10 division",
-  ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md" => "P09 / P10 分工"
+  ".aes/INTEGRATION.md" => "P09 / P10 division",
+  ".aes/AI-GOVERNANCE-ENTRY.md" => "P09 proves",
+  ".aes/TRACEABILITY.md" => "P09 / P10 division",
+  ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md" => "P09 / P10 分工"
 }
 doc_missing = docs.reject { |p, phrase| File.file?(File.join(ROOT, p)) && File.read(File.join(ROOT, p)).include?(phrase) }.keys
 add.call("B10", "all governance entrypoints state the same P09/P10 division",
@@ -176,15 +176,15 @@ add.call("B11", "D14 and D15 are separate quality / security assessments",
 failed = checks.reject { |c| c["status"] == "PASS" }
 payload = {
   "evidence_id" => EVIDENCE_ID, "generated_at" => now,
-  "related_requirement" => "UTER-UAES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
+  "related_requirement" => "UTER-AES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
   "related_finding" => failed.empty? ? nil : failed.map { |c| c["check"] },
   "source_system" => "scripts/quality/uter-p09-p10-boundary-check.rb",
-  "execution_environment" => { "ruby" => RUBY_VERSION, "uter_root" => ROOT, "uaes_root" => UAES_ROOT },
-  "repository_revision" => { "uter_head" => git_head(ROOT), "uaes_head" => git_head(UAES_ROOT) },
+  "execution_environment" => { "ruby" => RUBY_VERSION, "uter_root" => ROOT, "aes_root" => AES_ROOT },
+  "repository_revision" => { "uter_head" => git_head(ROOT), "aes_head" => git_head(AES_ROOT) },
   "collector" => "WorkBuddy (Tencent Hunyuan Hy)", "collection_time" => now,
   "integrity" => {
     "governing_spec_sha256" => sha256(SPEC), "uter_registry_sha256" => sha256(REGISTRY),
-    "uaes_registry_sha256" => sha256(uaes_registry_path),
+    "aes_registry_sha256" => sha256(aes_registry_path),
     "note" => "Hashes support evidence integrity only; they do not prove correctness of the underlying activity (§14.4)."
   },
   "storage_reference" => EVIDENCE_DIR,

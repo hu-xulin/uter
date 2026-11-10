@@ -78,7 +78,7 @@ const pairs = [
     light.softForeground,
     light.soft,
     4.5,
-    'navigation selected state — remediated foreground per UAES-05-003 §6',
+    'navigation selected state — remediated foreground per AES-05-003 §6',
     'light',
     'selected',
   ],
@@ -174,7 +174,7 @@ const rows = pairs.map(([fg, bg, min, label, theme, state]) => {
 })
 console.log(rows.join('\n'))
 
-// Negative test (UAES-P05 acceptance baseline §L.4 / UAES-05-003 §6):
+// Negative test (AES-P05 acceptance baseline §L.4 / AES-05-003 §6):
 // the pre-remediation navigation selected combination was 4.44:1 and MUST be
 // rejected, not silently waived because the gap is small.
 const NEG_FG = '#5B5EE6'
@@ -196,7 +196,7 @@ console.log(
       : 'incorrectly accepted')
 )
 
-// UAES-05-GATE-001 §4/§6: checks that cannot run are NOT_RUN, never PASS.
+// AES-05-GATE-001 §4/§6: checks that cannot run are NOT_RUN, never PASS.
 console.log('\nNOT_RUN: full non-text 3:1 inventory, gradient text, runtime')
 console.log(
   'theme-switch combinations and automated axe scan are not covered here.'

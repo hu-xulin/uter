@@ -8,9 +8,9 @@
   "properties": {
     "$extensions": {
       "type": "object",
-      "required": ["com.uter.uaes"],
+      "required": ["com.uter.aes"],
       "properties": {
-        "com.uter.uaes": {
+        "com.uter.aes": {
           "$ref": "#/$defs/metadata"
         }
       },

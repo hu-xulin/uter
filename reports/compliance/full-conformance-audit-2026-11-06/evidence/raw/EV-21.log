@@ -1,13 +1,13 @@
 # evidence_id=EV-21
 # started_at=2026-11-07T02:54:41Z
 # cwd=/Users/lincolnhu/uter
-# command=tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C "$tmp" && (cd "$tmp" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo "scanned_tree=$tmp"
+# command=tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C "$tmp" && (cd "$tmp" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo "scanned_tree=$tmp"
 # timeout=600
 # exit_code=0
 # timed_out=False
 
 ===== STDOUT =====
-scanned_tree=/tmp/uaes-gitleaks-zrM9YK
+scanned_tree=/tmp/aes-gitleaks-zrM9YK
 
 
 ===== STDERR =====

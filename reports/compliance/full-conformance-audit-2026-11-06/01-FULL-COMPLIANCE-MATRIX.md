@@ -1,9 +1,9 @@
-# UAES × Uter 全量符合性矩阵
+# AES × Uter 全量符合性矩阵
 
 - **Document:** `1/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -24,17 +24,17 @@
 | 逐条验证为 PASS | **0** |
 | 审计结果分布 | `{"NOT_ASSESSED": 2843, "NOT_APPLICABLE": 12, "BLOCKED": 29}` |
 | 源标准状态 | `{"APPROVED": 2855, "PROPOSED_BASELINE": 29}` |
-| UAES DRAFT 标准文件 | 0/178 |
+| AES DRAFT 标准文件 | 0/178 |
 | 域级测试矩阵（同 SHA） | 28/29 PASS，overall `FAIL` |
 | 绑定的真实 Commit SHA | `ec6501adceb008d46140a7e5ab6508eb78006731` |
 
-**结论：适用要求全部 `BLOCKED`。** 根因是 UAES 规范性基线未逐条批准（FIND-FCA-001），
+**结论：适用要求全部 `BLOCKED`。** 根因是 AES 规范性基线未逐条批准（FIND-FCA-001），
 且仓库不存在逐条实现映射与逐条验证（FIND-FCA-002）。域级命令仅登记为 `INDIRECT`，
 绝不提升任何单条要求为 PASS。
 
 ## 2. §3 十五字段
 
-`evidence/02-compliance-matrix.json` 每条记录包含：Requirement ID、UAES Domain、
+`evidence/02-compliance-matrix.json` 每条记录包含：Requirement ID、AES Domain、
 Requirement Description、Source Standard、Source Version、Applicability、
 Implementation Location、Verification Method、Acceptance Criteria、Evidence Location、
 Audit Result、Finding ID、Corrective Action、Revalidation Result，以及补充的
@@ -42,7 +42,7 @@ source_line / source_status / normative_level / keyword_class / commit_sha /
 applicability_justification / linked_real_commands / linked_manual_cases。
 
 完整 2884 行同时导出为 `evidence/matrix-export.csv`（UTF-8），
-可用任意表格工具按 `source_standard + source_line` 回查 UAES 原文重新核验。
+可用任意表格工具按 `source_standard + source_line` 回查 AES 原文重新核验。
 
 ## 3. 逐域要求数
 

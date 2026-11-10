@@ -1,0 +1,303 @@
+{
+  "report_id": "D19-TEST-MATRIX",
+  "generated_at": "2026-11-06T17:48:45.580670+00:00",
+  "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
+  "total": 29,
+  "passed": 28,
+  "failed": 1,
+  "skipped": [],
+  "overall": "FAIL",
+  "results": [
+    {
+      "id": "L1-01",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "bash scripts/quality/ai-specs-check.sh",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-01.log"
+    },
+    {
+      "id": "L1-02",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 0,
+      "command": "ruby scripts/quality/test-ai-governance-policy.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-02.log"
+    },
+    {
+      "id": "L1-03",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 0,
+      "command": "ruby scripts/quality/aes-agent-runtime-check.rb selftest",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-03.log"
+    },
+    {
+      "id": "L1-04",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 2,
+      "command": "bash scripts/quality/aes-pin-check.sh",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-04.log"
+    },
+    {
+      "id": "L1-05",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "bash scripts/quality/aes-integration-check.sh",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-05.log"
+    },
+    {
+      "id": "L1-06",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 20,
+      "command": "ruby scripts/quality/test-aes-pin-check.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-06.log"
+    },
+    {
+      "id": "L1-07",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 10,
+      "command": "ruby scripts/quality/test-aes-integration-check.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-07.log"
+    },
+    {
+      "id": "L1-08",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 6,
+      "command": "bun run typecheck",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-08.log"
+    },
+    {
+      "id": "L1-09",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 2,
+      "command": "bun run lint",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-09.log"
+    },
+    {
+      "id": "L1-10",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 2,
+      "command": "bun run format:check",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-10.log"
+    },
+    {
+      "id": "L1-11",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "bun run copyright:check",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-11.log"
+    },
+    {
+      "id": "L1-12",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 0,
+      "command": "bun run design:tokens:check",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-12.log"
+    },
+    {
+      "id": "L1-13",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 8,
+      "command": "gofmt -l $(find . -name '*.go' -not -path './.git/*' -not -path './node_modules/*' -not -path './.quality/*' | head -4000) | tee /tmp/aes-gofmt-list.txt; test ! -s /tmp/aes-gofmt-list.txt",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-13.log"
+    },
+    {
+      "id": "L1-14",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "ruby scripts/quality/uter-governance-separation-check.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-14.log"
+    },
+    {
+      "id": "L1-15",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 0,
+      "command": "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-15.log"
+    },
+    {
+      "id": "L1-16",
+      "layer": "L1",
+      "exit_code": 1,
+      "duration_seconds": 0,
+      "command": "ruby scripts/quality/aes-agent-runtime-check.rb preflight --task reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-task.json && ruby scripts/quality/aes-agent-runtime-check.rb workspace --task reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-task.json",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "FAIL",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-16.log"
+    },
+    {
+      "id": "L1-17",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 6,
+      "command": "ruby scripts/quality/test-uter-governance-boundaries.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-17.log"
+    },
+    {
+      "id": "L1-18",
+      "layer": "L1",
+      "exit_code": 0,
+      "duration_seconds": 3,
+      "command": "ruby scripts/quality/test-aes-manual-acceptance-boundary.rb",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L1-18.log"
+    },
+    {
+      "id": "L2-01",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 23,
+      "command": "GOWORK=off go test ./...",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-01.log"
+    },
+    {
+      "id": "L2-02",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 0,
+      "command": "GOWORK=off go test ./...",
+      "workdir": "/Users/lincolnhu/uter/relaykit",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-02.log"
+    },
+    {
+      "id": "L2-03",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "GOWORK=off go test ./...",
+      "workdir": "/Users/lincolnhu/uter/tokenkit",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-03.log"
+    },
+    {
+      "id": "L2-04",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 0,
+      "command": "GOWORK=off go test ./...",
+      "workdir": "/Users/lincolnhu/uter/tokenkit/tokenkit",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-04.log"
+    },
+    {
+      "id": "L2-05",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 5,
+      "command": "GOWORK=off go vet ./...",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-05.log"
+    },
+    {
+      "id": "L2-06",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 258,
+      "command": "bun run test",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-06.log"
+    },
+    {
+      "id": "L2-07",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 21,
+      "command": "bun run build:check",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-07.log"
+    },
+    {
+      "id": "L2-08",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 13,
+      "command": "GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay|TopUp|Recharge|Billing|Gateway|DreamRouter'",
+      "workdir": "/Users/lincolnhu/uter",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-08.log"
+    },
+    {
+      "id": "L2-09",
+      "layer": "L2",
+      "exit_code": 0,
+      "duration_seconds": 14,
+      "command": "bun run test -- src/features/wallet src/features/pricing",
+      "workdir": "/Users/lincolnhu/uter/web",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/L2-09.log"
+    },
+    {
+      "id": "U-01",
+      "layer": "AES",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "node quality/scripts/aes/validate-registry.mjs",
+      "workdir": "/Users/lincolnhu/aes",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/U-01.log"
+    },
+    {
+      "id": "U-02",
+      "layer": "AES",
+      "exit_code": 0,
+      "duration_seconds": 1,
+      "command": "node quality/scripts/aes/quality-gate-runner.mjs",
+      "workdir": "/Users/lincolnhu/aes",
+      "status": "PASS",
+      "log": "reports/compliance/aes-full-migration-2026-11-06/evidence/matrix/U-02.log"
+    }
+  ],
+  "note": "Exit codes come from real command execution. Skips are explicit and never counted as PASS."
+}

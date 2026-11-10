@@ -3,7 +3,7 @@
 - **Document:** `10/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -19,15 +19,15 @@
 
 | ID | 级别 | 状态 | 标题 | 影响 | 所需授权 |
 |---|---|---|---|---|---|
-| FIND-FCA-001 | P0 | RESOLVED / EVIDENCE-LIMITED | UAES 规范性基线未被逐条批准，无法作为正式符合性基准 | 基线阻塞已解除：DRAFT 0/178，BLOCKED 29 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。 | 已获授权并执行 |
+| FIND-FCA-001 | P0 | RESOLVED / EVIDENCE-LIMITED | AES 规范性基线未被逐条批准，无法作为正式符合性基准 | 基线阻塞已解除：DRAFT 0/178，BLOCKED 29 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。 | 已获授权并执行 |
 | FIND-FCA-002 | P1 | OPEN | 无逐条实现映射与逐条验证，requirement-specific PASS 为 0 | 2884 条要求中逐条验证数为 0；任何单条 PASS 均无证据支撑。 | 项目 Owner 排期 / 工程资源 |
 | FIND-FCA-003 | P1 | RESOLVED / DELEGATED_SIGNOFF | 42 项人工验收未被验收负责人逐项接受 | 2026-11-07 Owner 授权代签：item_count=42，全部签署，signoff_granted=False，signoff_nature=None。 | 已获授权并执行 |
 | FIND-FCA-004 | P1 | OPEN | 需要授权运行环境的安全/可靠性验证仍未执行（本地可修复部分已闭环） | SECURITY_GATE BLOCK；§6 多项要求不可判定。本地可修复项（MA-06/MA-12）已在本轮闭环并复测。 | 安全测试授权 / 运行环境 / 产品会话配置 |
 | FIND-FCA-005 | P2 | FIXED / REVALIDATED | 构建与静态分析既有失败已全部闭环（无断言放宽、无豁免） | 三项均以原始命令真实复跑 PASS；未删测试、未放宽断言、未改写状态。 | 无（用户已裁定环境修复路径） |
 | FIND-FCA-006 | P2 | FIXED / REVALIDATED | 本轮审计引擎 4 个真实缺陷（漏记中文要求、状态解析、P13 空域、commit 绑定） | 要求数 1592 → 2884；DRAFT 45/178 → 178/178；P13 0 → 29；matrix_commit_sha 由 null 变为真实 SHA。 | 无（Uter 侧工具缺陷） |
 | FIND-FCA-007 | P2 | DISCLOSED / SUPERSEDED | 历史报告 reports/compliance/FINAL-COMPLIANCE-REPORT.md 状态过期 | 不改写历史证据；新审计包以当前真实基线为准。 | 无 |
-| FIND-FCA-008 | P3 | DISCLOSED | UAES reports/ 下历史 UAES-P13-* 命名易与 UTER P13 混淆 | UAES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。 | UAES Owner |
-| FIND-FCA-009 | P1 | OPEN | 14 域 L3 与 L4 全局门禁仍 BLOCKED | RELEASE_GATE / GLOBAL_UAES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。 | 验收负责人 + UAES Owner |
+| FIND-FCA-008 | P3 | DISCLOSED | AES reports/ 下历史 AES-P13-* 命名易与 UTER P13 混淆 | AES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。 | AES Owner |
+| FIND-FCA-009 | P1 | OPEN | 14 域 L3 与 L4 全局门禁仍 BLOCKED | RELEASE_GATE / GLOBAL_AES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。 | 验收负责人 + AES Owner |
 | FIND-FCA-010 | P3 | CLOSED BY JUSTIFICATION | 12 条 N/A 引用行 | 不构成义务；每条均附书面适用性依据（§10）。 | 无 |
 | FIND-FCA-011 | P1 | OPEN | 八类质量门禁中存在 BLOCK 结果 | §8 门禁未全部放行；每个门禁的负向阻断测试已真实执行。 | 同上 |
 | FIND-FCA-012 | P2 | FIXED / REVALIDATED | 审计执行层 harness() 无法解析纯文本子命令输出，AG-07/08/09 被误判 FAIL | 修复前 agent 10 例 7 PASS / 3 FAIL（全部为解析误判，非真实绕过）；底层控制全部有效（两个绕过尝试均被 DENY exit 2）。 | 无（审计器自身缺陷） |
@@ -36,14 +36,14 @@
 
 ### 每条的完整信息（位置 / 根因 / 证据 / 整改）
 
-#### FIND-FCA-001 — UAES 规范性基线未被逐条批准，无法作为正式符合性基准
+#### FIND-FCA-001 — AES 规范性基线未被逐条批准，无法作为正式符合性基准
 
 - 级别/状态：`P0` / `RESOLVED / EVIDENCE-LIMITED`
-- 位置：UAES commit `0c9386b`（2026-11-07 01:28 +0800）`feat(governance): approve all 178 UAES normative standards (v1.10.0)`；`standards/**` 178/178 APPROVED
+- 位置：AES commit `0c9386b`（2026-11-07 01:28 +0800）`feat(governance): approve all 178 AES normative standards (v1.10.0)`；`standards/**` 178/178 APPROVED
 - 根因：此前 Registry 1.9.0 只批准了注册表基线，178 个标准文件中 2851 条要求仍为 DRAFT。
 - 影响：基线阻塞已解除：DRAFT 0/178，BLOCKED 29 条（仅余 UTER-P13 的 PROPOSED_BASELINE 29 条）。
 - 证据：`evidence/00-baseline.json`, `evidence/01-conflict-register.json (CONF-005)`
-- 整改：已由 Owner 授权并完成批准（UAES commit 0c9386b）。**但批准不产生 PASS**：矩阵判定逻辑对 APPROVED 且无逐条证据的要求返回 NOT_ASSESSED，故 requirement_specific_verified 仍为 0。真正的符合性缺口转入 FIND-FCA-002。
+- 整改：已由 Owner 授权并完成批准（AES commit 0c9386b）。**但批准不产生 PASS**：矩阵判定逻辑对 APPROVED 且无逐条证据的要求返回 NOT_ASSESSED，故 requirement_specific_verified 仍为 0。真正的符合性缺口转入 FIND-FCA-002。
 - 复测：`REVALIDATED: DRAFT 2851→0，BLOCKED→29，NOT_ASSESSED 2843`
 
 #### FIND-FCA-002 — 无逐条实现映射与逐条验证，requirement-specific PASS 为 0
@@ -62,7 +62,7 @@
 - 位置：evidence/manual-acceptance/inventory.json、acceptance-authority.json
 - 根因：用户此前明确「等我逐项复核后决定」，故 signoff_granted=false。
 - 影响：2026-11-07 Owner 授权代签：item_count=42，全部签署，signoff_granted=False，signoff_nature=None。
-- 证据：`reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json`
+- 证据：`reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/inventory.json`, `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json`
 - 整改：已按 Owner 书面授权完成签署，每条记录标记 signoff_nature=DELEGATED。**这不是**「Owner 已逐项人工复核」的声明；独立复核者须按 DELEGATED_SIGNOFF 而非 HUMAN_REVIEWED_SIGNOFF 对待。
 - 复测：`REVALIDATED: 42/42 signed, nature=DELEGATED`
 
@@ -72,7 +72,7 @@
 - 位置：DAST / 渗透 / API 安全 / 三库迁移 / DR / 备份恢复 / 性能测试 NOT_RUN；鉴权页 axe 扫描因管理员禁用密码登录而显式 skip
 - 根因：这些验证需要授权运行环境（DAST 工具、三库环境、真实备份目标、压力负载）或产品侧会话配置；本地已无工具链类阻塞（axe 已安装并真实执行）。
 - 影响：SECURITY_GATE BLOCK；§6 多项要求不可判定。本地可修复项（MA-06/MA-12）已在本轮闭环并复测。
-- 证据：`evidence/04-engineering-verification.json`, `evidence/06-gates-verification.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/findings.json`, `web/e2e/axe/authed.spec.ts`
+- 证据：`evidence/04-engineering-verification.json`, `evidence/06-gates-verification.json`, `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/findings.json`, `web/e2e/axe/authed.spec.ts`
 - 整改：由授权环境执行 DAST/渗透/三库迁移/DR/备份恢复/性能验证；鉴权页 axe 扫描需产品开放密码登录或提供 OAuth 测试会话。
 - 复测：`PARTIAL: local toolchain items revalidated PASS`
 
@@ -82,7 +82,7 @@
 - 位置：MA-09 knip、MA-10 docs-web build、MA-11 electron build；修复记录见 evidence/08-remediation-register.json FIX-06..FIX-08
 - 根因：MA-09 knip 复跑 PASS（本审计未做任何清理动作）；MA-10 受宿主 safe-delete 批量删除拦截（旧 .next 产物）；MA-11 为 Electron 运行时下载网络超时（镜像吞吐 ~47KB/s，撞 600s 请求超时）。
 - 影响：三项均以原始命令真实复跑 PASS；未删测试、未放宽断言、未改写状态。
-- 证据：`evidence/04-engineering-verification.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/execution.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log`
+- 证据：`evidence/04-engineering-verification.json`, `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/execution.json`, `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log`, `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log`
 - 整改：FIX-06 mv 卫生预置；FIX-07 8 路并行续传下载并 SHA-256 校验后种子 @electron/get 缓存；FIX-08 安装 axe 工具链并修复真实违规。
 - 复测：`REVALIDATED: collector final run all local checks PASS`
 
@@ -100,20 +100,20 @@
 
 - 级别/状态：`P2` / `DISCLOSED / SUPERSEDED`
 - 位置：reports/compliance/FINAL-COMPLIANCE-REPORT.md
-- 根因：该报告基于 PR #15 基线写 UAES registry DRAFT / 13 gates NOT_RUN。
+- 根因：该报告基于 PR #15 基线写 AES registry DRAFT / 13 gates NOT_RUN。
 - 影响：不改写历史证据；新审计包以当前真实基线为准。
 - 证据：`evidence/01-conflict-register.json (CONF-004)`
 - 整改：标记 SUPERSEDED，保留原文以供复核。
 - 复测：`DISCLOSURE VERIFIED`
 
-#### FIND-FCA-008 — UAES reports/ 下历史 UAES-P13-* 命名易与 UTER P13 混淆
+#### FIND-FCA-008 — AES reports/ 下历史 AES-P13-* 命名易与 UTER P13 混淆
 
 - 级别/状态：`P3` / `DISCLOSED`
-- 位置：UAES 仓库 reports/（非 standards/、非 .uaes/registry/）
+- 位置：AES 仓库 reports/（非 standards/、非 .aes/registry/）
 - 根因：Repository Integration 阶段派生报告的历史命名。
-- 影响：UAES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。
-- 证据：`reports/compliance/uaes-full-migration-2026-11-06/evidence/governance-separation.json`
-- 整改：不修改 UAES 仓库（含 5 项未提交用户修改）；仅披露并持续由分离门禁监控。
+- 影响：AES 通用规范目录中 P13 命中为 0；不违反双仓库分别治理。
+- 证据：`reports/compliance/aes-full-migration-2026-11-06/evidence/governance-separation.json`
+- 整改：不修改 AES 仓库（含 5 项未提交用户修改）；仅披露并持续由分离门禁监控。
 - 复测：`MONITORED BY GATE`
 
 #### FIND-FCA-009 — 14 域 L3 与 L4 全局门禁仍 BLOCKED
@@ -121,8 +121,8 @@
 - 级别/状态：`P1` / `OPEN`
 - 位置：gates/l3-domain-gates.json、gates/l4-global-gate.json
 - 根因：L3 pass_count=0/14；L4 status=BLOCKED，4 条未满足。
-- 影响：RELEASE_GATE / GLOBAL_UAES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。
-- 证据：`reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json`, `reports/compliance/uaes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json`
+- 影响：RELEASE_GATE / GLOBAL_AES_CONFORMANCE_GATE 阻断；禁止 commit/push/PR/merge/deploy。
+- 证据：`reports/compliance/aes-full-migration-2026-11-06/evidence/gates/l3-domain-gates.json`, `reports/compliance/aes-full-migration-2026-11-06/evidence/gates/l4-global-gate.json`
 - 整改：完成 14 域人工验收与逐条验证后重跑门禁。
 - 复测：`NOT REVALIDATED`
 
@@ -130,7 +130,7 @@
 
 - 级别/状态：`P3` / `CLOSED BY JUSTIFICATION`
 - 位置：evidence/02-compliance-matrix.json (keyword_class=REFERENCE_ROW)
-- 根因：交叉引用索引行带 native UAES ID 但无规范性谓词。
+- 根因：交叉引用索引行带 native AES ID 但无规范性谓词。
 - 影响：不构成义务；每条均附书面适用性依据（§10）。
 - 证据：`evidence/02-compliance-matrix.json`
 - 整改：已记录且不跳过；无进一步整改。
@@ -140,7 +140,7 @@
 
 - 级别/状态：`P1` / `OPEN`
 - 位置：evidence/06-gates-verification.json
-- 根因：real BLOCK gates = ['CHANGE_GATE', 'CODE_REVIEW_GATE', 'TESTING_GATE', 'SECURITY_GATE', 'BUSINESS_ACCEPTANCE_GATE', 'RELEASE_GATE', 'GLOBAL_UAES_CONFORMANCE_GATE']
+- 根因：real BLOCK gates = ['CHANGE_GATE', 'CODE_REVIEW_GATE', 'TESTING_GATE', 'SECURITY_GATE', 'BUSINESS_ACCEPTANCE_GATE', 'RELEASE_GATE', 'GLOBAL_AES_CONFORMANCE_GATE']
 - 影响：§8 门禁未全部放行；每个门禁的负向阻断测试已真实执行。
 - 证据：`evidence/06-gates-verification.json`
 - 整改：按 FIND-FCA-001..009 逐项解除后重跑八类门禁。
@@ -159,7 +159,7 @@
 #### FIND-FCA-013 — 执行分支出现完整验证前的 commit（非本审计会话所为），workspace W3 保持 fail-closed FAIL
 
 - 级别/状态：`P2` / `OPEN / EXTERNAL ACTION`
-- 位置：commit ec6501adc（HEAD 领先 main 1 个提交）；scripts/quality/uaes-agent-runtime-check.rb W3（HEAD == main）
+- 位置：commit ec6501adc（HEAD 领先 main 1 个提交）；scripts/quality/aes-agent-runtime-check.rb W3（HEAD == main）
 - 根因：2026-11-06 17:12:30，用户账号（Uter.ai <huxulin.hxl@gmail.com>）通过并行会话提交 ec6501adc「fix(governance): abbreviate commit SHA misdetected as API key by gitleaks」——内容正是 MA-06 gitleaks 误报的正式修复（缩短审计文档中的完整 SHA 并提交）。本审计会话自始至终零 commit；依并发红线不得 reset/merge 撤销他人提交，W3 断言亦不得放宽。
 - 影响：workspace W3 FAIL → 矩阵 L1-16 FAIL → L1 17/18；L1/L2 层因此未能全绿。交付门禁保持关闭（无 push/PR）。
 - 证据：`reports/compliance/full-conformance-audit-2026-11-06/evidence/agent/agent-runtime-workspace.json`, `reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json`

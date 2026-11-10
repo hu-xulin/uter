@@ -39,4 +39,23 @@ export const DEFAULT_SYSTEM_NAME = 'Uter'
 export const LOGO_ASSET_VERSION = '8'
 export const DEFAULT_LOGO = `/logo.png?v=${LOGO_ASSET_VERSION}`
 
+/**
+ * Favicon (.ico) asset version. Bump whenever
+ * `web/public/favicon-legacy.ico` is replaced.
+ *
+ * The browser tab icon uses the brand .ico, served from a stable URL with a
+ * `?v=` cache-buster (mirrors DEFAULT_LOGO). It is intentionally decoupled from
+ * the in-page logo: the tab icon is a fixed brand asset, while the page logo
+ * is the dynamic `logo` (defaults to `/logo.png`). A custom admin-uploaded logo
+ * must never leak into the tab icon.
+ *
+ * The file is deliberately NOT named `favicon.ico`: Rsbuild's dev server answers
+ * `/favicon.ico` with 204 and otherwise auto-injects an unversioned link, both of
+ * which defeat a controllable, cache-bustable tab icon. Keep this in sync with the
+ * `link rel="icon"` href in `web/index.html`, which is a static template and
+ * cannot import this constant.
+ */
+export const FAVICON_ICO_VERSION = '2'
+export const FAVICON_URL = `/favicon-legacy.ico?v=${FAVICON_ICO_VERSION}`
+
 // LocalStorage Keys

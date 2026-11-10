@@ -1,0 +1,28 @@
+$ go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v
+exit=0
+=== RUN   TestAutoFillOfficialPricingFillsUnpricedModelsOnly
+
+2026/11/10 19:42:16 [31;1m/tmp/uter-product-ci/model/ability.go:39 [35;1mSQL logic error: no such table: abilities (1)
+[0m[33m[0.033ms] [34;1m[rows:-][0m SELECT abilities.*, channels.type as channel_type FROM `abilities` left join channels on abilities.channel_id = channels.id WHERE abilities.enabled = true
+[SYS] 2026/11/10 - 19:42:16 | GetAllEnableAbilityWithChannels error: SQL logic error: no such table: abilities (1) 
+
+2026/11/10 19:42:16 [31;1m/tmp/uter-product-ci/model/ability.go:39 [35;1mSQL logic error: no such table: abilities (1)
+[0m[33m[0.027ms] [34;1m[rows:-][0m SELECT abilities.*, channels.type as channel_type FROM `abilities` left join channels on abilities.channel_id = channels.id WHERE abilities.enabled = true
+[SYS] 2026/11/10 - 19:42:16 | GetAllEnableAbilityWithChannels error: SQL logic error: no such table: abilities (1) 
+
+2026/11/10 19:42:16 [31;1m/tmp/uter-product-ci/model/task_model_alias.go:97 [35;1mSQL logic error: no such table: channels (1)
+[0m[33m[0.190ms] [34;1m[rows:0][0m SELECT `id`,`type`,`models`,`model_mapping` FROM `channels` WHERE status = 1
+[SYS] 2026/11/10 - 19:42:16 | rebuild task alias view: SQL logic error: no such table: channels (1) 
+
+2026/11/10 19:42:16 [31;1m/tmp/uter-product-ci/model/ability.go:39 [35;1mSQL logic error: no such table: abilities (1)
+[0m[33m[0.028ms] [34;1m[rows:-][0m SELECT abilities.*, channels.type as channel_type FROM `abilities` left join channels on abilities.channel_id = channels.id WHERE abilities.enabled = true
+[SYS] 2026/11/10 - 19:42:16 | GetAllEnableAbilityWithChannels error: SQL logic error: no such table: abilities (1) 
+--- PASS: TestAutoFillOfficialPricingFillsUnpricedModelsOnly (0.01s)
+=== RUN   TestCacheUpdateChannelSyncsAdvancedCustomConfig
+[SYS] 2026/11/10 - 19:42:16 | channels synced from database 
+[SYS] 2026/11/10 - 19:42:16 | channels synced from database 
+--- PASS: TestCacheUpdateChannelSyncsAdvancedCustomConfig (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/model	1.434s
+
+

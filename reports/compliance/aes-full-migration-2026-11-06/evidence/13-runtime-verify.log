@@ -1,0 +1,14 @@
+exit=0  bash scripts/quality/ai-specs-check.sh
+exit=0  ruby scripts/quality/test-ai-governance-policy.rb
+exit=0  ruby scripts/quality/test-aes-pin-check.rb
+exit=0  bash scripts/quality/aes-pin-check.sh
+exit=0  ruby scripts/quality/test-aes-integration-check.rb
+exit=0  bash scripts/quality/aes-integration-check.sh
+exit=0  ruby scripts/quality/uter-governance-separation-check.rb
+exit=0  ruby scripts/quality/uter-p09-p10-boundary-check.rb
+exit=0  ruby scripts/quality/test-uter-governance-boundaries.rb
+exit=0  ruby scripts/quality/test-aes-manual-acceptance-boundary.rb
+exit=0  python3 scripts/quality/aes-manual-acceptance.py --verify-only
+exit=0  cd /Users/lincolnhu/aes && node quality/scripts/aes/validate-registry.mjs
+overall=PASS report_success=true
+evidence: /Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-test-execution.json

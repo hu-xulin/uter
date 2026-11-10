@@ -83,7 +83,7 @@
       "status": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-01.log",
       "raw_log_sha256": "ef600323cbfefd682fa4d1373132918f095e0219f552ea64c2130850e173e760",
-      "stdout_tail": "ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-UAES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n",
+      "stdout_tail": "ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-AES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n",
       "stderr_tail": "",
       "category": "compile/static",
       "description": "spec completeness + governance wiring"
@@ -102,14 +102,14 @@
       "status": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-02.log",
       "raw_log_sha256": "c00ad0d7e5ed7ee6de6786c3749417215e2b58a61c78c60e0c0e14c66f440e71",
-      "stdout_tail": "ASS: R0-R4 risk classification and durable task lifecycle\nPASS: one non-main branch maximum; main push, force-push and PR merge denied\nPASS: delivery is gated on complete validation; branch strategy follows UTER-UAES-GOV-001 baseline preservation\nPASS: PR repair workflow allows verified branch commit/push/PR only\nPASS: task lifecycle prevents unverified closure and supports checkpointed recovery\nPASS: delegated Agent permissions cannot escalate\nPASS: production, real-payment and production-database changes denied\nNOTE: static policy/schema tests do not replace live Agent runtime denial tests.\n",
+      "stdout_tail": "ASS: R0-R4 risk classification and durable task lifecycle\nPASS: one non-main branch maximum; main push, force-push and PR merge denied\nPASS: delivery is gated on complete validation; branch strategy follows UTER-AES-GOV-001 baseline preservation\nPASS: PR repair workflow allows verified branch commit/push/PR only\nPASS: task lifecycle prevents unverified closure and supports checkpointed recovery\nPASS: delegated Agent permissions cannot escalate\nPASS: production, real-payment and production-database changes denied\nNOTE: static policy/schema tests do not replace live Agent runtime denial tests.\n",
       "stderr_tail": "",
       "category": "unit",
       "description": "P01 policy positive/negative fixtures"
     },
     {
       "evidence_id": "EV-03",
-      "command": "bash scripts/quality/uaes-pin-check.sh",
+      "command": "bash scripts/quality/aes-pin-check.sh",
       "cwd": ".",
       "started_at": "2026-11-07T02:40:21Z",
       "duration_seconds": 4.218,
@@ -121,14 +121,14 @@
       "status": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-03.log",
       "raw_log_sha256": "6434610518e080a5344bc2cd40c8ea49a7bcfca143a119df15873ade0e3e656b",
-      "stdout_tail": "PASS: pin contains all 11 required fields\nPASS: source commit and registry blob are valid 40-character object ids\nPASS: registry lifecycle is consistent (status=ACTIVE, approval=ACTIVE, integration=MIGRATION_PENDING)\nPASS: contract does not claim unverified compliance\nPASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle\nuaes-pin-check: PASS scope=static-integrity status=ACTIVE version=1.9.0 commit=0c9386b19209\n",
+      "stdout_tail": "PASS: pin contains all 11 required fields\nPASS: source commit and registry blob are valid 40-character object ids\nPASS: registry lifecycle is consistent (status=ACTIVE, approval=ACTIVE, integration=MIGRATION_PENDING)\nPASS: contract does not claim unverified compliance\nPASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle\naes-pin-check: PASS scope=static-integrity status=ACTIVE version=1.9.0 commit=0c9386b19209\n",
       "stderr_tail": "",
       "category": "config",
-      "description": "UAES pinned version re-verification"
+      "description": "AES pinned version re-verification"
     },
     {
       "evidence_id": "EV-04",
-      "command": "ruby scripts/quality/test-uaes-pin-check.rb",
+      "command": "ruby scripts/quality/test-aes-pin-check.rb",
       "cwd": ".",
       "started_at": "2026-11-07T02:40:25Z",
       "duration_seconds": 31.945,
@@ -140,14 +140,14 @@
       "status": "FAIL",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-04.log",
       "raw_log_sha256": "fb9caa4d4c11d8185ff3f34d97adb2ebe18d35cb99eadcae1c37dc58b7507441",
-      "stdout_tail": "Run options: --seed 8415\n\n# Running:\n\n......F.......\n\nFinished in 31.501146s, 0.4444 runs/s, 1.5872 assertions/s.\n\n  1) Failure:\nUaesPinCheckTest#test_rejects_approved_registry_without_approval_state [scripts/quality/test-uaes-pin-check.rb:145]:\nExpected /APPROVED registry requires approval_state=APPROVED/ to match \"FAIL: approved/active registry requires approval_state=APPROVED or ACTIVE\\nPASS: pin contains all 11 required fields\\nPASS: source commit and registry blob are valid 40-character object ids\\n\".\n\n14 runs, 50 assertions, 1 failures, 0 errors, 0 skips\n",
+      "stdout_tail": "Run options: --seed 8415\n\n# Running:\n\n......F.......\n\nFinished in 31.501146s, 0.4444 runs/s, 1.5872 assertions/s.\n\n  1) Failure:\nAesPinCheckTest#test_rejects_approved_registry_without_approval_state [scripts/quality/test-aes-pin-check.rb:145]:\nExpected /APPROVED registry requires approval_state=APPROVED/ to match \"FAIL: approved/active registry requires approval_state=APPROVED or ACTIVE\\nPASS: pin contains all 11 required fields\\nPASS: source commit and registry blob are valid 40-character object ids\\n\".\n\n14 runs, 50 assertions, 1 failures, 0 errors, 0 skips\n",
       "stderr_tail": "",
       "category": "unit",
       "description": "pin gate positive/negative fixtures"
     },
     {
       "evidence_id": "EV-05",
-      "command": "bash scripts/quality/uaes-integration-check.sh",
+      "command": "bash scripts/quality/aes-integration-check.sh",
       "cwd": ".",
       "started_at": "2026-11-07T02:40:57Z",
       "duration_seconds": 1.159,
@@ -162,11 +162,11 @@
       "stdout_tail": "itory architecture and P09/P10 ownership are registered\nPASS: Uter payment, billing, auth, database, and Design System overlays remain protected\nPASS: Agent entrypoints and both runtime skill adapters route to the canonical contract\nPASS: P01 fail-closed permission policy and task schema are registered\nNOTE: static wiring only; remote commit reachability, semantic parity, runtime skill discovery, CI policy enforcement, 14 independent domain acceptances, independent assessment and L4_GLOBAL_CONFORMANCE_GATE remain separate acceptance requirements. This check makes no conformance claim (§16.5).\n",
       "stderr_tail": "",
       "category": "config",
-      "description": "Uter/UAES integration wiring"
+      "description": "Uter/AES integration wiring"
     },
     {
       "evidence_id": "EV-06",
-      "command": "ruby scripts/quality/test-uaes-integration-check.rb",
+      "command": "ruby scripts/quality/test-aes-integration-check.rb",
       "cwd": ".",
       "started_at": "2026-11-07T02:40:58Z",
       "duration_seconds": 20.217,
@@ -204,7 +204,7 @@
     },
     {
       "evidence_id": "EV-10",
-      "command": "ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb",
+      "command": "ruby scripts/quality/test-aes-manual-acceptance-boundary.rb",
       "cwd": ".",
       "started_at": "2026-11-07T02:41:36Z",
       "duration_seconds": 6.246,
@@ -223,7 +223,7 @@
     },
     {
       "evidence_id": "EV-11",
-      "command": "python3 scripts/quality/uaes-manual-acceptance.py --verify-only",
+      "command": "python3 scripts/quality/aes-manual-acceptance.py --verify-only",
       "cwd": ".",
       "started_at": "2026-11-07T02:41:42Z",
       "duration_seconds": 0.257,
@@ -413,7 +413,7 @@
     },
     {
       "evidence_id": "EV-21",
-      "command": "tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
+      "command": "tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
       "cwd": ".",
       "started_at": "2026-11-07T02:54:41Z",
       "duration_seconds": 9.376,
@@ -425,7 +425,7 @@
       "status": "PASS",
       "raw_log": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-21.log",
       "raw_log_sha256": "e0d1b71bddf1e1daf8271889cddc376ae129cb5a40177e7b59099472694c854c",
-      "stdout_tail": "scanned_tree=/tmp/uaes-gitleaks-zrM9YK\n",
+      "stdout_tail": "scanned_tree=/tmp/aes-gitleaks-zrM9YK\n",
       "stderr_tail": "\u001b[90m10:54AM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mscanned ~39023540 bytes (39.02 MB) in 6.94s\u001b[0m\n\u001b[90m10:54AM\u001b[0m \u001b[32mINF\u001b[0m \u001b[1mno leaks found\u001b[0m\n",
       "category": "secret",
       "description": "secret scan on committed tree"
@@ -499,7 +499,7 @@
       "duration_seconds": 8.974,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-01.log",
       "raw_log_sha256": "732167023122c6b465fdaa3f126c2dc7b03694ec08bd3da17c29853eaceb4855"
     },
     {
@@ -512,7 +512,7 @@
       "duration_seconds": 27.43,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-02.log",
       "raw_log_sha256": "b5ae54ddcfa4cb39e85f84ad2d9e43556bd817c480eaab2a71bab63bfc29353b"
     },
     {
@@ -525,7 +525,7 @@
       "duration_seconds": 12.212,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-03.log",
       "raw_log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5"
     },
     {
@@ -538,7 +538,7 @@
       "duration_seconds": 10.107,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-04.log",
       "raw_log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5"
     },
     {
@@ -551,20 +551,20 @@
       "duration_seconds": 11.404,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-05.log",
       "raw_log_sha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5"
     },
     {
       "evidence_id": "MA-06",
       "title": "gitleaks secret scan on tracked HEAD tree",
-      "command": "tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
+      "command": "tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD | tar -x -C \"$tmp\" && (cd \"$tmp\" && gitleaks dir . --no-banner --config '/Users/lincolnhu/uter/.quality/gitleaks.toml') && echo \"scanned_tree=$tmp\"",
       "status": "PASS",
       "exit_code": 0,
       "started_at": "2026-11-06T10:59:31Z",
       "duration_seconds": 13.597,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-06.log",
       "raw_log_sha256": "4d2211236776e428111400ca1ce14790c340e2c8be9abcc36fd41b63b228e062"
     },
     {
@@ -577,7 +577,7 @@
       "duration_seconds": 0.046,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-07.log",
       "raw_log_sha256": "f0a74123d3251e18da087313dbd7af6ee27d0a62c57d88d5b6a9978b41a24698"
     },
     {
@@ -590,7 +590,7 @@
       "duration_seconds": 15.808,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-08.log",
       "raw_log_sha256": "2f86471de1521588fcade7304ca6ea38c661943067942c7e9487aab8ee667e20"
     },
     {
@@ -603,7 +603,7 @@
       "duration_seconds": 7.966,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-09.log",
       "raw_log_sha256": "daa78c62defd32cfe45e8193016880c25efa2229e923d0018ab14d0f327f4a65"
     },
     {
@@ -616,7 +616,7 @@
       "duration_seconds": 49.095,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-10.log",
       "raw_log_sha256": "4cc65b3f0cf46447eee4a8b7ff033d306d6c23118989ce8acd5f0c58617d8886"
     },
     {
@@ -629,7 +629,7 @@
       "duration_seconds": 24.539,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-11.log",
       "raw_log_sha256": "3a21eb1e5aeb7717c3972a51616d9fba91beab107fb6497ba53a601843dad443"
     },
     {
@@ -642,7 +642,7 @@
       "duration_seconds": 0.015,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-12.log",
       "raw_log_sha256": "127f24bd7fc76aab262b5223c32629d6a78aed8bc8218ee6133f6a87b359cdb4"
     },
     {
@@ -655,7 +655,7 @@
       "duration_seconds": 122.073,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-13.log",
       "raw_log_sha256": "1736a555392427a7e52c5fc081bb4fa0c9a87319cadc887a17d3ed7d6f60715b"
     },
     {
@@ -668,7 +668,7 @@
       "duration_seconds": 0.7,
       "execution": "PRIOR_REAL_RUN_AT_SAME_COMMIT",
       "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-      "raw_log": "reports/compliance/uaes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
+      "raw_log": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/MA-14.log",
       "raw_log_sha256": "7edaad7a486df586829cf26d8eae0b1b7f3e18e1e4978bf6f758ef3eba100212"
     }
   ],
@@ -678,8 +678,8 @@
       "category": "DAST / 动态应用安全测试",
       "status": "NOT_RUN",
       "reason": "DAST、渗透与 API 安全测试需一个已授权的运行中目标环境与书面授权；本机只有源码与测试套件。",
-      "linked_requirement": "UAES P10 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P10 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -703,8 +703,8 @@
       "category": "渗透测试",
       "status": "NOT_RUN",
       "reason": "同上；未授权对运行服务做主动探测会越出风险边界（§13）。",
-      "linked_requirement": "UAES P10 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P10 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -728,8 +728,8 @@
       "category": "API 安全测试",
       "status": "NOT_RUN",
       "reason": "需要授权运行实例、真实凭据与测试数据；当前无该环境。",
-      "linked_requirement": "UAES P10 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P10 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -753,8 +753,8 @@
       "category": "权限与访问控制端到端测试",
       "status": "NOT_RUN",
       "reason": "需要真实账号体系与多租户环境；不得使用测试号绕过登录（项目红线），且不得创建任何账号。",
-      "linked_requirement": "UAES P10 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P10 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -778,8 +778,8 @@
       "category": "三数据库迁移验证",
       "status": "NOT_RUN",
       "reason": "需要 MySQL / PostgreSQL / SQLite 三套真实实例与迁移快照。",
-      "linked_requirement": "UAES P11 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P11 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -803,8 +803,8 @@
       "category": "性能与压力测试",
       "status": "NOT_RUN",
       "reason": "无 k6/wrk/locust 类工具链与性能基线；不得用替代命令冒充。",
-      "linked_requirement": "UAES P09 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P09 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -828,8 +828,8 @@
       "category": "故障恢复 / DR 演练",
       "status": "NOT_RUN",
       "reason": "需要生产等价环境、故障注入与恢复窗口授权。",
-      "linked_requirement": "UAES P10/P11 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P10/P11 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -853,8 +853,8 @@
       "category": "备份与恢复测试",
       "status": "NOT_RUN",
       "reason": "需要真实数据库备份与恢复目标实例。",
-      "linked_requirement": "UAES P10/P11 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P10/P11 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -878,8 +878,8 @@
       "category": "CI/CD 与发布流程真实执行",
       "status": "NOT_RUN",
       "reason": "本地仅有 workflow 静态定义；未授权 push / PR / merge / deploy，无法产生真实 CI 运行记录。",
-      "linked_requirement": "UAES P11 / §6",
-      "required_authorization": "项目 Owner / 环境授权 / UAES Owner（按类别）",
+      "linked_requirement": "AES P11 / §6",
+      "required_authorization": "项目 Owner / 环境授权 / AES Owner（按类别）",
       "probe_evidence": "reports/compliance/full-conformance-audit-2026-11-06/evidence/raw/EV-00-PROBE.log",
       "probe": {
         "axe_toolchain": true,
@@ -905,7 +905,7 @@
       "category": "端到端 Playwright 视觉回归（真实执行）",
       "status": "EXECUTED_NOT_PASS",
       "reason": "命令 `bun run test:visual:e2e` 真实执行：19 passed / 10 failed (3.0m)。Playwright 与 chromium-1248 均在本机可用，此前的 NOT_RUN 理由（缺浏览器二进制）已被推翻。10 个失败均为 `expect(page).toHaveScreenshot(expected)` 像素基线不匹配，属基线漂移，需按批准流程更新快照后复跑，不得直接 --update-snapshots 掩盖。",
-      "linked_requirement": "UAES P09 / §6",
+      "linked_requirement": "AES P09 / §6",
       "required_authorization": "项目 Owner（基线更新 / 二进制重建授权）"
     },
     {
@@ -913,7 +913,7 @@
       "category": "axe 无障碍扫描（真实执行）",
       "status": "EXECUTED_NOT_PASS",
       "reason": "命令 `bun run test:axe` 真实执行：8 passed / 5 failed / 1 skipped (1.8m)。此前的 NOT_RUN 理由（web/node_modules 下无 @axe-core）不成立：@axe-core/cli、@axe-core/playwright、@axe-core/webdriverjs 均已安装。5 个失败全部同源：/about、/docs、/privacy-policy、/user-agreement、/recharge-agreement 的文档站 iframe 内 `[data-docs-sidebar-search]` 触发 serious/label-content-name-mismatch。根因已定位：:3000 由 launchd 托管，运行中的 uter-bin 编译于 2026-11-04 09:21，go:embed 固化了当时的 web/dist，因此 2026-11-06 18:11 的源码修复（kbd 加 aria-hidden）未被伺服；产物 web/dist/docs-content 内代码本身是正确的。需重建二进制后复跑。",
-      "linked_requirement": "UAES P05/P09 / §6",
+      "linked_requirement": "AES P05/P09 / §6",
       "required_authorization": "项目 Owner（基线更新 / 二进制重建授权）"
     }
   ]

@@ -1,0 +1,24 @@
+$ go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v
+exit=0
+=== RUN   TestDecideRelayRetryStopsAfterOutputWritten
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+--- PASS: TestDecideRelayRetryStopsAfterOutputWritten (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/service	1.659s
+
+
+$ go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v
+exit=0
+=== RUN   TestAcceptedSubmitStreamNeverRetries
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+--- PASS: TestAcceptedSubmitStreamNeverRetries (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/controller	1.890s
+
+

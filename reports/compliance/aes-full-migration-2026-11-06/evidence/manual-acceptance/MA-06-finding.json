@@ -1,0 +1,19 @@
+{
+  "evidence_id": "MA-06-FINDING",
+  "related_requirement": "UTER-AES-GOV-001 §10.2 / §8.4 / §16.4",
+  "generated_at": "2026-11-06T06:53:36.908705+00:00",
+  "source": "gitleaks dir . (tracked HEAD tree), json report",
+  "gitleaks_exit_code": 1,
+  "finding_count": 1,
+  "findings": [
+    {
+      "rule_id": "generic-api-key",
+      "description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "file": ".aes/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md",
+      "start_line": 62,
+      "match": "OpenAPI commit: `4aa9c0849049a640aaa27fae11870adc92367b62`"
+    }
+  ],
+  "assessment": "Candidate FALSE POSITIVE: the 40-hex string is an OpenAPI commit SHA quoted in a governance audit document, not a credential. NOT auto-waived: the allowlist in .quality/gitleaks.toml was NOT modified, and MA-06 remains FAIL/OPEN pending acceptance-authority review.",
+  "action_taken": "diagnostic report archived only; no config, source or evidence suppression"
+}

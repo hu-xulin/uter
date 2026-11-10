@@ -1,0 +1,6 @@
+=== RUN   TestGetUserTopUpsSurvivesGatewayFailure
+[WARN] 2026/11/10 - 19:43:45 | SYSTEM | 支付宝读时对账：查单失败 trade_no=ALIPAY-LIST-GATEWAY-DOWN user_id=1 error="alipay query failed: code=20000 sub_code=isp.unknow-error msg=Service Currently Unavailable" 
+--- PASS: TestGetUserTopUpsSurvivesGatewayFailure (0.04s)
+PASS
+ok  	github.com/uter-ai/uter/controller	1.909s
+

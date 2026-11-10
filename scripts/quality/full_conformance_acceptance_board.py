@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""UTER x UAES FINAL ACCEPTANCE BOARD -- §10 conditions, computed from evidence.
+"""UTER x AES FINAL ACCEPTANCE BOARD -- §10 conditions, computed from evidence.
 
 This is NOT a hand-written checklist. Every row is derived from an evidence file
 on disk; the reviewer can re-run this script to reproduce every boolean.
@@ -20,7 +20,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "reports/compliance/full-conformance-audit-2026-11-06"
 EV = OUT / "evidence"
-LEG = ROOT / "reports/compliance/uaes-full-migration-2026-11-06/evidence"
+LEG = ROOT / "reports/compliance/aes-full-migration-2026-11-06/evidence"
 
 
 def jread(p: pathlib.Path, default=None):
@@ -181,7 +181,7 @@ def build():
         ok=ind_ok,
         detail=(f"独立评估 conformance_claim_supported={ind_ok}；"
                 f"执行者={collector}（须为未参与整改的第三方人员签署）"),
-        evidence="uaes-full-migration-2026-11-06/evidence/independent-assessment.json",
+        evidence="aes-full-migration-2026-11-06/evidence/independent-assessment.json",
     ))
 
     met = [r["n"] for r in rows if r["ok"]]
@@ -195,7 +195,7 @@ def build():
 
 
 def render(b: dict) -> str:
-    lines = ["# UTER × UAES 最终验收看板（由证据实时计算）", "",
+    lines = ["# UTER × AES 最终验收看板（由证据实时计算）", "",
              f"- 生成方式：`scripts/quality/full_conformance_acceptance_board.py`（可重跑复核）",
              f"- Uter commit SHA：`{b['commit']}`",
              f"- 达成：**{len(b['met'])}/10**",

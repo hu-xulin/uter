@@ -2,7 +2,7 @@
   "evidence_id": "FCA-FINAL-ASSESSMENT",
   "generated_at": "2026-11-09T05:04:20Z",
   "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
-  "uaes_commit_sha": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
+  "aes_commit_sha": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
   "related_requirement": "§10 / §12",
   "conditions": [
     {
@@ -77,7 +77,7 @@
     "C11"
   ],
   "final_verdict": "BLOCKED",
-  "rationale": "§10 的 11 项条件中 5 项满足、6 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。",
+  "rationale": "§10 的 11 项条件中 5 项满足、6 项未满足。29 条适用要求因 AES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。",
   "allowed_vocabulary": [
     "CONFORMANT",
     "PARTIALLY CONFORMANT",
@@ -87,8 +87,8 @@
   ],
   "not_conformant_because": [
     "0 requirement-specific PASS out of 2872 applicable requirements",
-    "178/178 UAES standards are DRAFT and UAES APPROVAL-RECORD §4 does not approve them",
-    "13 UAES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS",
+    "178/178 AES standards are DRAFT and AES APPROVAL-RECORD §4 does not approve them",
+    "13 AES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS",
     "42 manual acceptance items remain NOT_VERIFIED with signoff_granted=false",
     "security verification is incomplete: MA-06 gitleaks and MA-12 axe are now PASS (user commit ec6501adc + installed axe-core/@axe-core/playwright real scan), but DAST / penetration / API security / three-database migration / DR / backup-restore / performance testing remain NOT_RUN (authorised environment required, see FIND-FCA-004)",
     "several of the eight §8 gates are BLOCK"

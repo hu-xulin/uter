@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# UTER-UAES-GOV-001 §1.3 / §8.2 / §9 / §10 / §16.3 / §18 steps 1-2,7
+# UTER-AES-GOV-001 §1.3 / §8.2 / §9 / §10 / §16.3 / §18 steps 1-2,7
 #
 # Positive and NEGATIVE fixtures for the two user-emphasised governance gates:
 #   * scripts/quality/uter-governance-separation-check.rb (two repositories)
@@ -11,7 +11,7 @@
 # throwaway mirror of BOTH repositories, injects one specific violation, and
 # asserts that the real gate exits non-zero with the expected FAIL check. The
 # user's working tree is never modified: mirrors live in Dir.mktmpdir and all
-# evidence is redirected via UAES_EVIDENCE_DIR.
+# evidence is redirected via AES_EVIDENCE_DIR.
 #
 # Usage: ruby scripts/quality/test-uter-governance-boundaries.rb
 # Exit:  0 = all fixtures behaved as specified; 1 = a gate failed to detect an
@@ -24,33 +24,33 @@ require "json"
 require "open3"
 
 REAL_ROOT = File.expand_path("../..", __dir__)
-REAL_UAES = File.expand_path(ENV.fetch("UAES_REPO", File.join(REAL_ROOT, "..", "uaes")))
+REAL_AES = File.expand_path(ENV.fetch("AES_REPO", File.join(REAL_ROOT, "..", "aes")))
 SEPARATION_GATE = "uter-governance-separation-check.rb"
 BOUNDARY_GATE = "uter-p09-p10-boundary-check.rb"
 
-GOV_SPEC = "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
-PROJECT_REGISTRY = ".uaes/uter-governance-registry.yaml"
+GOV_SPEC = "uaes/standards/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
+PROJECT_REGISTRY = ".aes/uter-governance-registry.yaml"
 
 UTER_MIRROR_FILES = [
   GOV_SPEC,
   PROJECT_REGISTRY,
-  ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
-  ".uaes/AI-GOVERNANCE-ENTRY.md",
-  ".uaes/INTEGRATION.md",
-  ".uaes/TRACEABILITY.md",
+  ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
+  ".aes/AI-GOVERNANCE-ENTRY.md",
+  ".aes/INTEGRATION.md",
+  ".aes/TRACEABILITY.md",
   "AGENTS.md",
-  "scripts/quality/uaes-governance-gates.rb",
+  "scripts/quality/aes-governance-gates.rb",
   "scripts/quality/#{SEPARATION_GATE}",
   "scripts/quality/#{BOUNDARY_GATE}"
 ].freeze
 
-UAES_MIRROR_DIRS = %w[standards .uaes reports].freeze
+AES_MIRROR_DIRS = %w[standards .aes reports].freeze
 
 class GovernanceBoundaryFixtures < Minitest::Test
   def setup
     @tmp = Dir.mktmpdir("uter-gov-fixture-")
     @root = File.join(@tmp, "uter")
-    @uaes = File.join(@tmp, "uaes")
+    @aes = File.join(@tmp, "aes")
     @evidence = File.join(@tmp, "evidence")
     FileUtils.mkdir_p(File.join(@root, "scripts", "quality"))
     FileUtils.mkdir_p(@evidence)
@@ -63,12 +63,12 @@ class GovernanceBoundaryFixtures < Minitest::Test
       FileUtils.cp(src, dst)
     end
 
-    # separation-check requires a .git directory in the pinned UAES checkout.
-    FileUtils.mkdir_p(File.join(@uaes, ".git"))
-    UAES_MIRROR_DIRS.each do |rel|
-      src = File.join(REAL_UAES, rel)
-      raise "UAES fixture source missing: #{src}" unless File.directory?(src)
-      FileUtils.cp_r(src, File.join(@uaes, rel))
+    # separation-check requires a .git directory in the pinned AES checkout.
+    FileUtils.mkdir_p(File.join(@aes, ".git"))
+    AES_MIRROR_DIRS.each do |rel|
+      src = File.join(REAL_AES, rel)
+      raise "AES fixture source missing: #{src}" unless File.directory?(src)
+      FileUtils.cp_r(src, File.join(@aes, rel))
     end
   end
 
@@ -77,7 +77,7 @@ class GovernanceBoundaryFixtures < Minitest::Test
   end
 
   def run_gate(script)
-    env = { "UAES_REPO" => @uaes, "UAES_EVIDENCE_DIR" => @evidence }
+    env = { "AES_REPO" => @aes, "AES_EVIDENCE_DIR" => @evidence }
     out, err, status = Open3.capture3(
       env, "ruby", File.join(@root, "scripts", "quality", script), chdir: @root
     )
@@ -116,59 +116,59 @@ class GovernanceBoundaryFixtures < Minitest::Test
   end
 
   # -------------------------------------- negative: two-repository separation
-  def test_separation_rejects_p13_standard_directory_in_uaes
-    dir = File.join(@uaes, "standards", "13-uter-p13")
+  def test_separation_rejects_p13_standard_directory_in_aes
+    dir = File.join(@aes, "standards", "13-uter-p13")
     FileUtils.mkdir_p(dir)
     File.write(File.join(dir, "BUSINESS.md"), "# UTER P13 business domain rules\n")
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S07",
-                        "UAES must not gain a 13- (UTER P13) domain directory")
+                        "AES must not gain a 13- (UTER P13) domain directory")
   end
 
-  def test_separation_rejects_uter_business_rule_in_uaes_standard
-    target = Dir.glob(File.join(@uaes, "standards", "**", "*.md")).first
-    refute_nil target, "UAES mirror must contain standards"
+  def test_separation_rejects_uter_business_rule_in_aes_standard
+    target = Dir.glob(File.join(@aes, "standards", "**", "*.md")).first
+    refute_nil target, "AES mirror must contain standards"
     File.open(target, "a") { |f| f.puts("\nUter-specific payment flow uses toPayAmount().\n") }
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S08",
-                        "Uter business rules must not enter UAES normative standards")
+                        "Uter business rules must not enter AES normative standards")
   end
 
-  def test_separation_rejects_uter_p13_artifact_anywhere_in_uaes
-    File.write(File.join(@uaes, "reports", "UTER-P13-INJECTED.md"), "project extension copy\n")
+  def test_separation_rejects_uter_p13_artifact_anywhere_in_aes
+    File.write(File.join(@aes, "reports", "UTER-P13-INJECTED.md"), "project extension copy\n")
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S09",
-                        "no UTER-P13 artifact may exist anywhere in the UAES repository")
+                        "no UTER-P13 artifact may exist anywhere in the AES repository")
   end
 
-  def test_separation_rejects_p13_gate_in_uaes_registry
-    gates = File.join(@uaes, ".uaes", "registry", "gates.yaml")
+  def test_separation_rejects_p13_gate_in_aes_registry
+    gates = File.join(@aes, ".aes", "registry", "gates.yaml")
     File.open(gates, "a") do |f|
-      f.puts("  - id: UAES-13-GATE-001")
+      f.puts("  - id: AES-13-GATE-001")
       f.puts("    name: UTER-P13-BUSINESS-DOMAIN")
       f.puts("    execution: NOT_RUN")
     end
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S06",
-                        "UAES gate registry must contain exactly 13 universal gates")
+                        "AES gate registry must contain exactly 13 universal gates")
   end
 
-  def test_separation_fails_closed_when_pinned_uaes_repository_is_missing
-    FileUtils.remove_entry(File.join(@uaes, ".git"))
+  def test_separation_fails_closed_when_pinned_aes_repository_is_missing
+    FileUtils.remove_entry(File.join(@aes, ".git"))
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S00",
-                        "missing/unreadable UAES repository must fail closed")
+                        "missing/unreadable AES repository must fail closed")
   end
 
-  def test_separation_rejects_p13_registered_in_uaes_registry
+  def test_separation_rejects_p13_registered_in_aes_registry
     rewrite(PROJECT_REGISTRY) do |body|
       body.sub('registered_in: "UTER-PROJECT-GOVERNANCE-REGISTRY"',
-               'registered_in: "UAES-GLOBAL-REGISTRY"')
+               'registered_in: "AES-GLOBAL-REGISTRY"')
     end
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S03",
                         "UTER P13 must be registered ONLY in the Uter project registry")
   end
 
-  def test_separation_rejects_competing_uaes_standards_copy_in_uter
+  def test_separation_rejects_competing_aes_standards_copy_in_uter
     FileUtils.mkdir_p(File.join(@root, "standards"))
-    File.write(File.join(@root, "standards", "COPY.md"), "copied UAES standard\n")
+    File.write(File.join(@root, "standards", "COPY.md"), "copied AES standard\n")
     assert_gate_rejects(SEPARATION_GATE, "governance-separation.json", "S10",
-                        "Uter must inherit UAES by pin, not by copying normative standards")
+                        "Uter must inherit AES by pin, not by copying normative standards")
   end
 
   # ------------------------------------------- negative: P09 proves / P10 defines
@@ -187,7 +187,7 @@ class GovernanceBoundaryFixtures < Minitest::Test
   end
 
   def test_boundary_rejects_v2_p10_business_domain_mislabel
-    rewrite("scripts/quality/uaes-governance-gates.rb") do |body|
+    rewrite("scripts/quality/aes-governance-gates.rb") do |body|
       body.sub('"id" => "P10", "name" => "Security & Reliability"',
                '"id" => "P10", "name" => "Business Domain Engineering"')
     end
@@ -201,10 +201,10 @@ class GovernanceBoundaryFixtures < Minitest::Test
                         "every governance entrypoint must state the P09/P10 division")
   end
 
-  def test_boundary_rejects_swapped_uaes_baseline_domain_names
-    registry = File.join(@uaes, ".uaes", "STANDARD-REGISTRY.yaml")
+  def test_boundary_rejects_swapped_aes_baseline_domain_names
+    registry = File.join(@aes, ".aes", "STANDARD-REGISTRY.yaml")
     File.write(registry, File.read(registry).sub(/name: "Quality Engineering"/, 'name: "Security & Reliability"'))
     assert_gate_rejects(BOUNDARY_GATE, "p09-p10-boundary.json", "B08",
-                        "pinned UAES baseline must keep P09=Quality / P10=Security")
+                        "pinned AES baseline must keep P09=Quality / P10=Security")
   end
 end

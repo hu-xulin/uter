@@ -1,0 +1,1662 @@
+# UTER Requirement Registry
+# 由 docs/product/registry/product-model.json 自动导出，禁止手工编辑
+# model_version: 1 / generated_at: 2026-11-09T15:47:41.781Z
+model_version: 1
+total: 124
+requirements:
+  -
+    feature_id: UTER-AUTH-001
+    items:
+      -
+        requirement_id: REQ-AUTH-001-01
+        title: 邮箱密码登录
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-001-01-01, BR-AUTH-001-01-02, BR-AUTH-001-01-03]
+        prototype_page_ids: [PP-AUTH-001-01]
+        component_ids: [CMP-AUTH-001-01, CMP-AUTH-001-02, CMP-AUTH-001-03, CMP-AUTH-001-04, CMP-AUTH-001-05]
+        interaction_ids: [INT-AUTH-001-01]
+        acceptance_ids: [AC-AUTH-001-01, AC-AUTH-001-02, AC-AUTH-001-03]
+        test_case_ids: [TC-AUTH-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-001-02
+        title: 登录失败反馈
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-001-02-01, BR-AUTH-001-02-02]
+        prototype_page_ids: [PP-AUTH-001-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-001-02]
+        acceptance_ids: [AC-AUTH-001-04, AC-AUTH-001-05, AC-AUTH-001-06]
+        test_case_ids: [TC-AUTH-001-02]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-001-03
+        title: 登录成功后跳转
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-001-03-01]
+        prototype_page_ids: [PP-AUTH-001-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-001-03]
+        acceptance_ids: [AC-AUTH-001-07, AC-AUTH-001-08, AC-AUTH-001-09]
+        test_case_ids: [TC-AUTH-001-03]
+        change_ids: []
+  -
+    feature_id: UTER-AUTH-002
+    items:
+      -
+        requirement_id: REQ-AUTH-002-01
+        title: 注册表单
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-002-01-01, BR-AUTH-002-01-02, BR-AUTH-002-01-03]
+        prototype_page_ids: [PP-AUTH-002-01]
+        component_ids: [CMP-AUTH-002-01, CMP-AUTH-002-02, CMP-AUTH-002-03, CMP-AUTH-002-04, CMP-AUTH-002-05]
+        interaction_ids: [INT-AUTH-002-01]
+        acceptance_ids: [AC-AUTH-002-01, AC-AUTH-002-02, AC-AUTH-002-03]
+        test_case_ids: [TC-AUTH-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-002-02
+        title: 邮箱验证码
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-002-02-01, BR-AUTH-002-02-02]
+        prototype_page_ids: [PP-AUTH-002-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-002-02]
+        acceptance_ids: [AC-AUTH-002-04, AC-AUTH-002-05, AC-AUTH-002-06]
+        test_case_ids: [TC-AUTH-002-02]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-002-03
+        title: 重复注册拦截
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-002-03-01]
+        prototype_page_ids: [PP-AUTH-002-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-002-03]
+        acceptance_ids: [AC-AUTH-002-07, AC-AUTH-002-08, AC-AUTH-002-09]
+        test_case_ids: [TC-AUTH-002-03]
+        change_ids: []
+  -
+    feature_id: UTER-AUTH-003
+    items:
+      -
+        requirement_id: REQ-AUTH-003-01
+        title: 发起密码找回
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-003-01-01, BR-AUTH-003-01-02]
+        prototype_page_ids: [PP-AUTH-003-01]
+        component_ids: [CMP-AUTH-003-01, CMP-AUTH-003-02, CMP-AUTH-003-03, CMP-AUTH-003-04, CMP-AUTH-003-05]
+        interaction_ids: [INT-AUTH-003-01]
+        acceptance_ids: [AC-AUTH-003-01, AC-AUTH-003-02, AC-AUTH-003-03]
+        test_case_ids: [TC-AUTH-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-003-02
+        title: 重置密码
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-AUTH-003-02-01, BR-AUTH-003-02-02]
+        prototype_page_ids: [PP-AUTH-003-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-003-02, INT-AUTH-003-03]
+        acceptance_ids: [AC-AUTH-003-04, AC-AUTH-003-05, AC-AUTH-003-06]
+        test_case_ids: [TC-AUTH-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-AUTH-004
+    items:
+      -
+        requirement_id: REQ-AUTH-004-01
+        title: OAuth 登录
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-004-01-01, BR-AUTH-004-01-02]
+        prototype_page_ids: [PP-AUTH-004-01]
+        component_ids: [CMP-AUTH-004-01, CMP-AUTH-004-02, CMP-AUTH-004-03, CMP-AUTH-004-04, CMP-AUTH-004-05]
+        interaction_ids: [INT-AUTH-004-01]
+        acceptance_ids: [AC-AUTH-004-01, AC-AUTH-004-02, AC-AUTH-004-03]
+        test_case_ids: [TC-AUTH-004-01]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-004-02
+        title: 账号绑定与解绑
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-004-02-01, BR-AUTH-004-02-02]
+        prototype_page_ids: [PP-AUTH-004-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-004-02]
+        acceptance_ids: [AC-AUTH-004-04, AC-AUTH-004-05, AC-AUTH-004-06]
+        test_case_ids: [TC-AUTH-004-02]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-004-03
+        title: 微信网页登录
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-004-03-01]
+        prototype_page_ids: [PP-AUTH-004-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-004-03]
+        acceptance_ids: [AC-AUTH-004-07, AC-AUTH-004-08, AC-AUTH-004-09]
+        test_case_ids: [TC-AUTH-004-03]
+        change_ids: []
+  -
+    feature_id: UTER-AUTH-005
+    items:
+      -
+        requirement_id: REQ-AUTH-005-01
+        title: Passkey 注册与认证
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-005-01-01, BR-AUTH-005-01-02]
+        prototype_page_ids: [PP-AUTH-005-01]
+        component_ids: [CMP-AUTH-005-01, CMP-AUTH-005-02, CMP-AUTH-005-03, CMP-AUTH-005-04, CMP-AUTH-005-05]
+        interaction_ids: [INT-AUTH-005-01]
+        acceptance_ids: [AC-AUTH-005-01, AC-AUTH-005-02, AC-AUTH-005-03]
+        test_case_ids: [TC-AUTH-005-01]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-005-02
+        title: TOTP 启用与备份码
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-005-02-01, BR-AUTH-005-02-02]
+        prototype_page_ids: [PP-AUTH-005-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-005-02]
+        acceptance_ids: [AC-AUTH-005-04, AC-AUTH-005-05, AC-AUTH-005-06]
+        test_case_ids: [TC-AUTH-005-02]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-005-03
+        title: 安全验证入口
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-005-03-01]
+        prototype_page_ids: [PP-AUTH-005-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-005-03]
+        acceptance_ids: [AC-AUTH-005-07, AC-AUTH-005-08, AC-AUTH-005-09]
+        test_case_ids: [TC-AUTH-005-03]
+        change_ids: []
+  -
+    feature_id: UTER-AUTH-006
+    items:
+      -
+        requirement_id: REQ-AUTH-006-01
+        title: 会话列表
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-006-01-01]
+        prototype_page_ids: [PP-AUTH-006-01]
+        component_ids: [CMP-AUTH-006-01, CMP-AUTH-006-02, CMP-AUTH-006-03, CMP-AUTH-006-04, CMP-AUTH-006-05, CMP-AUTH-006-06, CMP-AUTH-006-07]
+        interaction_ids: [INT-AUTH-006-01]
+        acceptance_ids: [AC-AUTH-006-01, AC-AUTH-006-02, AC-AUTH-006-03]
+        test_case_ids: [TC-AUTH-006-01]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-006-02
+        title: 撤销会话
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-006-02-01]
+        prototype_page_ids: [PP-AUTH-006-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-006-02]
+        acceptance_ids: [AC-AUTH-006-04, AC-AUTH-006-05, AC-AUTH-006-06]
+        test_case_ids: [TC-AUTH-006-02]
+        change_ids: []
+      -
+        requirement_id: REQ-AUTH-006-03
+        title: 登出与刷新
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-AUTH-006-03-01]
+        prototype_page_ids: [PP-AUTH-006-01]
+        component_ids: []
+        interaction_ids: [INT-AUTH-006-03, INT-AUTH-006-04, INT-AUTH-006-05]
+        acceptance_ids: [AC-AUTH-006-07, AC-AUTH-006-08, AC-AUTH-006-09]
+        test_case_ids: [TC-AUTH-006-03]
+        change_ids: []
+  -
+    feature_id: UTER-USER-001
+    items:
+      -
+        requirement_id: REQ-USER-001-01
+        title: 资料展示与编辑
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-USER-001-01-01]
+        prototype_page_ids: [PP-USER-001-01]
+        component_ids: [CMP-USER-001-01, CMP-USER-001-02, CMP-USER-001-03, CMP-USER-001-04]
+        interaction_ids: [INT-USER-001-01]
+        acceptance_ids: [AC-USER-001-01, AC-USER-001-02, AC-USER-001-03]
+        test_case_ids: [TC-USER-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-USER-001-02
+        title: 保存反馈
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-USER-001-02-01]
+        prototype_page_ids: [PP-USER-001-01]
+        component_ids: []
+        interaction_ids: [INT-USER-001-02]
+        acceptance_ids: [AC-USER-001-04, AC-USER-001-05, AC-USER-001-06]
+        test_case_ids: [TC-USER-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-USER-002
+    items:
+      -
+        requirement_id: REQ-USER-002-01
+        title: 安全状态总览
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-USER-002-01-01]
+        prototype_page_ids: [PP-USER-002-01]
+        component_ids: [CMP-USER-002-01, CMP-USER-002-02, CMP-USER-002-03, CMP-USER-002-04, CMP-USER-002-05, CMP-USER-002-06]
+        interaction_ids: [INT-USER-002-01]
+        acceptance_ids: [AC-USER-002-01, AC-USER-002-02, AC-USER-002-03]
+        test_case_ids: [TC-USER-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-USER-002-02
+        title: 绑定操作守卫
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-USER-002-02-01]
+        prototype_page_ids: [PP-USER-002-01]
+        component_ids: []
+        interaction_ids: [INT-USER-002-02, INT-USER-002-03]
+        acceptance_ids: [AC-USER-002-04, AC-USER-002-05, AC-USER-002-06]
+        test_case_ids: [TC-USER-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-USER-003
+    items:
+      -
+        requirement_id: REQ-USER-003-01
+        title: 用户列表与筛选
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-USER-003-01-01]
+        prototype_page_ids: [PP-USER-003-01]
+        component_ids: [CMP-USER-003-01, CMP-USER-003-02, CMP-USER-003-03, CMP-USER-003-04, CMP-USER-003-05, CMP-USER-003-06, CMP-USER-003-07]
+        interaction_ids: [INT-USER-003-01]
+        acceptance_ids: [AC-USER-003-01, AC-USER-003-02, AC-USER-003-03]
+        test_case_ids: [TC-USER-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-USER-003-02
+        title: 用户编辑
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-USER-003-02-01, BR-USER-003-02-02]
+        prototype_page_ids: [PP-USER-003-01]
+        component_ids: []
+        interaction_ids: [INT-USER-003-02]
+        acceptance_ids: [AC-USER-003-04, AC-USER-003-05, AC-USER-003-06]
+        test_case_ids: [TC-USER-003-02]
+        change_ids: []
+      -
+        requirement_id: REQ-USER-003-03
+        title: 权限不足状态
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-USER-003-03-01]
+        prototype_page_ids: [PP-USER-003-01]
+        component_ids: []
+        interaction_ids: [INT-USER-003-03, INT-USER-003-04, INT-USER-003-05]
+        acceptance_ids: [AC-USER-003-07, AC-USER-003-08, AC-USER-003-09]
+        test_case_ids: [TC-USER-003-03]
+        change_ids: []
+  -
+    feature_id: UTER-PAY-001
+    items:
+      -
+        requirement_id: REQ-PAY-001-01
+        title: 预设充值金额
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-001-01-01, BR-PAY-001-01-02]
+        prototype_page_ids: [PP-PAY-001-01]
+        component_ids: [CMP-PAY-001-01, CMP-PAY-001-02, CMP-PAY-001-04, CMP-PAY-001-05, CMP-PAY-001-06, CMP-PAY-001-07]
+        interaction_ids: [INT-PAY-001-01]
+        acceptance_ids: [AC-PAY-001-01, AC-PAY-001-02, AC-PAY-001-03]
+        test_case_ids: [TC-PAY-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-001-02
+        title: 最低充值金额校验
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-001-02-01, BR-PAY-001-02-02, BR-PAY-001-02-03]
+        prototype_page_ids: [PP-PAY-001-01]
+        component_ids: [CMP-PAY-001-03]
+        interaction_ids: [INT-PAY-001-02]
+        acceptance_ids: [AC-PAY-001-04, AC-PAY-001-05, AC-PAY-001-06, AC-PAY-001-07]
+        test_case_ids: [TC-PAY-001-02]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-001-03
+        title: 创建充值订单
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-001-03-01, BR-PAY-001-03-02]
+        prototype_page_ids: [PP-PAY-001-01]
+        component_ids: []
+        interaction_ids: [INT-PAY-001-03, INT-PAY-001-04]
+        acceptance_ids: [AC-PAY-001-08, AC-PAY-001-09, AC-PAY-001-10]
+        test_case_ids: [TC-PAY-001-03]
+        change_ids: []
+  -
+    feature_id: UTER-PAY-002
+    items:
+      -
+        requirement_id: REQ-PAY-002-01
+        title: 渠道可用性
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-002-01-01, BR-PAY-002-01-02]
+        prototype_page_ids: [PP-PAY-002-01]
+        component_ids: [CMP-PAY-002-01, CMP-PAY-002-02, CMP-PAY-002-03, CMP-PAY-002-04, CMP-PAY-002-05, CMP-PAY-002-06, CMP-PAY-002-07]
+        interaction_ids: [INT-PAY-002-01]
+        acceptance_ids: [AC-PAY-002-01, AC-PAY-002-02, AC-PAY-002-03]
+        test_case_ids: [TC-PAY-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-002-02
+        title: 渠道下单
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-002-02-01, BR-PAY-002-02-02]
+        prototype_page_ids: [PP-PAY-002-01]
+        component_ids: []
+        interaction_ids: [INT-PAY-002-02]
+        acceptance_ids: [AC-PAY-002-04, AC-PAY-002-05, AC-PAY-002-06]
+        test_case_ids: [TC-PAY-002-02]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-002-03
+        title: 微信 H5 场景
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-002-03-01]
+        prototype_page_ids: [PP-PAY-002-01]
+        component_ids: []
+        interaction_ids: [INT-PAY-002-03, INT-PAY-002-04]
+        acceptance_ids: [AC-PAY-002-07, AC-PAY-002-08, AC-PAY-002-09]
+        test_case_ids: [TC-PAY-002-03]
+        change_ids: []
+  -
+    feature_id: UTER-PAY-003
+    items:
+      -
+        requirement_id: REQ-PAY-003-01
+        title: 回调签名校验
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-003-01-01, BR-PAY-003-01-02]
+        prototype_page_ids: [PP-PAY-003-01]
+        component_ids: [CMP-PAY-003-01, CMP-PAY-003-02, CMP-PAY-003-03, CMP-PAY-003-04, CMP-PAY-003-05]
+        interaction_ids: [INT-PAY-003-01]
+        acceptance_ids: [AC-PAY-003-01, AC-PAY-003-02, AC-PAY-003-03]
+        test_case_ids: [TC-PAY-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-003-02
+        title: 重复回调幂等
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-003-02-01, BR-PAY-003-02-02]
+        prototype_page_ids: [PP-PAY-003-01]
+        component_ids: []
+        interaction_ids: [INT-PAY-003-02]
+        acceptance_ids: [AC-PAY-003-04, AC-PAY-003-05, AC-PAY-003-06]
+        test_case_ids: [TC-PAY-003-02]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-003-03
+        title: 对账与异常补偿
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-PAY-003-03-01]
+        prototype_page_ids: [PP-PAY-003-01]
+        component_ids: []
+        interaction_ids: []
+        acceptance_ids: [AC-PAY-003-07, AC-PAY-003-08, AC-PAY-003-09]
+        test_case_ids: [TC-PAY-003-03]
+        change_ids: []
+  -
+    feature_id: UTER-PAY-004
+    items:
+      -
+        requirement_id: REQ-PAY-004-01
+        title: 我的充值列表
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PAY-004-01-01]
+        prototype_page_ids: [PP-PAY-004-01]
+        component_ids: [CMP-PAY-004-01, CMP-PAY-004-02, CMP-PAY-004-03, CMP-PAY-004-04, CMP-PAY-004-05, CMP-PAY-004-06, CMP-PAY-004-07]
+        interaction_ids: [INT-PAY-004-01]
+        acceptance_ids: [AC-PAY-004-01, AC-PAY-004-02, AC-PAY-004-03]
+        test_case_ids: [TC-PAY-004-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PAY-004-02
+        title: 管理员全量查询
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PAY-004-02-01]
+        prototype_page_ids: [PP-PAY-004-01]
+        component_ids: []
+        interaction_ids: [INT-PAY-004-02, INT-PAY-004-03, INT-PAY-004-04, INT-PAY-004-05]
+        acceptance_ids: [AC-PAY-004-04, AC-PAY-004-05, AC-PAY-004-06]
+        test_case_ids: [TC-PAY-004-02]
+        change_ids: []
+  -
+    feature_id: UTER-REFUND-001
+    items:
+      -
+        requirement_id: REQ-REFUND-001-01
+        title: "【规划】退款申请入口"
+        status: PLANNED
+        priority: P1
+        business_rule_ids: [BR-REFUND-001-01-01]
+        prototype_page_ids: [PP-REFUND-001-01]
+        component_ids: [CMP-REFUND-001-01, CMP-REFUND-001-02, CMP-REFUND-001-03, CMP-REFUND-001-04]
+        interaction_ids: [INT-REFUND-001-01]
+        acceptance_ids: [AC-REFUND-001-01, AC-REFUND-001-02, AC-REFUND-001-03]
+        test_case_ids: [TC-REFUND-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-REFUND-001-02
+        title: "【规划】退款审核"
+        status: PLANNED
+        priority: P1
+        business_rule_ids: [BR-REFUND-001-02-01]
+        prototype_page_ids: [PP-REFUND-001-01]
+        component_ids: []
+        interaction_ids: [INT-REFUND-001-02]
+        acceptance_ids: [AC-REFUND-001-04, AC-REFUND-001-05, AC-REFUND-001-06]
+        test_case_ids: [TC-REFUND-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-REFUND-002
+    items:
+      -
+        requirement_id: REQ-REFUND-002-01
+        title: 失败退款事务
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-REFUND-002-01-01, BR-REFUND-002-01-02]
+        prototype_page_ids: [PP-REFUND-002-01]
+        component_ids: [CMP-REFUND-002-01, CMP-REFUND-002-02, CMP-REFUND-002-03, CMP-REFUND-002-04, CMP-REFUND-002-05, CMP-REFUND-002-06]
+        interaction_ids: [INT-REFUND-002-01]
+        acceptance_ids: [AC-REFUND-002-01, AC-REFUND-002-02, AC-REFUND-002-03]
+        test_case_ids: [TC-REFUND-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-REFUND-002-02
+        title: Outbox 重试与恢复
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-REFUND-002-02-01, BR-REFUND-002-02-02]
+        prototype_page_ids: [PP-REFUND-002-01]
+        component_ids: []
+        interaction_ids: [INT-REFUND-002-02, INT-REFUND-002-03, INT-REFUND-002-04]
+        acceptance_ids: [AC-REFUND-002-04, AC-REFUND-002-05, AC-REFUND-002-06]
+        test_case_ids: [TC-REFUND-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-REFUND-003
+    items:
+      -
+        requirement_id: REQ-REFUND-003-01
+        title: 对账扫描
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-REFUND-003-01-01]
+        prototype_page_ids: [PP-REFUND-003-01]
+        component_ids: [CMP-REFUND-003-01, CMP-REFUND-003-02, CMP-REFUND-003-03, CMP-REFUND-003-04, CMP-REFUND-003-05]
+        interaction_ids: [INT-REFUND-003-01]
+        acceptance_ids: [AC-REFUND-003-01, AC-REFUND-003-02, AC-REFUND-003-03]
+        test_case_ids: [TC-REFUND-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-REFUND-003-02
+        title: 补偿与告警
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-REFUND-003-02-01]
+        prototype_page_ids: [PP-REFUND-003-01]
+        component_ids: []
+        interaction_ids: [INT-REFUND-003-02]
+        acceptance_ids: [AC-REFUND-003-04, AC-REFUND-003-05, AC-REFUND-003-06]
+        test_case_ids: [TC-REFUND-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-BALANCE-001
+    items:
+      -
+        requirement_id: REQ-BALANCE-001-01
+        title: 余额展示
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BALANCE-001-01-01]
+        prototype_page_ids: [PP-BALANCE-001-01]
+        component_ids: [CMP-BALANCE-001-01, CMP-BALANCE-001-02, CMP-BALANCE-001-03, CMP-BALANCE-001-04, CMP-BALANCE-001-05, CMP-BALANCE-001-06, CMP-BALANCE-001-07]
+        interaction_ids: [INT-BALANCE-001-01]
+        acceptance_ids: [AC-BALANCE-001-01, AC-BALANCE-001-02, AC-BALANCE-001-03]
+        test_case_ids: [TC-BALANCE-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-BALANCE-001-02
+        title: 余额不足提示
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BALANCE-001-02-01]
+        prototype_page_ids: [PP-BALANCE-001-01]
+        component_ids: []
+        interaction_ids: [INT-BALANCE-001-02, INT-BALANCE-001-03]
+        acceptance_ids: [AC-BALANCE-001-04, AC-BALANCE-001-05, AC-BALANCE-001-06]
+        test_case_ids: [TC-BALANCE-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-BALANCE-002
+    items:
+      -
+        requirement_id: REQ-BALANCE-002-01
+        title: 事务化记账
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BALANCE-002-01-01]
+        prototype_page_ids: [PP-BALANCE-002-01]
+        component_ids: [CMP-BALANCE-002-01, CMP-BALANCE-002-02, CMP-BALANCE-002-03, CMP-BALANCE-002-04, CMP-BALANCE-002-05, CMP-BALANCE-002-06, CMP-BALANCE-002-07]
+        interaction_ids: [INT-BALANCE-002-01]
+        acceptance_ids: [AC-BALANCE-002-01, AC-BALANCE-002-02, AC-BALANCE-002-03]
+        test_case_ids: [TC-BALANCE-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-BALANCE-002-02
+        title: 完整性校验
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BALANCE-002-02-01]
+        prototype_page_ids: [PP-BALANCE-002-01]
+        component_ids: []
+        interaction_ids: [INT-BALANCE-002-02, INT-BALANCE-002-03, INT-BALANCE-002-04, INT-BALANCE-002-05]
+        acceptance_ids: [AC-BALANCE-002-04, AC-BALANCE-002-05, AC-BALANCE-002-06]
+        test_case_ids: [TC-BALANCE-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-BALANCE-003
+    items:
+      -
+        requirement_id: REQ-BALANCE-003-01
+        title: 准入额度检查
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BALANCE-003-01-01, BR-BALANCE-003-01-02]
+        prototype_page_ids: [PP-BALANCE-003-01]
+        component_ids: [CMP-BALANCE-003-01, CMP-BALANCE-003-02, CMP-BALANCE-003-03, CMP-BALANCE-003-04, CMP-BALANCE-003-05]
+        interaction_ids: [INT-BALANCE-003-01]
+        acceptance_ids: [AC-BALANCE-003-01, AC-BALANCE-003-02, AC-BALANCE-003-03]
+        test_case_ids: [TC-BALANCE-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-BALANCE-003-02
+        title: 结算与释放
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BALANCE-003-02-01]
+        prototype_page_ids: [PP-BALANCE-003-01]
+        component_ids: []
+        interaction_ids: [INT-BALANCE-003-02]
+        acceptance_ids: [AC-BALANCE-003-04, AC-BALANCE-003-05, AC-BALANCE-003-06]
+        test_case_ids: [TC-BALANCE-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-BILLING-001
+    items:
+      -
+        requirement_id: REQ-BILLING-001-01
+        title: Token 统计
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BILLING-001-01-01]
+        prototype_page_ids: [PP-BILLING-001-01]
+        component_ids: [CMP-BILLING-001-01, CMP-BILLING-001-02, CMP-BILLING-001-03, CMP-BILLING-001-04, CMP-BILLING-001-05, CMP-BILLING-001-06, CMP-BILLING-001-07]
+        interaction_ids: [INT-BILLING-001-01]
+        acceptance_ids: [AC-BILLING-001-01, AC-BILLING-001-02, AC-BILLING-001-03]
+        test_case_ids: [TC-BILLING-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-BILLING-001-02
+        title: 费用计算
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BILLING-001-02-01, BR-BILLING-001-02-02]
+        prototype_page_ids: [PP-BILLING-001-01]
+        component_ids: []
+        interaction_ids: [INT-BILLING-001-02, INT-BILLING-001-03]
+        acceptance_ids: [AC-BILLING-001-04, AC-BILLING-001-05, AC-BILLING-001-06]
+        test_case_ids: [TC-BILLING-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-BILLING-002
+    items:
+      -
+        requirement_id: REQ-BILLING-002-01
+        title: 日志查询与筛选
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-BILLING-002-01-01]
+        prototype_page_ids: [PP-BILLING-002-01]
+        component_ids: [CMP-BILLING-002-01, CMP-BILLING-002-02, CMP-BILLING-002-03, CMP-BILLING-002-04, CMP-BILLING-002-05, CMP-BILLING-002-06, CMP-BILLING-002-07]
+        interaction_ids: [INT-BILLING-002-01]
+        acceptance_ids: [AC-BILLING-002-01, AC-BILLING-002-02, AC-BILLING-002-03]
+        test_case_ids: [TC-BILLING-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-BILLING-002-02
+        title: 日志导出
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-BILLING-002-02-01, BR-BILLING-002-02-02]
+        prototype_page_ids: [PP-BILLING-002-01]
+        component_ids: []
+        interaction_ids: [INT-BILLING-002-02, INT-BILLING-002-03, INT-BILLING-002-04, INT-BILLING-002-05]
+        acceptance_ids: [AC-BILLING-002-04, AC-BILLING-002-05, AC-BILLING-002-06]
+        test_case_ids: [TC-BILLING-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-BILLING-003
+    items:
+      -
+        requirement_id: REQ-BILLING-003-01
+        title: 价格配置
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BILLING-003-01-01, BR-BILLING-003-01-02]
+        prototype_page_ids: [PP-BILLING-003-01]
+        component_ids: [CMP-BILLING-003-01, CMP-BILLING-003-02, CMP-BILLING-003-03, CMP-BILLING-003-04, CMP-BILLING-003-05, CMP-BILLING-003-06]
+        interaction_ids: [INT-BILLING-003-01]
+        acceptance_ids: [AC-BILLING-003-01, AC-BILLING-003-02, AC-BILLING-003-03]
+        test_case_ids: [TC-BILLING-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-BILLING-003-02
+        title: 倍率同步
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-BILLING-003-02-01]
+        prototype_page_ids: [PP-BILLING-003-01]
+        component_ids: []
+        interaction_ids: [INT-BILLING-003-02, INT-BILLING-003-03]
+        acceptance_ids: [AC-BILLING-003-04, AC-BILLING-003-05, AC-BILLING-003-06]
+        test_case_ids: [TC-BILLING-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-MODEL-001
+    items:
+      -
+        requirement_id: REQ-MODEL-001-01
+        title: 模型列表
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-MODEL-001-01-01]
+        prototype_page_ids: [PP-MODEL-001-01]
+        component_ids: [CMP-MODEL-001-01, CMP-MODEL-001-02, CMP-MODEL-001-03, CMP-MODEL-001-04, CMP-MODEL-001-05, CMP-MODEL-001-06, CMP-MODEL-001-07]
+        interaction_ids: [INT-MODEL-001-01]
+        acceptance_ids: [AC-MODEL-001-01, AC-MODEL-001-02, AC-MODEL-001-03]
+        test_case_ids: [TC-MODEL-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MODEL-001-02
+        title: 模型详情
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-MODEL-001-02-01]
+        prototype_page_ids: [PP-MODEL-001-01]
+        component_ids: []
+        interaction_ids: [INT-MODEL-001-02, INT-MODEL-001-03, INT-MODEL-001-04, INT-MODEL-001-05]
+        acceptance_ids: [AC-MODEL-001-04, AC-MODEL-001-05, AC-MODEL-001-06]
+        test_case_ids: [TC-MODEL-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-MODEL-002
+    items:
+      -
+        requirement_id: REQ-MODEL-002-01
+        title: 模型同步
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MODEL-002-01-01, BR-MODEL-002-01-02]
+        prototype_page_ids: [PP-MODEL-002-01]
+        component_ids: [CMP-MODEL-002-01, CMP-MODEL-002-02, CMP-MODEL-002-03, CMP-MODEL-002-04, CMP-MODEL-002-05, CMP-MODEL-002-06]
+        interaction_ids: [INT-MODEL-002-01]
+        acceptance_ids: [AC-MODEL-002-01, AC-MODEL-002-02, AC-MODEL-002-03]
+        test_case_ids: [TC-MODEL-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MODEL-002-02
+        title: 描述与价格补全
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MODEL-002-02-01]
+        prototype_page_ids: [PP-MODEL-002-01]
+        component_ids: []
+        interaction_ids: [INT-MODEL-002-02, INT-MODEL-002-03]
+        acceptance_ids: [AC-MODEL-002-04, AC-MODEL-002-05, AC-MODEL-002-06]
+        test_case_ids: [TC-MODEL-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-MODEL-003
+    items:
+      -
+        requirement_id: REQ-MODEL-003-01
+        title: 定价展示
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MODEL-003-01-01, BR-MODEL-003-01-02]
+        prototype_page_ids: [PP-MODEL-003-01]
+        component_ids: [CMP-MODEL-003-01, CMP-MODEL-003-02, CMP-MODEL-003-03, CMP-MODEL-003-04, CMP-MODEL-003-05, CMP-MODEL-003-06, CMP-MODEL-003-07]
+        interaction_ids: [INT-MODEL-003-01]
+        acceptance_ids: [AC-MODEL-003-01, AC-MODEL-003-02, AC-MODEL-003-03]
+        test_case_ids: [TC-MODEL-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MODEL-003-02
+        title: 价格详情
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MODEL-003-02-01]
+        prototype_page_ids: [PP-MODEL-003-01]
+        component_ids: []
+        interaction_ids: [INT-MODEL-003-02, INT-MODEL-003-03, INT-MODEL-003-04, INT-MODEL-003-05]
+        acceptance_ids: [AC-MODEL-003-04, AC-MODEL-003-05, AC-MODEL-003-06]
+        test_case_ids: [TC-MODEL-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-CHANNEL-001
+    items:
+      -
+        requirement_id: REQ-CHANNEL-001-01
+        title: 渠道 CRUD
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-CHANNEL-001-01-01, BR-CHANNEL-001-01-02]
+        prototype_page_ids: [PP-CHANNEL-001-01]
+        component_ids: [CMP-CHANNEL-001-01, CMP-CHANNEL-001-02, CMP-CHANNEL-001-03, CMP-CHANNEL-001-04, CMP-CHANNEL-001-05, CMP-CHANNEL-001-06, CMP-CHANNEL-001-07]
+        interaction_ids: [INT-CHANNEL-001-01]
+        acceptance_ids: [AC-CHANNEL-001-01, AC-CHANNEL-001-02, AC-CHANNEL-001-03]
+        test_case_ids: [TC-CHANNEL-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-CHANNEL-001-02
+        title: 启用与禁用
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-CHANNEL-001-02-01]
+        prototype_page_ids: [PP-CHANNEL-001-01]
+        component_ids: []
+        interaction_ids: [INT-CHANNEL-001-02, INT-CHANNEL-001-03, INT-CHANNEL-001-04, INT-CHANNEL-001-05]
+        acceptance_ids: [AC-CHANNEL-001-04, AC-CHANNEL-001-05, AC-CHANNEL-001-06]
+        test_case_ids: [TC-CHANNEL-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-CHANNEL-002
+    items:
+      -
+        requirement_id: REQ-CHANNEL-002-01
+        title: 渠道选择
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-CHANNEL-002-01-01]
+        prototype_page_ids: [PP-CHANNEL-002-01]
+        component_ids: [CMP-CHANNEL-002-01, CMP-CHANNEL-002-02, CMP-CHANNEL-002-03, CMP-CHANNEL-002-04, CMP-CHANNEL-002-05]
+        interaction_ids: [INT-CHANNEL-002-01]
+        acceptance_ids: [AC-CHANNEL-002-01, AC-CHANNEL-002-02, AC-CHANNEL-002-03]
+        test_case_ids: [TC-CHANNEL-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-CHANNEL-002-02
+        title: 失败回退
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-CHANNEL-002-02-01, BR-CHANNEL-002-02-02]
+        prototype_page_ids: [PP-CHANNEL-002-01]
+        component_ids: []
+        interaction_ids: [INT-CHANNEL-002-02]
+        acceptance_ids: [AC-CHANNEL-002-04, AC-CHANNEL-002-05, AC-CHANNEL-002-06]
+        test_case_ids: [TC-CHANNEL-002-02]
+        change_ids: []
+      -
+        requirement_id: REQ-CHANNEL-002-03
+        title: 亲和性缓存
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-CHANNEL-002-03-01]
+        prototype_page_ids: [PP-CHANNEL-002-01]
+        component_ids: []
+        interaction_ids: []
+        acceptance_ids: [AC-CHANNEL-002-07, AC-CHANNEL-002-08, AC-CHANNEL-002-09]
+        test_case_ids: [TC-CHANNEL-002-03]
+        change_ids: []
+  -
+    feature_id: UTER-CHANNEL-003
+    items:
+      -
+        requirement_id: REQ-CHANNEL-003-01
+        title: 渠道测试
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-CHANNEL-003-01-01]
+        prototype_page_ids: [PP-CHANNEL-003-01]
+        component_ids: [CMP-CHANNEL-003-01, CMP-CHANNEL-003-02, CMP-CHANNEL-003-03, CMP-CHANNEL-003-04, CMP-CHANNEL-003-05]
+        interaction_ids: [INT-CHANNEL-003-01]
+        acceptance_ids: [AC-CHANNEL-003-01, AC-CHANNEL-003-02, AC-CHANNEL-003-03]
+        test_case_ids: [TC-CHANNEL-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-CHANNEL-003-02
+        title: 失败诊断
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-CHANNEL-003-02-01]
+        prototype_page_ids: [PP-CHANNEL-003-01]
+        component_ids: []
+        interaction_ids: [INT-CHANNEL-003-02]
+        acceptance_ids: [AC-CHANNEL-003-04, AC-CHANNEL-003-05, AC-CHANNEL-003-06]
+        test_case_ids: [TC-CHANNEL-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-APIKEY-001
+    items:
+      -
+        requirement_id: REQ-APIKEY-001-01
+        title: 创建 Key
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-APIKEY-001-01-01, BR-APIKEY-001-01-02]
+        prototype_page_ids: [PP-APIKEY-001-01]
+        component_ids: [CMP-APIKEY-001-01, CMP-APIKEY-001-02, CMP-APIKEY-001-03, CMP-APIKEY-001-04, CMP-APIKEY-001-05, CMP-APIKEY-001-06, CMP-APIKEY-001-07]
+        interaction_ids: [INT-APIKEY-001-01]
+        acceptance_ids: [AC-APIKEY-001-01, AC-APIKEY-001-02, AC-APIKEY-001-03]
+        test_case_ids: [TC-APIKEY-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-APIKEY-001-02
+        title: 启停与删除
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-APIKEY-001-02-01]
+        prototype_page_ids: [PP-APIKEY-001-01]
+        component_ids: []
+        interaction_ids: [INT-APIKEY-001-02, INT-APIKEY-001-03, INT-APIKEY-001-04, INT-APIKEY-001-05]
+        acceptance_ids: [AC-APIKEY-001-04, AC-APIKEY-001-05, AC-APIKEY-001-06]
+        test_case_ids: [TC-APIKEY-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-APIKEY-002
+    items:
+      -
+        requirement_id: REQ-APIKEY-002-01
+        title: 额度限制
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-APIKEY-002-01-01]
+        prototype_page_ids: [PP-APIKEY-002-01]
+        component_ids: [CMP-APIKEY-002-01, CMP-APIKEY-002-02, CMP-APIKEY-002-03, CMP-APIKEY-002-04]
+        interaction_ids: [INT-APIKEY-002-01]
+        acceptance_ids: [AC-APIKEY-002-01, AC-APIKEY-002-02, AC-APIKEY-002-03]
+        test_case_ids: [TC-APIKEY-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-APIKEY-002-02
+        title: 范围限制
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-APIKEY-002-02-01]
+        prototype_page_ids: [PP-APIKEY-002-01]
+        component_ids: []
+        interaction_ids: [INT-APIKEY-002-02]
+        acceptance_ids: [AC-APIKEY-002-04, AC-APIKEY-002-05, AC-APIKEY-002-06]
+        test_case_ids: [TC-APIKEY-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-APIKEY-003
+    items:
+      -
+        requirement_id: REQ-APIKEY-003-01
+        title: 审计记录
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-APIKEY-003-01-01]
+        prototype_page_ids: [PP-APIKEY-003-01]
+        component_ids: [CMP-APIKEY-003-01, CMP-APIKEY-003-02, CMP-APIKEY-003-03, CMP-APIKEY-003-04, CMP-APIKEY-003-05, CMP-APIKEY-003-06, CMP-APIKEY-003-07]
+        interaction_ids: [INT-APIKEY-003-01]
+        acceptance_ids: [AC-APIKEY-003-01, AC-APIKEY-003-02, AC-APIKEY-003-03]
+        test_case_ids: [TC-APIKEY-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-APIKEY-003-02
+        title: 越权拦截
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-APIKEY-003-02-01]
+        prototype_page_ids: [PP-APIKEY-003-01]
+        component_ids: []
+        interaction_ids: [INT-APIKEY-003-02, INT-APIKEY-003-03, INT-APIKEY-003-04, INT-APIKEY-003-05]
+        acceptance_ids: [AC-APIKEY-003-04, AC-APIKEY-003-05, AC-APIKEY-003-06]
+        test_case_ids: [TC-APIKEY-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-RELAY-001
+    items:
+      -
+        requirement_id: REQ-RELAY-001-01
+        title: 请求鉴权与转发
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-001-01-01, BR-RELAY-001-01-02]
+        prototype_page_ids: [PP-RELAY-001-01]
+        component_ids: [CMP-RELAY-001-01, CMP-RELAY-001-02, CMP-RELAY-001-03, CMP-RELAY-001-04, CMP-RELAY-001-05, CMP-RELAY-001-06]
+        interaction_ids: [INT-RELAY-001-01]
+        acceptance_ids: [AC-RELAY-001-01, AC-RELAY-001-02, AC-RELAY-001-03]
+        test_case_ids: [TC-RELAY-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-RELAY-001-02
+        title: 流式响应
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-001-02-01]
+        prototype_page_ids: [PP-RELAY-001-01]
+        component_ids: []
+        interaction_ids: [INT-RELAY-001-02]
+        acceptance_ids: [AC-RELAY-001-04, AC-RELAY-001-05, AC-RELAY-001-06]
+        test_case_ids: [TC-RELAY-001-02]
+        change_ids: []
+      -
+        requirement_id: REQ-RELAY-001-03
+        title: 请求日志
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-001-03-01]
+        prototype_page_ids: [PP-RELAY-001-01]
+        component_ids: []
+        interaction_ids: [INT-RELAY-001-03, INT-RELAY-001-04]
+        acceptance_ids: [AC-RELAY-001-07, AC-RELAY-001-08, AC-RELAY-001-09]
+        test_case_ids: [TC-RELAY-001-03]
+        change_ids: []
+  -
+    feature_id: UTER-RELAY-002
+    items:
+      -
+        requirement_id: REQ-RELAY-002-01
+        title: 协议转换
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-002-01-01]
+        prototype_page_ids: [PP-RELAY-002-01]
+        component_ids: [CMP-RELAY-002-01, CMP-RELAY-002-02, CMP-RELAY-002-03, CMP-RELAY-002-04, CMP-RELAY-002-05, CMP-RELAY-002-06]
+        interaction_ids: [INT-RELAY-002-01]
+        acceptance_ids: [AC-RELAY-002-01, AC-RELAY-002-02, AC-RELAY-002-03]
+        test_case_ids: [TC-RELAY-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-RELAY-002-02
+        title: 协议可用性
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-002-02-01]
+        prototype_page_ids: [PP-RELAY-002-01]
+        component_ids: []
+        interaction_ids: [INT-RELAY-002-02, INT-RELAY-002-03, INT-RELAY-002-04]
+        acceptance_ids: [AC-RELAY-002-04, AC-RELAY-002-05, AC-RELAY-002-06]
+        test_case_ids: [TC-RELAY-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-RELAY-003
+    items:
+      -
+        requirement_id: REQ-RELAY-003-01
+        title: 错误分类
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-003-01-01]
+        prototype_page_ids: [PP-RELAY-003-01]
+        component_ids: [CMP-RELAY-003-01, CMP-RELAY-003-02, CMP-RELAY-003-03, CMP-RELAY-003-04, CMP-RELAY-003-05]
+        interaction_ids: [INT-RELAY-003-01]
+        acceptance_ids: [AC-RELAY-003-01, AC-RELAY-003-02, AC-RELAY-003-03]
+        test_case_ids: [TC-RELAY-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-RELAY-003-02
+        title: 重试上限
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-RELAY-003-02-01]
+        prototype_page_ids: [PP-RELAY-003-01]
+        component_ids: []
+        interaction_ids: [INT-RELAY-003-02]
+        acceptance_ids: [AC-RELAY-003-04, AC-RELAY-003-05, AC-RELAY-003-06]
+        test_case_ids: [TC-RELAY-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-TASK-001
+    items:
+      -
+        requirement_id: REQ-TASK-001-01
+        title: 任务提交
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-TASK-001-01-01, BR-TASK-001-01-02]
+        prototype_page_ids: [PP-TASK-001-01]
+        component_ids: [CMP-TASK-001-01, CMP-TASK-001-02, CMP-TASK-001-03, CMP-TASK-001-04, CMP-TASK-001-05, CMP-TASK-001-06]
+        interaction_ids: [INT-TASK-001-01]
+        acceptance_ids: [AC-TASK-001-01, AC-TASK-001-02, AC-TASK-001-03]
+        test_case_ids: [TC-TASK-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-TASK-001-02
+        title: 状态查询
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-TASK-001-02-01]
+        prototype_page_ids: [PP-TASK-001-01]
+        component_ids: []
+        interaction_ids: [INT-TASK-001-02]
+        acceptance_ids: [AC-TASK-001-04, AC-TASK-001-05, AC-TASK-001-06]
+        test_case_ids: [TC-TASK-001-02]
+        change_ids: []
+      -
+        requirement_id: REQ-TASK-001-03
+        title: 产物获取
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-TASK-001-03-01]
+        prototype_page_ids: [PP-TASK-001-01]
+        component_ids: []
+        interaction_ids: [INT-TASK-001-03, INT-TASK-001-04]
+        acceptance_ids: [AC-TASK-001-07, AC-TASK-001-08, AC-TASK-001-09]
+        test_case_ids: [TC-TASK-001-03]
+        change_ids: []
+  -
+    feature_id: UTER-TASK-002
+    items:
+      -
+        requirement_id: REQ-TASK-002-01
+        title: 插件版本管理
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-TASK-002-01-01, BR-TASK-002-01-02]
+        prototype_page_ids: [PP-TASK-002-01]
+        component_ids: [CMP-TASK-002-01, CMP-TASK-002-02, CMP-TASK-002-03, CMP-TASK-002-04, CMP-TASK-002-05, CMP-TASK-002-06, CMP-TASK-002-07]
+        interaction_ids: [INT-TASK-002-01]
+        acceptance_ids: [AC-TASK-002-01, AC-TASK-002-02, AC-TASK-002-03]
+        test_case_ids: [TC-TASK-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-TASK-002-02
+        title: 渠道绑定
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-TASK-002-02-01]
+        prototype_page_ids: [PP-TASK-002-01]
+        component_ids: []
+        interaction_ids: [INT-TASK-002-02, INT-TASK-002-03, INT-TASK-002-04, INT-TASK-002-05]
+        acceptance_ids: [AC-TASK-002-04, AC-TASK-002-05, AC-TASK-002-06]
+        test_case_ids: [TC-TASK-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-TASK-003
+    items:
+      -
+        requirement_id: REQ-TASK-003-01
+        title: 系统任务执行
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-TASK-003-01-01]
+        prototype_page_ids: [PP-TASK-003-01]
+        component_ids: [CMP-TASK-003-01, CMP-TASK-003-02, CMP-TASK-003-03, CMP-TASK-003-04, CMP-TASK-003-05]
+        interaction_ids: [INT-TASK-003-01]
+        acceptance_ids: [AC-TASK-003-01, AC-TASK-003-02, AC-TASK-003-03]
+        test_case_ids: [TC-TASK-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-TASK-003-02
+        title: 失败可见
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-TASK-003-02-01]
+        prototype_page_ids: [PP-TASK-003-01]
+        component_ids: []
+        interaction_ids: [INT-TASK-003-02]
+        acceptance_ids: [AC-TASK-003-04, AC-TASK-003-05, AC-TASK-003-06]
+        test_case_ids: [TC-TASK-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-PLAN-001
+    items:
+      -
+        requirement_id: REQ-PLAN-001-01
+        title: 套餐列表
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PLAN-001-01-01]
+        prototype_page_ids: [PP-PLAN-001-01]
+        component_ids: [CMP-PLAN-001-01, CMP-PLAN-001-02, CMP-PLAN-001-03, CMP-PLAN-001-04, CMP-PLAN-001-05, CMP-PLAN-001-06, CMP-PLAN-001-07]
+        interaction_ids: [INT-PLAN-001-01]
+        acceptance_ids: [AC-PLAN-001-01, AC-PLAN-001-02, AC-PLAN-001-03]
+        test_case_ids: [TC-PLAN-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PLAN-001-02
+        title: 订阅状态
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PLAN-001-02-01]
+        prototype_page_ids: [PP-PLAN-001-01]
+        component_ids: []
+        interaction_ids: [INT-PLAN-001-02, INT-PLAN-001-03, INT-PLAN-001-04, INT-PLAN-001-05]
+        acceptance_ids: [AC-PLAN-001-04, AC-PLAN-001-05, AC-PLAN-001-06]
+        test_case_ids: [TC-PLAN-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-PLAN-002
+    items:
+      -
+        requirement_id: REQ-PLAN-002-01
+        title: 订阅下单
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PLAN-002-01-01, BR-PLAN-002-01-02]
+        prototype_page_ids: [PP-PLAN-002-01]
+        component_ids: [CMP-PLAN-002-01, CMP-PLAN-002-02, CMP-PLAN-002-03, CMP-PLAN-002-04, CMP-PLAN-002-05, CMP-PLAN-002-06, CMP-PLAN-002-07]
+        interaction_ids: [INT-PLAN-002-01]
+        acceptance_ids: [AC-PLAN-002-01, AC-PLAN-002-02, AC-PLAN-002-03]
+        test_case_ids: [TC-PLAN-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PLAN-002-02
+        title: 订阅回调幂等
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PLAN-002-02-01]
+        prototype_page_ids: [PP-PLAN-002-01]
+        component_ids: []
+        interaction_ids: [INT-PLAN-002-02, INT-PLAN-002-03, INT-PLAN-002-04]
+        acceptance_ids: [AC-PLAN-002-04, AC-PLAN-002-05, AC-PLAN-002-06]
+        test_case_ids: [TC-PLAN-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-PLAN-003
+    items:
+      -
+        requirement_id: REQ-PLAN-003-01
+        title: 兑换码兑换
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PLAN-003-01-01, BR-PLAN-003-01-02]
+        prototype_page_ids: [PP-PLAN-003-01]
+        component_ids: [CMP-PLAN-003-01, CMP-PLAN-003-02, CMP-PLAN-003-03, CMP-PLAN-003-04]
+        interaction_ids: [INT-PLAN-003-01]
+        acceptance_ids: [AC-PLAN-003-01, AC-PLAN-003-02, AC-PLAN-003-03]
+        test_case_ids: [TC-PLAN-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-PLAN-003-02
+        title: 批量管理
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-PLAN-003-02-01]
+        prototype_page_ids: [PP-PLAN-003-01]
+        component_ids: []
+        interaction_ids: [INT-PLAN-003-02]
+        acceptance_ids: [AC-PLAN-003-04, AC-PLAN-003-05, AC-PLAN-003-06]
+        test_case_ids: [TC-PLAN-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-ADMIN-001
+    items:
+      -
+        requirement_id: REQ-ADMIN-001-01
+        title: 配置读写
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-ADMIN-001-01-01, BR-ADMIN-001-01-02]
+        prototype_page_ids: [PP-ADMIN-001-01]
+        component_ids: [CMP-ADMIN-001-01, CMP-ADMIN-001-02, CMP-ADMIN-001-03, CMP-ADMIN-001-04, CMP-ADMIN-001-05, CMP-ADMIN-001-06]
+        interaction_ids: [INT-ADMIN-001-01]
+        acceptance_ids: [AC-ADMIN-001-01, AC-ADMIN-001-02, AC-ADMIN-001-03]
+        test_case_ids: [TC-ADMIN-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-ADMIN-001-02
+        title: 配置校验
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-ADMIN-001-02-01]
+        prototype_page_ids: [PP-ADMIN-001-01]
+        component_ids: []
+        interaction_ids: [INT-ADMIN-001-02, INT-ADMIN-001-03]
+        acceptance_ids: [AC-ADMIN-001-04, AC-ADMIN-001-05, AC-ADMIN-001-06]
+        test_case_ids: [TC-ADMIN-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-ADMIN-002
+    items:
+      -
+        requirement_id: REQ-ADMIN-002-01
+        title: 统计概览
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-ADMIN-002-01-01]
+        prototype_page_ids: [PP-ADMIN-002-01]
+        component_ids: [CMP-ADMIN-002-01, CMP-ADMIN-002-02, CMP-ADMIN-002-03, CMP-ADMIN-002-04, CMP-ADMIN-002-05, CMP-ADMIN-002-06, CMP-ADMIN-002-07]
+        interaction_ids: [INT-ADMIN-002-01]
+        acceptance_ids: [AC-ADMIN-002-01, AC-ADMIN-002-02, AC-ADMIN-002-03]
+        test_case_ids: [TC-ADMIN-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-ADMIN-002-02
+        title: 维度切换
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-ADMIN-002-02-01]
+        prototype_page_ids: [PP-ADMIN-002-01]
+        component_ids: []
+        interaction_ids: [INT-ADMIN-002-02, INT-ADMIN-002-03]
+        acceptance_ids: [AC-ADMIN-002-04, AC-ADMIN-002-05, AC-ADMIN-002-06]
+        test_case_ids: [TC-ADMIN-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-ADMIN-003
+    items:
+      -
+        requirement_id: REQ-ADMIN-003-01
+        title: 审计查询
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-ADMIN-003-01-01]
+        prototype_page_ids: [PP-ADMIN-003-01]
+        component_ids: [CMP-ADMIN-003-01, CMP-ADMIN-003-02, CMP-ADMIN-003-03, CMP-ADMIN-003-04, CMP-ADMIN-003-05, CMP-ADMIN-003-06, CMP-ADMIN-003-07]
+        interaction_ids: [INT-ADMIN-003-01]
+        acceptance_ids: [AC-ADMIN-003-01, AC-ADMIN-003-02, AC-ADMIN-003-03]
+        test_case_ids: [TC-ADMIN-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-ADMIN-003-02
+        title: 审计详情
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-ADMIN-003-02-01]
+        prototype_page_ids: [PP-ADMIN-003-01]
+        component_ids: []
+        interaction_ids: [INT-ADMIN-003-02, INT-ADMIN-003-03, INT-ADMIN-003-04, INT-ADMIN-003-05]
+        acceptance_ids: [AC-ADMIN-003-04, AC-ADMIN-003-05, AC-ADMIN-003-06]
+        test_case_ids: [TC-ADMIN-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-ADMIN-004
+    items:
+      -
+        requirement_id: REQ-ADMIN-004-01
+        title: 授权校验
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-ADMIN-004-01-01]
+        prototype_page_ids: [PP-ADMIN-004-01]
+        component_ids: [CMP-ADMIN-004-01, CMP-ADMIN-004-02, CMP-ADMIN-004-03, CMP-ADMIN-004-04, CMP-ADMIN-004-05, CMP-ADMIN-004-06]
+        interaction_ids: [INT-ADMIN-004-01]
+        acceptance_ids: [AC-ADMIN-004-01, AC-ADMIN-004-02, AC-ADMIN-004-03]
+        test_case_ids: [TC-ADMIN-004-01]
+        change_ids: []
+      -
+        requirement_id: REQ-ADMIN-004-02
+        title: 请求策略
+        status: ACTIVE
+        priority: P0
+        business_rule_ids: [BR-ADMIN-004-02-01]
+        prototype_page_ids: [PP-ADMIN-004-01]
+        component_ids: []
+        interaction_ids: [INT-ADMIN-004-02, INT-ADMIN-004-03]
+        acceptance_ids: [AC-ADMIN-004-04, AC-ADMIN-004-05, AC-ADMIN-004-06]
+        test_case_ids: [TC-ADMIN-004-02]
+        change_ids: []
+  -
+    feature_id: UTER-ADMIN-005
+    items:
+      -
+        requirement_id: REQ-ADMIN-005-01
+        title: 系统信息展示
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-ADMIN-005-01-01]
+        prototype_page_ids: [PP-ADMIN-005-01]
+        component_ids: [CMP-ADMIN-005-01, CMP-ADMIN-005-02, CMP-ADMIN-005-03, CMP-ADMIN-005-04, CMP-ADMIN-005-05, CMP-ADMIN-005-06, CMP-ADMIN-005-07]
+        interaction_ids: [INT-ADMIN-005-01]
+        acceptance_ids: [AC-ADMIN-005-01, AC-ADMIN-005-02, AC-ADMIN-005-03]
+        test_case_ids: [TC-ADMIN-005-01]
+        change_ids: []
+      -
+        requirement_id: REQ-ADMIN-005-02
+        title: 异常状态
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-ADMIN-005-02-01]
+        prototype_page_ids: [PP-ADMIN-005-01]
+        component_ids: []
+        interaction_ids: [INT-ADMIN-005-02, INT-ADMIN-005-03]
+        acceptance_ids: [AC-ADMIN-005-04, AC-ADMIN-005-05, AC-ADMIN-005-06]
+        test_case_ids: [TC-ADMIN-005-02]
+        change_ids: []
+  -
+    feature_id: UTER-ORG-001
+    items:
+      -
+        requirement_id: REQ-ORG-001-01
+        title: 组织与成员
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-ORG-001-01-01]
+        prototype_page_ids: [PP-ORG-001-01]
+        component_ids: [CMP-ORG-001-01, CMP-ORG-001-02, CMP-ORG-001-03, CMP-ORG-001-04, CMP-ORG-001-05, CMP-ORG-001-06, CMP-ORG-001-07]
+        interaction_ids: [INT-ORG-001-01]
+        acceptance_ids: [AC-ORG-001-01, AC-ORG-001-02, AC-ORG-001-03]
+        test_case_ids: [TC-ORG-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-ORG-001-02
+        title: 组织级额度
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-ORG-001-02-01]
+        prototype_page_ids: [PP-ORG-001-01]
+        component_ids: []
+        interaction_ids: [INT-ORG-001-02, INT-ORG-001-03, INT-ORG-001-04, INT-ORG-001-05]
+        acceptance_ids: [AC-ORG-001-04, AC-ORG-001-05, AC-ORG-001-06]
+        test_case_ids: [TC-ORG-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-001
+    items:
+      -
+        requirement_id: REQ-MISC-001-01
+        title: 签到
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-001-01-01, BR-MISC-001-01-02]
+        prototype_page_ids: [PP-MISC-001-01]
+        component_ids: [CMP-MISC-001-01, CMP-MISC-001-02, CMP-MISC-001-03, CMP-MISC-001-04]
+        interaction_ids: [INT-MISC-001-01]
+        acceptance_ids: [AC-MISC-001-01, AC-MISC-001-02, AC-MISC-001-03]
+        test_case_ids: [TC-MISC-001-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-001-02
+        title: 重复签到
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-001-02-01]
+        prototype_page_ids: [PP-MISC-001-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-001-02]
+        acceptance_ids: [AC-MISC-001-04, AC-MISC-001-05, AC-MISC-001-06]
+        test_case_ids: [TC-MISC-001-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-002
+    items:
+      -
+        requirement_id: REQ-MISC-002-01
+        title: 排行展示
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-002-01-01]
+        prototype_page_ids: [PP-MISC-002-01]
+        component_ids: [CMP-MISC-002-01, CMP-MISC-002-02, CMP-MISC-002-03, CMP-MISC-002-04, CMP-MISC-002-05, CMP-MISC-002-06, CMP-MISC-002-07]
+        interaction_ids: [INT-MISC-002-01]
+        acceptance_ids: [AC-MISC-002-01, AC-MISC-002-02, AC-MISC-002-03]
+        test_case_ids: [TC-MISC-002-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-002-02
+        title: 维度切换
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-002-02-01]
+        prototype_page_ids: [PP-MISC-002-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-002-02, INT-MISC-002-03, INT-MISC-002-04, INT-MISC-002-05]
+        acceptance_ids: [AC-MISC-002-04, AC-MISC-002-05, AC-MISC-002-06]
+        test_case_ids: [TC-MISC-002-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-003
+    items:
+      -
+        requirement_id: REQ-MISC-003-01
+        title: 调试请求
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MISC-003-01-01, BR-MISC-003-01-02]
+        prototype_page_ids: [PP-MISC-003-01]
+        component_ids: [CMP-MISC-003-01, CMP-MISC-003-02, CMP-MISC-003-03, CMP-MISC-003-04, CMP-MISC-003-05, CMP-MISC-003-06]
+        interaction_ids: [INT-MISC-003-01]
+        acceptance_ids: [AC-MISC-003-01, AC-MISC-003-02, AC-MISC-003-03]
+        test_case_ids: [TC-MISC-003-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-003-02
+        title: 响应展示
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MISC-003-02-01]
+        prototype_page_ids: [PP-MISC-003-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-003-02, INT-MISC-003-03, INT-MISC-003-04]
+        acceptance_ids: [AC-MISC-003-04, AC-MISC-003-05, AC-MISC-003-06]
+        test_case_ids: [TC-MISC-003-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-004
+    items:
+      -
+        requirement_id: REQ-MISC-004-01
+        title: 文档访问
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-004-01-01]
+        prototype_page_ids: [PP-MISC-004-01]
+        component_ids: [CMP-MISC-004-01, CMP-MISC-004-02, CMP-MISC-004-03, CMP-MISC-004-04, CMP-MISC-004-05]
+        interaction_ids: [INT-MISC-004-01]
+        acceptance_ids: [AC-MISC-004-01, AC-MISC-004-02, AC-MISC-004-03]
+        test_case_ids: [TC-MISC-004-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-004-02
+        title: 协议页面
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-004-02-01]
+        prototype_page_ids: [PP-MISC-004-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-004-02]
+        acceptance_ids: [AC-MISC-004-04, AC-MISC-004-05, AC-MISC-004-06]
+        test_case_ids: [TC-MISC-004-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-005
+    items:
+      -
+        requirement_id: REQ-MISC-005-01
+        title: 客服部署配置
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-005-01-01]
+        prototype_page_ids: [PP-MISC-005-01]
+        component_ids: [CMP-MISC-005-01, CMP-MISC-005-02, CMP-MISC-005-03, CMP-MISC-005-04, CMP-MISC-005-05, CMP-MISC-005-06]
+        interaction_ids: [INT-MISC-005-01]
+        acceptance_ids: [AC-MISC-005-01, AC-MISC-005-02, AC-MISC-005-03]
+        test_case_ids: [TC-MISC-005-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-005-02
+        title: 用户侧客服入口
+        status: PLANNED
+        priority: P2
+        business_rule_ids: [BR-MISC-005-02-01]
+        prototype_page_ids: [PP-MISC-005-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-005-02, INT-MISC-005-03]
+        acceptance_ids: [AC-MISC-005-04, AC-MISC-005-05, AC-MISC-005-06]
+        test_case_ids: [TC-MISC-005-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-006
+    items:
+      -
+        requirement_id: REQ-MISC-006-01
+        title: 指标采集与展示
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-006-01-01]
+        prototype_page_ids: [PP-MISC-006-01]
+        component_ids: [CMP-MISC-006-01, CMP-MISC-006-02, CMP-MISC-006-03, CMP-MISC-006-04, CMP-MISC-006-05, CMP-MISC-006-06, CMP-MISC-006-07]
+        interaction_ids: [INT-MISC-006-01]
+        acceptance_ids: [AC-MISC-006-01, AC-MISC-006-02, AC-MISC-006-03]
+        test_case_ids: [TC-MISC-006-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-006-02
+        title: 指标筛选
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-006-02-01]
+        prototype_page_ids: [PP-MISC-006-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-006-02, INT-MISC-006-03]
+        acceptance_ids: [AC-MISC-006-04, AC-MISC-006-05, AC-MISC-006-06]
+        test_case_ids: [TC-MISC-006-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-007
+    items:
+      -
+        requirement_id: REQ-MISC-007-01
+        title: Provider 配置
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-007-01-01]
+        prototype_page_ids: [PP-MISC-007-01]
+        component_ids: [CMP-MISC-007-01, CMP-MISC-007-02, CMP-MISC-007-03, CMP-MISC-007-04, CMP-MISC-007-05, CMP-MISC-007-06]
+        interaction_ids: [INT-MISC-007-01]
+        acceptance_ids: [AC-MISC-007-01, AC-MISC-007-02, AC-MISC-007-03]
+        test_case_ids: [TC-MISC-007-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-007-02
+        title: 供应商合并规则
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-007-02-01]
+        prototype_page_ids: [PP-MISC-007-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-007-02, INT-MISC-007-03]
+        acceptance_ids: [AC-MISC-007-04, AC-MISC-007-05, AC-MISC-007-06]
+        test_case_ids: [TC-MISC-007-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-008
+    items:
+      -
+        requirement_id: REQ-MISC-008-01
+        title: 文件与产物读取
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-008-01-01, BR-MISC-008-01-02]
+        prototype_page_ids: [PP-MISC-008-01]
+        component_ids: [CMP-MISC-008-01, CMP-MISC-008-02, CMP-MISC-008-03, CMP-MISC-008-04, CMP-MISC-008-05, CMP-MISC-008-06, CMP-MISC-008-07]
+        interaction_ids: [INT-MISC-008-01]
+        acceptance_ids: [AC-MISC-008-01, AC-MISC-008-02, AC-MISC-008-03]
+        test_case_ids: [TC-MISC-008-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-008-02
+        title: 图片代理安全
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-008-02-01]
+        prototype_page_ids: [PP-MISC-008-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-008-02, INT-MISC-008-03, INT-MISC-008-04, INT-MISC-008-05]
+        acceptance_ids: [AC-MISC-008-04, AC-MISC-008-05, AC-MISC-008-06]
+        test_case_ids: [TC-MISC-008-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-009
+    items:
+      -
+        requirement_id: REQ-MISC-009-01
+        title: 错误页
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-009-01-01]
+        prototype_page_ids: [PP-MISC-009-01]
+        component_ids: [CMP-MISC-009-01, CMP-MISC-009-02, CMP-MISC-009-03, CMP-MISC-009-04, CMP-MISC-009-05]
+        interaction_ids: [INT-MISC-009-01]
+        acceptance_ids: [AC-MISC-009-01, AC-MISC-009-02, AC-MISC-009-03]
+        test_case_ids: [TC-MISC-009-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-009-02
+        title: 权限不足
+        status: ACTIVE
+        priority: P2
+        business_rule_ids: [BR-MISC-009-02-01]
+        prototype_page_ids: [PP-MISC-009-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-009-02]
+        acceptance_ids: [AC-MISC-009-04, AC-MISC-009-05, AC-MISC-009-06]
+        test_case_ids: [TC-MISC-009-02]
+        change_ids: []
+  -
+    feature_id: UTER-MISC-010
+    items:
+      -
+        requirement_id: REQ-MISC-010-01
+        title: 初始化状态检查
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MISC-010-01-01]
+        prototype_page_ids: [PP-MISC-010-01]
+        component_ids: [CMP-MISC-010-01, CMP-MISC-010-02, CMP-MISC-010-03, CMP-MISC-010-04]
+        interaction_ids: [INT-MISC-010-01]
+        acceptance_ids: [AC-MISC-010-01, AC-MISC-010-02, AC-MISC-010-03]
+        test_case_ids: [TC-MISC-010-01]
+        change_ids: []
+      -
+        requirement_id: REQ-MISC-010-02
+        title: 创建超级管理员
+        status: ACTIVE
+        priority: P1
+        business_rule_ids: [BR-MISC-010-02-01]
+        prototype_page_ids: [PP-MISC-010-01]
+        component_ids: []
+        interaction_ids: [INT-MISC-010-02]
+        acceptance_ids: [AC-MISC-010-04, AC-MISC-010-05, AC-MISC-010-06]
+        test_case_ids: [TC-MISC-010-02]
+        change_ids: []

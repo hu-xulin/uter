@@ -1,0 +1,2126 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "UTER-P13-CAPABILITY-VERIFICATION",
+  "generated_at": "2026-11-10T11:43:08.488Z",
+  "generated_by": "tools/aes/p13-capability-verifier.mjs",
+  "uter_root": "/private/tmp/uter-product-ci",
+  "mapping_path": "/private/tmp/uter-product-ci/.aes/UTER-P13-CAPABILITY-MAPPING.md",
+  "mapping_digest": "e15888ea99b31b160d79f8f351bf64e7010ad89e99ea9df0d65628815939bf42",
+  "verdict": "PASS",
+  "requirement_count": 100,
+  "verified_count": 100,
+  "requirements": [
+    {
+      "requirement_id": "P13-01-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "产品与业务需求域所有者：Uter 产品负责人（由平台工程代管）；本映射由 AES 自治治理执行会话依据第二阶段授权登记，取代 P13-REQ-001 的未确认状态。",
+      "implementation_paths": [
+        "docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md",
+        "uaes/standards/PRODUCT-REQUIREMENTS-STANDARD.md"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "a0e8fb37f91e78f91dae8190f9a6e8b72e64a38401a2942dadc29351bf690ed7",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "用户可见产品面（about/home/pricing/models/chat/playground/docs/legal）的范围必须与产品需求标准声明的清单一致，禁止未登记页面进入生产导航。",
+      "implementation_paths": [
+        "docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md",
+        "uaes/standards/PRODUCT-REQUIREMENTS-STANDARD.md"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0f48876e7d695f175de93da2f1737336f9af14fd88f1807245e7c5fc69a1f821",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "产品能力域以 web/src/features/* 为实现单元，产品需求标准为等价规格来源。",
+      "implementation_paths": [
+        "web/src/features/about",
+        "web/src/features/home"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "216b13ede9fc68721ab9c2c2cb645f74c09e7798edd0672905ec1b1a7243c4e6",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "任何产品页面必须可从导航到达且不依赖未发布特性开关；页面资源缺失时降级到错误页而非白屏。",
+      "implementation_paths": [
+        "web/src/features/about",
+        "web/src/features/home"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2fa5f8903de9944845a8c93a9601c296107798b502bf5015fb442b4475f46835",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "文档与法律声明页的更新必须先于相关功能上线（合规前置：legal 页面内容版本与支付合规条款版本联动）。",
+      "implementation_paths": [
+        "web/src/features/legal",
+        "docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f77acfba403a726ac560e2e1387425e202875bfe8b61fb06624fd29d8909550d",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "前端路由与资源加载失败必须落入统一错误页，不得白屏或暴露堆栈。",
+      "implementation_paths": [
+        "web/src/features/errors",
+        "web/src/features/docs"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "e10fdb33edd7d34f86ca4c2469450b6fcb1707ba2f8421babc9951536b0dcd19",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "匿名可访问 about/home/models/pricing/docs/legal；用户态数据页（dashboard/keys/wallet）必须登录后访问。",
+      "implementation_paths": [
+        "web/src/features/about",
+        "web/src/features/home"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6c008bdd4590cafae5b49257f59131fd0d0b9db5439b72154f8be72d0de14cd7",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "产品定价展示必须来自与计费引擎一致的 pricing 数据源，禁止前端硬编码价格。",
+      "implementation_paths": [
+        "web/src/features/pricing",
+        "web/src/features/models"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d6ec3fc12630548de9b5f4f65a0b09b5d0e4b3137e8f370c161a81c307d3d413",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：产品需求标准文档存在且包含需求清单章节；8 个核心特性目录存在且非空。",
+      "implementation_paths": [
+        "docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md",
+        "uaes/standards/PRODUCT-REQUIREMENTS-STANDARD.md"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2ee449c8a2f68ab0137ac614fc7c3ce4e298bea8c758fb995ccb1042cd9c18f2",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-01-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：标准文档 + 特性目录物理存在，由本验证器每次执行时实时核验并记录摘要。",
+      "implementation_paths": [
+        "docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md",
+        "uaes/standards/PRODUCT-REQUIREMENTS-STANDARD.md"
+      ],
+      "verifier_id": "self:p13.1",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "96165cb216f0c2c73a44116b5c9e84f61210cce088832014126801a7677085b6",
+      "evidence_path": [
+        ".aes/reports/P13-CAPABILITY-VERIFICATION.json#self-checks"
+      ],
+      "command": [
+        "node tools/aes/p13-capability-verifier.mjs (product-domain self checks)"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "身份与账户域所有者：Uter 平台工程负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "controller/user.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d5e0fb0c60dd6557b2bf85e2c046bf8d99922ed8f700000d3409c9f8657b3983",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "用户必须经注册/邮箱验证码/OAuth 登录获得账户；被停用账户不得通过任何登录路径获得会话。",
+      "implementation_paths": [
+        "controller/user.go",
+        "model/user.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4256b98f8dfcf24cc479ec1a9d8079952edece318895ab203da35c5a90b105a1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "账户域模型由 User/UserAccessToken/UserAuthCache/UserMonthQuota 组成（model/user*.go）。",
+      "implementation_paths": [
+        "model/user.go",
+        "model/user_access_token.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f5ba0eca603ea7782577f2df3a42dd128a00b7767cf01def9c1c7ec694bf491d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "邮箱验证码登录对停用账户必须静默处理（防账户枚举）；访问令牌必须防篡改且绑定授权 grant。",
+      "implementation_paths": [
+        "controller/email_code_login_test.go",
+        "service/auth_token_test.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "e767f6ef35d0125cdc4a62e3a367e9f7362cb366797d018b6bc7c03f443ac6d4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "令牌生命周期：创建（验证 grant）→ 使用 → 审计 → 过期/撤销；过期与 late request 一律拒绝。",
+      "implementation_paths": [
+        "model/user_access_token.go",
+        "controller/access_token_audit_test.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "95ddbded03d9754e2761a58bfedb13ce60e713831525efc331183069960e1fb3",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "令牌篡改、过期、late request 必须拒绝且不得泄露令牌存在性；认证失败不区分「账户不存在」与「密码错误」。",
+      "implementation_paths": [
+        "service/auth_token_test.go",
+        "controller/email_code_login_test.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "34412c264fc1d4eac72d9e4e4ba9d705137f533de06123ee34f096718dee9edf",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "API 访问令牌创建前必须验证授权 grant 存在且未被消费；令牌 scope 只授予申请者本人的权限。",
+      "implementation_paths": [
+        "service/auth_token_test.go",
+        "model/user_access_token.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5d8bb322f12762ac80f89081f3caf2a94fdf16593f1908a2726f950bbf681c55",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "令牌创建、使用与审计事件必须落库且排除浏览器会话（TestAccessTokenAuditsResultsAndExcludesBrowserSessions）。",
+      "implementation_paths": [
+        "controller/access_token_audit_test.go",
+        "model/audit_log.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "8aebf90a47d3c2aaeaf2ab3ab9dd1af2ebbc793ad16ffde32361b363cbc844cd",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：controller 静默登录/令牌生命周期测试 + service 令牌防篡改测试全部通过。",
+      "implementation_paths": [
+        "controller/email_code_login_test.go",
+        "service/auth_token_test.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d89a3d0aabe9748f8dc699f2d151acf070785a439fd8faead6c4e64c95a9e7e4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-02-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：controller/user.go、model/user*.go、oauth/ 与前端 auth 特性目录物理存在。",
+      "implementation_paths": [
+        "controller/user.go",
+        "model/user.go",
+        "model/user_access_token.go",
+        "model/user_auth_cache.go",
+        "model/user_month_quota.go"
+      ],
+      "verifier_id": "go:p13.2",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "15cb4b7bb1cb9b7799766d5a39ab33640e6f919e9396aa825615cb13bac5898b",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-2.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestEmailCodeLogin_SuspendedAccountSilent|TestAccessTokenLifecycleAndLateRequests)$ -count=1 -v && go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "模型与供应商域所有者：Uter 平台工程负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "model/channel.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4858051b6ea9102a8bd885c344dff1a8f4928a4fa7e26413a3dc943c12addc3a",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "渠道与模型数据由管理端维护；价格同步必须以官方价为准，且只填补未定价模型，不得覆盖已有定价。",
+      "implementation_paths": [
+        "model/model_pricing_autofill_test.go",
+        "service/dreamrouter_sync.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2f32356a53dcdb3bf224261c97fc9898f3acdd54d53a96cbbb6284935e438d86",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "渠道域模型：Channel/定价端点/模型定价自动填充（model/channel.go、model/pricing_endpoint_test.go）。",
+      "implementation_paths": [
+        "model/channel.go",
+        "model/pricing_endpoint_test.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3c351f67a5ed3e1e256aad6c9a5e12be008afe272b144efedbb4e32a27c234bb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "官方价自动填充只影响未定价模型（TestAutoFillOfficialPricingFillsUnpricedModelsOnly）；已有定价永不被自动填充覆盖。",
+      "implementation_paths": [
+        "model/model_pricing_autofill_test.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f3b525c775e9a6b2c330c60c921d6e063f5b6cd2149da0700942327f784f40c7",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "渠道更新触发高级自定义配置到缓存的同步（TestCacheUpdateChannelSyncsAdvancedCustomConfig）；同步任务状态由 system_task 跟踪。",
+      "implementation_paths": [
+        "model/pricing_endpoint_test.go",
+        "service/dreamrouter_sync_task.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "061d031f3a24663afe58b9118063a76771191cdc92e745a87c394ef95f6b43f1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "价格同步失败必须可重试且不破坏现有定价数据；上游不可达时保留最后已知定价。",
+      "implementation_paths": [
+        "service/dreamrouter_sync_task.go",
+        "model/model_pricing_autofill_test.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "e749ac9c1e1cf226550e2d11d25fdda87894c56923f3d239dacdb7aece3f7154",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "渠道与模型管理操作必须管理员权限；渠道 API 密钥仅存服务端。",
+      "implementation_paths": [
+        "controller/user.go",
+        "middleware/auth.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ef9ffdd9ad235980e287f4be6862e349758f212c4f3ed25d8ef6f3b176b2ee93",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "定价数据与端点配置落库一致性由 pricing_endpoint 测试矩阵保证。",
+      "implementation_paths": [
+        "model/pricing_endpoint_test.go",
+        "model/channel.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "474be67463916967d116063d07c0593e32f6db5dcc544f3f995296799ccc5d48",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：model 层官方价自动填充只填补未定价模型、渠道更新同步高级自定义配置两组测试全部通过。",
+      "implementation_paths": [
+        "model/model_pricing_autofill_test.go",
+        "model/pricing_endpoint_test.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "af2a50f0fab6b43bd99243a48be9226cf97e7112c75471619d62436b614eb20d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-03-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：model/channel.go、dreamrouter 同步服务、定价端点测试物理存在。",
+      "implementation_paths": [
+        "model/channel.go",
+        "service/dreamrouter_sync.go",
+        "service/dreamrouter_sync_task.go",
+        "model/model_pricing_autofill_test.go",
+        "model/pricing_endpoint_test.go"
+      ],
+      "verifier_id": "go:p13.3",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0ecf10032075bf93acc31cc710e8d68197c9be27a6003c609795998ebca11883",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-3.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAutoFillOfficialPricingFillsUnpricedModelsOnly|TestCacheUpdateChannelSyncsAdvancedCustomConfig)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "AI Relay 域所有者：Uter 平台工程负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "relay/relay_adaptor.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "a637232b1c859a162ef09d935b0d602273b57018fff0491869519d3a19bfa668",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "所有上游转发必须携带有效渠道凭证并经用户鉴权与配额校验；重试与渠道切换不得导致重复计费或重复输出。",
+      "implementation_paths": [
+        "relay/relay_adaptor.go",
+        "service/relay_error.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6d15d5c7597a42f498a9fe77a6ac9f7462643e8b9dce2cbab871f3c5a1e9951d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "relay 域模型：relay_adaptor/relay_task/common_handler/relay_error（relay/*.go）。",
+      "implementation_paths": [
+        "relay/relay_adaptor.go",
+        "relay/relay_task.go",
+        "service/relay_error.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3e3b1f3ee8e3e74e04f82afecf5076081dd5f6eae0b05934ac4d348cd2532f15",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "已向客户端写出流内容后禁止重试切换渠道（TestDecideRelayRetryStopsAfterOutputWritten）；提交后的流式任务永不重试（TestAcceptedSubmitStreamNeverRetries）。",
+      "implementation_paths": [
+        "service/relay_error.go",
+        "controller/relay_task_plugin_test.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "aa2e5ff0997580a4813e93ebd981cba89d2fe1b32eba9218ca414330385bd7d9",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "请求生命周期：接收→鉴权→配额预留→转发→流式输出→结算；输出开始后进入不可重试状态。",
+      "implementation_paths": [
+        "service/relay_error.go",
+        "relay/relay_task.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "1be0781e2ca4b4e8f1fc8f1cfbdea55ba862a5fc7b0b92ac7216f88a0a0a9bf7",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "重试决策必须区分可重试与不可重试错误；失败不得向客户端泄露上游地址或敏感响应体。",
+      "implementation_paths": [
+        "service/relay_error.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "63e6f9fa7e723e981d2cc8fdd77e31e6b0ce6ca77defa242b83752a6839b7550",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "渠道凭证仅存服务端；用户侧请求必须携带有效访问令牌并经配额校验后方可转发。",
+      "implementation_paths": [
+        "middleware/auth.go",
+        "relay/relay_adaptor.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "efff506fc0e590094738c36dd31fb825bff30ee93f257cda5a2561b1b2d5d902",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "用量快照在部分更新时保持一致；流式中断时的已消耗配额必须按实际用量结算。",
+      "implementation_paths": [
+        "service/relay_error.go",
+        "service/billing_session.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "17ca4923ca99876bfca8d44b8e4d7124fb9753c5393c518bfab570d6fe97d2ed",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：service 层重试决策测试 + controller 层流式任务重试测试通过。",
+      "implementation_paths": [
+        "service/relay_error.go",
+        "controller/relay_task_plugin_test.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ea9ac17e7e22aac1fc66f09e9cad51188c95554036b1926dc4875f017f1c4158",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-04-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：relay/ 协议处理器、controller 中继入口、错误重试服务物理存在。",
+      "implementation_paths": [
+        "relay/relay_adaptor.go",
+        "relay/relay_task.go",
+        "controller/relay_task_plugin_test.go",
+        "service/relay_error.go"
+      ],
+      "verifier_id": "go:p13.4",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "34dc591dc05b735a82eba4b8495b34acb2a90c6a370050a65213aabf0416b8fe",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-4.log"
+      ],
+      "command": [
+        "go go test ./service -run ^TestDecideRelayRetryStopsAfterOutputWritten$ -count=1 -v && go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "用量与定价域所有者：Uter 平台工程负责人（计费规则由资金安全负责人复核）；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "service/billing.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "213165bcd2fa0f0ab4bfec42d2a9daefa44c53cdb908fde198445b3f38ecbbdd",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "计量计费必须以会话为单位预留→结算→扣减；任何计费路径不得接受未经验证的价格输入。",
+      "implementation_paths": [
+        "service/billing.go",
+        "service/billing_session.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "9d10bb63bbb0f22d1e5fdf1632259913e3b9c4ec364cb310b52b0e026bea7a00",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "计费域模型：billing/billing_session/billing_usage/custom_pricing/quota（service/*.go）。",
+      "implementation_paths": [
+        "service/billing.go",
+        "service/billing_session.go",
+        "service/custom_pricing.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "8e9bb0e64c477b0c78021347fdd4f7fa5db3f658101c518156ceaeca985c1004",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "配额下溢必须拒绝（TestAdjustUserUsedQuotaRejectsUnderflow）；组织与成员配额调整必须原子（TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow）。",
+      "implementation_paths": [
+        "model/organization_test.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2aa0f7e846b2d4b879ede9dc1e694a76e483afef1bbe94d80f1183c955a68bfb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "计费会话生命周期：预留（reserve）→ 使用累计 → 结算（settle）→ 扣减余额；预留失败不得产生用量。",
+      "implementation_paths": [
+        "service/tiered_settle_test.go",
+        "service/billing_session.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "bfdfdf673f228c26f8c5e95b68efe13515ec931ac803a07dcb21eb5cafd39278",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "钱包预留失败必须可补偿且可重试；部分更新失败时计费快照不丢失。",
+      "implementation_paths": [
+        "service/tiered_settle_test.go",
+        "service/billing.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c8d8044775ea365c01a5cbcf32425b4788cf6673a9eecd119e1392cff732eb89",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "成员子配额只能由组织管理员调整，负值必须拒绝（TestAddMembersRejectsNegativeSubQuotaLimit）。",
+      "implementation_paths": [
+        "model/organization_test.go",
+        "middleware/auth.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5f9f7e8940e335ab3ac63ddd852453c2463d38e0c5d8c2b45ac08292e9aeef01",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "配额变更原子性：组织与成员 used quota 调整在同一事务内完成，成员下溢时整体回滚。",
+      "implementation_paths": [
+        "model/organization_test.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c4bd7f0772ecd3b5c1189e32894c2b3ce2819e3aad67afe2bb9805ed3647a396",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：model 层配额原子性测试 + service 层钱包预留扣减测试通过。",
+      "implementation_paths": [
+        "model/organization_test.go",
+        "service/tiered_settle_test.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "a5996ed376fab61ef359ded2a9dbf6a5acf399c6cec9428f9259a36d614361d1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-05-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：service/billing*.go、custom_pricing、quota 服务与组织配额测试物理存在。",
+      "implementation_paths": [
+        "service/billing.go",
+        "service/billing_session.go",
+        "service/billing_usage.go",
+        "service/custom_pricing.go",
+        "model/organization_test.go"
+      ],
+      "verifier_id": "go:p13.5",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "2e3630719944c04ec50c5f2cec85f9966cae9a0161af2e2ca209c57b0689c821",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-5.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v && go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "钱包与账务域所有者：Uter 资金安全负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "model/quota_reserve.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "16aa6d1937bb8e7f2a616787fe69b4808ef3cdf825ed523aae4096a65ddc9270",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "入账必须由订单状态机驱动并使用下单时金额快照；任何路径不得绕过金额校验直接修改余额。",
+      "implementation_paths": [
+        "model/topup.go",
+        "model/quota_reserve.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "888fbae4787463b77a0cb54507a0ca150e074a2e3f2c1cf0d786addfaf3d2d0e",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "钱包域模型：TopUp/QuotaReserve/Redemption（model/*.go）与钱包前端特性。",
+      "implementation_paths": [
+        "model/topup.go",
+        "model/quota_reserve.go",
+        "model/redemption.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "4e4b7efece6bac4097799b9d11d638f0f5d8e2ec279c99e85e32d160781045b9",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "并发领取同一 pending 订单只有一方成功（TestClaimPendingTopUpOnlyWinsOnce）；claim 的列写入必须原子（TestClaimPendingTopUpWritesExtraColumnsAtomically）。",
+      "implementation_paths": [
+        "model/topup_claim_pending_test.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "810dc033434a178efd387c522507817e92eefceaf3b47dcfd85f11668b37e5ae",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "订单状态机：pending→success/expired，由 topup_order_state_matrix 测试矩阵约束，非法转换一律拒绝。",
+      "implementation_paths": [
+        "model/topup_order_state_matrix_test.go",
+        "model/topup.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3109ab7c8f17b1c7b4bb64935c77cb3a67146df32c553849b4c5546a14bc7edf",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "钱包预留失败必须可补偿且可重试；领取失败方必须按幂等重复处理，绝不二次入账。",
+      "implementation_paths": [
+        "model/quota_reserve.go",
+        "model/topup_claim_pending_test.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "fbf43daa760ec005be0f07a8195d9607c0a3c26a5c0694d3fb28570fe834e9a0",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "充值与兑换记录只允许所有者或管理员查看；兑换码核销必须服务端验证。",
+      "implementation_paths": [
+        "model/redemption.go",
+        "controller/topup.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "269cab7645c172d5496ae2066973eaa0c6e1ecb6dc8b9cbaa1441d33f286db0c",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "claim、状态更新与额度入账必须在同一事务内完成；状态 CAS 保证重复通知幂等。",
+      "implementation_paths": [
+        "model/topup_claim_pending_test.go",
+        "model/topup.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "aabe77955aa5970ae04486fcc6dc5c161f6f196cf34290153763d8fef3f8f6eb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：model 层 claim 并发唯一性与原子写入测试通过。",
+      "implementation_paths": [
+        "model/topup_claim_pending_test.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0909a676808bc8a11aeec3738b24160126ec40e578b5db17c425aa7220d7fc95",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-06-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：model/topup.go、quota_reserve、redemption、claim 并发测试物理存在。",
+      "implementation_paths": [
+        "model/topup.go",
+        "model/quota_reserve.go",
+        "model/redemption.go",
+        "model/topup_claim_pending_test.go",
+        "service/tiered_settle_test.go"
+      ],
+      "verifier_id": "go:p13.6",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ec57f11d67fc8d5f5fbc4743925e801c5b7fd7d0bfc477edb3f80c4b6e8a6703",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-6.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestClaimPendingTopUpOnlyWinsOnce|TestClaimPendingTopUpWritesExtraColumnsAtomically)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "支付域所有者：Uter 资金安全负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "controller/topup_alipay.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "43e074cf2c2ab9a52ff51c13af4e0da753fe1b416fcfde79bfc4d0d61dac5408",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "所有支付回调与查单入账必须：验签通过、金额与下单快照一致、本地订单记录存在；三者缺一绝不入账。",
+      "implementation_paths": [
+        "controller/topup_alipay.go",
+        "controller/payment_reconcile_task.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d423b92ff1a60f6f9fb5878768f3ce3d098b4ad0b9cc7e87c6a4bf3392dba69f",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "支付域模型：TopUp 状态机 + 各渠道回调处理器（alipay/wechat/epay/stripe/creem/waffo）+ 对账任务。",
+      "implementation_paths": [
+        "model/topup.go",
+        "controller/topup_alipay.go",
+        "controller/payment_reconcile_task.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "42489bd894d02caa24a07a2364c58d2f835ff738334ae9e609f352988bb537ff",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "伪签名拒绝（TestPaymentCallbacksRejectForgedSignatures）；金额不匹配拒绝（TestAlipayReconcileRejectsAmountMismatch）；本地订单记录缺失绝不入账（TestAlipayReconcileDoesNotCreditMissingOrderRecord）。",
+      "implementation_paths": [
+        "controller/topup_callback_security_matrix_test.go",
+        "controller/payment_recovery_fault_injection_test.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "26651e9cb546f78248645618807150d84fcabcc633f8bf916bce2765d6b13a57",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "订单状态矩阵约束全部合法转换（TestTopUpOrderStateMatrix）；乱序/重复通知不得复活终态订单。",
+      "implementation_paths": [
+        "model/topup_order_state_matrix_test.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "60cda1ed650ad9c13e8f7c384c2e8d2a21566d744800f78fbfe574839025467c",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "网关故障轮次零入账且下一轮自动重试（TestAlipayReconcileRetriesAfterGatewayFailureRound）；worker 并发触发单飞保护且总额度恰好一次（TestAlipayReconcileWorkerSingleFlightExactOnceCredit）；回调丢失由对账兜底（TestGetUserTopUpsReconcilesBeforeReturning）。",
+      "implementation_paths": [
+        "controller/payment_recovery_fault_injection_test.go",
+        "controller/payment_reconcile_task_test.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "41d1e892a7b38e3b692aa289f71d428aa2ee8874d27b6c1b0e455fad9bb9df27",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "回调必须验签；中国区支付辅助函数必须先取得合规确认（TestChinaPaymentTopUpHelpersRequireComplianceConfirmation）；签名验签由 cn_pay_sign 服务统一实现。",
+      "implementation_paths": [
+        "controller/topup_callback_security_matrix_test.go",
+        "service/cn_pay_sign.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "3523e0c2658ef84c40e990cb356f5b0abe82e25b48de686438b2d9387988d032",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "入账 CAS 幂等：异步回调、主动查单、后台对账三方并存安全，重复执行不重复加额度；claim 与状态更新同事务。",
+      "implementation_paths": [
+        "model/topup_claim_pending_test.go",
+        "model/topup.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "da5f1a1d551b6e40ab94b2c78dbf6b07b891fb9437b19618ccbdc379f8be216d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：状态矩阵 + 回调签名安全矩阵 + 故障注入三件套（缺失记录/故障重试/单飞）全部执行通过。",
+      "implementation_paths": [
+        "model/topup_order_state_matrix_test.go",
+        "controller/topup_callback_security_matrix_test.go",
+        "controller/payment_recovery_fault_injection_test.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "442c6d076e07668898e901e26c6cd36850cadacd09903bed4f8d1b216081344d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-07-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：各渠道回调处理器（alipay/wechat/epay/stripe/creem/waffo）、对账任务实现、故障注入测试与状态矩阵测试全部物理存在，由本验证器每次执行实时核验。",
+      "implementation_paths": [
+        "controller/topup_alipay.go",
+        "controller/payment_reconcile_task.go",
+        "controller/payment_recovery_fault_injection_test.go",
+        "model/topup_order_state_matrix_test.go",
+        "controller/topup_callback_security_matrix_test.go"
+      ],
+      "verifier_id": "go:p13.7",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "27d8e2d9c91e17941046324e4210a411bf555aadc701508273a6ee68452aa4cc",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-7.log"
+      ],
+      "command": [
+        "go go test ./model -run ^TestTopUpOrderStateMatrix$ -count=1 -v && go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "任务与调度域所有者：Uter 平台工程负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "model/system_task.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "393d7ece30ff81e0d3e79246b11a3ae497240d713590bde6c3755b31047baccb",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "周期任务只能由主节点调度（IsMasterNode gate）；同一任务 key 不得同时存在活跃运行。",
+      "implementation_paths": [
+        "model/system_task.go",
+        "model/system_task_test.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "891860c49bf6542d834bbfb1807fa072143f71fd750c22a73e9f42a690a87324",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "调度域模型：SystemTask/Outbox/恢复任务（system_task.go、midjourney_refund_log_outbox.go、refund_intent_recovery_task.go）。",
+      "implementation_paths": [
+        "model/system_task.go",
+        "model/midjourney_refund_log_outbox.go",
+        "controller/refund_intent_recovery_task.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "b6c2941ccbd7184bbb502eaf866c8cf5ad6cc42a0f5a0d59680041876389e481",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "活跃 key 防重复运行（TestSystemTaskActiveKeyPreventsDuplicateActiveRun）；outbox 租约互斥（TestMidjourneyRefundOutboxLeaseIsExclusive）。",
+      "implementation_paths": [
+        "model/system_task_test.go",
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6b502b63d23fb64947d75184a1a3ed12355017b047d1f9ce5a7d15292cb918a4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "任务生命周期：create→active→history（TestSystemTaskCreateAndActiveLifecycle）；outbox：pending→delivered→dead-letter。",
+      "implementation_paths": [
+        "model/system_task_test.go",
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "737bd3b5ef9f079b68e000ca3b452087f578c119490a80aab22d3c172e133041",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "outbox 投递失败按预算重试后进入死信（TestMidjourneyRefundOutboxRetriesThenDeadLetters）；恢复任务失败可重试且不破坏业务数据。",
+      "implementation_paths": [
+        "model/midjourney_refund_log_outbox_test.go",
+        "controller/refund_intent_recovery_task.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "c0faea06fd212b124234d5452899c5f893f722f6e77be43277b0a0eda2cf8080",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "任务插件绑定需要 bind 权限（TestAddChannelTaskPluginRequiresBindPermission）；任务管理接口仅管理员可用。",
+      "implementation_paths": [
+        "middleware/auth.go",
+        "model/system_task.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "1881958312f16a765ad87f99124a135cedf6ffc9f7f153304ad07dfb30fa7cac",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "任务领取互斥、历史落库矩阵化（TestSystemTaskHistoryDatabaseMatrix）；outbox 与业务写入同事务。",
+      "implementation_paths": [
+        "model/system_task_test.go",
+        "model/midjourney_refund_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "eb94293c3be7bed903afd958ff9f95f3faa269bbb3356fd96e25667b8793b2de",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：system_task 生命周期/防重 + outbox 重试死信测试通过。",
+      "implementation_paths": [
+        "model/system_task_test.go",
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "60f5f36010f8c1a63f8417768cf12321a5516389b778587be3614ef5ea8e1e08",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-08-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：system_task、outbox、恢复任务实现与测试物理存在。",
+      "implementation_paths": [
+        "model/system_task.go",
+        "model/midjourney_refund_log_outbox.go",
+        "controller/refund_intent_recovery_task.go",
+        "model/system_task_test.go",
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.8",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "dfbd39483102d50c07670e0d3f6c442acb7ec5e01160e2203f5c859ed0525656",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-8.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "数据一致性域所有者：Uter 平台工程负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "model/accounting_tx_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d1392ec0c3e2f0754b5269e6cfbdf7ee812f05b6fd01e18de3b8a5900a99f40d",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "跨表账务变更必须使用事务原语；迁移必须幂等且遵循 DATABASE-STANDARD 的三库约束。",
+      "implementation_paths": [
+        "docs/ai-specs/DATABASE-STANDARD.md",
+        "uaes/standards/DATABASE-STANDARD.md"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "b881aff2098b0c93abc81a35fdb405626546dc4ff43694f6b4c9ad9300d49fe2",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "一致性域模型：accounting_tx 事务原语 + outbox 模式 + 迁移矩阵（model/accounting_tx_test.go、model/midjourney_refund_outbox_test.go）。",
+      "implementation_paths": [
+        "model/accounting_tx_test.go",
+        "model/midjourney_refund_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6bfc58f5ba9d0f73740da468bca96736368f6dd10c5d57f584a04750a0335ab0",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "事务原语要么全部提交要么全部回滚（CommitTogether/RollbackTogether）；缺失行必须拒绝（RejectMissingRows）；用量下溢拒绝（RejectUsageUnderflow）。",
+      "implementation_paths": [
+        "model/accounting_tx_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "7909f30460d3908e8b0599a0af63540a038b1353a0e6929c40d3f2c9b8b85b68",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "outbox 状态：pending→delivered（幂等投递）→dead-letter（预算耗尽）；每次转换与业务事务绑定。",
+      "implementation_paths": [
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d505dc88722b9a42f3fe096526d1547757040404bc662804242e1803b9722214",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "退款操作与 outbox 创建必须同事务原子（TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic）；投递失败重试后死信，不丢失、不重复。",
+      "implementation_paths": [
+        "model/midjourney_refund_outbox_test.go",
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5455b302fe44b08b404222855606afaea68b434a17bf7a6309da282daee70067",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "outbox 拒绝非法身份与不支持的载荷版本（OutboxIdentityAndValidation / RejectsUnsupportedPayloadVersions）。",
+      "implementation_paths": [
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "7a15e0b4bd1d0e002363d042b11faf8db6d152e58d0f9fa57c88442053cd95dc",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "投递幂等（TestMidjourneyRefundLogOutboxDeliveryIsIdempotent）；账务原语禁止部分提交。",
+      "implementation_paths": [
+        "model/midjourney_refund_log_outbox_test.go",
+        "model/accounting_tx_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "f5e47af2fcc3d3f03c6467d3255cdf26302742a290dce2ab703b001b0bb948c2",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：账务事务原语四向测试 + outbox 原子性与幂等测试通过。",
+      "implementation_paths": [
+        "model/accounting_tx_test.go",
+        "model/midjourney_refund_outbox_test.go",
+        "model/midjourney_refund_log_outbox_test.go"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "bf6e50e45f1eae09e80fa25b8e917ca269af195428f0bd4039d1a1e6a2e96bb0",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-09-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：accounting_tx、outbox 实现与测试、数据库标准文档物理存在。",
+      "implementation_paths": [
+        "model/accounting_tx_test.go",
+        "model/midjourney_refund_outbox_test.go",
+        "docs/ai-specs/DATABASE-STANDARD.md",
+        "uaes/standards/DATABASE-STANDARD.md"
+      ],
+      "verifier_id": "go:p13.9",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "d988966f25b747600d37c80e3ecd0fb349e7de9f152f2fe17783b07b70fdddbd",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-9.log"
+      ],
+      "command": [
+        "go go test ./model -run ^(TestAccountingTransactionPrimitivesCommitTogether|TestAccountingTransactionPrimitivesRollbackTogether|TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic|TestMidjourneyRefundLogOutboxDeliveryIsIdempotent)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-01",
+      "aspect": "business owner",
+      "normative_statement": "业务可观测性域所有者：Uter 平台工程负责人；AES 治理执行会话登记。",
+      "implementation_paths": [
+        "model/audit_log.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "ce46a6291257752375d0a143175cd799a416ac9de12a87568dc4ba1bb25af2df",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-02",
+      "aspect": "authoritative requirement",
+      "normative_statement": "业务操作（令牌、日志导出、管理动作）必须可审计；审计与导出必须按组织范围过滤并鉴权。",
+      "implementation_paths": [
+        "model/audit_log.go",
+        "controller/log_export_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "78f4f8f0362d7286d986bab8d702543faa6b11ba803eaf6c2a1b2dbe65f2d957",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-03",
+      "aspect": "domain model or equivalent specification",
+      "normative_statement": "可观测性域模型：AuditLog/日志导出/用量日志（model/audit_log.go、controller/log_export*.go）。",
+      "implementation_paths": [
+        "model/audit_log.go",
+        "controller/log_export_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "923645baa87bf0fe266650ff7432e19ead211337d314ba56439c4b6fa1fae094",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-04",
+      "aspect": "business invariants",
+      "normative_statement": "日志导出加锁防并发重复（TestAcquireLogExportLock）；审计矩阵落库（TestAPITokenAuditDatabaseMatrix/TestLogExportDatabaseMatrix）。",
+      "implementation_paths": [
+        "controller/log_export_test.go",
+        "controller/token_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "5ea7d4a536918b780eadd0e581f47bfe87defcb084810eabb4940ae60e1ac84e",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-05",
+      "aspect": "state transitions",
+      "normative_statement": "导出任务：pending→done/failed；锁获取失败必须让后续导出等待而非覆盖。",
+      "implementation_paths": [
+        "controller/log_export_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "0227e647ad14ec8639a7a07ba6e5ec86e9de83c6515e94aec1343f2428d219e1",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-06",
+      "aspect": "failure behavior",
+      "normative_statement": "组织成员查询失败时日志范围必须 fail-closed（TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors），不得放大可见范围。",
+      "implementation_paths": [
+        "controller/log_scope_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "032a8638d488256176f1912b2a49e502061112b8e60a96b0070c6a2f17bba5a4",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-07",
+      "aspect": "authorization rules",
+      "normative_statement": "rankings 等模块要求登录（TestHeaderNavModuleAuthRequiresLoginForRankings）；日志导出与管理员审计查询必须管理员权限。",
+      "implementation_paths": [
+        "controller/log_scope_test.go",
+        "middleware/auth.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "9e598c0fb190b3684c218925eb3f368de23f6ab21cb5cd6849252d954a7d9572",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-08",
+      "aspect": "data integrity requirements",
+      "normative_statement": "审计事件落库矩阵化（令牌审计矩阵与日志导出矩阵）；导出结果必须与请求数一致，不重复、不遗漏、不可篡改。",
+      "implementation_paths": [
+        "controller/token_test.go",
+        "controller/log_export_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "34b8ae8f1c287e5d0bcc7889b1ecb6be344c39e2b4ef0ed0f71f71ef0cffbbd9",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-09",
+      "aspect": "verification criteria",
+      "normative_statement": "验证准则：审计矩阵 + 组织范围 fail-closed + 导出锁与矩阵测试通过。",
+      "implementation_paths": [
+        "controller/token_test.go",
+        "controller/log_scope_test.go",
+        "controller/log_export_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "22de0eae7d2e40f286d5cc5cbf3f7a8147de9bce1e847885ec5ef42458f1d932",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    },
+    {
+      "requirement_id": "P13-10-CAP-10",
+      "aspect": "traceable implementation evidence",
+      "normative_statement": "实现证据：audit_log、日志导出、范围过滤实现与测试物理存在。",
+      "implementation_paths": [
+        "model/audit_log.go",
+        "controller/log_export_test.go",
+        "controller/log_scope_test.go",
+        "controller/token_test.go"
+      ],
+      "verifier_id": "go:p13.10",
+      "status": "PASS",
+      "independent_verification": "PASS",
+      "evidence_digest": "6fac9a05ef7252a8bf1922359d5372eedab505d7b777c7bdf2aafe4b7bddd4d3",
+      "evidence_path": [
+        ".aes/reports/p13-evidence/cap-go-p13-10.log"
+      ],
+      "command": [
+        "go go test ./controller -run ^(TestAPITokenAuditDatabaseMatrix|TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors|TestLogExportDatabaseMatrix)$ -count=1 -v"
+      ],
+      "problems": null,
+      "source_path": ".aes/UTER-P13-CAPABILITY-MAPPING.md"
+    }
+  ],
+  "honesty_note": "A requirement is PASS only when its normative statement is registered, its implementation paths physically exist, and its declared verifier executed with every expected test passing. Any missing piece keeps the requirement NOT_VERIFIED."
+}

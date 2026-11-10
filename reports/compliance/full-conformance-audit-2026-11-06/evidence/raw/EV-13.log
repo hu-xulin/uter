@@ -422,7 +422,7 @@ i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts�
   ! eslint(prefer-template): Unexpected string concatenation.
     ,-[scripts/generate-design-tokens.mjs:85:9]
  84 |           (key) =>
- 85 | ,->         '  --uaes-brand-' +
+ 85 | ,->         '  --aes-brand-' +
  86 | |           names[key] +
  87 | |           ': ' +
  88 | |           source.themes[theme].brand[key].$value +

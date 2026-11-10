@@ -3,7 +3,7 @@
 - **Document:** `13/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -18,7 +18,7 @@
 
 # `BLOCKED`
 
-§10 的 11 项条件中 5 项满足、6 项未满足。29 条适用要求因 UAES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。
+§10 的 11 项条件中 5 项满足、6 项未满足。29 条适用要求因 AES 规范基线未逐条批准且缺逐条验证而 BLOCKED；42 项人工验收未由负责人签署；DAST/渗透/三库/DR/备份恢复等需要授权环境，记为 NOT_RUN；逐条 PASS 数为 0。关键验证因权限与外部依赖无法完成，因此最精确的 §12 结论是 BLOCKED。
 
 ## §10 最终验收条件逐项核对
 
@@ -43,8 +43,8 @@
 ## 为什么不是 CONFORMANT
 
 1. 0 requirement-specific PASS out of 2872 applicable requirements
-2. 178/178 UAES standards are DRAFT and UAES APPROVAL-RECORD §4 does not approve them
-3. 13 UAES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS
+2. 178/178 AES standards are DRAFT and AES APPROVAL-RECORD §4 does not approve them
+3. 13 AES L3 domain gates remain NOT_RUN; 14-domain L3 group is 0/14 PASS
 4. 42 manual acceptance items remain NOT_VERIFIED with signoff_granted=false
 5. security verification is incomplete: MA-06 gitleaks and MA-12 axe are now PASS (user commit ec6501adc + installed axe-core/@axe-core/playwright real scan), but DAST / penetration / API security / three-database migration / DR / backup-restore / performance testing remain NOT_RUN (authorised environment required, see FIND-FCA-004)
 6. several of the eight §8 gates are BLOCK
