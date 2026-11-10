@@ -132,21 +132,12 @@ export function processChanges(opts = {}) {
   const projectRegistryPath = join(UTER_ROOT, '.aes/uter-governance-registry.yaml')
   if (exists(projectRegistryPath)) {
     let registry = readFileSync(projectRegistryPath, 'utf8')
-    const setScalar = (key, value) => { registry = registry.replace(new RegExp('^(  ' + key + ': ).*
-  writeAtomic(outputPath, final)
-  append(checksPath, final)
-  return { mode: 'PIN_REFRESHED', detection: d, record: final }
-}
-
-if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
-  const args = process.argv.slice(2)
-  const value = (key) => { const i = args.indexOf('--' + key); return i >= 0 ? args[i + 1] : null }
-  const result = processChanges({ checkOnly: args.includes('--check'), outputPath: value('output'), checksPath: value('checks'), findingsPath: value('findings'), pinPath: value('pin'), registryPath: value('registry'), statusPath: value('status') })
-  console.log(JSON.stringify(result, null, 2))
-  if (args.includes('--check') && result.would_refresh_pin) process.exitCode = 1
-  if (result.mode === 'BLOCKED') process.exitCode = 2
-}
-, 'm'), '$1"' + String(value).replaceAll('"', '\\"') + '"') }
+    const setScalar = (key, value) => {
+      const pattern = new RegExp('^(  ' + key + ': ).*$', 'm')
+      const serialized = JSON.stringify(String(value))
+      if (pattern.test(registry)) registry = registry.replace(pattern, '$1' + serialized)
+      else registry = registry.replace(/^(aes_inheritance:\s*)$/m, '$1\n  ' + key + ': ' + serialized)
+    }
     setScalar('source_commit', d.aes_source_commit)
     setScalar('registry_blob_sha', d.aes_registry_blob_sha)
     setScalar('registry_version', d.aes_registry_version)
