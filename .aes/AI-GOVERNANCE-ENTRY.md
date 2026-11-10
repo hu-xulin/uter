@@ -1,85 +1,44 @@
 # Uter AI Governance Entry Point
 
-**Purpose:** thin, deterministic pointer to the governance sources every AI Agent
-must load before engineering work in this repository. This file contains **no
-copy** of AES generic standard text.
+**Purpose:** deterministic bootstrap for every coding and automation agent in this repository. This file contains no duplicate AES standard text.
 
-**Governing universal specification:** AES `AES-SPEC-CORE`, registered in the AES repository at `.aes/spec-registry/SPECIFICATION-REGISTRY.yaml` and implemented by the ACTIVE P00–P12 standards under `standards/`. Uter's `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` is a project execution overlay only; it cannot override AES.
+## 1. Normative source
 
-## 0. Three-layer, two-repository architecture (§1.1 / §1.3)
-
-| Layer | Repository | Responsibility |
-|---|---|---|
-| A — AES universal | `aes` | P00–P12 only. MUST NOT contain Uter business rules or UTER P13. |
-| B — Uter project | `uter` | Governance entrypoints, AES inheritance config, **UTER P13**. |
-| C — Execution & assurance | both | WorkBuddy executes; CI/CD, tests and independent assessment verify. |
-
-The two repositories are governed separately: UTER P13 and Uter business rules
-stay in `uter`; AES universal standards stay in `aes`. Neither may absorb the
-other's content. Enforced by `scripts/quality/uter-governance-separation-check.rb`.
-
-**P09 proves / P10 defines (§1.3 / §8 / §9 / §10 / §16.3)**: P09 Quality Engineering proves whether
-engineering quality meets requirements; P10 Security & Reliability defines the
-security and reliability requirements the system must meet. Security testing is
-required by P10, executed and recorded by the P09 test system.
-Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
-
-## 1. Normative source (AES — generic engineering governance)
+AES is the sole owner of universal engineering governance P00–P12. Uter owns its implementation, project overlays and UTER-P13 business extension.
 
 | Field | Value |
 |---|---|
-| Repository | `hu-xulin/aes` (https://github.com/hu-xulin/aes) |
+| Repository | `https://github.com/hu-xulin/aes` |
 | Branch | `main` |
-| Machine pin | `.aes/aes-pin.json` (current fingerprint, registry version and source provenance; never hard-code a commit or digest here) |
-| Registry | AES `.aes/STANDARD-REGISTRY.yaml` (read from the pinned AES checkout) |
-| Registry version / status | Derived from the live machine pin and AES registry at execution time |
-| Machine authorization | `AES-AUTONOMOUS-GOVERNANCE-POLICY` + recomputable machine evidence; no human/third-party sign-off dependency |
-| Integration status | `MIGRATION_PENDING` until all Uter requirement-to-evidence checks and product gates have current machine PASS evidence |
+| Machine pin | `.aes/aes-pin.json` |
+| Project registry | `.aes/uter-governance-registry.yaml` |
+| Project extension | `.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md` |
+| Execution policy | `.aes/agent-governance.yaml` |
+| Canonical engine | AES `governance/ai-native/engine/cli.mjs` |
 
-Machine-readable pin: `.aes/aes-pin.json`.
-Human contract: `.aes/INTEGRATION.md`.
-Phase mapping: `.aes/TRACEABILITY.md`.
-Canonical integration skill (in the AES repository): `skills/aes-uter-integration/SKILL.md`.
+AES registry ACTIVE means the normative baseline is published. It does not by itself mean Uter conforms.
 
-Registry `ACTIVE` is a normative baseline, **not** a Uter conformance
-certificate (§0.3 / §16.5).
+## 2. Repository ownership
 
-## 2. Uter project layer (Layer B)
+- AES repository: universal P00–P12 standards, schemas, registries, validators and governance engines.
+- Uter repository: product implementation, Uter-specific standards, business invariants, P13 and project execution.
+- Uter MUST NOT create a competing copy of AES universal standards.
+- UTER-P13 MUST remain in this repository and MUST NOT be registered as an AES universal domain.
 
-- **`.aes/uter-governance-registry.yaml`** — machine-readable inheritance config,
-  three-layer architecture, P09/P10 ownership and UTER P13 registration.
-- **`.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`** — UTER P13, the
-  project-specific business domain extension (10 domains, inherits P00–P12).
-  Registered **only** in the Uter project governance registry.
-- Root `AGENTS.md` and `web/AGENTS.md` — project constitution and frontend scope.
-- `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` — design tokens and UI rules.
-- `docs/ai-specs/` — project engineering standards (keep/migrate/deprecate
-  disposition recorded in TRACEABILITY.md).
-- `.ai/UTER-EXECUTION-METHOD.md`, `.ai/README.md`, `.ai/task-schema.json`, `.ai/checklists/` — execution methodology.
-- `.agents/rules/billing.md`, `.agents/skills/` — project-specific rules and canonical skills.
-- `.aes/agent-governance.yaml` — P01 permission profile.
-- `scripts/quality/`, `scripts/verify-all.sh`, `.github/workflows/` — executable gates.
+P09 Quality Engineering proves whether engineering quality meets requirements. P10 Security & Reliability defines the required security and reliability properties. Security tests are executed and recorded by the P09 quality system.
 
-## 3. Agent load order (§6.4 / §18)
+## 3. Mandatory agent load order
 
-1. `AGENTS.md` (repo root), then `web/AGENTS.md` when touching `web/`.
-2. This entry point, then `.aes/uter-governance-registry.yaml`.
-3. `.aes/INTEGRATION.md` and `.aes/TRACEABILITY.md`.
-4. The pinned AES registry and applicable P00–P12 domain standards.
-5. **`.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`** and the applicable Uter
-   business overlays in §2 (§18 step 7).
-6. Confirm permissions, inspect the working tree and record the baseline (§6.3 / §6.6).
-7. Execute the task, then run the applicable gates in §4.
-8. Record evidence and requirement/finding status (§14 / §13).
+1. Root `AGENTS.md`; additionally load `web/AGENTS.md` for frontend work.
+2. This entry point and `.aes/agent-governance.yaml`.
+3. `.aes/uter-governance-registry.yaml`, `.aes/INTEGRATION.md` and `.aes/TRACEABILITY.md`.
+4. Verify the AES pin and load the applicable P00–P12 standards from the pinned AES source.
+5. Load `.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md` and applicable `.aes/business/` overlays.
+6. Inspect repository state and preserve all pre-existing changes.
+7. Execute the task with least privilege and run all applicable gates.
+8. Record machine evidence and derive the final status from actual verification.
 
-A file existing in the repository does **not** prove that the runtime Agent
-loaded or followed it (§6.4). Runtime evidence must come from an actual task.
-
-## 4. Verification entry points
-
-### 4.1 Keeping in step with AES — machine-pinned inheritance
-
-AES is the sole owner of universal P00–P12 rules. Uter keeps a content-addressed pin and project-specific overlays. The pin is updated only after AES's own seal is verified; source commit SHA is provenance, while the governed fingerprint identifies the normative content.
+## 4. Machine verification entry points
 
 Run from the Uter repository:
 
@@ -88,33 +47,28 @@ AES_ROOT="${AES_ROOT:-../aes}"
 node "$AES_ROOT/quality/scripts/aes/governed-fingerprint.mjs" --json --require-intact
 node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
 node .aes/autonomous/engine/sync.mjs --check
+AES_ROOT="$AES_ROOT" ruby scripts/quality/ai-native-internal-gate.rb
+ruby scripts/quality/uter-p09-p10-boundary-check.rb
+bash scripts/quality/ai-specs-check.sh
+bash scripts/verify-all.sh
 ```
 
-A successful pin check proves only that Uter references the exact sealed AES rule set. It does not prove product conformance. Any fingerprint mismatch, invalid seal, missing requirement mapping, missing verifier, or stale evidence blocks integration and is repaired before the pin can be accepted.
+The integration check verifies rule identity and registry structure. The internal gate verifies governance integration. Product conformance requires a separate requirement-level execution matrix covering all applicable AES requirements and all UTER-P13 business invariants.
 
-Internal governance, standard lifecycle, code review, test acceptance, defect closure and release-readiness are decided by executable machine policy plus independent machine verification. No human approval, human signature, third-party review or third-party certification is an internal acceptance prerequisite. External legal/regulatory/contractual acts and real production/funds actions are not fabricated or auto-authorized: if machine-verifiable authority is absent, the action is automatically denied without blocking internal engineering verification.
+## 5. State semantics
 
-`NOT_RUN`, `UNKNOWN`, `BLOCKED`, `NOT_VERIFIED` and missing evidence are never PASS. Historical records under `reports/compliance/legacy-uaes-archive/` are provenance only and MUST NOT be loaded as active policy or current acceptance evidence.
-### 4.2 Executable gates
+- `PASS`: real execution succeeded on the current revision and independent verification succeeded.
+- `FAIL`: an executed check found a violation.
+- `BLOCKED`: an operation is denied by policy or a required prerequisite is absent.
+- `NOT_RUN`: no execution evidence exists.
+- `UNKNOWN` / `NOT_VERIFIED`: evidence is insufficient or stale.
 
-| Gate | Command |
-|---|---|
-| AES pin, seal, registry and requirement mapping | `node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"` |
-| AES pin negative/positive tests | `node --test scripts/quality/aes-integration-check.test.mjs` |
-| AES downstream event sync | `node .aes/autonomous/engine/sync.mjs --check` |
-| Uter internal machine acceptance (11 checks) | `AES_ROOT="$AES_ROOT" ruby scripts/quality/ai-native-internal-gate.rb` |
-| P09/P10 responsibility boundary | `ruby scripts/quality/uter-p09-p10-boundary-check.rb` |
-| Project AI-spec integrity | `bash scripts/quality/ai-specs-check.sh` |
-| P01 permission policy fixtures | `ruby scripts/quality/test-ai-governance-policy.rb` |
-| Independent AES machine review | `UTER_ROOT="$PWD" node "$AES_ROOT/governance/ai-native/engine/cli.mjs" review` |
-| AES Agent execution self-check | `node "$AES_ROOT/governance/ai-native/engine/cli.mjs" self-check` |
-| Full Uter engineering verification | `./scripts/verify-all.sh` |
+Only PASS satisfies a mandatory requirement. A missing result, stale result, successful build alone, file presence or registry pin cannot imply conformance.
 
-A gate is complete only when its command actually executes and produces current evidence. A missing tool, missing report, skipped suite or unverified requirement is a failure/blocked state, never an implicit pass. The independent machine review is an internal technical control, not a third-party certification.
-## 5. Status
+## 6. Execution boundaries
 
-`MIGRATION_PENDING` / conformance `NOT_ASSESSED`. This entry point does not claim
-Uter is conformant with AES. Registry approval, the 13 AES domain gates,
-UTER P13 independent domain acceptance, Requirement→Evidence mapping, live Agent
-runtime discovery, CI enforcement and the independent assessment all require
-separate reproducible evidence.
+Repository work is performed on local `main`, without creating branches, pushing, creating or merging pull requests, or deploying. Existing user changes and untracked files MUST be preserved. Production database writes, real payment operations, production credential access and irreversible external side effects are automatically denied. A denied action remains BLOCKED and does not enter an interactive approval queue.
+
+## 7. AES inheritance
+
+The pin is updated only from a live AES fingerprint with an intact machine seal. Pin synchronization MUST NOT promote Uter conformance. Integration status is computed only after all applicable requirement-level checks, P13 business invariants, runtime controls and CI gates have current PASS evidence.
