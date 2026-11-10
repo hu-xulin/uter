@@ -1,0 +1,14 @@
+=== RUN   TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent
+
+2026/11/10 21:14:47 [31;1m/Users/lincolnhu/uter/model/midjourney_refund_transaction.go:122 [35;1mrecord not found
+[0m[33m[0.068ms] [34;1m[rows:0][0m SELECT * FROM `midjourney_refund_operations` WHERE midjourney_task_id = 1 AND operation_type = "full" ORDER BY `midjourney_refund_operations`.`id` LIMIT 1
+[SYS] 2026/11/10 - 21:14:47 | failed to refresh token quota after Midjourney refund: redis client is nil 
+--- PASS: TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent (0.01s)
+=== RUN   TestRefundIntentExecuteAppliesRefundOnce
+[SYS] 2026/11/10 - 21:14:47 | failed to sync token quota cache after refund intent 1: redis client is nil 
+--- PASS: TestRefundIntentExecuteAppliesRefundOnce (0.00s)
+=== RUN   TestSubscriptionRefundIntentCommitsOnce
+--- PASS: TestSubscriptionRefundIntentCommitsOnce (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/model	1.455s
+
