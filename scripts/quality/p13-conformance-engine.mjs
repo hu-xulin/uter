@@ -76,28 +76,32 @@ const paymentTests = [
     id: 'P13-PAY-002',
     scenario: 'duplicate payment notifications and concurrent callbacks',
     cwd: ROOT,
-    args: ['test', './model', '-run', '^(TestTopUpOrderStateMatrix|TestRechargeEpayConcurrentCallbacksCreditOnce)$', '-count=1'],
+    args: ['test', './model', '-run', '^(TestTopUpOrderStateMatrix|TestRechargeEpayConcurrentCallbacksCreditOnce)$', '-count=1', '-v'],
+    expected_tests: ['TestTopUpOrderStateMatrix', 'TestRechargeEpayConcurrentCallbacksCreditOnce'],
     source_paths: ['model/topup_order_state_matrix_test.go', 'model/topup_claim_pending_test.go'],
   },
   {
     id: 'P13-PAY-003',
     scenario: 'out-of-order payment notifications and terminal-state resurrection',
     cwd: ROOT,
-    args: ['test', './model', '-run', '^TestTopUpOrderStateMatrix$', '-count=1'],
+    args: ['test', './model', '-run', '^TestTopUpOrderStateMatrix$', '-count=1', '-v'],
+    expected_tests: ['TestTopUpOrderStateMatrix'],
     source_paths: ['model/topup_order_state_matrix_test.go'],
   },
   {
     id: 'P13-PAY-004',
     scenario: 'paid amount mismatch is rejected before credit',
     cwd: ROOT,
-    args: ['test', './controller', '-run', '^(TestAlipayReconcileRejectsAmountMismatch|TestPaymentGatewayCallbacksMatchPaidAmount)$', '-count=1'],
+    args: ['test', './controller', '-run', '^(TestAlipayReconcileRejectsAmountMismatch|TestPaymentGatewayCallbacksMatchPaidAmount)$', '-count=1', '-v'],
+    expected_tests: ['TestAlipayReconcileRejectsAmountMismatch', 'TestPaymentGatewayCallbacksMatchPaidAmount'],
     source_paths: ['controller/payment_reconcile_task_test.go', 'controller/topup_gateway_contract_test.go'],
   },
   {
     id: 'P13-PAY-005',
     scenario: 'forged provider signatures are rejected',
     cwd: ROOT,
-    args: ['test', './controller', '-run', '^TestPaymentCallbacksRejectForgedSignatures$', '-count=1'],
+    args: ['test', './controller', '-run', '^TestPaymentCallbacksRejectForgedSignatures$', '-count=1', '-v'],
+    expected_tests: ['TestPaymentCallbacksRejectForgedSignatures'],
     source_paths: ['controller/topup_callback_security_matrix_test.go'],
   },
   {
@@ -111,21 +115,24 @@ const paymentTests = [
     id: 'P13-PAY-007',
     scenario: 'duplicate refund execution and ledger mutation are idempotent',
     cwd: ROOT,
-    args: ['test', './model', '-run', '^(TestRefundIntentExecuteAppliesRefundOnce|TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent|TestSubscriptionRefundIntentCommitsOnce)$', '-count=1'],
+    args: ['test', './model', '-run', '^(TestRefundIntentExecuteAppliesRefundOnce|TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent|TestSubscriptionRefundIntentCommitsOnce)$', '-count=1', '-v'],
+    expected_tests: ['TestRefundIntentExecuteAppliesRefundOnce', 'TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent', 'TestSubscriptionRefundIntentCommitsOnce'],
     source_paths: ['model/refund_intent_test.go', 'model/midjourney_refund_transaction_test.go'],
   },
   {
     id: 'P13-PAY-008',
     scenario: 'payment-provider query failure is handled without false credit',
     cwd: ROOT,
-    args: ['test', './controller', '-run', '^TestGetUserTopUpsSurvivesGatewayFailure$', '-count=1'],
+    args: ['test', './controller', '-run', '^TestGetUserTopUpsSurvivesGatewayFailure$', '-count=1', '-v'],
+    expected_tests: ['TestGetUserTopUpsSurvivesGatewayFailure'],
     source_paths: ['controller/payment_reconcile_task_test.go'],
   },
   {
     id: 'P13-PAY-009',
     scenario: 'missing callback is recovered by automatic provider reconciliation',
     cwd: ROOT,
-    args: ['test', './controller', '-run', '^TestGetUserTopUpsReconcilesBeforeReturning$', '-count=1'],
+    args: ['test', './controller', '-run', '^TestGetUserTopUpsReconcilesBeforeReturning$', '-count=1', '-v'],
+    expected_tests: ['TestGetUserTopUpsReconcilesBeforeReturning'],
     source_paths: ['controller/payment_reconcile_task_test.go'],
   },
 ]
@@ -143,7 +150,9 @@ for (const item of paymentTests) {
   const logPath = resolve(EVIDENCE_DIR, `${item.id}.log`)
   mkdirSync(dirname(logPath), { recursive: true })
   writeFileSync(logPath, output)
-  const passed = result.status === 0
+  const expectedExecuted = (item.expected_tests || []).every((name) =>
+    output.includes(`--- PASS: ${name}`))
+  const passed = result.status === 0 && expectedExecuted
   paymentResults.push({
     requirement_id: item.id,
     domain: 'P13.7 Payment',
@@ -156,7 +165,7 @@ for (const item of paymentTests) {
     command: 'go ' + item.args.join(' '),
     exit_code: result.status,
     source_paths: item.source_paths,
-    detail: passed ? 'Targeted payment regression suite executed in the isolated L4 CI job.' : output.slice(-4000),
+    detail: passed ? 'Every declared test function executed and passed in the isolated L4 CI job.' : `exit=${result.status}; expected_tests_executed=${expectedExecuted}; ${output.slice(-4000)}`,
   })
 }
 
