@@ -19,23 +19,23 @@
 - AUTO-FIX-STANDARD.md
 
 **上位标准（Normative parent）：**
-本规范是 **Uter 项目执行层**规范，不是企业级标准。企业级要求由 UAES 定义，
-本文件不得重新定义、削弱或平行维护 UAES 已定义的质量治理要求。
+本规范是 **Uter 项目执行层**规范，不是企业级标准。企业级要求由 AES 定义，
+本文件不得重新定义、削弱或平行维护 AES 已定义的质量治理要求。
 
 | 归属 | 来源 | 关系 |
 |---|---|---|
-| 企业级质量治理、质量模型、风险分级 | UAES `UAES-09-001-QUALITY-MODEL-AND-GOVERNANCE` | 上位；本规范必须遵循 |
-| 代码审查工程 | UAES `UAES-09-002-CODE-REVIEW-ENGINEERING` | 上位；本规范补充 Uter 执行细则 |
-| 测试策略与执行 | UAES `UAES-09-003` ~ `UAES-09-013` | 上位；本规范补充 Uter 工具与命令 |
-| 自动修复与修复验证 | UAES `UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION` | 上位；本规范补充 Uter 权限边界 |
-| 质量报告与证据 | UAES `UAES-09-015-QUALITY-REPORT-AND-EVIDENCE` | 上位；本规范补充 Uter 报告位置 |
+| 企业级质量治理、质量模型、风险分级 | AES `AES-09-001-QUALITY-MODEL-AND-GOVERNANCE` | 上位；本规范必须遵循 |
+| 代码审查工程 | AES `AES-09-002-CODE-REVIEW-ENGINEERING` | 上位；本规范补充 Uter 执行细则 |
+| 测试策略与执行 | AES `AES-09-003` ~ `AES-09-013` | 上位；本规范补充 Uter 工具与命令 |
+| 自动修复与修复验证 | AES `AES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION` | 上位；本规范补充 Uter 权限边界 |
+| 质量报告与证据 | AES `AES-09-015-QUALITY-REPORT-AND-EVIDENCE` | 上位；本规范补充 Uter 报告位置 |
 
-UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`，
-审批记录 `UAES-APPROVAL-2026-11-07-004`（见 `.uaes/uaes-pin.json`）。
+AES 基线与规范版本以 `.aes/aes-pin.json` 的机器指纹和当前 ACTIVE Registry 为准；不得硬编码提交 SHA 或旧版本，
+审批记录 `AES-APPROVAL-2026-11-07-004`（见 `.aes/aes-pin.json`）。
 
-冲突处理：本规范与 UAES 冲突时，以 UAES 为准；Uter 专属的业务、支付、资金、
-渠道约束不受影响，按 UAES `UAES-00-002` 的冲突解决顺序处理，并登记在
-`.uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml` 的 `conflicts_registered` 中。
+冲突处理：本规范与 AES 冲突时，以 AES 为准；Uter 专属的业务、支付、资金、
+渠道约束不受影响，按 AES `AES-00-002` 的冲突解决顺序处理，并登记在
+`.aes/AI-SPEC-DISPOSITION-REGISTRY.yaml` 的 `conflicts_registered` 中。
 
 ---
 
@@ -122,10 +122,10 @@ Quality Gate 不负责代替各引擎执行具体检查。
 
 # 3. 统一状态定义
 
-所有质量检查必须采用统一状态。本表与 UAES `UAES-09-001` §11 及
-`UAES-09-015` 的状态词汇严格对齐（C-02 已修正）：UAES 使用 `NOT_RUN` 与
+所有质量检查必须采用统一状态。本表与 AES `AES-09-001` §11 及
+`AES-09-015` 的状态词汇严格对齐（C-02 已修正）：AES 使用 `NOT_RUN` 与
 `NOT_VERIFIED`，本文件此前使用 `NOT RUN`（含空格）与 `SKIPPED`，造成同一
-门禁在两套词汇下产生不同判定，现统一为下表。`SKIPPED` 作为 UAES 词汇中
+门禁在两套词汇下产生不同判定，现统一为下表。`SKIPPED` 作为 AES 词汇中
 不存在的一档已删除；原先记为 `SKIPPED` 的情形按真实语义拆分为
 `NOT_APPLICABLE`（经确认不适用）或 `NOT_VERIFIED`（已声明但无证据）。
 
@@ -168,7 +168,7 @@ NOT_APPLICABLE：
 
 **词汇一致性自检**：任何报告、脚本或 YAML 中出现的状态值必须是上表六值之一。
 出现 `SKIPPED`、`NOT RUN`（含空格）或其他别名即视为不合规，由
-`scripts/quality/ai-specs-check.sh` 与 UAES 侧状态校验共同拦截。
+`scripts/quality/ai-specs-check.sh` 与 AES 侧状态校验共同拦截。
 
 ## 3.2 总体状态计算
 
