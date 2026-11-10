@@ -475,9 +475,15 @@ The AES machine governance engine, independent verifier and CI gates are the onl
 
 This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
 
-## AI_NATIVE_GOVERNANCE — Canonical machine policy
+## AES_AUTONOMOUS_GOVERNANCE / AI_NATIVE_GOVERNANCE — Canonical AES machine policy
 
-- marker: AI_NATIVE_GOVERNANCE
+- marker: AES_AUTONOMOUS_GOVERNANCE
+- compatibility_marker: AI_NATIVE_GOVERNANCE
+- canonical_repository: https://github.com/hu-xulin/aes
+- governed_rule_identity_verifier: quality/scripts/aes/governed-fingerprint.mjs
+- canonical_engine_entrypoint: governance/ai-native/engine/cli.mjs
+- resolve AES_ROOT from the explicit environment variable (or the sibling `../aes` checkout); execute the engine with AES_ROOT as the working directory.
+- Before any governance decision, recompute the governed fingerprint with `node quality/scripts/aes/governed-fingerprint.mjs --json --require-intact` from AES_ROOT; reject missing, stale, or broken seals.
 
 ## Canonical machine policy
 
