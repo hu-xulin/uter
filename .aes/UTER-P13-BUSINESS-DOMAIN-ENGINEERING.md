@@ -7,7 +7,8 @@
 | Governing specification | `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` (`UTER-AES-GOV-001`) |
 | Registered in | Uter project governance registry: `.aes/uter-governance-registry.yaml` |
 | **Not registered in** | AES universal standards registry (`.aes/STANDARD-REGISTRY.yaml` in the AES repository) |
-| AES baseline inherited | `1.12.2 / ACTIVE`, source commit `0c00bc9aaee9e40494b342590d21ae4ecd13f1e8` (provenance only), registry blob `2a9695d29831144c49c1ef5f02360e6d2858449a`; governed fingerprint `13210ef04852a792a3e46b886a9a5960d05a35fa64bfc191e3af7b1bb6f175b3` (machine-recomputed) |
+| AES baseline at initial inventory (historical) | `1.12.2 / ACTIVE`; source commit `0c00bc9aaee9e40494b342590d21ae4ecd13f1e8`; registry blob `2a9695d29831144c49c1ef5f02360e6d2858449a`; governed fingerprint `13210ef04852a792a3e46b886a9a5960d05a35fa64bfc191e3af7b1bb6f175b3` |
+| Current AES machine pin | `1.12.2 / ACTIVE`; source commit `6269c6b91bf7494dfc180ecceb1f492fc1445b7d` (provenance only); registry blob `2ee9a7c70c1bbf67645a301de9662a8de9937bdb`; governed fingerprint `9178e4258d4ce797be9af58fad6cf4d7d6739cadd83b2e01fce4de5b5593f6c0`; sealed specification digest `cbe70cea90001a72e27f56f8bf21d1d4a970eeed7ce5a4f3b19ec5e08767c0c2` |
 | Uter revision at inventory | `ef778bf08f335aaf16f4c8805be02b1111336fbe` |
 | Status | `MACHINE_VERIFICATION_PENDING` — project-domain rules are registered; conformance is computed only from current executable evidence |
 | Language | 中文（术语保留英文） |
