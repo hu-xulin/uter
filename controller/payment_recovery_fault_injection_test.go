@@ -42,6 +42,7 @@ import (
 //     的旁路（缺失记录意味着没有金额快照、没有用户归属，入账无法被审计）。
 //  2. 该故障不得让对账 worker 崩溃或卡死，后续轮次必须继续工作。
 //  3. 记录恢复（模拟主从复制追平）后，恢复流程仍能恰好入账一次。
+//
 // ============================================================================
 func TestAlipayReconcileDoesNotCreditMissingOrderRecord(t *testing.T) {
 	db := setupAlipayQueryEnv(t, func(outTradeNo string) string {
@@ -100,6 +101,7 @@ func TestAlipayReconcileDoesNotCreditMissingOrderRecord(t *testing.T) {
 // 不变量：
 //  1. 查单失败轮次零入账、订单保持 pending、worker 不崩溃。
 //  2. 网关恢复后下一轮自动补账，且只入账一次。
+//
 // ============================================================================
 func TestAlipayReconcileRetriesAfterGatewayFailureRound(t *testing.T) {
 	var callCount atomic.Int32
