@@ -19,21 +19,21 @@
 
 **上位标准（Normative parent）：**
 本文件是 **Uter 项目执行层**规范，不是企业级标准。自动修复的权限、生命周期与
-验证闭包由 UAES 定义，本文件只补充 Uter 的分支策略、PR 流程与工具命令。
-**本文件不得扩大 Agent 权限**；权限以 `UAES-01-002` 与 `.uaes/agent-governance.yaml` 为准。
+验证闭包由 AES 定义，本文件只补充 Uter 的 main-only 执行策略、自动验证与工具命令。
+**本文件不得扩大 Agent 权限**；权限以 `AES-01-002` 与 `.aes/agent-governance.yaml` 为准。
 
 | 归属 | 来源 | 关系 |
 |---|---|---|
-| 自动修复生命周期与修复验证 | UAES `UAES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION` | 上位；本文件为 Uter 实施细则 |
-| Agent 权限与授权边界 | UAES `UAES-01-002-AGENT-AUTHORITY-AND-PERMISSIONS` | 上位；最高约束 |
-| 人工审批与升级 | UAES `UAES-01-003-HUMAN-APPROVAL-AND-ESCALATION` | 上位 |
-| 代码修改与重构 | UAES `UAES-06-010-REFACTORING-AND-MIGRATION` | 上位 |
-| 安全缺陷修复 | UAES `UAES-10-011-SECURITY-TESTING-AND-VULNERABILITY-MANAGEMENT` | 上位 |
-| Git / PR 与 CI 交付 | UAES `UAES-11-003`、`UAES-11-004` | 上位 |
+| 自动修复生命周期与修复验证 | AES `AES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION` | 上位；本文件为 Uter 实施细则 |
+| Agent 权限与授权边界 | AES `AES-01-002-AGENT-AUTHORITY-AND-PERMISSIONS` | 上位；最高约束 |
+| 机器自动决策与外部权限边界隔离 | AES `AES-01-003-AUTONOMOUS-DECISION-AND-ESCALATION` | 上位 |
+| 代码修改与重构 | AES `AES-06-010-REFACTORING-AND-MIGRATION` | 上位 |
+| 安全缺陷修复 | AES `AES-10-011-SECURITY-TESTING-AND-VULNERABILITY-MANAGEMENT` | 上位 |
+| Git / PR 与 CI 交付 | AES `AES-11-003`、`AES-11-004` | 上位 |
 
-UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`。
-冲突处理：与 UAES 冲突时以 UAES 为准，尤其权限相关条款不得放宽；Uter 专属
-业务约束按 `UAES-00-002` 顺序处理，并登记至 `.uaes/AI-SPEC-DISPOSITION-REGISTRY.yaml`。
+AES 基线与规范版本以 `.aes/aes-pin.json` 的机器指纹和当前 ACTIVE Registry 为准；不得硬编码提交 SHA 或旧版本。
+冲突处理：与 AES 冲突时以 AES 为准，尤其权限相关条款不得放宽；Uter 专属
+业务约束按 `AES-00-002` 顺序处理，并登记至 `.aes/AI-SPEC-DISPOSITION-REGISTRY.yaml`。
 
 ---
 
@@ -53,7 +53,7 @@ UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b211
 8. 执行相关测试和回归测试。
 9. 重新执行代码审查。
 10. 通过质量门禁。
-11. 复用项目现有的唯一非 main 工作分支；禁止创建第二分支。
+11. 复用项目现有的唯一非 main 工作分支；禁止创建任何执行分支或 PR。
 12. 自动 Commit。
 13. 自动 Push。
 14. 自动创建 GitHub Pull Request。
@@ -237,7 +237,7 @@ AI 必须先确认问题是否真实存在。
 - BLOCKED：缺少必要环境或权限。
 - FIXED：已修复。
 - VERIFIED：修复已验证。
-- PR_CREATED：已创建 PR。
+- PR_CREATED：已创建 PR（本治理迁移禁止）。
 - CLOSED：已关闭。
 
 ---
@@ -466,7 +466,7 @@ P1 发现后：
 
 # 7. Git 分支与版本控制
 
-## 7.1 唯一工作分支规则（强制）
+## 7.1 main-only 工作模式规则（强制）
 
 Uter 项目最多允许一个非 `main` 工作分支。所有审计、缺陷修复、测试补充、文档更新和质量门禁修复必须集中在该分支及其现有 PR 中。
 
