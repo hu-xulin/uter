@@ -60,12 +60,20 @@ governance_layers:
 aes_inheritance:
   source_repository: "https://github.com/hu-xulin/aes"
   source_default_branch: "main"
-  source_commit: "74e5d2eea215c96b845d7a0b2111b7fa011c540f"
+  source_commit: "8e1c72d9015f600ea541ef84c8530753d65fc4e7"
+  source_commit_role: "provenance-only; governed fingerprint defines rule identity"
   registry_path: ".aes/STANDARD-REGISTRY.yaml"
-  registry_blob_sha: "a806eef48e6242d82dcb1d39d5c094e0d7d981a1"
-  registry_version: "1.12.1"
+  registry_blob_sha: "308d9610c679f1c75a049953feb1341d7b55c365"
+  registry_version: "1.12.2"
   registry_status: "ACTIVE"
-  approval_record: "AES-APPROVAL-2026-11-07-004"
+  specification_registry_path: ".aes/spec-registry/SPECIFICATION-REGISTRY.yaml"
+  specification_id: "AES-SPEC-CORE"
+  specification_version: "2.0.0"
+  specification_status: "ACTIVE"
+  governed_fingerprint: "PENDING_MACHINE_RECOMPUTATION"
+  governed_fingerprint_algorithm: "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1"
+  machine_authorization_policy: "AES-AUTONOMOUS-GOVERNANCE-POLICY"
+  machine_authorization_mode: "AUTONOMOUS_MACHINE_EVIDENCE"
   integration_status: "MIGRATION_PENDING"
   inherited_domains:
     - P00
@@ -85,8 +93,8 @@ aes_inheritance:
     - "Project policies MUST NOT weaken an applicable mandatory AES requirement"
     - "Project policies MAY add stricter project-level requirements"
     - "Project policies MUST explicitly reference the AES requirement"
-    - "Conflicts MUST be documented and escalated; no AI Agent may waive a mandatory requirement"
-    - "Registry ACTIVE status is NOT evidence of Uter conformance (§0.3)"
+    - "Conflicts MUST be machine-detected and fail closed; no Agent may select a weaker rule"
+    - "ACTIVE is a normative baseline, not evidence of Uter conformance"
   machine_pin: ".aes/aes-pin.json"
 
 # ---------------------------------------------------------------------------
