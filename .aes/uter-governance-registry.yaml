@@ -70,7 +70,7 @@ aes_inheritance:
   specification_id: "AES-SPEC-CORE"
   specification_version: "2.0.0"
   specification_status: "ACTIVE"
-  governed_fingerprint: "4815f3f38c79b3030954dc4077132ba4b098c0759fd8eee989f223a9b74b0872"
+  governed_fingerprint: "fd29fa67406c0a3e9a7a5a8a5df580bb5bb75783157e401e7379968840519633"
   governed_fingerprint_algorithm: "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1"
   machine_authorization_policy: "AES-AUTONOMOUS-GOVERNANCE-POLICY"
   machine_authorization_mode: "AUTONOMOUS_MACHINE_EVIDENCE"
