@@ -5,226 +5,174 @@ This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
 */
-/**
- * 视觉回归基线（规范 §24「视觉回归」）。
- *
- * 为什么不用 Playwright：它要新增依赖、下载浏览器、改 bun.lock —— 而 CI 是
- * `--frozen-lockfile`。在引入这套重量级依赖之前，先用**本机 Chrome 无头截图**
- * 把基线跑起来，成本为零，能立刻发现布局漂移。将来真要接 Playwright，这条
- * 基线的目标清单可以直接复用。
- *
- * 用法：
- *   node scripts/visual-regression.mjs           对比基线（有差异 → 退出码 1）
- *   node scripts/visual-regression.mjs --update  重录基线
- *   CHROME_PATH=/path/to/chrome node …           显式指定浏览器
- *
- * 结果状态（对应 AIES §7 的五级，别把没跑说成通过）：
- *   PASS      两个视口都与基线逐字节一致
- *   FAIL      存在差异
- *   BLOCKED   找不到可用浏览器 / 目标文件缺失 —— 必须在报告里明说
- *
- * ⚠️ 本脚本**不接 CI**：不同机器 / OS 的字体渲染与抗锯齿不同，截图字节不可能
- * 跨平台一致，接进 CI 只会制造随机红灯。它的定位是「本地交付前的最后一双眼睛」。
- */
-
-import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  statSync,
-  writeFileSync,
-} from 'node:fs'
-import { join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { chromium } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
-const WEB_ROOT = fileURLToPath(new URL('..', import.meta.url))
-const UPDATE = process.argv.includes('--update')
-
-/** 快照图存放处（gitignore；结果大且可由 target 重算）。 */
-const SNAP_DIR = join(WEB_ROOT, '.visual-snapshots')
-/** 基线清单：只存哈希，体积很小，进版本库。 */
-const MANIFEST = join(WEB_ROOT, 'visual-regression', 'baseline.json')
-
-/**
- * 回归目标。目前只有核查页 —— 它是**唯一不需要后端和登录态**就能渲染完整
- * Token 的页面（涵盖了全部十档字号、七档文字色、组件与间距）。
- *
- * 规范 §24 列的真实页面（登录/注册、Dashboard、模型列表、API Key、请求日志、
- * 充值账单、用户设置、官网首页）需要起服务 + 构造登录态，属于另一件事：
- * 等有了可复用的 fixtures 再往这里加，不要假装它们已被覆盖。
- */
-const TARGETS = [
-  {
-    id: 'design-showcase',
-    file: '../docs/design-system/showcase-3.0.html',
-    说明: '设计规范核查页 3.0（每档 Token 都渲染了真实样本）',
-  },
-]
-
+const WEB_ROOT = resolve(process.cwd())
+const SHOWCASE = resolve(WEB_ROOT, '../docs/design-system/showcase-3.0.html')
+const REPORT_PATH = process.env.VISUAL_AUDIT_REPORT || resolve(process.env.RUNNER_TEMP || '/tmp', 'uter-visual-a11y-report.json')
 const VIEWPORTS = [
   { id: 'desktop', width: 1440, height: 900 },
   { id: 'mobile', width: 390, height: 844 },
 ]
+const THEMES = ['light', 'dark']
+const checks = []
 
-function findChrome() {
-  if (process.env.CHROME_PATH) return process.env.CHROME_PATH
-  const candidates = [
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/Applications/Chromium.app/Contents/MacOS/Chromium',
-    '/usr/bin/google-chrome',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-  ]
-  for (const path of candidates) if (existsSync(path)) return path
-  const which = spawnSync(
-    'sh',
-    ['-c', 'command -v google-chrome chromium chromium-browser'],
-    {
-      encoding: 'utf8',
-    }
-  )
-  return which.stdout?.trim().split('\n')[0] || null
+const add = (id, ok, detail, evidence = null) => {
+  checks.push({ id, status: ok ? 'PASS' : 'FAIL', detail, evidence })
+}
+const hash = (value) => createHash('sha256').update(value).digest('hex')
+
+if (!SHOWCASE || !pathToFileURL(SHOWCASE).href || !SHOWCASE.endsWith('showcase-3.0.html')) {
+  add('SHOWCASE_PATH', false, 'Design System 3.0 showcase path is invalid')
+} else {
+  add('SHOWCASE_PATH', true, 'Design System 3.0 showcase path resolved', { path: SHOWCASE })
 }
 
-function sha256(path) {
-  return createHash('sha256').update(readFileSync(path)).digest('hex')
+let browser
+try {
+  browser = await chromium.launch({ headless: true })
+} catch (error) {
+  add('BROWSER_LAUNCH', false, `Pinned Playwright Chromium unavailable: ${error.message}`)
 }
 
-const chrome = findChrome()
-if (!chrome) {
-  console.error(
-    '✗ 找不到可用的 Chrome / Chromium，视觉回归未执行（BLOCKED）。\n' +
-      '  安装 Chrome，或用 CHROME_PATH=/path/to/chrome 指定。\n' +
-      '  ⚠️ 这是「没跑」，不是「通过」——交付报告里必须照实写 BLOCKED。'
-  )
-  process.exit(2)
-}
-
-mkdirSync(SNAP_DIR, { recursive: true })
-
-function capture(target, viewport) {
-  const out = join(SNAP_DIR, `${target.id}-${viewport.id}.png`)
-  const result = spawnSync(
-    chrome,
-    [
-      '--headless',
-      '--disable-gpu',
-      '--no-sandbox',
-      '--hide-scrollbars',
-      '--force-device-scale-factor=1',
-      `--window-size=${viewport.width},${viewport.height}`,
-      `--screenshot=${out}`,
-      '--virtual-time-budget=4000',
-      `file://${resolve(WEB_ROOT, target.file)}`,
-    ],
-    { encoding: 'utf8', timeout: 60_000 }
-  )
-  if (!existsSync(out) || result.status !== 0) {
-    console.error(
-      `✗ 截图失败：${target.id} @ ${viewport.id}\n${result.stderr ?? ''}`
-    )
-    process.exit(2)
-  }
-  return { path: out, hash: sha256(out), bytes: statSync(out).size }
-}
-
-const previous = existsSync(MANIFEST)
-  ? JSON.parse(readFileSync(MANIFEST, 'utf8'))
-  : { entries: [] }
-const previousByKey = new Map(previous.entries.map((e) => [e.key, e]))
-
-const entries = []
-const diffs = []
-let ok = 0
-
-for (const target of TARGETS) {
-  const abs = resolve(WEB_ROOT, target.file)
-  if (!existsSync(abs)) {
-    console.error(`✗ 目标文件不存在：${target.file}（BLOCKED，未执行）`)
-    process.exit(2)
-  }
-
-  for (const viewport of VIEWPORTS) {
-    const shot = capture(target, viewport)
-    const key = `${target.id}@${viewport.id}`
-    const entry = {
-      key,
-      target: target.id,
-      viewport: viewport.id,
-      width: viewport.width,
-      height: viewport.height,
-      sha256: shot.hash,
-      bytes: shot.bytes,
-    }
-    entries.push(entry)
-
-    const old = previousByKey.get(key)
-    if (!old) {
-      diffs.push({ ...entry, how: '基线里没有这条（新增目标）' })
-    } else if (old.sha256 !== entry.sha256) {
-      diffs.push({
-        ...entry,
-        how: `与基线不一致（基线 ${old.bytes}B → 现在 ${entry.bytes}B）`,
+if (browser) {
+  for (const theme of THEMES) {
+    for (const viewport of VIEWPORTS) {
+      const page = await browser.newPage({
+        viewport: { width: viewport.width, height: viewport.height },
+        deviceScaleFactor: 1,
+        colorScheme: theme,
+        reducedMotion: 'reduce',
       })
-      copyFileSync(shot.path, join(SNAP_DIR, `${key}-diff-actual.png`))
-    } else {
-      ok += 1
+      const target = `${theme}/${viewport.id}`
+      try {
+        await page.goto(pathToFileURL(SHOWCASE).href, { waitUntil: 'load' })
+        await page.evaluate(() => document.fonts.ready)
+        await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
+
+        const metrics = await page.evaluate(() => {
+          const visible = (element) => {
+            const style = getComputedStyle(element)
+            const rect = element.getBoundingClientRect()
+            return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0
+          }
+          const textElements = [...document.querySelectorAll('body *')]
+            .filter((el) => visible(el) && (el.textContent || '').trim().length > 0)
+          const fontSizes = textElements
+            .map((el) => Number.parseFloat(getComputedStyle(el).fontSize))
+            .filter((n) => Number.isFinite(n) && n > 0)
+          const focusable = [...document.querySelectorAll(
+            'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+          )].filter(visible)
+          const unnamed = focusable.filter((el) => {
+            const label = el.getAttribute('aria-label')
+            const labelledBy = el.getAttribute('aria-labelledby')
+            const text = (el.innerText || el.textContent || '').trim()
+            const alt = el.getAttribute('alt')
+            return !label && !labelledBy && !text && !alt
+          })
+          return {
+            viewportWidth: window.innerWidth,
+            documentWidth: document.documentElement.scrollWidth,
+            horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+            minimumTextFontPx: fontSizes.length ? Math.min(...fontSizes) : null,
+            textElementCount: textElements.length,
+            focusableCount: focusable.length,
+            unnamedInteractiveCount: unnamed.length,
+          }
+        })
+
+        add(
+          `RESPONSIVE_OVERFLOW_${target.toUpperCase().replace('/', '_')}`,
+          !metrics.horizontalOverflow,
+          `documentWidth=${metrics.documentWidth}px viewport=${metrics.viewportWidth}px`,
+          metrics
+        )
+        add(
+          `MIN_FONT_SIZE_${target.toUpperCase().replace('/', '_')}`,
+          metrics.minimumTextFontPx !== null && metrics.minimumTextFontPx >= 12,
+          `minimum visible text font=${metrics.minimumTextFontPx ?? 'UNKNOWN'}px; required >=12px`,
+          metrics
+        )
+        add(
+          `ACCESSIBLE_NAMES_${target.toUpperCase().replace('/', '_')}`,
+          metrics.focusableCount > 0 && metrics.unnamedInteractiveCount === 0,
+          `focusable=${metrics.focusableCount} unnamed=${metrics.unnamedInteractiveCount}`,
+          metrics
+        )
+
+        await page.keyboard.press('Tab')
+        const focus = await page.evaluate(() => {
+          const el = document.activeElement
+          if (!el || el === document.body || el === document.documentElement) return { focused: false }
+          const style = getComputedStyle(el)
+          const rect = el.getBoundingClientRect()
+          const visible = rect.width > 0 && rect.height > 0
+          const outline = style.outlineStyle !== 'none' && Number.parseFloat(style.outlineWidth) > 0
+          const shadow = style.boxShadow !== 'none'
+          return {
+            focused: visible,
+            tag: el.tagName,
+            id: el.id || null,
+            outline,
+            shadow,
+            visibleFocusIndicator: outline || shadow,
+          }
+        })
+        add(
+          `KEYBOARD_FOCUS_${target.toUpperCase().replace('/', '_')}`,
+          focus.focused === true && focus.visibleFocusIndicator === true,
+          `first Tab focus visible=${focus.focused}; focus indicator=${focus.visibleFocusIndicator}`,
+          focus
+        )
+
+        const axe = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+          .analyze()
+        const blocking = axe.violations.filter((v) => ['critical', 'serious'].includes(v.impact))
+        add(
+          `AXE_WCAG_${target.toUpperCase().replace('/', '_')}`,
+          blocking.length === 0,
+          `violations=${axe.violations.length}; critical_or_serious=${blocking.length}`,
+          {
+            violations: axe.violations.map((v) => ({
+              id: v.id, impact: v.impact, help: v.help,
+              nodes: v.nodes.slice(0, 10).map((n) => n.target),
+            })),
+          }
+        )
+      } catch (error) {
+        add(`VISUAL_A11Y_${target.toUpperCase().replace('/', '_')}`, false, error.message)
+      } finally {
+        await page.close()
+      }
     }
   }
+  await browser.close()
 }
 
-if (UPDATE) {
-  mkdirSync(join(WEB_ROOT, 'visual-regression'), { recursive: true })
-  writeFileSync(
-    MANIFEST,
-    `${JSON.stringify(
-      {
-        说明:
-          '视觉回归基线。这里只存截图哈希与体积，PNG 本体落在 .visual-snapshots/' +
-          '（gitignore）。字体渲染因机器而异，故本基线只在同一台机器上可信，不接 CI。',
-        updatedAt: new Date().toISOString(),
-        viewports: VIEWPORTS,
-        entries,
-      },
-      null,
-      2
-    )}\n`
-  )
-  console.log(
-    `✓ 已重录 ${entries.length} 条视觉基线 → visual-regression/baseline.json`
-  )
-  process.exit(0)
+const failures = checks.filter((x) => x.status !== 'PASS')
+const report = {
+  schema_version: '1.0.0',
+  engine: 'UTER_DESIGN_SYSTEM_VISUAL_A11Y_AUDIT',
+  generated_at: new Date().toISOString(),
+  design_system: 'UTER Design System 3.0',
+  target: 'docs/design-system/showcase-3.0.html',
+  viewport_matrix: VIEWPORTS,
+  theme_matrix: THEMES,
+  verdict: failures.length ? 'FAIL' : 'PASS',
+  check_count: checks.length,
+  passed_count: checks.length - failures.length,
+  failed_count: failures.length,
+  checks,
 }
-
-if (diffs.length === 0) {
-  console.log(
-    `✓ 视觉回归通过：${entries.length} 个目标/视口组合与基线逐字节一致。`
-  )
-  process.exit(0)
-}
-
-console.log(`✗ 视觉回归发现 ${diffs.length} 处差异：\n`)
-for (const d of diffs) {
-  console.log(`  ${d.key}（${d.width}×${d.height}）  ${d.how}`)
-}
-console.log(
-  '\n截图落在 .visual-snapshots/，逐张人工确认：\n' +
-    '  · 是预期改动 → `bun run test:visual:update` 重录基线；\n' +
-    '  · 不是预期改动 → 回查改了什么 Token。**截图一致不代表交互与无障碍合格**（§5.2），\n' +
-    '    布局对了不等于设计对了。'
-)
-process.exit(1)
+mkdirSync(resolve(REPORT_PATH, '..'), { recursive: true })
+writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + '\n')
+console.log(JSON.stringify({ ...report, report_path: REPORT_PATH }, null, 2))
+if (failures.length) process.exitCode = 1
