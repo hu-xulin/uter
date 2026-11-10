@@ -1,7 +1,7 @@
 {
-  "check_id": "AES-DS-9070e51b7278",
+  "check_id": "AES-DS-301285cf2a1c",
   "engine": "UTER-AES-AUTONOMOUS-DOWNSTREAM-SYNC",
-  "executed_at": "2026-11-10T12:52:03.836Z",
+  "executed_at": "2026-11-10T20:11:24.612Z",
   "simulated": false,
   "aes_registry_version": "1.12.2",
   "uter_pin_registry_version": "1.12.2",
@@ -29,7 +29,7 @@
   },
   "downstream_check": {
     "status": "PROCESSED",
-    "processed_at": "2026-11-10T12:52:03.836Z",
+    "processed_at": "2026-11-10T20:11:24.612Z",
     "meaning": "AES version event detection and processing only; this does not assert Uter conformance or acceptance.",
     "integration_status_preserved": "MIGRATION_PENDING",
     "pin_modified": false,

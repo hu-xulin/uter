@@ -1,9 +1,9 @@
 {
   "document_id": "UTER-AES-AUTONOMOUS-INTERNAL-ACCEPTANCE",
-  "generated_at": "2026-11-10T13:15:26Z",
+  "generated_at": "2026-11-10T20:11:28Z",
   "generated_by": "Uter AES internal gate",
   "scope": "INTERNAL_GOVERNANCE_ACCEPTANCE_ONLY",
-  "aes_git_sha": "7a44bf5ce153f4e169e84334d0bba28b49ba2712",
+  "aes_git_sha": "f7d018f061e27e153a62a820160d429e72a38ae4",
   "verdict": "INTERNAL_ACCEPTED",
   "check_summary": {
     "total": 11,
@@ -18,7 +18,7 @@
       "status": "PASS",
       "detail": "seal_intact=true fingerprint=3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
       "evidence": [
-        "/Users/lincolnhu/aes/quality/scripts/aes/governed-fingerprint.mjs",
+        "/home/runner/work/uter/uter/aes/quality/scripts/aes/governed-fingerprint.mjs",
         ".aes/spec-registry/SPECIFICATION-REGISTRY.yaml"
       ]
     },
@@ -83,7 +83,7 @@
       "id": "UTER-AES-08",
       "ran": true,
       "status": "PASS",
-      "detail": "boundary_check_exit=0 stdout=PASS B01  P09 owns the PROOF system (7 quality-engineering clauses)\nPASS B02  P10 owns the REQUIREMENT baseline (11 security/reliability clauses)\nPASS B03  P09 text describes proving; P10 text describes defining\nPASS B04  no clause crosses the P09/P10 responsibility boundary\nPASS B05  security testing is required by P10 and executed/recorded by P09\nPASS B06  Uter registry assigns PROVE to P09 and DEFINE to P10\nPASS B07  duplicate/conflicting management system is explicitly forbidden\nPASS B08  pinned UAES baseline itself keeps P09=Quality / P10=Security\nPASS B09  AES project registry labels P09/P10/P13 correctly\nPASS B10  all governance entrypoints state the same P09/P10 division\nPASS B11  D14 and D15 are separate quality / security assessments\noverall=PASS checks=11 failed=0\nevidence: /Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/p09-p10-boundary.json stderr=",
+      "detail": "boundary_check_exit=0 stdout=PASS B01  P09 owns the PROOF system (7 quality-engineering clauses)\nPASS B02  P10 owns the REQUIREMENT baseline (11 security/reliability clauses)\nPASS B03  P09 text describes proving; P10 text describes defining\nPASS B04  no clause crosses the P09/P10 responsibility boundary\nPASS B05  security testing is required by P10 and executed/recorded by P09\nPASS B06  Uter registry assigns PROVE to P09 and DEFINE to P10\nPASS B07  duplicate/conflicting management system is explicitly forbidden\nPASS B08  pinned UAES baseline itself keeps P09=Quality / P10=Security\nPASS B09  AES project registry labels P09/P10/P13 correctly\nPASS B10  all governance entrypoints state the same P09/P10 division\nPASS B11  D14 and D15 are separate quality / security assessments\noverall=PASS checks=11 failed=0\nevidence: /home/runner/work/uter/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/p09-p10-boundary.json stderr=",
       "evidence": [
         "scripts/quality/uter-p09-p10-boundary-check.rb"
       ]
@@ -92,7 +92,7 @@
       "id": "UTER-AES-09",
       "ran": true,
       "status": "PASS",
-      "detail": "go_tests=523 web_tests=1455 workflows=10",
+      "detail": "go_tests=523 web_tests=333 workflows=10",
       "evidence": [
         "go.mod",
         "web/package.json",
@@ -115,8 +115,8 @@
       "status": "PASS",
       "detail": "chain_ok=true index_verified=true broken=0 stderr=",
       "evidence": [
-        "/Users/lincolnhu/aes/governance/ai-native/engine/cli.mjs",
-        "/Users/lincolnhu/aes/governance/ai-native/reports/EVIDENCE-INDEX.json"
+        "/home/runner/work/uter/uter/aes/governance/ai-native/engine/cli.mjs",
+        "/home/runner/work/uter/uter/aes/governance/ai-native/reports/EVIDENCE-INDEX.json"
       ]
     }
   ],
@@ -162,7 +162,7 @@
     "verified": true,
     "source": "AES evidence-engine chain and recomputed evidence index"
   },
-  "product_conformance_status": "CONFORMANT",
+  "product_conformance_status": "NOT_VERIFIED",
   "product_conformance_evidence": {
     "report": ".aes/reports/P13-CONFORMANCE-REPORT.json",
     "verdict": "PASS",
@@ -170,10 +170,10 @@
     "not_run_count": 0,
     "failed_count": 0,
     "aes_fingerprint": "3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
-    "uter_head": "ee6d26efa7d7c0c0958e552fafeec6f10ff9bac1",
+    "uter_head": "9a53e31d84d257d478fe60763cd3063412a4565b",
     "sha256": "8b26ac1df5263fd4ad798f90db4ba8c25935d15450ed5378e8f5929925142d4e",
     "aes_fingerprint_current": true,
-    "uter_head_current": true
+    "uter_head_current": false
   },
   "NOT_RUN_never_pass": true,
   "honesty_note": "Internal governance acceptance only. This report does not claim full product conformance, legal authorization, regulatory approval or third-party certification."
