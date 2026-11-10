@@ -6,7 +6,7 @@
 **Governance Framework:** AES  
 **Project Governance Extension:** UTER P13  
 **Execution Agent:** WorkBuddy  
-**Document Status:** Proposed Execution Baseline — Pending Repository and Standards Validation  
+**Document Status:** Machine-Executable Governance Contract — Conformance Status Derived by L4 Evidence (not a declaration of product conformance)  
 **Language:** English  
 **Scope:** Organization, product, software, AI, security, quality, operations and lifecycle governance
 
@@ -158,6 +158,18 @@ External Standards and Regulations
 No project-specific business rule shall be introduced into AES merely because it is used by Uter.
 
 No project-specific policy shall weaken an applicable mandatory AES requirement.
+
+## 1.4 L4 global conformance gate
+
+The `L4_GLOBAL_CONFORMANCE_GATE` is the only Uter-wide delivery-readiness decision. It MUST run automatically after all required same-head CI jobs and MUST fail closed if any job fails, is skipped, is missing, or is not tied to the current Uter revision.
+
+The executable entrypoint is `scripts/quality/l4-global-conformance-gate.mjs`, enforced by the final `l4-global-conformance` job in `.github/workflows/ci.yml`.
+
+The gate MUST independently recompute the current AES governed fingerprint and seal, verify the Uter AES pin, execute the Uter internal governance gate, verify the P09/P10 responsibility boundary, validate the AI specification inventory, verify the AES machine evidence chain, and require a requirement-level UTER-P13 conformance report bound to the exact Uter HEAD and AES fingerprint.
+
+A missing P13 report, an incomplete requirement map, `NOT_RUN`, `UNKNOWN`, `BLOCKED`, `NOT_VERIFIED`, stale evidence or a mismatched revision MUST produce FAIL/BLOCKED. A successful registry sync or successful build MUST NOT promote product conformance.
+
+The L4 decision is a machine-computed internal engineering result. It is not a human signature, legal authorization, regulatory approval or third-party certification.
 
 ## 1.4 Standards hierarchy and conflict resolution
 
