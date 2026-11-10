@@ -51,17 +51,15 @@ AES 基线与规范版本以 `.aes/aes-pin.json` 的机器指纹和当前 ACTIVE
 6. 自动修改代码。
 7. 自动增加或更新测试。
 8. 执行相关测试和回归测试。
-9. 重新执行代码审查。
-10. 通过质量门禁。
-11. 复用项目现有的唯一非 main 工作分支；禁止创建任何执行分支或 PR。
-12. 自动 Commit。
-13. 自动 Push。
-14. 自动创建 GitHub Pull Request。
-15. 生成完整修复报告。
+9. 由独立机器审查器重新读取差异并执行代码审查。
+10. 通过全部质量门禁并验证证据完整性。
+11. 仅在本地现有 `main` 工作树执行；禁止创建、切换或复用任何执行分支。
+12. 按机器策略自动生成本地 Commit；不 Push、不创建 Pull Request、不 Merge、不 Deploy。
+13. 自动生成完整修复报告、测试报告和机器证据。
 
 最终实现：
 
-**Issue Detection → Root Cause Analysis → Code Fix → Test → Regression → Re-Review → Quality Gate → Commit → Push → Pull Request**
+**Issue Detection → Root Cause Analysis → Code Fix → Test → Regression → Independent Machine Re-Review → Quality Gate → Local Main Commit → Evidence Report**
 
 ## 1.2 基本原则
 
@@ -459,7 +457,7 @@ P0/P1 的决策由机器策略和独立验证器完成，不设置人工审批�
 - 存在不可恢复的数据风险。
 - 需要真实支付交易验证。
 - 无法安全隔离用户修改。
-- 远程分支发生冲突且无法安全处理。
+- 远程 main 与本地基线发生漂移且无法通过只读证据安全判定。
 
 停止后必须输出诊断报告。
 
@@ -467,17 +465,17 @@ P0/P1 的决策由机器策略和独立验证器完成，不设置人工审批�
 
 # 7. Git 分支与版本控制
 
-## 7.1 main-only 工作模式规则（强制）
+## 7.1 本地 main-only 工作模式（强制）
 
-Uter 项目最多允许一个非 `main` 工作分支。所有审计、缺陷修复、测试补充、文档更新和质量门禁修复必须集中在该分支及其现有 PR 中。
+Uter 工程治理只允许在本地现有 `main` 工作树直接执行，不创建、不切换、不复用任何执行分支，也不创建 Pull Request。
 
-- 开始工作前枚举远端分支并检查现有 PR。
-- 若唯一非 `main` 工作分支已存在，必须复用该分支；禁止创建第二分支。
-- 若不存在非 `main` 分支，必须先报告并取得用户明确授权后，才可创建唯一工作分支。
-- 若发现两个或更多非 `main` 分支，停止创建分支和推送；不得自行删除、重写或覆盖任何分支，须由用户确定保留分支。
-- 每个问题使用独立 Issue ID / Commit / 报告追踪，不以创建多个分支隔离问题。
-- 不直接修改或推送 `main`，不 force push，不覆盖用户未提交修改，不删除他人分支。
-- 推送前核对分支 head SHA、工作区状态、暂存文件和远端是否发生并发更新。
+- 开始前读取当前分支、HEAD、工作区状态和完整 diff。
+- 当前分支不是 `main` 时自动停止写操作；不得擅自切换分支。
+- 不覆盖用户未提交修改；仅编辑明确属于本任务且不存在冲突的文件。
+- 每项问题使用独立 Finding ID、Commit（如获机器策略许可）和证据记录追踪，不以分支隔离问题。
+- 默认禁止 Push、Pull Request、Merge、Rebase、Force Push 和 Deploy。
+- 若远程 main 与本地基线发生漂移，保留本地状态并将结果标记为 BLOCKED；不得自动覆盖或推送远端。
+- 禁止使用 `git reset --hard`、`git clean -fd` 或其他破坏性方式清理工作区。
 
 ## 7.3 Commit 规范
 
@@ -523,24 +521,21 @@ Commit 必须清楚说明实际修改内容。
 
 ---
 
-# 8. 自动 Push 与 Pull Request
+# 8. 本地 main Commit 与远程操作边界
 
-## 8.1 Push 权限
+## 8.1 远程操作禁止项
 
-用户已明确授权 AI：
+本规范的默认执行范围仅为本地现有 `main` 工作树：
 
-- 复用项目唯一非 `main` 工作分支；不得创建第二分支。
-- 自动 Commit。
-- 自动 Push。
-- 自动创建 Pull Request。
+- 允许在机器策略授权范围内自动修改、测试、复验和生成本地 Commit。
+- 禁止创建或切换执行分支。
+- 禁止 Push、Pull Request、Merge、Rebase、Force Push 和 Deploy。
+- 禁止调用 GitHub 写接口绕过本地工作树和证据门禁。
+- 不得要求用户或第三方完成内部代码审查、签批或验收。
 
-必须使用最小权限的 GitHub App 或短期凭证。
+## 8.2 本地 main Commit 条件
 
-不得把长期高权限 PAT 明文写入代码或日志。
-
-## 8.2 main Commit 条件
-
-仅当以下条件全部满足时，才允许在现有 main 分支创建提交：
+仅当以下条件全部满足时，才允许创建本地 Commit：
 
 1. 缺陷、需求和受影响规则已自动识别并可追溯。
 2. 修复已完成，且未覆盖用户既有未提交内容。
@@ -549,9 +544,9 @@ Commit 必须清楚说明实际修改内容。
 5. 质量门禁、权限策略和证据完整性全部 PASS。
 6. 不存在 FAIL、BLOCKED、NOT_RUN、UNKNOWN 或 NOT_VERIFIED。
 7. 不存在未授权的敏感文件或生产配置修改。
-8. P1 已获得机器策略授权，且没有任何未解决的阻断风险。
+8. P1 已通过机器策略授权与独立复验；授权不得由执行 Agent 自行修改或生成。
 
-不创建执行分支或 Pull Request；不得将 Commit 等同于 Merge 或生产发布。
+任何条件不满足时自动 BLOCKED，记录原因并继续执行不受影响的安全任务；不得转入人工审批队列。
 
 ## 8.3 Commit 标题
 
@@ -758,7 +753,7 @@ WAITING_FOR_HUMAN_REVIEW
 - FALSE_POSITIVE
 - BLOCKED
 - FAILED
-- NEEDS_HUMAN_APPROVAL
+- BLOCKED_BY_POLICY
 - CANCELLED
 
 状态必须持久化，避免任务中断后无法恢复执行记录。
@@ -806,7 +801,7 @@ AI Coding Agent 必须：
 - 遵守质量门禁规范。
 - 在隔离环境执行修复。
 - 对修复进行真实验证。
-- 仅在机器策略和用户授权范围内自动 Commit；Push 必须有明确授权，不创建分支或 PR。
+- 仅在机器策略授权范围内创建本地 main Commit；不 Push、不创建分支或 PR。
 - 保留完整执行证据。
 
 **最终原则：内部修复、审查、测试和验收完全自动化；只有机器策略授权且独立复验 PASS 才能提交 main。任何超出机器授权范围的生产、部署、资金或外部法律行为均自动拒绝，不引入人工审批或伪造外部授权。**
