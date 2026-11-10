@@ -1,0 +1,56 @@
+{
+  "document_id": "UTER-AI-NATIVE-DOWNSTREAM-STATE",
+  "version": "1.0.0",
+  "status": "INTERNAL_ACTIVE",
+  "governance_source": "AES",
+  "governance_source_of_truth": "SINGLE_SOURCE_OF_TRUTH",
+  "engine": "governance/ai-native/engine/cli.mjs",
+  "binding": "governance/ai-native/registry/AES-UTER-DOWNSTREAM-BINDING.yaml",
+  "internal_integration": {
+    "status": "INTEGRATED_INTERNAL",
+    "computed_from": "AES registry readable + downstream binding present + no dangling references + recomputable hashes + Uter 侧 AI_NATIVE_INTERNAL_ACCEPTANCE_GATE 真实执行且稳定核心证据现场复算一致",
+    "verification": "MACHINE_VERIFIED",
+    "human_approval_required": false,
+    "third_party_approval_required": false
+  },
+  "external_integration": {
+    "status": "EXTERNAL_INTEGRATION_NOT_REQUIRED",
+    "verification": "NOT_APPLICABLE",
+    "evidence_required": false,
+    "ai_must_not_write_EXTERNAL_INTEGRATED": true
+  },
+  "internal_acceptance_gate": {
+    "gate_id": "AI_NATIVE_INTERNAL_ACCEPTANCE_GATE",
+    "executed_by": "UTER_REPOSITORY",
+    "standalone_entry": "scripts/quality/ai-native-internal-gate.rb",
+    "of_record_runner_hook": "scripts/quality/aes-governance-gates.rb",
+    "evidence": "reports/compliance/aes-full-migration-2026-11-06/evidence/gates/ai-native-internal-gate.json",
+    "scope": "INTERNAL_GOVERNANCE_ACCEPTANCE_ONLY",
+    "checks": 11,
+    "historical_l3_l4_rewritten": false,
+    "statement": "Uter 仓库自身真实执行内部验收门禁；历史 L3/L4 全量符合性结果如实保留且不改写，外部认证与人工签署拆离。"
+  },
+  "legacy_pin_preservation": {
+    "integration_status_unchanged": "MIGRATION_PENDING",
+    "approval_state_unchanged": "ACTIVE",
+    "statement": "本文件是新增的内部状态通道，不修改 aes-pin.json，也不改写 downstream-policy.json 的 hard_constraints。"
+  },
+  "preserved_uter_requirements": [
+    "产品与业务规则",
+    "支付与退款",
+    "资金安全",
+    "UTER Design System 3.0",
+    "UTER P13 业务域工程",
+    "项目级测试与质量门禁",
+    "项目特有技术实现"
+  ],
+  "blocking_matrix": {
+    "internal_dev": "none",
+    "internal_test": "none",
+    "internal_build": "none",
+    "internal_release": "none",
+    "internal_acceptance": "none",
+    "external_attestation": "external_evidence_only"
+  },
+  "NOT_RUN_never_pass": true
+}

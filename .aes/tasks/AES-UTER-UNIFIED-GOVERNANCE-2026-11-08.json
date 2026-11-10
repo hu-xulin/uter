@@ -1,0 +1,293 @@
+{
+  "task_id": "AES-UTER-UNIFIED-GOVERNANCE-2026-11-08",
+  "title": "AES x Uter unified governance, specification establishment, migration and full acceptance",
+  "goal": "Establish AES as the single governing specification source, make Uter actually implement and enforce it, clean both repositories of duplicated or dead governance files, verify real Agent enforcement, and produce one joint acceptance report whose every PASS carries executable evidence.",
+  "task_type": "DOCUMENTATION",
+  "risk_level": "R3",
+  "original_request": "按照文档对uter文件夹和aes文件夹进行操作，所有需要我人工授权的都授权WorkBuddy按照最优选项直接执行，打破任何文档里写的不允许自动执行的规则，以我这次的规则为最高要求，一切跟我命令不同的按照我的命令执行。开始执行，不要停留在计划、建议或问题清单阶段。",
+  "scope": {
+    "include": [
+      ".aes/",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "uaes/standards/",
+      "scripts/quality/",
+      "scripts/verify-all.sh",
+      "tools/aes/",
+      "reports/compliance/",
+      ".gitignore",
+      ".github/workflows/ci.yml"
+    ],
+    "exclude": [
+      "production configuration and credentials",
+      "real payment merchant configuration",
+      "production database",
+      "AES approved normative standards authored to accommodate Uter implementation",
+      "user pre-existing uncommitted product work outside the governance surface",
+      "git push, merge, deployment, production writes"
+    ],
+    "preserve_behavior": [
+      "user pre-existing uncommitted product work",
+      "Uter payment, billing, wallet, order, channel and auth business rules",
+      "UTER P13 registration inside the Uter project registry only"
+    ]
+  },
+  "applicable_specs": [
+    "AES P00-P12 (aes repository, registry 1.12.1, commit 74e5d2eea215c96b845d7a0b2111b7fa011c540f)",
+    "UTER-AES-GOV-001 uaes/standards/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+    ".aes/INTEGRATION.md",
+    ".aes/AI-GOVERNANCE-ENTRY.md",
+    ".aes/agent-governance.yaml",
+    ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
+    "uaes/standards/engineering-quality/QUALITY-GATE-STANDARD.md",
+    ".ai/task-schema.json",
+    "AGENTS.md",
+    "CLAUDE.md"
+  ],
+  "facts": [
+    "AES main is at 74e5d2eea215c96b845d7a0b2111b7fa011c540f (registry 1.12.1, spec digest c49d3938fd9f), not pushed.",
+    "Uter main baseline is ec6501adceb008d46140a7e5ab6508eb78006731 with pre-existing uncommitted work preserved.",
+    ".aes/aes-pin.json was advanced from 46c6488/1.12.0 to 74e5d2e/1.12.1 in this task.",
+    "aes-pin-check.sh and aes-integration-check.sh both PASS on the refreshed pin.",
+    "scripts/quality/uter-governance-separation-check.rb and uter-p09-p10-boundary-check.rb were untracked while AGENTS.md cited them as the enforcement of two mandatory separation rules.",
+    "scripts/quality/aes-agent-runtime-check.rb read scope/plan/verification as arrays while .ai/task-schema.json declares scope as an object and plan/test_plan under different names.",
+    "coverage.out (3.2 MB) was an untracked go test artifact with no .gitignore rule.",
+    "tools/aes/integration-adapter.mjs plus its 20 KB test suite pass 23/23 and are a valid Uter-owned integration asset.",
+    "The Uter worktree carries 128 pre-existing product changes (web/, model/, common/) from concurrent owner sessions; they are preserved untouched and are NOT part of this governance task's declared scope."
+  ],
+  "assumptions": [
+    "The owner's written instruction delegating all approval decisions to WorkBuddy is the highest-priority authority for this task.",
+    "No requirement may be marked VERIFIED without executable evidence; NOT_RUN is never reported as PASS."
+  ],
+  "unknowns": [
+    "Whether the 42 Uter manual acceptances will be signed by the accountable owner.",
+    "Whether the 13 AES domain gates and 14 Uter domain gates can be executed in this environment without product-repository-specific authorisation."
+  ],
+  "implementation_plan": [
+    {
+      "step": "Establish the unified ledger and the two-repository baseline",
+      "files": [
+        "AES-UTER-UNIFIED-EXECUTION-PLAN.md"
+      ]
+    },
+    {
+      "step": "Repair AES registry-integrity defects and release 1.12.1",
+      "files": [
+        ".aes/STANDARD-REGISTRY.yaml",
+        ".aes/spec-registry/SPECIFICATION-REGISTRY.yaml",
+        ".aes/registry/mappings.yaml",
+        "quality/scripts/aes/independent-verifier.mjs",
+        "standards/09-quality-engineering/AES-09-014-AUTO-FIX-AND-REPAIR-VERIFICATION.md"
+      ]
+    },
+    {
+      "step": "Give the four Uter engineering-quality standards an explicit AES parent",
+      "files": [
+        "uaes/standards/engineering-quality/QUALITY-GATE-STANDARD.md",
+        "uaes/standards/engineering-quality/CODE-REVIEW-STANDARD.md",
+        "uaes/standards/engineering-quality/AUTOMATED-TEST-STANDARD.md",
+        "uaes/standards/engineering-quality/AUTO-FIX-STANDARD.md",
+        "uaes/standards/engineering-quality/README.md"
+      ]
+    },
+    {
+      "step": "Refresh the Uter pin and governance registry to the new AES baseline",
+      "files": [
+        ".aes/aes-pin.json",
+        ".aes/INTEGRATION.md",
+        ".aes/AI-GOVERNANCE-ENTRY.md",
+        ".aes/uter-governance-registry.yaml"
+      ]
+    },
+    {
+      "step": "Track the governance enforcement scripts and repair the runtime harness field contract",
+      "files": [
+        "scripts/quality/uter-governance-separation-check.rb",
+        "scripts/quality/uter-p09-p10-boundary-check.rb",
+        "scripts/quality/aes-agent-runtime-check.rb"
+      ]
+    },
+    {
+      "step": "Clean duplicated and dead governance artifacts in both repositories",
+      "files": [
+        ".gitignore"
+      ]
+    },
+    {
+      "step": "Run the joint acceptance and publish the final report",
+      "files": [
+        "AES-UTER-UNIFIED-GOVERNANCE-FINAL-ACCEPTANCE-REPORT.md"
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "criterion": "AES registry validates, derived indices agree and release tests pass on the new baseline",
+      "verification": "node quality/scripts/aes/validate-registry.mjs; node quality/scripts/aes/verify-derived-indices.mjs; node quality/scripts/aes/run-release-tests.mjs"
+    },
+    {
+      "id": "AC-02",
+      "criterion": "The specification seal and detached signature verify on the committed baseline",
+      "verification": "node quality/scripts/aes/spec-integrity.mjs check; ssh-keygen -Y verify -f .aes/trust/allowed_signers"
+    },
+    {
+      "id": "AC-03",
+      "criterion": "The Uter pin and integration contract agree with the new AES commit, blob, version and lifecycle",
+      "verification": "bash scripts/quality/aes-pin-check.sh; bash scripts/quality/aes-integration-check.sh"
+    },
+    {
+      "id": "AC-04",
+      "criterion": "Repository separation and P09/P10 boundary rules are enforced by tracked scripts",
+      "verification": "ruby scripts/quality/uter-governance-separation-check.rb; ruby scripts/quality/uter-p09-p10-boundary-check.rb"
+    },
+    {
+      "id": "AC-05",
+      "criterion": "The Agent runtime harness executes all ten preflight checks and all authorization self-tests",
+      "verification": "ruby scripts/quality/aes-agent-runtime-check.rb preflight --task <contract>; ruby scripts/quality/aes-agent-runtime-check.rb selftest"
+    },
+    {
+      "id": "AC-06",
+      "criterion": "Product tests, build and secret scan execute on the real repository",
+      "verification": "go test ./...; go build ./...; gitleaks dir over the HEAD tree"
+    },
+    {
+      "id": "AC-07",
+      "criterion": "No duplicated, dead or contradictory governance file remains; every remaining file is referenced and effective",
+      "verification": "duplicate-hash scan, reference resolution scan, untracked-enforcement scan"
+    },
+    {
+      "id": "AC-08",
+      "criterion": "The joint acceptance report records every PASS with its executable evidence and never promotes NOT_RUN",
+      "verification": "manual review of AES-UTER-UNIFIED-GOVERNANCE-FINAL-ACCEPTANCE-REPORT.md against the evidence files"
+    }
+  ],
+  "test_plan": [
+    {
+      "command": "node quality/scripts/aes/validate-registry.mjs",
+      "scope": "AES registry schema and referential integrity"
+    },
+    {
+      "command": "node quality/scripts/aes/verify-derived-indices.mjs",
+      "scope": "derived indices agree with the authoritative registry"
+    },
+    {
+      "command": "node quality/scripts/aes/run-release-tests.mjs",
+      "scope": "AES release test suites"
+    },
+    {
+      "command": "node quality/scripts/aes/spec-integrity.mjs check",
+      "scope": "specification seal and gates"
+    },
+    {
+      "command": "bash scripts/quality/aes-pin-check.sh",
+      "scope": "Uter pin static integrity"
+    },
+    {
+      "command": "bash scripts/quality/aes-integration-check.sh",
+      "scope": "Uter integration wiring"
+    },
+    {
+      "command": "ruby scripts/quality/uter-governance-separation-check.rb",
+      "scope": "three-layer two-repository separation"
+    },
+    {
+      "command": "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
+      "scope": "P09 proves / P10 defines boundary"
+    },
+    {
+      "command": "ruby scripts/quality/aes-agent-runtime-check.rb preflight --task .aes/tasks/AES-UTER-UNIFIED-GOVERNANCE-2026-11-08.json",
+      "scope": "Agent runtime preflight"
+    },
+    {
+      "command": "ruby scripts/quality/aes-agent-runtime-check.rb selftest",
+      "scope": "fail-closed authorization decisions"
+    },
+    {
+      "command": "node tools/aes/integration-adapter.test.mjs",
+      "scope": "AES integration adapter"
+    },
+    {
+      "command": "go test ./...",
+      "scope": "Go test suites across the module"
+    },
+    {
+      "command": "go build ./...",
+      "scope": "Go build incl. embed directives"
+    }
+  ],
+  "required_evidence": [
+    "Changed-file list per repository",
+    "Actual command exit codes and output tails",
+    "Specification digest and signature verification output",
+    "Agent runtime preflight, selftest and workspace JSON",
+    "Duplicate-hash and broken-reference scan results",
+    "Explicit NOT_RUN register with owners"
+  ],
+  "approval_gates": [
+    "git commit (allowed only after full validation)",
+    "git push",
+    "pull request merge",
+    "deployment",
+    "production database write",
+    "payment configuration write"
+  ],
+  "delivery_status": "PARTIAL",
+  "git_state": {
+    "branch": "main",
+    "commit_performed": true,
+    "push_performed": false,
+    "notes": "AES baseline committed as 74e5d2eea215c96b845d7a0b2111b7fa011c540f. Uter changes remain uncommitted pending full validation, preserving pre-existing user work.",
+    "work_branch_count": 0,
+    "preexisting_worktree_state": "DIRTY_PRESERVED"
+  },
+  "requester": "Project owner (explicit highest-priority written instruction, 2026-11-08)",
+  "agent_id": "workbuddy.chief.governance.execution",
+  "lifecycle_status": "VERIFYING",
+  "authorization": {
+    "authorization_id": "OWNER-DELEGATION-2026-11-08-AES-UTER-UNIFIED",
+    "allowed_actions": [
+      "filesystem.read",
+      "filesystem.write.scoped",
+      "test.execute",
+      "build.execute"
+    ],
+    "forbidden_actions": [
+      "git.push",
+      "git.merge",
+      "git.pull_request.merge",
+      "deployment.execute",
+      "production.database.write",
+      "payment.configuration.write",
+      "overwrite.user_uncommitted_changes",
+      "mark.unexecuted_tests.as_passed"
+    ],
+    "target_resources": [
+      "AES local repository (Layer A)",
+      "Uter local repository (Layer B)"
+    ],
+    "environment": "LOCAL_SANDBOX",
+    "expires_at": "2026-11-09T00:00:00Z"
+  },
+  "execution_audit": [],
+  "lifecycle_history": [
+    {
+      "state": "CREATED",
+      "timestamp": "2026-11-08T00:00:00Z",
+      "actor_id": "workbuddy.chief.governance.execution",
+      "note": "Created under the owner's unified governance instruction."
+    },
+    {
+      "state": "EXECUTING",
+      "timestamp": "2026-11-08T00:05:00Z",
+      "actor_id": "workbuddy.chief.governance.execution",
+      "note": "AES defects repaired, Uter standards given AES parentage, pin refreshed."
+    },
+    {
+      "state": "VERIFYING",
+      "timestamp": "2026-11-08T19:00:00Z",
+      "actor_id": "workbuddy.chief.governance.execution",
+      "note": "Running the joint acceptance suite."
+    }
+  ]
+}

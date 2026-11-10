@@ -32,7 +32,7 @@ REGEX_COUNT="$(awk '/^regexes = \[/{in_regex=1; next} in_regex && /^\]/{exit} in
 CORPUS="$WORK/corpus.md"
 cat > "$CORPUS" <<'EOF'
 Signature verification detail:
-  "detail": "Good \"uaes-spec-release\" signature for uaes-authority@uaes.local with ED25519 key SHA256:IvFuu+b99VjTrimJcjvw5r9KY3ZRdYnhUi1iq+qqI1I"
+  "detail": "Good \"aes-spec-release\" signature for aes-authority@aes.local with ED25519 key SHA256:IvFuu+b99VjTrimJcjvw5r9KY3ZRdYnhUi1iq+qqI1I"
 
 Security scope prose:
   threat modeling, identity/access, application/API security, data protection.
