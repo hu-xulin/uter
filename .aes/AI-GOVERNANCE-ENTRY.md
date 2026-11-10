@@ -4,7 +4,7 @@
 must load before engineering work in this repository. This file contains **no
 copy** of AES generic standard text.
 
-**Governing specification:** `UTER-AES-GOV-001` —
+**Governing universal specification:** AES `AES-SPEC-CORE` —
 `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`.
 Where earlier execution orders conflict, this specification governs.
 
@@ -32,11 +32,11 @@ Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
 |---|---|
 | Repository | `hu-xulin/aes` (https://github.com/hu-xulin/aes) |
 | Branch | `main` |
-| Pinned commit | `586f6227d1248e57173ac785e1b8537cb880362f` |
+| Pinned source commit | `8e1c72d9015f600ea541ef84c8530753d65fc4e7` (provenance only) |
 | Registry | `.aes/STANDARD-REGISTRY.yaml` |
-| Registry blob SHA | `72fbcbea78b54290b00fb9b989ea67d6a6faaccc` |
+| Registry blob SHA | `308d9610c679f1c75a049953feb1341d7b55c365` |
 | Registry version / status | `1.12.2` / `ACTIVE` |
-| Approval record | `AES-APPROVAL-2026-11-07-004` + `586f622` (historical approval basis for the 1.12.1 baseline: governed content unchanged from `74e5d2e`, registry blob `a806eef4`, 178/178 ACTIVE. The current 1.12.2 pin is an index correction and carries no new approval; release-signature separation-of-duties caveat recorded in `INTEGRATION.md` §1) |
+| Machine authorization | `AES-AUTONOMOUS-GOVERNANCE-POLICY` + recomputable machine evidence; no human/third-party sign-off dependency |
 | Integration status | `MIGRATION_PENDING` (AES domain gates remain `NOT_RUN`) |
 
 Machine-readable pin: `.aes/aes-pin.json`.
@@ -82,7 +82,7 @@ loaded or followed it (§6.4). Runtime evidence must come from an actual task.
 
 ### 4.1 Keeping in step with AES — one direction
 
-AES is the only place a rule is maintained. Do **not** hand-edit Uter's pin or the prose contracts when a AES standard changes: run the propagation command in the AES repository and it updates exactly the fields AES owns.
+AES is the only place universal rules are maintained. The Uter pin is updated only from a machine-recomputed AES governed fingerprint and intact seal; a registry version or commit SHA alone is insufficient.
 
 | Step | Command (run in the AES repository) |
 |---|---|
@@ -95,7 +95,7 @@ AES is the only place a rule is maintained. Do **not** hand-edit Uter's pin or t
 
 Two things propagation will **never** do, by design:
 
-1. **It never touches Uter's own declarations.** `integration_status`, `approval_state`, `approval_record` and the Uter verdicts are this repository's to state. A tool that could flip them would be a way to fabricate compliance evidence.
+1. **It never touches Uter's own declarations.** `integration_status` and Uter conformance verdicts are computed from Uter's own executed evidence; no source-side sync may promote them. A tool that could flip them would be a way to fabricate compliance evidence.
 2. **It never marks anything VERIFIED.** A propagated pin means Uter now *knows* the new rules. It does not mean Uter complies. The 14 domain gates, the 42 manual acceptances and the Requirement→Evidence mapping remain this repository's responsibility.
 
 `source_commit` in the pin is provenance only. It records which AES tree the fingerprint was taken from. AES HEAD moves on every governance report and verifier fix, and no gate may fail on that difference alone — the governed fingerprint is what decides whether the rules changed.
