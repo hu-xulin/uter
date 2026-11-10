@@ -1,0 +1,233 @@
+#!/usr/bin/env node
+/**
+ * P13 requirement-level machine conformance engine.
+ *
+ * This engine deliberately does not infer conformance from file presence,
+ * generic CI success, or a repository-level governance PASS. It independently
+ * executes the available payment-domain regression suites and emits explicit
+ * NOT_VERIFIED rows for the 10 x 10 business-capability requirements whose
+ * requirement-to-source-to-verifier mapping is not yet complete.
+ */
+import { spawnSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+
+const ROOT = process.cwd()
+const AES_ROOT = resolve(process.env.AES_ROOT || resolve(ROOT, '../aes'))
+const REPORT = resolve(process.env.P13_REPORT_PATH || '.aes/reports/P13-CONFORMANCE-REPORT.json')
+const EVIDENCE_DIR = resolve(ROOT, '.aes/reports/p13-evidence')
+const P13_PATH = '.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md'
+const sha = (value) => createHash('sha256').update(value).digest('hex')
+const read = (p) => readFileSync(resolve(ROOT, p), 'utf8')
+const git = (args) => spawnSync('git', args, { cwd: ROOT, encoding: 'utf8' })
+const currentHead = git(['rev-parse', 'HEAD']).stdout.trim()
+const p13Source = read(P13_PATH)
+const aesFingerprintRun = spawnSync(process.execPath, [
+  'quality/scripts/aes/governed-fingerprint.mjs', '--json', '--require-intact',
+], { cwd: AES_ROOT, encoding: 'utf8', timeout: 60_000 })
+let aesFingerprint = null
+try { aesFingerprint = JSON.parse(aesFingerprintRun.stdout) } catch {}
+
+const capabilityAspects = [
+  'machine responsibility domain and source ownership',
+  'traceable machine normative source',
+  'domain model or equivalent specification',
+  'business invariants',
+  'state transitions',
+  'failure behavior',
+  'authorization rules',
+  'data integrity requirements',
+  'verification criteria',
+  'traceable implementation evidence',
+]
+const domains = [
+  'P13.1 Product and business requirements',
+  'P13.2 Identity and accounts',
+  'P13.3 Models and providers',
+  'P13.4 AI relay',
+  'P13.5 Usage and pricing',
+  'P13.6 Wallet and accounting',
+  'P13.7 Payment',
+  'P13.8 Tasks and scheduling',
+  'P13.9 Data consistency',
+  'P13.10 Business observability',
+]
+
+const requirements = []
+for (let d = 0; d < domains.length; d++) {
+  for (let a = 0; a < capabilityAspects.length; a++) {
+    requirements.push({
+      requirement_id: `P13-${String(d + 1).padStart(2, '0')}-CAP-${String(a + 1).padStart(2, '0')}`,
+      domain: domains[d],
+      capability: capabilityAspects[a],
+      applicable: true,
+      status: 'NOT_VERIFIED',
+      independent_verification: 'NOT_RUN',
+      evidence_digest: null,
+      reason: 'P13 requires an explicit machine source, implementation, verifier, execution and independent evidence mapping; current inventory does not yet close this requirement.',
+      source_path: P13_PATH,
+    })
+  }
+}
+
+const paymentTests = [
+  {
+    id: 'P13-PAY-002',
+    scenario: 'duplicate payment notifications and concurrent callbacks',
+    cwd: ROOT,
+    args: ['test', './model', '-run', '^(TestTopUpOrderStateMatrix|TestRechargeEpayConcurrentCallbacksCreditOnce)$', '-count=1'],
+    source_paths: ['model/topup_order_state_matrix_test.go', 'model/topup_claim_pending_test.go'],
+  },
+  {
+    id: 'P13-PAY-003',
+    scenario: 'out-of-order payment notifications and terminal-state resurrection',
+    cwd: ROOT,
+    args: ['test', './model', '-run', '^TestTopUpOrderStateMatrix$', '-count=1'],
+    source_paths: ['model/topup_order_state_matrix_test.go'],
+  },
+  {
+    id: 'P13-PAY-004',
+    scenario: 'paid amount mismatch is rejected before credit',
+    cwd: ROOT,
+    args: ['test', './controller', '-run', '^(TestAlipayReconcileRejectsAmountMismatch|TestPaymentGatewayCallbacksMatchPaidAmount)$', '-count=1'],
+    source_paths: ['controller/payment_reconcile_task_test.go', 'controller/topup_gateway_contract_test.go'],
+  },
+  {
+    id: 'P13-PAY-005',
+    scenario: 'forged provider signatures are rejected',
+    cwd: ROOT,
+    args: ['test', './controller', '-run', '^TestPaymentCallbacksRejectForgedSignatures$', '-count=1'],
+    source_paths: ['controller/topup_callback_security_matrix_test.go'],
+  },
+  {
+    id: 'P13-PAY-006',
+    scenario: 'invalid order-state transitions are rejected',
+    cwd: ROOT,
+    args: ['test', './model', '-run', '^TestTopUpOrderStateMatrix$', '-count=1'],
+    source_paths: ['model/topup_order_state_matrix_test.go'],
+  },
+  {
+    id: 'P13-PAY-007',
+    scenario: 'duplicate refund execution and ledger mutation are idempotent',
+    cwd: ROOT,
+    args: ['test', './model', '-run', '^(TestRefundIntentExecuteAppliesRefundOnce|TestRefundMidjourneyTaskBillingIsAtomicAndIdempotent|TestSubscriptionRefundIntentCommitsOnce)$', '-count=1'],
+    source_paths: ['model/refund_intent_test.go', 'model/midjourney_refund_transaction_test.go'],
+  },
+  {
+    id: 'P13-PAY-008',
+    scenario: 'payment-provider query failure is handled without false credit',
+    cwd: ROOT,
+    args: ['test', './controller', '-run', '^TestGetUserTopUpsSurvivesGatewayFailure$', '-count=1'],
+    source_paths: ['controller/payment_reconcile_task_test.go'],
+  },
+  {
+    id: 'P13-PAY-009',
+    scenario: 'missing callback is recovered by automatic provider reconciliation',
+    cwd: ROOT,
+    args: ['test', './controller', '-run', '^TestGetUserTopUpsReconcilesBeforeReturning$', '-count=1'],
+    source_paths: ['controller/payment_reconcile_task_test.go'],
+  },
+]
+
+const paymentResults = []
+for (const item of paymentTests) {
+  const result = spawnSync('go', item.args, {
+    cwd: item.cwd,
+    encoding: 'utf8',
+    timeout: 10 * 60 * 1000,
+    maxBuffer: 16 * 1024 * 1024,
+    env: { ...process.env, GOWORK: 'off' },
+  })
+  const output = [result.stdout || '', result.stderr || ''].join('\n')
+  const logPath = resolve(EVIDENCE_DIR, `${item.id}.log`)
+  mkdirSync(dirname(logPath), { recursive: true })
+  writeFileSync(logPath, output)
+  const passed = result.status === 0
+  paymentResults.push({
+    requirement_id: item.id,
+    domain: 'P13.7 Payment',
+    scenario: item.scenario,
+    applicable: true,
+    status: passed ? 'PASS' : (result.status === null ? 'NOT_RUN' : 'FAIL'),
+    independent_verification: passed ? 'PASS' : 'NOT_RUN',
+    evidence_digest: passed ? sha(output) : null,
+    evidence_path: passed ? '.aes/reports/p13-evidence/' + item.id + '.log' : null,
+    command: 'go ' + item.args.join(' '),
+    exit_code: result.status,
+    source_paths: item.source_paths,
+    detail: passed ? 'Targeted payment regression suite executed in the isolated L4 CI job.' : output.slice(-4000),
+  })
+}
+
+requirements.push(
+  {
+    requirement_id: 'P13-PAY-001',
+    domain: 'P13.7 Payment',
+    scenario: 'gateway reports paid but the local order record was not persisted',
+    applicable: true,
+    status: 'NOT_VERIFIED',
+    independent_verification: 'NOT_RUN',
+    evidence_digest: null,
+    source_path: P13_PATH,
+    reason: 'Existing reconciliation recovers an already-persisted pending order; no fault-injection test currently proves recovery when the local order record itself is absent.',
+  },
+  ...paymentResults,
+  {
+    requirement_id: 'P13-PAY-010',
+    domain: 'P13.7 Payment',
+    scenario: 'payment-order recovery worker failure and automatic retry/recovery',
+    applicable: true,
+    status: 'NOT_VERIFIED',
+    independent_verification: 'NOT_RUN',
+    evidence_digest: null,
+    source_path: P13_PATH,
+    reason: 'Existing refund-intent recovery tests do not prove the payment-order recovery failure path; a dedicated payment-order recovery test is required.',
+  },
+)
+
+const notRunCount = requirements.filter(x => x.status === 'NOT_RUN').length
+const failedCount = requirements.filter(x => x.status === 'FAIL').length
+const allVerified = requirements.every(x => x.applicable === false ||
+  (x.status === 'PASS' && x.independent_verification === 'PASS' && Boolean(x.evidence_digest)))
+const report = {
+  schema_version: '1.0.0',
+  report_id: 'UTER-P13-MACHINE-CONFORMANCE',
+  generated_at: new Date().toISOString(),
+  generated_by: 'scripts/quality/p13-conformance-engine.mjs',
+  written_by_hand: false,
+  uter_head: currentHead,
+  aes_governed_fingerprint: aesFingerprint?.fingerprint || null,
+  aes_seal_intact: aesFingerprint?.seal_intact === true,
+  p13_source_digest: sha(p13Source),
+  requirement_count: requirements.length,
+  all_applicable_requirements_verified: allVerified,
+  not_run_count: notRunCount,
+  failed_count: failedCount,
+  verdict: allVerified && aesFingerprint?.seal_intact === true ? 'PASS' : (failedCount ? 'FAIL' : 'NOT_VERIFIED'),
+  requirements,
+  summary: {
+    capability_requirements: 100,
+    capability_requirements_verified: 0,
+    payment_scenarios_tested: paymentResults.length,
+    payment_scenarios_passed: paymentResults.filter(x => x.status === 'PASS').length,
+    payment_scenarios_failed: paymentResults.filter(x => x.status === 'FAIL').length,
+    payment_scenarios_not_run: paymentResults.filter(x => x.status === 'NOT_RUN').length,
+    payment_scenarios_not_verified: 2,
+  },
+  honesty_note: 'A successful generic CI job, a file path or a passing unit test does not establish all P13 business-domain requirements. Only the targeted executed tests above are marked PASS; every unclosed capability or payment requirement remains NOT_VERIFIED.',
+}
+mkdirSync(dirname(REPORT), { recursive: true })
+writeFileSync(REPORT, JSON.stringify(report, null, 2) + '\n')
+console.log(JSON.stringify({
+  verdict: report.verdict,
+  requirement_count: report.requirement_count,
+  capability_requirements: report.summary.capability_requirements,
+  payment_scenarios_passed: report.summary.payment_scenarios_passed,
+  payment_scenarios_failed: report.summary.payment_scenarios_failed,
+  payment_scenarios_not_verified: report.summary.payment_scenarios_not_verified,
+  not_run_count: report.not_run_count,
+  failed_count: report.failed_count,
+  report: '.aes/reports/P13-CONFORMANCE-REPORT.json',
+}, null, 2))
+if (!aesFingerprint?.seal_intact) process.exitCode = 1
