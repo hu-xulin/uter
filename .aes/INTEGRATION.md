@@ -46,6 +46,6 @@ PASS requires a real successful execution against the current repository revisio
 
 The former `.uaes/` tree is a migration source only. No active gate, policy or runtime entrypoint may read it after migration. Unique project business documents are maintained under `.aes/business/`; archived records are not active normative sources.
 
-## P09 / P10 boundary
+## P09 / P10 division
 
 P09 Quality Engineering proves whether engineering quality meets the requirements. P10 Security & Reliability defines the security and reliability requirements. Security testing is required by P10 and executed and recorded by the P09 quality system.
