@@ -59,6 +59,8 @@ jobs:
         run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
       - name: Test AES pin and seal fail-closed behavior
         run: node --test scripts/quality/aes-integration-check.test.mjs
+      - name: Test AES downstream synchronization engine
+        run: node --test .aes/autonomous/engine/sync.test.mjs
       - name: Detect and process AES downstream version events
         env:
           AES_REPO: ${{ github.workspace }}/aes-pinned
