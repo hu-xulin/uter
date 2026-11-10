@@ -692,12 +692,6 @@ func GetTopUpUserIDByTradeNo(tradeNo string) (int, error) {
 	return userId, nil
 }
 
-// ManualTopUpOutcome reports what a manual completion actually did.
-//
-// F-19: the admin UI used to get a bare `nil` for both "I just credited the
-// order" and "the order was already credited before". That makes a double click
-// (or two admins working the same queue) look identical to a real completion,
-// so the operator cannot tell whether the money moved now or earlier.
 var ErrManualTopUpDisabled = errors.New("manual top-up completion is disabled; only verified payment callbacks or automatic provider reconciliation may credit balances")
 
 // ManualCompleteTopUp is a compatibility tombstone for retired human-operated
