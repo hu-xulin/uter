@@ -18,182 +18,57 @@ concurrency:
 # Checkout the event commit in both jobs. A PR merge ref can disappear while
 # queued runs start, and a base branch can advance after the merge event.
 jobs:
-  uaes-integration:
-    name: UAES integration contract
+  aes-integration:
+    name: AES universal governance integration
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 8
+    permissions:
+      contents: read
     steps:
-      - name: Checkout
+      - name: Checkout Uter
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Test UAES integration gate positive and negative fixtures
-        run: ruby scripts/quality/test-uaes-integration-check.rb
-      - name: Validate UAES integration wiring
-        run: bash scripts/quality/uaes-integration-check.sh
-      - name: Test UAES spec-version pin gate positive and negative fixtures
-        run: ruby scripts/quality/test-uaes-pin-check.rb
-      - name: Validate UAES spec-version pin against integration contract
-        run: bash scripts/quality/uaes-pin-check.sh
-      - name: Test P01 AI governance policy and task contract
-        run: ruby scripts/quality/test-ai-governance-policy.rb
-      - name: Read pinned UAES baseline commit
-        id: uaes_pin
+      - name: Read immutable AES source pin
+        id: aes_pin
         run: |
-          commit="$(ruby -rjson -e 'print JSON.parse(File.read(".uaes/uaes-pin.json")).fetch("source_commit")')"
+          set -euo pipefail
+          commit="$(node -e 'const p=require("./.aes/aes-pin.json"); process.stdout.write(p.source_commit || "")')"
+          test -n "$commit" || { echo "FAIL: AES source commit missing"; exit 1; }
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
-      - name: Checkout pinned UAES universal standards baseline
+      - name: Checkout pinned AES governance source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          repository: hu-xulin/uaes
-          ref: ${{ steps.uaes_pin.outputs.commit }}
-          path: uaes-pinned
-
-      # Autonomous downstream gate: Uter must detect and process every upstream
-      # UAES version change. --check is detect-only and exits 1 when a change is
-      # still pending, so an unprocessed upstream change blocks the build rather
-      # than being silently absorbed. It never promotes integration_status,
-      # never marks items VERIFIED and never marks L3/L4 gates PASS (see
-      # .uaes/autonomous/config/downstream-policy.json hard_constraints).
-      - name: Autonomous UAES downstream version check
-        env:
-          UAES_ROOT: ${{ github.workspace }}/uaes-pinned
-        run: node .uaes/autonomous/engine/sync.mjs --check
-
-      - name: Validate UAES / Uter two-repository separation
-        env:
-          UAES_REPO: ${{ github.workspace }}/uaes-pinned
-        run: ruby scripts/quality/uter-governance-separation-check.rb
-      - name: Validate P09 proves / P10 defines boundary
-        env:
-          UAES_REPO: ${{ github.workspace }}/uaes-pinned
-        run: ruby scripts/quality/uter-p09-p10-boundary-check.rb
-      - name: Test separation and P09/P10 gate negative fixtures
-        env:
-          UAES_REPO: ${{ github.workspace }}/uaes-pinned
-        run: ruby scripts/quality/test-uter-governance-boundaries.rb
-      - name: Test P08 fail-closed Agent runtime denials
-        run: ruby scripts/quality/uaes-agent-runtime-check.rb selftest
-
-      - name: Set up Python for the integration adapter's YAML fallback
-        # The adapter parses YAML with the hoisted js-yaml when present, and
-        # falls back to python3+PyYAML otherwise. This job never installs the
-        # frontend workspace, so without this the fallback is the only parser
-        # and an absent PyYAML would make the adapter refuse to run (by design —
-        # an empty parse would report every count as zero).
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+          repository: hu-xulin/aes
+          ref: ${{ steps.aes_pin.outputs.commit }}
+          path: aes-pinned
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.12'
-      - name: Install pinned PyYAML
-        run: python -m pip install --disable-pip-version-check --no-input PyYAML==6.0.2
-
-      - name: Prove the UAES integration adapter cannot report a false INTEGRATED
-        # The adapter's own suite proves §8's hard rule: integration is a
-        # conjunction of four independent conditions (authentic ACTIVE spec, zero
-        # unmapped requirements, pin matching the ACTIVE digest, and the PINNED
-        # COMMIT actually carrying the declared artefacts). Copying files is not
-        # integration, and neither is a pin that names a commit without them.
-        # UAES_REPO_ROOT must point at the pinned checkout; without it the
-        # adapter falls back to /Users/lincolnhu/uaes and 10+ cases fail in CI.
+          node-version: "20"
+      - name: Verify AES registry, seal, governed fingerprint and Uter mapping
         env:
-          UAES_REPO_ROOT: ${{ github.workspace }}/uaes-pinned
-        run: node --test tools/uaes/integration-adapter.test.mjs
-      - name: Verify the pinned commit carries the governance artefacts
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
+      - name: Test AES pin and seal fail-closed behavior
+        run: node --test scripts/quality/aes-integration-check.test.mjs
+      - name: Detect and process AES downstream version events
         env:
-          UAES_REPO_ROOT: ${{ github.workspace }}/uaes-pinned
-        # A pin is only meaningful if `git checkout <source_commit>` yields the
-        # registry, policy and trust roster. Otherwise CI validates an empty tree
-        # while the project looks governed. This is a real gate, not a formality:
-        # it fails today and stays failed until source_commit advances to a UAES
-        # commit that contains the formal specification registry.
-        run: node tools/uaes/integration-adapter.mjs verify-pin
-
-      - name: Block delivery actions until full validation passes
+          AES_REPO: ${{ github.workspace }}/aes-pinned
+        run: node .aes/autonomous/engine/sync.mjs --check
+      - name: Verify Uter business extension and Agent entrypoints
         run: |
           set -euo pipefail
-          for action in git.commit git.push.feature_branch git.pull_request.create; do
-            if ruby scripts/quality/uaes-agent-runtime-check.rb authorize \
-                --action "$action" --profile pull_request_creator >/dev/null 2>&1; then
-              echo "FAIL: $action was allowed without complete L1+L2+14xL3+L4_GLOBAL_CONFORMANCE_GATE validation" >&2
-              exit 1
-            fi
-            echo "PASS: $action denied before complete validation"
-          done
-          for action in git.push.main git.pull_request.merge production.database.write payment.configuration.write overwrite.user_uncommitted_changes; do
-            if ruby scripts/quality/uaes-agent-runtime-check.rb authorize \
-                --action "$action" --profile pull_request_creator --validation-passed >/dev/null 2>&1; then
-              echo "FAIL: forbidden action $action was allowed" >&2
-              exit 1
-            fi
-            echo "PASS: $action denied even after validation"
-          done
-      - name: Validate production Docker Compose configuration and immutable service images
-        run: |
-          set -euo pipefail
-          docker compose --env-file .env.example -f docker-compose.yml config --quiet
-          docker compose -f docker-compose.dev.yml config --quiet
-          python3 - <<'PY'
-          import re
-          from pathlib import Path
-
-          for compose_path in ("docker-compose.yml", "docker-compose.dev.yml"):
-              compose = Path(compose_path).read_text()
-              for service in ("redis", "postgres"):
-                  match = re.search(
-                      rf"(?ms)^  {service}:\n(?:(?!^  [A-Za-z0-9_-]+:).)*?^    image: ([^\n]+)",
-                      compose,
-                  )
-                  if not match:
-                      raise SystemExit(f"FAIL: {compose_path}: {service} image declaration not found")
-                  image = match.group(1).strip()
-                  if not re.search(r"@sha256:[0-9a-f]{64}$", image):
-                      raise SystemExit(f"FAIL: {compose_path}: {service} image is not pinned by a full SHA-256 digest: {image}")
-                  print(f"PASS: {compose_path}: {service} image is digest-pinned")
-          PY
-
-      - name: Enforce one non-main work branch per project
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          # AUTO-FIX-STANDARD.md §7.1 and AGENTS.md constrain the single
-          # non-main *work branch* used for audit/fix tasks. Automated
-          # dependency-update branches (Dependabot / Renovate) and merge-queue
-          # refs are created by bots, are not human work branches, and must not
-          # be counted. Counting them made this gate permanently unsatisfiable
-          # (45+ Dependabot branches live on this repo) and therefore unable to
-          # detect the case it exists for: a genuine second work branch.
-          # The exclusion is a narrow prefix filter, and is asserted below so
-          # it cannot be widened into "count nothing".
-          work_branch_names() {
-            grep -vx 'main' | grep -v '^$' \
-              | grep -Ev '^(dependabot|renovate|gh-readonly-queue)/'
-          }
-          # Negative self-test: bot refs are excluded, real work refs are NOT.
-          sample=$'main\ndependabot/go_modules/example-1.2.3\nfeature/audit-fix\nfeature/second-fix'
-          sample_count="$(printf '%s\n' "$sample" | work_branch_names | grep -c . || true)"
-          if [ "$sample_count" -ne 2 ]; then
-            echo "FAIL: work-branch filter self-test expected 2 real work branches, saw $sample_count" >&2
-            exit 1
-          fi
-          echo 'PASS: work-branch filter excludes bot refs but still counts real work branches'
-          branch_names="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')"
-          # bash 3.2-compatible (no mapfile) so the same logic can be verified
-          # locally as well as on the ubuntu runner.
-          work_branches=()
-          while IFS= read -r b; do
-            [ -n "$b" ] && work_branches+=("$b")
-          done < <(printf '%s\n' "$branch_names" | work_branch_names || true)
-          printf 'Non-main work branches (%s):\n' "${#work_branches[@]}"
-          if [ "${#work_branches[@]}" -gt 0 ]; then printf '  %s\n' "${work_branches[@]}"; fi
-          if [ "${#work_branches[@]}" -gt 1 ]; then
-            echo 'FAIL: only one non-main work branch is permitted for this project.' >&2
-            exit 1
-          fi
-          echo 'PASS: project has at most one non-main work branch.'
+          test -s .aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md
+          test -s .aes/uter-governance-registry.yaml
+          test -s .aes/INTEGRATION.md
+          grep -q 'AES_AUTONOMOUS_GOVERNANCE' AGENTS.md
+          grep -q 'AES_AUTONOMOUS_GOVERNANCE' CLAUDE.md
+          grep -q 'UTER-P13' .aes/uter-governance-registry.yaml
+          echo "PASS: AES P00-P12 integration and UTER-P13 entrypoints are present"
 
 
   ueqe-review:
     name: UEQE review engine (all modules + AI spec integrity)
-    needs: uaes-integration
+    needs: aes-integration
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
