@@ -1,0 +1,36 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "UTER-AUTONOMOUS-DOWNSTREAM-POLICY",
+  "purpose": "Uter 自动检测 AES 标准同步、版本差异、适用性与符合性；自动记录并处理下游检查；不隐式提升集成状态。",
+  "upstream": {
+    "registry": ".aes/STANDARD-REGISTRY.yaml",
+    "version_events": "governance/autonomous/records/VERSION-EVENTS.jsonl"
+  },
+  "local": {
+    "pin": ".aes/aes-pin.json",
+    "integration_status_report": ".aes/reports/aes-integration-status.json",
+    "last_sync": ".aes/autonomous/records/LAST-SYNC.json",
+    "checks": ".aes/autonomous/records/DOWNSTREAM-CHECKS.jsonl",
+    "findings": ".aes/autonomous/records/COMPLIANCE-FINDINGS.jsonl",
+    "processed_events": ".aes/autonomous/records/PROCESSED-EVENTS.json"
+  },
+  "checks": [
+    { "id": "DS-01", "name": "AES 标准同步检查", "rule": "读取上游注册表版本与 governed 内容，确认 pin 存在且可解析" },
+    { "id": "DS-02", "name": "版本差异检查", "rule": "registry_version 与 pin 不一致，或存在未处理的 STANDARD_ACTIVATED 事件 → version_change_detected" },
+    { "id": "DS-03", "name": "项目适用性判断", "rule": "依据 pin 的 standards/requirement_count 与项目范围标记，判定哪些变化需要 Uter 侧处理" },
+    { "id": "DS-04", "name": "Uter 符合性审计", "rule": "读取 aes-integration-status.json；manual_acceptance_signed / verified_item_count / domain_gates_pass / global_gate_pass 任一为假即记录 NOT_CONFORMANT 发现，绝不自动提升" },
+    { "id": "DS-05", "name": "文档迁移与重复规范合并", "rule": "仅记录迁移/合并任务，不改动任何受保护的历史签署证据" },
+    { "id": "DS-06", "name": "自动化修复", "rule": "只对非破坏性、可回滚的差异生成修复建议；不自动执行真实资金/生产操作" },
+    { "id": "DS-07", "name": "测试、构建、质量门禁、验收记录、整改销项", "rule": "由 AC-10 / AC-11 / AC-12 / AC-16 及 Uter 既有门禁脚本执行；本策略不把 NOT_RUN 计为 PASS" }
+  ],
+  "hard_constraints": [
+    "integration_status 保持 MIGRATION_PENDING，除非存在显式外部 INTEGRATED 治理声明（A3）",
+    "prohibit_implicit_approval：downstream_check.status = PROCESSED 只表示变化被检测并处理，不表示符合、验收或批准",
+    "不修改 aes-pin.json 的 integration_status / approval_state",
+    "不把任何 S01–S42 项标为 VERIFIED，不把 0/42 改成已签署",
+    "不把 L3/L4 门禁状态标为 PASS",
+    "不伪造具名人工或第三方签署",
+    "不创建分支、不 push、不 merge、不 deploy"
+  ],
+  "decision": "version_change_detected 为真时写入 LAST-SYNC.json 并把 downstream_check.status 置为 PROCESSED；检测到的不符合项写入 COMPLIANCE-FINDINGS.jsonl 并保留为阻断项，继续其他不受影响的工作。"
+}
