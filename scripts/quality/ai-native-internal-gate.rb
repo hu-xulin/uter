@@ -195,7 +195,7 @@ def main
     manifest = JSON.parse(File.read(PRESERVED))
     mismatches = []
     manifest.fetch("entries").each do |entry|
-      root = entry["project"] == "UTER" ? UTER_ROOT : AES_ROOT
+      root = entry["project"].to_s.casecmp("uter").zero? ? UTER_ROOT : AES_ROOT
       path = File.join(root, entry.fetch("path"))
       unless File.file?(path) && sha256(path) == entry.fetch("sha256")
         mismatches << "#{entry['project']}:#{entry['path']}"
