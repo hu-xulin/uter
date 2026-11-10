@@ -1,0 +1,67 @@
+name: AES Governance Synchronization
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: aes-governance-sync-main
+  cancel-in-progress: false
+
+jobs:
+  synchronize-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Uter main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Checkout AES main
+        uses: actions/checkout@v4
+        with:
+          repository: hu-xulin/aes
+          ref: main
+          path: aes
+          fetch-depth: 0
+
+      - name: Set up Node and Ruby
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Recompute AES seal and synchronize Uter pin
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes
+        run: node .aes/autonomous/engine/sync.mjs
+
+      - name: Verify exact AES pin and registry mapping
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes
+        run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
+
+      - name: Execute Uter machine governance gate
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes
+        run: ruby scripts/quality/ai-native-internal-gate.rb
+
+      - name: Persist only machine-generated synchronization evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .aes/aes-pin.json .aes/uter-governance-registry.yaml .aes/autonomous/records/LAST-SYNC.json .aes/autonomous/records/DOWNSTREAM-CHECKS.jsonl .aes/reports/ai-native-internal-gate.json
+          if git diff --cached --quiet; then
+            echo "No AES pin or machine evidence changes."
+            exit 0
+          fi
+          git commit -m "chore(uter): synchronize sealed AES governance baseline [skip ci]"
+          git push origin HEAD:main
