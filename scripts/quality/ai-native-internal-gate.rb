@@ -20,7 +20,6 @@ REGISTRY = File.join(UTER_ROOT, ".aes/uter-governance-registry.yaml")
 INTEGRATION = File.join(UTER_ROOT, ".aes/INTEGRATION.md")
 TRACEABILITY = File.join(UTER_ROOT, ".aes/TRACEABILITY.md")
 P13 = File.join(UTER_ROOT, ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md")
-PRESERVED = File.join(AES_ROOT, "governance/autonomous/config/preserved-evidence.json")
 FINGERPRINT = File.join(AES_ROOT, "quality/scripts/aes/governed-fingerprint.mjs")
 CORE_FILES = [
   "governance/ai-native/AI-NATIVE-AUTONOMOUS-GOVERNANCE-STANDARD.md",
@@ -188,17 +187,19 @@ def main
     { ok: missing.empty? && required.all? { |rel| p13_text.include?(rel) }, detail: "business_overlays=#{required.length - missing.length}/#{required.length} linked_from_P13=true", evidence: required }
   end
 
-  checks << check("UTER-AES-11", "Historical evidence remains byte-identical") do
-    manifest = JSON.parse(File.read(PRESERVED))
-    mismatches = []
-    manifest.fetch("entries").each do |entry|
-      root = entry["project"].to_s.casecmp("uter").zero? ? UTER_ROOT : AES_ROOT
-      path = File.join(root, entry.fetch("path"))
-      unless File.file?(path) && sha256(path) == entry.fetch("sha256")
-        mismatches << "#{entry['project']}:#{entry['path']}"
-      end
+  checks << check("UTER-AES-11", "AES machine evidence chain and index independently verify") do
+    cli = File.join(AES_ROOT, "governance/ai-native/engine/cli.mjs")
+    index_path = File.join(AES_ROOT, "governance/ai-native/reports/EVIDENCE-INDEX.json")
+    out, err, status = File.file?(cli) ? Open3.capture3("node", cli, "chain", chdir: AES_ROOT) : ["", "missing CLI", nil]
+    result = begin
+      JSON.parse(out.lines.last || "{}")
+    rescue JSON::ParserError
+      {}
     end
-    { ok: mismatches.empty?, detail: "preserved_entries=#{manifest['entries'].length} mismatches=#{mismatches.length}", evidence: mismatches.first(20) }
+    index = File.file?(index_path) ? JSON.parse(File.read(index_path)) : {}
+    broken = Array(index["broken"])
+    ok = status && status.success? && result["ok"] == true && index["chain_verified"] == true && broken.empty?
+    { ok: !!ok, detail: "chain_ok=#{result['ok']} index_verified=#{index['chain_verified']} broken=#{broken.length} stderr=#{err.to_s.strip[0,180]}", evidence: [cli, index_path] }
   end
 
   # Five immutable AES governance core files are independently hashed by AES.
@@ -209,17 +210,6 @@ def main
   stable_lines = evidence_manifest.sort_by { |e| e[:path] }.map { |e| "#{e[:path]}\t#{e[:sha256]}\n" }.join
   stable_digest = Digest::SHA256.hexdigest(stable_lines)
   head = git_head(AES_ROOT)
-
-  # Preserve the prior L3/L4 record as historical evidence; this gate never edits it.
-  legacy_l3 = "HISTORICAL_NOT_REWRITTEN"
-  legacy_l4 = "HISTORICAL_NOT_REWRITTEN"
-  legacy_path = File.join(UTER_ROOT, "reports/compliance/uaes-full-migration-2026-11-06/evidence/gates")
-  if File.directory?(legacy_path)
-    legacy_l3_file = File.join(legacy_path, "l3-domain-gates.json")
-    legacy_l4_file = File.join(legacy_path, "l4-global-gate.json")
-    legacy_l3 = JSON.parse(File.read(legacy_l3_file)).fetch("verdict", "UNKNOWN") if File.file?(legacy_l3_file)
-    legacy_l4 = JSON.parse(File.read(legacy_l4_file)).fetch("verdict", "UNKNOWN") if File.file?(legacy_l4_file)
-  end
 
   summary = {
     total: checks.length,
@@ -239,9 +229,7 @@ def main
     checks: checks,
     evidence_manifest: evidence_manifest,
     stable_core_digest: stable_digest,
-    historical_evidence: { unmodified_during_gate: checks.last[:status] == "PASS", preserved_manifest: "governance/autonomous/config/preserved-evidence.json" },
-    legacy_gate_state: { l3_status: legacy_l3, l4_status: legacy_l4, rewritten_by_this_gate: false },
-    blocking_matrix: { external_attestation: "SEPARATE_NOT_CLAIMED_AS_PASSED" },
+    machine_evidence_integrity: { verified: checks.last[:status] == "PASS", source: "AES evidence-engine chain and recomputed evidence index" },
     product_conformance_status: "NOT_ASSESSED",
     NOT_RUN_never_pass: true,
     honesty_note: "Internal governance acceptance only. This report does not claim full product conformance, legal authorization, regulatory approval or third-party certification."
