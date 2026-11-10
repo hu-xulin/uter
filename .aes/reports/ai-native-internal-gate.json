@@ -1,0 +1,169 @@
+{
+  "document_id": "UTER-AES-AUTONOMOUS-INTERNAL-ACCEPTANCE",
+  "generated_at": "2026-11-10T12:52:07Z",
+  "generated_by": "Uter AES internal gate",
+  "scope": "INTERNAL_GOVERNANCE_ACCEPTANCE_ONLY",
+  "aes_git_sha": "7a44bf5ce153f4e169e84334d0bba28b49ba2712",
+  "verdict": "INTERNAL_ACCEPTED",
+  "check_summary": {
+    "total": 11,
+    "pass": 11,
+    "fail": 0,
+    "not_run": 0
+  },
+  "checks": [
+    {
+      "id": "UTER-AES-01",
+      "ran": true,
+      "status": "PASS",
+      "detail": "seal_intact=true fingerprint=3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
+      "evidence": [
+        "/home/runner/work/uter/uter/aes/quality/scripts/aes/governed-fingerprint.mjs",
+        ".aes/spec-registry/SPECIFICATION-REGISTRY.yaml"
+      ]
+    },
+    {
+      "id": "UTER-AES-02",
+      "ran": true,
+      "status": "PASS",
+      "detail": "pin_matches=true integration_status=MIGRATION_PENDING (not auto-promoted)",
+      "evidence": [
+        ".aes/aes-pin.json"
+      ]
+    },
+    {
+      "id": "UTER-AES-03",
+      "ran": true,
+      "status": "PASS",
+      "detail": "project_registry=true integration_contract=true duplicate_universal_registry=false",
+      "evidence": [
+        ".aes/uter-governance-registry.yaml",
+        ".aes/INTEGRATION.md"
+      ]
+    },
+    {
+      "id": "UTER-AES-04",
+      "ran": true,
+      "status": "PASS",
+      "detail": "inherited_domains=13/13 P13_registered=true P13_domains=10",
+      "evidence": [
+        ".aes/uter-governance-registry.yaml",
+        ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
+      ]
+    },
+    {
+      "id": "UTER-AES-05",
+      "ran": true,
+      "status": "PASS",
+      "detail": "AGENTS.md=true CLAUDE.md=true",
+      "evidence": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ]
+    },
+    {
+      "id": "UTER-AES-06",
+      "ran": true,
+      "status": "PASS",
+      "detail": "legacy_.uaes_directory_present=false",
+      "evidence": [
+        ".uaes/ (must be retired after migration)"
+      ]
+    },
+    {
+      "id": "UTER-AES-07",
+      "ran": true,
+      "status": "PASS",
+      "detail": "forbidden_policy_keys=0 local_main_no_push_no_pr=true high_risk_auto_deny=true",
+      "evidence": [
+        ".aes/agent-governance.yaml"
+      ]
+    },
+    {
+      "id": "UTER-AES-08",
+      "ran": true,
+      "status": "PASS",
+      "detail": "boundary_check_exit=0 stdout=PASS B01  P09 owns the PROOF system (7 quality-engineering clauses)\nPASS B02  P10 owns the REQUIREMENT baseline (11 security/reliability clauses)\nPASS B03  P09 text describes proving; P10 text describes defining\nPASS B04  no clause crosses the P09/P10 responsibility boundary\nPASS B05  security testing is required by P10 and executed/recorded by P09\nPASS B06  Uter registry assigns PROVE to P09 and DEFINE to P10\nPASS B07  duplicate/conflicting management system is explicitly forbidden\nPASS B08  pinned UAES baseline itself keeps P09=Quality / P10=Security\nPASS B09  AES project registry labels P09/P10/P13 correctly\nPASS B10  all governance entrypoints state the same P09/P10 division\nPASS B11  D14 and D15 are separate quality / security assessments\noverall=PASS checks=11 failed=0\nevidence: /home/runner/work/uter/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence/p09-p10-boundary.json stderr=",
+      "evidence": [
+        "scripts/quality/uter-p09-p10-boundary-check.rb"
+      ]
+    },
+    {
+      "id": "UTER-AES-09",
+      "ran": true,
+      "status": "PASS",
+      "detail": "go_tests=522 web_tests=333 workflows=10",
+      "evidence": [
+        "go.mod",
+        "web/package.json",
+        ".github/workflows/"
+      ]
+    },
+    {
+      "id": "UTER-AES-10",
+      "ran": true,
+      "status": "PASS",
+      "detail": "business_overlays=2/2 linked_from_P13=true",
+      "evidence": [
+        ".aes/business/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md",
+        ".aes/business/MIDJOURNEY-REFUND-TRANSACTION-DESIGN-2026-11-05.md"
+      ]
+    },
+    {
+      "id": "UTER-AES-11",
+      "ran": true,
+      "status": "PASS",
+      "detail": "chain_ok=true index_verified=true broken=0 stderr=",
+      "evidence": [
+        "/home/runner/work/uter/uter/aes/governance/ai-native/engine/cli.mjs",
+        "/home/runner/work/uter/uter/aes/governance/ai-native/reports/EVIDENCE-INDEX.json"
+      ]
+    }
+  ],
+  "evidence_manifest": [
+    {
+      "root": "aes",
+      "path": "governance/ai-native/AI-NATIVE-AUTONOMOUS-GOVERNANCE-STANDARD.md",
+      "role": "STABLE_CORE",
+      "present": true,
+      "sha256": "c5598b45fd9dfcf97ebacc19e99baa9d7f0cc96570ac930c420c16022525adf5"
+    },
+    {
+      "root": "aes",
+      "path": "governance/ai-native/config/acceptance-rules-ai-native.json",
+      "role": "STABLE_CORE",
+      "present": true,
+      "sha256": "9a9f19e3d5fccea6c54bd3c8bfc4116c139cb522fc441d62bdc22f5f8f281673"
+    },
+    {
+      "root": "aes",
+      "path": "governance/ai-native/config/independent-review-rules.json",
+      "role": "STABLE_CORE",
+      "present": true,
+      "sha256": "521b0ac5344af7f17f90c65a96ffe44126704f5739777ed4eae67a782e1962ce"
+    },
+    {
+      "root": "aes",
+      "path": "governance/ai-native/engine/acceptance-engine.mjs",
+      "role": "STABLE_CORE",
+      "present": true,
+      "sha256": "d480d38f2dd08e9cd78114840f9b378ab7b900db496e27f6c93ff274bb0ebef4"
+    },
+    {
+      "root": "aes",
+      "path": "governance/ai-native/engine/independent-review.mjs",
+      "role": "STABLE_CORE",
+      "present": true,
+      "sha256": "cc1bc3e84bdb6a6229431417326ee160066d499d86c70fb0cfaa5c71890124f1"
+    }
+  ],
+  "stable_core_digest": "d525c36df6f2544897bc2bd368bbd21e184ff0bfbdc3ad6403cd6f5e3e206faf",
+  "machine_evidence_integrity": {
+    "verified": true,
+    "source": "AES evidence-engine chain and recomputed evidence index"
+  },
+  "product_conformance_status": "NOT_ASSESSED",
+  "product_conformance_evidence": null,
+  "NOT_RUN_never_pass": true,
+  "honesty_note": "Internal governance acceptance only. This report does not claim full product conformance, legal authorization, regulatory approval or third-party certification."
+}
