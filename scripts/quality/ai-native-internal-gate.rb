@@ -147,24 +147,21 @@ def main
     { ok: !legacy, detail: "legacy_.uaes_directory_present=#{legacy}", evidence: [".uaes/ (must be retired after migration)"] }
   end
 
-  checks << check("UTER-AES-07", "No active manual or third-party approval dependency") do
-    roots = [File.join(UTER_ROOT, ".aes"), File.join(UTER_ROOT, "scripts/quality"), File.join(UTER_ROOT, ".github/workflows")]
-    patterns = [
-      /human_approval_required\s*:\s*true/i,
-      /manual_approval_required\s*:\s*true/i,
-      /third_party_approval_required\s*:\s*true/i,
-      /execution\s*:\s*MANUAL\b/i,
-      /kind\s*:\s*manual-review\b/i
-    ]
-    hits = []
-    roots.each do |root|
-      next unless File.directory?(root)
-      Dir.glob(File.join(root, "**", "*")).select { |p| File.file?(p) && p.match?(/\.(rb|mjs|js|json|ya?ml|md|sh)$/i) }.each do |path|
-        text = File.read(path)
-        patterns.each { |pattern| hits << "#{path.delete_prefix(UTER_ROOT + '/')}:#{pattern.source}" if text.match?(pattern) }
-      end
+  checks << check("UTER-AES-07", "Autonomous policy has no interactive approval or review state") do
+    policy = load_yaml(File.join(UTER_ROOT, ".aes/agent-governance.yaml"))
+    text = File.read(File.join(UTER_ROOT, ".aes/agent-governance.yaml"))
+    forbidden_keys = %w[manual_intervention_triggers approval_rules human_approval_required manual_approval_required third_party_approval_required]
+    found_keys = forbidden_keys.select { |key| policy.key?(key) || text.match?(/^\s*#{Regexp.escape(key)}\s*:/) }
+    effects = policy.fetch("action_policy", {}).values.map { |v| v.is_a?(Hash) ? v["effect"] : nil }.compact
+    branch_ok = policy.dig("repository", "execution_branch") == "main" &&
+      policy.dig("repository", "max_non_main_branches").to_i == 0 &&
+      policy.dig("repository", "remote_push") == false &&
+      policy.dig("repository", "pull_request_creation") == false
+    deny_ok = %w[production_change real_payment_operation production_database_write deployment irreversible_data_operation permission_escalation].all? do |key|
+      policy.dig("action_policy", key, "effect") == "AUTO_DENY"
     end
-    { ok: hits.empty?, detail: "active_manual_gate_matches=#{hits.length}", evidence: hits.first(20) }
+    ok = found_keys.empty? && branch_ok && deny_ok && effects.none? { |v| v.to_s.match?(/HUMAN|MANUAL|THIRD_PARTY|APPROVAL/i) }
+    { ok: ok, detail: "forbidden_policy_keys=#{found_keys.length} local_main_no_push_no_pr=#{branch_ok} high_risk_auto_deny=#{deny_ok}", evidence: [".aes/agent-governance.yaml"] }
   end
 
   checks << check("UTER-AES-08", "P09/P10 responsibility boundary is executable") do
