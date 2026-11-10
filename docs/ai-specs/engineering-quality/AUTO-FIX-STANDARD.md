@@ -1,5 +1,5 @@
 # Uter AI Auto-Fix Standard
-## AI 自动代码修复与 Pull Request 管理规范
+## AI 自动代码修复与本地 main 提交规范
 
 **项目：** Uter  
 **规范编号：** UTER-ENG-003  
@@ -152,7 +152,7 @@ AI 自动修复必须遵循：
 
 以下操作不得由 AI 自动执行：
 
-- 自动合并 Pull Request。
+- 自动合并远程变更或 Pull Request。
 - 自动部署生产环境。
 - 修改生产数据库。
 - 删除生产数据。
@@ -235,7 +235,7 @@ AI 必须先确认问题是否真实存在。
 - BLOCKED：缺少必要环境或权限。
 - FIXED：已修复。
 - VERIFIED：修复已验证。
-- PR_CREATED：已创建 PR（本治理迁移禁止）。
+- LOCAL_COMMIT_RECORDED：本地 main Commit 已记录。
 - CLOSED：已关闭。
 
 ---
@@ -637,8 +637,8 @@ Commit SHA:
 - 普通代码审查：只读权限。
 - 自动测试：只读源码和测试环境权限。
 - 自动修复：隔离工作区写权限。
-- 自动 Push：**唯一工作分支**写权限（见 §7.1；不得为此新建第二分支）。
-- PR 创建：Pull Request 创建权限。
+- 本地 main Commit：仅限机器策略授权且独立复验 PASS。
+- 远程写入：禁止 Push、PR、Merge、Rebase 和 Deploy。
 
 不应将所有权限授予所有 Workflow。
 
@@ -648,7 +648,7 @@ Commit SHA:
 
 - 打印密钥。
 - 提交密钥。
-- 在 PR 中暴露密钥。
+- 在审查报告、日志或远程协作平台暴露密钥。
 - 向 AI 提供生产密钥。
 - 将生产凭证用于自动化测试。
 
@@ -740,11 +740,7 @@ VERIFIED
    ↓
 COMMITTING
    ↓
-PUSHING
-   ↓
-PR_CREATED
-   ↓
-WAITING_FOR_HUMAN_REVIEW
+EVIDENCE_ARCHIVED
 ```
 
 异常状态：
@@ -775,9 +771,9 @@ Auto-Fix Engine 必须通过以下验收：
 9. 能够重新执行代码审查。
 10. 能够根据风险等级执行权限控制。
 11. 能够严格在 main 上执行，拒绝创建任何执行分支或 PR。
-12. 能够自动 Commit。
-13. 能够自动 Push。
-14. 不创建 PR；能够在授权范围内直接提交 main。
+12. 能够按机器策略自动创建本地 main Commit。
+13. 能够拒绝 Push、PR、Merge、Rebase 和 Deploy。
+14. 不创建执行分支，不创建 PR，不等待人工审核。
 15. main Commit 关联完整测试、修复与独立复验机器证据。
 16. P0 能正确阻断。
 17. P1 能触发机器策略授权、自动隔离和独立机器复验。
