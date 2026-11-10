@@ -16,6 +16,7 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 export const UTER_ROOT = resolve(HERE, '../../..')
 export const AES_ROOT = process.env.AES_REPO || process.env.AES_ROOT || resolve(UTER_ROOT, '../aes')
 const sha256 = (v) => createHash('sha256').update(v).digest('hex')
+const canonical = (v) => Array.isArray(v) ? v.map(canonical) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canonical(v[k])])) : v
 const now = () => new Date().toISOString()
 const exists = (p) => { try { return existsSync(p) && readFileSync(p).length > 0 } catch { return false } }
 const readJson = (p, fallback = null) => { try { return JSON.parse(readFileSync(p, 'utf8')) } catch { return fallback } }
@@ -53,7 +54,7 @@ export function detect(opts = {}) {
   } catch (e) {
     fingerprintError = String(e?.message || e)
   }
-  const componentMatch = Boolean(live && JSON.stringify(Object.fromEntries(Object.entries(pin.governed_components || {}).sort())) === JSON.stringify(Object.fromEntries(Object.entries(live.components || {}).sort())))
+  const componentMatch = Boolean(live && JSON.stringify(canonical(pin.governed_components || {})) === JSON.stringify(canonical(live.components || {})))
   const pinCurrent = Boolean(live && pin.governed_fingerprint === live.fingerprint &&
     pin.registry_blob_sha === registryBlob && pin.registry_version === version &&
     pin.registry_status === status && componentMatch)
@@ -128,6 +129,32 @@ export function processChanges(opts = {}) {
     note: 'AES governed fingerprint and seal are machine-recomputed. Pin refresh identifies the normative source only; product conformance is independently computed from requirement-level evidence and is never auto-promoted by synchronization.',
   }
   writeAtomic(pinPath, updated)
+  const projectRegistryPath = join(UTER_ROOT, '.aes/uter-governance-registry.yaml')
+  if (exists(projectRegistryPath)) {
+    let registry = readFileSync(projectRegistryPath, 'utf8')
+    const setScalar = (key, value) => { registry = registry.replace(new RegExp('^(  ' + key + ': ).*
+  writeAtomic(outputPath, final)
+  append(checksPath, final)
+  return { mode: 'PIN_REFRESHED', detection: d, record: final }
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
+  const args = process.argv.slice(2)
+  const value = (key) => { const i = args.indexOf('--' + key); return i >= 0 ? args[i + 1] : null }
+  const result = processChanges({ checkOnly: args.includes('--check'), outputPath: value('output'), checksPath: value('checks'), findingsPath: value('findings'), pinPath: value('pin'), registryPath: value('registry'), statusPath: value('status') })
+  console.log(JSON.stringify(result, null, 2))
+  if (args.includes('--check') && result.would_refresh_pin) process.exitCode = 1
+  if (result.mode === 'BLOCKED') process.exitCode = 2
+}
+, 'm'), '$1"' + String(value).replaceAll('"', '\\"') + '"') }
+    setScalar('source_commit', d.aes_source_commit)
+    setScalar('registry_blob_sha', d.aes_registry_blob_sha)
+    setScalar('registry_version', d.aes_registry_version)
+    setScalar('registry_status', d.aes_registry_status)
+    setScalar('governed_fingerprint', live.fingerprint)
+    setScalar('specification_integrity_digest', live.components.specification_integrity_digest)
+    writeFileSync(projectRegistryPath, registry)
+  }
   const final = { ...record, result: 'PIN_REFRESHED', pin_current_after: true, pin_sha256: sha256(JSON.stringify(updated)), conformance_status_after: updated.integration_status }
   writeAtomic(outputPath, final)
   append(checksPath, final)
