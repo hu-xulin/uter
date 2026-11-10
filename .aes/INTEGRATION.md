@@ -34,3 +34,14 @@ PASS requires a real successful execution and current evidence. FAIL, BLOCKED, N
 4. Run product tests, security tests, quality gates and business invariants.
 5. Independently re-read changed files and rerun all affected checks.
 6. Compute Uter conformance status from evidence; never hand-edit a success status.
+
+
+## Canonical Uter governance artifacts
+
+- Agent permission policy: `.aes/agent-governance.yaml`.
+- Requirement traceability inventory: `.aes/TRACEABILITY.md`.
+- Legacy AI-spec disposition inventory: `.aes/AI-SPEC-DISPOSITION-REGISTRY.yaml` (historical inventory; machine reassessment required before deleting any local spec).
+- Uter-specific business controls: `.aes/business/`, registered through P13.
+- Downstream version-event synchronization policy: `.aes/autonomous/config/downstream-policy.json`.
+
+The former `.uaes/` tree is a migration source only. No active gate, policy or runtime entrypoint may read it after migration. Its unique business documents have been moved to `.aes/business/`; historical machine records are retained as immutable archive evidence before the old directory is removed.
