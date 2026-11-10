@@ -14,19 +14,19 @@
 
 **上位标准（Normative parent）：**
 本文件是 **Uter 项目执行层**的工程质量引擎实施说明，不是企业级标准。
-企业级的质量治理与门禁要求由 UAES P09 / P10 定义，本文件只描述 Uter 如何
+企业级的质量治理与门禁要求由 AES P09 / P10 定义，本文件只描述 Uter 如何
 用本地脚本、CI 与命令去**执行**这些要求。
 
 | 归属 | 来源 | 关系 |
 |---|---|---|
-| 质量模型、风险分级、门禁判定 | UAES `UAES-09-001-QUALITY-MODEL-AND-GOVERNANCE` | 上位 |
-| 代码审查 / 测试 / 自动修复 / 报告 | UAES `UAES-09-002` ~ `UAES-09-015` | 上位 |
-| 安全与可靠性要求 | UAES P10（`UAES-10-001` ~ `UAES-10-016`） | 上位；P10 定义要求，P09 证明符合 |
-| 构建、CI/CD 与交付证据 | UAES P11（`UAES-11-005`、`UAES-11-015`） | 上位 |
+| 质量模型、风险分级、门禁判定 | AES `AES-09-001-QUALITY-MODEL-AND-GOVERNANCE` | 上位 |
+| 代码审查 / 测试 / 自动修复 / 报告 | AES `AES-09-002` ~ `AES-09-015` | 上位 |
+| 安全与可靠性要求 | AES P10（`AES-10-001` ~ `AES-10-016`） | 上位；P10 定义要求，P09 证明符合 |
+| 构建、CI/CD 与交付证据 | AES P11（`AES-11-005`、`AES-11-015`） | 上位 |
 
-UAES 基线：registry `1.12.1` / `ACTIVE`，commit `74e5d2eea215c96b845d7a0b2111b7fa011c540f`。
+AES 基线与规范版本以 `.aes/aes-pin.json` 的机器指纹和当前 ACTIVE Registry 为准；不得硬编码提交 SHA 或旧版本。
 本目录下的 CODE-REVIEW / AUTOMATED-TEST / AUTO-FIX / QUALITY-GATE 四份文件是
-**Uter 实施细则**，不得被视为与 UAES 平行并列的企业级标准来源。
+**Uter 实施细则**，不得被视为与 AES 平行并列的企业级标准来源。
 P09 / P10 分工见 `scripts/quality/uter-p09-p10-boundary-check.rb`。
 
 ---
@@ -784,7 +784,7 @@ Testing Engine 必须验证：
 
 ## 5.6 测试结果状态
 
-统一使用（与 UAES `UAES-09-001` §11 状态词汇对齐，见 QUALITY-GATE-STANDARD.md §3）：
+统一使用（与 AES `AES-09-001` §11 状态词汇对齐，见 QUALITY-GATE-STANDARD.md §3）：
 
 - PASS：实际执行并通过。
 - FAIL：实际执行但失败。
