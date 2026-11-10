@@ -41,10 +41,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Recompute sealed AES source and refresh ephemeral Uter pin
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: node .aes/autonomous/engine/sync.mjs
       - name: Verify AES registry, seal, governed fingerprint and Uter mapping
         env:
           AES_ROOT: ${{ github.workspace }}/aes-pinned
         run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
+      - name: Execute Uter machine governance acceptance
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: ruby scripts/quality/ai-native-internal-gate.rb
       - name: Test AES pin and seal fail-closed behavior
         run: node --test scripts/quality/aes-integration-check.test.mjs
       - name: Detect and process AES downstream version events
