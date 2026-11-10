@@ -56,7 +56,7 @@ Quality Gate 负责汇总：
 7. 关键业务专项验证。
 8. 代码变更及版本基线。
 
-根据真实执行结果，判断代码是否满足创建 PR、通过 PR 检查或进入人工审核的条件。
+根据真实执行结果，判断代码是否满足 main Commit 的机器门禁；所有内部审查、测试、缺陷关闭和验收均由自动化执行器与独立机器验证器完成。
 
 ## 1.2 设计原则
 
@@ -219,11 +219,11 @@ Quality Gate 包含八个检查维度。
 
 | 等级 | 门禁要求 |
 |---|---|
-| P0 | 阻断自动发布及 PR 创建 |
-| P1 | 必须人工审批，不能标记为无条件通过 |
-| P2 | 必须修复或记录经批准的例外 |
-| P3 | 按 PR 策略处理 |
-| P4 | 可以记录为优化事项 |
+| P0 | 自动隔离；未解除风险前阻断 main Commit 和发布 |
+| P1 | 必须自动修复、机器策略授权并通过独立复验；不得人工审批 |
+| P2 | 必须修复或满足机器策略定义的例外 |
+| P3 | 自动修复并复验后按策略提交 main |
+| P4 | 机器记录并按风险策略处理 |
 
 ## 5.3 审查范围
 
@@ -342,10 +342,10 @@ Quality Gate 包含八个检查维度。
 
 发现真实密钥泄露时：
 
-1. 阻断 PR 质量门禁。
+1. 自动阻断 main Commit 和发布状态转换。
 2. 不得将密钥复制到报告。
 3. 记录文件路径和脱敏证据。
-4. 通知人工处理。
+4. 自动触发凭证隔离、撤销/轮换（仅限预授权范围）；无法安全自动处理时保持 BLOCKED 并记录机器处置计划。
 5. 根据实际情况建议撤销和轮换凭证。
 
 不能因为删除文件就认为已经消除密钥泄露风险。
@@ -536,7 +536,7 @@ FIX VERIFIED。
 - 不得自动发布已验证修复。
 - 不得将失败报告标记为 PASS。
 - 可以在隔离环境进行有限次数重试。
-- 超过重试上限后转人工处理。
+- 超过重试上限后自动隔离该修复任务、生成根因报告并保持 BLOCKED；不得转为人工审批队列。
 
 ---
 
@@ -608,22 +608,22 @@ FIX VERIFIED。
 
 ## 13.2 决策矩阵
 
-| 情况 | 质量门禁 | PR 创建 | 合并 |
+| 情况 | 质量门禁 | main Commit | 发布/外部动作 |
 |---|---|---|---|
-| 无阻断问题，必需测试通过 | PASS | 允许 | 人工决定 |
-| 存在 P0 | FAIL | 禁止自动创建修复 PR | 禁止 |
-| 存在未审批 P1 | BLOCKED | 等待人工批准 | 禁止 |
-| P1 已审批且验证通过 | CONDITIONAL PASS | 允许 | 人工审核 |
-| P2 已修复且验证通过 | PASS | 允许 | 人工审核 |
-| P3 已修复且验证通过 | PASS | 允许 | 人工审核 |
-| 必需测试失败 | FAIL | 不得以验证通过的名义创建 | 禁止 |
-| 必需测试被阻塞 | BLOCKED | 依照修复策略处理，不得标记完全通过 | 禁止 |
-| 安全扫描发现阻断风险 | FAIL | 阻断 | 禁止 |
-| 只有非必需检查被阻塞 | 按策略判定 | 可允许 | 人工审核 |
+| 无阻断问题，必需测试与独立复验通过 | PASS | 机器策略授权后允许 | 仍需独立发布策略授权 |
+| 存在 P0 | FAIL | 自动阻断 | 自动隔离并阻断 |
+| P1 缺少机器策略授权或独立复验 | BLOCKED | 自动阻断 | 自动阻断 |
+| P1 机器授权且验证通过 | PASS | 机器策略授权后允许 | 仍需独立发布策略授权 |
+| P2 已修复且验证通过 | PASS | 机器策略授权后允许 | 按发布策略 |
+| P3 已修复且验证通过 | PASS | 机器策略授权后允许 | 按发布策略 |
+| 必需测试失败 | FAIL | 自动阻断 | 自动阻断 |
+| 必需测试被阻塞 | BLOCKED | 自动阻断 | 自动阻断 |
+| 安全扫描发现阻断风险 | FAIL | 自动阻断 | 自动隔离并阻断 |
+| 只有非必需检查被阻塞 | 按策略判定；不得掩盖必需项 | 仅在全部必需项 PASS 时允许 | 按发布策略 |
 
 ## 13.3 CONDITIONAL PASS
 
-仅用于已完成专项审批的 P1 等高风险修复。
+不得用 CONDITIONAL PASS 绕过未解决的 P0/P1 或必需控制。机器授权例外必须有明确范围、期限、补偿控制、独立复验和自动撤销条件，且不等同于完整 PASS。
 
 必须明确记录：
 
@@ -665,11 +665,11 @@ CONDITIONAL PASS 不等于完全通过。
 - 风险评估。
 - 自动修复执行记录。
 
-## 14.3 P1 修复 PR
+## 14.3 P1 main Commit 条件
 
 额外要求：
 
-- 人工专项审批。
+- 机器策略精确授权与权限范围验证。
 - 关键业务验证。
 - 安全影响评估。
 - 回滚方案。
@@ -678,9 +678,7 @@ CONDITIONAL PASS 不等于完全通过。
 
 ## 14.4 P0
 
-不得通过自动化修复 PR 流程发布。
-
-应转入紧急人工事件处理机制。
+P0 不得通过自动化流程绕过门禁提交或发布。必须自动隔离、冻结风险状态、执行安全诊断与可逆修复，并在独立验证器确认风险解除前保持 BLOCKED；不转入人工审批流程。
 
 ---
 
@@ -868,7 +866,7 @@ Quality Gate 必须能够被 GitHub Actions 调用。
 
 ## 17.2 完整审计
 
-定时或人工触发：
+事件或定时触发：
 
 - 全仓库审查。
 - 全仓库测试。
@@ -940,11 +938,12 @@ quality_gate:
     not_verified: NOT_VERIFIED
     not_applicable: NOT_APPLICABLE
 
-  pull_request:
-    require_review: true
+  main_commit:
+    require_independent_machine_review: true
     require_tests: true
     require_security_scan: true
     require_change_integrity: true
+    require_no_unverified_requirements: true
 
   risk_policy:
     P0:
@@ -952,13 +951,14 @@ quality_gate:
       block_commit: true
       block_push: true
       block_pr: true
-      require_human_decision: true
+      auto_isolate: true
+      block_until_machine_verified: true
 
     P1:
       allow_isolated_fix: true
-      require_human_approval_before_push: true
-      require_human_approval_before_pr: true
-      block_auto_merge: true
+      require_machine_policy_authorization: true
+      require_independent_machine_verification: true
+      block_if_any_mandatory_check_not_pass: true
 
     P2:
       allow_auto_fix: true
@@ -1070,20 +1070,20 @@ Quality Gate 必须通过以下验收：
 
 预期：FAIL，阻止自动修复发布和 PR 创建。
 
-### 场景 C：P1 未审批
+### 场景 C：P1 缺少机器策略授权
 
 - 审查发现 P1。
 - 修复已完成。
 - 测试通过。
-- 没有人工专项审批。
+- 缺少有效机器策略授权或独立验证证据。
 
-预期：BLOCKED，不允许 Push 和创建正式 PR。
+预期：BLOCKED；自动隔离，不允许 main Commit 或发布。
 
-### 场景 D：P1 已审批
+### 场景 D：P1 机器授权且验证通过
 
 - 修复完成。
 - 必需测试通过。
-- 人工专项审批存在。
+- 机器策略授权有效，独立验证器重新执行并全部 PASS。
 
 预期：CONDITIONAL PASS，允许创建 PR，仍然禁止自动合并。
 
