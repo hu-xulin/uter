@@ -481,3 +481,56 @@ jobs:
 
       - name: Build production frontend
         run: bun run build:check
+
+  l4-global-conformance:
+    name: L4 Global Conformance Gate
+    if: always()
+    needs:
+      - aes-integration
+      - ueqe-review
+      - backend
+      - race
+      - coverage
+      - vulnscan
+      - desktop
+      - frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Uter at the event revision
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+      - name: Checkout canonical AES main
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: hu-xulin/aes
+          ref: main
+          path: aes-pinned
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Enforce same-head L4 global conformance
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+          L4_REPORT_PATH: ${{ runner.temp }}/l4-global-conformance.json
+          NEEDS_AES_INTEGRATION: ${{ needs.aes-integration.result }}
+          NEEDS_UEQE_REVIEW: ${{ needs.ueqe-review.result }}
+          NEEDS_BACKEND: ${{ needs.backend.result }}
+          NEEDS_RACE: ${{ needs.race.result }}
+          NEEDS_COVERAGE: ${{ needs.coverage.result }}
+          NEEDS_VULNSCAN: ${{ needs.vulnscan.result }}
+          NEEDS_DESKTOP: ${{ needs.desktop.result }}
+          NEEDS_FRONTEND: ${{ needs.frontend.result }}
+        run: node scripts/quality/l4-global-conformance-gate.mjs
+      - name: Upload L4 conformance evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: l4-global-conformance
+          path: ${{ runner.temp }}/l4-global-conformance.json
+          if-no-files-found: warn
+          retention-days: 30
