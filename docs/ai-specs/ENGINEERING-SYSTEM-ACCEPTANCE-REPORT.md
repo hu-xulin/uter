@@ -1,3 +1,11 @@
+> **HISTORICAL / SUPERSEDED — NOT CURRENT ACCEPTANCE EVIDENCE**
+>
+> This report records a 2026-11-01 baseline and must not be used as a current
+> Uter conformance verdict, manual review queue or acceptance gate. Its scores,
+> branch references, tool results and human-check notes are historical only.
+> Current conformance is determined by live AES pin verification, executable
+> Uter gates, actual CI runs and machine-generated evidence.
+
 # Uter Vibe Coding Engineering System — 正式验收报告
 
 > **迁移注记（2026-11-03）**：本报告为 2026-11-01 历史时点验收记录，文中引用的
