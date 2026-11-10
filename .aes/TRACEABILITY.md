@@ -192,6 +192,6 @@ Regression coverage added in `service/task_billing_funding_test.go` includes org
 ## Current AES migration status (machine-maintained)
 
 - Canonical enterprise source: `https://github.com/hu-xulin/aes`, branch `main`.
-- Uter canonical integration directory: `.aes/`; legacy `.uaes/` is retired after content migration.
+- Uter canonical integration directory: `.aes/`; legacy `.uaes/` was retired on 2026-11-10 and its 22 original files were preserved byte-for-byte under `reports/compliance/legacy-uaes-archive/.uaes/`.
 - Current Uter conformance: `NOT_ASSESSED` until all applicable AES requirements have executable Uter-side evidence.
 - This traceability matrix is an inventory and mapping aid, not a conformance certificate.
