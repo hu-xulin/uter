@@ -1,3 +1,12 @@
+> **HISTORICAL / SUPERSEDED — NOT A CURRENT MANUAL TASK LIST OR ACCEPTANCE SOURCE**
+>
+> This report records a 2026-11-05 conflict review. Its historical references to manual
+> checks, human confirmation, branch/PR workflows and third-party review are not active
+> requirements. Current acceptance is machine-only under AES and the current Uter
+> governance registry. An automation gap MUST be reported as BLOCKED/NOT_VERIFIED and
+> repaired through executable checks; it MUST NOT be routed to a person or third party.
+> Preserve this report for audit history; do not use it as a current execution checklist.
+
 # Uter AI 规范体系冲突检查报告
 
 **项目：** Uter
@@ -69,22 +78,22 @@
 
 ---
 
-## 三、不可执行 / 需人工核对的条款
+## 三、历史发现：当时尚未自动化的条款（全部已退出当前人工待办链）
 
-以下条款当前无法程序化，已建立人工/AI 审查清单（交付报告中必须逐项声明执行结果）：
+以下表格只反映 2026-11-05 的历史状态，不代表当前需要人工执行。当前缺少机器证据的条款必须保持 BLOCKED/NOT_VERIFIED，直到自动化验证器真实运行并通过。
 
-| # | 规范条款 | 现状 | 人工/AI 核对方式 |
+| # | 规范条款 | 历史发现 | 当前机器处理原则（非人工待办） |
 |---|---|---|---|
 | A-1 | CHANGE §11 Business Critical（支付/计费专项回归） | 无独立引擎 | 改支付/计费代码时，必须定向跑 `_reports/Uter测试用例集.md` 中 BE-PAY/BE-BIL 组用例并在报告列出 |
 | A-2 | API-CONTRACT §13 API 测试矩阵 | 无 OpenAPI 工具链 | API 变更时按 §13 九类场景自查并断言进测试 |
 | A-3 | API-CONTRACT §11 Schema 校验 | 仓库无 OpenAPI 契约源 | 不适用（除非引入契约工具），不得虚构 |
 | A-4 | DATABASE §11/14 三库迁移矩阵 | SQLite 由 `go test` 覆盖；MySQL/PG 需 `docker-compose.multidb.yml` 人工执行 | Schema/迁移变更必须实跑三库并在报告记录版本与命令 |
-| A-5 | DATABASE §13 备份/恢复（RPO/RTO） | 运维域，仓库无自动化 | 变更涉及备份策略时人工确认并记录 |
-| A-6 | ARCHITECTURE §11 架构图同步 | 无图生成工具链 | 架构变更时人工更新文档并说明 |
+| A-5 | DATABASE §13 备份/恢复（RPO/RTO） | 运维域，仓库无自动化 | 由机器策略校验备份范围、RPO/RTO、实际备份和恢复证据；证据缺失时自动 BLOCKED，不转人工确认 |
+| A-6 | ARCHITECTURE §11 架构图同步 | 无图生成工具链 | 架构变更时由文档生成器或结构化架构图校验器更新/验证；无法生成时 BLOCKED |
 | A-7 | CHANGE §15 变更追溯完整性 | 部分自动化（git log + UEQE 报告） | 交付报告须含任务→基线 SHA→Commit→测试→门禁链路 |
-| A-8 | UX §15 交互状态覆盖（H5 触摸、键盘） | Playwright 本地轨可覆盖部分；CI 无 | UI 变更按 §3–§14 状态清单自查，视觉双轨本地跑 |
-| A-9 | PRODUCT §7 验收标准（Given/When/Then 完备性） | 判断性要求 | 功能任务交付前对照 §2–§8 自查 |
-| A-10 | DOCUMENTATION §12 文档链接/术语审查 | `go test`（`main_docs_test.go`）覆盖嵌入产物存在性，非链接校验 | 文档变更人工核对链接与术语 |
+| A-8 | UX §15 交互状态覆盖（H5 触摸、键盘） | Playwright 本地轨可覆盖部分；CI 无 | 由 E2E、视觉和可访问性测试自动覆盖；未执行时 NOT_RUN |
+| A-9 | PRODUCT §7 验收标准（Given/When/Then 完备性） | 判断性要求 | 由 PRD/验收条件 Schema 校验器检查 Given/When/Then 与需求映射；失败时 BLOCKED |
+| A-10 | DOCUMENTATION §12 文档链接/术语审查 | `go test`（`main_docs_test.go`）覆盖嵌入产物存在性，非链接校验 | 由链接检查器、术语表和规范引用校验器自动检查；失败时 BLOCKED |
 
 ---
 
