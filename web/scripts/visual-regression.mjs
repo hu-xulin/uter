@@ -55,6 +55,9 @@ if (browser) {
         await page.goto(pathToFileURL(SHOWCASE).href, { waitUntil: 'load' })
         await page.evaluate(() => document.fonts.ready)
         await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' })
+        await page.evaluate((mode) => {
+          document.documentElement.classList.toggle('dark', mode === 'dark')
+        }, theme)
 
         const metrics = await page.evaluate(() => {
           const visible = (element) => {
@@ -77,6 +80,13 @@ if (browser) {
             const alt = el.getAttribute('alt')
             return !label && !labelledBy && !text && !alt
           })
+          const gradientElements = [...document.querySelectorAll('.ds-text-gradient-brand')].filter(visible)
+          const gradientTextSizeFailures = gradientElements.filter((el) => {
+            const style = getComputedStyle(el)
+            const size = Number.parseFloat(style.fontSize)
+            const weight = Number.parseInt(style.fontWeight, 10) || 400
+            return !(size >= 24 || (size >= 18.67 && weight >= 700))
+          })
           return {
             viewportWidth: window.innerWidth,
             documentWidth: document.documentElement.scrollWidth,
@@ -85,6 +95,8 @@ if (browser) {
             textElementCount: textElements.length,
             focusableCount: focusable.length,
             unnamedInteractiveCount: unnamed.length,
+            gradientTextCount: gradientElements.length,
+            gradientTextSizeFailures: gradientTextSizeFailures.length,
           }
         })
 
@@ -130,6 +142,29 @@ if (browser) {
           focus.focused === true && focus.visibleFocusIndicator === true,
           `first Tab focus visible=${focus.focused}; focus indicator=${focus.visibleFocusIndicator}`,
           focus
+        )
+        add(
+          `GRADIENT_TEXT_SIZE_${target.toUpperCase().replace('/', '_')}`,
+          metrics.gradientTextSizeFailures === 0,
+          `gradient text elements=${metrics.gradientTextCount}; undersized=${metrics.gradientTextSizeFailures}; requires >=24px regular or >=18.67px bold`,
+          metrics
+        )
+        const keyboardButton = page.locator('button:not([disabled])').first()
+        const keyboardButtonCount = await page.locator('button:not([disabled])').count()
+        let keyboardActivation = false
+        if (keyboardButtonCount > 0) {
+          await page.evaluate(() => { window.__uterKeyboardActivationCount = 0 })
+          await keyboardButton.evaluate((el) => {
+            el.addEventListener('click', () => { window.__uterKeyboardActivationCount += 1 }, { once: true })
+            el.focus()
+          })
+          await page.keyboard.press('Enter')
+          keyboardActivation = await page.evaluate(() => window.__uterKeyboardActivationCount === 1)
+        }
+        add(
+          `KEYBOARD_ACTIVATION_${target.toUpperCase().replace('/', '_')}`,
+          keyboardButtonCount > 0 && keyboardActivation,
+          `enabled buttons=${keyboardButtonCount}; Enter activated first button=${keyboardActivation}`
         )
 
         const axe = await new AxeBuilder({ page })
