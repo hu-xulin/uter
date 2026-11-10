@@ -158,6 +158,10 @@ grep -Fq 'role: "PROVE"' "$GOV_REGISTRY" || fail "治理注册表未声明 P09 �
 grep -Fq 'role: "DEFINE"' "$GOV_REGISTRY" || fail "治理注册表未声明 P10 负责定义安全可靠性要求"
 grep -Fq 'full_validation_required_before' "$POLICY" || fail "交付动作未保持完整验证前置（fail-closed）"
 grep -Fq 'L4_GLOBAL_CONFORMANCE_GATE' "$POLICY" || fail "策略未把 L4 全局符合性门禁列为交付前置条件"
+[ -s "$ROOT/scripts/quality/l4-global-conformance-gate.mjs" ] || fail "L4_GLOBAL_CONFORMANCE_GATE 可执行入口缺失"
+grep -Fq 'L4_GLOBAL_CONFORMANCE_GATE' "$ROOT/scripts/quality/l4-global-conformance-gate.mjs" || fail "L4 执行入口未实现全局门禁"
+grep -Fq 'l4-global-conformance:' "$ROOT/.github/workflows/ci.yml" || fail "CI 未执行最终 L4_GLOBAL_CONFORMANCE_GATE"
+
 
 # 8. ADR registry and accepted decision.
 [ -s "$ADR_DIR/README.md" ] || fail "ADR 注册索引缺失"
