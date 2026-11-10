@@ -152,3 +152,13 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 3. 不得因"代码里有实现"而把业务域标记为 `VERIFIED` 或 `CONFORMANT`。
 4. 不得在未获授权时使用真实资金、生产数据库或生产支付配置做验证。
 5. 不得由 WorkBuddy 自行批准业务风险、例外或削弱任何 AES 强制要求（§6.1 / §13.4）。
+
+
+## 10. Related project-specific business controls
+
+The following Uter-owned documents supplement P13 and are not universal AES standards:
+
+- `.aes/business/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md` — legacy API contract and consumer audit. Its historical decision does not claim complete external consumer telemetry.
+- `.aes/business/MIDJOURNEY-REFUND-TRANSACTION-DESIGN-2026-11-05.md` — Midjourney refund transaction design. Status remains DRAFT until executable accounting, idempotency, recovery and concurrency tests pass.
+
+These documents remain project-specific overlays. They MUST inherit applicable AES P00–P12 requirements, MUST NOT weaken them, and MUST NOT be registered as AES universal standards. Presence is not implementation or acceptance evidence.
