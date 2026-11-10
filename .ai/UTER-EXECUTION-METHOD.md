@@ -141,6 +141,9 @@ Uter 工程任务固定在现有本地 main 工作树执行，不创建分支、
   "lifecycle_status": "CREATED",
   "authorization": {
     "authorization_id": "AUTH-EXAMPLE-001",
+    "policy_id": "AES-AUTONOMOUS-GOVERNANCE-POLICY",
+    "decision": "AUTO_AUTHORIZED",
+    "evidence_refs": ["machine-policy-evaluation:AUTH-EXAMPLE-001"],
     "allowed_actions": ["filesystem.write.scoped", "test.execute"],
     "forbidden_actions": ["git.merge", "deployment.execute", "production.database.write", "payment.configuration.write"],
     "target_resources": ["login screen", "directly related auth components"],
@@ -302,7 +305,7 @@ Uter 工程任务固定在现有本地 main 工作树执行，不创建分支、
 保护用户原有改动；避免无关批量替换；避免大范围格式化导致 diff 失控；不执行未授权清理/重置；不覆盖与任务无关的文件。若发生意外覆盖或删除，立即停止后续操作、优先恢复原有内容并如实报告。
 
 ### 8.3 修改后
-审查完整 diff；检查变更文件清单；检查临时文件/调试代码；检查是否泄露密钥；确认用户原有工作保留；报告当前工作区状态。**默认只做代码修改和验证；但 Uter 当前已获明确授权的工程修复任务，必须复用本地 main 工作树，并可在验证达到门禁后 Commit、Push、创建/更新该分支现有 PR。不得创建第二分支、直接推送 main、force push、合并 PR 或部署。**
+审查完整 diff；检查变更文件清单；检查临时文件/调试代码；检查是否泄露密钥；确认用户原有工作保留；报告当前工作区状态。**所有 Uter 工程修复固定在本地 main 工作树执行；不创建分支、worktree 或 PR，不 Push、Merge、Force Push 或 Deploy。Commit 仅在 AES 机器策略明确授权且全部必需门禁和独立复验真实 PASS 后允许。**
 
 ### 8.4 Uter 特有纪律（务必遵守）
 - 🔴 **工作区常有并发会话 WIP**：本次任务开工时 `git status --short` 出现大量非本次任务的改动（`AGENTS.md`(M)、支付文件、design tokens、设计文档删改、skills 删除等）。**只改自己负责的文件，严禁 `git add -A`、严禁混入他人 WIP、严禁在其未收尾时本地全量构建**（会把半成品编进 `uter-bin`）。提交用显式 `git add <路径>` + `git diff --cached --name-status` 复核，含 D 先 `go build ./...`。
@@ -381,7 +384,7 @@ Uter 工程任务固定在现有本地 main 工作树执行，不创建分支、
 
 - 用户要求直接修改代码时，必须在授权范围内**实际完成修改**，而非只输出建议/方案/提示词。
 - 必须优先遵守项目已批准的设计规范、架构约束、API 契约、安全规则和测试约定；冲突按规则优先级与风险处理，不能擅自忽略强制约束。
-- 必须保护用户未提交代码和其他已有工作；最小必要修改；不得无故扩大范围；不得未经授权升级依赖、大规模重构、删除数据、生产操作或超出本项目明确授权范围的 Git 操作；Uter 本地 main 工作树内的 Commit/Push/PR 按本文件 §3.3 执行。
+- 必须保护用户未提交代码和其他已有工作；最小必要修改；不得无故扩大范围；不得未经授权升级依赖、大规模重构、删除数据、生产操作或超出本项目明确授权范围的 Git 操作；Uter 本地 main 工作树内的操作按本文件 §3.3 执行；不 Push、不创建 PR。
 - 必须按任务风险确定验证强度；认证/支付/数据库/权限/资金/生产环境任务须专项分析与测试。关键业务信息不明确时暂停相关高风险操作，但继续完成不受影响且已授权的工作。
 - 修改完成后执行实际可运行的测试与质量检查，并审查完整 diff；发现范围内且能安全修复的问题，修复后重新验证。
 - **不得伪造测试结果，不得声称未执行的测试已通过，不得通过删除测试、跳过断言或关闭安全控制制造成功。**
@@ -421,7 +424,7 @@ Uter 工程任务固定在现有本地 main 工作树执行，不创建分支、
 ### 13.4 待协调项（需用户决策，本次未执行）
 - **治理规则现状**：Agent 角色、权限配置和任务审计合同以 `.aes/uter-governance-registry.yaml` 与 `.ai/task-schema.json` 为准；第三方 Agent 的运行时工具阻断仍须通过 WorkBuddy/Claude 等实际运行环境单独验证，不得把静态策略测试描述为运行时验收。
 - **自治治理继承（AES P00–P12）**：Uter 完全继承 AES 的「内部事项自主、真实外部约束机器检查」统一规则（见 AES 仓库 P00–P12 ACTIVE 规范）。Uter 不再建立独立的人工审批体系；本文件 §R4（生产写入 / 生产库 / 真实支付 / 生产密钥 / 生产部署 / 重大不可逆操作）作为外部高风险动作默认拒绝；只有既有机器策略对精确资源、动作和环境明确授权时才允许，否则自动 BLOCKED，不进入人工审批。
-- **Git 授权现状**：Uter 自动修复可在本地 main 工作树内 Commit、Push、创建/更新 PR；禁止直接推送 main、force push、合并 PR、部署和生产写操作。
+- **Git 授权现状**：Uter 自动修复固定在本地 main 工作树；不得创建分支、worktree、PR，不得 Push、Merge、Force Push、Deploy 或执行生产写操作。Commit 仅在机器策略与独立复验全部 PASS 后允许。
 - **PandaMall 规范包**：平移本框架时需换成 React Native/Expo/Clerk 技术规则，不共用 Uter 的 Web 设计与支付规则。
 
 ---
