@@ -125,7 +125,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.20.2
 	github.com/mewkiz/flac v1.0.13
-	github.com/nicksnyder/go-i18n/v2 v2.6.1
+	github.com/nicksnyder/go-i18n/v2 v2.7.0
 	github.com/openai/openai-go v1.12.0
 	github.com/pkg/errors v0.9.1
 	github.com/pquerna/otp v1.5.0
