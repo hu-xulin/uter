@@ -195,7 +195,7 @@ AI 更新文档前必须核对：
 | `AGENTS.md`（根） | 项目宪法：技术栈、四项 AI 协作自律、OWASP 强制、后端/前端规则、Git 纪律 | 最高（仅次于用户授权） |
 | `web/AGENTS.md` | 前端专属约定 | 高 |
 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | 设计系统唯一真源（单文件 + showcase-3.0.html，2026-11-03 起唯一标准） | 高 |
-| `.ai/AIES.md` + `.ai/README.md` | 执行方法论（L0–L4、12 阶段 SOP、任务合同） | 中（不得覆盖上面三者） |
+| `.ai/UTER-EXECUTION-METHOD.md` + `.ai/README.md` | 执行方法论（L0–L4、12 阶段 SOP、任务合同） | 中（不得覆盖上面三者） |
 | `docs/ai-specs/`（本目录，10 份 STANDARD + engineering-quality/UEQE） | 领域规范基线，已按真实代码校准（2026-11-01） | 中 |
 | `docs-dev/` | 开发文档（构建、部署、协议） | 参考 |
 | `web/docs/design-system/` 其余分篇 | 已废止删除（2026-11-03），统一并入 3.0 单文件 | 已废止 |
