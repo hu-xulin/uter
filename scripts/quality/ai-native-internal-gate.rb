@@ -250,6 +250,9 @@ def main
     requirement_count: p13_report["requirement_count"],
     not_run_count: p13_report["not_run_count"],
     failed_count: p13_report["failed_count"],
+    aes_fingerprint: fp&.dig("fingerprint"),
+    uter_head: uter_head,
+    sha256: sha256(p13_report_path),
     aes_fingerprint_current: p13_report["aes_governed_fingerprint"] == fp&.dig("fingerprint"),
     uter_head_current: p13_report["uter_head"] == uter_head
   } : nil
