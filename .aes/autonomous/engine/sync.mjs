@@ -29,7 +29,7 @@ export function detect(opts = {}) {
   const statusPath = opts.statusPath || join(UTER_ROOT, '.aes/reports/aes-integration-status.json')
   const processedPath = opts.processedPath || join(UTER_ROOT, '.aes/autonomous/records/PROCESSED-EVENTS.json')
   const regText = exists(registryPath) ? readFileSync(registryPath, 'utf8') : ''
-  const version = opts.simulateVersion || (regText.match(/^\\s*version:\\s*"?([^"\\n]+)"?/m) || [])[1] || null
+  const version = opts.simulateVersion || (regText.match(/^\s*version:\s*"?([^"\n]+)"?/m) || [])[1] || null
   const pin = readJson(pinPath, {})
   const pinVersion = pin.registry_version || null
   const drift = Boolean(version && pinVersion && version !== pinVersion)
