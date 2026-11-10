@@ -170,7 +170,7 @@ def main
   checks << check("UTER-AES-08", "P09/P10 responsibility boundary is executable") do
     script = File.join(UTER_ROOT, "scripts/quality/uter-p09-p10-boundary-check.rb")
     out, err, status = File.file?(script) ? Open3.capture3("ruby", script, chdir: UTER_ROOT) : ["", "missing", nil]
-    { ok: status && status.success?, detail: "boundary_check_exit=#{status&.exitstatus} #{err.strip}", evidence: ["scripts/quality/uter-p09-p10-boundary-check.rb"] }
+    { ok: status && status.success?, detail: "boundary_check_exit=#{status&.exitstatus} stdout=#{out.strip} stderr=#{err.strip}", evidence: ["scripts/quality/uter-p09-p10-boundary-check.rb"] }
   end
 
   checks << check("UTER-AES-09", "Product test and CI verification surfaces exist") do
@@ -250,6 +250,8 @@ def main
     honesty_note: "Internal governance acceptance only. This report does not claim full product conformance, legal authorization, regulatory approval or third-party certification."
   }
   write_json(REPORT, document)
+  failed_checks = checks.reject { |c| c[:status] == "PASS" }
+  failed_checks.each { |c| warn "UTER_INTERNAL_GATE_FAIL #{c[:id]} #{c[:detail]} evidence=#{Array(c[:evidence]).join(',')}" }
   puts JSON.generate({ verdict: verdict, checks: summary, report: REPORT, product_conformance_status: "NOT_ASSESSED" })
   exit(verdict == "INTERNAL_ACCEPTED" ? 0 : 1)
 end
