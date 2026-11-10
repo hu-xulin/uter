@@ -893,47 +893,8 @@ func AdminCompleteTopUp(c *gin.Context) {
 		return
 	}
 
-	// 订单级互斥，防止并发补单
-	LockOrder(req.TradeNo)
-	defer UnlockOrder(req.TradeNo)
-
-	// 组织范围门禁（对应审计项 P2-3）：组织 / 部门管理员只能补本租户成员的订单，
-	// 平台管理员（scope.OrgID==0）跳过此校验。
-	scope := middleware.RequestOrgScope(c)
-	if scope.OrgID != 0 {
-		ownerId, oerr := model.GetTopUpUserIDByTradeNo(req.TradeNo)
-		if oerr != nil {
-			common.ApiError(c, oerr)
-			return
-		}
-		ids, ierr := scope.UserIDs()
-		if ierr != nil {
-			common.ApiError(c, ierr)
-			return
-		}
-		inScope := false
-		for _, id := range ids {
-			if id == ownerId {
-				inScope = true
-				break
-			}
-		}
-		if !inScope {
-			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
-			return
-		}
-	}
-
-	outcome, err := model.ManualCompleteTopUp(req.TradeNo, c.ClientIP())
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	// F-19: tell the operator which of the two outcomes happened. `completed`
-	// means this call credited the account; `already_completed` means the order
-	// had been settled earlier and nothing was credited again.
-	common.ApiSuccess(c, gin.H{
-		"completed":         outcome.Completed,
-		"already_completed": !outcome.Completed,
-	})
+	// Compatibility tombstone: an administrator action must never credit a
+	// pending order. Only verified provider callbacks or automatic provider
+	// reconciliation may settle an order and mutate wallet balance.
+	common.ApiError(c, model.ErrManualTopUpDisabled)
 }
