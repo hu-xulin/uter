@@ -135,25 +135,22 @@ func TestRechargeEpayConcurrentCallbacksCreditOnce(t *testing.T) {
 	assert.Equal(t, common.TopUpStatusSuccess, reloaded.Status)
 }
 
-// TestManualCompleteTopUpRejectsFailedOrder 确认人工补单不能把已失败订单「复活」，
-// 否则一个已被判失败的订单仍可能被补单入账，形成重复资金。
-func TestManualCompleteTopUpRejectsFailedOrder(t *testing.T) {
+// Manual completion is a retired human-operated funds path. A pending order
+// must remain pending until a verified provider callback or automatic provider
+// reconciliation proves payment success and the paid amount.
+func TestManualCompleteTopUpIsDisabledForPendingOrder(t *testing.T) {
 	truncateTables(t)
 	useFixedQuotaPerUnitForOfficialTest(t, 500000)
 
 	user := insertUserForPaymentGuardTest(t, 805, 0)
-	order := createEpayTestOrder(t, user.Id, "CLAIM-FAILED", PaymentProviderEpay, common.TopUpStatusPending)
-
-	stored := GetTopUpByTradeNo(order.TradeNo)
-	require.NotNil(t, stored)
-	require.NoError(t, stored.MarkFailed("checkout never completed"))
+	order := createEpayTestOrder(t, user.Id, "CLAIM-MANUAL-DISABLED", PaymentProviderEpay, common.TopUpStatusPending)
 
 	outcome, err := ManualCompleteTopUp(order.TradeNo, "127.0.0.1")
-	require.Error(t, err)
+	require.ErrorIs(t, err, ErrManualTopUpDisabled)
 	assert.False(t, outcome.Completed)
-	assert.Equal(t, 0, getUserQuotaForPaymentGuardTest(t, user.Id), "a failed order must not be credited")
+	assert.Equal(t, 0, getUserQuotaForPaymentGuardTest(t, user.Id), "manual completion must never credit balance")
 
 	reloaded := GetTopUpByTradeNo(order.TradeNo)
 	require.NotNil(t, reloaded)
-	assert.Equal(t, common.TopUpStatusFailed, reloaded.Status)
+	assert.Equal(t, common.TopUpStatusPending, reloaded.Status, "manual completion must not mutate order state")
 }
