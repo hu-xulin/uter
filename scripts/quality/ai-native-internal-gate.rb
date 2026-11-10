@@ -225,6 +225,34 @@ def main
     not_run: checks.count { |c| c[:ran] != true }
   }
   verdict = summary[:pass] == 11 ? "INTERNAL_ACCEPTED" : "NOT_ACCEPTED"
+  p13_report_path = File.join(UTER_ROOT, ".aes/reports/P13-CONFORMANCE-REPORT.json")
+  p13_report = begin
+    File.file?(p13_report_path) ? JSON.parse(File.read(p13_report_path)) : nil
+  rescue JSON::ParserError
+    nil
+  end
+  uter_head = git_head(UTER_ROOT)
+  p13_current = p13_report && fp && p13_report["uter_head"] == uter_head &&
+    p13_report["aes_governed_fingerprint"] == fp["fingerprint"]
+  product_conformance_status =
+    if p13_current && p13_report["verdict"] == "PASS" &&
+      p13_report["all_applicable_requirements_verified"] == true &&
+      p13_report["not_run_count"].to_i.zero? && p13_report["failed_count"].to_i.zero?
+      "CONFORMANT"
+    elsif p13_report
+      "NOT_VERIFIED"
+    else
+      "NOT_ASSESSED"
+    end
+  product_conformance_evidence = p13_report ? {
+    report: ".aes/reports/P13-CONFORMANCE-REPORT.json",
+    verdict: p13_report["verdict"],
+    requirement_count: p13_report["requirement_count"],
+    not_run_count: p13_report["not_run_count"],
+    failed_count: p13_report["failed_count"],
+    aes_fingerprint_current: p13_report["aes_governed_fingerprint"] == fp&.dig("fingerprint"),
+    uter_head_current: p13_report["uter_head"] == uter_head
+  } : nil
   document = {
     document_id: "UTER-AES-AUTONOMOUS-INTERNAL-ACCEPTANCE",
     generated_at: Time.now.utc.iso8601,
@@ -237,14 +265,15 @@ def main
     evidence_manifest: evidence_manifest,
     stable_core_digest: stable_digest,
     machine_evidence_integrity: { verified: checks.last[:status] == "PASS", source: "AES evidence-engine chain and recomputed evidence index" },
-    product_conformance_status: "NOT_ASSESSED",
+    product_conformance_status: product_conformance_status,
+    product_conformance_evidence: product_conformance_evidence,
     NOT_RUN_never_pass: true,
     honesty_note: "Internal governance acceptance only. This report does not claim full product conformance, legal authorization, regulatory approval or third-party certification."
   }
   write_json(REPORT, document)
   failed_checks = checks.reject { |c| c[:status] == "PASS" }
   failed_checks.each { |c| warn "UTER_INTERNAL_GATE_FAIL #{c[:id]} #{c[:detail]} evidence=#{Array(c[:evidence]).join(',')}" }
-  puts JSON.generate({ verdict: verdict, checks: summary, report: REPORT, product_conformance_status: "NOT_ASSESSED" })
+  puts JSON.generate({ verdict: verdict, checks: summary, report: REPORT, product_conformance_status: product_conformance_status, product_conformance_evidence: product_conformance_evidence })
   exit(verdict == "INTERNAL_ACCEPTED" ? 0 : 1)
 end
 
