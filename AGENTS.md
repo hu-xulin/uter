@@ -126,10 +126,10 @@ so and label the result unverified.
   never fold pre-existing modifications into your own commit.
 - **Stage explicitly**: `git add <path>` only. `git add -A` / `-u` is forbidden.
   Review with `git diff --cached --name-status` before committing.
-- **Governing specification**: `docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` (`UTER-UAES-GOV-001`) is the authority for this governance task. It supersedes earlier execution orders wherever they conflict. Governance has three layers: UAES universal P00–P12 (owned by the separate `uaes` repository), Uter project governance incl. **UTER P13** (owned here), and execution/assurance (WorkBuddy + CI + independent review). Read `.uaes/uter-governance-registry.yaml` before changing any governance file.
-- **Repository separation**: UTER P13 and Uter business rules MUST stay in this repository. Never write them into UAES `standards/`, `.uaes/registry/` or the UAES Registry; never copy UAES generic standard text into a competing local standard. Enforced by `scripts/quality/uter-governance-separation-check.rb`.
+- **Governing specification**: `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` (`UTER-AES-GOV-001`) is the Uter project execution layer. AES universal P00–P12 is owned by the separate `aes` repository; Uter owns only its project layer and UTER P13. Read `.aes/uter-governance-registry.yaml` and `.aes/INTEGRATION.md` before changing governance files.
+- **Repository separation**: UTER P13 and Uter business rules MUST stay in this repository. Never write them into AES `standards/`, `.aes/registry/` or the AES Registry; never copy AES generic standard text into a competing local standard. Enforced by `scripts/quality/aes-integration-check.mjs` and the Uter internal gate.
 - **P09 / P10 separation**: P09 Quality Engineering *proves* whether engineering quality meets requirements (test strategy, execution, defect closure, metrics, quality gates); P10 Security & Reliability *defines* the security and reliability requirements the system must meet. Security testing is required by P10 and executed/recorded by the P09 test system. Neither substitutes for the other. Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
-- **Authorized delivery workflow**: this execution reuses the existing single dedicated branch `governance/uaes-full-migration-2026-11-06`; do not create a second execution branch. If the execution environment explicitly authorizes working on local `main`, follow that environment authorization instead of changing it unilaterally. Commit, push and Pull Request creation remain fail-closed until the applicable validation gates pass; a partial or quick verification is not sufficient. Never authorize PR merge, deployment, production writes, real payment configuration changes, force-push, or direct push to `main` by inference.
+- **Authorized delivery workflow**: governance migration work is performed on `main` as explicitly directed; do not create branches or PRs for this task. Remote writes to GitHub `main` require explicit user authorization (granted for the current migration). Never force-push, merge, deploy, write production data, or change real payment configuration.
 - **Baseline preservation**: pre-existing uncommitted changes must be preserved and staged only by explicit path (`git add <path>`); never `git add -A`, never `git reset --hard` / `git clean` / `git restore` on user files.
 - **No unauthorized git actions**: any action outside that explicit scope remains denied; never infer additional permissions from task completion.
 - **No destructive shell operations**: never `rm -rf`, never `git clean -fd`.
@@ -207,7 +207,7 @@ UX 状态覆盖、ADR 需求判断）按 `docs/ai-specs/CONFLICT-REPORT.md` 附�
 - 若发现两个或更多非 `main` 分支，停止创建分支和推送；先报告并请求确定保留分支，不得自行删除或重写任何分支。
 - 用户已授权的 Uter 修复工作流允许在该唯一工作分支上 Commit、Push 和创建/更新 PR；不允许 force push、PR merge、部署或生产写操作。
 - CI 必须检查远端非 `main` 分支数量不得超过 1。
-- **本次治理执行的工作分支（按 `UTER-UAES-GOV-001` §6.3 基线保护）**：本次治理执行直接在本地 `main` 上进行（2026-11-07 用户明确授权并要求把本地所有分支收敛到 `main`；原执行分支与 `main` 同提交，已删除）。不创建第二个执行分支。交付动作（commit / push / PR）在适用验证门禁通过前保持 fail-closed；验证未通过时保持未提交状态、如实登记阻断项与恢复条件。该约束不解除 force push、merge、rebase、部署、生产写、真实支付配置修改、覆盖用户未提交修改等任何禁止项。
+- **本次治理执行**：直接在 `main` 上完成，不创建分支或 PR。当前任务已明确授权直接修改 GitHub `main`；这不授予 force-push、merge、部署、生产写、真实支付配置修改或覆盖用户未提交内容的权限。
 
 ### Documentation sync
 
