@@ -41,6 +41,8 @@ delivery_controls:
     - release
     - artifact_publication
   required_gate: "L4_GLOBAL_CONFORMANCE_GATE"
+  gate_command: "node scripts/quality/l4-global-conformance-gate.mjs"
+  gate_evidence: "L4 report must bind the same Uter HEAD and current AES governed fingerprint"
   gate_scope:
     - AES_PIN_AND_SEAL
     - AES_P00_P12_REQUIREMENTS
