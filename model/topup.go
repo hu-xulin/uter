@@ -709,102 +709,14 @@ type ManualTopUpOutcome struct {
 }
 
 // ManualCompleteTopUp 管理员手动完成订单并给用户充值
-func ManualCompleteTopUp(tradeNo string, callerIp string) (ManualTopUpOutcome, error) {
-	var outcome ManualTopUpOutcome
-	if tradeNo == "" {
-		return outcome, errors.New("未提供订单号")
-	}
+var ErrManualTopUpDisabled = errors.New("manual top-up completion is disabled; only verified payment callbacks or automatic provider reconciliation may credit balances")
 
-	refCol := "`trade_no`"
-	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
-		refCol = `"trade_no"`
-	}
-
-	var userId int
-	var quotaToAdd int
-	var payMoney float64
-	var paymentMethod string
-	// F-06/F-19: track whether this invocation actually completed the order. On
-	// the idempotent path (order already succeeded) the post-transaction cache
-	// sync and audit log must be skipped, otherwise they run with the zero-value
-	// locals (userId 0, quota 0) captured above and corrupt the wrong user's
-	// cache or emit a misleading completion log.
-	alreadyCompleted := false
-
-	err := DB.Transaction(func(tx *gorm.DB) error {
-		topUp := &TopUp{}
-		// 行级锁，避免并发补单
-		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(topUp).Error; err != nil {
-			return errors.New("充值订单不存在")
-		}
-
-		// 幂等处理：已成功直接返回
-		if topUp.Status == common.TopUpStatusSuccess {
-			alreadyCompleted = true
-			return nil
-		}
-
-		if topUp.Status != common.TopUpStatusPending {
-			return errors.New("订单状态不是待支付，无法补单")
-		}
-
-		// 计算应充值额度：
-		// - Stripe 订单：Money 代表经分组倍率换算后的美元数量，直接 * QuotaPerUnit
-		// - 其他订单（如易支付）：Amount 为美元数量，* QuotaPerUnit
-		var quotaErr error
-		if topUp.PaymentProvider == PaymentProviderStripe {
-			quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
-				decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
-			)
-		} else {
-			quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
-				decimal.NewFromFloat(topUp.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
-			)
-		}
-		if quotaErr != nil || quotaToAdd <= 0 {
-			return ErrInvalidTopUpQuota
-		}
-
-		// 标记完成：条件更新 pending -> success，由数据库决定归属，避免
-		// SQLite 上并发的「回调 + 人工补单」同时读到 pending 而重复入账。
-		claimed, claimErr := claimPendingTopUp(tx, tradeNo, nil)
-		if claimErr != nil {
-			return claimErr
-		}
-		if !claimed {
-			alreadyCompleted = true
-			return nil
-		}
-		topUp.CompleteTime = common.GetTimestamp()
-		topUp.Status = common.TopUpStatusSuccess
-
-		// 增加用户额度（立即写库，保持一致性）
-		if err := creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil); err != nil {
-			return err
-		}
-
-		userId = topUp.UserId
-		payMoney = topUp.Money
-		paymentMethod = topUp.PaymentMethod
-		return nil
-	})
-
-	if err != nil {
-		return outcome, err
-	}
-
-	// F-06/F-19: on the idempotent repeat call the order was already completed in
-	// a previous invocation, so the transaction never populated userId /
-	// quotaToAdd / payMoney / paymentMethod. Skipping the cache sync and audit
-	// log here avoids touching user 0's cache and writing a false completion.
-	if alreadyCompleted {
-		return outcome, nil
-	}
-
-	// 事务外记录日志，避免阻塞
-	syncCreditUserQuotaCache(userId, quotaToAdd, "manual topup")
-	RecordTopupLog(userId, common.NewMessage("Administrator completed the order, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%f", payMoney)}), callerIp, paymentMethod, "admin")
-	return ManualTopUpOutcome{Completed: true, UserId: userId, QuotaAdded: quotaToAdd}, nil
+// ManualCompleteTopUp is retained as a compatibility guard for old callers.
+// It MUST NOT credit quota from an administrator action or from a pending
+// order alone. Only a cryptographically verified provider callback or an
+// automatic provider reconciliation that confirms the paid amount may credit.
+func ManualCompleteTopUp(_ string, _ string) (ManualTopUpOutcome, error) {
+	return ManualTopUpOutcome{}, ErrManualTopUpDisabled
 }
 
 // RechargeCreem credits the order without treating payment-provider billing details
