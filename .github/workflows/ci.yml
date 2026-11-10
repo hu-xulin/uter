@@ -523,6 +523,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Set up Go for independent P13 business verification
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+            tokenkit/tokenkit/go.sum
+      - name: Generate requirement-level P13 machine conformance evidence
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+          P13_REPORT_PATH: .aes/reports/P13-CONFORMANCE-REPORT.json
+          GOWORK: 'off'
+        run: node scripts/quality/p13-conformance-engine.mjs
       - name: Enforce same-head L4 global conformance
         env:
           AES_ROOT: ${{ github.workspace }}/aes-pinned
@@ -541,6 +556,9 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: l4-global-conformance
-          path: ${{ runner.temp }}/l4-global-conformance.json
+          path: |
+            ${{ runner.temp }}/l4-global-conformance.json
+            .aes/reports/P13-CONFORMANCE-REPORT.json
+            .aes/reports/p13-evidence/
           if-no-files-found: warn
           retention-days: 30
