@@ -2,24 +2,24 @@
   "schema_version": "3.1.0",
   "repository": "https://github.com/hu-xulin/aes",
   "default_branch": "main",
-  "governed_fingerprint": "PENDING_MACHINE_RECOMPUTATION",
+  "governed_fingerprint": "8e1a58148d1139a2c7613a1f837098e660b0b9dbe82a72f3928dd54a9e6a9404",
   "governed_fingerprint_algorithm": "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1",
   "governed_components": {
-    "registry_blob_sha": "308d9610c679f1c75a049953feb1341d7b55c365",
+    "registry_blob_sha": "2a9695d29831144c49c1ef5f02360e6d2858449a",
     "registry_version": "1.12.2",
     "registry_status": "ACTIVE",
     "specification_id": "AES-SPEC-CORE",
     "specification_version": "2.0.0",
     "specification_status": "ACTIVE",
     "specification_integrity_digest": "2fe091a0a4bc5c017f6f5a7f1d91b810fb89966b10d3d91793d16dc0a901155a",
-    "specification_integrity_computed": "PENDING_MACHINE_RECOMPUTATION",
+    "specification_integrity_computed": "2fe091a0a4bc5c017f6f5a7f1d91b810fb89966b10d3d91793d16dc0a901155a",
     "requirement_count": 2150,
-    "requirement_ids_digest": "PENDING_MACHINE_RECOMPUTATION"
+    "requirement_ids_digest": "d6782a6925fdb5afbbb1de6184e4b956e204c7e626ff72b3053243374988ab5b"
   },
-  "source_commit": "8e1c72d9015f600ea541ef84c8530753d65fc4e7",
-  "source_commit_role": "provenance-only",
+  "source_commit": "8a0b0432ac7f298e6cf372fa7646f1c38c8eca08",
+  "source_commit_role": "provenance-only; governed fingerprint defines rule identity",
   "registry_path": ".aes/STANDARD-REGISTRY.yaml",
-  "registry_blob_sha": "308d9610c679f1c75a049953feb1341d7b55c365",
+  "registry_blob_sha": "2a9695d29831144c49c1ef5f02360e6d2858449a",
   "registry_version": "1.12.2",
   "registry_status": "ACTIVE",
   "specification_registry_path": ".aes/spec-registry/SPECIFICATION-REGISTRY.yaml",
@@ -31,6 +31,6 @@
   "requirement_count": 2150,
   "integration_status": "MIGRATION_PENDING",
   "machine_authorization_state": "ACTIVE",
-  "pinned_at": "2026-11-10T01:30:00Z",
-  "note": "The pin identifies the exact AES source checkout and governed-content fingerprint separately. The fingerprint remains PENDING_MACHINE_RECOMPUTATION until AES CI emits a recomputed intact seal; Uter acceptance is blocked until that value is installed and independently rechecked. No human/third-party signature or external certification is represented."
+  "pinned_at": "2026-11-10T10:58:00+08:00",
+  "note": "The governed fingerprint and every component were recomputed from the live AES main content. This pin identifies the normative rule content, not Uter conformance. Uter remains MIGRATION_PENDING until all applicable requirements, runtime controls, business invariants and CI gates have current PASS evidence."
 }
