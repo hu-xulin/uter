@@ -4,9 +4,7 @@
 must load before engineering work in this repository. This file contains **no
 copy** of AES generic standard text.
 
-**Governing universal specification:** AES `AES-SPEC-CORE` —
-`docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`.
-Where earlier execution orders conflict, this specification governs.
+**Governing universal specification:** AES `AES-SPEC-CORE`, registered in the AES repository at `.aes/spec-registry/SPECIFICATION-REGISTRY.yaml` and implemented by the ACTIVE P00–P12 standards under `standards/`. Uter's `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` is a project execution overlay only; it cannot override AES.
 
 ## 0. Three-layer, two-repository architecture (§1.1 / §1.3)
 
@@ -36,7 +34,7 @@ Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
 | Registry | AES `.aes/STANDARD-REGISTRY.yaml` (read from the pinned AES checkout) |
 | Registry version / status | Derived from the live machine pin and AES registry at execution time |
 | Machine authorization | `AES-AUTONOMOUS-GOVERNANCE-POLICY` + recomputable machine evidence; no human/third-party sign-off dependency |
-| Integration status | `MIGRATION_PENDING` (AES domain gates remain `NOT_RUN`) |
+| Integration status | `MIGRATION_PENDING` until all Uter requirement-to-evidence checks and product gates have current machine PASS evidence |
 
 Machine-readable pin: `.aes/aes-pin.json`.
 Human contract: `.aes/INTEGRATION.md`.
