@@ -161,6 +161,9 @@ grep -Fq 'L4_GLOBAL_CONFORMANCE_GATE' "$POLICY" || fail "策略未把 L4 全局�
 [ -s "$ROOT/scripts/quality/l4-global-conformance-gate.mjs" ] || fail "L4_GLOBAL_CONFORMANCE_GATE 可执行入口缺失"
 grep -Fq 'L4_GLOBAL_CONFORMANCE_GATE' "$ROOT/scripts/quality/l4-global-conformance-gate.mjs" || fail "L4 执行入口未实现全局门禁"
 grep -Fq 'l4-global-conformance:' "$ROOT/.github/workflows/ci.yml" || fail "CI 未执行最终 L4_GLOBAL_CONFORMANCE_GATE"
+grep -Fq 'run: bun run test:visual' "$ROOT/.github/workflows/ci.yml" || fail "CI 未执行视觉布局/键盘/无障碍自动验收"
+grep -Fq 'run: bun run verify:contrast' "$ROOT/.github/workflows/ci.yml" || fail "CI 未执行设计 Token 对比度自动验收"
+
 
 
 # 8. ADR registry and accepted decision.
