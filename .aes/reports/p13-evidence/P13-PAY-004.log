@@ -1,0 +1,26 @@
+=== RUN   TestAlipayReconcileRejectsAmountMismatch
+[WARN] 2026/11/10 - 21:14:32 | SYSTEM | 支付宝主动查单金额不匹配 trade_no=ALIPAY-RECONCILE-MISMATCH 查单金额="0.01" 
+--- PASS: TestAlipayReconcileRejectsAmountMismatch (0.03s)
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/EpayNotify
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/AlipayNotify
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/QueryAlipayOrder
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/QueryWechatOrder
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/WechatPayNotify
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/StripeWebhook
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/WaffoWebhook
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/WaffoPancakeWebhook
+=== RUN   TestPaymentGatewayCallbacksMatchPaidAmount/CreemWebhook
+--- PASS: TestPaymentGatewayCallbacksMatchPaidAmount (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/EpayNotify (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/AlipayNotify (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/QueryAlipayOrder (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/QueryWechatOrder (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/WechatPayNotify (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/StripeWebhook (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/WaffoWebhook (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/WaffoPancakeWebhook (0.00s)
+    --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/CreemWebhook (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/controller	2.849s
+

@@ -1,0 +1,18 @@
+$ go test ./model -run ^(TestSystemTaskActiveKeyPreventsDuplicateActiveRun|TestSystemTaskCreateAndActiveLifecycle|TestMidjourneyRefundOutboxRetriesThenDeadLetters)$ -count=1 -v
+exit=0
+=== RUN   TestMidjourneyRefundOutboxRetriesThenDeadLetters
+--- PASS: TestMidjourneyRefundOutboxRetriesThenDeadLetters (0.00s)
+=== RUN   TestSystemTaskCreateAndActiveLifecycle
+
+2026/11/10 21:14:06 [31;1m/Users/lincolnhu/uter/model/system_task.go:139 [35;1mrecord not found
+[0m[33m[0.048ms] [34;1m[rows:0][0m SELECT * FROM `system_tasks` WHERE type = "log_cleanup" AND status IN ("pending","running") ORDER BY id desc,`system_tasks`.`id` LIMIT 1
+--- PASS: TestSystemTaskCreateAndActiveLifecycle (0.00s)
+=== RUN   TestSystemTaskActiveKeyPreventsDuplicateActiveRun
+
+2026/11/10 21:14:06 [31;1m/Users/lincolnhu/uter/model/system_task.go:118 [35;1mconstraint failed: UNIQUE constraint failed: system_tasks.active_key (2067)
+[0m[33m[0.080ms] [34;1m[rows:0][0m INSERT INTO `system_tasks` (`task_id`,`type`,`status`,`active_key`,`payload`,`state`,`result`,`error`,`locked_by`,`created_at`,`updated_at`) VALUES ("systask_NrIW57yY0w2wQ6AlAWoy405aw623OVHe","log_cleanup","pending","log_cleanup","{""target_timestamp"":1000,""batch_size"":100}","{""total"":0,""processed"":0,""progress"":0,""remaining"":0}","","","",1794316446,1794316446) RETURNING `id`
+--- PASS: TestSystemTaskActiveKeyPreventsDuplicateActiveRun (0.00s)
+PASS
+ok  	github.com/uter-ai/uter/model	1.512s
+
+
