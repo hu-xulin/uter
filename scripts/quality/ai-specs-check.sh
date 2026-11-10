@@ -16,12 +16,12 @@ AIES="$ROOT/.ai/AIES.md"
 AUTO_FIX="$EQ/AUTO-FIX-STANDARD.md"
 EQ_README="$EQ/README.md"
 ADR_DIR="$ROOT/docs/adr"
-POLICY="$ROOT/ .aes/agent-governance.yaml"
+POLICY="$ROOT/.aes/agent-governance.yaml"
 GOV_SPEC="$SPECS/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
-GOV_REGISTRY="$ROOT/ .aes/uter-governance-registry.yaml"
-GOV_ENTRY="$ROOT/ .aes/AI-GOVERNANCE-ENTRY.md"
-GOV_INTEGRATION="$ROOT/ .aes/INTEGRATION.md"
-GOV_P13="$ROOT/ .aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
+GOV_REGISTRY="$ROOT/.aes/uter-governance-registry.yaml"
+GOV_ENTRY="$ROOT/.aes/AI-GOVERNANCE-ENTRY.md"
+GOV_INTEGRATION="$ROOT/.aes/INTEGRATION.md"
+GOV_P13="$ROOT/.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md"
 
 errors=0
 fail() {
@@ -117,9 +117,9 @@ grep -Fq '禁止创建第二分支' "$EQ_README" || fail "工程质量入口未�
 #     规范以落盘文件为准：三层架构、两仓库分别治理、UTER P13 注册在 Uter、
 #     P09 证明 / P10 定义、交付动作仍 fail-closed。
 [ -s "$GOV_SPEC" ] || fail "UTER-AES-GOV-001 规范文件缺失"
-[ -s "$GOV_REGISTRY" ] || fail "Uter 项目治理注册表缺失（ .aes/uter-governance-registry.yaml）"
-[ -s "$GOV_P13" ] || fail "UTER P13 规范缺失（ .aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md）"
-[ -s "$GOV_ENTRY" ] || fail "AI 治理入口缺失（ .aes/AI-GOVERNANCE-ENTRY.md）"
+[ -s "$GOV_REGISTRY" ] || fail "Uter 项目治理注册表缺失（.aes/uter-governance-registry.yaml）"
+[ -s "$GOV_P13" ] || fail "UTER P13 规范缺失（.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md）"
+[ -s "$GOV_ENTRY" ] || fail "AI 治理入口缺失（.aes/AI-GOVERNANCE-ENTRY.md）"
 
 grep -Fq 'UTER-AES-GOV-001' "$AGENTS" || fail "AGENTS.md 未指向 UTER-AES-GOV-001 治理规范"
 grep -Fq 'uter-governance-registry.yaml' "$AGENTS" || fail "AGENTS.md 未指向 Uter 项目治理注册表"
