@@ -27,18 +27,15 @@ jobs:
     steps:
       - name: Checkout Uter
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Read immutable AES source pin
-        id: aes_pin
+      - name: Record AES provenance (not used as a rule pin)
         run: |
           set -euo pipefail
-          commit="$(node -e 'const p=require("./.aes/aes-pin.json"); process.stdout.write(p.source_commit || "")')"
-          test -n "$commit" || { echo "FAIL: AES source commit missing"; exit 1; }
-          echo "commit=$commit" >> "$GITHUB_OUTPUT"
-      - name: Checkout pinned AES governance source
+          node -e 'const p=require("./.aes/aes-pin.json"); console.log("AES provenance commit:", p.source_commit || "not-recorded")'
+      - name: Checkout current AES main governance source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: hu-xulin/aes
-          ref: ${{ steps.aes_pin.outputs.commit }}
+          ref: main
           path: aes-pinned
       - name: Set up Node
         uses: actions/setup-node@v4
