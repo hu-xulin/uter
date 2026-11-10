@@ -180,7 +180,7 @@ NOT_APPLICABLE：
 4. 必需检查未执行：BLOCKED 或 NOT_RUN。
 5. 所有必需检查通过：PASS。
 
-可选检查不应阻断普通 PR，但必须在报告中保留状态。
+可选检查不应阻断已通过全部必需门禁的本地 main Commit，但必须在报告中保留状态。
 
 ---
 
@@ -238,7 +238,7 @@ Quality Gate 包含八个检查维度。
 
 对于全仓库审计，必须同时记录已审查和未审查模块。
 
-不得将仅审查 PR 差异标记为全仓库审查通过。
+不得将仅审查局部变更差异标记为全仓库审查通过。
 
 ## 5.4 通过条件
 
@@ -552,7 +552,7 @@ FIX VERIFIED。
 - Execution SHA。
 - Fix Branch。
 - Commit SHA。
-- PR Base SHA。
+- 本地审查基线 SHA。
 
 所有测试和审查结果必须对应明确版本。
 
@@ -767,7 +767,7 @@ Pull Request:
 List:
 
 ## 12. Final Decision
-PASS / CONDITIONAL PASS / FAIL / BLOCKED
+PASS / FAIL / BLOCKED / NOT_RUN / NOT_VERIFIED / NOT_APPLICABLE
 ```
 
 ## 16.2 JSON 报告
@@ -790,7 +790,7 @@ JSON 必须包含机器可读的状态字段、执行基线、各检查项、证
 - 覆盖率文件。
 - 修复差异。
 - Commit。
-- PR。
+- 本地 main Commit。
 - CI 执行记录。
 
 不得在报告中输出密钥或敏感数据。
