@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://uter.ai/.ai/task-schema.json",
-  "title": "Uter AIES Task Contract",
-  "description": "Standard task contract for AI-driven code execution on Uter. Convert natural-language requests into bounded, verifiable work items. See .ai/AIES.md chapter 4. Requires agent identity, lifecycle state and scoped authorization for P01 governance.",
+  "title": "Uter Execution Task Contract",
+  "description": "AES-aligned machine-verifiable task contract for Uter. See .ai/UTER-EXECUTION-METHOD.md chapter 4. Internal authorization decisions are machine-policy decisions; no human approval gate is permitted.",
   "type": "object",
   "required": [
     "task_id",
@@ -226,13 +226,6 @@
       },
       "description": "e.g. Changed-file list, actual test results, acceptance checklist."
     },
-    "approval_gates": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Operations needing explicit authorization (commit/push/deploy/production/financial)."
-    },
     "delivery_status": {
       "type": "string",
       "enum": [
@@ -247,7 +240,11 @@
       "type": "object",
       "properties": {
         "branch": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "main"
+          ],
+          "description": "All Uter engineering execution is performed on the existing local main worktree."
         },
         "commit_performed": {
           "type": "boolean",
@@ -255,7 +252,9 @@
         },
         "push_performed": {
           "type": "boolean",
-          "default": false
+          "const": false,
+          "default": false,
+          "description": "Remote push is prohibited by the Uter local-main execution policy."
         },
         "notes": {
           "type": "string",
@@ -264,8 +263,8 @@
         "work_branch_count": {
           "type": "integer",
           "minimum": 0,
-          "maximum": 1,
-          "description": "Number of non-main project branches; maximum one."
+          "maximum": 0,
+          "description": "Number of non-main project branches; must remain zero."
         },
         "preexisting_worktree_state": {
           "type": "string",
@@ -309,7 +308,10 @@
         "forbidden_actions",
         "target_resources",
         "environment",
-        "expires_at"
+        "expires_at",
+        "policy_id",
+        "decision",
+        "evidence_refs"
       ],
       "properties": {
         "authorization_id": {
@@ -351,12 +353,34 @@
           "type": "string",
           "format": "date-time"
         },
-        "approval_ids": {
+        "machine_decision_ids": {
           "type": "array",
           "items": {
             "type": "string"
           },
           "uniqueItems": true
+        },
+        "policy_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical AES machine policy identifier."
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "AUTO_AUTHORIZED",
+            "AUTO_BLOCKED"
+          ],
+          "description": "Machine-only authorization result. No manual approval state exists."
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Machine-verifiable policy and evidence references supporting the decision."
         }
       },
       "additionalProperties": false
@@ -493,6 +517,13 @@
         }
       },
       "additionalProperties": false
+    },
+    "machine_authorization_checks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Executable AES policy checks for scope, action, resource and environment. A failed check automatically BLOCKS the action; no human approval gate is allowed."
     }
   }
 }
