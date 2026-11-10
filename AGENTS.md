@@ -507,14 +507,16 @@ Operating rules for WorkBuddy, Claude Code, Codex and every other Agent:
 6. This section must not be edited to raise `max_delegatable_level`, to set `agent_can_modify_own_policy` to true, or to grant any bypass. Any PRIVILEGE_ESCALATION request is rejected and recorded by the engine. AC-18 verifies this block byte-for-byte in AGENTS.md and CLAUDE.md of both repositories.
 7. Uter `integration_status` is decided by an explicit, machine-evidenced internal governance record; a mere version sync that sets `downstream_check.status: PROCESSED` never implicitly promotes it to INTEGRATED, VERIFIED, or PASS. That decision requires no human, owner or third-party signature.
 
-## AI_NATIVE_GOVERNANCE — 强制加载与执行块
+---
 
-- 治理模式：`AI_NATIVE_GOVERNANCE` / `AUTONOMOUS_FIRST` / `ZERO_HUMAN_DEPENDENCY`。
-- 唯一治理源：`aes/governance/ai-native/AI-NATIVE-AUTONOMOUS-GOVERNANCE-STANDARD.md`；注册表 `governance/ai-native/registry/AI-NATIVE-STANDARD-REGISTRY.yaml`。
-- 强制加载：任何 Agent 在执行治理、规范、整改、审批、验收任务前，必须真实加载上述总纲，并执行 `governance/ai-native/engine/cli.mjs self-check`。
-- 执行入口：`governance/ai-native/engine/cli.mjs`（`verify` / `ai-run-all` / `approve` / `status`）。
-- 内部工程事项默认由 AI 在既有授权内自主完成：不要求用户逐项审批、逐项签署、逐项确认，不要求第三方参与内部工程验收。
-- 内部审批经 `governance/autonomous/engine/cli.mjs ai-approve` 单一入口路由到 of-record 引擎，只有绑定验收规则真实 ALL_PASS 才自动批准。
-- 外部法定签署、第三方认证、监管批准、生产与资金操作属于 A6：检测、隔离、登记、告警；绝不自动批准，绝不伪造，且不阻塞内部交付。
-- 证据要求：真实执行 + 内容哈希 + 追加式哈希链 `governance/ai-native/records/EVIDENCE-CHAIN.jsonl`；`NOT_RUN` / `SKIPPED` / `UNKNOWN` / `BLOCKED` 绝不记为 PASS。
-- 权限边界：本块不授予任何新权限；canonical governance block 逐字保留，`privilege_guard` 与下游 `downstream-policy.json` 的 hard_constraints 不变，不绕过 SOD。
+## AES_AUTONOMOUS_GOVERNANCE — 强制加载与执行块
+
+- 唯一规范源：独立仓库 `https://github.com/hu-xulin/aes`；AES 通用规范注册表为 `aes/.aes/STANDARD-REGISTRY.yaml`，正式规范注册表为 `aes/.aes/spec-registry/SPECIFICATION-REGISTRY.yaml`。
+- Uter 项目集成入口：`.aes/INTEGRATION.md`、`.aes/aes-pin.json`、`.aes/uter-governance-registry.yaml`、`.aes/AI-GOVERNANCE-ENTRY.md`。
+- 强制加载：任何 Agent 在产品、架构、代码、规范、整改、测试或发布准备任务开始前，必须加载 AES ACTIVE 规范、当前机器 Pin、Uter 项目注册表和本文件；运行 `node aes/quality/scripts/aes/governed-fingerprint.mjs --json --require-intact` 及 `node .aes/autonomous/engine/sync.mjs --check`。
+- 执行入口：AES `governance/ai-native/engine/cli.mjs`；Uter 集成检查 `scripts/quality/aes-integration-check.mjs`；UEQE 质量门禁 `scripts/quality/uter-quality.sh`。
+- 内部规范审核、代码审核、测试验收、整改关闭、发布准入和项目符合性判定全部由可执行机器规则自动完成；必须有真实执行、独立复验、内容哈希和追加式证据。不得要求用户逐项签批或第三方为内部工程验收签署。
+- AI 可在仓库既有权限范围内自动执行审计、修改、测试和修复；不得自行扩大权限、修改自身授权策略、绕过职责分离或将未执行项目标记为 PASS。
+- `PASS` 只允许来自真实执行且证据完整的机器验证；`FAIL`、`BLOCKED`、`NOT_RUN`、`UNKNOWN`、`NOT_VERIFIED` 均不得折算为 PASS。
+- 法律、监管、合同、外部认证、生产环境和真实资金动作不属于内部机器验收。不得伪造外部签署或认证；无合法、明确、可验证授权时，相关外部动作自动拒绝并隔离，不阻断可独立完成的内部工程验收。
+- AES 是通用治理规范源，Uter 仅维护项目实施策略和 UTER-P13 业务扩展；禁止复制 AES 通用规范形成第二权威版本，禁止降低 AES 强制要求。
