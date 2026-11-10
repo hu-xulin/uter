@@ -16,7 +16,7 @@
     "requirement_count": 2150,
     "requirement_ids_digest": "PENDING_MACHINE_RECOMPUTATION"
   },
-  "source_commit": "e4fb83c2c07e3a012604e4a5beb98e0560cf7007",
+  "source_commit": "8e1c72d9015f600ea541ef84c8530753d65fc4e7",
   "source_commit_role": "provenance-only",
   "registry_path": ".aes/STANDARD-REGISTRY.yaml",
   "registry_blob_sha": "308d9610c679f1c75a049953feb1341d7b55c365",
@@ -31,6 +31,6 @@
   "requirement_count": 2150,
   "integration_status": "MIGRATION_PENDING",
   "machine_authorization_state": "ACTIVE",
-  "pinned_at": "2026-11-10T00:30:00Z",
-  "note": "This is a machine-governed content pin, not a human approval, legal authorization or third-party certification. source_commit is provenance only; the AES governed fingerprint is the rule identity. PENDING_MACHINE_RECOMPUTATION blocks acceptance until the live AES fingerprint and intact seal are independently recomputed."
+  "pinned_at": "2026-11-10T01:30:00Z",
+  "note": "The pin identifies the exact AES source checkout and governed-content fingerprint separately. The fingerprint remains PENDING_MACHINE_RECOMPUTATION until AES CI emits a recomputed intact seal; Uter acceptance is blocked until that value is installed and independently rechecked. No human/third-party signature or external certification is represented."
 }
