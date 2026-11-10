@@ -55,7 +55,7 @@ right scope every time:
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
 | Design system / typography / color | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (single authoritative file, 2026-11-03 起唯一标准) |
-| Execution methodology | `.ai/AIES.md` + `.ai/README.md` |
+| Execution methodology | `.ai/UTER-EXECUTION-METHOD.md` + `.ai/README.md` |
 | Domain standards (architecture / API contract / database / payment / billing / security / UX / change / documentation) | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准，含「代码事实锚点」章节） |
 | Engineering quality standards (code review / testing / auto-fix / quality gate) | `docs/ai-specs/engineering-quality/` |
 
@@ -149,7 +149,7 @@ resolve by precedence, never by convenience:
 1. `AGENTS.md` (this file) and `web/AGENTS.md` (frontend scope)
 2. `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (UI design values and rules)
 3. `docs/ai-specs/*` (domain standards; `engineering-quality/` = quality process)
-4. `.ai/AIES.md` (execution methodology)
+4. `.ai/UTER-EXECUTION-METHOD.md` (execution methodology)
 
 ### Spec index
 
