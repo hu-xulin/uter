@@ -7,12 +7,12 @@ registry:
   id: "UTER-PROJECT-GOVERNANCE-REGISTRY"
   name: "Uter Project Governance Registry"
   version: "1.0.0"
-  status: "PROPOSED_BASELINE"
+  status: "ACTIVE_MACHINE_SPECIFICATION"
   owner: "Uter Engineering Governance"
   governing_specification:
     document_id: "UTER-AES-GOV-001"
     path: "docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md"
-    status: "PROPOSED_EXECUTION_BASELINE_PENDING_VALIDATION"
+    status: "ACTIVE_MACHINE_EXECUTION_CONTRACT"
   repository_scope: "uter"
   aes_repository_scope: "aes"
 
@@ -51,8 +51,8 @@ governance_layers:
     agent: "WorkBuddy"
     assurance:
       - "CI/CD workflows"
-      - "scripts/quality/ gates"
-      - "Independent assessment (Phase 7)"
+      - "scripts/quality/ executable gates"
+      - "Independent machine verification"
 
 # ---------------------------------------------------------------------------
 # §6.4 / §18 step 1-2 — pinned AES inheritance (re-verified 2026-11-07)
@@ -119,8 +119,8 @@ project_extensions:
       - "P13.8 Task and scheduler domain"
       - "P13.9 Data consistency domain"
       - "P13.10 Business observability"
-    status: "PROPOSED_BASELINE"
-    conformance_status: "NOT_ASSESSED"
+    status: "ACTIVE_MACHINE_SPECIFICATION"
+    conformance_status: "NOT_VERIFIED"
     forbidden_registration_locations:
       - "aes/standards/"
       - "aes/.aes/registry/"
@@ -254,3 +254,13 @@ enforcement:
   spec_check: "scripts/quality/ai-specs-check.sh"
   policy_test: "scripts/quality/test-ai-governance-policy.rb"
   independent_assessment: "scripts/quality/uter-independent-assessment.rb"
+
+# Machine-only conformance lifecycle
+conformance_lifecycle:
+  decision_source: "current executable evidence only"
+  required_states: [PASS, FAIL, BLOCKED, NOT_RUN, NOT_VERIFIED]
+  pass_requires: [current_head_execution, requirement_traceability, independent_machine_verification, evidence_integrity]
+  unknown_is_pass: false
+  not_run_is_pass: false
+  interactive_approval_queue: false
+  unresolved_result: "NOT_VERIFIED"
