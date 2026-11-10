@@ -192,7 +192,8 @@ def main
     index_path = File.join(AES_ROOT, "governance/ai-native/reports/EVIDENCE-INDEX.json")
     out, err, status = File.file?(cli) ? Open3.capture3("node", cli, "chain", chdir: AES_ROOT) : ["", "missing CLI", nil]
     result = begin
-      JSON.parse(out.lines.last || "{}")
+      last_json_line = out.lines.reverse.find { |line| !line.strip.empty? }
+      JSON.parse(last_json_line || "{}")
     rescue JSON::ParserError
       {}
     end
