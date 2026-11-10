@@ -1,18 +1,18 @@
 # Uter local AI specification disposition registry
-# Authority: AES skills/aes-uter-integration/SKILL.md Procedure 10; AGENTS.md AES section.
-# Rule: deletion/stubbing is PROHIBITED until all five prerequisites are met.
-# Generated: 2026-11-07 (real repository inspection). Remediated: 2026-11-08. No file was deleted by this registry.
+# Authority: .agents/skills/aes-integration/SKILL.md; AES standards; AGENTS.md AES section.
+# Rule: exact duplicates may be automatically retired only after content-hash and inbound-reference checks; partial duplicates with Uter-specific rules remain mapped project overlays.
+# Machine inventory updated: 2026-11-10. This registry is not a manual approval queue.
 
 registry_id: UTER-AI-SPEC-DISPOSITION-REGISTRY
 version: 1.0.0
 generated_at: '2026-11-10'
-aes_pinned_commit: 74e5d2eea215c96b845d7a0b2111b7fa011c540f
-aes_registry_status: ACTIVE
-deletion_prerequisites_met: 1/5 (semantic_parity=NOT_REASSESSED, machine_lifecycle=PARTIAL, project_mapping=PARTIAL, runtime_discovery=NOT_VERIFIED, ci_enforcement=NOT_VERIFIED)
+aes_pin_source: .aes/aes-pin.json
+aes_registry_status: READ_FROM_MACHINE_PIN
+deletion_prerequisites_met: MACHINE_REASSESSMENT_PENDING (semantic_parity=PARTIAL, machine_lifecycle=IN_PROGRESS, project_mapping=IN_PROGRESS, runtime_discovery=PARTIAL, ci_enforcement=IN_PROGRESS)
 deletion_allowed: false
 current_authority: AES_AUTONOMOUS_GOVERNANCE
-status: HISTORICAL_INVENTORY_REQUIRES_MACHINE_REASSESSMENT
-note: This registry records the legacy .uaes inventory; it is not permission to delete a file until replacement mapping and all references are machine-verified.
+status: ACTIVE_MACHINE_INVENTORY
+note: The former .uaes root is retired and archived. This registry now governs only Uter-local AI-spec overlays; no human adjudication or third-party approval is required. Deletion remains fail-closed until a machine verifier proves exact duplication and zero active references.
 total_files: 18
 semantic_class_counts:
   exact_duplicate: 0
@@ -24,9 +24,9 @@ semantic_class_counts:
 conflicts_registered:
 - id: C-01
   location: AUTO-FIX-STANDARD.md section 4 step 4
-  issue: independent fix branch conflicts with Uter single-branch mode
+  issue: creating any execution branch or PR conflicts with the main-only governance mode
   status: RESOLVED
-  resolution: §9.1 用语改为「唯一工作分支」；§7.1 已是强制唯一分支规则。2026-11-08
+  resolution: Uter governance migration is main-only; no execution branch or PR is created. 2026-11-10
 - id: C-02
   location: QUALITY-GATE-STANDARD.md
   issue: status/risk/coverage vocabulary differs from AES-09-015
@@ -43,7 +43,7 @@ conflicts_registered:
 - id: C-05
   location: AES standards/09-quality-engineering/AES-09-002, -014, -015
   issue: upstream generic standards embed Uter-specific owner and test matrix
-review_trigger: AES formally published in an immutable commit AND semantic parity report completed AND full requirement-to-evidence mapping closed AND runtime skill discovery proven AND CI enforcement verified AND independent approval recorded.
+review_trigger: AES formally published in an immutable commit AND semantic parity report completed AND full requirement-to-evidence mapping closed AND runtime skill discovery proven AND CI enforcement verified AND independent machine verification PASS recorded.
 files:
 - path: docs/ai-specs/AI-EXECUTION-STANDARD.md
   doc_id: UTER-AI-EXEC-001
@@ -301,10 +301,10 @@ build_order_and_untracked_enforcement_2026_11_08:
     - scripts/quality/ensure-go-embed-artifacts.sh
     - scripts/quality/ensure-embed-for-verification.sh
     - scripts/quality/test-uter-governance-boundaries.rb
-    - scripts/quality/uter-independent-assessment.rb
+    - scripts/quality/ai-native-internal-gate.rb
     - scripts/quality/test-verify-all-embed-precondition.rb
     - scripts/quality/test-ueqe-verdict-scope.rb
-    - scripts/quality/test-aes-manual-acceptance-boundary.rb
+    - scripts/quality/aes-integration-check.test.mjs
     - scripts/quality/aes-test-matrix.sh
   why_these_eight: >-
     它们被 CI（ci.yml 第 60 行直接执行 test-uter-governance-boundaries.rb）、
@@ -330,4 +330,4 @@ retained_but_not_tracked_2026_11_08:
     - scripts/quality/aes-evidence-closure.py
     - scripts/quality/aes-governance-gates.rb
     - scripts/quality/aes-governance-reports.py
-    - scripts/quality/aes-manual-acceptance.py
+    - scripts/quality/ai-native-internal-gate.rb
