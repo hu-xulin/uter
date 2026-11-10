@@ -471,18 +471,54 @@ All internal governance, specification review, acceptance, remediation closure a
 
 The AES machine governance engine, independent verifier and CI gates are the only accepted internal decision path. Every Agent must load the canonical governance block and the AI-Native execution block below before work.
  
-## AI_NATIVE_GOVERNANCE — 强制加载与执行块
+# AES Autonomous Governance Bootstrap Block
 
-- 治理模式：`AI_NATIVE_GOVERNANCE` / `AUTONOMOUS_MACHINE_ONLY`。
-- 唯一通用规范源：独立仓库 `https://github.com/hu-xulin/aes`；通用规范注册表 `aes/.aes/STANDARD-REGISTRY.yaml`；规范注册表 `aes/.aes/spec-registry/SPECIFICATION-REGISTRY.yaml`。
-- Uter 项目入口：`.aes/AI-GOVERNANCE-ENTRY.md`、`.aes/INTEGRATION.md`、`.aes/aes-pin.json`、`.aes/uter-governance-registry.yaml`、`.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`。
-- 强制加载顺序：本文件 → `.aes/agent-governance.yaml` → `.aes/AI-GOVERNANCE-ENTRY.md` → 当前 AES pin 与适用标准 → UTER-P13 → 任务相关项目规范。
-- 强制执行：运行 `node ${AES_ROOT:-../aes}/quality/scripts/aes/governed-fingerprint.mjs --json --require-intact`、`node .aes/autonomous/engine/sync.mjs`、`node scripts/quality/aes-integration-check.mjs --aes-root "${AES_ROOT:-../aes}"`、`ruby scripts/quality/ai-native-internal-gate.rb`。
-- 决策流程：`Requirement → Rule → Actual Execution → Evidence → Independent Machine Verification → Decision`。
-- 所有内部规范决策、代码审查、测试验收、整改关闭和发布准备状态均由可执行机器规则计算；禁止手写成功状态。
-- `PASS` 必须来自当前 revision 的真实执行与独立复验；`FAIL`、`BLOCKED`、`NOT_RUN`、`UNKNOWN`、`NOT_VERIFIED` 均不得折算为 PASS。
-- 超出仓库工作区权限的生产数据库写入、真实资金操作、生产部署、生产密钥访问、不可逆副作用、权限升级和策略自修改一律 `AUTO_DENY`；拒绝结果写入机器证据，不产生交互审批任务。
-- Uter 的执行约束：本地 `main` 执行；不创建分支、不 push、不创建或合并 PR、不部署；必须保护所有预先存在的工作区修改。
-- AES 负责通用 P00–P12；Uter 负责产品实现和 UTER-P13。Uter 项目覆盖层必须映射 AES，不得降低 AES 要求或建立第二套通用规范。
-- P09 Quality Engineering proves whether engineering quality meets requirements. P10 Security & Reliability defines security and reliability requirements. P09 executes and records the tests required by P10.
+This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
 
+## AI_NATIVE_GOVERNANCE — Canonical machine policy
+
+- marker: AI_NATIVE_GOVERNANCE
+
+## Canonical machine policy
+
+- governance_mode: AUTONOMOUS_MACHINE_ONLY
+- decision_engine: governance/ai-native/engine/cli.mjs
+- policy_engine: governance/ai-native/engine/policy-engine.mjs
+- acceptance_engine: governance/ai-native/engine/acceptance-engine.mjs
+- independent_verifier: governance/ai-native/engine/independent-review.mjs
+- evidence_engine: governance/ai-native/engine/evidence-engine.mjs
+- evidence_mode: AUTONOMOUS_MACHINE_EVIDENCE
+- default_decision: DENY_UNLESS_VERIFIED
+
+## Mandatory load order
+
+1. Load the canonical AES governance standard and registry.
+2. Load the Agent's repository entrypoint and project policy.
+3. Run `node governance/ai-native/engine/cli.mjs self-check`.
+4. Verify task identity, scope, permission envelope and repository baseline.
+5. Execute only declared actions and commands.
+6. Run all required acceptance rules.
+7. Invoke independent machine verification.
+8. Append evidence and recompute status.
+
+## Action boundaries
+
+- A0–A5: bounded internal engineering actions within declared permissions.
+- A6: out-of-scope operations; always AUTO_DENY.
+- Production database mutation, real-funds operation, production credential access, irreversible external side effects, permission escalation and policy self-modification are denied by machine policy.
+- A denied action produces an immutable decision record and BLOCKED result; no interactive approval task is created.
+
+## Evidence and decision rules
+
+- All decisions use real command execution, content hashes and append-only evidence.
+- The verifier reads source files independently and recomputes the result.
+- The executor cannot write or override its own success state.
+- NOT_RUN, UNKNOWN, SKIPPED, BLOCKED, FAILED and NOT_VERIFIED never count as PASS.
+- Internal release readiness is computed from current mandatory requirement evidence only.
+
+## Protected invariants
+
+- `agent_can_modify_own_policy: false`
+- `max_delegatable_level: A2`
+- Uter `downstream-policy.json` hard constraints remain enforced.
+- No Agent may modify this block to expand its own authority.
