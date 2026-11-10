@@ -27,7 +27,7 @@ require "open3"
 require "fileutils"
 
 ROOT = File.expand_path("../..", __dir__)
-AES_ROOT = File.expand_path(ENV.fetch("AES_REPO", File.join(ROOT, "..", "uaes")))
+AES_ROOT = File.expand_path(ENV.fetch("AES_REPO") { ENV.fetch("AES_ROOT") { File.join(ROOT, "..", "aes") } })
 EVIDENCE_DIR = ENV.fetch(
   "AES_EVIDENCE_DIR",
   File.join(ROOT, "reports/compliance/uaes-full-migration-2026-11-06/evidence")
