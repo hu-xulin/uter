@@ -9,7 +9,7 @@
 | **Not registered in** | AES universal standards registry (`.aes/STANDARD-REGISTRY.yaml` in the AES repository) |
 | AES baseline inherited | `1.12.2 / ACTIVE`, source commit `0c00bc9aaee9e40494b342590d21ae4ecd13f1e8` (provenance only), registry blob `2a9695d29831144c49c1ef5f02360e6d2858449a`; governed fingerprint `13210ef04852a792a3e46b886a9a5960d05a35fa64bfc191e3af7b1bb6f175b3` (machine-recomputed) |
 | Uter revision at inventory | `ef778bf08f335aaf16f4c8805be02b1111336fbe` |
-| Status | `PROPOSED_BASELINE` — repository inventory completed; domain acceptance **not** performed |
+| Status | `MACHINE_VERIFICATION_PENDING` — project-domain rules are registered; conformance is computed only from current executable evidence |
 | Language | 中文（术语保留英文） |
 
 > **归属声明（§1.3 / §4.1）**：P13 只定义 Uter 专属业务领域规则，**不属于 AES 通用标准**，
@@ -28,7 +28,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 - **不得**把 Uter 专属支付流程、Token 计费、模型路由、余额账务、订单状态机、渠道管理写入 AES。
 - **不得**用 P13 削弱或重定义任何 AES 强制要求；P13 只能增加更严格的项目级约束。
-- **不得**从当前代码反推业务规则当成权威需求（§4.2）。代码与批准需求不一致时必须登记差异并走变更控制。
+- **不得**把单一代码实现直接视为完整业务规则。规则候选必须关联现存产品文档、API 契约、配置、状态机和测试；冲突时采用最严格的安全解释并自动标记 BLOCKED，直到机器可验证的来源关系闭合。
 - 冲突必须登记并上报，**Agent 不得自行选择较宽松的规则**（§1.4 第 7 条）。
 
 按 §0.3：**存在代码或文档不等于符合规范**；单个测试通过不等于系统符合。
@@ -61,7 +61,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 | P13.10 业务可观测性 | Business observability | `web/src/features/usage-logs/`, `performance-metrics/`, `system-info/`, `rankings/`, `logger/`, `model/` 日志相关表 | `IMPLEMENTED` / 脱敏与审计完整性未独立验收 |
 
 **盘点结论**：10 个业务域在代码层均有可定位实现，但按 §4.2「业务规则不得仅从代码推断」，
-本执行**不把这些实现当作已批准的业务需求**；权威业务需求、业务所有者与验收准则尚未逐域确认，
+本执行**不把这些实现当作已批准的业务需求**；可追溯的机器规范来源、业务所有者与验收准则尚未逐域确认，
 已登记为 `P13-REQ-001`。
 
 ---
@@ -70,15 +70,15 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 | # | 要求 | 当前处置 |
 |---|---|---|
-| 1 | 明确的业务所有者 | 未确认 → `P13-REQ-001` |
-| 2 | 权威业务需求 | 未确认 → `P13-REQ-001` |
-| 3 | 领域模型或等价规格 | 部分存在于代码与 `docs/ai-specs/`，未批准 |
+| 1 | 明确的机器责任域与源文件归属 | 未确认 → `P13-REQ-001` |
+| 2 | 可追溯的机器规范来源 | 未确认 → `P13-REQ-001` |
+| 3 | 领域模型或等价规格 | 部分存在于代码与 `docs/ai-specs/`，需生成来源映射并验证 |
 | 4 | 业务不变量 | 部分有测试覆盖，未条款化 |
-| 5 | 状态转换定义（适用时） | `model/topup_order_state_matrix_test.go` 等存在，未批准为规格 |
+| 5 | 状态转换定义（适用时） | `model/topup_order_state_matrix_test.go` 等存在，需与规范化状态机逐项比对 |
 | 6 | 失败行为定义 | 部分有恢复任务，未条款化 |
 | 7 | 授权规则 | 散落在 `middleware/` 与 controller，未条款化 |
 | 8 | 数据完整性要求 | 部分有测试，未条款化 |
-| 9 | 验证准则 | 未逐域批准 |
+| 9 | 验证准则 | 未逐域机器验证 |
 | 10 | 可追溯实现证据 | 本文件 §2 提供物理位置，非验收证据 |
 
 按 §13.2：**不得仅因为存在实现变更就关闭 finding**；按 §5.3：`IMPLEMENTED` 不等于 `VERIFIED`。
@@ -87,8 +87,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 ## 4. 支付域重点异常场景（P13.7，最高资金风险）
 
-以下场景为**必须验证清单**，不是已完成清单。按 §9.4，涉及真实资金的测试必须使用
-经批准的隔离测试环境；本执行未运行任何真实资金或生产库测试。
+以下场景为**必须验证清单**，不是已完成清单。所有资金相关测试必须使用本地模拟支付网关、合成订单、隔离数据库和可销毁测试数据；禁止连接真实资金渠道或生产数据库。
 
 | # | 场景 | 现有可定位证据 | 本执行状态 |
 |---|---|---|---|
@@ -109,11 +108,11 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 | AES 域 | P13 继承要求 | 不得削弱的红线 |
 |---|---|---|
-| P00 Foundation | 规范注册、版本、追踪 | 版本必须锁定，需求必须有所有者与验证方法 |
+| P00 Foundation | 规范注册、版本、追踪 | 版本必须锁定，需求必须有机器责任域与验证方法 |
 | P01 AI Governance | 业务自动化中的 Agent 权限 | 越权一律 fail-closed |
 | P02 Product Engineering | 业务需求可测试、可追踪 | 需求必须有验收准则 |
 | P03 Knowledge Engineering | 业务知识与实际代码一致 | 不得把未验证信息当作权威 |
-| P04 System Architecture | 业务模块边界与 ADR | 实现必须与批准架构一致 |
+| P04 System Architecture | 业务模块边界与 ADR | 实现必须与机器注册的有效架构约束一致 |
 | P05 Experience & Design | 钱包/定价等 UI | 遵循 UTER Design System 3.0 |
 | P06 Software Engineering | 类型安全、错误处理、静态分析 | 敏感信息不得进日志 |
 | P07 Cross-Platform | Electron / Web 一致性 | 未验证平台不得标记已支持 |
@@ -133,6 +132,17 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 
 ---
 
+## 6.0 自动规范生成与自动验收机制
+
+本域不设置人工审批队列、签批步骤或外部验证前置条件。规范与验收完全由机器流程执行：
+
+1. 从产品需求、API/OpenAPI、配置、数据库模型、状态机、业务服务、已有测试和迁移脚本提取规则候选。
+2. 为每条候选生成稳定 Requirement ID、来源路径与行范围、适用域、风险等级、实现映射、验证命令和证据位置。
+3. 对多来源冲突执行确定性优先级：安全与账务不变量 > 当前有效产品规范 > API 契约 > 业务模型/状态机 > 实现代码 > 测试样例。低优先级不得覆盖高优先级。
+4. 缺少权威来源、存在冲突或无法执行验证时，状态自动为 `BLOCKED` 或 `NOT_VERIFIED`，不得猜测、不得标记 PASS。
+5. 对可安全执行的缺陷自动修复；每次修复后独立重跑原验证、回归验证和负向测试。
+6. 只有所有适用强制要求均有当前修订的真实 PASS 证据，才可将该业务域计算为 `VERIFIED`。
+
 ## 6. 验收状态与证据要求
 
 - 按 §16.3，UTER P13 作为**独立域**评估，不得因 AES 某域通过而抵消。
@@ -141,7 +151,7 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 - 按 §9.3，每项测试执行需记录 Test ID、用例版本、被测修订、环境、工具版本、预期/实际结果、PASS/FAIL/BLOCKED、失败详情、缺陷引用、证据位置。
 
 **本域当前结论：`NOT ASSESSED`（§16.2）** —— 已完成仓库盘点与规范落盘，
-但 §3 的 10 项、§4 的 10 个异常场景、独立域验收与证据链均未完成。
+但 §3 的 10 项、§4 的 10 个异常场景、独立机器验证与证据链均未完成。
 
 ---
 
@@ -150,15 +160,15 @@ P13 继承 AES P00–P12 全部适用强制要求（§4.3），只补充 Uter �
 1. 不得把本文件或任何 UTER P13 内容提交进 AES `standards/`、`.aes/registry/` 或 AES Registry。
 2. 不得把 Uter 业务实现细节反向写入 AES 通用标准。
 3. 不得因"代码里有实现"而把业务域标记为 `VERIFIED` 或 `CONFORMANT`。
-4. 不得在未获授权时使用真实资金、生产数据库或生产支付配置做验证。
-5. 不得由 WorkBuddy 自行批准业务风险、例外或削弱任何 AES 强制要求（§6.1 / §13.4）。
+4. 所有真实资金、生产数据库、生产支付配置及不可逆外部副作用均由策略自动拒绝；仅允许本地模拟与隔离测试。
+5. Agent 不得修改治理策略或降低 AES 强制要求；任何例外自动拒绝，任何冲突自动 BLOCKED。。
 
 
 ## 10. Related project-specific business controls
 
 The following Uter-owned documents supplement P13 and are not universal AES standards:
 
-- `.aes/business/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md` — legacy API contract and consumer audit. Its historical decision does not claim complete external consumer telemetry.
+- `.aes/business/API-LEGACY-ENDPOINT-DEPRECATION-AUDIT-2026-11-05.md` — legacy API contract and consumer audit. Historical evidence is provenance only; current route usage is verified by repository-wide source and test scans.
 - `.aes/business/MIDJOURNEY-REFUND-TRANSACTION-DESIGN-2026-11-05.md` — Midjourney refund transaction design. Status remains DRAFT until executable accounting, idempotency, recovery and concurrency tests pass.
 
 These documents remain project-specific overlays. They MUST inherit applicable AES P00–P12 requirements, MUST NOT weaken them, and MUST NOT be registered as AES universal standards. Presence is not implementation or acceptance evidence.
