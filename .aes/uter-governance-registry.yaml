@@ -60,7 +60,7 @@ governance_layers:
 aes_inheritance:
   source_repository: "https://github.com/hu-xulin/aes"
   source_default_branch: "main"
-  source_commit: "8a0b0432ac7f298e6cf372fa7646f1c38c8eca08"
+  source_commit: "0c00bc9aaee9e40494b342590d21ae4ecd13f1e8"
   source_commit_role: "provenance-only; governed fingerprint defines rule identity"
   registry_path: ".aes/STANDARD-REGISTRY.yaml"
   registry_blob_sha: "2a9695d29831144c49c1ef5f02360e6d2858449a"
@@ -70,7 +70,7 @@ aes_inheritance:
   specification_id: "AES-SPEC-CORE"
   specification_version: "2.0.0"
   specification_status: "ACTIVE"
-  governed_fingerprint: "8e1a58148d1139a2c7613a1f837098e660b0b9dbe82a72f3928dd54a9e6a9404"
+  governed_fingerprint: "13210ef04852a792a3e46b886a9a5960d05a35fa64bfc191e3af7b1bb6f175b3"
   governed_fingerprint_algorithm: "quality/scripts/aes/governed-fingerprint.mjs#sha256-canonical-json-v1"
   machine_authorization_policy: "AES-AUTONOMOUS-GOVERNANCE-POLICY"
   machine_authorization_mode: "AUTONOMOUS_MACHINE_EVIDENCE"
