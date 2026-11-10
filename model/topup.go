@@ -698,25 +698,12 @@ func GetTopUpUserIDByTradeNo(tradeNo string) (int, error) {
 // order" and "the order was already credited before". That makes a double click
 // (or two admins working the same queue) look identical to a real completion,
 // so the operator cannot tell whether the money moved now or earlier.
-type ManualTopUpOutcome struct {
-	// Completed is true only when this call transitioned the order from pending
-	// to success and credited the quota.
-	Completed bool
-	// UserId / QuotaAdded describe the credit applied by this call; both are
-	// zero on the already-completed path.
-	UserId     int
-	QuotaAdded int
-}
-
-// ManualCompleteTopUp 管理员手动完成订单并给用户充值
 var ErrManualTopUpDisabled = errors.New("manual top-up completion is disabled; only verified payment callbacks or automatic provider reconciliation may credit balances")
 
-// ManualCompleteTopUp is retained as a compatibility guard for old callers.
-// It MUST NOT credit quota from an administrator action or from a pending
-// order alone. Only a cryptographically verified provider callback or an
-// automatic provider reconciliation that confirms the paid amount may credit.
-func ManualCompleteTopUp(_ string, _ string) (ManualTopUpOutcome, error) {
-	return ManualTopUpOutcome{}, ErrManualTopUpDisabled
+// ManualCompleteTopUp is a compatibility tombstone for retired human-operated
+// funds handling. It never mutates order state, wallet balance or cache.
+func ManualCompleteTopUp(_ string, _ string) error {
+	return ErrManualTopUpDisabled
 }
 
 // RechargeCreem credits the order without treating payment-provider billing details
