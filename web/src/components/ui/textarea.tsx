@@ -47,7 +47,7 @@ function Textarea({
         // 焦点态不改边框色（不设 focus-visible:border-ring）：1px 满色焦点环
         // 单独承担焦点指示（PR #31 focus-ring 修复），边框保持 border-input。
         'border-input hover:border-border-strong placeholder:text-muted-foreground focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-md border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
-        // 与 Input 一致：字号统一走 `text-long`（16px）满足 UAES P4 H5 无障碍
+        // 与 Input 一致：字号统一走 `text-long`（16px）满足 AES P4 H5 无障碍
         // （≥16px 防 iOS 聚焦自动缩放）；mono 仅额外叠 `font-mono` 字形族，
         // 不再用 13px 的 `text-mono` 档，size 与字形拆开避免 twMerge 冲突。
         mono ? 'font-mono text-long' : 'text-long',

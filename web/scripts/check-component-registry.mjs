@@ -116,7 +116,7 @@ const summary = {
   errors: errors.length,
   warnings: warnings.length,
 }
-console.log('[UAES Component Registry]', JSON.stringify(summary, null, 2))
+console.log('[AES Component Registry]', JSON.stringify(summary, null, 2))
 for (const error of errors) console.error('ERROR:', error)
 for (const warning of warnings) console.warn('WARN:', warning)
 if (errors.length) process.exit(1)

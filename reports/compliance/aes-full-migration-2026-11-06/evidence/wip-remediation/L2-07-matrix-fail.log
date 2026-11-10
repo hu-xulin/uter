@@ -1,0 +1,47 @@
+# id: L2-07
+# layer: L2
+# command: bun run build:check
+# workdir: /Users/lincolnhu/uter/web
+# started_at: 2026-11-06T07:16:30Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+$ tsgo -b && rsbuild build
+Rsbuild v2.1.6
+
+Warning: Route file "/Users/lincolnhu/uter/web/src/routes/__tests__/root-setup-status.test.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "/Users/lincolnhu/uter/web/src/routes/__tests__/-root-setup-status.test.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "/Users/lincolnhu/uter/web/src/routes/__tests__/public-routes-render.test.tsx" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "/Users/lincolnhu/uter/web/src/routes/__tests__/-public-routes-render.test.tsx" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+info    build started...
+error   Failed to build.
+error   Failed to copy public directory '/Users/lincolnhu/uter/web/public' to output directory. To disable public directory copying, set `server.publicDir: false` in your config.
+[safe-delete][SAFE_DELETE_BULK_CONFIRM_REQUIRED] {"count":50,"threshold":50,"scope":"turn","targets":["/Users/lincolnhu/uter/web/dist/plugins/hailuo/1.1.3/plugin.js"],"targetCount":1}
+    at checkBulkDeleteGuard (/Applications/WorkBuddy AI.app/Contents/Resources/app.asar.unpacked/cli/vendor/shim/node-safe-delete-shim.cjs:243:19)
+    at tryTrash (/Applications/WorkBuddy AI.app/Contents/Resources/app.asar.unpacked/cli/vendor/shim/node-safe-delete-shim.cjs:595:5)
+    at /Applications/WorkBuddy AI.app/Contents/Resources/app.asar.unpacked/cli/vendor/shim/node-safe-delete-shim.cjs:765:9
+    at mayCopyFile (node:internal/fs/cp/cp:246:11)
+    at onFile (node:internal/fs/cp/cp:241:10)
+    at getStatsForCopy (node:internal/fs/cp/cp:210:12)
+    at async copyDir (node:internal/fs/cp/cp:329:19)
+    at async copyDir (node:internal/fs/cp/cp:329:19)
+    at async copyDir (node:internal/fs/cp/cp:329:19)
+    at async copyDir (node:internal/fs/cp/cp:329:19)
+error: script "build:check" exited with code 1
+# exit_code: 1
+# duration_seconds: 463

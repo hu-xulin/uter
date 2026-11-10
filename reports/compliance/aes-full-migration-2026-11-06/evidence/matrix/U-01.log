@@ -1,0 +1,40 @@
+# id: U-01
+# layer: AES
+# command: node quality/scripts/aes/validate-registry.mjs
+# workdir: /Users/lincolnhu/aes
+# started_at: 2026-11-08T18:41:46Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+PASS     G-001  registries loadable                    modules=10 mappings=9 gates=13 standards=178
+PASS     G-002  module registry schema                 conforms
+PASS     G-003  mapping schema                         conforms
+PASS     G-004  gate registry schema                   conforms
+PASS     G-005  unique module IDs                      10 unique
+PASS     G-006  module paths exist in code repo        10/10 exist
+PASS     G-007  module manifests exist                 all manifests present
+PASS     G-008  domain IDs resolvable                  13 domains indexed
+PASS     G-009  mapped rule IDs are REAL               21 mapped IDs all found in standards/**/*.md (595 available)
+PASS     G-010  rule-level status consistency          consistent
+PASS     G-011  mapping modules resolvable             all resolvable
+PASS     G-012  mapping gates resolvable               13 gates indexed
+PASS     G-013  verification IDs resolvable            20 catalog entries
+PASS     G-014  declared_in artefacts exist            20 verification declarations verified
+PASS     G-015  gate documents exist in governance repo 13 gate docs present
+PASS     G-016  shared impact zones resolve            4 zones
+PASS     G-017  read-only boundary enforced            code repo is read-only for the governance layer
+PASS     G-018  no implicit PASS for unexecuted layers L3/L4 default NOT_RUN
+PASS     G-019  all schema files parseable and non-empty 78 schema files readable with $schema
+PASS     G-020  all standard documents non-empty       178 standard docs non-empty
+PASS     G-021  declared schemas resolve at content level 76 declared schemas present and parseable
+PASS     G-022  declared standards resolve at content level 178 declared standard files present and non-empty
+PASS     G-023  no duplicate declared artefact paths   76 unique paths; 0 runtime schemas unregistered (informational)
+PASS     G-024  catalogue execution fields are honest  20 catalogue entries: domains, timeout budgets and precondition scripts all resolve
+PASS     G-025  catalogue executables are tracked in Git 1 governance-domain catalogue executables are present and tracked
+PASS     G-026  top-level governance records are tracked in Git 20 top-level AES records and governance/ entries are all tracked
+
+scope=all checks=26 PASS=26 FAIL=0 NOT_RUN=0
+written: reports/quality/AES-P13-REGISTRY-VALIDATION.json
+# exit_code: 0
+# duration_seconds: 0

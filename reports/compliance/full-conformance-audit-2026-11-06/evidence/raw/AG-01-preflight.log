@@ -1,7 +1,7 @@
 # evidence_id=AG-01-preflight
 # started_at=2026-11-07T02:57:07Z
 # cwd=/Users/lincolnhu/uter
-# command=ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json
+# command=ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/compliance/full-conformance-audit-2026-11-06/evidence/agent-runtime-task.json
 # timeout=240
 # exit_code=1
 # timed_out=False
@@ -11,11 +11,11 @@
   "report_id": "D09-RUNTIME-PREFLIGHT",
   "generated_at": "2026-11-07T02:57:07Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
-  "harness": "scripts/quality/uaes-agent-runtime-check.rb",
-  "uaes_version": "1.9.0",
-  "uaes_status": "ACTIVE",
+  "harness": "scripts/quality/aes-agent-runtime-check.rb",
+  "aes_version": "1.9.0",
+  "aes_status": "ACTIVE",
   "uter_commit": "ec6501adceb008d46140a7e5ab6508eb78006731",
-  "branch": "governance/uaes-full-migration-2026-11-06",
+  "branch": "governance/aes-full-migration-2026-11-06",
   "overall": "FAIL",
   "failed_steps": [
     3
@@ -36,13 +36,13 @@
       "name": "read governance entry",
       "status": "PASS",
       "observation": {
-        "path": ".uaes/AI-GOVERNANCE-ENTRY.md",
+        "path": ".aes/AI-GOVERNANCE-ENTRY.md",
         "sha256": "06b9f0420a9008c3c62d0fcaa73fad4662f345edb0905da85937a718b3927014"
       }
     },
     {
       "step": 3,
-      "name": "confirm UAES version",
+      "name": "confirm AES version",
       "status": "FAIL",
       "observation": {
         "pin": {
@@ -50,10 +50,10 @@
           "registry_status": "ACTIVE",
           "source_commit": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
           "registry_blob_sha": "e5c9777843b606ca62f5287d2263056dfbfbf845",
-          "approval_record": "UAES-APPROVAL-2026-11-06-001"
+          "approval_record": "AES-APPROVAL-2026-11-06-001"
         },
         "registry_blob_sha_actual": "e5c9777843b606ca62f5287d2263056dfbfbf845",
-        "uaes_head_actual": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
+        "aes_head_actual": "0c9386b192090e901ccc5de6df1f2aebe3f5c618",
         "registry_version_actual": "1.9.0",
         "registry_status_actual": "APPROVED"
       }
@@ -87,7 +87,7 @@
       "status": "PASS",
       "observation": {
         "default_effect": "deny",
-        "task_id": "UTER-UAES-FULL-GOVERNANCE-MIGRATION-2026-11-06",
+        "task_id": "UTER-AES-FULL-GOVERNANCE-MIGRATION-2026-11-06",
         "risk_level": "R2"
       }
     },
@@ -108,12 +108,12 @@
       "status": "PASS",
       "observation": {
         "scope": [
-          ".uaes/",
+          ".aes/",
           "AGENTS.md",
           "scripts/quality/",
-          "reports/compliance/uaes-full-migration-2026-11-06/",
+          "reports/compliance/aes-full-migration-2026-11-06/",
           ".github/workflows/ci.yml",
-          "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+          "docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
           "web/.oxfmtrc.json",
           "web/scripts/check-component-registry.mjs",
           "web/scripts/generate-design-tokens.mjs",
@@ -147,12 +147,12 @@
       "status": "PASS",
       "observation": {
         "steps": [
-          "§18-1: verify UAES repository and approved release",
+          "§18-1: verify AES repository and approved release",
           "§18-2: verify Uter repository and actual project structure",
           "§18-3: establish and preserve the baseline",
           "§18-4: identify applicable external standards (§2.1 catalogue)",
           "§18-5: establish standards applicability register (D01)",
-          "§18-6: establish UAES P00-P12 traceability (D05)",
+          "§18-6: establish AES P00-P12 traceability (D05)",
           "§18-7: establish UTER P13 as a Uter project-specific extension (D06)",
           "§18-8: assess all applicable requirements across 14 independent domains",
           "§18-9: identify governance and implementation gaps (D10)",
@@ -176,16 +176,16 @@
       "status": "PASS",
       "observation": {
         "methods": [
-          "node quality/scripts/uaes/validate-registry.mjs",
+          "node quality/scripts/aes/validate-registry.mjs",
           "bash scripts/quality/ai-specs-check.sh",
           "ruby scripts/quality/test-ai-governance-policy.rb",
-          "ruby scripts/quality/test-uaes-pin-check.rb && bash scripts/quality/uaes-pin-check.sh",
-          "ruby scripts/quality/test-uaes-integration-check.rb && bash scripts/quality/uaes-integration-check.sh",
+          "ruby scripts/quality/test-aes-pin-check.rb && bash scripts/quality/aes-pin-check.sh",
+          "ruby scripts/quality/test-aes-integration-check.rb && bash scripts/quality/aes-integration-check.sh",
           "ruby scripts/quality/uter-governance-separation-check.rb",
           "ruby scripts/quality/uter-p09-p10-boundary-check.rb",
-          "ruby scripts/quality/uaes-agent-runtime-check.rb preflight/workspace/verify/selftest",
-          "bash scripts/quality/uaes-test-matrix.sh",
-          "ruby scripts/quality/uaes-governance-gates.rb",
+          "ruby scripts/quality/aes-agent-runtime-check.rb preflight/workspace/verify/selftest",
+          "bash scripts/quality/aes-test-matrix.sh",
+          "ruby scripts/quality/aes-governance-gates.rb",
           "ruby scripts/quality/uter-independent-assessment.rb",
           "Go tests across 4 modules, gofmt, go vet",
           "frontend typecheck / vitest / format / build"
@@ -197,9 +197,9 @@
       "name": "begin execution with recorded baseline",
       "status": "PASS",
       "observation": {
-        "branch": "governance/uaes-full-migration-2026-11-06",
+        "branch": "governance/aes-full-migration-2026-11-06",
         "head": "ec6501adceb008d46140a7e5ab6508eb78006731",
-        "governing_specification": "UTER-UAES-GOV-001",
+        "governing_specification": "UTER-AES-GOV-001",
         "baseline_preservation_required": true
       }
     }

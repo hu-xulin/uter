@@ -1,0 +1,13 @@
+# id: L1-10
+# layer: L1
+# command: bun run format:check
+# workdir: /Users/lincolnhu/uter/web
+# started_at: 2026-11-08T18:34:12Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+$ node scripts/format-with-protected-headers.mjs --check
+Finished in 1018ms on 1621 files using 16 threads.
+# exit_code: 0
+# duration_seconds: 3

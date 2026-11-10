@@ -1,16 +1,16 @@
 {
-  "task_id": "UTER-UAES-FULL-GOVERNANCE-MIGRATION-2026-11-06",
+  "task_id": "UTER-AES-FULL-GOVERNANCE-MIGRATION-2026-11-06",
   "task_type": "governance_migration_and_conformance_assessment",
   "requester": "Project owner (explicit written instruction, 2026-11-06)",
   "agent_id": "workbuddy.chief.governance.execution",
   "risk_level": "R2",
   "lifecycle_status": "EXECUTING",
-  "governing_specification": "UTER-UAES-GOV-001",
-  "governing_order": "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md (user-designated sole authority; supersedes all earlier execution orders where they conflict)",
-  "architecture": "Layer A UAES universal P00-P12 (uaes repository) / Layer B UTER project governance incl. UTER P13 (uter repository) / Layer C WorkBuddy + CI/CD + independent assessment",
+  "governing_specification": "UTER-AES-GOV-001",
+  "governing_order": "docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md (user-designated sole authority; supersedes all earlier execution orders where they conflict)",
+  "architecture": "Layer A AES universal P00-P12 (aes repository) / Layer B UTER project governance incl. UTER P13 (uter repository) / Layer C WorkBuddy + CI/CD + independent assessment",
   "scope": [],
   "scope_declarations": {
-    "docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md": "user-supplied governing specification, recorded as an INPUT to this task; not an Agent-authored change",
+    "docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md": "user-supplied governing specification, recorded as an INPUT to this task; not an Agent-authored change",
     "_WIP_REMEDIATION_SCOPE_EXTENSION": "Later explicit user instruction '\u6574\u7406 4 \u4e2a WIP \u5931\u8d25' authorised minimal, semantic-preserving edits to the exact web/ paths enumerated above: typecheck/build fixes in types.ts + display.ts + visual.ts, lint curly-brace fixes in model-card.tsx / check-component-registry.mjs / generate-design-tokens.mjs, the generated-CSS formatter exclusion in .oxfmtrc.json, and formatter-normalised files touched by `bun run format`. Before/after SHA-256 and git status snapshots are archived in evidence/wip-remediation/. These paths are declared individually, NOT via a broad `web/` prefix, so W1 still detects any undeclared change."
   },
   "excluded_scope": [
@@ -18,13 +18,13 @@
     "real payment merchant configuration",
     "production database",
     "user pre-existing uncommitted work (billingexpr / dreamrouter / pricing) \u2014 preserved; ONLY the WIP-remediation paths explicitly enumerated in scope are authorised for minimal edits",
-    "UAES approved normative standards (read-only audit only; no UTER P13 may be added there)",
-    "UAES universal standards modified to accommodate Uter implementation"
+    "AES approved normative standards (read-only audit only; no UTER P13 may be added there)",
+    "AES universal standards modified to accommodate Uter implementation"
   ],
   "plan": [],
   "verification": [],
   "authorization": {
-    "authorization_id": "USER-ORDER-2026-11-06-UTER-UAES-GOV-001",
+    "authorization_id": "USER-ORDER-2026-11-06-UTER-AES-GOV-001",
     "allowed_actions": [
       "filesystem.read",
       "filesystem.write.scoped",
@@ -45,14 +45,14 @@
     ],
     "target_resources": [
       "Uter local repository (Layer B)",
-      "UAES local repository (Layer A, read-only audit)"
+      "AES local repository (Layer A, read-only audit)"
     ],
     "environment": "local non-production",
     "expires_at": "task completion"
   },
   "acceptance_criteria": [
-    "UAES approved release re-verified from the UAES repository, not from history",
-    "UAES and Uter are governed separately; UTER P13 is registered only in the Uter project registry",
+    "AES approved release re-verified from the AES repository, not from history",
+    "AES and Uter are governed separately; UTER P13 is registered only in the Uter project registry",
     "P09 Quality Engineering proves quality; P10 Security & Reliability defines requirements; neither substitutes for the other",
     "all 14 domains (P00-P12 + UTER-P13) independently assessed with real evidence",
     "live Agent runtime evidence with over-privilege denials",

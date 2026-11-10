@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UTER 产品规格中心 · PRD × Prototype</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">U</span>
+        <div class="brand-text">
+          <strong>UTER 产品规格中心</strong>
+          <span class="caption">单一需求数据源 · PRD ⇄ Prototype 双向同步</span>
+        </div>
+      </div>
+      <nav class="viewnav" id="viewnav"></nav>
+      <div class="top-actions">
+        <label class="role-picker" title="内部资料写权限">
+          <span class="caption">角色</span>
+          <select id="roleSelect" aria-label="当前角色">
+            <option value="admin">管理员（可编辑）</option>
+            <option value="viewer">普通用户（只读）</option>
+          </select>
+        </label>
+        <button class="btn btn-ghost btn-sm" id="themeToggle" title="切换明暗主题">◐</button>
+        <a class="btn btn-ghost btn-sm" href="/api/health" target="_blank" rel="noopener">服务状态</a>
+      </div>
+    </header>
+
+    <div class="statusbar" id="statusbar"></div>
+
+    <main id="main" class="main"></main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="dialogRoot"></div>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

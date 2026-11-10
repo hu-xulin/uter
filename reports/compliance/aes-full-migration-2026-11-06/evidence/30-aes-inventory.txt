@@ -1,0 +1,131 @@
+=== AES GOVERNANCE ASSET INVENTORY 2026-11-06T03:29:38Z ===
+--- registry indices ---
+total 344
+drwxr-xr-x@ 10 lincolnhu  staff    320 Nov  6 00:52 .
+drwxr-xr-x@ 17 lincolnhu  staff    544 Nov  6 01:46 ..
+-rw-r--r--@  1 lincolnhu  staff   1597 Nov  6 00:52 api-breaking-change-approvals.json
+-rw-r--r--@  1 lincolnhu  staff  75442 Nov  6 00:52 api-contract-baseline.json
+-rw-r--r--@  1 lincolnhu  staff  11300 Nov  6 00:52 database-migration-inventory.yaml
+-rw-r--r--@  1 lincolnhu  staff   6752 Nov  6 01:47 gates.yaml
+-rw-r--r--@  1 lincolnhu  staff   9441 Nov  5 01:10 mappings.yaml
+-rw-r--r--@  1 lincolnhu  staff    927 Nov  6 00:52 module-dependencies.yaml
+-rw-r--r--@  1 lincolnhu  staff   7464 Nov  5 01:02 modules.yaml
+-rw-r--r--@  1 lincolnhu  staff  48530 Nov  6 01:47 standards.yaml
+--- adapter / policy / template dirs ---
+.aes/TOOL-ADAPTERS:        5
+.aes/policies:        1
+quality/policies:        1
+agents/policies:        1
+agents/adapters:        6
+.agents:        8
+.claude:        8
+design-system:       20
+--- skills ---
+skills/.DS_Store
+skills/README.md
+skills/architecture-design/.gitkeep
+skills/auto-fix/.gitkeep
+skills/automated-testing/.gitkeep
+skills/backend-development/.gitkeep
+skills/code-review/.gitkeep
+skills/feature-development/.gitkeep
+skills/frontend-development/.gitkeep
+skills/harmony-development/.gitkeep
+skills/mobile-development/.gitkeep
+skills/registry.yaml
+skills/release-validation/.gitkeep
+skills/requirement-analysis/.gitkeep
+skills/security-audit/.gitkeep
+skills/aes-auto-fix/SKILL.md
+skills/aes-auto-fix/manifest.json
+skills/aes-code-review/SKILL.md
+skills/aes-code-review/manifest.json
+skills/aes-compliance-audit/SKILL.md
+skills/aes-compliance-audit/manifest.json
+skills/aes-design-system-audit/SKILL.md
+skills/aes-design-system-audit/manifest.json
+skills/aes-security-audit/SKILL.md
+skills/aes-security-audit/manifest.json
+skills/aes-standard-authoring/SKILL.md
+skills/aes-standard-authoring/manifest.json
+skills/aes-test-engineering/SKILL.md
+skills/aes-test-engineering/manifest.json
+skills/aes-uter-integration/SKILL.md
+skills/aes-uter-integration/manifest.json
+--- agents ---
+agents/registry.yaml
+--- workflows ---
+workflows/bug-fix/.gitkeep
+workflows/bug-fix/WORKFLOW.md
+workflows/emergency-response/.gitkeep
+workflows/emergency-response/WORKFLOW.md
+workflows/feature-development/.gitkeep
+workflows/feature-development/WORKFLOW.md
+workflows/refactoring/.gitkeep
+workflows/registry.yaml
+workflows/release/.gitkeep
+workflows/release/WORKFLOW.md
+workflows/security-audit/.gitkeep
+workflows/security-audit/WORKFLOW.md
+--- gate docs ---
+AES-00-GATE-001-FOUNDATION-GATE.md
+AES-01-GATE-001-AI-GOVERNANCE-GATE.md
+AES-02-GATE-001-PRODUCT-ENGINEERING-GATE.md
+AES-03-GATE-001-KNOWLEDGE-ENGINEERING-GATE.md
+AES-04-GATE-001-ARCHITECTURE-GATE.md
+AES-05-GATE-001-DESIGN-QUALITY-GATE.md
+AES-06-GATE-001-SOFTWARE-ENGINEERING-GATE.md
+AES-07-GATE-001-CROSS-PLATFORM-GATE.md
+AES-08-GATE-001-AGENT-ENGINEERING-GATE.md
+AES-09-GATE-001-QUALITY-ENGINEERING-GATE.md
+AES-10-GATE-001-SECURITY-RELIABILITY-GATE.md
+AES-11-GATE-001-DEVOPS-DELIVERY-GATE.md
+AES-12-GATE-001-LIFECYCLE-EVOLUTION-GATE.md
+--- versioning rules ---
+standards/00-foundation/AES-00-006-AI-ENGINEERING-EXECUTION-MODEL.md
+standards/00-foundation/AES-00-003-STANDARD-LIFECYCLE.md
+standards/00-foundation/AES-00-004-REGISTRY-AND-DEPENDENCIES.md
+--- standards per domain ---
+standards/00-foundation/        7
+standards/01-ai-governance/       11
+standards/02-product-engineering/        9
+standards/03-knowledge-engineering/       13
+standards/04-system-architecture/       14
+standards/05-experience-design/       14
+standards/06-software-engineering/       15
+standards/07-cross-platform/       14
+standards/08-agent-engineering/       15
+standards/09-quality-engineering/       16
+standards/10-security-reliability/       17
+standards/11-devops-delivery/       16
+standards/12-lifecycle-evolution/       17
+--- 304 DRAFT count ---
+303
+--- schemas ---
+      71
+--- APPROVAL RECORD exclusions ---
+## 4. Explicitly NOT Approved (no implicit approval, no fabricated closure)
+
+Per `registry.governance.rules.prohibit_implicit_approval` and
+`prohibit_implicit_implementation`, this approval does **not**:
+
+1. Promote the 304 individual `status: "DRAFT"` entries (phases, standards,
+   schemas, gates, acceptance baselines) to `APPROVED`. Each remains `DRAFT`
+   until its own evidence is reviewed.
+2. Execute or pass the 13 L3 domain gates. `.aes/registry/gates.yaml` still
+   records `execution: NOT_RUN` for every domain gate and the L4 global gate
+   remains `BLOCKED`. `quality-gate-runner.mjs` still defaults to
+   evidence-only, read-only behaviour (G-018).
+3. Claim that the Uter product conforms to AES, or convert any Uter audit
+   finding to `VERIFIED` on the strength of this document alone.
+4. Waive visual regression / axe / keyboard / three-database migration /
+   security scanning / live Agent runtime evidence, which remain `NOT_RUN`.
+5. Authorise a production deployment, production database change, real payment
+   configuration change, or a PR merge in the Uter repository.
+
+Consequence: approving the normative baseline is a necessary but **not
+sufficient** condition for final Uter compliance. The compliance status remains
+`MIGRATION_PENDING` until the domain gates and the Requirement→Evidence mapping
+are executed against an approved baseline.
+
+## 5. Verification Plan (executed with this approval)

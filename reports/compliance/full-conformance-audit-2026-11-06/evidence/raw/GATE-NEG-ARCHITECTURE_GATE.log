@@ -14,13 +14,13 @@
     "repository_separation_PASS": false,
     "P09_P10_boundary_PASS": true,
     "14_domains_registered": true,
-    "UTER_P13_not_in_UAES": false,
+    "UTER_P13_not_in_AES": false,
     "architecture_matrix_rows_PASS": true,
     "governance_wiring_PASS": true
   },
   "failed_checks": [
     "repository_separation_PASS",
-    "UTER_P13_not_in_UAES"
+    "UTER_P13_not_in_AES"
   ],
   "passed_checks": 4,
   "total_checks": 6,

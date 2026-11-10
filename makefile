@@ -8,7 +8,7 @@ DEV_POSTGRES_DB = uter
 DEV_POSTGRES_USER = root
 DEV_SQLITE_PATH ?= one-api.db
 
-.PHONY: all build-web build-all-web start-api dev dev-api dev-api-rebuild dev-web reset-setup test verify verify-quick
+.PHONY: all build-web build-all-web start-api dev dev-api dev-api-rebuild dev-web reset-setup test verify verify-quick product-workspace product-check product-test product-report
 
 all: build-all-web start-api
 
@@ -84,3 +84,16 @@ verify:
 
 verify-quick:
 	@./scripts/verify-all.sh --quick
+
+# UTER 产品规格中心（PRD × Prototype 单一数据源 / 双向同步）
+product-workspace:
+	@bash tools/product-workspace/start.sh
+
+product-check:
+	@node tools/product-workspace/cli.mjs check
+
+product-test:
+	@node --test tools/product-workspace/tests/*.test.mjs
+
+product-report:
+	@node tools/product-workspace/cli.mjs report

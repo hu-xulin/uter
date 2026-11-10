@@ -3,7 +3,7 @@
 - **Document:** `12/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -48,7 +48,7 @@ Finding ID 与复测记录。机器可读版本：`evidence/09-evidence-index.js
 | evidence/agent/fixtures/agent-verify-commands.txt | `50f086a184e1d5ad288a…` | 153 | — |
 | evidence/agent/fixtures/task-bypass-attempt.json | `dabad36251c92aafe007…` | 15465 | — |
 | evidence/agent/fixtures/task-missing-applicability.json | `ef9bf69ab9f3319fe4da…` | 4069 | — |
-| evidence/agent/fixtures/uaes-registry-version-drift.yaml | `3e614e3d0f777b338489…` | 98446 | — |
+| evidence/agent/fixtures/aes-registry-version-drift.yaml | `3e614e3d0f777b338489…` | 98446 | — |
 | evidence/agent-runtime-task.json | `5b41ba236f5ff5c183cf…` | 7589 | — |
 | evidence/bugfix/02-compliance-matrix.AFTER.json | `51d3d8d99604f55cfbff…` | 6292457 | — |
 | evidence/bugfix/02-compliance-matrix.BEFORE.json | `7f949a39628c8fbd0333…` | 3176301 | — |
@@ -58,55 +58,55 @@ Finding ID 与复测记录。机器可读版本：`evidence/09-evidence-index.js
 | evidence/gates/fixtures/BUSINESS_ACCEPTANCE_GATE-nonconforming-state.json | `29c885920a86ecc0b2a2…` | 225144 | — |
 | evidence/gates/fixtures/CHANGE_GATE-nonconforming-state.json | `40dbcfc480a17348f09a…` | 225135 | — |
 | evidence/gates/fixtures/CODE_REVIEW_GATE-nonconforming-state.json | `0fa8e67739f5717b8792…` | 225188 | — |
-| evidence/gates/fixtures/GLOBAL_UAES_CONFORMANCE_GATE-nonconforming-state.json | `433dc4557d911fd6fa88…` | 225074 | — |
+| evidence/gates/fixtures/GLOBAL_AES_CONFORMANCE_GATE-nonconforming-state.json | `433dc4557d911fd6fa88…` | 225074 | — |
 | evidence/gates/fixtures/RELEASE_GATE-nonconforming-state.json | `52b12f5d34cdebb6c760…` | 225132 | — |
 | evidence/gates/fixtures/SECURITY_GATE-nonconforming-state.json | `117cbcfa3db52c02fd05…` | 225135 | — |
 | evidence/gates/fixtures/TESTING_GATE-nonconforming-state.json | `117cbcfa3db52c02fd05…` | 225135 | — |
 | evidence/matrix-export.csv | `b2a479bf1ba4758dec59…` | 3040448 | — |
 | evidence/raw/AG-01-preflight.exit | `4355a46b19d348dc2f57…` | 2 | — |
-| evidence/raw/AG-01-preflight.log | `7ee60b201cd6dd8f29e5…` | 7928 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/co |
+| evidence/raw/AG-01-preflight.log | `7ee60b201cd6dd8f29e5…` | 7928 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/co |
 | evidence/raw/AG-02-spec-drift.exit | `4355a46b19d348dc2f57…` | 2 | — |
-| evidence/raw/AG-02-spec-drift.log | `93c6994a4b3647013557…` | 8032 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/co |
+| evidence/raw/AG-02-spec-drift.log | `93c6994a4b3647013557…` | 8032 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/co |
 | evidence/raw/AG-03-empty-applicability.exit | `4355a46b19d348dc2f57…` | 2 | — |
-| evidence/raw/AG-03-empty-applicability.log | `13dfe5ace90a26fb2b96…` | 3923 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/co |
+| evidence/raw/AG-03-empty-applicability.log | `13dfe5ace90a26fb2b96…` | 3923 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb preflight --task /Users/lincolnhu/uter/reports/co |
 | evidence/raw/AG-04-deny-01.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-01.log | `cc01a106306a2b6c37de…` | 532 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.push.main --profile pull_r |
+| evidence/raw/AG-04-deny-01.log | `cc01a106306a2b6c37de…` | 532 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.push.main --profile pull_r |
 | evidence/raw/AG-04-deny-02.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-02.log | `d0c2a142cfcdb16bd51b…` | 559 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.pull_request.merge --profi |
+| evidence/raw/AG-04-deny-02.log | `d0c2a142cfcdb16bd51b…` | 559 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.pull_request.merge --profi |
 | evidence/raw/AG-04-deny-03.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-03.log | `20b72564967cf24c6b9e…` | 520 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.merge --profile pull_reque |
+| evidence/raw/AG-04-deny-03.log | `20b72564967cf24c6b9e…` | 520 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.merge --profile pull_reque |
 | evidence/raw/AG-04-deny-04.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-04.log | `1cfa16bda0a4c498118a…` | 568 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action production.database.write --pr |
+| evidence/raw/AG-04-deny-04.log | `1cfa16bda0a4c498118a…` | 568 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action production.database.write --pr |
 | evidence/raw/AG-04-deny-05.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-05.log | `481c378ef83f37abaca2…` | 574 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action payment.configuration.write -- |
+| evidence/raw/AG-04-deny-05.log | `481c378ef83f37abaca2…` | 574 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action payment.configuration.write -- |
 | evidence/raw/AG-04-deny-06.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-06.log | `c183e829c78b8bcb041c…` | 595 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action overwrite.user_uncommitted_cha |
+| evidence/raw/AG-04-deny-06.log | `c183e829c78b8bcb041c…` | 595 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action overwrite.user_uncommitted_cha |
 | evidence/raw/AG-04-deny-07.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-07.log | `aa6c57271009207eb9ee…` | 574 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action falsify.verification_result -- |
+| evidence/raw/AG-04-deny-07.log | `aa6c57271009207eb9ee…` | 574 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action falsify.verification_result -- |
 | evidence/raw/AG-04-deny-08.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-08.log | `9a961fb7f7572ab883a0…` | 581 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action production.secrets.read --prof |
+| evidence/raw/AG-04-deny-08.log | `9a961fb7f7572ab883a0…` | 581 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action production.secrets.read --prof |
 | evidence/raw/AG-04-deny-09.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-09.log | `270913c968a0a20bf32a…` | 535 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.reset.hard --profile pull_ |
+| evidence/raw/AG-04-deny-09.log | `270913c968a0a20bf32a…` | 535 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.reset.hard --profile pull_ |
 | evidence/raw/AG-04-deny-10.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-04-deny-10.log | `82dd32d24d9696e75d92…` | 559 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.restore.user_files --profi |
+| evidence/raw/AG-04-deny-10.log | `82dd32d24d9696e75d92…` | 559 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.restore.user_files --profi |
 | evidence/raw/AG-05-gate-01.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-05-gate-01.log | `3143dfe940e7fa73fada…` | 597 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.commit --profile pull_requ |
+| evidence/raw/AG-05-gate-01.log | `3143dfe940e7fa73fada…` | 597 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.commit --profile pull_requ |
 | evidence/raw/AG-05-gate-02.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-05-gate-02.log | `34bad2b00493ef046c2c…` | 623 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.push.feature_branch --prof |
+| evidence/raw/AG-05-gate-02.log | `34bad2b00493ef046c2c…` | 623 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.push.feature_branch --prof |
 | evidence/raw/AG-05-gate-03.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-05-gate-03.log | `e15f2d4f6741dd24a1b0…` | 623 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.pull_request.create --prof |
+| evidence/raw/AG-05-gate-03.log | `e15f2d4f6741dd24a1b0…` | 623 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.pull_request.create --prof |
 | evidence/raw/AG-06-allow-read.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/AG-06-allow-read.log | `434596e774d533871eaa…` | 508 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action filesystem.read --profile read |
+| evidence/raw/AG-06-allow-read.log | `434596e774d533871eaa…` | 508 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action filesystem.read --profile read |
 | evidence/raw/AG-07-alternate-path.exit | `4355a46b19d348dc2f57…` | 2 | — |
-| evidence/raw/AG-07-alternate-path.log | `54c944e779ada20bf0ab…` | 832 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb workspace --task /Users/lincolnhu/uter/reports/co |
+| evidence/raw/AG-07-alternate-path.log | `54c944e779ada20bf0ab…` | 832 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb workspace --task /Users/lincolnhu/uter/reports/co |
 | evidence/raw/AG-07-prompt-bypass.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-07-prompt-bypass.log | `1e89e3384abbfa205ef4…` | 565 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.push.main --profile pull_r |
+| evidence/raw/AG-07-prompt-bypass.log | `1e89e3384abbfa205ef4…` | 565 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.push.main --profile pull_r |
 | evidence/raw/AG-07-task-switch.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/AG-07-task-switch.log | `f40a46dc8e14463510b2…` | 574 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb authorize --action git.pull_request.merge --profi |
+| evidence/raw/AG-07-task-switch.log | `f40a46dc8e14463510b2…` | 574 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb authorize --action git.pull_request.merge --profi |
 | evidence/raw/AG-08-selftest.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/AG-08-selftest.log | `9d1946dd191d9a3ed50c…` | 1638 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb selftest  \|  exit_code=0 |
+| evidence/raw/AG-08-selftest.log | `9d1946dd191d9a3ed50c…` | 1638 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb selftest  \|  exit_code=0 |
 | evidence/raw/AG-09-real-task.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/AG-09-real-task.log | `955e6c5621f4f369de77…` | 748 | ruby /Users/lincolnhu/uter/scripts/quality/uaes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/c |
+| evidence/raw/AG-09-real-task.log | `955e6c5621f4f369de77…` | 748 | ruby /Users/lincolnhu/uter/scripts/quality/aes-agent-runtime-check.rb verify --commands /Users/lincolnhu/uter/reports/c |
 | evidence/raw/AG-10-ci-denial-loop.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
 | evidence/raw/AG-10-ci-denial-loop.log | `e0bd460755a014d7a35c…` | 1480 |   \|  exit_code=0 |
 | evidence/raw/EV-00-PROBE.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
@@ -116,19 +116,19 @@ Finding ID 与复测记录。机器可读版本：`evidence/09-evidence-index.js
 | evidence/raw/EV-02.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
 | evidence/raw/EV-02.log | `c00ad0d7e5ed7ee6de67…` | 955 | ruby scripts/quality/test-ai-governance-policy.rb  \|  exit_code=0 |
 | evidence/raw/EV-03.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/EV-03.log | `6434610518e080a5344b…` | 660 | bash scripts/quality/uaes-pin-check.sh  \|  exit_code=0 |
+| evidence/raw/EV-03.log | `6434610518e080a5344b…` | 660 | bash scripts/quality/aes-pin-check.sh  \|  exit_code=0 |
 | evidence/raw/EV-04.exit | `4355a46b19d348dc2f57…` | 2 | — |
-| evidence/raw/EV-04.log | `fb9caa4d4c11d8185ff3…` | 791 | ruby scripts/quality/test-uaes-pin-check.rb  \|  exit_code=1 |
+| evidence/raw/EV-04.log | `fb9caa4d4c11d8185ff3…` | 791 | ruby scripts/quality/test-aes-pin-check.rb  \|  exit_code=1 |
 | evidence/raw/EV-05.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/EV-05.log | `9598eb44dfe6f4347890…` | 1196 | bash scripts/quality/uaes-integration-check.sh  \|  exit_code=0 |
+| evidence/raw/EV-05.log | `9598eb44dfe6f4347890…` | 1196 | bash scripts/quality/aes-integration-check.sh  \|  exit_code=0 |
 | evidence/raw/EV-06.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/EV-06.log | `6cbf2dabd1ea185a611f…` | 405 | ruby scripts/quality/test-uaes-integration-check.rb  \|  exit_code=0 |
+| evidence/raw/EV-06.log | `6cbf2dabd1ea185a611f…` | 405 | ruby scripts/quality/test-aes-integration-check.rb  \|  exit_code=0 |
 | evidence/raw/EV-09.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
 | evidence/raw/EV-09.log | `7e22e647e192acb1555c…` | 405 | ruby scripts/quality/test-uter-governance-boundaries.rb  \|  exit_code=0 |
 | evidence/raw/EV-10.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/EV-10.log | `4d5ef372460a8dfc4f0e…` | 404 | ruby scripts/quality/test-uaes-manual-acceptance-boundary.rb  \|  exit_code=0 |
+| evidence/raw/EV-10.log | `4d5ef372460a8dfc4f0e…` | 404 | ruby scripts/quality/test-aes-manual-acceptance-boundary.rb  \|  exit_code=0 |
 | evidence/raw/EV-11.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/EV-11.log | `5c84db0c5d3ca2d99466…` | 453 | python3 scripts/quality/uaes-manual-acceptance.py --verify-only  \|  exit_code=0 |
+| evidence/raw/EV-11.log | `5c84db0c5d3ca2d99466…` | 453 | python3 scripts/quality/aes-manual-acceptance.py --verify-only  \|  exit_code=0 |
 | evidence/raw/EV-12.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
 | evidence/raw/EV-12.log | `678325bab2f774213520…` | 212 | bun run typecheck  \|  exit_code=0 |
 | evidence/raw/EV-13.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
@@ -148,7 +148,7 @@ Finding ID 与复测记录。机器可读版本：`evidence/09-evidence-index.js
 | evidence/raw/EV-20.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
 | evidence/raw/EV-20.log | `7b67ac8321683c41d2d4…` | 508 | GOWORK=off govulncheck ./...  \|  exit_code=0 |
 | evidence/raw/EV-21.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
-| evidence/raw/EV-21.log | `e0d1b71bddf1e1daf827…` | 565 | tmp=$(mktemp -d /tmp/uaes-gitleaks-XXXXXX) && git archive HEAD \| tar -x -C "$tmp" && (cd "$tmp" && gitleaks dir . --no-b |
+| evidence/raw/EV-21.log | `e0d1b71bddf1e1daf827…` | 565 | tmp=$(mktemp -d /tmp/aes-gitleaks-XXXXXX) && git archive HEAD \| tar -x -C "$tmp" && (cd "$tmp" && gitleaks dir . --no-b |
 | evidence/raw/EV-22.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
 | evidence/raw/EV-22.log | `a863fecfcf39641cba6d…` | 204 | bun run knip  \|  exit_code=0 |
 | evidence/raw/EV-23.exit | `9a271f2a916b0b6ee6ce…` | 2 | — |
@@ -163,8 +163,8 @@ Finding ID 与复测记录。机器可读版本：`evidence/09-evidence-index.js
 | evidence/raw/GATE-NEG-CHANGE_GATE.log | `b2409036b934c6e80a4c…` | 1131 | python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full- |
 | evidence/raw/GATE-NEG-CODE_REVIEW_GATE.exit | `53c234e5e8472b6ac51c…` | 2 | — |
 | evidence/raw/GATE-NEG-CODE_REVIEW_GATE.log | `cbf457372a978f029b96…` | 995 | python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full- |
-| evidence/raw/GATE-NEG-GLOBAL_UAES_CONFORMANCE_GATE.exit | `53c234e5e8472b6ac51c…` | 2 | — |
-| evidence/raw/GATE-NEG-GLOBAL_UAES_CONFORMANCE_GATE.log | `3dba0fa10c36919d7666…` | 1249 | python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full- |
+| evidence/raw/GATE-NEG-GLOBAL_AES_CONFORMANCE_GATE.exit | `53c234e5e8472b6ac51c…` | 2 | — |
+| evidence/raw/GATE-NEG-GLOBAL_AES_CONFORMANCE_GATE.log | `3dba0fa10c36919d7666…` | 1249 | python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full- |
 | evidence/raw/GATE-NEG-RELEASE_GATE.exit | `53c234e5e8472b6ac51c…` | 2 | — |
 | evidence/raw/GATE-NEG-RELEASE_GATE.log | `c497783ba1cd3eb13691…` | 951 | python3 scripts/quality/full-conformance-execution.py gate-check --state '/Users/lincolnhu/uter/reports/compliance/full- |
 | evidence/raw/GATE-NEG-SECURITY_GATE.exit | `53c234e5e8472b6ac51c…` | 2 | — |
@@ -202,4 +202,4 @@ sha256sum reports/compliance/full-conformance-audit-2026-11-06/evidence/02-compl
 ```
 
 复核者可用 `evidence/matrix-export.csv` 的 `source_standard:source_line` 直接回查
-UAES 仓库 `ff7cf878...` 的规范原文，逐条重放审计结论。
+AES 仓库 `ff7cf878...` 的规范原文，逐条重放审计结论。

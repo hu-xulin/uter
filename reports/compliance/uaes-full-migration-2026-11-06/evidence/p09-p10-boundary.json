@@ -1,24 +1,24 @@
 {
   "evidence_id": "D07-P09-P10-BOUNDARY",
-  "generated_at": "2026-11-09T04:34:03Z",
-  "related_requirement": "UTER-UAES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
+  "generated_at": "2026-11-10T12:47:36Z",
+  "related_requirement": "UTER-AES-GOV-001 §1.3 / §3 P09 / §3 P10 / §8.2 / §16.3",
   "related_finding": null,
   "source_system": "scripts/quality/uter-p09-p10-boundary-check.rb",
   "execution_environment": {
     "ruby": "4.0.6",
     "uter_root": "/Users/lincolnhu/uter",
-    "uaes_root": "/Users/lincolnhu/uaes"
+    "uaes_root": "/Users/lincolnhu/aes"
   },
   "repository_revision": {
-    "uter_head": "1ca18a6818db4f867d96a897ac4ec24a49e9383d",
-    "uaes_head": "e798e65c3eacdb56bb3c4f49d71d87303bcea0b4"
+    "uter_head": "6ef64a116191784781785efc41e507199c907f7a",
+    "uaes_head": "7a44bf5ce153f4e169e84334d0bba28b49ba2712"
   },
   "collector": "WorkBuddy (Tencent Hunyuan Hy)",
-  "collection_time": "2026-11-09T04:34:03Z",
+  "collection_time": "2026-11-10T12:47:36Z",
   "integrity": {
-    "governing_spec_sha256": "5fd0e271263dc07e5230e92b75505023ee8bc7dcf0400cc348979f79cb787af1",
-    "uter_registry_sha256": "e357556f58af173434dd055c58dc81633c55dcdca5fb53aa6826da0206dbc986",
-    "uaes_registry_sha256": "46bc1e4366731f49b4e2166d81cfaa337c50c23020aca34fbddc70398535d25b",
+    "governing_spec_sha256": "2799007ae1d78d08157e209a45fd7e6d57d37d618324f4660f29b665193dc407",
+    "uter_registry_sha256": "257517ed6d081e1bebf7fe09d588ffcbaaa3992d4a08241e24922a4f6671e7be",
+    "uaes_registry_sha256": "1b856d4f5aacf6ca84f6580cf8dea3ab3afff0b1f4c6dcc13a5dd95fedd4604a",
     "note": "Hashes support evidence integrity only; they do not prove correctness of the underlying activity (§14.4)."
   },
   "storage_reference": "/Users/lincolnhu/uter/reports/compliance/uaes-full-migration-2026-11-06/evidence",
@@ -36,7 +36,7 @@
       "requirement": "§3 P09 / §9",
       "status": "PASS",
       "observation": {
-        "p09_bytes": 4193,
+        "p09_bytes": 4392,
         "missing_headings": [],
         "expected_headings": [
           "P09.1 Quality management",
@@ -55,7 +55,7 @@
       "requirement": "§3 P10 / §10",
       "status": "PASS",
       "observation": {
-        "p10_bytes": 4682,
+        "p10_bytes": 4820,
         "missing_headings": [],
         "expected_headings": [
           "P10.1 Security governance",
@@ -138,18 +138,19 @@
       "observation": {
         "uaes_P09": "Quality Engineering",
         "uaes_P10": "Security and Reliability Engineering",
-        "uaes_gate_09": "UAES-09-GATE-001-QUALITY-ENGINEERING-GATE",
-        "uaes_gate_10": "UAES-10-GATE-001-SECURITY-RELIABILITY-GATE"
+        "uaes_gate_09": "AES-09-GATE-001-QUALITY-ENGINEERING-GATE",
+        "uaes_gate_10": "AES-10-GATE-001-SECURITY-RELIABILITY-GATE"
       }
     },
     {
       "check": "B09",
-      "name": "local 14-domain gate evaluator labels P09/P10/P13 correctly",
-      "requirement": "§8.2 / §16.3",
+      "name": "AES project registry labels P09/P10/P13 correctly",
+      "requirement": "§1.3 / §8.2 / §16.3",
       "status": "PASS",
       "observation": {
-        "evaluator": "scripts/quality/uaes-governance-gates.rb",
-        "note": "V2 evaluator mislabelled P09/P10 and put business rules in P10; UTER-UAES-GOV-001 assigns them to P09/P10/UTER-P13."
+        "registry": ".aes/uter-governance-registry.yaml",
+        "evaluator": "scripts/quality/ai-native-internal-gate.rb",
+        "note": "P09 proves quality, P10 defines security/reliability, UTER-P13 owns project business domains."
       }
     },
     {
@@ -159,11 +160,11 @@
       "status": "PASS",
       "observation": {
         "checked": {
-          "AGENTS.md": "P09 proves",
-          ".uaes/INTEGRATION.md": "P09 / P10 division",
-          ".uaes/AI-GOVERNANCE-ENTRY.md": "P09 proves",
-          ".uaes/TRACEABILITY.md": "P09 / P10 division",
-          ".uaes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md": "P09 / P10 分工"
+          "AGENTS.md": "P09 Quality Engineering proves",
+          ".aes/INTEGRATION.md": "P09 / P10 division",
+          ".aes/AI-GOVERNANCE-ENTRY.md": "P09 proves",
+          ".aes/TRACEABILITY.md": "P09 / P10 division",
+          ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md": "P09 / P10 分工"
         },
         "missing": []
       }

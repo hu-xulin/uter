@@ -7,7 +7,7 @@
     {
       "id": "CONF-001",
       "type": "DELIVERABLE_SCOPE",
-      "old": "UTER-UAES-GOV-001 §15: D01-D28 (28 deliverables)",
+      "old": "UTER-AES-GOV-001 §15: D01-D28 (28 deliverables)",
       "new": "This directive §11: 14 deliverables including a full compliance matrix and P00-P13 per-domain reports",
       "resolution": "Produce a NEW independent audit package in reports/compliance/full-conformance-audit-2026-11-06/; keep D01-D28 intact as prior-stage evidence. No overwrite.",
       "authority": "latest explicit user instruction"
@@ -15,15 +15,15 @@
     {
       "id": "CONF-002",
       "type": "GATE_TAXONOMY",
-      "old": "UTER-UAES-GOV-001 §8.2: L1_CHANGE_GATE / L2_INTEGRATION_GATE / L3_DOMAIN_ACCEPTANCE_GATE / L4_GLOBAL_CONFORMANCE_GATE",
-      "new": "This directive §8: 8 gates (Change, Code Review, Testing, Security, Architecture, Business Acceptance, Release, Global UAES Conformance)",
+      "old": "UTER-AES-GOV-001 §8.2: L1_CHANGE_GATE / L2_INTEGRATION_GATE / L3_DOMAIN_ACCEPTANCE_GATE / L4_GLOBAL_CONFORMANCE_GATE",
+      "new": "This directive §8: 8 gates (Change, Code Review, Testing, Security, Architecture, Business Acceptance, Release, Global AES Conformance)",
       "resolution": "Implement the 8 named gates as an additional executable layer; map each to the existing 4-layer evaluator; keep both, do not delete the 4-layer gate.",
       "authority": "latest explicit user instruction"
     },
     {
       "id": "CONF-003",
       "type": "CONCLUSION_VOCABULARY",
-      "old": "UTER-UAES-GOV-001 §16.2: CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED",
+      "old": "UTER-AES-GOV-001 §16.2: CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / NOT ASSESSED / NOT APPLICABLE / BLOCKED",
       "new": "This directive §12: CONFORMANT / PARTIALLY CONFORMANT / NON-CONFORMANT / BLOCKED / NOT ASSESSED",
       "resolution": "Use ONLY the 5 §12 terms in this audit's final verdict. NOT_APPLICABLE is retained as a per-requirement applicability value (§10 requires justification for every N/A), not as a report-level verdict.",
       "authority": "latest explicit user instruction"
@@ -31,8 +31,8 @@
     {
       "id": "CONF-004",
       "type": "STALE_DOCUMENT",
-      "old": "reports/compliance/FINAL-COMPLIANCE-REPORT.md states UAES registry is DRAFT and 13 gates NOT_RUN under PR #15 baseline",
-      "new": "UAES registry is 1.9.0 APPROVED; a 29/29 PASS matrix exists at the current commit",
+      "old": "reports/compliance/FINAL-COMPLIANCE-REPORT.md states AES registry is DRAFT and 13 gates NOT_RUN under PR #15 baseline",
+      "new": "AES registry is 1.9.0 APPROVED; a 29/29 PASS matrix exists at the current commit",
       "resolution": "Do NOT rewrite the historical report (evidence preservation). Mark it SUPERSEDED in the new evidence index and cite the current baseline instead.",
       "authority": "real repository state"
     },
@@ -40,23 +40,23 @@
       "id": "CONF-005",
       "type": "NORMATIVE_BASELINE_LIMITATION",
       "old": "Assumption: an APPROVED registry is an approved normative baseline for all requirements",
-      "new": "UAES .uaes/APPROVAL-RECORD.md §4 explicitly does NOT approve 304 DRAFT entries, does NOT execute 13 domain gates, and does NOT claim Uter conforms",
-      "resolution": "Register as P0 finding FIND-FCA-001. No requirement may be reported as formally approved against a published baseline. CONFORMANT is impossible until the UAES owner approves the entries and gates.",
-      "authority": "UAES approval record (real file)"
+      "new": "AES .aes/APPROVAL-RECORD.md §4 explicitly does NOT approve 304 DRAFT entries, does NOT execute 13 domain gates, and does NOT claim Uter conforms",
+      "resolution": "Register as P0 finding FIND-FCA-001. No requirement may be reported as formally approved against a published baseline. CONFORMANT is impossible until the AES owner approves the entries and gates.",
+      "authority": "AES approval record (real file)"
     },
     {
       "id": "CONF-006",
       "type": "REPOSITORY_SEPARATION",
       "old": "This directive §7 asks to fix every non-conformity",
-      "new": "Prior binding instruction: UAES and Uter must be governed separately; UTER P13 must not enter UAES; UAES has 5 uncommitted user changes",
-      "resolution": "Fix ONLY Uter-side issues. UAES-side DRAFT/NOT_RUN issues are registered as findings with required authorisation, not silently edited.",
+      "new": "Prior binding instruction: AES and Uter must be governed separately; UTER P13 must not enter AES; AES has 5 uncommitted user changes",
+      "resolution": "Fix ONLY Uter-side issues. AES-side DRAFT/NOT_RUN issues are registered as findings with required authorisation, not silently edited.",
       "authority": "prior explicit user instruction + WIP protection"
     },
     {
       "id": "CONF-007",
       "type": "AUDIT_ENGINE_DEFECT",
       "old": "First engine run: English MUST/SHALL matcher only; bold-only Status parser; P13 produced 0 rows; matrix commit key guessed as commit_sha",
-      "new": "UAES standards are bilingual (1333 Chinese mandatory lines were dropped); 133/178 standards use a table Status header; P13 is written in Chinese; D19-TEST-MATRIX writes `uter_commit`",
+      "new": "AES standards are bilingual (1333 Chinese mandatory lines were dropped); 133/178 standards use a table Status header; P13 is written in Chinese; D19-TEST-MATRIX writes `uter_commit`",
       "resolution": "FIND-FCA-005..008: fixed matcher (EN+CN+SHOULD+reference rows), shared standard_meta(), P13 Chinese extraction, and uter_commit binding. Before/after matrix snapshots preserved in evidence/bugfix/. Requirement count is therefore NOT comparable between the two runs.",
       "authority": "real repository content + §3 no-skip rule"
     }

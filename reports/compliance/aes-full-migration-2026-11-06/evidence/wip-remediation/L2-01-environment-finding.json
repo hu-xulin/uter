@@ -1,0 +1,60 @@
+{
+  "evidence_id": "WIP-REMEDIATION-L2-01-ENVIRONMENT-FINDING",
+  "evidence_class": "ANALYST_DISCLOSURE",
+  "generated_at": "2026-11-06T08:10:44Z",
+  "check": "L2-01 GOWORK=off go test ./... (unchanged command)",
+  "matrix_observation": {
+    "run": "third full matrix re-run (pOajH5)",
+    "status": "FAIL",
+    "exit_code": 1,
+    "duration_seconds": 27,
+    "log": "evidence/wip-remediation/L2-01-matrix-fail.log",
+    "log_sha256": "cacb483cd8d18c183734d4166dca05b0bef73313f8aedd3afda3e0a60f6050e0",
+    "failing_test": "TestEmbeddedBinaryCarriesTheDocsSite",
+    "error": "Should be empty, but was [web/dist/docs-content/docs/zh/index.html web/dist/docs-content/about/en/index.html]; open web/dist/docs-content/docs/zh/index.html: file does not exist",
+    "aggregate": "test-matrix: total=29 passed=28 failed=1 skipped=0 overall=FAIL"
+  },
+  "diagnosis": "Before this matrix run, web/dist was prepared with only index.html and docs-content/_next to satisfy main.go's //go:embed patterns. That is sufficient for compilation but NOT for main_docs_test.go, which additionally requires the full Next.js static export (all 8 language landing pages, about pages and >1KB landing page). The build-hygiene step added for L2-07 was correct and L2-07 itself PASSED (exit=0, 19s); the failure is an incomplete docs-artifact preparation for L2-01, not a Go test regression or project-code defect.",
+  "remediation": {
+    "action": "run the project's own postbuild step `node docs-web/scripts/copy-to-web.mjs` to copy the complete docs-web/out static export into web/dist/docs-content, then verify with scripts/verify-docs-artifacts.sh",
+    "verification": {
+      "docs_artifact_gate": "PASS",
+      "index_html_bytes": 3482,
+      "docs_zh_index_bytes": 69822,
+      "next_css_files": 1,
+      "next_js_files": 26,
+      "GOWORK=off go build ./...": "exit 0",
+      "GOWORK=off go test ./... (standalone)": "exit 0",
+      "GOWORK=off go test -count=1 . (forced, no cache)": "exit 0",
+      "logs": [
+        "evidence/wip-remediation/L2-01-after-docs-restore.log",
+        "evidence/wip-remediation/L2-01-root-forced.log",
+        "evidence/wip-remediation/docs-artifacts-after-restore.txt"
+      ]
+    }
+  },
+  "policy": {
+    "command_changed": false,
+    "assertion_relaxed": false,
+    "exit_code_rewritten": false,
+    "test_disabled_or_skipped": false,
+    "failed_matrix_row_overwritten": false,
+    "note": "The third-run FAIL aggregate is archived unchanged. It can only be superseded by an honest complete matrix re-run with the full docs static export present, never by editing results.tsv or test-matrix.json."
+  },
+  "final_matrix_preparation": "Full docs static export present in web/dist before L2-01..L2-05; the documented mid-matrix `mv web/dist` build-hygiene step still moves dist aside immediately before L2-07 so build:check runs against an empty output directory.",
+  "final_matrix_result": {
+    "run": "fourth full matrix re-run (y6sZJB)",
+    "matrix_exit": 0,
+    "aggregate": "test-matrix: total=29 passed=29 failed=0 skipped=0 overall=PASS",
+    "generated_at": "2026-11-06T08:18:09.420364+00:00",
+    "evidence": [
+      "evidence/wip-remediation/matrix-fourth-run-console.log",
+      "evidence/wip-remediation/matrix-final-results.tsv",
+      "evidence/wip-remediation/test-matrix-final.json"
+    ],
+    "note": "Supersedes the archived FAIL aggregate by a complete honest re-run; no prior FAIL row was edited or deleted.",
+    "L2_01_status": "PASS exit=0 20s",
+    "L2_07_status": "PASS exit=0 19s",
+    "docs_restore_step": "post-L2-07 restoration executed: [copy-to-web] + docs artifact verification passed"
+  }
+}

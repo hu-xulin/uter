@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/knip/schema.json",
   // Each pattern below carries an explicit justification; do not add blanket
-  // ignores without one. MA-09 (UAES manual acceptance) runs `knip` as a
+  // ignores without one. MA-09 (AES manual acceptance) runs `knip` as a
   // dead-code signal check — keep it strict for application code.
   // Supersedes the former knip.config.ts (merged 2026-11-06, file removed).
   "entry": [
@@ -36,7 +36,7 @@
     // (npm run i18n:check); it is never imported
     "src/i18n/static-keys.ts",
     // Design-contract declaration file: the single allowed home for third-party
-    // brand colors (design-system spec §T8 / UTER-UAES P05). Its constants are
+    // brand colors (design-system spec §T8 / UTER-AES P05). Its constants are
     // declarative API surface — including OAUTH_BRAND_COLORS — and must not be
     // pruned by dead-code analysis
     "src/design-system/tokens/brand-colors.ts",

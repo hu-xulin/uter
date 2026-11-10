@@ -7,17 +7,17 @@
     {
       "command": "bash scripts/quality/ai-specs-check.sh",
       "exit_code": 0,
-      "stdout": "ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-UAES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n",
+      "stdout": "ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-AES-GOV-001 三层架构/P13/P09-P10 分工、ADR）\n",
       "stderr": ""
     },
     {
       "command": "ruby scripts/quality/test-ai-governance-policy.rb",
       "exit_code": 0,
-      "stdout": "PASS: fail-closed Agent governance policy\nPASS: least privilege, task identity, scoped authorization and audit requirements\nPASS: R0-R4 risk classification and durable task lifecycle\nPASS: one non-main branch maximum; main push, force-push and PR merge denied\nPASS: delivery is gated on complete validation; branch strategy follows UTER-UAES-GOV-001 baseline preservation\nPASS: PR repair workflow allows verified branch commit/push/PR only\nPASS: task lifecycle prevents unverified closure and supports checkpointed recovery\nPASS: delegated Agent permissions cannot escalate\nPASS: production, real-payment and production-database changes denied\nNOTE: static policy/schema tests do not replace live Agent runtime denial tests.\n",
+      "stdout": "PASS: fail-closed Agent governance policy\nPASS: least privilege, task identity, scoped authorization and audit requirements\nPASS: R0-R4 risk classification and durable task lifecycle\nPASS: one non-main branch maximum; main push, force-push and PR merge denied\nPASS: delivery is gated on complete validation; branch strategy follows UTER-AES-GOV-001 baseline preservation\nPASS: PR repair workflow allows verified branch commit/push/PR only\nPASS: task lifecycle prevents unverified closure and supports checkpointed recovery\nPASS: delegated Agent permissions cannot escalate\nPASS: production, real-payment and production-database changes denied\nNOTE: static policy/schema tests do not replace live Agent runtime denial tests.\n",
       "stderr": ""
     },
     {
-      "command": "python3 scripts/quality/uaes-manual-acceptance.py --verify-only",
+      "command": "python3 scripts/quality/aes-manual-acceptance.py --verify-only",
       "exit_code": 0,
       "stdout": "{\n  \"run_id\": \"RUN-20261106T105821Z\",\n  \"run_state\": \"COMPLETED\",\n  \"cases\": {\n    \"total\": 14,\n    \"PASS\": 14,\n    \"FAIL\": 0,\n    \"NOT_RUN\": 0,\n    \"TIMEOUT\": 0\n  },\n  \"integrity\": \"PASS\",\n  \"problems\": []\n}\n",
       "stderr": ""

@@ -1,0 +1,24 @@
+# id: L1-15
+# layer: L1
+# command: ruby scripts/quality/uter-p09-p10-boundary-check.rb
+# workdir: /Users/lincolnhu/uter
+# started_at: 2026-11-08T18:34:22Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+PASS B01  P09 owns the PROOF system (7 quality-engineering clauses)
+PASS B02  P10 owns the REQUIREMENT baseline (11 security/reliability clauses)
+PASS B03  P09 text describes proving; P10 text describes defining
+PASS B04  no clause crosses the P09/P10 responsibility boundary
+PASS B05  security testing is required by P10 and executed/recorded by P09
+PASS B06  Uter registry assigns PROVE to P09 and DEFINE to P10
+PASS B07  duplicate/conflicting management system is explicitly forbidden
+PASS B08  pinned AES baseline itself keeps P09=Quality / P10=Security
+PASS B09  local 14-domain gate evaluator labels P09/P10/P13 correctly
+PASS B10  all governance entrypoints state the same P09/P10 division
+PASS B11  D14 and D15 are separate quality / security assessments
+overall=PASS checks=11 failed=0
+evidence: /Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence/p09-p10-boundary.json
+# exit_code: 0
+# duration_seconds: 0

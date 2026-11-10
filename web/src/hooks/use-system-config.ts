@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useCallback } from 'react'
 
-import { DEFAULT_LOGO } from '@/lib/constants'
+import { DEFAULT_LOGO, FAVICON_URL } from '@/lib/constants'
 import { applyFaviconToDom } from '@/lib/dom-utils'
 import { ensureStatus } from '@/lib/status-query'
 import { useSystemConfigStore } from '@/stores/system-config-store'
@@ -94,7 +94,8 @@ export function useSystemConfig(options: UseSystemConfigOptions = {}) {
       logo,
       () => {
         setLoadedLogoUrl(logo)
-        applyFaviconToDom(logo)
+        // Tab favicon is the brand .ico, independent of the in-page logo.
+        applyFaviconToDom(FAVICON_URL)
       },
       () => {
         if (logo !== DEFAULT_LOGO) {

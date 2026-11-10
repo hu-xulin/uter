@@ -1,0 +1,727 @@
+[1m== uter 统一质量门禁 ==[0m
+根目录: /Users/lincolnhu/uter
+模式:   quick（跳过慢套件）
+分支:   main @ ec6501adc
+工作区: 192 处未提交改动（本脚本不会修改其中任何内容）
+
+[1m[1] Go embed 前置产物[0m
+[2m  $ (cd /Users/lincolnhu/uter)[0m
+[2m     "$ROOT/scripts/quality/ensure-go-embed-artifacts.sh" 2>&1[0m
+embed targets already present; no placeholder created
+embed precondition OK: web/dist/index.html + web/dist/docs-content/_next
+  [32m✓ PASS[0m (0s)
+
+[1m[2] Go 格式[0m
+[2m  $ (cd /Users/lincolnhu/uter)[0m
+[2m     gofmt_files=$(gofmt -l . 2>/dev/null | grep -v "^vendor/" || true); if [ -n "$gofmt_files" ]; then echo "以下文件未 gofmt:"; echo "$gofmt_files"; exit 1; fi[0m
+  [32m✓ PASS[0m (2s)
+
+[1m[3] Go vet (all four modules)[0m
+[2m  $ (cd /Users/lincolnhu/uter)[0m
+[2m     GOWORK=off go vet ./... 2>&1 && (cd relaykit && GOWORK=off go vet ./...) && (cd tokenkit && GOWORK=off go vet ./...) && (cd tokenkit/tokenkit && GOWORK=off go vet ./...)[0m
+  [32m✓ PASS[0m (8s)
+
+[1m[4] Go 测试 (make test)[0m
+  [33m- SKIP[0m (--quick 模式跳过)
+
+[1m[5] 前端 类型检查 (tsgo)[0m
+[2m  $ (cd web)[0m
+[2m     bun run typecheck 2>&1[0m
+$ tsgo -b
+  [32m✓ PASS[0m (9s)
+
+[1m[6] 前端 Lint (oxlint+i18n)[0m
+[2m  $ (cd web)[0m
+[2m     bun run lint 2>&1[0m
+$ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .
+i18n:check 通过：7304 个静态 t() 键 + 701 个登记键（static-keys.ts）在 7 份语言包中全部存在。
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/system-settings/integrations/amount-discount-visual-editor.tsx:62:26]
+ 61 |       }))
+ 62 |       .filter((item) => !isNaN(item.amount) && !isNaN(item.discountRate))
+    :                          ^^^^^
+ 63 |       .sort((a, b) => a.amount - b.amount)
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/system-settings/integrations/amount-discount-visual-editor.tsx:62:49]
+ 61 |       }))
+ 62 |       .filter((item) => !isNaN(item.amount) && !isNaN(item.discountRate))
+    :                                                 ^^^^^
+ 63 |       .sort((a, b) => a.amount - b.amount)
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/hooks/use-system-config.ts:39:7]
+ 38 |   const img = new Image()
+ 39 |   img.onload = onLoad
+    :       ^^^^^^
+ 40 |   img.onerror = onError
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/hooks/use-system-config.ts:40:7]
+ 39 |   img.onload = onLoad
+ 40 |   img.onerror = onError
+    :       ^^^^^^^
+ 41 |   img.src = src
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/hooks/use-system-config.ts:44:9]
+ 43 |   return () => {
+ 44 |     img.onload = null
+    :         ^^^^^^
+ 45 |     img.onerror = null
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/hooks/use-system-config.ts:45:9]
+ 44 |     img.onload = null
+ 45 |     img.onerror = null
+    :         ^^^^^^^
+ 46 |   }
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
+    ,-[src/features/system-settings/utils/json-parser.ts:72:22]
+ 71 | ): { line: number; column: number } {
+ 72 |   const lines = text.substring(0, position).split('\n')
+    :                      ^^^^^^^^^
+ 73 |   return {
+    `----
+
+  ! import(first): Import statements must come first
+    ,-[src/lib/admin-permissions.ts:23:1]
+ 22 | 
+ 23 | import { ROLE } from './roles'
+    : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 24 | 
+    `----
+  help: Move import statement to the top of the file
+
+  ! unicorn(prefer-structured-clone): Use `structuredClone(…)` to create a deep clone.
+     ,-[src/features/system-settings/general/channel-affinity/constants.ts:133:10]
+ 132 | export function cloneTemplate<T>(template: T): T {
+ 133 |   return JSON.parse(JSON.stringify(template))
+     :          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 134 | }
+     `----
+  help: Switch to `structuredClone(…)`.
+
+  ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
+    ,-[src/features/system-settings/integrations/utils.ts:56:30]
+ 55 |     const position = Number.parseInt(positionMatch[1], 10)
+ 56 |     const lines = jsonString.substring(0, position).split('\n')
+    :                              ^^^^^^^^^
+ 57 |     return {
+    `----
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/system-settings/integrations/amount-options-visual-editor.tsx:52:54]
+ 51 |     return parsed
+ 52 |       .filter((item) => typeof item === 'number' || !isNaN(Number(item)))
+    :                                                      ^^^^^
+ 53 |       .map(Number)
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/system-settings/integrations/amount-options-visual-editor.tsx:59:9]
+ 58 |     const amount = Number.parseFloat(newAmount)
+ 59 |     if (isNaN(amount) || amount <= 0) {
+    :         ^^^^^
+ 60 |       return
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
+    ,-[src/features/dashboard/lib/text.ts:32:20]
+ 31 |   return plainText.length > maxLength
+ 32 |     ? `${plainText.substring(0, maxLength)}...`
+    :                    ^^^^^^^^^
+ 33 |     : plainText
+    `----
+
+  ! unicorn(prefer-number-properties): Use `Number.isNaN` instead of the global `isNaN`
+    ,-[src/features/dashboard/lib/stats.ts:30:7]
+ 29 |   const result = value / divisor
+ 30 |   if (isNaN(result) || !isFinite(result)) return 0
+    :       ^^^^^
+ 31 |   const factor = Math.pow(10, precision)
+    `----
+  help: Replace it with `Number.isNaN`
+
+  ! unicorn(prefer-number-properties): Use `Number.isFinite` instead of the global `isFinite`
+    ,-[src/features/dashboard/lib/stats.ts:30:25]
+ 29 |   const result = value / divisor
+ 30 |   if (isNaN(result) || !isFinite(result)) return 0
+    :                         ^^^^^^^^
+ 31 |   const factor = Math.pow(10, precision)
+    `----
+  help: Replace it with `Number.isFinite`
+
+  ! unicorn(prefer-query-selector): Prefer `.querySelector()` over `.getElementById()`.
+     ,-[src/features/dashboard/components/overview/__tests__/setup-guide.test.tsx:123:28]
+ 122 |     }
+ 123 |     const panel = document.getElementById(
+     :                            ^^^^^^^^^^^^^^
+ 124 |       toggle.getAttribute('aria-controls') ?? ''
+     `----
+  help: It's better to use the same method to query DOM elements. This helps keep consistency and it lends itself to future improvements (e.g. more specific selectors).
+
+  ! unicorn(prefer-query-selector): Prefer `.querySelector()` over `.getElementById()`.
+     ,-[src/features/dashboard/components/overview/__tests__/setup-guide.test.tsx:140:16]
+ 139 |     expect(
+ 140 |       document.getElementById(toggle.getAttribute('aria-controls') ?? '')
+     :                ^^^^^^^^^^^^^^
+ 141 |     ).toBeVisible()
+     `----
+  help: It's better to use the same method to query DOM elements. This helps keep consistency and it lends itself to future improvements (e.g. more specific selectors).
+
+  ! unicorn(prefer-string-slice): Prefer String#slice() over String#substring()
+    ,-[src/features/system-settings/models/utils.ts:72:30]
+ 71 |     const position = Number.parseInt(positionMatch[1], 10)
+ 72 |     const lines = jsonString.substring(0, position).split('\n')
+    :                              ^^^^^^^^^
+ 73 |     return {
+    `----
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+    ,-[src/components/turnstile.tsx:71:7]
+ 70 |     s.defer = true
+ 71 |     s.onload = () => render()
+    :       ^^^^^^
+ 72 |     document.head.appendChild(s)
+    `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+     ,-[src/components/ai-elements/prompt-input.tsx:696:14]
+ 695 |       reader.onloadend = () => resolve(reader.result as string)
+ 696 |       reader.onerror = reject
+     :              ^^^^^^^
+ 697 |       reader.readAsDataURL(blob)
+     `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-add-event-listener): Prefer `addEventListener()` over their `on`-function counterparts.
+      ,-[src/components/ai-elements/prompt-input.tsx:1173:25]
+ 1172 | 
+ 1173 |       speechRecognition.onerror = (event) => {
+      :                         ^^^^^^^
+ 1174 |         // eslint-disable-next-line no-console
+      `----
+  help: `addEventListener()` can register multiple handlers and accepts options such as `{ once: true }`; assigning to `on<event>` replaces any previously registered handler.
+
+  ! unicorn(prefer-set-has): should be a `Set`, and use `.has()` to check existence or non-existence.
+    ,-[src/design-system/__tests__/semantic-colors.test.ts:39:7]
+ 38 | /** 语义状态键：它们的取值必须来自语义 Token，不得是 chart-N。 */
+ 39 | const STATUS_KEYS = ['success', 'warning', 'danger', 'info', 'destructive']
+    :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 40 | 
+    `----
+  help: Switch to `Set`
+
+  ! unicorn(prefer-structured-clone): Use `structuredClone(…)` to create a deep clone.
+    ,-[src/features/profile/__tests__/settings.test.tsx:63:10]
+ 62 | function sentBody(put: { mock: { calls: unknown[][] } }): unknown {
+ 63 |   return JSON.parse(JSON.stringify(put.mock.calls[0][1]))
+    :          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 64 | }
+    `----
+  help: Switch to `structuredClone(…)`.
+
+  ! unicorn(prefer-set-has): should be a `Set`, and use `.has()` to check existence or non-existence.
+    ,-[src/features/rankings/index.tsx:36:7]
+ 35 | 
+ 36 | const VALID_PERIODS: RankingPeriod[] = ['today', 'week', 'month', 'year']
+    :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 37 | 
+    `----
+  help: Switch to `Set`
+
+  ! eslint(no-console): Unexpected console statement.
+    ,-[e2e/axe/authed.spec.ts:82:7]
+ 81 |         v.impact && BLOCKING_IMPACTS.has(v.impact) ? 'blocking' : 'advisory'
+ 82 |       console.log(
+    :       ^^^^^^^^^^^
+ 83 |         `[axe:${tag}][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
+    `----
+  help: Delete this console statement.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[e2e/axe/authed.spec.ts:89:9]
+ 88 |           blockingByRoute.push(
+ 89 | ,->         `${route.path} ${v.impact}/${v.id} "${v.help}" -> ` +
+ 90 | |             v.nodes
+ 91 | |               .slice(0, 5)
+ 92 | |               .map((n) => n.target.join(' '))
+ 93 | `->             .join('; ')
+ 94 |           )
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[e2e/axe/authed.spec.ts:100:5]
+  99 |     blockingByRoute,
+ 100 |     '鉴权页存在 critical/serious 可访问性违规：\n' + blockingByRoute.join('\n')
+     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 101 |   ).toEqual([])
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/generate-design-tokens.mjs:48:21]
+ 47 |   if (group?.$type !== 'color') {
+ 48 |     throw new Error('Missing color group: themes.' + theme + '.brand')
+    :                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 49 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/generate-design-tokens.mjs:57:9]
+ 56 |           throw new Error(
+ 57 | ,->         'Invalid themes.' +
+ 58 | |             theme +
+ 59 | |             '.brand.' +
+ 60 | |             key +
+ 61 | `->           ': expected DTCG color token with #RRGGBB $value'
+ 62 |           )
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/generate-design-tokens.mjs:66:9]
+ 65 |       throw new Error(
+ 66 |         'Missing $description for themes.' + theme + '.brand.' + key
+    :         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 67 |       )
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/generate-design-tokens.mjs:85:9]
+ 84 |           (key) =>
+ 85 | ,->         '  --aes-brand-' +
+ 86 | |           names[key] +
+ 87 | |           ': ' +
+ 88 | |           source.themes[theme].brand[key].$value +
+ 89 | `->         ';'
+ 90 |         )
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/generate-design-tokens.mjs:115:3]
+ 114 |   ' * Source: src/design-system/source/brand.tokens.json',
+ 115 |   ' * Source version: ' + metadata.version + ' (' + metadata.status + ')',
+     :   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 116 |   ' * Generator: scripts/generate-design-tokens.mjs',
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:57:17]
+ 56 |   if (ids.has(component.id)) {
+ 57 |     errors.push('Duplicate component ID: ' + component.id)
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 58 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:61:17]
+ 60 |   if (files.has(component.file)) {
+ 61 |     errors.push('Duplicate component file: ' + component.file)
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 62 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:65:17]
+ 64 |   if (!existsSync(join(ROOT, component.file))) {
+ 65 |     errors.push('Missing component file: ' + component.file)
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 66 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:68:17]
+ 67 |   if (!component.contract?.states?.length) {
+ 68 |     errors.push('Missing states: ' + component.id)
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 69 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:72:19]
+ 71 |     if (!component.contract?.[section]) {
+ 72 |       errors.push('Missing contract section ' + section + ': ' + component.id)
+    :                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 73 |     }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:80:17]
+ 79 |   ) {
+ 80 |     errors.push('Invalid evidence status: ' + component.id)
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 81 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:84:19]
+ 83 |     if (!existsSync(join(ROOT, test))) {
+ 84 |       errors.push('Missing test evidence file ' + test + ' for ' + component.id)
+    :                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 85 |     }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:88:19]
+ 87 |   if (component.contract?.evidence?.status !== 'VERIFIED') {
+ 88 |     warnings.push('Evidence not verified: ' + component.id)
+    :                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 89 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/check-component-registry.mjs:95:17]
+ 94 |   if (!files.has(file)) {
+ 95 |     errors.push('Unregistered UI component file: ' + file)
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 96 |   }
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/check-component-registry.mjs:100:17]
+  99 |   if (!actual.has(file)) {
+ 100 |     errors.push('Registry entry is not an eligible UI component: ' + file)
+     :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 101 |   }
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/add-showcase-anchors.mjs:138:27]
+ 137 | for (const { heading, block } of ANCHORS) {
+ 138 |   const idx = src.indexOf(heading + '\n')
+     :                           ^^^^^^^^^^^^^^
+ 139 |   if (idx < 0) {
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/add-showcase-anchors.mjs:152:9]
+ 151 |   const insertAt = src.indexOf('\n', idx + heading.length) + 1
+ 152 |   src = src.slice(0, insertAt) + '\n' + block + '\n' + src.slice(insertAt)
+     :         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 153 |   inserted++
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(no-console): Unexpected console statement.
+    ,-[e2e/visual/lib/service-gate.ts:72:5]
+ 71 |   if (!reachable) {
+ 72 |     console.error(BLOCKED_BANNER)
+    :     ^^^^^^^^^^^^^
+ 73 |     throw new Error(
+    `----
+  help: Delete this console statement.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/gen-lobe-icon-variants.cjs:8:7]
+  7 |         (e) =>
+  8 | ,->       '\t"' +
+  9 | |         e.id +
+ 10 | |         '": {' +
+ 11 | |         (e.param.hasColor ? 'true' : 'false') +
+ 12 | |         ', ' +
+ 13 | |         (e.param.hasAvatar ? 'true' : 'false') +
+ 14 | `->       '},'
+ 15 |       )
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/gen-lobe-icon-variants.cjs:58:17]
+ 57 | 
+ 58 | const content = header + entries.join('\n') + '\n}\n'
+    :                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 59 | fs.writeFileSync('/Users/lincolnhu/uter/model/lobe_icon_variants.go', content)
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(no-console): Unexpected console statement.
+    ,-[e2e/axe/lib/service-gate.ts:87:5]
+ 86 |   if (!reachable) {
+ 87 |     console.error(BLOCKED_BANNER)
+    :     ^^^^^^^^^^^^^
+ 88 |     throw new Error(
+    `----
+  help: Delete this console statement.
+
+  ! eslint(no-unused-vars): Identifier 'path' is imported but never used.
+   ,-[e2e/visual/lib/target.ts:1:8]
+ 1 | import path from 'node:path'
+   :        ^^|^
+   :          `-- 'path' is imported here
+ 2 | 
+   `----
+  help: Consider removing this import.
+
+  ! unicorn(prefer-number-properties): Use `Number.parseInt` instead of the global `parseInt`
+    ,-[scripts/verify-contrast.mjs:40:15]
+ 39 |   const [r, g, b] = [0, 2, 4].map((i) => {
+ 40 |     const v = parseInt(c.slice(i, i + 2), 16) / 255
+    :               ^^^^^^^^
+ 41 |     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+    `----
+  help: Replace it with `Number.parseInt`
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/verify-contrast.mjs:158:5]
+ 157 |       return (
+ 158 | ,->     (pass ? 'PASS' : 'FAIL') +
+ 159 | |       '  ' +
+ 160 | |       theme +
+ 161 | |       '/' +
+ 162 | |       state +
+ 163 | |       '  ' +
+ 164 | |       fg +
+ 165 | |       ' on ' +
+ 166 | |       bg +
+ 167 | |       '  ' +
+ 168 | |       value.toFixed(2) +
+ 169 | |       ':1 (min ' +
+ 170 | |       min +
+ 171 | |       ')  ' +
+ 172 | `->     label
+ 173 |       )
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/verify-contrast.mjs:186:3]
+ 185 |     console.log(
+ 186 | ,->   (negRejected ? 'NEGATIVE-TEST PASS' : 'NEGATIVE-TEST FAIL') +
+ 187 | |       '  pre-remediation navigation selected ' +
+ 188 | |       NEG_FG +
+ 189 | |       ' on ' +
+ 190 | |       NEG_BG +
+ 191 | |       ' = ' +
+ 192 | |       negValue.toFixed(2) +
+ 193 | |       ':1 -> ' +
+ 194 | |       (negRejected
+ 195 | |         ? 'correctly rejected by the AA 4.5:1 rule'
+ 196 | `->       : 'incorrectly accepted')
+ 197 |     )
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/verify-contrast.mjs:208:7]
+ 207 |     ? '\nAll executable brand contrast checks pass; NOT_RUN items remain open.'
+ 208 |     : '\n' + failures + ' check(s) FAILED'
+     :       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 209 | )
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(no-unused-vars): Variable 'depth' is declared but never used. Unused variables should start with a '_'.
+    ,-[scripts/audit-settings-input-hints.mjs:45:9]
+ 44 |   let i = startIdx
+ 45 |   const depth = 0
+    :         ^^|^^
+    :           `-- 'depth' is declared here
+ 46 |   while (i < src.length) {
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-console): Unexpected console statement.
+    ,-[e2e/axe/public.spec.ts:90:9]
+ 89 |       for (const v of advisory) {
+ 90 |         console.log(
+    :         ^^^^^^^^^^^
+ 91 |           `[axe:advisory][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
+    `----
+  help: Delete this console statement.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[e2e/axe/public.spec.ts:99:7]
+  98 |           blocking,
+  99 | ,->       `${route.path} 存在 critical/serious 可访问性违规：` +
+ 100 | |           blocking
+ 101 | |             .map(
+ 102 | |               (v) =>
+ 103 | |                 `${v.impact}/${v.id} "${v.help}" -> ` +
+ 104 | |                 v.nodes
+ 105 | |                   .slice(0, 5)
+ 106 | |                   .map((n) => n.target.join(' '))
+ 107 | |                   .join('; ')
+ 108 | |             )
+ 109 | `->           .join('\n')
+ 110 |         ).toEqual([])
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[scripts/check-design-tokens.mjs:598:5]
+ 597 |       console.log(
+ 598 | ,->     `design-tokens: 基线已写入 ${relative(ROOT, BASELINE_PATH)}，共 ${entries.length} 条` +
+ 599 | |         (previousCount
+ 600 | |           ? `（此前 ${previousCount} 条，减少 ${previousCount - entries.length} 条）`
+ 601 | `->         : '')
+ 602 |       )
+     `----
+  help: Use template literals instead of string concatenation.
+
+  ! eslint(no-unused-vars): Function 'readVar' is declared but never used.
+    ,-[scripts/generate-design-showcase.mjs:89:10]
+ 88 | /** 从编译产物里读一个 CSS 变量的原始值（用于表格里显示「实际值」）。 */
+ 89 | function readVar(css, name) {
+    :          ^^^|^^^
+    :             `-- 'readVar' is declared here
+ 90 |   const i = css.indexOf(name + ':')
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'toPx' is declared but never used.
+     ,-[scripts/generate-design-showcase.mjs:100:10]
+  99 | /** rem → px（根字号 16px）。 */
+ 100 | function toPx(value) {
+     :          ^^|^
+     :            `-- 'toPx' is declared here
+ 101 |   if (!value) return null
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'SAMPLE_EN' is declared but never used. Unused variables should start with a '_'.
+      ,-[scripts/generate-design-showcase.mjs:1072:7]
+ 1071 | const SAMPLE_ZH = '优特智能大模型服务平台'
+ 1072 | const SAMPLE_EN = 'Uter.ai'
+      :       ^^^^|^^^^
+      :           `-- 'SAMPLE_EN' is declared here
+ 1073 | 
+      `----
+  help: Consider removing this declaration.
+
+  ! eslint(prefer-template): Unexpected string concatenation.
+    ,-[scripts/generate-design-showcase.mjs:90:25]
+ 89 | function readVar(css, name) {
+ 90 |   const i = css.indexOf(name + ':')
+    :                         ^^^^^^^^^^
+ 91 |   if (i < 0) return null
+    `----
+  help: Use template literals instead of string concatenation.
+
+  ! unicorn(prefer-number-properties): Use `Number.parseFloat` instead of the global `parseFloat`
+     ,-[scripts/generate-design-showcase.mjs:103:28]
+ 102 |   const m = value.match(/^(-?[\d.]+)rem$/)
+ 103 |   if (m) return Math.round(parseFloat(m[1]) * 16 * 100) / 100
+     :                            ^^^^^^^^^^
+ 104 |   const p = value.match(/^(-?[\d.]+)px$/)
+     `----
+  help: Replace it with `Number.parseFloat`
+
+  ! unicorn(prefer-number-properties): Use `Number.parseFloat` instead of the global `parseFloat`
+     ,-[scripts/generate-design-showcase.mjs:105:17]
+ 104 |   const p = value.match(/^(-?[\d.]+)px$/)
+ 105 |   if (p) return parseFloat(p[1])
+     :                 ^^^^^^^^^^
+ 106 |   return null
+     `----
+  help: Replace it with `Number.parseFloat`
+
+  ! eslint(no-useless-escape): Unnecessary escape character '<'
+      ,-[scripts/generate-design-showcase.mjs:1555:253]
+ 1554 |       <div style="padding:14px 18px; font-family:var(--font-mono); font-size:13px; line-height:22px">
+ 1555 |         <div><span class="text-term-command" style="font-weight:500">curl</span> <span class="text-term-flag">-X</span> <span class="text-term-flag">POST</span> <span class="text-term-string">"/v1/chat/completions"</span> <span class="text-term-dim-2">\</span></div>
+      :                                                                                                                                                                                                                                                             ^^
+ 1556 |         <div>&nbsp;&nbsp;<span class="text-term-flag">-H</span> <span class="text-term-string">"Authorization: Bearer sk-••••"</span> <span class="text-term-dim-2">\</span></div>
+      `----
+  help: Replace `\<` with `<`.
+
+  ! eslint(no-useless-escape): Unnecessary escape character '<'
+      ,-[scripts/generate-design-showcase.mjs:1556:173]
+ 1555 |         <div><span class="text-term-command" style="font-weight:500">curl</span> <span class="text-term-flag">-X</span> <span class="text-term-flag">POST</span> <span class="text-term-string">"/v1/chat/completions"</span> <span class="text-term-dim-2">\</span></div>
+ 1556 |         <div>&nbsp;&nbsp;<span class="text-term-flag">-H</span> <span class="text-term-string">"Authorization: Bearer sk-••••"</span> <span class="text-term-dim-2">\</span></div>
+      :                                                                                                                                                                     ^^
+ 1557 |         <div>&nbsp;&nbsp;<span class="text-term-flag">-d</span> <span class="text-term-string">'{'</span></div>
+      `----
+  help: Replace `\<` with `<`.
+
+Found 65 warnings and 0 errors.
+Finished in 841ms on 1446 files with 186 rules using 16 threads.
+  [32m✓ PASS[0m (2s)
+
+[1m[7] 设计令牌门禁 (strict)[0m
+[2m  $ (cd web)[0m
+[2m     bun run lint:design:strict 2>&1[0m
+$ node scripts/check-design-tokens.mjs --strict
+design-tokens: 通过。扫描 1249 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。
+
+浮层投影（规范 §1.5 允许，不计入违规）：20 处
+Token 定义处色值（颜色的落点，不计入违规）：182 处
+  [32m✓ PASS[0m (2s)
+
+[1m[8] 版权头检查[0m
+[2m  $ (cd web)[0m
+[2m     bun run copyright:check 2>&1[0m
+$ node scripts/add-copyright.mjs --check
+copyright: checked 1528, added 0, updated 0, skipped generated 5, skipped third-party 1523
+  [32m✓ PASS[0m (0s)
+
+[1m[9] 格式检查[0m
+[2m  $ (cd web)[0m
+[2m     bun run format:check 2>&1[0m
+$ node scripts/format-with-protected-headers.mjs --check
+Finished in 923ms on 1621 files using 16 threads.
+  [32m✓ PASS[0m (4s)
+
+[1m[10] 前端 单元测试 (vitest)[0m
+  [33m- SKIP[0m (--quick 模式跳过)
+
+[1m[11] 前端 生产构建 (build:check)[0m
+  [33m- SKIP[0m (--quick 模式跳过)
+
+[1m[12] 安全扫描 (UEQE security)[0m
+  [33m- SKIP[0m (--quick 模式跳过)
+
+[1m== 门禁汇总 ==[0m
+--------------------------------------------------------------------------------
+检查项                      结果   耗时 退出码
+--------------------------------------------------------------------------------
+Go embed 前置产物          [32mPASS    [0m 0     s 0
+Go 格式                      [32mPASS    [0m 2     s 0
+Go vet (all four modules)      [32mPASS    [0m 8     s 0
+Go 测试 (make test)          [33mSKIP    [0m 0     s -
+前端 类型检查 (tsgo)     [32mPASS    [0m 9     s 0
+前端 Lint (oxlint+i18n)      [32mPASS    [0m 2     s 0
+设计令牌门禁 (strict)    [32mPASS    [0m 2     s 0
+版权头检查                [32mPASS    [0m 0     s 0
+格式检查                   [32mPASS    [0m 4     s 0
+前端 单元测试 (vitest)   [33mSKIP    [0m 0     s -
+前端 生产构建 (build:check) [33mSKIP    [0m 0     s -
+安全扫描 (UEQE security)   [33mSKIP    [0m 0     s -
+--------------------------------------------------------------------------------
+通过 8 / 失败 0 / 跳过 4
+
+[33m⚠ 快速检查完成（非完整质量验收）[0m

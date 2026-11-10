@@ -1,0 +1,251 @@
+{
+  "evidence_id": "D04-GOVERNANCE-SEPARATION",
+  "generated_at": "2026-11-09T10:57:58Z",
+  "related_requirement": "UTER-AES-GOV-001 §1.1 / §1.3 / §1.4 / §4.3 / §16.3",
+  "related_finding": null,
+  "source_system": "scripts/quality/uter-governance-separation-check.rb",
+  "execution_environment": {
+    "ruby": "4.0.6",
+    "uter_root": "/Users/lincolnhu/uter",
+    "aes_root": "/Users/lincolnhu/aes"
+  },
+  "repository_revision": {
+    "uter_head": "775e9eb50bbc0c99541da63b28d2779624f03bed",
+    "aes_head": "9d727f6685db3d6e341f487138a59fc732f8d8b7"
+  },
+  "collector": "WorkBuddy (Tencent Hunyuan Hy)",
+  "collection_time": "2026-11-09T10:57:58Z",
+  "integrity": {
+    "uter_registry_sha256": "48f0cd5678ff60e8b88a811a920dc8cc6caced640e411eceaa3082c6fed2c3c6",
+    "aes_registry_sha256": "c4b667fe3ca5ad89ce5eeffa93fdad03ab27c7f753c97251f0561e2aaa34ba64",
+    "aes_gates_sha256": "2deb7e7d26b26559ac893990a69fc18391cb637bfd90dd95f675c61d4511070d",
+    "note": "Hashes support evidence integrity only; they do not prove the underlying activity was performed correctly (§14.4)."
+  },
+  "storage_reference": "/Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence",
+  "access_restrictions": "local repository evidence; no credentials or production data",
+  "overall": "PASS",
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "S00",
+      "name": "AES repository reachable",
+      "requirement": "§18 step 1",
+      "status": "PASS",
+      "observation": {
+        "aes_root": "/Users/lincolnhu/aes",
+        "aes_head": "9d727f6685db3d6e341f487138a59fc732f8d8b7"
+      }
+    },
+    {
+      "check": "S01",
+      "name": "Uter Layer B governance assets present",
+      "requirement": "§1.1 Layer B / §18 step 7",
+      "status": "PASS",
+      "observation": {
+        "paths": [
+          "uaes/standards/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md",
+          ".aes/uter-governance-registry.yaml",
+          ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
+          ".aes/AI-GOVERNANCE-ENTRY.md"
+        ],
+        "missing": []
+      }
+    },
+    {
+      "check": "S02",
+      "name": "project registry declares separate repository scopes",
+      "requirement": "§1.1 / §1.3",
+      "status": "PASS",
+      "observation": {
+        "repository_scope": "uter",
+        "aes_repository_scope": "aes",
+        "governing_document_id": "UTER-AES-GOV-001"
+      }
+    },
+    {
+      "check": "S03",
+      "name": "UTER P13 registered ONLY in Uter project governance registry",
+      "requirement": "§1.3 / §4.3 / §16.3",
+      "status": "PASS",
+      "observation": {
+        "extension_count": 1,
+        "id": "UTER-P13",
+        "registered_in": "UTER-PROJECT-GOVERNANCE-REGISTRY",
+        "classification": "PROJECT_SPECIFIC_GOVERNANCE_EXTENSION",
+        "inherits": "AES P00-P12 (all applicable mandatory requirements)"
+      }
+    },
+    {
+      "check": "S04",
+      "name": "registry explicitly forbids AES registration locations",
+      "requirement": "§1.3 / §4.3",
+      "status": "PASS",
+      "observation": {
+        "declared": [
+          "aes/standards/",
+          "aes/.aes/registry/",
+          "aes/.aes/STANDARD-REGISTRY.yaml"
+        ],
+        "required": [
+          "aes/standards/",
+          "aes/.aes/registry/",
+          "aes/.aes/STANDARD-REGISTRY.yaml"
+        ]
+      }
+    },
+    {
+      "check": "S05",
+      "name": "AES registry contains exactly P00-P12 (no UTER P13 phase)",
+      "requirement": "§1.1 Layer A / §16.3",
+      "status": "PASS",
+      "observation": {
+        "phase_count": 13,
+        "phases": [
+          "P00",
+          "P01",
+          "P02",
+          "P03",
+          "P04",
+          "P05",
+          "P06",
+          "P07",
+          "P08",
+          "P09",
+          "P10",
+          "P11",
+          "P12"
+        ],
+        "expected": [
+          "P00",
+          "P01",
+          "P02",
+          "P03",
+          "P04",
+          "P05",
+          "P06",
+          "P07",
+          "P08",
+          "P09",
+          "P10",
+          "P11",
+          "P12"
+        ]
+      }
+    },
+    {
+      "check": "S06",
+      "name": "AES domain gates are exactly 13 with no P13 gate",
+      "requirement": "§1.1 Layer A / §16.3",
+      "status": "PASS",
+      "observation": {
+        "gate_count": 13,
+        "gate_ids": [
+          "AES-00-GATE-001",
+          "AES-01-GATE-001",
+          "AES-03-GATE-001",
+          "AES-02-GATE-001",
+          "AES-04-GATE-001",
+          "AES-05-GATE-001",
+          "AES-07-GATE-001",
+          "AES-08-GATE-001",
+          "AES-06-GATE-001",
+          "AES-09-GATE-001",
+          "AES-10-GATE-001",
+          "AES-11-GATE-001",
+          "AES-12-GATE-001"
+        ]
+      }
+    },
+    {
+      "check": "S07",
+      "name": "AES standards/ has 13 universal domain directories only",
+      "requirement": "§1.1 Layer A / §4.3",
+      "status": "PASS",
+      "observation": {
+        "domain_directories": [
+          "00-foundation",
+          "01-ai-governance",
+          "02-product-engineering",
+          "03-knowledge-engineering",
+          "04-system-architecture",
+          "05-experience-design",
+          "06-software-engineering",
+          "07-cross-platform",
+          "08-agent-engineering",
+          "09-quality-engineering",
+          "10-security-reliability",
+          "11-devops-delivery",
+          "12-lifecycle-evolution"
+        ]
+      }
+    },
+    {
+      "check": "S08",
+      "name": "no Uter business rules or UTER P13 inside AES normative standards",
+      "requirement": "§1.3 'No project-specific business rule shall be introduced into AES'",
+      "status": "PASS",
+      "observation": {
+        "scanned_files": 195,
+        "markers": [
+          "UTER-P13",
+          "UTER P13",
+          "topup_alipay",
+          "ACQ.TRADE_NOT_EXIST",
+          "toPayAmount",
+          "billing_expr",
+          "dreamrouter_snapshot",
+          "wallet/lib/payment.ts",
+          "Uter-specific payment flow"
+        ],
+        "hits": []
+      }
+    },
+    {
+      "check": "S09",
+      "name": "no UTER-P13 artifact exists anywhere in the AES repository",
+      "requirement": "§4.3 / user directive: UTER P13 must not be committed to AES",
+      "status": "PASS",
+      "observation": {
+        "matches": []
+      }
+    },
+    {
+      "check": "S10",
+      "name": "Uter holds no competing copy of AES normative standards",
+      "requirement": "§1.3 / §1.4 standards hierarchy",
+      "status": "PASS",
+      "observation": {
+        "unexpected_paths": [],
+        "note": "Uter inherits AES through .aes/aes-pin.json + INTEGRATION.md, not by copying standards"
+      }
+    },
+    {
+      "check": "S11",
+      "name": "Uter governance entry remains a thin pointer",
+      "requirement": "§1.4 / §6.4",
+      "status": "PASS",
+      "observation": {
+        "bytes": 7575,
+        "pins_aes": true
+      }
+    },
+    {
+      "check": "S12",
+      "name": "historical AES-P13-* files are confined to derived reports/",
+      "requirement": "§1.3 / §4.3 / §14.2",
+      "status": "PASS",
+      "observation": {
+        "count": 6,
+        "paths": [
+          "reports/baseline/AES-P13-REPOSITORY-INVENTORY.json",
+          "reports/baseline/AES-P13-REPOSITORY-INVENTORY.md",
+          "reports/quality/AES-P13-CHANGE-IMPACT.json",
+          "reports/quality/AES-P13-GOVERNANCE-LAYER-IMPLEMENTATION.md",
+          "reports/quality/AES-P13-GOVERNANCE-VERIFICATION.json",
+          "reports/quality/AES-P13-REGISTRY-VALIDATION.json"
+        ],
+        "finding": "FINDING-SEP-001 (Low / Naming ambiguity): 'AES-P13-*' denotes the Repository Integration phase, not a AES P13 domain. Keep outside standards/ and registry; consider renaming in a separately approved AES-repository change."
+      }
+    }
+  ]
+}

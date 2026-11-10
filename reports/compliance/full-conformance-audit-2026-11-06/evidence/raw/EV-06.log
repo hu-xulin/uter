@@ -1,7 +1,7 @@
 # evidence_id=EV-06
 # started_at=2026-11-07T02:40:58Z
 # cwd=/Users/lincolnhu/uter
-# command=ruby scripts/quality/test-uaes-integration-check.rb
+# command=ruby scripts/quality/test-aes-integration-check.rb
 # timeout=240
 # exit_code=0
 # timed_out=False

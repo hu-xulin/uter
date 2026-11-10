@@ -155,7 +155,7 @@ describe('mono values', () => {
     const tokens = classes(input)
     expect(tokens).toContain('font-mono')
     expect(tokens).toContain('text-long')
-    // UAES P4：H5 输入框字号 ≥16px（防 iOS 聚焦自动缩放），等宽值不再用 13px
+    // AES P4：H5 输入框字号 ≥16px（防 iOS 聚焦自动缩放），等宽值不再用 13px
     // 的 text-mono 档，size 统一走 text-long，字形族单独保留 font-mono。
     expect(tokens).not.toContain('text-sm')
     expect(tokens).not.toContain('text-mono')

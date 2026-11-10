@@ -1,0 +1,1075 @@
+# UTER Feature Registry
+# 由 docs/product/registry/product-model.json 自动导出，禁止手工编辑
+# model_version: 1 / generated_at: 2026-11-09T15:47:41.779Z
+model_version: 1
+total: 56
+status_counts:
+  IMPLEMENTED: 46
+  BACKEND_ONLY: 8
+  NOT_IMPLEMENTED: 1
+  PARTIALLY_IMPLEMENTED: 1
+features:
+  -
+    feature_id: UTER-AUTH-001
+    name: 邮箱密码登录
+    domain: AUTH
+    module: auth
+    status: IMPLEMENTED
+    priority: P0
+    roles: [guest]
+    prd_path: docs/product/prd/auth/UTER-AUTH-001.md
+    prototype_path: docs/product/prototypes/auth/UTER-AUTH-001.md
+    prototype_html_path: docs/product/prototypes/auth/UTER-AUTH-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-AUTH-001-01, REQ-AUTH-001-02, REQ-AUTH-001-03]
+    prototype_page_ids: [PP-AUTH-001-01, PP-AUTH-001-02]
+    acceptance_ids: [AC-AUTH-001-01, AC-AUTH-001-02, AC-AUTH-001-03, AC-AUTH-001-04, AC-AUTH-001-05, AC-AUTH-001-06, AC-AUTH-001-07, AC-AUTH-001-08, AC-AUTH-001-09]
+    test_case_ids: [TC-AUTH-001-01, TC-AUTH-001-02, TC-AUTH-001-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-AUTH-002
+    name: 用户注册与邮箱验证
+    domain: AUTH
+    module: auth
+    status: IMPLEMENTED
+    priority: P0
+    roles: [guest]
+    prd_path: docs/product/prd/auth/UTER-AUTH-002.md
+    prototype_path: docs/product/prototypes/auth/UTER-AUTH-002.md
+    prototype_html_path: docs/product/prototypes/auth/UTER-AUTH-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-AUTH-002-01, REQ-AUTH-002-02, REQ-AUTH-002-03]
+    prototype_page_ids: [PP-AUTH-002-01, PP-AUTH-002-02]
+    acceptance_ids: [AC-AUTH-002-01, AC-AUTH-002-02, AC-AUTH-002-03, AC-AUTH-002-04, AC-AUTH-002-05, AC-AUTH-002-06, AC-AUTH-002-07, AC-AUTH-002-08, AC-AUTH-002-09]
+    test_case_ids: [TC-AUTH-002-01, TC-AUTH-002-02, TC-AUTH-002-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-AUTH-003
+    name: 密码找回与重置
+    domain: AUTH
+    module: auth
+    status: IMPLEMENTED
+    priority: P0
+    roles: [guest, user]
+    prd_path: docs/product/prd/auth/UTER-AUTH-003.md
+    prototype_path: docs/product/prototypes/auth/UTER-AUTH-003.md
+    prototype_html_path: docs/product/prototypes/auth/UTER-AUTH-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-AUTH-003-01, REQ-AUTH-003-02]
+    prototype_page_ids: [PP-AUTH-003-01, PP-AUTH-003-02]
+    acceptance_ids: [AC-AUTH-003-01, AC-AUTH-003-02, AC-AUTH-003-03, AC-AUTH-003-04, AC-AUTH-003-05, AC-AUTH-003-06]
+    test_case_ids: [TC-AUTH-003-01, TC-AUTH-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-AUTH-004
+    name: OAuth 与第三方登录绑定
+    domain: AUTH
+    module: auth
+    status: IMPLEMENTED
+    priority: P1
+    roles: [guest, user]
+    prd_path: docs/product/prd/auth/UTER-AUTH-004.md
+    prototype_path: docs/product/prototypes/auth/UTER-AUTH-004.md
+    prototype_html_path: docs/product/prototypes/auth/UTER-AUTH-004.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-AUTH-004-01, REQ-AUTH-004-02, REQ-AUTH-004-03]
+    prototype_page_ids: [PP-AUTH-004-01, PP-AUTH-004-02]
+    acceptance_ids: [AC-AUTH-004-01, AC-AUTH-004-02, AC-AUTH-004-03, AC-AUTH-004-04, AC-AUTH-004-05, AC-AUTH-004-06, AC-AUTH-004-07, AC-AUTH-004-08, AC-AUTH-004-09]
+    test_case_ids: [TC-AUTH-004-01, TC-AUTH-004-02, TC-AUTH-004-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-AUTH-005
+    name: Passkey / 2FA 与二次验证
+    domain: AUTH
+    module: auth
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user]
+    prd_path: docs/product/prd/auth/UTER-AUTH-005.md
+    prototype_path: docs/product/prototypes/auth/UTER-AUTH-005.md
+    prototype_html_path: docs/product/prototypes/auth/UTER-AUTH-005.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-AUTH-005-01, REQ-AUTH-005-02, REQ-AUTH-005-03]
+    prototype_page_ids: [PP-AUTH-005-01, PP-AUTH-005-02]
+    acceptance_ids: [AC-AUTH-005-01, AC-AUTH-005-02, AC-AUTH-005-03, AC-AUTH-005-04, AC-AUTH-005-05, AC-AUTH-005-06, AC-AUTH-005-07, AC-AUTH-005-08, AC-AUTH-005-09]
+    test_case_ids: [TC-AUTH-005-01, TC-AUTH-005-02, TC-AUTH-005-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-AUTH-006
+    name: 登录会话与登出
+    domain: AUTH
+    module: auth
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, admin]
+    prd_path: docs/product/prd/auth/UTER-AUTH-006.md
+    prototype_path: docs/product/prototypes/auth/UTER-AUTH-006.md
+    prototype_html_path: docs/product/prototypes/auth/UTER-AUTH-006.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-AUTH-006-01, REQ-AUTH-006-02, REQ-AUTH-006-03]
+    prototype_page_ids: [PP-AUTH-006-01, PP-AUTH-006-02]
+    acceptance_ids: [AC-AUTH-006-01, AC-AUTH-006-02, AC-AUTH-006-03, AC-AUTH-006-04, AC-AUTH-006-05, AC-AUTH-006-06, AC-AUTH-006-07, AC-AUTH-006-08, AC-AUTH-006-09]
+    test_case_ids: [TC-AUTH-006-01, TC-AUTH-006-02, TC-AUTH-006-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-USER-001
+    name: 个人资料与偏好
+    domain: USER
+    module: user
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user]
+    prd_path: docs/product/prd/user/UTER-USER-001.md
+    prototype_path: docs/product/prototypes/user/UTER-USER-001.md
+    prototype_html_path: docs/product/prototypes/user/UTER-USER-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-USER-001-01, REQ-USER-001-02]
+    prototype_page_ids: [PP-USER-001-01]
+    acceptance_ids: [AC-USER-001-01, AC-USER-001-02, AC-USER-001-03, AC-USER-001-04, AC-USER-001-05, AC-USER-001-06]
+    test_case_ids: [TC-USER-001-01, TC-USER-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-USER-002
+    name: 账户安全与身份绑定
+    domain: USER
+    module: user
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user]
+    prd_path: docs/product/prd/user/UTER-USER-002.md
+    prototype_path: docs/product/prototypes/user/UTER-USER-002.md
+    prototype_html_path: docs/product/prototypes/user/UTER-USER-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-USER-002-01, REQ-USER-002-02]
+    prototype_page_ids: [PP-USER-002-01]
+    acceptance_ids: [AC-USER-002-01, AC-USER-002-02, AC-USER-002-03, AC-USER-002-04, AC-USER-002-05, AC-USER-002-06]
+    test_case_ids: [TC-USER-002-01, TC-USER-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-USER-003
+    name: "用户管理（管理员）"
+    domain: USER
+    module: user
+    status: IMPLEMENTED
+    priority: P0
+    roles: [admin, super_admin]
+    prd_path: docs/product/prd/user/UTER-USER-003.md
+    prototype_path: docs/product/prototypes/user/UTER-USER-003.md
+    prototype_html_path: docs/product/prototypes/user/UTER-USER-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-USER-003-01, REQ-USER-003-02, REQ-USER-003-03]
+    prototype_page_ids: [PP-USER-003-01, PP-USER-003-02]
+    acceptance_ids: [AC-USER-003-01, AC-USER-003-02, AC-USER-003-03, AC-USER-003-04, AC-USER-003-05, AC-USER-003-06, AC-USER-003-07, AC-USER-003-08, AC-USER-003-09]
+    test_case_ids: [TC-USER-003-01, TC-USER-003-02, TC-USER-003-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-PAY-001
+    name: 充值金额选择与充值下单
+    domain: PAY
+    module: pay
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user]
+    prd_path: docs/product/prd/pay/UTER-PAY-001.md
+    prototype_path: docs/product/prototypes/pay/UTER-PAY-001.md
+    prototype_html_path: docs/product/prototypes/pay/UTER-PAY-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PAY-001-01, REQ-PAY-001-02, REQ-PAY-001-03]
+    prototype_page_ids: [PP-PAY-001-01, PP-PAY-001-02]
+    acceptance_ids: [AC-PAY-001-01, AC-PAY-001-02, AC-PAY-001-03, AC-PAY-001-04, AC-PAY-001-05, AC-PAY-001-06, AC-PAY-001-07, AC-PAY-001-08, AC-PAY-001-09, AC-PAY-001-10]
+    test_case_ids: [TC-PAY-001-01, TC-PAY-001-02, TC-PAY-001-03]
+    status_note: "最低金额 10 元为代码基线值；若在 PRD 中修改该业务规则，同步引擎会同步更新原型校验、错误提示与验收标准。"
+    open_decisions: []
+  -
+    feature_id: UTER-PAY-002
+    name: 支付渠道与支付方式
+    domain: PAY
+    module: pay
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user]
+    prd_path: docs/product/prd/pay/UTER-PAY-002.md
+    prototype_path: docs/product/prototypes/pay/UTER-PAY-002.md
+    prototype_html_path: docs/product/prototypes/pay/UTER-PAY-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PAY-002-01, REQ-PAY-002-02, REQ-PAY-002-03]
+    prototype_page_ids: [PP-PAY-002-01, PP-PAY-002-02]
+    acceptance_ids: [AC-PAY-002-01, AC-PAY-002-02, AC-PAY-002-03, AC-PAY-002-04, AC-PAY-002-05, AC-PAY-002-06, AC-PAY-002-07, AC-PAY-002-08, AC-PAY-002-09]
+    test_case_ids: [TC-PAY-002-01, TC-PAY-002-02, TC-PAY-002-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-PAY-003
+    name: "支付回调、幂等与对账"
+    domain: PAY
+    module: pay
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system]
+    prd_path: docs/product/prd/pay/UTER-PAY-003.md
+    prototype_path: docs/product/prototypes/pay/UTER-PAY-003.md
+    prototype_html_path: docs/product/prototypes/pay/UTER-PAY-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PAY-003-01, REQ-PAY-003-02, REQ-PAY-003-03]
+    prototype_page_ids: [PP-PAY-003-01]
+    acceptance_ids: [AC-PAY-003-01, AC-PAY-003-02, AC-PAY-003-03, AC-PAY-003-04, AC-PAY-003-05, AC-PAY-003-06, AC-PAY-003-07, AC-PAY-003-08, AC-PAY-003-09]
+    test_case_ids: [TC-PAY-003-01, TC-PAY-003-02, TC-PAY-003-03]
+    status_note: "后端已实现并具备测试，未发现独立的前端回调管理页面，因此状态为 BACKEND_ONLY。"
+    open_decisions: []
+  -
+    feature_id: UTER-PAY-004
+    name: 充值记录与订单查询
+    domain: PAY
+    module: pay
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, admin]
+    prd_path: docs/product/prd/pay/UTER-PAY-004.md
+    prototype_path: docs/product/prototypes/pay/UTER-PAY-004.md
+    prototype_html_path: docs/product/prototypes/pay/UTER-PAY-004.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PAY-004-01, REQ-PAY-004-02]
+    prototype_page_ids: [PP-PAY-004-01, PP-PAY-004-02]
+    acceptance_ids: [AC-PAY-004-01, AC-PAY-004-02, AC-PAY-004-03, AC-PAY-004-04, AC-PAY-004-05, AC-PAY-004-06]
+    test_case_ids: [TC-PAY-004-01, TC-PAY-004-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-REFUND-001
+    name: 通用用户退款申请与审核
+    domain: REFUND
+    module: refund
+    status: NOT_IMPLEMENTED
+    priority: P1
+    roles: [user, admin]
+    prd_path: docs/product/prd/refund/UTER-REFUND-001.md
+    prototype_path: docs/product/prototypes/refund/UTER-REFUND-001.md
+    prototype_html_path: docs/product/prototypes/refund/UTER-REFUND-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-REFUND-001-01, REQ-REFUND-001-02]
+    prototype_page_ids: [PP-REFUND-001-01]
+    acceptance_ids: [AC-REFUND-001-01, AC-REFUND-001-02, AC-REFUND-001-03, AC-REFUND-001-04, AC-REFUND-001-05, AC-REFUND-001-06]
+    test_case_ids: [TC-REFUND-001-01, TC-REFUND-001-02]
+    status_note: "经全仓扫描 router/controller/service/model 与 web/src/routes（含 /wallet、/subscriptions、/usage-logs、(auth)/*），未发现用户侧退款申请入口、退款 API 或退款审核后台；Midjourney 任务失败自动退款由后端事务处理，见 UTER-REFUND-002，不在此 Feature 范围。"
+    open_decisions: ["退款适用范围（充值余额 / 订阅 / 任务扣费）", 退款时效与审核流, 退款与会计事务的冲正规则]
+  -
+    feature_id: UTER-REFUND-002
+    name: Midjourney 任务失败自动退款
+    domain: REFUND
+    module: refund
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system]
+    prd_path: docs/product/prd/refund/UTER-REFUND-002.md
+    prototype_path: docs/product/prototypes/refund/UTER-REFUND-002.md
+    prototype_html_path: docs/product/prototypes/refund/UTER-REFUND-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-REFUND-002-01, REQ-REFUND-002-02]
+    prototype_page_ids: [PP-REFUND-002-01, PP-REFUND-002-02]
+    acceptance_ids: [AC-REFUND-002-01, AC-REFUND-002-02, AC-REFUND-002-03, AC-REFUND-002-04, AC-REFUND-002-05, AC-REFUND-002-06]
+    test_case_ids: [TC-REFUND-002-01, TC-REFUND-002-02]
+    status_note: "代码含完整事务/Outbox 实现与测试，但未发现对应前端退款管理页面。"
+    open_decisions: []
+  -
+    feature_id: UTER-REFUND-003
+    name: 支付对账与异常补偿
+    domain: REFUND
+    module: refund
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system, admin]
+    prd_path: docs/product/prd/refund/UTER-REFUND-003.md
+    prototype_path: docs/product/prototypes/refund/UTER-REFUND-003.md
+    prototype_html_path: docs/product/prototypes/refund/UTER-REFUND-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-REFUND-003-01, REQ-REFUND-003-02]
+    prototype_page_ids: [PP-REFUND-003-01]
+    acceptance_ids: [AC-REFUND-003-01, AC-REFUND-003-02, AC-REFUND-003-03, AC-REFUND-003-04, AC-REFUND-003-05, AC-REFUND-003-06]
+    test_case_ids: [TC-REFUND-003-01, TC-REFUND-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-BALANCE-001
+    name: 用户余额与额度展示
+    domain: BALANCE
+    module: balance
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user]
+    prd_path: docs/product/prd/balance/UTER-BALANCE-001.md
+    prototype_path: docs/product/prototypes/balance/UTER-BALANCE-001.md
+    prototype_html_path: docs/product/prototypes/balance/UTER-BALANCE-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-BALANCE-001-01, REQ-BALANCE-001-02]
+    prototype_page_ids: [PP-BALANCE-001-01, PP-BALANCE-001-02]
+    acceptance_ids: [AC-BALANCE-001-01, AC-BALANCE-001-02, AC-BALANCE-001-03, AC-BALANCE-001-04, AC-BALANCE-001-05, AC-BALANCE-001-06]
+    test_case_ids: [TC-BALANCE-001-01, TC-BALANCE-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-BALANCE-002
+    name: 资金流水与会计事务
+    domain: BALANCE
+    module: balance
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system, admin]
+    prd_path: docs/product/prd/balance/UTER-BALANCE-002.md
+    prototype_path: docs/product/prototypes/balance/UTER-BALANCE-002.md
+    prototype_html_path: docs/product/prototypes/balance/UTER-BALANCE-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-BALANCE-002-01, REQ-BALANCE-002-02]
+    prototype_page_ids: [PP-BALANCE-002-01, PP-BALANCE-002-02]
+    acceptance_ids: [AC-BALANCE-002-01, AC-BALANCE-002-02, AC-BALANCE-002-03, AC-BALANCE-002-04, AC-BALANCE-002-05, AC-BALANCE-002-06]
+    test_case_ids: [TC-BALANCE-002-01, TC-BALANCE-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-BALANCE-003
+    name: 额度预占与并发扣减
+    domain: BALANCE
+    module: balance
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system]
+    prd_path: docs/product/prd/balance/UTER-BALANCE-003.md
+    prototype_path: docs/product/prototypes/balance/UTER-BALANCE-003.md
+    prototype_html_path: docs/product/prototypes/balance/UTER-BALANCE-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-BALANCE-003-01, REQ-BALANCE-003-02]
+    prototype_page_ids: [PP-BALANCE-003-01]
+    acceptance_ids: [AC-BALANCE-003-01, AC-BALANCE-003-02, AC-BALANCE-003-03, AC-BALANCE-003-04, AC-BALANCE-003-05, AC-BALANCE-003-06]
+    test_case_ids: [TC-BALANCE-003-01, TC-BALANCE-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-BILLING-001
+    name: Token 用量统计与计费
+    domain: BILLING
+    module: billing
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user, admin]
+    prd_path: docs/product/prd/billing/UTER-BILLING-001.md
+    prototype_path: docs/product/prototypes/billing/UTER-BILLING-001.md
+    prototype_html_path: docs/product/prototypes/billing/UTER-BILLING-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-BILLING-001-01, REQ-BILLING-001-02]
+    prototype_page_ids: [PP-BILLING-001-01, PP-BILLING-001-02]
+    acceptance_ids: [AC-BILLING-001-01, AC-BILLING-001-02, AC-BILLING-001-03, AC-BILLING-001-04, AC-BILLING-001-05, AC-BILLING-001-06]
+    test_case_ids: [TC-BILLING-001-01, TC-BILLING-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-BILLING-002
+    name: 消费记录与日志导出
+    domain: BILLING
+    module: billing
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, admin]
+    prd_path: docs/product/prd/billing/UTER-BILLING-002.md
+    prototype_path: docs/product/prototypes/billing/UTER-BILLING-002.md
+    prototype_html_path: docs/product/prototypes/billing/UTER-BILLING-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-BILLING-002-01, REQ-BILLING-002-02]
+    prototype_page_ids: [PP-BILLING-002-01, PP-BILLING-002-02]
+    acceptance_ids: [AC-BILLING-002-01, AC-BILLING-002-02, AC-BILLING-002-03, AC-BILLING-002-04, AC-BILLING-002-05, AC-BILLING-002-06]
+    test_case_ids: [TC-BILLING-002-01, TC-BILLING-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-BILLING-003
+    name: 模型倍率与价格配置
+    domain: BILLING
+    module: billing
+    status: IMPLEMENTED
+    priority: P0
+    roles: [super_admin]
+    prd_path: docs/product/prd/billing/UTER-BILLING-003.md
+    prototype_path: docs/product/prototypes/billing/UTER-BILLING-003.md
+    prototype_html_path: docs/product/prototypes/billing/UTER-BILLING-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-BILLING-003-01, REQ-BILLING-003-02]
+    prototype_page_ids: [PP-BILLING-003-01]
+    acceptance_ids: [AC-BILLING-003-01, AC-BILLING-003-02, AC-BILLING-003-03, AC-BILLING-003-04, AC-BILLING-003-05, AC-BILLING-003-06]
+    test_case_ids: [TC-BILLING-003-01, TC-BILLING-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MODEL-001
+    name: 模型列表与模型广场
+    domain: MODEL
+    module: model
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user, admin]
+    prd_path: docs/product/prd/model/UTER-MODEL-001.md
+    prototype_path: docs/product/prototypes/model/UTER-MODEL-001.md
+    prototype_html_path: docs/product/prototypes/model/UTER-MODEL-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MODEL-001-01, REQ-MODEL-001-02]
+    prototype_page_ids: [PP-MODEL-001-01, PP-MODEL-001-02]
+    acceptance_ids: [AC-MODEL-001-01, AC-MODEL-001-02, AC-MODEL-001-03, AC-MODEL-001-04, AC-MODEL-001-05, AC-MODEL-001-06]
+    test_case_ids: [TC-MODEL-001-01, TC-MODEL-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MODEL-002
+    name: 模型元数据同步与自动补全
+    domain: MODEL
+    module: model
+    status: IMPLEMENTED
+    priority: P1
+    roles: [super_admin]
+    prd_path: docs/product/prd/model/UTER-MODEL-002.md
+    prototype_path: docs/product/prototypes/model/UTER-MODEL-002.md
+    prototype_html_path: docs/product/prototypes/model/UTER-MODEL-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MODEL-002-01, REQ-MODEL-002-02]
+    prototype_page_ids: [PP-MODEL-002-01]
+    acceptance_ids: [AC-MODEL-002-01, AC-MODEL-002-02, AC-MODEL-002-03, AC-MODEL-002-04, AC-MODEL-002-05, AC-MODEL-002-06]
+    test_case_ids: [TC-MODEL-002-01, TC-MODEL-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MODEL-003
+    name: 公开定价页
+    domain: MODEL
+    module: model
+    status: IMPLEMENTED
+    priority: P1
+    roles: [guest, user]
+    prd_path: docs/product/prd/model/UTER-MODEL-003.md
+    prototype_path: docs/product/prototypes/model/UTER-MODEL-003.md
+    prototype_html_path: docs/product/prototypes/model/UTER-MODEL-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MODEL-003-01, REQ-MODEL-003-02]
+    prototype_page_ids: [PP-MODEL-003-01, PP-MODEL-003-02]
+    acceptance_ids: [AC-MODEL-003-01, AC-MODEL-003-02, AC-MODEL-003-03, AC-MODEL-003-04, AC-MODEL-003-05, AC-MODEL-003-06]
+    test_case_ids: [TC-MODEL-003-01, TC-MODEL-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-CHANNEL-001
+    name: 渠道管理
+    domain: CHANNEL
+    module: channel
+    status: IMPLEMENTED
+    priority: P0
+    roles: [super_admin]
+    prd_path: docs/product/prd/channel/UTER-CHANNEL-001.md
+    prototype_path: docs/product/prototypes/channel/UTER-CHANNEL-001.md
+    prototype_html_path: docs/product/prototypes/channel/UTER-CHANNEL-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-CHANNEL-001-01, REQ-CHANNEL-001-02]
+    prototype_page_ids: [PP-CHANNEL-001-01, PP-CHANNEL-001-02]
+    acceptance_ids: [AC-CHANNEL-001-01, AC-CHANNEL-001-02, AC-CHANNEL-001-03, AC-CHANNEL-001-04, AC-CHANNEL-001-05, AC-CHANNEL-001-06]
+    test_case_ids: [TC-CHANNEL-001-01, TC-CHANNEL-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-CHANNEL-002
+    name: "渠道选择、优先级与亲和性"
+    domain: CHANNEL
+    module: channel
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system]
+    prd_path: docs/product/prd/channel/UTER-CHANNEL-002.md
+    prototype_path: docs/product/prototypes/channel/UTER-CHANNEL-002.md
+    prototype_html_path: docs/product/prototypes/channel/UTER-CHANNEL-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-CHANNEL-002-01, REQ-CHANNEL-002-02, REQ-CHANNEL-002-03]
+    prototype_page_ids: [PP-CHANNEL-002-01]
+    acceptance_ids: [AC-CHANNEL-002-01, AC-CHANNEL-002-02, AC-CHANNEL-002-03, AC-CHANNEL-002-04, AC-CHANNEL-002-05, AC-CHANNEL-002-06, AC-CHANNEL-002-07, AC-CHANNEL-002-08, AC-CHANNEL-002-09]
+    test_case_ids: [TC-CHANNEL-002-01, TC-CHANNEL-002-02, TC-CHANNEL-002-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-CHANNEL-003
+    name: 渠道测试与健康状态
+    domain: CHANNEL
+    module: channel
+    status: IMPLEMENTED
+    priority: P1
+    roles: [super_admin]
+    prd_path: docs/product/prd/channel/UTER-CHANNEL-003.md
+    prototype_path: docs/product/prototypes/channel/UTER-CHANNEL-003.md
+    prototype_html_path: docs/product/prototypes/channel/UTER-CHANNEL-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-CHANNEL-003-01, REQ-CHANNEL-003-02]
+    prototype_page_ids: [PP-CHANNEL-003-01]
+    acceptance_ids: [AC-CHANNEL-003-01, AC-CHANNEL-003-02, AC-CHANNEL-003-03, AC-CHANNEL-003-04, AC-CHANNEL-003-05, AC-CHANNEL-003-06]
+    test_case_ids: [TC-CHANNEL-003-01, TC-CHANNEL-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-APIKEY-001
+    name: API Key 创建与管理
+    domain: APIKEY
+    module: apikey
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user]
+    prd_path: docs/product/prd/apikey/UTER-APIKEY-001.md
+    prototype_path: docs/product/prototypes/apikey/UTER-APIKEY-001.md
+    prototype_html_path: docs/product/prototypes/apikey/UTER-APIKEY-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-APIKEY-001-01, REQ-APIKEY-001-02]
+    prototype_page_ids: [PP-APIKEY-001-01, PP-APIKEY-001-02]
+    acceptance_ids: [AC-APIKEY-001-01, AC-APIKEY-001-02, AC-APIKEY-001-03, AC-APIKEY-001-04, AC-APIKEY-001-05, AC-APIKEY-001-06]
+    test_case_ids: [TC-APIKEY-001-01, TC-APIKEY-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-APIKEY-002
+    name: Key 额度与使用限制
+    domain: APIKEY
+    module: apikey
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user]
+    prd_path: docs/product/prd/apikey/UTER-APIKEY-002.md
+    prototype_path: docs/product/prototypes/apikey/UTER-APIKEY-002.md
+    prototype_html_path: docs/product/prototypes/apikey/UTER-APIKEY-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-APIKEY-002-01, REQ-APIKEY-002-02]
+    prototype_page_ids: [PP-APIKEY-002-01]
+    acceptance_ids: [AC-APIKEY-002-01, AC-APIKEY-002-02, AC-APIKEY-002-03, AC-APIKEY-002-04, AC-APIKEY-002-05, AC-APIKEY-002-06]
+    test_case_ids: [TC-APIKEY-002-01, TC-APIKEY-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-APIKEY-003
+    name: API Key 审计
+    domain: APIKEY
+    module: apikey
+    status: IMPLEMENTED
+    priority: P1
+    roles: [admin, super_admin]
+    prd_path: docs/product/prd/apikey/UTER-APIKEY-003.md
+    prototype_path: docs/product/prototypes/apikey/UTER-APIKEY-003.md
+    prototype_html_path: docs/product/prototypes/apikey/UTER-APIKEY-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-APIKEY-003-01, REQ-APIKEY-003-02]
+    prototype_page_ids: [PP-APIKEY-003-01, PP-APIKEY-003-02]
+    acceptance_ids: [AC-APIKEY-003-01, AC-APIKEY-003-02, AC-APIKEY-003-03, AC-APIKEY-003-04, AC-APIKEY-003-05, AC-APIKEY-003-06]
+    test_case_ids: [TC-APIKEY-003-01, TC-APIKEY-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-RELAY-001
+    name: OpenAI 兼容 API 中继
+    domain: RELAY
+    module: relay
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user, developer]
+    prd_path: docs/product/prd/relay/UTER-RELAY-001.md
+    prototype_path: docs/product/prototypes/relay/UTER-RELAY-001.md
+    prototype_html_path: docs/product/prototypes/relay/UTER-RELAY-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-RELAY-001-01, REQ-RELAY-001-02, REQ-RELAY-001-03]
+    prototype_page_ids: [PP-RELAY-001-01, PP-RELAY-001-02]
+    acceptance_ids: [AC-RELAY-001-01, AC-RELAY-001-02, AC-RELAY-001-03, AC-RELAY-001-04, AC-RELAY-001-05, AC-RELAY-001-06, AC-RELAY-001-07, AC-RELAY-001-08, AC-RELAY-001-09]
+    test_case_ids: [TC-RELAY-001-01, TC-RELAY-001-02, TC-RELAY-001-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-RELAY-002
+    name: 多协议中继适配
+    domain: RELAY
+    module: relay
+    status: IMPLEMENTED
+    priority: P0
+    roles: [user, developer]
+    prd_path: docs/product/prd/relay/UTER-RELAY-002.md
+    prototype_path: docs/product/prototypes/relay/UTER-RELAY-002.md
+    prototype_html_path: docs/product/prototypes/relay/UTER-RELAY-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-RELAY-002-01, REQ-RELAY-002-02]
+    prototype_page_ids: [PP-RELAY-002-01, PP-RELAY-002-02]
+    acceptance_ids: [AC-RELAY-002-01, AC-RELAY-002-02, AC-RELAY-002-03, AC-RELAY-002-04, AC-RELAY-002-05, AC-RELAY-002-06]
+    test_case_ids: [TC-RELAY-002-01, TC-RELAY-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-RELAY-003
+    name: "中继错误处理、超时与重试"
+    domain: RELAY
+    module: relay
+    status: BACKEND_ONLY
+    priority: P0
+    roles: [system]
+    prd_path: docs/product/prd/relay/UTER-RELAY-003.md
+    prototype_path: docs/product/prototypes/relay/UTER-RELAY-003.md
+    prototype_html_path: docs/product/prototypes/relay/UTER-RELAY-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-RELAY-003-01, REQ-RELAY-003-02]
+    prototype_page_ids: [PP-RELAY-003-01]
+    acceptance_ids: [AC-RELAY-003-01, AC-RELAY-003-02, AC-RELAY-003-03, AC-RELAY-003-04, AC-RELAY-003-05, AC-RELAY-003-06]
+    test_case_ids: [TC-RELAY-003-01, TC-RELAY-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-TASK-001
+    name: "异步任务创建、查询与产物"
+    domain: TASK
+    module: task
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, developer]
+    prd_path: docs/product/prd/task/UTER-TASK-001.md
+    prototype_path: docs/product/prototypes/task/UTER-TASK-001.md
+    prototype_html_path: docs/product/prototypes/task/UTER-TASK-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-TASK-001-01, REQ-TASK-001-02, REQ-TASK-001-03]
+    prototype_page_ids: [PP-TASK-001-01, PP-TASK-001-02]
+    acceptance_ids: [AC-TASK-001-01, AC-TASK-001-02, AC-TASK-001-03, AC-TASK-001-04, AC-TASK-001-05, AC-TASK-001-06, AC-TASK-001-07, AC-TASK-001-08, AC-TASK-001-09]
+    test_case_ids: [TC-TASK-001-01, TC-TASK-001-02, TC-TASK-001-03]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-TASK-002
+    name: 任务插件管理与市场
+    domain: TASK
+    module: task
+    status: IMPLEMENTED
+    priority: P1
+    roles: [super_admin]
+    prd_path: docs/product/prd/task/UTER-TASK-002.md
+    prototype_path: docs/product/prototypes/task/UTER-TASK-002.md
+    prototype_html_path: docs/product/prototypes/task/UTER-TASK-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-TASK-002-01, REQ-TASK-002-02]
+    prototype_page_ids: [PP-TASK-002-01, PP-TASK-002-02]
+    acceptance_ids: [AC-TASK-002-01, AC-TASK-002-02, AC-TASK-002-03, AC-TASK-002-04, AC-TASK-002-05, AC-TASK-002-06]
+    test_case_ids: [TC-TASK-002-01, TC-TASK-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-TASK-003
+    name: 系统任务与定时维护
+    domain: TASK
+    module: task
+    status: BACKEND_ONLY
+    priority: P2
+    roles: [system]
+    prd_path: docs/product/prd/task/UTER-TASK-003.md
+    prototype_path: docs/product/prototypes/task/UTER-TASK-003.md
+    prototype_html_path: docs/product/prototypes/task/UTER-TASK-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-TASK-003-01, REQ-TASK-003-02]
+    prototype_page_ids: [PP-TASK-003-01]
+    acceptance_ids: [AC-TASK-003-01, AC-TASK-003-02, AC-TASK-003-03, AC-TASK-003-04, AC-TASK-003-05, AC-TASK-003-06]
+    test_case_ids: [TC-TASK-003-01, TC-TASK-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-PLAN-001
+    name: 套餐列表与订阅购买
+    domain: PLAN
+    module: plan
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, admin]
+    prd_path: docs/product/prd/plan/UTER-PLAN-001.md
+    prototype_path: docs/product/prototypes/plan/UTER-PLAN-001.md
+    prototype_html_path: docs/product/prototypes/plan/UTER-PLAN-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PLAN-001-01, REQ-PLAN-001-02]
+    prototype_page_ids: [PP-PLAN-001-01, PP-PLAN-001-02]
+    acceptance_ids: [AC-PLAN-001-01, AC-PLAN-001-02, AC-PLAN-001-03, AC-PLAN-001-04, AC-PLAN-001-05, AC-PLAN-001-06]
+    test_case_ids: [TC-PLAN-001-01, TC-PLAN-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-PLAN-002
+    name: 订阅支付与回调
+    domain: PLAN
+    module: plan
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, system]
+    prd_path: docs/product/prd/plan/UTER-PLAN-002.md
+    prototype_path: docs/product/prototypes/plan/UTER-PLAN-002.md
+    prototype_html_path: docs/product/prototypes/plan/UTER-PLAN-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PLAN-002-01, REQ-PLAN-002-02]
+    prototype_page_ids: [PP-PLAN-002-01, PP-PLAN-002-02]
+    acceptance_ids: [AC-PLAN-002-01, AC-PLAN-002-02, AC-PLAN-002-03, AC-PLAN-002-04, AC-PLAN-002-05, AC-PLAN-002-06]
+    test_case_ids: [TC-PLAN-002-01, TC-PLAN-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-PLAN-003
+    name: 兑换码
+    domain: PLAN
+    module: plan
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, super_admin]
+    prd_path: docs/product/prd/plan/UTER-PLAN-003.md
+    prototype_path: docs/product/prototypes/plan/UTER-PLAN-003.md
+    prototype_html_path: docs/product/prototypes/plan/UTER-PLAN-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-PLAN-003-01, REQ-PLAN-003-02]
+    prototype_page_ids: [PP-PLAN-003-01]
+    acceptance_ids: [AC-PLAN-003-01, AC-PLAN-003-02, AC-PLAN-003-03, AC-PLAN-003-04, AC-PLAN-003-05, AC-PLAN-003-06]
+    test_case_ids: [TC-PLAN-003-01, TC-PLAN-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-ADMIN-001
+    name: 系统设置
+    domain: ADMIN
+    module: admin
+    status: IMPLEMENTED
+    priority: P0
+    roles: [super_admin]
+    prd_path: docs/product/prd/admin/UTER-ADMIN-001.md
+    prototype_path: docs/product/prototypes/admin/UTER-ADMIN-001.md
+    prototype_html_path: docs/product/prototypes/admin/UTER-ADMIN-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-ADMIN-001-01, REQ-ADMIN-001-02]
+    prototype_page_ids: [PP-ADMIN-001-01]
+    acceptance_ids: [AC-ADMIN-001-01, AC-ADMIN-001-02, AC-ADMIN-001-03, AC-ADMIN-001-04, AC-ADMIN-001-05, AC-ADMIN-001-06]
+    test_case_ids: [TC-ADMIN-001-01, TC-ADMIN-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-ADMIN-002
+    name: 数据统计看板
+    domain: ADMIN
+    module: admin
+    status: IMPLEMENTED
+    priority: P1
+    roles: [admin, super_admin]
+    prd_path: docs/product/prd/admin/UTER-ADMIN-002.md
+    prototype_path: docs/product/prototypes/admin/UTER-ADMIN-002.md
+    prototype_html_path: docs/product/prototypes/admin/UTER-ADMIN-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-ADMIN-002-01, REQ-ADMIN-002-02]
+    prototype_page_ids: [PP-ADMIN-002-01, PP-ADMIN-002-02]
+    acceptance_ids: [AC-ADMIN-002-01, AC-ADMIN-002-02, AC-ADMIN-002-03, AC-ADMIN-002-04, AC-ADMIN-002-05, AC-ADMIN-002-06]
+    test_case_ids: [TC-ADMIN-002-01, TC-ADMIN-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-ADMIN-003
+    name: 操作审计日志
+    domain: ADMIN
+    module: admin
+    status: IMPLEMENTED
+    priority: P1
+    roles: [admin, super_admin]
+    prd_path: docs/product/prd/admin/UTER-ADMIN-003.md
+    prototype_path: docs/product/prototypes/admin/UTER-ADMIN-003.md
+    prototype_html_path: docs/product/prototypes/admin/UTER-ADMIN-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-ADMIN-003-01, REQ-ADMIN-003-02]
+    prototype_page_ids: [PP-ADMIN-003-01, PP-ADMIN-003-02]
+    acceptance_ids: [AC-ADMIN-003-01, AC-ADMIN-003-02, AC-ADMIN-003-03, AC-ADMIN-003-04, AC-ADMIN-003-05, AC-ADMIN-003-06]
+    test_case_ids: [TC-ADMIN-003-01, TC-ADMIN-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-ADMIN-004
+    name: 权限与请求策略
+    domain: ADMIN
+    module: admin
+    status: IMPLEMENTED
+    priority: P0
+    roles: [super_admin]
+    prd_path: docs/product/prd/admin/UTER-ADMIN-004.md
+    prototype_path: docs/product/prototypes/admin/UTER-ADMIN-004.md
+    prototype_html_path: docs/product/prototypes/admin/UTER-ADMIN-004.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-ADMIN-004-01, REQ-ADMIN-004-02]
+    prototype_page_ids: [PP-ADMIN-004-01]
+    acceptance_ids: [AC-ADMIN-004-01, AC-ADMIN-004-02, AC-ADMIN-004-03, AC-ADMIN-004-04, AC-ADMIN-004-05, AC-ADMIN-004-06]
+    test_case_ids: [TC-ADMIN-004-01, TC-ADMIN-004-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-ADMIN-005
+    name: 系统信息与运行状态
+    domain: ADMIN
+    module: admin
+    status: IMPLEMENTED
+    priority: P2
+    roles: [super_admin]
+    prd_path: docs/product/prd/admin/UTER-ADMIN-005.md
+    prototype_path: docs/product/prototypes/admin/UTER-ADMIN-005.md
+    prototype_html_path: docs/product/prototypes/admin/UTER-ADMIN-005.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-ADMIN-005-01, REQ-ADMIN-005-02]
+    prototype_page_ids: [PP-ADMIN-005-01, PP-ADMIN-005-02]
+    acceptance_ids: [AC-ADMIN-005-01, AC-ADMIN-005-02, AC-ADMIN-005-03, AC-ADMIN-005-04, AC-ADMIN-005-05, AC-ADMIN-005-06]
+    test_case_ids: [TC-ADMIN-005-01, TC-ADMIN-005-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-ORG-001
+    name: 组织与成员管理
+    domain: ORG
+    module: org
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user, admin]
+    prd_path: docs/product/prd/org/UTER-ORG-001.md
+    prototype_path: docs/product/prototypes/org/UTER-ORG-001.md
+    prototype_html_path: docs/product/prototypes/org/UTER-ORG-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-ORG-001-01, REQ-ORG-001-02]
+    prototype_page_ids: [PP-ORG-001-01, PP-ORG-001-02]
+    acceptance_ids: [AC-ORG-001-01, AC-ORG-001-02, AC-ORG-001-03, AC-ORG-001-04, AC-ORG-001-05, AC-ORG-001-06]
+    test_case_ids: [TC-ORG-001-01, TC-ORG-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-001
+    name: 签到与赠送额度
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [user]
+    prd_path: docs/product/prd/misc/UTER-MISC-001.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-001.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-001.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-001-01, REQ-MISC-001-02]
+    prototype_page_ids: [PP-MISC-001-01]
+    acceptance_ids: [AC-MISC-001-01, AC-MISC-001-02, AC-MISC-001-03, AC-MISC-001-04, AC-MISC-001-05, AC-MISC-001-06]
+    test_case_ids: [TC-MISC-001-01, TC-MISC-001-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-002
+    name: 排行榜
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [guest, user]
+    prd_path: docs/product/prd/misc/UTER-MISC-002.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-002.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-002.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-002-01, REQ-MISC-002-02]
+    prototype_page_ids: [PP-MISC-002-01, PP-MISC-002-02]
+    acceptance_ids: [AC-MISC-002-01, AC-MISC-002-02, AC-MISC-002-03, AC-MISC-002-04, AC-MISC-002-05, AC-MISC-002-06]
+    test_case_ids: [TC-MISC-002-01, TC-MISC-002-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-003
+    name: Playground 与 Chat
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P1
+    roles: [user]
+    prd_path: docs/product/prd/misc/UTER-MISC-003.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-003.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-003.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-003-01, REQ-MISC-003-02]
+    prototype_page_ids: [PP-MISC-003-01, PP-MISC-003-02]
+    acceptance_ids: [AC-MISC-003-01, AC-MISC-003-02, AC-MISC-003-03, AC-MISC-003-04, AC-MISC-003-05, AC-MISC-003-06]
+    test_case_ids: [TC-MISC-003-01, TC-MISC-003-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-004
+    name: 文档站与协议页面
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [guest, user]
+    prd_path: docs/product/prd/misc/UTER-MISC-004.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-004.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-004.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-004-01, REQ-MISC-004-02]
+    prototype_page_ids: [PP-MISC-004-01]
+    acceptance_ids: [AC-MISC-004-01, AC-MISC-004-02, AC-MISC-004-03, AC-MISC-004-04, AC-MISC-004-05, AC-MISC-004-06]
+    test_case_ids: [TC-MISC-004-01, TC-MISC-004-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-005
+    name: 客服与客服部署
+    domain: MISC
+    module: misc
+    status: PARTIALLY_IMPLEMENTED
+    priority: P2
+    roles: [user, super_admin]
+    prd_path: docs/product/prd/misc/UTER-MISC-005.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-005.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-005.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-005-01, REQ-MISC-005-02]
+    prototype_page_ids: [PP-MISC-005-01]
+    acceptance_ids: [AC-MISC-005-01, AC-MISC-005-02, AC-MISC-005-03, AC-MISC-005-04, AC-MISC-005-05, AC-MISC-005-06]
+    test_case_ids: [TC-MISC-005-01, TC-MISC-005-02]
+    status_note: "前后端证据不充分，按 PARTIALLY_IMPLEMENTED 记录，不写成完整实现。"
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-006
+    name: 性能指标与运行监控
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [admin, super_admin]
+    prd_path: docs/product/prd/misc/UTER-MISC-006.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-006.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-006.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-006-01, REQ-MISC-006-02]
+    prototype_page_ids: [PP-MISC-006-01, PP-MISC-006-02]
+    acceptance_ids: [AC-MISC-006-01, AC-MISC-006-02, AC-MISC-006-03, AC-MISC-006-04, AC-MISC-006-05, AC-MISC-006-06]
+    test_case_ids: [TC-MISC-006-01, TC-MISC-006-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-007
+    name: 自定义 OAuth Provider 与供应商元数据
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [super_admin]
+    prd_path: docs/product/prd/misc/UTER-MISC-007.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-007.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-007.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-007-01, REQ-MISC-007-02]
+    prototype_page_ids: [PP-MISC-007-01]
+    acceptance_ids: [AC-MISC-007-01, AC-MISC-007-02, AC-MISC-007-03, AC-MISC-007-04, AC-MISC-007-05, AC-MISC-007-06]
+    test_case_ids: [TC-MISC-007-01, TC-MISC-007-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-008
+    name: 文件上传与产物代理
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [user, developer]
+    prd_path: docs/product/prd/misc/UTER-MISC-008.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-008.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-008.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-008-01, REQ-MISC-008-02]
+    prototype_page_ids: [PP-MISC-008-01, PP-MISC-008-02]
+    acceptance_ids: [AC-MISC-008-01, AC-MISC-008-02, AC-MISC-008-03, AC-MISC-008-04, AC-MISC-008-05, AC-MISC-008-06]
+    test_case_ids: [TC-MISC-008-01, TC-MISC-008-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-009
+    name: 统一错误页与空状态
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P2
+    roles: [guest, user]
+    prd_path: docs/product/prd/misc/UTER-MISC-009.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-009.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-009.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-009-01, REQ-MISC-009-02]
+    prototype_page_ids: [PP-MISC-009-01]
+    acceptance_ids: [AC-MISC-009-01, AC-MISC-009-02, AC-MISC-009-03, AC-MISC-009-04, AC-MISC-009-05, AC-MISC-009-06]
+    test_case_ids: [TC-MISC-009-01, TC-MISC-009-02]
+    status_note: null
+    open_decisions: []
+  -
+    feature_id: UTER-MISC-010
+    name: 首次安装与初始化
+    domain: MISC
+    module: misc
+    status: IMPLEMENTED
+    priority: P1
+    roles: [guest, super_admin]
+    prd_path: docs/product/prd/misc/UTER-MISC-010.md
+    prototype_path: docs/product/prototypes/misc/UTER-MISC-010.md
+    prototype_html_path: docs/product/prototypes/misc/UTER-MISC-010.html
+    prd_version: 1
+    sync_status: SYNCED
+    requirement_ids: [REQ-MISC-010-01, REQ-MISC-010-02]
+    prototype_page_ids: [PP-MISC-010-01]
+    acceptance_ids: [AC-MISC-010-01, AC-MISC-010-02, AC-MISC-010-03, AC-MISC-010-04, AC-MISC-010-05, AC-MISC-010-06]
+    test_case_ids: [TC-MISC-010-01, TC-MISC-010-02]
+    status_note: null
+    open_decisions: []

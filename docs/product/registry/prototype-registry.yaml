@@ -1,0 +1,1534 @@
+# UTER Prototype Registry
+# 由 docs/product/registry/product-model.json 自动导出，禁止手工编辑
+# model_version: 1 / generated_at: 2026-11-09T15:47:41.782Z
+model_version: 1
+total_pages: 90
+prototypes:
+  -
+    prototype_id: PROTO-AUTH-001
+    feature_id: UTER-AUTH-001
+    primary_page_id: PP-AUTH-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/auth/UTER-AUTH-001.md
+    html_path: docs/product/prototypes/auth/UTER-AUTH-001.html
+    pages:
+      -
+        prototype_page_id: PP-AUTH-001-01
+        name: "邮箱密码登录 · 主页面"
+        entry: "web/src/routes/(auth)/sign-in.tsx"
+        layout: center-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-001-01, CMP-AUTH-001-02, CMP-AUTH-001-03, CMP-AUTH-001-04, CMP-AUTH-001-05]
+        interaction_ids: [INT-AUTH-001-01, INT-AUTH-001-02, INT-AUTH-001-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-AUTH-001-01, REQ-AUTH-001-02, REQ-AUTH-001-03]
+      -
+        prototype_page_id: PP-AUTH-001-02
+        name: "邮箱密码登录 · 登录后落地页"
+        entry: 由 PP-AUTH-001-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-001-101, CMP-AUTH-001-102, CMP-AUTH-001-103]
+        interaction_ids: [INT-AUTH-001-100]
+        state_kinds: [success, loading]
+        requirement_ids: [REQ-AUTH-001-01]
+  -
+    prototype_id: PROTO-AUTH-002
+    feature_id: UTER-AUTH-002
+    primary_page_id: PP-AUTH-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/auth/UTER-AUTH-002.md
+    html_path: docs/product/prototypes/auth/UTER-AUTH-002.html
+    pages:
+      -
+        prototype_page_id: PP-AUTH-002-01
+        name: "用户注册与邮箱验证 · 主页面"
+        entry: "web/src/routes/(auth)/sign-up.tsx"
+        layout: center-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-002-01, CMP-AUTH-002-02, CMP-AUTH-002-03, CMP-AUTH-002-04, CMP-AUTH-002-05]
+        interaction_ids: [INT-AUTH-002-01, INT-AUTH-002-02, INT-AUTH-002-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-AUTH-002-01, REQ-AUTH-002-02, REQ-AUTH-002-03]
+      -
+        prototype_page_id: PP-AUTH-002-02
+        name: "用户注册与邮箱验证 · 登录后落地页"
+        entry: 由 PP-AUTH-002-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-002-101, CMP-AUTH-002-102, CMP-AUTH-002-103]
+        interaction_ids: [INT-AUTH-002-100]
+        state_kinds: [success, loading]
+        requirement_ids: [REQ-AUTH-002-01]
+  -
+    prototype_id: PROTO-AUTH-003
+    feature_id: UTER-AUTH-003
+    primary_page_id: PP-AUTH-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/auth/UTER-AUTH-003.md
+    html_path: docs/product/prototypes/auth/UTER-AUTH-003.html
+    pages:
+      -
+        prototype_page_id: PP-AUTH-003-01
+        name: "密码找回与重置 · 主页面"
+        entry: "web/src/routes/(auth)/forgot-password.tsx"
+        layout: center-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-003-01, CMP-AUTH-003-02, CMP-AUTH-003-03, CMP-AUTH-003-04, CMP-AUTH-003-05]
+        interaction_ids: [INT-AUTH-003-01, INT-AUTH-003-02, INT-AUTH-003-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-AUTH-003-01, REQ-AUTH-003-02]
+      -
+        prototype_page_id: PP-AUTH-003-02
+        name: "密码找回与重置 · 登录后落地页"
+        entry: 由 PP-AUTH-003-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-003-101, CMP-AUTH-003-102, CMP-AUTH-003-103]
+        interaction_ids: [INT-AUTH-003-100]
+        state_kinds: [success, loading]
+        requirement_ids: [REQ-AUTH-003-01]
+  -
+    prototype_id: PROTO-AUTH-004
+    feature_id: UTER-AUTH-004
+    primary_page_id: PP-AUTH-004-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/auth/UTER-AUTH-004.md
+    html_path: docs/product/prototypes/auth/UTER-AUTH-004.html
+    pages:
+      -
+        prototype_page_id: PP-AUTH-004-01
+        name: "OAuth 与第三方登录绑定 · 主页面"
+        entry: "web/src/routes/oauth/$provider.tsx"
+        layout: center-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-004-01, CMP-AUTH-004-02, CMP-AUTH-004-03, CMP-AUTH-004-04, CMP-AUTH-004-05]
+        interaction_ids: [INT-AUTH-004-01, INT-AUTH-004-02, INT-AUTH-004-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-AUTH-004-01, REQ-AUTH-004-02, REQ-AUTH-004-03]
+      -
+        prototype_page_id: PP-AUTH-004-02
+        name: "OAuth 与第三方登录绑定 · 登录后落地页"
+        entry: 由 PP-AUTH-004-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-004-101, CMP-AUTH-004-102, CMP-AUTH-004-103]
+        interaction_ids: [INT-AUTH-004-100]
+        state_kinds: [success, loading]
+        requirement_ids: [REQ-AUTH-004-01]
+  -
+    prototype_id: PROTO-AUTH-005
+    feature_id: UTER-AUTH-005
+    primary_page_id: PP-AUTH-005-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/auth/UTER-AUTH-005.md
+    html_path: docs/product/prototypes/auth/UTER-AUTH-005.html
+    pages:
+      -
+        prototype_page_id: PP-AUTH-005-01
+        name: "Passkey / 2FA 与二次验证 · 主页面"
+        entry: web/src/routes/_authenticated/security/index.tsx
+        layout: center-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-005-01, CMP-AUTH-005-02, CMP-AUTH-005-03, CMP-AUTH-005-04, CMP-AUTH-005-05]
+        interaction_ids: [INT-AUTH-005-01, INT-AUTH-005-02, INT-AUTH-005-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-AUTH-005-01, REQ-AUTH-005-02, REQ-AUTH-005-03]
+      -
+        prototype_page_id: PP-AUTH-005-02
+        name: "Passkey / 2FA 与二次验证 · 登录后落地页"
+        entry: 由 PP-AUTH-005-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-005-101, CMP-AUTH-005-102, CMP-AUTH-005-103]
+        interaction_ids: [INT-AUTH-005-100]
+        state_kinds: [success, loading]
+        requirement_ids: [REQ-AUTH-005-01]
+  -
+    prototype_id: PROTO-AUTH-006
+    feature_id: UTER-AUTH-006
+    primary_page_id: PP-AUTH-006-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/auth/UTER-AUTH-006.md
+    html_path: docs/product/prototypes/auth/UTER-AUTH-006.html
+    pages:
+      -
+        prototype_page_id: PP-AUTH-006-01
+        name: "登录会话与登出 · 主页面"
+        entry: web/src/routes/_authenticated/security/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-006-01, CMP-AUTH-006-02, CMP-AUTH-006-03, CMP-AUTH-006-04, CMP-AUTH-006-05, CMP-AUTH-006-06, CMP-AUTH-006-07]
+        interaction_ids: [INT-AUTH-006-01, INT-AUTH-006-02, INT-AUTH-006-03, INT-AUTH-006-04, INT-AUTH-006-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-AUTH-006-01, REQ-AUTH-006-02, REQ-AUTH-006-03]
+      -
+        prototype_page_id: PP-AUTH-006-02
+        name: "登录会话与登出 · 详情"
+        entry: 由 PP-AUTH-006-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-AUTH-006-101, CMP-AUTH-006-102, CMP-AUTH-006-103]
+        interaction_ids: [INT-AUTH-006-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-AUTH-006-01]
+  -
+    prototype_id: PROTO-USER-001
+    feature_id: UTER-USER-001
+    primary_page_id: PP-USER-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/user/UTER-USER-001.md
+    html_path: docs/product/prototypes/user/UTER-USER-001.html
+    pages:
+      -
+        prototype_page_id: PP-USER-001-01
+        name: "个人资料与偏好 · 主页面"
+        entry: web/src/routes/_authenticated/profile/index.tsx
+        layout: single-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-USER-001-01, CMP-USER-001-02, CMP-USER-001-03, CMP-USER-001-04]
+        interaction_ids: [INT-USER-001-01, INT-USER-001-02]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-USER-001-01, REQ-USER-001-02]
+  -
+    prototype_id: PROTO-USER-002
+    feature_id: UTER-USER-002
+    primary_page_id: PP-USER-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/user/UTER-USER-002.md
+    html_path: docs/product/prototypes/user/UTER-USER-002.html
+    pages:
+      -
+        prototype_page_id: PP-USER-002-01
+        name: "账户安全与身份绑定 · 主页面"
+        entry: web/src/routes/_authenticated/security/index.tsx
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-USER-002-01, CMP-USER-002-02, CMP-USER-002-03, CMP-USER-002-04, CMP-USER-002-05, CMP-USER-002-06]
+        interaction_ids: [INT-USER-002-01, INT-USER-002-02, INT-USER-002-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-USER-002-01, REQ-USER-002-02]
+  -
+    prototype_id: PROTO-USER-003
+    feature_id: UTER-USER-003
+    primary_page_id: PP-USER-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/user/UTER-USER-003.md
+    html_path: docs/product/prototypes/user/UTER-USER-003.html
+    pages:
+      -
+        prototype_page_id: PP-USER-003-01
+        name: "用户管理（管理员） · 主页面"
+        entry: web/src/routes/_authenticated/users/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-USER-003-01, CMP-USER-003-02, CMP-USER-003-03, CMP-USER-003-04, CMP-USER-003-05, CMP-USER-003-06, CMP-USER-003-07]
+        interaction_ids: [INT-USER-003-01, INT-USER-003-02, INT-USER-003-03, INT-USER-003-04, INT-USER-003-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-USER-003-01, REQ-USER-003-02, REQ-USER-003-03]
+      -
+        prototype_page_id: PP-USER-003-02
+        name: "用户管理（管理员） · 详情"
+        entry: 由 PP-USER-003-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-USER-003-101, CMP-USER-003-102, CMP-USER-003-103]
+        interaction_ids: [INT-USER-003-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-USER-003-01]
+  -
+    prototype_id: PROTO-PAY-001
+    feature_id: UTER-PAY-001
+    primary_page_id: PP-PAY-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/pay/UTER-PAY-001.md
+    html_path: docs/product/prototypes/pay/UTER-PAY-001.html
+    pages:
+      -
+        prototype_page_id: PP-PAY-001-01
+        name: "充值金额选择与充值下单 · 主页面"
+        entry: web/src/routes/_authenticated/wallet/index.tsx
+        layout: two-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-001-01, CMP-PAY-001-02, CMP-PAY-001-03, CMP-PAY-001-04, CMP-PAY-001-05, CMP-PAY-001-06, CMP-PAY-001-07]
+        interaction_ids: [INT-PAY-001-01, INT-PAY-001-02, INT-PAY-001-03, INT-PAY-001-04]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-PAY-001-01, REQ-PAY-001-02, REQ-PAY-001-03]
+      -
+        prototype_page_id: PP-PAY-001-02
+        name: "充值金额选择与充值下单 · 订单结果与状态"
+        entry: 由 PP-PAY-001-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-001-101, CMP-PAY-001-102, CMP-PAY-001-103, CMP-PAY-001-104, CMP-PAY-001-105]
+        interaction_ids: [INT-PAY-001-100]
+        state_kinds: [loading, success, error, empty]
+        requirement_ids: [REQ-PAY-001-01]
+  -
+    prototype_id: PROTO-PAY-002
+    feature_id: UTER-PAY-002
+    primary_page_id: PP-PAY-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/pay/UTER-PAY-002.md
+    html_path: docs/product/prototypes/pay/UTER-PAY-002.html
+    pages:
+      -
+        prototype_page_id: PP-PAY-002-01
+        name: "支付渠道与支付方式 · 主页面"
+        entry: web/src/routes/_authenticated/wallet/index.tsx
+        layout: two-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-002-01, CMP-PAY-002-02, CMP-PAY-002-03, CMP-PAY-002-04, CMP-PAY-002-05, CMP-PAY-002-06, CMP-PAY-002-07]
+        interaction_ids: [INT-PAY-002-01, INT-PAY-002-02, INT-PAY-002-03, INT-PAY-002-04]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-PAY-002-01, REQ-PAY-002-02, REQ-PAY-002-03]
+      -
+        prototype_page_id: PP-PAY-002-02
+        name: "支付渠道与支付方式 · 订单结果与状态"
+        entry: 由 PP-PAY-002-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-002-101, CMP-PAY-002-102, CMP-PAY-002-103, CMP-PAY-002-104, CMP-PAY-002-105]
+        interaction_ids: [INT-PAY-002-100]
+        state_kinds: [loading, success, error, empty]
+        requirement_ids: [REQ-PAY-002-01]
+  -
+    prototype_id: PROTO-PAY-003
+    feature_id: UTER-PAY-003
+    primary_page_id: PP-PAY-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/pay/UTER-PAY-003.md
+    html_path: docs/product/prototypes/pay/UTER-PAY-003.html
+    pages:
+      -
+        prototype_page_id: PP-PAY-003-01
+        name: "支付回调、幂等与对账 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-003-01, CMP-PAY-003-02, CMP-PAY-003-03, CMP-PAY-003-04, CMP-PAY-003-05]
+        interaction_ids: [INT-PAY-003-01, INT-PAY-003-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-PAY-003-01, REQ-PAY-003-02, REQ-PAY-003-03]
+  -
+    prototype_id: PROTO-PAY-004
+    feature_id: UTER-PAY-004
+    primary_page_id: PP-PAY-004-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/pay/UTER-PAY-004.md
+    html_path: docs/product/prototypes/pay/UTER-PAY-004.html
+    pages:
+      -
+        prototype_page_id: PP-PAY-004-01
+        name: "充值记录与订单查询 · 主页面"
+        entry: web/src/routes/_authenticated/wallet/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-004-01, CMP-PAY-004-02, CMP-PAY-004-03, CMP-PAY-004-04, CMP-PAY-004-05, CMP-PAY-004-06, CMP-PAY-004-07]
+        interaction_ids: [INT-PAY-004-01, INT-PAY-004-02, INT-PAY-004-03, INT-PAY-004-04, INT-PAY-004-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-PAY-004-01, REQ-PAY-004-02]
+      -
+        prototype_page_id: PP-PAY-004-02
+        name: "充值记录与订单查询 · 详情"
+        entry: 由 PP-PAY-004-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PAY-004-101, CMP-PAY-004-102, CMP-PAY-004-103]
+        interaction_ids: [INT-PAY-004-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-PAY-004-01]
+  -
+    prototype_id: PROTO-REFUND-001
+    feature_id: UTER-REFUND-001
+    primary_page_id: PP-REFUND-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/refund/UTER-REFUND-001.md
+    html_path: docs/product/prototypes/refund/UTER-REFUND-001.html
+    pages:
+      -
+        prototype_page_id: PP-REFUND-001-01
+        name: "通用用户退款申请与审核 · 主页面"
+        entry: "（未发现对应前端页面：NOT_IMPLEMENTED）"
+        layout: single-column-form
+        status: PLANNED
+        planned: true
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-REFUND-001-01, CMP-REFUND-001-02, CMP-REFUND-001-03, CMP-REFUND-001-04]
+        interaction_ids: [INT-REFUND-001-01, INT-REFUND-001-02]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-REFUND-001-01, REQ-REFUND-001-02]
+  -
+    prototype_id: PROTO-REFUND-002
+    feature_id: UTER-REFUND-002
+    primary_page_id: PP-REFUND-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/refund/UTER-REFUND-002.md
+    html_path: docs/product/prototypes/refund/UTER-REFUND-002.html
+    pages:
+      -
+        prototype_page_id: PP-REFUND-002-01
+        name: "Midjourney 任务失败自动退款 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: task-console
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-REFUND-002-01, CMP-REFUND-002-02, CMP-REFUND-002-03, CMP-REFUND-002-04, CMP-REFUND-002-05, CMP-REFUND-002-06]
+        interaction_ids: [INT-REFUND-002-01, INT-REFUND-002-02, INT-REFUND-002-03, INT-REFUND-002-04]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-REFUND-002-01, REQ-REFUND-002-02]
+      -
+        prototype_page_id: PP-REFUND-002-02
+        name: "Midjourney 任务失败自动退款 · 任务产物"
+        entry: 由 PP-REFUND-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-REFUND-002-101, CMP-REFUND-002-102, CMP-REFUND-002-103]
+        interaction_ids: [INT-REFUND-002-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-REFUND-002-01]
+  -
+    prototype_id: PROTO-REFUND-003
+    feature_id: UTER-REFUND-003
+    primary_page_id: PP-REFUND-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/refund/UTER-REFUND-003.md
+    html_path: docs/product/prototypes/refund/UTER-REFUND-003.html
+    pages:
+      -
+        prototype_page_id: PP-REFUND-003-01
+        name: "支付对账与异常补偿 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-REFUND-003-01, CMP-REFUND-003-02, CMP-REFUND-003-03, CMP-REFUND-003-04, CMP-REFUND-003-05]
+        interaction_ids: [INT-REFUND-003-01, INT-REFUND-003-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-REFUND-003-01, REQ-REFUND-003-02]
+  -
+    prototype_id: PROTO-BALANCE-001
+    feature_id: UTER-BALANCE-001
+    primary_page_id: PP-BALANCE-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/balance/UTER-BALANCE-001.md
+    html_path: docs/product/prototypes/balance/UTER-BALANCE-001.html
+    pages:
+      -
+        prototype_page_id: PP-BALANCE-001-01
+        name: "用户余额与额度展示 · 主页面"
+        entry: web/src/routes/_authenticated/wallet/index.tsx
+        layout: stat-grid
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BALANCE-001-01, CMP-BALANCE-001-02, CMP-BALANCE-001-03, CMP-BALANCE-001-04, CMP-BALANCE-001-05, CMP-BALANCE-001-06, CMP-BALANCE-001-07]
+        interaction_ids: [INT-BALANCE-001-01, INT-BALANCE-001-02, INT-BALANCE-001-03]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-BALANCE-001-01, REQ-BALANCE-001-02]
+      -
+        prototype_page_id: PP-BALANCE-001-02
+        name: "用户余额与额度展示 · 指标明细"
+        entry: 由 PP-BALANCE-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BALANCE-001-101, CMP-BALANCE-001-102]
+        interaction_ids: [INT-BALANCE-001-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-BALANCE-001-01]
+  -
+    prototype_id: PROTO-BALANCE-002
+    feature_id: UTER-BALANCE-002
+    primary_page_id: PP-BALANCE-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/balance/UTER-BALANCE-002.md
+    html_path: docs/product/prototypes/balance/UTER-BALANCE-002.html
+    pages:
+      -
+        prototype_page_id: PP-BALANCE-002-01
+        name: "资金流水与会计事务 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BALANCE-002-01, CMP-BALANCE-002-02, CMP-BALANCE-002-03, CMP-BALANCE-002-04, CMP-BALANCE-002-05, CMP-BALANCE-002-06, CMP-BALANCE-002-07]
+        interaction_ids: [INT-BALANCE-002-01, INT-BALANCE-002-02, INT-BALANCE-002-03, INT-BALANCE-002-04, INT-BALANCE-002-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-BALANCE-002-01, REQ-BALANCE-002-02]
+      -
+        prototype_page_id: PP-BALANCE-002-02
+        name: "资金流水与会计事务 · 详情"
+        entry: 由 PP-BALANCE-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BALANCE-002-101, CMP-BALANCE-002-102, CMP-BALANCE-002-103]
+        interaction_ids: [INT-BALANCE-002-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-BALANCE-002-01]
+  -
+    prototype_id: PROTO-BALANCE-003
+    feature_id: UTER-BALANCE-003
+    primary_page_id: PP-BALANCE-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/balance/UTER-BALANCE-003.md
+    html_path: docs/product/prototypes/balance/UTER-BALANCE-003.html
+    pages:
+      -
+        prototype_page_id: PP-BALANCE-003-01
+        name: "额度预占与并发扣减 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BALANCE-003-01, CMP-BALANCE-003-02, CMP-BALANCE-003-03, CMP-BALANCE-003-04, CMP-BALANCE-003-05]
+        interaction_ids: [INT-BALANCE-003-01, INT-BALANCE-003-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-BALANCE-003-01, REQ-BALANCE-003-02]
+  -
+    prototype_id: PROTO-BILLING-001
+    feature_id: UTER-BILLING-001
+    primary_page_id: PP-BILLING-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/billing/UTER-BILLING-001.md
+    html_path: docs/product/prototypes/billing/UTER-BILLING-001.html
+    pages:
+      -
+        prototype_page_id: PP-BILLING-001-01
+        name: "Token 用量统计与计费 · 主页面"
+        entry: "web/src/routes/_authenticated/usage-logs/$section.tsx"
+        layout: stat-grid
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BILLING-001-01, CMP-BILLING-001-02, CMP-BILLING-001-03, CMP-BILLING-001-04, CMP-BILLING-001-05, CMP-BILLING-001-06, CMP-BILLING-001-07]
+        interaction_ids: [INT-BILLING-001-01, INT-BILLING-001-02, INT-BILLING-001-03]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-BILLING-001-01, REQ-BILLING-001-02]
+      -
+        prototype_page_id: PP-BILLING-001-02
+        name: "Token 用量统计与计费 · 指标明细"
+        entry: 由 PP-BILLING-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BILLING-001-101, CMP-BILLING-001-102]
+        interaction_ids: [INT-BILLING-001-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-BILLING-001-01]
+  -
+    prototype_id: PROTO-BILLING-002
+    feature_id: UTER-BILLING-002
+    primary_page_id: PP-BILLING-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/billing/UTER-BILLING-002.md
+    html_path: docs/product/prototypes/billing/UTER-BILLING-002.html
+    pages:
+      -
+        prototype_page_id: PP-BILLING-002-01
+        name: "消费记录与日志导出 · 主页面"
+        entry: web/src/routes/_authenticated/usage-logs/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BILLING-002-01, CMP-BILLING-002-02, CMP-BILLING-002-03, CMP-BILLING-002-04, CMP-BILLING-002-05, CMP-BILLING-002-06, CMP-BILLING-002-07]
+        interaction_ids: [INT-BILLING-002-01, INT-BILLING-002-02, INT-BILLING-002-03, INT-BILLING-002-04, INT-BILLING-002-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-BILLING-002-01, REQ-BILLING-002-02]
+      -
+        prototype_page_id: PP-BILLING-002-02
+        name: "消费记录与日志导出 · 详情"
+        entry: 由 PP-BILLING-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BILLING-002-101, CMP-BILLING-002-102, CMP-BILLING-002-103]
+        interaction_ids: [INT-BILLING-002-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-BILLING-002-01]
+  -
+    prototype_id: PROTO-BILLING-003
+    feature_id: UTER-BILLING-003
+    primary_page_id: PP-BILLING-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/billing/UTER-BILLING-003.md
+    html_path: docs/product/prototypes/billing/UTER-BILLING-003.html
+    pages:
+      -
+        prototype_page_id: PP-BILLING-003-01
+        name: "模型倍率与价格配置 · 主页面"
+        entry: "web/src/routes/_authenticated/system-settings/billing/$section.tsx"
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-BILLING-003-01, CMP-BILLING-003-02, CMP-BILLING-003-03, CMP-BILLING-003-04, CMP-BILLING-003-05, CMP-BILLING-003-06]
+        interaction_ids: [INT-BILLING-003-01, INT-BILLING-003-02, INT-BILLING-003-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-BILLING-003-01, REQ-BILLING-003-02]
+  -
+    prototype_id: PROTO-MODEL-001
+    feature_id: UTER-MODEL-001
+    primary_page_id: PP-MODEL-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/model/UTER-MODEL-001.md
+    html_path: docs/product/prototypes/model/UTER-MODEL-001.html
+    pages:
+      -
+        prototype_page_id: PP-MODEL-001-01
+        name: "模型列表与模型广场 · 主页面"
+        entry: web/src/routes/_authenticated/models/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MODEL-001-01, CMP-MODEL-001-02, CMP-MODEL-001-03, CMP-MODEL-001-04, CMP-MODEL-001-05, CMP-MODEL-001-06, CMP-MODEL-001-07]
+        interaction_ids: [INT-MODEL-001-01, INT-MODEL-001-02, INT-MODEL-001-03, INT-MODEL-001-04, INT-MODEL-001-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MODEL-001-01, REQ-MODEL-001-02]
+      -
+        prototype_page_id: PP-MODEL-001-02
+        name: "模型列表与模型广场 · 详情"
+        entry: 由 PP-MODEL-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MODEL-001-101, CMP-MODEL-001-102, CMP-MODEL-001-103]
+        interaction_ids: [INT-MODEL-001-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-MODEL-001-01]
+  -
+    prototype_id: PROTO-MODEL-002
+    feature_id: UTER-MODEL-002
+    primary_page_id: PP-MODEL-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/model/UTER-MODEL-002.md
+    html_path: docs/product/prototypes/model/UTER-MODEL-002.html
+    pages:
+      -
+        prototype_page_id: PP-MODEL-002-01
+        name: "模型元数据同步与自动补全 · 主页面"
+        entry: "web/src/routes/_authenticated/system-settings/models/$section.tsx"
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MODEL-002-01, CMP-MODEL-002-02, CMP-MODEL-002-03, CMP-MODEL-002-04, CMP-MODEL-002-05, CMP-MODEL-002-06]
+        interaction_ids: [INT-MODEL-002-01, INT-MODEL-002-02, INT-MODEL-002-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MODEL-002-01, REQ-MODEL-002-02]
+  -
+    prototype_id: PROTO-MODEL-003
+    feature_id: UTER-MODEL-003
+    primary_page_id: PP-MODEL-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/model/UTER-MODEL-003.md
+    html_path: docs/product/prototypes/model/UTER-MODEL-003.html
+    pages:
+      -
+        prototype_page_id: PP-MODEL-003-01
+        name: "公开定价页 · 主页面"
+        entry: web/src/routes/_public/pricing/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MODEL-003-01, CMP-MODEL-003-02, CMP-MODEL-003-03, CMP-MODEL-003-04, CMP-MODEL-003-05, CMP-MODEL-003-06, CMP-MODEL-003-07]
+        interaction_ids: [INT-MODEL-003-01, INT-MODEL-003-02, INT-MODEL-003-03, INT-MODEL-003-04, INT-MODEL-003-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MODEL-003-01, REQ-MODEL-003-02]
+      -
+        prototype_page_id: PP-MODEL-003-02
+        name: "公开定价页 · 详情"
+        entry: 由 PP-MODEL-003-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MODEL-003-101, CMP-MODEL-003-102, CMP-MODEL-003-103]
+        interaction_ids: [INT-MODEL-003-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-MODEL-003-01]
+  -
+    prototype_id: PROTO-CHANNEL-001
+    feature_id: UTER-CHANNEL-001
+    primary_page_id: PP-CHANNEL-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/channel/UTER-CHANNEL-001.md
+    html_path: docs/product/prototypes/channel/UTER-CHANNEL-001.html
+    pages:
+      -
+        prototype_page_id: PP-CHANNEL-001-01
+        name: "渠道管理 · 主页面"
+        entry: web/src/routes/_authenticated/channels/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-CHANNEL-001-01, CMP-CHANNEL-001-02, CMP-CHANNEL-001-03, CMP-CHANNEL-001-04, CMP-CHANNEL-001-05, CMP-CHANNEL-001-06, CMP-CHANNEL-001-07]
+        interaction_ids: [INT-CHANNEL-001-01, INT-CHANNEL-001-02, INT-CHANNEL-001-03, INT-CHANNEL-001-04, INT-CHANNEL-001-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-CHANNEL-001-01, REQ-CHANNEL-001-02]
+      -
+        prototype_page_id: PP-CHANNEL-001-02
+        name: "渠道管理 · 详情"
+        entry: 由 PP-CHANNEL-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-CHANNEL-001-101, CMP-CHANNEL-001-102, CMP-CHANNEL-001-103]
+        interaction_ids: [INT-CHANNEL-001-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-CHANNEL-001-01]
+  -
+    prototype_id: PROTO-CHANNEL-002
+    feature_id: UTER-CHANNEL-002
+    primary_page_id: PP-CHANNEL-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/channel/UTER-CHANNEL-002.md
+    html_path: docs/product/prototypes/channel/UTER-CHANNEL-002.html
+    pages:
+      -
+        prototype_page_id: PP-CHANNEL-002-01
+        name: "渠道选择、优先级与亲和性 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-CHANNEL-002-01, CMP-CHANNEL-002-02, CMP-CHANNEL-002-03, CMP-CHANNEL-002-04, CMP-CHANNEL-002-05]
+        interaction_ids: [INT-CHANNEL-002-01, INT-CHANNEL-002-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-CHANNEL-002-01, REQ-CHANNEL-002-02, REQ-CHANNEL-002-03]
+  -
+    prototype_id: PROTO-CHANNEL-003
+    feature_id: UTER-CHANNEL-003
+    primary_page_id: PP-CHANNEL-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/channel/UTER-CHANNEL-003.md
+    html_path: docs/product/prototypes/channel/UTER-CHANNEL-003.html
+    pages:
+      -
+        prototype_page_id: PP-CHANNEL-003-01
+        name: "渠道测试与健康状态 · 主页面"
+        entry: web/src/routes/_authenticated/channels/index.tsx
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-CHANNEL-003-01, CMP-CHANNEL-003-02, CMP-CHANNEL-003-03, CMP-CHANNEL-003-04, CMP-CHANNEL-003-05]
+        interaction_ids: [INT-CHANNEL-003-01, INT-CHANNEL-003-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-CHANNEL-003-01, REQ-CHANNEL-003-02]
+  -
+    prototype_id: PROTO-APIKEY-001
+    feature_id: UTER-APIKEY-001
+    primary_page_id: PP-APIKEY-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/apikey/UTER-APIKEY-001.md
+    html_path: docs/product/prototypes/apikey/UTER-APIKEY-001.html
+    pages:
+      -
+        prototype_page_id: PP-APIKEY-001-01
+        name: "API Key 创建与管理 · 主页面"
+        entry: web/src/routes/_authenticated/keys/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-APIKEY-001-01, CMP-APIKEY-001-02, CMP-APIKEY-001-03, CMP-APIKEY-001-04, CMP-APIKEY-001-05, CMP-APIKEY-001-06, CMP-APIKEY-001-07]
+        interaction_ids: [INT-APIKEY-001-01, INT-APIKEY-001-02, INT-APIKEY-001-03, INT-APIKEY-001-04, INT-APIKEY-001-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-APIKEY-001-01, REQ-APIKEY-001-02]
+      -
+        prototype_page_id: PP-APIKEY-001-02
+        name: "API Key 创建与管理 · 详情"
+        entry: 由 PP-APIKEY-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-APIKEY-001-101, CMP-APIKEY-001-102, CMP-APIKEY-001-103]
+        interaction_ids: [INT-APIKEY-001-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-APIKEY-001-01]
+  -
+    prototype_id: PROTO-APIKEY-002
+    feature_id: UTER-APIKEY-002
+    primary_page_id: PP-APIKEY-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/apikey/UTER-APIKEY-002.md
+    html_path: docs/product/prototypes/apikey/UTER-APIKEY-002.html
+    pages:
+      -
+        prototype_page_id: PP-APIKEY-002-01
+        name: "Key 额度与使用限制 · 主页面"
+        entry: web/src/routes/_authenticated/keys/index.tsx
+        layout: single-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-APIKEY-002-01, CMP-APIKEY-002-02, CMP-APIKEY-002-03, CMP-APIKEY-002-04]
+        interaction_ids: [INT-APIKEY-002-01, INT-APIKEY-002-02]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-APIKEY-002-01, REQ-APIKEY-002-02]
+  -
+    prototype_id: PROTO-APIKEY-003
+    feature_id: UTER-APIKEY-003
+    primary_page_id: PP-APIKEY-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/apikey/UTER-APIKEY-003.md
+    html_path: docs/product/prototypes/apikey/UTER-APIKEY-003.html
+    pages:
+      -
+        prototype_page_id: PP-APIKEY-003-01
+        name: "API Key 审计 · 主页面"
+        entry: web/src/routes/_authenticated/usage-logs/audit.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-APIKEY-003-01, CMP-APIKEY-003-02, CMP-APIKEY-003-03, CMP-APIKEY-003-04, CMP-APIKEY-003-05, CMP-APIKEY-003-06, CMP-APIKEY-003-07]
+        interaction_ids: [INT-APIKEY-003-01, INT-APIKEY-003-02, INT-APIKEY-003-03, INT-APIKEY-003-04, INT-APIKEY-003-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-APIKEY-003-01, REQ-APIKEY-003-02]
+      -
+        prototype_page_id: PP-APIKEY-003-02
+        name: "API Key 审计 · 详情"
+        entry: 由 PP-APIKEY-003-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-APIKEY-003-101, CMP-APIKEY-003-102, CMP-APIKEY-003-103]
+        interaction_ids: [INT-APIKEY-003-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-APIKEY-003-01]
+  -
+    prototype_id: PROTO-RELAY-001
+    feature_id: UTER-RELAY-001
+    primary_page_id: PP-RELAY-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/relay/UTER-RELAY-001.md
+    html_path: docs/product/prototypes/relay/UTER-RELAY-001.html
+    pages:
+      -
+        prototype_page_id: PP-RELAY-001-01
+        name: "OpenAI 兼容 API 中继 · 主页面"
+        entry: web/src/routes/_authenticated/playground/index.tsx
+        layout: request-response
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-RELAY-001-01, CMP-RELAY-001-02, CMP-RELAY-001-03, CMP-RELAY-001-04, CMP-RELAY-001-05, CMP-RELAY-001-06]
+        interaction_ids: [INT-RELAY-001-01, INT-RELAY-001-02, INT-RELAY-001-03, INT-RELAY-001-04]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-RELAY-001-01, REQ-RELAY-001-02, REQ-RELAY-001-03]
+      -
+        prototype_page_id: PP-RELAY-001-02
+        name: "OpenAI 兼容 API 中继 · 请求日志"
+        entry: 由 PP-RELAY-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-RELAY-001-101, CMP-RELAY-001-102]
+        interaction_ids: [INT-RELAY-001-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-RELAY-001-01]
+  -
+    prototype_id: PROTO-RELAY-002
+    feature_id: UTER-RELAY-002
+    primary_page_id: PP-RELAY-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/relay/UTER-RELAY-002.md
+    html_path: docs/product/prototypes/relay/UTER-RELAY-002.html
+    pages:
+      -
+        prototype_page_id: PP-RELAY-002-01
+        name: "多协议中继适配 · 主页面"
+        entry: web/src/routes/_authenticated/playground/index.tsx
+        layout: request-response
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-RELAY-002-01, CMP-RELAY-002-02, CMP-RELAY-002-03, CMP-RELAY-002-04, CMP-RELAY-002-05, CMP-RELAY-002-06]
+        interaction_ids: [INT-RELAY-002-01, INT-RELAY-002-02, INT-RELAY-002-03, INT-RELAY-002-04]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-RELAY-002-01, REQ-RELAY-002-02]
+      -
+        prototype_page_id: PP-RELAY-002-02
+        name: "多协议中继适配 · 请求日志"
+        entry: 由 PP-RELAY-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-RELAY-002-101, CMP-RELAY-002-102]
+        interaction_ids: [INT-RELAY-002-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-RELAY-002-01]
+  -
+    prototype_id: PROTO-RELAY-003
+    feature_id: UTER-RELAY-003
+    primary_page_id: PP-RELAY-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/relay/UTER-RELAY-003.md
+    html_path: docs/product/prototypes/relay/UTER-RELAY-003.html
+    pages:
+      -
+        prototype_page_id: PP-RELAY-003-01
+        name: "中继错误处理、超时与重试 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-RELAY-003-01, CMP-RELAY-003-02, CMP-RELAY-003-03, CMP-RELAY-003-04, CMP-RELAY-003-05]
+        interaction_ids: [INT-RELAY-003-01, INT-RELAY-003-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-RELAY-003-01, REQ-RELAY-003-02]
+  -
+    prototype_id: PROTO-TASK-001
+    feature_id: UTER-TASK-001
+    primary_page_id: PP-TASK-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/task/UTER-TASK-001.md
+    html_path: docs/product/prototypes/task/UTER-TASK-001.html
+    pages:
+      -
+        prototype_page_id: PP-TASK-001-01
+        name: "异步任务创建、查询与产物 · 主页面"
+        entry: "web/src/routes/_authenticated/usage-logs/$section.tsx"
+        layout: task-console
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-TASK-001-01, CMP-TASK-001-02, CMP-TASK-001-03, CMP-TASK-001-04, CMP-TASK-001-05, CMP-TASK-001-06]
+        interaction_ids: [INT-TASK-001-01, INT-TASK-001-02, INT-TASK-001-03, INT-TASK-001-04]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-TASK-001-01, REQ-TASK-001-02, REQ-TASK-001-03]
+      -
+        prototype_page_id: PP-TASK-001-02
+        name: "异步任务创建、查询与产物 · 任务产物"
+        entry: 由 PP-TASK-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-TASK-001-101, CMP-TASK-001-102, CMP-TASK-001-103]
+        interaction_ids: [INT-TASK-001-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-TASK-001-01]
+  -
+    prototype_id: PROTO-TASK-002
+    feature_id: UTER-TASK-002
+    primary_page_id: PP-TASK-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/task/UTER-TASK-002.md
+    html_path: docs/product/prototypes/task/UTER-TASK-002.html
+    pages:
+      -
+        prototype_page_id: PP-TASK-002-01
+        name: "任务插件管理与市场 · 主页面"
+        entry: web/src/routes/_authenticated/task-plugins/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-TASK-002-01, CMP-TASK-002-02, CMP-TASK-002-03, CMP-TASK-002-04, CMP-TASK-002-05, CMP-TASK-002-06, CMP-TASK-002-07]
+        interaction_ids: [INT-TASK-002-01, INT-TASK-002-02, INT-TASK-002-03, INT-TASK-002-04, INT-TASK-002-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-TASK-002-01, REQ-TASK-002-02]
+      -
+        prototype_page_id: PP-TASK-002-02
+        name: "任务插件管理与市场 · 详情"
+        entry: 由 PP-TASK-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-TASK-002-101, CMP-TASK-002-102, CMP-TASK-002-103]
+        interaction_ids: [INT-TASK-002-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-TASK-002-01]
+  -
+    prototype_id: PROTO-TASK-003
+    feature_id: UTER-TASK-003
+    primary_page_id: PP-TASK-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/task/UTER-TASK-003.md
+    html_path: docs/product/prototypes/task/UTER-TASK-003.html
+    pages:
+      -
+        prototype_page_id: PP-TASK-003-01
+        name: "系统任务与定时维护 · 主页面"
+        entry: "（未发现对应前端页面：BACKEND_ONLY）"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-TASK-003-01, CMP-TASK-003-02, CMP-TASK-003-03, CMP-TASK-003-04, CMP-TASK-003-05]
+        interaction_ids: [INT-TASK-003-01, INT-TASK-003-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-TASK-003-01, REQ-TASK-003-02]
+  -
+    prototype_id: PROTO-PLAN-001
+    feature_id: UTER-PLAN-001
+    primary_page_id: PP-PLAN-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/plan/UTER-PLAN-001.md
+    html_path: docs/product/prototypes/plan/UTER-PLAN-001.html
+    pages:
+      -
+        prototype_page_id: PP-PLAN-001-01
+        name: "套餐列表与订阅购买 · 主页面"
+        entry: web/src/routes/_authenticated/subscriptions/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PLAN-001-01, CMP-PLAN-001-02, CMP-PLAN-001-03, CMP-PLAN-001-04, CMP-PLAN-001-05, CMP-PLAN-001-06, CMP-PLAN-001-07]
+        interaction_ids: [INT-PLAN-001-01, INT-PLAN-001-02, INT-PLAN-001-03, INT-PLAN-001-04, INT-PLAN-001-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-PLAN-001-01, REQ-PLAN-001-02]
+      -
+        prototype_page_id: PP-PLAN-001-02
+        name: "套餐列表与订阅购买 · 详情"
+        entry: 由 PP-PLAN-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PLAN-001-101, CMP-PLAN-001-102, CMP-PLAN-001-103]
+        interaction_ids: [INT-PLAN-001-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-PLAN-001-01]
+  -
+    prototype_id: PROTO-PLAN-002
+    feature_id: UTER-PLAN-002
+    primary_page_id: PP-PLAN-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/plan/UTER-PLAN-002.md
+    html_path: docs/product/prototypes/plan/UTER-PLAN-002.html
+    pages:
+      -
+        prototype_page_id: PP-PLAN-002-01
+        name: "订阅支付与回调 · 主页面"
+        entry: web/src/routes/_authenticated/subscriptions/index.tsx
+        layout: two-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PLAN-002-01, CMP-PLAN-002-02, CMP-PLAN-002-03, CMP-PLAN-002-04, CMP-PLAN-002-05, CMP-PLAN-002-06, CMP-PLAN-002-07]
+        interaction_ids: [INT-PLAN-002-01, INT-PLAN-002-02, INT-PLAN-002-03, INT-PLAN-002-04]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-PLAN-002-01, REQ-PLAN-002-02]
+      -
+        prototype_page_id: PP-PLAN-002-02
+        name: "订阅支付与回调 · 订单结果与状态"
+        entry: 由 PP-PLAN-002-01 的页面跳转进入
+        layout: result
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PLAN-002-101, CMP-PLAN-002-102, CMP-PLAN-002-103, CMP-PLAN-002-104, CMP-PLAN-002-105]
+        interaction_ids: [INT-PLAN-002-100]
+        state_kinds: [loading, success, error, empty]
+        requirement_ids: [REQ-PLAN-002-01]
+  -
+    prototype_id: PROTO-PLAN-003
+    feature_id: UTER-PLAN-003
+    primary_page_id: PP-PLAN-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/plan/UTER-PLAN-003.md
+    html_path: docs/product/prototypes/plan/UTER-PLAN-003.html
+    pages:
+      -
+        prototype_page_id: PP-PLAN-003-01
+        name: "兑换码 · 主页面"
+        entry: web/src/routes/_authenticated/redemption-codes/index.tsx
+        layout: single-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-PLAN-003-01, CMP-PLAN-003-02, CMP-PLAN-003-03, CMP-PLAN-003-04]
+        interaction_ids: [INT-PLAN-003-01, INT-PLAN-003-02]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-PLAN-003-01, REQ-PLAN-003-02]
+  -
+    prototype_id: PROTO-ADMIN-001
+    feature_id: UTER-ADMIN-001
+    primary_page_id: PP-ADMIN-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/admin/UTER-ADMIN-001.md
+    html_path: docs/product/prototypes/admin/UTER-ADMIN-001.html
+    pages:
+      -
+        prototype_page_id: PP-ADMIN-001-01
+        name: "系统设置 · 主页面"
+        entry: web/src/routes/_authenticated/system-settings/route.tsx
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-001-01, CMP-ADMIN-001-02, CMP-ADMIN-001-03, CMP-ADMIN-001-04, CMP-ADMIN-001-05, CMP-ADMIN-001-06]
+        interaction_ids: [INT-ADMIN-001-01, INT-ADMIN-001-02, INT-ADMIN-001-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-ADMIN-001-01, REQ-ADMIN-001-02]
+  -
+    prototype_id: PROTO-ADMIN-002
+    feature_id: UTER-ADMIN-002
+    primary_page_id: PP-ADMIN-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/admin/UTER-ADMIN-002.md
+    html_path: docs/product/prototypes/admin/UTER-ADMIN-002.html
+    pages:
+      -
+        prototype_page_id: PP-ADMIN-002-01
+        name: "数据统计看板 · 主页面"
+        entry: web/src/routes/_authenticated/dashboard/index.tsx
+        layout: stat-grid
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-002-01, CMP-ADMIN-002-02, CMP-ADMIN-002-03, CMP-ADMIN-002-04, CMP-ADMIN-002-05, CMP-ADMIN-002-06, CMP-ADMIN-002-07]
+        interaction_ids: [INT-ADMIN-002-01, INT-ADMIN-002-02, INT-ADMIN-002-03]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-ADMIN-002-01, REQ-ADMIN-002-02]
+      -
+        prototype_page_id: PP-ADMIN-002-02
+        name: "数据统计看板 · 指标明细"
+        entry: 由 PP-ADMIN-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-002-101, CMP-ADMIN-002-102]
+        interaction_ids: [INT-ADMIN-002-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-ADMIN-002-01]
+  -
+    prototype_id: PROTO-ADMIN-003
+    feature_id: UTER-ADMIN-003
+    primary_page_id: PP-ADMIN-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/admin/UTER-ADMIN-003.md
+    html_path: docs/product/prototypes/admin/UTER-ADMIN-003.html
+    pages:
+      -
+        prototype_page_id: PP-ADMIN-003-01
+        name: "操作审计日志 · 主页面"
+        entry: web/src/routes/_authenticated/usage-logs/audit.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-003-01, CMP-ADMIN-003-02, CMP-ADMIN-003-03, CMP-ADMIN-003-04, CMP-ADMIN-003-05, CMP-ADMIN-003-06, CMP-ADMIN-003-07]
+        interaction_ids: [INT-ADMIN-003-01, INT-ADMIN-003-02, INT-ADMIN-003-03, INT-ADMIN-003-04, INT-ADMIN-003-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-ADMIN-003-01, REQ-ADMIN-003-02]
+      -
+        prototype_page_id: PP-ADMIN-003-02
+        name: "操作审计日志 · 详情"
+        entry: 由 PP-ADMIN-003-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-003-101, CMP-ADMIN-003-102, CMP-ADMIN-003-103]
+        interaction_ids: [INT-ADMIN-003-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-ADMIN-003-01]
+  -
+    prototype_id: PROTO-ADMIN-004
+    feature_id: UTER-ADMIN-004
+    primary_page_id: PP-ADMIN-004-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/admin/UTER-ADMIN-004.md
+    html_path: docs/product/prototypes/admin/UTER-ADMIN-004.html
+    pages:
+      -
+        prototype_page_id: PP-ADMIN-004-01
+        name: "权限与请求策略 · 主页面"
+        entry: "web/src/routes/_authenticated/system-settings/request-policies/$section.tsx"
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-004-01, CMP-ADMIN-004-02, CMP-ADMIN-004-03, CMP-ADMIN-004-04, CMP-ADMIN-004-05, CMP-ADMIN-004-06]
+        interaction_ids: [INT-ADMIN-004-01, INT-ADMIN-004-02, INT-ADMIN-004-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-ADMIN-004-01, REQ-ADMIN-004-02]
+  -
+    prototype_id: PROTO-ADMIN-005
+    feature_id: UTER-ADMIN-005
+    primary_page_id: PP-ADMIN-005-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/admin/UTER-ADMIN-005.md
+    html_path: docs/product/prototypes/admin/UTER-ADMIN-005.html
+    pages:
+      -
+        prototype_page_id: PP-ADMIN-005-01
+        name: "系统信息与运行状态 · 主页面"
+        entry: web/src/routes/_authenticated/system-info/index.tsx
+        layout: stat-grid
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-005-01, CMP-ADMIN-005-02, CMP-ADMIN-005-03, CMP-ADMIN-005-04, CMP-ADMIN-005-05, CMP-ADMIN-005-06, CMP-ADMIN-005-07]
+        interaction_ids: [INT-ADMIN-005-01, INT-ADMIN-005-02, INT-ADMIN-005-03]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-ADMIN-005-01, REQ-ADMIN-005-02]
+      -
+        prototype_page_id: PP-ADMIN-005-02
+        name: "系统信息与运行状态 · 指标明细"
+        entry: 由 PP-ADMIN-005-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ADMIN-005-101, CMP-ADMIN-005-102]
+        interaction_ids: [INT-ADMIN-005-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-ADMIN-005-01]
+  -
+    prototype_id: PROTO-ORG-001
+    feature_id: UTER-ORG-001
+    primary_page_id: PP-ORG-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/org/UTER-ORG-001.md
+    html_path: docs/product/prototypes/org/UTER-ORG-001.html
+    pages:
+      -
+        prototype_page_id: PP-ORG-001-01
+        name: "组织与成员管理 · 主页面"
+        entry: web/src/routes/_authenticated/organization/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ORG-001-01, CMP-ORG-001-02, CMP-ORG-001-03, CMP-ORG-001-04, CMP-ORG-001-05, CMP-ORG-001-06, CMP-ORG-001-07]
+        interaction_ids: [INT-ORG-001-01, INT-ORG-001-02, INT-ORG-001-03, INT-ORG-001-04, INT-ORG-001-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-ORG-001-01, REQ-ORG-001-02]
+      -
+        prototype_page_id: PP-ORG-001-02
+        name: "组织与成员管理 · 详情"
+        entry: 由 PP-ORG-001-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-ORG-001-101, CMP-ORG-001-102, CMP-ORG-001-103]
+        interaction_ids: [INT-ORG-001-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-ORG-001-01]
+  -
+    prototype_id: PROTO-MISC-001
+    feature_id: UTER-MISC-001
+    primary_page_id: PP-MISC-001-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-001.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-001.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-001-01
+        name: "签到与赠送额度 · 主页面"
+        entry: web/src/routes/_authenticated/wallet/index.tsx
+        layout: single-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-001-01, CMP-MISC-001-02, CMP-MISC-001-03, CMP-MISC-001-04]
+        interaction_ids: [INT-MISC-001-01, INT-MISC-001-02]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-001-01, REQ-MISC-001-02]
+  -
+    prototype_id: PROTO-MISC-002
+    feature_id: UTER-MISC-002
+    primary_page_id: PP-MISC-002-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-002.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-002.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-002-01
+        name: "排行榜 · 主页面"
+        entry: web/src/routes/_public/rankings/index.tsx
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-002-01, CMP-MISC-002-02, CMP-MISC-002-03, CMP-MISC-002-04, CMP-MISC-002-05, CMP-MISC-002-06, CMP-MISC-002-07]
+        interaction_ids: [INT-MISC-002-01, INT-MISC-002-02, INT-MISC-002-03, INT-MISC-002-04, INT-MISC-002-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-002-01, REQ-MISC-002-02]
+      -
+        prototype_page_id: PP-MISC-002-02
+        name: "排行榜 · 详情"
+        entry: 由 PP-MISC-002-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-002-101, CMP-MISC-002-102, CMP-MISC-002-103]
+        interaction_ids: [INT-MISC-002-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-MISC-002-01]
+  -
+    prototype_id: PROTO-MISC-003
+    feature_id: UTER-MISC-003
+    primary_page_id: PP-MISC-003-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-003.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-003.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-003-01
+        name: "Playground 与 Chat · 主页面"
+        entry: web/src/routes/_authenticated/playground/index.tsx
+        layout: request-response
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-003-01, CMP-MISC-003-02, CMP-MISC-003-03, CMP-MISC-003-04, CMP-MISC-003-05, CMP-MISC-003-06]
+        interaction_ids: [INT-MISC-003-01, INT-MISC-003-02, INT-MISC-003-03, INT-MISC-003-04]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-003-01, REQ-MISC-003-02]
+      -
+        prototype_page_id: PP-MISC-003-02
+        name: "Playground 与 Chat · 请求日志"
+        entry: 由 PP-MISC-003-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-003-101, CMP-MISC-003-102]
+        interaction_ids: [INT-MISC-003-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-MISC-003-01]
+  -
+    prototype_id: PROTO-MISC-004
+    feature_id: UTER-MISC-004
+    primary_page_id: PP-MISC-004-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-004.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-004.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-004-01
+        name: "文档站与协议页面 · 主页面"
+        entry: web/src/routes/_public/docs.tsx
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-004-01, CMP-MISC-004-02, CMP-MISC-004-03, CMP-MISC-004-04, CMP-MISC-004-05]
+        interaction_ids: [INT-MISC-004-01, INT-MISC-004-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-MISC-004-01, REQ-MISC-004-02]
+  -
+    prototype_id: PROTO-MISC-005
+    feature_id: UTER-MISC-005
+    primary_page_id: PP-MISC-005-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-005.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-005.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-005-01
+        name: "客服与客服部署 · 主页面"
+        entry: web/src/features/customer-service
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-005-01, CMP-MISC-005-02, CMP-MISC-005-03, CMP-MISC-005-04, CMP-MISC-005-05, CMP-MISC-005-06]
+        interaction_ids: [INT-MISC-005-01, INT-MISC-005-02, INT-MISC-005-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-005-01, REQ-MISC-005-02]
+  -
+    prototype_id: PROTO-MISC-006
+    feature_id: UTER-MISC-006
+    primary_page_id: PP-MISC-006-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-006.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-006.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-006-01
+        name: "性能指标与运行监控 · 主页面"
+        entry: web/src/features/performance-metrics
+        layout: stat-grid
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-006-01, CMP-MISC-006-02, CMP-MISC-006-03, CMP-MISC-006-04, CMP-MISC-006-05, CMP-MISC-006-06, CMP-MISC-006-07]
+        interaction_ids: [INT-MISC-006-01, INT-MISC-006-02, INT-MISC-006-03]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-MISC-006-01, REQ-MISC-006-02]
+      -
+        prototype_page_id: PP-MISC-006-02
+        name: "性能指标与运行监控 · 指标明细"
+        entry: 由 PP-MISC-006-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-006-101, CMP-MISC-006-102]
+        interaction_ids: [INT-MISC-006-100]
+        state_kinds: [loading, empty, success]
+        requirement_ids: [REQ-MISC-006-01]
+  -
+    prototype_id: PROTO-MISC-007
+    feature_id: UTER-MISC-007
+    primary_page_id: PP-MISC-007-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-007.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-007.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-007-01
+        name: "自定义 OAuth Provider 与供应商元数据 · 主页面"
+        entry: "web/src/routes/_authenticated/system-settings/integrations/$section.tsx"
+        layout: settings-tabs
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-007-01, CMP-MISC-007-02, CMP-MISC-007-03, CMP-MISC-007-04, CMP-MISC-007-05, CMP-MISC-007-06]
+        interaction_ids: [INT-MISC-007-01, INT-MISC-007-02, INT-MISC-007-03]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-007-01, REQ-MISC-007-02]
+  -
+    prototype_id: PROTO-MISC-008
+    feature_id: UTER-MISC-008
+    primary_page_id: PP-MISC-008-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-008.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-008.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-008-01
+        name: "文件上传与产物代理 · 主页面"
+        entry: "web/src/routes/_authenticated/usage-logs/$section.tsx"
+        layout: table-with-toolbar
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-008-01, CMP-MISC-008-02, CMP-MISC-008-03, CMP-MISC-008-04, CMP-MISC-008-05, CMP-MISC-008-06, CMP-MISC-008-07]
+        interaction_ids: [INT-MISC-008-01, INT-MISC-008-02, INT-MISC-008-03, INT-MISC-008-04, INT-MISC-008-05]
+        state_kinds: [idle, loading, empty, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-008-01, REQ-MISC-008-02]
+      -
+        prototype_page_id: PP-MISC-008-02
+        name: "文件上传与产物代理 · 详情"
+        entry: 由 PP-MISC-008-01 的页面跳转进入
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-008-101, CMP-MISC-008-102, CMP-MISC-008-103]
+        interaction_ids: [INT-MISC-008-100]
+        state_kinds: [loading, success, empty, error]
+        requirement_ids: [REQ-MISC-008-01]
+  -
+    prototype_id: PROTO-MISC-009
+    feature_id: UTER-MISC-009
+    primary_page_id: PP-MISC-009-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-009.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-009.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-009-01
+        name: "统一错误页与空状态 · 主页面"
+        entry: "web/src/routes/(errors)/401.tsx"
+        layout: detail
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-009-01, CMP-MISC-009-02, CMP-MISC-009-03, CMP-MISC-009-04, CMP-MISC-009-05]
+        interaction_ids: [INT-MISC-009-01, INT-MISC-009-02]
+        state_kinds: [idle, loading, empty, error, success, permission_denied]
+        requirement_ids: [REQ-MISC-009-01, REQ-MISC-009-02]
+  -
+    prototype_id: PROTO-MISC-010
+    feature_id: UTER-MISC-010
+    primary_page_id: PP-MISC-010-01
+    viewport_default: PC
+    doc_path: docs/product/prototypes/misc/UTER-MISC-010.md
+    html_path: docs/product/prototypes/misc/UTER-MISC-010.html
+    pages:
+      -
+        prototype_page_id: PP-MISC-010-01
+        name: "首次安装与初始化 · 主页面"
+        entry: web/src/routes/setup/index.tsx
+        layout: single-column-form
+        status: ACTIVE
+        planned: false
+        demo_notice: "DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。"
+        component_ids: [CMP-MISC-010-01, CMP-MISC-010-02, CMP-MISC-010-03, CMP-MISC-010-04]
+        interaction_ids: [INT-MISC-010-01, INT-MISC-010-02]
+        state_kinds: [idle, loading, error, success, disabled, permission_denied]
+        requirement_ids: [REQ-MISC-010-01, REQ-MISC-010-02]

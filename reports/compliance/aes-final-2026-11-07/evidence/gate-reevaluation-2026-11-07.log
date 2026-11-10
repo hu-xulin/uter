@@ -1,0 +1,58 @@
+# gate re-evaluation after real fixes — 2026-11-07T15:00:45Z
+# commit=ec6501adceb008d46140a7e5ab6508eb78006731
+
+## L1/L2/L3/L4 gate evaluator
+L1=FAIL (17/18)  L2=FAIL (0/0)
+L3=BLOCKED (0/14 PASS; 13 AES + 1 UTER-P13)
+  P00       BLOCKED  2 manual acceptance item(s) lack real verification evidence
+  P01       BLOCKED  automated checks not passing: L1-16=FAIL
+  P02       BLOCKED  3 manual acceptance item(s) lack real verification evidence
+  P03       BLOCKED  3 manual acceptance item(s) lack real verification evidence
+  P04       BLOCKED  2 manual acceptance item(s) lack real verification evidence
+  P05       BLOCKED  4 manual acceptance item(s) lack real verification evidence
+  P06       BLOCKED  automated checks not passing: L2-01=NOT_RUN, L2-02=NOT_RUN, L2-03=NOT_RUN, L2-04=NOT_RUN, L2-05=NOT_RUN
+  P07       BLOCKED  3 manual acceptance item(s) lack real verification evidence
+  P08       BLOCKED  automated checks not passing: L1-16=FAIL
+  P09       BLOCKED  automated checks not passing: L1-16=FAIL, L2-06=NOT_RUN
+  P10       BLOCKED  4 manual acceptance item(s) lack real verification evidence
+  UTER-P13  BLOCKED  automated checks not passing: L2-08=NOT_RUN, L2-09=NOT_RUN
+  P11       BLOCKED  2 manual acceptance item(s) lack real verification evidence
+  P12       BLOCKED  3 manual acceptance item(s) lack real verification evidence
+L4=BLOCKED (8/16 MET)
+gates written to /Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence/gates
+GATES_EXIT=1
+
+## D26 independent assessment (re-derived from source)
+independent assessment: COMPLETED re_evaluation=5/7
+open_findings=6 l4=BLOCKED conformance_claim_supported=false
+evidence: /Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/evidence/independent-assessment.json
+report: /Users/lincolnhu/uter/reports/compliance/aes-full-migration-2026-11-06/D26-INDEPENDENT-ASSESSMENT-REPORT.md
+INDEPENDENT_ASSESSMENT_EXIT=1
+
+## two new regression guards
+
+Finished in 0.134663s, 51.9816 runs/s, 118.8151 assertions/s.
+
+7 runs, 16 assertions, 0 failures, 0 errors, 0 skips
+UEQE_GUARD_EXIT=
+
+Finished in 0.141289s, 49.5438 runs/s, 226.4861 assertions/s.
+
+7 runs, 32 assertions, 0 failures, 0 errors, 0 skips
+EMBED_GUARD_EXIT=
+
+## static governance gates
+PASS: source commit and registry blob are valid 40-character object ids
+PASS: registry lifecycle is consistent (status=ACTIVE, approval=ACTIVE, integration=MIGRATION_PENDING)
+PASS: contract does not claim unverified compliance
+PASS: INTEGRATION.md agrees with the pinned commit, blob, version and lifecycle
+aes-pin-check: PASS scope=static-integrity status=ACTIVE version=1.12.0 commit=46c648836ee4
+PIN_CHECK_EXIT=
+PASS: UTER-AES-GOV-001 three-layer / two-repository architecture and P09/P10 ownership are registered
+PASS: Uter payment, billing, auth, database, and Design System overlays remain protected
+PASS: Agent entrypoints and both runtime skill adapters route to the canonical contract
+PASS: P01 fail-closed permission policy and task schema are registered
+NOTE: static wiring only; remote commit reachability, semantic parity, runtime skill discovery, CI policy enforcement, 14 independent domain acceptances, independent assessment and L4_GLOBAL_CONFORMANCE_GATE remain separate acceptance requirements. This check makes no conformance claim (§16.5).
+INTEGRATION_CHECK_EXIT=
+ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-AES-GOV-001 三层架构/P13/P09-P10 分工、ADR）
+AI_SPECS_CHECK_EXIT=

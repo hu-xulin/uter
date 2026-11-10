@@ -1,0 +1,12 @@
+# id: L1-01
+# layer: L1
+# command: bash scripts/quality/ai-specs-check.sh
+# workdir: /Users/lincolnhu/uter
+# started_at: 2026-11-08T18:33:26Z
+# go: go version go1.27.3 darwin/amd64
+# node: v22.22.2
+# bun: 1.4.2
+# ---------------------------------------------
+ai-specs-check: 通过（10 域规范、4 质量规范、Agent 入口、引用、UTER-AES-GOV-001 三层架构/P13/P09-P10 分工、ADR）
+# exit_code: 0
+# duration_seconds: 1

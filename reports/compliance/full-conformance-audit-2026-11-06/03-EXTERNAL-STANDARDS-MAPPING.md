@@ -3,7 +3,7 @@
 - **Document:** `3/14` of §11 (14 mandated deliverables)
 - **Generated:** 2026-11-09T05:04:20Z
 - **Uter commit SHA:** `ec6501adceb008d46140a7e5ab6508eb78006731`
-- **UAES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
+- **AES commit SHA:** `0c9386b192090e901ccc5de6df1f2aebe3f5c618`
 - **Execution environment:** macOS-26.7.2-x86_64-i386-64bit-Mach-O
 - **Collector:** WorkBuddy (Tencent Hunyuan Hy)
 - **Evidence root:** `reports/compliance/full-conformance-audit-2026-11-06/evidence/`
@@ -14,8 +14,8 @@
 ---
 
 
-来源：权威规范 `docs/ai-specs/UTER-UAES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`
-`UTER-UAES-GOV-001` §2.1，共 **25** 项；§2.2 要求逐项记录标识、
+来源：权威规范 `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md`
+`UTER-AES-GOV-001` §2.1，共 **25** 项；§2.2 要求逐项记录标识、
 官方名称、发布者、版本、发布日期、现行状态、修订、适用范围、相关要求、适用性决定、
 裁剪决定、责任人、验证方法、证据位置。
 
