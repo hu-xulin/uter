@@ -10,7 +10,7 @@
 **下次复核：** 2027-02-03  
 **维护责任：** Uter Engineering Maintainers  
 **版本追溯：** 以 Git 文件历史及对应 Commit SHA 为准  
-**适用范围：** 全仓库代码审查、自动化测试、安全扫描、AI 自动修复及 Pull Request  
+**适用范围：** 全仓库代码审查、自动化测试、安全扫描、AI 自动修复及本地 main 质量门禁  
 **执行主体：** Quality Orchestrator、Code Review Engine、Testing Engine、Auto-Fix Engine、GitHub Actions
 
 **关联规范：**
@@ -31,7 +31,7 @@
 | 质量报告与证据 | AES `AES-09-015-QUALITY-REPORT-AND-EVIDENCE` | 上位；本规范补充 Uter 报告位置 |
 
 AES 基线与规范版本以 `.aes/aes-pin.json` 的机器指纹和当前 ACTIVE Registry 为准；不得硬编码提交 SHA 或旧版本，
-审批记录 `AES-APPROVAL-2026-11-07-004`（见 `.aes/aes-pin.json`）。
+机器授权依据：AES 当前 ACTIVE Registry、`.aes/aes-pin.json` 与可复算机器证据；不得引用历史人工审批记录作为当前授权。
 
 冲突处理：本规范与 AES 冲突时，以 AES 为准；Uter 专属的业务、支付、资金、
 渠道约束不受影响，按 AES `AES-00-002` 的冲突解决顺序处理，并登记在
@@ -368,7 +368,7 @@ Quality Gate 包含八个检查维度。
 - 安装脚本。
 - 依赖混淆风险。
 
-发现高风险依赖漏洞时必须阻断或进入人工风险审批。
+发现高风险依赖漏洞时必须自动 FAIL/BLOCKED、隔离受影响依赖和变更，并触发自动修复与独立复验；不得进入人工风险审批队列。
 
 依赖升级必须验证兼容性。
 
@@ -577,7 +577,7 @@ FIX VERIFIED。
 如果发现工作区变更：
 
 1. 记录原始状态。
-2. 使用独立 Worktree。
+2. 使用临时隔离测试副本或临时目录；不得创建 Git 分支或 linked worktree。
 3. 只处理授权范围内的文件。
 4. 不得强制清理工作区。
 5. 发生冲突时停止自动提交。
@@ -621,60 +621,41 @@ FIX VERIFIED。
 | 安全扫描发现阻断风险 | FAIL | 自动阻断 | 自动隔离并阻断 |
 | 只有非必需检查被阻塞 | 按策略判定；不得掩盖必需项 | 仅在全部必需项 PASS 时允许 | 按发布策略 |
 
-## 13.3 CONDITIONAL PASS
+## 13.3 禁止人工条件通过
 
-不得用 CONDITIONAL PASS 绕过未解决的 P0/P1 或必需控制。机器授权例外必须有明确范围、期限、补偿控制、独立复验和自动撤销条件，且不等同于完整 PASS。
-
-必须明确记录：
-
-- 审批人。
-- 审批时间。
-- 审批依据。
-- 已完成的验证。
-- 未完成的检查。
-- 遗留风险。
+内部质量门禁不使用等待人工审批的 CONDITIONAL PASS 状态。所有必需控制必须真实执行并 PASS；不满足时只能为 FAIL 或 BLOCKED。机器策略例外必须由独立机器规则校验范围、期限、补偿控制、证据和自动撤销条件，且例外状态不等同于 PASS。记录必须包含机器决策 ID、策略版本、验证器、证据摘要、未满足条件和自动复验时间。
 
 CONDITIONAL PASS 不等于完全通过。
 
 ---
 
-# 14. PR 质量门禁
+# 14. 本地 main 变更质量门禁
 
-## 14.1 普通 PR
+## 14.1 每次本地 main 变更
 
 必须完成：
 
-- 变更审查。
-- 编译。
-- Lint。
-- 相关单元测试。
-- 必要集成测试。
-- 安全基础扫描。
-- 变更完整性检查。
+- 全部变更的机器代码审查。
+- 编译、Lint、类型检查和格式检查。
+- 受影响模块的单元与集成测试。
+- 必要端到端和回归测试。
+- 依赖、许可证、漏洞和 Secrets 扫描。
+- 变更完整性、权限和证据链检查。
+- 独立机器验证器重新读取差异并复验。
 
-## 14.2 AI 修复 PR
+## 14.2 AI 自动修复变更
 
-在普通 PR 要求基础上增加：
+必须额外保存：
 
-- 缺陷确认记录。
-- 根因分析。
-- 修复前后差异。
-- 新增测试。
-- 回归测试。
-- 修复后审查。
-- 风险评估。
-- 自动修复执行记录。
+- 缺陷确认和根因分析。
+- 修复前后差异及影响范围。
+- 新增或更新的回归测试。
+- 修复后独立机器审查结果。
+- 机器策略授权和证据摘要。
 
-## 14.3 P1 main Commit 条件
+## 14.3 P1 本地 main Commit 条件
 
-额外要求：
-
-- 机器策略精确授权与权限范围验证。
-- 关键业务验证。
-- 安全影响评估。
-- 回滚方案。
-- 明确标记高风险。
-- 禁止自动合并。
+必须满足机器策略精确授权、关键业务验证、安全影响评估、回滚/恢复方案和独立机器复验；任何条件缺失均自动 BLOCKED。不得要求人工或第三方签署。
 
 ## 14.4 P0
 
@@ -692,35 +673,13 @@ COLLECTING
 VALIDATING
    ↓
 EVALUATING
-   │
-   ├── PASS
-   │     ↓
-   │   READY_FOR_PR
-   │
-   ├── CONDITIONAL_PASS
-   │     ↓
-   │   WAITING_FOR_APPROVAL
-   │
-   ├── FAIL
-   │     ↓
-   │   BLOCKED_BY_FAILURE
-   │
-   └── BLOCKED
-         ↓
-      WAITING_FOR_DEPENDENCY
+   ├── PASS → READY_FOR_LOCAL_MAIN_COMMIT
+   ├── FAIL → AUTO_REMEDIATE_AND_REVERIFY
+   └── BLOCKED / NOT_RUN / UNKNOWN / NOT_VERIFIED
+             → BLOCKED_AND_AUTO_RETRY
 ```
 
-每次状态变化必须保存：
-
-- Execution ID。
-- Previous Status。
-- New Status。
-- Timestamp。
-- Trigger。
-- Evidence。
-- Decision Reason。
-
-不得仅根据 AI 的自然语言判断修改状态。
+每次状态变化必须保存 Execution ID、Previous Status、New Status、Timestamp、Trigger、Evidence 和 Decision Reason。不得仅根据 AI 的自然语言判断修改状态；不得设置 WAITING_FOR_APPROVAL 或人工待办状态。
 
 ---
 
@@ -854,15 +813,15 @@ Quality Gate 必须能够被 GitHub Actions 调用。
 
 不能让不同 Workflow 各自使用不一致的通过条件。
 
-## 17.1 PR 检查
+## 17.1 main 变更持续集成检查
 
-每次 PR：
+每次 main 提交以及定时审计：
 
-- 执行增量审查。
-- 执行相关测试。
-- 执行基础安全扫描。
-- 执行变更完整性检查。
-- 输出门禁结果。
+- 执行全量或受影响范围的机器代码审查。
+- 执行相关测试与回归测试。
+- 执行安全、依赖、许可证和 Secrets 扫描。
+- 执行变更完整性、规范映射和证据链检查。
+- 输出机器可解析的门禁结果；失败时非零退出。
 
 ## 17.2 完整审计
 
@@ -880,35 +839,15 @@ Quality Gate 必须能够被 GitHub Actions 调用。
 AI 修复任务必须：
 
 1. 调用 Auto-Fix Engine。
-2. 获取测试结果。
-3. 获取复审结果。
+2. 获取真实测试结果。
+3. 获取独立机器复审结果。
 4. 调用 Quality Gate。
-5. 根据结果决定是否允许 Commit、Push 和创建 PR。
+5. 仅在全部必需门禁 PASS 且机器策略授权后创建本地 main Commit。
+6. 禁止 Push、Pull Request、Merge、Rebase 和 Deploy。
 
-不得绕过统一质量门禁直接创建标记为验证通过的 PR。
+## 17.4 main-only 执行控制
 
-## 17.4 分支保护补偿控制（2026-11-01 验收整改落地）
-
-Uter 仓库为私有免费仓，GitHub Branch Protection / Required Status Checks
-API 不可用（HTTP 403），「必需状态检查」无法在平台层强制。补偿控制如下，
-四层次中「GitHub 强制阻断」一栏以补偿态运行：
-
-1. **CI 服务端检查为权威强制层**：`ci.yml`（push main + 全部 PR 触发，
-   backend / race / coverage / vulnscan / frontend / desktop）在 GitHub
-   runner 上执行，AI 与本地环境无法宣布其通过。
-2. **发布门禁**：`release-gate.yml`（workflow_call/dispatch）作为发版前
-   最后一道完整检查。
-3. **CODEOWNERS**（`.github/CODEOWNERS`）：免费私有仓下仅为审查提示，
-   不构成强制；文件内注明升级路径。
-4. **流程纪律**：AGENTS.md「逐次单独授权」（commit/push/merge/rebase/
-   部署逐项授权、禁 force push、禁 --no-verify）作为流程性补偿。
-5. **退出码契约**：`scripts/quality/uter-quality.sh` 执行类阶段与
-   `full` 在存在 FAILED/BLOCKED 子项时必须以非零码退出（verdict=FAIL），
-   使编排器可被任何脚本链/CI step 直接消费为阻断门禁；NOT_RUN 不阻断
-   但必须在报告与 verdict（PASS_WITH_NOTES）中显式披露。
-6. **升级条件**：仓库转公开或升级付费计划后，应立即为 main 配置
-   Required Status Checks（backend/race/coverage/vulnscan/frontend），
-   届时本节补偿控制降级为辅助。
+Uter 工程修复固定在本地现有 main 工作树执行。Agent 不创建执行分支、linked worktree 或 PR，不调用远程写接口。CI 在远程 main 提交和定时事件上独立运行；本地提交是否允许由同一组可执行门禁和机器证据决定。缺少 GitHub Branch Protection 不构成放宽本地门禁的理由，也不产生人工审批待办。
 
 ---
 
@@ -963,20 +902,20 @@ quality_gate:
     P2:
       allow_auto_fix: true
       allow_auto_commit: true
-      allow_auto_push: true
-      allow_auto_pr: true
+      allow_auto_push: false
+      allow_auto_pr: false
 
     P3:
       allow_auto_fix: true
       allow_auto_commit: true
-      allow_auto_push: true
-      allow_auto_pr: true
+      allow_auto_push: false
+      allow_auto_pr: false
 
     P4:
       allow_auto_fix: true
       allow_auto_commit: true
-      allow_auto_push: true
-      allow_auto_pr: true
+      allow_auto_push: false
+      allow_auto_pr: false
 
   security:
     block_critical: true
@@ -993,8 +932,11 @@ quality_gate:
     prevent_regression: true
 
   git:
+    forbid_branch_creation: true
+    forbid_linked_worktree: true
+    forbid_remote_push: true
+    forbid_pull_request: true
     forbid_force_push: true
-    forbid_direct_main_push: true
     forbid_auto_merge: true
     forbid_auto_deploy: true
 ```
@@ -1020,7 +962,7 @@ Quality Gate 应支持长期质量趋势统计：
 - 测试覆盖率变化。
 - 安全漏洞变化。
 - 平均修复时间。
-- PR 等待审核时间。
+- 自动复验与修复闭环时间。
 - 重复缺陷比例。
 - 回归缺陷数量。
 
@@ -1049,8 +991,8 @@ Quality Gate 必须通过以下验收：
 13. 能够生成 Markdown 报告。
 14. 能够生成 JSON 报告。
 15. 能够被 GitHub Actions 调用。
-16. 能够为 PR 提供真实门禁结果。
-17. 能够阻止未授权的自动合并。
+16. 能够为本地 main Commit 提供真实门禁结果。
+17. 能够阻止未授权的远程写入、Push、PR 和 Merge。
 18. 能够阻止未经授权的生产部署。
 
 必须通过以下场景验证：
@@ -1068,7 +1010,7 @@ Quality Gate 必须通过以下验收：
 
 - 审查发现 P0。
 
-预期：FAIL，阻止自动修复发布和 PR 创建。
+预期：FAIL，阻止本地 Commit 和发布。
 
 ### 场景 C：P1 缺少机器策略授权
 
@@ -1085,7 +1027,7 @@ Quality Gate 必须通过以下验收：
 - 必需测试通过。
 - 机器策略授权有效，独立验证器重新执行并全部 PASS。
 
-预期：CONDITIONAL PASS，允许创建 PR，仍然禁止自动合并。
+预期：PASS，允许机器策略范围内创建本地 main Commit；不创建 PR。
 
 ### 场景 E：测试失败
 
@@ -1106,13 +1048,13 @@ Quality Gate 必须通过以下验收：
 - 原始问题已解决。
 - 其他模块回归失败。
 
-预期：FAIL，不允许创建验证通过的 PR。
+预期：FAIL，不允许创建本地 Commit。
 
 ### 场景 H：密钥泄露
 
 - 发现真实密钥进入代码变更。
 
-预期：FAIL，阻断 PR。
+预期：FAIL，阻断本地 Commit。
 
 ### 场景 I：正常 AI 自动修复
 
@@ -1122,7 +1064,7 @@ Quality Gate 必须通过以下验收：
 - 复审通过。
 - 安全检查通过。
 
-预期：PASS，允许 Commit、Push 和创建 PR。
+预期：PASS，允许创建本地 main Commit；禁止 Push、PR、Merge 和 Deploy。
 
 ---
 
@@ -1134,9 +1076,9 @@ Quality Gate 必须通过以下验收：
 4. 所有状态必须可追溯。
 5. 所有风险必须明确记录。
 6. 不允许 AI 自行绕过门禁。
-7. 不允许自动合并 PR。
+7. 不允许创建或自动合并 PR。
 8. 不允许自动部署生产环境。
 9. P0 和 P1 必须严格控制。
 10. 所有质量规则必须可配置、可验证、可持续维护。
 
-**最终目标：让 Uter 的每次代码变更、AI 自动修复和 Pull Request 都经过统一、可靠、可追溯的工程质量验证。**
+**最终目标：让 Uter 的每次本地 main 代码变更和 AI 自动修复都经过统一、可靠、可追溯的机器质量验证；内部审查、测试、整改和验收不依赖人工或第三方。**
