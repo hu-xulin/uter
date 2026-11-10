@@ -86,7 +86,7 @@ require (
 	github.com/Azure/go-ntlmssp v0.1.1
 	github.com/Calcium-Ion/go-epay v0.0.5
 	github.com/Calcium-Ion/moejs v0.1.0-alpha.7
-	github.com/ClickHouse/clickhouse-go/v2 v2.46.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.50.0
 	github.com/abema/go-mp4 v1.4.1
 	github.com/alicebob/miniredis/v2 v2.38.0
 	github.com/andybalholm/brotli v1.2.7
