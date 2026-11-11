@@ -124,5 +124,37 @@ export function DocsEmbedBridge() {
     );
   }, [pathname]);
 
+  // Docs → host: report scroll position so the SPA header — which the
+  // host renders, not this framed site — switches to its solid, floating
+  // state as the reader scrolls, exactly like the non-framed public
+  // pages (pricing/rankings). The iframe owns the scroll, so the host
+  // window never moves and `PublicHeader`'s own `useScrolled` would stay
+  // false without this signal.
+  useEffect(() => {
+    if (!isEmbedded()) return;
+    let frame = 0;
+    const report = () => {
+      const y = window.scrollY || document.documentElement.scrollTop || 0;
+      window.parent.postMessage(
+        { type: 'Uter:docs:scroll', y },
+        window.location.origin
+      );
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        report();
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, true);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('scroll', onScroll, true);
+    };
+  }, []);
+
   return null;
 }

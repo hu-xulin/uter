@@ -695,6 +695,18 @@ html[data-docs-embed='true'] body {
 }
 
 /*
+ * Embedded sidebar — let the left navigation panel sit on the host's
+ * surface (white + brand glow) like the SPA's own left panels, instead
+ * of its standalone neutral surface (`--Uter-panel`), so docs/about read
+ * on the same background as pricing/rankings. Cards and content keep
+ * their own surfaces; only the chrome frame goes transparent.
+ */
+html[data-docs-embed='true'] #nd-sidebar,
+html[data-docs-embed='true'] #nd-sidebar-mobile {
+  background-color: transparent !important;
+}
+
+/*
  * Below `lg`, Fumadocs keeps a second, compact bar (`#nd-subnav`, its
  * internal id) carrying the search and sidebar triggers. It leads with
  * the same logo + wordmark as the host's header directly above it, so
