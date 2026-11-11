@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-11T12:59:41.607Z",
+  "generated_at": "2026-11-11T14:54:42.617Z",
   "repository": "https://github.com/hu-xulin/uter",
   "local_root": "/Users/lincolnhu/uter",
-  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "uther_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
   "aes_repository": "https://github.com/hu-xulin/aes",
-  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
   "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
   "state_model": [
     "PASS",
@@ -59,7 +59,7 @@
       "id": "HG-06",
       "name": "Stale or missing execution evidence",
       "status": "PASS",
-      "detail": "evidence manifest current (0.02h, 12 entries)"
+      "detail": "evidence manifest current (0.01h, 12 entries)"
     },
     {
       "id": "HG-07",
@@ -90,6 +90,6 @@
     "path": "reports/final/UTER-GOVERNANCE-HARD-GATES.json",
     "exists": true,
     "bytes": 2814,
-    "sha256": "b1ed03fb77dd829a702f4f560071ff3664a0b6f2726fc99acc70130feaa06b26"
+    "sha256": "151b32e9af42715ef7b940ec41e1f92d557a29aa1fc0bdecb2faf4dbb099436d"
   }
 }

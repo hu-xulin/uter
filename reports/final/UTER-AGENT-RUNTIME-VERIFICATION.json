@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-11T12:59:41.607Z",
+  "generated_at": "2026-11-11T14:54:42.617Z",
   "repository": "https://github.com/hu-xulin/uter",
   "local_root": "/Users/lincolnhu/uter",
-  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "uther_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
   "aes_repository": "https://github.com/hu-xulin/aes",
-  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
   "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
   "state_model": [
     "PASS",
@@ -19,7 +19,7 @@
   "skills_runtime": {
     "schema_version": "1.0.0",
     "report_id": "UTER-AGENT-SKILLS-RUNTIME-VERIFICATION",
-    "generated_at": "2026-11-11T12:57:03.904Z",
+    "generated_at": "2026-11-11T14:53:56.160Z",
     "generated_by": "tools/aes/agent-skills-runtime-verify.mjs",
     "written_by_hand": false,
     "uter_root": "/Users/lincolnhu/uter",
@@ -129,7 +129,7 @@
       "path": "reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-selftest.json",
       "exists": true,
       "bytes": 6504,
-      "sha256": "960228d777d894df194af8db81e3c36dabfcaf3a532cd6b8ffe2c2237f3fc6f9"
+      "sha256": "cee89896be2ffb19bc89d787b4b27d2cd9fde4afe96c8f23fe576c9095836a20"
     }
   },
   "verdict": "PASS",

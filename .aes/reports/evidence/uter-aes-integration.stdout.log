@@ -1,9 +1,9 @@
 {
   "schema_version": "1.1.0",
   "engine": "UTER-AES-INTEGRATION-CHECK",
-  "executed_at": "2026-11-11T12:57:06.310Z",
+  "executed_at": "2026-11-11T14:53:59.324Z",
   "aes_root": "/Users/lincolnhu/aes",
-  "aes_commit": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "aes_commit": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
   "pin_fingerprint": "74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
   "live_fingerprint": "74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
   "seal_intact": true,

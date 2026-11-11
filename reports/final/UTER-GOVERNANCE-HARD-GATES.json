@@ -1,11 +1,11 @@
 {
   "report_id": "UTER-GOVERNANCE-HARD-GATES",
   "tool_id": "uter-governance-hard-gates@1.0.0",
-  "generated_at": "2026-11-11T12:56:17.608Z",
+  "generated_at": "2026-11-11T14:54:42.452Z",
   "uter_root": "/Users/lincolnhu/uter",
   "aes_root": "/Users/lincolnhu/aes",
-  "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
-  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "uter_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
+  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
   "state_model": [
     "PASS",
     "FAIL",
@@ -57,7 +57,7 @@
       "id": "HG-06",
       "name": "Stale or missing execution evidence",
       "status": "PASS",
-      "detail": "evidence manifest current (0.02h, 12 entries)"
+      "detail": "evidence manifest current (0.01h, 12 entries)"
     },
     {
       "id": "HG-07",
@@ -86,8 +86,8 @@
   ],
   "evidence": {
     "manifest": ".aes/reports/UTER-EVIDENCE-MANIFEST.json",
-    "manifest_generated_at": "2026-11-11T12:55:15.684Z",
-    "manifest_age_hours": 0.02,
+    "manifest_generated_at": "2026-11-11T14:53:59.350Z",
+    "manifest_age_hours": 0.01,
     "head_policy": {
       "ok": true,
       "reason": "EXACT",

@@ -2,9 +2,9 @@
   "report_id": "BRANCH-POLICY-VALIDATION",
   "verifier_id": "aes-branch-policy-verifier@1.0.0",
   "policy_id": "AES-MAIN-ONLY-BRANCH-POLICY-2026-11-11",
-  "generated_at": "2026-11-11T13:07:22.884Z",
+  "generated_at": "2026-11-11T14:31:33.154Z",
   "repository_root": "/Users/lincolnhu/uter",
-  "head_sha": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "head_sha": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
   "checks": [
     {
       "id": "BP-01",
@@ -140,41 +140,11 @@
     {
       "id": "BP-08",
       "name": "Dependabot version-update branch generation disabled",
-      "status": "PASS",
-      "detail": "6 ecosystem block(s), 0 non-compliant",
+      "status": "NOT_APPLICABLE",
+      "detail": "this repository has no .github/dependabot.yml, so Dependabot cannot generate branches here",
       "evidence": {
-        "blocks": [
-          {
-            "ecosystem": "bun",
-            "limit_zero": true,
-            "target_main": true
-          },
-          {
-            "ecosystem": "gomod",
-            "limit_zero": true,
-            "target_main": true
-          },
-          {
-            "ecosystem": "gomod",
-            "limit_zero": true,
-            "target_main": true
-          },
-          {
-            "ecosystem": "gomod",
-            "limit_zero": true,
-            "target_main": true
-          },
-          {
-            "ecosystem": "gomod",
-            "limit_zero": true,
-            "target_main": true
-          },
-          {
-            "ecosystem": "github-actions",
-            "limit_zero": true,
-            "target_main": true
-          }
-        ]
+        "path": ".github/dependabot.yml",
+        "exists": false
       }
     },
     {
@@ -191,7 +161,8 @@
     }
   ],
   "status_counts": {
-    "PASS": 8,
+    "PASS": 7,
+    "NOT_APPLICABLE": 1,
     "PENDING_APPROVAL": 1
   },
   "verdict": "PASS_WITH_PENDING_APPROVAL",

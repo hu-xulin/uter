@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-11T12:59:41.607Z",
+  "generated_at": "2026-11-11T14:54:42.617Z",
   "repository": "https://github.com/hu-xulin/uter",
   "local_root": "/Users/lincolnhu/uter",
-  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "uther_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
   "aes_repository": "https://github.com/hu-xulin/aes",
-  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
   "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
   "state_model": [
     "PASS",
@@ -23,19 +23,19 @@
     "path": ".aes/TRACEABILITY.jsonl",
     "exists": true,
     "bytes": 5665609,
-    "sha256": "5e5a9a78fc80b8980c0f5642765319b01b67aa7135a057d39dce03fe077f8d67"
+    "sha256": "61b27d96dcf21892ce2a6159d5ed5cb4ac47b0d658d43fa53f0bb6a4d9701148"
   },
   "md_evidence": {
     "path": ".aes/TRACEABILITY.md",
     "exists": true,
     "bytes": 2116,
-    "sha256": "42c0cedd076ce408303ca6d601bad1fe45da399a66f73468acd85e6067f81b66"
+    "sha256": "413ce83758a2a03d46fb6923043b805569e049f37b47cf9c9876585f09c139e1"
   },
   "verification_evidence": {
     "path": ".aes/reports/REQUIREMENT-TRACEABILITY-VERIFICATION.json",
     "exists": true,
     "bytes": 822,
-    "sha256": "29545684d830c42cdf485856f7c713c83051e640e3f903f70780b91ad76356aa"
+    "sha256": "0a65557dacdb6d0eae432cfdf3b4a29c241d023548ca5bdfbb2b50b0c080f8ea"
   },
   "honesty": "Coverage evidence only. final_status stays NOT_VERIFIED for every requirement until independent per-requirement execution evidence exists."
 }
