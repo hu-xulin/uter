@@ -10,7 +10,7 @@ import (
 	"github.com/uter-ai/uter/types"
 )
 
-// from songquanpeng/one-api
+// upstream-derived model ratio table
 const (
 	USD2RMB = 7.3 // 暂定 1 USD = 7.3 RMB
 	USD     = 500 // $0.002 = 1 -> $1 = 500

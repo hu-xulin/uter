@@ -346,8 +346,8 @@ export function isDefaultMarketplaceSource(indexUrl: string): boolean {
  */
 const LEGACY_UPSTREAM_MARKETPLACE_INDEX_URLS = new Set([
   'https://www.newapi.ai/api/v1/plugins/index.json',
-  'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/index.json',
-  'https://cdn.jsdelivr.net/gh/QuantumNous/new-api-plugins@main/index.json',
+  'https://raw.githubusercontent.com/hu-xulin/uter-plugins/main/index.json',
+  'https://cdn.jsdelivr.net/gh/hu-xulin/uter-plugins@main/index.json',
 ])
 
 export function isLegacyUpstreamMarketplaceSource(indexUrl: string): boolean {

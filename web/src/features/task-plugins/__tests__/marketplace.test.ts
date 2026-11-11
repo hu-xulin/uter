@@ -741,7 +741,7 @@ describe('marketplace source branding', () => {
     )
     assert.equal(
       isOfficialMarketplaceSource(
-        'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/index.json'
+        'https://raw.githubusercontent.com/hu-xulin/uter-plugins/main/index.json'
       ),
       true
     )
@@ -755,7 +755,7 @@ describe('marketplace source branding', () => {
         indexName: 'New API Official Plugins',
         sourceName: 'GitHub',
         isOfficial: isOfficialMarketplaceSource(
-          'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/index.json'
+          'https://raw.githubusercontent.com/hu-xulin/uter-plugins/main/index.json'
         ),
       }),
       'Uter.ai Official Plugins'

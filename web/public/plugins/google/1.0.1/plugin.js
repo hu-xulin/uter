@@ -8,7 +8,7 @@ export const meta = {
     zh: 'Google Veo 视频生成（文生视频、图生视频），Gemini API 版本',
   },
   version: '1.0.1',
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   channelTypes: [24],
   models: [
     'veo-3.0-generate-001',

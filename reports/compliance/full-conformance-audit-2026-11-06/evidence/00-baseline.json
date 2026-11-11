@@ -7,8 +7,8 @@
     "branch": "governance/aes-full-migration-2026-11-06",
     "commit_sha": "ec6501adceb008d46140a7e5ab6508eb78006731",
     "remotes": [
-      "newapi-upstream\thttps://gh-proxy.com/https://github.com/QuantumNous/new-api.git (fetch)",
-      "newapi-upstream\thttps://gh-proxy.com/https://github.com/QuantumNous/new-api.git (push)",
+      "newapi-upstream\thttps://gh-proxy.com/https://github.com/hu-xulin/uter.git (fetch)",
+      "newapi-upstream\thttps://gh-proxy.com/https://github.com/hu-xulin/uter.git (push)",
       "origin\tgit@github-huxulin:hu-xulin/uter.git (fetch)",
       "origin\tgit@github-huxulin:hu-xulin/uter.git (push)"
     ],
