@@ -813,5 +813,29 @@
       "linked_evidence": [],
       "open_reason": "needs a rehearsal environment"
     }
-  ]
+  ],
+  "current_machine_verification": {
+    "status": "CURRENT_EFFECTIVE",
+    "recorded_at": "2026-11-11",
+    "directive": "OWNER_DIRECTIVE_2026_11_11: 42 项全部取消人工介入，全部转为自动验证",
+    "change_class": "GOVERNANCE_MODEL_CHANGE_NOT_AN_ACCEPTANCE_ACT",
+    "policy_file": "AES/governance/autonomous/config/acceptance-42-policy.json",
+    "rules_file": "AES/governance/autonomous/config/acceptance-42-rules.json",
+    "validator": "AES/quality/scripts/aes/acceptance-42-validator.mjs",
+    "result_file": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/AUTOMATED-ACCEPTANCE-CURRENT-RESULT.json",
+    "test_run_id": "RUN-42-20261111T052326Z-342bf1a3-e555",
+    "item_count": 42,
+    "validator_coverage": "42/42",
+    "validator_map": "S01..S42 each map to exactly one validator AES-V42-S01..AES-V42-S42 with its own executed check set and its own evidence_hash. The full per-item mapping and hashes are in result_file.",
+    "summary": {
+      "AUTO_VERIFIED": 32,
+      "NOT_RUN": 10,
+      "AUTO_REJECTED": 0
+    },
+    "verdict": "BLOCKED",
+    "human_intervention_count": 0,
+    "human_signature_count": 0,
+    "third_party_signature_count": 0,
+    "historical_note": "ADDITIVE BLOCK ONLY. All 42 legacy item objects above, including acceptance_status=NOT_VERIFIED, verified_by=null, verified_at=null, linked_evidence=[] and open_reason, are retained byte-identically as HISTORICAL evidence. No legacy item was rewritten to VERIFIED and no signature was forged. The current effective decision for each item lives exclusively in result_file and is produced by a real per-item machine execution."
+  }
 }
