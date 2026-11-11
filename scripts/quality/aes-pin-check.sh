@@ -20,11 +20,35 @@ CONTRACT="$ROOT/.aes/INTEGRATION.md"
 test -s "$PIN" || fail "missing or empty .aes/aes-pin.json"
 test -s "$CONTRACT" || fail "missing or empty .aes/INTEGRATION.md"
 
+# Schema-aware authorization field.
+#
+# The 3.1.0 pin replaced the legacy `approval_state` lifecycle mirror with the
+# ACTIVE signature-free machine authorization mechanism
+# (`machine_authorization_state`). Requiring a field that no current pin has
+# made this gate FAIL on the real repository while its historical 1.0.0
+# fixtures stayed green — a live, undetected contract drift. Older schemas
+# keep the legacy field so their documented fixtures remain meaningful; a
+# sub-3.0 pin is still refused below unless AES_PIN_LEGACY_OK=1 is set
+# deliberately.
+PIN_SCHEMA="$(ruby -rjson -e '
+  begin
+    print JSON.parse(File.read(ARGV[0]))["schema_version"].to_s
+  rescue JSON::ParserError
+    abort "pin is not parseable JSON while reading schema_version"
+  end
+' "$PIN" 2>/dev/null)" || fail "pin is not parseable JSON while reading schema_version"
+if [[ "$PIN_SCHEMA" == 3.1.* || "$PIN_SCHEMA" == 3.[2-9]* || "$PIN_SCHEMA" == [4-9]* ]]; then
+  AUTH_FIELD=machine_authorization_state
+else
+  AUTH_FIELD=approval_state
+fi
+
 # Every required field must be present and non-empty in the pin document.
+# The count stays at 11 in BOTH schemas: no field is dropped to make a pin pass.
 REQUIRED_FIELDS=(
   schema_version repository default_branch source_commit registry_path
   registry_blob_sha registry_version registry_status integration_status
-  approval_state pinned_at
+  "$AUTH_FIELD" pinned_at
 )
 for field in "${REQUIRED_FIELDS[@]}"; do
   ruby -rjson -e '
@@ -45,7 +69,7 @@ REGISTRY_BLOB="$(field registry_blob_sha)"
 REGISTRY_VERSION="$(field registry_version)"
 REGISTRY_STATUS="$(field registry_status)"
 INTEGRATION_STATUS="$(field integration_status)"
-APPROVAL_STATE="$(field approval_state)"
+APPROVAL_STATE="$(field "$AUTH_FIELD")"
 
 for pair in "source_commit:$SOURCE_COMMIT" "registry_blob_sha:$REGISTRY_BLOB"; do
   name="${pair%%:*}"
@@ -56,7 +80,11 @@ pass "source commit and registry blob are valid 40-character object ids"
 
 case "$REGISTRY_STATUS" in
   DRAFT)
-    [[ "$APPROVAL_STATE" == "NOT_APPROVED" ]] || fail "DRAFT registry must keep approval_state=NOT_APPROVED"
+    if [ "$AUTH_FIELD" = "machine_authorization_state" ]; then
+      [[ "$APPROVAL_STATE" != "ACTIVE" ]] || fail "DRAFT registry must not declare ACTIVE machine authorization"
+    else
+      [[ "$APPROVAL_STATE" == "NOT_APPROVED" ]] || fail "DRAFT registry must keep approval_state=NOT_APPROVED"
+    fi
     [[ "$INTEGRATION_STATUS" == "MIGRATION_PENDING" ]] || fail "DRAFT registry must keep integration_status=MIGRATION_PENDING"
     ;;
   APPROVED|ACTIVE)
@@ -65,16 +93,16 @@ case "$REGISTRY_STATUS" in
     # moved to ACTIVE at v1.10.0 (AES commit 0c9386b) when all 178 standards were
     # approved. The constraint is unchanged and is NOT relaxed: approval is a
     # normative baseline, never a compliance certificate.
-    # approval_state tracks the registry's own lifecycle field, which advanced
-    # APPROVED -> ACTIVE at v1.10.0 (AES commit 0c9386b, 178/178 approved).
-    # ACTIVE is a post-approval state, so it satisfies "was approved". This is a
-    # vocabulary alignment, NOT a relaxation: NOT_APPROVED is still rejected.
-    [[ "$APPROVAL_STATE" == "APPROVED" || "$APPROVAL_STATE" == "ACTIVE" ]] || fail "approved/active registry requires approval_state=APPROVED or ACTIVE"
+    if [ "$AUTH_FIELD" = "machine_authorization_state" ]; then
+      [[ "$APPROVAL_STATE" == "ACTIVE" ]] || fail "approved/active registry requires machine_authorization_state=ACTIVE"
+    else
+      [[ "$APPROVAL_STATE" == "APPROVED" || "$APPROVAL_STATE" == "ACTIVE" ]] || fail "approved/active registry requires approval_state=APPROVED or ACTIVE"
+    fi
     [[ "$INTEGRATION_STATUS" != "VERIFIED" ]] || fail "approved/active registry does not authorise integration_status=VERIFIED while domain gates are NOT_RUN"
     ;;
   *) fail "unsupported registry_status: $REGISTRY_STATUS" ;;
 esac
-pass "registry lifecycle is consistent (status=$REGISTRY_STATUS, approval=$APPROVAL_STATE, integration=$INTEGRATION_STATUS)"
+pass "registry lifecycle is consistent (status=$REGISTRY_STATUS, $AUTH_FIELD=$APPROVAL_STATE, integration=$INTEGRATION_STATUS)"
 
 require_text() { grep -Fq -- "$2" "$1" || fail "$1 is missing pinned value: $2"; }
 

@@ -6,6 +6,19 @@
 **Project extension:** `.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`.  
 **Current conformance:** `MIGRATION_PENDING` until every applicable AES and UTER-P13 requirement has current executable PASS evidence.
 
+## Pinned baseline (normative)
+
+The values below are the **committed** schema 3.1.0 pin. `scripts/quality/aes-pin-check.sh` runs before AES is checked out in CI and compares this contract against `.aes/aes-pin.json`. A mismatch is a deliberate hard FAIL, never a warning. When `.aes/autonomous/engine/sync.mjs` refreshes the pin because the AES governed fingerprint legitimately changed, this block MUST be refreshed in the same change with the upstream authorization recorded — otherwise the change is an unapproved forced specification change.
+
+| AES source commit (provenance only) | `093a5c8b3161603bd04424cf8d2128898266c0f8` |
+| Registry blob SHA at audit baseline | `2ee9a7c70c1bbf67645a301de9662a8de9937bdb` |
+| Registry version | `1.12.2` |
+| Registry status | `ACTIVE` |
+| Governed fingerprint | `74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433` |
+| Integration status | `MIGRATION_PENDING` |
+
+Do not change this status to VERIFIED without approved, current, independently re-verified machine evidence for every applicable requirement. `source_commit` is provenance only; rule identity is the governed fingerprint, and a mere AES HEAD move does not invalidate this pin.
+
 ## Repository separation
 
 - AES owns universal enterprise governance P00–P12.

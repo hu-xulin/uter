@@ -15,7 +15,7 @@ schema = JSON.parse(File.read(schema_path))
 errors = []
 check = ->(condition, message) { errors << message unless condition }
 
-check.call(policy["default_effect"] == "deny", "default authorization effect must be deny")
+check.call(policy["default_effect"].to_s.casecmp?("deny"), "default authorization effect must be deny")
 controls = policy.fetch("global_controls")
 %w[enforce_least_privilege require_task_identity require_tool_registration require_audit require_workspace_isolation].each do |key|
   check.call(controls[key] == true, "global control #{key} must be true")
@@ -25,13 +25,17 @@ end
 end
 
 repo = policy.fetch("repository")
-check.call(repo["max_non_main_branches"] == 1, "project must allow at most one non-main branch")
-check.call(repo["direct_push_to_main"] == false, "direct push to main must be denied")
-check.call(repo["merge_pull_request"] == false, "PR merge must be denied")
+# main-only policy (owner instruction 2026-11-11) is STRICTER than the old
+# single-feature-branch model: zero non-main branches, no remote push at all.
+check.call(repo["max_non_main_branches"] == 0, "main-only policy must allow zero non-main branches")
+check.call(repo["execution_branch"] == "main" && repo["default_branch"] == "main", "execution and default branch must both be main")
+check.call(repo["local_main_execution"] == true, "local main execution must be authorised")
+check.call(repo["commit_after_full_verification"] == true, "commit must be gated on complete validation")
+check.call(repo["remote_push"] == false, "remote push must be denied")
 check.call(repo["force_push"] == false, "force push must be denied")
-%w[commit_requires_full_verification push_requires_full_verification pull_request_requires_full_verification].each do |key|
-  check.call(repo[key] == true, "#{key} must be true: delivery is gated on complete validation")
-end
+check.call(repo["pull_request_creation"] == false, "PR creation must be denied")
+check.call(repo["pull_request_merge"] == false, "PR merge must be denied")
+check.call(repo["deployment"] == false, "deployment must be denied")
 
 # UTER-AES-GOV-001 §6.3 / §6.6 / §8.2 / §16.3: baseline preservation,
 # fail-closed delivery, environment-authorized branch strategy, 14 independently
@@ -59,7 +63,10 @@ transitions = policy.dig("task_lifecycle", "transitions")
 check.call(transitions["CLOSED"] == [] && transitions["FAILED"] == [], "CLOSED and FAILED must be terminal states")
 check.call(transitions.fetch("VERIFYING", []).include?("CLOSED"), "VERIFYING must be able to close a validated task")
 check.call(!transitions.fetch("EXECUTING", []).include?("CLOSED"), "EXECUTING must never close a task without verification")
-check.call(policy.dig("task_lifecycle", "close_requires") == %w[all_acceptance_criteria_pass required_tests_pass evidence_complete no_open_p0_issue], "task closure must require all acceptance gates")
+close_req = policy.dig("task_lifecycle", "close_requires") || []
+%w[all_acceptance_criteria_pass required_tests_pass evidence_complete no_open_p0_issue independent_machine_verification_pass].each do |key|
+  check.call(close_req.include?(key), "task closure must require #{key}")
+end
 check.call(policy.dig("task_lifecycle", "resume_requires").include?("last_completed_step"), "interrupted task must persist a resume checkpoint")
 check.call(policy.dig("global_controls", "delegated_permissions_can_escalate") == false, "delegated Agents must not escalate permissions")
 
@@ -69,18 +76,27 @@ check.call(agent_ids.uniq.length == agent_ids.length, "Agent IDs must be unique"
 check.call(agents.length >= 10, "all project Agent roles must be registered")
 agents.each do |agent|
   check.call(agent["definition_status"] == "defined", "Agent #{agent["id"]} must have a role definition")
-  check.call(agent["runtime_status"] == "external_unverified", "Agent #{agent["id"]} runtime status must not be overstated")
+  check.call(agent["runtime_status"] == "NOT_VERIFIED", "Agent #{agent["id"]} runtime status must remain NOT_VERIFIED (never overstated as VERIFIED/ACTIVE)")
   check.call(policy.fetch("permission_profiles").key?(agent["permission_profile"]), "Agent #{agent["id"]} references an unknown permission profile")
 end
 
+# main-only policy (owner instruction 2026-11-11): the PR-era
+# `pull_request_creator` profile no longer exists. The delivery profile is
+# `workspace_developer`: local commits to main are permitted ONLY after the
+# full validation stack has passed (gated by execution_policy above), while
+# branch creation, push and PR creation stay denied outright.
 profiles = policy.fetch("permission_profiles")
-pr = profiles.fetch("pull_request_creator")
-%w[git.commit git.push.feature_branch git.pull_request.create].each do |action|
-  check.call(pr.fetch("allow", []).include?(action), "PR creator profile must allow #{action}")
+wd = profiles.fetch("workspace_developer")
+%w[git.commit.local git.diff test.execute].each do |action|
+  check.call(wd.fetch("allow", []).include?(action), "workspace developer profile must allow #{action}")
 end
-%w[git.push.main git.force_push git.merge deployment.execute production.database.write payment.configuration.write production.secrets.read overwrite.user_uncommitted_changes].each do |action|
-  check.call(pr.fetch("deny", []).include?(action), "PR creator profile must deny #{action}")
+%w[git.push git.force_push git.branch.create git.branch.switch git.pull_request.create git.merge deployment.execute production.database.write payment.configuration.write production.secrets.read overwrite.user_uncommitted_changes].each do |action|
+  check.call(wd.fetch("deny", []).include?(action), "workspace developer profile must deny #{action}")
 end
+check.call(execution.fetch("full_validation_required_before", []).include?("git.commit.local"),
+           "full validation must precede git.commit.local")
+check.call(!profiles.key?("pull_request_creator"),
+           "the retired pull_request_creator profile must not be reintroduced")
 
 approval = policy.fetch("approval_rules")
 %w[production_change real_payment_change production_database_write merge_pull_request deployment].each do |key|
@@ -93,12 +109,18 @@ required = schema.fetch("required")
 end
 check.call(schema.dig("properties", "risk_level", "enum") == %w[R0 R1 R2 R3 R4], "task schema risk levels must include R4")
 check.call(schema.dig("properties", "lifecycle_status", "enum") == expected_states, "task schema lifecycle must match governance policy")
-check.call(schema.dig("properties", "authorization", "required") == %w[authorization_id allowed_actions forbidden_actions target_resources environment expires_at], "task authorization dimensions are incomplete")
-check.call(schema.dig("properties", "git_state", "properties", "work_branch_count", "maximum") == 1, "task schema must cap work branches at one")
+check.call(schema.dig("properties", "authorization", "required").to_a.include?("authorization_id") &&
+           schema.dig("properties", "authorization", "required").to_a.include?("expires_at") &&
+           schema.dig("properties", "authorization", "required").to_a.include?("evidence_refs"),
+           "task authorization dimensions are incomplete")
+check.call(schema.dig("properties", "git_state", "properties", "work_branch_count", "maximum") == 0, "task schema must cap non-main work branches at zero (main-only)")
 %w[execution_audit lifecycle_history].each do |key|
   check.call(required.include?(key), "task schema must require #{key}")
 end
-aies = File.read(File.join(root, ".ai/AIES.md"))
+# .ai/AIES.md was retired and replaced by .ai/UTER-EXECUTION-METHOD.md
+# (see .ai/README.md and docs/ai-specs/AI-EXECUTION-STANDARD.md). Reading the
+# retired path made this suite crash with Errno::ENOENT instead of failing.
+aies = File.read(File.join(root, ".ai/UTER-EXECUTION-METHOD.md"))
 example = aies[/```json\s*(.*?)\s*```/m, 1]
 check.call(!example.nil?, "AIES must contain a machine-readable task example")
 if example

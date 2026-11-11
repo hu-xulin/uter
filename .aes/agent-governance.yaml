@@ -19,6 +19,14 @@ execution_policy:
   current_execution_branch: "main"
   environment_authorized_local_main_must_be_respected: true
   full_validation_required_before:
+    # main-only policy (owner instruction 2026-11-11): the only delivery action
+    # an agent may take is a LOCAL commit to main, and only after every
+    # validation layer has passed. git.commit.local was added because that is
+    # the action the runtime evaluator and the workspace_developer profile
+    # actually authorise; the legacy git.commit entry is kept so older
+    # task records remain covered. Feature-branch push and PR creation remain
+    # gated but are additionally denied by the workspace_developer profile.
+    - git.commit.local
     - git.commit
     - git.push.feature_branch
     - git.pull_request.create
@@ -216,6 +224,20 @@ action_policy:
   ambiguous_requirement: { effect: "AUTO_BLOCK", reason: "derive candidate interpretations and require executable evidence; never guess" }
   verification_failure: { effect: "AUTO_BLOCK", reason: "preserve evidence, isolate change and run bounded remediation" }
   transient_failure: { effect: "BOUNDED_RETRY", max_attempts: 3, backoff: "exponential" }
+
+# Machine-evaluable approval rules. `decide()` in
+# scripts/quality/aes-agent-runtime-check.rb denies any action whose name
+# matches one of these keys BEFORE any permission profile is consulted, so
+# these denials hold even for a profile that would otherwise allow the action.
+# This section was declared by the policy test suite but had never been present
+# in the policy itself — the test crashed on fetch() instead of failing, which
+# is why the gap went unnoticed.
+approval_rules:
+  production_change: { effect: "deny", reason: "production changes are prohibited in the autonomous workspace" }
+  real_payment_change: { effect: "deny", reason: "real-funds payment operations are prohibited" }
+  production_database_write: { effect: "deny", reason: "production data mutation is prohibited" }
+  merge_pull_request: { effect: "deny", reason: "PR merges are not part of the main-only execution model" }
+  deployment: { effect: "deny", reason: "deployment is prohibited" }
 
 workspace_protection:
   preflight_required: true
