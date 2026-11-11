@@ -27,15 +27,24 @@ describe('shouldUseSolidHeader', () => {
     expect(shouldUseSolidHeader('/', true)).toBe(true)
   })
 
-  it('uses the solid variant on framed docs paths without host scrolling', () => {
+  it('keeps framed docs paths transparent while the host does not scroll', () => {
+    // The frame owns its own scrolling, so the host document never scrolls.
+    // The header therefore stays in its transparent state and the shared
+    // top-of-page brand glow bleeds through, matching the pricing page.
     for (const path of ['/docs', '/docs/', '/docs/zh/getting-started']) {
-      expect(shouldUseSolidHeader(path, false)).toBe(true)
+      expect(shouldUseSolidHeader(path, false)).toBe(false)
     }
   })
 
-  it('uses the solid variant on framed about paths without host scrolling', () => {
+  it('keeps framed about paths transparent while the host does not scroll', () => {
     for (const path of ['/about', '/about/', '/about/zh/']) {
-      expect(shouldUseSolidHeader(path, false)).toBe(true)
+      expect(shouldUseSolidHeader(path, false)).toBe(false)
+    }
+  })
+
+  it('uses the solid variant on framed paths once the host document scrolls', () => {
+    for (const path of ['/docs', '/docs/zh/getting-started', '/about', '/about/zh/']) {
+      expect(shouldUseSolidHeader(path, true)).toBe(true)
     }
   })
 
@@ -43,10 +52,5 @@ describe('shouldUseSolidHeader', () => {
     for (const path of ['/', '/pricing', '/rankings']) {
       expect(shouldUseSolidHeader(path, false)).toBe(false)
     }
-  })
-
-  it('does not match unrelated paths that merely share the prefix', () => {
-    expect(shouldUseSolidHeader('/documentation', false)).toBe(false)
-    expect(shouldUseSolidHeader('/about-us', false)).toBe(false)
   })
 })
