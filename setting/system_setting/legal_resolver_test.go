@@ -27,7 +27,7 @@ func TestIsLocalDocPath(t *testing.T) {
 		in   string
 		want bool
 	}{
-		{"docs-web/content/legal/zh/user-agreement.md", true},
+		{"web/src/docs-content/legal/zh/user-agreement.mdx", true},
 		{"privacy-policy.markdown", true},
 		{"foo/bar", true},
 		{"http://x.md", false},

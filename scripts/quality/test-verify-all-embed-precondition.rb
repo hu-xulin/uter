@@ -4,11 +4,15 @@
 # Regression guard for the Go //go:embed precondition in scripts/verify-all.sh.
 #
 # Bug fixed 2026-11-07: the local full gate ran `go vet ./...` before any
-# frontend artifact existed. main.go embeds web/dist/index.html AND
-# all:web/dist/docs-content/_next, so every local Go vet run failed with
-# "no matching files found" even when the Go code was clean. CI already solves
-# this with a "Create frontend embed placeholder" step; the local harness had
-# drifted from CI.
+# frontend artifact existed. main.go embeds web/dist and web/dist/index.html,
+# so every local Go vet run failed with "no matching files found" even when
+# the Go code was clean. CI already solves this with a "Create frontend embed
+# placeholder" step; the local harness had drifted from CI.
+#
+# Updated 2026-11-11 for the native-docs convergence: the retired Next.js
+# static export is gone, so main.go no longer has an
+# `all:web/dist/docs-content/_next` pattern. The helper must NOT recreate that
+# skeleton — doing so would let a binary without docs assets look compilable.
 #
 # Invariants asserted here:
 #   1. The embed-precondition step executes BEFORE the Go vet step (real order,
@@ -17,8 +21,12 @@
 #      hardcoded PASS. Strictness is NOT relaxed.
 #   3. Both scripts pass `bash -n`.
 #   4. The precondition is idempotent and NON-DESTRUCTIVE: a real
-#      web/dist/index.html and real docs CSS are left byte-for-byte untouched.
-#   5. When artifacts are absent, both embed patterns become resolvable.
+#      web/dist/index.html is left byte-for-byte untouched.
+#   5. When the artifact is absent, the embed pattern becomes resolvable.
+#   6. Retired docs-content skeletons are never created, and a stale
+#      docs-content tree fails closed instead of being silently accepted.
+#   7. The release-chain verifier still checks all 7 search indexes and
+#      both themes of the user-guide screenshots.
 #
 # Usage: ruby scripts/quality/test-verify-all-embed-precondition.rb
 # Exit:  0 = every invariant holds; 1 = regression or a guard failed.
@@ -31,6 +39,7 @@ require "fileutils"
 REAL_ROOT = File.expand_path("../..", __dir__)
 VERIFY = File.join(REAL_ROOT, "scripts/verify-all.sh")
 ENSURE = File.join(REAL_ROOT, "scripts/quality/ensure-go-embed-artifacts.sh")
+DOCS_VERIFY = File.join(REAL_ROOT, "scripts/verify-docs-artifacts.sh")
 
 class VerifyAllEmbedPreconditionTest < Minitest::Test
   def source
@@ -67,6 +76,16 @@ class VerifyAllEmbedPreconditionTest < Minitest::Test
     end
   end
 
+  def test_release_verifier_requires_all_native_docs_assets
+    body = File.read(DOCS_VERIFY)
+    assert_includes body, "for lang in en fr ja ru vi zh zh-TW; do",
+                    "the verifier must iterate all seven docs locales"
+    assert_includes body, 'index="$DIST/docs-search/$lang.json"',
+                    "each locale must resolve to its own search index"
+    assert_includes body, "user-guide/$loc/auth/$theme/01-login.webp",
+                    "the verifier must check light/dark screenshot pairs"
+  end
+
   # Build a miniature repository so the helper resolves ROOT from its own path.
   def with_fixture_repo
     Dir.mktmpdir("embed-precondition-") do |tmp|
@@ -84,28 +103,22 @@ class VerifyAllEmbedPreconditionTest < Minitest::Test
     [out + err, st.exitstatus]
   end
 
-  def test_real_frontend_artifacts_are_never_overwritten
+  def test_real_frontend_artifact_is_never_overwritten
     with_fixture_repo do |tmp, helper|
       index = File.join(tmp, "web/dist/index.html")
-      css = File.join(tmp, "web/dist/docs-content/_next/static/chunks/real.css")
       FileUtils.mkdir_p(File.dirname(index))
-      FileUtils.mkdir_p(File.dirname(css))
       File.write(index, "<!doctype html><title>REAL SPA</title>\n")
-      File.write(css, "/* REAL DOC CSS */\n")
 
       out, code = run_helper(helper)
       assert_equal 0, code, "helper failed: #{out}"
       assert_equal "<!doctype html><title>REAL SPA</title>\n", File.read(index),
                    "a real SPA build must never be truncated by the precondition"
-      assert_equal "/* REAL DOC CSS */\n", File.read(css),
-                   "real docs assets must never be touched"
       refute_includes out, "created build-time embed skeleton",
-                      "no placeholder may be created when real artifacts exist"
-      refute File.exist?(File.join(tmp, "web/dist/docs-content/_next/static/chunks/embed-placeholder.css"))
+                      "no placeholder may be created when a real artifact exists"
     end
   end
 
-  def test_missing_artifacts_are_created_and_helper_is_idempotent
+  def test_missing_artifact_is_created_and_helper_is_idempotent
     with_fixture_repo do |tmp, helper|
       out1, code1 = run_helper(helper)
       assert_equal 0, code1, "first run failed: #{out1}"
@@ -113,30 +126,36 @@ class VerifyAllEmbedPreconditionTest < Minitest::Test
       assert_includes out1, "embed precondition OK"
 
       index = File.join(tmp, "web/dist/index.html")
-      css = File.join(tmp, "web/dist/docs-content/_next/static/chunks/embed-placeholder.css")
       assert File.file?(index), "//go:embed web/dist/index.html needs a file"
-      assert File.file?(css), "//go:embed all:web/dist/docs-content/_next needs at least one file"
       assert_equal "", File.read(index)
-      assert_equal "", File.read(css)
 
       # A second run must not truncate / duplicate anything.
       out2, code2 = run_helper(helper)
       assert_equal 0, code2, "second run failed: #{out2}"
       assert_includes out2, "no placeholder created"
-      assert File.file?(index) && File.file?(css)
+      assert File.file?(index)
     end
   end
 
-  def test_partial_state_preserves_real_index_but_fills_docs_skeleton
+  def test_retired_docs_content_skeleton_is_never_created
     with_fixture_repo do |tmp, helper|
-      index = File.join(tmp, "web/dist/index.html")
-      FileUtils.mkdir_p(File.dirname(index))
-      File.write(index, "REAL\n")
-
       _out, code = run_helper(helper)
       assert_equal 0, code
-      assert_equal "REAL\n", File.read(index)
-      assert File.file?(File.join(tmp, "web/dist/docs-content/_next/static/chunks/embed-placeholder.css"))
+      refute File.exist?(File.join(tmp, "web/dist/docs-content")),
+             "docs-web is retired: the helper must not create a docs-content skeleton"
+    end
+  end
+
+  def test_stale_docs_content_tree_fails_closed
+    with_fixture_repo do |tmp, helper|
+      stale = File.join(tmp, "web/dist/docs-content/_next/static/chunks/old.css")
+      FileUtils.mkdir_p(File.dirname(stale))
+      File.write(stale, "/* STALE EXPORT */\n")
+
+      out, code = run_helper(helper)
+      refute_equal 0, code,
+                   "a stale docs-content tree must fail closed, not be silently accepted"
+      assert_includes out, "retired docs-content tree still present"
     end
   end
 end

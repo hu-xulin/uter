@@ -134,18 +134,22 @@ describe('public routes render through the real route tree', () => {
     expect(screen.queryByText(/Back to Home/)).toBeNull()
   })
 
-  it('renders /about with the shared page background and transparent header', async () => {
+  it('renders /about natively, without the retired docs frame', async () => {
     const { container } = renderAt('/about')
+
+    // The About page used to frame the docs-web export. The docs are native
+    // SPA routes now, so the page must render its own content — and it must
+    // not put a frame back, which would split the site into two again.
     await waitFor(() => {
-      expect(container.querySelector('iframe')).not.toBeNull()
+      expect(container.querySelector('h1')?.textContent).toMatch(
+        /关于我们|About Us/
+      )
     })
+    expect(container.querySelector('iframe')).toBeNull()
 
     expect(container.querySelector('[data-public-page-glow]')).not.toBeNull()
-    expect(container.querySelector('iframe')?.className).toContain(
-      'bg-transparent'
-    )
-    // The frame owns its scrolling, so the host never scrolls and the header
-    // stays transparent, letting the shared top-of-page glow bleed through.
+    // The header is transparent until the reader scrolls, letting the shared
+    // top-of-page glow bleed through.
     const headerClass = container.querySelector('header')?.className ?? ''
     expect(headerClass).not.toContain('bg-background/85')
     expect(headerClass).toContain('bg-transparent')

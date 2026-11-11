@@ -7533,9 +7533,9 @@
     "Response model: {{model}}": "Response model: {{model}}",
     "Upstream Model": "Upstream Model",
     "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.": "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md": "Adresse du document : une URL complète ou un chemin Markdown relatif au dépôt, par ex. docs-web/content/legal/zh/user-agreement.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md": "Adresse du document : une URL complète ou un chemin Markdown relatif au dépôt, par ex. docs-web/content/legal/zh/privacy-policy.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md": "Adresse du document : une URL complète ou un chemin Markdown relatif au dépôt, par ex. docs-web/content/legal/zh/recharge-agreement.md",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx": "Adresse du document : une URL complète ou un chemin Markdown relatif au dépôt, par ex. web/src/docs-content/legal/zh/user-agreement.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx": "Adresse du document : une URL complète ou un chemin Markdown relatif au dépôt, par ex. web/src/docs-content/legal/zh/privacy-policy.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx": "Adresse du document : une URL complète ou un chemin Markdown relatif au dépôt, par ex. web/src/docs-content/legal/zh/recharge-agreement.mdx",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.": "Référencez une adresse de document au lieu de coller le contenu. Accepte une URL complète ou un chemin de fichier Markdown (résolu par rapport à la racine des documents). Laissez vide pour utiliser le contrat utilisateur par défaut intégré.",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.": "Référencez une adresse de document au lieu de coller le contenu. Accepte une URL complète ou un chemin de fichier Markdown (résolu par rapport à la racine des documents). Laissez vide pour utiliser la politique de confidentialité par défaut intégrée.",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.": "Référencez une adresse de document au lieu de coller le contenu. Accepte une URL complète ou un chemin de fichier Markdown (résolu par rapport à la racine des documents). Laissez vide pour utiliser le contrat de recharge par défaut intégré.",
@@ -7782,6 +7782,11 @@
     "Output modalities": "Modalités de sortie",
     "Spec source": "Source des spécifications",
     "Spec source unavailable": "Source des spécifications indisponible",
-    "{{count}} models matched": "{{count}} modèles correspondants"
+    "{{count}} models matched": "{{count}} modèles correspondants",
+    "docs.search.title": "Recherche dans la documentation",
+    "docs.search.placeholder": "Rechercher dans la documentation…",
+    "docs.search.loading": "Chargement de l'index de recherche…",
+    "docs.search.noResults": "Aucune page trouvée",
+    "docs.toc.heading": "Sur cette page"
   }
 }

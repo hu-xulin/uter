@@ -968,7 +968,7 @@ export const FEATURES = [
     pages: ['web/src/routes/_public/docs.tsx', 'web/src/routes/_public/docs/$.tsx', 'web/src/routes/_public/user-agreement.tsx', 'web/src/routes/_public/privacy-policy.tsx', 'web/src/routes/_public/recharge-agreement.tsx'],
     apis: ['GET /api/user-agreement', 'GET /api/privacy-policy', 'GET /api/recharge-agreement', 'GET /api/home_page_content'],
     models: ['model/option.go'],
-    code: ['router/web-router.go', 'docs-web/', 'web/src/lib/docs-link.ts'],
+    code: ['router/web-router.go', 'web/src/docs-content/', 'web/src/lib/docs-link.ts'],
     tests: ['web/src/features/docs/__tests__'],
   },
   {

@@ -5,7 +5,7 @@
 # 全被打进构建上下文，首次 docker build 极慢。新增本地产物时请同步到这里。
 #
 # 注意：Docker 的 *.md 只匹配上下文根目录的 .md，不匹配嵌套路径，所以
-# docs-web/content/**.md 不受影响；根目录的 THIRD-PARTY-LICENSES.md 由下面的
+# web/src/docs-content/**.mdx 不受影响；根目录的 THIRD-PARTY-LICENSES.md 由下面的
 # 反向规则显式放行（最终镜像要 COPY 它）。
 
 # --- 版本控制 / 编辑器 / AI 协作数据 ---
@@ -63,15 +63,6 @@ upload
 # --- 前端：镜像内重新 bun install + build，不需要宿主产物 ---
 /web/node_modules
 /web/dist
-
-# --- 文档站：源码必须进上下文（Dockerfile 要在镜像内构建它），
-#     只排除它的重产物。注意不能像以前那样整体排除 docs-web——那会让
-#     Dockerfile 的文档构建阶段拿不到源码，产出一个「能跑但没有文档」的镜像。
-docs-web/node_modules
-docs-web/.next
-docs-web/out
-docs-web/tsconfig.tsbuildinfo
-docs-web/next-env.d.ts
 
 # --- Electron：不进主镜像 ---
 electron

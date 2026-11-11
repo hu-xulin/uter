@@ -34,29 +34,30 @@ import (
 
 // maxETagFileSize bounds the per-request content hashing done by DiskETag.
 //
-// The files that actually change when the docs are updated — HTML pages, CSS,
-// JSON, small assets — sit far below this cap, so we can afford a content hash
-// for byte-correct revalidation. The large bundles under
-// `/docs-content/_next/static/...` are content-hashed by Next.js and therefore
-// immutable for a given URL; we skip hashing them and let the file server's
-// `Last-Modified` handle their (cheap, always-304) revalidation instead.
+// The files that actually change when a hot-updated tree is replaced — JSON
+// bundles, CSS, small assets — sit far below this cap, so we can afford a
+// content hash for byte-correct revalidation. Large bundles are usually
+// content-hashed by the build and therefore immutable for a given URL; we skip
+// hashing them and let the file server's `Last-Modified` handle their (cheap,
+// always-304) revalidation instead.
 const maxETagFileSize = 1 << 20 // 1 MiB
 
-// DiskETag makes a hot-updatable docs tree revalidate correctly.
+// DiskETag makes a hot-updatable tree revalidate correctly.
 //
-// The docs subtree is served `no-cache` (see Cache), so the browser revalidates
-// on each load. Revalidation normally rides on `Last-Modified`, but that is
-// mtime-based and ops update docs with `rsync -a`, which *preserves* mtimes —
-// a replaced page could keep an unchanged `Last-Modified` and browsers would
-// keep showing the stale copy for the whole revalidation window. So for each
-// small regular file we attach a **content-based** ETag (FNV-1a over the bytes)
-// that changes whenever the content changes, no matter how the file landed on
-// disk, and we answer a matching `If-None-Match` with `304 Not Modified` so the
+// A hot-swapped subtree (today: the i18n bundles under `UTER_I18N_DIR`) is
+// served `no-cache` (see Cache), so the browser revalidates on each load.
+// Revalidation normally rides on `Last-Modified`, but that is mtime-based and
+// ops update those trees with `rsync -a`, which *preserves* mtimes — a
+// replaced file could keep an unchanged `Last-Modified` and browsers would keep
+// showing the stale copy for the whole revalidation window. So for each small
+// regular file we attach a **content-based** ETag (FNV-1a over the bytes) that
+// changes whenever the content changes, no matter how the file landed on disk,
+// and we answer a matching `If-None-Match` with `304 Not Modified` so the
 // per-load revalidation stays cheap.
 //
-// When `dir` is empty the docs are served from the embedded copy in the binary:
-// the bytes are frozen for the lifetime of the process, so there is nothing to
-// hot-update and the middleware is a no-op.
+// When `dir` is empty the files are served from the embedded copy in the
+// binary: the bytes are frozen for the lifetime of the process, so there is
+// nothing to hot-update and the middleware is a no-op.
 func DiskETag(mount, dir string) func(c *gin.Context) {
 	if dir == "" {
 		return func(c *gin.Context) { c.Next() }

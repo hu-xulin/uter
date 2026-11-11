@@ -2,8 +2,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { defineConfig, loadEnv } from '@rsbuild/core'
-import { pluginReact } from '@rsbuild/plugin-react'
 import { pluginMdx } from '@rsbuild/plugin-mdx'
+import { pluginReact } from '@rsbuild/plugin-react'
 import { pluginTailwindcss } from '@rsbuild/plugin-tailwindcss'
 import { tanstackRouter } from '@tanstack/router-plugin/rspack'
 import rehypeSlug from 'rehype-slug'
@@ -26,84 +26,25 @@ export default defineConfig(({ envMode }) => {
     ])
   ) as Record<string, { target: string; changeOrigin: boolean; ws?: boolean }>
 
-  // Forward the statically exported pages to the Go backend (port 3000),
-  // which embeds them at `web/dist/docs-content/` and mounts that at
-  // `/docs-content` (see `router/web-router.go`). With `basePath:
-  // '/docs-content'` set in `docs-web/next.config.mjs`, every URL the
-  // export serves — `/docs-content/docs/<lang>/*`,
-  // `/docs-content/about/<lang>/*`, `/docs-content/_next/*`,
-  // `/docs-content/search-index.json`, … — is prefixed by `/docs-content`,
-  // so the proxy prefixes below must carry that prefix too. The bare
-  // `/docs` and `/about` entries are deliberately *not* proxied: those are
-  // the SPA's own routes, which choose the locale from the UI language and
-  // frame the export. Override `NEXT_DOCS_PORT` to point at the Next.js
-  // dev server for live HMR against the source.
+  // Docs are native SPA routes now: MDX lives in `src/docs-content/**` and
+  // its static assets (7 search indexes, user-guide screenshots, apps-assets,
+  // …) live under `web/public` at their root paths. rsbuild's dev server
+  // serves `public/` directly, so there is no second static site, no
+  // `/docs-content` mount and therefore no docs proxy entries here. Only the
+  // API prefixes need forwarding to the Go backend.
   //
-  // `/docs-content/_next/*` is proxied too: the exported HTML references
-  // its CSS/JS assets at `/docs-content/_next/static/...` (Next.js's
-  // default asset prefix with the basePath). Without the proxy, rsbuild
-  // serves `index.html` for those paths and the page renders without
-  // styles.
-  //
-  // `/docs-content/search-index.json` is proxied for the same reason and
-  // one more: it is not an asset the HTML references but a file the search
-  // box fetches at runtime, from both sections. Unproxied, the dev server
-  // answers it from its history fallback with `index.html` and a 200, so
-  // the fetch succeeds, `response.json()` throws, and the search silently
-  // falls back to an empty index — every query returns nothing, with no
-  // visible error.
-  const docsProxyPort = process.env.NEXT_DOCS_PORT || '3000'
-  const docsTarget = `http://localhost:${docsProxyPort}`
-  const staticLocales = ['zh', 'en']
-  const staticPrefixes = [
-    ...staticLocales.map((locale) => `/docs-content/docs/${locale}`),
-    ...staticLocales.map((locale) => `/docs-content/about/${locale}`),
-    // Files the docs export serves from its root rather than from a
-    // localised section — the profile's portrait, the partner logo wall,
-    // the user guide's screenshots (which sit under
-    // `public/user-guide/<locale>/<slug>/`), and the subset brand font the
-    // docs header sets its wordmark in. Unproxied, dev answers with
-    // `index.html` and the asset silently fails, or 404s as HTML. The
-    // `/docs-content` prefix is the docs site's `basePath`.
-    //
-    // `brand-assets` is deliberately not `fonts`: that path is the SPA's
-    // own font directory and the dev server serves it locally, so pointing
-    // it at the docs server would take the app's faces with it.
-    '/docs-content/about-assets',
-    '/docs-content/img/partners',
-    '/docs-content/user-guide',
-    '/docs-content/apps-assets',
-    '/docs-content/brand-assets',
-    '/docs-content/_next',
-    '/docs-content/search-index.json',
-  ]
-  // The Next dev server hydrates the page only after its HMR websocket
-  // (`ws://<origin>/docs-content/_next/hmr`) is connected. The generic
-  // `/docs-content/_next` proxy above forwards plain HTTP but not the
-  // `Upgrade` handshake, so the socket hangs forever: the proxied docs page
-  // loads and renders with no console error — and never hydrates, leaving
-  // every sidebar toggle dead. `ws: true` makes the dev server forward the
-  // upgrade. Must be declared before `/docs-content/_next` so the more
-  // specific path matches first.
-  devProxy['/docs-content/_next/hmr'] = {
-    target: docsTarget.replace('http', 'ws'),
-    ws: true,
-    changeOrigin: true,
-  }
-  for (const prefix of staticPrefixes) {
-    devProxy[prefix] = {
-      target: docsTarget,
-      changeOrigin: true,
-    }
-  }
+  // Keep this comment if you are tempted to re-add `/docs-content` proxies:
+  // the retired Next.js export used that prefix; a stale proxy now would
+  // shadow real root-level assets such as `/docs-search/zh.json`.
 
   return {
     plugins: [
       pluginReact(),
-      // Native docs pipeline (Path 2 convergence): compile `content/**`
-      // Markdown/MDX — authored with `<Callout>` directives and GFM tables —
-      // into React components so the docs render in the SPA shell without an
-      // iframe. `remark-gfm` is required for the GFM tables the docs use.
+      // Native docs pipeline: compile `src/docs-content/**/*.mdx` — authored
+      // with `<Callout>` directives and GFM tables — into lazy React
+      // components so the docs render as ordinary SPA routes, with no iframe
+      // and no second static site. `remark-gfm` is required for the GFM
+      // tables the docs use.
       pluginMdx({
         mdxLoaderOptions: {
           remarkPlugins: [remarkGfm],

@@ -14,27 +14,25 @@ const cacheVersion = "b688f2fb5be447c25e5aa3bd063087a83db32a288bf6a4f35f2d8db310
 // isFingerprintedAsset reports whether the request targets a build artifact
 // whose filename embeds a content hash, and which is therefore immutable:
 //
-//   - `/static/...`        the SPA's Rsbuild bundles (`index.<hash>.js`)
-//   - `/_next/static/...`  the docs site's Next.js bundles
+//   - `/static/...`  the SPA's Rsbuild bundles (`index.<hash>.js`)
 //
 // A changed file always produces a new filename, so these can be cached for a
 // long time without any risk of serving stale bytes.
 //
-// Every other path keeps a stable URL across releases: the SPA shell, the
-// docs HTML, `/logo.png` and the bundled fonts. Caching those with a long
-// `max-age` and no revalidation means a replaced file stays invisible in the
-// browser for the whole window — replacing `web/public/logo.png` under
-// `max-age=604800` left the old logo on screen for up to a week. They get
-// `no-cache` instead, which lets the browser keep the bytes but requires it
-// to revalidate before reusing them.
+// Every other path keeps a stable URL across releases: the SPA shell,
+// `/logo.png`, the bundled fonts, and the native docs' static assets.
+// Caching those with a long `max-age` and no revalidation means a replaced
+// file stays invisible in the browser for the whole window — replacing
+// `web/public/logo.png` under `max-age=604800` left the old logo on screen
+// for up to a week. They get `no-cache` instead, which lets the browser keep
+// the bytes but requires it to revalidate before reusing them.
 //
 // Note that `no-cache` still cannot evict an entry the browser already
 // stored under a longer lifetime, which is why the logo and every icon
 // declaration carry a `?v=` suffix: changing the URL is the only way to
 // reach a copy the browser captured before the policy was fixed.
 func isFingerprintedAsset(path string) bool {
-	return strings.HasPrefix(path, "/static/") ||
-		strings.HasPrefix(path, "/_next/static/")
+	return strings.HasPrefix(path, "/static/")
 }
 
 // revalidatedExtensions are the file types served from a stable, un-hashed URL
@@ -46,20 +44,39 @@ var revalidatedExtensions = map[string]bool{
 	"woff": true, "woff2": true, "ttf": true, "otf": true,
 }
 
-// isRevalidatedAsset reports whether the request targets a file whose URL
-// carries no content hash, so a new build cannot rename it:
+// revalidatedPrefixes are stable-URL trees that a rebuild can replace in
+// place. They used to live under the retired `/docs-content/` mount, which
+// was revalidated as a whole; after the native-docs convergence they are
+// served from the SPA root, so each prefix has to be listed explicitly or
+// it would silently fall through to the week-long `max-age` default.
 //
-//   - `/docs-content/...`  the exported docs site (hot-updated via rsync)
+//   - `/docs-search/...`   the per-locale search indexes
+//   - `/user-guide/...`    light/dark screenshots
+//   - `/apps-assets/...`, `/about-assets/...`, `/img/...`  migrated docs art
 //   - `/plugins/...`       plugin bundles re-issued at runtime
-//   - top-level files such as `/logo.png`, `/favicon-legacy.ico` and
-//     `/uter-bimi.svg`, which are fetched **by name** (favicon probes, BIMI,
-//     feed readers) and therefore cannot be cache-busted with a `?v=` suffix.
+var revalidatedPrefixes = []string{
+	"/docs-search/",
+	"/user-guide/",
+	"/apps-assets/",
+	"/about-assets/",
+	"/img/",
+	"/plugins/",
+}
+
+// isRevalidatedAsset reports whether the request targets a file whose URL
+// carries no content hash, so a new build cannot rename it. Besides the
+// prefixes above, top-level files such as `/logo.png`,
+// `/favicon-legacy.ico` and `/uter-bimi.svg` are fetched **by name**
+// (favicon probes, BIMI, feed readers) and cannot be cache-busted with a
+// `?v=` suffix.
 //
-// Paths deeper than one segment are excluded: `/static/...` assets are hashed
-// and are already handled by isFingerprintedAsset.
+// Other deep paths are excluded: `/static/...` assets are hashed and are
+// already handled by isFingerprintedAsset.
 func isRevalidatedAsset(path string) bool {
-	if strings.HasPrefix(path, "/docs-content/") || strings.HasPrefix(path, "/plugins/") {
-		return true
+	for _, prefix := range revalidatedPrefixes {
+		if strings.HasPrefix(path, prefix) {
+			return true
+		}
 	}
 	// Top-level file only: `/logo.png` qualifies, `/static/logo.png` does not.
 	if !strings.HasPrefix(path, "/") || strings.Count(path, "/") != 1 {

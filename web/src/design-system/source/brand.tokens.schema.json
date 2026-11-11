@@ -4,16 +4,11 @@
   "title": "UTER Brand Tokens (DTCG-compatible)",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "$extensions",
-    "themes"
-  ],
+  "required": ["$extensions", "themes"],
   "properties": {
     "$extensions": {
       "type": "object",
-      "required": [
-        "com.uter.aes"
-      ],
+      "required": ["com.uter.aes"],
       "properties": {
         "com.uter.aes": {
           "$ref": "#/$defs/metadata"
@@ -23,10 +18,7 @@
     },
     "themes": {
       "type": "object",
-      "required": [
-        "light",
-        "dark"
-      ],
+      "required": ["light", "dark"],
       "properties": {
         "light": {
           "$ref": "#/$defs/theme"
@@ -63,11 +55,7 @@
           "const": "UTER Design System 3.0"
         },
         "status": {
-          "enum": [
-            "DRAFT",
-            "ACTIVE",
-            "DEPRECATED"
-          ]
+          "enum": ["DRAFT", "ACTIVE", "DEPRECATED"]
         },
         "sourceCommit": {
           "type": "string",
@@ -106,9 +94,7 @@
     },
     "theme": {
       "type": "object",
-      "required": [
-        "brand"
-      ],
+      "required": ["brand"],
       "properties": {
         "brand": {
           "$ref": "#/$defs/colorGroup"
@@ -162,10 +148,7 @@
     },
     "colorToken": {
       "type": "object",
-      "required": [
-        "$value",
-        "$description"
-      ],
+      "required": ["$value", "$description"],
       "properties": {
         "$value": {
           "$ref": "#/$defs/hex"
@@ -199,11 +182,7 @@
           "const": "AUTONOMOUS_MACHINE_EVIDENCE"
         },
         "decision": {
-          "enum": [
-            "AUTO_ACCEPTED",
-            "AUTO_REJECTED",
-            "AUTO_BLOCKED"
-          ]
+          "enum": ["AUTO_ACCEPTED", "AUTO_REJECTED", "AUTO_BLOCKED"]
         },
         "evidence": {
           "type": "array",

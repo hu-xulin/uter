@@ -23,14 +23,11 @@ import {
   DOCS_ENTRY_PATH,
   DOCS_LANDING_SEGMENT,
   DOCS_LOCALE_PAIRS,
-  docsLandingPathFor,
   docsPathFor,
-  docsPathForSpaLocale,
   isBundledDocsHref,
+  legalDocsPathFor,
   resolveDocsHref,
   resolveDocsLocaleCode,
-  toDocsHostSplat,
-  toDocsSplat,
 } from '../docs-link'
 
 describe('docs-link helpers', () => {
@@ -43,6 +40,18 @@ describe('docs-link helpers', () => {
 
   test('DOCS_ENTRY_PATH is the locale-free /docs entry', () => {
     expect(DOCS_ENTRY_PATH).toBe('/docs')
+  })
+
+  test('DOCS_LANDING_SEGMENT names the native features landing as a bare splat', () => {
+    // The native `/docs/$` route and `nativeDocsTarget()` both treat this
+    // as the page part of `/docs/<locale>/<page>`, so a leading or trailing
+    // slash here would break the cold-open landing. Keep the contract pinned
+    // now that the framed export (and its trailing-slash URLs) is gone.
+    expect(DOCS_LANDING_SEGMENT).toBe(
+      'guide/wiki/basic-concepts/features-introduction'
+    )
+    expect(DOCS_LANDING_SEGMENT.startsWith('/')).toBe(false)
+    expect(DOCS_LANDING_SEGMENT.endsWith('/')).toBe(false)
   })
 
   test('DOCS_LOCALE_PAIRS maps every supported UI locale onto its own docs locale', () => {
@@ -72,24 +81,6 @@ describe('docs-link helpers', () => {
     expect(DOCS_LOCALE_PAIRS['zh-TW']).toEqual(expect.arrayContaining(['zhTW']))
   })
 
-  test('docsLandingPathFor opens the docs on 特性说明, not on a landing page', () => {
-    // The quick-start landing is gone from the docs site; the entry has
-    // to name a real page, and 特性说明 is the first entry in the
-    // sidebar. The returned value is the *content* path (the iframe
-    // source), served under the `/docs-content` basePath. It ends with a
-    // slash because the docs export sets `trailingSlash: true` and the Go
-    // static handler resolves directories through their index file.
-    expect(docsLandingPathFor('zh')).toBe(
-      `/docs-content/docs/zh/${DOCS_LANDING_SEGMENT}/`
-    )
-    expect(docsLandingPathFor('en')).toBe(
-      `/docs-content/docs/en/${DOCS_LANDING_SEGMENT}/`
-    )
-    expect(DOCS_LANDING_SEGMENT).toBe(
-      'guide/wiki/basic-concepts/features-introduction'
-    )
-  })
-
   test('resolveDocsLocaleCode maps i18next language codes onto docs locales', () => {
     expect(resolveDocsLocaleCode('zhCN')).toBe('zh')
     expect(resolveDocsLocaleCode('zhTW')).toBe('zh-TW')
@@ -98,11 +89,6 @@ describe('docs-link helpers', () => {
     expect(resolveDocsLocaleCode('ru')).toBe('ru')
     expect(resolveDocsLocaleCode('ja')).toBe('ja')
     expect(resolveDocsLocaleCode('vi')).toBe('vi')
-  })
-
-  test('docsPathFor returns the content path (iframe source) under /docs-content', () => {
-    expect(docsPathFor('zh')).toBe('/docs-content/docs/zh/')
-    expect(docsPathFor('en')).toBe('/docs-content/docs/en/')
   })
 
   test('resolveDocsLocaleCode maps every supported UI locale to its own docs locale', () => {
@@ -138,30 +124,32 @@ describe('docs-link helpers', () => {
     expect(resolveDocsLocaleCode(undefined)).toBe('en')
     expect(resolveDocsLocaleCode('')).toBe('en')
   })
+})
 
-  test('docsPathForSpaLocale returns the per-locale content path for every UI language', () => {
-    // Aliases are BCP-47 tags because they're used to map browser-detected
-    // locales (and persisted UI preferences stored as BCP-47). i18next
-    // itself uses camelCase (`zhCN`/`zhTW`) internally; that conversion
-    // happens in `languages.ts#convertDetectedLanguage` before the value
-    // reaches `i18n.language`, so by the time we read it for resolve,
-    // it has already been normalized back to a BCP-47 form for matching
-    // — see the SPA's i18n config (`web/src/i18n/config.ts`).
-    // The value is the *content* path (iframe source) under /docs-content.
-    expect(docsPathForSpaLocale('zh-CN')).toBe('/docs-content/docs/zh/')
-    expect(docsPathForSpaLocale('zh-TW')).toBe('/docs-content/docs/zh-TW/')
-    expect(docsPathForSpaLocale('zh-HK')).toBe('/docs-content/docs/zh-TW/')
-    expect(docsPathForSpaLocale('zh-Hans')).toBe('/docs-content/docs/zh/')
-    expect(docsPathForSpaLocale('fr')).toBe('/docs-content/docs/fr/')
-    expect(docsPathForSpaLocale('ja')).toBe('/docs-content/docs/ja/')
-    expect(docsPathForSpaLocale('ru')).toBe('/docs-content/docs/ru/')
-    expect(docsPathForSpaLocale('vi')).toBe('/docs-content/docs/vi/')
+describe('native docs paths', () => {
+  test('docsPathFor points at the SPA locale root', () => {
+    // The docs are native routes now: the content is served by the same
+    // origin as the app, so the reader-facing URL IS the docs URL. A
+    // second prefix (`/docs-content/…`) would send readers to a path
+    // that no longer exists.
+    expect(docsPathFor('zh')).toBe('/docs/zh')
+    expect(docsPathFor('zh-TW')).toBe('/docs/zh-TW')
+    expect(docsPathFor('en')).toBe('/docs/en')
   })
 
-  test('docsPathForSpaLocale falls back to /docs-content/docs/en/ for unknown UI codes', () => {
-    expect(docsPathForSpaLocale('en')).toBe('/docs-content/docs/en/')
-    expect(docsPathForSpaLocale('ko')).toBe('/docs-content/docs/en/')
-    expect(docsPathForSpaLocale(null)).toBe('/docs-content/docs/en/')
+  test('legalDocsPathFor addresses the legal set under the locale root', () => {
+    // `docRefForPagePath()` maps `legal/<docId>` to
+    // `web/src/docs-content/legal/<locale>/<docId>.mdx`, so the host path
+    // has to keep the same shape — no trailing slash, no extra prefix.
+    expect(legalDocsPathFor('zh', 'user-agreement')).toBe(
+      '/docs/zh/legal/user-agreement'
+    )
+    expect(legalDocsPathFor('en', 'privacy-policy')).toBe(
+      '/docs/en/legal/privacy-policy'
+    )
+    expect(legalDocsPathFor('vi', 'recharge-agreement')).toBe(
+      '/docs/vi/legal/recharge-agreement'
+    )
   })
 })
 
@@ -193,50 +181,12 @@ describe('resolveDocsHref', () => {
 
 describe('isBundledDocsHref', () => {
   test('is true only for the SPA-owned /docs entry', () => {
-    // Only the bundled entry is an SPA route that can render the docs
-    // export in-app; every other target has to leave the app.
+    // Only the bundled entry is an SPA route that can render the native
+    // docs in-app; every other target has to leave the app.
     expect(isBundledDocsHref(DOCS_ENTRY_PATH)).toBe(true)
     expect(isBundledDocsHref('/docs/zh/')).toBe(false)
     expect(isBundledDocsHref('https://docs.example.com')).toBe(false)
     expect(isBundledDocsHref('/knowledge-base')).toBe(false)
     expect(isBundledDocsHref('')).toBe(false)
-  })
-})
-
-describe('host vs frame splat', () => {
-  // The export is built with `trailingSlash: true`, so the framed site and
-  // every path it reports over postMessage carry a trailing slash. The
-  // address bar must NOT keep it — the SPA route is not a directory — while
-  // the frame's src MUST, because the content mount resolves directory
-  // indexes and 301s the unslashed form.
-  test('toDocsSplat keeps the trailing slash the static mount needs', () => {
-    expect(toDocsSplat('/docs/zh/guide/wiki/model-testing/')).toBe(
-      'zh/guide/wiki/model-testing/'
-    )
-    expect(toDocsSplat('/docs-content/docs/zh/guide/wiki/model-testing/')).toBe(
-      'zh/guide/wiki/model-testing/'
-    )
-  })
-
-  test('toDocsHostSplat strips it for the address bar', () => {
-    expect(toDocsHostSplat('/docs/zh/guide/wiki/model-testing/')).toBe(
-      'zh/guide/wiki/model-testing'
-    )
-    expect(toDocsHostSplat('/docs/zh/guide/wiki/model-testing')).toBe(
-      'zh/guide/wiki/model-testing'
-    )
-    expect(
-      toDocsHostSplat('/docs-content/docs/zh/guide/wiki/model-testing/')
-    ).toBe('zh/guide/wiki/model-testing')
-  })
-
-  test('toDocsHostSplat leaves the locale root bare', () => {
-    // Stripping would empty the splat, and `/docs/zh` is already shortest.
-    expect(toDocsHostSplat('/docs/zh/')).toBe('zh')
-  })
-
-  test('toDocsHostSplat still rejects a non-docs path', () => {
-    expect(toDocsHostSplat('/docs/legacy/x/')).toBeNull()
-    expect(toDocsHostSplat(undefined)).toBeNull()
   })
 })

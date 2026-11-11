@@ -16,14 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { DocsLocaleCode } from '@/lib/docs-link'
-
-import {
-  USER_GUIDE_CHAPTER_SLUGS,
-  USER_GUIDE_PATH,
-  userGuideChapterTitle,
-} from './user-guide-identity'
-
+import apiNavEn from '@/docs-content/api/en/_nav.json'
+import apiNavFr from '@/docs-content/api/fr/_nav.json'
 // ── Data ───────────────────────────────────────────────────────────────
 //
 // The outline is **data**, not code — exactly as in `docs-web/content/
@@ -31,10 +25,6 @@ import {
 // (`api` / `apps`) read their page lists from the `_nav.json` files the
 // upstream sync scripts write, copied next to the (not yet migrated)
 // Markdown so the sidebar can name pages before their bodies arrive.
-
-import navManifestJson from '@/docs-content/nav.json'
-import apiNavEn from '@/docs-content/api/en/_nav.json'
-import apiNavFr from '@/docs-content/api/fr/_nav.json'
 import apiNavJa from '@/docs-content/api/ja/_nav.json'
 import apiNavRu from '@/docs-content/api/ru/_nav.json'
 import apiNavVi from '@/docs-content/api/vi/_nav.json'
@@ -47,6 +37,14 @@ import appsNavRu from '@/docs-content/apps/ru/_nav.json'
 import appsNavVi from '@/docs-content/apps/vi/_nav.json'
 import appsNavZhTw from '@/docs-content/apps/zh-TW/_nav.json'
 import appsNavZh from '@/docs-content/apps/zh/_nav.json'
+import navManifestJson from '@/docs-content/nav.json'
+import type { DocsLocaleCode } from '@/lib/docs-link'
+
+import {
+  USER_GUIDE_CHAPTER_SLUGS,
+  USER_GUIDE_PATH,
+  userGuideChapterTitle,
+} from './user-guide-identity'
 
 /** A string that has to exist in every locale the site ships. */
 type Localized = Partial<Record<DocsLocaleCode, string>>
@@ -137,11 +135,7 @@ export type SidebarNode = {
 }
 
 /** A label in one locale, falling back through the supported pair. */
-function text(
-  label: Localized,
-  locale: DocsLocaleCode,
-  what: string
-): string {
+function text(label: Localized, locale: DocsLocaleCode, what: string): string {
   const value = label?.[locale]
   if (value) return value
   // New locales are authored in `zh`/`en` only for now; fall back through
@@ -316,6 +310,9 @@ export type NativeDocRef = { set: DocsSet; slug: string }
 export const FEATURES_PAGE_PATH =
   'guide/wiki/basic-concepts/features-introduction'
 
+/** Fixed page path of the model-testing section (a peer of the guide). */
+export const MODEL_TESTING_PAGE_PATH = 'guide/wiki/model-testing'
+
 /** The user guide's path under a locale root. */
 export const NATIVE_USER_GUIDE_PATH = USER_GUIDE_PATH
 
@@ -327,6 +324,11 @@ export function docRefForPagePath(pagePath: string): NativeDocRef | null {
   const path = pagePath.replace(/\/+$/, '')
   if (path === FEATURES_PAGE_PATH) {
     return { set: 'features', slug: 'features-introduction' }
+  }
+  // 模型测试 is a top-level outline section (a peer of the guide) but
+  // its body is the guide set's `model-testing.mdx`.
+  if (path === MODEL_TESTING_PAGE_PATH) {
+    return { set: 'user-guide', slug: 'model-testing' }
   }
   if (path === USER_GUIDE_PATH) return { set: 'user-guide', slug: 'index' }
   if (path.startsWith(`${USER_GUIDE_PATH}/`)) {

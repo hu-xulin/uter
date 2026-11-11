@@ -54,12 +54,7 @@ import {
   resolveChatUrl,
   type ChatPreset,
 } from '@/features/chat/lib/chat-links'
-import {
-  DOCS_ENTRY_PATH,
-  docsPathFor,
-  resolveDocsLocaleCode,
-  toDocsHostSplat,
-} from '@/lib/docs-link'
+import { resolveDocsLocaleCode } from '@/lib/docs-link'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import { normalizeHref } from '../lib/url-utils'
@@ -328,20 +323,11 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
     (preset: ChatPreset) => {
       const locale = resolveDocsLocaleCode(i18n.language)
       const slug = PRESET_DOC_SLUG[preset.name]
-      const target = slug
-        ? `${docsPathFor(locale)}apps/${slug}/`
-        : `${docsPathFor(locale)}apps/`
-      // `target` is the framed content path; route to the clean host URL
-      // `/docs/<lang>/<page>` (the `/docs/$` splat) so the page reopens
-      // from a shareable, encoding-free link. The host form drops the
-      // trailing slash the static mount needs, so the address bar reads
-      // `/docs/zh/apps/…`.
-      const splat = toDocsHostSplat(target)
-      if (splat) {
-        navigate({ to: '/docs/$', params: { _splat: splat } })
-      } else {
-        navigate({ to: DOCS_ENTRY_PATH })
-      }
+      // The docs are native SPA routes: the `/docs/$` splat is
+      // `<locale>/apps/<slug>`, and the section index is `apps/index`
+      // (see `docRefForPagePath` in `features/docs/native/docs-content.ts`).
+      const splat = slug ? `${locale}/apps/${slug}` : `${locale}/apps/index`
+      navigate({ to: '/docs/$', params: { _splat: splat } })
     },
     [i18n.language, navigate]
   )

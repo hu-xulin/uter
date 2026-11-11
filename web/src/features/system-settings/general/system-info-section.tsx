@@ -356,7 +356,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                       <Input
                         mono
                         placeholder={t(
-                          'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md'
+                          'Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx'
                         )}
                         {...field}
                       />
@@ -381,7 +381,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                       <Input
                         mono
                         placeholder={t(
-                          'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md'
+                          'Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx'
                         )}
                         {...field}
                       />
@@ -406,7 +406,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                       <Input
                         mono
                         placeholder={t(
-                          'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md'
+                          'Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx'
                         )}
                         {...field}
                       />

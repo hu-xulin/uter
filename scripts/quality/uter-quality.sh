@@ -146,13 +146,18 @@ stage_test() {
   done
   run_check test "web:vitest" bash -c "cd web && bun run test" || true
 
-  # A scaffolded web/dist satisfies //go:embed but is NOT a front-end build: the
-  # docs export is missing and main_docs_test.go fails on purpose. Say so here
-  # rather than letting the Go leg report a bare exit 1 with no explanation.
-  if [ -d "$ROOT/docs-web" ] && [ ! -s "$ROOT/web/dist/docs-content/docs/zh/index.html" ]; then
-    echo "NOTE: web/dist/docs-content has no real docs export. The Go leg above" >&2
-    echo "      treats this as a FAIL by design (main_docs_test.go). Build it with:" >&2
-    echo "        (cd docs-web && bun run build)" >&2
+  # A scaffolded web/dist satisfies //go:embed but is NOT a front-end build:
+  # the SPA bundle, the 7 docs-search indexes and the user-guide screenshots
+  # are all absent, and main_docs_test.go's real-artifact checks either skip
+  # (placeholder shell) or fail. Say so here rather than letting the Go leg
+  # report a bare exit 1 with no explanation. The authoritative hard gate is
+  # scripts/verify-docs-artifacts.sh (called by verify-all.sh, Dockerfile and
+  # the release workflow); this stage stays a note so backend-only CI jobs
+  # keep their historical pass/fail semantics.
+  if ! "$ROOT/scripts/verify-docs-artifacts.sh" "$ROOT/web/dist" >/dev/null 2>&1; then
+    echo "NOTE: web/dist has no complete native docs assets. Build the frontend with:" >&2
+    echo "        (cd web && bun install --frozen-lockfile && bun run build)" >&2
+    echo "      then re-run scripts/verify-docs-artifacts.sh web/dist." >&2
   fi
 }
 

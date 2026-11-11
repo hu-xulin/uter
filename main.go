@@ -40,50 +40,44 @@ import (
 	_ "net/http/pprof"
 )
 
-// 注意这里的两个 pattern，缺一不可：
+// web/dist 是唯一的嵌入产物目录：SPA 的 bundle、原生文档编译出的异步
+// chunk、7 份搜索索引与 user-guide 截图都由 `bun run build` 落在这里。
 //
-//   - `web/dist` 嵌入前端 SPA 与文档页面；
-//   - `all:web/dist/docs-content/_next` 嵌入 Next.js 静态导出的 CSS/JS。
+// 文档收敛后不再有独立静态站，也就不再需要为下划线目录加 `all:` 前缀的
+// embed 特例：Next.js 曾把 CSS/JS 放在 `_next/`，而 //go:embed 的目录模式
+// 默认跳过以 `.` 或 `_` 开头的名字。现在整棵产物树都是常规命名，一个
+// `web/dist` 就够了。
 //
-// 为什么必须显式写上 `_next`：//go:embed 对「目录」模式有一个默认规则——
-// 递归嵌入时会跳过名字以 `.` 或 `_` 开头的文件与目录。Next.js 静态导出恰恰
-// 把全部样式与脚本放在 `_next/` 下，所以只写 `//go:embed web/dist` 会静默
-// 丢掉整个 `_next` 目录：编译通过、文档页能打开，但没有 CSS 和 JS，页面是
-// 散的。`all:` 前缀就是用来关闭这个「跳过下划线开头」的默认行为的。
-//
-// 这里没有直接用 `all:web/dist`：那会连 macOS 的 `.DS_Store` 一起嵌进二进制，
-// 而它是否存在于工作区取决于开发机，会让构建结果不确定。
-//
-//go:embed web/dist all:web/dist/docs-content/_next
+//go:embed web/dist
 var buildFS embed.FS
 
 //go:embed web/dist/index.html
 var indexPage []byte
 
-// embeddedDocsPaths 是 go:embed web/dist 时必须存在的文档静态站关键路径。
+// embeddedNativeDocsPaths 是原生文档能完整工作所必需的静态产物。
 //
-// 文档站是独立的 Next.js 工程（docs-web），它的 postbuild 才把静态导出拷进
-// web/dist/docs-content。只构建 web 而漏掉 docs-web 时，go:embed 不会报错——
-// 嵌入的只是一个空目录，编译通过、服务能起，但 /docs 全是空白。
+// MDX 正文编译进了 SPA 的异步 chunk，但搜索索引与 user-guide 截图仍是
+// `public/` 下的静态文件，由 `cp -R public/. dist/` 拷进 web/dist。只编译
+// Go 而漏掉前端构建时 //go:embed 不会报错（目录存在即可），服务能起，
+// 但搜索空、截图 404。这里在启动时把缺失逐条说出来，而不是等用户发现。
 //
-// 注意这里刻意包含 `_next`：//go:embed 默认跳过以 `_` 开头的目录，而
-// Next.js 把 CSS/JS 全放在那里，只校验 HTML 会漏掉「页面能开但没有样式」。
-//
-// 发布链路（release.yml / Dockerfile / electron-build.yml）已经用
-// scripts/verify-docs-artifacts.sh 把这种情况挡在构建阶段；这里再兜一层，
-// 让任何绕过发布链路的本地构建也能在启动日志里看到明确告警，而不是让用户
-// 先发现文档打不开。
-var embeddedDocsPaths = []string{
-	"web/dist/docs-content/docs/zh/index.html",
-	"web/dist/docs-content/about/en/index.html",
-	"web/dist/docs-content/_next",
-	"web/dist/docs-content/_next/static/chunks",
+// 发布链路另由 `scripts/verify-docs-artifacts.sh` 在构建阶段拦截。
+var embeddedNativeDocsPaths = []string{
+	"web/dist/docs-search/zh.json",
+	"web/dist/docs-search/zh-TW.json",
+	"web/dist/docs-search/en.json",
+	"web/dist/docs-search/fr.json",
+	"web/dist/docs-search/ja.json",
+	"web/dist/docs-search/ru.json",
+	"web/dist/docs-search/vi.json",
+	"web/dist/user-guide/zh/auth/light/01-login.webp",
+	"web/dist/user-guide/en/auth/light/01-login.webp",
 }
 
-// missingEmbeddedDocs 返回未随二进制嵌入的文档静态站关键路径。
-func missingEmbeddedDocs() []string {
+// missingNativeDocsAssets 返回未随二进制嵌入的原生文档静态产物路径。
+func missingNativeDocsAssets() []string {
 	var missing []string
-	for _, p := range embeddedDocsPaths {
+	for _, p := range embeddedNativeDocsPaths {
 		if _, err := buildFS.Open(p); err != nil {
 			missing = append(missing, p)
 		}
@@ -91,20 +85,20 @@ func missingEmbeddedDocs() []string {
 	return missing
 }
 
-// checkEmbeddedDocs 检查文档静态站产物是否随二进制一起嵌入。
+// checkNativeDocsAssets 检查原生文档的静态产物是否随二进制一起嵌入。
 //
-// 不致命：历史版本或有意裁剪的构建可能确实不带文档。但缺失必须被响亮地
-// 说出来——静默缺失正是这个缺陷最难排查的原因。
-func checkEmbeddedDocs() {
-	missing := missingEmbeddedDocs()
+// 不致命：CI 的占位前端与有意裁剪的构建确实不带这些文件。但缺失必须被
+// 响亮地说出来——静默缺失正是这类缺陷最难排查的原因。
+func checkNativeDocsAssets() {
+	missing := missingNativeDocsAssets()
 	if len(missing) == 0 {
 		return
 	}
 	common.SysLog(common.LogText(
-		"WARNING: the docs static site is missing from this binary (%v). "+
-			"The /docs pages will not be served. Rebuild docs-web "+
-			"(cd docs-web && bun install && bun run build) before go build, "+
-			"or run scripts/verify-docs-artifacts.sh to check web/dist.",
+		"WARNING: native docs assets are missing from this binary (%v). "+
+			"Docs search and user-guide screenshots will not load. "+
+			"Run `cd web && bun run build` before go build, "+
+			"or check the tree with scripts/verify-docs-artifacts.sh.",
 		missing))
 }
 
@@ -125,7 +119,7 @@ func main() {
 	}
 
 	common.SysLog(common.LogText("New API %s started", common.Version))
-	checkEmbeddedDocs()
+	checkNativeDocsAssets()
 	if os.Getenv("GIN_MODE") != "debug" {
 		gin.SetMode(gin.ReleaseMode)
 	}

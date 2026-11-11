@@ -43,7 +43,12 @@ describe('shouldUseSolidHeader', () => {
   })
 
   it('uses the solid variant on framed paths once the host document scrolls', () => {
-    for (const path of ['/docs', '/docs/zh/getting-started', '/about', '/about/zh/']) {
+    for (const path of [
+      '/docs',
+      '/docs/zh/getting-started',
+      '/about',
+      '/about/zh/',
+    ]) {
       expect(shouldUseSolidHeader(path, true)).toBe(true)
     }
   })

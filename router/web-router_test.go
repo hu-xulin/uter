@@ -1,24 +1,54 @@
 package router
 
-import "testing"
+import (
+	"os"
+	"strings"
+	"testing"
+)
 
-// Docs hosting model (see SetWebRouter's doc comment for the full picture):
+// TestWebRouterNoLongerServesTheStaticDocsExport pins the retirement of the
+// Next.js docs site.
 //
-//   - The SPA owns the clean, encoding-free host routes `/docs` and
-//     `/docs/<lang>/<page>` and frames the statically exported docs site.
-//   - The exported content lives under the Next.js `basePath`
-//     `/docs-content` and is mounted at that prefix by this router.
-//
-// There are no longer any `/docs/*` classifier helpers to unit test in
-// Go — the SPA route tree resolves those internally — so this file pins
-// the one invariant the Go side must keep in lockstep with the SPA and
-// the docs-web build: the mount prefix.
-
-func TestDocsContentMount(t *testing.T) {
-	// Must stay in sync with `docs-web/next.config.mjs#basePath`,
-	// `docs-web/scripts/copy-to-web.mjs`, and
-	// `web/src/lib/docs-link.ts#DOCS_CONTENT_PREFIX`.
-	if docsContentMount != "/docs-content" {
-		t.Fatalf("docsContentMount = %q, want %q", docsContentMount, "/docs-content")
+// The native docs are SPA routes whose assets live in the same `web/dist`
+// tree as the dashboard. Re-introducing a `/docs-content` mount, a
+// `UTER_DOCS_DIR` disk override or an iframe content prefix would split the
+// docs back into a second site and silently diverge from the MDX corpus,
+// so this source-level contract fails loudly if any of them comes back.
+func TestWebRouterNoLongerServesTheStaticDocsExport(t *testing.T) {
+	source, err := os.ReadFile("web-router.go")
+	if err != nil {
+		t.Fatalf("reading web-router.go: %v", err)
 	}
+	// Scan the code, not the prose: a comment may legitimately name the
+	// retired mount to explain why it is gone, but no statement may use it.
+	code := codeLines(string(source))
+	for _, retired := range []string{
+		"/docs-content",
+		"UTER_DOCS_DIR",
+		"docsContentMount",
+		"DiskETag(",
+	} {
+		if strings.Contains(code, retired) {
+			t.Errorf("web-router.go still references the retired docs export (%q)", retired)
+		}
+	}
+
+	// The SPA's own embedded tree must still be the single source of assets.
+	if !strings.Contains(string(source), `common.EmbedFolder(assets.BuildFS, "web/dist")`) {
+		t.Error("web-router.go no longer serves the SPA from the embedded web/dist tree")
+	}
+}
+
+// codeLines drops whole-line comments so the retirement guard above reads
+// statements only. Trailing comments are kept: they cannot hide a retired
+// identifier that a statement still uses.
+func codeLines(source string) string {
+	var kept []string
+	for _, line := range strings.Split(source, "\n") {
+		if strings.HasPrefix(strings.TrimSpace(line), "//") {
+			continue
+		}
+		kept = append(kept, line)
+	}
+	return strings.Join(kept, "\n")
 }

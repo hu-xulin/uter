@@ -7533,9 +7533,9 @@
     "Response model: {{model}}": "Response model: {{model}}",
     "Upstream Model": "Upstream Model",
     "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.": "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md": "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md": "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md": "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx": "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx": "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx": "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.": "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.": "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.": "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.",
@@ -7782,6 +7782,11 @@
     "Output modalities": "Output modalities",
     "Spec source": "Spec source",
     "Spec source unavailable": "Spec source unavailable",
-    "{{count}} models matched": "{{count}} models matched"
+    "{{count}} models matched": "{{count}} models matched",
+    "docs.search.title": "Documentation search",
+    "docs.search.placeholder": "Search docs…",
+    "docs.search.loading": "Loading search index…",
+    "docs.search.noResults": "No matching pages",
+    "docs.toc.heading": "On this page"
   }
 }

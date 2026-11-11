@@ -56,9 +56,8 @@ jobs:
       # 不需要真的前端产物。用共享脚本生成，保证两处骨架一致。
       - name: Create frontend embed placeholder
         run: |
-          # 只测后端：造一个最小的 embed 骨架让 go build 通过。必须包含
-          # docs-content/_next，否则 //go:embed all:web/dist/docs-content/_next
-          # 会因找不到匹配文件而编译失败。
+          # 只测后端：造一个最小的 embed 骨架让 go build 通过。
+          # //go:embed web/dist/index.html 要求该文件在编译期真实存在。
           ./scripts/make-frontend-placeholder.sh
 
       - name: Check gofmt

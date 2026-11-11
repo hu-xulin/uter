@@ -7533,9 +7533,9 @@
     "Response model: {{model}}": "Response model: {{model}}",
     "Upstream Model": "Upstream Model",
     "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.": "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md": "文件位址：完整 URL 或相對於儲存庫的 Markdown 路徑，例如 docs-web/content/legal/zh/user-agreement.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md": "文件位址：完整 URL 或相對於儲存庫的 Markdown 路徑，例如 docs-web/content/legal/zh/privacy-policy.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md": "文件位址：完整 URL 或相對於儲存庫的 Markdown 路徑，例如 docs-web/content/legal/zh/recharge-agreement.md",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx": "文件位址：完整 URL 或相對於儲存庫的 Markdown 路徑，例如 web/src/docs-content/legal/zh/user-agreement.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx": "文件位址：完整 URL 或相對於儲存庫的 Markdown 路徑，例如 web/src/docs-content/legal/zh/privacy-policy.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx": "文件位址：完整 URL 或相對於儲存庫的 Markdown 路徑，例如 web/src/docs-content/legal/zh/recharge-agreement.mdx",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.": "引用文件位址而非貼上內文。支援完整 URL 或 Markdown 檔案路徑（相對於文件根目錄解析）。留空則使用內建預設使用者協議。",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.": "引用文件位址而非貼上內文。支援完整 URL 或 Markdown 檔案路徑（相對於文件根目錄解析）。留空則使用內建預設隱私權政策。",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.": "引用文件位址而非貼上內文。支援完整 URL 或 Markdown 檔案路徑（相對於文件根目錄解析）。留空則使用內建預設儲值協議。",
@@ -7782,6 +7782,11 @@
     "Output modalities": "輸出模態",
     "Spec source": "規格來源",
     "Spec source unavailable": "規格來源不可用",
-    "{{count}} models matched": "命中 {{count}} 個模型"
+    "{{count}} models matched": "命中 {{count}} 個模型",
+    "docs.search.title": "文件搜尋",
+    "docs.search.placeholder": "搜尋文件…",
+    "docs.search.loading": "正在載入搜尋索引…",
+    "docs.search.noResults": "未找到相關文件",
+    "docs.toc.heading": "目錄"
   }
 }

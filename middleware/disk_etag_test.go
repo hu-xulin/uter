@@ -92,7 +92,7 @@ func TestResolveDiskFile(t *testing.T) {
 
 	got := func(urlPath string) string {
 		t.Helper()
-		return resolveDiskFile(dir, "/docs-content", urlPath)
+		return resolveDiskFile(dir, "/static", urlPath)
 	}
 	rel := func(p string) string {
 		if p == "" {
@@ -105,24 +105,24 @@ func TestResolveDiskFile(t *testing.T) {
 		return filepath.ToSlash(r)
 	}
 
-	if r := rel(got("/docs-content/docs/zh/index.html")); r != "docs/zh/index.html" {
+	if r := rel(got("/static/docs/zh/index.html")); r != "docs/zh/index.html" {
 		t.Errorf("explicit file → %q", r)
 	}
-	if r := rel(got("/docs-content/docs/zh/")); r != "docs/zh/index.html" {
+	if r := rel(got("/static/docs/zh/")); r != "docs/zh/index.html" {
 		t.Errorf("dir request → %q", r)
 	}
-	if r := rel(got("/docs-content/robots.txt")); r != "robots.txt" {
+	if r := rel(got("/static/robots.txt")); r != "robots.txt" {
 		t.Errorf("root file → %q", r)
 	}
-	if r := rel(got("/docs-content/docs/zh")); r != "docs/zh/index.html" {
+	if r := rel(got("/static/docs/zh")); r != "docs/zh/index.html" {
 		t.Errorf("dir without slash → %q", r)
 	}
 	// Outside the mount, missing file, and traversal attempts resolve to "".
 	for _, u := range []string{
 		"/other/docs/zh/index.html",
-		"/docs-content/nope.html",
-		"/docs-content/../../../etc/passwd",
-		"/docs-content/docs/../../..",
+		"/static/nope.html",
+		"/static/../../../etc/passwd",
+		"/static/docs/../../..",
 	} {
 		if p := got(u); p != "" {
 			t.Errorf("resolveDiskFile(%q) = %q, want \"\"", u, rel(p))
@@ -166,12 +166,12 @@ func TestDiskETagMiddleware(t *testing.T) {
 
 	var reached int
 	r := gin.New()
-	r.Use(DiskETag("/docs-content", dir))
-	r.GET("/docs-content/*any", func(c *gin.Context) { reached++; c.String(http.StatusOK, "served") })
+	r.Use(DiskETag("/static", dir))
+	r.GET("/static/*any", func(c *gin.Context) { reached++; c.String(http.StatusOK, "served") })
 
 	// 1) plain request → handler runs, ETag present.
 	w := httptest.NewRecorder()
-	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/docs-content/docs/zh/index.html", nil))
+	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/static/docs/zh/index.html", nil))
 	if w.Code != http.StatusOK || reached != 1 {
 		t.Fatalf("plain: code=%d reached=%d", w.Code, reached)
 	}
@@ -183,7 +183,7 @@ func TestDiskETagMiddleware(t *testing.T) {
 	// 2) conditional request with matching ETag → 304, handler NOT reached.
 	reached = 0
 	w = httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/docs-content/docs/zh/index.html", nil)
+	req := httptest.NewRequest(http.MethodGet, "/static/docs/zh/index.html", nil)
 	req.Header.Set("If-None-Match", etag)
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusNotModified {
@@ -196,7 +196,7 @@ func TestDiskETagMiddleware(t *testing.T) {
 	// 3) non-matching validator → falls through, fresh content served.
 	reached = 0
 	w = httptest.NewRecorder()
-	req = httptest.NewRequest(http.MethodGet, "/docs-content/docs/zh/index.html", nil)
+	req = httptest.NewRequest(http.MethodGet, "/static/docs/zh/index.html", nil)
 	req.Header.Set("If-None-Match", `"stale"`)
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusOK || reached != 1 {
@@ -210,10 +210,10 @@ func TestDiskETagNoopWhenEmbedded(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	var reached int
 	r := gin.New()
-	r.Use(DiskETag("/docs-content", ""))
-	r.GET("/docs-content/*any", func(c *gin.Context) { reached++; c.String(http.StatusOK, "served") })
+	r.Use(DiskETag("/static", ""))
+	r.GET("/static/*any", func(c *gin.Context) { reached++; c.String(http.StatusOK, "served") })
 	w := httptest.NewRecorder()
-	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/docs-content/docs/zh/index.html", nil))
+	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/static/docs/zh/index.html", nil))
 	if reached != 1 {
 		t.Fatalf("noop: handler reached=%d, want 1", reached)
 	}

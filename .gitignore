@@ -49,13 +49,12 @@ token_estimator_test.go
 skills-lock.json
 .playwright-mcp
 
-# web/ 与 docs-web/ 用 bun 管理依赖，bun.lock 是唯一权威锁文件（CI / Dockerfile /
+# web/ 用 bun 管理依赖，bun.lock 是唯一权威锁文件（CI / Dockerfile /
 # release 全部 `bun install --frozen-lockfile`）。npm 生成的 package-lock.json 会与
 # bun.lock 漂移，而 Dependabot 只读 package-lock.json —— 结果就是一堆「已修复的漏洞」
 # 反复出现在告警里（真实版本在 bun.lock 中早已升级）。删掉并忽略，让 Dependabot
 # 改读 bun.lock。
 web/package-lock.json
-docs-web/package-lock.json
 
 # Local-only live probes and scratch test workspaces.
 .local-tests/
@@ -64,15 +63,7 @@ service/openaicompat/chat_responses_live_local_test.go
 go.work
 go.work.sum
 
-# docs-web (Next.js SSG site) — build outputs & caches must never be tracked.
-# Note: docs-web/{content,public,src,...} ARE intentionally tracked; only these are ignored.
-docs-web/out/
-docs-web/.next/
-docs-web/node_modules/
-docs-web/tsconfig.tsbuildinfo
-docs-web/next-env.d.ts
-
-# Python bytecode (docs-web/scripts)
+# Python bytecode (scripts/docs-sync)
 __pycache__/
 *.pyc
 

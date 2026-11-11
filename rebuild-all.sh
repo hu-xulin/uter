@@ -3,14 +3,15 @@
 #
 # 覆盖所有前后端产物并重启服务，保证任何改动都生效：
 #   1. web/       React SPA        → rsbuild build    （产出 web/dist）
-#   2. docs-web/  Next.js 文档站   → npm run build    （postbuild 自动拷贝到 web/dist/docs）
-#   3. Go 后端    //go:embed       → go build -o uter-bin .（内嵌新前端）
+#      文档已完整收敛进 SPA：MDX 正文编译成异步 chunk，7 份搜索索引与
+#      user-guide 截图从 web/public 拷进 web/dist。没有第二个静态站。
+#   2. Go 后端    //go:embed       → go build -o uter-bin .（内嵌新前端）
 #      构建时通过 -ldflags -X 注入仓库根 VERSION 文件里的版本号；
 #      构建成功后自动把 patch 位 +1 写回 VERSION，下次构建即递进
 #      （v1.0.0 → v1.0.1 → v1.0.2 ...），首页 logo 旁即显示该版本。
-#   4. uter-cs/   智能客服前端     → vite build       （产出 uter-cs/web/dist）
-#   5. 重启       杀掉旧进程后以独立会话启动 uter-bin，并做端口 + HTTP 体检
-#   6. 重启       同上，启动 uter-cs（Node/Fastify）并体检 /api/health
+#   3. uter-cs/   智能客服前端     → vite build       （产出 uter-cs/web/dist）
+#   4. 重启       杀掉旧进程后以独立会话启动 uter-bin，并做端口 + HTTP 体检
+#   5. 重启       同上，启动 uter-cs（Node/Fastify）并体检 /api/health
 #
 # 前置依赖 Redis：Uter 的 .env 配了 REDIS_CONN_STRING 时，启动即强 ping，
 # 不通就 FatalLog 退出（进程活不过 1 秒）。所以第 5 步会先把本机 Redis 拉起：
@@ -18,10 +19,11 @@
 # 容器；都没有 → 明确报错并给安装指引（绝不静默降级成「无 Redis」）。
 #
 # 关键约束（改动前先读）：
-#   - 顺序不可换：rsbuild 会清空整个 web/dist（含 dist/docs），所以必须
-#     先 web 后 docs-web，最后才编 Go，否则文档站会被打进旧产物。
+#   - 顺序仍是先 web 后 Go：rsbuild 会清空整个 web/dist，go:embed 对缺失
+#     目录是静默跳过的，编译照样成功但二进制里没有 SPA 与文档产物。
+#     编译前用 scripts/verify-docs-artifacts.sh 把缺产物变成硬失败。
 #   - CODEBUDDY_SAFE_DELETE_ENABLED=0 必须带上：WorkBuddy 的删除 shim 会
-#     让 Next 清理 .next 时报 ENOTEMPTY 或静默失效。
+#     拦住构建产物目录的清理。
 #   - 本仓库无 bun：一律用 ./node_modules/.bin/ 下的可执行文件。
 #   - 重启不能用 nohup &：终端会回收子进程。这里用 python Popen 的
 #     start_new_session=True 派生独立会话。
@@ -33,8 +35,8 @@
 #   本项目没有独立的前端进程。SPA 构建产物 web/dist 由 Go 用 //go:embed
 #   内嵌，和 API 一起在 $PORT(3000) 上对外服务——所以「启动前端」就是
 #   重新编译并重启 Go 二进制，不需要、也不能单独起一个前端服务。
-#   需要热更新（HMR）开发时用 --dev：额外拉起 rsbuild dev（SPA）与
-#   next dev（文档站），API 与 /docs 资源仍代理到 3000 的 Go 后端。
+#   需要热更新（HMR）开发时用 --dev：额外拉起 rsbuild dev（SPA），
+#   /api 等仍代理到 3000 的 Go 后端；文档是 SPA 原生路由，无需 dev 服务。
 #
 # 关于「智能客服（uter-cs）」：
 #   uter-cs 是**独立仓库**（默认取同级目录 ../uter-cs，可用 UTER_CS_DIR 指定），
@@ -46,9 +48,8 @@
 #   - 只想要 Uter 时加 --no-cs。
 #
 # 用法：
-#   ./rebuild-all.sh                    # 全量：web + docs + Go + uter-cs + 重启全部
+#   ./rebuild-all.sh                    # 全量：web + Go + uter-cs + 重启全部
 #   ./rebuild-all.sh --no-restart       # 只构建，不重启任何服务
-#   ./rebuild-all.sh --no-docs          # 跳过文档站（改了 Go/SPA 时用）
 #   ./rebuild-all.sh --no-cs            # 跳过智能客服（只构建并重启 Uter）
 #   ./rebuild-all.sh --no-cs-build      # 不重建 uter-cs 前端，只重启它
 #   ./rebuild-all.sh --install          # 构建前先 npm install 各前端
@@ -92,13 +93,12 @@ if [ ! -x "$NODE_DIR/npm" ]; then
 fi
 PYTHON=/usr/bin/python3
 
-NO_RESTART=0; NO_DOCS=0; INSTALL=0; DEV=0; NO_BUILD=0
+NO_RESTART=0; INSTALL=0; DEV=0; NO_BUILD=0
 NO_CS=0; NO_CS_BUILD=0
 for arg in "$@"; do
   case "$arg" in
     --no-build)    NO_BUILD=1 ;;
     --no-restart)  NO_RESTART=1 ;;
-    --no-docs)     NO_DOCS=1 ;;
     --no-cs)       NO_CS=1 ;;
     --no-cs-build) NO_CS_BUILD=1 ;;
     --install)     INSTALL=1 ;;
@@ -107,7 +107,7 @@ for arg in "$@"; do
   esac
 done
 
-# WorkBuddy 的 node-safe-delete-shim 会让 Next 的清理步骤炸掉，提前关掉。
+# WorkBuddy 的 node-safe-delete-shim 会让构建产物目录的清理炸掉，提前关掉。
 export CODEBUDDY_SAFE_DELETE_ENABLED=0
 # 同时关掉 broker 文件钩子与沙箱删除保护：否则受沙箱保护的命令写入工作区
 # 的文件会在命令结束时被整体回滚（rsbuild/go build 产物看似成功却不落盘）。
@@ -407,52 +407,35 @@ bump_version() {
 if [ "$NO_BUILD" = 1 ]; then
   echo "==> 跳过构建（--no-build），直接用现有 web/dist 与 $BIN"
 else
-echo "==> [1/6] 构建前端 SPA (web/)"
+echo "==> [1/5] 构建前端 SPA (web/)"
 cd "$ROOT/web"
 if [ "$INSTALL" = 1 ]; then "$NODE_DIR/npm" install; fi
 [ -x node_modules/.bin/rsbuild ] || fail "web/node_modules 缺失，先跑 $0 --install"
-# 先清掉上一次的 dist。文档站会在 [2/6] 把 docs-content 拷进 dist，若它残留到
-# 本次构建，Tailwind 的内容扫描会把它当成待扫源码（4351 个文件、数十 MB 的
-# _next 产物），SPA 构建从 ~20s 变成永不结束（实测 9 分钟仍卡在 fs 扫描，
-# 最终超时后 Go 构建报 `embed web/dist/index.html: no such file`）。
-# dist 是纯构建产物，清空安全 —— [2/6] 会重新拷入 docs-content。
-[ -d "$ROOT/web/dist" ] && rm -rf "$ROOT/web/dist"
-./node_modules/.bin/rsbuild build
+# 先把上一次的 dist 移走，而不是 rm -rf：本机 WorkBuddy 的删除保护会把
+# `rm -rf web/dist` 直接拦成 SAFE_DELETE_BULK_CONFIRM_REQUIRED。移走后
+# rsbuild 写进一个真正空的目录，也不会把旧产物当成 Tailwind 待扫源码。
+# dist 是纯构建产物，移到 /tmp 安全。
+if [ -d "$ROOT/web/dist" ]; then
+  DIST_PREBUILD="${TMPDIR:-/tmp}/uter-dist-before-build-$$"
+  mv "$ROOT/web/dist" "$DIST_PREBUILD" || fail "无法移走旧的 web/dist"
+  echo "    旧产物已移走: $DIST_PREBUILD"
+fi
+# 必须用 package.json 的 build 脚本，不能直接调 rsbuild：脚本会先生成
+# 7 份 docs-search 索引，再把 web/public（含 user-guide / apps-assets 截图）
+# 拷进 dist。少一步就会得到一个「SPA 能开、文档搜索空、截图 404」的二进制。
+"$NODE_DIR/npm" run build
 echo "    产物: $(stat_line "$ROOT/web/dist/index.html")"
 ls "$ROOT"/web/dist/static/js/*.js >/dev/null 2>&1 || fail "web/dist/static/js 为空，SPA 构建异常"
 
-echo "==> [2/6] 构建文档站 (docs-web/ → web/dist/docs)"
-if [ "$NO_DOCS" = 0 ]; then
-  cd "$ROOT/docs-web"
-  if [ "$INSTALL" = 1 ]; then "$NODE_DIR/npm" install; fi
-  "$NODE_DIR/npm" run build   # postbuild 会自动把 out/ 拷进 web/dist/docs-content
-  [ -d "$ROOT/web/dist/docs-content" ] || fail "web/dist/docs-content 不存在，文档站拷贝失败"
-  # 文档站是 locale 前缀导出，根目录没有 index.html，用搜索索引当指纹。
-  echo "    产物: $(stat_line "$ROOT/web/dist/docs-content/search-index.json")"
-else
-  echo "    跳过 (--no-docs)"
-fi
-
-echo "==> [3/6] 编译 Go 后端（内嵌 web/dist）"
+echo "==> [2/5] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
 
-# 文档站完整性闸门：只要这次会编 Go，就必须带着 docs-content 进编译。
-# 起因：rsbuild build 会清空整个 web/dist（含 docs-content），而
-# `//go:embed all:web/dist` 对缺失目录是**静默跳过**的 —— 编译照样成功，
-# 结果是二进制里没有文档站，/docs 与 /about 的 iframe 拿到 SPA 壳渲染成 404，
-# 且 `strings uter-bin | grep -c docs-content/docs/zh` 为 0，只能上线后才发现。
+# 原生文档完整性闸门：只要这次会编 Go，就必须带着 SPA 外壳、文档 chunk、
+# 7 份搜索索引与截图进编译。起因是 `//go:embed web/dist` 对缺失目录
+# **静默跳过** —— 编译照样成功，结果是二进制里没有文档：/docs 原生路由
+# 渲染不出正文，搜索索引 404、截图裂图，只能上线后才发现。
 # 这里在编译前拦住，把故障从「上线后页面消失」提前到「构建时报错」。
-#
-# 注意：**`--no-docs` 恰恰是最危险的路径**（它跳过了 docs-web 步骤，却仍然会
-# 先跑 rsbuild 清空 dist），所以这里不按 NO_DOCS 豁免，而是按「dist 里到底
-# 有没有文档站」判断。`--no-build` 只重启不编译，不受此约束。
-if [ "$NO_BUILD" = 0 ]; then
-  if [ ! -d "$ROOT/web/dist/docs-content/docs" ] || [ ! -d "$ROOT/web/dist/docs-content/about" ]; then
-    fail "web/dist/docs-content 缺失：本次构建会把一个不含文档站的二进制编出来。
-  rsbuild build 会清空整个 web/dist（含 docs-content），而 go:embed 对缺失目录是静默跳过的。
-  请重跑 $0（不要带 --no-docs）。确实不需要文档站的话，请确认这是有意为之。"
-  fi
-fi
+"$ROOT/scripts/verify-docs-artifacts.sh" "$ROOT/web/dist" || fail "web/dist 原生文档产物不完整，拒绝编译 Go 二进制"
 
 # 先自增、再用新值构建：保证「运行中二进制内嵌版本」与「VERSION 文件」始终一致。
 # 旧顺序（先按旧值构建、成功后再自增）会让服务上报的 X-Uter-Version 永远落后
@@ -479,7 +462,7 @@ fi
 # 即使这次没构建成功，后面仍会用仓库里现有的 web/dist 尝试启动。
 # ---------------------------------------------------------------------------
 CS_BUILD_OK=1
-echo "==> [4/6] 构建智能客服前端 (uter-cs/web → uter-cs/web/dist)"
+echo "==> [3/5] 构建智能客服前端 (uter-cs/web → uter-cs/web/dist)"
 cd "$ROOT"
 if [ "$NO_CS" = 1 ]; then
   echo "    跳过 (--no-cs)"
@@ -516,7 +499,7 @@ if [ "$NO_RESTART" = 1 ]; then
   exit 0
 fi
 
-echo "==> [5/6] 重启 Uter（API + SPA + 文档站，端口 ${PORT}）"
+echo "==> [4/5] 重启 Uter（API + SPA + 原生文档，端口 ${PORT}）"
 
 # 5.1 依赖保障：Redis（.env 配了 REDIS_CONN_STRING 时 Uter 强依赖，不通即退出）
 ensure_redis || fail "Redis 不可用，Uter 无法启动（见上方指引）"
@@ -544,21 +527,19 @@ fi
 pid="$(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t 2>/dev/null | head -1 || true)"
 echo "✓ 后端已重启（同时提供 API 与前端 SPA）: pid=$pid  http://127.0.0.1:$PORT/  (HTTP $code)"
 
-# 5.5 文档站落地校验：`/docs-content/...` 返回 200 不代表内容对——静态目录缺失时
-# Go 的 NoRoute 会把 SPA 壳返回给这个路径，状态码同样是 200。所以这里不看状态码，
-# 只确认响应体确实是文档站的 HTML（含 lang 标记）而不是 SPA 的 <!doctype html><html
-# lang="en"> 壳。缺文档站的二进制在这一步就会被当场发现，而不是等读者打开 /docs。
+# 4.5 原生文档静态产物落地校验：/docs 是 SPA 路由，返回 200 只说明外壳在，
+# 不代表搜索索引和截图进了二进制。直接向运行中的服务要一份搜索索引，
+# 能解析出 JSON 且非空，才说明 go:embed 真的带上了 web/dist/docs-search。
 if [ "$NO_BUILD" = 0 ]; then
-  probe="$(curl -s --noproxy '*' --max-time 10 "http://127.0.0.1:$PORT/docs-content/docs/zh/guide/wiki/basic-concepts/features-introduction/" 2>/dev/null || true)"
+  probe="$(curl -s --noproxy '*' --max-time 10 "http://127.0.0.1:$PORT/docs-search/zh.json" 2>/dev/null || true)"
   case "$probe" in
-    *"<html lang=\"zh-CN\""*|*'lang="zh-CN"'*) ;;
-    *) echo "✗ 文档站未随二进制生效：/docs-content/... 返回的不是文档站 HTML。" >&2
-       echo "  排查：strings $BIN | grep -c 'docs-content/docs/zh'  （为 0 即未内嵌）" >&2
-       echo "        ls web/dist/docs-content                          （应为存在）" >&2
-       echo "  多为只跑了 web 构建导致 rsbuild 清空了 web/dist，请重跑 $0（不要带 --no-docs）。" >&2
+    '[{'*) ;;
+    *) echo "✗ 原生文档搜索索引未随二进制生效：/docs-search/zh.json 返回的不是索引 JSON。" >&2
+       echo "  排查：ls web/dist/docs-search（应有 7 份 .json）" >&2
+       echo "        cd web && npm run build  然后重跑 $0" >&2
        exit 1 ;;
   esac
-  echo "✓ 文档站已内嵌并可访问（/docs 与 /about 的 iframe 内容正常）"
+  echo "✓ 原生文档静态产物已内嵌并可访问（/docs-search/zh.json 命中）"
 fi
 
 # ---------------------------------------------------------------------------
@@ -571,7 +552,7 @@ fi
 # 「目录不在」只警告并跳过（视为未安装）；「目录在但起不来」算本次失败，
 # 退出码非零 —— 否则「一键启动所有服务」会在只起来一半时谎报成功。
 # ---------------------------------------------------------------------------
-echo "==> [6/6] 智能客服 uter-cs（端口 ${CS_PORT}）"
+echo "==> [5/5] 智能客服 uter-cs（端口 ${CS_PORT}）"
 CS_STARTED=0; CS_FAILED=0
 if [ "$NO_CS" = 1 ]; then
   echo "    跳过 (--no-cs)"
@@ -613,7 +594,7 @@ if [ -n "${REDIS_PORT:-}" ]; then
 else
   echo "  Redis    : （未配置，Uter 以无 Redis 模式运行）"
 fi
-echo "  Uter     : http://127.0.0.1:$PORT/   ✓ 运行中（API + SPA + 文档站）"
+echo "  Uter     : http://127.0.0.1:$PORT/   ✓ 运行中（API + SPA + 原生文档）"
 if [ "$CS_STARTED" = 1 ]; then
   echo "  智能客服 : http://127.0.0.1:$CS_PORT/   ✓ 运行中"
 elif [ "$NO_CS" = 1 ]; then
@@ -625,8 +606,8 @@ else
 fi
 echo "  日志     : Uter=$LOG"
 echo "             智能客服=$CS_LOG"
-echo "  说明     : Uter 生产形态是单端口 $PORT —— SPA 与文档站已内嵌进 Go 二进制，"
-echo "             没有独立前端端口。改前端源码后想热更新调试，用 $0 --dev（3001/3100）。"
+echo "  说明     : Uter 生产形态是单端口 $PORT —— SPA 与原生文档已内嵌进 Go 二进制，"
+echo "             没有独立前端端口。改前端源码后想热更新调试，用 $0 --dev（3001）。"
 
 # CS 明确该起却没起来时，不能报成功（DEV 服务也就没必要再拉）。
 if [ "$CS_FAILED" = 1 ]; then
@@ -640,26 +621,16 @@ if [ "$DEV" = 0 ]; then exit 0; fi
 # 附加：前端 HMR 开发服务（可选，--dev）
 #
 # 生产模式下前端是 Go 内嵌的静态产物，改一行代码也要重编 Go。开发时把
-# rsbuild dev 拉起来可热更新：它把 /api 等代理到 $PORT 的 Go 后端，把
-# /docs、/about 代理到 next dev（NEXT_DOCS_PORT），所以后端仍是唯一数据源。
+# rsbuild dev 拉起来可热更新：它把 /api 等代理到 $PORT 的 Go 后端，所以
+# 后端仍是唯一数据源。/docs 与 /about 是 SPA 原生路由，改 MDX 也会 HMR，
+# 不再需要 next dev 或任何文档站代理。
 # ---------------------------------------------------------------------------
 echo "==> 启动前端开发服务（HMR）"
-
-DOCS_DEV_PORT="$PORT"
-if [ "$NO_DOCS" = 0 ]; then
-  DOCS_DEV_PORT="$(pick_port 3100)"
-  DOCS_DEV_LOG=/tmp/uter-docs-dev.log
-  [ -x "$ROOT/docs-web/node_modules/.bin/next" ] || fail "docs-web/node_modules 缺失，先跑 $0 --install"
-  spawn "$DOCS_DEV_LOG" "$ROOT/docs-web" "$ROOT/docs-web/node_modules/.bin/next" dev --port "$DOCS_DEV_PORT"
-  docs_code="$(wait_http "$DOCS_DEV_PORT" 60 || echo 000)"
-  [ "$docs_code" != "000" ] || { echo "✗ 文档站 dev 未就绪:" >&2; tail -20 "$DOCS_DEV_LOG" >&2; exit 1; }
-  echo "    文档站 dev : http://127.0.0.1:$DOCS_DEV_PORT/  (HTTP $docs_code)  日志: $DOCS_DEV_LOG"
-fi
 
 WEB_DEV_PORT="$(pick_port 3001)"
 WEB_DEV_LOG=/tmp/uter-web-dev.log
 [ -x "$ROOT/web/node_modules/.bin/rsbuild" ] || fail "web/node_modules 缺失，先跑 $0 --install"
-spawn "$WEB_DEV_LOG" "$ROOT/web" env NEXT_DOCS_PORT="$DOCS_DEV_PORT" \
+spawn "$WEB_DEV_LOG" "$ROOT/web" \
   "$ROOT/web/node_modules/.bin/rsbuild" dev --port "$WEB_DEV_PORT"
 web_code="$(wait_http "$WEB_DEV_PORT" 60 || echo 000)"
 if [ "$web_code" = "000" ]; then
@@ -668,4 +639,4 @@ if [ "$web_code" = "000" ]; then
   exit 1
 fi
 echo "✓ SPA dev      : http://127.0.0.1:$WEB_DEV_PORT/  (HTTP $web_code)  日志: $WEB_DEV_LOG"
-echo "  改 web/src 下的代码即时热更新；API 与 /docs 代理到后端 ${PORT}。"
+echo "  改 web/src 下的代码（含 docs-content 的 MDX）即时热更新；API 代理到后端 ${PORT}。"

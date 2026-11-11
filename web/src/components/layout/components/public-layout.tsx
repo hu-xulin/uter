@@ -52,7 +52,7 @@ type PublicLayoutProps = {
 
 export function PublicLayout(props: PublicLayoutProps) {
   return (
-    <div className='bg-transparent text-foreground relative min-h-svh overflow-x-clip'>
+    <div className='text-foreground relative min-h-svh overflow-x-clip bg-transparent'>
       {props.showMainContainer !== false ? (
         <main className='container px-4 py-6 pt-20 md:px-4'>
           {props.children}
