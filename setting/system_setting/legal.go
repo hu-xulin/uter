@@ -19,8 +19,8 @@ type LegalSettings struct {
 // 的逻辑依赖这些默认值——保证用户协议与隐私政策始终存在，从而注册/登录的
 // 同意勾选不会被静默关闭。
 //
-// 说明：默认部署通过站内文档站（docs-web）渲染完整多语种协议
-// （docs-web/content/legal/<lang>/*.md），以下内置文本仅作为系统设置未配置
+// 说明：默认部署通过站内文档页（原生 SPA 路由）渲染完整多语种协议
+// （web/src/docs-content/legal/<lang>/*.mdx），以下内置文本仅作为系统设置未配置
 // 时的兜底（例如 docs_link 指向外部知识库、走 /api/<doc> 配置模式的场景）。
 const defaultUserAgreement = `# 优特智能大模型服务平台用户协议
 

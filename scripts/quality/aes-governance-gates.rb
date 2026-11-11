@@ -240,7 +240,7 @@ DOMAINS = [
     "automated" => %w[],
     "manual" => manual([
       ["M07-01", "Electron main/renderer isolation, CSP, IPC, preload security", "not executed"],
-      ["M07-02", "docs-web / electron / web full build matrix", "not executed"],
+      ["M07-02", "web (native docs) / electron full build matrix", "not executed"],
       ["M07-03", "installer and upgrade verification", "not executed"]
     ]) },
   { "id" => "P08", "name" => "AI Agent Engineering", "aes_gate" => "AES-08-GATE-001",

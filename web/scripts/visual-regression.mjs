@@ -10,12 +10,15 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { chromium } from '@playwright/test'
+
 import AxeBuilder from '@axe-core/playwright'
+import { chromium } from '@playwright/test'
 
 const WEB_ROOT = resolve(process.cwd())
 const SHOWCASE = resolve(WEB_ROOT, '../docs/design-system/showcase-3.0.html')
-const REPORT_PATH = process.env.VISUAL_AUDIT_REPORT || resolve(process.env.RUNNER_TEMP || '/tmp', 'uter-visual-a11y-report.json')
+const REPORT_PATH =
+  process.env.VISUAL_AUDIT_REPORT ||
+  resolve(process.env.RUNNER_TEMP || '/tmp', 'uter-visual-a11y-report.json')
 const VIEWPORTS = [
   { id: 'desktop', width: 1440, height: 900 },
   { id: 'mobile', width: 390, height: 844 },
@@ -28,17 +31,27 @@ const add = (id, ok, detail, evidence = null) => {
 }
 const hash = (value) => createHash('sha256').update(value).digest('hex')
 
-if (!SHOWCASE || !pathToFileURL(SHOWCASE).href || !SHOWCASE.endsWith('showcase-3.0.html')) {
+if (
+  !SHOWCASE ||
+  !pathToFileURL(SHOWCASE).href ||
+  !SHOWCASE.endsWith('showcase-3.0.html')
+) {
   add('SHOWCASE_PATH', false, 'Design System 3.0 showcase path is invalid')
 } else {
-  add('SHOWCASE_PATH', true, 'Design System 3.0 showcase path resolved', { path: SHOWCASE })
+  add('SHOWCASE_PATH', true, 'Design System 3.0 showcase path resolved', {
+    path: SHOWCASE,
+  })
 }
 
 let browser
 try {
   browser = await chromium.launch({ headless: true })
 } catch (error) {
-  add('BROWSER_LAUNCH', false, `Pinned Playwright Chromium unavailable: ${error.message}`)
+  add(
+    'BROWSER_LAUNCH',
+    false,
+    `Pinned Playwright Chromium unavailable: ${error.message}`
+  )
 }
 
 if (browser) {
@@ -67,16 +80,24 @@ if (browser) {
           const visible = (element) => {
             const style = getComputedStyle(element)
             const rect = element.getBoundingClientRect()
-            return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0
+            return (
+              style.display !== 'none' &&
+              style.visibility !== 'hidden' &&
+              rect.width > 0 &&
+              rect.height > 0
+            )
           }
-          const textElements = [...document.querySelectorAll('body *')]
-            .filter((el) => visible(el) && (el.textContent || '').trim().length > 0)
+          const textElements = [...document.querySelectorAll('body *')].filter(
+            (el) => visible(el) && (el.textContent || '').trim().length > 0
+          )
           const fontSizes = textElements
             .map((el) => Number.parseFloat(getComputedStyle(el).fontSize))
             .filter((n) => Number.isFinite(n) && n > 0)
-          const focusable = [...document.querySelectorAll(
-            'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
-          )].filter(visible)
+          const focusable = [
+            ...document.querySelectorAll(
+              'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+            ),
+          ].filter(visible)
           // Accessible-name computation follows the HTML-AAM / accname
           // order: aria-labelledby -> aria-label -> native label association
           // -> text content. Native association covers BOTH the `label[for]`
@@ -90,21 +111,33 @@ if (browser) {
           const accessibleName = (el) => {
             const labelledBy = el.getAttribute('aria-labelledby')
             if (labelledBy) {
-              const text = labelledBy.split(/\s+/)
+              const text = labelledBy
+                .split(/\s+/)
                 .map((id) => document.getElementById(id)?.textContent || '')
-                .join(' ').trim()
+                .join(' ')
+                .trim()
               if (text) return text
             }
             const ariaLabel = (el.getAttribute('aria-label') || '').trim()
             if (ariaLabel) return ariaLabel
             const tag = el.tagName.toLowerCase()
-            if (tag === 'input' || tag === 'select' || tag === 'textarea' || tag === 'progress' || tag === 'meter') {
+            if (
+              tag === 'input' ||
+              tag === 'select' ||
+              tag === 'textarea' ||
+              tag === 'progress' ||
+              tag === 'meter'
+            ) {
               if (el.id) {
-                const explicit = document.querySelector(`label[for="${CSS.escape(el.id)}"]`)
-                if (explicit && (explicit.textContent || '').trim()) return explicit.textContent.trim()
+                const explicit = document.querySelector(
+                  `label[for="${CSS.escape(el.id)}"]`
+                )
+                if (explicit && (explicit.textContent || '').trim())
+                  return explicit.textContent.trim()
               }
               const wrapping = el.closest('label')
-              if (wrapping && (wrapping.textContent || '').trim()) return wrapping.textContent.trim()
+              if (wrapping && (wrapping.textContent || '').trim())
+                return wrapping.textContent.trim()
               const title = (el.getAttribute('title') || '').trim()
               if (title) return title
               const placeholder = (el.getAttribute('placeholder') || '').trim()
@@ -117,7 +150,9 @@ if (browser) {
             return ''
           }
           const unnamed = focusable.filter((el) => accessibleName(el) === '')
-          const gradientElements = [...document.querySelectorAll('.ds-text-gradient-brand')].filter(visible)
+          const gradientElements = [
+            ...document.querySelectorAll('.ds-text-gradient-brand'),
+          ].filter(visible)
           const gradientTextSizeFailures = gradientElements.filter((el) => {
             const style = getComputedStyle(el)
             const size = Number.parseFloat(style.fontSize)
@@ -127,7 +162,8 @@ if (browser) {
           return {
             viewportWidth: window.innerWidth,
             documentWidth: document.documentElement.scrollWidth,
-            horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+            horizontalOverflow:
+              document.documentElement.scrollWidth > window.innerWidth + 1,
             minimumTextFontPx: fontSizes.length ? Math.min(...fontSizes) : null,
             textElementCount: textElements.length,
             focusableCount: focusable.length,
@@ -159,11 +195,14 @@ if (browser) {
         await page.keyboard.press('Tab')
         const focus = await page.evaluate(() => {
           const el = document.activeElement
-          if (!el || el === document.body || el === document.documentElement) return { focused: false }
+          if (!el || el === document.body || el === document.documentElement)
+            return { focused: false }
           const style = getComputedStyle(el)
           const rect = el.getBoundingClientRect()
           const visible = rect.width > 0 && rect.height > 0
-          const outline = style.outlineStyle !== 'none' && Number.parseFloat(style.outlineWidth) > 0
+          const outline =
+            style.outlineStyle !== 'none' &&
+            Number.parseFloat(style.outlineWidth) > 0
           const shadow = style.boxShadow !== 'none'
           return {
             focused: visible,
@@ -187,16 +226,28 @@ if (browser) {
           metrics
         )
         const keyboardButton = page.locator('button:not([disabled])').first()
-        const keyboardButtonCount = await page.locator('button:not([disabled])').count()
+        const keyboardButtonCount = await page
+          .locator('button:not([disabled])')
+          .count()
         let keyboardActivation = false
         if (keyboardButtonCount > 0) {
-          await page.evaluate(() => { window.__uterKeyboardActivationCount = 0 })
+          await page.evaluate(() => {
+            window.__uterKeyboardActivationCount = 0
+          })
           await keyboardButton.evaluate((el) => {
-            el.addEventListener('click', () => { window.__uterKeyboardActivationCount += 1 }, { once: true })
+            el.addEventListener(
+              'click',
+              () => {
+                window.__uterKeyboardActivationCount += 1
+              },
+              { once: true }
+            )
             el.focus()
           })
           await page.keyboard.press('Enter')
-          keyboardActivation = await page.evaluate(() => window.__uterKeyboardActivationCount === 1)
+          keyboardActivation = await page.evaluate(
+            () => window.__uterKeyboardActivationCount === 1
+          )
         }
         add(
           `KEYBOARD_ACTIVATION_${target.toUpperCase().replace('/', '_')}`,
@@ -207,20 +258,28 @@ if (browser) {
         const axe = await new AxeBuilder({ page })
           .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
           .analyze()
-        const blocking = axe.violations.filter((v) => ['critical', 'serious'].includes(v.impact))
+        const blocking = axe.violations.filter((v) =>
+          ['critical', 'serious'].includes(v.impact)
+        )
         add(
           `AXE_WCAG_${target.toUpperCase().replace('/', '_')}`,
           blocking.length === 0,
           `violations=${axe.violations.length}; critical_or_serious=${blocking.length}`,
           {
             violations: axe.violations.map((v) => ({
-              id: v.id, impact: v.impact, help: v.help,
+              id: v.id,
+              impact: v.impact,
+              help: v.help,
               nodes: v.nodes.slice(0, 10).map((n) => n.target),
             })),
           }
         )
       } catch (error) {
-        add(`VISUAL_A11Y_${target.toUpperCase().replace('/', '_')}`, false, error.message)
+        add(
+          `VISUAL_A11Y_${target.toUpperCase().replace('/', '_')}`,
+          false,
+          error.message
+        )
       } finally {
         await context.close()
       }

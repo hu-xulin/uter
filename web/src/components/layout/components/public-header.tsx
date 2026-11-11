@@ -17,7 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
-import { useCallback, useEffect, useState, useContext, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useContext,
+  type ReactNode,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@/components/dialog'
@@ -30,7 +36,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { SystemUpdateAction } from '@/features/system-update/system-update-action'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useScrolled } from '@/hooks/use-scrolled'
-import { shouldUseSolidHeader, EmbedScrollContext } from './public-header-variant'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { BRAND_LOGO_BOX_CLASS, localizedBrandName } from '@/lib/brand'
@@ -41,6 +46,10 @@ import { defaultTopNavLinks } from '../config/top-nav.config'
 import { fullPageAnchorProps, getTopNavActive } from '../lib/url-utils'
 import type { TopNavLink } from '../types'
 import { HeaderLogo } from './header-logo'
+import {
+  shouldUseSolidHeader,
+  EmbedScrollContext,
+} from './public-header-variant'
 
 const AUTH_PROMPT_SECONDS = 5
 

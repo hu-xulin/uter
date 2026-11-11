@@ -19,6 +19,17 @@ For commercial licensing, please contact support@uter.ai
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+
+/* The native docs are compiled from the MDX files under `src/docs-content`,
+ * and their screenshot pairs carry `dark:hidden` / `hidden dark:block`
+ * directly in the source. MDX is not part of the default candidate scan, so
+ * declare the directory explicitly — otherwise the utility classes silently
+ * never get generated and both the light and the dark screenshot show at
+ * once.
+ *
+ * (Keep the glob out of this comment: a `*` followed by `/` closes a CSS
+ * comment early and the rest of the file stops parsing.) */
+@source '../docs-content';
 /* Project typefaces — English/digits in Inter, Chinese in 思源黑体.
  *
  * Inter covers Latin / Greek / Cyrillic only: it has NO CJK glyphs, so

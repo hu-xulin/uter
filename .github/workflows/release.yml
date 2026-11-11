@@ -50,18 +50,10 @@ jobs:
           bun install --frozen-lockfile
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
           cd ..
-      # 文档静态站是独立的 Next.js 工程，它的 postbuild 会把静态导出拷贝进
-      # web/dist/docs-content。Go 用 go:embed web/dist 把前端与文档一起打进
-      # 二进制，所以文档必须在 go build 之前构建完；只构建 web 会得到一个
-      # 「能跑但没有文档」的二进制，而编译不会报错。
-      - name: Build Docs Site
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-        run: |
-          cd docs-web
-          bun install --frozen-lockfile
-          bun run build
-          cd ..
+      # 文档已收敛进 SPA：MDX 正文编译成异步 chunk，7 份搜索索引与
+      # user-guide 截图由上面的 `bun run build` 从 web/public 拷进 web/dist。
+      # 不再有第二个静态站需要单独构建；发布前的
+      # scripts/verify-docs-artifacts.sh 会把缺产物挡在发布步骤之外。
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
@@ -75,8 +67,8 @@ jobs:
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y gcc-aarch64-linux-gnu
           CC=aarch64-linux-gnu-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags "-s -w -X 'uter/common.Version=$VERSION' -extldflags '-static'" -o uter-arm64-$VERSION
-      # 发布前完整性检查：产物必须同时包含 SPA 与文档静态页，缺任何一个都
-      # 不允许进入发布步骤。
+      # 发布前完整性检查：产物必须同时包含 SPA 外壳、文档 chunk、7 份搜索
+      # 索引与截图，缺任何一个都不允许进入发布步骤。
       - name: Verify release artifacts
         run: |
           ./scripts/verify-docs-artifacts.sh web/dist
@@ -128,14 +120,6 @@ jobs:
           cd web
           bun install --frozen-lockfile
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
-          cd ..
-      - name: Build Docs Site
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-        run: |
-          cd docs-web
-          bun install --frozen-lockfile
-          bun run build
           cd ..
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -197,14 +181,6 @@ jobs:
           cd web
           bun install --frozen-lockfile
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
-          cd ..
-      - name: Build Docs Site
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-        run: |
-          cd docs-web
-          bun install --frozen-lockfile
-          bun run build
           cd ..
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0

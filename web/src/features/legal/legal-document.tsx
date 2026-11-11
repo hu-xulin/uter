@@ -18,22 +18,25 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
 import { FileWarning } from 'lucide-react'
+import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DocsExportFrame } from '@/components/docs-export-frame'
 import { PublicLayout } from '@/components/layout'
 import { RichContent } from '@/components/rich-content'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Heading } from '@/design-system'
+import { Callout } from '@/features/docs/native/callout'
+import { loadNativeDoc } from '@/features/docs/native/docs-loader'
+import { PROSE_CLASSES } from '@/features/docs/native/native-docs-view'
 import { useStatus } from '@/hooks/use-status'
 import { getSafeHttpUrl, isLikelyHtml } from '@/lib/content-format'
 import {
   isBundledDocsHref,
-  legalDocsPathFor,
   resolveDocsHref,
   resolveDocsLocaleCode,
+  type DocsLocaleCode,
 } from '@/lib/docs-link'
 
 import type { LegalDocumentResponse } from './types'
@@ -84,14 +87,77 @@ export function LegalDocument({
 
   if (isBundledDocsHref(resolveDocsHref(status?.docs_link))) {
     return (
-      <DocsExportFrame
-        src={legalDocsPathFor(resolveDocsLocaleCode(i18n.language), docsDocId)}
+      <BundledLegalDocument
+        docsDocId={docsDocId}
+        locale={resolveDocsLocaleCode(i18n.language)}
         title={title}
       />
     )
   }
 
   return <ConfiguredLegalDocument title={title} {...rest} />
+}
+
+/**
+ * One legal document of the bundled docs, rendered natively.
+ *
+ * The document body is the migrated Markdown in
+ * `web/src/docs-content/legal/<locale>/<doc>.mdx`, resolved through the
+ * same lazy MDX loader the `/docs` pages use and drawn with the same
+ * prose scale — no iframe, no static export. Switching the UI language
+ * swaps the module, exactly as the framed version re-pointed its
+ * `src`.
+ */
+function BundledLegalDocument({
+  docsDocId,
+  locale,
+  title,
+}: {
+  docsDocId: string
+  locale: DocsLocaleCode
+  title: string
+}) {
+  const loader = useMemo(
+    () => loadNativeDoc(locale, { set: 'legal', slug: docsDocId }),
+    [locale, docsDocId]
+  )
+  const [Doc, setDoc] = useState<ComponentType<Record<string, unknown>> | null>(
+    null
+  )
+
+  useEffect(() => {
+    setDoc(null)
+    if (!loader) return
+    let alive = true
+    loader()
+      .then((module) => {
+        if (alive) setDoc(() => module.default)
+      })
+      .catch(() => {
+        // A failed chunk load leaves the page blank below the shell —
+        // the admin-configured fallback is the recovery path.
+      })
+    return () => {
+      alive = false
+    }
+  }, [loader])
+
+  return (
+    <PublicLayout>
+      <div className='mx-auto w-full max-w-3xl px-6 py-10'>
+        <h1 className='text-fg-primary mt-6 mb-2 text-2xl font-semibold'>
+          {title}
+        </h1>
+        <div className={PROSE_CLASSES}>
+          {Doc ? (
+            <Doc components={{ Callout }} locale={locale} />
+          ) : (
+            <Skeleton className='h-4 w-full' />
+          )}
+        </div>
+      </div>
+    </PublicLayout>
+  )
 }
 
 /**

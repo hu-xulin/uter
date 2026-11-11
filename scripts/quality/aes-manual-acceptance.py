@@ -177,7 +177,7 @@ INVENTORY = [
     ("P06", "M06-01", "code review gate sign-off", "HUMAN_SIGNOFF", [], "no independent review recorded"),
     ("P06", "M06-02", "complexity / duplication / maintainability audit", "LOCAL_PARTIAL", ["MA-09", "L1-09"], "knip + oxlint executed; maintainability judgement still needs a reviewer"),
     ("P07", "M07-01", "Electron main/renderer isolation, CSP, IPC, preload security", "HUMAN_SIGNOFF", [], "security review of the Electron boundary not executed"),
-    ("P07", "M07-02", "docs-web / electron / web full build matrix", "LOCAL_PARTIAL", ["MA-10", "MA-11", "L2-07"], "web build executed; docs-web/electron builds depend on locally installed dependencies"),
+    ("P07", "M07-02", "web (native docs) / electron full build matrix", "LOCAL_PARTIAL", ["MA-10", "MA-11", "L2-07"], "web build executed with native docs assets verified; electron build depends on locally installed dependencies"),
     ("P07", "M07-03", "installer and upgrade verification", "EXTERNAL_ENVIRONMENT", [], "needs signed installers and an upgrade target"),
     ("P08", "M08-01", "independent Agent behaviour-consistency test across task types", "EXTERNAL_ENVIRONMENT", [], "only one task type has been executed"),
     ("P08", "M08-02", "third-party Agent runtime discovery cross-check", "EXTERNAL_ENVIRONMENT", [], "needs a second live Agent runtime"),
@@ -227,9 +227,13 @@ CASES = [
          cwd=".", tool="go", timeout=900),
     dict(id="MA-09", title="unused-code / duplication signal (knip)",
          command="bun run knip", cwd="web", tool="bun", timeout=420),
-    dict(id="MA-10", title="docs-web build",
-         command="if [ ! -d node_modules ]; then echo 'NOT_RUN: docs-web/node_modules missing'; exit 2; fi; npm run build",
-         cwd="docs-web", tool="npm", timeout=900),
+    # docs-web (the separate Next.js static export) was retired with the
+    # native-docs convergence. The equivalent build-coverage item now has to
+    # prove that a real `web/` build emits the SPA shell, the MDX chunks and
+    # every native docs static asset — not merely that `next build` exited 0.
+    dict(id="MA-10", title="web build + native docs assets",
+         command="bun run build:check && bash ../scripts/verify-docs-artifacts.sh dist",
+         cwd="web", tool="bun", timeout=900),
     dict(id="MA-11", title="electron build",
          command="if [ ! -d node_modules ]; then echo 'NOT_RUN: electron/node_modules missing'; exit 2; fi; npx electron-builder --dir",
          cwd="electron", tool="npm", timeout=900),

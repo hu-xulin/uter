@@ -140,7 +140,7 @@ type LegalDocId = keyof typeof LEGAL_ROUTES
 // container's gap controls spacing.
 //
 // Each link keeps a real, independently resolvable destination as its `href`
-// — the bundled docs page, `/docs/<locale>/legal/<doc>/` — but a plain left
+// — the bundled docs page, `/docs/<locale>/legal/<doc>` — but a plain left
 // click is routed in-app through {@link LEGAL_ROUTES}, so the reader stays
 // under the app shell. The `href` is what a crawler, a link unfurler or
 // anyone the reader shares the URL with follows; modified clicks (middle

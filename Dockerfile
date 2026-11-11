@@ -9,16 +9,9 @@ RUN bun install --frozen-lockfile
 COPY ./web ./
 RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat /build/VERSION) bun run build
 
-# --- 文档静态站 ---
-# 必须在前端之后、go build 之前构建：docs-web 的 postbuild 会把静态导出拷进
-# web/dist/docs-content，而 Go 用 go:embed web/dist 把前端与文档一起打进二进制。
-# 漏掉这一步不会编译报错，只会得到一个「能跑但没有文档」的镜像——这正是发布
-# 验收要挡住的缺陷。顺序也不能反：先跑 docs 会被 web 的构建清掉。
-WORKDIR /build/docs-web
-COPY docs-web/package.json docs-web/bun.lock ./
-RUN bun install --frozen-lockfile
-COPY ./docs-web ./
-RUN bun run build
+# 文档已经完整收敛进 SPA：MDX 正文编译成 web/dist/static/js 下的异步 chunk，
+# 7 份搜索索引与 user-guide 截图由 `bun run build` 从 web/public 拷进 web/dist。
+# 因此这里不再有第二个 Next.js 静态站构建，也不存在「先构建谁」的顺序约束。
 
 # 工具链版本与 go.mod 的 go 指令保持一致（1.27.3）。go1.27.1 的标准库带 11 个
 # 已公布漏洞（net/http、net/http2、crypto/tls、crypto/x509、net/textproto），
@@ -47,8 +40,9 @@ RUN go mod download
 
 COPY . .
 COPY --from=frontend /build/web/dist ./web/dist
-# go:embed 只会嵌入存在的文件：文档站漏构建时编译照样通过，镜像却没有文档。
-# 这里复用发布链路共用的校验脚本，把「静默缺文档」变成构建失败。
+# go:embed 只会嵌入存在的文件：前端漏构建时编译照样通过，镜像却没有 SPA
+# 外壳、文档 chunk、搜索索引和截图。这里复用发布链路共用的校验脚本，
+# 把「静默缺文档产物」变成构建失败。
 # builder2 是中间层、不进最终镜像，装 bash 不增加产物体积。
 RUN apk add --no-cache bash
 RUN ./scripts/verify-docs-artifacts.sh web/dist

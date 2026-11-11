@@ -7533,9 +7533,9 @@
     "Response model: {{model}}": "Response model: {{model}}",
     "Upstream Model": "Upstream Model",
     "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.": "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md": "ドキュメントアドレス：完全な URL またはリポジトリからの相対 Markdown パス（例: docs-web/content/legal/zh/user-agreement.md）",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md": "ドキュメントアドレス：完全な URL またはリポジトリからの相対 Markdown パス（例: docs-web/content/legal/zh/privacy-policy.md）",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md": "ドキュメントアドレス：完全な URL またはリポジトリからの相対 Markdown パス（例: docs-web/content/legal/zh/recharge-agreement.md）",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx": "ドキュメントアドレス：完全な URL またはリポジトリからの相対 Markdown パス（例: web/src/docs-content/legal/zh/user-agreement.mdx）",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx": "ドキュメントアドレス：完全な URL またはリポジトリからの相対 Markdown パス（例: web/src/docs-content/legal/zh/privacy-policy.mdx）",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx": "ドキュメントアドレス：完全な URL またはリポジトリからの相対 Markdown パス（例: web/src/docs-content/legal/zh/recharge-agreement.mdx）",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.": "本文を貼り付ける代わりにドキュメントアドレスを参照します。完全な URL または Markdown ファイルパス（ドキュメントルートからの相対パス）を指定できます。空欄の場合は組み込みの既定ユーザー契約を使用します。",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.": "本文を貼り付ける代わりにドキュメントアドレスを参照します。完全な URL または Markdown ファイルパス（ドキュメントルートからの相対パス）を指定できます。空欄の場合は組み込みの既定プライバシーポリシーを使用します。",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.": "本文を貼り付ける代わりにドキュメントアドレスを参照します。完全な URL または Markdown ファイルパス（ドキュメントルートからの相対パス）を指定できます。空欄の場合は組み込みの既定チャージ契約を使用します。",
@@ -7782,6 +7782,11 @@
     "Output modalities": "出力モダリティ",
     "Spec source": "スペック情報ソース",
     "Spec source unavailable": "スペック情報ソースを利用できません",
-    "{{count}} models matched": "{{count}} 件のモデルに一致"
+    "{{count}} models matched": "{{count}} 件のモデルに一致",
+    "docs.search.title": "ドキュメント検索",
+    "docs.search.placeholder": "ドキュメントを検索…",
+    "docs.search.loading": "検索インデックスを読み込み中…",
+    "docs.search.noResults": "一致するドキュメントがありません",
+    "docs.toc.heading": "このページの内容"
   }
 }

@@ -274,4 +274,3 @@ it('colours the whole legal row like the tertiary text token', async () => {
   expect(brand?.className).not.toContain('font-medium')
   expect(brand?.className).not.toContain('font-semibold')
 })
-

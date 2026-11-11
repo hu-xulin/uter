@@ -9,11 +9,11 @@ import (
 // 取舍说明：
 //   - 不设置 X-Powered-By：Go/Gin 默认本就不输出，显式声明避免上游网关补写。
 //   - CSP 只约束 frame-ancestors / object-src / base-uri，**刻意不约束 script-src**：
-//     web/index.html 与 docs-web 的 bootstrap 都有内联 <script>（主题防闪烁），
-//     一旦上 script-src 'self' 会直接把首屏打白。真正的 script-src 需要先做
-//     nonce/hash 改造，属独立工作项，不在本次上线加固范围内。
-//   - frame-ancestors 'self' 不会误伤文档站：SPA 的 /docs、/about 是同源 iframe
-//     （/docs-content/...），同源被允许；拦的是第三方站点点击劫持。
+//     web/index.html 的主题防闪烁脚本是内联的，一旦上 script-src 'self' 会直接把
+//     首屏打白。真正的 script-src 需要先做 nonce/hash 改造，属独立工作项，
+//     不在本次上线加固范围内。
+//   - frame-ancestors 'self' 拦的是第三方站点点击劫持。文档、About 与法务页现在
+//     都是 SPA 自己的路由（同源），不再走 iframe，因此这里不需要为它们开口子。
 //   - 不设置 Cross-Origin-Opener-Policy，避免影响 OAuth / 支付等弹窗流程。
 func SecurityHeaders() gin.HandlerFunc {
 	return func(c *gin.Context) {

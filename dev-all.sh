@@ -9,7 +9,7 @@
 # Ctrl+C 一次性停止全部子进程。日志同时落盘，便于事后回看。
 #
 # 与 rebuild-all.sh 的关系（务必先读）：
-#   rebuild-all.sh = **构建 + 发布**：rsbuild → docs-web → go build（VERSION 自增）
+#   rebuild-all.sh = **构建 + 发布**：rsbuild（含原生文档）→ go build（VERSION 自增）
 #                    → detached 启动 uter-bin（独立会话，脚本退出后仍存活）→ 体检。
 #                    它是「代码改动后」的默认动作，逻辑只有这一份，**不要复制**。
 #   dev-all.sh     = **联调编排**：只跑不编译。把已构建好的 uter-bin 连同 uter-cs、
@@ -27,7 +27,7 @@
 #   检测到并告警，但不会自动重启 —— 请Ctrl+C 后重跑。
 #
 # 服务清单：
-#   3000  uter            AI 网关本体（Go 二进制，内嵌 SPA + 文档站）
+#   3000  uter            AI 网关本体（Go 二进制，内嵌 SPA + 原生文档）
 #   3200  uter-cs         智能客服（挂件 + /api/rag/search）
 #   3500  rag-shim        RAG 零依赖测试桩
 #   3510  rag-adapter     RAG 适配器（本地语料 + SiliconFlow 向量）
@@ -276,7 +276,7 @@ trap cleanup INT TERM
 if [ "$DO_BUILD" = 1 ]; then
   echo ""
   echo "==> 构建中（委托 rebuild-all.sh --no-restart，不动端口 3000）"
-  echo "${C_DIM}    web/ → docs-web/ → go build（VERSION 自增）${C_OFF}"
+  echo "${C_DIM}    web/ → go build（VERSION 自增）${C_OFF}"
   if [ ! -x "$ROOT/rebuild-all.sh" ]; then
     echo "✗ 缺少 $ROOT/rebuild-all.sh，无法 --build（去掉 --build 可直接跑现有二进制）" >&2
     exit 1
@@ -303,7 +303,7 @@ for port in 3000 3200 3500 3510; do
 done
 
 echo ""
-echo "  ${C_UTER}uter${C_OFF}       http://127.0.0.1:3000   AI 网关（控制台 / 文档站）"
+echo "  ${C_UTER}uter${C_OFF}       http://127.0.0.1:3000   AI 网关（控制台 / 原生文档）"
 echo "  ${C_CS}uter-cs${C_OFF}     http://127.0.0.1:3200   智能客服 + RAG 检索"
 echo "  ${C_SHIM}rag-shim${C_OFF}   http://127.0.0.1:3500   RAG 测试桩"
 echo "  ${C_ADAPTER}rag-adapter${C_OFF} http://127.0.0.1:3510 RAG 适配器（真实语料）"

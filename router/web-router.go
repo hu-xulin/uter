@@ -2,9 +2,7 @@ package router
 
 import (
 	"embed"
-	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/uter-ai/uter/common"
@@ -21,54 +19,15 @@ type WebAssets struct {
 	IndexPage []byte
 }
 
-// Docs hosting model
+// SetWebRouter serves the SPA and its static assets from `web/dist`.
 //
-// The SPA owns the clean, encoding-free host routes `/docs` and
-// `/docs/<lang>/<page>` (see `web/src/routes/docs.tsx` and
-// `web/src/routes/docs/$.tsx`), which render the app shell and frame the
-// statically exported docs site. The exported content itself lives under
-// the Next.js `basePath` `/docs-content` (set in
-// `docs-web/next.config.mjs`) and is copied to `web/dist/docs-content`
-// by `docs-web/scripts/copy-to-web.mjs`; this router mounts that
-// directory at `/docs-content`, serving the real pages from
-// `/docs-content/docs/<lang>/<page>` and `/docs-content/about/<lang>/...`.
-//
-// Because the SPA claims every `/docs/*` path, this file no longer needs
-// the legacy `/docs/*` redirect helpers that used to funnel unknown docs
-// paths back to a landing — the SPA route tree handles those.
-
-// docsContentMount is the URL prefix the statically exported docs + About
-// site is served from. It must match the Next.js `basePath` in
-// `docs-web/next.config.mjs` and the copy target in
-// `docs-web/scripts/copy-to-web.mjs`, and the SPA's
-// `web/src/lib/docs-link.ts#DOCS_CONTENT_PREFIX`, so the framed content and
-// the clean `/docs/<lang>/<page>` host routes stay in lockstep.
-const docsContentMount = "/docs-content"
-
+// The docs, About and legal pages are native SPA routes now (`/docs/...`,
+// `/about`, `/<legal-doc>`): their MDX is compiled into lazy chunks and
+// their images / search indexes ship as ordinary files under `web/dist`.
+// There is no second static site to mount, no separate content prefix and
+// no disk hot-swap directory — everything below is one embedded tree.
 func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.HandlerFunc) {
 	frontendFS := common.EmbedFolder(assets.BuildFS, "web/dist")
-
-	// The Next.js docs + About site builds a fully static export into
-	// `web/dist/docs-content/` (under the `/docs-content` basePath set in
-	// `docs-web/next.config.mjs`). Mount it at `/docs-content` so the real
-	// pages are served from `/docs-content/docs/<lang>/...` and
-	// `/docs-content/about/<lang>/...`. The SPA keeps the clean `/docs/...`
-	// host routes (which frame this content), so `/docs-content/...` never
-	// collides with them. `/dashboard` and the rest of the SPA still fall
-	// through to `web/dist/index.html` via the NoRoute handler below.
-	docsDir := os.Getenv("UTER_DOCS_DIR")
-	docsFS := common.EmbedFolder(assets.BuildFS, "web/dist/docs-content")
-	// docsDiskDir stays empty unless we actually serve from disk, so the ETag
-	// middleware stays a no-op for the embedded copy.
-	docsDiskDir := ""
-	if docsDir != "" {
-		if info, err := os.Stat(docsDir); err == nil && info.IsDir() {
-			docsFS = common.DiskFolder(docsDir)
-			docsDiskDir = docsDir
-		} else {
-			log.Printf("[web] UTER_DOCS_DIR=%q is not a directory; serving docs from the embedded build", docsDir)
-		}
-	}
 
 	router.Use(
 		middleware.RouteTag("web"),
@@ -76,13 +35,6 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 		// 引擎级注册一次）：web 路径始终压缩，relay 路径仅当 costopt.GzipEnabled
 		// 时压缩。此处不再单独注册 gzip，避免两层 gzip 叠加造成整页乱码。
 		middleware.Cache(),
-		// The SPA owns every `/docs/*` path now (clean host routes that
-		// frame the exported content), so there is no legacy `/docs/*`
-		// redirect to perform here — the SPA route tree resolves or 404s
-		// those internally. The exported content is served from
-		// `/docs-content/...` by the `static.Serve("/docs-content", ...)`
-		// mount at the end of this `Use` chain, which does not intercept
-		// `/docs/*`.
 		// The shipped icon file is `web/public/favicon-legacy.ico`, not
 		// `favicon.ico`: Rsbuild auto-detects `public/favicon.{ico,png,svg}`
 		// and injects an un-versioned `<link rel="icon" href="/favicon.ico">`
@@ -105,17 +57,6 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 			}
 			c.Next()
 		},
-		// Attach a content-based ETag to the docs tree *before* the static handler
-		// serves it, and short-circuit matching `If-None-Match` requests with
-		// 304. Needed because the docs are `no-cache` (they revalidate on
-		// every load) and revalidation on `Last-Modified` alone goes stale
-		// when ops hot-update via `rsync -a`, which preserves mtimes. A
-		// content hash changes whenever the bytes change, so a replaced page
-		// is picked up immediately. Must be registered before
-		// `static.Serve`, which answers existing files without calling
-		// `c.Next()`.
-		middleware.DiskETag(docsContentMount, docsDiskDir),
-		static.Serve(docsContentMount, docsFS),
 	)
 
 	router.NoRoute(

@@ -43,18 +43,18 @@ func TestDiskFolder(t *testing.T) {
 	}
 
 	fsys := DiskFolder(dir)
-	const prefix = "/docs-content"
+	const prefix = "/static"
 
 	cases := []struct {
 		path string
 		want bool
 	}{
-		{"/docs-content/docs/zh/index.html", true},
-		{"/docs-content/docs/zh/", true}, // dir with index.html resolves
-		{"/docs-content/robots.txt", true},
-		{"/docs-content/noindex/", false}, // dir without index.html
-		{"/docs-content/missing.html", false},
-		{"/docs-content/", false}, // root defers to the SPA shell
+		{"/static/docs/zh/index.html", true},
+		{"/static/docs/zh/", true}, // dir with index.html resolves
+		{"/static/robots.txt", true},
+		{"/static/noindex/", false}, // dir without index.html
+		{"/static/missing.html", false},
+		{"/static/", false}, // root defers to the SPA shell
 		{"/elsewhere/docs/zh/index.html", false},
 	}
 	for _, tc := range cases {

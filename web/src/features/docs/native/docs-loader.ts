@@ -30,6 +30,7 @@ import {
   docsModulePath,
   type NativeDocRef,
 } from './docs-content'
+import { UserGuideIndex } from './user-guide-index'
 
 /**
  * The native docs loader — the content-source layer that replaces the
@@ -58,6 +59,16 @@ export function loadNativeDoc(
   locale: DocsLocaleCode,
   ref: NativeDocRef
 ): (() => Promise<NativeDocModule>) | null {
+  // The guide's landing is synthesised (chapter cards), not a Markdown
+  // document — its "module" is always available.
+  if (ref.set === 'user-guide' && ref.slug === 'index') {
+    return () =>
+      Promise.resolve({
+        default: UserGuideIndex as unknown as ComponentType<
+          Record<string, unknown>
+        >,
+      })
+  }
   const suffix = `/docs-content/${docsModulePath(ref, locale)}`
   for (const [key, loader] of Object.entries(modules)) {
     if (key.endsWith(suffix)) {
@@ -89,9 +100,7 @@ export function nativeDocsTarget(
   let pagePath = DOCS_LANDING_SEGMENT
 
   if (pathname.startsWith(`${DOCS_ENTRY_PATH}/`)) {
-    const rest = pathname
-      .slice(DOCS_ENTRY_PATH.length + 1)
-      .replace(/\/+$/, '')
+    const rest = pathname.slice(DOCS_ENTRY_PATH.length + 1).replace(/\/+$/, '')
     if (rest !== '') {
       const slash = rest.indexOf('/')
       const first = slash === -1 ? rest : rest.slice(0, slash)

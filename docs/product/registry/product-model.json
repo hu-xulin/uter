@@ -36793,7 +36793,7 @@
         ],
         "code": [
           "router/web-router.go",
-          "docs-web/",
+          "web/src/docs-content/",
           "web/src/lib/docs-link.ts"
         ],
         "models": [

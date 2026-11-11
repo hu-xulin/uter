@@ -47,18 +47,19 @@ func TestSecurityHeadersSetsBaselineHeaders(t *testing.T) {
 	assert.Empty(t, header.Get("X-Powered-By"), "must not advertise the stack")
 }
 
-// TestSecurityHeadersKeepSameOriginFramingAllowed locks in that the docs site —
-// which the SPA embeds in a same-origin iframe — is still framable by us.
+// TestSecurityHeadersKeepSameOriginFramingAllowed locks in that our own
+// pages — the docs are an SPA route now, not a framed export — are still
+// framable by us.
 func TestSecurityHeadersKeepSameOriginFramingAllowed(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 	router.Use(SecurityHeaders())
-	router.GET("/docs-content/docs/zh", func(c *gin.Context) { c.String(http.StatusOK, "docs") })
+	router.GET("/docs/zh", func(c *gin.Context) { c.String(http.StatusOK, "docs") })
 
 	recorder := httptest.NewRecorder()
-	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/docs-content/docs/zh", nil))
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/docs/zh", nil))
 	require.Equal(t, http.StatusOK, recorder.Code)
 	assert.Contains(t, recorder.Header().Get("Content-Security-Policy"), "frame-ancestors 'self'")
-	// script-src must stay unset: the SPA/docs bootstrap use inline theme scripts.
+	// script-src must stay unset: the SPA bootstrap uses an inline theme script.
 	assert.NotContains(t, recorder.Header().Get("Content-Security-Policy"), "script-src")
 }

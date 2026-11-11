@@ -89,36 +89,34 @@ run L1-19 L1 "ruby scripts/quality/test-registry-draft-state.rb"
 run L1-20 L1 "bash scripts/quality/gitleaks-allowlist.test.sh"
 
 # ---------------- L2 Integration Gate ----------------
-# §8.3 build-order precondition. main.go embeds BOTH `web/dist` and
-# `all:web/dist/docs-content/_next`, so Go compilation fails outright when either
-# target is missing — a prerequisite defect, not a Go code defect.
+# §8.3 build-order precondition. main.go embeds `web/dist` and
+# `web/dist/index.html`, so Go compilation fails outright when the SPA shell is
+# missing — a prerequisite defect, not a Go code defect. On top of that, a
+# NON-EMPTY index.html makes isPlaceholderFrontend() false, so
+# main_docs_test.go then requires the real native docs assets (7 search indexes
+# + user-guide screenshots). A half-built dist would make L2-01 fail for a
+# harness reason rather than a product reason.
 #
-# Do NOT paper over this with scripts/quality/ensure-go-embed-artifacts.sh. That
-# helper is correct for a backend-only CI job that never runs main_docs_test.go,
-# but here it actively corrupts the evidence: it creates an empty docs skeleton
-# while web/dist/index.html may be a REAL build. isPlaceholderFrontend() keys off
-# index.html being empty, so that combination is judged "not a placeholder" and
-# TestEmbeddedBinaryCarriesTheDocsSite then fails on a docs export that this
-# script itself reduced to a stub. The failure would be caused by the harness,
-# not by the product.
+# Do NOT paper over this with scripts/quality/ensure-go-embed-artifacts.sh:
+# that helper only guarantees compilation (empty index.html) and is correct for
+# backend-only CI jobs, not for this integration matrix.
 #
-# Instead restore the real artifacts the way the project itself does: reuse the
-# docs-web export if it exists (it is a shared output, not rebuilt on every run),
-# then hard-fail on incomplete artifacts rather than letting a downstream test
-# discover the gap indirectly.
+# The retired docs-web static export no longer exists; the ONLY source of these
+# assets is `cd web && bun run build`. Build it when the tree is incomplete,
+# then hard-fail on any remaining gap rather than letting a downstream test
+# discover it indirectly. L2-01..L2-07 commands, assertions and exit-code
+# semantics are unchanged.
 if [ "$QUICK" -eq 0 ]; then
-  DOCS_OUT="$ROOT/docs-web/out"
-  DIST_DOCS="$ROOT/web/dist/docs-content"
-  if [ -d "$DOCS_OUT" ] && [ ! -s "$DIST_DOCS/docs/zh/index.html" ]; then
-    node "$ROOT/docs-web/scripts/copy-to-web.mjs" || exit 4
-    echo "# restored docs export from docs-web/out into web/dist/docs-content" >&2
+  if ! "$ROOT/scripts/quality/ensure-embed-for-verification.sh" >/dev/null 2>&1; then
+    echo "# native docs assets missing; building web/ before the L2 Go leg" >&2
+    if [ -d "$ROOT/web/dist" ]; then
+      PREBUILD="${TMPDIR:-/tmp}/aes-dist-before-L2-precondition-$$"
+      mv "$ROOT/web/dist" "$PREBUILD" || exit 4
+      echo "# moved stale web/dist to $PREBUILD (safe-delete workaround)" >&2
+    fi
+    (cd "$ROOT/web" && bun run build) || exit 4
   fi
-  if [ ! -s "$ROOT/web/dist/index.html" ] || [ ! -d "$DIST_DOCS" ]; then
-    # Neither a real frontend build nor a docs export is present. Fail loudly
-    # here instead of emitting misleading FAILs from L2-01/L2-05.
-    echo "# FATAL: web/dist is not buildable for go:embed (spa=$ROOT/web/dist/index.html docs=$DIST_DOCS)" >&2
-    exit 6
-  fi
+  "$ROOT/scripts/verify-docs-artifacts.sh" "$ROOT/web/dist" || exit 6
   run L2-01 L2 "GOWORK=off go test ./..." "$ROOT"
   run L2-02 L2 "GOWORK=off go test ./..." "$ROOT/relaykit"
   run L2-03 L2 "GOWORK=off go test ./..." "$ROOT/tokenkit"
@@ -139,19 +137,14 @@ if [ "$QUICK" -eq 0 ]; then
     echo "# build hygiene before L2-07: moved web/dist to $DIST_PREBUILD" >&2
   fi
   run L2-07 L2 "bun run build:check" "$ROOT/web"
-  # Host build-environment restoration (§8.3: still NO command, assertion or
-  # exit-code semantics changed). build:check rebuilds web/dist from scratch, so
-  # the docs static export produced by docs-web's postbuild is no longer present.
-  # main_docs_test.go requires the COMPLETE export (all language landing pages,
-  # about pages and _next assets), not just a placeholder directory. Restore it
-  # with the project's own postbuild script — only when missing, so that no
-  # deletion is issued and the host safe-delete guard is never engaged. This
-  # leaves the workspace in a state where a subsequent `go test ./...` is valid.
-  if [ ! -d "$ROOT/web/dist/docs-content" ]; then
-    node "$ROOT/docs-web/scripts/copy-to-web.mjs" || exit 5
-    bash "$ROOT/scripts/verify-docs-artifacts.sh" "$ROOT/web/dist" || exit 5
-    echo "# build hygiene after L2-07: restored docs static export into web/dist" >&2
-  fi
+  # Post-build verification (§8.3: still NO command, assertion or exit-code
+  # semantics changed). build:check generates the 7 search indexes and copies
+  # web/public (screenshots, apps-assets, …) into web/dist itself, so there is
+  # no second export to restore any more. Still assert the complete native docs
+  # asset set here: a subsequent `go test ./...` is only valid when the tree is
+  # complete, and a silent gap must not be left for a downstream job to find.
+  bash "$ROOT/scripts/verify-docs-artifacts.sh" "$ROOT/web/dist" || exit 5
+  echo "# build hygiene after L2-07: native docs assets verified in web/dist" >&2
   # UTER P13 business-domain evidence (§4 / §16.3, 14th domain): real targeted
   # payment/billing/relay Go suites and wallet/pricing frontend suites.
   run L2-08 L2 "GOWORK=off go test ./controller/... ./service/... ./model/... -run 'Alipay|TopUp|Recharge|Billing|Gateway|DreamRouter'" "$ROOT"

@@ -7533,9 +7533,9 @@
     "Response model: {{model}}": "Response model: {{model}}",
     "Upstream Model": "Upstream Model",
     "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.": "The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md": "Địa chỉ tài liệu: URL đầy đủ hoặc đường dẫn Markdown tương đối với kho lưu trữ, ví dụ docs-web/content/legal/zh/user-agreement.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md": "Địa chỉ tài liệu: URL đầy đủ hoặc đường dẫn Markdown tương đối với kho lưu trữ, ví dụ docs-web/content/legal/zh/privacy-policy.md",
-    "Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md": "Địa chỉ tài liệu: URL đầy đủ hoặc đường dẫn Markdown tương đối với kho lưu trữ, ví dụ docs-web/content/legal/zh/recharge-agreement.md",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/user-agreement.mdx": "Địa chỉ tài liệu: URL đầy đủ hoặc đường dẫn Markdown tương đối với kho lưu trữ, ví dụ web/src/docs-content/legal/zh/user-agreement.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/privacy-policy.mdx": "Địa chỉ tài liệu: URL đầy đủ hoặc đường dẫn Markdown tương đối với kho lưu trữ, ví dụ web/src/docs-content/legal/zh/privacy-policy.mdx",
+    "Document address: a full URL or a repo-relative Markdown path, e.g. web/src/docs-content/legal/zh/recharge-agreement.mdx": "Địa chỉ tài liệu: URL đầy đủ hoặc đường dẫn Markdown tương đối với kho lưu trữ, ví dụ web/src/docs-content/legal/zh/recharge-agreement.mdx",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.": "Tham chiếu địa chỉ tài liệu thay vì dán nội dung. Chấp nhận URL đầy đủ hoặc đường dẫn tệp Markdown (được phân giải tương đối với thư mục gốc tài liệu). Để trống để dùng thỏa thuận người dùng mặc định có sẵn.",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.": "Tham chiếu địa chỉ tài liệu thay vì dán nội dung. Chấp nhận URL đầy đủ hoặc đường dẫn tệp Markdown (được phân giải tương đối với thư mục gốc tài liệu). Để trống để dùng chính sách bảo mật mặc định có sẵn.",
     "Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.": "Tham chiếu địa chỉ tài liệu thay vì dán nội dung. Chấp nhận URL đầy đủ hoặc đường dẫn tệp Markdown (được phân giải tương đối với thư mục gốc tài liệu). Để trống để dùng thỏa thuận nạp tiền mặc định có sẵn.",
@@ -7782,6 +7782,11 @@
     "Output modalities": "Định dạng đầu ra",
     "Spec source": "Nguồn thông số",
     "Spec source unavailable": "Không thể truy cập nguồn thông số",
-    "{{count}} models matched": "Đã khớp {{count}} mô hình"
+    "{{count}} models matched": "Đã khớp {{count}} mô hình",
+    "docs.search.title": "Tìm kiếm tài liệu",
+    "docs.search.placeholder": "Tìm kiếm tài liệu…",
+    "docs.search.loading": "Đang tải chỉ mục tìm kiếm…",
+    "docs.search.noResults": "Không tìm thấy tài liệu phù hợp",
+    "docs.toc.heading": "Trên trang này"
   }
 }

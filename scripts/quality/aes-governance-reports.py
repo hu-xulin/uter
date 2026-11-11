@@ -476,7 +476,7 @@ written.append(write(
     f"`{selftest['passed']}/{selftest['total_cases']}`; manual-acceptance collector "
     f"PASS {MA_SUMMARY.get('PASS', 0)} / FAIL {MA_SUMMARY.get('FAIL', 0)} / "
     f"NOT_RUN {MA_SUMMARY.get('NOT_RUN', 0)} (visual regression {ma('MA-01')}, "
-    f"coverage gate {ma('MA-13')}, knip {ma('MA-09')}, docs-web build {ma('MA-10')}, "
+    f"coverage gate {ma('MA-13')}, knip {ma('MA-09')}, native docs build {ma('MA-10')}, "
     f"electron build {ma('MA-11')}, accessibility probe {ma('MA-12')}). "
     f"Non-PASS checks remain OPEN: {MA_NON_PASS_TEXT}.\n\n"
     "Open quality items:\n\n"

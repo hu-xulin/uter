@@ -126,7 +126,6 @@ For commercial licensing, please contact support@uter.ai
      两者曾同时存在（一个零引用），见 `tokens/semantic.css`。 */
 }
 
-
 /* Dark-theme brand gradient: preserve the blue-violet identity with AA contrast. */
 :root.dark {
   --ds-color-brand-gradient-from: #8b8df5;

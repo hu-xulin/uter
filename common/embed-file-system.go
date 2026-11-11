@@ -117,11 +117,9 @@ func EmbedFolder(fsEmbed embed.FS, targetPath string) static.ServeFileSystem {
 
 // DiskFolder adapts a real filesystem directory to the ServeFileSystem
 // interface used by gin-contrib/static. Unlike EmbedFolder, it reads from
-// disk at request time, so the docs export can be updated in place (e.g.
-// rsync the latest `docs-web` build into the directory) without rebuilding
-// the binary or restarting the server. The directory root must contain the
-// same layout as the embedded `web/dist/docs-content` (i.e. `docs/`,
-// `about/`, ...), because the SPA frames `/docs-content/<lang>/...`.
+// disk at request time, so a hot-swappable tree (e.g. the i18n bundles under
+// `UTER_I18N_DIR`) can be updated in place without rebuilding the binary or
+// restarting the server.
 //
 // Serve from disk only when the directory actually exists; the caller falls
 // back to EmbedFolder otherwise so a missing/misconfigured path never takes
@@ -136,7 +134,7 @@ type diskFileSystem struct {
 
 // Exists mirrors embedFileSystem.Exists: a path is servable if it names a
 // regular file, or a directory that contains an index.html. The mount root
-// (empty path) returns false so bare `/docs-content/` falls through to the
+// (empty path) returns false so the bare mount prefix falls through to the
 // SPA shell, matching the embedded behaviour.
 func (d *diskFileSystem) Exists(prefix string, requestPath string) bool {
 	if !strings.HasPrefix(requestPath, prefix) {

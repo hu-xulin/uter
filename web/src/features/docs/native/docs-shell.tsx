@@ -18,11 +18,13 @@ For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
 import { sidebarEntries, type SidebarNode } from './docs-content'
+import { DocsSearchButton, DocsSearchDialog } from './docs-search'
 
 /** One entry of the in-page table of contents. */
 export type TocItem = { depth: 2 | 3; text: string; id: string }
@@ -47,6 +49,7 @@ function TreeItem({
   depth: number
   activeSplat: string
 }) {
+  const { t } = useTranslation()
   const splat = splatOf(node.url)
   const [open, setOpen] = useState(
     subtreeContains(node, activeSplat) || node.defaultOpen === true
@@ -60,9 +63,9 @@ function TreeItem({
       <Link
         to='/docs/$'
         params={{ _splat: splat }}
-        className={`block rounded-md py-1.5 pr-2 text-dense no-underline transition-colors hover:bg-muted ${
+        className={`text-dense hover:bg-muted block rounded-md py-1.5 pr-2 no-underline transition-colors ${
           isActive
-            ? 'bg-accent font-medium text-accent-foreground'
+            ? 'bg-accent text-accent-foreground font-medium'
             : 'text-fg-secondary'
         }`}
         style={indent}
@@ -75,14 +78,14 @@ function TreeItem({
   return (
     <div>
       <div
-        className='flex items-center rounded-md py-1.5 pr-2 transition-colors hover:bg-muted'
+        className='hover:bg-muted flex items-center rounded-md py-1.5 pr-2 transition-colors'
         style={indent}
       >
         {node.noIndex ? (
           <button
             type='button'
             onClick={() => setOpen((v) => !v)}
-            className='flex min-w-0 flex-1 items-center gap-1 bg-transparent text-left text-dense font-medium text-fg-secondary'
+            className='text-dense text-fg-secondary flex min-w-0 flex-1 items-center gap-1 bg-transparent text-left font-medium'
           >
             <span className='min-w-0 truncate'>{node.title}</span>
           </button>
@@ -92,7 +95,7 @@ function TreeItem({
             params={{ _splat: splat }}
             className={`flex min-w-0 flex-1 items-center no-underline ${
               isActive
-                ? 'font-medium text-accent-foreground'
+                ? 'text-accent-foreground font-medium'
                 : 'text-fg-secondary'
             }`}
           >
@@ -102,9 +105,9 @@ function TreeItem({
         <button
           type='button'
           aria-expanded={open}
-          aria-label={node.title}
+          aria-label={`${t(open ? 'Collapse' : 'Expand')} ${node.title}`}
           onClick={() => setOpen((v) => !v)}
-          className='ml-1 shrink-0 text-fg-secondary opacity-70 transition-opacity hover:opacity-100'
+          className='text-fg-secondary ml-1 shrink-0 opacity-70 transition-opacity hover:opacity-100'
         >
           <svg
             width='12'
@@ -138,16 +141,19 @@ function TreeItem({
 }
 
 function DocsToc({ items }: { items: TocItem[] }) {
+  const { t } = useTranslation()
   if (items.length === 0) return null
   return (
-    <nav aria-label='Table of contents' className='text-dense'>
-      <p className='mb-2 px-2 font-medium text-fg-secondary'>目录</p>
+    <nav aria-label={t('docs.toc.heading')} className='text-dense'>
+      <p className='text-fg-secondary mb-2 px-2 font-medium'>
+        {t('docs.toc.heading')}
+      </p>
       <ul className='space-y-1'>
         {items.map((item) => (
           <li key={item.id}>
             <a
               href={`#${item.id}`}
-              className={`block rounded px-2 py-1 text-fg-secondary no-underline transition-colors hover:bg-muted hover:text-fg-primary ${
+              className={`text-fg-secondary hover:bg-muted hover:text-fg-primary block rounded px-2 py-1 no-underline transition-colors ${
                 item.depth === 3 ? 'pl-5' : ''
               }`}
             >
@@ -182,15 +188,18 @@ export function NativeDocsShell({
   toc: TocItem[]
   children: React.ReactNode
 }) {
+  const { t } = useTranslation()
   const entries = sidebarEntries(locale)
   const activeSplat = `${locale}/${pagePath}`
+  const [searchOpen, setSearchOpen] = useState(false)
 
   return (
     <PublicLayout showMainContainer={false}>
       <div className='h-16 shrink-0' aria-hidden='true' />
       <div className='mx-auto flex w-full max-w-[1440px] items-start'>
         <aside className='sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
-          <nav aria-label='Docs'>
+          <DocsSearchButton onOpen={() => setSearchOpen(true)} />
+          <nav aria-label={t('Docs')}>
             {entries.map((entry) => (
               <TreeItem
                 key={entry.url}
@@ -208,6 +217,7 @@ export function NativeDocsShell({
           <DocsToc items={toc} />
         </aside>
       </div>
+      <DocsSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </PublicLayout>
   )
 }

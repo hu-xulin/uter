@@ -16,51 +16,51 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Outlet,
+  useNavigate,
+  useRouterState,
+} from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DocsViewer } from '@/features/docs'
 import { nativeDocsTarget } from '@/features/docs/native/docs-loader'
 import { NativeDocsView } from '@/features/docs/native/native-docs-view'
 import { resolveDocsLocaleCode } from '@/lib/docs-link'
 
 /**
- * Layout route for `/docs`. It owns the docs shell — and deliberately
- * renders the viewer *here*, in the layout that survives every child
- * swap, rather than in the two children below.
+ * Layout route for `/docs` — fully native since the docs-web retirement.
+ * It renders the docs shell itself (sidebar tree, article, table of
+ * contents) and survives every child swap, so the bare entry
+ * (`routes/docs/index.tsx`) and the clean `/docs/<lang>/<page>` URL
+ * (`routes/docs/$.tsx`) both draw through this component while the shell
+ * stays mounted.
  *
- * During the Path 2 convergence this layout serves **two renderers**:
- *
- * - `NativeDocsView` — an in-shell MDX page (no iframe) when the
- *   requested page has been migrated into `web/src/docs-content/`;
- * - `DocsViewer` — the framed Next.js export, for every page that has
- *   not migrated yet.
- *
- * The fallback keeps the whole documentation reachable while the
- * migration proceeds set by set; once every page renders natively the
- * iframe branch and `docs-web` are retired together.
- *
- * The bare entry (`routes/docs/index.tsx`) and the clean `/docs/<lang>/<page>`
- * URL (`routes/docs/$.tsx`) are **sibling** routes, so the viewer rendered
- * here must read the current page from the location — the one place that
- * always names it — exactly like the iframe viewer does.
+ * An unknown splat (a stale link to a removed page, a stray
+ * `/docs/legacy/…`) redirects to the locale landing so old URLs keep
+ * working instead of 404ing inside the shell.
  */
 function DocsRoute() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const navigate = useNavigate()
   const { i18n } = useTranslation()
+  const docsLocale = resolveDocsLocaleCode(i18n.language)
 
-  const target = nativeDocsTarget(
-    pathname,
-    resolveDocsLocaleCode(i18n.language)
-  )
+  const target = nativeDocsTarget(pathname, docsLocale)
+
+  // `nativeDocsTarget` resolves the landing for the bare entry; a splat
+  // that names no page (or a locale we do not ship) falls back to it.
+  useEffect(() => {
+    if (target) return
+    navigate({ to: '/docs/$', params: { _splat: docsLocale }, replace: true })
+  }, [target, docsLocale, navigate])
+
+  if (!target) return null
 
   return (
     <>
-      {target ? (
-        <NativeDocsView locale={target.locale} pagePath={target.pagePath} />
-      ) : (
-        <DocsViewer />
-      )}
+      <NativeDocsView locale={target.locale} pagePath={target.pagePath} />
       <Outlet />
     </>
   )

@@ -16,15 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { MDXProvider } from '@mdx-js/react'
 import { useNavigate } from '@tanstack/react-router'
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ComponentType,
-} from 'react'
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { resolveDocsLocaleCode, type DocsLocaleCode } from '@/lib/docs-link'
@@ -42,7 +35,7 @@ import { NativeDocsShell, type TocItem } from './docs-shell'
  * Anchored headings get `scroll-mt` so a TOC click clears the fixed
  * public header.
  */
-const PROSE_CLASSES = [
+export const PROSE_CLASSES = [
   'max-w-none text-long',
   '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:scroll-mt-20',
   '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:scroll-mt-20',
@@ -154,9 +147,11 @@ export function NativeDocsView({
     <NativeDocsShell locale={locale} pagePath={pagePath} toc={toc}>
       <div ref={articleRef} className={PROSE_CLASSES}>
         {Doc ? (
-          <MDXProvider components={{ Callout }}>
-            <Doc />
-          </MDXProvider>
+          // The compiled MDX resolves `_components` from `props.components`
+          // first, so the Callout is passed explicitly — the `MDXProvider`
+          // context is unreliable across the CJS/ESM boundary of the lazy
+          // chunks.
+          <Doc components={{ Callout }} locale={locale} />
         ) : null}
       </div>
     </NativeDocsShell>

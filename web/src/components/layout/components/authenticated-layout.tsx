@@ -19,7 +19,6 @@ For commercial licensing, please contact support@uter.ai
 import { CommandMenu } from '@/components/command-menu'
 import { AnimatedOutlet } from '@/components/page-transition'
 import { SkipToMain } from '@/components/skip-to-main'
-import { PublicPageGlow } from './public-page-glow'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { LayoutProvider } from '@/context/layout-provider'
 import { SearchProvider } from '@/context/search-provider'
@@ -28,6 +27,7 @@ import { cn } from '@/lib/utils'
 
 import { AppHeader } from './app-header'
 import { AppSidebar } from './app-sidebar'
+import { PublicPageGlow } from './public-page-glow'
 
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
@@ -39,7 +39,10 @@ export function AuthenticatedLayout(props: AuthenticatedLayoutProps) {
   return (
     <LayoutProvider>
       <SearchProvider>
-        <SidebarProvider defaultOpen={defaultOpen} className='relative flex-col'>
+        <SidebarProvider
+          defaultOpen={defaultOpen}
+          className='relative flex-col'
+        >
           {/*
             与定价页同款顶部品牌辉光：覆盖顶栏 + 左栏 + 内容区顶部，
             让已登录外壳与定价页背景连续一致。装饰性（aria-hidden /
