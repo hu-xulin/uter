@@ -17,7 +17,7 @@ import {
 import { createHash } from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
-import { headCompatibility } from './build-traceability.mjs'
+import { headCompatibility, governanceHeadCompatibility } from './build-traceability.mjs'
 
 export const TOOL_ID = 'uter-evidence-harness@1.0.0'
 export const STATE_MODEL = [
@@ -97,6 +97,7 @@ export function run({ aesRoot = null, root = ROOT } = {}) {
     product_head: uterHead, governance_head: aesHead,
     entry_count: entries.length, entries,
     policy: { max_age_hours: 24, rule: 'Every artefact hash must recompute; HEAD must be current; age <= 24h; non-zero exits are never PASS.' },
+    governance_head_policy: governanceHeadCompatibility(aesHead, aesRoot),
   }
   writeFileSync(join(root, '.aes/reports/evidence/UTER-EVIDENCE-MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
   // A stable top-level copy is what the hard gates and reports consume.
@@ -106,13 +107,20 @@ export function run({ aesRoot = null, root = ROOT } = {}) {
   return manifest
 }
 
-export function verify({ root = ROOT, maxAgeHours = 24, manifestRel = '.aes/reports/UTER-EVIDENCE-MANIFEST.json' } = {}) {
+export function verify({ root = ROOT, maxAgeHours = 24, manifestRel = '.aes/reports/UTER-EVIDENCE-MANIFEST.json', aesRoot = null } = {}) {
   const abs = join(root, manifestRel)
   if (!existsSync(abs)) return { verdict: 'FAIL', errors: [`manifest missing: ${manifestRel}`] }
   const m = JSON.parse(readFileSync(abs, 'utf8'))
   const errors = []
   const head = headCompatibility(m.product_head, gitHead(root), root)
   if (!head.ok) errors.push(`Uter HEAD mismatch: ${head.reason}`)
+  // The manifest also binds the AES revision the evidence was produced against.
+  // Carrying a 40-hex SHA is not enough: the bound revision must still be
+  // reachable from the current AES HEAD without any governed input having
+  // moved (P0 rule: evidence whose SHA does not match the current revision
+  // must FAIL, not PASS).
+  const govHead = governanceHeadCompatibility(m.governance_head, aesRoot)
+  if (!govHead.ok) errors.push(`AES HEAD mismatch: ${govHead.reason}`)
   const ageH = (Date.now() - new Date(m.generated_at).getTime()) / 3600000
   if (!Number.isFinite(ageH) || ageH > maxAgeHours) errors.push(`evidence stale: ${ageH.toFixed(1)}h > ${maxAgeHours}h`)
   if ((m.entry_count || 0) < 11) errors.push(`evidence catalogue incomplete: ${m.entry_count}/11`)
@@ -131,6 +139,7 @@ export function verify({ root = ROOT, maxAgeHours = 24, manifestRel = '.aes/repo
     harness_id: TOOL_ID, verdict: errors.length ? 'FAIL' : 'PASS',
     age_hours: Number(ageH.toFixed(2)), entry_count: m.entry_count,
     head_policy: head,
+    governance_head_policy: govHead,
     status_counts: (m.entries || []).reduce((a, e) => { a[e.status] = (a[e.status] || 0) + 1; return a }, {}),
     error_count: errors.length, errors,
   }
@@ -144,7 +153,7 @@ if (isCli) {
   const root = argv.includes('--root') ? resolve(argv[argv.indexOf('--root') + 1]) : ROOT
   if (argv[0] === 'run') { run({ aesRoot, root }) }
   else {
-    const r = verify({ root })
+    const r = verify({ root, aesRoot })
     console.log(JSON.stringify(r, null, 2))
     process.exitCode = r.verdict === 'PASS' ? 0 : 1
   }

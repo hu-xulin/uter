@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import {
   REQUIRED_FIELDS, STATE_MODEL, validateRecord, validateSource,
-  headCompatibility, isOutputOnlyPath, build, verify,
+  headCompatibility, isOutputOnlyPath, build, verify, governanceHeadCompatibility,
 } from './build-traceability.mjs'
 
 const now = () => new Date().toISOString()
@@ -167,6 +167,54 @@ test('NC-09: tampering with one byte of the matrix is detected', () => {
     assert.equal(r.verdict, 'FAIL')
     assert.ok(r.errors.some((e) => e.includes('SHA-256 mismatch')))
   } finally { cleanup(root) }
+})
+
+test('NC-11: a moved AES revision that changed a governed input invalidates the binding', () => {
+  // Fixture "AES" repository: its own harness declares the output-only policy,
+  // exactly like the real AES repository does.
+  const aes = mkdtempSync(join(tmpdir(), 'aes-policy-'))
+  const ute = mkdtempSync(join(tmpdir(), 'uter-bind-'))
+  try {
+    git(aes, ['init', '-q'])
+    mkdirSync(join(aes, 'quality', 'scripts', 'aes'), { recursive: true })
+    writeFileSync(join(aes, 'quality/scripts/aes/governance-evidence-harness.mjs'),
+      "export const OUTPUT_ONLY_PREFIXES = [\n  'reports/',\n]\n")
+    mkdirSync(join(aes, 'standards'), { recursive: true })
+    writeFileSync(join(aes, 'standards', 'spec.md'), '# governed input\n')
+    commitAll(aes, 'aes seed')
+    const aesHead = git(aes, ['rev-parse', 'HEAD']).stdout.trim()
+
+    // 1. exact binding is accepted
+    let r = governanceHeadCompatibility(aesHead, aes)
+    assert.equal(r.ok, true, r.reason)
+    assert.equal(r.reason, 'EXACT')
+
+    // 2. an output-only AES commit keeps the binding valid
+    mkdirSync(join(aes, 'reports'), { recursive: true })
+    writeFileSync(join(aes, 'reports', 'out.json'), '{}\n')
+    commitAll(aes, 'aes evidence-only commit')
+    r = governanceHeadCompatibility(aesHead, aes)
+    assert.equal(r.ok, true, r.reason)
+    assert.equal(r.reason, 'EVIDENCE_ONLY_COMMITS')
+
+    // 3. a commit touching a governed AES input breaks the binding
+    writeFileSync(join(aes, 'standards', 'spec.md'), '# governed input changed\n')
+    commitAll(aes, 'aes governed-input commit')
+    r = governanceHeadCompatibility(aesHead, aes)
+    assert.equal(r.ok, false)
+    assert.match(r.reason, /changed governed input/)
+
+    // 4. fail-closed when the AES output-only policy cannot be read
+    rmSync(join(aes, 'quality/scripts/aes/governance-evidence-harness.mjs'))
+    r = governanceHeadCompatibility(aesHead, aes)
+    assert.equal(r.ok, false)
+    assert.match(r.reason, /fail-closed/)
+
+    // 5. fail-closed when no AES checkout is supplied
+    r = governanceHeadCompatibility(aesHead, null)
+    assert.equal(r.ok, false)
+    assert.match(r.reason, /no AES checkout/)
+  } finally { cleanup(aes); cleanup(ute) }
 })
 
 test('NC-10: deleting the matrix fails closed', () => {

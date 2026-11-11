@@ -21,7 +21,7 @@ import {
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { join, resolve, dirname } from 'node:path'
-import { headCompatibility } from './build-traceability.mjs'
+import { headCompatibility, governanceHeadCompatibility } from './build-traceability.mjs'
 
 export const TOOL_ID = 'uter-governance-hard-gates@1.0.0'
 export const STATE_MODEL = [
@@ -81,6 +81,7 @@ export function baselineCtx() {
     },
     manifestAgeHours: 0.1,
     headPolicy: { ok: true, reason: 'EXACT' },
+    governanceHeadPolicy: { ok: true, reason: 'EXACT' },
     agent: {
       default_effect: 'DENY',
       execution_policy: {
@@ -151,7 +152,11 @@ export const RULES = [
     if (!/^[0-9a-f]{40}$/.test(c.manifest.product_head || '') || !/^[0-9a-f]{40}$/.test(c.manifest.governance_head || '')) {
       return bad('evidence manifest does not carry valid AES + Uter HEAD SHAs')
     }
-    return ok(`evidence bound to current AES + Uter HEAD (${c.headPolicy.reason})`)
+    if (!c.governanceHeadPolicy?.ok) {
+      return bad(`AES HEAD mismatch: ${c.governanceHeadPolicy?.reason || 'unknown'}`)
+    }
+    return ok(`evidence bound to current AES + Uter HEAD `
+      + `(Uter: ${c.headPolicy.reason}; AES: ${c.governanceHeadPolicy.reason})`)
   }],
   ['HG-08', 'Agent privilege escalation', (c) => {
     const a = c.agent || {}
@@ -249,6 +254,12 @@ export function buildContext({ root = resolve(process.env.UTER_ROOT || process.c
   const headPolicy = manifest?.product_head
     ? headCompatibility(manifest.product_head, gitHead(root), root)
     : { ok: false, reason: 'manifest has no product_head' }
+  // The evidence is also bound to an AES revision. That binding is only
+  // meaningful if the bound revision is still current for the AES governed
+  // inputs, so it is judged with the AES repository's own output-only policy.
+  const governanceHeadPolicy = manifest?.governance_head
+    ? governanceHeadCompatibility(manifest.governance_head, aesRoot)
+    : { ok: false, reason: 'manifest has no governance_head' }
 
   const workflows = {}
   const wfDir = join(root, '.github/workflows')
@@ -312,7 +323,7 @@ export function buildContext({ root = resolve(process.env.UTER_ROOT || process.c
     normativeAuthorityCount: (integration.match(/^\*\*Normative authority:\*\*/gm) || []).length,
     records, implementationPathsMissing: implementationPathsMissing.slice(0, 20),
     negativeSuitesExist: NEGATIVE_SUITES.every((p) => existsSync(join(root, p))),
-    manifest, manifestAgeHours, headPolicy,
+    manifest, manifestAgeHours, headPolicy, governanceHeadPolicy,
     agent: yamlToJson(root, '.aes/agent-governance.yaml') || {},
     workflows, pinCheck, fingerprint, aesStandards,
   }

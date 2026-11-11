@@ -76,6 +76,14 @@ test('NC-08 / HG-07: evidence bound to a different revision FAILs', () => {
   rejects('HG-07', ctx, /HEAD mismatch/)
   const ctx2 = baseline(); ctx2.manifest.product_head = 'not-a-sha'
   rejects('HG-07', ctx2, /valid AES \+ Uter HEAD SHAs/)
+  // The AES revision the evidence was produced against must still be current
+  // for the AES governed inputs; a moved AES HEAD is a SHA mismatch.
+  const ctx3 = baseline()
+  ctx3.governanceHeadPolicy = { ok: false, reason: 'commit deadbeef changed governed input quality/scripts/aes/spec-integrity.mjs' }
+  rejects('HG-07', ctx3, /AES HEAD mismatch/)
+  const ctx4 = baseline()
+  ctx4.governanceHeadPolicy = { ok: false, reason: 'cannot read the AES output-only policy (fail-closed)' }
+  rejects('HG-07', ctx4, /AES HEAD mismatch/)
 })
 
 test('NC-09 / HG-08: agent privilege escalation FAILs', () => {

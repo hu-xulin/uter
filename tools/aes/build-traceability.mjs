@@ -50,8 +50,31 @@ export const OUTPUT_ONLY_PREFIXES = [
   'reports/', 'docs/governance/reports/',
 ]
 
-export function isOutputOnlyPath(p) {
-  return OUTPUT_ONLY_PREFIXES.some((prefix) => p.startsWith(prefix))
+export function isOutputOnlyPath(p, prefixes = OUTPUT_ONLY_PREFIXES) {
+  return prefixes.some((prefix) => p.startsWith(prefix))
+}
+
+/**
+ * Load the AES repository's own output-only prefix list so that cross-repo
+ * HEAD compatibility is judged by the SAME rule the AES harness applies.
+ * Reading the AES source of truth instead of duplicating the list here
+ * removes the drift risk of two independently maintained policies.
+ *
+ * The list is parsed from the AES harness source synchronously (the hard-gate
+ * evaluator is a sync API). A parse failure is fail-closed: the caller must
+ * treat "no list" as "nothing is output-only", never as "everything is".
+ */
+export function aesOutputOnlyPrefixes(aesRoot) {
+  if (!aesRoot) return null
+  const harness = join(aesRoot, 'quality/scripts/aes/governance-evidence-harness.mjs')
+  if (!existsSync(harness)) return null
+  try {
+    const src = readFileSync(harness, 'utf8')
+    const m = src.match(/export const OUTPUT_ONLY_PREFIXES\s*=\s*\[([\s\S]*?)\]/)
+    if (!m) return null
+    const prefixes = [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1])
+    return prefixes.length ? prefixes : null
+  } catch { return null }
 }
 
 function sha256(buf) { return createHash('sha256').update(buf).digest('hex') }
@@ -60,7 +83,7 @@ function gitHead(root) {
   return r.status === 0 ? r.stdout.trim() : null
 }
 
-export function headCompatibility(evidenceHead, currentHead, root) {
+export function headCompatibility(evidenceHead, currentHead, root, outputOnlyPrefixes = OUTPUT_ONLY_PREFIXES) {
   if (!evidenceHead || !currentHead) return { ok: false, reason: 'HEAD unavailable' }
   if (evidenceHead === currentHead) return { ok: true, reason: 'EXACT', commits: 0 }
   const anc = spawnSync('git', ['-C', root, 'merge-base', '--is-ancestor', evidenceHead, currentHead])
@@ -71,12 +94,36 @@ export function headCompatibility(evidenceHead, currentHead, root) {
   for (const sha of shas) {
     const names = spawnSync('git', ['-C', root, 'show', '--pretty=format:', '--name-only', sha], { encoding: 'utf8' })
     if (names.status !== 0) return { ok: false, reason: `cannot inspect ${sha.slice(0, 8)}`, commits: shas.length }
-    const substantive = names.stdout.trim().split('\n').filter(Boolean).filter((p) => !isOutputOnlyPath(p))
+    const substantive = names.stdout.trim().split('\n').filter(Boolean).filter((p) => !isOutputOnlyPath(p, outputOnlyPrefixes))
     if (substantive.length) {
       return { ok: false, reason: `commit ${sha.slice(0, 8)} changed governed input ${substantive[0]}`, commits: shas.length }
     }
   }
   return { ok: true, reason: 'EVIDENCE_ONLY_COMMITS', commits: shas.length }
+}
+
+/**
+ * Cross-repository HEAD compatibility: is the AES revision that Uter's
+ * evidence was bound to still current?
+ *
+ * The P0 rule "evidence whose SHA does not match the current revision must
+ * FAIL" is not satisfied by merely carrying a 40-hex SHA in the manifest.
+ * The bound AES revision must still be reachable from the AES HEAD, and every
+ * intervening AES commit must touch only paths the AES harness itself
+ * classifies as output-only. Otherwise the AES governed inputs moved and the
+ * Uter evidence is stale even though the Uter tree did not change.
+ */
+export function governanceHeadCompatibility(evidenceHead, aesRoot) {
+  if (!evidenceHead) return { ok: false, reason: 'manifest carries no governance_head' }
+  if (!aesRoot) return { ok: false, reason: 'no AES checkout provided (--aes-root)' }
+  const current = gitHead(aesRoot)
+  if (!current) return { ok: false, reason: 'cannot read AES HEAD' }
+  const prefixes = aesOutputOnlyPrefixes(aesRoot)
+  if (!prefixes) {
+    return { ok: false, reason: 'cannot read the AES output-only policy (fail-closed)', commits: -1 }
+  }
+  const r = headCompatibility(evidenceHead, current, aesRoot, prefixes)
+  return { ...r, current_head: current, policy_source: 'AES quality/scripts/aes/governance-evidence-harness.mjs' }
 }
 
 function nonEmpty(v) {
