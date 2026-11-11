@@ -1,8 +1,8 @@
 # Uter Final Compliance Report — AES Conformance
 
-**Generated:** 2026-11-11T14:54:42.617Z
-**Uter HEAD:** `b54f64366fa99353cb78ddc6f55b3977a7b7a5c7`
-**AES HEAD:** `f29867a4f3e8f92cf0e02ea1333ac0968d37145c`
+**Generated:** 2026-11-11T17:16:20.402Z
+**Uter HEAD:** `258ae27c5f94dfd8aa7ef6469f2f703a505c1c50`
+**AES HEAD:** `e7fb66dcc8ae246e244e19195d69c22c6cd2e928`
 **AES pin:** registry 1.12.2 / ACTIVE, fingerprint `74af90a42971f175…`
 **Integration status:** `MIGRATION_PENDING` — this remains MIGRATION_PENDING and is NOT a compliance certificate.
 
@@ -12,7 +12,7 @@
 |---|---|
 | Branch policy (main-only) | PASS_WITH_PENDING_APPROVAL |
 | 10 hard governance gates | PASS (10/10 PASS) |
-| Execution evidence harness | 12/12 PASS |
+| Execution evidence harness | PASS (12/12 PASS, SHA-bound) |
 | 2,150-requirement traceability | PASS (coverage only, NOT per-requirement compliance) |
 | Agent/Skills runtime load | PASS (?/? loaded) |
 | Agent runtime policy selftest | PASS (20/20 cases) |

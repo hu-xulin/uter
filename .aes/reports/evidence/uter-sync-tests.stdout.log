@@ -2,25 +2,25 @@ TAP version 13
 # Subtest: detect parses quoted YAML version with indentation
 ok 1 - detect parses quoted YAML version with indentation
   ---
-  duration_ms: 15.54448
+  duration_ms: 16.385437
   type: 'test'
   ...
 # Subtest: detect reports registry drift and never promotes Uter conformance
 ok 2 - detect reports registry drift and never promotes Uter conformance
   ---
-  duration_ms: 10.214996
+  duration_ms: 10.721628
   type: 'test'
   ...
 # Subtest: check-only mode is side-effect free
 ok 3 - check-only mode is side-effect free
   ---
-  duration_ms: 11.884819
+  duration_ms: 12.679934
   type: 'test'
   ...
 # Subtest: processing records detection but preserves non-conformant state
 ok 4 - processing records detection but preserves non-conformant state
   ---
-  duration_ms: 13.370112
+  duration_ms: 14.502679
   type: 'test'
   ...
 1..4
@@ -31,4 +31,4 @@ ok 4 - processing records detection but preserves non-conformant state
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 193.10227
+# duration_ms 207.444527

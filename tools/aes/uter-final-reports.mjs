@@ -7,6 +7,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
+import { headCompatibility, governanceHeadCompatibility } from './build-traceability.mjs'
 
 const ROOT = resolve(process.env.UTER_ROOT || process.cwd())
 const AES_ROOT = resolve(process.env.AES_ROOT || '/Users/lincolnhu/aes')
@@ -62,6 +63,19 @@ const pinTestEntry = evidenceManifest?.entries?.find((e) => e.id === 'uter-pin-t
 // 1 — Final compliance report (markdown, human-readable)
 const hardCounts = hardGates?.summary?.counts || {}
 const evCounts = evidenceManifest?.entries?.reduce((a, e) => { a[e.status] = (a[e.status] || 0) + 1; return a }, {}) || {}
+// SHA bindings: green command results alone are not enough if the evidence is
+// bound to a revision that is no longer current (P0 rule: evidence whose SHA
+// does not match the current revision must FAIL, not PASS).
+const productBinding = evidenceManifest
+  ? headCompatibility(evidenceManifest.product_head, uterHead, ROOT)
+  : { ok: false, reason: 'no evidence manifest' }
+const governanceBinding = evidenceManifest
+  ? governanceHeadCompatibility(evidenceManifest.governance_head, AES_ROOT)
+  : { ok: false, reason: 'no evidence manifest' }
+const evidenceVerdict = !evidenceManifest ? 'NOT_RUN'
+  : (evCounts.FAIL ? 'FAIL'
+    : (!productBinding.ok ? 'FAIL'
+      : (!governanceBinding.ok ? 'FAIL' : 'PASS')))
 const finalMd = `# Uter Final Compliance Report — AES Conformance
 
 **Generated:** ${COMMON.generated_at}
@@ -76,7 +90,7 @@ const finalMd = `# Uter Final Compliance Report — AES Conformance
 |---|---|
 | Branch policy (main-only) | ${branchPolicy?.verdict || branchPolicy?.final_verdict || 'NOT_RUN'} |
 | 10 hard governance gates | ${hardGates?.summary?.verdict || 'NOT_RUN'} (${hardCounts.PASS || 0}/10 PASS) |
-| Execution evidence harness | ${evidenceManifest ? `${evCounts.PASS || 0}/${evidenceManifest.entry_count} PASS` : 'NOT_RUN'} |
+| Execution evidence harness | ${evidenceVerdict} (${evCounts.PASS || 0}/${evidenceManifest?.entry_count ?? 0} PASS, SHA-bound) |
 | 2,150-requirement traceability | ${traceReport?.verdict || 'NOT_RUN'} (coverage only, NOT per-requirement compliance) |
 | Agent/Skills runtime load | ${agentRuntime?.verdict || 'NOT_RUN'} (${agentRuntime?.loaded ?? '?'}/${agentRuntime?.canonical ?? '?'} loaded) |
 | Agent runtime policy selftest | ${runtimeSelftest?.overall || 'NOT_RUN'} (${runtimeSelftest?.passed ?? '?'}/${runtimeSelftest?.total_cases ?? '?'} cases) |
@@ -120,11 +134,23 @@ write('UTER-HARD-GATES-REPORT.json', {
 })
 
 // 4 — Evidence report
+// The verdict must also carry the SHA bindings: green command results alone
+// are not enough if the evidence is bound to a revision that is no longer
+// current (P0 rule: evidence whose SHA does not match the current revision
+// must FAIL, not PASS).
 write('UTER-EVIDENCE-REPORT.json', {
   ...COMMON, report_id: 'UTER-EVIDENCE-REPORT',
-  verdict: evidenceManifest ? (evCounts.FAIL ? 'FAIL' : 'PASS') : 'NOT_RUN',
+  verdict: evidenceVerdict,
   entry_count: evidenceManifest?.entry_count || 0,
   status_counts: evCounts,
+  bindings: {
+    product_head: evidenceManifest?.product_head || null,
+    current_uter_head: uterHead,
+    product_head_policy: productBinding,
+    governance_head: evidenceManifest?.governance_head || null,
+    current_aes_head: aesHead,
+    governance_head_policy: governanceBinding,
+  },
   manifest_evidence: evidence('.aes/reports/UTER-EVIDENCE-MANIFEST.json'),
   entries: (evidenceManifest?.entries || []).map((e) => ({
     id: e.id, status: e.status, exit_code: e.exit_code, duration_ms: e.duration_ms,

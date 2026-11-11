@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-11T14:54:42.617Z",
+  "generated_at": "2026-11-11T17:16:20.402Z",
   "repository": "https://github.com/hu-xulin/uter",
   "local_root": "/Users/lincolnhu/uter",
-  "uther_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
+  "uther_head": "258ae27c5f94dfd8aa7ef6469f2f703a505c1c50",
   "aes_repository": "https://github.com/hu-xulin/aes",
-  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
+  "aes_head": "e7fb66dcc8ae246e244e19195d69c22c6cd2e928",
   "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
   "state_model": [
     "PASS",
@@ -59,13 +59,13 @@
       "id": "HG-06",
       "name": "Stale or missing execution evidence",
       "status": "PASS",
-      "detail": "evidence manifest current (0.01h, 12 entries)"
+      "detail": "evidence manifest current (0.00h, 12 entries)"
     },
     {
       "id": "HG-07",
       "name": "Evidence / current SHA mismatch",
       "status": "PASS",
-      "detail": "evidence bound to current AES + Uter HEAD (EXACT)"
+      "detail": "evidence bound to current AES + Uter HEAD (Uter: EXACT; AES: EXACT)"
     },
     {
       "id": "HG-08",
@@ -89,7 +89,7 @@
   "source_evidence": {
     "path": "reports/final/UTER-GOVERNANCE-HARD-GATES.json",
     "exists": true,
-    "bytes": 2814,
-    "sha256": "151b32e9af42715ef7b940ec41e1f92d557a29aa1fc0bdecb2faf4dbb099436d"
+    "bytes": 2829,
+    "sha256": "4f0f5750b65554b46512a1ceb9f40a5a1825af297817da21e13b241f3292814f"
   }
 }

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-11T14:54:42.617Z",
+  "generated_at": "2026-11-11T17:16:20.402Z",
   "repository": "https://github.com/hu-xulin/uter",
   "local_root": "/Users/lincolnhu/uter",
-  "uther_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
+  "uther_head": "258ae27c5f94dfd8aa7ef6469f2f703a505c1c50",
   "aes_repository": "https://github.com/hu-xulin/aes",
-  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
+  "aes_head": "e7fb66dcc8ae246e244e19195d69c22c6cd2e928",
   "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
   "state_model": [
     "PASS",
@@ -21,119 +21,137 @@
   "status_counts": {
     "PASS": 12
   },
+  "bindings": {
+    "product_head": "258ae27c5f94dfd8aa7ef6469f2f703a505c1c50",
+    "current_uter_head": "258ae27c5f94dfd8aa7ef6469f2f703a505c1c50",
+    "product_head_policy": {
+      "ok": true,
+      "reason": "EXACT",
+      "commits": 0
+    },
+    "governance_head": "e7fb66dcc8ae246e244e19195d69c22c6cd2e928",
+    "current_aes_head": "e7fb66dcc8ae246e244e19195d69c22c6cd2e928",
+    "governance_head_policy": {
+      "ok": true,
+      "reason": "EXACT",
+      "commits": 0,
+      "current_head": "e7fb66dcc8ae246e244e19195d69c22c6cd2e928",
+      "policy_source": "exact match (output-only policy not required)"
+    }
+  },
   "manifest_evidence": {
     "path": ".aes/reports/UTER-EVIDENCE-MANIFEST.json",
     "exists": true,
-    "bytes": 11001,
-    "sha256": "67c0aaa7f2f9bb49ebf9dc30b2a11480679b08b69518e4809ba0c5a1330730f7"
+    "bytes": 11226,
+    "sha256": "0109c32d31cd3dc3f8dc50732b41cc8ed666cad735d1b1a9a230c893b30aa026"
   },
   "entries": [
     {
       "id": "uter-adapter-tests",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 11074,
+      "duration_ms": 10817,
       "tap": {
         "pass": 23,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/integration-adapter.test.mjs",
-      "stdout_sha256": "5f50be6612a2964b73ea027749fa7dc35c0dde90e60d1a183d38568d161e20c3",
+      "stdout_sha256": "8b69b40881dabdbc32d75149058c46ffe8f88735317c90d1ff6be9c3652e1ce1",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-adapter-contract",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 4505,
+      "duration_ms": 4895,
       "tap": {
         "pass": 9,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/integration-adapter.contract.test.mjs",
-      "stdout_sha256": "73a9ef01b54d4e88f046043988ac2a2db69e5177d508f327765e44a6134b86b1",
+      "stdout_sha256": "d8f59e5d4e7981f5938ebc299d8c005162be025f6a02d1239a87ea1f0b2ff80f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-traceability-tests",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 12031,
+      "duration_ms": 12636,
       "tap": {
-        "pass": 15,
+        "pass": 17,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/build-traceability.test.mjs",
-      "stdout_sha256": "2da5afecea62e380d6a952400cb17c597ec792a9558eb855098ba0695a7f3d00",
+      "stdout_sha256": "af6d7b86cad4cbee3d286be46d7e64351fe848712fc35485ca5d290c882d76e4",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-hard-gate-tests",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 333,
+      "duration_ms": 365,
       "tap": {
         "pass": 14,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/uter-governance-hard-gates.test.mjs",
-      "stdout_sha256": "c0bdc962c09cde3f40df653eecd5bf3de827ed61883adad04ab5532d0d1674a7",
+      "stdout_sha256": "758f3337d205e73b27b67784a5f41b9b96a4be186e4e4c8a746223b4538e1f4f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-negative-suites",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 867,
+      "duration_ms": 824,
       "tap": {
         "pass": 2,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/p13-capability-verifier.negative.test.mjs tools/aes/agent-skills-runtime-verify.negative.test.mjs",
-      "stdout_sha256": "faa4eb4baf6ff9c02fd5f6519aa7800b2afccfec36d2a83a09b6a6d07e9b6222",
+      "stdout_sha256": "ca5b86a962bfeb33f4860612c7ab2e343ebeba7622b3c74cd8800b544b19af07",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-integration-check-tests",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 233,
+      "duration_ms": 246,
       "tap": {
         "pass": 4,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test scripts/quality/aes-integration-check.test.mjs",
-      "stdout_sha256": "88f62121cbaa0661100187e1e1bc91ec7d3dd961acb9d145ccaa53f630542d29",
+      "stdout_sha256": "d3bdd5560858d6b171ee6a63477185363a0bbf30b4df6b035b6ccfd32746c134",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-sync-tests",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 293,
+      "duration_ms": 315,
       "tap": {
         "pass": 4,
         "fail": 0
       },
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test .aes/autonomous/engine/sync.test.mjs",
-      "stdout_sha256": "2fd415d9bc19dcce99f1f53ed7e456e07a815785eb0270e5861f5988153366fb",
+      "stdout_sha256": "cf8ca9b71622f2a7959549541f2d3ae6dc17446ad0043633b5ee8bfa4979d191",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-pin-tests",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 27978,
+      "duration_ms": 29637,
       "tap": null,
       "command": "ruby scripts/quality/test-aes-pin-check.rb",
-      "stdout_sha256": "a38da26f0b7077a3b8e54177dc23e825708e1d88d4e166058f780f19d0824333",
+      "stdout_sha256": "c1cb491313f3c55314fd3af27e95fbc1739efb94036bb32782d6aec9ec63878c",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "id": "uter-agent-runtime",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 111,
+      "duration_ms": 117,
       "tap": null,
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node tools/aes/agent-skills-runtime-verify.mjs",
       "stdout_sha256": "95f61062259bbb559ad971a14ee08ec67d2693a474f552f57c89c6fe7205edca",
@@ -143,7 +161,7 @@
       "id": "uter-pin-check",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 2501,
+      "duration_ms": 2575,
       "tap": null,
       "command": "bash scripts/quality/aes-pin-check.sh",
       "stdout_sha256": "e22288807f3b3e0d09df568db8c891f6c185bee053f1a1933ffead9ee377723c",
@@ -153,7 +171,7 @@
       "id": "uter-traceability-verify",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 210,
+      "duration_ms": 209,
       "tap": null,
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node tools/aes/build-traceability.mjs --verify",
       "stdout_sha256": "ea72592d948a65bbef5a7df473012731086bbff807453f5c5ca6aef7de36a85e",
@@ -163,10 +181,10 @@
       "id": "uter-aes-integration",
       "status": "PASS",
       "exit_code": 0,
-      "duration_ms": 465,
+      "duration_ms": 492,
       "tap": null,
       "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node scripts/quality/aes-integration-check.mjs --aes-root /Users/lincolnhu/aes",
-      "stdout_sha256": "bc070972e7c51bc8958fdd6911534696f14cbf7b64e754c2d1a0e1df9b146906",
+      "stdout_sha256": "695ee103ca96630ddc8f04f80bcc4fb5ae664ec2e9fd697ffe0f73a278c0776f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ]

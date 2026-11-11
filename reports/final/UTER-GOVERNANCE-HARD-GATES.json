@@ -1,11 +1,11 @@
 {
   "report_id": "UTER-GOVERNANCE-HARD-GATES",
   "tool_id": "uter-governance-hard-gates@1.0.0",
-  "generated_at": "2026-11-11T14:54:42.452Z",
+  "generated_at": "2026-11-11T17:16:20.217Z",
   "uter_root": "/Users/lincolnhu/uter",
   "aes_root": "/Users/lincolnhu/aes",
-  "uter_head": "b54f64366fa99353cb78ddc6f55b3977a7b7a5c7",
-  "aes_head": "f29867a4f3e8f92cf0e02ea1333ac0968d37145c",
+  "uter_head": "258ae27c5f94dfd8aa7ef6469f2f703a505c1c50",
+  "aes_head": "e7fb66dcc8ae246e244e19195d69c22c6cd2e928",
   "state_model": [
     "PASS",
     "FAIL",
@@ -57,13 +57,13 @@
       "id": "HG-06",
       "name": "Stale or missing execution evidence",
       "status": "PASS",
-      "detail": "evidence manifest current (0.01h, 12 entries)"
+      "detail": "evidence manifest current (0.00h, 12 entries)"
     },
     {
       "id": "HG-07",
       "name": "Evidence / current SHA mismatch",
       "status": "PASS",
-      "detail": "evidence bound to current AES + Uter HEAD (EXACT)"
+      "detail": "evidence bound to current AES + Uter HEAD (Uter: EXACT; AES: EXACT)"
     },
     {
       "id": "HG-08",
@@ -86,8 +86,8 @@
   ],
   "evidence": {
     "manifest": ".aes/reports/UTER-EVIDENCE-MANIFEST.json",
-    "manifest_generated_at": "2026-11-11T14:53:59.350Z",
-    "manifest_age_hours": 0.01,
+    "manifest_generated_at": "2026-11-11T17:16:09.606Z",
+    "manifest_age_hours": 0,
     "head_policy": {
       "ok": true,
       "reason": "EXACT",
