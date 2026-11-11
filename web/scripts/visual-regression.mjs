@@ -44,12 +44,16 @@ try {
 if (browser) {
   for (const theme of THEMES) {
     for (const viewport of VIEWPORTS) {
-      const page = await browser.newPage({
+      // @axe-core/playwright requires a page created from an explicit
+      // browser.newContext(); browser.newPage() creates an implicit context
+      // and makes AxeBuilder.analyze() throw "Please use browser.newContext()".
+      const context = await browser.newContext({
         viewport: { width: viewport.width, height: viewport.height },
         deviceScaleFactor: 1,
         colorScheme: theme,
         reducedMotion: 'reduce',
       })
+      const page = await context.newPage()
       const target = `${theme}/${viewport.id}`
       try {
         await page.goto(pathToFileURL(SHOWCASE).href, { waitUntil: 'load' })
@@ -73,13 +77,46 @@ if (browser) {
           const focusable = [...document.querySelectorAll(
             'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
           )].filter(visible)
-          const unnamed = focusable.filter((el) => {
-            const label = el.getAttribute('aria-label')
+          // Accessible-name computation follows the HTML-AAM / accname
+          // order: aria-labelledby -> aria-label -> native label association
+          // -> text content. Native association covers BOTH the `label[for]`
+          // pattern and the wrapping-`<label>` pattern. The previous
+          // implementation only looked at aria-* and direct text, so correctly
+          // marked-up controls (a `label[for]`-bound input, a checkbox inside
+          // a wrapping label) were reported as unnamed. That produced a false
+          // failure that forced real markup to be degraded, or the audit to be
+          // weakened. An element with no accessible name at all is still
+          // reported, which is what this gate is actually for.
+          const accessibleName = (el) => {
             const labelledBy = el.getAttribute('aria-labelledby')
+            if (labelledBy) {
+              const text = labelledBy.split(/\s+/)
+                .map((id) => document.getElementById(id)?.textContent || '')
+                .join(' ').trim()
+              if (text) return text
+            }
+            const ariaLabel = (el.getAttribute('aria-label') || '').trim()
+            if (ariaLabel) return ariaLabel
+            const tag = el.tagName.toLowerCase()
+            if (tag === 'input' || tag === 'select' || tag === 'textarea' || tag === 'progress' || tag === 'meter') {
+              if (el.id) {
+                const explicit = document.querySelector(`label[for="${CSS.escape(el.id)}"]`)
+                if (explicit && (explicit.textContent || '').trim()) return explicit.textContent.trim()
+              }
+              const wrapping = el.closest('label')
+              if (wrapping && (wrapping.textContent || '').trim()) return wrapping.textContent.trim()
+              const title = (el.getAttribute('title') || '').trim()
+              if (title) return title
+              const placeholder = (el.getAttribute('placeholder') || '').trim()
+              if (placeholder) return placeholder
+            }
             const text = (el.innerText || el.textContent || '').trim()
-            const alt = el.getAttribute('alt')
-            return !label && !labelledBy && !text && !alt
-          })
+            if (text) return text
+            const alt = (el.getAttribute('alt') || '').trim()
+            if (alt) return alt
+            return ''
+          }
+          const unnamed = focusable.filter((el) => accessibleName(el) === '')
           const gradientElements = [...document.querySelectorAll('.ds-text-gradient-brand')].filter(visible)
           const gradientTextSizeFailures = gradientElements.filter((el) => {
             const style = getComputedStyle(el)
@@ -185,7 +222,7 @@ if (browser) {
       } catch (error) {
         add(`VISUAL_A11Y_${target.toUpperCase().replace('/', '_')}`, false, error.message)
       } finally {
-        await page.close()
+        await context.close()
       }
     }
   }

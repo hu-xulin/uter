@@ -29,7 +29,7 @@
   /* 文字色（§2.4 Light） */
   --foreground: #0F172A;
   --foreground-secondary: #334155;
-  --foreground-tertiary: #64748B;
+  --foreground-tertiary: #617187;
   --foreground-disabled: #94A3B8;
   --foreground-inverse: #FFFFFF;
   --foreground-placeholder: #64748B;
@@ -96,13 +96,13 @@
   --term-foreground: #E2E8F0;
   --term-cursor: #5558D8;
   --term-selection: #25264A;
-  --term-command: #047857;
-  --term-flag: #2563EB;
-  --term-property: #0369A1;
-  --term-string: #B45309;
-  --term-number: #7C3AED;
+  --term-command: #2F8F74;
+  --term-flag: #487CEE;
+  --term-property: #3888B5;
+  --term-string: #BE6B2B;
+  --term-number: #9863F1;
   --term-dim-1: #94A3B8;
-  --term-dim-2: #64748B;
+  --term-dim-2: #748297;
 
   /* 字体（§1.1） */
   --font-sans: "Inter", "Source Han Sans SC", "Noto Sans CJK SC",
@@ -667,6 +667,35 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
   html { scroll-behavior: auto; }
   * { transition-duration: 1ms !important; }
 }
+
+/* Responsive（§16.3 · H5 不得出现非预期横向溢出；表格可横向滚动） */
+@media (max-width: 640px) {
+  /* Data tables keep their intrinsic column widths (headers are nowrap), so a
+     table wider than the viewport is placed in a dedicated scroll container.
+     The container is keyboard focusable, so a keyboard-only user can reach
+     and scroll it (WCAG 2.1.1 / axe `scrollable-region-focusable`). */
+  .tbl-scroll {
+    max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+  }
+  .tbl-scroll:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+  /* The typography sample pins the token label to 220px; on a narrow viewport
+     that fixed column plus an unbreakable mono string overflowed the page.
+     The label may shrink and the sample value may wrap. */
+  .type-row { flex-wrap: wrap; gap: 4px 12px; }
+  .type-row .tag { width: auto; flex: 0 1 auto; }
+  .type-row .mono { overflow-wrap: anywhere; }
+  .nav-demo { gap: 16px; }
+  .nav-side { width: 100%; flex: 1 1 100%; }
+  /* Flex items default to min-width:auto, i.e. their min-content width. A
+     table-heavy panel therefore refuses to shrink below its intrinsic width
+     and pushes the document wider than the viewport. min-width:0 lets the
+     item shrink so the scroll container inside it can do its job. */
+  .nav-demo > * { min-width: 0; }
+}
 </style>
 </head>
 <body>
@@ -768,7 +797,7 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
 <section class="demo" id="syntax">
   <h2><span class="no">区域 9</span>语法高亮色 <code style="font-size:13px;color:var(--foreground-tertiary)">§2.9</code></h2>
   <p class="lead">独立 Token、Light / Dark 分别维护；注释 / 关键字 / 字符串等语义角色一致。</p>
-  <pre class="code" id="syntax-demo"><span class="c">// 语法高亮核查样例（语义角色 → Token）</span>
+  <pre class="code" id="syntax-demo" tabindex="0" role="region" aria-label="语法高亮示例代码，可横向滚动"><span class="c">// 语法高亮核查样例（语义角色 → Token）</span>
 <span class="k">async function</span> <span class="f">createChatCompletion</span><span class="u">(</span><span class="p">model</span><span class="u">,</span> <span class="p">messages</span><span class="u">) {</span>
   <span class="k">const</span> maxTokens <span class="u">=</span> <span class="n">1024</span><span class="u">;</span>
   <span class="k">const</span> endpoint <span class="u">=</span> <span class="s">"https://uter.ai/v1/chat/completions"</span><span class="u">;</span>
@@ -781,7 +810,7 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
 <section class="demo" id="terminal">
   <h2><span class="no">区域 10</span>Terminal 演示 Token <code style="font-size:13px;color:var(--foreground-tertiary)">§2.10</code></h2>
   <p class="lead">终端主题独立定义，不与普通 UI 语义色混用；浅色页用项目 AA 补偿值，深色页用提亮档。</p>
-  <pre class="term" id="term-demo">$ <span class="c-cmd">uter</span> <span class="c-flag">chat</span> <span class="c-dim">--model</span> <span class="c-str">"gpt-5.2-turbo"</span> <span class="c-dim">--max-tokens</span> <span class="c-num">4096</span>
+  <pre class="term" id="term-demo" tabindex="0" role="region" aria-label="终端命令示例，可横向滚动">$ <span class="c-cmd">uter</span> <span class="c-flag">chat</span> <span class="c-dim">--model</span> <span class="c-str">"gpt-5.2-turbo"</span> <span class="c-dim">--max-tokens</span> <span class="c-num">4096</span>
 <span class="c-dim">✓ stream connected · latency</span> <span class="c-num">128ms</span>
 <span class="c-prop">usage:</span> input <span class="c-num">1,024</span> + output <span class="c-num">256</span> tokens
 <span class="c-dim">▋</span></pre>
@@ -824,8 +853,8 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
   <div class="comp-card" style="margin-top:14px">
     <h4 style="font-size:18px;line-height:26px;font-weight:600;margin-bottom:10px">卡片标题（padding = --card-padding）</h4>
     <div style="display:flex;flex-direction:column;gap:var(--form-field-gap)">
-      <input class="input" style="width:100%" placeholder="输入框（高度 = --control-md）">
-      <div class="check-row"><span class="switch" role="switch" aria-checked="true" tabindex="0"></span><span>Switch（尺寸不随密度变化）</span></div>
+      <input class="input" style="width:100%" placeholder="输入框（高度 = --control-md）" aria-label="输入框示例">
+      <div class="check-row"><span class="switch" role="switch" aria-checked="true" tabindex="0" aria-label="开关示例"></span><span>Switch（尺寸不随密度变化）</span></div>
     </div>
   </div>
 </section>
@@ -907,7 +936,7 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
     <label class="check-row"><input type="checkbox" checked>勾选标记 ≠ 仅颜色（§11.5）</label>
     <label class="check-row"><input type="radio" name="r1" checked>单选 A</label>
     <label class="check-row"><input type="radio" name="r1">单选 B</label>
-    <span class="check-row"><span class="switch" role="switch" aria-checked="true" tabindex="0"></span>Switch</span>
+    <span class="check-row"><span class="switch" role="switch" aria-checked="true" tabindex="0" aria-label="开关示例"></span>Switch</span>
   </div>
 </section>
 
@@ -939,7 +968,7 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
     <div class="comp-card">
       <h4>Avatar / Progress / Skeleton</h4>
       <div style="display:flex;gap:12px;align-items:center"><span class="avatar">U</span><span class="avatar" style="width:28px;height:28px;font-size:12px">AI</span></div>
-      <div class="progress" style="margin-top:14px" role="progressbar" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+      <div class="progress" style="margin-top:14px" role="progressbar" aria-label="上传进度示例" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"><i></i></div>
       <div class="skel" style="margin-top:14px;width:80%"></div>
     </div>
     <div class="comp-card">
@@ -991,8 +1020,8 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
   <h3 class="sub">焦点环演示（Tab 键聚焦查看）</h3>
   <div class="focus-row">
     <button class="btn btn-primary">按钮 focus-visible</button>
-    <input class="input" style="width:200px" placeholder="输入框 focus">
-    <span class="switch" role="switch" aria-checked="false" tabindex="0"></span>
+    <input class="input" style="width:200px" placeholder="输入框 focus" aria-label="焦点演示输入框">
+    <span class="switch" role="switch" aria-checked="false" tabindex="0" aria-label="焦点演示开关"></span>
     <select class="select" style="width:180px" aria-label="焦点演示下拉"><option>下拉控件</option></select>
   </div>
   <h3 class="sub">触控目标（§15.3 · 推荐 44×44，非 WCAG AA 统一最低要求）</h3>
@@ -1012,6 +1041,25 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
 <div id="copy-toast" role="status" aria-live="polite"></div>
 
 <script>
+/* ═══════════ §16.3 响应式：表格横向滚动容器 ═══════════
+   表格列宽由表头 nowrap 决定，小屏时整体宽于视口。规范允许表格横向滚动，
+   但滚动区域必须可由键盘到达，因此包装层需要 tabindex 与可读名称。 */
+(function wrapTablesForResponsiveScroll() {
+  var tables = document.querySelectorAll('main table.tbl');
+  Array.prototype.forEach.call(tables, function (table) {
+    if (table.parentNode && table.parentNode.classList.contains('tbl-scroll')) return;
+    var wrapper = document.createElement('div');
+    wrapper.className = 'tbl-scroll';
+    wrapper.setAttribute('tabindex', '0');
+    wrapper.setAttribute('role', 'region');
+    var section = table.closest('section.demo');
+    var heading = section ? section.querySelector('h2 .no') : null;
+    var label = heading ? heading.textContent.trim() : '数据表格';
+    wrapper.setAttribute('aria-label', label + ' 数据表格，窄屏可横向滚动');
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
+})();
 /* ═══════════ 工具：WCAG 对比度（真实计算，§19.3）═══════════ */
 function hexToRgb(hex) {
   const m = /^#([0-9a-f]{6})$/i.exec((hex || '').trim());
