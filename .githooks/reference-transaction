@@ -1,0 +1,43 @@
+#!/bin/sh
+# AES / Uter main-only branch policy guard (owner instruction 2026-11-11).
+#
+# Only refs/heads/main may exist as a local branch. Creating any other local
+# branch, or deleting main, is refused at the git reference-transaction layer,
+# which fires for EVERY ref update: `git branch`, `git checkout -b`,
+# `git switch -c`, `git worktree add -b`, rebases and resets included. Static
+# documentation alone does not stop an agent from running `git branch`; this
+# hook does.
+#
+# Install locally (does not require a push):
+#   git config core.hooksPath .githooks
+#
+# A legitimate future branch requires an EXPLICIT owner instruction in the same
+# message that authorises the branch; disable or override this guard only then.
+#
+# Hooks receive the transaction state as $1 and one line per updated ref on
+# stdin: "<old-oid> <new-oid> <ref-name>". Exiting non-zero in the "prepared"
+# state aborts the whole transaction, so a blocked branch never materialises.
+
+state="$1"
+[ "$state" = "prepared" ] || exit 0
+
+zero=0000000000000000000000000000000000000000
+
+while read -r old new ref; do
+  case "$ref" in
+    refs/heads/*)
+      name=${ref#refs/heads/}
+      if [ "$old" = "$zero" ] && [ "$name" != "main" ]; then
+        echo "BLOCKED by main-only branch policy: creation of local branch '$name' is not authorised." >&2
+        echo "Only refs/heads/main may be created. Override this guard only on an explicit owner instruction." >&2
+        exit 1
+      fi
+      if [ "$new" = "$zero" ] && [ "$name" = "main" ]; then
+        echo "BLOCKED by main-only branch policy: deletion of main is forbidden." >&2
+        exit 1
+      fi
+      ;;
+  esac
+done
+
+exit 0
