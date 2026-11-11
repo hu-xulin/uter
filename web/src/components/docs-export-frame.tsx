@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useCallback, useEffect, useRef } from 'react'
 
-import { PublicLayout, PublicPageGlow } from '@/components/layout'
+import { PublicLayout } from '@/components/layout'
 import { useTheme } from '@/context/theme-provider'
 
 /**
@@ -103,7 +103,6 @@ export function DocsExportFrame({ src, title }: DocsExportFrameProps) {
   return (
     <PublicLayout showMainContainer={false}>
       <div className='relative'>
-        <PublicPageGlow />
         <div className='h-16 shrink-0' aria-hidden='true' />
       <iframe
         ref={frameRef}

@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
-import { PublicLayout, PublicPageGlow } from '@/components/layout'
+import { PublicLayout } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Heading } from '@/design-system'
@@ -95,7 +95,6 @@ export function Rankings() {
   return (
     <PublicLayout showMainContainer={false}>
       <div className='relative'>
-        <PublicPageGlow />
         <PageTransition className='max-w-container relative mx-auto w-full space-y-8 px-3 pt-16 pb-10 sm:px-6 sm:pt-20 sm:pb-12 xl:px-8'>
           <RankingsHero period={period} onPeriodChange={handlePeriodChange} />
 
