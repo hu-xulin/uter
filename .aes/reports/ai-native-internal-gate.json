@@ -1,6 +1,6 @@
 {
   "document_id": "UTER-AES-AUTONOMOUS-INTERNAL-ACCEPTANCE",
-  "generated_at": "2026-11-10T20:11:28Z",
+  "generated_at": "2026-11-11T00:46:13Z",
   "generated_by": "Uter AES internal gate",
   "scope": "INTERNAL_GOVERNANCE_ACCEPTANCE_ONLY",
   "aes_git_sha": "f7d018f061e27e153a62a820160d429e72a38ae4",
@@ -92,7 +92,7 @@
       "id": "UTER-AES-09",
       "ran": true,
       "status": "PASS",
-      "detail": "go_tests=523 web_tests=333 workflows=10",
+      "detail": "go_tests=523 web_tests=335 workflows=10",
       "evidence": [
         "go.mod",
         "web/package.json",
@@ -170,7 +170,7 @@
     "not_run_count": 0,
     "failed_count": 0,
     "aes_fingerprint": "3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
-    "uter_head": "9a53e31d84d257d478fe60763cd3063412a4565b",
+    "uter_head": "5d02cf56356d9603402266767bed2321f88e653e",
     "sha256": "8b26ac1df5263fd4ad798f90db4ba8c25935d15450ed5378e8f5929925142d4e",
     "aes_fingerprint_current": true,
     "uter_head_current": false
