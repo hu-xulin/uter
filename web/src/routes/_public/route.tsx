@@ -16,9 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
 
 import { PublicHeader, PublicPageGlow } from '@/components/layout'
+import { EmbedScrollContext } from '@/components/layout/components/public-header-variant'
 
 /**
  * Layout route for every public page (home, docs, about, pricing, rankings,
@@ -37,17 +39,43 @@ import { PublicHeader, PublicPageGlow } from '@/components/layout'
  * public area, so a nav click only swaps the page body underneath it.
  */
 function PublicAreaLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const [embedScrolled, setEmbedScrolled] = useState<boolean | null>(null)
+
+  // 文档/关于页是 iframe 渲染：滚动发生在 iframe 内部，host 窗口不滚动，
+  // `PublicHeader` 自身的 `useScrolled` 永远为 false。被框站点通过
+  // `Uter:docs:scroll` 上报滚动位置，这里把它镜像成 header 的 solid 信号，
+  // 让共享顶栏像普通公开页（定价/排行）一样上划变悬浮。
+  useEffect(() => {
+    const onMessage = (event: MessageEvent<unknown>) => {
+      if (event.origin !== window.location.origin) return
+      const data = event.data as { type?: unknown; y?: unknown } | null
+      if (!data || data.type !== 'Uter:docs:scroll') return
+      const y = typeof data.y === 'number' ? data.y : 0
+      setEmbedScrolled(y > 8)
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [])
+
+  // 离开被框页面时清掉 iframe 信号，使其它公开页回落到 host 自身滚动状态。
+  useEffect(() => {
+    setEmbedScrolled(null)
+  }, [pathname])
+
   return (
-    <div className='relative'>
-      {/*
-        与定价页同款顶部品牌辉光：置于头部之下、内容之上，所有公开页
-        （首页/定价/排行/文档/关于）共享同一顶部紫晕，与定价页背景连续一致。
-        装饰性（aria-hidden / pointer-events-none），不参与可访问性树。
-      */}
-      <PublicPageGlow />
-      <PublicHeader />
-      <Outlet />
-    </div>
+    <EmbedScrollContext.Provider value={embedScrolled}>
+      <div className='relative'>
+        {/*
+          与定价页同款顶部品牌辉光：置于头部之下、内容之上，所有公开页
+          （首页/定价/排行/文档/关于）共享同一顶部紫晕，与定价页背景连续一致。
+          装饰性（aria-hidden / pointer-events-none），不参与可访问性树。
+        */}
+        <PublicPageGlow />
+        <PublicHeader />
+        <Outlet />
+      </div>
+    </EmbedScrollContext.Provider>
   )
 }
 

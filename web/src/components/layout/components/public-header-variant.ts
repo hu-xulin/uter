@@ -28,6 +28,16 @@ For commercial licensing, please contact support@uter.ai
  * the host never scrolls and the header simply stays in its transparent,
  * glow-bearing state.
  */
+import { createContext } from 'react'
+
+/**
+ * Whether an embedded docs/about iframe has been scrolled past the
+ * threshold. `null` means the current page is not an iframe host (so
+ * `PublicHeader` falls back to its own `useScrolled`); a boolean means it
+ * is, and the header mirrors the iframe's scroll state.
+ */
+export const EmbedScrollContext = createContext<boolean | null>(null)
+
 export function shouldUseSolidHeader(
   _pathname: string,
   scrolled: boolean
