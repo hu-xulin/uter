@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useCallback, useEffect, useRef } from 'react'
 
-import { PublicLayout } from '@/components/layout'
+import { PublicLayout, PublicPageGlow } from '@/components/layout'
 import { useTheme } from '@/context/theme-provider'
 
 /**
@@ -102,7 +102,9 @@ export function DocsExportFrame({ src, title }: DocsExportFrameProps) {
 
   return (
     <PublicLayout showMainContainer={false}>
-      <div className='h-16 shrink-0' aria-hidden='true' />
+      <div className='relative'>
+        <PublicPageGlow />
+        <div className='h-16 shrink-0' aria-hidden='true' />
       <iframe
         ref={frameRef}
         src={src}
@@ -111,9 +113,10 @@ export function DocsExportFrame({ src, title }: DocsExportFrameProps) {
         // 同源应用内嵌：需 allow-scripts 执行脚本 + allow-same-origin 才能读父页 DOM
         // 做主题同步（postMessage 桥）。收紧 sandbox 会让主题同步失效。
         sandbox='allow-scripts allow-same-origin'
-        className='w-full border-0'
+        className='relative z-10 w-full border-0 bg-transparent'
         style={{ height: `calc(100svh - ${SPA_HEADER_HEIGHT})` }}
       />
+      </div>
     </PublicLayout>
   )
 }

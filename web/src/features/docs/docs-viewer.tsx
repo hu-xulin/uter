@@ -20,7 +20,7 @@ import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PublicLayout } from '@/components/layout'
+import { PublicLayout, PublicPageGlow } from '@/components/layout'
 import { useTheme } from '@/context/theme-provider'
 import { useStatus } from '@/hooks/use-status'
 import {
@@ -269,7 +269,9 @@ export function DocsViewer() {
 
   return (
     <PublicLayout showMainContainer={false}>
-      <div className='h-16 shrink-0' aria-hidden='true' />
+      <div className='relative'>
+        <PublicPageGlow />
+        <div className='h-16 shrink-0' aria-hidden='true' />
       {/* The framed docs share the SPA's origin, so we keep
           `allow-same-origin`: the host verifies `event.origin ===
           window.location.origin` on every postMessage, and a sandboxed
@@ -299,9 +301,10 @@ export function DocsViewer() {
         title={t('Docs')}
         onLoad={syncTheme}
         sandbox={DOCS_IFRAME_SANDBOX}
-        className='w-full border-0'
+        className='relative z-10 w-full border-0 bg-transparent'
         style={{ height: `calc(100svh - ${SPA_HEADER_HEIGHT})` }}
       />
+      </div>
     </PublicLayout>
   )
 }

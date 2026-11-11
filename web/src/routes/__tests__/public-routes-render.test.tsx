@@ -134,10 +134,18 @@ describe('public routes render through the real route tree', () => {
     expect(screen.queryByText(/Back to Home/)).toBeNull()
   })
 
-  it('renders /about through the docs frame', async () => {
-    renderAt('/about')
+  it('renders /about with the shared page background and solid header', async () => {
+    const { container } = renderAt('/about')
     await waitFor(() => {
-      expect(document.querySelector('iframe')).not.toBeNull()
+      expect(container.querySelector('iframe')).not.toBeNull()
     })
+
+    expect(container.querySelector('[data-public-page-glow]')).not.toBeNull()
+    expect(container.querySelector('iframe')?.className).toContain(
+      'bg-transparent'
+    )
+    expect(container.querySelector('header')?.className).toContain(
+      'bg-background/85'
+    )
   })
 })

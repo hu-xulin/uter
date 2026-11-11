@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PublicLayout } from '@/components/layout'
+import { PublicLayout, PublicPageGlow } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
 import { Heading, Text } from '@/design-system'
 import { useIsSuperAdmin } from '@/hooks/use-admin'
@@ -173,23 +173,7 @@ export function Pricing() {
   return (
     <PublicLayout showMainContainer={false}>
       <div className='relative'>
-        <div
-          aria-hidden
-          className='pointer-events-none absolute inset-x-0 top-0 h-[600px] opacity-20 dark:opacity-10'
-          style={{
-            // 顶部品牌光晕：色相全部派生自 `--primary`，换主题预设时自动跟随，
-            // 不写死 oklch 字面值（旧实现是三段固定色相，换色后仍停在旧蓝）。
-            background: [
-              'radial-gradient(ellipse 60% 50% at 20% 20%, color-mix(in oklch, var(--primary) 80%, transparent) 0%, transparent 70%)',
-              'radial-gradient(ellipse 50% 40% at 80% 15%, color-mix(in oklch, var(--primary) 55%, transparent) 0%, transparent 70%)',
-              'radial-gradient(ellipse 40% 35% at 50% 70%, color-mix(in oklch, var(--primary) 35%, transparent) 0%, transparent 70%)',
-            ].join(', '),
-            maskImage:
-              'linear-gradient(to bottom, black 40%, transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(to bottom, black 40%, transparent 100%)',
-          }}
-        />
+        <PublicPageGlow />
         <PageTransition className='max-w-container-wide relative mx-auto w-full px-3 pt-16 pb-8 sm:px-6 sm:pt-20 sm:pb-10 xl:px-8'>
           <header className='mx-auto mb-5 max-w-3xl pt-5 text-center sm:mb-10 sm:pt-10'>
             <Heading variant='display' level={1}>

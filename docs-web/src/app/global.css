@@ -683,6 +683,18 @@ html[data-docs-embed='true'] {
 }
 
 /*
+ * Framed pages sit on the host's surface rather than on the standalone
+ * site's neutral palette. Letting the frame's html/body be transparent
+ * exposes the SPA's `bg-background` and the shared brand glow underneath,
+ * so docs/about read on the same background as pricing/rankings. Cards and
+ * sidebars keep their own opaque surfaces, so long-form text stays legible.
+ */
+html[data-docs-embed='true'],
+html[data-docs-embed='true'] body {
+  background-color: transparent !important;
+}
+
+/*
  * Below `lg`, Fumadocs keeps a second, compact bar (`#nd-subnav`, its
  * internal id) carrying the search and sidebar triggers. It leads with
  * the same logo + wordmark as the host's header directly above it, so
