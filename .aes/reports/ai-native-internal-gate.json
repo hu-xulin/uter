@@ -1,9 +1,9 @@
 {
   "document_id": "UTER-AES-AUTONOMOUS-INTERNAL-ACCEPTANCE",
-  "generated_at": "2026-11-11T00:46:13Z",
+  "generated_at": "2026-11-11T07:28:06Z",
   "generated_by": "Uter AES internal gate",
   "scope": "INTERNAL_GOVERNANCE_ACCEPTANCE_ONLY",
-  "aes_git_sha": "f7d018f061e27e153a62a820160d429e72a38ae4",
+  "aes_git_sha": "093a5c8b3161603bd04424cf8d2128898266c0f8",
   "verdict": "INTERNAL_ACCEPTED",
   "check_summary": {
     "total": 11,
@@ -16,7 +16,7 @@
       "id": "UTER-AES-01",
       "ran": true,
       "status": "PASS",
-      "detail": "seal_intact=true fingerprint=3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
+      "detail": "seal_intact=true fingerprint=74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
       "evidence": [
         "/home/runner/work/uter/uter/aes/quality/scripts/aes/governed-fingerprint.mjs",
         ".aes/spec-registry/SPECIFICATION-REGISTRY.yaml"
@@ -169,10 +169,10 @@
     "requirement_count": 110,
     "not_run_count": 0,
     "failed_count": 0,
-    "aes_fingerprint": "3ebeb626ff197f4e55cb9020a8a3a6717ebc7589428c732fce0454aef3616ed7",
-    "uter_head": "5d02cf56356d9603402266767bed2321f88e653e",
-    "sha256": "8b26ac1df5263fd4ad798f90db4ba8c25935d15450ed5378e8f5929925142d4e",
-    "aes_fingerprint_current": true,
+    "aes_fingerprint": "74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
+    "uter_head": "1a282baf4e48816a283dca7f0857b166176c33ba",
+    "sha256": "5aa601b3a3d72714d445d7fb9c32ba7b27f41c2d52edc3c04c95342571040d16",
+    "aes_fingerprint_current": false,
     "uter_head_current": false
   },
   "NOT_RUN_never_pass": true,
