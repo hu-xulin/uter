@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
-import { PublicHeader } from '@/components/layout'
+import { PublicHeader, PublicPageGlow } from '@/components/layout'
 
 /**
  * Layout route for every public page (home, docs, about, pricing, rankings,
@@ -38,10 +38,16 @@ import { PublicHeader } from '@/components/layout'
  */
 function PublicAreaLayout() {
   return (
-    <>
+    <div className='relative'>
+      {/*
+        与定价页同款顶部品牌辉光：置于头部之下、内容之上，所有公开页
+        （首页/定价/排行/文档/关于）共享同一顶部紫晕，与定价页背景连续一致。
+        装饰性（aria-hidden / pointer-events-none），不参与可访问性树。
+      */}
+      <PublicPageGlow />
       <PublicHeader />
       <Outlet />
-    </>
+    </div>
   )
 }
 

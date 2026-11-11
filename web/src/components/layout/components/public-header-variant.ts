@@ -18,21 +18,19 @@ For commercial licensing, please contact support@uter.ai
 */
 
 /**
- * Paths whose content lives in a same-origin iframe. The frame owns its own
- * scrolling, so the host document never scrolls and `useScrolled()` stays
- * false forever — without this the shared public header would remain fully
- * transparent on those pages while pricing/rankings gain their solid,
- * blurred treatment as soon as they scroll.
+ * Whether the public header should render its solid (scrolled) variant.
+ *
+ * At the top of a page the header is transparent so the shared top-of-page
+ * brand glow (rendered once by the `_public` layout route) bleeds through
+ * behind it — matching the pricing page. Once the reader scrolls, the header
+ * gains its solid, blurred background. This holds for every public page,
+ * including the framed docs/about pages: their iframe owns the scrolling, so
+ * the host never scrolls and the header simply stays in its transparent,
+ * glow-bearing state.
  */
-const FRAMED_PAGE_PREFIXES = ['/docs', '/about'] as const
-
-/** Whether the public header should render its solid (scrolled) variant. */
 export function shouldUseSolidHeader(
-  pathname: string,
+  _pathname: string,
   scrolled: boolean
 ): boolean {
-  if (scrolled) return true
-  return FRAMED_PAGE_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  )
+  return scrolled
 }

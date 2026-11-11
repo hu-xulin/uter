@@ -20,7 +20,7 @@ import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { PublicLayout, PublicPageGlow } from '@/components/layout'
+import { PublicLayout } from '@/components/layout'
 import { useTheme } from '@/context/theme-provider'
 import { useStatus } from '@/hooks/use-status'
 import {
@@ -270,7 +270,6 @@ export function DocsViewer() {
   return (
     <PublicLayout showMainContainer={false}>
       <div className='relative'>
-        <PublicPageGlow />
         <div className='h-16 shrink-0' aria-hidden='true' />
       {/* The framed docs share the SPA's origin, so we keep
           `allow-same-origin`: the host verifies `event.origin ===
