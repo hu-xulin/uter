@@ -106,7 +106,7 @@ require (
 	github.com/expr-lang/expr v1.17.8
 	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/gin-contrib/cors v1.7.2
-	github.com/gin-contrib/gzip v0.0.6
+	github.com/gin-contrib/gzip v1.2.9
 	github.com/gin-contrib/static v1.1.9
 	github.com/gin-gonic/gin v1.12.0
 	github.com/glebarez/go-sqlite v1.23.0
