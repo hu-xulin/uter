@@ -30,6 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { SystemUpdateAction } from '@/features/system-update/system-update-action'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useScrolled } from '@/hooks/use-scrolled'
+import { shouldUseSolidHeader } from './public-header-variant'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { BRAND_LOGO_BOX_CLASS, localizedBrandName } from '@/lib/brand'
@@ -90,6 +91,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
   const scrolled = useScrolled()
+  const solidHeader = shouldUseSolidHeader(pathname, scrolled)
 
   const user = auth.user
   const isAuthenticated = !!user
@@ -197,7 +199,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-marketing-fast',
-          scrolled
+          solidHeader
             ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
             : 'border-b border-transparent bg-transparent'
         )}
