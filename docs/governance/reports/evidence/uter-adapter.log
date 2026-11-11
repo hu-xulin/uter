@@ -2,139 +2,139 @@ TAP version 13
 # Subtest: an ACTIVE specification is discoverable and machine-evidence-verified
 ok 1 - an ACTIVE specification is discoverable and machine-evidence-verified
   ---
-  duration_ms: 723.813989
+  duration_ms: 725.069861
   type: 'test'
   ...
 # Subtest: exactly one ACTIVE specification is authoritative
 ok 2 - exactly one ACTIVE specification is authoritative
   ---
-  duration_ms: 714.085324
+  duration_ms: 760.160205
   type: 'test'
   ...
 # Subtest: P00 through P12 are all loaded from the AES corpus
 ok 3 - P00 through P12 are all loaded from the AES corpus
   ---
-  duration_ms: 3.83555
+  duration_ms: 3.992199
   type: 'test'
   ...
 # Subtest: the UTER P13 extension is project-owned and present
 ok 4 - the UTER P13 extension is project-owned and present
   ---
-  duration_ms: 1.83674
+  duration_ms: 1.752189
   type: 'test'
   ...
 # Subtest: P13 is NOT registered in the AES universal registry
 ok 5 - P13 is NOT registered in the AES universal registry
   ---
-  duration_ms: 4.566625
+  duration_ms: 4.95881
   type: 'test'
   ...
 # Subtest: all reported requirements map to an executable enforcement point
 ok 6 - all reported requirements map to an executable enforcement point
   ---
-  duration_ms: 95.747442
+  duration_ms: 101.878879
   type: 'test'
   ...
 # Subtest: every requirement falls inside an inherited phase
 ok 7 - every requirement falls inside an inherited phase
   ---
-  duration_ms: 49.999874
+  duration_ms: 53.839628
   type: 'test'
   ...
 # Subtest: a changed upstream specification digest is detected as drift, never as a pass
 ok 8 - a changed upstream specification digest is detected as drift, never as a pass
   ---
-  duration_ms: 1028.902223
+  duration_ms: 930.223591
   type: 'test'
   ...
 # Subtest: integration is NOT reported from technical wiring alone
 ok 9 - integration is NOT reported from technical wiring alone
   ---
-  duration_ms: 882.346891
+  duration_ms: 1006.089276
   type: 'test'
   ...
 # Subtest: the pinned-commit check verifies every declared artefact
 ok 10 - the pinned-commit check verifies every declared artefact
   ---
-  duration_ms: 999.554881
+  duration_ms: 1022.205225
   type: 'test'
   ...
 # Subtest: verifyPinnedCommit rejects a pin with no commit and a bogus commit
 ok 11 - verifyPinnedCommit rejects a pin with no commit and a bogus commit
   ---
-  duration_ms: 91.051296
+  duration_ms: 87.523864
   type: 'test'
   ...
 # Subtest: INTEGRATED requires technical wiring AND an explicit declaration AND acceptance evidence
 ok 12 - INTEGRATED requires technical wiring AND an explicit declaration AND acceptance evidence
   ---
-  duration_ms: 880.442298
+  duration_ms: 1279.660173
   type: 'test'
   ...
 # Subtest: the pin records the exact specification version and digest
 ok 13 - the pin records the exact specification version and digest
   ---
-  duration_ms: 0.359598
+  duration_ms: 0.726927
   type: 'test'
   ...
 # Subtest: a stale pin version is detectable as a mismatch
 ok 14 - a stale pin version is detectable as a mismatch
   ---
-  duration_ms: 705.987223
+  duration_ms: 736.289191
   type: 'test'
   ...
 # Subtest: instruction conflicts are reported with a location
 ok 15 - instruction conflicts are reported with a location
   ---
-  duration_ms: 870.428782
+  duration_ms: 887.721647
   type: 'test'
   ...
 # Subtest: the CLI runs when invoked through a symlinked path
 ok 16 - the CLI runs when invoked through a symlinked path
   ---
-  duration_ms: 1354.444574
+  duration_ms: 1399.884383
   type: 'test'
   ...
 # Subtest: the adapter refuses to run when no YAML parser is available
 ok 17 - the adapter refuses to run when no YAML parser is available
   ---
-  duration_ms: 179.438751
+  duration_ms: 119.144093
   type: 'test'
   ...
 # Subtest: writePin refuses a pin whose commit does not carry the artefacts
 ok 18 - writePin refuses a pin whose commit does not carry the artefacts
   ---
-  duration_ms: 162.803618
+  duration_ms: 124.498943
   type: 'test'
   ...
 # Subtest: writePin refuses a pin with no commit and a pin with a bogus commit
 ok 19 - writePin refuses a pin with no commit and a pin with a bogus commit
   ---
-  duration_ms: 120.740958
+  duration_ms: 119.335009
   type: 'test'
   ...
 # Subtest: writePin refuses a null pin instead of writing an empty record
 ok 20 - writePin refuses a null pin instead of writing an empty record
   ---
-  duration_ms: 0.332836
+  duration_ms: 0.366816
   type: 'test'
   ...
 # Subtest: the pin gate ACCEPTS a commit that really carries the artefacts
 ok 21 - the pin gate ACCEPTS a commit that really carries the artefacts
   ---
-  duration_ms: 1480.159375
+  duration_ms: 1185.4303
   type: 'test'
   ...
 # Subtest: the requirement map measures coverage against the corpus, not the registry
 ok 22 - the requirement map measures coverage against the corpus, not the registry
   ---
-  duration_ms: 47.607051
+  duration_ms: 47.628007
   type: 'test'
   ...
 # Subtest: a corpus domain with no requirements is reported as uncovered (synthetic)
 ok 23 - a corpus domain with no requirements is reported as uncovered (synthetic)
   ---
-  duration_ms: 157.194994
+  duration_ms: 159.192409
   type: 'test'
   ...
 1..23
@@ -145,4 +145,4 @@ ok 23 - a corpus domain with no requirements is reported as uncovered (synthetic
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 10744.869935
+# duration_ms 10949.821088
