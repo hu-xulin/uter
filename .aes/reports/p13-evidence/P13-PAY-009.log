@@ -1,7 +1,7 @@
 === RUN   TestGetUserTopUpsReconcilesBeforeReturning
-[SYS] 2026/11/10 - 21:15:00 | alipay_official 充值成功 trade_no=ALIPAY-LIST-RECONCILE user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:15:00 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-LIST-RECONCILE user_id=1 source=reconcile 
---- PASS: TestGetUserTopUpsReconcilesBeforeReturning (0.04s)
+[SYS] 2026/11/11 - 02:27:22 | alipay_official 充值成功 trade_no=ALIPAY-LIST-RECONCILE user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:27:22 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-LIST-RECONCILE user_id=1 source=reconcile 
+--- PASS: TestGetUserTopUpsReconcilesBeforeReturning (0.07s)
 PASS
-ok  	github.com/uter-ai/uter/controller	1.984s
+ok  	github.com/uter-ai/uter/controller	2.252s
 

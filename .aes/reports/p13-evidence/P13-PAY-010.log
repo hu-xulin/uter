@@ -1,15 +1,15 @@
 === RUN   TestAlipayReconcileRetriesAfterGatewayFailureRound
-[WARN] 2026/11/10 - 21:15:15 | SYSTEM | 支付宝订单对账：查单失败 trade_no=ALIPAY-FAULT-RETRY user_id=1 error="alipay query failed: code=20000 sub_code=isp.unknow-error msg=Service Currently Unavailable" 
-[INFO] 2026/11/10 - 21:15:15 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=0 query_failed=1 
-[SYS] 2026/11/10 - 21:15:15 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-RETRY user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:15:15 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-RETRY user_id=1 source=reconcile 
-[INFO] 2026/11/10 - 21:15:15 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
---- PASS: TestAlipayReconcileRetriesAfterGatewayFailureRound (0.33s)
+[WARN] 2026/11/11 - 02:27:36 | SYSTEM | 支付宝订单对账：查单失败 trade_no=ALIPAY-FAULT-RETRY user_id=1 error="alipay query failed: code=20000 sub_code=isp.unknow-error msg=Service Currently Unavailable" 
+[INFO] 2026/11/11 - 02:27:36 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=0 query_failed=1 
+[SYS] 2026/11/11 - 02:27:36 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-RETRY user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:27:36 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-RETRY user_id=1 source=reconcile 
+[INFO] 2026/11/11 - 02:27:36 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileRetriesAfterGatewayFailureRound (0.07s)
 === RUN   TestAlipayReconcileWorkerSingleFlightExactOnceCredit
-[SYS] 2026/11/10 - 21:15:15 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-SF user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:15:15 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-SF user_id=1 source=reconcile 
-[INFO] 2026/11/10 - 21:15:15 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
---- PASS: TestAlipayReconcileWorkerSingleFlightExactOnceCredit (0.07s)
+[SYS] 2026/11/11 - 02:27:36 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-SF user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:27:36 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-SF user_id=1 source=reconcile 
+[INFO] 2026/11/11 - 02:27:36 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileWorkerSingleFlightExactOnceCredit (0.04s)
 PASS
-ok  	github.com/uter-ai/uter/controller	3.183s
+ok  	github.com/uter-ai/uter/controller	2.362s
 

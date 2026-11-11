@@ -8,10 +8,10 @@ exit=0
 --- PASS: TestMidjourneyRefundLogOutboxDeliveryIsIdempotent (0.01s)
 === RUN   TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic
 
-2026/11/10 21:14:10 [31;1m/Users/lincolnhu/uter/model/midjourney_refund_outbox.go:102 [35;1mconstraint failed: UNIQUE constraint failed: midjourney_refund_outbox.event_key (2067)
-[0m[33m[0.066ms] [34;1m[rows:0][0m INSERT INTO `midjourney_refund_outbox` (`event_key`,`refund_operation_id`,`event_type`,`payload_version`,`payload_json`,`status`,`attempt_count`,`next_attempt_at`,`lease_owner`,`lease_until`,`last_error`,`created_at`,`updated_at`,`delivered_at`) VALUES ("mj-refund-atomic-test:1794316450802612000",2,"midjourney.refund.completed",1,"{""result"":""duplicate""}","pending",0,0,"",0,"",1794316450,1794316450,0) RETURNING `id`
+2026/11/11 02:26:26 [31;1m/Users/lincolnhu/uter/model/midjourney_refund_outbox.go:102 [35;1mconstraint failed: UNIQUE constraint failed: midjourney_refund_outbox.event_key (2067)
+[0m[33m[0.074ms] [34;1m[rows:0][0m INSERT INTO `midjourney_refund_outbox` (`event_key`,`refund_operation_id`,`event_type`,`payload_version`,`payload_json`,`status`,`attempt_count`,`next_attempt_at`,`lease_owner`,`lease_until`,`last_error`,`created_at`,`updated_at`,`delivered_at`) VALUES ("mj-refund-atomic-test:1794335186945769000",2,"midjourney.refund.completed",1,"{""result"":""duplicate""}","pending",0,0,"",0,"",1794335186,1794335186,0) RETURNING `id`
 --- PASS: TestCreateMidjourneyRefundOperationWithOutboxTxIsAtomic (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/model	1.483s
+ok  	github.com/uter-ai/uter/model	1.644s
 
 

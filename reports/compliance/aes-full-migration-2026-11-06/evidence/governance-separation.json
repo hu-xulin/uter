@@ -1,6 +1,6 @@
 {
   "evidence_id": "D04-GOVERNANCE-SEPARATION",
-  "generated_at": "2026-11-09T10:57:58Z",
+  "generated_at": "2026-11-11T01:26:13Z",
   "related_requirement": "UTER-AES-GOV-001 §1.1 / §1.3 / §1.4 / §4.3 / §16.3",
   "related_finding": null,
   "source_system": "scripts/quality/uter-governance-separation-check.rb",
@@ -10,14 +10,14 @@
     "aes_root": "/Users/lincolnhu/aes"
   },
   "repository_revision": {
-    "uter_head": "775e9eb50bbc0c99541da63b28d2779624f03bed",
-    "aes_head": "9d727f6685db3d6e341f487138a59fc732f8d8b7"
+    "uter_head": "a193b24d3b2db0e01cc6b6b22f3fb698955d0ef2",
+    "aes_head": "0a038859478ae97fa06f521d19213a308418ec7c"
   },
   "collector": "WorkBuddy (Tencent Hunyuan Hy)",
-  "collection_time": "2026-11-09T10:57:58Z",
+  "collection_time": "2026-11-11T01:26:13Z",
   "integrity": {
-    "uter_registry_sha256": "48f0cd5678ff60e8b88a811a920dc8cc6caced640e411eceaa3082c6fed2c3c6",
-    "aes_registry_sha256": "c4b667fe3ca5ad89ce5eeffa93fdad03ab27c7f753c97251f0561e2aaa34ba64",
+    "uter_registry_sha256": "257517ed6d081e1bebf7fe09d588ffcbaaa3992d4a08241e24922a4f6671e7be",
+    "aes_registry_sha256": "1b856d4f5aacf6ca84f6580cf8dea3ab3afff0b1f4c6dcc13a5dd95fedd4604a",
     "aes_gates_sha256": "2deb7e7d26b26559ac893990a69fc18391cb637bfd90dd95f675c61d4511070d",
     "note": "Hashes support evidence integrity only; they do not prove the underlying activity was performed correctly (§14.4)."
   },
@@ -33,7 +33,7 @@
       "status": "PASS",
       "observation": {
         "aes_root": "/Users/lincolnhu/aes",
-        "aes_head": "9d727f6685db3d6e341f487138a59fc732f8d8b7"
+        "aes_head": "0a038859478ae97fa06f521d19213a308418ec7c"
       }
     },
     {
@@ -185,7 +185,7 @@
       "requirement": "§1.3 'No project-specific business rule shall be introduced into AES'",
       "status": "PASS",
       "observation": {
-        "scanned_files": 195,
+        "scanned_files": 194,
         "markers": [
           "UTER-P13",
           "UTER P13",
@@ -225,7 +225,7 @@
       "requirement": "§1.4 / §6.4",
       "status": "PASS",
       "observation": {
-        "bytes": 7575,
+        "bytes": 4262,
         "pins_aes": true
       }
     },

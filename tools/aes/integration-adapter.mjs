@@ -34,7 +34,18 @@ const UTER_ROOT = resolve(SELF, '..', '..')
 // AES_REPO (governance scripts) / AES_REPO_ROOT (this adapter). Accept both
 // names so a step that only sets one of them cannot silently fall back to a
 // developer-machine absolute path and produce a false "registry not found".
-const AES_ROOT = resolve(process.env.AES_REPO_ROOT || process.env.AES_REPO || '/Users/lincolnhu/aes')
+//
+// AES_ROOT is accepted as well. The three CI workflows did not agree on one
+// name -- the product's own ci.yml used AES_ROOT for the pinned baseline, the
+// AES repository's governance gate used AES_ROOT for its own workspace, and
+// aes-governance-sync used AES_REPO. This adapter only understood the first
+// two, so when the AES governance gate ran the adapter it fell back to
+// '/Users/lincolnhu/aes', a path that does not exist on a runner, and the 11
+// AES-dependent cases failed for an environment reason that looked like a
+// product defect. All three names now resolve to the same baseline.
+const AES_ROOT = resolve(
+  process.env.AES_REPO_ROOT || process.env.AES_REPO || process.env.AES_ROOT || '/Users/lincolnhu/aes'
+)
 
 const AES_SPEC_REGISTRY = join(AES_ROOT, '.aes/spec-registry/SPECIFICATION-REGISTRY.yaml')
 const AES_REQ_REGISTRY = join(AES_ROOT, '.aes/registry/requirements.yaml')

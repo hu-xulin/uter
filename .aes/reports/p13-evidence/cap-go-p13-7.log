@@ -3,86 +3,86 @@ exit=0
 === RUN   TestTopUpOrderStateMatrix
 === RUN   TestTopUpOrderStateMatrix/epay
 === RUN   TestTopUpOrderStateMatrix/epay/pending_is_credited_exactly_once
-[SYS] 2026/11/10 - 21:13:55 | 易支付充值成功 trade_no=MTX-epay-PENDING user_id=901 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 02:26:09 | 易支付充值成功 trade_no=MTX-epay-PENDING user_id=901 quota_to_add=1000000 money=10.00 
 === RUN   TestTopUpOrderStateMatrix/epay/failed_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/epay/expired_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/epay/cross_channel_order_is_rejected
 === RUN   TestTopUpOrderStateMatrix/epay/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:330 [35;1mrecord not found
-[0m[33m[0.040ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-epay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:330 [35;1mrecord not found
+[0m[33m[0.072ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-epay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
 === RUN   TestTopUpOrderStateMatrix/alipay
 === RUN   TestTopUpOrderStateMatrix/alipay/pending_is_credited_exactly_once
-[SYS] 2026/11/10 - 21:13:55 | alipay_official 充值成功 trade_no=MTX-alipay-PENDING user_id=902 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 02:26:09 | alipay_official 充值成功 trade_no=MTX-alipay-PENDING user_id=902 quota_to_add=1000000 money=10.00 
 === RUN   TestTopUpOrderStateMatrix/alipay/failed_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/alipay/expired_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/alipay/cross_channel_order_is_rejected
 === RUN   TestTopUpOrderStateMatrix/alipay/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
-[0m[33m[0.039ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-alipay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
+[0m[33m[0.071ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-alipay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
 === RUN   TestTopUpOrderStateMatrix/wechat
 === RUN   TestTopUpOrderStateMatrix/wechat/pending_is_credited_exactly_once
-[SYS] 2026/11/10 - 21:13:55 | wechat_pay_official 充值成功 trade_no=MTX-wechat-PENDING user_id=903 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 02:26:09 | wechat_pay_official 充值成功 trade_no=MTX-wechat-PENDING user_id=903 quota_to_add=1000000 money=10.00 
 === RUN   TestTopUpOrderStateMatrix/wechat/failed_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/wechat/expired_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/wechat/cross_channel_order_is_rejected
 === RUN   TestTopUpOrderStateMatrix/wechat/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
-[0m[33m[0.038ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-wechat-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
+[0m[33m[0.058ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-wechat-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
 === RUN   TestTopUpOrderStateMatrix/stripe
 === RUN   TestTopUpOrderStateMatrix/stripe/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/stripe/failed_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/stripe/expired_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/stripe/cross_channel_order_is_rejected
-[SYS] 2026/11/10 - 21:13:55 | topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 02:26:09 | topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/stripe/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:495 [35;1mrecord not found
-[0m[33m[0.038ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-stripe-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/10 - 21:13:55 | topup failed: 充值订单不存在 
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:495 [35;1mrecord not found
+[0m[33m[0.056ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-stripe-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 02:26:09 | topup failed: 充值订单不存在 
 === RUN   TestTopUpOrderStateMatrix/creem
 === RUN   TestTopUpOrderStateMatrix/creem/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/creem/failed_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | creem topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | creem topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/creem/expired_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | creem topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | creem topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/creem/cross_channel_order_is_rejected
-[SYS] 2026/11/10 - 21:13:55 | creem topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 02:26:09 | creem topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/creem/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:721 [35;1mrecord not found
-[0m[33m[0.038ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-creem-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/10 - 21:13:55 | creem topup failed: 充值订单不存在 
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:721 [35;1mrecord not found
+[0m[33m[0.042ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-creem-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 02:26:09 | creem topup failed: 充值订单不存在 
 === RUN   TestTopUpOrderStateMatrix/waffo
 === RUN   TestTopUpOrderStateMatrix/waffo/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/waffo/failed_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | waffo topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | waffo topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo/expired_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | waffo topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | waffo topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo/cross_channel_order_is_rejected
-[SYS] 2026/11/10 - 21:13:55 | waffo topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 02:26:09 | waffo topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/waffo/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:790 [35;1mrecord not found
-[0m[33m[0.040ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/10 - 21:13:55 | waffo topup failed: 充值订单不存在 
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:790 [35;1mrecord not found
+[0m[33m[0.047ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 02:26:09 | waffo topup failed: 充值订单不存在 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/failed_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | waffo pancake topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | waffo pancake topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/expired_is_not_resurrected
-[SYS] 2026/11/10 - 21:13:55 | waffo pancake topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 02:26:09 | waffo pancake topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/cross_channel_order_is_rejected
-[SYS] 2026/11/10 - 21:13:55 | waffo pancake topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 02:26:09 | waffo pancake topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/unknown_order_is_rejected
 
-2026/11/10 21:13:55 [31;1m/Users/lincolnhu/uter/model/topup.go:861 [35;1mrecord not found
-[0m[33m[0.039ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-pancake-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/10 - 21:13:55 | waffo pancake topup failed: 充值订单不存在 
+2026/11/11 02:26:09 [31;1m/Users/lincolnhu/uter/model/topup.go:861 [35;1mrecord not found
+[0m[33m[0.043ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-pancake-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 02:26:09 | waffo pancake topup failed: 充值订单不存在 
 --- PASS: TestTopUpOrderStateMatrix (0.02s)
     --- PASS: TestTopUpOrderStateMatrix/epay (0.00s)
         --- PASS: TestTopUpOrderStateMatrix/epay/pending_is_credited_exactly_once (0.00s)
@@ -127,62 +127,62 @@ exit=0
         --- PASS: TestTopUpOrderStateMatrix/waffo-pancake/cross_channel_order_is_rejected (0.00s)
         --- PASS: TestTopUpOrderStateMatrix/waffo-pancake/unknown_order_is_rejected (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/model	1.448s
+ok  	github.com/uter-ai/uter/model	1.642s
 
 
 $ go test ./controller -run ^(TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcileDoesNotCreditMissingOrderRecord|TestAlipayReconcileRetriesAfterGatewayFailureRound|TestAlipayReconcileWorkerSingleFlightExactOnceCredit|TestGetUserTopUpsReconcilesBeforeReturning)$ -count=1 -v
 exit=0
 === RUN   TestGetUserTopUpsReconcilesBeforeReturning
-[SYS] 2026/11/10 - 21:14:01 | alipay_official 充值成功 trade_no=ALIPAY-LIST-RECONCILE user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-LIST-RECONCILE user_id=1 source=reconcile 
---- PASS: TestGetUserTopUpsReconcilesBeforeReturning (0.18s)
+[SYS] 2026/11/11 - 02:26:16 | alipay_official 充值成功 trade_no=ALIPAY-LIST-RECONCILE user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-LIST-RECONCILE user_id=1 source=reconcile 
+--- PASS: TestGetUserTopUpsReconcilesBeforeReturning (0.20s)
 === RUN   TestAlipayReconcileDoesNotCreditMissingOrderRecord
 
-2026/11/10 21:14:01 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
-[0m[33m[0.076ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "ALIPAY-FAULT-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[ERR] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝主动查单入账失败 trade_no=ALIPAY-FAULT-MISSING user_id=1 error="topup not found" 
-[SYS] 2026/11/10 - 21:14:01 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-MISSING user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-MISSING user_id=1 source=reconcile 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
---- PASS: TestAlipayReconcileDoesNotCreditMissingOrderRecord (0.16s)
+2026/11/11 02:26:16 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
+[0m[33m[0.056ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "ALIPAY-FAULT-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[ERR] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝主动查单入账失败 trade_no=ALIPAY-FAULT-MISSING user_id=1 error="topup not found" 
+[SYS] 2026/11/11 - 02:26:16 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-MISSING user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-MISSING user_id=1 source=reconcile 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileDoesNotCreditMissingOrderRecord (0.09s)
 === RUN   TestAlipayReconcileRetriesAfterGatewayFailureRound
-[WARN] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝订单对账：查单失败 trade_no=ALIPAY-FAULT-RETRY user_id=1 error="alipay query failed: code=20000 sub_code=isp.unknow-error msg=Service Currently Unavailable" 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=0 query_failed=1 
-[SYS] 2026/11/10 - 21:14:01 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-RETRY user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-RETRY user_id=1 source=reconcile 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
---- PASS: TestAlipayReconcileRetriesAfterGatewayFailureRound (0.09s)
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝订单对账：查单失败 trade_no=ALIPAY-FAULT-RETRY user_id=1 error="alipay query failed: code=20000 sub_code=isp.unknow-error msg=Service Currently Unavailable" 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=0 query_failed=1 
+[SYS] 2026/11/11 - 02:26:16 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-RETRY user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-RETRY user_id=1 source=reconcile 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileRetriesAfterGatewayFailureRound (0.15s)
 === RUN   TestAlipayReconcileWorkerSingleFlightExactOnceCredit
-[SYS] 2026/11/10 - 21:14:01 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-SF user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-SF user_id=1 source=reconcile 
-[INFO] 2026/11/10 - 21:14:01 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
---- PASS: TestAlipayReconcileWorkerSingleFlightExactOnceCredit (0.07s)
+[SYS] 2026/11/11 - 02:26:16 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-SF user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-SF user_id=1 source=reconcile 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileWorkerSingleFlightExactOnceCredit (0.10s)
 === RUN   TestPaymentCallbacksRejectForgedSignatures
 === RUN   TestPaymentCallbacksRejectForgedSignatures/alipay
-[INFO] 2026/11/10 - 21:14:02 | SYSTEM | 支付宝 webhook 收到请求 path="/api/user/alipay/notify" client_ip=192.0.2.1 method=POST param_count=6 
-[WARN] 2026/11/10 - 21:14:02 | SYSTEM | 支付宝 webhook 验签失败 path="/api/user/alipay/notify" client_ip=192.0.2.1 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝 webhook 收到请求 path="/api/user/alipay/notify" client_ip=192.0.2.1 method=POST param_count=6 
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | 支付宝 webhook 验签失败 path="/api/user/alipay/notify" client_ip=192.0.2.1 
 === RUN   TestPaymentCallbacksRejectForgedSignatures/wechat
-[WARN] 2026/11/10 - 21:14:02 | SYSTEM | 微信支付 webhook 时间戳异常 path="/api/user/wechat/notify" client_ip=192.0.2.1 timestamp=1700000000 
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | 微信支付 webhook 时间戳异常 path="/api/user/wechat/notify" client_ip=192.0.2.1 timestamp=1700000000 
 === RUN   TestPaymentCallbacksRejectForgedSignatures/stripe
-[INFO] 2026/11/10 - 21:14:02 | SYSTEM | Stripe webhook received request path="/api/stripe/webhook" client_ip=192.0.2.1 body_bytes=50 
-[WARN] 2026/11/10 - 21:14:02 | SYSTEM | Stripe webhook signature verification failed path="/api/stripe/webhook" client_ip=192.0.2.1 error="timestamp wasn't within tolerance" 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | Stripe webhook received request path="/api/stripe/webhook" client_ip=192.0.2.1 body_bytes=50 
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | Stripe webhook signature verification failed path="/api/stripe/webhook" client_ip=192.0.2.1 error="timestamp wasn't within tolerance" 
 === RUN   TestPaymentCallbacksRejectForgedSignatures/creem
-[INFO] 2026/11/10 - 21:14:02 | SYSTEM | Creem webhook received request path="/api/creem/webhook" client_ip=192.0.2.1 body_bytes=68 
-[WARN] 2026/11/10 - 21:14:02 | SYSTEM | Creem webhook signature verification failed path="/api/creem/webhook" client_ip=192.0.2.1 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | Creem webhook received request path="/api/creem/webhook" client_ip=192.0.2.1 body_bytes=68 
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | Creem webhook signature verification failed path="/api/creem/webhook" client_ip=192.0.2.1 
 === RUN   TestPaymentCallbacksRejectForgedSignatures/waffo
-[INFO] 2026/11/10 - 21:14:02 | SYSTEM | Waffo webhook received request path="/api/waffo/webhook" client_ip=192.0.2.1 body_bytes=34 
-[WARN] 2026/11/10 - 21:14:02 | SYSTEM | Waffo webhook signature verification failed path="/api/waffo/webhook" client_ip=192.0.2.1 
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | Waffo webhook received request path="/api/waffo/webhook" client_ip=192.0.2.1 body_bytes=34 
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | Waffo webhook signature verification failed path="/api/waffo/webhook" client_ip=192.0.2.1 
 === RUN   TestPaymentCallbacksRejectForgedSignatures/waffo-pancake
-[INFO] 2026/11/10 - 21:14:02 | SYSTEM | Waffo Pancake webhook received request path="/api/waffo-pancake/webhook/prod" client_ip=192.0.2.1 body_bytes=81 
-[WARN] 2026/11/10 - 21:14:02 | SYSTEM | Waffo Pancake webhook signature verification failed path="/api/waffo-pancake/webhook/prod" client_ip=192.0.2.1 error="malformed X-Waffo-Signature header: missing t or v1" 
---- PASS: TestPaymentCallbacksRejectForgedSignatures (0.23s)
+[INFO] 2026/11/11 - 02:26:16 | SYSTEM | Waffo Pancake webhook received request path="/api/waffo-pancake/webhook/prod" client_ip=192.0.2.1 body_bytes=81 
+[WARN] 2026/11/11 - 02:26:16 | SYSTEM | Waffo Pancake webhook signature verification failed path="/api/waffo-pancake/webhook/prod" client_ip=192.0.2.1 error="malformed X-Waffo-Signature header: missing t or v1" 
+--- PASS: TestPaymentCallbacksRejectForgedSignatures (0.34s)
     --- PASS: TestPaymentCallbacksRejectForgedSignatures/alipay (0.00s)
-    --- PASS: TestPaymentCallbacksRejectForgedSignatures/wechat (0.11s)
+    --- PASS: TestPaymentCallbacksRejectForgedSignatures/wechat (0.03s)
     --- PASS: TestPaymentCallbacksRejectForgedSignatures/stripe (0.00s)
     --- PASS: TestPaymentCallbacksRejectForgedSignatures/creem (0.00s)
     --- PASS: TestPaymentCallbacksRejectForgedSignatures/waffo (0.00s)
     --- PASS: TestPaymentCallbacksRejectForgedSignatures/waffo-pancake (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/controller	2.698s
+ok  	github.com/uter-ai/uter/controller	3.172s
 
 

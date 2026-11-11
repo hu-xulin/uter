@@ -1,11 +1,16 @@
 {
   "report_id": "D09-RUNTIME-SELFTEST",
-  "generated_at": "2026-11-09T05:14:16Z",
+  "generated_at": "2026-11-11T01:25:35Z",
   "agent": "WorkBuddy (Tencent Hunyuan Hy)",
-  "overall": "PASS",
+  "overall": "FAIL",
   "total_cases": 20,
-  "passed": 20,
-  "failed_cases": [],
+  "passed": 16,
+  "failed_cases": [
+    "deny commit before full validation",
+    "deny push before full validation",
+    "deny PR before full validation",
+    "allow commit only after full validation"
+  ],
   "cases": [
     {
       "case": "allowed read",
@@ -34,7 +39,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: git.push.main",
+      "reason": "default_effect=deny; git.push.main is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -44,7 +49,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: git.pull_request.merge",
+      "reason": "default_effect=deny; git.pull_request.merge is not granted to orchestrator",
       "status": "PASS"
     },
     {
@@ -54,7 +59,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: git.merge",
+      "reason": "default_effect=deny; git.merge is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -64,7 +69,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: production.database.write",
+      "reason": "default_effect=deny; production.database.write is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -74,7 +79,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: payment.configuration.write",
+      "reason": "default_effect=deny; payment.configuration.write is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -84,7 +89,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: overwrite.user_uncommitted_changes",
+      "reason": "default_effect=deny; overwrite.user_uncommitted_changes is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -94,7 +99,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: falsify.verification_result",
+      "reason": "default_effect=deny; falsify.verification_result is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -114,7 +119,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: git.worktree.create",
+      "reason": "default_effect=deny; git.worktree.create is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -124,7 +129,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: git.reset.hard",
+      "reason": "default_effect=deny; git.reset.hard is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -134,7 +139,7 @@
       "validation_passed": true,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "execution_policy.forbidden: git.restore.user_files",
+      "reason": "default_effect=deny; git.restore.user_files is not granted to pull_request_creator",
       "status": "PASS"
     },
     {
@@ -144,8 +149,8 @@
       "validation_passed": false,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
-      "status": "PASS"
+      "reason": "default_effect=deny; git.commit is not granted to pull_request_creator",
+      "status": "FAIL"
     },
     {
       "case": "deny push before full validation",
@@ -154,8 +159,8 @@
       "validation_passed": false,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
-      "status": "PASS"
+      "reason": "default_effect=deny; git.push.feature_branch is not granted to pull_request_creator",
+      "status": "FAIL"
     },
     {
       "case": "deny PR before full validation",
@@ -164,8 +169,8 @@
       "validation_passed": false,
       "expected": "DENY",
       "actual": "DENY",
-      "reason": "L1_CHANGE_GATE + L2_INTEGRATION_GATE + 14xL3_DOMAIN_ACCEPTANCE_GATE + L4_GLOBAL_CONFORMANCE_GATE not passed; delivery action blocked",
-      "status": "PASS"
+      "reason": "default_effect=deny; git.pull_request.create is not granted to pull_request_creator",
+      "status": "FAIL"
     },
     {
       "case": "allow commit only after full validation",
@@ -173,9 +178,9 @@
       "profile": "pull_request_creator",
       "validation_passed": true,
       "expected": "ALLOW",
-      "actual": "ALLOW",
-      "reason": "profile pull_request_creator explicitly allows git.commit",
-      "status": "PASS"
+      "actual": "DENY",
+      "reason": "default_effect=deny; git.commit is not granted to pull_request_creator",
+      "status": "FAIL"
     },
     {
       "case": "deny unknown action (fail-closed)",
