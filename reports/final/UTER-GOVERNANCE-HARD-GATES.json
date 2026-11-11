@@ -1,0 +1,99 @@
+{
+  "report_id": "UTER-GOVERNANCE-HARD-GATES",
+  "tool_id": "uter-governance-hard-gates@1.0.0",
+  "generated_at": "2026-11-11T12:56:17.608Z",
+  "uter_root": "/Users/lincolnhu/uter",
+  "aes_root": "/Users/lincolnhu/aes",
+  "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "summary": {
+    "verdict": "PASS",
+    "counts": {
+      "PASS": 10
+    },
+    "total": 10
+  },
+  "checks": [
+    {
+      "id": "HG-01",
+      "name": "Missing normative specification",
+      "status": "PASS",
+      "detail": "9 normative artifacts present; P00-P12 standards present"
+    },
+    {
+      "id": "HG-02",
+      "name": "Conflicting or duplicate specification",
+      "status": "PASS",
+      "detail": "single normative authority; no duplicate IDs; no retired .uaes/ source"
+    },
+    {
+      "id": "HG-03",
+      "name": "Requirement without executable verifier",
+      "status": "PASS",
+      "detail": "2,150/2,150 requirements bound to executable verifiers"
+    },
+    {
+      "id": "HG-04",
+      "name": "Verifier without implementation",
+      "status": "PASS",
+      "detail": "every verifier implementation existed and was hashed at generation time"
+    },
+    {
+      "id": "HG-05",
+      "name": "Requirement without tests / negative controls",
+      "status": "PASS",
+      "detail": "2,150 test bindings present; 6 negative-control suites present"
+    },
+    {
+      "id": "HG-06",
+      "name": "Stale or missing execution evidence",
+      "status": "PASS",
+      "detail": "evidence manifest current (0.02h, 12 entries)"
+    },
+    {
+      "id": "HG-07",
+      "name": "Evidence / current SHA mismatch",
+      "status": "PASS",
+      "detail": "evidence bound to current AES + Uter HEAD (EXACT)"
+    },
+    {
+      "id": "HG-08",
+      "name": "Agent privilege escalation",
+      "status": "PASS",
+      "detail": "default DENY, 13 forbidden actions, main-only, runtime + independent verification required"
+    },
+    {
+      "id": "HG-09",
+      "name": "Security / governance gate bypass in CI",
+      "status": "PASS",
+      "detail": "10 workflow(s) scanned; no bypass pattern"
+    },
+    {
+      "id": "HG-10",
+      "name": "Unapproved forced specification change",
+      "status": "PASS",
+      "detail": "pin/contract coherent; governed fingerprint matches the AES seal"
+    }
+  ],
+  "evidence": {
+    "manifest": ".aes/reports/UTER-EVIDENCE-MANIFEST.json",
+    "manifest_generated_at": "2026-11-11T12:55:15.684Z",
+    "manifest_age_hours": 0.02,
+    "head_policy": {
+      "ok": true,
+      "reason": "EXACT",
+      "commits": 0
+    },
+    "workflow_count": 10,
+    "record_count": 2150
+  }
+}

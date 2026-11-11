@@ -266,11 +266,14 @@ export function buildContext({ root = resolve(process.env.UTER_ROOT || process.c
     const pin = (() => { try { return JSON.parse(readText(join(root, '.aes/aes-pin.json'))) } catch { return null } })()
     const fp = spawnSync(process.execPath, ['quality/scripts/aes/governed-fingerprint.mjs', '--json', '--require-intact'],
       { cwd: aesRoot, encoding: 'utf8' })
-    let computed = null
-    try { computed = JSON.parse(fp.stdout).governed_fingerprint } catch {
-      const m = String(fp.stdout).match(/"governed_fingerprint"\s*:\s*"([0-9a-f]{64})"/); if (m) computed = m[1]
-    }
-    if (fp.status !== 0 || !computed) fingerprint = { status: 'FAIL', detail: `AES seal not intact (exit ${fp.status})` }
+    // The tool names the value `fingerprint` and exposes `seal_intact`; the
+    // first implementation looked for `governed_fingerprint` and misread a
+    // healthy seal as tampered.
+    let doc = null
+    try { doc = JSON.parse(fp.stdout) } catch { doc = null }
+    const computed = doc?.fingerprint || null
+    const intact = doc?.seal_intact === true
+    if (fp.status !== 0 || !computed || !intact) fingerprint = { status: 'FAIL', detail: `AES seal not intact (exit ${fp.status}, seal_intact=${doc?.seal_intact})` }
     else if (computed !== pin?.governed_fingerprint) {
       fingerprint = { status: 'FAIL', detail: `pin=${String(pin?.governed_fingerprint).slice(0, 12)} vs AES=${computed.slice(0, 12)}` }
     } else fingerprint = { status: 'PASS', detail: computed }

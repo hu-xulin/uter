@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: PC-01: a complete current matrix builds and re-verifies PASS
+ok 1 - PC-01: a complete current matrix builds and re-verifies PASS
+  ---
+  duration_ms: 843.832536
+  type: 'test'
+  ...
+# Subtest: PC-02: generated markdown exists and carries the honest state counts
+ok 2 - PC-02: generated markdown exists and carries the honest state counts
+  ---
+  duration_ms: 745.283533
+  type: 'test'
+  ...
+# Subtest: PC-03: an evidence-only commit does not invalidate the SHA-bound matrix
+ok 3 - PC-03: an evidence-only commit does not invalidate the SHA-bound matrix
+  ---
+  duration_ms: 969.299345
+  type: 'test'
+  ...
+# Subtest: NC-01: a missing mandatory field is rejected
+ok 4 - NC-01: a missing mandatory field is rejected
+  ---
+  duration_ms: 0.325859
+  type: 'test'
+  ...
+# Subtest: NC-02: a forged per-requirement PASS without evidence is rejected
+ok 5 - NC-02: a forged per-requirement PASS without evidence is rejected
+  ---
+  duration_ms: 0.29628
+  type: 'test'
+  ...
+# Subtest: NC-03: PASS with NOT_RUN execution is rejected
+ok 6 - NC-03: PASS with NOT_RUN execution is rejected
+  ---
+  duration_ms: 0.171096
+  type: 'test'
+  ...
+# Subtest: NC-04: a state outside the 7-state model is rejected
+ok 7 - NC-04: a state outside the 7-state model is rejected
+  ---
+  duration_ms: 0.211999
+  type: 'test'
+  ...
+# Subtest: NC-05: duplicate requirement IDs are rejected
+ok 8 - NC-05: duplicate requirement IDs are rejected
+  ---
+  duration_ms: 694.5732
+  type: 'test'
+  ...
+# Subtest: NC-06: a truncated matrix (2149 records) is rejected
+ok 9 - NC-06: a truncated matrix (2149 records) is rejected
+  ---
+  duration_ms: 735.069768
+  type: 'test'
+  ...
+# Subtest: NC-07: evidence bound to a foreign HEAD is rejected
+ok 10 - NC-07: evidence bound to a foreign HEAD is rejected
+  ---
+  duration_ms: 705.09847
+  type: 'test'
+  ...
+# Subtest: NC-08: stale evidence (48h) is rejected
+ok 11 - NC-08: stale evidence (48h) is rejected
+  ---
+  duration_ms: 1522.995088
+  type: 'test'
+  ...
+# Subtest: NC-09: tampering with one byte of the matrix is detected
+ok 12 - NC-09: tampering with one byte of the matrix is detected
+  ---
+  duration_ms: 764.406281
+  type: 'test'
+  ...
+# Subtest: NC-10: deleting the matrix fails closed
+ok 13 - NC-10: deleting the matrix fails closed
+  ---
+  duration_ms: 709.071185
+  type: 'test'
+  ...
+# Subtest: NC-11: a commit touching governed source invalidates the matrix
+ok 14 - NC-11: a commit touching governed source invalidates the matrix
+  ---
+  duration_ms: 907.256981
+  type: 'test'
+  ...
+# Subtest: NC-12: output-only path classification never hides a governed input
+ok 15 - NC-12: output-only path classification never hides a governed input
+  ---
+  duration_ms: 750.987073
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9468.810531

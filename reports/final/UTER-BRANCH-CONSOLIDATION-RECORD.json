@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-11-11T12:59:41.607Z",
+  "repository": "https://github.com/hu-xulin/uter",
+  "local_root": "/Users/lincolnhu/uter",
+  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_repository": "https://github.com/hu-xulin/aes",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "report_id": "UTER-BRANCH-CONSOLIDATION-RECORD",
+  "local_branches": [
+    "main"
+  ],
+  "consolidated_report": "reports/final/UTER-BRANCH-CONSOLIDATION-REPORT.md",
+  "report_evidence": {
+    "path": "reports/final/UTER-BRANCH-CONSOLIDATION-REPORT.md",
+    "exists": true,
+    "bytes": 7154,
+    "sha256": "9ff70c3ef9b90a6e79b6bedadcaa35c117038933b8cf1adfa6e67b3eb4ac85b5"
+  },
+  "verdict": "PASS"
+}

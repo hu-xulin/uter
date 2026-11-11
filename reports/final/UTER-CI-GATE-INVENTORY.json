@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-11-11T12:59:41.607Z",
+  "repository": "https://github.com/hu-xulin/uter",
+  "local_root": "/Users/lincolnhu/uter",
+  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_repository": "https://github.com/hu-xulin/aes",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "report_id": "UTER-CI-GATE-INVENTORY",
+  "workflow": ".github/workflows/ci.yml",
+  "workflow_bytes": 22677,
+  "rules": [
+    {
+      "rule": "missing specification",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "conflicting specification",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "no verifier / no implementation",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "no tests",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "stale evidence",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "evidence SHA mismatch",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "agent privilege escalation",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "security gate bypass",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "unapproved forced spec change",
+      "wired": true,
+      "state": "PASS"
+    },
+    {
+      "rule": "main-only branch policy",
+      "wired": true,
+      "state": "PASS"
+    }
+  ],
+  "verdict": "PASS",
+  "sync_workflow": {
+    "file": ".github/workflows/aes-governance-sync.yml",
+    "auto_push_disabled": true,
+    "note": "Synchronization is read-only; normative drift fails closed as PENDING_APPROVAL."
+  }
+}

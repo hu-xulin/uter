@@ -16,8 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { AboutContent } from '../about-shared'
-import { FOUNDER_AVATAR, PARTNER_WALL } from '../about-shared'
+import {
+  FOUNDER_AVATAR,
+  PARTNER_WALL,
+  type AboutContent,
+} from '../about-shared'
 
 export const JA_CONTENT: AboutContent = {
   title: 'Uterについて',

@@ -1,0 +1,27 @@
+{
+  "report_id": "UTER-REQUIREMENT-TRACEABILITY-VERIFICATION",
+  "tool_id": "uter-build-traceability@1.0.0",
+  "generated_at": "2026-11-11T12:54:14.517Z",
+  "source": ".aes/reports/AES-REQUIREMENT-MAP.json",
+  "jsonl": ".aes/TRACEABILITY.jsonl",
+  "jsonl_sha256": "5e5a9a78fc80b8980c0f5642765319b01b67aa7135a057d39dce03fe077f8d67",
+  "jsonl_bytes": 5665609,
+  "record_count": 2150,
+  "governance_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "product_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "current_product_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "head_policy": {
+    "ok": true,
+    "reason": "EXACT",
+    "commits": 0
+  },
+  "by_execution_status": {
+    "NOT_RUN": 2150
+  },
+  "by_final_status": {
+    "NOT_VERIFIED": 2150
+  },
+  "verdict": "PASS",
+  "error_count": 0,
+  "errors": []
+}

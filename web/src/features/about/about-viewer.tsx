@@ -237,7 +237,7 @@ function ChapterBody({
   return (
     <>
       {section.subSections?.map((sub, i) => (
-        <div key={i} className='mt-6'>
+        <div key={sub.heading} className='mt-6'>
           <Heading
             variant='card-title'
             level={3}
@@ -247,15 +247,15 @@ function ChapterBody({
             {sub.heading}
           </Heading>
           <ProfileBlock sub={sub} />
-          {sub.paragraphs?.map((paragraph, j) => (
-            <p key={j} className='text-long text-fg-primary mb-2'>
+          {sub.paragraphs?.map((paragraph) => (
+            <p key={paragraph} className='text-long text-fg-primary mb-2'>
               {paragraph}
             </p>
           ))}
           {sub.entries ? (
             <dl className='mt-3 mb-4 grid gap-3 sm:grid-cols-2'>
-              {sub.entries.map((entry, k) => (
-                <div key={k} className='rounded-md border p-4'>
+              {sub.entries.map((entry) => (
+                <div key={entry.label} className='rounded-md border p-4'>
                   <dt className='text-long text-fg-primary font-medium'>
                     {entry.label}
                   </dt>
@@ -276,8 +276,8 @@ function ChapterBody({
           ) : null}
         </div>
       ))}
-      {section.closing?.map((paragraph, i) => (
-        <p key={i} className='text-long text-fg-primary mt-4'>
+      {section.closing?.map((paragraph) => (
+        <p key={paragraph} className='text-long text-fg-primary mt-4'>
           {paragraph}
         </p>
       ))}

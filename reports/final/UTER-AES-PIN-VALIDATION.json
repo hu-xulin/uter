@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-11-11T12:59:41.607Z",
+  "repository": "https://github.com/hu-xulin/uter",
+  "local_root": "/Users/lincolnhu/uter",
+  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_repository": "https://github.com/hu-xulin/aes",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "report_id": "UTER-AES-PIN-VALIDATION",
+  "pin_schema": "3.1.0",
+  "registry_version": "1.12.2",
+  "registry_status": "ACTIVE",
+  "governed_fingerprint": "74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
+  "integration_status": "MIGRATION_PENDING",
+  "static_contract": {
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": {
+      "rel": ".aes/reports/evidence/uter-pin-check.stdout.log",
+      "bytes": 619,
+      "sha256": "e22288807f3b3e0d09df568db8c891f6c185bee053f1a1933ffead9ee377723c"
+    }
+  },
+  "contract_tests": {
+    "status": "PASS",
+    "tap": null
+  },
+  "online_check": {
+    "status": "PASS",
+    "exit_code": 0
+  },
+  "verdict": "PASS"
+}

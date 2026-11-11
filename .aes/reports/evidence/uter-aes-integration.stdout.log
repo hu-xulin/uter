@@ -1,0 +1,119 @@
+{
+  "schema_version": "1.1.0",
+  "engine": "UTER-AES-INTEGRATION-CHECK",
+  "executed_at": "2026-11-11T12:57:06.310Z",
+  "aes_root": "/Users/lincolnhu/aes",
+  "aes_commit": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "pin_fingerprint": "74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
+  "live_fingerprint": "74af90a42971f175998ab3b962ca0d37307784283b62317d8e779fe334efe433",
+  "seal_intact": true,
+  "pin_registry_blob_sha": "2ee9a7c70c1bbf67645a301de9662a8de9937bdb",
+  "live_components": {
+    "registry_blob_sha": "2ee9a7c70c1bbf67645a301de9662a8de9937bdb",
+    "registry_version": "1.12.2",
+    "registry_status": "ACTIVE",
+    "specification_id": "AES-SPEC-CORE",
+    "specification_version": "2.0.0",
+    "specification_status": "ACTIVE",
+    "specification_integrity_digest": "b380f655fffd9d28d1d508f12037bfe8b771512c1b3ee9b35170921174bf3a41",
+    "specification_integrity_computed": "b380f655fffd9d28d1d508f12037bfe8b771512c1b3ee9b35170921174bf3a41",
+    "requirement_count": 2150,
+    "requirement_ids_digest": "d6782a6925fdb5afbbb1de6184e4b956e204c7e626ff72b3053243374988ab5b"
+  },
+  "pin_components": {
+    "registry_blob_sha": "2ee9a7c70c1bbf67645a301de9662a8de9937bdb",
+    "registry_version": "1.12.2",
+    "registry_status": "ACTIVE",
+    "specification_id": "AES-SPEC-CORE",
+    "specification_version": "2.0.0",
+    "specification_status": "ACTIVE",
+    "specification_integrity_digest": "b380f655fffd9d28d1d508f12037bfe8b771512c1b3ee9b35170921174bf3a41",
+    "specification_integrity_computed": "b380f655fffd9d28d1d508f12037bfe8b771512c1b3ee9b35170921174bf3a41",
+    "requirement_count": 2150,
+    "requirement_ids_digest": "d6782a6925fdb5afbbb1de6184e4b956e204c7e626ff72b3053243374988ab5b"
+  },
+  "checks": [
+    {
+      "id": "AES-PIN-001",
+      "status": "PASS",
+      "detail": "pin identifies canonical AES repository"
+    },
+    {
+      "id": "AES-PIN-002",
+      "status": "PASS",
+      "detail": "registry path/version match live AES registry"
+    },
+    {
+      "id": "AES-PIN-003",
+      "status": "PASS",
+      "detail": "AES registry is ACTIVE and pin matches"
+    },
+    {
+      "id": "AES-PIN-004",
+      "status": "PASS",
+      "detail": "registry Git blob SHA matches pin"
+    },
+    {
+      "id": "AES-PIN-005",
+      "status": "PASS",
+      "detail": "ACTIVE specification seal recomputes from governed bytes"
+    },
+    {
+      "id": "AES-PIN-006",
+      "status": "PASS",
+      "detail": "governed fingerprint matches machine pin"
+    },
+    {
+      "id": "AES-PIN-007",
+      "status": "PASS",
+      "detail": "all fingerprint components match machine pin independent of JSON key order"
+    },
+    {
+      "id": "AES-PIN-008",
+      "status": "PASS",
+      "detail": "exactly one ACTIVE formal specification"
+    },
+    {
+      "id": "AES-PIN-009",
+      "status": "PASS",
+      "detail": "requirement registry count matches pin"
+    },
+    {
+      "id": "AES-UTER-001",
+      "status": "PASS",
+      "detail": "Uter inherits AES P00-P12"
+    },
+    {
+      "id": "AES-UTER-002",
+      "status": "PASS",
+      "detail": "UTER-P13 is registered in the Uter project registry"
+    },
+    {
+      "id": "AES-UTER-003",
+      "status": "PASS",
+      "detail": "P09 proves quality; P10 defines security/reliability"
+    },
+    {
+      "id": "AES-UTER-004",
+      "status": "PASS",
+      "detail": "conformance is not implicitly promoted"
+    },
+    {
+      "id": "AES-AGENT-001",
+      "status": "PASS",
+      "detail": "AGENTS.md bootstraps canonical AES"
+    },
+    {
+      "id": "AES-AGENT-002",
+      "status": "PASS",
+      "detail": "CLAUDE.md bootstraps canonical AES"
+    },
+    {
+      "id": "AES-AGENT-003",
+      "status": "PASS",
+      "detail": "no stale UAES canonical-source bootstrap"
+    }
+  ],
+  "verdict": "PASS",
+  "failed_checks": []
+}

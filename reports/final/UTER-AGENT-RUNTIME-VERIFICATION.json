@@ -1,0 +1,137 @@
+{
+  "generated_at": "2026-11-11T12:59:41.607Z",
+  "repository": "https://github.com/hu-xulin/uter",
+  "local_root": "/Users/lincolnhu/uter",
+  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_repository": "https://github.com/hu-xulin/aes",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "report_id": "UTER-AGENT-RUNTIME-VERIFICATION",
+  "skills_runtime": {
+    "schema_version": "1.0.0",
+    "report_id": "UTER-AGENT-SKILLS-RUNTIME-VERIFICATION",
+    "generated_at": "2026-11-11T12:57:03.904Z",
+    "generated_by": "tools/aes/agent-skills-runtime-verify.mjs",
+    "written_by_hand": false,
+    "uter_root": "/Users/lincolnhu/uter",
+    "runtime_load_semantics": "frontmatter parse + canonical delegation + referenced-file resolution (real disk reads)",
+    "canonical_skill_count": 4,
+    "loaded_skill_count": 4,
+    "verdict": "PASS",
+    "problems": null,
+    "skills": [
+      {
+        "name": "aes-integration",
+        "loaded": true,
+        "checks": {
+          "canonical_frontmatter": {
+            "ok": true,
+            "digest": "c59f8e296ad81d281844e6d6e6fa1d2c56a79d625b937a574bc116797ece2a19"
+          },
+          "adapter_frontmatter": {
+            "ok": true,
+            "digest": "5f52c35b3a55fd0c35ca6400c25466e356a0f72879963a18fa2cef95bafcc3a7"
+          },
+          "delegation": {
+            "ok": true,
+            "target": ".agents/skills/aes-integration/SKILL.md"
+          },
+          "referenced_files": {
+            "ok": true,
+            "resolved_via_real_disk_reads": true
+          }
+        }
+      },
+      {
+        "name": "i18n-translate",
+        "loaded": true,
+        "checks": {
+          "canonical_frontmatter": {
+            "ok": true,
+            "digest": "7453908a7be6d63994cb2d3ed188732110e2a160265f3050d466c2cf3a843f2f"
+          },
+          "adapter_frontmatter": {
+            "ok": true,
+            "digest": "e1296135472d25588a1be9f19d908905f93a9aa089e019a0d264a4216539eaf4"
+          },
+          "delegation": {
+            "ok": true,
+            "target": ".agents/skills/i18n-translate/SKILL.md"
+          },
+          "referenced_files": {
+            "ok": true,
+            "resolved_via_real_disk_reads": true
+          }
+        }
+      },
+      {
+        "name": "shadcn-ui",
+        "loaded": true,
+        "checks": {
+          "canonical_frontmatter": {
+            "ok": true,
+            "digest": "023c951b492f0a72dea63567cef4fd4fd4cba3bd19aa08914bffafda9f4843b9"
+          },
+          "adapter_frontmatter": {
+            "ok": true,
+            "digest": "1becadda72d36b69ffc77c37bbd6b6473f78170a8aea7b302e6ffecfcdc9003f"
+          },
+          "delegation": {
+            "ok": true,
+            "target": ".agents/skills/shadcn-ui/SKILL.md"
+          },
+          "referenced_files": {
+            "ok": true,
+            "resolved_via_real_disk_reads": true
+          }
+        }
+      },
+      {
+        "name": "vercel-react-best-practices",
+        "loaded": true,
+        "checks": {
+          "canonical_frontmatter": {
+            "ok": true,
+            "digest": "3d03f4691bf3b60b69f20d9c70e65b3d8862a8e3d1091f2ae0ca2689702f7a6c"
+          },
+          "adapter_frontmatter": {
+            "ok": true,
+            "digest": "7ab6a2745cd3f357a3d7795a3cf2455fb14901c450ca741d3e1eb9084ffdc98f"
+          },
+          "delegation": {
+            "ok": true,
+            "target": ".agents/skills/vercel-react-best-practices/SKILL.md"
+          },
+          "referenced_files": {
+            "ok": true,
+            "resolved_via_real_disk_reads": true
+          }
+        }
+      }
+    ],
+    "honesty_note": "Runtime loading here means the loader performed the same reads a real agent runtime performs (frontmatter, delegation target, referenced files). Autonomous behaviour of external agent runtimes remains external_unverified by design."
+  },
+  "policy_selftest": {
+    "overall": "PASS",
+    "total_cases": 20,
+    "passed": 20,
+    "failed_cases": [],
+    "evidence": {
+      "path": "reports/compliance/aes-full-migration-2026-11-06/evidence/agent-runtime-selftest.json",
+      "exists": true,
+      "bytes": 6504,
+      "sha256": "960228d777d894df194af8db81e3c36dabfcaf3a532cd6b8ffe2c2237f3fc6f9"
+    }
+  },
+  "verdict": "PASS",
+  "note": "Runtime loading of 4 canonical skills is verified live; permission denial and honesty cases come from the 20-case policy selftest, not from static file existence."
+}

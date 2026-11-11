@@ -1,0 +1,286 @@
+{
+  "harness_id": "uter-evidence-harness@1.0.0",
+  "generated_at": "2026-11-11T12:57:06.330Z",
+  "product_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "governance_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "entry_count": 12,
+  "entries": [
+    {
+      "id": "uter-adapter-tests",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/integration-adapter.test.mjs",
+      "started_at": "2026-11-11T12:56:17.738Z",
+      "duration_ms": 10696,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 23,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-adapter-tests.stdout.log",
+        "bytes": 4582,
+        "sha256": "55a0a33818b1e5de4c30b88f585dd66c8e3a63135bddf9d905a9eab6d27728f5"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-adapter-tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-adapter-contract",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/integration-adapter.contract.test.mjs",
+      "started_at": "2026-11-11T12:56:28.438Z",
+      "duration_ms": 3517,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 9,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-adapter-contract.stdout.log",
+        "bytes": 2026,
+        "sha256": "2f8bedc88cb228e7f3734981de49056cd4a392db94f637561ede116162de2d20"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-adapter-contract.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-traceability-tests",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/build-traceability.test.mjs",
+      "started_at": "2026-11-11T12:56:31.955Z",
+      "duration_ms": 9551,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 15,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-traceability-tests.stdout.log",
+        "bytes": 2849,
+        "sha256": "877d2c7ae0ac3e0e46f9bbf597c3c41c93d2fb14895f527598f21578f7e47433"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-traceability-tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-hard-gate-tests",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/uter-governance-hard-gates.test.mjs",
+      "started_at": "2026-11-11T12:56:41.507Z",
+      "duration_ms": 260,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 14,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-hard-gate-tests.stdout.log",
+        "bytes": 2766,
+        "sha256": "93c8e6cb0e04c9d23a5528030c89335209dc7a941d9357021ad77df12754c9ae"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-hard-gate-tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-negative-suites",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/p13-capability-verifier.negative.test.mjs tools/aes/agent-skills-runtime-verify.negative.test.mjs",
+      "started_at": "2026-11-11T12:56:41.767Z",
+      "duration_ms": 611,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 2,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-negative-suites.stdout.log",
+        "bytes": 965,
+        "sha256": "e43a4c2a8670f278712724e08fac04432b975d86d83fb636b2f9af53e90e0dfe"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-negative-suites.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-integration-check-tests",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test scripts/quality/aes-integration-check.test.mjs",
+      "started_at": "2026-11-11T12:56:42.378Z",
+      "duration_ms": 186,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 4,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-integration-check-tests.stdout.log",
+        "bytes": 795,
+        "sha256": "c74ad1df896dc3fb1a25d11a49ee5d0490db0e9f88d718ce9805d656d555f95f"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-integration-check-tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-sync-tests",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test .aes/autonomous/engine/sync.test.mjs",
+      "started_at": "2026-11-11T12:56:42.564Z",
+      "duration_ms": 276,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": {
+        "pass": 4,
+        "fail": 0
+      },
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-sync-tests.stdout.log",
+        "bytes": 831,
+        "sha256": "2f544a6fdbc436eb5994ddf872fa50b057b713556c8b2ee7ff5acda275500073"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-sync-tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-pin-tests",
+      "command": "ruby scripts/quality/test-aes-pin-check.rb",
+      "started_at": "2026-11-11T12:56:42.840Z",
+      "duration_ms": 20986,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": null,
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-pin-tests.stdout.log",
+        "bytes": 170,
+        "sha256": "fa69dccf5070eff456cb1e6b1afff3267e4266228a5b1c19035e1e1d134b7f19"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-pin-tests.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-agent-runtime",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node tools/aes/agent-skills-runtime-verify.mjs",
+      "started_at": "2026-11-11T12:57:03.826Z",
+      "duration_ms": 87,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": null,
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-agent-runtime.stdout.log",
+        "bytes": 75,
+        "sha256": "95f61062259bbb559ad971a14ee08ec67d2693a474f552f57c89c6fe7205edca"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-agent-runtime.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-pin-check",
+      "command": "bash scripts/quality/aes-pin-check.sh",
+      "started_at": "2026-11-11T12:57:03.913Z",
+      "duration_ms": 1890,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": null,
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-pin-check.stdout.log",
+        "bytes": 619,
+        "sha256": "e22288807f3b3e0d09df568db8c891f6c185bee053f1a1933ffead9ee377723c"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-pin-check.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-traceability-verify",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node tools/aes/build-traceability.mjs --verify",
+      "started_at": "2026-11-11T12:57:05.803Z",
+      "duration_ms": 155,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": null,
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-traceability-verify.stdout.log",
+        "bytes": 207,
+        "sha256": "d35f4f768d9e387d0e5c8c5b03dc253ac5b0a4ac7da11362d293c869dabdd42e"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-traceability-verify.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "id": "uter-aes-integration",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node scripts/quality/aes-integration-check.mjs --aes-root /Users/lincolnhu/aes",
+      "started_at": "2026-11-11T12:57:05.958Z",
+      "duration_ms": 372,
+      "exit_code": 0,
+      "status": "PASS",
+      "uter_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+      "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+      "tap": null,
+      "stdout": {
+        "rel": ".aes/reports/evidence/uter-aes-integration.stdout.log",
+        "bytes": 3811,
+        "sha256": "38dd31d008c50e8f5cd3f891b2620feaea87909f296db649d5711c04711847c7"
+      },
+      "stderr": {
+        "rel": ".aes/reports/evidence/uter-aes-integration.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "policy": {
+    "max_age_hours": 24,
+    "rule": "Every artefact hash must recompute; HEAD must be current; age <= 24h; non-zero exits are never PASS."
+  }
+}

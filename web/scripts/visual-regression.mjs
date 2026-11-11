@@ -132,12 +132,14 @@ if (browser) {
                 const explicit = document.querySelector(
                   `label[for="${CSS.escape(el.id)}"]`
                 )
-                if (explicit && (explicit.textContent || '').trim())
+                if (explicit && (explicit.textContent || '').trim()) {
                   return explicit.textContent.trim()
+                }
               }
               const wrapping = el.closest('label')
-              if (wrapping && (wrapping.textContent || '').trim())
+              if (wrapping && (wrapping.textContent || '').trim()) {
                 return wrapping.textContent.trim()
+              }
               const title = (el.getAttribute('title') || '').trim()
               if (title) return title
               const placeholder = (el.getAttribute('placeholder') || '').trim()
@@ -195,8 +197,9 @@ if (browser) {
         await page.keyboard.press('Tab')
         const focus = await page.evaluate(() => {
           const el = document.activeElement
-          if (!el || el === document.body || el === document.documentElement)
+          if (!el || el === document.body || el === document.documentElement) {
             return { focused: false }
+          }
           const style = getComputedStyle(el)
           const rect = el.getBoundingClientRect()
           const visible = rect.width > 0 && rect.height > 0

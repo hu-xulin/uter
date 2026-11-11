@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-11-11T12:59:41.607Z",
+  "repository": "https://github.com/hu-xulin/uter",
+  "local_root": "/Users/lincolnhu/uter",
+  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_repository": "https://github.com/hu-xulin/aes",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "report_id": "UTER-P13-CAPABILITY-REPORT",
+  "extension": ".aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md",
+  "registry": ".aes/uter-governance-registry.yaml",
+  "capabilities": {
+    "business_domain_extension_present": true,
+    "capability_mapping_present": true,
+    "capability_verifier_tests": true,
+    "skills_runtime_loaded": 0
+  },
+  "verdict": "NOT_VERIFIED",
+  "honesty": "P13 business-domain acceptance requires product-level business invariant evidence; the artifacts above prove structure and runtime loading only."
+}

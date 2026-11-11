@@ -1,0 +1,173 @@
+{
+  "generated_at": "2026-11-11T12:59:41.607Z",
+  "repository": "https://github.com/hu-xulin/uter",
+  "local_root": "/Users/lincolnhu/uter",
+  "uther_head": "7a02f15bb227d91dabacec0b2f8bc92c024325f4",
+  "aes_repository": "https://github.com/hu-xulin/aes",
+  "aes_head": "cd8296583242ef86cc09ca1be8a0042680d30039",
+  "branch_policy": "LOCAL MAIN ONLY (no new branches, no PR, no push performed by this run)",
+  "state_model": [
+    "PASS",
+    "FAIL",
+    "NOT_RUN",
+    "NOT_VERIFIED",
+    "BLOCKED",
+    "NOT_APPLICABLE",
+    "PENDING_APPROVAL"
+  ],
+  "report_id": "UTER-EVIDENCE-REPORT",
+  "verdict": "PASS",
+  "entry_count": 12,
+  "status_counts": {
+    "PASS": 12
+  },
+  "manifest_evidence": {
+    "path": ".aes/reports/UTER-EVIDENCE-MANIFEST.json",
+    "exists": true,
+    "bytes": 10999,
+    "sha256": "a7361208962fce2111c8bc983d406b2db5c6bc48d8fc9da2941c9df9d279892d"
+  },
+  "entries": [
+    {
+      "id": "uter-adapter-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 10696,
+      "tap": {
+        "pass": 23,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/integration-adapter.test.mjs",
+      "stdout_sha256": "55a0a33818b1e5de4c30b88f585dd66c8e3a63135bddf9d905a9eab6d27728f5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-adapter-contract",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 3517,
+      "tap": {
+        "pass": 9,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/integration-adapter.contract.test.mjs",
+      "stdout_sha256": "2f8bedc88cb228e7f3734981de49056cd4a392db94f637561ede116162de2d20",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-traceability-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 9551,
+      "tap": {
+        "pass": 15,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/build-traceability.test.mjs",
+      "stdout_sha256": "877d2c7ae0ac3e0e46f9bbf597c3c41c93d2fb14895f527598f21578f7e47433",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-hard-gate-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 260,
+      "tap": {
+        "pass": 14,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/uter-governance-hard-gates.test.mjs",
+      "stdout_sha256": "93c8e6cb0e04c9d23a5528030c89335209dc7a941d9357021ad77df12754c9ae",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-negative-suites",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 611,
+      "tap": {
+        "pass": 2,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test tools/aes/p13-capability-verifier.negative.test.mjs tools/aes/agent-skills-runtime-verify.negative.test.mjs",
+      "stdout_sha256": "e43a4c2a8670f278712724e08fac04432b975d86d83fb636b2f9af53e90e0dfe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-integration-check-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 186,
+      "tap": {
+        "pass": 4,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test scripts/quality/aes-integration-check.test.mjs",
+      "stdout_sha256": "c74ad1df896dc3fb1a25d11a49ee5d0490db0e9f88d718ce9805d656d555f95f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-sync-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 276,
+      "tap": {
+        "pass": 4,
+        "fail": 0
+      },
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node --test .aes/autonomous/engine/sync.test.mjs",
+      "stdout_sha256": "2f544a6fdbc436eb5994ddf872fa50b057b713556c8b2ee7ff5acda275500073",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-pin-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 20986,
+      "tap": null,
+      "command": "ruby scripts/quality/test-aes-pin-check.rb",
+      "stdout_sha256": "fa69dccf5070eff456cb1e6b1afff3267e4266228a5b1c19035e1e1d134b7f19",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-agent-runtime",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 87,
+      "tap": null,
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node tools/aes/agent-skills-runtime-verify.mjs",
+      "stdout_sha256": "95f61062259bbb559ad971a14ee08ec67d2693a474f552f57c89c6fe7205edca",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-pin-check",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 1890,
+      "tap": null,
+      "command": "bash scripts/quality/aes-pin-check.sh",
+      "stdout_sha256": "e22288807f3b3e0d09df568db8c891f6c185bee053f1a1933ffead9ee377723c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-traceability-verify",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 155,
+      "tap": null,
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node tools/aes/build-traceability.mjs --verify",
+      "stdout_sha256": "d35f4f768d9e387d0e5c8c5b03dc253ac5b0a4ac7da11362d293c869dabdd42e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "uter-aes-integration",
+      "status": "PASS",
+      "exit_code": 0,
+      "duration_ms": 372,
+      "tap": null,
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node scripts/quality/aes-integration-check.mjs --aes-root /Users/lincolnhu/aes",
+      "stdout_sha256": "38dd31d008c50e8f5cd3f891b2620feaea87909f296db649d5711c04711847c7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

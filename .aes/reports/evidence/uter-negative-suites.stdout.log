@@ -1,0 +1,32 @@
+TAP version 13
+# ok 1 - broken frontmatter fails closed
+# ok 2 - missing delegation fails closed
+# ok 3 - missing referenced file fails closed
+# ok 4 - adapter/canonical set divergence fails closed
+# Agent/skills runtime verifier negative tests: 4/4 PASS
+# Subtest: tools/aes/agent-skills-runtime-verify.negative.test.mjs
+ok 1 - tools/aes/agent-skills-runtime-verify.negative.test.mjs
+  ---
+  duration_ms: 519.023172
+  type: 'test'
+  ...
+# ok 1 - incomplete mapping fails closed (exit 1, verified_count=0)
+# ok 2 - duplicate rows fail closed
+# ok 3 - trivial normative statement fails closed
+# ok 4 - missing mapping file fails closed
+# P13 capability verifier negative tests: 4/4 PASS
+# Subtest: tools/aes/p13-capability-verifier.negative.test.mjs
+ok 2 - tools/aes/p13-capability-verifier.negative.test.mjs
+  ---
+  duration_ms: 426.254588
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 529.245392

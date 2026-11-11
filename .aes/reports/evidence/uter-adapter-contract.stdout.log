@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: machine evidence executes three real AES verifiers with recorded exit codes
+ok 1 - machine evidence executes three real AES verifiers with recorded exit codes
+  ---
+  duration_ms: 537.003523
+  type: 'test'
+  ...
+# Subtest: no signature, human signer or third-party dependency remains in the trust chain
+ok 2 - no signature, human signer or third-party dependency remains in the trust chain
+  ---
+  duration_ms: 1066.830679
+  type: 'test'
+  ...
+# Subtest: the pinned commit really carries all seven current governance artefacts
+ok 3 - the pinned commit really carries all seven current governance artefacts
+  ---
+  duration_ms: 96.112565
+  type: 'test'
+  ...
+# Subtest: a missing AES verifier directory makes discovery fail closed
+ok 4 - a missing AES verifier directory makes discovery fail closed
+  ---
+  duration_ms: 95.753232
+  type: 'test'
+  ...
+# Subtest: machine evidence fails closed when the AES verifiers are absent
+ok 5 - machine evidence fails closed when the AES verifiers are absent
+  ---
+  duration_ms: 97.909311
+  type: 'test'
+  ...
+# Subtest: pin verification rejects null, missing and non-existent commits
+ok 6 - pin verification rejects null, missing and non-existent commits
+  ---
+  duration_ms: 66.412036
+  type: 'test'
+  ...
+# Subtest: product conformance evidence is absent -> acceptance stays fail-closed
+ok 7 - product conformance evidence is absent -> acceptance stays fail-closed
+  ---
+  duration_ms: 1.802266
+  type: 'test'
+  ...
+# Subtest: technical wiring alone never promotes integration status to INTEGRATED
+ok 8 - technical wiring alone never promotes integration status to INTEGRATED
+  ---
+  duration_ms: 704.670631
+  type: 'test'
+  ...
+# Subtest: the adapter CLI real call chain emits a real discovery with machine evidence
+ok 9 - the adapter CLI real call chain emits a real discovery with machine evidence
+  ---
+  duration_ms: 634.364621
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3438.945002

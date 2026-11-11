@@ -29,7 +29,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Heading } from '@/design-system'
 import { Callout } from '@/features/docs/native/callout'
 import { loadNativeDoc } from '@/features/docs/native/docs-loader'
-import { PROSE_CLASSES } from '@/features/docs/native/native-docs-view'
+import { PROSE_CLASSES } from '@/features/docs/native/prose-classes'
 import { useStatus } from '@/hooks/use-status'
 import { getSafeHttpUrl, isLikelyHtml } from '@/lib/content-format'
 import {
