@@ -2,9 +2,9 @@
   "report_id": "BRANCH-POLICY-VALIDATION",
   "verifier_id": "aes-branch-policy-verifier@1.0.0",
   "policy_id": "AES-MAIN-ONLY-BRANCH-POLICY-2026-11-11",
-  "generated_at": "2026-11-11T17:21:24.503Z",
+  "generated_at": "2026-11-11T18:15:08.709Z",
   "repository_root": "/Users/lincolnhu/uter",
-  "head_sha": "5e86dacf00aac617cf0990b4dd1d55bae9d47e00",
+  "head_sha": "93011d2c9c38bd1fbf1553cdee36f3472048b755",
   "checks": [
     {
       "id": "BP-01",

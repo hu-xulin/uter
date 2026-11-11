@@ -64,16 +64,73 @@ export function isOutputOnlyPath(p, prefixes = OUTPUT_ONLY_PREFIXES) {
  * evaluator is a sync API). A parse failure is fail-closed: the caller must
  * treat "no list" as "nothing is output-only", never as "everything is".
  */
+/**
+ * Extract the source text of an exported array literal, e.g.
+ *   export const NAME = [ ... ]
+ * The scan is a real lexical scan: it skips line comments, block comments and
+ * string literals. A naive /'([^']+)'/g extraction is NOT sufficient here -
+ * an apostrophe inside a comment ("Uter's generated ...") pairs with the next
+ * real quote and silently DROPS genuine entries, which would make a governed
+ * input look like output-only content.
+ */
+function extractArrayLiteral(src, name) {
+  const decl = src.indexOf(`const ${name}`)
+  if (decl < 0) return null
+  const start = src.indexOf('[', decl)
+  if (start < 0) return null
+  let i = start
+  let depth = 0
+  let quote = null
+  while (i < src.length) {
+    const ch = src[i]
+    if (quote) {
+      if (ch === '\\') { i += 2; continue }
+      if (ch === quote) quote = null
+      i++
+      continue
+    }
+    if (ch === "'" || ch === '"' || ch === '`') { quote = ch; i++; continue }
+    if (ch === '/' && src[i + 1] === '/') { while (i < src.length && src[i] !== '\n') i++; continue }
+    if (ch === '/' && src[i + 1] === '*') {
+      const end = src.indexOf('*/', i + 2)
+      if (end < 0) return null
+      i = end + 2
+      continue
+    }
+    if (ch === '[') depth++
+    else if (ch === ']') {
+      depth--
+      if (depth === 0) return src.slice(start, i + 1)
+    }
+    i++
+  }
+  return null
+}
+
+/**
+ * Load the AES repository's own output-only prefix list so that cross-repo
+ * HEAD compatibility is judged by the SAME rule the AES harness applies.
+ * Reading the AES source of truth instead of duplicating the list here
+ * removes the drift risk of two independently maintained policies.
+ *
+ * The literal is evaluated by the JS engine itself (so its comments and
+ * quoting are handled natively) and every element is validated to be a
+ * non-empty string. A parse failure is fail-closed: the caller must treat
+ * "no list" as "nothing is output-only", never as "everything is".
+ */
 export function aesOutputOnlyPrefixes(aesRoot) {
   if (!aesRoot) return null
   const harness = join(aesRoot, 'quality/scripts/aes/governance-evidence-harness.mjs')
   if (!existsSync(harness)) return null
   try {
     const src = readFileSync(harness, 'utf8')
-    const m = src.match(/export const OUTPUT_ONLY_PREFIXES\s*=\s*\[([\s\S]*?)\]/)
-    if (!m) return null
-    const prefixes = [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1])
-    return prefixes.length ? prefixes : null
+    const literal = extractArrayLiteral(src, 'OUTPUT_ONLY_PREFIXES')
+    if (!literal) return null
+    const value = new Function(`return ${literal}`)()
+    if (!Array.isArray(value)) return null
+    if (!value.length) return null
+    if (!value.every((v) => typeof v === 'string' && v.length > 0)) return null
+    return value
   } catch { return null }
 }
 

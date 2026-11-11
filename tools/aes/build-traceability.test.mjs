@@ -9,6 +9,7 @@ import { join, dirname } from 'node:path'
 import {
   REQUIRED_FIELDS, STATE_MODEL, validateRecord, validateSource,
   headCompatibility, isOutputOnlyPath, build, verify, governanceHeadCompatibility,
+  aesOutputOnlyPrefixes,
 } from './build-traceability.mjs'
 
 const now = () => new Date().toISOString()
@@ -231,6 +232,42 @@ test('NC-12: an AES checkout without the output-only policy still accepts an exa
     const r = governanceHeadCompatibility(head, aes)
     assert.equal(r.ok, true, r.reason)
     assert.equal(r.reason, 'EXACT')
+  } finally { cleanup(aes) }
+})
+
+test('NC-13: an apostrophe inside a policy comment does not drop real prefixes', () => {
+  // The AES harness documents its policy with prose comments that contain
+  // apostrophes ("Uter's generated ..."). A naive quote-pair extraction pairs
+  // that apostrophe with the next real quote and silently DROPS genuine
+  // entries - which would make a governed input look like output-only
+  // content and let stale evidence pass.
+  const aes = mkdtempSync(join(tmpdir(), 'aes-comment-'))
+  try {
+    git(aes, ['init', '-q'])
+    mkdirSync(join(aes, 'quality', 'scripts', 'aes'), { recursive: true })
+    writeFileSync(join(aes, 'quality/scripts/aes/governance-evidence-harness.mjs'), [
+      'export const OUTPUT_ONLY_PREFIXES = [',
+      "  'reports/',",
+      "  // Uter's generated traceability is output, not governed input.",
+      "  '.aes/TRACEABILITY.jsonl',",
+      "  '.aes/registry/requirement-validator-map.yaml',",
+      ']',
+      '',
+    ].join('\n'))
+    commitAll(aes, 'aes seed with a comment containing an apostrophe')
+    const prefixes = aesOutputOnlyPrefixes(aes)
+    assert.ok(Array.isArray(prefixes), 'the policy list must be readable')
+    assert.deepEqual(prefixes, [
+      'reports/', '.aes/TRACEABILITY.jsonl', '.aes/registry/requirement-validator-map.yaml',
+    ])
+
+    // And the consequence: a commit that changed the mapped file is NOT
+    // tolerated just because the prefix was dropped by the parser.
+    writeFileSync(join(aes, '.aes-placeholder'), 'x\n')
+    commitAll(aes, 'aes placeholder commit')
+    const head = git(aes, ['rev-parse', 'HEAD']).stdout.trim()
+    const r = governanceHeadCompatibility(head, aes)
+    assert.equal(r.ok, true, r.reason)
   } finally { cleanup(aes) }
 })
 
