@@ -9,7 +9,7 @@ export const meta = {
   },
   version: '1.1.0',
   channelTypes: [55, 1], // OpenAI-type channels natively serve sora with the same wire format
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   models: ['sora-2', 'sora-2-pro'],
   fetchMode: 'per_task',
   // A New API gateway serves /v1/videos as a host protocol, so no URL changes.

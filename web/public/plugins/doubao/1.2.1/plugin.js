@@ -396,7 +396,7 @@ export const meta = {
     zh: '火山引擎豆包 Seedance 视频生成与 Seedream 图片生成',
   },
   version: '1.2.1',
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   channelTypes: [54, 45], // VolcEngine-type channels serve Ark video models with the same wire format
   models: Object.keys(VIDEO_MODELS).concat(Object.keys(IMAGE_MODELS)),
   fetchMode: 'per_task',

@@ -8,7 +8,7 @@ export const meta = {
     zh: '阿里云百炼万相视频生成（文生视频、图生视频）',
   },
   version: '1.0.0',
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   channelTypes: [17],
   models: [
     'wan2.7-i2v',

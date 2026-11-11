@@ -9,7 +9,7 @@ export const meta = {
   },
   version: '1.0.2',
   channelTypes: [41],
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   models: [
     'veo-3.0-generate-001',
     'veo-3.0-fast-generate-001',

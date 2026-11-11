@@ -14,9 +14,6 @@
 </p>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/hu-xulin/uter/main/LICENSE">
-    <img src="https://img.shields.io/github/license/hu-xulin/uter?color=brightgreen" alt="license">
-  </a>
   <a href="https://github.com/hu-xulin/uter/releases/latest">
     <img src="https://img.shields.io/github/v/release/hu-xulin/uter?color=brightgreen&include_prereleases" alt="release">
   </a>
@@ -36,9 +33,6 @@
 </div>
 
 ## 📝 Project Description
-
-> [!NOTE]  
-> This is an open-source project developed based on [One API](https://github.com/songquanpeng/one-api)
 
 > [!IMPORTANT]  
 > - This project is intended solely for lawful and authorized AI API gateway, organization-level authentication, multi-model management, usage analytics, cost accounting, and private deployment scenarios.
@@ -415,7 +409,6 @@ See [User authentication and login sessions](./docs-dev/authentication.md) for t
 
 | Project | Description |
 |------|------|
-| [One API](https://github.com/songquanpeng/one-api) | Original project base |
 | [Midjourney-Proxy](https://github.com/novicezk/midjourney-proxy) | Midjourney interface support |
 
 ### Supporting Tools
@@ -457,25 +450,6 @@ Welcome all forms of contribution!
 
 ---
 
-## 📜 License
-
-This project is licensed under the [GNU Affero General Public License v3.0 (AGPLv3)](./LICENSE).
-
-This project is a modified version of [new-api](https://github.com/QuantumNous/new-api), which is itself developed on top of [One API](https://github.com/songquanpeng/one-api) (MIT License). The upstream copyright notices and the attribution and original project link required by the additional terms of AGPLv3 Section 7 are preserved in [NOTICE](./NOTICE) and shown in the interface footer:
-
-- new-api: Copyright (c) QuantumNous and contributors.
-- One API: Copyright (c) songquanpeng and contributors.
-
-### Corresponding source (AGPLv3 Section 13)
-
-This project provides a service over a network. Anyone who interacts with that service over the network is entitled to the complete corresponding source code of the version being run:
-
-- Repository: <https://github.com/hu-xulin/uter>
-- Releases: <https://github.com/hu-xulin/uter/releases>
-
-If neither address is reachable, write to <support@uter.ai> to request the corresponding source.
-
-If your organization's policies do not permit the use of AGPLv3-licensed software, or if you wish to avoid the open-source obligations of AGPLv3, please contact <support@uter.ai>.
 
 ---
 

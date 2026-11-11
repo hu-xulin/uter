@@ -8,7 +8,7 @@ export const meta = {
     zh: 'MiniMax 海螺视频生成（文生视频、图生视频）',
   },
   version: '1.0.0',
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   channelTypes: [35],
   models: [
     'MiniMax-Hailuo-2.3',

@@ -138,7 +138,7 @@ ok  	github.com/uter-ai/uter/relaykit/relayconvert/reasoning	(cached)
 Testing tokenkit Go module...
 ok  	github.com/uter-ai/uter/tokenkit	(cached)
 Testing nested tokenkit/tokenkit Go module...
-ok  	github.com/QuantumNous/new-api/tokenkit	(cached)
+ok  	github.com/uter-ai/uter/tokenkit	(cached)
   [32m✓ PASS[0m (39s)
 
 [1m[5] 前端 类型检查 (tsgo)[0m

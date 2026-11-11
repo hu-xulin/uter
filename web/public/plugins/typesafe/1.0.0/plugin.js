@@ -12,7 +12,7 @@ export const meta = {
   sortPriority: 90,
   version: '1.0.0',
   icon: 'text:TS',
-  author: { name: 'QuantumNous', url: 'https://github.com/QuantumNous' },
+  author: { name: 'Uter.ai', url: 'https://github.com/hu-xulin/uter' },
   website: 'https://typesafe.ai',
   description: {
     en: 'Typed decisions with TypeSafe Jev, input priced per million tokens and output free',

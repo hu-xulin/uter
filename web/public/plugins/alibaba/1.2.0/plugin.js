@@ -132,7 +132,7 @@ export const meta = {
     zh: '阿里云百炼万相视频生成（文生视频、图生视频）',
   },
   version: '1.2.0',
-  author: { name: 'QuantumNous' },
+  author: { name: 'Uter.ai' },
   channelTypes: [17],
   // Literal metadata also supports the dashboard's static script preview.
   models: [
