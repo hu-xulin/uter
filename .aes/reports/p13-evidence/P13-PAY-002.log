@@ -1,89 +1,89 @@
 === RUN   TestRechargeEpayConcurrentCallbacksCreditOnce
-[SYS] 2026/11/11 - 02:26:39 | 易支付充值成功 trade_no=CLAIM-CONCURRENT user_id=804 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 11:07:28 | 易支付充值成功 trade_no=CLAIM-CONCURRENT user_id=804 quota_to_add=1000000 money=10.00 
 --- PASS: TestRechargeEpayConcurrentCallbacksCreditOnce (0.00s)
 === RUN   TestTopUpOrderStateMatrix
 === RUN   TestTopUpOrderStateMatrix/epay
 === RUN   TestTopUpOrderStateMatrix/epay/pending_is_credited_exactly_once
-[SYS] 2026/11/11 - 02:26:39 | 易支付充值成功 trade_no=MTX-epay-PENDING user_id=901 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 11:07:28 | 易支付充值成功 trade_no=MTX-epay-PENDING user_id=901 quota_to_add=1000000 money=10.00 
 === RUN   TestTopUpOrderStateMatrix/epay/failed_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/epay/expired_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/epay/cross_channel_order_is_rejected
 === RUN   TestTopUpOrderStateMatrix/epay/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:330 [35;1mrecord not found
-[0m[33m[0.055ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-epay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:330 [35;1mrecord not found
+[0m[33m[0.059ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-epay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
 === RUN   TestTopUpOrderStateMatrix/alipay
 === RUN   TestTopUpOrderStateMatrix/alipay/pending_is_credited_exactly_once
-[SYS] 2026/11/11 - 02:26:39 | alipay_official 充值成功 trade_no=MTX-alipay-PENDING user_id=902 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 11:07:28 | alipay_official 充值成功 trade_no=MTX-alipay-PENDING user_id=902 quota_to_add=1000000 money=10.00 
 === RUN   TestTopUpOrderStateMatrix/alipay/failed_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/alipay/expired_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/alipay/cross_channel_order_is_rejected
 === RUN   TestTopUpOrderStateMatrix/alipay/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
-[0m[33m[0.056ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-alipay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
+[0m[33m[0.063ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-alipay-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
 === RUN   TestTopUpOrderStateMatrix/wechat
 === RUN   TestTopUpOrderStateMatrix/wechat/pending_is_credited_exactly_once
-[SYS] 2026/11/11 - 02:26:39 | wechat_pay_official 充值成功 trade_no=MTX-wechat-PENDING user_id=903 quota_to_add=1000000 money=10.00 
+[SYS] 2026/11/11 - 11:07:28 | wechat_pay_official 充值成功 trade_no=MTX-wechat-PENDING user_id=903 quota_to_add=1000000 money=10.00 
 === RUN   TestTopUpOrderStateMatrix/wechat/failed_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/wechat/expired_is_not_resurrected
 === RUN   TestTopUpOrderStateMatrix/wechat/cross_channel_order_is_rejected
 === RUN   TestTopUpOrderStateMatrix/wechat/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
-[0m[33m[0.057ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-wechat-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
+[0m[33m[0.070ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-wechat-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
 === RUN   TestTopUpOrderStateMatrix/stripe
 === RUN   TestTopUpOrderStateMatrix/stripe/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/stripe/failed_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/stripe/expired_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/stripe/cross_channel_order_is_rejected
-[SYS] 2026/11/11 - 02:26:39 | topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 11:07:28 | topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/stripe/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:495 [35;1mrecord not found
-[0m[33m[0.074ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-stripe-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/11 - 02:26:39 | topup failed: 充值订单不存在 
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:495 [35;1mrecord not found
+[0m[33m[0.058ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-stripe-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 11:07:28 | topup failed: 充值订单不存在 
 === RUN   TestTopUpOrderStateMatrix/creem
 === RUN   TestTopUpOrderStateMatrix/creem/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/creem/failed_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | creem topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | creem topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/creem/expired_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | creem topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | creem topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/creem/cross_channel_order_is_rejected
-[SYS] 2026/11/11 - 02:26:39 | creem topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 11:07:28 | creem topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/creem/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:721 [35;1mrecord not found
-[0m[33m[0.042ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-creem-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/11 - 02:26:39 | creem topup failed: 充值订单不存在 
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:721 [35;1mrecord not found
+[0m[33m[0.047ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-creem-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 11:07:28 | creem topup failed: 充值订单不存在 
 === RUN   TestTopUpOrderStateMatrix/waffo
 === RUN   TestTopUpOrderStateMatrix/waffo/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/waffo/failed_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | waffo topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | waffo topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo/expired_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | waffo topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | waffo topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo/cross_channel_order_is_rejected
-[SYS] 2026/11/11 - 02:26:39 | waffo topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 11:07:28 | waffo topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/waffo/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:790 [35;1mrecord not found
-[0m[33m[0.041ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/11 - 02:26:39 | waffo topup failed: 充值订单不存在 
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:790 [35;1mrecord not found
+[0m[33m[0.045ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 11:07:28 | waffo topup failed: 充值订单不存在 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/pending_is_credited_exactly_once
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/failed_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | waffo pancake topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | waffo pancake topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/expired_is_not_resurrected
-[SYS] 2026/11/11 - 02:26:39 | waffo pancake topup failed: 充值订单状态错误 
+[SYS] 2026/11/11 - 11:07:28 | waffo pancake topup failed: 充值订单状态错误 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/cross_channel_order_is_rejected
-[SYS] 2026/11/11 - 02:26:39 | waffo pancake topup failed: payment method mismatch 
+[SYS] 2026/11/11 - 11:07:28 | waffo pancake topup failed: payment method mismatch 
 === RUN   TestTopUpOrderStateMatrix/waffo-pancake/unknown_order_is_rejected
 
-2026/11/11 02:26:39 [31;1m/Users/lincolnhu/uter/model/topup.go:861 [35;1mrecord not found
-[0m[33m[0.048ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-pancake-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[SYS] 2026/11/11 - 02:26:39 | waffo pancake topup failed: 充值订单不存在 
+2026/11/11 11:07:28 [31;1m/Users/lincolnhu/uter/model/topup.go:861 [35;1mrecord not found
+[0m[33m[0.047ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "MTX-waffo-pancake-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[SYS] 2026/11/11 - 11:07:28 | waffo pancake topup failed: 充值订单不存在 
 --- PASS: TestTopUpOrderStateMatrix (0.02s)
     --- PASS: TestTopUpOrderStateMatrix/epay (0.00s)
         --- PASS: TestTopUpOrderStateMatrix/epay/pending_is_credited_exactly_once (0.00s)
@@ -128,5 +128,5 @@
         --- PASS: TestTopUpOrderStateMatrix/waffo-pancake/cross_channel_order_is_rejected (0.00s)
         --- PASS: TestTopUpOrderStateMatrix/waffo-pancake/unknown_order_is_rejected (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/model	1.634s
+ok  	github.com/uter-ai/uter/model	1.772s
 

@@ -5,6 +5,6 @@ exit=0
 === RUN   TestClaimPendingTopUpWritesExtraColumnsAtomically
 --- PASS: TestClaimPendingTopUpWritesExtraColumnsAtomically (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/model	1.718s
+ok  	github.com/uter-ai/uter/model	1.704s
 
 

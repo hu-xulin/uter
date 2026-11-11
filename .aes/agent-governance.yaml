@@ -5,6 +5,53 @@ decision_mode: "AUTONOMOUS_MACHINE_ONLY"
 default_effect: "DENY"
 source_of_truth: ".aes/agent-governance.yaml"
 
+# Baseline preservation and fail-closed delivery are mandatory
+# (UTER-AES-GOV-001 §6.3 / §6.6 / §8.2 / §16.3). This section is consumed by
+# test-ai-governance-policy.rb (L1-02) and the runtime policy evaluator
+# (aes-agent-runtime-check.rb); both treat delivery actions (commit / push /
+# PR) as DENIED until full validation has completed. Without this section the
+# delivery gate silently degrades to allow, which the selftest negative cases
+# catch as over-privilege.
+execution_policy:
+  governing_specification: "UTER-AES-GOV-001"
+  baseline_preservation_required: true
+  max_execution_branches_per_project: 1
+  current_execution_branch: "main"
+  environment_authorized_local_main_must_be_respected: true
+  full_validation_required_before:
+    - git.commit
+    - git.push.feature_branch
+    - git.pull_request.create
+  validation_layers:
+    - L1_CHANGE_GATE
+    - L2_INTEGRATION_GATE
+    - L3_DOMAIN_ACCEPTANCE_GATE
+    - L4_GLOBAL_CONFORMANCE_GATE
+  independently_assessed_domains: 14
+  runtime_agent_verification_required: true
+  independent_assessment_required: true
+  forbidden:
+    - git.push.main
+    - git.force_push
+    - git.merge
+    - git.pull_request.merge
+    - git.worktree.create
+    - git.reset.hard
+    - git.clean
+    - git.restore.user_files
+    - deployment.execute
+    - production.database.write
+    - payment.configuration.write
+    - overwrite.user_uncommitted_changes
+    - falsify.verification_result
+
+risk_levels:
+  - R0
+  - R1
+  - R2
+  - R3
+  - R4
+
 repository:
   default_branch: "main"
   execution_branch: "main"

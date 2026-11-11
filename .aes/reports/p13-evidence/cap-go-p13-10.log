@@ -23,8 +23,8 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false
 
-2026/11/11 02:26:33 [31;1m/Users/lincolnhu/uter/model/main.go:480 [35;1mSQL logic error: no such table: options (1)
-[0m[33m[0.063ms] [34;1m[rows:0][0m SELECT `value` FROM `options` WHERE key = "log_cache_tokens_backfilled" LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/main.go:480 [35;1mSQL logic error: no such table: options (1)
+[0m[33m[0.068ms] [34;1m[rows:0][0m SELECT `value` FROM `options` WHERE key = "log_cache_tokens_backfilled" LIMIT 1
     token_test.go:831: database version: 3.53.3
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/create
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/invalid_create
@@ -32,7 +32,7 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/validation_error_exceeds_audit_buffer
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/create_storage_failure
 
-2026/11/11 02:26:33 [34;1m/Users/lincolnhu/uter/controller/token_test.go:934
+2026/11/11 11:07:22 [34;1m/Users/lincolnhu/uter/controller/token_test.go:934
 [0m[35m[warn] [0mremoving callback `token-audit:fail` from /Users/lincolnhu/uter/controller/token_test.go:934
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/normalized_update
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/configuration_values_stay_private
@@ -41,30 +41,30 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/successful_response_exceeds_audit_buffer
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/update_storage_failure
 
-2026/11/11 02:26:33 [34;1m/Users/lincolnhu/uter/controller/token_test.go:937
+2026/11/11 11:07:22 [34;1m/Users/lincolnhu/uter/controller/token_test.go:937
 [0m[35m[warn] [0mremoving callback `token-audit:fail` from /Users/lincolnhu/uter/controller/token_test.go:937
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_update
 
-2026/11/11 02:26:33 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.086ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 25 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 25 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.093ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 25 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 25 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/disable
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/enable
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/expired_enable
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/delete
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_delete
 
-2026/11/11 02:26:33 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.092ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 35 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 35 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.094ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 35 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 35 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/missing_delete
 
-2026/11/11 02:26:33 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.086ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.140ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/key_view
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/PAT_key_view
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_key_view
 
-2026/11/11 02:26:33 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.093ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 43 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 43 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.107ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 43 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 43 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/rate_limited_key_view
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/batch_delete_partial_and_duplicate
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/empty_batch_delete
@@ -74,18 +74,18 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/bounded_batch_metadata
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/reads_and_unauthenticated_writes_add_no_operation_audit
 
-2026/11/11 02:26:33 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
 [0m[33m[0.088ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/self_audit_excludes_other_owners
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/audit_storage_failure_preserves_operation_result
-[ERR] 2026/11/11 - 02:26:33 | 2026111018263395340600026a4fa6b5W0wbKjm | audit log write failed (request_id=2026111018263395340600026a4fa6b5W0wbKjm): audit unavailable 
+[ERR] 2026/11/11 - 11:07:22 | 2026111103072252710000026a4fa6b4JrEBTEA | audit log write failed (request_id=2026111103072252710000026a4fa6b4JrEBTEA): audit unavailable 
 
-2026/11/11 02:26:33 [34;1m/Users/lincolnhu/uter/controller/token_test.go:1088
+2026/11/11 11:07:22 [34;1m/Users/lincolnhu/uter/controller/token_test.go:1088
 [0m[35m[warn] [0mremoving callback `token-audit:log-fail` from /Users/lincolnhu/uter/controller/token_test.go:1088
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true
 
-2026/11/11 02:26:34 [31;1m/Users/lincolnhu/uter/model/main.go:480 [35;1mSQL logic error: no such table: options (1)
-[0m[33m[0.064ms] [34;1m[rows:0][0m SELECT `value` FROM `options` WHERE key = "log_cache_tokens_backfilled" LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/main.go:480 [35;1mSQL logic error: no such table: options (1)
+[0m[33m[0.068ms] [34;1m[rows:0][0m SELECT `value` FROM `options` WHERE key = "log_cache_tokens_backfilled" LIMIT 1
     token_test.go:831: database version: 3.53.3
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/create
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/invalid_create
@@ -93,7 +93,7 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/validation_error_exceeds_audit_buffer
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/create_storage_failure
 
-2026/11/11 02:26:34 [34;1m/Users/lincolnhu/uter/controller/token_test.go:934
+2026/11/11 11:07:22 [34;1m/Users/lincolnhu/uter/controller/token_test.go:934
 [0m[35m[warn] [0mremoving callback `token-audit:fail` from /Users/lincolnhu/uter/controller/token_test.go:934
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/normalized_update
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/configuration_values_stay_private
@@ -102,30 +102,30 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/successful_response_exceeds_audit_buffer
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/update_storage_failure
 
-2026/11/11 02:26:34 [34;1m/Users/lincolnhu/uter/controller/token_test.go:937
+2026/11/11 11:07:22 [34;1m/Users/lincolnhu/uter/controller/token_test.go:937
 [0m[35m[warn] [0mremoving callback `token-audit:fail` from /Users/lincolnhu/uter/controller/token_test.go:937
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_update
 
-2026/11/11 02:26:34 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.093ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 25 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 25 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.101ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 25 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 25 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/disable
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/enable
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/expired_enable
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/delete
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_delete
 
-2026/11/11 02:26:34 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.090ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 35 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 35 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.097ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 35 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 35 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/missing_delete
 
-2026/11/11 02:26:34 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.090ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.096ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/key_view
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/PAT_key_view
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_key_view
 
-2026/11/11 02:26:34 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.103ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 43 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 43 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.100ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 43 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 43 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/rate_limited_key_view
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/batch_delete_partial_and_duplicate
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/empty_batch_delete
@@ -135,13 +135,13 @@ exit=0
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/bounded_batch_metadata
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/reads_and_unauthenticated_writes_add_no_operation_audit
 
-2026/11/11 02:26:34 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
-[0m[33m[0.088ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
+2026/11/11 11:07:22 [31;1m/Users/lincolnhu/uter/model/token.go:267 [35;1mrecord not found
+[0m[33m[0.094ms] [34;1m[rows:0][0m SELECT * FROM `tokens` WHERE (id = 999999 and user_id = 1) AND `tokens`.`deleted_at` IS NULL AND `tokens`.`id` = 999999 ORDER BY `tokens`.`id` LIMIT 1
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/self_audit_excludes_other_owners
 === RUN   TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/audit_storage_failure_preserves_operation_result
-[ERR] 2026/11/11 - 02:26:34 | 2026111018263417170600026a4fa6bRGasT7Yl | audit log write failed (request_id=2026111018263417170600026a4fa6bRGasT7Yl): audit unavailable 
+[ERR] 2026/11/11 - 11:07:22 | 2026111103072277950500026a4fa6bWo9Kis10 | audit log write failed (request_id=2026111103072277950500026a4fa6bWo9Kis10): audit unavailable 
 
-2026/11/11 02:26:34 [34;1m/Users/lincolnhu/uter/controller/token_test.go:1088
+2026/11/11 11:07:22 [34;1m/Users/lincolnhu/uter/controller/token_test.go:1088
 [0m[35m[warn] [0mremoving callback `token-audit:log-fail` from /Users/lincolnhu/uter/controller/token_test.go:1088
 === RUN   TestAPITokenAuditDatabaseMatrix/mysql/separate_log=false
     token_test.go:801: AUDIT_MYSQL_DSN is not configured
@@ -151,13 +151,13 @@ exit=0
     token_test.go:801: AUDIT_POSTGRES_DSN is not configured
 === RUN   TestAPITokenAuditDatabaseMatrix/postgres/separate_log=true
     token_test.go:801: AUDIT_POSTGRES_DSN is not configured
---- PASS: TestAPITokenAuditDatabaseMatrix (0.43s)
-    --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false (0.21s)
+--- PASS: TestAPITokenAuditDatabaseMatrix (0.49s)
+    --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false (0.23s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/create (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/invalid_create (0.00s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/malformed_body (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/invalid_create (0.01s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/malformed_body (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/validation_error_exceeds_audit_buffer (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/create_storage_failure (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/create_storage_failure (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/normalized_update (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/configuration_values_stay_private (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/unchanged_update (0.01s)
@@ -167,50 +167,50 @@ exit=0
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_update (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/disable (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/enable (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/expired_enable (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/expired_enable (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/delete (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_delete (0.00s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/missing_delete (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_delete (0.01s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/missing_delete (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/key_view (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/PAT_key_view (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_key_view (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/foreign_key_view (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/rate_limited_key_view (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/batch_delete_partial_and_duplicate (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/empty_batch_delete (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/empty_batch_delete (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/batch_keys_partial_and_duplicate (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/batch_keys_no_matches (0.00s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/empty_batch_keys (0.01s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/empty_batch_keys (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/bounded_batch_metadata (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/reads_and_unauthenticated_writes_add_no_operation_audit (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/self_audit_excludes_other_owners (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=false/audit_storage_failure_preserves_operation_result (0.00s)
-    --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true (0.22s)
+    --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true (0.25s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/create (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/invalid_create (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/invalid_create (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/malformed_body (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/validation_error_exceeds_audit_buffer (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/create_storage_failure (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/create_storage_failure (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/normalized_update (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/configuration_values_stay_private (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/unchanged_update (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/user_quota_query_update (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/successful_response_exceeds_audit_buffer (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/update_storage_failure (0.00s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_update (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/update_storage_failure (0.01s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_update (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/disable (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/enable (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/expired_enable (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/expired_enable (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/delete (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_delete (0.00s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/missing_delete (0.00s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/key_view (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_delete (0.01s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/missing_delete (0.01s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/key_view (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/PAT_key_view (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_key_view (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/foreign_key_view (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/rate_limited_key_view (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/batch_delete_partial_and_duplicate (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/empty_batch_delete (0.00s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/batch_keys_partial_and_duplicate (0.01s)
-        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/batch_keys_no_matches (0.00s)
+        --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/batch_keys_no_matches (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/empty_batch_keys (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/bounded_batch_metadata (0.01s)
         --- PASS: TestAPITokenAuditDatabaseMatrix/sqlite/separate_log=true/reads_and_unauthenticated_writes_add_no_operation_audit (0.00s)
@@ -221,6 +221,6 @@ exit=0
     --- SKIP: TestAPITokenAuditDatabaseMatrix/postgres/separate_log=false (0.00s)
     --- SKIP: TestAPITokenAuditDatabaseMatrix/postgres/separate_log=true (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/controller	2.660s
+ok  	github.com/uter-ai/uter/controller	2.956s
 
 

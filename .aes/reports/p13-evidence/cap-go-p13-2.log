@@ -19,17 +19,17 @@ exit=0
 [GIN-debug] DELETE /api/user/access_tokens/legacy --> github.com/uter-ai/uter/controller.RevokeLegacyAccessToken (4 handlers)
 [GIN-debug] DELETE /api/user/:id             --> github.com/uter-ai/uter/controller.DeleteUser (4 handlers)
 
-2026/11/11 02:25:14 [31;1m/Users/lincolnhu/uter/model/user_access_token.go:102 [35;1mrecord not found
-[0m[33m[0.037ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE id = 2 AND user_id = 1 ORDER BY `user_access_tokens`.`id` LIMIT 1
+2026/11/11 11:05:54 [31;1m/Users/lincolnhu/uter/model/user_access_token.go:102 [35;1mrecord not found
+[0m[33m[0.041ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE id = 2 AND user_id = 1 ORDER BY `user_access_tokens`.`id` LIMIT 1
 
-2026/11/11 02:25:14 [31;1m/Users/lincolnhu/uter/model/user_access_token.go:90 [35;1mrecord not found
-[0m[33m[0.041ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE token_hash = "3683114c465b4299f0ff0169f9e3e8e5c3c69e6514db613612561281d41a2934" ORDER BY `user_access_tokens`.`id` LIMIT 1
+2026/11/11 11:05:54 [31;1m/Users/lincolnhu/uter/model/user_access_token.go:90 [35;1mrecord not found
+[0m[33m[0.053ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE token_hash = "611eea4fc299dd89f27f385f2a5d8031a400ec0df7a9a2cc2e0acd6fa980f800" ORDER BY `user_access_tokens`.`id` LIMIT 1
 
-2026/11/11 02:25:14 [31;1m/Users/lincolnhu/uter/model/user_access_token.go:102 [35;1mrecord not found
-[0m[33m[0.038ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE id = 1 AND user_id = 1 ORDER BY `user_access_tokens`.`id` LIMIT 1
+2026/11/11 11:05:54 [31;1m/Users/lincolnhu/uter/model/user_access_token.go:102 [35;1mrecord not found
+[0m[33m[0.057ms] [34;1m[rows:0][0m SELECT * FROM `user_access_tokens` WHERE id = 1 AND user_id = 1 ORDER BY `user_access_tokens`.`id` LIMIT 1
 
-2026/11/11 02:25:14 [31;1m/Users/lincolnhu/uter/model/user.go:1302 [35;1mrecord not found
-[0m[33m[0.077ms] [34;1m[rows:0][0m SELECT * FROM `users` WHERE access_token = "legacy-opaque-token" AND `users`.`deleted_at` IS NULL ORDER BY `users`.`id` LIMIT 1
+2026/11/11 11:05:54 [31;1m/Users/lincolnhu/uter/model/user.go:1302 [35;1mrecord not found
+[0m[33m[0.087ms] [34;1m[rows:0][0m SELECT * FROM `users` WHERE access_token = "legacy-opaque-token" AND `users`.`deleted_at` IS NULL ORDER BY `users`.`id` LIMIT 1
 --- PASS: TestAccessTokenLifecycleAndLateRequests (0.04s)
 === RUN   TestEmailCodeLogin_SuspendedAccountSilent
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
@@ -38,7 +38,7 @@ exit=0
 
 --- PASS: TestEmailCodeLogin_SuspendedAccountSilent (0.01s)
 PASS
-ok  	github.com/uter-ai/uter/controller	2.527s
+ok  	github.com/uter-ai/uter/controller	2.969s
 
 
 $ go test ./service -run ^TestAccessTokenRejectsTampering$ -count=1 -v
@@ -46,6 +46,6 @@ exit=0
 === RUN   TestAccessTokenRejectsTampering
 --- PASS: TestAccessTokenRejectsTampering (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/service	2.071s
+ok  	github.com/uter-ai/uter/service	2.174s
 
 

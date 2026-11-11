@@ -1,12 +1,12 @@
 === RUN   TestAlipayReconcileDoesNotCreditMissingOrderRecord
 
-2026/11/11 02:27:29 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
-[0m[33m[0.069ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "ALIPAY-FAULT-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
-[ERR] 2026/11/11 - 02:27:29 | SYSTEM | 支付宝主动查单入账失败 trade_no=ALIPAY-FAULT-MISSING user_id=1 error="topup not found" 
-[SYS] 2026/11/11 - 02:27:29 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-MISSING user_id=1 quota_to_add=1000000 money=10.00 
-[INFO] 2026/11/11 - 02:27:29 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-MISSING user_id=1 source=reconcile 
-[INFO] 2026/11/11 - 02:27:29 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
---- PASS: TestAlipayReconcileDoesNotCreditMissingOrderRecord (0.13s)
+2026/11/11 11:08:24 [31;1m/Users/lincolnhu/uter/model/topup.go:408 [35;1mrecord not found
+[0m[33m[0.073ms] [34;1m[rows:0][0m SELECT * FROM `top_ups` WHERE `trade_no` = "ALIPAY-FAULT-MISSING" ORDER BY `top_ups`.`id` LIMIT 1
+[ERR] 2026/11/11 - 11:08:24 | SYSTEM | 支付宝主动查单入账失败 trade_no=ALIPAY-FAULT-MISSING user_id=1 error="topup not found" 
+[SYS] 2026/11/11 - 11:08:24 | alipay_official 充值成功 trade_no=ALIPAY-FAULT-MISSING user_id=1 quota_to_add=1000000 money=10.00 
+[INFO] 2026/11/11 - 11:08:24 | SYSTEM | 支付宝查单确认入账 trade_no=ALIPAY-FAULT-MISSING user_id=1 source=reconcile 
+[INFO] 2026/11/11 - 11:08:24 | SYSTEM | 支付宝订单对账完成 scanned=1 credited=1 query_failed=0 
+--- PASS: TestAlipayReconcileDoesNotCreditMissingOrderRecord (0.08s)
 PASS
-ok  	github.com/uter-ai/uter/controller	2.300s
+ok  	github.com/uter-ai/uter/controller	2.706s
 
