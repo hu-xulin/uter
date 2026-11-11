@@ -1,8 +1,8 @@
 # Uter Final Compliance Report — AES Conformance
 
-**Generated:** 2026-11-11T17:55:24.395Z
-**Uter HEAD:** `5e86dacf00aac617cf0990b4dd1d55bae9d47e00`
-**AES HEAD:** `e7a28a03fd94e001f213cbd0ec98a2e43eb76cc7`
+**Generated:** 2026-11-11T18:21:09.375Z
+**Uter HEAD:** `2570c2ecd8d7430526a0c4df7eac0167f8b93a20`
+**AES HEAD:** `dcd0734bc73e552de90b6d9a0801b4c18fb2cc99`
 **AES pin:** registry 1.12.2 / ACTIVE, fingerprint `74af90a42971f175…`
 **Integration status:** `MIGRATION_PENDING` — this remains MIGRATION_PENDING and is NOT a compliance certificate.
 
