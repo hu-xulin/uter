@@ -134,7 +134,7 @@ describe('public routes render through the real route tree', () => {
     expect(screen.queryByText(/Back to Home/)).toBeNull()
   })
 
-  it('renders /about with the shared page background and solid header', async () => {
+  it('renders /about with the shared page background and transparent header', async () => {
     const { container } = renderAt('/about')
     await waitFor(() => {
       expect(container.querySelector('iframe')).not.toBeNull()
@@ -144,8 +144,10 @@ describe('public routes render through the real route tree', () => {
     expect(container.querySelector('iframe')?.className).toContain(
       'bg-transparent'
     )
-    expect(container.querySelector('header')?.className).toContain(
-      'bg-background/85'
-    )
+    // The frame owns its scrolling, so the host never scrolls and the header
+    // stays transparent, letting the shared top-of-page glow bleed through.
+    const headerClass = container.querySelector('header')?.className ?? ''
+    expect(headerClass).not.toContain('bg-background/85')
+    expect(headerClass).toContain('bg-transparent')
   })
 })
