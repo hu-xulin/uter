@@ -3,8 +3,11 @@ import { fileURLToPath } from 'node:url'
 
 import { defineConfig, loadEnv } from '@rsbuild/core'
 import { pluginReact } from '@rsbuild/plugin-react'
+import { pluginMdx } from '@rsbuild/plugin-mdx'
 import { pluginTailwindcss } from '@rsbuild/plugin-tailwindcss'
 import { tanstackRouter } from '@tanstack/router-plugin/rspack'
+import rehypeSlug from 'rehype-slug'
+import remarkGfm from 'remark-gfm'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -95,7 +98,23 @@ export default defineConfig(({ envMode }) => {
   }
 
   return {
-    plugins: [pluginReact(), pluginTailwindcss({ optimize: false })],
+    plugins: [
+      pluginReact(),
+      // Native docs pipeline (Path 2 convergence): compile `content/**`
+      // Markdown/MDX — authored with `<Callout>` directives and GFM tables —
+      // into React components so the docs render in the SPA shell without an
+      // iframe. `remark-gfm` is required for the GFM tables the docs use.
+      pluginMdx({
+        mdxLoaderOptions: {
+          remarkPlugins: [remarkGfm],
+          // Anchor every h2/h3 so the native docs' table of contents (built
+          // from the rendered DOM in `native-docs-view.tsx`) has stable
+          // fragments to point at.
+          rehypePlugins: [rehypeSlug],
+        },
+      }),
+      pluginTailwindcss({ optimize: false }),
+    ],
     // Rsbuild 2: replaces deprecated `performance.chunkSplit` (RSPack 2 aligned)
     splitChunks: {
       preset: 'default',

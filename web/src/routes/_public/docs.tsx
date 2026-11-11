@@ -16,33 +16,51 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import { DocsViewer } from '@/features/docs'
+import { nativeDocsTarget } from '@/features/docs/native/docs-loader'
+import { NativeDocsView } from '@/features/docs/native/native-docs-view'
+import { resolveDocsLocaleCode } from '@/lib/docs-link'
 
 /**
  * Layout route for `/docs`. It owns the docs shell — and deliberately
- * renders {@link DocsViewer} *here*, in the layout that survives every
- * child swap, rather than in the two children below.
+ * renders the viewer *here*, in the layout that survives every child
+ * swap, rather than in the two children below.
+ *
+ * During the Path 2 convergence this layout serves **two renderers**:
+ *
+ * - `NativeDocsView` — an in-shell MDX page (no iframe) when the
+ *   requested page has been migrated into `web/src/docs-content/`;
+ * - `DocsViewer` — the framed Next.js export, for every page that has
+ *   not migrated yet.
+ *
+ * The fallback keeps the whole documentation reachable while the
+ * migration proceeds set by set; once every page renders natively the
+ * iframe branch and `docs-web` are retired together.
  *
  * The bare entry (`routes/docs/index.tsx`) and the clean `/docs/<lang>/<page>`
- * URL (`routes/docs/$.tsx`) are **sibling** routes, so a viewer rendered by
- * either of them is unmounted and remounted as soon as the reader moves
- * between `/docs` and a page inside it — and a remounted `<iframe>` reloads
- * its document, which is the "sudden page refresh" that made clicking a
- * sidebar section feel like it threw the page away. One frame in the layout
- * stays mounted across the whole docs section, and reads the page it should
- * show from the location (`DocsViewer` uses `useRouterState`), so the
- * children only have to exist to own the URL.
- *
- * Rendering `<Outlet/>` is also what makes the `/docs/$` child route mount
- * at all; without it the child never renders and the address bar can never be
- * re-pointed at the page the reader navigated to.
+ * URL (`routes/docs/$.tsx`) are **sibling** routes, so the viewer rendered
+ * here must read the current page from the location — the one place that
+ * always names it — exactly like the iframe viewer does.
  */
 function DocsRoute() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const { i18n } = useTranslation()
+
+  const target = nativeDocsTarget(
+    pathname,
+    resolveDocsLocaleCode(i18n.language)
+  )
+
   return (
     <>
-      <DocsViewer />
+      {target ? (
+        <NativeDocsView locale={target.locale} pagePath={target.pagePath} />
+      ) : (
+        <DocsViewer />
+      )}
       <Outlet />
     </>
   )
