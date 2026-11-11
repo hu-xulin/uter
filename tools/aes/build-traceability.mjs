@@ -118,9 +118,24 @@ export function governanceHeadCompatibility(evidenceHead, aesRoot) {
   if (!aesRoot) return { ok: false, reason: 'no AES checkout provided (--aes-root)' }
   const current = gitHead(aesRoot)
   if (!current) return { ok: false, reason: 'cannot read AES HEAD' }
+  // An exact match needs no output-only policy at all. This is the normal CI
+  // case: the evidence is regenerated in the same run against the AES
+  // checkout that is present, so the bound revision IS the current one. The
+  // policy is only needed to prove that a MOVED AES HEAD did not carry a
+  // governed input change along with it.
+  if (evidenceHead === current) {
+    return {
+      ok: true, reason: 'EXACT', commits: 0, current_head: current,
+      policy_source: 'exact match (output-only policy not required)',
+    }
+  }
   const prefixes = aesOutputOnlyPrefixes(aesRoot)
   if (!prefixes) {
-    return { ok: false, reason: 'cannot read the AES output-only policy (fail-closed)', commits: -1 }
+    return {
+      ok: false,
+      reason: `cannot read the AES output-only policy (fail-closed): bound ${evidenceHead.slice(0, 8)} is not the current AES HEAD ${current.slice(0, 8)}`,
+      commits: -1, current_head: current,
+    }
   }
   const r = headCompatibility(evidenceHead, current, aesRoot, prefixes)
   return { ...r, current_head: current, policy_source: 'AES quality/scripts/aes/governance-evidence-harness.mjs' }

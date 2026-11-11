@@ -217,6 +217,23 @@ test('NC-11: a moved AES revision that changed a governed input invalidates the 
   } finally { cleanup(aes); cleanup(ute) }
 })
 
+test('NC-12: an AES checkout without the output-only policy still accepts an exact match', () => {
+  // CI checks the AES repository out at a revision that predates the exported
+  // output-only policy. The evidence is regenerated in the same run, so the
+  // bound revision IS the current one and no policy is needed. Refusing that
+  // would break CI for a reason that has nothing to do with evidence validity.
+  const aes = mkdtempSync(join(tmpdir(), 'aes-nopolicy-'))
+  try {
+    git(aes, ['init', '-q'])
+    writeFileSync(join(aes, 'README.md'), 'old aes revision\n')
+    commitAll(aes, 'aes seed without the policy export')
+    const head = git(aes, ['rev-parse', 'HEAD']).stdout.trim()
+    const r = governanceHeadCompatibility(head, aes)
+    assert.equal(r.ok, true, r.reason)
+    assert.equal(r.reason, 'EXACT')
+  } finally { cleanup(aes) }
+})
+
 test('NC-10: deleting the matrix fails closed', () => {
   const { root, head } = fixtureRepo()
   try {
