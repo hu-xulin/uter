@@ -110,6 +110,7 @@ func TestGetOptionsMasksSecretKeys(t *testing.T) {
 // TestUpdateOptionIgnoresMaskedSecretWrite 锁定「写入侧防掩码覆盖」：
 // 前端把展示态掩码串原样提交时必须视为未修改，库中原密钥保持不变。
 func TestUpdateOptionIgnoresMaskedSecretWrite(t *testing.T) {
+	// 显式占位值：不是真实 Stripe 凭证，也不匹配真实密钥格式。
 	const storedSecret = "whsec_EXAMPLE_SECRET_7890"
 	withOptionMap(t, map[string]string{"StripeWebhookSecret": storedSecret})
 

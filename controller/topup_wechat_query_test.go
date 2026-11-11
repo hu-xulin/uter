@@ -94,6 +94,7 @@ func setupWechatQueryEnv(t *testing.T, node func(outTradeNo string) (status int,
 	})
 
 	operation_setting.WechatPayGateway = gateway.URL
+	// 以下商户号/AppID 均为显式测试占位值，不是任何真实商户凭证。
 	operation_setting.WechatPayMchId = "1900000000"
 	operation_setting.WechatPayAppId = "wx_example_appid"
 	operation_setting.WechatPayApiV3Key = strings.Repeat("k", 32)

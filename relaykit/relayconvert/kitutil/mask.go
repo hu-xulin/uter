@@ -124,7 +124,8 @@ func MaskSensitiveInfo(str string) string {
 	// Mask IP addresses
 	str = maskIPPattern.ReplaceAllString(str, "***.***.***.***")
 
-	// Mask API keys (e.g., "api_key:AIzaSy_EXAMPLE_NOT_A_REAL_KEY" -> "api_key:***")
+	// Mask API keys (e.g., "api_key:AIzaSy_EXAMPLE_NOT_A_REAL_KEY" -> "api_key:***");
+	// the example is an explicit placeholder, never a real Google API key.
 	str = maskApiKeyPattern.ReplaceAllString(str, "${1}api_key:***${3}")
 
 	return str
