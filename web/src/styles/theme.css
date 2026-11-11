@@ -476,7 +476,9 @@ For commercial licensing, please contact support@uter.ai
   --overview-accent-1: oklch(0.72 0.18 250);
   --overview-accent-2: oklch(0.65 0.15 200);
   --overview-accent-3: oklch(0.7 0.12 280);
-  --sidebar: #f8fafc;
+  /* 左栏底色与定价页一致：白底（--background），由顶部 PublicPageGlow
+     紫光提供品牌色，不再用浅灰 #f8fafc，消除与内容区的灰缝。 */
+  --sidebar: #ffffff;
   --sidebar-foreground: #334155;
   --sidebar-primary: #6366f1;
   --sidebar-primary-foreground: #ffffff;
