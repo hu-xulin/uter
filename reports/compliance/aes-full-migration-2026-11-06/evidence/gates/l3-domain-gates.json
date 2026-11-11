@@ -33,6 +33,28 @@
     "verified_item_count": 0,
     "note": "Execution evidence is recorded per item (§14.3) but does NOT constitute human acceptance. Only an explicit per-item sign-off from the recorded acceptance authority can set VERIFIED."
   },
+  "automated_acceptance_gate": {
+    "status": "CURRENT_EFFECTIVE",
+    "recorded_at": "2026-11-11",
+    "test_run_id": "RUN-42-20261111T052326Z-342bf1a3-e555",
+    "verdict": "BLOCKED",
+    "decision_subject": "AES_AUTONOMOUS_ENGINE",
+    "decision_mode": "AI_AUTOMATED",
+    "is_human_signature": false,
+    "is_third_party_signature": false,
+    "is_legal_authorization": false,
+    "human_signoff_dependency": 0,
+    "third_party_signoff_dependency": 0,
+    "manual_acceptance_dependency": 0,
+    "automated_verified_item_count": 32,
+    "not_run_item_count": 10,
+    "not_run_items": ["S11", "S21", "S22", "S23", "S32", "S33", "S36", "S38", "S39", "S42"],
+    "policy_file": "AES/governance/autonomous/config/acceptance-42-policy.json",
+    "current_result_file": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/AUTOMATED-ACCEPTANCE-CURRENT-RESULT.json",
+    "gate_rule": "Overall verdict is PASS only when all 42 items are AUTO_VERIFIED with recomputable evidence. Any FAIL / NOT_RUN / UNKNOWN / TIMEOUT / AUTO_REJECTED / MISSING_EVIDENCE / STALE_EVIDENCE / HASH_MISMATCH yields BLOCKED.",
+    "independent_machine_verification": "AES/quality/scripts/aes/acceptance-42-validator.mjs verify recomputes all 42 evidence sha256 digests, re-derives each verdict from the executed checks, checks validator/check-set coverage, detects forged signature flags and verifies the append-only chain. It does NOT re-read a PASS field as truth.",
+    "historical_note": "ADDITIVE BLOCK ONLY. manual_acceptance_evidence above is retained verbatim as HISTORICAL / SUPERSEDED evidence. pass_count=0 and status=BLOCKED at the top of this file were NOT edited to manufacture a pass. The current BLOCKED status is produced by machine evidence (10 environment-gated NOT_RUN items), not by the absence of a human signature. Uter follows AES automatically: the current acceptance entry point is the AES policy, not any signed page."
+  },
   "domains": [
     {
       "id": "P00",

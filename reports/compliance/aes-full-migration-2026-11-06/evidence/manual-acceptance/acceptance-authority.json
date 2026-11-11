@@ -88,5 +88,29 @@
     "declared_by": "user",
     "written_by": "WorkBuddy as evidence recorder only; no signature forged and no acceptance decision invented",
     "not_a_certification": "§16.5: internal assessment is not ISO/IEC/IEEE/NIST/OWASP/SLSA certification"
+  },
+  "historical_status": "HISTORICAL_SUPERSEDED",
+  "historical_status_note": "ADDITIVE MARKER ONLY (2026-11-11). Every key above this point is retained byte-identically as immutable historical evidence. This record remains the authoritative evidence of the 2026-11-07 design, of FIND-IA-11 (Critical), of the owner's O-06=A void decision and of the third-party review status. It is no longer the CURRENT acceptance entry point. It is NOT edited, re-signed, back-dated or rewritten; no signoff_granted, signed_item_ids, decision, scope.auto_promotion_allowed or voided_record field was changed. No item in this file was promoted to VERIFIED.",
+  "current_effective_policy": {
+    "governance_model_change": "OWNER_DIRECTIVE_2026_11_11: '42 项全部取消人工介入，全部转为自动验证'. The owner, acting in the same capacity recorded in authority_role above, changed the acceptance MODEL from a named human signer to an automated machine verifier. This is a change of制度, not an acceptance act, not a signature and not a delegation to an agent to sign on the owner's behalf.",
+    "policy_file": "AES/governance/autonomous/config/acceptance-42-policy.json",
+    "policy_id": "AES-42-ITEM-AUTOMATED-ACCEPTANCE-POLICY",
+    "policy_version": "1.0.0",
+    "rules_file": "AES/governance/autonomous/config/acceptance-42-rules.json",
+    "validator": "AES/quality/scripts/aes/acceptance-42-validator.mjs",
+    "current_result_file": "reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/AUTOMATED-ACCEPTANCE-CURRENT-RESULT.json",
+    "acceptance_authority_now": "AES_AUTONOMOUS_ENGINE",
+    "decision_mode": "AI_AUTOMATED",
+    "human_signoff_dependency": 0,
+    "third_party_signoff_dependency": 0,
+    "manual_acceptance_dependency": 0,
+    "is_human_signature": false,
+    "is_third_party_signature": false,
+    "is_legal_authorization": false,
+    "auto_promotion_allowed_now": true,
+    "auto_promotion_semantics": "A machine decision may promote an item ONLY after its own validator really executed every declared check, every predicate was true, the evidence hash recomputes and no FAIL/NOT_RUN/UNKNOWN exists. This does NOT restore the DELEGATED_BLANKET_SIGNOFF that O-06=A voided.",
+    "FIND_IA_11_protection": "No blanket declaration, no proxy signing, no bulk VERIFIED marking. Each of the 42 items has its own validator_id and its own executed evidence record.",
+    "global_verdict_at_last_run": "BLOCKED",
+    "global_verdict_reason": "32 AUTO_VERIFIED / 10 NOT_RUN. The 10 NOT_RUN items are environment-gated; they are machine decisions with zero human intervention, and they were NOT fabricated into PASS. The gate is fail-closed and stays BLOCKED until the environments exist and the validators re-run."
   }
 }

@@ -2351,3 +2351,57 @@ The final conformity statement MUST identify the assessed scope, standards editi
 No universal or external certification claim shall be made without the corresponding formal assessment.
 
 **END OF SPECIFICATION**
+
+---
+
+# AMENDMENT A-2026-11-11 — AUTOMATED MACHINE ACCEPTANCE (OWNER DIRECTIVE)
+
+**Status:** ACTIVE, APPEND-ONLY. Sections 1–19 above, including the verbatim text of §16.4 and §18, are retained unchanged as the historical normative baseline. This amendment does not delete, rewrite or re-sign any clause.
+
+**Directive:** On 2026-11-11 the project owner issued: `42 项全部取消人工介入，全部转为自动验证`. This is a change of the **governance model**, issued by the same natural person recorded as `authority_name` in `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/acceptance-authority.json`. It is recorded as an instruction, **not** as a signature, and it does not authorise any agent to sign on the owner's behalf.
+
+## A.1 Scope of the change
+
+Acceptance authority for the 42 item-level acceptance decisions is transferred from a named human signer to `AES_AUTONOMOUS_ENGINE`. For the AES/Uter **internal** acceptance path:
+
+- `manual_acceptance_dependency = 0`
+- `human_signoff_dependency = 0`
+- `third_party_signoff_dependency = 0`
+- `decision_mode = AI_AUTOMATED`
+- `is_human_signature = false`, `is_third_party_signature = false`, `is_legal_authorization = false`
+
+No private key, human signature, third-party signature or legal authorisation is required, read or written.
+
+## A.2 Reinterpretation of existing clauses (no text above is altered)
+
+| Original clause | Interpretation under this amendment |
+| --- | --- |
+| §16.4 "Record the acceptance authority." | The recorded acceptance authority is `AES_AUTONOMOUS_ENGINE`; the decision record is produced by `AES/quality/scripts/aes/acceptance-42-validator.mjs` and carries `validator_id`, `test_run_id`, `policy_version`, `decision_timestamp` and a recomputable `evidence_hash`. |
+| §18 step 19 "Obtain required acceptance decisions." | Decisions are obtained by really executing one validator per item and re-deriving the verdict from the executed predicates. They are not obtained from a signature page. |
+| §18 step 17 "Conduct independent assessment." | Conducted as `INDEPENDENT_MACHINE_VERIFICATION` in a separate execution context that recomputes every sha256 digest, re-derives every verdict and verifies the append-only chain. It is **not** ISO/IEC/IEEE/NIST/OWASP/SLSA certification; §16.5 is unchanged and still applies in full. |
+| §18 "Override required human approvals." | No human approval is any longer *required* in this internal path, so none is overridden. The prohibition is **not** weakened: if a human approval were still required by the owner, overriding it would remain forbidden. |
+| §18 "Mark unexecuted tests as passed" / "Mark unverified controls as conformant" / "Weaken security or quality controls to obtain a passing result" | All remain forbidden and are strengthened: any `FAIL`, `NOT_RUN`, `UNKNOWN`, `TIMEOUT`, `AUTO_REJECTED`, `MISSING_EVIDENCE`, `STALE_EVIDENCE` or `HASH_MISMATCH` yields a `BLOCKED` global gate. |
+
+## A.3 FIND-IA-11 guard
+
+The 2026-11-07 `DELEGATED_BLANKET_SIGNOFF` was voided by owner decision `O-06=A` on 2026-11-08 and judged `FIND-IA-11 (Critical)`. This amendment is **not** a repeat of it:
+
+- It changes the model; it does not sign anything.
+- It declares **no** item `VERIFIED` in bulk.
+- It forges **no** human, owner or third-party signature.
+- Each of the 42 items has its own `validator_id`, its own executed check set and its own evidence record.
+- All historical signature, void, third-party review and acceptance-authority files are retained verbatim as `HISTORICAL / SUPERSEDED` evidence.
+
+## A.4 Fail-closed contract
+
+Every item follows `Requirement → Validator → Test → Execution → Evidence → Decision`. A verdict of `AUTO_VERIFIED` requires every declared check to have really executed, every predicate to be true, the evidence hash to recompute and all four signature flags to be false. Directly editing a state field, reducing the check set, deleting a validator, reusing stale evidence or `NOT_RUN → PASS` without a new real execution are all rejected by the independent verifier.
+
+## A.5 Uter automatically follows AES
+
+The current effective acceptance entry point is `AES/governance/autonomous/config/acceptance-42-policy.json` with `acceptance-42-rules.json` and the validator. Uter consumes `reports/compliance/aes-full-migration-2026-11-06/evidence/manual-acceptance/AUTOMATED-ACCEPTANCE-CURRENT-RESULT.json`. The legacy `acceptance-authority.json`, `inventory.json` and `l3-domain-gates.json` receive only additive `HISTORICAL_SUPERSEDED` / `CURRENT_EFFECTIVE` pointers; their historical fields are not rewritten.
+
+## A.6 Honest current status (not a conformity claim)
+
+At `test_run_id RUN-42-20261111T052326Z-342bf1a3-e555`: **42/42 validators executed**, `32 AUTO_VERIFIED`, `10 NOT_RUN`, `0 AUTO_REJECTED`, global verdict **BLOCKED**. The 10 `NOT_RUN` items require real external environments (live cross-layer instance, signed installers, a second Agent runtime, three live databases, DR/release/rehearsal drills, head-bound green CI run). They are machine decisions with zero human intervention and were **not** fabricated into PASS. No global conformity claim is made. `pass_count` in the historical L3 gate file remains `0`; it was not edited to manufacture a pass.
+
+**END OF AMENDMENT A-2026-11-11 (sections 1–19 unchanged)**
