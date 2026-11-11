@@ -7,7 +7,7 @@ exit=0
 
 --- PASS: TestDecideRelayRetryStopsAfterOutputWritten (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/service	1.711s
+ok  	github.com/uter-ai/uter/service	2.073s
 
 
 $ go test ./controller -run ^TestAcceptedSubmitStreamNeverRetries$ -count=1 -v
@@ -19,6 +19,6 @@ exit=0
 
 --- PASS: TestAcceptedSubmitStreamNeverRetries (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/controller	1.989s
+ok  	github.com/uter-ai/uter/controller	2.306s
 
 

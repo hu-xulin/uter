@@ -1,6 +1,6 @@
 === RUN   TestAlipayReconcileRejectsAmountMismatch
-[WARN] 2026/11/10 - 21:14:32 | SYSTEM | 支付宝主动查单金额不匹配 trade_no=ALIPAY-RECONCILE-MISMATCH 查单金额="0.01" 
---- PASS: TestAlipayReconcileRejectsAmountMismatch (0.03s)
+[WARN] 2026/11/11 - 02:26:51 | SYSTEM | 支付宝主动查单金额不匹配 trade_no=ALIPAY-RECONCILE-MISMATCH 查单金额="0.01" 
+--- PASS: TestAlipayReconcileRejectsAmountMismatch (0.12s)
 === RUN   TestPaymentGatewayCallbacksMatchPaidAmount
 === RUN   TestPaymentGatewayCallbacksMatchPaidAmount/EpayNotify
 === RUN   TestPaymentGatewayCallbacksMatchPaidAmount/AlipayNotify
@@ -22,5 +22,5 @@
     --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/WaffoPancakeWebhook (0.00s)
     --- PASS: TestPaymentGatewayCallbacksMatchPaidAmount/CreemWebhook (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/controller	2.849s
+ok  	github.com/uter-ai/uter/controller	2.403s
 

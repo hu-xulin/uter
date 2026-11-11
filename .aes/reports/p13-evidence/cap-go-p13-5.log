@@ -1,12 +1,12 @@
 $ go test ./model -run ^(TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow|TestAdjustUserUsedQuotaRejectsUnderflow)$ -count=1 -v
 exit=0
 === RUN   TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow
-[SYS] 2026/11/10 - 21:13:41 | organization 90 budget overdraft: used_quota increased by 100 (delta>0); admission will reject further requests once used_quota reaches the budget 
+[SYS] 2026/11/11 - 02:25:53 | organization 90 budget overdraft: used_quota increased by 100 (delta>0); admission will reject further requests once used_quota reaches the budget 
 --- PASS: TestAdjustOrgAndMemberUsedQuotaIsAtomicOnMemberUnderflow (0.00s)
 === RUN   TestAdjustUserUsedQuotaRejectsUnderflow
 --- PASS: TestAdjustUserUsedQuotaRejectsUnderflow (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/model	1.531s
+ok  	github.com/uter-ai/uter/model	1.776s
 
 
 $ go test ./service -run ^TestBillingSessionReserveWalletTopUpDecrementsBalance$ -count=1 -v
@@ -14,6 +14,6 @@ exit=0
 === RUN   TestBillingSessionReserveWalletTopUpDecrementsBalance
 --- PASS: TestBillingSessionReserveWalletTopUpDecrementsBalance (0.00s)
 PASS
-ok  	github.com/uter-ai/uter/service	1.712s
+ok  	github.com/uter-ai/uter/service	1.954s
 
 
