@@ -22,12 +22,28 @@ jobs:
   aes-integration:
     name: AES universal governance integration
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
       - name: Checkout Uter
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate AES pin contract (offline, before AES checkout)
+        # Runs against the COMMITTED pin; an INTEGRATION.md / pin mismatch is a
+        # hard FAIL. Deliberately placed before AES is checked out so this
+        # remains a pure static-integrity gate.
+        run: |
+          set -euo pipefail
+          bash scripts/quality/aes-pin-check.sh
+          ruby scripts/quality/test-aes-pin-check.rb
+      - name: Verify 2,150-requirement traceability matrix
+        # Fail-closed: a governed source commit that did not regenerate the
+        # matrix, a forged per-requirement PASS, a duplicate ID, tampering or a
+        # foreign HEAD all break the build.
+        run: |
+          set -euo pipefail
+          node tools/aes/build-traceability.mjs --verify
+          node --test tools/aes/build-traceability.test.mjs
       - name: Record AES provenance (not used as a rule pin)
         run: |
           set -euo pipefail
@@ -69,6 +85,27 @@ jobs:
         env:
           AES_ROOT: ${{ github.workspace }}/aes-pinned
         run: node scripts/quality/aes-integration-check.mjs --aes-root "$AES_ROOT"
+      - name: Generate current SHA-bound Uter execution evidence
+        # Fresh evidence in THIS run: raw logs, SHA-256 digests, HEAD binding.
+        # The hard gates then evaluate freshness against evidence produced here,
+        # never against an aging committed file.
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: node tools/aes/uter-evidence-harness.mjs run --aes-root "$AES_ROOT"
+      - name: Enforce 10 mandatory fail-closed governance gates
+        # Missing spec, conflicting spec, no verifier, no implementation, no
+        # tests, stale evidence, SHA mismatch, agent privilege escalation, CI
+        # bypass and unapproved forced specification change each FAIL the build.
+        env:
+          AES_ROOT: ${{ github.workspace }}/aes-pinned
+        run: |
+          set -euo pipefail
+          node tools/aes/uter-governance-hard-gates.mjs \
+            --aes-root "$AES_ROOT" \
+            --json reports/final/UTER-GOVERNANCE-HARD-GATES.json
+          node --test tools/aes/uter-governance-hard-gates.test.mjs
+      - name: Verify Agent / Skills runtime loading (live, not static existence)
+        run: node tools/aes/agent-skills-runtime-verify.mjs
       - name: Test AES pin and seal fail-closed behavior
         run: node --test scripts/quality/aes-integration-check.test.mjs
       - name: Test AES downstream synchronization engine
