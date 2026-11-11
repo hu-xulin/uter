@@ -145,9 +145,9 @@ function BundledLegalDocument({
   return (
     <PublicLayout>
       <div className='mx-auto w-full max-w-3xl px-6 py-10'>
-        <h1 className='text-fg-primary mt-6 mb-2 text-2xl font-semibold'>
+        <Heading variant='section-title' level={1} className='mt-6 mb-2'>
           {title}
-        </h1>
+        </Heading>
         <div className={PROSE_CLASSES}>
           {Doc ? (
             <Doc components={{ Callout }} locale={locale} />

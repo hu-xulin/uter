@@ -1397,7 +1397,7 @@ function RouteGroupEditor({
               }))}
               value={incomingPath}
               onValueChange={onIncomingPathChange}
-              className='max-w-fullg:max-w-[420px]'
+              className='max-w-full lg:max-w-[420px]'
             />
           </div>
         </div>

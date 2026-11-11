@@ -114,7 +114,7 @@ export function LobeIconField(props: {
         <span className='flex size-9 shrink-0 items-center justify-center'>
           {getLobeIcon(previewIcon, 28)}
         </span>
-        <div className='min-w-0 text-xs'>
+        <div className='min-w-0 text-sm'>
           <p className='font-medium'>{t('Effective icon')}</p>
           <p className='text-muted-foreground break-all'>
             {effectiveIcon || t('Default placeholder')}

@@ -61,7 +61,7 @@ For commercial licensing, please contact support@uter.ai
   border-radius: var(--radius-2xl);
   box-shadow: var(--ds-elevation-overlay);
   font-family: var(--font-ui);
-  animation: cs-in 0.18s ease-out;
+  animation: cs-in var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .cs-header {

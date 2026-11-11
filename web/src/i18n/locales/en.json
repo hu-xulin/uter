@@ -7787,6 +7787,7 @@
     "docs.search.placeholder": "Search docs…",
     "docs.search.loading": "Loading search index…",
     "docs.search.noResults": "No matching pages",
+    "Contents": "Contents",
     "docs.toc.heading": "On this page"
   }
 }

@@ -44,6 +44,7 @@ For commercial licensing, please contact support@uter.ai
  *   T14 透明度凑悬停       `hover:bg-primary/90`（§11.2 禁止，改用 `*-hover` Token）
  *   T15 透明度凑浅底       `bg-warning/10`（§11.2 禁止，改用 `*-soft` / `*-subtle`）
  *   T16 低于最小字号       `text-[11px]` / `font-size: 10px`（§12.15 全站下限 12px）
+ *   T17 任意间距           `p-[3px]` / `gap-[2px]`（间距阶梯就是 Tailwind 4px 单位）
  *
  * 扫描不把硬编码一律判死：图表 canvas 的 `fontSize` 必须是数字、
  * 第三方控件的行内样式改不动、弹窗浮层本来就该有投影。这些进 ALLOWLIST，
@@ -155,6 +156,7 @@ const RULES = {
   T14: '透明度凑悬停（hover:bg-{primary|secondary|destructive|success}/NN，改用 *-hover Token）',
   T15: '透明度凑浅底（bg-{success|warning|info}/NN → *-soft；bg-{primary|destructive}/NN → *-subtle）',
   T16: '低于最小字号（规范 §12.15：全站可见文本下限 12px，布局不够用改布局不许缩字号）',
+  T17: '任意间距（p-/m-/gap-[…]，间距阶梯就是 Tailwind 4px 单位，就近取整档）',
 }
 
 /**
@@ -527,6 +529,29 @@ for (const abs of walk(SRC)) {
     for (const hit of raw.match(T15_RE) ?? []) {
       if (hit.includes('hover:')) continue
       report('T15', rel, line, rawText)
+      break
+    }
+
+    // T17：任意间距
+    //
+    // 间距阶梯就是 Tailwind 的 4px 单位（§6.1）。`p-[3px]` 与 `p-1`（4px）差
+    // 1px，肉眼不可见，但会让密度档切换失效、让全站间距失去可枚举性。
+    // 放行两类**不是自造档位**的写法：
+    //   · `pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]` —— 安全区是设备
+    //     常量，没有对应工具类；
+    //   · `gap-[--spacing(var(--gap))]` —— 引用 Token / 变量，属于正确写法。
+    for (const hit of raw.match(
+      /\b(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y)-\[[^\]]*\]/g
+    ) ?? []) {
+      const inner = hit.slice(hit.indexOf('[') + 1, -1)
+      if (
+        inner.includes('var(') ||
+        inner.includes('calc(') ||
+        inner.includes('env(')
+      ) {
+        continue
+      }
+      report('T17', rel, line, rawText)
       break
     }
   })

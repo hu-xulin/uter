@@ -174,7 +174,7 @@ export function DataTablePagination<TData>({
           {pageItems.map(({ page: pageNumber, key }) => (
             <div key={key} className='flex items-center'>
               {pageNumber === '...' ? (
-                <span className='text-tertiary-foreground px-0.5 text-sm @lg/pagination:px-1'>
+                <span className='text-muted-foreground px-0.5 text-sm @lg/pagination:px-1'>
                   ...
                 </span>
               ) : (

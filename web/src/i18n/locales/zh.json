@@ -7788,6 +7788,7 @@
     "docs.search.placeholder": "搜索文档…",
     "docs.search.loading": "正在加载搜索索引…",
     "docs.search.noResults": "未找到相关文档",
+    "Contents": "内容导航",
     "docs.toc.heading": "目录"
   }
 }

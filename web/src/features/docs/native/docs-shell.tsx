@@ -25,9 +25,9 @@ import type { DocsLocaleCode } from '@/lib/docs-link'
 
 import { sidebarEntries, type SidebarNode } from './docs-content'
 import { DocsSearchButton, DocsSearchDialog } from './docs-search'
+import { DocsToc, DocsTocInline, type TocItem } from './docs-toc'
 
-/** One entry of the in-page table of contents. */
-export type TocItem = { depth: 2 | 3; text: string; id: string }
+export type { TocItem }
 
 /** Host splat (`<locale>/<page path>`) of a sidebar node URL. */
 function splatOf(url: string): string {
@@ -63,10 +63,11 @@ function TreeItem({
       <Link
         to='/docs/$'
         params={{ _splat: splat }}
-        className={`text-dense hover:bg-muted block rounded-md py-1.5 pr-2 no-underline transition-colors ${
+        aria-current={isActive ? 'page' : undefined}
+        className={`text-dense block rounded-md py-1.5 pr-2 no-underline transition-colors ${
           isActive
-            ? 'bg-accent text-accent-foreground font-medium'
-            : 'text-fg-secondary'
+            ? 'bg-primary-subtle text-sidebar-active-foreground font-medium'
+            : 'text-fg-secondary hover:bg-muted hover:text-fg-primary'
         }`}
         style={indent}
       >
@@ -78,7 +79,9 @@ function TreeItem({
   return (
     <div>
       <div
-        className='hover:bg-muted flex items-center rounded-md py-1.5 pr-2 transition-colors'
+        className={`flex items-center rounded-md py-1.5 pr-2 transition-colors ${
+          isActive ? 'bg-primary-subtle' : 'hover:bg-muted'
+        }`}
         style={indent}
       >
         {node.noIndex ? (
@@ -93,10 +96,11 @@ function TreeItem({
           <Link
             to='/docs/$'
             params={{ _splat: splat }}
+            aria-current={isActive ? 'page' : undefined}
             className={`flex min-w-0 flex-1 items-center no-underline ${
               isActive
-                ? 'text-accent-foreground font-medium'
-                : 'text-fg-secondary'
+                ? 'text-sidebar-active-foreground font-medium'
+                : 'text-fg-secondary hover:text-fg-primary'
             }`}
           >
             <span className='min-w-0 truncate'>{node.title}</span>
@@ -140,32 +144,6 @@ function TreeItem({
   )
 }
 
-function DocsToc({ items }: { items: TocItem[] }) {
-  const { t } = useTranslation()
-  if (items.length === 0) return null
-  return (
-    <nav aria-label={t('docs.toc.heading')} className='text-dense'>
-      <p className='text-fg-secondary mb-2 px-2 font-medium'>
-        {t('docs.toc.heading')}
-      </p>
-      <ul className='space-y-1'>
-        {items.map((item) => (
-          <li key={item.id}>
-            <a
-              href={`#${item.id}`}
-              className={`text-fg-secondary hover:bg-muted hover:text-fg-primary block rounded px-2 py-1 no-underline transition-colors ${
-                item.depth === 3 ? 'pl-5' : ''
-              }`}
-            >
-              {item.text}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  )
-}
-
 /**
  * Layout for the native docs — sidebar, article and table of contents,
  * the same three-column shape the framed docs export renders, drawn with
@@ -176,6 +154,9 @@ function DocsToc({ items }: { items: TocItem[] }) {
  * the framed export builds server-side — and links stay on the SPA's
  * `/docs/<locale>/<page>` routes, so deep links, reloads and the
  * UI-language switch all keep working unchanged.
+ *
+ * 两侧都有选中态：左栏标当前页（品牌色浅底 + 品牌前景），右栏标当前小节
+ * （品牌色竖线 + 品牌前景），与 Clerk 的文档站同一套读法。
  */
 export function NativeDocsShell({
   locale,
@@ -197,7 +178,7 @@ export function NativeDocsShell({
     <PublicLayout showMainContainer={false}>
       <div className='h-16 shrink-0' aria-hidden='true' />
       <div className='mx-auto flex w-full max-w-[1440px] items-start'>
-        <aside className='sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
+        <aside className='border-border sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
           <DocsSearchButton onOpen={() => setSearchOpen(true)} />
           <nav aria-label={t('Docs')}>
             {entries.map((entry) => (
@@ -211,7 +192,10 @@ export function NativeDocsShell({
           </nav>
         </aside>
         <main className='min-w-0 flex-1'>
-          <article className='mx-auto max-w-3xl px-6 py-10'>{children}</article>
+          <div className='mx-auto max-w-3xl px-6 py-10'>
+            <DocsTocInline items={toc} />
+            <article>{children}</article>
+          </div>
         </main>
         <aside className='sticky top-16 hidden h-[calc(100svh-4rem)] w-56 shrink-0 overflow-y-auto py-6 xl:block'>
           <DocsToc items={toc} />

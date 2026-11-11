@@ -227,6 +227,26 @@ WorkBuddy 可以在授权代码范围内：
 - 特殊内容可以使用明确批准的 `leading-*` Token，但不得随意覆盖。
 - 同一层级标题必须使用一致的字号和字重。
 
+**16/600（`text-base` + `font-semibold`）作为标题时只能当 `group-title`**，即卡片内部的分组标题。不得用它当页面标题、区块标题或卡片标题 —— 那三档分别是 30/600、24/600、18/600。
+
+下列三类**不是标题**，不受本条约束，各自的档位另有规定：
+
+| 场景 | 规定 | 出处 |
+|---|---|---|
+| 设置页字段标签（`field` 档） | 16/600 | `form-label-tier` |
+| 数值展示（价格、倍率、用量，配 `tabular-nums`） | 16/600 可用，须配等宽数字 | §1.6 |
+| Markdown 正文标题 | 自成一套，见 E14 例外 | §13 |
+
+**列表行标题用 16/500**：名称与说明成对出现的列表行（账号绑定、登录设备、渠道列表），标题用 `text-base font-medium`，不用 600。600 与 500 在 16px 上视觉差异很小，但语义上 600 是「标题」，500 是「行内强调」，混用会让层级失效。
+
+**语义标签与视觉档位必须同时正确**：分组标题除了字重字号对，还必须由 `<Heading variant='group-title'>` 输出，不得用 `<p>` / `<div>` / `<span>` 拼出同样的视觉。视觉对但语义错，会让读屏用户拿不到标题大纲。
+
+**`caption`（12px）的适用边界**：
+
+- 允许：单行、≤20 字、不承载数值的纯标签（时间戳、单位名、「可选」这类状态词）。
+- 不允许：说明性句子、价格/配额/用量等数值、表单字段的帮助文字、弹窗内的解释段落。
+- 上述不允许的场景一律用 `text-sm`（14px）。**判据是「这句话需不需要被读」** —— 需要被读就用 14px，只是标记就用 12px。
+
 ## 1.4 字重
 
 ```css
@@ -398,6 +418,25 @@ WorkBuddy 必须重新通过脚本验证最终代码中的实际值。
 
 所有文字颜色必须根据其实际背景验收。
 
+### 三级文字（`foreground-tertiary`）的允许清单
+
+三级文字是**辅助层级**，不是「弱化一切」的万能工具。允许使用的场景只有：
+
+| 场景 | 示例 |
+|---|---|
+| 页脚法规行 | 备案号、许可证号 |
+| 版权行 | `© 2026 Uter.ai` |
+| 搜索框图标与清除按钮 | 定价页搜索栏（已登记） |
+| 分页省略号 | `…` 分隔标记 |
+| 营销首屏的补充微文案 | 首页首屏「支持的应用」下方那两行 ≤14px 说明（有意压到比副标题更浅一档，避免小字抢正文注意力） |
+| 图表内的连接/装饰图标 | 流程图的 `ChevronRight` 连接符 |
+
+禁止：
+
+- 用它做**禁用态**文字。禁用态走 `--ds-color-text-disabled`（`disabled:` 变体），那是「不可用」，三级色是「次要但可用」，两者语义不同，混用会让用户以为控件可点。
+- 用它做**正文、说明、标签**。那些用 `--ds-color-text-secondary`（`text-muted-foreground`）。
+- 因为它「看起来更淡」而用来降视觉重量 —— 需要降重量就改字号或字重。
+
 ## 2.5 页面表面颜色
 
 ### Light
@@ -425,6 +464,22 @@ WorkBuddy 必须重新通过脚本验证最终代码中的实际值。
 层级优先通过表面颜色差异和边框表达。
 
 不得为了制造层次而在所有卡片上添加投影。
+
+### 特殊表面：遮罩层与纯白表面
+
+有两个表面**不跟随主题**，因此各自单独定义 Token，而不是复用一个会变的语义色：
+
+| Token | Light | Dark | 用途 |
+|---|---|---|---|
+| `--ds-color-surface-overlay` | `#000000` | `#000000` | 弹窗 / 抽屉 / 移动端全屏菜单背后的遮罩层 |
+| `--ds-color-surface-pure` | `#FFFFFF` | `#FFFFFF` | 二维码底、滑块手柄这类必须在两种主题下都保持纯白的表面 |
+
+规则：
+
+- 遮罩层恒为黑。遮罩的作用是「把后面压下去」，如果跟着主题变浅，深色模式下就等于没有遮罩。浓淡由调用方的透明度修饰表达（`bg-surface-overlay/10`、`/50`），不拆成两个 Token。
+- 纯白表面恒为白。二维码是给摄像头读的，压成 `--card` 的暖白会掉对比度；滑块手柄靠白与轨道色区分，跟着主题变深就看不见了。
+- 除这两类之外，**组件里不得再出现 `bg-white` / `bg-black` / `text-white` 的字面写法**。饱和填充上的白字用 `text-primary-foreground` 或 `--ds-color-text-on-emphasis`。
+- SVG 内部的描边（如主题色选择器色块上的对勾 `stroke-white`）与营销终端的装饰色不受本条约束 —— 它们不是界面表面。
 
 ## 2.6 边框颜色
 
@@ -555,6 +610,13 @@ WorkBuddy 必须根据项目现有状态色核实具体色值。
 - 对色觉障碍用户进行基本可辨识性检查。
 - 图表文字、坐标轴、标签、网格线分别定义 Token。
 - 图表颜色不能未经验证直接用于普通文本。
+
+**`chart-N` 用于分类徽标与图标底色的边界**（本条曾与门禁注释互相矛盾，现统一）：
+
+- **允许**：`bg-chart-1..6` 作为**分类**标识的底色 —— 状态徽标的分类态（如「试用」「已归档」「待复核」这类非成败语义）、图标徽标的 tone、`lib/colors.ts` 的分类色板。这些场景需要 5 种以上可区分的色相，而语义状态色只有 success / warning / destructive / info 四组，用语义色硬凑会造出「用成功色表示中性状态」的假语义。
+- **不允许**：用 `chart-N` 表达成功 / 失败 / 警告 / 危险。那四类必须走 `--success` / `--destructive` / `--warning` / `--info` 及其 `-soft` 变体。
+- **不允许**：把 `chart-N` 当页面表面、卡片底、区块分隔线这类大面积背景。
+- 判据：**这个颜色在解释「数据系列」或「分类身份」，还是在解释「状态好坏」？** 前者用 `chart-N`，后者用语义状态色。
 
 ## 2.9 Syntax 高亮色
 
@@ -717,6 +779,9 @@ Dim 色不能未经计算直接降低 opacity，也不能任意调整至某个�
 - 随意指定 9px、11px、13px 等新圆角。
 - 同一组件不同页面出现不同圆角。
 - 通过叠加多个圆角 Token 生成不可控样式。
+- **使用任意值语法 `rounded-[...]`**。需要圆角就从上面七档里挑最接近的：想写 `rounded-[0.6rem]`（9.6px）说明本来要的就是 10px，用 `radius-md` / `rounded-lg`。
+
+唯一例外：**tooltip 箭头的尖端微圆**（`rounded-xs`，4px）。箭头是一个旋转 45° 的小方块，用容器档位会露出直角或让箭身变胖，因此允许它单独取值，但必须在代码里写明理由。
 
 Tailwind v4 映射必须避免循环引用：
 
@@ -786,6 +851,7 @@ Tailwind v4 映射必须避免循环引用：
 - 表格单元格：使用 Table Cell Padding。
 - 同一层级组件的间距必须一致。
 - 不得使用负间距修复本应通过布局结构解决的问题，特殊布局须经批准。
+- **不得使用任意值语法 `p-[3px]` / `py-[2px]` / `gap-[2px]`**。间距阶梯就是 Tailwind 的 4px 单位，`p-[3px]` 与 `p-1`（4px）差 1px，肉眼不可见，但会让密度档切换失效、让全站间距失去可枚举性。需要 2px 用 `0.5` 档（`py-0.5`、`gap-0.5`），需要 6px 用 `1.5` 档，其余就近取整档。
 
 ---
 
@@ -916,26 +982,39 @@ Dark 主题中，投影可能需要结合：
 
 | Token | 时长 | 用途 |
 |---|---:|---|
-| `duration-fast` | 100ms | 轻微反馈 |
-| `duration-base` | 200ms | 常规交互 |
-| `duration-slow` | 350ms | 复杂过渡 |
-| `duration-marketing-fast` | 300ms | 营销动效 |
-| `duration-marketing-base` | 500ms | 营销展示 |
-| `duration-enter` | 600ms | 特殊进入动画 |
-| `duration-shimmer` | 1800ms | 骨架屏 |
-| `duration-pulse` | 1500ms | 状态脉冲 |
-| `duration-caret` | 1000ms | 光标 |
-| `duration-spin` | 800ms | Loading |
-| `duration-data-fast` | 250ms | 数据变化 |
-| `duration-data-base` | 500ms | 数据过渡 |
+| `--ds-motion-fast` | 100ms | 轻微反馈 |
+| `--ds-motion-base` | 200ms | 常规交互 |
+| `--ds-motion-slow` | 350ms | 复杂过渡（Dialog / Sheet 整块进出） |
+| `--ds-motion-marketing-fast` | 300ms | 营销动效 |
+| `--ds-motion-marketing-base` | 500ms | 营销展示 |
+| `--ds-motion-enter` | 600ms | 特殊进入动画 |
+| `--ds-motion-loop-shimmer` | 1800ms | 骨架屏 |
+| `--ds-motion-loop-pulse` | 1500ms | 状态脉冲 |
+| `--ds-motion-loop-caret` | 1000ms | 光标 |
+| `--ds-motion-loop-spin` | 800ms | Loading |
+| `--ds-motion-loop-marquee` | 20000ms | 滚动字幕 |
+| `--ds-motion-loop-border` | 3200ms | 流动边框 |
+| `--ds-motion-data-fast` | 250ms | 数据变化 |
+| `--ds-motion-data` | 500ms | 数据过渡 |
 
 ## 9.2 Easing Token
 
 ```css
---ease-standard: cubic-bezier(0.2, 0, 0, 1);
---ease-enter: cubic-bezier(0, 0, 0.2, 1);
---ease-exit: cubic-bezier(0.4, 0, 1, 1);
+/* 后台交互的标准曲线：两端对称，不抢戏。全站默认。 */
+--ds-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+/* 营销面的整块位移（巨型菜单、首屏进入）：略缓一档。 */
+--ds-motion-ease-marketing: cubic-bezier(0.16, 1, 0.3, 1);
+/* 小控件的快速响应（开关、标签增删）。 */
+--ds-motion-ease-snappy: cubic-bezier(0.22, 1, 0.36, 1);
 ```
+
+三档曲线的分工是**按场景**而不是按手感：后台交互一律 `--ds-motion-ease`，营销面整块位移用 `--ds-motion-ease-marketing`，小控件状态切换用 `--ds-motion-ease-snappy`。
+
+禁止：
+
+- 裸写 `ease-in` / `ease-out` / `ease-in-out` / `linear` 作为交互过渡的缓动（`linear` 只允许用于无限循环的位移，如 marquee）。
+- 自定义第四档贝塞尔曲线。
+- 在同一个组件里混用两档曲线。
 
 ## 9.3 动效使用规则
 
@@ -958,6 +1037,8 @@ Dark 主题中，投影可能需要结合：
 - Loading 动效必须具有明确状态含义。
 - 动画不得阻止用户操作。
 - 禁止为普通业务组件添加过度装饰动画。
+- **不得裸写 `duration-150` / `duration-300` / `duration-[0.35s]`**。后台交互只用 `ds-motion-fast`（100ms）/ `ds-motion-base`（200ms）两档；`ds-motion-slow`（350ms）只给 Dialog、Sheet 这类整块进出；营销面用 `ds-motion-marketing-fast` / `ds-motion-marketing-base`。
+- **营销面动画是唯一允许用 300/500ms 的地方**，且必须显式引用 `ds-motion-marketing-*` Token，不得写成裸值 —— 这样营销例外就是可枚举的，而不是散落各处的魔法数字。
 
 ## 9.4 Reduced Motion
 
@@ -1034,6 +1115,27 @@ Disabled 是状态，不是 Variant。
 - Cursor。
 - Transition。
 - Focus Ring（适用时）。
+
+### Loading 态必须用 `loading` 属性
+
+```tsx
+<Button loading>Saving…</Button>
+```
+
+`Button` 的 `loading` prop 承担四件事，调用方不得自己拼：
+
+1. **保留原文字**。spinner 只作为前置图标**追加**，不替换 `children`，所以按钮宽度不塌缩。
+2. 自动 `disabled`。
+3. 自动 `aria-busy="true"`。
+4. spinner 带 `aria-hidden`，保证按钮的可访问名称始终是「保存」而不是「Loading 保存」。
+
+禁止：
+
+- 用 `<Button disabled><Spinner /> 保存</Button>` 手拼加载态 —— 会漏掉 `aria-busy`，且不同人写的 spinner 尺寸不一致。
+- 把文字换成 spinner（`{loading ? <Spinner /> : '保存'}`）—— 宽度跳变会让工具栏抖动。
+- 用 `isLoading` / `pending` 之类的自定义 prop 再造一套。
+
+存量手写 spinner 允许保留，但**新增与改动的代码必须走 `loading`**；迁移时优先处理「替换文字」写法，因为那是会改变布局的那一类。
 
 ## 10.4 Primary Button
 
@@ -1335,9 +1437,11 @@ Selected 是持续选中状态，Active 是用户按下时的瞬时状态，两�
 默认：
 
 ```css
---focus-ring-width: 2px;
---focus-ring-offset: 2px;
+--ds-focus-ring-width: 1px;
+--ds-focus-ring-offset: 0px;
 ```
+
+**全站恒为 1px，且贴边（offset 0）。不存在 2px 档。**
 
 必须：
 
@@ -1347,10 +1451,20 @@ Selected 是持续选中状态，Active 是用户按下时的瞬时状态，两�
 - 不得被父容器裁切。
 - 不得被浮层覆盖。
 - 不得在无替代方案的情况下删除默认焦点。
+- 组件层一律写 `focus-visible:ring-1`；原生兜底走同一 Token 的 `outline`。
+- 输入舱这类「容器承担焦点环」的结构，基态必须是 `ring-1 ring-transparent` 占位，否则过渡时会跳。
 
-焦点指示器建议使用至少 2px 宽度和 2px Offset。
+不属于焦点指示器、**不受 1px 约束**的三类环：
 
-注意：WCAG 2.2 的 Focus Appearance（2.4.13）属于 AAA，不得将其误称为 AA 要求。本规范将其作为更高标准的设计建议。
+| 环 | 宽度 | 说明 |
+|---|---|---|
+| `aria-invalid:ring-2` | 2px | 错误态提示，不是焦点指示器 |
+| avatar 镂空环 | 由尺寸决定 | 视觉分隔 |
+| 选中态 `ring-offset-2` | 2px | 偏移量不是宽度 |
+
+焦点环对比度按 WCAG 2.2 AA 的 1.4.11（非文本对比度 3:1）验收。
+
+注意：WCAG 2.2 的 Focus Appearance（2.4.13）属于 AAA，不得将其误称为 AA 要求。本规范不采用 2px 宽度 —— 在 14px 正文与 36px 控件的高度体系下，2px 环会与 1px 描边体系打架，视觉上像「控件变胖了一圈」；1px 贴边环配合品牌色已经满足 3:1 非文本对比度。
 
 ## 15.2 对比度
 
@@ -1428,6 +1542,28 @@ Uter 推荐：
 - Sidebar 与 Main Content 关系保持稳定。
 - 表格必须具有合理的最小宽度或自适应策略。
 - 弹窗不得超出可视区域。
+
+### 内容区最大宽度：后台 1280px，营销页不受限
+
+「内容区 1280px」这条约束的对象是**后台内容区**（仪表盘、设置、日志、定价管理）：
+
+```css
+/* 后台内容区 */
+max-width: 1280px;
+margin-inline: auto;
+```
+
+营销页（首页、定价展示页、关于页）是**宽屏展示面**，允许突破 1280px —— 首屏主视觉与多列价格卡在 1440/1920 屏上被压进 1280px 会留下大片空白，反而更差。营销页的宽屏上限按页面登记，登记在本文档而不是散落代码里。
+
+三栏文档 / 关于页的外壳宽度是另一回事：`max-w-[1440px]` 是「左导航 + 正文 + 右目录」的总宽，正文自身仍限制在 `max-w-3xl`。不要把它当成内容区破例。
+
+判据：**这个页面是「用户在里面干活」还是「用户在里面被说服」？** 前者 1280px，后者按登记值。
+
+### 指标数值的断点用 `md`，不用 `sm`
+
+指标数值（仪表盘卡片上的大数字）统一 `text-2xl md:text-3xl`（24px → 30px，768px 起放大）。
+
+不得写成 `text-2xl sm:text-3xl`：`sm`（640px）在 640–768px 区间会把数字放大到 30px，而那一档正文还是 14px，数字会压过标题；`md` 是「平板竖屏转横屏」的分界，也是侧边栏开始常驻的位置，数字在那之后放大才与整体层级同步。
 
 ## 16.3 H5
 

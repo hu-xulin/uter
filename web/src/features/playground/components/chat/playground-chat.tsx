@@ -230,7 +230,7 @@ export function PlaygroundChat({
       <ConversationContent className='p-0'>
         <div className='mx-auto w-full max-w-4xl px-4 py-4'>
           {hiddenMessageCount > 0 && !isLoadingMessages ? (
-            <p className='text-tertiary-foreground py-2 text-center text-sm'>
+            <p className='text-muted-foreground py-2 text-center text-sm'>
               {t(
                 'Only the latest {{count}} messages are shown; the full history is still sent with each request.',
                 { count: MAX_RENDERED_HISTORY_MESSAGES }

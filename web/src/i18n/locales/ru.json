@@ -7787,6 +7787,7 @@
     "docs.search.placeholder": "Поиск по документации…",
     "docs.search.loading": "Загрузка поискового индекса…",
     "docs.search.noResults": "Ничего не найдено",
+    "Contents": "Содержание",
     "docs.toc.heading": "На этой странице"
   }
 }

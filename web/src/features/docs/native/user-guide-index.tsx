@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
+import { Heading } from '@/design-system'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
 import {
@@ -171,7 +172,9 @@ export function UserGuideIndex({ locale }: { locale: DocsLocaleCode }) {
 
   return (
     <div>
-      <h1 className='mt-6 mb-2 text-2xl font-semibold'>{identity.title}</h1>
+      <Heading variant='section-title' level={1} className='mt-6 mb-2'>
+        {identity.title}
+      </Heading>
       <p className='text-long text-fg-secondary mb-8'>{identity.description}</p>
       <div className='grid gap-4 sm:grid-cols-2'>
         {USER_GUIDE_CHAPTER_SLUGS.map((slug) => (

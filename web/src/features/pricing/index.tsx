@@ -186,7 +186,7 @@ export function Pricing() {
             <Text
               as='p'
               variant='body-sm'
-              className='text-tertiary-foreground mx-auto mt-2 max-w-2xl'
+              className='text-muted-foreground mx-auto mt-2 max-w-2xl'
             >
               {t(
                 'Discover curated AI models, compare pricing and capabilities, and choose the right model for every scenario.'

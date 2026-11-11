@@ -7787,6 +7787,7 @@
     "docs.search.placeholder": "搜尋文件…",
     "docs.search.loading": "正在載入搜尋索引…",
     "docs.search.noResults": "未找到相關文件",
+    "Contents": "內容導覽",
     "docs.toc.heading": "目錄"
   }
 }

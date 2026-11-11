@@ -7787,6 +7787,7 @@
     "docs.search.placeholder": "Rechercher dans la documentation…",
     "docs.search.loading": "Chargement de l'index de recherche…",
     "docs.search.noResults": "Aucune page trouvée",
+    "Contents": "Sommaire",
     "docs.toc.heading": "Sur cette page"
   }
 }

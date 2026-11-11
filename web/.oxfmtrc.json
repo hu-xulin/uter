@@ -24,6 +24,7 @@
     "**/routeTree.gen.ts",
     "src/routeTree.gen.ts",
     "src/design-system/tokens/generated/brand.css",
-    "src/docs-content"
+    "src/docs-content",
+    "public/docs-search"
   ]
 }
