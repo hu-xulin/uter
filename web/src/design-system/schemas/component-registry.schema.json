@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://uter.ai/schemas/component-registry.schema.json",
-  "title": "AES React Component Registry",
+  "title": "Uter React Component Registry",
   "type": "object",
   "additionalProperties": false,
   "required": [
