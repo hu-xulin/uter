@@ -5,6 +5,7 @@ module github.com/uter-ai/uter/tokenkit
 // 全部在 go1.27.2 / go1.27.3 修复。独立构建 tokenkit 时也必须落到
 // 修好标准库的工具链上，否则 Dependabot 会按 go 指令的版本继续报 stdlib 告警。
 go 1.27.3
+toolchain go1.27.4
 
 require (
 	github.com/stretchr/testify v1.11.1

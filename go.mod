@@ -3,6 +3,8 @@ module github.com/uter-ai/uter
 // +heroku goVersion go1.27.3
 go 1.27.3
 
+toolchain go1.27.4
+
 require (
 	github.com/ClickHouse/ch-go v0.74.0 // indirect
 	github.com/DmitriyVTitov/size v1.5.0 // indirect
@@ -149,13 +151,13 @@ require (
 	github.com/waffo-com/waffo-go v1.3.2
 	github.com/waffo-com/waffo-pancake-sdk-go v0.18.0
 	github.com/yapingcat/gomedia v0.0.0-20240906162731-17feea57090c
-	golang.org/x/crypto v0.58.0
+	golang.org/x/crypto v0.59.0
 	golang.org/x/image v0.47.0
 	golang.org/x/net v0.62.0
 	golang.org/x/oauth2 v0.36.0
-	golang.org/x/sync v0.24.0
-	golang.org/x/sys v0.49.0
-	golang.org/x/text v0.43.0
+	golang.org/x/sync v0.25.0
+	golang.org/x/sys v0.50.0
+	golang.org/x/text v0.44.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/clickhouse v0.6.0
 	gorm.io/driver/mysql v1.5.7

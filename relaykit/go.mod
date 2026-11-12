@@ -4,6 +4,7 @@ module github.com/uter-ai/uter/relaykit
 // net/http2、crypto/tls、crypto/x509、net/textproto），全部在 go1.27.3 修复。
 // 独立构建 relaykit 时也必须落到修好标准库的工具链上。
 go 1.27.3
+toolchain go1.27.4
 
 require (
 	github.com/google/uuid v1.6.0
