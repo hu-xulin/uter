@@ -1,6 +1,0 @@
-L1-01	L1	0	1	bash scripts/quality/ai-specs-check.sh	/Users/lincolnhu/uter
-L1-02	L1	0	0	ruby scripts/quality/test-ai-governance-policy.rb	/Users/lincolnhu/uter
-L1-03	L1	0	0	ruby scripts/quality/aes-agent-runtime-check.rb selftest	/Users/lincolnhu/uter
-L1-04	L1	0	2	bash scripts/quality/aes-pin-check.sh	/Users/lincolnhu/uter
-L1-05	L1	0	1	bash scripts/quality/aes-integration-check.sh	/Users/lincolnhu/uter
-L1-06	L1	0	23	ruby scripts/quality/test-aes-pin-check.rb	/Users/lincolnhu/uter

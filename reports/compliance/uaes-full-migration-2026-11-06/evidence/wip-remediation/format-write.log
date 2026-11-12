@@ -1,2 +1,0 @@
-$ node scripts/format-with-protected-headers.mjs --write
-Finished in 824ms on 1626 files using 16 threads.

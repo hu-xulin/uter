@@ -1,3 +1,0 @@
-bash scripts/quality/ai-specs-check.sh
-ruby scripts/quality/test-ai-governance-policy.rb
-python3 scripts/quality/aes-manual-acceptance.py --verify-only

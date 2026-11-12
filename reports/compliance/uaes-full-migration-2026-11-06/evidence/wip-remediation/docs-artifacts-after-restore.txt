@@ -1,1 +1,0 @@
-docs artifact verification passed: web/dist contains the SPA shell and the docs static export
