@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152056-90651ccd",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152055-1eca1df6",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:56.209Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:build_defect_registry",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-11\",\"name\":\"build_defect_registry\",\"idempotent\":true,\"handler\":\"build_defect_registry\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "defect registry loaded: 3 defects",
+  "content_hash": "7248502228b23c95d9add47bc2733fc401a26644f66267d3e66ff158cafec70d"
+}

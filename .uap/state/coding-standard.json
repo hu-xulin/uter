@@ -1,0 +1,392 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T15:14:28.965Z",
+  "executor_ids": [
+    "development.coding_standard"
+  ],
+  "format_check": {
+    "status": "CLEAN",
+    "command_record": {
+      "command": "gofmt -l .",
+      "args": [
+        "-l",
+        "."
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 1773
+    },
+    "unformatted_file_count": 0,
+    "unformatted_files": [],
+    "stdout_summary": "",
+    "stderr_summary": "",
+    "note": "gofmt -l . executed for real; timeout / spawn_error is recorded as BLOCKED, never faked as success"
+  },
+  "dead_code_scan": {
+    "scanned_file_count": 50,
+    "finding_count": 49,
+    "unused_import_count": 27,
+    "findings": [
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 12,
+        "kind": "unused_import_heuristic",
+        "pattern": "newId",
+        "snippet": "import { nowISO, readJSON, writeJSON, readText, exists, listFiles, newId, hash } from '../runtime/_lib/util.mjs'"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 12,
+        "kind": "unused_import_heuristic",
+        "pattern": "hash",
+        "snippet": "import { nowISO, readJSON, writeJSON, readText, exists, listFiles, newId, hash } from '../runtime/_lib/util.mjs'"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 14,
+        "kind": "unused_import_heuristic",
+        "pattern": "loadConfig",
+        "snippet": "import { loadAllConfigs, loadConfig, registryIntegrity, readVersion, executorEntries, specById, validatorById, CONFIG_NA"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 18,
+        "kind": "unused_import_heuristic",
+        "pattern": "listStepHandlers",
+        "snippet": "import { registerStepHandler, createTask, getTask, listTasks, runTask, cancelTask, listStepHandlers } from '../runtime/t"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 19,
+        "kind": "unused_import_heuristic",
+        "pattern": "runtimeHealth",
+        "snippet": "import { health as runtimeHealth, start as runtimeStart } from '../runtime/orchestrator/index.mjs'"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 22,
+        "kind": "unused_import_heuristic",
+        "pattern": "runAllValidators",
+        "snippet": "import { runValidator, runAll as runAllValidators, coverage as validatorCoverage, health as validatorHealth } from '../v"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 22,
+        "kind": "unused_import_heuristic",
+        "pattern": "validatorHealth",
+        "snippet": "import { runValidator, runAll as runAllValidators, coverage as validatorCoverage, health as validatorHealth } from '../v"
+      },
+      {
+        "file": ".uap/bin/uap.mjs",
+        "line": 23,
+        "kind": "unused_import_heuristic",
+        "pattern": "workflowHealth",
+        "snippet": "import { listWorkflows, runWorkflow, runAll as runAllWorkflows, stepExecutor, health as workflowHealth } from '../workfl"
+      },
+      {
+        "file": ".uap/engines/code-review/index.mjs",
+        "line": 79,
+        "kind": "todo_marker",
+        "pattern": "TODO/FIXME",
+        "snippet": "code: 'CR-TODO-MONEY', severity: 'MAJOR',"
+      },
+      {
+        "file": ".uap/engines/code-review/index.mjs",
+        "line": 80,
+        "kind": "todo_marker",
+        "pattern": "TODO/FIXME",
+        "snippet": "test: (l) => /\\b(?:TODO|FIXME)\\b/.test(l) && MONEY_CONTEXT.test(l),"
+      },
+      {
+        "file": ".uap/engines/code-review/index.mjs",
+        "line": 81,
+        "kind": "todo_marker",
+        "pattern": "TODO/FIXME",
+        "snippet": "root_cause: '资金路径存在未完成的 TODO/FIXME',"
+      },
+      {
+        "file": ".uap/engines/development/index.mjs",
+        "line": 124,
+        "kind": "todo_marker",
+        "pattern": "TODO/FIXME",
+        "snippet": "if (/\\b(?:TODO|FIXME|HACK)\\b/.test(line)) push(rel, i + 1, 'todo_marker', 'TODO/FIXME', line);"
+      },
+      {
+        "file": ".uap/runtime/orchestrator/index.mjs",
+        "line": 6,
+        "kind": "unused_import_heuristic",
+        "pattern": "listTasks",
+        "snippet": "import { createTask, runTask, getTask, listTasks, registerStepHandler } from '../task-engine/index.mjs'"
+      },
+      {
+        "file": ".uap/runtime/orchestrator/index.mjs",
+        "line": 6,
+        "kind": "unused_import_heuristic",
+        "pattern": "registerStepHandler",
+        "snippet": "import { createTask, runTask, getTask, listTasks, registerStepHandler } from '../task-engine/index.mjs'"
+      },
+      {
+        "file": ".uap/runtime/policy-engine/index.mjs",
+        "line": 2,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { STATE, ROOT } from '../_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/tools/danger-scan.mjs",
+        "line": 245,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "console.log(JSON.stringify(out));"
+      },
+      {
+        "file": ".uap/tools/generate-index.mjs",
+        "line": 60,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "console.log(`SPECIFICATION-INDEX.md generated: ${specs.length} specs, ${domains.length} domains, registry=${integrity.ok ? 'PASS' : 'FAIL'}`);"
+      },
+      {
+        "file": ".uap/tools/generate-schemas.mjs",
+        "line": 117,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "console.log(`generated ${Object.keys(schemas).length} schemas in ${SCHEMA_DIR}`);"
+      },
+      {
+        "file": ".uap/tools/normalize-spec-headers.mjs",
+        "line": 11,
+        "kind": "unused_import_heuristic",
+        "pattern": "relToRoot",
+        "snippet": "import { ROOT, REPORTS, relToRoot } from '../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/tools/report-generator.mjs",
+        "line": 11,
+        "kind": "unused_import_heuristic",
+        "pattern": "hash",
+        "snippet": "import { nowISO, readJSON, writeJSON, readText, exists, listFiles, hash } from '../runtime/_lib/util.mjs'"
+      },
+      {
+        "file": ".uap/validators/agents/index.mjs",
+        "line": 2,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, STATE, FILES, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/agents/index.mjs",
+        "line": 163,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({ok,shape:Object.keys(er)}));\", 15000);"
+      },
+      {
+        "file": ".uap/validators/agents/index.mjs",
+        "line": 172,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "const timeoutSelf = await selfCheck(\"console.log(JSON.stringify({ok:true}));\", 15000);"
+      },
+      {
+        "file": ".uap/validators/agents/index.mjs",
+        "line": 266,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({terminal,noSelfLoop,ok:terminal&&noSelfLoop}));\", 15000);"
+      },
+      {
+        "file": ".uap/validators/architecture/index.mjs",
+        "line": 1,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/architecture/index.mjs",
+        "line": 4,
+        "kind": "unused_import_heuristic",
+        "pattern": "readJSON",
+        "snippet": "import { exists, readText, readJSON, listFiles } from '../../runtime/_lib/util.mjs'"
+      },
+      {
+        "file": ".uap/validators/core/index.mjs",
+        "line": 146,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({checks:r.checks.length,pass:r.checks.filter(c=>c.status==='PASS').length,findings:r.findings.length,ok:r.ok}));\";"
+      },
+      {
+        "file": ".uap/validators/core/index.mjs",
+        "line": 203,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({terminal,shape,states:TASK_STATES.length,ok:terminal&&shape}));\";"
+      },
+      {
+        "file": ".uap/validators/cross-platform/index.mjs",
+        "line": 3,
+        "kind": "unused_import_heuristic",
+        "pattern": "pathToFileURL",
+        "snippet": "import { pathToFileURL } from 'node:url'"
+      },
+      {
+        "file": ".uap/validators/cross-platform/index.mjs",
+        "line": 4,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/cross-platform/index.mjs",
+        "line": 81,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({scripts:Object.keys(pkg.scripts||{}).length,n,tests,hasBuild:!!pkg.scripts?.build,hasTest:!!pkg.scripts?.test}));\";"
+      },
+      {
+        "file": ".uap/validators/delivery/index.mjs",
+        "line": 1,
+        "kind": "unused_import_heuristic",
+        "pattern": "path",
+        "snippet": "import path from 'node:path'"
+      },
+      {
+        "file": ".uap/validators/delivery/index.mjs",
+        "line": 3,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/delivery/index.mjs",
+        "line": 205,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "const cmd = await selfCheck(\"console.log(JSON.stringify({ok:true}));\", 15000);"
+      },
+      {
+        "file": ".uap/validators/delivery/index.mjs",
+        "line": 217,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({ok:!a.includes('HUNTER2SECRETVALUE'),redacted:a}));\";"
+      },
+      {
+        "file": ".uap/validators/development/index.mjs",
+        "line": 2,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/development/index.mjs",
+        "line": 92,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({checked:files.length,bad,ok:bad.length===0}));\";"
+      },
+      {
+        "file": ".uap/validators/development/index.mjs",
+        "line": 148,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({normalOk,selfReportRejected,findingSchema,blocking,ok:normalOk&&selfReportRejected&&findingSchema&&blocking}));\";"
+      },
+      {
+        "file": ".uap/validators/evolution/index.mjs",
+        "line": 1,
+        "kind": "unused_import_heuristic",
+        "pattern": "pathToFileURL",
+        "snippet": "import { pathToFileURL } from 'node:url'"
+      },
+      {
+        "file": ".uap/validators/evolution/index.mjs",
+        "line": 2,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, FILES, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/evolution/index.mjs",
+        "line": 138,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({impact:seen.size,ok:seen.size>0}));\";"
+      },
+      {
+        "file": ".uap/validators/product/index.mjs",
+        "line": 1,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/quality/index.mjs",
+        "line": 3,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, REPORTS, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/quality/index.mjs",
+        "line": 188,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({max,retryPath,bounded,ok:retryPath&&bounded}));\", 15000);"
+      },
+      {
+        "file": ".uap/validators/quality/index.mjs",
+        "line": 232,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({blocking:a.status==='FAIL'&&b.status==='PASS',ok:a.status==='FAIL'&&b.status==='PASS'}));\", 15000);"
+      },
+      {
+        "file": ".uap/validators/security/index.mjs",
+        "line": 3,
+        "kind": "unused_import_heuristic",
+        "pattern": "ROOT",
+        "snippet": "import { ROOT, STATE, REPORTS, rootPath } from '../../runtime/_lib/paths.mjs'"
+      },
+      {
+        "file": ".uap/validators/security/index.mjs",
+        "line": 160,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "+ \"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes(fakeKey)}));\";"
+      },
+      {
+        "file": ".uap/validators/security/index.mjs",
+        "line": 275,
+        "kind": "debug_residue",
+        "pattern": "console.log",
+        "snippet": "const timeoutCmd = await selfCheck(\"console.log(JSON.stringify({ok:true,pid:process.pid}));\", 15000);"
+      },
+      {
+        "file": ".uap/workflows/index.mjs",
+        "line": 8,
+        "kind": "unused_import_heuristic",
+        "pattern": "getTask",
+        "snippet": "import { createTask, runTask, getTask, registerStepHandler } from '../runtime/task-engine/index.mjs'"
+      }
+    ],
+    "policy": "heuristic patterns only; these hints never disable a quality gate"
+  },
+  "commands": [
+    {
+      "command": "gofmt -l .",
+      "args": [
+        "-l",
+        "."
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 1773
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152430-1ce50d7d",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:30.451Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap workflow run --all",
+  "exit_code": 0,
+  "duration_ms": 16274,
+  "inputs": "{\"argv\":[\"workflow\",\"run\",\"--all\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "workflow: all 7 workflows succeeded",
+  "content_hash": "9d59cfa410df6fb303aee3f074bdcdc01de084288f117880d13c95faf7360263"
+}

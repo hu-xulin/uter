@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151505-82e4da2d",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112151505-80d6e859",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:15:05.690Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:run_regression",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-6\",\"name\":\"run_regression\",\"idempotent\":true,\"handler\":\"run_regression\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality gates: 1 gates, 0 failures",
+  "content_hash": "a1d2f0ff4a27f9b5a057749a2ecfd680ce54436a5dba10e21edff66e7727300d"
+}

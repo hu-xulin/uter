@@ -1,0 +1,35 @@
+{
+  "evidence_id": "UAP-EV-20261112152345-26d0ef26",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:23:45.496Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.deployment_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.deployment_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "MAJOR",
+      "code": "deployment_plan_static_only",
+      "message": "仅核对部署/回滚/健康检查的静态配置与本地门禁入口, 未执行任何生产部署"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "production_deployment_unauthorized",
+      "message": "生产部署未授权: policy check() production_deploy=DENY production_write=DENY, dry_run_for_production=true; 真实生产部署/健康检查不可执行 -> BLOCKED(受限项), 未报告\"生产已验证\""
+    }
+  ],
+  "summary": "delivery.deployment_integrity 实检: deployment_plan=PASS(release-gate.yml 存在=true; BASELINE 登记 release-gate.yml=true (仅静态部署门禁配置, 非生产部署)); rollback_plan=PASS(docs/adr 状态枚举含 Superseded/Deprecated=true; change-registry 含 snapshots=true; BASELINE git.policy 含 no_destructive_git=true (静态回滚/废弃语义)); health_check=PASS(verify-all.sh / ci.yml 本地健康检查入口存在=true (生产环境健康检查未执行)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1333 个 | BLOCKED 受限项: 生产部署未授权(policy DENY=true)且 dry_run_for_production=true; 仅静态核对计划/回滚/健康检查配置, 未执行也未验证任何生产部署; 绝不把桌面/CI 通过当作生产已验证",
+  "content_hash": "9c8028e9e365163b4a17d9bfe84d2d8add9d7b597c104119bda614c2c90e8f33"
+}

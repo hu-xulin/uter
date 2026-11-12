@@ -1,0 +1,170 @@
+schema_version: "1.0"
+registry_id: "UAP-VALIDATOR-REGISTRY"
+
+validators:
+  - id: core.architecture_integrity
+    target: UAP-00-001
+    implementation: .uap/validators/core/index.mjs
+    checks: [module_presence, dependency_integrity, interface_integrity]
+
+  - id: core.execution_integrity
+    target: UAP-00-002
+    implementation: .uap/validators/core/index.mjs
+    checks: [task_execution, dependency_order, bounded_retry]
+
+  - id: security.permission_boundary
+    target: UAP-00-003
+    implementation: .uap/validators/security/index.mjs
+    checks: [least_privilege, denied_operations, audit_logging]
+
+  - id: core.evidence_integrity
+    target: UAP-00-004
+    implementation: .uap/validators/core/index.mjs
+    checks: [evidence_exists, state_validity, traceability]
+
+  - id: product.requirement_traceability
+    target: UAP-01-001
+    implementation: .uap/validators/product/index.mjs
+    checks: [feature_ids, requirement_coverage, acceptance_criteria]
+
+  - id: product.prototype_consistency
+    target: UAP-01-002
+    implementation: .uap/validators/product/index.mjs
+    checks: [prd_mapping, prototype_mapping, change_detection]
+
+  - id: product.business_rule_integrity
+    target: UAP-01-003
+    implementation: .uap/validators/product/index.mjs
+    checks: [rule_ids, conflict_detection, business_test_coverage]
+
+  - id: architecture.consistency
+    target: UAP-02-001
+    implementation: .uap/validators/architecture/index.mjs
+    checks: [module_boundaries, dependency_graph, architecture_evidence]
+
+  - id: architecture.api_database_integrity
+    target: UAP-02-002
+    implementation: .uap/validators/architecture/index.mjs
+    checks: [api_contracts, schema_integrity, migration_safety]
+
+  - id: architecture.adr_integrity
+    target: UAP-02-003
+    implementation: .uap/validators/architecture/index.mjs
+    checks: [decision_records, decision_traceability]
+
+  - id: agents.registry_integrity
+    target: UAP-03-001
+    implementation: .uap/validators/agents/index.mjs
+    checks: [agent_ids, implementation_exists, permission_mapping]
+
+  - id: agents.execution_integrity
+    target: UAP-03-002
+    implementation: .uap/validators/agents/index.mjs
+    checks: [execution_contract, structured_output, timeout]
+
+  - id: agents.collaboration_integrity
+    target: UAP-03-003
+    implementation: .uap/validators/agents/index.mjs
+    checks: [task_dependencies, conflict_detection, result_consistency]
+
+  - id: agents.recovery_integrity
+    target: UAP-03-004
+    implementation: .uap/validators/agents/index.mjs
+    checks: [state_persistence, interruption_recovery, idempotency]
+
+  - id: development.coding_compliance
+    target: UAP-04-001
+    implementation: .uap/validators/development/index.mjs
+    checks: [format, lint, typecheck, dead_code]
+
+  - id: development.review_integrity
+    target: UAP-04-002
+    implementation: .uap/validators/development/index.mjs
+    checks: [review_execution, finding_schema, blocking_rules]
+
+  - id: development.dependency_integrity
+    target: UAP-04-003
+    implementation: .uap/validators/development/index.mjs
+    checks: [lockfile, vulnerabilities, unused_dependencies]
+
+  - id: quality.engineering_integrity
+    target: UAP-05-001
+    implementation: .uap/validators/quality/index.mjs
+    checks: [review_engine, test_engine, repair_engine, gates]
+
+  - id: quality.test_integrity
+    target: UAP-05-002
+    implementation: .uap/validators/quality/index.mjs
+    checks: [test_execution, failure_propagation, evidence]
+
+  - id: quality.repair_integrity
+    target: UAP-05-003
+    implementation: .uap/validators/quality/index.mjs
+    checks: [root_cause, bounded_retry, regression]
+
+  - id: quality.gate_integrity
+    target: UAP-05-004
+    implementation: .uap/validators/quality/index.mjs
+    checks: [gate_execution, blocking, bypass_detection]
+
+  - id: security.application_integrity
+    target: UAP-06-001
+    implementation: .uap/validators/security/index.mjs
+    checks: [vulnerability_scan, authz, secret_scan]
+
+  - id: security.financial_integrity_validator
+    target: UAP-06-002
+    implementation: .uap/validators/security/index.mjs
+    checks: [ledger_consistency, idempotency, concurrency, recovery]
+
+  - id: security.reliability_integrity
+    target: UAP-06-003
+    implementation: .uap/validators/security/index.mjs
+    checks: [health, timeout, retry, recovery]
+
+  - id: cross_platform.web_integrity
+    target: UAP-07-001
+    implementation: .uap/validators/cross-platform/index.mjs
+    checks: [web_build, web_tests, route_integrity]
+
+  - id: cross_platform.h5_integrity
+    target: UAP-07-002
+    implementation: .uap/validators/cross-platform/index.mjs
+    checks: [h5_build, viewport, touch, mobile_tests]
+
+  - id: cross_platform.consistency_integrity
+    target: UAP-07-003
+    implementation: .uap/validators/cross-platform/index.mjs
+    checks: [feature_mapping, api_consistency, business_consistency]
+
+  - id: delivery.ci_integrity
+    target: UAP-08-001
+    implementation: .uap/validators/delivery/index.mjs
+    checks: [pipeline_config, local_equivalent, failure_propagation]
+
+  - id: delivery.deployment_integrity
+    target: UAP-08-002
+    implementation: .uap/validators/delivery/index.mjs
+    checks: [deployment_plan, rollback_plan, health_check]
+
+  - id: delivery.observability_integrity
+    target: UAP-08-003
+    implementation: .uap/validators/delivery/index.mjs
+    checks: [structured_logs, traceability, secret_redaction]
+
+  - id: evolution.knowledge_integrity
+    target: UAP-09-001
+    implementation: .uap/validators/evolution/index.mjs
+    checks: [source_traceability, stale_knowledge, conflict_detection]
+
+  - id: evolution.evolution_integrity
+    target: UAP-09-002
+    implementation: .uap/validators/evolution/index.mjs
+    checks: [change_impact, regression, rollback]
+
+validation_policy:
+  fail_if_validator_missing: true
+  fail_if_validator_not_executable: true
+  fail_if_evidence_missing: true
+  fail_if_required_check_skipped: true
+  allow_explicit_blocked_status: true

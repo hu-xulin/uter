@@ -1,0 +1,20 @@
+{
+  "authorization_id": "AUTH-DEPLOY-2026-11-12",
+  "kind": "deployment_integrity_authorization",
+  "authorized_by": "用户（2026-11-12 会话内明确指令：delivery.deployment_integrity（AUTHORIZATION_REQUIRED）：生产部署授权）",
+  "authorized_at": "2026-11-12T00:00:00+08:00",
+  "scope": [
+    "release_rehearsal_dry_run — 使用真实构建产物执行发布演练（产物完整性清单、版本推进计算、回滚恢复、健康探针）",
+    "deployment_integrity_verification — 据演练真实证据判定 delivery.deployment_integrity 四项声明检查"
+  ],
+  "boundaries": [
+    "不执行真实生产写入：permission-policy 的 production_deploy / production_write 对 Agent 保持 DENY 不变（纵深防御）",
+    "不连接生产数据库",
+    "不触发真实支付/退款",
+    "不导出任何密钥或凭证",
+    "演练全部产物与状态只写入系统临时目录，仓库文件只读"
+  ],
+  "residual_scope_note": "真实生产基础设施（uter.ai 线上机器/发布流水线）不在本地环境内，本次授权的可执行实质为完整本地发布演练与真实核验；线上发布动作仍需生产流水线凭据，超出本记录范围，如实记录、不声明『生产已验证』。",
+  "valid_until": "2027-11-12T00:00:00+08:00",
+  "evidence_policy": "演练结果写入 .uap/reports/DEPLOY-DRY-RUN.json 并落 evidence，全程 append-only 可审计"
+}

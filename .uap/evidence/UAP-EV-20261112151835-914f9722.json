@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112151835-914f9722",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:18:35.725Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.engineering_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.engineering_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.repair_engine",
+      "message": "repair_engine: 动态 import .uap/engines/auto-repair/index.mjs 并调用 health(): health().ok=false"
+    }
+  ],
+  "summary": "quality.engineering_integrity 实检: review_engine=PASS(动态 import .uap/engines/code-review/index.mjs 并调用 health(): health().ok=true); test_engine=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true); repair_engine=FAIL(动态 import .uap/engines/auto-repair/index.mjs 并调用 health(): health().ok=false); gates=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1023 个 | 4 个引擎均动态 import 且 health().ok===true",
+  "content_hash": "603f50bccf8d0f4999287e2b259769d2d402091ac23dbcb095438a07497e8007"
+}

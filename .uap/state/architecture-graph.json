@@ -1,0 +1,2725 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:33.552Z",
+  "executor_ids": [
+    "architecture.analyzer",
+    "architecture.api_database"
+  ],
+  "graph_source": "real Go import blocks",
+  "modules": [
+    {
+      "name": "root",
+      "layer": 5,
+      "file_count": 1,
+      "files": [
+        "main.go"
+      ]
+    },
+    {
+      "name": "router",
+      "layer": 4,
+      "file_count": 8,
+      "files": [
+        "router/api-router.go",
+        "router/authz-router.go",
+        "router/channel-router.go",
+        "router/dashboard.go",
+        "router/gzip.go",
+        "router/main.go",
+        "router/plugin-router.go",
+        "router/relay-router.go"
+      ]
+    },
+    {
+      "name": "middleware",
+      "layer": 2,
+      "file_count": 8,
+      "files": [
+        "middleware/access_token_routes.go",
+        "middleware/audit.go",
+        "middleware/auth.go",
+        "middleware/auth_origin.go",
+        "middleware/body_cleanup.go",
+        "middleware/cache.go",
+        "middleware/cors.go",
+        "middleware/demo.go"
+      ]
+    },
+    {
+      "name": "controller",
+      "layer": 3,
+      "file_count": 8,
+      "files": [
+        "controller/access_token.go",
+        "controller/audit.go",
+        "controller/auth_session.go",
+        "controller/authz.go",
+        "controller/billing.go",
+        "controller/channel-billing.go",
+        "controller/channel-test.go",
+        "controller/channel.go"
+      ]
+    },
+    {
+      "name": "service",
+      "layer": 2,
+      "file_count": 8,
+      "files": [
+        "service/access_token_scope.go",
+        "service/account_security.go",
+        "service/alipay_query.go",
+        "service/audio.go",
+        "service/auth_cleanup.go",
+        "service/auth_session.go",
+        "service/auth_token.go",
+        "service/billing.go"
+      ]
+    },
+    {
+      "name": "model",
+      "layer": 1,
+      "file_count": 8,
+      "files": [
+        "model/ability.go",
+        "model/account_security.go",
+        "model/accounting_tx.go",
+        "model/audit_log.go",
+        "model/audit_other.go",
+        "model/auth_flow.go",
+        "model/authz_role.go",
+        "model/casbin_rule.go"
+      ]
+    },
+    {
+      "name": "relay",
+      "layer": 2,
+      "file_count": 8,
+      "files": [
+        "relay/alpha_search_handler.go",
+        "relay/audio_handler.go",
+        "relay/chat_completions_via_responses.go",
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go",
+        "relay/convert_request_error.go",
+        "relay/deepseek_tools_handler.go",
+        "relay/embedding_handler.go"
+      ]
+    },
+    {
+      "name": "common",
+      "layer": 0,
+      "file_count": 8,
+      "files": [
+        "common/account_password.go",
+        "common/advanced_custom_presets.go",
+        "common/api_type.go",
+        "common/audio.go",
+        "common/body_storage.go",
+        "common/constants.go",
+        "common/container_usage.go",
+        "common/copy.go"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "common",
+      "to": "constant",
+      "count": 2,
+      "sample_files": [
+        "common/advanced_custom_presets.go",
+        "common/api_type.go"
+      ]
+    },
+    {
+      "from": "common",
+      "to": "relaykit",
+      "count": 1,
+      "sample_files": [
+        "common/advanced_custom_presets.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "common",
+      "count": 7,
+      "sample_files": [
+        "controller/access_token.go",
+        "controller/audit.go",
+        "controller/auth_session.go",
+        "controller/billing.go",
+        "controller/channel-billing.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "constant",
+      "count": 4,
+      "sample_files": [
+        "controller/audit.go",
+        "controller/channel-billing.go",
+        "controller/channel-test.go",
+        "controller/channel.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "i18n",
+      "count": 2,
+      "sample_files": [
+        "controller/audit.go",
+        "controller/channel-test.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "logger",
+      "count": 1,
+      "sample_files": [
+        "controller/auth_session.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "middleware",
+      "count": 3,
+      "sample_files": [
+        "controller/access_token.go",
+        "controller/auth_session.go",
+        "controller/channel-test.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "model",
+      "count": 7,
+      "sample_files": [
+        "controller/access_token.go",
+        "controller/audit.go",
+        "controller/auth_session.go",
+        "controller/billing.go",
+        "controller/channel-billing.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "pkg",
+      "count": 2,
+      "sample_files": [
+        "controller/channel-test.go",
+        "controller/channel.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "relay",
+      "count": 10,
+      "sample_files": [
+        "controller/channel-billing.go",
+        "controller/channel-test.go",
+        "controller/channel.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "relaykit",
+      "count": 6,
+      "sample_files": [
+        "controller/billing.go",
+        "controller/channel-billing.go",
+        "controller/channel-test.go",
+        "controller/channel.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "service",
+      "count": 7,
+      "sample_files": [
+        "controller/access_token.go",
+        "controller/auth_session.go",
+        "controller/authz.go",
+        "controller/channel-billing.go",
+        "controller/channel-test.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "setting",
+      "count": 3,
+      "sample_files": [
+        "controller/billing.go",
+        "controller/channel-billing.go",
+        "controller/channel-test.go"
+      ]
+    },
+    {
+      "from": "controller",
+      "to": "types",
+      "count": 1,
+      "sample_files": [
+        "controller/channel-test.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "common",
+      "count": 6,
+      "sample_files": [
+        "middleware/audit.go",
+        "middleware/auth.go",
+        "middleware/auth_origin.go",
+        "middleware/body_cleanup.go",
+        "middleware/cors.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "constant",
+      "count": 2,
+      "sample_files": [
+        "middleware/audit.go",
+        "middleware/auth.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "dto",
+      "count": 1,
+      "sample_files": [
+        "middleware/auth.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "i18n",
+      "count": 2,
+      "sample_files": [
+        "middleware/auth.go",
+        "middleware/demo.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "logger",
+      "count": 1,
+      "sample_files": [
+        "middleware/auth.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "model",
+      "count": 2,
+      "sample_files": [
+        "middleware/audit.go",
+        "middleware/auth.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "relaykit",
+      "count": 1,
+      "sample_files": [
+        "middleware/auth.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "service",
+      "count": 6,
+      "sample_files": [
+        "middleware/access_token_routes.go",
+        "middleware/audit.go",
+        "middleware/auth.go",
+        "middleware/body_cleanup.go"
+      ]
+    },
+    {
+      "from": "middleware",
+      "to": "setting",
+      "count": 2,
+      "sample_files": [
+        "middleware/auth.go",
+        "middleware/demo.go"
+      ]
+    },
+    {
+      "from": "model",
+      "to": "common",
+      "count": 5,
+      "sample_files": [
+        "model/ability.go",
+        "model/account_security.go",
+        "model/audit_log.go",
+        "model/audit_other.go",
+        "model/auth_flow.go"
+      ]
+    },
+    {
+      "from": "model",
+      "to": "dto",
+      "count": 1,
+      "sample_files": [
+        "model/ability.go"
+      ]
+    },
+    {
+      "from": "model",
+      "to": "logger",
+      "count": 1,
+      "sample_files": [
+        "model/audit_log.go"
+      ]
+    },
+    {
+      "from": "model",
+      "to": "setting",
+      "count": 1,
+      "sample_files": [
+        "model/ability.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "common",
+      "count": 7,
+      "sample_files": [
+        "relay/alpha_search_handler.go",
+        "relay/audio_handler.go",
+        "relay/chat_completions_via_responses.go",
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "constant",
+      "count": 5,
+      "sample_files": [
+        "relay/alpha_search_handler.go",
+        "relay/chat_completions_via_responses.go",
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go",
+        "relay/deepseek_tools_handler.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "logger",
+      "count": 5,
+      "sample_files": [
+        "relay/alpha_search_handler.go",
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go",
+        "relay/deepseek_tools_handler.go",
+        "relay/embedding_handler.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "middleware",
+      "count": 1,
+      "sample_files": [
+        "relay/compatible_handler.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "relaykit",
+      "count": 16,
+      "sample_files": [
+        "relay/alpha_search_handler.go",
+        "relay/audio_handler.go",
+        "relay/chat_completions_via_responses.go",
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "service",
+      "count": 7,
+      "sample_files": [
+        "relay/alpha_search_handler.go",
+        "relay/audio_handler.go",
+        "relay/chat_completions_via_responses.go",
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go"
+      ]
+    },
+    {
+      "from": "relay",
+      "to": "setting",
+      "count": 3,
+      "sample_files": [
+        "relay/claude_handler.go",
+        "relay/compatible_handler.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "common",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "constant",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "controller",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "i18n",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "logger",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "middleware",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "model",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "oauth",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "pkg",
+      "count": 3,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "relay",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "relaykit",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "router",
+      "count": 1,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "service",
+      "count": 2,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "root",
+      "to": "setting",
+      "count": 2,
+      "sample_files": [
+        "main.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "common",
+      "count": 2,
+      "sample_files": [
+        "router/main.go",
+        "router/plugin-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "constant",
+      "count": 2,
+      "sample_files": [
+        "router/plugin-router.go",
+        "router/relay-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "controller",
+      "count": 6,
+      "sample_files": [
+        "router/api-router.go",
+        "router/authz-router.go",
+        "router/channel-router.go",
+        "router/dashboard.go",
+        "router/plugin-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "logger",
+      "count": 1,
+      "sample_files": [
+        "router/plugin-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "middleware",
+      "count": 7,
+      "sample_files": [
+        "router/api-router.go",
+        "router/authz-router.go",
+        "router/channel-router.go",
+        "router/dashboard.go",
+        "router/main.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "pkg",
+      "count": 1,
+      "sample_files": [
+        "router/plugin-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "relay",
+      "count": 2,
+      "sample_files": [
+        "router/relay-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "relaykit",
+      "count": 1,
+      "sample_files": [
+        "router/relay-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "service",
+      "count": 3,
+      "sample_files": [
+        "router/api-router.go",
+        "router/channel-router.go"
+      ]
+    },
+    {
+      "from": "router",
+      "to": "setting",
+      "count": 1,
+      "sample_files": [
+        "router/gzip.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "common",
+      "count": 6,
+      "sample_files": [
+        "service/access_token_scope.go",
+        "service/account_security.go",
+        "service/auth_cleanup.go",
+        "service/auth_session.go",
+        "service/auth_token.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "i18n",
+      "count": 1,
+      "sample_files": [
+        "service/account_security.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "logger",
+      "count": 1,
+      "sample_files": [
+        "service/billing.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "model",
+      "count": 6,
+      "sample_files": [
+        "service/access_token_scope.go",
+        "service/account_security.go",
+        "service/auth_cleanup.go",
+        "service/auth_session.go",
+        "service/auth_token.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "oauth",
+      "count": 1,
+      "sample_files": [
+        "service/account_security.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "relay",
+      "count": 1,
+      "sample_files": [
+        "service/billing.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "relaykit",
+      "count": 1,
+      "sample_files": [
+        "service/billing.go"
+      ]
+    },
+    {
+      "from": "service",
+      "to": "setting",
+      "count": 2,
+      "sample_files": [
+        "service/account_security.go",
+        "service/alipay_query.go"
+      ]
+    }
+  ],
+  "cycle_count": 2,
+  "cycles": [
+    "middleware -> service -> relay -> middleware",
+    "service -> relay -> service"
+  ],
+  "cross_module_edge_count": 66,
+  "layer_violations": [
+    {
+      "from": "common",
+      "to": "constant",
+      "from_layer": 0,
+      "to_layer": 0,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    },
+    {
+      "from": "common",
+      "to": "relaykit",
+      "from_layer": 0,
+      "to_layer": 1,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    },
+    {
+      "from": "middleware",
+      "to": "service",
+      "from_layer": 2,
+      "to_layer": 2,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    },
+    {
+      "from": "model",
+      "to": "setting",
+      "from_layer": 1,
+      "to_layer": 1,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    },
+    {
+      "from": "relay",
+      "to": "middleware",
+      "from_layer": 2,
+      "to_layer": 2,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    },
+    {
+      "from": "relay",
+      "to": "service",
+      "from_layer": 2,
+      "to_layer": 2,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    },
+    {
+      "from": "service",
+      "to": "relay",
+      "from_layer": 2,
+      "to_layer": 2,
+      "note": "lower/equal layer importing upper layer (heuristic coupling smell)"
+    }
+  ],
+  "external_import_count": 64,
+  "external_imports_sample": [
+    "bytes",
+    "context",
+    "embed",
+    "errors",
+    "log",
+    "net/http",
+    "os",
+    "os/signal",
+    "strconv",
+    "strings",
+    "syscall",
+    "time",
+    "github.com/bytedance/gopkg/util/gopool",
+    "github.com/gin-gonic/gin",
+    "github.com/joho/godotenv",
+    "net/http/pprof",
+    "path",
+    "regexp",
+    "github.com/gin-contrib/gzip",
+    "fmt"
+  ],
+  "api_inventory": [
+    {
+      "method": "GET",
+      "path": "/setup",
+      "handler": "GetSetup",
+      "line": 30
+    },
+    {
+      "method": "POST",
+      "path": "/setup",
+      "handler": "PostSetup",
+      "line": 31
+    },
+    {
+      "method": "GET",
+      "path": "/status",
+      "handler": "GetStatus",
+      "line": 32
+    },
+    {
+      "method": "GET",
+      "path": "/i18n/:file",
+      "handler": "GetI18nBundle",
+      "line": 38
+    },
+    {
+      "method": "GET",
+      "path": "/uptime/status",
+      "handler": "GetUptimeKumaStatus",
+      "line": 39
+    },
+    {
+      "method": "GET",
+      "path": "/models",
+      "handler": "DashboardListModels",
+      "line": 40
+    },
+    {
+      "method": "GET",
+      "path": "/status/test",
+      "handler": "TestStatus",
+      "line": 41
+    },
+    {
+      "method": "GET",
+      "path": "/notice",
+      "handler": "GetNotice",
+      "line": 42
+    },
+    {
+      "method": "GET",
+      "path": "/user-agreement",
+      "handler": "GetUserAgreement",
+      "line": 43
+    },
+    {
+      "method": "GET",
+      "path": "/privacy-policy",
+      "handler": "GetPrivacyPolicy",
+      "line": 44
+    },
+    {
+      "method": "GET",
+      "path": "/recharge-agreement",
+      "handler": "GetRechargeAgreement",
+      "line": 45
+    },
+    {
+      "method": "GET",
+      "path": "/about",
+      "handler": "GetAbout",
+      "line": 46
+    },
+    {
+      "method": "GET",
+      "path": "/midjourney",
+      "handler": "GetMidjourney",
+      "line": 47
+    },
+    {
+      "method": "GET",
+      "path": "/home_page_content",
+      "handler": "GetHomePageContent",
+      "line": 48
+    },
+    {
+      "method": "GET",
+      "path": "/pricing",
+      "handler": "GetPricing",
+      "line": 49
+    },
+    {
+      "method": "GET",
+      "path": "/summary",
+      "handler": "GetPerfMetricsSummary",
+      "line": 53
+    },
+    {
+      "method": "GET",
+      "path": "/rankings",
+      "handler": "GetRankings",
+      "line": 56
+    },
+    {
+      "method": "GET",
+      "path": "/verification",
+      "handler": "SendEmailVerification",
+      "line": 57
+    },
+    {
+      "method": "GET",
+      "path": "/reset_password",
+      "handler": "SendPasswordResetEmail",
+      "line": 58
+    },
+    {
+      "method": "POST",
+      "path": "/user/reset",
+      "handler": "ResetPassword",
+      "line": 59
+    },
+    {
+      "method": "POST",
+      "path": "/oauth/state",
+      "handler": "GenerateOAuthCode",
+      "line": 61
+    },
+    {
+      "method": "POST",
+      "path": "/oauth/email/bind/start",
+      "handler": "EmailBindStart",
+      "line": 62
+    },
+    {
+      "method": "POST",
+      "path": "/oauth/email/bind/resend",
+      "handler": "EmailBindResend",
+      "line": 63
+    },
+    {
+      "method": "POST",
+      "path": "/oauth/email/bind",
+      "handler": "EmailBind",
+      "line": 64
+    },
+    {
+      "method": "POST",
+      "path": "/oauth/wechat-web/state",
+      "handler": "GenerateWeChatWebCode",
+      "line": 66
+    },
+    {
+      "method": "GET",
+      "path": "/oauth/wechat-web/origin",
+      "handler": "GetWeChatWebFlowOrigin",
+      "line": 67
+    },
+    {
+      "method": "GET",
+      "path": "/oauth/wechat-web",
+      "handler": "WeChatWebAuth",
+      "line": 68
+    },
+    {
+      "method": "GET",
+      "path": "/oauth/telegram/login",
+      "handler": "TelegramLegacyAuth",
+      "line": 69
+    },
+    {
+      "method": "POST",
+      "path": "/oauth/telegram/bind/start",
+      "handler": "TelegramLegacyAuth",
+      "line": 70
+    },
+    {
+      "method": "GET",
+      "path": "/oauth/telegram/bind/:flow_token",
+      "handler": "TelegramLegacyAuth",
+      "line": 71
+    },
+    {
+      "method": "GET",
+      "path": "/oauth/:provider",
+      "handler": "HandleOAuth",
+      "line": 73
+    },
+    {
+      "method": "GET",
+      "path": "/ratio_config",
+      "handler": "GetRatioConfig",
+      "line": 74
+    },
+    {
+      "method": "POST",
+      "path": "/stripe/webhook",
+      "handler": "StripeWebhook",
+      "line": 76
+    },
+    {
+      "method": "POST",
+      "path": "/creem/webhook",
+      "handler": "CreemWebhook",
+      "line": 77
+    },
+    {
+      "method": "POST",
+      "path": "/waffo/webhook",
+      "handler": "WaffoWebhook",
+      "line": 78
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/webhook/:env",
+      "handler": "WaffoPancakeWebhook",
+      "line": 81
+    },
+    {
+      "method": "GET",
+      "path": "/customer-service/deploy/llm",
+      "handler": "GetCustomerServiceLLMConfig",
+      "line": 85
+    },
+    {
+      "method": "PUT",
+      "path": "/customer-service/deploy/llm",
+      "handler": "UpdateCustomerServiceLLMConfig",
+      "line": 86
+    },
+    {
+      "method": "GET",
+      "path": "/customer-service/admin-token",
+      "handler": "GetCustomerServiceAdminToken",
+      "line": 88
+    },
+    {
+      "method": "GET",
+      "path": "/verify/methods",
+      "handler": "GetVerificationMethods",
+      "line": 91
+    },
+    {
+      "method": "POST",
+      "path": "/verify",
+      "handler": "UniversalVerify",
+      "line": 92
+    },
+    {
+      "method": "POST",
+      "path": "/verify/email_code",
+      "handler": "SendVerificationEmailCode",
+      "line": 95
+    },
+    {
+      "method": "POST",
+      "path": "/auth/refresh",
+      "handler": "RefreshAuth",
+      "line": 99
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "handler": "AuthLogout",
+      "line": 100
+    },
+    {
+      "method": "POST",
+      "path": "/register",
+      "handler": "Register",
+      "line": 101
+    },
+    {
+      "method": "GET",
+      "path": "/login/encryption-key",
+      "handler": "GetPasswordEncryptionKey",
+      "line": 102
+    },
+    {
+      "method": "POST",
+      "path": "/login",
+      "handler": "Login",
+      "line": 103
+    },
+    {
+      "method": "GET",
+      "path": "/login/email-code",
+      "handler": "SendLoginEmailCode",
+      "line": 106
+    },
+    {
+      "method": "POST",
+      "path": "/login/email-code",
+      "handler": "LoginByEmailCode",
+      "line": 107
+    },
+    {
+      "method": "POST",
+      "path": "/login/2fa",
+      "handler": "Verify2FALogin",
+      "line": 108
+    },
+    {
+      "method": "POST",
+      "path": "/login/verify",
+      "handler": "VerifyLogin",
+      "line": 109
+    },
+    {
+      "method": "POST",
+      "path": "/login/passkey/begin",
+      "handler": "LoginPasskeyBegin",
+      "line": 110
+    },
+    {
+      "method": "POST",
+      "path": "/login/passkey/finish",
+      "handler": "LoginPasskeyFinish",
+      "line": 111
+    },
+    {
+      "method": "POST",
+      "path": "/passkey/login/begin",
+      "handler": "PasskeyLoginBegin",
+      "line": 112
+    },
+    {
+      "method": "POST",
+      "path": "/passkey/login/finish",
+      "handler": "PasskeyLoginFinish",
+      "line": 113
+    },
+    {
+      "method": "POST",
+      "path": "/tokenlog",
+      "handler": "TokenLog",
+      "line": 114
+    },
+    {
+      "method": "POST",
+      "path": "/epay/notify",
+      "handler": "EpayNotify",
+      "line": 115
+    },
+    {
+      "method": "GET",
+      "path": "/epay/notify",
+      "handler": "EpayNotify",
+      "line": 116
+    },
+    {
+      "method": "POST",
+      "path": "/alipay/notify",
+      "handler": "AlipayNotify",
+      "line": 117
+    },
+    {
+      "method": "POST",
+      "path": "/wechat/notify",
+      "handler": "WechatPayNotify",
+      "line": 118
+    },
+    {
+      "method": "GET",
+      "path": "/groups",
+      "handler": "GetUserGroups",
+      "line": 121
+    },
+    {
+      "method": "GET",
+      "path": "/sessions",
+      "handler": "GetLoginSessions",
+      "line": 126
+    },
+    {
+      "method": "DELETE",
+      "path": "/sessions/:sid",
+      "handler": "DeleteLoginSession",
+      "line": 127
+    },
+    {
+      "method": "POST",
+      "path": "/sessions/revoke-others",
+      "handler": "RevokeOtherLoginSessions",
+      "line": 128
+    },
+    {
+      "method": "GET",
+      "path": "/self/groups",
+      "handler": "GetUserGroups",
+      "line": 129
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetSelf",
+      "line": 130
+    },
+    {
+      "method": "GET",
+      "path": "/models",
+      "handler": "GetUserModels",
+      "line": 131
+    },
+    {
+      "method": "PUT",
+      "path": "/self",
+      "handler": "UpdateSelf",
+      "line": 132
+    },
+    {
+      "method": "DELETE",
+      "path": "/self",
+      "handler": "DeleteSelf",
+      "line": 133
+    },
+    {
+      "method": "GET",
+      "path": "/catalog",
+      "handler": "GetAccessTokenCatalog",
+      "line": 138
+    },
+    {
+      "method": "GET",
+      "path": "/scopes",
+      "handler": "GetAccessTokenScopes",
+      "line": 139
+    },
+    {
+      "method": "PATCH",
+      "path": "/:id",
+      "handler": "UpdateAccessToken",
+      "line": 141
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteAccessToken",
+      "line": 142
+    },
+    {
+      "method": "DELETE",
+      "path": "/legacy",
+      "handler": "RevokeLegacyAccessToken",
+      "line": 143
+    },
+    {
+      "method": "GET",
+      "path": "/passkey",
+      "handler": "PasskeyStatus",
+      "line": 145
+    },
+    {
+      "method": "POST",
+      "path": "/passkey/register/begin",
+      "handler": "PasskeyRegisterBegin",
+      "line": 146
+    },
+    {
+      "method": "POST",
+      "path": "/passkey/register/finish",
+      "handler": "PasskeyRegisterFinish",
+      "line": 147
+    },
+    {
+      "method": "POST",
+      "path": "/passkey/verify/begin",
+      "handler": "PasskeyVerifyBegin",
+      "line": 148
+    },
+    {
+      "method": "POST",
+      "path": "/passkey/verify/finish",
+      "handler": "PasskeyVerifyFinish",
+      "line": 149
+    },
+    {
+      "method": "DELETE",
+      "path": "/passkey",
+      "handler": "PasskeyDelete",
+      "line": 150
+    },
+    {
+      "method": "GET",
+      "path": "/aff",
+      "handler": "GetAffCode",
+      "line": 151
+    },
+    {
+      "method": "GET",
+      "path": "/topup/info",
+      "handler": "GetTopUpInfo",
+      "line": 152
+    },
+    {
+      "method": "GET",
+      "path": "/topup/self",
+      "handler": "GetUserTopUps",
+      "line": 153
+    },
+    {
+      "method": "POST",
+      "path": "/topup",
+      "handler": "TopUp",
+      "line": 154
+    },
+    {
+      "method": "POST",
+      "path": "/pay",
+      "handler": "RequestEpay",
+      "line": 155
+    },
+    {
+      "method": "POST",
+      "path": "/amount",
+      "handler": "RequestAmount",
+      "line": 156
+    },
+    {
+      "method": "POST",
+      "path": "/stripe/pay",
+      "handler": "RequestStripePay",
+      "line": 157
+    },
+    {
+      "method": "POST",
+      "path": "/stripe/amount",
+      "handler": "RequestStripeAmount",
+      "line": 158
+    },
+    {
+      "method": "POST",
+      "path": "/creem/pay",
+      "handler": "RequestCreemPay",
+      "line": 159
+    },
+    {
+      "method": "POST",
+      "path": "/alipay/webpay",
+      "handler": "RequestAlipayWeb",
+      "line": 160
+    },
+    {
+      "method": "POST",
+      "path": "/alipay/query",
+      "handler": "QueryAlipayOrder",
+      "line": 161
+    },
+    {
+      "method": "POST",
+      "path": "/wechat/query",
+      "handler": "QueryWechatOrder",
+      "line": 162
+    },
+    {
+      "method": "POST",
+      "path": "/wechat/webpay",
+      "handler": "RequestWechatPayWeb",
+      "line": 163
+    },
+    {
+      "method": "POST",
+      "path": "/waffo/amount",
+      "handler": "RequestWaffoAmount",
+      "line": 164
+    },
+    {
+      "method": "POST",
+      "path": "/waffo/pay",
+      "handler": "RequestWaffoPay",
+      "line": 165
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/amount",
+      "handler": "RequestWaffoPancakeAmount",
+      "line": 166
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/pay",
+      "handler": "RequestWaffoPancakePay",
+      "line": 167
+    },
+    {
+      "method": "POST",
+      "path": "/aff_transfer",
+      "handler": "TransferAffQuota",
+      "line": 168
+    },
+    {
+      "method": "PUT",
+      "path": "/setting",
+      "handler": "UpdateUserSetting",
+      "line": 169
+    },
+    {
+      "method": "GET",
+      "path": "/2fa/status",
+      "handler": "Get2FAStatus",
+      "line": 172
+    },
+    {
+      "method": "POST",
+      "path": "/2fa/setup",
+      "handler": "Setup2FA",
+      "line": 173
+    },
+    {
+      "method": "POST",
+      "path": "/2fa/enable",
+      "handler": "Enable2FA",
+      "line": 174
+    },
+    {
+      "method": "POST",
+      "path": "/2fa/disable",
+      "handler": "Disable2FA",
+      "line": 175
+    },
+    {
+      "method": "POST",
+      "path": "/2fa/backup_codes",
+      "handler": "RegenerateBackupCodes",
+      "line": 176
+    },
+    {
+      "method": "GET",
+      "path": "/checkin",
+      "handler": "GetCheckinStatus",
+      "line": 179
+    },
+    {
+      "method": "POST",
+      "path": "/checkin",
+      "handler": "DoCheckin",
+      "line": 180
+    },
+    {
+      "method": "GET",
+      "path": "/oauth/bindings",
+      "handler": "GetUserOAuthBindings",
+      "line": 183
+    },
+    {
+      "method": "DELETE",
+      "path": "/oauth/bindings/:provider_id",
+      "handler": "UnbindCustomOAuth",
+      "line": 184
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllUsers",
+      "line": 190
+    },
+    {
+      "method": "GET",
+      "path": "/topup",
+      "handler": "GetAllTopUps",
+      "line": 191
+    },
+    {
+      "method": "POST",
+      "path": "/topup/complete",
+      "handler": "AdminCompleteTopUp",
+      "line": 192
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchUsers",
+      "line": 193
+    },
+    {
+      "method": "GET",
+      "path": "/:id/oauth/bindings",
+      "handler": "GetUserOAuthBindingsByAdmin",
+      "line": 194
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id/oauth/bindings/:provider_id",
+      "handler": "UnbindCustomOAuthByAdmin",
+      "line": 195
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id/bindings/:binding_type",
+      "handler": "AdminClearUserBinding",
+      "line": 196
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetUser",
+      "line": 197
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreateUser",
+      "line": 198
+    },
+    {
+      "method": "POST",
+      "path": "/manage",
+      "handler": "ManageUser",
+      "line": 199
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateUser",
+      "line": 200
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteUser",
+      "line": 201
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id/reset_passkey",
+      "handler": "AdminResetPasskey",
+      "line": 202
+    },
+    {
+      "method": "GET",
+      "path": "/2fa/stats",
+      "handler": "Admin2FAStats",
+      "line": 205
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id/2fa",
+      "handler": "AdminDisable2FA",
+      "line": 206
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetMyOrganization",
+      "line": 221
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetOrganization",
+      "line": 226
+    },
+    {
+      "method": "GET",
+      "path": "/:id/stats",
+      "handler": "GetOrganizationStats",
+      "line": 227
+    },
+    {
+      "method": "GET",
+      "path": "/:id/members",
+      "handler": "GetOrganizationMembers",
+      "line": 228
+    },
+    {
+      "method": "POST",
+      "path": "/:id/members",
+      "handler": "AddOrganizationMembers",
+      "line": 229
+    },
+    {
+      "method": "PUT",
+      "path": "/:id/members/:uid",
+      "handler": "UpdateOrganizationMember",
+      "line": 230
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id/members/:uid",
+      "handler": "RemoveOrganizationMember",
+      "line": 231
+    },
+    {
+      "method": "PUT",
+      "path": "/:id",
+      "handler": "UpdateOrganization",
+      "line": 232
+    },
+    {
+      "method": "GET",
+      "path": "/:id/logs",
+      "handler": "GetOrganizationLogs",
+      "line": 233
+    },
+    {
+      "method": "GET",
+      "path": "/:id/logs/stat",
+      "handler": "GetOrganizationLogsStat",
+      "line": 234
+    },
+    {
+      "method": "GET",
+      "path": "/:id/quota-dates",
+      "handler": "GetOrganizationQuotaDates",
+      "line": 235
+    },
+    {
+      "method": "GET",
+      "path": "/:id/quota-dates/users",
+      "handler": "GetOrganizationQuotaDatesByUser",
+      "line": 236
+    },
+    {
+      "method": "GET",
+      "path": "/:id/flow",
+      "handler": "GetOrganizationFlow",
+      "line": 237
+    },
+    {
+      "method": "GET",
+      "path": "/:id/tasks",
+      "handler": "GetOrganizationTasks",
+      "line": 238
+    },
+    {
+      "method": "GET",
+      "path": "/:id/drawings",
+      "handler": "GetOrganizationMidjourney",
+      "line": 239
+    },
+    {
+      "method": "GET",
+      "path": "/:id/audit",
+      "handler": "GetOrganizationAuditLogs",
+      "line": 240
+    },
+    {
+      "method": "GET",
+      "path": "/plans",
+      "handler": "GetSubscriptionPlans",
+      "line": 256
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetSubscriptionSelf",
+      "line": 257
+    },
+    {
+      "method": "PUT",
+      "path": "/self/preference",
+      "handler": "UpdateSubscriptionPreference",
+      "line": 258
+    },
+    {
+      "method": "POST",
+      "path": "/balance/pay",
+      "handler": "SubscriptionRequestBalancePay",
+      "line": 259
+    },
+    {
+      "method": "POST",
+      "path": "/epay/pay",
+      "handler": "SubscriptionRequestEpay",
+      "line": 260
+    },
+    {
+      "method": "POST",
+      "path": "/stripe/pay",
+      "handler": "SubscriptionRequestStripePay",
+      "line": 261
+    },
+    {
+      "method": "POST",
+      "path": "/creem/pay",
+      "handler": "SubscriptionRequestCreemPay",
+      "line": 262
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/pay",
+      "handler": "SubscriptionRequestWaffoPancakePay",
+      "line": 263
+    },
+    {
+      "method": "GET",
+      "path": "/plans",
+      "handler": "AdminListSubscriptionPlans",
+      "line": 268
+    },
+    {
+      "method": "POST",
+      "path": "/plans",
+      "handler": "AdminCreateSubscriptionPlan",
+      "line": 269
+    },
+    {
+      "method": "PUT",
+      "path": "/plans/:id",
+      "handler": "AdminUpdateSubscriptionPlan",
+      "line": 270
+    },
+    {
+      "method": "PATCH",
+      "path": "/plans/:id",
+      "handler": "AdminUpdateSubscriptionPlanStatus",
+      "line": 271
+    },
+    {
+      "method": "POST",
+      "path": "/bind",
+      "handler": "AdminBindSubscription",
+      "line": 272
+    },
+    {
+      "method": "POST",
+      "path": "/plans/:id/subscriptions/reset",
+      "handler": "AdminResetPlanSubscriptions",
+      "line": 273
+    },
+    {
+      "method": "GET",
+      "path": "/users/:id/subscriptions",
+      "handler": "AdminListUserSubscriptions",
+      "line": 276
+    },
+    {
+      "method": "POST",
+      "path": "/users/:id/subscriptions",
+      "handler": "AdminCreateUserSubscription",
+      "line": 277
+    },
+    {
+      "method": "POST",
+      "path": "/users/:id/subscriptions/reset",
+      "handler": "AdminResetUserSubscriptionsByPlan",
+      "line": 278
+    },
+    {
+      "method": "POST",
+      "path": "/user_subscriptions/:id/invalidate",
+      "handler": "AdminInvalidateUserSubscription",
+      "line": 279
+    },
+    {
+      "method": "DELETE",
+      "path": "/user_subscriptions/:id",
+      "handler": "AdminDeleteUserSubscription",
+      "line": 280
+    },
+    {
+      "method": "POST",
+      "path": "/subscription/epay/notify",
+      "handler": "SubscriptionEpayNotify",
+      "line": 284
+    },
+    {
+      "method": "GET",
+      "path": "/subscription/epay/notify",
+      "handler": "SubscriptionEpayNotify",
+      "line": 285
+    },
+    {
+      "method": "GET",
+      "path": "/subscription/epay/return",
+      "handler": "SubscriptionEpayReturn",
+      "line": 286
+    },
+    {
+      "method": "POST",
+      "path": "/subscription/epay/return",
+      "handler": "SubscriptionEpayReturn",
+      "line": 287
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetOptions",
+      "line": 291
+    },
+    {
+      "method": "GET",
+      "path": "/request_policy",
+      "handler": "GetRequestPolicy",
+      "line": 292
+    },
+    {
+      "method": "PATCH",
+      "path": "/request_policy",
+      "handler": "UpdateRequestPolicy",
+      "line": 293
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateOption",
+      "line": 294
+    },
+    {
+      "method": "POST",
+      "path": "/exchange_rate/sync",
+      "handler": "SyncExchangeRate",
+      "line": 295
+    },
+    {
+      "method": "PUT",
+      "path": "/passkey/domains",
+      "handler": "UpdatePasskeyDomains",
+      "line": 296
+    },
+    {
+      "method": "GET",
+      "path": "/model_pricing",
+      "handler": "GetModelPricingConfig",
+      "line": 297
+    },
+    {
+      "method": "PATCH",
+      "path": "/model_pricing",
+      "handler": "UpdateModelPricingConfig",
+      "line": 298
+    },
+    {
+      "method": "POST",
+      "path": "/model_pricing/convert",
+      "handler": "PreviewModelPricingConversion",
+      "line": 299
+    },
+    {
+      "method": "POST",
+      "path": "/model_pricing/preview",
+      "handler": "PreviewModelPricing",
+      "line": 300
+    },
+    {
+      "method": "POST",
+      "path": "/payment_compliance",
+      "handler": "ConfirmPaymentCompliance",
+      "line": 301
+    },
+    {
+      "method": "GET",
+      "path": "/channel_affinity_cache",
+      "handler": "GetChannelAffinityCacheStats",
+      "line": 302
+    },
+    {
+      "method": "DELETE",
+      "path": "/channel_affinity_cache",
+      "handler": "ClearChannelAffinityCache",
+      "line": 303
+    },
+    {
+      "method": "POST",
+      "path": "/rest_model_ratio",
+      "handler": "ResetModelRatio",
+      "line": 304
+    },
+    {
+      "method": "GET",
+      "path": "/waffo-pancake/catalog",
+      "handler": "ListWaffoPancakeCatalog",
+      "line": 305
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/pair",
+      "handler": "CreateWaffoPancakePair",
+      "line": 306
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/save",
+      "handler": "SaveWaffoPancake",
+      "line": 307
+    },
+    {
+      "method": "POST",
+      "path": "/waffo-pancake/subscription-product",
+      "handler": "CreateWaffoPancakeSubscriptionProduct",
+      "line": 308
+    },
+    {
+      "method": "GET",
+      "path": "/waffo-pancake/subscription-product-options",
+      "handler": "ListWaffoPancakeSubscriptionProductOptions",
+      "line": 309
+    },
+    {
+      "method": "POST",
+      "path": "/discovery",
+      "handler": "FetchCustomOAuthDiscovery",
+      "line": 316
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetCustomOAuthProviders",
+      "line": 317
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetCustomOAuthProvider",
+      "line": 318
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreateCustomOAuthProvider",
+      "line": 319
+    },
+    {
+      "method": "PUT",
+      "path": "/:id",
+      "handler": "UpdateCustomOAuthProvider",
+      "line": 320
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteCustomOAuthProvider",
+      "line": 321
+    },
+    {
+      "method": "GET",
+      "path": "/stats",
+      "handler": "GetPerformanceStats",
+      "line": 326
+    },
+    {
+      "method": "DELETE",
+      "path": "/disk_cache",
+      "handler": "ClearDiskCache",
+      "line": 327
+    },
+    {
+      "method": "POST",
+      "path": "/reset_stats",
+      "handler": "ResetPerformanceStats",
+      "line": 328
+    },
+    {
+      "method": "POST",
+      "path": "/gc",
+      "handler": "ForceGC",
+      "line": 329
+    },
+    {
+      "method": "GET",
+      "path": "/logs",
+      "handler": "GetLogFiles",
+      "line": 330
+    },
+    {
+      "method": "DELETE",
+      "path": "/logs",
+      "handler": "CleanupLogFiles",
+      "line": 331
+    },
+    {
+      "method": "GET",
+      "path": "/channels",
+      "handler": "GetSyncableChannels",
+      "line": 336
+    },
+    {
+      "method": "POST",
+      "path": "/fetch",
+      "handler": "FetchUpstreamRatios",
+      "line": 337
+    },
+    {
+      "method": "GET",
+      "path": "/preset_prices",
+      "handler": "GetPresetPrices",
+      "line": 338
+    },
+    {
+      "method": "POST",
+      "path": "/dreamrouter/run",
+      "handler": "RunDreamRouterSync",
+      "line": 339
+    },
+    {
+      "method": "GET",
+      "path": "/dreamrouter/status",
+      "handler": "GetDreamRouterSyncStatus",
+      "line": 340
+    },
+    {
+      "method": "GET",
+      "path": "/dreamrouter/models",
+      "handler": "GetDreamRouterSyncModels",
+      "line": 341
+    },
+    {
+      "method": "GET",
+      "path": "/runtime/status",
+      "handler": "GetTaskPluginRuntime",
+      "line": 349
+    },
+    {
+      "method": "GET",
+      "path": "/marketplace/sources",
+      "handler": "GetTaskPluginMarketplaceSources",
+      "line": 350
+    },
+    {
+      "method": "PUT",
+      "path": "/marketplace/sources",
+      "handler": "UpdateTaskPluginMarketplaceSources",
+      "line": 351
+    },
+    {
+      "method": "GET",
+      "path": "/marketplace/fetch",
+      "handler": "FetchTaskPluginMarketplaceIndex",
+      "line": 352
+    },
+    {
+      "method": "GET",
+      "path": "/:key",
+      "handler": "GetTaskPlugin",
+      "line": 353
+    },
+    {
+      "method": "GET",
+      "path": "/:key/icon",
+      "handler": "GetTaskPluginIcon",
+      "line": 354
+    },
+    {
+      "method": "GET",
+      "path": "/:key/versions",
+      "handler": "GetTaskPluginVersions",
+      "line": 355
+    },
+    {
+      "method": "POST",
+      "path": "/:key/activate",
+      "handler": "ActivateTaskPlugin",
+      "line": 356
+    },
+    {
+      "method": "POST",
+      "path": "/:key/status",
+      "handler": "SetTaskPluginStatus",
+      "line": 357
+    },
+    {
+      "method": "POST",
+      "path": "/:key/dryrun",
+      "handler": "DryRunTaskPlugin",
+      "line": 358
+    },
+    {
+      "method": "DELETE",
+      "path": "/:key/versions/:version",
+      "handler": "DeleteTaskPluginVersion",
+      "line": 359
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllTokens",
+      "line": 368
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchTokens",
+      "line": 369
+    },
+    {
+      "method": "POST",
+      "path": "/search",
+      "handler": "SearchTokensPost",
+      "line": 370
+    },
+    {
+      "method": "GET",
+      "path": "/auto-groups",
+      "handler": "GetTokenAutoGroups",
+      "line": 371
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetToken",
+      "line": 372
+    },
+    {
+      "method": "POST",
+      "path": "/:id/key",
+      "handler": "GetTokenKey",
+      "line": 373
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "AddToken",
+      "line": 374
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateToken",
+      "line": 375
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteToken",
+      "line": 376
+    },
+    {
+      "method": "POST",
+      "path": "/batch",
+      "handler": "DeleteTokenBatch",
+      "line": 377
+    },
+    {
+      "method": "POST",
+      "path": "/batch/keys",
+      "handler": "GetTokenKeysBatch",
+      "line": 378
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetTokenUsage",
+      "line": 387
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllRedemptions",
+      "line": 394
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchRedemptions",
+      "line": 395
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetRedemption",
+      "line": 396
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "AddRedemption",
+      "line": 397
+    },
+    {
+      "method": "POST",
+      "path": "/batch",
+      "handler": "DeleteRedemptionBatch",
+      "line": 398
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateRedemption",
+      "line": 399
+    },
+    {
+      "method": "DELETE",
+      "path": "/invalid",
+      "handler": "DeleteInvalidRedemption",
+      "line": 400
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteRedemption",
+      "line": 401
+    },
+    {
+      "method": "GET",
+      "path": "/audit/self",
+      "handler": "GetAuditLogs",
+      "line": 404
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllLogs",
+      "line": 406
+    },
+    {
+      "method": "GET",
+      "path": "/stat",
+      "handler": "GetLogsStat",
+      "line": 407
+    },
+    {
+      "method": "GET",
+      "path": "/self/stat",
+      "handler": "GetLogsSelfStat",
+      "line": 408
+    },
+    {
+      "method": "GET",
+      "path": "/channel_affinity_usage_cache",
+      "handler": "GetChannelAffinityUsageCacheStats",
+      "line": 409
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchAllLogs",
+      "line": 410
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetUserLogs",
+      "line": 411
+    },
+    {
+      "method": "GET",
+      "path": "/export",
+      "handler": "ExportAllLogs",
+      "line": 412
+    },
+    {
+      "method": "GET",
+      "path": "/self/export",
+      "handler": "ExportUserLogs",
+      "line": 413
+    },
+    {
+      "method": "GET",
+      "path": "/self/search",
+      "handler": "SearchUserLogs",
+      "line": 414
+    },
+    {
+      "method": "POST",
+      "path": "/log-cleanup",
+      "handler": "CreateLogCleanupSystemTask",
+      "line": 419
+    },
+    {
+      "method": "GET",
+      "path": "/list",
+      "handler": "ListSystemTasks",
+      "line": 420
+    },
+    {
+      "method": "DELETE",
+      "path": "/history",
+      "handler": "DeleteSystemTaskHistory",
+      "line": 421
+    },
+    {
+      "method": "GET",
+      "path": "/current",
+      "handler": "GetCurrentSystemTask",
+      "line": 422
+    },
+    {
+      "method": "GET",
+      "path": "/:task_id",
+      "handler": "GetSystemTask",
+      "line": 423
+    },
+    {
+      "method": "GET",
+      "path": "/instances",
+      "handler": "ListSystemInstances",
+      "line": 428
+    },
+    {
+      "method": "DELETE",
+      "path": "/stale-instances",
+      "handler": "DeleteStaleSystemInstances",
+      "line": 429
+    },
+    {
+      "method": "DELETE",
+      "path": "/instances/:node_name",
+      "handler": "DeleteStaleSystemInstance",
+      "line": 430
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllQuotaDates",
+      "line": 434
+    },
+    {
+      "method": "GET",
+      "path": "/users",
+      "handler": "GetQuotaDatesByUser",
+      "line": 435
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetUserQuotaDates",
+      "line": 436
+    },
+    {
+      "method": "GET",
+      "path": "/flow",
+      "handler": "GetAllFlowQuotaDates",
+      "line": 437
+    },
+    {
+      "method": "GET",
+      "path": "/flow/self",
+      "handler": "GetUserFlowQuotaDates",
+      "line": 438
+    },
+    {
+      "method": "GET",
+      "path": "/token",
+      "handler": "GetLogByKey",
+      "line": 442
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetGroups",
+      "line": 447
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetPrefillGroups",
+      "line": 453
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreatePrefillGroup",
+      "line": 454
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdatePrefillGroup",
+      "line": 455
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeletePrefillGroup",
+      "line": 456
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetUserMidjourney",
+      "line": 460
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllMidjourney",
+      "line": 461
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetUserTask",
+      "line": 465
+    },
+    {
+      "method": "GET",
+      "path": "/:task_id/artifacts",
+      "handler": "GetDashboardTaskArtifacts",
+      "line": 467
+    },
+    {
+      "method": "POST",
+      "path": "/operations/preview",
+      "handler": "PreviewVendorOperation",
+      "line": 473
+    },
+    {
+      "method": "POST",
+      "path": "/operations",
+      "handler": "ApplyVendorOperation",
+      "line": 474
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllVendors",
+      "line": 475
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchVendors",
+      "line": 476
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetVendorMeta",
+      "line": 477
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreateVendorMeta",
+      "line": 478
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateVendorMeta",
+      "line": 479
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteVendorMeta",
+      "line": 480
+    },
+    {
+      "method": "GET",
+      "path": "/merge-rules",
+      "handler": "ListVendorMergeRules",
+      "line": 481
+    },
+    {
+      "method": "DELETE",
+      "path": "/merge-rules/:id",
+      "handler": "DeleteVendorMergeRule",
+      "line": 482
+    },
+    {
+      "method": "GET",
+      "path": "/sync_upstream/preview",
+      "handler": "SyncUpstreamPreview",
+      "line": 488
+    },
+    {
+      "method": "POST",
+      "path": "/sync_upstream",
+      "handler": "SyncUpstreamModels",
+      "line": 489
+    },
+    {
+      "method": "POST",
+      "path": "/sync_upstream/auto_fill",
+      "handler": "AutoFillChannelOfficialData",
+      "line": 490
+    },
+    {
+      "method": "POST",
+      "path": "/delete",
+      "handler": "BatchDeleteModelMeta",
+      "line": 491
+    },
+    {
+      "method": "GET",
+      "path": "/missing",
+      "handler": "GetMissingModels",
+      "line": 492
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllModelsMeta",
+      "line": 493
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchModelsMeta",
+      "line": 494
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetModelMeta",
+      "line": 495
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreateModelMeta",
+      "line": 496
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateModelMeta",
+      "line": 497
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteModelMeta",
+      "line": 498
+    },
+    {
+      "method": "GET",
+      "path": "/settings",
+      "handler": "GetModelDeploymentSettings",
+      "line": 505
+    },
+    {
+      "method": "POST",
+      "path": "/settings/test-connection",
+      "handler": "TestIoNetConnection",
+      "line": 506
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllDeployments",
+      "line": 507
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchDeployments",
+      "line": 508
+    },
+    {
+      "method": "POST",
+      "path": "/test-connection",
+      "handler": "TestIoNetConnection",
+      "line": 509
+    },
+    {
+      "method": "GET",
+      "path": "/hardware-types",
+      "handler": "GetHardwareTypes",
+      "line": 510
+    },
+    {
+      "method": "GET",
+      "path": "/locations",
+      "handler": "GetLocations",
+      "line": 511
+    },
+    {
+      "method": "GET",
+      "path": "/available-replicas",
+      "handler": "GetAvailableReplicas",
+      "line": 512
+    },
+    {
+      "method": "POST",
+      "path": "/price-estimation",
+      "handler": "GetPriceEstimation",
+      "line": 513
+    },
+    {
+      "method": "GET",
+      "path": "/check-name",
+      "handler": "CheckClusterNameAvailability",
+      "line": 514
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreateDeployment",
+      "line": 515
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetDeployment",
+      "line": 517
+    },
+    {
+      "method": "GET",
+      "path": "/:id/logs",
+      "handler": "GetDeploymentLogs",
+      "line": 518
+    },
+    {
+      "method": "GET",
+      "path": "/:id/containers",
+      "handler": "ListDeploymentContainers",
+      "line": 519
+    },
+    {
+      "method": "GET",
+      "path": "/:id/containers/:container_id",
+      "handler": "GetContainerDetails",
+      "line": 520
+    },
+    {
+      "method": "PUT",
+      "path": "/:id",
+      "handler": "UpdateDeployment",
+      "line": 521
+    },
+    {
+      "method": "PUT",
+      "path": "/:id/name",
+      "handler": "UpdateDeploymentName",
+      "line": 522
+    },
+    {
+      "method": "POST",
+      "path": "/:id/extend",
+      "handler": "ExtendDeployment",
+      "line": 523
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteDeployment",
+      "line": 524
+    }
+  ],
+  "api_count": 303,
+  "database_anchors": {
+    "go_mod_drivers": [
+      "ClickHouse/ch-go",
+      "mattn/go-isatty",
+      "ClickHouse/clickhouse-go/v2",
+      "glebarez/go-sqlite",
+      "glebarez/sqlite",
+      "go-sql-driver/mysql",
+      "gorm.io/driver/clickhouse",
+      "gorm.io/driver/mysql",
+      "gorm.io/driver/postgres",
+      "gorm.io/gorm"
+    ],
+    "model_file_count": 102,
+    "model_sample": [
+      "model/ability.go",
+      "model/account_security.go",
+      "model/accounting_tx.go",
+      "model/audit_log.go",
+      "model/audit_other.go",
+      "model/auth_flow.go",
+      "model/authz_role.go",
+      "model/casbin_rule.go",
+      "model/channel.go",
+      "model/channel_cache.go"
+    ]
+  },
+  "scanned_files": [
+    "main.go",
+    "router/api-router.go",
+    "router/authz-router.go",
+    "router/channel-router.go",
+    "router/dashboard.go",
+    "router/gzip.go",
+    "router/main.go",
+    "router/plugin-router.go",
+    "router/relay-router.go",
+    "middleware/access_token_routes.go",
+    "middleware/audit.go",
+    "middleware/auth.go",
+    "middleware/auth_origin.go",
+    "middleware/body_cleanup.go",
+    "middleware/cache.go",
+    "middleware/cors.go",
+    "middleware/demo.go",
+    "controller/access_token.go",
+    "controller/audit.go",
+    "controller/auth_session.go",
+    "controller/authz.go",
+    "controller/billing.go",
+    "controller/channel-billing.go",
+    "controller/channel-test.go",
+    "controller/channel.go",
+    "service/access_token_scope.go",
+    "service/account_security.go",
+    "service/alipay_query.go",
+    "service/audio.go",
+    "service/auth_cleanup.go",
+    "service/auth_session.go",
+    "service/auth_token.go",
+    "service/billing.go",
+    "model/ability.go",
+    "model/account_security.go",
+    "model/accounting_tx.go",
+    "model/audit_log.go",
+    "model/audit_other.go",
+    "model/auth_flow.go",
+    "model/authz_role.go",
+    "model/casbin_rule.go",
+    "relay/alpha_search_handler.go",
+    "relay/audio_handler.go",
+    "relay/chat_completions_via_responses.go",
+    "relay/claude_handler.go",
+    "relay/compatible_handler.go",
+    "relay/convert_request_error.go",
+    "relay/deepseek_tools_handler.go",
+    "relay/embedding_handler.go",
+    "common/account_password.go",
+    "common/advanced_custom_presets.go",
+    "common/api_type.go",
+    "common/audio.go",
+    "common/body_storage.go",
+    "common/constants.go",
+    "common/container_usage.go",
+    "common/copy.go"
+  ],
+  "scanned_file_count": 57
+}

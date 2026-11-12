@@ -1,0 +1,55 @@
+{
+  "baseline_id": "UAP-BASELINE-2026-11-12T10-19-06Z",
+  "captured_at": "2026-11-12T10:19:06Z",
+  "workspace": "/Users/lincolnhu/uter",
+  "git": {
+    "branch": "main",
+    "head": "7b19a8756",
+    "head_subject": "chore(docs): drop AES project attribution from docs-dev PR #15 note",
+    "porcelain_entry_count": 0,
+    "modified_tracked_files": [],
+    "untracked_files": [],
+    "policy": "no_branch_creation; no_branch_switch; no_destructive_git; preserve_user_changes"
+  },
+  "toolchain": {
+    "node": "v22.22.2",
+    "bun": "1.4.2",
+    "go": "go1.27.4 darwin/amd64",
+    "python3": "Python 3.13.12",
+    "git": "/usr/local/bin/git",
+    "bun_yaml_builtin": true,
+    "yaml_packages_already_present": ["web/node_modules/yaml", "web/node_modules/js-yaml"],
+    "new_dependencies_installed": []
+  },
+  "project": {
+    "type": "Go AI API gateway + React 19 / Rsbuild frontend + Electron desktop wrapper",
+    "backend": "Gin + GORM v2; SQLite / MySQL / PostgreSQL; Redis; 87 Go packages in root module",
+    "frontend_dir": "web",
+    "frontend_package_manager": "bun",
+    "go_modules": [".", "relaykit", "tokenkit", "tokenkit/tokenkit"],
+    "ci_workflows": ["ci.yml", "docker-build.yml", "docker-image-branch.yml", "electron-build.yml", "nightly-full-audit.yml", "release-gate.yml", "release.yml", "sync-release-to-gitcode.yml", "weekly-security-audit.yml"]
+  },
+  "real_gate_commands": [
+    "./scripts/verify-all.sh [--quick]",
+    "gofmt -l .",
+    "GOWORK=off go vet ./... (plus relaykit / tokenkit / tokenkit/tokenkit)",
+    "make test",
+    "cd web && bun run typecheck",
+    "cd web && bun run lint",
+    "cd web && bun run test",
+    "cd web && bun run lint:design:strict",
+    "cd web && bun run copyright:check",
+    "cd web && bun run format:check",
+    "cd web && bun run build:check"
+  ],
+  "pre_existing_governance": {
+    "AGENTS.md": "343 lines, repository-wide mandatory discipline; PRESERVED IN FULL",
+    "CLAUDE.md": "22 lines, mandatory read-AGENTS.md gate; PRESERVED IN FULL",
+    "design_system": "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+    "AES_UAES_status": "retired 2026-11-12 per AGENTS.md / CLAUDE.md; UAP has zero runtime dependency on AES/UAES",
+    "protected_user_state": ".env, *.db, *.db-shm, *.db-wal, logs/, web/dist, build artifacts"
+  },
+  "uap_deviations_from_literal_instruction": [
+    "AGENTS.md / CLAUDE.md are extended with a UAP entry section at the top instead of being overwritten verbatim; overwriting would destroy the repository's own binding mandatory rules and violate the instruction's preserve-uncommitted-changes clause."
+  ]
+}

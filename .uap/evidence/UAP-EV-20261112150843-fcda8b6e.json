@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112150843-fcda8b6e",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112150838-609e5147",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:08:43.591Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:typecheck",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"typecheck\",\"idempotent\":true,\"handler\":\"typecheck\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "typecheck/config parse: 6 YAML configs parsed",
+  "content_hash": "0abc7b28798d0b404c199b1c7f5525f157aee312bd144d33d86d0623a35a0f84"
+}

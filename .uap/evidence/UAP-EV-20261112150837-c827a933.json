@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112150837-c827a933",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112150837-a0e504e8",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:08:37.765Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:implement_missing_capabilities",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"implement_missing_capabilities\",\"idempotent\":true,\"handler\":\"implement_missing_capabilities\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "implement_missing_capabilities: all registered implementations present",
+  "content_hash": "326717658278a2438b28de6334bc5b44633fcb2fbbb5cefc6aa28e5082296034"
+}

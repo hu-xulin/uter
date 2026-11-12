@@ -1,0 +1,152 @@
+{
+  "status": "PASS",
+  "exit_code": 0,
+  "summary": "UAP 1.0.0: registry 37/37, specs=COMPLETE, runtime=FULLY_OPERATIONAL, Uter=FULLY_COMPLIANT",
+  "data": {
+    "platform": "UAP",
+    "version": "1.0.0",
+    "generated_at": "2026-11-12T17:05:43.087Z",
+    "root": "/Users/lincolnhu/uter",
+    "registry": {
+      "ok": true,
+      "summary": "37/37 registry checks passed, 0 blocking findings",
+      "checks_passed": 37,
+      "checks_total": 37,
+      "blocking_findings": 0
+    },
+    "specifications": {
+      "status": "COMPLETE",
+      "checks_passed": 7,
+      "checks_total": 7,
+      "failed_checks": [],
+      "generated_at": "2026-11-12T17:05:42.832Z"
+    },
+    "runtime": {
+      "status": "FULLY_OPERATIONAL",
+      "checks": {
+        "health_check_passed": true,
+        "components_healthy": true,
+        "registry_integrity": true,
+        "full_validation_run": true,
+        "no_validator_failure": true,
+        "no_unexplained_block": true,
+        "uap_tests_run": true,
+        "recovery_verified": true
+      },
+      "checks_passed": 8,
+      "checks_total": 8,
+      "all_validators_passed": true,
+      "validators_pass": 32,
+      "validators_total": 32,
+      "restricted_blocked_items": [],
+      "checked_at": "2026-11-12T16:40:06.875Z"
+    },
+    "uter_compliance": {
+      "status": "FULLY_COMPLIANT",
+      "checks": {
+        "audit_executed": true,
+        "defect_registry_built": true,
+        "all_validators_pass": true,
+        "financial_checks_pass": true,
+        "quality_gates_pass": true,
+        "no_open_p0": true,
+        "no_open_p1": true
+      },
+      "checks_passed": 7,
+      "checks_total": 7,
+      "open_p0": 0,
+      "open_p1": 0
+    },
+    "three_independent_results": {
+      "specification_completeness": "COMPLETE",
+      "uap_runtime_capability": "FULLY_OPERATIONAL",
+      "uter_real_compliance": "FULLY_COMPLIANT"
+    },
+    "machine_configs": [
+      {
+        "name": "specification-registry",
+        "parsed": true,
+        "bytes": 7813
+      },
+      {
+        "name": "execution-mapping",
+        "parsed": true,
+        "bytes": 4357
+      },
+      {
+        "name": "agent-registry",
+        "parsed": true,
+        "bytes": 3462
+      },
+      {
+        "name": "permission-policy",
+        "parsed": true,
+        "bytes": 1795
+      },
+      {
+        "name": "workflow-registry",
+        "parsed": true,
+        "bytes": 3117
+      },
+      {
+        "name": "validator-registry",
+        "parsed": true,
+        "bytes": 5984
+      }
+    ],
+    "system_entrypoints": [
+      {
+        "name": "AGENTS.md",
+        "exists": true,
+        "has_uap_entry": true
+      },
+      {
+        "name": "CLAUDE.md",
+        "exists": true,
+        "has_uap_entry": true
+      }
+    ],
+    "executors": {
+      "registered": 32,
+      "implemented": 32
+    },
+    "validators": {
+      "registered": 32,
+      "implementation_files_present": 32,
+      "domains": 10,
+      "mapping_complete": true,
+      "generated_at": "2026-11-12T17:05:42.878Z"
+    },
+    "agents": {
+      "registered": 11,
+      "implemented": 11
+    },
+    "workflows": {
+      "registered": 7,
+      "runs": 44
+    },
+    "tasks": {
+      "total": 206,
+      "by_state": {
+        "SUCCEEDED": 165,
+        "RUNNING": 4,
+        "FAILED": 16,
+        "CREATED": 15,
+        "BLOCKED": 6
+      }
+    },
+    "evidence": {
+      "total": 1960,
+      "hash_verified": 1960,
+      "hash_invalid": 0
+    },
+    "reports_present": 18,
+    "reports_total": 18,
+    "reports_missing": [],
+    "defects": 3
+  },
+  "command": "status",
+  "duration_ms": 311,
+  "generated_at": "2026-11-12T17:05:43.091Z",
+  "evidence_ref": "UAP-EV-20261112170543-4e280f9a"
+}

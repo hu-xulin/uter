@@ -111,7 +111,7 @@ function TreeItem({
           aria-expanded={open}
           aria-label={`${t(open ? 'Collapse' : 'Expand')} ${node.title}`}
           onClick={() => setOpen((v) => !v)}
-          className='text-fg-secondary ml-1 shrink-0 opacity-70 transition-opacity hover:opacity-100'
+          className='text-fg-secondary relative ml-1 shrink-0 opacity-70 transition-opacity after:absolute after:-inset-2 after:content-[""] hover:opacity-100'
         >
           <svg
             width='12'

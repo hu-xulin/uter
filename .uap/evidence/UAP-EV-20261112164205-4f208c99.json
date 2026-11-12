@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164205-4f208c99",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:42:05.658Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate evolution.knowledge_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"evolution.knowledge_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "evolution.knowledge_integrity 实检: source_traceability=PASS(32 条规范均声明 file 字段=32/32; product-model.json source_of_truth=true; docs/adr/README.md=true; VERSION=1.0.0; (规范文件当前实际落盘 32/32, 如实记录)); stale_knowledge=PASS(registry.status_values=true; 已落盘规范文件状态非法=0; 32 条均声明 criticality=true; VERSION 非空=true); conflict_detection=PASS(registry ID 唯一/无孤儿验证器/依赖存在=true; product-model.conflicts=0; change-registry conflicts:[]=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1921 个 | 真实读取规范注册表/业务 SSOT/ADR/VERSION 并核验状态合法性; 规范文件落盘 32/32 如实记录(并行施工中间态), 未把\"已登记\"当作\"已落盘\"",
+  "content_hash": "3702a5bea4c18ffb42741742e15f9f7c071859903b4ed6a0443ace92c3d2f620"
+}

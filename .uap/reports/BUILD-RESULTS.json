@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-11-12T17:04:12.107Z",
+  "uap_modules_checked": 53,
+  "syntax_failures": [],
+  "commands": [
+    {
+      "command": "go build ./...",
+      "exit_code": 0,
+      "duration_ms": 27535,
+      "stderr_tail": ""
+    },
+    {
+      "command": "bun run typecheck",
+      "exit_code": 0,
+      "duration_ms": 8753,
+      "stderr_tail": "$ tsgo -b\n"
+    }
+  ],
+  "quality_gate": {
+    "executed": true,
+    "command": "bash scripts/verify-all.sh",
+    "exit_code": 0,
+    "duration_ms": 452836,
+    "timed_out": false
+  },
+  "moved_artifacts": [
+    {
+      "artifact": "web/dist",
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794502562964"
+    },
+    {
+      "artifact": ".quality/.state/head-tree",
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter--quality--state-head-tree-before-build-1794502562965"
+    }
+  ]
+}

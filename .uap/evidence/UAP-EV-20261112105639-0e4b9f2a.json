@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112105639-0e4b9f2a",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:39.969Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.consistency_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.consistency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.feature_mapping",
+      "message": "feature_mapping: 重复移动端源码树=无; web/src/features 存在=true; AGENTS.md 声明桌面/移动共享 type scale=false"
+    }
+  ],
+  "summary": "cross_platform.consistency_integrity 实检: feature_mapping=FAIL(重复移动端源码树=无; web/src/features 存在=true; AGENTS.md 声明桌面/移动共享 type scale=false); api_consistency=PASS(web/src 下 API 客户端/请求封装文件=366; 后端 service/authz 存在=true; 无独立 H5 API 树=true; 前后端共用同一 API 层); business_consistency=PASS(product-model.json source_of_truth=true; i18n locales=14; web/H5 规范依赖同一基线=true ([\"UAP-01-001\"]); 依赖存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 89 个 | 源码/配置级一致性真实核对(单一 web/src 源码树/统一 API/共享 SSOT); 真机两端一致性未验证(见 h5_integrity BLOCKED); feature 目录计数=0",
+  "content_hash": "e6ae525f6a8718bf736f186747a1a4c22269c769b684003a05bc9d6009758b0b"
+}

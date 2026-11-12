@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152032-3be383e0",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:32.108Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261112152019-fbd0cf50",
+  "exit_code": 0,
+  "duration_ms": 541,
+  "inputs": "{\"argv\":[\"task\",\"run\",\"UAP-TASK-20261112152019-fbd0cf50\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task run: UAP-TASK-20261112152019-fbd0cf50 SUCCEEDED",
+  "content_hash": "3131421c12a179ea384ca88cfdabc6e6886a282fa5af2932aea01fb43df933e5"
+}

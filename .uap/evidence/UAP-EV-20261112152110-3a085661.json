@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152110-3a085661",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152110-4ca56f2d",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:21:10.491Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_payment_state_machine",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"inspect_payment_state_machine\",\"idempotent\":true,\"handler\":\"inspect_payment_state_machine\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspect_payment_state_machine: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "6be2a85c98b549026b687ac1ae1acf34365a0114f4da4573fdbcd2964c6a28e0"
+}

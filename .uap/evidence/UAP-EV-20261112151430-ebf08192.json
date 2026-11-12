@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151430-ebf08192",
+  "kind": "agent_invocation",
+  "task_id": "UAP-TASK-20261112151422-e03bbc2d",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:14:30.786Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "agent:uap-development-agent",
+  "exit_code": 0,
+  "duration_ms": 1820,
+  "inputs": "{\"action\":\"agent.invoke\",\"permission\":\"project_read\",\"objective\":\"regenerate coding standard artifact from real source\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "read real go.mod (80 requires), web/package.json (55 deps), web/bun.lock (exists=true); gofmt -l . exit_code=0 status=CLEAN unformatted=0; scanned 50 .mjs files, 49 dead-code hints",
+  "content_hash": "8169bfa96e87816a4ea0a7c8671188dd5d4fa365e2eaf1646f4e7c484eec6e8b"
+}

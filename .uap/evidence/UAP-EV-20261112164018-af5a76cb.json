@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164018-af5a76cb",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112164007-c2fd4842",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:40:18.792Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:build",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-8\",\"name\":\"build\",\"idempotent\":true,\"handler\":\"build\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "build: 53 UAP modules syntax-checked, 0 failures",
+  "content_hash": "fc485307bfc643a1c8009304a38f4d359a6c5d0a2cad6b2dcd1921f2e891d816"
+}

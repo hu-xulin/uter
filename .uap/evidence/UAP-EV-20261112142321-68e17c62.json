@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112142321-68e17c62",
+  "kind": "health_probe",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T14:23:21.355Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "evidence-engine.health()",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"secret\":\"EXAMPLE_ONLY_NOT_A_REAL_KEY\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "immutability probe",
+  "content_hash": "701b9b23017665ce89481544f10497a42e1c72cfe6e301d68de02f4d0f2e158b"
+}

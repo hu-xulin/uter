@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152325-c73916e9",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:23:25.254Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.review_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.review_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.review_integrity 实检: review_execution=PASS(执行器不得自报 validation_results(assertExecutorResult 拒绝)=true; 正常 executorResult 通过=true; code_review 执行器已登记=true); finding_schema=PASS(finding() 返回 severity/code/message/extra 结构=true); blocking_rules=PASS(BLOCKER 降级 PASS->FAIL / MAJOR 不阻断 / executed:false 降级=true (p1=FAIL p2=PASS p3=FAIL)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1300 个 | node 子进程真实复验 执行器/验证器分离 + finding schema + BLOCKER-only 阻断; 未调用 code-review 引擎 execute() 给自己盖章",
+  "content_hash": "390e78024c506731c14fe76a2c6de91f7bc16e7a315b12576a628fb85f8d82e6"
+}

@@ -1,0 +1,758 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:37.552Z",
+  "executor_ids": [
+    "cross_platform.web",
+    "cross_platform.h5",
+    "cross_platform.consistency"
+  ],
+  "viewport": {
+    "found": true,
+    "file": "web/index.html",
+    "line": 45,
+    "content": "width=device-width, initial-scale=1.0"
+  },
+  "design_tokens": {
+    "brand_colors_exists": true,
+    "brand_constant_count": 9,
+    "brand_color_literal_count": 71,
+    "token_file_count": 10,
+    "token_files": [
+      "web/src/design-system/tokens/brand-colors.ts",
+      "web/src/design-system/tokens/chart-typography.ts",
+      "web/src/design-system/tokens/colors.css",
+      "web/src/design-system/tokens/elevation.css",
+      "web/src/design-system/tokens/generated/brand.css",
+      "web/src/design-system/tokens/index.css",
+      "web/src/design-system/tokens/primitives.css",
+      "web/src/design-system/tokens/semantic.css",
+      "web/src/design-system/tokens/spacing.css",
+      "web/src/design-system/tokens/typography.css"
+    ],
+    "var_token_usage_count": 906,
+    "files_using_tokens": 78,
+    "token_import_count": 32
+  },
+  "shared_business_modules": {
+    "feature_count": 30,
+    "business_feature_dirs": [
+      "model-pricing",
+      "pricing",
+      "redemption-codes",
+      "subscriptions",
+      "wallet"
+    ],
+    "shared_lib_files": [],
+    "shared_component_files": [
+      "web/src/components/__tests__/payment-icon-by-name.test.tsx",
+      "web/src/components/auto-group-order-item.tsx",
+      "web/src/components/payment-icon-by-name.tsx",
+      "web/src/components/payment-wechat-alias.ts",
+      "web/src/components/quota-details-popover.tsx"
+    ]
+  },
+  "platforms": {
+    "web": {
+      "present": true,
+      "source": "web/",
+      "viewport": {
+        "found": true,
+        "file": "web/index.html",
+        "line": 45,
+        "content": "width=device-width, initial-scale=1.0"
+      },
+      "feature_count": 30
+    },
+    "h5": {
+      "candidates_checked": [
+        "web/src/h5",
+        "web/h5",
+        "web/src/mobile",
+        "web/mobile",
+        "web/src/features/h5",
+        "web/src/pages/h5",
+        "h5",
+        "mobile"
+      ],
+      "found": [],
+      "dedicated_h5_directory": false,
+      "status": "DIFFERENCE",
+      "note": "No dedicated H5/mobile directory exists; recorded as a difference, NOT a pass."
+    }
+  },
+  "feature_mapping": [
+    {
+      "feature_id": "XP-ABOUT",
+      "slug": "about",
+      "web": {
+        "path": "web/src/features/about",
+        "file_count": 11,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-AUTH",
+      "slug": "auth",
+      "web": {
+        "path": "web/src/features/auth",
+        "file_count": 50,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-CHANNELS",
+      "slug": "channels",
+      "web": {
+        "path": "web/src/features/channels",
+        "file_count": 117,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 17
+    },
+    {
+      "feature_id": "XP-CHAT",
+      "slug": "chat",
+      "web": {
+        "path": "web/src/features/chat",
+        "file_count": 8,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-CUSTOMER-SERVICE",
+      "slug": "customer-service",
+      "web": {
+        "path": "web/src/features/customer-service",
+        "file_count": 4,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 73
+    },
+    {
+      "feature_id": "XP-DASHBOARD",
+      "slug": "dashboard",
+      "web": {
+        "path": "web/src/features/dashboard",
+        "file_count": 40,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 13
+    },
+    {
+      "feature_id": "XP-DOCS",
+      "slug": "docs",
+      "web": {
+        "path": "web/src/features/docs",
+        "file_count": 15,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-ERRORS",
+      "slug": "errors",
+      "web": {
+        "path": "web/src/features/errors",
+        "file_count": 6,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-HOME",
+      "slug": "home",
+      "web": {
+        "path": "web/src/features/home",
+        "file_count": 14,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-KEYS",
+      "slug": "keys",
+      "web": {
+        "path": "web/src/features/keys",
+        "file_count": 33,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 2
+    },
+    {
+      "feature_id": "XP-LEGAL",
+      "slug": "legal",
+      "web": {
+        "path": "web/src/features/legal",
+        "file_count": 7,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-MODEL-PRICING",
+      "slug": "model-pricing",
+      "web": {
+        "path": "web/src/features/model-pricing",
+        "file_count": 11,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": true,
+      "design_token_usage": 1
+    },
+    {
+      "feature_id": "XP-MODELS",
+      "slug": "models",
+      "web": {
+        "path": "web/src/features/models",
+        "file_count": 55,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 1
+    },
+    {
+      "feature_id": "XP-ORGANIZATION",
+      "slug": "organization",
+      "web": {
+        "path": "web/src/features/organization",
+        "file_count": 8,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-PERFORMANCE-METRICS",
+      "slug": "performance-metrics",
+      "web": {
+        "path": "web/src/features/performance-metrics",
+        "file_count": 4,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 6
+    },
+    {
+      "feature_id": "XP-PLAYGROUND",
+      "slug": "playground",
+      "web": {
+        "path": "web/src/features/playground",
+        "file_count": 63,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 1
+    },
+    {
+      "feature_id": "XP-PRICING",
+      "slug": "pricing",
+      "web": {
+        "path": "web/src/features/pricing",
+        "file_count": 68,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": true,
+      "design_token_usage": 2
+    },
+    {
+      "feature_id": "XP-PROFILE",
+      "slug": "profile",
+      "web": {
+        "path": "web/src/features/profile",
+        "file_count": 17,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-RANKINGS",
+      "slug": "rankings",
+      "web": {
+        "path": "web/src/features/rankings",
+        "file_count": 13,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-REDEMPTION-CODES",
+      "slug": "redemption-codes",
+      "web": {
+        "path": "web/src/features/redemption-codes",
+        "file_count": 21,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": true,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-SECURITY",
+      "slug": "security",
+      "web": {
+        "path": "web/src/features/security",
+        "file_count": 37,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-SETUP",
+      "slug": "setup",
+      "web": {
+        "path": "web/src/features/setup",
+        "file_count": 9,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-SUBSCRIPTIONS",
+      "slug": "subscriptions",
+      "web": {
+        "path": "web/src/features/subscriptions",
+        "file_count": 18,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": true,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-SYSTEM-INFO",
+      "slug": "system-info",
+      "web": {
+        "path": "web/src/features/system-info",
+        "file_count": 9,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-SYSTEM-SETTINGS",
+      "slug": "system-settings",
+      "web": {
+        "path": "web/src/features/system-settings",
+        "file_count": 192,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 30
+    },
+    {
+      "feature_id": "XP-SYSTEM-UPDATE",
+      "slug": "system-update",
+      "web": {
+        "path": "web/src/features/system-update",
+        "file_count": 8,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-TASK-PLUGINS",
+      "slug": "task-plugins",
+      "web": {
+        "path": "web/src/features/task-plugins",
+        "file_count": 52,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 5
+    },
+    {
+      "feature_id": "XP-USAGE-LOGS",
+      "slug": "usage-logs",
+      "web": {
+        "path": "web/src/features/usage-logs",
+        "file_count": 80,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 3
+    },
+    {
+      "feature_id": "XP-USERS",
+      "slug": "users",
+      "web": {
+        "path": "web/src/features/users",
+        "file_count": 23,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": false,
+      "design_token_usage": 0
+    },
+    {
+      "feature_id": "XP-WALLET",
+      "slug": "wallet",
+      "web": {
+        "path": "web/src/features/wallet",
+        "file_count": 40,
+        "present": true
+      },
+      "h5": {
+        "present": false,
+        "path": null,
+        "note": "no dedicated H5 mapping available"
+      },
+      "shared_business": true,
+      "design_token_usage": 0
+    }
+  ],
+  "gaps": [
+    {
+      "type": "missing_h5_directory",
+      "severity": "DIFFERENCE",
+      "detail": "no dedicated H5/mobile directory found among: web/src/h5, web/h5, web/src/mobile, web/mobile, web/src/features/h5, web/src/pages/h5, h5, mobile",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-ABOUT",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-AUTH",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-CHANNELS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-CHAT",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-CUSTOMER-SERVICE",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-DASHBOARD",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-DOCS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-ERRORS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-HOME",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-KEYS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-LEGAL",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-MODEL-PRICING",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-MODELS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-ORGANIZATION",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-PERFORMANCE-METRICS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-PLAYGROUND",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-PRICING",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-PROFILE",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-RANKINGS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-REDEMPTION-CODES",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-SECURITY",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-SETUP",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-SUBSCRIPTIONS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-SYSTEM-INFO",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-SYSTEM-SETTINGS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-SYSTEM-UPDATE",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-TASK-PLUGINS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-USAGE-LOGS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-USERS",
+      "recorded_as": "difference_not_pass"
+    },
+    {
+      "type": "feature_not_mapped_to_h5",
+      "feature_id": "XP-WALLET",
+      "recorded_as": "difference_not_pass"
+    }
+  ],
+  "consistency_checks": [
+    {
+      "rule": "shared_type_scale_no_h5_16px_exception",
+      "documented_in": "AGENTS.md",
+      "documented": true,
+      "heuristic": true
+    },
+    {
+      "rule": "no_h5_16px_input_exception_in_code",
+      "occurrences": 3,
+      "sample": [
+        {
+          "file": "web/src/components/ui/__tests__/form-label-tier.test.tsx",
+          "line": 152,
+          "snippet": "it('Input 的 mono 走等宽字形 + 16px（font-mono text-long），不再用 13px text-mono 档', () => {"
+        },
+        {
+          "file": "web/src/components/ui/textarea.tsx",
+          "line": 50,
+          "snippet": "// 与 Input 一致：字号统一走 `text-long`（16px）满足 AES P4 H5 无障碍"
+        },
+        {
+          "file": "web/src/styles/index.css",
+          "line": 788,
+          "snippet": "* 移动端浏览器（iOS Safari）聚焦 font-size < 16px 的输入框时会自动放大视口，"
+        }
+      ],
+      "heuristic": true,
+      "note": "text heuristic only; not a quality gate"
+    }
+  ],
+  "policy": {
+    "h5_absence_is_gap_not_pass": true,
+    "no_platform_marked_pass_without_evidence": true
+  }
+}

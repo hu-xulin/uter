@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152415-212efb9c",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152414-470bed81",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:15.111Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:initialize_runtime",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-5\",\"name\":\"initialize_runtime\",\"idempotent\":true,\"handler\":\"initialize_runtime\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "runtime initialised: 10 components healthy",
+  "content_hash": "34c9d9055ac8317773cd47c735e7707ce8cb698f13ea34d1abae954ffc0ee95b"
+}

@@ -1,0 +1,26 @@
+{
+  "evidence_id": "UAP-EV-20261112152032-040b56c5",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-20261112152019-fbd0cf50",
+  "trace_id": "UAP-TRACE-20261112152019-c086b3a1",
+  "specification_ids": [
+    "UAP-05-003"
+  ],
+  "recorded_at": "2026-11-12T15:20:32.030Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:uap-repair-agent",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-1\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "uap-repair-agent succeeded",
+  "content_hash": "07ba2d744a8292548af3df3d542b20341c73400aea639cd24e615efe9eee5383"
+}

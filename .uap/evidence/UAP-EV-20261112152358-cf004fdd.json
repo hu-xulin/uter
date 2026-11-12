@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112152358-cf004fdd",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:23:58.775Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap workflow run --all",
+  "exit_code": 3,
+  "duration_ms": 0,
+  "inputs": "{\"argv\":[\"workflow run --all\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "usage_error",
+      "message": "unknown command: workflow run --all"
+    }
+  ],
+  "summary": "unknown command: workflow run --all",
+  "content_hash": "d70b21bf7ad6c6a7703d3d290afe144e9d2ba71a8dfa92f06b56428b08553ac1"
+}

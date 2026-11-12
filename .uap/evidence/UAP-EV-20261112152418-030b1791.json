@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152418-030b1791",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152418-ba1878fb",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:18.830Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:generate_repair_plan",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-4\",\"name\":\"generate_repair_plan\",\"idempotent\":true,\"handler\":\"generate_repair_plan\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "generate_repair_plan: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "ca41b2ee284ffa14b6d7419f15fcdabc3c307ce08b2db700b536cef973be088a"
+}

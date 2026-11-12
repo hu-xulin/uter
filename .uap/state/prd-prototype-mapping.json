@@ -1,0 +1,1303 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:33.464Z",
+  "executor_ids": [
+    "product.prototype_sync"
+  ],
+  "key_strategy": "stable UTER-/PRD-/PROTO- ids, never filenames as primary keys",
+  "prd_count": 56,
+  "prototype_md_count": 56,
+  "prototype_html_count": 56,
+  "mapping_count": 56,
+  "mappings": [
+    {
+      "pair_id": "MAP-ADMIN-001",
+      "feature_id": "UTER-ADMIN-001",
+      "prd": {
+        "id": "PRD-ADMIN-001",
+        "path": "docs/product/prd/admin/UTER-ADMIN-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-ADMIN-001",
+        "md_path": "docs/product/prototypes/admin/UTER-ADMIN-001.md",
+        "html_path": "docs/product/prototypes/admin/UTER-ADMIN-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/admin/UTER-ADMIN-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/admin/UTER-ADMIN-001.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-001.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-ADMIN-002",
+      "feature_id": "UTER-ADMIN-002",
+      "prd": {
+        "id": "PRD-ADMIN-002",
+        "path": "docs/product/prd/admin/UTER-ADMIN-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-ADMIN-002",
+        "md_path": "docs/product/prototypes/admin/UTER-ADMIN-002.md",
+        "html_path": "docs/product/prototypes/admin/UTER-ADMIN-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/admin/UTER-ADMIN-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/admin/UTER-ADMIN-002.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-002.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-ADMIN-003",
+      "feature_id": "UTER-ADMIN-003",
+      "prd": {
+        "id": "PRD-ADMIN-003",
+        "path": "docs/product/prd/admin/UTER-ADMIN-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-ADMIN-003",
+        "md_path": "docs/product/prototypes/admin/UTER-ADMIN-003.md",
+        "html_path": "docs/product/prototypes/admin/UTER-ADMIN-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/admin/UTER-ADMIN-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/admin/UTER-ADMIN-003.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-003.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-ADMIN-004",
+      "feature_id": "UTER-ADMIN-004",
+      "prd": {
+        "id": "PRD-ADMIN-004",
+        "path": "docs/product/prd/admin/UTER-ADMIN-004.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-ADMIN-004",
+        "md_path": "docs/product/prototypes/admin/UTER-ADMIN-004.md",
+        "html_path": "docs/product/prototypes/admin/UTER-ADMIN-004.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/admin/UTER-ADMIN-004.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/admin/UTER-ADMIN-004.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-004.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-004.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-ADMIN-005",
+      "feature_id": "UTER-ADMIN-005",
+      "prd": {
+        "id": "PRD-ADMIN-005",
+        "path": "docs/product/prd/admin/UTER-ADMIN-005.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-ADMIN-005",
+        "md_path": "docs/product/prototypes/admin/UTER-ADMIN-005.md",
+        "html_path": "docs/product/prototypes/admin/UTER-ADMIN-005.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/admin/UTER-ADMIN-005.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/admin/UTER-ADMIN-005.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-005.md",
+        "docs/product/prototypes/admin/UTER-ADMIN-005.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-APIKEY-001",
+      "feature_id": "UTER-APIKEY-001",
+      "prd": {
+        "id": "PRD-APIKEY-001",
+        "path": "docs/product/prd/apikey/UTER-APIKEY-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-APIKEY-001",
+        "md_path": "docs/product/prototypes/apikey/UTER-APIKEY-001.md",
+        "html_path": "docs/product/prototypes/apikey/UTER-APIKEY-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/apikey/UTER-APIKEY-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/apikey/UTER-APIKEY-001.md",
+        "docs/product/prototypes/apikey/UTER-APIKEY-001.md",
+        "docs/product/prototypes/apikey/UTER-APIKEY-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-APIKEY-002",
+      "feature_id": "UTER-APIKEY-002",
+      "prd": {
+        "id": "PRD-APIKEY-002",
+        "path": "docs/product/prd/apikey/UTER-APIKEY-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-APIKEY-002",
+        "md_path": "docs/product/prototypes/apikey/UTER-APIKEY-002.md",
+        "html_path": "docs/product/prototypes/apikey/UTER-APIKEY-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/apikey/UTER-APIKEY-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/apikey/UTER-APIKEY-002.md",
+        "docs/product/prototypes/apikey/UTER-APIKEY-002.md",
+        "docs/product/prototypes/apikey/UTER-APIKEY-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-APIKEY-003",
+      "feature_id": "UTER-APIKEY-003",
+      "prd": {
+        "id": "PRD-APIKEY-003",
+        "path": "docs/product/prd/apikey/UTER-APIKEY-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-APIKEY-003",
+        "md_path": "docs/product/prototypes/apikey/UTER-APIKEY-003.md",
+        "html_path": "docs/product/prototypes/apikey/UTER-APIKEY-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/apikey/UTER-APIKEY-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/apikey/UTER-APIKEY-003.md",
+        "docs/product/prototypes/apikey/UTER-APIKEY-003.md",
+        "docs/product/prototypes/apikey/UTER-APIKEY-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-AUTH-001",
+      "feature_id": "UTER-AUTH-001",
+      "prd": {
+        "id": "PRD-AUTH-001",
+        "path": "docs/product/prd/auth/UTER-AUTH-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-AUTH-001",
+        "md_path": "docs/product/prototypes/auth/UTER-AUTH-001.md",
+        "html_path": "docs/product/prototypes/auth/UTER-AUTH-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/auth/UTER-AUTH-001.md",
+        "docs/product/prototypes/auth/UTER-AUTH-001.md",
+        "docs/product/prototypes/auth/UTER-AUTH-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-AUTH-002",
+      "feature_id": "UTER-AUTH-002",
+      "prd": {
+        "id": "PRD-AUTH-002",
+        "path": "docs/product/prd/auth/UTER-AUTH-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-AUTH-002",
+        "md_path": "docs/product/prototypes/auth/UTER-AUTH-002.md",
+        "html_path": "docs/product/prototypes/auth/UTER-AUTH-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/auth/UTER-AUTH-002.md",
+        "docs/product/prototypes/auth/UTER-AUTH-002.md",
+        "docs/product/prototypes/auth/UTER-AUTH-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-AUTH-003",
+      "feature_id": "UTER-AUTH-003",
+      "prd": {
+        "id": "PRD-AUTH-003",
+        "path": "docs/product/prd/auth/UTER-AUTH-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-AUTH-003",
+        "md_path": "docs/product/prototypes/auth/UTER-AUTH-003.md",
+        "html_path": "docs/product/prototypes/auth/UTER-AUTH-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/auth/UTER-AUTH-003.md",
+        "docs/product/prototypes/auth/UTER-AUTH-003.md",
+        "docs/product/prototypes/auth/UTER-AUTH-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-AUTH-004",
+      "feature_id": "UTER-AUTH-004",
+      "prd": {
+        "id": "PRD-AUTH-004",
+        "path": "docs/product/prd/auth/UTER-AUTH-004.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-AUTH-004",
+        "md_path": "docs/product/prototypes/auth/UTER-AUTH-004.md",
+        "html_path": "docs/product/prototypes/auth/UTER-AUTH-004.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-004.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/auth/UTER-AUTH-004.md",
+        "docs/product/prototypes/auth/UTER-AUTH-004.md",
+        "docs/product/prototypes/auth/UTER-AUTH-004.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-AUTH-005",
+      "feature_id": "UTER-AUTH-005",
+      "prd": {
+        "id": "PRD-AUTH-005",
+        "path": "docs/product/prd/auth/UTER-AUTH-005.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-AUTH-005",
+        "md_path": "docs/product/prototypes/auth/UTER-AUTH-005.md",
+        "html_path": "docs/product/prototypes/auth/UTER-AUTH-005.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-005.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/auth/UTER-AUTH-005.md",
+        "docs/product/prototypes/auth/UTER-AUTH-005.md",
+        "docs/product/prototypes/auth/UTER-AUTH-005.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-AUTH-006",
+      "feature_id": "UTER-AUTH-006",
+      "prd": {
+        "id": "PRD-AUTH-006",
+        "path": "docs/product/prd/auth/UTER-AUTH-006.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-AUTH-006",
+        "md_path": "docs/product/prototypes/auth/UTER-AUTH-006.md",
+        "html_path": "docs/product/prototypes/auth/UTER-AUTH-006.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-006.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/auth/UTER-AUTH-006.md",
+        "docs/product/prototypes/auth/UTER-AUTH-006.md",
+        "docs/product/prototypes/auth/UTER-AUTH-006.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-BALANCE-001",
+      "feature_id": "UTER-BALANCE-001",
+      "prd": {
+        "id": "PRD-BALANCE-001",
+        "path": "docs/product/prd/balance/UTER-BALANCE-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-BALANCE-001",
+        "md_path": "docs/product/prototypes/balance/UTER-BALANCE-001.md",
+        "html_path": "docs/product/prototypes/balance/UTER-BALANCE-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/balance/UTER-BALANCE-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/balance/UTER-BALANCE-001.md",
+        "docs/product/prototypes/balance/UTER-BALANCE-001.md",
+        "docs/product/prototypes/balance/UTER-BALANCE-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-BALANCE-002",
+      "feature_id": "UTER-BALANCE-002",
+      "prd": {
+        "id": "PRD-BALANCE-002",
+        "path": "docs/product/prd/balance/UTER-BALANCE-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-BALANCE-002",
+        "md_path": "docs/product/prototypes/balance/UTER-BALANCE-002.md",
+        "html_path": "docs/product/prototypes/balance/UTER-BALANCE-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/balance/UTER-BALANCE-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/balance/UTER-BALANCE-002.md",
+        "docs/product/prototypes/balance/UTER-BALANCE-002.md",
+        "docs/product/prototypes/balance/UTER-BALANCE-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-BALANCE-003",
+      "feature_id": "UTER-BALANCE-003",
+      "prd": {
+        "id": "PRD-BALANCE-003",
+        "path": "docs/product/prd/balance/UTER-BALANCE-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-BALANCE-003",
+        "md_path": "docs/product/prototypes/balance/UTER-BALANCE-003.md",
+        "html_path": "docs/product/prototypes/balance/UTER-BALANCE-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/balance/UTER-BALANCE-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/balance/UTER-BALANCE-003.md",
+        "docs/product/prototypes/balance/UTER-BALANCE-003.md",
+        "docs/product/prototypes/balance/UTER-BALANCE-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-BILLING-001",
+      "feature_id": "UTER-BILLING-001",
+      "prd": {
+        "id": "PRD-BILLING-001",
+        "path": "docs/product/prd/billing/UTER-BILLING-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-BILLING-001",
+        "md_path": "docs/product/prototypes/billing/UTER-BILLING-001.md",
+        "html_path": "docs/product/prototypes/billing/UTER-BILLING-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/billing/UTER-BILLING-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/billing/UTER-BILLING-001.md",
+        "docs/product/prototypes/billing/UTER-BILLING-001.md",
+        "docs/product/prototypes/billing/UTER-BILLING-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-BILLING-002",
+      "feature_id": "UTER-BILLING-002",
+      "prd": {
+        "id": "PRD-BILLING-002",
+        "path": "docs/product/prd/billing/UTER-BILLING-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-BILLING-002",
+        "md_path": "docs/product/prototypes/billing/UTER-BILLING-002.md",
+        "html_path": "docs/product/prototypes/billing/UTER-BILLING-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/billing/UTER-BILLING-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/billing/UTER-BILLING-002.md",
+        "docs/product/prototypes/billing/UTER-BILLING-002.md",
+        "docs/product/prototypes/billing/UTER-BILLING-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-BILLING-003",
+      "feature_id": "UTER-BILLING-003",
+      "prd": {
+        "id": "PRD-BILLING-003",
+        "path": "docs/product/prd/billing/UTER-BILLING-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-BILLING-003",
+        "md_path": "docs/product/prototypes/billing/UTER-BILLING-003.md",
+        "html_path": "docs/product/prototypes/billing/UTER-BILLING-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/billing/UTER-BILLING-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/billing/UTER-BILLING-003.md",
+        "docs/product/prototypes/billing/UTER-BILLING-003.md",
+        "docs/product/prototypes/billing/UTER-BILLING-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-CHANNEL-001",
+      "feature_id": "UTER-CHANNEL-001",
+      "prd": {
+        "id": "PRD-CHANNEL-001",
+        "path": "docs/product/prd/channel/UTER-CHANNEL-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-CHANNEL-001",
+        "md_path": "docs/product/prototypes/channel/UTER-CHANNEL-001.md",
+        "html_path": "docs/product/prototypes/channel/UTER-CHANNEL-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/channel/UTER-CHANNEL-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/channel/UTER-CHANNEL-001.md",
+        "docs/product/prototypes/channel/UTER-CHANNEL-001.md",
+        "docs/product/prototypes/channel/UTER-CHANNEL-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-CHANNEL-002",
+      "feature_id": "UTER-CHANNEL-002",
+      "prd": {
+        "id": "PRD-CHANNEL-002",
+        "path": "docs/product/prd/channel/UTER-CHANNEL-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-CHANNEL-002",
+        "md_path": "docs/product/prototypes/channel/UTER-CHANNEL-002.md",
+        "html_path": "docs/product/prototypes/channel/UTER-CHANNEL-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/channel/UTER-CHANNEL-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/channel/UTER-CHANNEL-002.md",
+        "docs/product/prototypes/channel/UTER-CHANNEL-002.md",
+        "docs/product/prototypes/channel/UTER-CHANNEL-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-CHANNEL-003",
+      "feature_id": "UTER-CHANNEL-003",
+      "prd": {
+        "id": "PRD-CHANNEL-003",
+        "path": "docs/product/prd/channel/UTER-CHANNEL-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-CHANNEL-003",
+        "md_path": "docs/product/prototypes/channel/UTER-CHANNEL-003.md",
+        "html_path": "docs/product/prototypes/channel/UTER-CHANNEL-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/channel/UTER-CHANNEL-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/channel/UTER-CHANNEL-003.md",
+        "docs/product/prototypes/channel/UTER-CHANNEL-003.md",
+        "docs/product/prototypes/channel/UTER-CHANNEL-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-001",
+      "feature_id": "UTER-MISC-001",
+      "prd": {
+        "id": "PRD-MISC-001",
+        "path": "docs/product/prd/misc/UTER-MISC-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-001",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-001.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-001.md",
+        "docs/product/prototypes/misc/UTER-MISC-001.md",
+        "docs/product/prototypes/misc/UTER-MISC-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-002",
+      "feature_id": "UTER-MISC-002",
+      "prd": {
+        "id": "PRD-MISC-002",
+        "path": "docs/product/prd/misc/UTER-MISC-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-002",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-002.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-002.md",
+        "docs/product/prototypes/misc/UTER-MISC-002.md",
+        "docs/product/prototypes/misc/UTER-MISC-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-003",
+      "feature_id": "UTER-MISC-003",
+      "prd": {
+        "id": "PRD-MISC-003",
+        "path": "docs/product/prd/misc/UTER-MISC-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-003",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-003.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-003.md",
+        "docs/product/prototypes/misc/UTER-MISC-003.md",
+        "docs/product/prototypes/misc/UTER-MISC-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-004",
+      "feature_id": "UTER-MISC-004",
+      "prd": {
+        "id": "PRD-MISC-004",
+        "path": "docs/product/prd/misc/UTER-MISC-004.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-004",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-004.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-004.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-004.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-004.md",
+        "docs/product/prototypes/misc/UTER-MISC-004.md",
+        "docs/product/prototypes/misc/UTER-MISC-004.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-005",
+      "feature_id": "UTER-MISC-005",
+      "prd": {
+        "id": "PRD-MISC-005",
+        "path": "docs/product/prd/misc/UTER-MISC-005.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-005",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-005.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-005.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-005.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-005.md",
+        "docs/product/prototypes/misc/UTER-MISC-005.md",
+        "docs/product/prototypes/misc/UTER-MISC-005.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-006",
+      "feature_id": "UTER-MISC-006",
+      "prd": {
+        "id": "PRD-MISC-006",
+        "path": "docs/product/prd/misc/UTER-MISC-006.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-006",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-006.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-006.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-006.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-006.md",
+        "docs/product/prototypes/misc/UTER-MISC-006.md",
+        "docs/product/prototypes/misc/UTER-MISC-006.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-007",
+      "feature_id": "UTER-MISC-007",
+      "prd": {
+        "id": "PRD-MISC-007",
+        "path": "docs/product/prd/misc/UTER-MISC-007.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-007",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-007.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-007.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-007.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-007.md",
+        "docs/product/prototypes/misc/UTER-MISC-007.md",
+        "docs/product/prototypes/misc/UTER-MISC-007.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-008",
+      "feature_id": "UTER-MISC-008",
+      "prd": {
+        "id": "PRD-MISC-008",
+        "path": "docs/product/prd/misc/UTER-MISC-008.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-008",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-008.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-008.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-008.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-008.md",
+        "docs/product/prototypes/misc/UTER-MISC-008.md",
+        "docs/product/prototypes/misc/UTER-MISC-008.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-009",
+      "feature_id": "UTER-MISC-009",
+      "prd": {
+        "id": "PRD-MISC-009",
+        "path": "docs/product/prd/misc/UTER-MISC-009.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-009",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-009.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-009.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-009.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-009.md",
+        "docs/product/prototypes/misc/UTER-MISC-009.md",
+        "docs/product/prototypes/misc/UTER-MISC-009.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MISC-010",
+      "feature_id": "UTER-MISC-010",
+      "prd": {
+        "id": "PRD-MISC-010",
+        "path": "docs/product/prd/misc/UTER-MISC-010.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MISC-010",
+        "md_path": "docs/product/prototypes/misc/UTER-MISC-010.md",
+        "html_path": "docs/product/prototypes/misc/UTER-MISC-010.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/misc/UTER-MISC-010.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/misc/UTER-MISC-010.md",
+        "docs/product/prototypes/misc/UTER-MISC-010.md",
+        "docs/product/prototypes/misc/UTER-MISC-010.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MODEL-001",
+      "feature_id": "UTER-MODEL-001",
+      "prd": {
+        "id": "PRD-MODEL-001",
+        "path": "docs/product/prd/model/UTER-MODEL-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MODEL-001",
+        "md_path": "docs/product/prototypes/model/UTER-MODEL-001.md",
+        "html_path": "docs/product/prototypes/model/UTER-MODEL-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/model/UTER-MODEL-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/model/UTER-MODEL-001.md",
+        "docs/product/prototypes/model/UTER-MODEL-001.md",
+        "docs/product/prototypes/model/UTER-MODEL-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MODEL-002",
+      "feature_id": "UTER-MODEL-002",
+      "prd": {
+        "id": "PRD-MODEL-002",
+        "path": "docs/product/prd/model/UTER-MODEL-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MODEL-002",
+        "md_path": "docs/product/prototypes/model/UTER-MODEL-002.md",
+        "html_path": "docs/product/prototypes/model/UTER-MODEL-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/model/UTER-MODEL-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/model/UTER-MODEL-002.md",
+        "docs/product/prototypes/model/UTER-MODEL-002.md",
+        "docs/product/prototypes/model/UTER-MODEL-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-MODEL-003",
+      "feature_id": "UTER-MODEL-003",
+      "prd": {
+        "id": "PRD-MODEL-003",
+        "path": "docs/product/prd/model/UTER-MODEL-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-MODEL-003",
+        "md_path": "docs/product/prototypes/model/UTER-MODEL-003.md",
+        "html_path": "docs/product/prototypes/model/UTER-MODEL-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/model/UTER-MODEL-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/model/UTER-MODEL-003.md",
+        "docs/product/prototypes/model/UTER-MODEL-003.md",
+        "docs/product/prototypes/model/UTER-MODEL-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-ORG-001",
+      "feature_id": "UTER-ORG-001",
+      "prd": {
+        "id": "PRD-ORG-001",
+        "path": "docs/product/prd/org/UTER-ORG-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-ORG-001",
+        "md_path": "docs/product/prototypes/org/UTER-ORG-001.md",
+        "html_path": "docs/product/prototypes/org/UTER-ORG-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/org/UTER-ORG-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/org/UTER-ORG-001.md",
+        "docs/product/prototypes/org/UTER-ORG-001.md",
+        "docs/product/prototypes/org/UTER-ORG-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PAY-001",
+      "feature_id": "UTER-PAY-001",
+      "prd": {
+        "id": "PRD-PAY-001",
+        "path": "docs/product/prd/pay/UTER-PAY-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PAY-001",
+        "md_path": "docs/product/prototypes/pay/UTER-PAY-001.md",
+        "html_path": "docs/product/prototypes/pay/UTER-PAY-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/pay/UTER-PAY-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/pay/UTER-PAY-001.md",
+        "docs/product/prototypes/pay/UTER-PAY-001.md",
+        "docs/product/prototypes/pay/UTER-PAY-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PAY-002",
+      "feature_id": "UTER-PAY-002",
+      "prd": {
+        "id": "PRD-PAY-002",
+        "path": "docs/product/prd/pay/UTER-PAY-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PAY-002",
+        "md_path": "docs/product/prototypes/pay/UTER-PAY-002.md",
+        "html_path": "docs/product/prototypes/pay/UTER-PAY-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/pay/UTER-PAY-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/pay/UTER-PAY-002.md",
+        "docs/product/prototypes/pay/UTER-PAY-002.md",
+        "docs/product/prototypes/pay/UTER-PAY-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PAY-003",
+      "feature_id": "UTER-PAY-003",
+      "prd": {
+        "id": "PRD-PAY-003",
+        "path": "docs/product/prd/pay/UTER-PAY-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PAY-003",
+        "md_path": "docs/product/prototypes/pay/UTER-PAY-003.md",
+        "html_path": "docs/product/prototypes/pay/UTER-PAY-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/pay/UTER-PAY-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/pay/UTER-PAY-003.md",
+        "docs/product/prototypes/pay/UTER-PAY-003.md",
+        "docs/product/prototypes/pay/UTER-PAY-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PAY-004",
+      "feature_id": "UTER-PAY-004",
+      "prd": {
+        "id": "PRD-PAY-004",
+        "path": "docs/product/prd/pay/UTER-PAY-004.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PAY-004",
+        "md_path": "docs/product/prototypes/pay/UTER-PAY-004.md",
+        "html_path": "docs/product/prototypes/pay/UTER-PAY-004.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/pay/UTER-PAY-004.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/pay/UTER-PAY-004.md",
+        "docs/product/prototypes/pay/UTER-PAY-004.md",
+        "docs/product/prototypes/pay/UTER-PAY-004.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PLAN-001",
+      "feature_id": "UTER-PLAN-001",
+      "prd": {
+        "id": "PRD-PLAN-001",
+        "path": "docs/product/prd/plan/UTER-PLAN-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PLAN-001",
+        "md_path": "docs/product/prototypes/plan/UTER-PLAN-001.md",
+        "html_path": "docs/product/prototypes/plan/UTER-PLAN-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/plan/UTER-PLAN-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/plan/UTER-PLAN-001.md",
+        "docs/product/prototypes/plan/UTER-PLAN-001.md",
+        "docs/product/prototypes/plan/UTER-PLAN-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PLAN-002",
+      "feature_id": "UTER-PLAN-002",
+      "prd": {
+        "id": "PRD-PLAN-002",
+        "path": "docs/product/prd/plan/UTER-PLAN-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PLAN-002",
+        "md_path": "docs/product/prototypes/plan/UTER-PLAN-002.md",
+        "html_path": "docs/product/prototypes/plan/UTER-PLAN-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/plan/UTER-PLAN-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/plan/UTER-PLAN-002.md",
+        "docs/product/prototypes/plan/UTER-PLAN-002.md",
+        "docs/product/prototypes/plan/UTER-PLAN-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-PLAN-003",
+      "feature_id": "UTER-PLAN-003",
+      "prd": {
+        "id": "PRD-PLAN-003",
+        "path": "docs/product/prd/plan/UTER-PLAN-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-PLAN-003",
+        "md_path": "docs/product/prototypes/plan/UTER-PLAN-003.md",
+        "html_path": "docs/product/prototypes/plan/UTER-PLAN-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/plan/UTER-PLAN-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/plan/UTER-PLAN-003.md",
+        "docs/product/prototypes/plan/UTER-PLAN-003.md",
+        "docs/product/prototypes/plan/UTER-PLAN-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-REFUND-001",
+      "feature_id": "UTER-REFUND-001",
+      "prd": {
+        "id": "PRD-REFUND-001",
+        "path": "docs/product/prd/refund/UTER-REFUND-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-REFUND-001",
+        "md_path": "docs/product/prototypes/refund/UTER-REFUND-001.md",
+        "html_path": "docs/product/prototypes/refund/UTER-REFUND-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/refund/UTER-REFUND-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/refund/UTER-REFUND-001.md",
+        "docs/product/prototypes/refund/UTER-REFUND-001.md",
+        "docs/product/prototypes/refund/UTER-REFUND-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-REFUND-002",
+      "feature_id": "UTER-REFUND-002",
+      "prd": {
+        "id": "PRD-REFUND-002",
+        "path": "docs/product/prd/refund/UTER-REFUND-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-REFUND-002",
+        "md_path": "docs/product/prototypes/refund/UTER-REFUND-002.md",
+        "html_path": "docs/product/prototypes/refund/UTER-REFUND-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/refund/UTER-REFUND-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/refund/UTER-REFUND-002.md",
+        "docs/product/prototypes/refund/UTER-REFUND-002.md",
+        "docs/product/prototypes/refund/UTER-REFUND-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-REFUND-003",
+      "feature_id": "UTER-REFUND-003",
+      "prd": {
+        "id": "PRD-REFUND-003",
+        "path": "docs/product/prd/refund/UTER-REFUND-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-REFUND-003",
+        "md_path": "docs/product/prototypes/refund/UTER-REFUND-003.md",
+        "html_path": "docs/product/prototypes/refund/UTER-REFUND-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/refund/UTER-REFUND-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/refund/UTER-REFUND-003.md",
+        "docs/product/prototypes/refund/UTER-REFUND-003.md",
+        "docs/product/prototypes/refund/UTER-REFUND-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-RELAY-001",
+      "feature_id": "UTER-RELAY-001",
+      "prd": {
+        "id": "PRD-RELAY-001",
+        "path": "docs/product/prd/relay/UTER-RELAY-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-RELAY-001",
+        "md_path": "docs/product/prototypes/relay/UTER-RELAY-001.md",
+        "html_path": "docs/product/prototypes/relay/UTER-RELAY-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/relay/UTER-RELAY-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/relay/UTER-RELAY-001.md",
+        "docs/product/prototypes/relay/UTER-RELAY-001.md",
+        "docs/product/prototypes/relay/UTER-RELAY-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-RELAY-002",
+      "feature_id": "UTER-RELAY-002",
+      "prd": {
+        "id": "PRD-RELAY-002",
+        "path": "docs/product/prd/relay/UTER-RELAY-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-RELAY-002",
+        "md_path": "docs/product/prototypes/relay/UTER-RELAY-002.md",
+        "html_path": "docs/product/prototypes/relay/UTER-RELAY-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/relay/UTER-RELAY-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/relay/UTER-RELAY-002.md",
+        "docs/product/prototypes/relay/UTER-RELAY-002.md",
+        "docs/product/prototypes/relay/UTER-RELAY-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-RELAY-003",
+      "feature_id": "UTER-RELAY-003",
+      "prd": {
+        "id": "PRD-RELAY-003",
+        "path": "docs/product/prd/relay/UTER-RELAY-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-RELAY-003",
+        "md_path": "docs/product/prototypes/relay/UTER-RELAY-003.md",
+        "html_path": "docs/product/prototypes/relay/UTER-RELAY-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/relay/UTER-RELAY-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/relay/UTER-RELAY-003.md",
+        "docs/product/prototypes/relay/UTER-RELAY-003.md",
+        "docs/product/prototypes/relay/UTER-RELAY-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-TASK-001",
+      "feature_id": "UTER-TASK-001",
+      "prd": {
+        "id": "PRD-TASK-001",
+        "path": "docs/product/prd/task/UTER-TASK-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-TASK-001",
+        "md_path": "docs/product/prototypes/task/UTER-TASK-001.md",
+        "html_path": "docs/product/prototypes/task/UTER-TASK-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/task/UTER-TASK-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/task/UTER-TASK-001.md",
+        "docs/product/prototypes/task/UTER-TASK-001.md",
+        "docs/product/prototypes/task/UTER-TASK-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-TASK-002",
+      "feature_id": "UTER-TASK-002",
+      "prd": {
+        "id": "PRD-TASK-002",
+        "path": "docs/product/prd/task/UTER-TASK-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-TASK-002",
+        "md_path": "docs/product/prototypes/task/UTER-TASK-002.md",
+        "html_path": "docs/product/prototypes/task/UTER-TASK-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/task/UTER-TASK-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/task/UTER-TASK-002.md",
+        "docs/product/prototypes/task/UTER-TASK-002.md",
+        "docs/product/prototypes/task/UTER-TASK-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-TASK-003",
+      "feature_id": "UTER-TASK-003",
+      "prd": {
+        "id": "PRD-TASK-003",
+        "path": "docs/product/prd/task/UTER-TASK-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-TASK-003",
+        "md_path": "docs/product/prototypes/task/UTER-TASK-003.md",
+        "html_path": "docs/product/prototypes/task/UTER-TASK-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/task/UTER-TASK-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/task/UTER-TASK-003.md",
+        "docs/product/prototypes/task/UTER-TASK-003.md",
+        "docs/product/prototypes/task/UTER-TASK-003.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-USER-001",
+      "feature_id": "UTER-USER-001",
+      "prd": {
+        "id": "PRD-USER-001",
+        "path": "docs/product/prd/user/UTER-USER-001.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-USER-001",
+        "md_path": "docs/product/prototypes/user/UTER-USER-001.md",
+        "html_path": "docs/product/prototypes/user/UTER-USER-001.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/user/UTER-USER-001.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/user/UTER-USER-001.md",
+        "docs/product/prototypes/user/UTER-USER-001.md",
+        "docs/product/prototypes/user/UTER-USER-001.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-USER-002",
+      "feature_id": "UTER-USER-002",
+      "prd": {
+        "id": "PRD-USER-002",
+        "path": "docs/product/prd/user/UTER-USER-002.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-USER-002",
+        "md_path": "docs/product/prototypes/user/UTER-USER-002.md",
+        "html_path": "docs/product/prototypes/user/UTER-USER-002.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/user/UTER-USER-002.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/user/UTER-USER-002.md",
+        "docs/product/prototypes/user/UTER-USER-002.md",
+        "docs/product/prototypes/user/UTER-USER-002.html"
+      ]
+    },
+    {
+      "pair_id": "MAP-USER-003",
+      "feature_id": "UTER-USER-003",
+      "prd": {
+        "id": "PRD-USER-003",
+        "path": "docs/product/prd/user/UTER-USER-003.md",
+        "exists": true
+      },
+      "prototype": {
+        "id": "PROTO-USER-003",
+        "md_path": "docs/product/prototypes/user/UTER-USER-003.md",
+        "html_path": "docs/product/prototypes/user/UTER-USER-003.html",
+        "md_exists": true,
+        "html_exists": true
+      },
+      "prd_ref": "docs/product/prd/user/UTER-USER-003.md",
+      "sync_status": "SYNCED",
+      "sources": [
+        "docs/product/prd/user/UTER-USER-003.md",
+        "docs/product/prototypes/user/UTER-USER-003.md",
+        "docs/product/prototypes/user/UTER-USER-003.html"
+      ]
+    }
+  ],
+  "gaps": []
+}

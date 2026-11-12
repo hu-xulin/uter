@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112105639-2a6c802b",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:39.354Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.application_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.application_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.vulnerability_scan",
+      "message": "vulnerability_scan: node 子进程静态扫描 31 个 UAP .mjs 危险调用(eval/execSync/rm -rf/--force 等), 命中文件=4; exit_code=0; 未运行外部 CVE 库(离线), 不声称无 CVE"
+    }
+  ],
+  "summary": "security.application_integrity 实检: vulnerability_scan=FAIL(node 子进程静态扫描 31 个 UAP .mjs 危险调用(eval/execSync/rm -rf/--force 等), 命中文件=4; exit_code=0; 未运行外部 CVE 库(离线), 不声称无 CVE); authz=PASS(service/authz/*.go=13 个; router/ 存在=true; AGENTS.md 含 OWASP/Authentication Security=true); secret_scan=PASS(子进程复跑 redact(): token/secret 均被 REDACTED=true; exit_code=0; BASELINE 保护 .env/*.db=true; policy secret_export=deny) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 84 个 | 真实运行 redact() 与 .mjs 危险模式扫描两个子进程; authz 基于真实 service/authz 代码与 AGENTS.md OWASP 约束; 全程只读/模拟",
+  "content_hash": "03797b2d764d3959179fbcd3e1f49b407fd7e0f19e3a7ebdabaae93fbcccf2c8"
+}

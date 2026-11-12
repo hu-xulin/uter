@@ -1,0 +1,50 @@
+{
+  "evidence_id": "UAP-EV-20261112105639-f2fbb653",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:39.919Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.h5_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.h5_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.h5_build",
+      "message": "h5_build: 仅静态观察到 19 个 .html; 未在本地真机/移动浏览器执行 H5 构建产物验证(不可用)"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "check.viewport",
+      "message": "viewport: 含 width=device-width 的 html=18/19; 真实多尺寸视口渲染(390x844 等)需无头浏览器矩阵, 本地不可验证"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "check.touch",
+      "message": "touch: 源码 touch 事件命中=1; design-system 含 H5/响应式规则=true; 真实触屏手势/指针事件需真机, 本地不可验证"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "check.mobile_tests",
+      "message": "mobile_tests: web/e2e/visual 目录存在=true(AGENTS.md 说明 track2 需完整前后端栈, 本地不具备); 无真实移动设备/浏览器测试结果可引用"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "h5_real_device_unavailable",
+      "message": "真实移动设备/浏览器(viewport/touch/mobile_tests)在本地 CLI 不可用; 桌面/web 构建通过不等于 H5 合格; 需真机或浏览器矩阵验证, 当前一律 BLOCKED"
+    }
+  ],
+  "summary": "cross_platform.h5_integrity 实检: h5_build=FAIL(仅静态观察到 19 个 .html; 未在本地真机/移动浏览器执行 H5 构建产物验证(不可用)); viewport=FAIL(含 width=device-width 的 html=18/19; 真实多尺寸视口渲染(390x844 等)需无头浏览器矩阵, 本地不可验证); touch=FAIL(源码 touch 事件命中=1; design-system 含 H5/响应式规则=true; 真实触屏手势/指针事件需真机, 本地不可验证); mobile_tests=FAIL(web/e2e/visual 目录存在=true(AGENTS.md 说明 track2 需完整前后端栈, 本地不具备); 无真实移动设备/浏览器测试结果可引用) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 88 个 | BLOCKED: H5 真机/浏览器验证不可用, 未判 H5 合格; 绝不因 web 桌面构建/静态检查通过而放行 H5",
+  "content_hash": "baf844ad4568b615adec7b92453f8d449508f1ab2c66e37025c8ab57d343a33e"
+}

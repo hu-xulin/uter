@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151503-582a8adf",
+  "kind": "recovery_result",
+  "task_id": "UAP-TASK-INTERRUPT-20261112151503-8774de7c",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:15:03.368Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task resume UAP-TASK-INTERRUPT-20261112151503-8774de7c",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"before\":{\"resumable\":true,\"state\":\"RUNNING\",\"context_version\":\"e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f\",\"completed_steps\":[\"step-1\"],\"pending_steps\":[\"step-2\",\"step-3\"],\"ambiguous_side_effects\":[],\"committed_side_effects\":[],\"trace_id\":\"UAP-TRACE-20261112151503-456934c1\"}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "recovery finished: state=SUCCEEDED, repeated_completed_steps=0, ambiguous=0",
+  "content_hash": "176e36c0b658f7ee0232cd03ee43e5d96ef9c5efc6444412111bc8999a8fdf00"
+}

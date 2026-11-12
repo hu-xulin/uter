@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261112143759-5aba81e8",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261112143754-15f94101",
+  "trace_id": "UAP-TRACE-20261112143754-fd453d08",
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T14:37:59.275Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261112143754-15f94101",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"Execute workflow Quality Gate\",\"specification_ids\":[\"UAP-00-001\",\"UAP-00-002\",\"UAP-00-003\",\"UAP-00-004\",\"UAP-01-001\",\"UAP-01-002\",\"UAP-01-003\",\"UAP-02-001\",\"UAP-02-002\",\"UAP-02-003\",\"UAP-03-001\",\"UAP-03-002\",\"UAP-03-003\",\"UAP-03-004\",\"UAP-04-001\",\"UAP-04-002\",\"UAP-04-003\",\"UAP-05-001\",\"UAP-05-002\",\"UAP-05-003\",\"UAP-05-004\",\"UAP-06-001\",\"UAP-06-002\",\"UAP-06-003\",\"UAP-07-001\",\"UAP-07-002\",\"UAP-07-003\",\"UAP-08-001\",\"UAP-08-002\",\"UAP-08-003\",\"UAP-09-001\",\"UAP-09-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "steps_unfinished",
+      "message": "7 steps not SUCCEEDED"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "step_evidence_missing",
+      "message": "6 steps have no evidence"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "task_blocked",
+      "message": "quality gates report 1 failing gates (real exit codes)"
+    }
+  ],
+  "summary": "task UAP-TASK-20261112143754-15f94101 finished: BLOCKED",
+  "content_hash": "15700c8bb3ea5ae35e70bc46a43384f46d22e2690e0b7793a62a36dd13640074"
+}

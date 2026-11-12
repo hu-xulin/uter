@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112143635-2f3e43c2",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112143634-31f21b4e",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T14:36:35.781Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:execute_targeted_tests",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-6\",\"name\":\"execute_targeted_tests\",\"idempotent\":true,\"handler\":\"execute_targeted_tests\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "workflow_step_failed",
+      "message": "quality gates report 1 failing gates (real exit codes)"
+    }
+  ],
+  "summary": "quality gates report 1 failing gates (real exit codes)",
+  "content_hash": "0ba1953bcb9679d5e920fefd12c09505d7dbb0e19753efbe9f84a72985e65d3f"
+}

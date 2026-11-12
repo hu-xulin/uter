@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152410-c6df3868",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:10.560Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.adr_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.adr_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.adr_integrity 实检: decision_records=PASS(docs/adr/README.md(bytes=703) 与 0001 ADR(bytes=1152) 存在; README 含状态枚举=true; 规范含 ADR/背景/备选方案/状态=true); decision_traceability=PASS(依赖标准 UAP-02-001 文件存在=true; 0001 ADR 含 Accepted=true; 决策落地 go.mod/web/package.json/design-system 存在=true; 规范含 追溯/依赖标准=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1383 个 | 真实读取 docs/adr 决策记录与真实技术栈文件, 复核决策→代码可追溯",
+  "content_hash": "d87f50972cc98ce3253ff2b3f52db0d25d3bfff63670dfd0c056396fb1239acd"
+}

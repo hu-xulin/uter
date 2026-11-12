@@ -1,0 +1,26 @@
+{
+  "evidence_id": "UAP-EV-20261112152054-bbd764f7",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-HEALTH-20261112152054-a34be6bd",
+  "trace_id": "UAP-TRACE-20261112152054-209c5137",
+  "specification_ids": [
+    "UAP-00-002"
+  ],
+  "recorded_at": "2026-11-12T15:20:54.140Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:__health_step__",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-1\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "__health_step__ succeeded",
+  "content_hash": "b62899fa7e72090c741b665668c0653d87ad4fd0c39316b1d38ddc12d1e18b4f"
+}

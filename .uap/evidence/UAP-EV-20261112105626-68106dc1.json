@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112105626-68106dc1",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:26.664Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap doctor --json",
+  "exit_code": 0,
+  "duration_ms": 396,
+  "inputs": "{\"argv\":[\"doctor\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "doctor: 10 components healthy, recovery probe passed",
+  "content_hash": "d5b0fbacb6bcc8306eae95602f0566e62afd08b881a25af38fd6dd3e47657a1c"
+}

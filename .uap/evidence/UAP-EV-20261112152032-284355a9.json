@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152032-284355a9",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261112152019-fbd0cf50",
+  "trace_id": "UAP-TRACE-20261112152019-c086b3a1",
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:32.081Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261112152019-fbd0cf50",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"re-run auto-repair engine sandbox exercise to regenerate its artifact\",\"specification_ids\":[\"UAP-05-003\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-20261112152019-fbd0cf50 finished: SUCCEEDED",
+  "content_hash": "5f9766fde05a1ccf8d8027d24414dea0203861460bd2670cc4fea92eebc51f79"
+}

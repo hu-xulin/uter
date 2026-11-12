@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T15:14:28.965Z",
+  "executor_ids": [
+    "development.dependencies"
+  ],
+  "go_mod": {
+    "exists": true,
+    "module": "github.com/uter-ai/uter",
+    "go_version": "1.27.3",
+    "toolchain": "go1.27.4",
+    "require_count": 80,
+    "indirect_count": 80,
+    "direct_count": 0,
+    "sample": [
+      {
+        "path": "github.com/ClickHouse/ch-go",
+        "version": "v0.74.0",
+        "indirect": true
+      },
+      {
+        "path": "github.com/DmitriyVTitov/size",
+        "version": "v1.5.0",
+        "indirect": true
+      },
+      {
+        "path": "github.com/anknown/darts",
+        "version": "v0.0.0-20151216065714-83ff685239e6",
+        "indirect": true
+      },
+      {
+        "path": "github.com/aws/aws-sdk-go-v2/internal/configsources",
+        "version": "v1.5.8",
+        "indirect": true
+      },
+      {
+        "path": "github.com/aws/aws-sdk-go-v2/internal/endpoints/v2",
+        "version": "v2.8.8",
+        "indirect": true
+      },
+      {
+        "path": "github.com/beorn7/perks",
+        "version": "v1.0.1",
+        "indirect": true
+      },
+      {
+        "path": "github.com/bmatcuk/doublestar/v4",
+        "version": "v4.6.1",
+        "indirect": true
+      },
+      {
+        "path": "github.com/boombuler/barcode",
+        "version": "v1.1.0",
+        "indirect": true
+      },
+      {
+        "path": "github.com/bytedance/sonic",
+        "version": "v1.15.2",
+        "indirect": true
+      },
+      {
+        "path": "github.com/bytedance/sonic/loader",
+        "version": "v0.5.1",
+        "indirect": true
+      },
+      {
+        "path": "github.com/casbin/govaluate",
+        "version": "v1.10.0",
+        "indirect": true
+      },
+      {
+        "path": "github.com/cespare/xxhash/v2",
+        "version": "v2.3.0",
+        "indirect": true
+      },
+      {
+        "path": "github.com/cloudwego/base64x",
+        "version": "v0.1.7",
+        "indirect": true
+      },
+      {
+        "path": "github.com/dgryski/go-rendezvous",
+        "version": "v0.0.0-20200823014737-9f7001d12a5f",
+        "indirect": true
+      },
+      {
+        "path": "github.com/dlclark/regexp2/v2",
+        "version": "v2.5.1",
+        "indirect": true
+      }
+    ],
+    "hash": "1968879a7b7c49840f12dd8f0bcd5e9ead52fda8c3bcfda456f75cf918971716"
+  },
+  "frontend": {
+    "exists": true,
+    "name": "uter-web",
+    "version": "1.0.0",
+    "dependency_count": 55,
+    "dev_dependency_count": 29,
+    "script_count": 39,
+    "dependencies_sample": [
+      "@base-ui/react",
+      "@codemirror/lang-javascript",
+      "@codemirror/lang-markdown",
+      "@codemirror/language",
+      "@codemirror/state",
+      "@codemirror/view",
+      "@fontsource-variable/inter",
+      "@fontsource-variable/noto-sans-sc",
+      "@hookform/resolvers",
+      "@lezer/highlight",
+      "@lobehub/icons",
+      "@tanstack/react-query",
+      "@tanstack/react-router",
+      "@tanstack/react-table",
+      "@visactor/react-vchart"
+    ],
+    "scripts_sample": [
+      "dev",
+      "build",
+      "build:check",
+      "docs:search-index",
+      "docs:sitemap",
+      "docs:assets:check",
+      "prepare",
+      "typecheck",
+      "lint",
+      "lint:design",
+      "lint:design:strict",
+      "lint:design:baseline",
+      "lint:design:baseline:update",
+      "lint:fix",
+      "lint:plugins"
+    ]
+  },
+  "bun_lock": {
+    "exists": true,
+    "size": 360342,
+    "line_count": 2991,
+    "entry_line_count": 1545,
+    "sample_entries": [
+      "lockfileVersion",
+      "configVersion",
+      "workspaces",
+      "name",
+      "dependencies",
+      "@base-ui/react",
+      "@codemirror/lang-javascript",
+      "@codemirror/lang-markdown",
+      "@codemirror/language",
+      "@codemirror/state",
+      "@codemirror/view",
+      "@fontsource-variable/inter",
+      "@fontsource-variable/noto-sans-sc",
+      "@hookform/resolvers",
+      "@lezer/highlight"
+    ],
+    "hash": "3e34eeeaef9feff1cf2234dffa1d92ef0fb15f84662fae7d02386b77aedad42f"
+  }
+}

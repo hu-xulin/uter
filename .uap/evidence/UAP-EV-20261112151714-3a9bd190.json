@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151714-3a9bd190",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:17:14.693Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap report --final",
+  "exit_code": 0,
+  "duration_ms": 447,
+  "inputs": "{\"argv\":[\"report\",\"--final\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "report: 18 deliverables written from real run data",
+  "content_hash": "67301c7ddc6033a684a1bfc138a3a4a79f837335661504fdff9eef351e7ea56b"
+}

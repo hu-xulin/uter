@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uap://schemas/validator-result",
+  "title": "UAP Validator Result",
+  "type": "object",
+  "required": [
+    "validator_id",
+    "status",
+    "executed",
+    "exit_code",
+    "checked_at",
+    "evidence_refs",
+    "findings",
+    "summary"
+  ],
+  "properties": {
+    "validator_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_EXECUTED"
+      ]
+    },
+    "executed": {
+      "type": "boolean"
+    },
+    "exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "severity",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "severity": {
+            "enum": [
+              "BLOCKER",
+              "MAJOR",
+              "MINOR",
+              "INFO"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "checks_run": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "duration_ms": {
+      "type": "number"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "executed": {
+            "const": true
+          },
+          "exit_code": {
+            "const": 0
+          }
+        }
+      }
+    }
+  ]
+}

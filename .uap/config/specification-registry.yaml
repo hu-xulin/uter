@@ -1,0 +1,277 @@
+schema_version: "1.0"
+registry_id: "UAP-SPECIFICATION-REGISTRY"
+platform: "UAP"
+platform_version: "1.0.0"
+
+defaults:
+  status: "IMPLEMENTED_NOT_VERIFIED"
+  required_executor: true
+  required_validator: true
+  evidence_required: true
+
+status_values:
+  - NOT_BUILT
+  - PARTIALLY_BUILT
+  - IMPLEMENTED_NOT_VERIFIED
+  - PARTIALLY_VERIFIED
+  - FULLY_VERIFIED
+  - FULLY_OPERATIONAL
+  - BLOCKED
+  - FAILED
+
+specifications:
+  - id: UAP-00-001
+    file: .uap/core/UAP-00-001-CORE-ARCHITECTURE.md
+    domain: core
+    criticality: P0
+    executor: core.architecture
+    validator: core.architecture_integrity
+    dependencies: []
+
+  - id: UAP-00-002
+    file: .uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md
+    domain: core
+    criticality: P0
+    executor: core.autonomous_execution
+    validator: core.execution_integrity
+    dependencies: [UAP-00-001]
+
+  - id: UAP-00-003
+    file: .uap/core/UAP-00-003-SECURITY-BOUNDARY.md
+    domain: core
+    criticality: P0
+    executor: security.policy
+    validator: security.permission_boundary
+    dependencies: [UAP-00-001]
+
+  - id: UAP-00-004
+    file: .uap/core/UAP-00-004-EVIDENCE-AND-STATE.md
+    domain: core
+    criticality: P0
+    executor: core.evidence
+    validator: core.evidence_integrity
+    dependencies: [UAP-00-001]
+
+  - id: UAP-01-001
+    file: .uap/product/UAP-01-001-PRODUCT-REQUIREMENTS.md
+    domain: product
+    criticality: P1
+    executor: product.requirements
+    validator: product.requirement_traceability
+    dependencies: [UAP-00-001]
+
+  - id: UAP-01-002
+    file: .uap/product/UAP-01-002-PRD-PROTOTYPE-SYNC.md
+    domain: product
+    criticality: P1
+    executor: product.prototype_sync
+    validator: product.prototype_consistency
+    dependencies: [UAP-01-001]
+
+  - id: UAP-01-003
+    file: .uap/product/UAP-01-003-BUSINESS-RULES.md
+    domain: product
+    criticality: P0
+    executor: product.business_rules
+    validator: product.business_rule_integrity
+    dependencies: [UAP-01-001]
+
+  - id: UAP-02-001
+    file: .uap/architecture/UAP-02-001-SYSTEM-ARCHITECTURE.md
+    domain: architecture
+    criticality: P1
+    executor: architecture.analyzer
+    validator: architecture.consistency
+    dependencies: [UAP-00-001]
+
+  - id: UAP-02-002
+    file: .uap/architecture/UAP-02-002-API-AND-DATABASE.md
+    domain: architecture
+    criticality: P0
+    executor: architecture.api_database
+    validator: architecture.api_database_integrity
+    dependencies: [UAP-02-001]
+
+  - id: UAP-02-003
+    file: .uap/architecture/UAP-02-003-TECHNICAL-DECISIONS.md
+    domain: architecture
+    criticality: P2
+    executor: architecture.adr
+    validator: architecture.adr_integrity
+    dependencies: [UAP-02-001]
+
+  - id: UAP-03-001
+    file: .uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md
+    domain: agents
+    criticality: P0
+    executor: agents.registry
+    validator: agents.registry_integrity
+    dependencies: [UAP-00-001, UAP-00-003]
+
+  - id: UAP-03-002
+    file: .uap/agents/UAP-03-002-AGENT-EXECUTION.md
+    domain: agents
+    criticality: P0
+    executor: agents.execution
+    validator: agents.execution_integrity
+    dependencies: [UAP-03-001]
+
+  - id: UAP-03-003
+    file: .uap/agents/UAP-03-003-AGENT-COLLABORATION.md
+    domain: agents
+    criticality: P1
+    executor: agents.collaboration
+    validator: agents.collaboration_integrity
+    dependencies: [UAP-03-001, UAP-03-002]
+
+  - id: UAP-03-004
+    file: .uap/agents/UAP-03-004-AGENT-RECOVERY.md
+    domain: agents
+    criticality: P0
+    executor: agents.recovery
+    validator: agents.recovery_integrity
+    dependencies: [UAP-03-002]
+
+  - id: UAP-04-001
+    file: .uap/development/UAP-04-001-CODING-STANDARD.md
+    domain: development
+    criticality: P1
+    executor: development.coding_standard
+    validator: development.coding_compliance
+    dependencies: [UAP-00-001]
+
+  - id: UAP-04-002
+    file: .uap/development/UAP-04-002-CODE-REVIEW.md
+    domain: development
+    criticality: P0
+    executor: development.code_review
+    validator: development.review_integrity
+    dependencies: [UAP-04-001]
+
+  - id: UAP-04-003
+    file: .uap/development/UAP-04-003-DEPENDENCY-MANAGEMENT.md
+    domain: development
+    criticality: P1
+    executor: development.dependencies
+    validator: development.dependency_integrity
+    dependencies: [UAP-04-001]
+
+  - id: UAP-05-001
+    file: .uap/quality/UAP-05-001-QUALITY-ENGINEERING.md
+    domain: quality
+    criticality: P0
+    executor: quality.engineering
+    validator: quality.engineering_integrity
+    dependencies: [UAP-04-002]
+
+  - id: UAP-05-002
+    file: .uap/quality/UAP-05-002-AUTOMATED-TESTING.md
+    domain: quality
+    criticality: P0
+    executor: quality.testing
+    validator: quality.test_integrity
+    dependencies: [UAP-05-001]
+
+  - id: UAP-05-003
+    file: .uap/quality/UAP-05-003-AUTO-REPAIR.md
+    domain: quality
+    criticality: P0
+    executor: quality.auto_repair
+    validator: quality.repair_integrity
+    dependencies: [UAP-05-001, UAP-05-002]
+
+  - id: UAP-05-004
+    file: .uap/quality/UAP-05-004-QUALITY-GATES.md
+    domain: quality
+    criticality: P0
+    executor: quality.gates
+    validator: quality.gate_integrity
+    dependencies: [UAP-05-001, UAP-05-002, UAP-05-003]
+
+  - id: UAP-06-001
+    file: .uap/security/UAP-06-001-APPLICATION-SECURITY.md
+    domain: security
+    criticality: P0
+    executor: security.application
+    validator: security.application_integrity
+    dependencies: [UAP-00-003]
+
+  - id: UAP-06-002
+    file: .uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md
+    domain: security
+    criticality: P0
+    executor: security.financial_integrity
+    validator: security.financial_integrity_validator
+    dependencies: [UAP-01-003, UAP-02-002, UAP-06-001]
+
+  - id: UAP-06-003
+    file: .uap/security/UAP-06-003-RELIABILITY-AND-RECOVERY.md
+    domain: security
+    criticality: P0
+    executor: security.reliability
+    validator: security.reliability_integrity
+    dependencies: [UAP-00-004]
+
+  - id: UAP-07-001
+    file: .uap/cross-platform/UAP-07-001-WEB-ENGINEERING.md
+    domain: cross-platform
+    criticality: P1
+    executor: cross_platform.web
+    validator: cross_platform.web_integrity
+    dependencies: [UAP-01-001]
+
+  - id: UAP-07-002
+    file: .uap/cross-platform/UAP-07-002-H5-ENGINEERING.md
+    domain: cross-platform
+    criticality: P1
+    executor: cross_platform.h5
+    validator: cross_platform.h5_integrity
+    dependencies: [UAP-01-001]
+
+  - id: UAP-07-003
+    file: .uap/cross-platform/UAP-07-003-CROSS-PLATFORM-CONSISTENCY.md
+    domain: cross-platform
+    criticality: P1
+    executor: cross_platform.consistency
+    validator: cross_platform.consistency_integrity
+    dependencies: [UAP-07-001, UAP-07-002]
+
+  - id: UAP-08-001
+    file: .uap/delivery/UAP-08-001-CI-CD.md
+    domain: delivery
+    criticality: P0
+    executor: delivery.ci_cd
+    validator: delivery.ci_integrity
+    dependencies: [UAP-05-004]
+
+  - id: UAP-08-002
+    file: .uap/delivery/UAP-08-002-DEPLOYMENT-AND-ROLLBACK.md
+    domain: delivery
+    criticality: P0
+    executor: delivery.deployment
+    validator: delivery.deployment_integrity
+    dependencies: [UAP-08-001, UAP-06-003]
+
+  - id: UAP-08-003
+    file: .uap/delivery/UAP-08-003-OBSERVABILITY.md
+    domain: delivery
+    criticality: P1
+    executor: delivery.observability
+    validator: delivery.observability_integrity
+    dependencies: [UAP-00-004]
+
+  - id: UAP-09-001
+    file: .uap/evolution/UAP-09-001-KNOWLEDGE-MANAGEMENT.md
+    domain: evolution
+    criticality: P1
+    executor: evolution.knowledge
+    validator: evolution.knowledge_integrity
+    dependencies: [UAP-00-004]
+
+  - id: UAP-09-002
+    file: .uap/evolution/UAP-09-002-CONTINUOUS-EVOLUTION.md
+    domain: evolution
+    criticality: P2
+    executor: evolution.continuous
+    validator: evolution.evolution_integrity
+    dependencies: [UAP-09-001, UAP-05-004]

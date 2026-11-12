@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151504-0c427711",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112151504-e08d314a",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:15:04.799Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:scan_cross_platform",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-8\",\"name\":\"scan_cross_platform\",\"idempotent\":true,\"handler\":\"scan_cross_platform\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "scanned cross_platform: 1071 files",
+  "content_hash": "f4ea247cb0af43dacfeb1a2c02a4f5bb36145ee37c84327c75fdeb4d432b2980"
+}

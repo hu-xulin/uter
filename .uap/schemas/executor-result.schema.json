@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uap://schemas/executor-result",
+  "title": "UAP Executor Result",
+  "type": "object",
+  "required": [
+    "result_id",
+    "task_id",
+    "executor_id",
+    "status",
+    "summary",
+    "changed_files",
+    "validation_results",
+    "evidence_refs",
+    "blocked_reasons"
+  ],
+  "properties": {
+    "result_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "executor_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blocked_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs": {
+      "type": "object"
+    },
+    "validation_results": {
+      "type": "array",
+      "maxItems": 0,
+      "description": "Executor must not self-declare validation; this array is always empty on an executor result."
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

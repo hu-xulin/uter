@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Local equivalent entry point for the UAP CLI.
+# No global install required: ./uap <command> from anywhere in the repository.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec node "$ROOT/.uap/bin/uap.mjs" "$@"

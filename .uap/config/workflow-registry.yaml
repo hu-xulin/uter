@@ -1,0 +1,115 @@
+schema_version: "1.0"
+registry_id: "UAP-WORKFLOW-REGISTRY"
+implementation: .uap/workflows/index.mjs
+
+workflows:
+  - id: uap-bootstrap
+    name: UAP Bootstrap
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - inspect_repository
+      - validate_environment
+      - initialize_uap_structure
+      - validate_specification_registry
+      - initialize_runtime
+      - run_runtime_tests
+    acceptance: runtime_health_check
+
+  - id: uap-full-audit
+    name: Full Governance Audit
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - inspect_project
+      - scan_requirements
+      - scan_architecture
+      - scan_agents
+      - scan_development
+      - scan_quality
+      - scan_security
+      - scan_cross_platform
+      - scan_delivery
+      - scan_knowledge
+      - build_defect_registry
+    acceptance: audit_evidence_complete
+
+  - id: uap-implementation
+    name: Governance Implementation
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - resolve_dependencies
+      - create_execution_plan
+      - implement_missing_capabilities
+      - implement_missing_validators
+      - integrate_runtime
+      - execute_targeted_tests
+    acceptance: implementation_verified
+
+  - id: uap-defect-repair
+    name: Bounded Defect Repair
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - classify_defect
+      - identify_root_cause
+      - calculate_impact
+      - generate_repair_plan
+      - apply_authorized_repair
+      - run_regression
+      - independent_review
+      - persist_evidence
+    retry:
+      max_attempts_per_root_cause: 3
+      stop_on_permission_denied: true
+      stop_on_unrecoverable: true
+    acceptance: defect_verified_or_blocked
+
+  - id: uap-quality-gate
+    name: Quality Gate
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - lint
+      - typecheck
+      - unit_tests
+      - integration_tests
+      - end_to_end_tests
+      - security_scan
+      - dependency_scan
+      - build
+      - code_review
+    acceptance: all_required_gates_pass
+
+  - id: uap-financial-verification
+    name: Financial Integrity Verification
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - inspect_payment_state_machine
+      - inspect_refund_state_machine
+      - inspect_balance_ledger
+      - test_idempotency
+      - test_concurrency
+      - test_duplicate_notifications
+      - test_failure_recovery
+      - verify_reconciliation
+    environment: simulated_only
+    acceptance: financial_integrity_verified
+
+  - id: uap-final-verification
+    name: Final Verification
+    implementation: .uap/workflows/index.mjs
+    steps:
+      - validate_all_specifications
+      - validate_all_executors
+      - validate_all_agents
+      - validate_all_workflows
+      - validate_all_validators
+      - run_full_quality_gate
+      - run_end_to_end_workflows
+      - verify_recovery
+      - generate_final_report
+    acceptance: full_operational_acceptance
+
+execution:
+  persist_after_each_step: true
+  resume_on_interruption: true
+  stop_on_critical_security_failure: true
+  stop_on_unrecoverable_data_integrity_failure: true
+  require_evidence: true

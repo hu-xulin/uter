@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112122705-d1df32dc",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T12:27:05.209Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap build --full",
+  "exit_code": 1,
+  "duration_ms": 469693,
+  "inputs": "{\"argv\":[\"build\",\"--full\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "build: 1 real command failures"
+    }
+  ],
+  "summary": "build: 1 real command failures",
+  "content_hash": "ae4bb102340df6ebe930082dd148a8342194d8490358d3f10c404fba32816b58"
+}

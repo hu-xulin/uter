@@ -1,0 +1,94 @@
+schema_version: "1.0"
+policy_id: "UAP-PERMISSION-POLICY"
+implementation: .uap/runtime/policy-engine/index.mjs
+default_effect: deny
+
+permission_groups:
+  project_read:
+    description: Read project files and metadata
+    effect: allow
+
+  project_write:
+    description: Modify authorized project files
+    effect: allow
+    constraints:
+      preserve_uncommitted_changes: true
+      forbid_destructive_git_operations: true
+
+  local_command:
+    description: Execute approved local development commands
+    effect: allow
+    constraints:
+      require_command_logging: true
+      forbid_secret_exfiltration: true
+
+  task_create:
+    effect: allow
+
+  task_dispatch:
+    effect: allow
+
+  product_write:
+    effect: allow
+
+  architecture_write:
+    effect: allow
+
+  knowledge_write:
+    effect: allow
+
+  evidence_write:
+    effect: allow
+
+  test_environment:
+    effect: allow
+    constraints:
+      isolated_environment_only: true
+
+  production_read:
+    effect: deny
+    reason: Not required for local UAP implementation
+
+  production_write:
+    effect: deny
+    reason: Explicit production authorization required
+
+  production_deploy:
+    effect: deny
+    reason: Explicit production authorization required
+
+  real_payment:
+    effect: deny
+    reason: All payment verification must use simulation
+
+  real_refund:
+    effect: deny
+    reason: All refund verification must use simulation
+
+  secret_export:
+    effect: deny
+
+  force_push:
+    effect: deny
+
+  branch_creation:
+    effect: deny
+
+  branch_switch:
+    effect: deny
+
+  destructive_git:
+    effect: deny
+
+  quality_gate_disable:
+    effect: deny
+
+  test_deletion_to_force_pass:
+    effect: deny
+
+enforcement:
+  check_before_action: true
+  log_denied_actions: true
+  log_sensitive_actions: true
+  redact_secrets: true
+  fail_closed: true

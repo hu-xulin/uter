@@ -1,0 +1,158 @@
+{
+  "platform": "UAP",
+  "version": "1.0.0",
+  "started": true,
+  "health_check_passed": true,
+  "checked_at": "2026-11-12T16:40:06.875Z",
+  "components": {
+    "orchestrator": {
+      "component": "orchestrator",
+      "ok": true,
+      "checks": {
+        "self": true
+      },
+      "checked_at": "2026-11-12T16:40:06.225Z",
+      "note": "orchestrator is the caller of this health check"
+    },
+    "task-engine": {
+      "component": "task-engine",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "task_persisted": true,
+        "state_reached_succeeded": true,
+        "step_evidence_recorded": true,
+        "independent_validation_passed": true,
+        "executor_result_valid": true,
+        "trace_id_present": true
+      },
+      "checked_at": "2026-11-12T16:40:06.393Z",
+      "probe_task_id": "UAP-TASK-HEALTH-20261112164006-b29b32a7"
+    },
+    "state-machine": {
+      "component": "state-machine",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "states_defined": true,
+        "all_states_have_transitions": true,
+        "terminal_states_closed": true,
+        "illegal_edge_rejected": true,
+        "legal_edge_accepted": true,
+        "recovery_edge_accepted": true
+      },
+      "checked_at": "2026-11-12T16:40:06.393Z"
+    },
+    "event-system": {
+      "component": "event-system",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "persisted_event_found": true,
+        "event_count_incremented": true,
+        "structured_fields": true,
+        "task_query": true
+      },
+      "checked_at": "2026-11-12T16:40:06.427Z"
+    },
+    "scheduler": {
+      "component": "scheduler",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "topological_levels": true,
+        "parallel_level": true,
+        "cycle_detected": true,
+        "file_conflict_detected": true,
+        "concurrency_limit_defined": true
+      },
+      "checked_at": "2026-11-12T16:40:06.427Z"
+    },
+    "resource-manager": {
+      "component": "resource-manager",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "acquire": true,
+        "conflict_rejected": true,
+        "release": true,
+        "conflict_detector": true,
+        "max_concurrency": 4
+      },
+      "checked_at": "2026-11-12T16:40:06.429Z"
+    },
+    "recovery-engine": {
+      "component": "recovery-engine",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "child_process_crashed": true,
+        "state_persisted_before_crash": true,
+        "step1_completed_before_crash": true,
+        "recovery_reached_succeeded": true,
+        "completed_steps_not_repeated": true,
+        "recovery_evidence_written": true
+      },
+      "probe_task_id": "UAP-TASK-INTERRUPT-20261112164006-696b225e",
+      "final_state": "SUCCEEDED",
+      "checked_at": "2026-11-12T16:40:06.854Z"
+    },
+    "agent-runtime": {
+      "component": "agent-runtime",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "agents_registered": true,
+        "unique_ids": true,
+        "all_declare_permissions": true,
+        "all_declare_tools": true,
+        "all_declare_output_schema": true,
+        "all_implementations_exist": true,
+        "tool_guard_rejects_unknown": true,
+        "policy_gate_active": true
+      },
+      "checked_at": "2026-11-12T16:40:06.855Z"
+    },
+    "evidence-engine": {
+      "component": "evidence-engine",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "persisted": true,
+        "hash_verified": true,
+        "overwrite_rejected": true,
+        "original_untouched": true,
+        "environment_recorded": true,
+        "command_and_exit_recorded": true,
+        "secret_redaction": true
+      },
+      "checked_at": "2026-11-12T16:40:06.856Z",
+      "probe_evidence_id": "UAP-EV-20261112164006-debb6f67"
+    },
+    "policy-engine": {
+      "component": "policy-engine",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "policy_loaded": true,
+        "default_deny": true,
+        "allow_registered_permission": true,
+        "deny_production_write": true,
+        "deny_unregistered_agent": true,
+        "deny_undeclared_permission": true,
+        "deny_unlisted_command": true,
+        "all_high_risk_denied": true,
+        "audit_logged": true
+      },
+      "checked_at": "2026-11-12T16:40:06.875Z"
+    }
+  },
+  "registry": {
+    "ok": true,
+    "checks_passed": 37,
+    "checks_total": 37,
+    "findings": 0
+  },
+  "module_dependencies_resolved": true,
+  "no_unexplained_cycles": true
+}

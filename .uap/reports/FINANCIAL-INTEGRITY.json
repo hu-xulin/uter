@@ -1,0 +1,431 @@
+{
+  "generated_at": "2026-11-12T16:40:33.488Z",
+  "simulated_only": true,
+  "safety": {
+    "network_calls": 0,
+    "database_writes": 0,
+    "real_payments_or_refunds": 0,
+    "note": "static source reading + in-memory arithmetic only"
+  },
+  "checks": [
+    {
+      "id": "payment_success_order_state",
+      "scenario": "支付成功后订单状态落库路径",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/topup.go",
+        "matched": [
+          "TopUpStatusSuccess",
+          "alreadyDone",
+          "claimPendingTopUp",
+          "CompleteTime",
+          "creditTopUpQuota"
+        ],
+        "detail": "已读取 1/1 个候选源码文件；锚点匹配 5/5；命中文件=[model/topup.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "signature_verification",
+      "scenario": "支付宝/微信回调验签",
+      "status": "PASS",
+      "evidence": {
+        "file": "service/cn_pay_sign.go",
+        "matched": [
+          "func AlipayVerifySign",
+          "alipayNotifyVerifyContent",
+          "AlipayVerifyResponse",
+          "signature invalid",
+          "RSA2"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 5/5；命中文件=[service/cn_pay_sign.go, service/alipay_query.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "duplicate_notification",
+      "scenario": "重复通知幂等",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/topup.go",
+        "matched": [
+          "alreadyDone",
+          "绝不二次入账",
+          "idempotent repeat",
+          "AlipayReconcileSuccess"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/topup.go, controller/topup_alipay.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "local_order_save_failure_recovery",
+      "scenario": "本地订单保存失败恢复",
+      "status": "PASS",
+      "evidence": {
+        "file": "controller/topup_alipay.go",
+        "matched": [
+          "credit_failed",
+          "AlipayReconcileCreditFailed",
+          "恰好入账一次",
+          "恢复",
+          "保持 pending 待重试"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 5/5；命中文件=[controller/topup_alipay.go, controller/payment_recovery_fault_injection_test.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "refund_linked_to_original_order",
+      "scenario": "退款关联原订单",
+      "status": "PASS",
+      "evidence": {
+        "file": "service/billing_session.go",
+        "matched": [
+          "requestId",
+          "relay-refund:",
+          "originating request id",
+          "IdempotencyKey"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[service/billing_session.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "duplicate_refund",
+      "scenario": "重复退款防护",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/refund_intent.go",
+        "matched": [
+          "errRefundIntentAlreadyDone",
+          "already done",
+          "s.refunded",
+          "refunded ||"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/refund_intent.go, service/billing_session.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "concurrent_billing",
+      "scenario": "并发扣费 / quota 原子 CAS",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/token.go",
+        "matched": [
+          "remain_quota >= ?",
+          "RowsAffected == 0",
+          "原子预扣",
+          "超扣"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/token.go, service/quota.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "balance_ledger_consistency",
+      "scenario": "余额流水一致",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/billing_integrity_test.go",
+        "matched": [
+          "PreConsumed",
+          "settlement delta",
+          "balance",
+          "IdempotencyKey"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/billing_integrity_test.go, model/task_billing_state.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "exception_recovery",
+      "scenario": "异常恢复",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/refund_intent.go",
+        "matched": [
+          "SweepPendingRefundIntents",
+          "stays pending for sweep",
+          "fail-closed",
+          "故障注入"
+        ],
+        "detail": "已读取 3/3 个候选源码文件；锚点匹配 4/4；命中文件=[model/refund_intent.go, service/billing_session.go, controller/payment_recovery_fault_injection_test.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "price_change",
+      "scenario": "价格变化时的金额快照",
+      "status": "PASS",
+      "evidence": {
+        "file": "controller/topup_cn_amount_snapshot_test.go",
+        "matched": [
+          "ProviderAmount",
+          "ProviderCurrency",
+          "快照",
+          "providerExpectedMinorUnits"
+        ],
+        "detail": "已读取 3/3 个候选源码文件；锚点匹配 4/4；命中文件=[controller/topup_cn_amount_snapshot_test.go, controller/topup_wechat.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "upstream_failure",
+      "scenario": "上游失败处理",
+      "status": "PASS",
+      "evidence": {
+        "file": "controller/payment_recovery_fault_injection_test.go",
+        "matched": [
+          "网关故障",
+          "自动重试",
+          "保持 pending",
+          "http status",
+          "signature invalid"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 5/5；命中文件=[controller/payment_recovery_fault_injection_test.go, service/alipay_query.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "idempotency",
+      "scenario": "幂等键 / 状态检查",
+      "status": "PASS",
+      "evidence": {
+        "file": "model/refund_intent.go",
+        "matched": [
+          "IdempotencyKey",
+          "uniqueIndex",
+          "status = ?",
+          "alreadyDone",
+          "billing_idempotency_key"
+        ],
+        "detail": "已读取 3/3 个候选源码文件；锚点匹配 5/5；命中文件=[model/refund_intent.go, model/topup.go, model/task_billing_state.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "historical_fund_data_protection",
+      "scenario": "历史资金数据迁移保护",
+      "status": "PASS",
+      "evidence": {
+        "file": "service/task_billing.go",
+        "matched": [
+          "TaskRefundLegacyCutoff",
+          "historical terminal task",
+          "automatic refund is disabled",
+          "fail-closed"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[service/task_billing.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "alipay_query_four_state",
+      "scenario": "查单四分状态与未支付/终态区分",
+      "status": "PASS",
+      "evidence": {
+        "file": "service/alipay_query.go",
+        "matched": [
+          "ACQ.TRADE_NOT_EXIST",
+          "TRADE_CLOSED",
+          "AlipayReconcileUnpaid",
+          "\"unpaid\"",
+          "\"pending\"",
+          "\"closed\"",
+          "\"success\""
+        ],
+        "detail": "已读取 3/3 个候选源码文件；锚点匹配 7/7；命中文件=[service/alipay_query.go, controller/topup_alipay.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "wechat_scene_info",
+      "scenario": "微信 v2/v3 scene_info 差异",
+      "status": "PASS",
+      "evidence": {
+        "file": "controller/topup_wechat_h5_scene_test.go",
+        "matched": [
+          "scene_info",
+          "h5_info",
+          "APIv3",
+          "buildWechatH5SceneInfo"
+        ],
+        "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[controller/topup_wechat_h5_scene_test.go]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "frontend_amount_rounding",
+      "scenario": "前端金额取整（toPayAmount 替代 Math.floor）",
+      "status": "PASS",
+      "evidence": {
+        "file": "web/src/features/wallet/lib/payment.ts",
+        "matched": [
+          "toPayAmount",
+          "Math.round",
+          "Math.floor(0.01)",
+          "0.01"
+        ],
+        "detail": "已读取 1/1 个候选源码文件；锚点匹配 4/4；命中文件=[web/src/features/wallet/lib/payment.ts]；未命中锚点=[无]。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "sim_duplicate_notification_credited_once",
+      "scenario": "内存模拟：重复通知只入账一次",
+      "status": "PASS",
+      "evidence": {
+        "simulated": true,
+        "mode": "in-process in-memory only (no DB / no network / no gateway / no real refund)",
+        "input": {
+          "initial_balance": 0,
+          "order_amount": 100,
+          "notifications": 5,
+          "initial_status": "pending"
+        },
+        "output": {
+          "final_balance": 100,
+          "credited_count": 1,
+          "final_status": "success",
+          "applied": [
+            "notify#1: CREDIT",
+            "notify#2: SKIP(alreadyDone)",
+            "notify#3: SKIP(alreadyDone)",
+            "notify#4: SKIP(alreadyDone)",
+            "notify#5: SKIP(alreadyDone)"
+          ]
+        },
+        "assertions": [
+          {
+            "name": "credited_exactly_once",
+            "expected": 1,
+            "actual": 1,
+            "exit_code": 0
+          },
+          {
+            "name": "balance_equals_amount",
+            "expected": 100,
+            "actual": 100,
+            "exit_code": 0
+          },
+          {
+            "name": "duplicate_skipped",
+            "expected": 4,
+            "actual": 4,
+            "exit_code": 0
+          }
+        ],
+        "detail": "进程内纯内存模拟；3 条断言，通过 3 条。模拟通过不代表真实资金验证通过。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "sim_duplicate_refund_rejected",
+      "scenario": "内存模拟：重复退款被拒",
+      "status": "PASS",
+      "evidence": {
+        "simulated": true,
+        "mode": "in-process in-memory only (no DB / no network / no gateway / no real refund)",
+        "input": {
+          "initial_balance": 100,
+          "refund_amount": 40,
+          "attempts": 3,
+          "idempotency_key": "relay-refund:7:req-42"
+        },
+        "output": {
+          "final_balance": 140,
+          "refunds_applied": 1,
+          "applied": [
+            "refund#1: APPLY",
+            "refund#2: REJECT(already done)",
+            "refund#3: REJECT(already done)"
+          ]
+        },
+        "assertions": [
+          {
+            "name": "refund_applied_once",
+            "expected": 1,
+            "actual": 1,
+            "exit_code": 0
+          },
+          {
+            "name": "balance_conserved",
+            "expected": 140,
+            "actual": 140,
+            "exit_code": 0
+          },
+          {
+            "name": "duplicates_rejected",
+            "expected": 2,
+            "actual": 2,
+            "exit_code": 0
+          }
+        ],
+        "detail": "进程内纯内存模拟；3 条断言，通过 3 条。模拟通过不代表真实资金验证通过。"
+      },
+      "blockers": []
+    },
+    {
+      "id": "sim_concurrent_billing_balance_conserved",
+      "scenario": "内存模拟：并发扣费余额守恒",
+      "status": "PASS",
+      "evidence": {
+        "simulated": true,
+        "mode": "in-process in-memory only (no DB / no network / no gateway / no real refund)",
+        "input": {
+          "initial_balance": 100,
+          "charge": 15,
+          "concurrent_requests": 10
+        },
+        "output": {
+          "final_balance": 10,
+          "debits_succeeded": 6,
+          "debits_rejected": 4,
+          "applied": [
+            "req#1: DEBIT ok",
+            "req#2: DEBIT ok",
+            "req#3: DEBIT ok",
+            "req#4: DEBIT ok",
+            "req#5: DEBIT ok",
+            "req#6: DEBIT ok",
+            "req#7: REJECT insufficient",
+            "req#8: REJECT insufficient",
+            "req#9: REJECT insufficient",
+            "req#10: REJECT insufficient"
+          ]
+        },
+        "assertions": [
+          {
+            "name": "balance_never_negative",
+            "expected": true,
+            "actual": true,
+            "exit_code": 0
+          },
+          {
+            "name": "balance_conservation",
+            "expected": 100,
+            "actual": 100,
+            "exit_code": 0
+          },
+          {
+            "name": "no_overdraft",
+            "expected": 10,
+            "actual": 10,
+            "exit_code": 0
+          }
+        ],
+        "detail": "进程内纯内存模拟；3 条断言，通过 3 条。模拟通过不代表真实资金验证通过。"
+      },
+      "blockers": []
+    }
+  ],
+  "total": 19,
+  "passed": 19,
+  "failed": 0,
+  "blocked": 0,
+  "failed_ids": [],
+  "blocked_ids": [],
+  "summary": "纯静态源码分析 + 进程内内存模拟（simulated_only=true；未连接任何支付网关/数据库/网络，未发起真实退款）。共 19 项检查（16 个源码场景 + 3 个内存模拟）：PASS=19, FAIL=0, BLOCKED=0。源码场景均在 Uter 真实源码中按字符串锚点匹配，未匹配即 FAIL/BLOCKED，不允许无条件 PASS；无法从源码证明的场景数（BLOCKED）= 0。 无 FAIL 场景。 注意：内存模拟 PASS 仅证明进程内逻辑自洽，绝不等于真实资金验证通过。"
+}

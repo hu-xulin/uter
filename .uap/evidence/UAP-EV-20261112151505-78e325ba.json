@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151505-78e325ba",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112151505-80d6e859",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:15:05.620Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:identify_root_cause",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"identify_root_cause\",\"idempotent\":true,\"handler\":\"identify_root_cause\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "identify_root_cause: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "a69ca92cb3d4b7728988ce05f466a8ec31d1d33cf1a43ab63ba542058ade8279"
+}

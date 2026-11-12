@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112150837-ef49be67",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112150837-c6171bf0",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:08:37.486Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_project",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"inspect_project\",\"idempotent\":true,\"handler\":\"inspect_project\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspected repository: 207 controller Go files, 1518 frontend TS files",
+  "content_hash": "aed83e3e2c4b580db5fb5fb221ee18d0c428502370a6f7dddd9c0455e72fbf22"
+}

@@ -1,0 +1,1252 @@
+{
+  "generated_at": "2026-11-12T16:55:48.411Z",
+  "target": "http://localhost:3000",
+  "blocked": false,
+  "browser": "playwright chromium (headless, real render)",
+  "viewports": [
+    "mobile-390 390x844 touch=true",
+    "mobile-375 375x667 touch=true",
+    "mobile-430 430x932 touch=true",
+    "tablet-768 768x1024 touch=true",
+    "desktop-1440 1440x900 touch=false"
+  ],
+  "routes": [
+    "/",
+    "/sign-in",
+    "/pricing",
+    "/rankings",
+    "/docs"
+  ],
+  "matrix_rows": 25,
+  "matrix": [
+    {
+      "viewport": "mobile-390",
+      "route": "/",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
+            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
+            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
+            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 0,
+          "inline_exception": 6,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/sign-up",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/sign-in",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/sign-in",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
+            "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/pricing",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/pricing",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
+            "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/rankings",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/rankings",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
+            "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-390",
+      "route": "/docs",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/docs",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 3,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 5,
+          "label_wrapped_measured": 0,
+          "inline_exception": 3,
+          "pseudo_extended_pass": 3
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-375",
+      "route": "/",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
+            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
+            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
+            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 0,
+          "inline_exception": 6,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/sign-up",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-375",
+      "route": "/sign-in",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/sign-in",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
+            "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-375",
+      "route": "/pricing",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/pricing",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
+            "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-375",
+      "route": "/rankings",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/rankings",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
+            "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-375",
+      "route": "/docs",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/docs",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 3,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 5,
+          "label_wrapped_measured": 0,
+          "inline_exception": 3,
+          "pseudo_extended_pass": 3
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-430",
+      "route": "/",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
+            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
+            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
+            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 0,
+          "inline_exception": 6,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/sign-up",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-430",
+      "route": "/sign-in",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/sign-in",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
+            "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-430",
+      "route": "/pricing",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/pricing",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
+            "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-430",
+      "route": "/rankings",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/rankings",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
+            "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "mobile-430",
+      "route": "/docs",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/docs",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 3,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 5,
+          "label_wrapped_measured": 0,
+          "inline_exception": 3,
+          "pseudo_extended_pass": 3
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "tablet-768",
+      "route": "/",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
+            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
+            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
+            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 0,
+          "inline_exception": 6,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/sign-up",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "tablet-768",
+      "route": "/sign-in",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/sign-in",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "tablet-768",
+      "route": "/pricing",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/pricing",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "tablet-768",
+      "route": "/rankings",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/rankings",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "tablet-768",
+      "route": "/docs",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/docs",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 3,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
+            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 5,
+          "label_wrapped_measured": 0,
+          "inline_exception": 3,
+          "pseudo_extended_pass": 3
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": {
+        "tapped": "/",
+        "navigation_worked": true,
+        "touchstart": 1,
+        "pointerdown": 1
+      },
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "desktop-1440",
+      "route": "/",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 16,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "a.min-w-0.truncate \"首页\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"管理\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"定价\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"排行\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"文档\" [52x38] eff=[52x38]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 0,
+          "inline_exception": 6,
+          "pseudo_extended_pass": 16
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": null,
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "desktop-1440",
+      "route": "/sign-in",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/sign-in",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": null,
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "desktop-1440",
+      "route": "/pricing",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/pricing",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": null,
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "desktop-1440",
+      "route": "/rankings",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/rankings",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 8,
+          "samples": [
+            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
+            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 0,
+          "label_wrapped_measured": 1,
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": null,
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    },
+    {
+      "viewport": "desktop-1440",
+      "route": "/docs",
+      "http_status": 200,
+      "final_url": "http://localhost:3000/docs",
+      "spa_rendered": true,
+      "meta_viewport_ok": true,
+      "meta_viewport": "width=device-width, initial-scale=1.0",
+      "horizontal_overflow_px": 0,
+      "overflow_samples": [],
+      "small_touch_targets": {
+        "below_uter_recommended_44": {
+          "count": 20,
+          "samples": [
+            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "a.min-w-0.truncate \"首页\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"管理\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"定价\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"排行\" [52x38] eff=[52x38]",
+            "a.min-w-0.truncate \"文档\" [52x38] eff=[52x38]"
+          ],
+          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+        },
+        "below_wcag_min_24": {
+          "count": 0,
+          "samples": [],
+          "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
+        },
+        "wcag_258_exemptions_applied": {
+          "disabled_or_sr_only": 5,
+          "label_wrapped_measured": 0,
+          "inline_exception": 6,
+          "pseudo_extended_pass": 20
+        }
+      },
+      "small_fonts": {
+        "count": 0,
+        "samples": [],
+        "standard": "design-system §1.2: min 12px"
+      },
+      "tap": null,
+      "console_errors": [],
+      "http_failures": [],
+      "page_errors": []
+    }
+  ],
+  "context_findings": {
+    "small_font_rows": 0,
+    "page_error_rows": 0,
+    "touch_target_44_coverage": {
+      "interactive_elements_below_44": 140,
+      "interactive_elements_below_24": 0,
+      "note": "44x44 为 Uter 推荐（§15.3），达标率供 UI 迭代跟踪；24x24 为 WCAG 硬线"
+    },
+    "note": "these are recorded context findings; they do not gate the four declared checks but are never dropped"
+  },
+  "verdict": {
+    "h5_build": "PASS",
+    "viewport": "PASS",
+    "touch": "PASS",
+    "mobile_tests": "PASS"
+  }
+}

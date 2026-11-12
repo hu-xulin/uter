@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112151652-315392eb",
+  "kind": "auto_repair_attempt",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:16:52.788Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap repair UAP-DEFECT-0003",
+  "exit_code": 2,
+  "duration_ms": null,
+  "inputs": "{\"defect_id\":\"UAP-DEFECT-0003\",\"attempt\":2,\"action\":\"requires_authorization\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "repair_blocked",
+      "message": "business source change requires explicit authorization; no production or business files modified by UAP repair"
+    }
+  ],
+  "summary": "UAP-DEFECT-0003: requires_authorization -> BLOCKED",
+  "content_hash": "791e04e743ec39061ae18eb13472318cd3b72021603fa37eca622c9114c4ffc2"
+}

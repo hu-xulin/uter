@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112152359-3818ba88",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:23:59.138Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap report --final",
+  "exit_code": 3,
+  "duration_ms": 1,
+  "inputs": "{\"argv\":[\"report --final\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "usage_error",
+      "message": "unknown command: report --final"
+    }
+  ],
+  "summary": "unknown command: report --final",
+  "content_hash": "4aedc063d8ba0e673a3210fa610a99f731bf51ff9a9c33302beb094fa5121d78"
+}

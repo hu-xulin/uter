@@ -1,0 +1,1014 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:33.464Z",
+  "executor_ids": [
+    "product.requirements"
+  ],
+  "source_of_truth": "code",
+  "sources": [
+    "router/api-router.go",
+    "controller",
+    "web/src/features",
+    "docs/product/registry/feature-registry.yaml"
+  ],
+  "routes_scanned": 303,
+  "controllers_scanned": 94,
+  "feature_count": 30,
+  "features": [
+    {
+      "id": "FEAT-ABOUT",
+      "slug": "about",
+      "source_files": [
+        "web/src/features/about",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/about",
+      "related_routes": [
+        "GET /about"
+      ],
+      "related_route_count": 1,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 2
+    },
+    {
+      "id": "FEAT-AUTH",
+      "slug": "auth",
+      "source_files": [
+        "web/src/features/auth",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/auth",
+      "related_routes": [
+        "POST /oauth/state",
+        "POST /oauth/email/bind/start",
+        "POST /oauth/email/bind/resend",
+        "POST /oauth/email/bind",
+        "POST /oauth/wechat-web/state",
+        "GET /oauth/wechat-web/origin",
+        "GET /oauth/wechat-web",
+        "GET /oauth/telegram/login",
+        "POST /oauth/telegram/bind/start",
+        "GET /oauth/telegram/bind/:flow_token",
+        "GET /oauth/:provider",
+        "POST /auth/refresh",
+        "POST /auth/logout",
+        "GET /oauth/bindings",
+        "DELETE /oauth/bindings/:provider_id",
+        "GET /:id/oauth/bindings",
+        "DELETE /:id/oauth/bindings/:provider_id"
+      ],
+      "related_route_count": 17,
+      "related_controllers": [
+        "auth_session",
+        "authz",
+        "channel_authz",
+        "custom_oauth",
+        "oauth"
+      ],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-AUTH-001-01",
+        "AC-AUTH-001-02",
+        "AC-AUTH-001-03",
+        "AC-AUTH-001-04",
+        "AC-AUTH-001-05",
+        "AC-AUTH-001-06",
+        "AC-AUTH-001-07",
+        "AC-AUTH-001-08",
+        "AC-AUTH-001-09",
+        "AC-AUTH-002-01",
+        "AC-AUTH-002-02",
+        "AC-AUTH-002-03",
+        "AC-AUTH-002-04",
+        "AC-AUTH-002-05",
+        "AC-AUTH-002-06",
+        "AC-AUTH-002-07",
+        "AC-AUTH-002-08",
+        "AC-AUTH-002-09",
+        "AC-AUTH-003-01",
+        "AC-AUTH-003-02",
+        "AC-AUTH-003-03",
+        "AC-AUTH-003-04",
+        "AC-AUTH-003-05",
+        "AC-AUTH-003-06",
+        "AC-AUTH-004-01"
+      ],
+      "registry_feature_ids": [
+        "UTER-AUTH-001",
+        "UTER-AUTH-002",
+        "UTER-AUTH-003",
+        "UTER-AUTH-004",
+        "UTER-AUTH-005",
+        "UTER-AUTH-006"
+      ],
+      "prd_ref": "docs/product/prd/auth/UTER-AUTH-001.md",
+      "code_evidence_count": 23
+    },
+    {
+      "id": "FEAT-CHANNELS",
+      "slug": "channels",
+      "source_files": [
+        "web/src/features/channels",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/channels",
+      "related_routes": [
+        "GET /channels"
+      ],
+      "related_route_count": 1,
+      "related_controllers": [],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-CHANNEL-001-01",
+        "AC-CHANNEL-001-02",
+        "AC-CHANNEL-001-03",
+        "AC-CHANNEL-001-04",
+        "AC-CHANNEL-001-05",
+        "AC-CHANNEL-001-06",
+        "AC-CHANNEL-002-01",
+        "AC-CHANNEL-002-02",
+        "AC-CHANNEL-002-03",
+        "AC-CHANNEL-002-04",
+        "AC-CHANNEL-002-05",
+        "AC-CHANNEL-002-06",
+        "AC-CHANNEL-002-07",
+        "AC-CHANNEL-002-08",
+        "AC-CHANNEL-002-09",
+        "AC-CHANNEL-003-01",
+        "AC-CHANNEL-003-02",
+        "AC-CHANNEL-003-03",
+        "AC-CHANNEL-003-04",
+        "AC-CHANNEL-003-05",
+        "AC-CHANNEL-003-06"
+      ],
+      "registry_feature_ids": [
+        "UTER-CHANNEL-001",
+        "UTER-CHANNEL-002",
+        "UTER-CHANNEL-003"
+      ],
+      "prd_ref": "docs/product/prd/channel/UTER-CHANNEL-001.md",
+      "code_evidence_count": 2
+    },
+    {
+      "id": "FEAT-CHAT",
+      "slug": "chat",
+      "source_files": [
+        "web/src/features/chat",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/chat",
+      "related_routes": [
+        "POST /oauth/wechat-web/state",
+        "GET /oauth/wechat-web/origin",
+        "GET /oauth/wechat-web",
+        "POST /wechat/notify",
+        "POST /wechat/query",
+        "POST /wechat/webpay"
+      ],
+      "related_route_count": 6,
+      "related_controllers": [
+        "topup_wechat",
+        "wechat_web"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 9
+    },
+    {
+      "id": "FEAT-CUSTOMER-SERVICE",
+      "slug": "customer-service",
+      "source_files": [
+        "web/src/features/customer-service",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/customer-service",
+      "related_routes": [
+        "GET /customer-service/deploy/llm",
+        "PUT /customer-service/deploy/llm",
+        "GET /customer-service/admin-token"
+      ],
+      "related_route_count": 3,
+      "related_controllers": [
+        "customer_service_deploy"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 5
+    },
+    {
+      "id": "FEAT-DASHBOARD",
+      "slug": "dashboard",
+      "source_files": [
+        "web/src/features/dashboard",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/dashboard",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    },
+    {
+      "id": "FEAT-DOCS",
+      "slug": "docs",
+      "source_files": [
+        "web/src/features/docs",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/docs",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    },
+    {
+      "id": "FEAT-ERRORS",
+      "slug": "errors",
+      "source_files": [
+        "web/src/features/errors",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/errors",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    },
+    {
+      "id": "FEAT-HOME",
+      "slug": "home",
+      "source_files": [
+        "web/src/features/home",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/home",
+      "related_routes": [
+        "GET /home_page_content"
+      ],
+      "related_route_count": 1,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 2
+    },
+    {
+      "id": "FEAT-KEYS",
+      "slug": "keys",
+      "source_files": [
+        "web/src/features/keys",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/keys",
+      "related_routes": [
+        "POST /:key/status",
+        "POST /batch/keys"
+      ],
+      "related_route_count": 2,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 3
+    },
+    {
+      "id": "FEAT-LEGAL",
+      "slug": "legal",
+      "source_files": [
+        "web/src/features/legal",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/legal",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    },
+    {
+      "id": "FEAT-MODEL-PRICING",
+      "slug": "model-pricing",
+      "source_files": [
+        "web/src/features/model-pricing",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/model-pricing",
+      "related_routes": [
+        "GET /models",
+        "GET /pricing",
+        "GET /models",
+        "GET /model_pricing",
+        "PATCH /model_pricing",
+        "POST /model_pricing/convert",
+        "POST /model_pricing/preview",
+        "POST /rest_model_ratio",
+        "GET /dreamrouter/models"
+      ],
+      "related_route_count": 9,
+      "related_controllers": [
+        "missing_models",
+        "model",
+        "model_auto_fill",
+        "model_desc_sync",
+        "model_desc_translate",
+        "model_meta",
+        "model_pricing_config",
+        "model_sync",
+        "pricing"
+      ],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-MODEL-001-01",
+        "AC-MODEL-001-02",
+        "AC-MODEL-001-03",
+        "AC-MODEL-001-04",
+        "AC-MODEL-001-05",
+        "AC-MODEL-001-06",
+        "AC-MODEL-002-01",
+        "AC-MODEL-002-02",
+        "AC-MODEL-002-03",
+        "AC-MODEL-002-04",
+        "AC-MODEL-002-05",
+        "AC-MODEL-002-06",
+        "AC-MODEL-003-01",
+        "AC-MODEL-003-02",
+        "AC-MODEL-003-03",
+        "AC-MODEL-003-04",
+        "AC-MODEL-003-05",
+        "AC-MODEL-003-06"
+      ],
+      "registry_feature_ids": [
+        "UTER-MODEL-001",
+        "UTER-MODEL-002",
+        "UTER-MODEL-003"
+      ],
+      "prd_ref": "docs/product/prd/model/UTER-MODEL-001.md",
+      "code_evidence_count": 19
+    },
+    {
+      "id": "FEAT-MODELS",
+      "slug": "models",
+      "source_files": [
+        "web/src/features/models",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/models",
+      "related_routes": [
+        "GET /models",
+        "GET /models",
+        "GET /dreamrouter/models"
+      ],
+      "related_route_count": 3,
+      "related_controllers": [
+        "missing_models",
+        "model_sync"
+      ],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-MODEL-001-01",
+        "AC-MODEL-001-02",
+        "AC-MODEL-001-03",
+        "AC-MODEL-001-04",
+        "AC-MODEL-001-05",
+        "AC-MODEL-001-06",
+        "AC-MODEL-002-01",
+        "AC-MODEL-002-02",
+        "AC-MODEL-002-03",
+        "AC-MODEL-002-04",
+        "AC-MODEL-002-05",
+        "AC-MODEL-002-06",
+        "AC-MODEL-003-01",
+        "AC-MODEL-003-02",
+        "AC-MODEL-003-03",
+        "AC-MODEL-003-04",
+        "AC-MODEL-003-05",
+        "AC-MODEL-003-06"
+      ],
+      "registry_feature_ids": [
+        "UTER-MODEL-001",
+        "UTER-MODEL-002",
+        "UTER-MODEL-003"
+      ],
+      "prd_ref": "docs/product/prd/model/UTER-MODEL-001.md",
+      "code_evidence_count": 6
+    },
+    {
+      "id": "FEAT-ORGANIZATION",
+      "slug": "organization",
+      "source_files": [
+        "web/src/features/organization",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/organization",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [
+        "organization"
+      ],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-ORG-001-01",
+        "AC-ORG-001-02",
+        "AC-ORG-001-03",
+        "AC-ORG-001-04",
+        "AC-ORG-001-05",
+        "AC-ORG-001-06"
+      ],
+      "registry_feature_ids": [
+        "UTER-ORG-001"
+      ],
+      "prd_ref": "docs/product/prd/org/UTER-ORG-001.md",
+      "code_evidence_count": 2
+    },
+    {
+      "id": "FEAT-PERFORMANCE-METRICS",
+      "slug": "performance-metrics",
+      "source_files": [
+        "web/src/features/performance-metrics",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/performance-metrics",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [
+        "perf_metrics",
+        "performance"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 3
+    },
+    {
+      "id": "FEAT-PLAYGROUND",
+      "slug": "playground",
+      "source_files": [
+        "web/src/features/playground",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/playground",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [
+        "playground"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 2
+    },
+    {
+      "id": "FEAT-PRICING",
+      "slug": "pricing",
+      "source_files": [
+        "web/src/features/pricing",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/pricing",
+      "related_routes": [
+        "GET /pricing",
+        "GET /model_pricing",
+        "PATCH /model_pricing",
+        "POST /model_pricing/convert",
+        "POST /model_pricing/preview"
+      ],
+      "related_route_count": 5,
+      "related_controllers": [
+        "model_pricing_config",
+        "pricing"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 8
+    },
+    {
+      "id": "FEAT-PROFILE",
+      "slug": "profile",
+      "source_files": [
+        "web/src/features/profile",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/profile",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    },
+    {
+      "id": "FEAT-RANKINGS",
+      "slug": "rankings",
+      "source_files": [
+        "web/src/features/rankings",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/rankings",
+      "related_routes": [
+        "GET /rankings"
+      ],
+      "related_route_count": 1,
+      "related_controllers": [
+        "rankings"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 3
+    },
+    {
+      "id": "FEAT-REDEMPTION-CODES",
+      "slug": "redemption-codes",
+      "source_files": [
+        "web/src/features/redemption-codes",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/redemption-codes",
+      "related_routes": [
+        "POST /2fa/backup_codes"
+      ],
+      "related_route_count": 1,
+      "related_controllers": [
+        "redemption"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 3
+    },
+    {
+      "id": "FEAT-SECURITY",
+      "slug": "security",
+      "source_files": [
+        "web/src/features/security",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/security",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    },
+    {
+      "id": "FEAT-SETUP",
+      "slug": "setup",
+      "source_files": [
+        "web/src/features/setup",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/setup",
+      "related_routes": [
+        "GET /setup",
+        "POST /setup",
+        "POST /2fa/setup"
+      ],
+      "related_route_count": 3,
+      "related_controllers": [
+        "setup"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 5
+    },
+    {
+      "id": "FEAT-SUBSCRIPTIONS",
+      "slug": "subscriptions",
+      "source_files": [
+        "web/src/features/subscriptions",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/subscriptions",
+      "related_routes": [
+        "POST /plans/:id/subscriptions/reset",
+        "GET /users/:id/subscriptions",
+        "POST /users/:id/subscriptions",
+        "POST /users/:id/subscriptions/reset",
+        "POST /user_subscriptions/:id/invalidate",
+        "DELETE /user_subscriptions/:id"
+      ],
+      "related_route_count": 6,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 7
+    },
+    {
+      "id": "FEAT-SYSTEM-INFO",
+      "slug": "system-info",
+      "source_files": [
+        "web/src/features/system-info",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/system-info",
+      "related_routes": [
+        "GET /topup/info"
+      ],
+      "related_route_count": 1,
+      "related_controllers": [
+        "system_info",
+        "system_task",
+        "system_task_handlers"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 5
+    },
+    {
+      "id": "FEAT-SYSTEM-SETTINGS",
+      "slug": "system-settings",
+      "source_files": [
+        "web/src/features/system-settings",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/system-settings",
+      "related_routes": [
+        "GET /settings",
+        "POST /settings/test-connection"
+      ],
+      "related_route_count": 2,
+      "related_controllers": [
+        "system_info",
+        "system_task",
+        "system_task_handlers"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 6
+    },
+    {
+      "id": "FEAT-SYSTEM-UPDATE",
+      "slug": "system-update",
+      "source_files": [
+        "web/src/features/system-update",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/system-update",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [
+        "channel_upstream_update",
+        "system_info",
+        "system_task",
+        "system_task_handlers"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 5
+    },
+    {
+      "id": "FEAT-TASK-PLUGINS",
+      "slug": "task-plugins",
+      "source_files": [
+        "web/src/features/task-plugins",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/task-plugins",
+      "related_routes": [
+        "GET /:id/tasks",
+        "GET /:task_id",
+        "GET /:task_id/artifacts"
+      ],
+      "related_route_count": 3,
+      "related_controllers": [
+        "midjourney_refund_outbox_task",
+        "midjourney_refund_recovery_task",
+        "payment_reconcile_task",
+        "refund_intent_recovery_task",
+        "system_task",
+        "system_task_handlers",
+        "task",
+        "task_plugin",
+        "task_plugin_debug"
+      ],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-TASK-001-01",
+        "AC-TASK-001-02",
+        "AC-TASK-001-03",
+        "AC-TASK-001-04",
+        "AC-TASK-001-05",
+        "AC-TASK-001-06",
+        "AC-TASK-001-07",
+        "AC-TASK-001-08",
+        "AC-TASK-001-09",
+        "AC-TASK-002-01",
+        "AC-TASK-002-02",
+        "AC-TASK-002-03",
+        "AC-TASK-002-04",
+        "AC-TASK-002-05",
+        "AC-TASK-002-06",
+        "AC-TASK-003-01",
+        "AC-TASK-003-02",
+        "AC-TASK-003-03",
+        "AC-TASK-003-04",
+        "AC-TASK-003-05",
+        "AC-TASK-003-06"
+      ],
+      "registry_feature_ids": [
+        "UTER-TASK-001",
+        "UTER-TASK-002",
+        "UTER-TASK-003"
+      ],
+      "prd_ref": "docs/product/prd/task/UTER-TASK-001.md",
+      "code_evidence_count": 13
+    },
+    {
+      "id": "FEAT-USAGE-LOGS",
+      "slug": "usage-logs",
+      "source_files": [
+        "web/src/features/usage-logs",
+        "controller",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/usage-logs",
+      "related_routes": [
+        "GET /:id/logs",
+        "GET /:id/logs/stat",
+        "GET /logs",
+        "DELETE /logs",
+        "GET /channel_affinity_usage_cache",
+        "GET /:id/logs"
+      ],
+      "related_route_count": 6,
+      "related_controllers": [
+        "codex_usage"
+      ],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 8
+    },
+    {
+      "id": "FEAT-USERS",
+      "slug": "users",
+      "source_files": [
+        "web/src/features/users",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/users",
+      "related_routes": [
+        "GET /:id/quota-dates/users",
+        "GET /users/:id/subscriptions",
+        "POST /users/:id/subscriptions",
+        "POST /users/:id/subscriptions/reset",
+        "POST /user_subscriptions/:id/invalidate",
+        "DELETE /user_subscriptions/:id",
+        "GET /users"
+      ],
+      "related_route_count": 7,
+      "related_controllers": [],
+      "acceptance_locatable": true,
+      "acceptance_refs": [
+        "AC-USER-001-01",
+        "AC-USER-001-02",
+        "AC-USER-001-03",
+        "AC-USER-001-04",
+        "AC-USER-001-05",
+        "AC-USER-001-06",
+        "AC-USER-002-01",
+        "AC-USER-002-02",
+        "AC-USER-002-03",
+        "AC-USER-002-04",
+        "AC-USER-002-05",
+        "AC-USER-002-06",
+        "AC-USER-003-01",
+        "AC-USER-003-02",
+        "AC-USER-003-03",
+        "AC-USER-003-04",
+        "AC-USER-003-05",
+        "AC-USER-003-06",
+        "AC-USER-003-07",
+        "AC-USER-003-08",
+        "AC-USER-003-09"
+      ],
+      "registry_feature_ids": [
+        "UTER-USER-001",
+        "UTER-USER-002",
+        "UTER-USER-003"
+      ],
+      "prd_ref": "docs/product/prd/user/UTER-USER-001.md",
+      "code_evidence_count": 8
+    },
+    {
+      "id": "FEAT-WALLET",
+      "slug": "wallet",
+      "source_files": [
+        "web/src/features/wallet",
+        "router/api-router.go"
+      ],
+      "frontend_path": "web/src/features/wallet",
+      "related_routes": [],
+      "related_route_count": 0,
+      "related_controllers": [],
+      "acceptance_locatable": false,
+      "acceptance_refs": [],
+      "registry_feature_ids": [],
+      "prd_ref": null,
+      "code_evidence_count": 1
+    }
+  ],
+  "gaps": [
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-ABOUT",
+      "slug": "about",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-CHAT",
+      "slug": "chat",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-CUSTOMER-SERVICE",
+      "slug": "customer-service",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-DASHBOARD",
+      "slug": "dashboard",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-DOCS",
+      "slug": "docs",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-ERRORS",
+      "slug": "errors",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-HOME",
+      "slug": "home",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-KEYS",
+      "slug": "keys",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-LEGAL",
+      "slug": "legal",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-PERFORMANCE-METRICS",
+      "slug": "performance-metrics",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-PLAYGROUND",
+      "slug": "playground",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-PRICING",
+      "slug": "pricing",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-PROFILE",
+      "slug": "profile",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-RANKINGS",
+      "slug": "rankings",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-REDEMPTION-CODES",
+      "slug": "redemption-codes",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-SECURITY",
+      "slug": "security",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-SETUP",
+      "slug": "setup",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-SUBSCRIPTIONS",
+      "slug": "subscriptions",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-SYSTEM-INFO",
+      "slug": "system-info",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-SYSTEM-SETTINGS",
+      "slug": "system-settings",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-SYSTEM-UPDATE",
+      "slug": "system-update",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-USAGE-LOGS",
+      "slug": "usage-logs",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    },
+    {
+      "type": "missing_prd_ref",
+      "feature_id": "FEAT-WALLET",
+      "slug": "wallet",
+      "detail": "no feature-registry entry with an existing prd_path maps to this code feature"
+    }
+  ]
+}

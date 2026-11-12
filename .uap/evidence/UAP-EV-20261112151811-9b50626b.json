@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151811-9b50626b",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:18:11.448Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap status",
+  "exit_code": 0,
+  "duration_ms": 177,
+  "inputs": "{\"argv\":[\"status\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "UAP 1.0.0: registry 37/37, specs=COMPLETE, runtime=FULLY_OPERATIONAL, Uter=NOT_FULLY_VERIFIED",
+  "content_hash": "06f4b3724fab492a73cbf35c1b4426e04eb102f09a991d737d35d29f7d1c1127"
+}

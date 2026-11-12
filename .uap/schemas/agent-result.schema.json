@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uap://schemas/agent-result",
+  "title": "UAP Agent Result",
+  "type": "object",
+  "required": [
+    "status",
+    "summary",
+    "changed_files",
+    "evidence_refs",
+    "agent_id"
+  ],
+  "properties": {
+    "agent_id": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "SUCCEEDED",
+        "FAILED",
+        "BLOCKED"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputs": {
+      "type": "object"
+    }
+  }
+}

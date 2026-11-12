@@ -1,0 +1,98 @@
+schema_version: "1.0"
+registry_id: "UAP-AGENT-REGISTRY"
+implementation: .uap/runtime/agent-runtime/index.mjs
+
+agents:
+  - id: uap-orchestrator
+    name: Orchestrator
+    role: task_orchestration
+    implementation: .uap/runtime/agent-runtime/index.mjs
+    permissions: [project_read, task_create, task_dispatch, evidence_write]
+    tools: [task_engine, state_machine, evidence_engine]
+    output_schema: agent-result
+
+  - id: uap-product-agent
+    name: Product Engineering Agent
+    role: product_analysis
+    implementation: .uap/engines/product/index.mjs
+    permissions: [project_read, product_write, evidence_write]
+    tools: [product_engine, requirement_registry]
+    output_schema: agent-result
+
+  - id: uap-architecture-agent
+    name: Architecture Agent
+    role: architecture_analysis
+    implementation: .uap/engines/architecture/index.mjs
+    permissions: [project_read, architecture_write, evidence_write]
+    tools: [architecture_engine, dependency_analyzer]
+    output_schema: agent-result
+
+  - id: uap-development-agent
+    name: Development Agent
+    role: code_implementation
+    implementation: .uap/engines/development/index.mjs
+    permissions: [project_read, project_write, local_command, evidence_write]
+    tools: [development_engine, test_engine]
+    output_schema: agent-result
+
+  - id: uap-review-agent
+    name: Code Review Agent
+    role: independent_code_review
+    implementation: .uap/engines/code-review/index.mjs
+    permissions: [project_read, evidence_write]
+    tools: [review_engine, security_scanner]
+    output_schema: review-result
+
+  - id: uap-test-agent
+    name: Testing Agent
+    role: test_execution
+    implementation: .uap/engines/testing/index.mjs
+    permissions: [project_read, local_command, test_environment, evidence_write]
+    tools: [test_engine, coverage_engine]
+    output_schema: test-result
+
+  - id: uap-repair-agent
+    name: Auto Repair Agent
+    role: defect_repair
+    implementation: .uap/engines/auto-repair/index.mjs
+    permissions: [project_read, project_write, local_command, evidence_write]
+    tools: [repair_engine, test_engine]
+    output_schema: repair-result
+
+  - id: uap-security-agent
+    name: Security Agent
+    role: security_assessment
+    implementation: .uap/engines/security/index.mjs
+    permissions: [project_read, local_command, evidence_write]
+    tools: [security_engine, dependency_scanner]
+    output_schema: security-result
+
+  - id: uap-cross-platform-agent
+    name: Cross Platform Agent
+    role: platform_consistency
+    implementation: .uap/engines/cross-platform/index.mjs
+    permissions: [project_read, project_write, local_command, evidence_write]
+    tools: [cross_platform_engine, browser_test_adapter]
+    output_schema: agent-result
+
+  - id: uap-delivery-agent
+    name: Delivery Agent
+    role: build_and_delivery
+    implementation: .uap/engines/delivery/index.mjs
+    permissions: [project_read, local_command, test_environment, evidence_write]
+    tools: [delivery_engine, build_adapter]
+    output_schema: delivery-result
+
+  - id: uap-knowledge-agent
+    name: Knowledge Agent
+    role: knowledge_management
+    implementation: .uap/engines/knowledge/index.mjs
+    permissions: [project_read, knowledge_write, evidence_write]
+    tools: [knowledge_engine, traceability_engine]
+    output_schema: agent-result
+
+defaults:
+  deny_unregistered_agents: true
+  deny_undeclared_tools: true
+  enforce_permission_policy: true
+  require_structured_output: true

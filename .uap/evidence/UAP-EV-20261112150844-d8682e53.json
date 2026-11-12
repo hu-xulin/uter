@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112150844-d8682e53",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112150844-1c18b28e",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:08:44.179Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:generate_final_report",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "generate_final_report persisted evidence",
+  "content_hash": "b79948f674d567a7fa9863a5d819a9a2b4390b9329b4ac467133e35d04bf0c26"
+}

@@ -1,0 +1,63 @@
+{
+  "evidence_id": "UAP-EV-20261112150843-43416b76",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-20261112150838-609e5147",
+  "trace_id": "UAP-TRACE-20261112150838-df310c3a",
+  "specification_ids": [
+    "UAP-00-001",
+    "UAP-00-002",
+    "UAP-00-003",
+    "UAP-00-004",
+    "UAP-01-001",
+    "UAP-01-002",
+    "UAP-01-003",
+    "UAP-02-001",
+    "UAP-02-002",
+    "UAP-02-003",
+    "UAP-03-001",
+    "UAP-03-002",
+    "UAP-03-003",
+    "UAP-03-004",
+    "UAP-04-001",
+    "UAP-04-002",
+    "UAP-04-003",
+    "UAP-05-001",
+    "UAP-05-002",
+    "UAP-05-003",
+    "UAP-05-004",
+    "UAP-06-001",
+    "UAP-06-002",
+    "UAP-06-003",
+    "UAP-07-001",
+    "UAP-07-002",
+    "UAP-07-003",
+    "UAP-08-001",
+    "UAP-08-002",
+    "UAP-08-003",
+    "UAP-09-001",
+    "UAP-09-002"
+  ],
+  "recorded_at": "2026-11-12T15:08:43.785Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:security_scan",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-6\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "step_failed",
+      "message": "7 secret-shaped literals found"
+    }
+  ],
+  "summary": "security_scan failed: 7 secret-shaped literals found",
+  "content_hash": "de7e7077a477197e2194a6b3dea23cff5c179eea9e9f706cb300c90a91a732bd"
+}

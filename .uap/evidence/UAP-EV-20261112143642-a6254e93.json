@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112143642-a6254e93",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112143642-1cd047e6",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T14:36:42.116Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:validate_all_workflows",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-4\",\"name\":\"validate_all_workflows\",\"idempotent\":true,\"handler\":\"validate_all_workflows\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "validate_all_workflows: all registered implementations present",
+  "content_hash": "30ef0f2880a5055526572275c364765d2baa03038cd8a1f7fc3c7bb8ebd4653e"
+}

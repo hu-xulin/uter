@@ -76,7 +76,8 @@ add(
 )
 add(
   'TOKEN_SCHEMA_MACHINE_AUTHORIZATION',
-  schema.properties?.$extensions?.required?.includes('com.uter.tokens') === true &&
+  schema.properties?.$extensions?.required?.includes('com.uter.tokens') ===
+    true &&
     schema.$defs?.metadata?.required?.includes('machineAuthorization') ===
       true &&
     schema.$defs?.metadata?.properties?.changeApproval === undefined &&

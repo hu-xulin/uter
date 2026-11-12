@@ -1,0 +1,572 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:33.464Z",
+  "executor_ids": [
+    "product.business_rules"
+  ],
+  "note": "All billing/payment rules are code anchors; funds were NOT moved (simulated_only).",
+  "simulated_only": true,
+  "rule_count": 70,
+  "rules": [
+    {
+      "id": "BR-QUOTA-2f951c42cc",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaFromFloat",
+      "line": 112,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-8da4edcb01",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaFromFloatChecked",
+      "line": 119,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-7c203d9270",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaFromFloatStrict",
+      "line": 125,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-d05a8762e6",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaRound",
+      "line": 133,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-dbac8eb12c",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaRoundChecked",
+      "line": 140,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-4343b75a2c",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaRoundStrict",
+      "line": 146,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-18236ce0b1",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaFromDecimal",
+      "line": 152,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-11b64cb9e9",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaFromDecimalChecked",
+      "line": 159,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-4287e956e0",
+      "source": "common/quota_math.go",
+      "symbol": "QuotaFromDecimalStrict",
+      "line": 166,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-QUOTA-51efcae3cd",
+      "source": "common/quota_math.go",
+      "symbol": "WalletQuotaFromDecimalStrict",
+      "line": 172,
+      "category": "QUOTA",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-505bdec6dc",
+      "source": "model/email_quota.go",
+      "symbol": "EmailQuotaDate",
+      "line": 29,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-7a66afcc7d",
+      "source": "model/quota_reserve.go",
+      "symbol": "quotaResultFromLua",
+      "line": 67,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-ab10c8acd9",
+      "source": "model/quota_reserve.go",
+      "symbol": "cacheTryReserveUserQuota",
+      "line": 81,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-5a0ec09721",
+      "source": "model/quota_reserve.go",
+      "symbol": "cacheApplyUserQuotaDelta",
+      "line": 90,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-1e7b6d42ad",
+      "source": "model/quota_reserve.go",
+      "symbol": "cacheTryReserveTokenQuota",
+      "line": 99,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-224e07f416",
+      "source": "model/quota_reserve.go",
+      "symbol": "cacheApplyTokenQuotaDelta",
+      "line": 108,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-fd47524dde",
+      "source": "model/quota_reserve.go",
+      "symbol": "persistUserQuotaDelta",
+      "line": 119,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-e1d5001670",
+      "source": "model/subscription.go",
+      "symbol": "GetSubscriptionOrderByTradeNo",
+      "line": 244,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-2c7a85f314",
+      "source": "model/subscription.go",
+      "symbol": "CompleteSubscriptionOrder",
+      "line": 582,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-86d7bf8e66",
+      "source": "model/subscription.go",
+      "symbol": "upsertSubscriptionTopUpTx",
+      "line": 672,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-9a2be2cf91",
+      "source": "model/subscription.go",
+      "symbol": "transitionLinkedSubscriptionTopUpTx",
+      "line": 753,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-874bfa19ec",
+      "source": "model/subscription.go",
+      "symbol": "ExpireSubscriptionOrder",
+      "line": 787,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-bf19aec3b4",
+      "source": "model/subscription.go",
+      "symbol": "FailPendingSubscriptionOrder",
+      "line": 820,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-642b770fc6",
+      "source": "model/task_billing_state.go",
+      "symbol": "TaskBillingIdempotencyKey",
+      "line": 141,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-7d950b531e",
+      "source": "model/topup.go",
+      "symbol": "topUpQuotaMaxCurrent",
+      "line": 79,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-65b616ce7c",
+      "source": "model/topup.go",
+      "symbol": "ValidateTopUpQuotaCapacity",
+      "line": 89,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-ebfb8df7f1",
+      "source": "model/topup.go",
+      "symbol": "creditTopUpQuota",
+      "line": 108,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-c28713071a",
+      "source": "model/topup.go",
+      "symbol": "topUpRefColumn",
+      "line": 146,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-8fb68b1cc7",
+      "source": "model/topup.go",
+      "symbol": "claimPendingTopUp",
+      "line": 172,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-47ef76d5f5",
+      "source": "model/topup.go",
+      "symbol": "GetTopUpById",
+      "line": 243,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-78d1513642",
+      "source": "model/user_month_quota.go",
+      "symbol": "GetUserMonthConsumedQuota",
+      "line": 34,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-f440d986ba",
+      "source": "model/user_month_quota.go",
+      "symbol": "evictMonthlyQuotaCacheLocked",
+      "line": 68,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-df16ec53bc",
+      "source": "model/user_month_quota.go",
+      "symbol": "ResetUserMonthQuotaCache",
+      "line": 92,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-32aa59b5e6",
+      "source": "model/user_month_quota.go",
+      "symbol": "sumConsumedQuotaSince",
+      "line": 105,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-MODEL-a1355ab634",
+      "source": "model/user_quota_adjustment.go",
+      "symbol": "AdjustUserQuota",
+      "line": 25,
+      "category": "MODEL",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-0f9c90016d",
+      "source": "controller/payment_reconcile_task.go",
+      "symbol": "reconcileUserPendingAlipayOrders",
+      "line": 79,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-e2a895f5ca",
+      "source": "controller/payment_reconcile_task.go",
+      "symbol": "StartAlipayReconcileTask",
+      "line": 120,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-f93571ef2c",
+      "source": "controller/payment_reconcile_task.go",
+      "symbol": "RunAlipayReconcileOnce",
+      "line": 146,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-b8a40e7990",
+      "source": "controller/subscription_payment_epay.go",
+      "symbol": "SubscriptionEpayNotify",
+      "line": 119,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-724232da96",
+      "source": "controller/subscription_payment_stripe.go",
+      "symbol": "stripeSubscriptionPriceMatchesLocalOrder",
+      "line": 145,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-232b778ae7",
+      "source": "controller/topup.go",
+      "symbol": "presetDiscountFor",
+      "line": 226,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-68c22a1cd8",
+      "source": "controller/topup.go",
+      "symbol": "getPayMoney",
+      "line": 236,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-cd3b587903",
+      "source": "controller/topup.go",
+      "symbol": "roundPayMoneyToCent",
+      "line": 275,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-46d88559de",
+      "source": "controller/topup.go",
+      "symbol": "formatTopUpAmount",
+      "line": 294,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-6f6cb26cb4",
+      "source": "controller/topup.go",
+      "symbol": "WalletQuotaFromDecimalStrict",
+      "line": 305,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-e1e04e0f7c",
+      "source": "controller/topup.go",
+      "symbol": "getTopUpQuota",
+      "line": 314,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-ae2396f3fc",
+      "source": "controller/topup_alipay.go",
+      "symbol": "buildAlipayWebPayParams",
+      "line": 82,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-fa824e50b7",
+      "source": "controller/topup_alipay.go",
+      "symbol": "alipayWebProductName",
+      "line": 113,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-ca36f335af",
+      "source": "controller/topup_alipay.go",
+      "symbol": "isAlipayTopUpEnabled",
+      "line": 120,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-818c8a9686",
+      "source": "controller/topup_alipay.go",
+      "symbol": "alipayAmountForStorage",
+      "line": 124,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-e3925a2cf7",
+      "source": "controller/topup_alipay.go",
+      "symbol": "RequestAlipayWeb",
+      "line": 147,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-67f28a4a63",
+      "source": "controller/topup_alipay.go",
+      "symbol": "QueryAlipayOrder",
+      "line": 255,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-cec9c3205f",
+      "source": "controller/topup_creem.go",
+      "symbol": "verifyCreemSignature",
+      "line": 39,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-eda03b278f",
+      "source": "controller/topup_stripe.go",
+      "symbol": "RequestAmount",
+      "line": 54,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-b37f55f056",
+      "source": "controller/topup_stripe.go",
+      "symbol": "RequestStripeAmount",
+      "line": 190,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-12f038bb71",
+      "source": "controller/topup_stripe.go",
+      "symbol": "stripeCheckoutSubtotalMatchesOrder",
+      "line": 349,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-ceafee6b4f",
+      "source": "controller/topup_stripe.go",
+      "symbol": "stripeCheckoutTotalIsPayable",
+      "line": 365,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-51e962c7b8",
+      "source": "controller/topup_stripe.go",
+      "symbol": "stripeMoneyToMinorUnits",
+      "line": 526,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-3a766cba24",
+      "source": "controller/topup_stripe.go",
+      "symbol": "GetChargedAmount",
+      "line": 636,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-35b5180e93",
+      "source": "controller/topup_waffo.go",
+      "symbol": "buildWaffoTopUpGoodsInfo",
+      "line": 86,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-865dee62c1",
+      "source": "controller/topup_waffo.go",
+      "symbol": "formatWaffoAmount",
+      "line": 102,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-dc2145b75d",
+      "source": "controller/topup_waffo.go",
+      "symbol": "waffoPaidAmountMatchesOrder",
+      "line": 111,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-80e15d0e0f",
+      "source": "controller/topup_waffo.go",
+      "symbol": "getWaffoPayMoney",
+      "line": 124,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-131d97fb64",
+      "source": "controller/topup_waffo.go",
+      "symbol": "RequestWaffoAmount",
+      "line": 151,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-0f33d5602e",
+      "source": "controller/topup_waffo_pancake.go",
+      "symbol": "RequestWaffoPancakeAmount",
+      "line": 24,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-e569c3d021",
+      "source": "controller/topup_waffo_pancake.go",
+      "symbol": "getWaffoPancakePayMoney",
+      "line": 55,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-c61b854825",
+      "source": "controller/topup_waffo_pancake.go",
+      "symbol": "normalizeWaffoPancakeTopUpAmount",
+      "line": 81,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-3bcae4cf6f",
+      "source": "controller/topup_waffo_pancake.go",
+      "symbol": "formatWaffoPancakeAmount",
+      "line": 95,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-48a80e3184",
+      "source": "controller/topup_wechat.go",
+      "symbol": "wechatAmountForStorage",
+      "line": 50,
+      "category": "PAYMENT",
+      "simulated_only": true
+    },
+    {
+      "id": "BR-PAYMENT-6dfda74f7e",
+      "source": "controller/topup_wechat.go",
+      "symbol": "WechatPayNotify",
+      "line": 282,
+      "category": "PAYMENT",
+      "simulated_only": true
+    }
+  ]
+}

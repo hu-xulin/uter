@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112151734-c7c24fec",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:17:34.832Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap release check",
+  "exit_code": 1,
+  "duration_ms": 31,
+  "inputs": "{\"argv\":[\"release\",\"check\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "release check BLOCKED: 2 gates not satisfied (full_validation_all_pass, final_status_claims_success)"
+    }
+  ],
+  "summary": "release check BLOCKED: 2 gates not satisfied (full_validation_all_pass, final_status_claims_success)",
+  "content_hash": "db72206d8a6af680647ddcec0afbf8d4893667a853aa9beda0bd8b0fa25dc4a7"
+}

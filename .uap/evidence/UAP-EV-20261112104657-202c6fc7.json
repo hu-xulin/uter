@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112104657-202c6fc7",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-HEALTH-20261112104657-991a6aef",
+  "trace_id": "UAP-TRACE-20261112104657-f0699672",
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:46:57.859Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-HEALTH-20261112104657-991a6aef",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"runtime health probe\",\"specification_ids\":[\"UAP-00-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-HEALTH-20261112104657-991a6aef finished: SUCCEEDED",
+  "content_hash": "27af0d8e27ad98fc203311caaf33f0c37baaa106a6994fb18e3559740668279d"
+}

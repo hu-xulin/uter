@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151702-b67585a2",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:17:02.560Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap audit",
+  "exit_code": 0,
+  "duration_ms": 277,
+  "inputs": "{\"argv\":[\"audit\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "audit clean: 4157 files, 19 financial checks, 0 blockers",
+  "content_hash": "26d6625685d2410dad0da5914c577440216d5d9e0b4e7f127e92af3a6715c022"
+}

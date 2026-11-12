@@ -1,0 +1,2272 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:34.958Z",
+  "executor_id": "development.code_review",
+  "git_available": true,
+  "changed_file_count": 346,
+  "changed_files": [
+    {
+      "path": "AGENTS.md",
+      "status": " M"
+    },
+    {
+      "path": "CLAUDE.md",
+      "status": " M"
+    },
+    {
+      "path": ".uap/README.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/SPECIFICATION-INDEX.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/VERSION",
+      "status": "??"
+    },
+    {
+      "path": ".uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/agents/UAP-03-002-AGENT-EXECUTION.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/agents/UAP-03-003-AGENT-COLLABORATION.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/agents/UAP-03-004-AGENT-RECOVERY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/architecture/UAP-02-001-SYSTEM-ARCHITECTURE.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/architecture/UAP-02-002-API-AND-DATABASE.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/architecture/UAP-02-003-TECHNICAL-DECISIONS.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/bin/uap.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/config/agent-registry.yaml",
+      "status": "??"
+    },
+    {
+      "path": ".uap/config/execution-mapping.yaml",
+      "status": "??"
+    },
+    {
+      "path": ".uap/config/permission-policy.yaml",
+      "status": "??"
+    },
+    {
+      "path": ".uap/config/specification-registry.yaml",
+      "status": "??"
+    },
+    {
+      "path": ".uap/config/validator-registry.yaml",
+      "status": "??"
+    },
+    {
+      "path": ".uap/config/workflow-registry.yaml",
+      "status": "??"
+    },
+    {
+      "path": ".uap/core/UAP-00-001-CORE-ARCHITECTURE.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/core/UAP-00-003-SECURITY-BOUNDARY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/core/UAP-00-004-EVIDENCE-AND-STATE.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/cross-platform/UAP-07-001-WEB-ENGINEERING.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/cross-platform/UAP-07-002-H5-ENGINEERING.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/cross-platform/UAP-07-003-CROSS-PLATFORM-CONSISTENCY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/delivery/UAP-08-001-CI-CD.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/delivery/UAP-08-002-DEPLOYMENT-AND-ROLLBACK.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/delivery/UAP-08-003-OBSERVABILITY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/development/UAP-04-001-CODING-STANDARD.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/development/UAP-04-002-CODE-REVIEW.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/development/UAP-04-003-DEPENDENCY-MANAGEMENT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/architecture/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/auto-repair/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/code-review/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/cross-platform/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/delivery/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/development/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/knowledge/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/product/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/security/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/engines/testing/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-2475b437.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-4688c9b8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-6794a1df.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-6da70a1f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-a4a3ddfd.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-c7e9a95a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-cedcf0a3.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-da885048.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-f0697d4e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104051-f33487b8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104602-141b654f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104615-3e657111.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104644-fe8f1c39.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104657-202c6fc7.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104657-238f0f5a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104657-4c00c6e8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104658-00b93568.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104658-090c2497.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104658-1162cfa9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104658-171213e9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104658-8b98cf4a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104658-b8bbf06f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104817-1d4bc854.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104817-32db3372.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104817-5c85ae76.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104817-60b98087.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104817-61549361.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112104817-fc80ae38.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105056-a9e34f46.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105439-54228dfa.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105521-f33f7fc6.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105532-7b2097b7.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105532-b8cc24bb.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105532-c730e696.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-046304bb.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-24a6355b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-45c04d33.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-86149ba9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-88f2eaee.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-9c27c244.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-d4271575.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-dc52f374.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105533-ee47a5ee.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105534-39f76bc8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105625-ef2eb644.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-05a09a92.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-1eeb3245.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-29873404.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-3957a808.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-3d274f5f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-3f02a24a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-43f0428d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-5884a0a6.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-68106dc1.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-8d588be6.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-9141a0f3.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-9267273b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-b4ca0055.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-bcdb0e7a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-c1ab5b51.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-c591e6b6.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105626-dbefac13.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105627-453efab4.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-15b14c8a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-431e3e94.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-4c8fae84.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-aa2fee23.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-bd09b9c3.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-cfb3819f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105636-d094ef50.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-139afc0b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-53c81b0b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-665a6a13.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-67c17ec0.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-9727164f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-c118c52d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105637-eba66ac2.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105638-0064826c.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105638-15ec046d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105638-7cfb4d9a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105638-a173bc77.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105638-ab579e78.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105638-e944e76c.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-06dea295.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-0e4b9f2a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-1a11101c.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-2a6c802b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-2d55a600.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-43422a94.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-997fb1f8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-9e04b528.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105639-f2fbb653.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105640-2187eae5.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105640-7bc93c7b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105640-7dab0f1d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105640-a24a5775.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-0113550e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-0e51b9aa.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-1f9f6ac9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-3b82fc2e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-43f4099f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-56cfbafb.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-597020e4.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-5a4ddbca.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-6b153848.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-703e94be.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-83740f23.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-93147b8b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-9cba76a0.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-a3b76984.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-a4f0a783.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-b6b1dce7.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-c9aa7870.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-caf04b74.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-d20b92bb.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-e43b55e3.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-e6dfad87.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-e7b27675.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-eb3b9743.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-f15dd0c7.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-f323a17e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-f4629d41.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112105731-f897ebd7.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-0fcfd628.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-12f91c98.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-406223f2.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-61d45dca.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-64f0b607.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-64fbaccc.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-9ef8e2de.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-d775c7e9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110156-f30255a2.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-00592410.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-033bbc50.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-07f4b0bf.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-0a7e7eff.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-18a0c00d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-19b05ef2.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-2320693a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-27369cce.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-5287fc4a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-5d14bc96.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-64067f5e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-675b3091.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-69cb42db.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-72a2256f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-73610c1b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-8110bd74.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-89492ac3.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-8b202d57.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-8c39e566.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-8e552579.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-935f0741.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-97675b0d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-afbab2f3.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-b36c93b9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-cbce9ffc.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-d3363a4c.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-d6c6b733.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110157-d911a798.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-052dc115.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-09227505.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-14500703.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-27409e74.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-2be30c09.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-2ddac17b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-3061c5c5.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-3c535dbd.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-41af892a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-53b86db1.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-570ba2c8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-5e192a93.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-620344f9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-63baa848.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-6d29fc0c.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-7f024618.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-83ba2ca5.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-914fec20.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-9349a1a5.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-93d5b56b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-9853f94e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-9f3df147.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-a3c4ee2f.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-a467f8c9.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-aac9b1b8.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-b3259e19.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-b32cb90c.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-cc08024a.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-d6a4f144.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-d7f240ee.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-e9e8055e.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-e9fcbab0.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-ef782b0d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-f0cb197b.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-f298f339.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-f683f42d.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-20261112110221-fc20f733.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-TEST-20261112110157-67704179.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evidence/UAP-EV-TEST-20261112110221-fc0cdd84.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evolution/UAP-09-001-KNOWLEDGE-MANAGEMENT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/evolution/UAP-09-002-CONTINUOUS-EVOLUTION.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/product/UAP-01-001-PRODUCT-REQUIREMENTS.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/product/UAP-01-002-PRD-PROTOTYPE-SYNC.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/product/UAP-01-003-BUSINESS-RULES.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/quality/UAP-05-001-QUALITY-ENGINEERING.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/quality/UAP-05-002-AUTOMATED-TESTING.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/quality/UAP-05-003-AUTO-REPAIR.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/quality/UAP-05-004-QUALITY-GATES.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/AGENT-COMPLIANCE-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/AUDIT-REPORT.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/AUTO-REPAIR-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/AUTO-REPAIR.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/BLOCKED-ITEMS.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/CODE-REVIEW.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/CROSS-PLATFORM-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/CROSS-PLATFORM.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/DEFECT-REGISTRY.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/DELIVERY.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/EVIDENCE-INDEX.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/EXECUTOR-COVERAGE-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/FINAL-STATUS.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/FINANCIAL-INTEGRITY-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/FINANCIAL-INTEGRITY.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/H5-ENGINEERING-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/IMPLEMENTATION-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/QUALITY-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/RUNTIME-TEST-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/SECURITY-AUDIT-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/SECURITY-SCAN.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/SPEC-HEADER-REPAIR.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/SPECIFICATION-COMPLIANCE-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/SPECIFICATION-REGISTRY-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/TEST-RUNS.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/VALIDATION-RESULTS.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/VALIDATOR-COVERAGE-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/WEB-ENGINEERING-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/reports/WORKFLOW-VERIFICATION-REPORT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/_lib/config.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/_lib/contract.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/_lib/paths.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/_lib/proc.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/_lib/util.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/_lib/yaml.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/agent-runtime/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/event-system/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/evidence-engine/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/orchestrator/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/policy-engine/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/recovery-engine/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/resource-manager/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/scheduler/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/state-machine/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/runtime/task-engine/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/agent-result.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/defect.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/evidence.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/executor-result.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/final-status.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/task.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/schemas/validator-result.schema.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/security/UAP-06-001-APPLICATION-SECURITY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/security/UAP-06-003-RELIABILITY-AND-RECOVERY.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/BASELINE.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/adr-inventory.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/architecture-graph.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/business-rules.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/cli-last.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/coding-standard.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/dependency-inventory.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/events.jsonl",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/feature-registry.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/knowledge-index.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/locks.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/policy-audit.jsonl",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/prd-prototype-mapping.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/recovery-verification.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/repair-sandbox/billing-sample.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/runtime-health.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/state/tasks.json",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tests/runtime.test.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/MODULE-CONTRACT.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/financial-simulation.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/generate-index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/generate-schemas.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/interrupt-probe.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/normalize-spec-headers.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/report-generator.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/schema-paths.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/spec-baseline.md",
+      "status": "??"
+    },
+    {
+      "path": ".uap/tools/uter-audit.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/agents/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/architecture/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/core/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/cross-platform/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/delivery/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/development/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/evolution/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/product/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/quality/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/validators/security/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": ".uap/workflows/index.mjs",
+      "status": "??"
+    },
+    {
+      "path": "uap",
+      "status": "??"
+    }
+  ],
+  "directory_expansions": [
+    {
+      "path": ".uap/",
+      "file_count": 343
+    }
+  ],
+  "files_reviewed": 345,
+  "finding_count": 80,
+  "severity_counts": {
+    "BLOCKER": 11,
+    "MAJOR": 14,
+    "MINOR": 1,
+    "INFO": 54
+  },
+  "findings": [
+    {
+      "severity": "MAJOR",
+      "file": ".uap/engines/auto-repair/index.mjs",
+      "line": 28,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "const paid = Math.floor(amount * 100);"
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/engines/auto-repair/index.mjs",
+      "line": 49,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": ".replace('  const paid = Math.floor(amount * 100);', '  const paid = toPayAmount(amount);'),"
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/engines/auto-repair/index.mjs",
+      "line": 56,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "'  const paid = Math.floor(amount * 100);',"
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/engines/auto-repair/index.mjs",
+      "line": 67,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "'  const paid = Math.floor(amount * 100);\\n  return paid;',"
+    },
+    {
+      "severity": "MINOR",
+      "file": ".uap/engines/code-review/index.mjs",
+      "line": 92,
+      "message": "[CR-IGNORED-ERR] 错误被显式忽略或校验被禁用（启发式）",
+      "root_cause": "错误被显式忽略或校验被禁用（启发式）",
+      "suggestion": "处理错误，或在审查说明中记录豁免理由",
+      "code": "CR-IGNORED-ERR",
+      "matched_text": "test: (l) => /_\\s*=\\s*err\\b|@ts-ignore|eslint-disable/.test(l),"
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/evidence/UAP-EV-20261112105639-2a6c802b.json",
+      "line": 25,
+      "message": "[CR-RM-RF] 破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "root_cause": "破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "suggestion": "改用 OS 回收站机制分批删除，每批不超过 10 个并复核",
+      "code": "CR-RM-RF",
+      "matched_text": "\"message\": \"vulnerability_scan: node 子进程静态扫描 31 个 UAP .mjs 危险调用(eval/execSync/rm -rf/--force 等), 命中文件=4; exit_code=0; 未运行外部 CVE 库(离线), 不声称无 CVE\""
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/reports/AUDIT-REPORT.json",
+      "line": 123,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "\"message\": \"wallet/lib/payment.ts 真实文本匹配金额取整锚点 3/3: [toPayAmount, Math.round, Math.floor(0.01)]\","
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/reports/AUDIT-REPORT.json",
+      "line": 414,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "\"message\": \"wallet/lib/payment.ts 真实文本匹配金额取整锚点 3/3: [toPayAmount, Math.round, Math.floor(0.01)]\","
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 23,
+      "message": "[CR-MERCHANT-ID] 疑似真实商户号硬编码在改动文件中",
+      "root_cause": "疑似真实商户号硬编码在改动文件中",
+      "suggestion": "改用配置项注入，避免提交真实商户标识",
+      "code": "CR-MERCHANT-ID",
+      "matched_text": "\"redacted_snippet\": \"\\\"matched_text\\\": \\\"\\\\\\\"redacted_snippet\\\\\\\": \\\\\\\"WechatPayMchId: '1900000000',\\\\\\\",\\\"\","
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 32,
+      "message": "[CR-MERCHANT-ID] 疑似真实商户号硬编码在改动文件中",
+      "root_cause": "疑似真实商户号硬编码在改动文件中",
+      "suggestion": "改用配置项注入，避免提交真实商户标识",
+      "code": "CR-MERCHANT-ID",
+      "matched_text": "\"redacted_snippet\": \"\\\"matched_text\\\": \\\"\\\\\\\"redacted_snippet\\\\\\\": \\\\\\\"WechatPayMchId: '1900000000',\\\\\\\",\\\"\","
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 41,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "\"redacted_snippet\": \"\\\"matched_text\\\": \\\"\\\\\\\"redacted_snippet\\\\\\\": \\\\\\\"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',\\\\\\\",\\\"\","
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 50,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"redacted_snippet\": \"\\\"snippet\\\": \\\"+ \\\\\\\"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\\\\\\\";\\\"\","
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 77,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"redacted_snippet\": \"+ \\\"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\\\";\","
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 131,
+      "message": "[CR-MERCHANT-ID] 疑似真实商户号硬编码在改动文件中",
+      "root_cause": "疑似真实商户号硬编码在改动文件中",
+      "suggestion": "改用配置项注入，避免提交真实商户标识",
+      "code": "CR-MERCHANT-ID",
+      "matched_text": "\"redacted_snippet\": \"WechatPayMchId: '1900000000',\","
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 140,
+      "message": "[CR-MERCHANT-ID] 疑似真实商户号硬编码在改动文件中",
+      "root_cause": "疑似真实商户号硬编码在改动文件中",
+      "suggestion": "改用配置项注入，避免提交真实商户标识",
+      "code": "CR-MERCHANT-ID",
+      "matched_text": "\"redacted_snippet\": \"WechatPayMchId: '1900000000',\","
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "line": 158,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "\"redacted_snippet\": \"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',\","
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 89,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {loadAllConfigs,registryIntegrity}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/config.mjs');const r=registryIntegrity(loadAllConfigs());c"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 185,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {TASK_TRANSITIONS,TASK_STATES,executorResult}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/contract.mjs');const terminal=['SUCCEEDED','CAN"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 1082,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {executorResult}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/contract.mjs');const er=executorResult({status:'SUCCEEDED',task_id:'probe'})"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 1094,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e console.log(JSON.stringify({ok:true}));\","
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 1296,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {TASK_TRANSITIONS}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/contract.mjs');const terminal=['SUCCEEDED','CANCELLED'].every(s=>TASK_TRAN"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 1406,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e import {spawnSync} from 'node:child_process';const files=[\\\"/Users/lincolnhu/uter/.uap/validators/core/index.mjs\\\",\\\"/Users/lincolnhu/uter/.uap/validators/secur"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 1516,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const c=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/contract.mjs');const er=c.executorResult({status:'SUCCEEDED'});let normalOk=true;try{c.asse"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 1940,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {TASK_TRANSITIONS}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/contract.mjs');const max=3;const retryPath=(TASK_TRANSITIONS.FAILED||[]).i"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2071,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {validatorResult,finding}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/contract.mjs');const a=validatorResult({validator_id:'g',status:'PA"
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2183,
+      "message": "[CR-RM-RF] 破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "root_cause": "破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "suggestion": "改用 OS 回收站机制分批删除，每批不超过 10 个并复核",
+      "code": "CR-RM-RF",
+      "matched_text": "\"message\": \"vulnerability_scan: node 子进程静态扫描 31 个 UAP .mjs 危险调用(eval/execSync/rm -rf/--force 等), 命中文件=4; exit_code=0; 未运行外部 CVE 库(离线), 不声称无 CVE\""
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2193,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "\"command\": \"node --input-type=module -e const {redact}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/util.mjs');const a=redact('token: [REDACTED]');const b=redact('sk-abcdefghi"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2193,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {redact}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/util.mjs');const a=redact('token: [REDACTED]');const b=redact('sk-abcdefghi"
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2205,
+      "message": "[CR-RM-RF] 破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "root_cause": "破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "suggestion": "改用 OS 回收站机制分批删除，每批不超过 10 个并复核",
+      "code": "CR-RM-RF",
+      "matched_text": "\"command\": \"node --input-type=module -e import fs from 'node:fs';import path from 'node:path';const roots=[\\\"/Users/lincolnhu/uter/.uap/runtime\\\",\\\"/Users/lincolnhu/uter/.uap/engines\\\",\\\"/Users/lincol"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2205,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e import fs from 'node:fs';import path from 'node:path';const roots=[\\\"/Users/lincolnhu/uter/.uap/runtime\\\",\\\"/Users/lincolnhu/uter/.uap/engines\\\",\\\"/Users/lincol"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2429,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e console.log(JSON.stringify({ok:true,pid:process.pid}));\","
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2548,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e import fs from 'node:fs';import path from 'node:path';const pkg=JSON.parse(fs.readFileSync(\\\"/Users/lincolnhu/uter/web/package.json\\\",'utf8'));const root=\\\"/Use"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 3156,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e console.log(JSON.stringify({ok:true}));\","
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 3168,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const {redact}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/util.mjs');const a=redact('password: [REDACTED]');console.log(JSON.stringify"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 3406,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"command\": \"node --input-type=module -e const deps=[{\\\"id\\\":\\\"UAP-00-001\\\",\\\"d\\\":[]},{\\\"id\\\":\\\"UAP-00-002\\\",\\\"d\\\":[\\\"UAP-00-001\\\"]},{\\\"id\\\":\\\"UAP-00-003\\\",\\\"d\\\":[\\\"UAP-00-001\\\"]},{\\\"id\\\":\\\"UAP-00-004\\"
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md",
+      "line": 47,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "- **前端支付金额禁止 Math.floor**：`web/src/features/wallet/lib/payment.ts` 的 `toPayAmount` 用 `Math.round((amount + Number.EPSILON) * 100) / 100` 保留两位小数（源码注释明确「这里**绝不能取整**：`Math.floor(0.01)` 会变成 0，后端 `req.Amou"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 142,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"console.log(`SPECIFICATION-INDEX.md generated: ${specs.length} specs, ${domains.length} domains, registry=${integrity.ok ? 'PASS' : 'FAIL'}`);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 149,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"console.log(`generated ${Object.keys(schemas).length} schemas in ${SCHEMA_DIR}`);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 177,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({ok,shape:Object.keys(er)}));\\\", 15000);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 184,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"const timeoutSelf = await selfCheck(\\\"console.log(JSON.stringify({ok:true}));\\\", 15000);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 191,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({terminal,noSelfLoop,ok:terminal&&noSelfLoop}));\\\", 15000);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 212,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({checks:r.checks.length,pass:r.checks.filter(c=>c.status==='PASS').length,findings:r.findings.length,ok:r.ok}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 219,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({terminal,shape,states:TASK_STATES.length,ok:terminal&&shape}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 240,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({scripts:Object.keys(pkg.scripts||{}).length,n,tests,hasBuild:!!pkg.scripts?.build,hasTest:!!pkg.scripts?.test}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 261,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"const cmd = await selfCheck(\\\"console.log(JSON.stringify({ok:true}));\\\", 15000);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 268,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({ok:!a.includes('HUNTER2SECRETVALUE'),redacted:a}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 282,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({checked:files.length,bad,ok:bad.length===0}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 289,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({normalOk,selfReportRejected,findingSchema,blocking,ok:normalOk&&selfReportRejected&&findingSchema&&blocking}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 310,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({impact:seen.size,ok:seen.size>0}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 331,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({max,retryPath,bounded,ok:retryPath&&bounded}));\\\", 15000);\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 338,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({blocking:a.status==='FAIL'&&b.status==='PASS',ok:a.status==='FAIL'&&b.status==='PASS'}));\\\", 15000);\""
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/state/coding-standard.json",
+      "line": 352,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 352,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 359,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"+ \\\"console.log(JSON.stringify({scanned:files.length,bad,ok:bad.length===0}));\\\";\""
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/state/coding-standard.json",
+      "line": 366,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "\"snippet\": \"const timeoutCmd = await selfCheck(\\\"console.log(JSON.stringify({ok:true,pid:process.pid}));\\\", 15000);\""
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/tools/financial-simulation.mjs",
+      "line": 113,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "anchors: ['toPayAmount', 'Math.round', 'Math.floor(0.01)', '0.01'],"
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/tools/financial-simulation.mjs",
+      "line": 248,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "mkAssert('no_overdraft', input.initial_balance - Math.floor(input.initial_balance / input.charge) * input.charge, balance),"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/tools/generate-index.mjs",
+      "line": 60,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "console.log(`SPECIFICATION-INDEX.md generated: ${specs.length} specs, ${domains.length} domains, registry=${integrity.ok ? 'PASS' : 'FAIL'}`);"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/tools/generate-schemas.mjs",
+      "line": 117,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "console.log(`generated ${Object.keys(schemas).length} schemas in ${SCHEMA_DIR}`);"
+    },
+    {
+      "severity": "MAJOR",
+      "file": ".uap/tools/uter-audit.mjs",
+      "line": 173,
+      "message": "[CR-MONEY-MATH-FLOOR] 金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "root_cause": "金额换算使用裸 Math.floor，可能绕过集中式 quota/toPayAmount 转换与饱和钳制",
+      "suggestion": "改用集中式 helper（toPayAmount / common.QuotaFromFloat）并校验输入上界",
+      "code": "CR-MONEY-MATH-FLOOR",
+      "matched_text": "const tsAnchors = ['toPayAmount', 'Math.round', 'Math.floor(0.01)'];"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/agents/index.mjs",
+      "line": 163,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({ok,shape:Object.keys(er)}));\", 15000);"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/agents/index.mjs",
+      "line": 172,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "const timeoutSelf = await selfCheck(\"console.log(JSON.stringify({ok:true}));\", 15000);"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/agents/index.mjs",
+      "line": 266,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({terminal,noSelfLoop,ok:terminal&&noSelfLoop}));\", 15000);"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/core/index.mjs",
+      "line": 146,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({checks:r.checks.length,pass:r.checks.filter(c=>c.status==='PASS').length,findings:r.findings.length,ok:r.ok}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/core/index.mjs",
+      "line": 203,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({terminal,shape,states:TASK_STATES.length,ok:terminal&&shape}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/cross-platform/index.mjs",
+      "line": 79,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({scripts:Object.keys(pkg.scripts||{}).length,n,tests,hasBuild:!!pkg.scripts?.build,hasTest:!!pkg.scripts?.test}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/delivery/index.mjs",
+      "line": 180,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "const cmd = await selfCheck(\"console.log(JSON.stringify({ok:true}));\", 15000);"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/delivery/index.mjs",
+      "line": 192,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({ok:!a.includes('HUNTER2SECRETVALUE'),redacted:a}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/development/index.mjs",
+      "line": 92,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({checked:files.length,bad,ok:bad.length===0}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/development/index.mjs",
+      "line": 148,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({normalOk,selfReportRejected,findingSchema,blocking,ok:normalOk&&selfReportRejected&&findingSchema&&blocking}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/evolution/index.mjs",
+      "line": 138,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({impact:seen.size,ok:seen.size>0}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/quality/index.mjs",
+      "line": 188,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({max,retryPath,bounded,ok:retryPath&&bounded}));\", 15000);"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/quality/index.mjs",
+      "line": 232,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({blocking:a.status==='FAIL'&&b.status==='PASS',ok:a.status==='FAIL'&&b.status==='PASS'}));\", 15000);"
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 152,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "+ \"const b=redact('[REDACTED]');\""
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 153,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "+ \"const ok=!a.includes('SUPERSECRETVALUE123')&&!b.includes('[REDACTED]');\""
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 154,
+      "message": "[CR-SECRET-LITERAL] 疑似真实密钥字面量出现在改动文件中",
+      "root_cause": "疑似真实密钥字面量出现在改动文件中",
+      "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
+      "code": "CR-SECRET-LITERAL",
+      "matched_text": "+ \"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 154,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\";"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 172,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "+ \"console.log(JSON.stringify({scanned:files.length,bad,ok:bad.length===0}));\";"
+    },
+    {
+      "severity": "BLOCKER",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 178,
+      "message": "[CR-RM-RF] 破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "root_cause": "破坏性删除命令（AGENTS.md 明确禁止 rm -rf）",
+      "suggestion": "改用 OS 回收站机制分批删除，每批不超过 10 个并复核",
+      "code": "CR-RM-RF",
+      "matched_text": "detail: `node 子进程静态扫描 ${scanOut?.scanned ?? 'n/a'} 个 UAP .mjs 危险调用(eval/execSync/rm -rf/--force 等), 命中文件=${scanOut?.bad?.length ?? 'n/a'}; exit_code=${scan.exit_code}; 未运行外部 CVE 库(离线), 不声称无 CVE`,"
+    },
+    {
+      "severity": "INFO",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 254,
+      "message": "[CR-DEBUG-LOG] 调试日志残留（风格提示，不作为阻断）",
+      "root_cause": "调试日志残留（风格提示，不作为阻断）",
+      "suggestion": "按需移除或用受控 logger 替代",
+      "code": "CR-DEBUG-LOG",
+      "matched_text": "const timeoutCmd = await selfCheck(\"console.log(JSON.stringify({ok:true,pid:process.pid}));\", 15000);"
+    }
+  ],
+  "rules_applied": [
+    {
+      "code": "CR-MONEY-MATH-FLOOR",
+      "severity": "MAJOR"
+    },
+    {
+      "code": "CR-SECRET-LITERAL",
+      "severity": "BLOCKER"
+    },
+    {
+      "code": "CR-MERCHANT-ID",
+      "severity": "MAJOR"
+    },
+    {
+      "code": "CR-RM-RF",
+      "severity": "BLOCKER"
+    },
+    {
+      "code": "CR-DESTRUCTIVE-GIT",
+      "severity": "BLOCKER"
+    },
+    {
+      "code": "CR-TODO-MONEY",
+      "severity": "MAJOR"
+    },
+    {
+      "code": "CR-EMPTY-CATCH",
+      "severity": "MAJOR"
+    },
+    {
+      "code": "CR-IGNORED-ERR",
+      "severity": "MINOR"
+    },
+    {
+      "code": "CR-DEBUG-LOG",
+      "severity": "INFO"
+    }
+  ],
+  "policy": {
+    "style_preferences_are_blockers": false,
+    "snippets_redacted": true,
+    "note": "BLOCKER reserved for secrets, rm -rf, destructive git; style/format hints are INFO/MINOR"
+  },
+  "commands": [
+    {
+      "label": "git status --porcelain=v1",
+      "command": "git status --porcelain=v1",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 72
+    },
+    {
+      "label": "git diff --name-only",
+      "command": "git diff --name-only",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 31
+    }
+  ]
+}

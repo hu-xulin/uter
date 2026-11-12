@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112150837-9107ee97",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112150837-c6171bf0",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:08:37.636Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:scan_delivery",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-9\",\"name\":\"scan_delivery\",\"idempotent\":true,\"handler\":\"scan_delivery\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "scanned delivery: 28 files",
+  "content_hash": "1e6fafeed95b08e9d498435e140e8ab1f8e623183f98ec98195db0cfacfa5350"
+}

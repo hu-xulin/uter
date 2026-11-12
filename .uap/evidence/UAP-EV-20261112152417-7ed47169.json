@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152417-7ed47169",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261112152416-45417e89",
+  "trace_id": "UAP-TRACE-20261112152416-8b70945b",
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:17.127Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261112152416-45417e89",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"Execute workflow Financial Integrity Verification\",\"specification_ids\":[\"UAP-00-001\",\"UAP-00-002\",\"UAP-00-003\",\"UAP-00-004\",\"UAP-01-001\",\"UAP-01-002\",\"UAP-01-003\",\"UAP-02-001\",\"UAP-02-002\",\"UAP-02-003\",\"UAP-03-001\",\"UAP-03-002\",\"UAP-03-003\",\"UAP-03-004\",\"UAP-04-001\",\"UAP-04-002\",\"UAP-04-003\",\"UAP-05-001\",\"UAP-05-002\",\"UAP-05-003\",\"UAP-05-004\",\"UAP-06-001\",\"UAP-06-002\",\"UAP-06-003\",\"UAP-07-001\",\"UAP-07-002\",\"UAP-07-003\",\"UAP-08-001\",\"UAP-08-002\",\"UAP-08-003\",\"UAP-09-001\",\"UAP-09-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-20261112152416-45417e89 finished: SUCCEEDED",
+  "content_hash": "1d25be61f314a676db2e5bec220347d4531e5669c27173ea63280d60fcad7904"
+}

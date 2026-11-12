@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112110221-cc08024a",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112110221-484e968f",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T11:02:21.859Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:test_concurrency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-5\",\"name\":\"test_concurrency\",\"idempotent\":true,\"handler\":\"test_concurrency\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "test_concurrency: read real artifacts (financial=19 checks, repair=SUCCEEDED)",
+  "content_hash": "9be3a73117b03ba69f215892767368908e605fa6e32d959332e854786ac8a0dd"
+}

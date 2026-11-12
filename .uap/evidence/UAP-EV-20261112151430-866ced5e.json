@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151430-866ced5e",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261112151422-e03bbc2d",
+  "trace_id": "UAP-TRACE-20261112151422-ed5d63ce",
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:14:30.826Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261112151422-e03bbc2d",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"regenerate coding standard artifact from real source\",\"specification_ids\":[\"UAP-04-001\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-20261112151422-e03bbc2d finished: SUCCEEDED",
+  "content_hash": "7073487d1f7dd79fe5653cdfd48a05e097e9b892962d2ebdd70437d07af6fb3c"
+}

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152108-36b8c85c",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152108-eac30954",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:21:08.367Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:validate_all_specifications",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"validate_all_specifications\",\"idempotent\":true,\"handler\":\"validate_all_specifications\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "registry integrity: 37/37 checks passed",
+  "content_hash": "fe4dfbb2114fd8d2583dcbd7a3571a033f1576e98f0f2b56cbfdc3b3df211ee3"
+}

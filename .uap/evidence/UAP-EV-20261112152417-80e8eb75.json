@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152417-80e8eb75",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152416-45417e89",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:17.021Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:test_duplicate_notifications",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-6\",\"name\":\"test_duplicate_notifications\",\"idempotent\":true,\"handler\":\"test_duplicate_notifications\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "test_duplicate_notifications: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "8f50f706a3abc4294148d72ae6320e72a580bbec29b1c0349cf2f6c6b154ffea"
+}

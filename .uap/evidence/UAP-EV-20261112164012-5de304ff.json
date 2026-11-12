@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164012-5de304ff",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112164007-c2fd4842",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:40:12.954Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:lint",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"lint\",\"idempotent\":true,\"handler\":\"lint\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "lint: 53 UAP modules syntax-checked, 0 failures",
+  "content_hash": "b99f504ec8366e9258ee667b9b1b5f0917a6066b1e57ebf04ebdf7566844d197"
+}

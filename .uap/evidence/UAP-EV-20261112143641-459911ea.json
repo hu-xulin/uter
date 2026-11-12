@@ -1,0 +1,63 @@
+{
+  "evidence_id": "UAP-EV-20261112143641-459911ea",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-20261112143636-65a4b482",
+  "trace_id": "UAP-TRACE-20261112143636-a5584606",
+  "specification_ids": [
+    "UAP-00-001",
+    "UAP-00-002",
+    "UAP-00-003",
+    "UAP-00-004",
+    "UAP-01-001",
+    "UAP-01-002",
+    "UAP-01-003",
+    "UAP-02-001",
+    "UAP-02-002",
+    "UAP-02-003",
+    "UAP-03-001",
+    "UAP-03-002",
+    "UAP-03-003",
+    "UAP-03-004",
+    "UAP-04-001",
+    "UAP-04-002",
+    "UAP-04-003",
+    "UAP-05-001",
+    "UAP-05-002",
+    "UAP-05-003",
+    "UAP-05-004",
+    "UAP-06-001",
+    "UAP-06-002",
+    "UAP-06-003",
+    "UAP-07-001",
+    "UAP-07-002",
+    "UAP-07-003",
+    "UAP-08-001",
+    "UAP-08-002",
+    "UAP-08-003",
+    "UAP-09-001",
+    "UAP-09-002"
+  ],
+  "recorded_at": "2026-11-12T14:36:41.852Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:unit_tests",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-3\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "step_failed",
+      "message": "quality gates report 1 failing gates (real exit codes)"
+    }
+  ],
+  "summary": "unit_tests failed: quality gates report 1 failing gates (real exit codes)",
+  "content_hash": "4b33f8ccb7605a41ce6553041d51c8c02b4578a1942f9f6934d2c35b4a9437da"
+}

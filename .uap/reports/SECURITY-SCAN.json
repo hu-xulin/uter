@@ -1,0 +1,441 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:36.758Z",
+  "executor_ids": [
+    "security.application",
+    "security.financial_integrity",
+    "security.reliability"
+  ],
+  "simulated_only": true,
+  "scanned_file_count": 2105,
+  "secret_finding_count": 27,
+  "severity_counts": {
+    "BLOCKER": 16,
+    "MAJOR": 11
+  },
+  "secret_findings": [
+    {
+      "id": "SEC-9c45515153",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "line": 1496,
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"\\\\\\\"matched_text\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"redacted_snippet\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"WechatPayMchId: '1900000000',\\\\\\\\\\\\\\\",\\\\\\\"\\\",\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-0631f43885",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "line": 1506,
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"\\\\\\\"matched_text\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"redacted_snippet\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"WechatPayMchId: '1900000000',\\\\\\\\\\\\\\\",\\\\\\\"\\\",\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-da1c3557ef",
+      "severity": "BLOCKER",
+      "pattern_id": "private_key_block",
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "line": 1516,
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"\\\\\\\"matched_text\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"redacted_snippet\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END ",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-57b708536e",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "line": 1546,
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"WechatPayMchId: '1900000000',\\\",\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-e9e5b507a8",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "line": 1556,
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"WechatPayMchId: '1900000000',\\\",\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-4f8bd3e614",
+      "severity": "BLOCKER",
+      "pattern_id": "private_key_block",
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "line": 1566,
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',\\\",\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-6cbae290b1",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "line": 2193,
+      "redacted_snippet": "\"command\": \"node --input-type=module -e const {redact}=await import('file:///Users/lincolnhu/uter/.uap/runtime/_lib/util.mjs');const a=redact('token: [REDACTED]",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-5bafea7c76",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": ".uap/state/coding-standard.json",
+      "line": 352,
+      "redacted_snippet": "\"snippet\": \"+ \\\"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\\\";\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-07a95375c2",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 152,
+      "redacted_snippet": "+ \"const b=redact('[REDACTED]');\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-2015455898",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 153,
+      "redacted_snippet": "+ \"const ok=!a.includes('SUPERSECRETVALUE123')&&!b.includes('[REDACTED]');\"",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-c6fd1e7dac",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": ".uap/validators/security/index.mjs",
+      "line": 154,
+      "redacted_snippet": "+ \"console.log(JSON.stringify({ok,okA:!a.includes('SUPERSECRETVALUE123'),okB:!b.includes('[REDACTED]')}));\";",
+      "possible_test_fixture": false
+    },
+    {
+      "id": "SEC-9dce2bd14c",
+      "severity": "BLOCKER",
+      "pattern_id": "private_key_block",
+      "file": "web/src/components/ui/__tests__/secret-file-input.test.tsx",
+      "line": 60,
+      "redacted_snippet": "const VALID_PRIVATE_KEY = [REDACTED] PRIVATE KEY-----",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-80d36b779b",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": "web/src/features/chat/lib/__tests__/chat-links.test.ts",
+      "line": 32,
+      "redacted_snippet": "const API_KEY = '[REDACTED]'",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-ebaaa7b72a",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": "web/src/features/playground/lib/storage/__tests__/storage-obfuscation.test.ts",
+      "line": 25,
+      "redacted_snippet": "const SECRET = '[REDACTED]'",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-c7c557e012",
+      "severity": "BLOCKER",
+      "pattern_id": "private_key_block",
+      "file": "web/src/features/system-settings/integrations/__tests__/payment-waffo-file-selection.test.tsx",
+      "line": 35,
+      "redacted_snippet": "const PKCS1_PRIVATE_KEY = [REDACTED] RSA PRIVATE KEY-----",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-012ce377a1",
+      "severity": "BLOCKER",
+      "pattern_id": "private_key_block",
+      "file": "web/src/features/system-settings/integrations/__tests__/payment-waffo-file-selection.test.tsx",
+      "line": 39,
+      "redacted_snippet": "const PKCS8_PRIVATE_KEY = [REDACTED] PRIVATE KEY-----",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-c01dc80132",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "web/src/features/system-settings/integrations/__tests__/payment-wechat-file-selection.test.tsx",
+      "line": 66,
+      "redacted_snippet": "WechatPayMchId: '1900000000',",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-693051e14f",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "web/src/features/system-settings/integrations/__tests__/wechat-pay-file-selection.test.tsx",
+      "line": 38,
+      "redacted_snippet": "WechatPayMchId: '1900000000',",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-f337fb7c4d",
+      "severity": "BLOCKER",
+      "pattern_id": "openai_style_key",
+      "file": "web/src/lib/secret.test.ts",
+      "line": 48,
+      "redacted_snippet": "const long = '[REDACTED]'",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-73ce9408fe",
+      "severity": "BLOCKER",
+      "pattern_id": "private_key_block",
+      "file": "web/src/lib/secret.test.ts",
+      "line": 80,
+      "redacted_snippet": "'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-a4fd0a9416",
+      "severity": "BLOCKER",
+      "pattern_id": "stripe_webhook_secret",
+      "file": "web/src/lib/secret.test.ts",
+      "line": 81,
+      "redacted_snippet": "'[REDACTED]',",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-45b20c6bf8",
+      "severity": "BLOCKER",
+      "pattern_id": "stripe_webhook_secret",
+      "file": "controller/option_secret_test.go",
+      "line": 84,
+      "redacted_snippet": "\"StripeWebhookSecret\": \"[REDACTED]\",",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-6478ad1876",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "controller/topup_wechat_query_test.go",
+      "line": 98,
+      "redacted_snippet": "operation_setting.WechatPayMchId = \"1900000000\"",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-76c46c8c2c",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "controller/topup_wechat_query_test.go",
+      "line": 156,
+      "redacted_snippet": "`{\"trade_state\":\"SUCCESS\",\"out_trade_no\":%q,\"mchid\":\"1900000000\",\"appid\":\"wx_example_appid\",\"amount\":{\"total\":1000,\"currency\":\"CNY\"}}`, outTradeNo)",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-ad081fd2f8",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "controller/topup_wechat_query_test.go",
+      "line": 192,
+      "redacted_snippet": "`{\"trade_state\":\"SUCCESS\",\"out_trade_no\":%q,\"mchid\":\"1900000000\",\"appid\":\"wx_example_appid\",\"amount\":{\"total\":1,\"currency\":\"CNY\"}}`, outTradeNo)",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-c2d926bdc9",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "controller/topup_wechat_query_test.go",
+      "line": 282,
+      "redacted_snippet": "`{\"trade_state\":\"NOTPAY\",\"out_trade_no\":%q,\"mchid\":\"1900000000\",\"appid\":\"wx_example_appid\",\"amount\":{\"total\":1000,\"currency\":\"CNY\"}}`, outTradeNo)",
+      "possible_test_fixture": true
+    },
+    {
+      "id": "SEC-f82a93e4e6",
+      "severity": "MAJOR",
+      "pattern_id": "merchant_id",
+      "file": "controller/topup_wechat_query_test.go",
+      "line": 304,
+      "redacted_snippet": "`{\"trade_state\":\"CLOSED\",\"out_trade_no\":%q,\"mchid\":\"1900000000\",\"appid\":\"wx_example_appid\",\"amount\":{\"total\":1000,\"currency\":\"CNY\"}}`, outTradeNo)",
+      "possible_test_fixture": true
+    }
+  ],
+  "financial_anchors": [
+    {
+      "id": "common.QuotaFromFloat",
+      "source": "common/quota_math.go",
+      "found": true,
+      "line": 112,
+      "simulated_only": true
+    },
+    {
+      "id": "common.QuotaRound",
+      "source": "common/quota_math.go",
+      "found": true,
+      "line": 133,
+      "simulated_only": true
+    },
+    {
+      "id": "common.WalletQuotaFromDecimalStrict",
+      "source": "common/quota_math.go",
+      "found": true,
+      "line": 172,
+      "simulated_only": true
+    },
+    {
+      "id": "common.QuotaFromDecimal",
+      "source": "common/quota_math.go",
+      "found": true,
+      "line": 152,
+      "simulated_only": true
+    },
+    {
+      "id": "toPayAmount",
+      "source": "controller,web/src",
+      "found": true,
+      "evidence": [
+        {
+          "file": "web/src/features/wallet/components/dialogs/cn-pay-web-dialog.tsx",
+          "line": 45,
+          "redacted": "toPayAmount,"
+        },
+        {
+          "file": "web/src/features/wallet/components/dialogs/cn-pay-web-dialog.tsx",
+          "line": 114,
+          "redacted": "amount: toPayAmount(topupAmount),"
+        },
+        {
+          "file": "web/src/features/wallet/hooks/use-payment.ts",
+          "line": 40,
+          "redacted": "toPayAmount,"
+        },
+        {
+          "file": "web/src/features/wallet/hooks/use-payment.ts",
+          "line": 138,
+          "redacted": "const amount = toPayAmount(topupAmount)"
+        },
+        {
+          "file": "web/src/features/wallet/hooks/use-waffo-pancake-payment.ts",
+          "line": 29,
+          "redacted": "toPayAmount,"
+        }
+      ],
+      "simulated_only": true
+    },
+    {
+      "id": "TRADE_NOT_EXIST",
+      "source": "controller,model,service,router",
+      "found": true,
+      "evidence": [
+        {
+          "file": "controller/payment_reconcile_task_test.go",
+          "line": 87,
+          "redacted": "return `{\"code\":\"40004\",\"msg\":\"Business Failed\",\"sub_code\":\"ACQ.TRADE_NOT_EXIST\",\"sub_msg\":\"交易不存在\"}`"
+        },
+        {
+          "file": "controller/payment_reconcile_task_test.go",
+          "line": 200,
+          "redacted": "// code 非 10000 且不是 TRADE_NOT_EXIST → 视为查询故障。"
+        },
+        {
+          "file": "controller/topup_alipay.go",
+          "line": 285,
+          "redacted": "// 这里曾经把「支付宝侧查无此交易」(TRADE_NOT_EXIST) 也归进 pending，结果是："
+        },
+        {
+          "file": "controller/topup_alipay.go",
+          "line": 287,
+          "redacted": "// 不变失败。查单拿到 TRADE_NOT_EXIST 意味着支付宝侧根本没有这笔交易，再轮询"
+        },
+        {
+          "file": "controller/topup_alipay_query_test.go",
+          "line": 278,
+          "redacted": "return `{\"code\":\"40004\",\"msg\":\"Business Failed\",\"sub_code\":\"ACQ.TRADE_NOT_EXIST\",\"sub_msg\":\"交易不存在\"}`"
+        }
+      ],
+      "simulated_only": true
+    },
+    {
+      "id": "alipay_signature_verification",
+      "source": "controller,service",
+      "found": true,
+      "evidence": [
+        {
+          "file": "controller/payment_reconcile_task.go",
+          "line": 38,
+          "redacted": "// alipayReconcileTickInterval 对账周期。"
+        },
+        {
+          "file": "controller/payment_reconcile_task.go",
+          "line": 41,
+          "redacted": "alipayReconcileTickInterval = 1 * time.Minute"
+        },
+        {
+          "file": "controller/payment_reconcile_task.go",
+          "line": 42,
+          "redacted": "// alipayReconcileWindow 只对账这段时间内创建的订单。"
+        },
+        {
+          "file": "controller/payment_reconcile_task.go",
+          "line": 45,
+          "redacted": "alipayReconcileWindow = 20 * time.Minute"
+        },
+        {
+          "file": "controller/payment_reconcile_task.go",
+          "line": 46,
+          "redacted": "// alipayReconcileBatchSize 单轮最多核对多少笔，防止一次 tick 打爆网关。"
+        }
+      ],
+      "simulated_only": true
+    }
+  ],
+  "financial_anchor_hit_count": 7,
+  "reliability_anchors": [
+    {
+      "id": "quota_clamp_checked_variants",
+      "source": "common/quota_math.go",
+      "found": true,
+      "simulated_only": true
+    },
+    {
+      "id": "quota_saturation_audit",
+      "source": "service/log_info_generate.go",
+      "found": true,
+      "simulated_only": true
+    },
+    {
+      "id": "permission_fail_closed",
+      "source": ".uap/config/permission-policy.yaml",
+      "found": true,
+      "simulated_only": true
+    }
+  ],
+  "reliability_anchor_hit_count": 3,
+  "permission_policy": {
+    "exists": true,
+    "source": ".uap/config/permission-policy.yaml",
+    "deny_groups_checked": 12,
+    "deny_groups_present": 12,
+    "present": [
+      "production_read",
+      "production_write",
+      "production_deploy",
+      "real_payment",
+      "real_refund",
+      "secret_export",
+      "force_push",
+      "branch_creation",
+      "branch_switch",
+      "destructive_git",
+      "quality_gate_disable",
+      "test_deletion_to_force_pass"
+    ],
+    "missing": [],
+    "default_effect_deny": true,
+    "enforcement_fail_closed": true
+  },
+  "policy": {
+    "no_real_funds": true,
+    "simulated_only": true,
+    "snippets_redacted": true,
+    "note": "All billing/payment checks are static code anchors; no funds were moved."
+  }
+}

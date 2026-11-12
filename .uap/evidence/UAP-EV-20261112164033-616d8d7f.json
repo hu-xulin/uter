@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164033-616d8d7f",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:40:33.995Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.evidence_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.evidence_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.evidence_integrity 实检: evidence_exists=PASS(list()=1924 条, verify().valid=true 的=1924 条); state_validity=PASS(对已存在证据重复 record() 覆盖被拒绝(append-only)=true; content_hash 由 verify() 重算比对); traceability=PASS(证据记录含 environment.node/recorded_at 可追溯字段=1/1924) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1921 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | evidence-engine.list()/verify()/get()/record(覆盖) 真实调用, 验证 1924 条 hash",
+  "content_hash": "fb2d53f8bec03b1d017a875774772f1d20c938a57796431dedc7974183960cae"
+}

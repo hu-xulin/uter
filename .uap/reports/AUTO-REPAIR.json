@@ -1,0 +1,287 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T15:20:31.615Z",
+  "executor_id": "quality.auto_repair",
+  "sandbox_dir": ".uap/state/repair-sandbox",
+  "fixture": ".uap/state/repair-sandbox/billing-sample.mjs",
+  "simulated_only": true,
+  "defect": {
+    "pattern": "Math\\.floor\\s*\\(\\s*amount\\s*\\*\\s*100\\s*\\)",
+    "detected": true,
+    "line": 7,
+    "snippet": "const paid = Math.floor(amount * 100);",
+    "before_content": "// UAP repair sandbox fixture — deliberately defective, NOT business code.\nexport function toPayAmount(amount) {\n  return amount;\n}\n\nexport function charge(amount) {\n  const paid = Math.floor(amount * 100);\n  return paid;\n}\n"
+  },
+  "plan": [
+    {
+      "strategy_id": "S1-delegate-to-central-helper",
+      "description": "Replace the bare local conversion with the centralised toPayAmount helper and give that helper a validated, saturated implementation.",
+      "authorized": true,
+      "target": "billing-sample.mjs charge()"
+    },
+    {
+      "strategy_id": "S2-inline-guard",
+      "description": "Keep the local expression but validate the input and clamp the result in place before charging.",
+      "authorized": true,
+      "target": "billing-sample.mjs charge()"
+    },
+    {
+      "strategy_id": "S3-fail-closed-reject",
+      "description": "Remove the unbounded conversion entirely and reject unvalidated / out-of-range input at the boundary.",
+      "authorized": true,
+      "target": "billing-sample.mjs charge()"
+    }
+  ],
+  "attempts": [
+    {
+      "strategy_id": "S1-delegate-to-central-helper",
+      "authorized": true,
+      "applied": true,
+      "defect_remaining": false,
+      "syntax_ok": true,
+      "node_check_exit_code": 0,
+      "before_sha256": "71be4eb81d6f6d5ff7cf48dc922bfeec5a8f63fbe9a2654b0c928fc81555cdbc",
+      "after_sha256": "460bea505fd42d311051375997ab40cff72636bfbb3ed127fa310f311a25dac9",
+      "diff": [
+        {
+          "line": 3,
+          "before": "  return amount;",
+          "after": "  const n = Number(amount);"
+        },
+        {
+          "line": 4,
+          "before": "}",
+          "after": "  if (!Number.isFinite(n) || n < 0) throw new Error('invalid amount');"
+        },
+        {
+          "line": 5,
+          "before": "",
+          "after": "  return Math.min(Math.trunc(n * 100), 2147483647);"
+        },
+        {
+          "line": 6,
+          "before": "export function charge(amount) {",
+          "after": "}"
+        },
+        {
+          "line": 7,
+          "before": "  const paid = Math.floor(amount * 100);",
+          "after": ""
+        },
+        {
+          "line": 8,
+          "before": "  return paid;",
+          "after": "export function charge(amount) {"
+        },
+        {
+          "line": 9,
+          "before": "}",
+          "after": "  const paid = toPayAmount(amount);"
+        },
+        {
+          "line": 10,
+          "before": "",
+          "after": "  return paid;"
+        },
+        {
+          "line": 11,
+          "before": null,
+          "after": "}"
+        },
+        {
+          "line": 12,
+          "before": null,
+          "after": ""
+        }
+      ],
+      "outcome": "ACCEPTED"
+    },
+    {
+      "strategy_id": "S2-inline-guard",
+      "authorized": true,
+      "applied": true,
+      "defect_remaining": false,
+      "syntax_ok": true,
+      "node_check_exit_code": 0,
+      "before_sha256": "71be4eb81d6f6d5ff7cf48dc922bfeec5a8f63fbe9a2654b0c928fc81555cdbc",
+      "after_sha256": "c2b4b88e1048dea5c3ebb7b2c9174e7609b01b31fcf93b2b4f28deded9e48fc7",
+      "diff": [
+        {
+          "line": 7,
+          "before": "  const paid = Math.floor(amount * 100);",
+          "after": "  const n = Number(amount);"
+        },
+        {
+          "line": 8,
+          "before": "  return paid;",
+          "after": "  if (!Number.isFinite(n) || n < 0) throw new Error('invalid amount');"
+        },
+        {
+          "line": 9,
+          "before": "}",
+          "after": "  const paid = Math.min(Math.trunc(n * 100), 2147483647);"
+        },
+        {
+          "line": 10,
+          "before": "",
+          "after": "  return paid;"
+        },
+        {
+          "line": 11,
+          "before": null,
+          "after": "}"
+        },
+        {
+          "line": 12,
+          "before": null,
+          "after": ""
+        }
+      ],
+      "outcome": "ACCEPTED"
+    },
+    {
+      "strategy_id": "S3-fail-closed-reject",
+      "authorized": true,
+      "applied": true,
+      "defect_remaining": false,
+      "syntax_ok": true,
+      "node_check_exit_code": 0,
+      "before_sha256": "71be4eb81d6f6d5ff7cf48dc922bfeec5a8f63fbe9a2654b0c928fc81555cdbc",
+      "after_sha256": "5514ad41a617f4b3419ef4e79c412c13d2b33c0f45a801f28b12a1b885d07bda",
+      "diff": [
+        {
+          "line": 7,
+          "before": "  const paid = Math.floor(amount * 100);",
+          "after": "  const n = Number(amount);"
+        },
+        {
+          "line": 8,
+          "before": "  return paid;",
+          "after": "  if (!Number.isFinite(n) || n < 0 || n > 21474836) throw new Error('amount out of range');"
+        },
+        {
+          "line": 9,
+          "before": "}",
+          "after": "  return Math.trunc(n * 100);"
+        },
+        {
+          "line": 10,
+          "before": "",
+          "after": "}"
+        },
+        {
+          "line": 11,
+          "before": null,
+          "after": ""
+        }
+      ],
+      "outcome": "ACCEPTED"
+    }
+  ],
+  "selected_strategy": "S1-delegate-to-central-helper",
+  "after_content": "// UAP repair sandbox fixture — deliberately defective, NOT business code.\nexport function toPayAmount(amount) {\n  const n = Number(amount);\n  if (!Number.isFinite(n) || n < 0) throw new Error('invalid amount');\n  return Math.min(Math.trunc(n * 100), 2147483647);\n}\n\nexport function charge(amount) {\n  const paid = toPayAmount(amount);\n  return paid;\n}\n",
+  "diff": [
+    {
+      "line": 3,
+      "before": "  return amount;",
+      "after": "  const n = Number(amount);"
+    },
+    {
+      "line": 4,
+      "before": "}",
+      "after": "  if (!Number.isFinite(n) || n < 0) throw new Error('invalid amount');"
+    },
+    {
+      "line": 5,
+      "before": "",
+      "after": "  return Math.min(Math.trunc(n * 100), 2147483647);"
+    },
+    {
+      "line": 6,
+      "before": "export function charge(amount) {",
+      "after": "}"
+    },
+    {
+      "line": 7,
+      "before": "  const paid = Math.floor(amount * 100);",
+      "after": ""
+    },
+    {
+      "line": 8,
+      "before": "  return paid;",
+      "after": "export function charge(amount) {"
+    },
+    {
+      "line": 9,
+      "before": "}",
+      "after": "  const paid = toPayAmount(amount);"
+    },
+    {
+      "line": 10,
+      "before": "",
+      "after": "  return paid;"
+    },
+    {
+      "line": 11,
+      "before": null,
+      "after": "}"
+    },
+    {
+      "line": 12,
+      "before": null,
+      "after": ""
+    }
+  ],
+  "verification": {
+    "rechecked": true,
+    "defect_remaining": false,
+    "node_check_exit_code": 0,
+    "syntax_ok": true
+  },
+  "final_status": "FIXED",
+  "safety": {
+    "only_sandbox_files_written": true,
+    "business_code_untouched": true,
+    "tests_untouched": true,
+    "no_destructive_commands": true,
+    "simulated_only": true
+  },
+  "commands": [
+    {
+      "label": "syntax check S1-delegate-to-central-helper",
+      "command": "node --check /Users/lincolnhu/uter/.uap/state/repair-sandbox/billing-sample.mjs",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 105
+    },
+    {
+      "label": "syntax check S2-inline-guard",
+      "command": "node --check /Users/lincolnhu/uter/.uap/state/repair-sandbox/billing-sample.mjs",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 104
+    },
+    {
+      "label": "syntax check S3-fail-closed-reject",
+      "command": "node --check /Users/lincolnhu/uter/.uap/state/repair-sandbox/billing-sample.mjs",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 97
+    },
+    {
+      "label": "final re-verification",
+      "command": "node --check /Users/lincolnhu/uter/.uap/state/repair-sandbox/billing-sample.mjs",
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 103
+    }
+  ]
+}

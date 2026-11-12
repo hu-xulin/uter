@@ -1,0 +1,934 @@
+{
+  "generated_at": "2026-11-12T16:40:33.488Z",
+  "registry": {
+    "ok": true,
+    "findings": 0
+  },
+  "audit": {
+    "generated_at": "2026-11-12T16:40:33.482Z",
+    "domains": [
+      {
+        "domain": "authentication",
+        "files_scanned": 2,
+        "checks_run": 3,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "authz_middleware_boundary_files",
+            "message": "middleware/ 下授权/鉴权/限流边界相关文件真实计数 = 17",
+            "file": "middleware/",
+            "domain": "authentication"
+          },
+          {
+            "severity": "INFO",
+            "code": "authz_controller_token_files",
+            "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 210",
+            "file": "controller/",
+            "domain": "authentication"
+          },
+          {
+            "severity": "INFO",
+            "code": "authz_middleware_text",
+            "message": "middleware/auth.go + secure_verification.go 真实文本匹配鉴权锚点 5/5: [role, token, authenticate, c.Get, c.Abort]",
+            "file": "middleware/auth.go",
+            "domain": "authentication"
+          }
+        ]
+      },
+      {
+        "domain": "billing",
+        "files_scanned": 2,
+        "checks_run": 3,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "billing_service_files",
+            "message": "service/ 下计费/quota/结算相关文件真实计数 = 23",
+            "file": "service/",
+            "domain": "billing"
+          },
+          {
+            "severity": "INFO",
+            "code": "billing_session_symbols",
+            "message": "service/billing_session.go 真实文本匹配计费会话锚点 3/4: [type BillingSession struct, func (s *BillingSession) Refund, func (s *BillingSession) Settle]",
+            "file": "service/billing_session.go",
+            "domain": "billing"
+          },
+          {
+            "severity": "INFO",
+            "code": "billing_quota_atomic_cas",
+            "message": "model/token.go 真实文本匹配原子 CAS 锚点 3/3: [remain_quota >= ?, RowsAffected == 0, used_quota >= ?]",
+            "file": "model/token.go",
+            "domain": "billing"
+          }
+        ]
+      },
+      {
+        "domain": "pricing",
+        "files_scanned": 2,
+        "checks_run": 3,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "pricing_model_files",
+            "message": "model/ 下 price/pricing/model 相关文件真实计数 = 13",
+            "file": "model/",
+            "domain": "pricing"
+          },
+          {
+            "severity": "INFO",
+            "code": "pricing_feature_presence",
+            "message": "web/src/features/pricing/ exists=true，真实文件计数 = 69（存在性探测，仅 INFO）",
+            "file": "web/src/features/pricing/",
+            "domain": "pricing"
+          },
+          {
+            "severity": "INFO",
+            "code": "pricing_config_text",
+            "message": "model_pricing_* 真实文本匹配价格锚点 2/3: [Price, ModelPrice]",
+            "file": "model/model_pricing_config.go",
+            "domain": "pricing"
+          }
+        ]
+      },
+      {
+        "domain": "payment",
+        "files_scanned": 3,
+        "checks_run": 4,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "payment_topup_files",
+            "message": "controller/ 下 topup/alipay/wechat/payment 相关文件真实计数 = 35",
+            "file": "controller/",
+            "domain": "payment"
+          },
+          {
+            "severity": "INFO",
+            "code": "payment_alipay_reconcile_text",
+            "message": "controller/topup_alipay.go 真实文本匹配查单/入账锚点 4/5: [applyAlipayQueryResult, AlipayReconcileUnpaid, AlipayReconcileCreditFailed, TRADE_CLOSED]",
+            "file": "controller/topup_alipay.go",
+            "domain": "payment"
+          },
+          {
+            "severity": "INFO",
+            "code": "payment_idempotent_cas_text",
+            "message": "model/topup.go 真实文本匹配幂等 CAS 锚点 4/4: [claimPendingTopUp, alreadyDone, status = ?, RowsAffected != 1]",
+            "file": "model/topup.go",
+            "domain": "payment"
+          },
+          {
+            "severity": "INFO",
+            "code": "payment_amount_rounding_text",
+            "message": "wallet/lib/payment.ts 真实文本匹配金额取整锚点 3/3: [toPayAmount, Math.round, Math.floor(0.01)]",
+            "file": "web/src/features/wallet/lib/payment.ts",
+            "domain": "payment"
+          }
+        ]
+      },
+      {
+        "domain": "frontend-design-system",
+        "files_scanned": 1,
+        "checks_run": 3,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "designsystem_src_files",
+            "message": "web/src/design-system/ 真实文件计数 = 35",
+            "file": "web/src/design-system/",
+            "domain": "frontend-design-system"
+          },
+          {
+            "severity": "INFO",
+            "code": "designsystem_agents_presence",
+            "message": "web/AGENTS.md 存在=true，真实字符长度 = 12576（存在性/长度探测，仅 INFO）",
+            "file": "web/AGENTS.md",
+            "domain": "frontend-design-system"
+          },
+          {
+            "severity": "INFO",
+            "code": "designsystem_docs_files",
+            "message": "docs/design-system/ 真实文件计数 = 21",
+            "file": "docs/design-system/",
+            "domain": "frontend-design-system"
+          }
+        ]
+      },
+      {
+        "domain": "ci-cd",
+        "files_scanned": 2,
+        "checks_run": 2,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "cicd_ci_yml_content",
+            "message": ".github/workflows/ci.yml 真实字节长度 = 17117，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+            "file": ".github/workflows/ci.yml",
+            "domain": "ci-cd"
+          },
+          {
+            "severity": "INFO",
+            "code": "cicd_verify_all_content",
+            "message": "scripts/verify-all.sh 真实字节长度 = 9635，非空指令锚点匹配 2/5: [echo, bun]",
+            "file": "scripts/verify-all.sh",
+            "domain": "ci-cd"
+          }
+        ]
+      },
+      {
+        "domain": "dependencies",
+        "files_scanned": 3,
+        "checks_run": 3,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "deps_go_mod_text",
+            "message": "go.mod 真实文本匹配 3/3: [module , go 1., require (]",
+            "file": "go.mod",
+            "domain": "dependencies"
+          },
+          {
+            "severity": "INFO",
+            "code": "deps_package_json_text",
+            "message": "web/package.json 真实解析：dependencies=55，devDependencies=29",
+            "file": "web/package.json",
+            "domain": "dependencies"
+          },
+          {
+            "severity": "INFO",
+            "code": "deps_lockfile_presence",
+            "message": "lockfile 存在=true（web/bun.lock，真实字符长度=360342）（存在性探测，仅 INFO）",
+            "file": "web/bun.lock",
+            "domain": "dependencies"
+          }
+        ]
+      },
+      {
+        "domain": "environment",
+        "files_scanned": 0,
+        "checks_run": 3,
+        "findings": [
+          {
+            "severity": "INFO",
+            "code": "env_git_status",
+            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=8",
+            "domain": "environment"
+          },
+          {
+            "severity": "INFO",
+            "code": "env_node_version",
+            "message": "真实命令 \"node --version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"v22.22.2\"",
+            "domain": "environment"
+          },
+          {
+            "severity": "INFO",
+            "code": "env_go_version",
+            "message": "真实命令 \"go version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"go version go1.27.4 darwin/amd64\"",
+            "domain": "environment"
+          }
+        ]
+      }
+    ],
+    "scanned_paths": [
+      {
+        "path": "controller/",
+        "exists": true,
+        "file_count": 210
+      },
+      {
+        "path": "model/",
+        "exists": true,
+        "file_count": 196
+      },
+      {
+        "path": "service/",
+        "exists": true,
+        "file_count": 162
+      },
+      {
+        "path": "middleware/",
+        "exists": true,
+        "file_count": 58
+      },
+      {
+        "path": "router/",
+        "exists": true,
+        "file_count": 26
+      },
+      {
+        "path": "common/",
+        "exists": true,
+        "file_count": 102
+      },
+      {
+        "path": "web/src/",
+        "exists": true,
+        "file_count": 2140
+      },
+      {
+        "path": "web/src/features/",
+        "exists": true,
+        "file_count": 1036
+      },
+      {
+        "path": "scripts/",
+        "exists": true,
+        "file_count": 19
+      },
+      {
+        "path": ".github/workflows/",
+        "exists": true,
+        "file_count": 9
+      },
+      {
+        "path": "docs/design-system/",
+        "exists": true,
+        "file_count": 21
+      },
+      {
+        "path": "relaykit/",
+        "exists": true,
+        "file_count": 163
+      },
+      {
+        "path": "tokenkit/",
+        "exists": true,
+        "file_count": 15
+      }
+    ],
+    "commands": [
+      {
+        "command": "git status --porcelain=v1",
+        "exit_code": 0,
+        "timed_out": false,
+        "spawn_error": null,
+        "stdout_preview": "M AGENTS.md\n M CLAUDE.md\n M web/scripts/verify-contrast.mjs\n M web/src/design-system/source/brand.tokens.schema.json\n M web/src/features/auth/components/legal-consent.tsx\n M web/src/features/docs/nati",
+        "stderr_preview": ""
+      },
+      {
+        "command": "node --version",
+        "exit_code": 0,
+        "timed_out": false,
+        "spawn_error": null,
+        "stdout_preview": "v22.22.2",
+        "stderr_preview": ""
+      },
+      {
+        "command": "go version",
+        "exit_code": 0,
+        "timed_out": false,
+        "spawn_error": null,
+        "stdout_preview": "go version go1.27.4 darwin/amd64",
+        "stderr_preview": ""
+      }
+    ],
+    "files_scanned_total": 4157,
+    "findings": [
+      {
+        "severity": "INFO",
+        "code": "authz_middleware_boundary_files",
+        "message": "middleware/ 下授权/鉴权/限流边界相关文件真实计数 = 17",
+        "file": "middleware/",
+        "domain": "authentication"
+      },
+      {
+        "severity": "INFO",
+        "code": "authz_controller_token_files",
+        "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 210",
+        "file": "controller/",
+        "domain": "authentication"
+      },
+      {
+        "severity": "INFO",
+        "code": "authz_middleware_text",
+        "message": "middleware/auth.go + secure_verification.go 真实文本匹配鉴权锚点 5/5: [role, token, authenticate, c.Get, c.Abort]",
+        "file": "middleware/auth.go",
+        "domain": "authentication"
+      },
+      {
+        "severity": "INFO",
+        "code": "billing_service_files",
+        "message": "service/ 下计费/quota/结算相关文件真实计数 = 23",
+        "file": "service/",
+        "domain": "billing"
+      },
+      {
+        "severity": "INFO",
+        "code": "billing_session_symbols",
+        "message": "service/billing_session.go 真实文本匹配计费会话锚点 3/4: [type BillingSession struct, func (s *BillingSession) Refund, func (s *BillingSession) Settle]",
+        "file": "service/billing_session.go",
+        "domain": "billing"
+      },
+      {
+        "severity": "INFO",
+        "code": "billing_quota_atomic_cas",
+        "message": "model/token.go 真实文本匹配原子 CAS 锚点 3/3: [remain_quota >= ?, RowsAffected == 0, used_quota >= ?]",
+        "file": "model/token.go",
+        "domain": "billing"
+      },
+      {
+        "severity": "INFO",
+        "code": "pricing_model_files",
+        "message": "model/ 下 price/pricing/model 相关文件真实计数 = 13",
+        "file": "model/",
+        "domain": "pricing"
+      },
+      {
+        "severity": "INFO",
+        "code": "pricing_feature_presence",
+        "message": "web/src/features/pricing/ exists=true，真实文件计数 = 69（存在性探测，仅 INFO）",
+        "file": "web/src/features/pricing/",
+        "domain": "pricing"
+      },
+      {
+        "severity": "INFO",
+        "code": "pricing_config_text",
+        "message": "model_pricing_* 真实文本匹配价格锚点 2/3: [Price, ModelPrice]",
+        "file": "model/model_pricing_config.go",
+        "domain": "pricing"
+      },
+      {
+        "severity": "INFO",
+        "code": "payment_topup_files",
+        "message": "controller/ 下 topup/alipay/wechat/payment 相关文件真实计数 = 35",
+        "file": "controller/",
+        "domain": "payment"
+      },
+      {
+        "severity": "INFO",
+        "code": "payment_alipay_reconcile_text",
+        "message": "controller/topup_alipay.go 真实文本匹配查单/入账锚点 4/5: [applyAlipayQueryResult, AlipayReconcileUnpaid, AlipayReconcileCreditFailed, TRADE_CLOSED]",
+        "file": "controller/topup_alipay.go",
+        "domain": "payment"
+      },
+      {
+        "severity": "INFO",
+        "code": "payment_idempotent_cas_text",
+        "message": "model/topup.go 真实文本匹配幂等 CAS 锚点 4/4: [claimPendingTopUp, alreadyDone, status = ?, RowsAffected != 1]",
+        "file": "model/topup.go",
+        "domain": "payment"
+      },
+      {
+        "severity": "INFO",
+        "code": "payment_amount_rounding_text",
+        "message": "wallet/lib/payment.ts 真实文本匹配金额取整锚点 3/3: [toPayAmount, Math.round, Math.floor(0.01)]",
+        "file": "web/src/features/wallet/lib/payment.ts",
+        "domain": "payment"
+      },
+      {
+        "severity": "INFO",
+        "code": "designsystem_src_files",
+        "message": "web/src/design-system/ 真实文件计数 = 35",
+        "file": "web/src/design-system/",
+        "domain": "frontend-design-system"
+      },
+      {
+        "severity": "INFO",
+        "code": "designsystem_agents_presence",
+        "message": "web/AGENTS.md 存在=true，真实字符长度 = 12576（存在性/长度探测，仅 INFO）",
+        "file": "web/AGENTS.md",
+        "domain": "frontend-design-system"
+      },
+      {
+        "severity": "INFO",
+        "code": "designsystem_docs_files",
+        "message": "docs/design-system/ 真实文件计数 = 21",
+        "file": "docs/design-system/",
+        "domain": "frontend-design-system"
+      },
+      {
+        "severity": "INFO",
+        "code": "cicd_ci_yml_content",
+        "message": ".github/workflows/ci.yml 真实字节长度 = 17117，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+        "file": ".github/workflows/ci.yml",
+        "domain": "ci-cd"
+      },
+      {
+        "severity": "INFO",
+        "code": "cicd_verify_all_content",
+        "message": "scripts/verify-all.sh 真实字节长度 = 9635，非空指令锚点匹配 2/5: [echo, bun]",
+        "file": "scripts/verify-all.sh",
+        "domain": "ci-cd"
+      },
+      {
+        "severity": "INFO",
+        "code": "deps_go_mod_text",
+        "message": "go.mod 真实文本匹配 3/3: [module , go 1., require (]",
+        "file": "go.mod",
+        "domain": "dependencies"
+      },
+      {
+        "severity": "INFO",
+        "code": "deps_package_json_text",
+        "message": "web/package.json 真实解析：dependencies=55，devDependencies=29",
+        "file": "web/package.json",
+        "domain": "dependencies"
+      },
+      {
+        "severity": "INFO",
+        "code": "deps_lockfile_presence",
+        "message": "lockfile 存在=true（web/bun.lock，真实字符长度=360342）（存在性探测，仅 INFO）",
+        "file": "web/bun.lock",
+        "domain": "dependencies"
+      },
+      {
+        "severity": "INFO",
+        "code": "env_git_status",
+        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=8",
+        "domain": "environment"
+      },
+      {
+        "severity": "INFO",
+        "code": "env_node_version",
+        "message": "真实命令 \"node --version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"v22.22.2\"",
+        "domain": "environment"
+      },
+      {
+        "severity": "INFO",
+        "code": "env_go_version",
+        "message": "真实命令 \"go version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"go version go1.27.4 darwin/amd64\"",
+        "domain": "environment"
+      }
+    ],
+    "summary": "扫描 13 个路径（真实文件计数合计 4157，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
+    "blockers": 0,
+    "severities": [
+      "BLOCKER",
+      "MAJOR",
+      "MINOR",
+      "INFO"
+    ]
+  },
+  "financial": {
+    "generated_at": "2026-11-12T16:40:33.488Z",
+    "simulated_only": true,
+    "safety": {
+      "network_calls": 0,
+      "database_writes": 0,
+      "real_payments_or_refunds": 0,
+      "note": "static source reading + in-memory arithmetic only"
+    },
+    "checks": [
+      {
+        "id": "payment_success_order_state",
+        "scenario": "支付成功后订单状态落库路径",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/topup.go",
+          "matched": [
+            "TopUpStatusSuccess",
+            "alreadyDone",
+            "claimPendingTopUp",
+            "CompleteTime",
+            "creditTopUpQuota"
+          ],
+          "detail": "已读取 1/1 个候选源码文件；锚点匹配 5/5；命中文件=[model/topup.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "signature_verification",
+        "scenario": "支付宝/微信回调验签",
+        "status": "PASS",
+        "evidence": {
+          "file": "service/cn_pay_sign.go",
+          "matched": [
+            "func AlipayVerifySign",
+            "alipayNotifyVerifyContent",
+            "AlipayVerifyResponse",
+            "signature invalid",
+            "RSA2"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 5/5；命中文件=[service/cn_pay_sign.go, service/alipay_query.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "duplicate_notification",
+        "scenario": "重复通知幂等",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/topup.go",
+          "matched": [
+            "alreadyDone",
+            "绝不二次入账",
+            "idempotent repeat",
+            "AlipayReconcileSuccess"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/topup.go, controller/topup_alipay.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "local_order_save_failure_recovery",
+        "scenario": "本地订单保存失败恢复",
+        "status": "PASS",
+        "evidence": {
+          "file": "controller/topup_alipay.go",
+          "matched": [
+            "credit_failed",
+            "AlipayReconcileCreditFailed",
+            "恰好入账一次",
+            "恢复",
+            "保持 pending 待重试"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 5/5；命中文件=[controller/topup_alipay.go, controller/payment_recovery_fault_injection_test.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "refund_linked_to_original_order",
+        "scenario": "退款关联原订单",
+        "status": "PASS",
+        "evidence": {
+          "file": "service/billing_session.go",
+          "matched": [
+            "requestId",
+            "relay-refund:",
+            "originating request id",
+            "IdempotencyKey"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[service/billing_session.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "duplicate_refund",
+        "scenario": "重复退款防护",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/refund_intent.go",
+          "matched": [
+            "errRefundIntentAlreadyDone",
+            "already done",
+            "s.refunded",
+            "refunded ||"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/refund_intent.go, service/billing_session.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "concurrent_billing",
+        "scenario": "并发扣费 / quota 原子 CAS",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/token.go",
+          "matched": [
+            "remain_quota >= ?",
+            "RowsAffected == 0",
+            "原子预扣",
+            "超扣"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/token.go, service/quota.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "balance_ledger_consistency",
+        "scenario": "余额流水一致",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/billing_integrity_test.go",
+          "matched": [
+            "PreConsumed",
+            "settlement delta",
+            "balance",
+            "IdempotencyKey"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[model/billing_integrity_test.go, model/task_billing_state.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "exception_recovery",
+        "scenario": "异常恢复",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/refund_intent.go",
+          "matched": [
+            "SweepPendingRefundIntents",
+            "stays pending for sweep",
+            "fail-closed",
+            "故障注入"
+          ],
+          "detail": "已读取 3/3 个候选源码文件；锚点匹配 4/4；命中文件=[model/refund_intent.go, service/billing_session.go, controller/payment_recovery_fault_injection_test.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "price_change",
+        "scenario": "价格变化时的金额快照",
+        "status": "PASS",
+        "evidence": {
+          "file": "controller/topup_cn_amount_snapshot_test.go",
+          "matched": [
+            "ProviderAmount",
+            "ProviderCurrency",
+            "快照",
+            "providerExpectedMinorUnits"
+          ],
+          "detail": "已读取 3/3 个候选源码文件；锚点匹配 4/4；命中文件=[controller/topup_cn_amount_snapshot_test.go, controller/topup_wechat.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "upstream_failure",
+        "scenario": "上游失败处理",
+        "status": "PASS",
+        "evidence": {
+          "file": "controller/payment_recovery_fault_injection_test.go",
+          "matched": [
+            "网关故障",
+            "自动重试",
+            "保持 pending",
+            "http status",
+            "signature invalid"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 5/5；命中文件=[controller/payment_recovery_fault_injection_test.go, service/alipay_query.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "idempotency",
+        "scenario": "幂等键 / 状态检查",
+        "status": "PASS",
+        "evidence": {
+          "file": "model/refund_intent.go",
+          "matched": [
+            "IdempotencyKey",
+            "uniqueIndex",
+            "status = ?",
+            "alreadyDone",
+            "billing_idempotency_key"
+          ],
+          "detail": "已读取 3/3 个候选源码文件；锚点匹配 5/5；命中文件=[model/refund_intent.go, model/topup.go, model/task_billing_state.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "historical_fund_data_protection",
+        "scenario": "历史资金数据迁移保护",
+        "status": "PASS",
+        "evidence": {
+          "file": "service/task_billing.go",
+          "matched": [
+            "TaskRefundLegacyCutoff",
+            "historical terminal task",
+            "automatic refund is disabled",
+            "fail-closed"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[service/task_billing.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "alipay_query_four_state",
+        "scenario": "查单四分状态与未支付/终态区分",
+        "status": "PASS",
+        "evidence": {
+          "file": "service/alipay_query.go",
+          "matched": [
+            "ACQ.TRADE_NOT_EXIST",
+            "TRADE_CLOSED",
+            "AlipayReconcileUnpaid",
+            "\"unpaid\"",
+            "\"pending\"",
+            "\"closed\"",
+            "\"success\""
+          ],
+          "detail": "已读取 3/3 个候选源码文件；锚点匹配 7/7；命中文件=[service/alipay_query.go, controller/topup_alipay.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "wechat_scene_info",
+        "scenario": "微信 v2/v3 scene_info 差异",
+        "status": "PASS",
+        "evidence": {
+          "file": "controller/topup_wechat_h5_scene_test.go",
+          "matched": [
+            "scene_info",
+            "h5_info",
+            "APIv3",
+            "buildWechatH5SceneInfo"
+          ],
+          "detail": "已读取 2/2 个候选源码文件；锚点匹配 4/4；命中文件=[controller/topup_wechat_h5_scene_test.go]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "frontend_amount_rounding",
+        "scenario": "前端金额取整（toPayAmount 替代 Math.floor）",
+        "status": "PASS",
+        "evidence": {
+          "file": "web/src/features/wallet/lib/payment.ts",
+          "matched": [
+            "toPayAmount",
+            "Math.round",
+            "Math.floor(0.01)",
+            "0.01"
+          ],
+          "detail": "已读取 1/1 个候选源码文件；锚点匹配 4/4；命中文件=[web/src/features/wallet/lib/payment.ts]；未命中锚点=[无]。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "sim_duplicate_notification_credited_once",
+        "scenario": "内存模拟：重复通知只入账一次",
+        "status": "PASS",
+        "evidence": {
+          "simulated": true,
+          "mode": "in-process in-memory only (no DB / no network / no gateway / no real refund)",
+          "input": {
+            "initial_balance": 0,
+            "order_amount": 100,
+            "notifications": 5,
+            "initial_status": "pending"
+          },
+          "output": {
+            "final_balance": 100,
+            "credited_count": 1,
+            "final_status": "success",
+            "applied": [
+              "notify#1: CREDIT",
+              "notify#2: SKIP(alreadyDone)",
+              "notify#3: SKIP(alreadyDone)",
+              "notify#4: SKIP(alreadyDone)",
+              "notify#5: SKIP(alreadyDone)"
+            ]
+          },
+          "assertions": [
+            {
+              "name": "credited_exactly_once",
+              "expected": 1,
+              "actual": 1,
+              "exit_code": 0
+            },
+            {
+              "name": "balance_equals_amount",
+              "expected": 100,
+              "actual": 100,
+              "exit_code": 0
+            },
+            {
+              "name": "duplicate_skipped",
+              "expected": 4,
+              "actual": 4,
+              "exit_code": 0
+            }
+          ],
+          "detail": "进程内纯内存模拟；3 条断言，通过 3 条。模拟通过不代表真实资金验证通过。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "sim_duplicate_refund_rejected",
+        "scenario": "内存模拟：重复退款被拒",
+        "status": "PASS",
+        "evidence": {
+          "simulated": true,
+          "mode": "in-process in-memory only (no DB / no network / no gateway / no real refund)",
+          "input": {
+            "initial_balance": 100,
+            "refund_amount": 40,
+            "attempts": 3,
+            "idempotency_key": "relay-refund:7:req-42"
+          },
+          "output": {
+            "final_balance": 140,
+            "refunds_applied": 1,
+            "applied": [
+              "refund#1: APPLY",
+              "refund#2: REJECT(already done)",
+              "refund#3: REJECT(already done)"
+            ]
+          },
+          "assertions": [
+            {
+              "name": "refund_applied_once",
+              "expected": 1,
+              "actual": 1,
+              "exit_code": 0
+            },
+            {
+              "name": "balance_conserved",
+              "expected": 140,
+              "actual": 140,
+              "exit_code": 0
+            },
+            {
+              "name": "duplicates_rejected",
+              "expected": 2,
+              "actual": 2,
+              "exit_code": 0
+            }
+          ],
+          "detail": "进程内纯内存模拟；3 条断言，通过 3 条。模拟通过不代表真实资金验证通过。"
+        },
+        "blockers": []
+      },
+      {
+        "id": "sim_concurrent_billing_balance_conserved",
+        "scenario": "内存模拟：并发扣费余额守恒",
+        "status": "PASS",
+        "evidence": {
+          "simulated": true,
+          "mode": "in-process in-memory only (no DB / no network / no gateway / no real refund)",
+          "input": {
+            "initial_balance": 100,
+            "charge": 15,
+            "concurrent_requests": 10
+          },
+          "output": {
+            "final_balance": 10,
+            "debits_succeeded": 6,
+            "debits_rejected": 4,
+            "applied": [
+              "req#1: DEBIT ok",
+              "req#2: DEBIT ok",
+              "req#3: DEBIT ok",
+              "req#4: DEBIT ok",
+              "req#5: DEBIT ok",
+              "req#6: DEBIT ok",
+              "req#7: REJECT insufficient",
+              "req#8: REJECT insufficient",
+              "req#9: REJECT insufficient",
+              "req#10: REJECT insufficient"
+            ]
+          },
+          "assertions": [
+            {
+              "name": "balance_never_negative",
+              "expected": true,
+              "actual": true,
+              "exit_code": 0
+            },
+            {
+              "name": "balance_conservation",
+              "expected": 100,
+              "actual": 100,
+              "exit_code": 0
+            },
+            {
+              "name": "no_overdraft",
+              "expected": 10,
+              "actual": 10,
+              "exit_code": 0
+            }
+          ],
+          "detail": "进程内纯内存模拟；3 条断言，通过 3 条。模拟通过不代表真实资金验证通过。"
+        },
+        "blockers": []
+      }
+    ],
+    "total": 19,
+    "passed": 19,
+    "failed": 0,
+    "blocked": 0,
+    "failed_ids": [],
+    "blocked_ids": [],
+    "summary": "纯静态源码分析 + 进程内内存模拟（simulated_only=true；未连接任何支付网关/数据库/网络，未发起真实退款）。共 19 项检查（16 个源码场景 + 3 个内存模拟）：PASS=19, FAIL=0, BLOCKED=0。源码场景均在 Uter 真实源码中按字符串锚点匹配，未匹配即 FAIL/BLOCKED，不允许无条件 PASS；无法从源码证明的场景数（BLOCKED）= 0。 无 FAIL 场景。 注意：内存模拟 PASS 仅证明进程内逻辑自洽，绝不等于真实资金验证通过。"
+  },
+  "missing_tools": []
+}

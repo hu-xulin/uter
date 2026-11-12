@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112105532-c730e696",
+  "kind": "auto_repair_attempt",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:55:32.962Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap repair UAP-DEFECT-0001",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"defect_id\":\"UAP-DEFECT-0001\",\"attempt\":1,\"action\":\"normalize_spec_headers\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "UAP-DEFECT-0001: normalize_spec_headers -> REPAIRED",
+  "content_hash": "db241423e92af9c7de686d360e2aec143264db7bb9d01ee5d07c8d6916d40a64"
+}

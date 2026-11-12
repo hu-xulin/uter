@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152053-cc75b64f",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152052-7430c80b",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:53.209Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:validate_environment",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"validate_environment\",\"idempotent\":true,\"handler\":\"validate_environment\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "toolchain: node v22.22.2, go go version go1.27.4 darwin/amd64, bun 1.4.2",
+  "content_hash": "d2b027637cc85df48635b90c33e15f87f7476f392921d6784574b0e664e9f0be"
+}

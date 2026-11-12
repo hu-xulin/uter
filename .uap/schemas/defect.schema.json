@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uap://schemas/defect",
+  "title": "UAP Defect",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "severity",
+    "domain",
+    "root_cause",
+    "affected_files",
+    "affected_features",
+    "specification_ids",
+    "executor_id",
+    "validator_id",
+    "repair_strategy",
+    "repair_attempts",
+    "status",
+    "evidence_refs"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^UAP-DEFECT-\\d{4}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ]
+    },
+    "domain": {
+      "type": "string"
+    },
+    "root_cause": {
+      "type": "string"
+    },
+    "affected_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "affected_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "specification_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "executor_id": {
+      "type": "string"
+    },
+    "validator_id": {
+      "type": "string"
+    },
+    "repair_strategy": {
+      "type": "string"
+    },
+    "repair_attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "status": {
+      "enum": [
+        "OPEN",
+        "IN_PROGRESS",
+        "FIXED",
+        "VERIFIED",
+        "BLOCKED",
+        "ACCEPTED_RISK"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blocked_reason": {
+      "type": "string"
+    }
+  }
+}

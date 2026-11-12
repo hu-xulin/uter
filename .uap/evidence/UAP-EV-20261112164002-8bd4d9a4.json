@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164002-8bd4d9a4",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112164002-cd43eca9",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:40:02.326Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:initialize_uap_structure",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"initialize_uap_structure\",\"idempotent\":true,\"handler\":\"initialize_uap_structure\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "UAP structure initialised: 9 required files present",
+  "content_hash": "b16feb38881cae252eb8e268a115dc90efa6faf898f039787c921bbc855a2d27"
+}

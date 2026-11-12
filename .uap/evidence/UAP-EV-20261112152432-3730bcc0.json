@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152432-3730bcc0",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:32.863Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap test --all",
+  "exit_code": 0,
+  "duration_ms": 2224,
+  "inputs": "{\"argv\":[\"test\",\"--all\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "test: 1 test files passed, exit_code=0",
+  "content_hash": "3fa3a98c94c621bceec2af544684a763ab72185baaa44b76f766dc33c76f9673"
+}

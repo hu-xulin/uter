@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-TEST-20261112110221-fc0cdd84",
+  "kind": "uap_tester_probe",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T11:02:21.760Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap test",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "immutability probe",
+  "content_hash": "4f263c8776bc524f7438ff67eab5e776eea34639c0a0efedc61448c52423c3e8"
+}

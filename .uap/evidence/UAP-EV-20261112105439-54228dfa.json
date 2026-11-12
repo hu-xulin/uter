@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112105439-54228dfa",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:54:39.896Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap audit --json",
+  "exit_code": 1,
+  "duration_ms": 427,
+  "inputs": "{\"argv\":[\"audit\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "audit found 33 blocking findings; 26 defects registered"
+    }
+  ],
+  "summary": "audit found 33 blocking findings; 26 defects registered",
+  "content_hash": "62ad5f1ebfc0f0f50550687a1d525d4971e37c1f71d0e801ec1e50bb1f463e46"
+}

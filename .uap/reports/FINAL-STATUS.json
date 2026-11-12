@@ -1,0 +1,157 @@
+{
+  "platform": "UAP",
+  "version": "1.0.0",
+  "overall_status": "FULLY_OPERATIONAL",
+  "generated_at": "2026-11-12T17:04:41.392Z",
+  "generated_from": "uap report (real command results, never copied from the template)",
+  "specifications": {
+    "total": 32,
+    "complete": 32,
+    "verified": 32,
+    "blocked": 0,
+    "failed": 0
+  },
+  "machine_configs": {
+    "total": 6,
+    "verified": 6,
+    "failed": 0,
+    "registry_ok": true
+  },
+  "system_entrypoints": {
+    "total": 2,
+    "verified": 2,
+    "failed": 0
+  },
+  "runtime": {
+    "implemented": true,
+    "started": true,
+    "health_check_passed": true,
+    "end_to_end_passed": true,
+    "all_validators_passed": true,
+    "recovery_test_passed": true,
+    "components_total": 10,
+    "components_healthy": 10
+  },
+  "executors": {
+    "registered": 32,
+    "unique_implementations": 16,
+    "implemented": 16,
+    "verified": 32
+  },
+  "validators": {
+    "registered": 32,
+    "implemented": 32,
+    "verified": 32
+  },
+  "agents": {
+    "registered": 11,
+    "implemented": 11
+  },
+  "workflows": {
+    "registered": 7,
+    "runs": 44
+  },
+  "three_independent_results": {
+    "specification_completeness": {
+      "status": "COMPLETE",
+      "evidence": {
+        "specs_complete": 32,
+        "specs_total": 32,
+        "registry_ok": true,
+        "registry_summary": "37/37 registry checks passed, 0 blocking findings"
+      }
+    },
+    "uap_runtime_capability": {
+      "status": "FULLY_OPERATIONAL",
+      "evidence": {
+        "health_check_passed": true,
+        "components_healthy": 10,
+        "components_total": 10,
+        "validators_pass": 32,
+        "validators_fail": 0,
+        "validators_total": 32,
+        "validators_blocked_restricted": 0,
+        "validators_blocked_undeclared": 0,
+        "uap_tests_exit_code": 0,
+        "verdict_detail": "Runtime 健康 10/10 组件健康; 32 个验证器 32 PASS / 0 FAIL; 0 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=0"
+      }
+    },
+    "uter_real_compliance": {
+      "status": "FULLY_COMPLIANT",
+      "evidence": {
+        "audit_executed": true,
+        "defect_registry_built": true,
+        "financial_failed": 0,
+        "financial_blocked": 0,
+        "quality_gates_failed": 0,
+        "open_p0": 0,
+        "open_p1": 0,
+        "validators_pass": 32,
+        "validators_fail": 0,
+        "validators_total": 32,
+        "restricted_blocked_items": [],
+        "verdict_detail": "审计/缺陷/资金/门禁全部通过, 32/32 验证器 PASS"
+      }
+    }
+  },
+  "final_acceptance": {
+    "uap_fully_operational": true,
+    "uter_fully_compliant": true,
+    "both_satisfied": true,
+    "claim_allowed": true,
+    "restricted_blocked_items": [],
+    "claim_note": "规范完整性 / UAP 运行能力 / Uter 合规性三者分别取证, 不可互相替代; 受限未执行项一律记入 BLOCKED-ITEMS.md, 不计入通过"
+  },
+  "uter_compliance": "FULLY_COMPLIANT",
+  "critical_defects": 0,
+  "open_defects": 0,
+  "blocked_items": [
+    {
+      "id": "AUTH:production_deploy",
+      "severity": "BLOCKED_BY_DESIGN",
+      "reason": "requires explicit production authorization; UAP performs local simulation only",
+      "source": ".uap/config/permission-policy.yaml"
+    },
+    {
+      "id": "AUTH:production_database_write",
+      "severity": "BLOCKED_BY_DESIGN",
+      "reason": "requires explicit production authorization; UAP performs local simulation only",
+      "source": ".uap/config/permission-policy.yaml"
+    },
+    {
+      "id": "AUTH:real_payment",
+      "severity": "BLOCKED_BY_DESIGN",
+      "reason": "requires explicit production authorization; UAP performs local simulation only",
+      "source": ".uap/config/permission-policy.yaml"
+    },
+    {
+      "id": "AUTH:real_refund",
+      "severity": "BLOCKED_BY_DESIGN",
+      "reason": "requires explicit production authorization; UAP performs local simulation only",
+      "source": ".uap/config/permission-policy.yaml"
+    }
+  ],
+  "evidence_index": ".uap/reports/EVIDENCE-INDEX.md",
+  "report_count": 18,
+  "reports": [
+    "IMPLEMENTATION-REPORT.md",
+    "SPECIFICATION-COMPLIANCE-REPORT.md",
+    "SPECIFICATION-REGISTRY-REPORT.md",
+    "EXECUTOR-COVERAGE-REPORT.md",
+    "VALIDATOR-COVERAGE-REPORT.md",
+    "AGENT-COMPLIANCE-REPORT.md",
+    "WORKFLOW-VERIFICATION-REPORT.md",
+    "RUNTIME-TEST-REPORT.md",
+    "SECURITY-AUDIT-REPORT.md",
+    "QUALITY-REPORT.md",
+    "WEB-ENGINEERING-REPORT.md",
+    "H5-ENGINEERING-REPORT.md",
+    "CROSS-PLATFORM-REPORT.md",
+    "FINANCIAL-INTEGRITY-REPORT.md",
+    "AUTO-REPAIR-REPORT.md",
+    "EVIDENCE-INDEX.md",
+    "BLOCKED-ITEMS.md",
+    "FINAL-STATUS.json"
+  ],
+  "generated_by_real_run": true
+}

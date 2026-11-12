@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112105637-9727164f",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:37.275Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.collaboration_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.collaboration_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.collaboration_integrity 实检: task_dependencies=PASS(agents 域 4 条规范自算 DAG cycles=0 missing_deps=0; registry 无环=true); conflict_detection=PASS(agent id 唯一=true; deny_undeclared_tools=true; 规范含 冲突/一致=true); result_consistency=PASS(动态 import state-machine 并调用 health().ok===true: health().ok=true; 11 agent 均有 output_schema=true; 规范含 结构化=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 75 个 | 自算协作依赖 DAG + 冲突规则 + 动态 import 调用 health() 证明模块可运行",
+  "content_hash": "2f067f57057f94707c92b1d9f099f888436474e698ae4fc62af51abb119c07d6"
+}

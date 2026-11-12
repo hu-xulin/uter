@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151832-7f745087",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:18:32.072Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test .uap/tests/runtime.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 1855,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/runtime.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 1 files -> exit 0, tap pass=25 fail=0",
+  "content_hash": "2127ec6873e109b767d93296b5e7e9a168b58e28594d21c7c52512d70a31b16e"
+}

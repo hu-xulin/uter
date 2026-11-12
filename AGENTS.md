@@ -1,3 +1,122 @@
+# UAP Agent Entry Point
+
+## 1. Governance Authority
+
+UAP is the autonomous engineering governance and execution platform for this repository.
+
+The authoritative UAP specifications are located in `.uap/`.
+
+Before executing engineering tasks, agents MUST:
+
+1. Read `.uap/README.md`.
+2. Read `.uap/config/specification-registry.yaml`.
+3. Read `.uap/config/agent-registry.yaml`.
+4. Read `.uap/config/permission-policy.yaml`.
+5. Read the specifications relevant to the assigned task.
+6. Use the registered execution workflows and validators.
+
+## 2. Execution Rules
+
+- Work in the existing local `main` workspace.
+- Do not create or switch Git branches.
+- Preserve all existing user changes.
+- Never use destructive Git operations to clean the workspace.
+- Do not claim an operation succeeded without actual tool evidence.
+- Do not mark a task complete without its acceptance checks.
+- Do not bypass quality gates.
+- Do not delete tests to obtain a passing result.
+- Do not silently weaken security or validation rules.
+
+## 3. Task Contract
+
+Every task must have:
+
+- Unique task ID.
+- Objective and scope.
+- Relevant specification IDs.
+- Dependencies.
+- Permission requirements.
+- Expected outputs.
+- Acceptance criteria.
+- Evidence references.
+
+Every task result must report:
+
+- Status.
+- Summary.
+- Changed files.
+- Commands executed.
+- Validation results.
+- Evidence references.
+- Remaining risks or blocked items.
+
+## 4. Security
+
+Default to least privilege.
+
+Production deployment, production database writes, real payment, real refunds, secret export, force push, branch creation and destructive Git operations are denied.
+
+Use simulated financial operations and isolated test environments.
+
+## 5. Quality
+
+All relevant code changes must undergo:
+
+- Code review.
+- Automated testing.
+- Security validation.
+- Quality gate validation.
+
+Critical failures block completion.
+
+## 6. Recovery
+
+Persist task state and evidence.
+
+Resume interrupted tasks only after checking existing side effects.
+
+Do not repeat non-idempotent operations.
+
+## 7. Final Status
+
+Use only evidence-backed statuses:
+
+- NOT_BUILT
+- PARTIALLY_BUILT
+- IMPLEMENTED_NOT_VERIFIED
+- PARTIALLY_VERIFIED
+- FULLY_VERIFIED
+- FULLY_OPERATIONAL
+- BLOCKED
+- FAILED
+
+Never fabricate PASS or FULLY_OPERATIONAL.
+
+## 8. Coexistence with Existing Repository Rules
+
+This file intentionally preserves the repository's original binding conventions
+in full below. UAP does not replace `AGENTS.md` project conventions,
+`web/AGENTS.md`, `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`,
+`scripts/verify-all.sh` or `.github/workflows/ci.yml`. Where rules differ, the
+stricter rule wins.
+
+The retired AES/UAES governance system is not a dependency of UAP. UAP lives
+entirely inside `.uap/`. Use the local entry point for evidence-backed state:
+
+```bash
+./uap status
+./uap doctor
+./uap validate --all
+./uap test --all
+./uap report
+```
+
+A document, a file's existence, or a generated report alone never proves that a
+capability is operational. Only a real command with a real exit code and
+persisted evidence does.
+
+---
+
 # AGENTS.md — Project Conventions for uter
 
 DO NOT send optional commentary

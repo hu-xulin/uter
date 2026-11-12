@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261112105639-9e04b528",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:39.116Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.gate_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.gate_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.gate_execution",
+      "message": "gate_execution: 缺少 /Users/lincolnhu/uter/.uap/reports/QUALITY-GATES.json"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "check.blocking",
+      "message": "blocking: 子进程复验 BLOCKER 降级 PASS->FAIL / MAJOR 不阻断=true; 报告中非零 exit_code 被伪装为 PASS 的=0 条"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "gate_report_missing",
+      "message": "缺少报告 /Users/lincolnhu/uter/.uap/reports/QUALITY-GATES.json, 无法校验门禁执行记录 -> BLOCKED"
+    }
+  ],
+  "summary": "quality.gate_integrity 实检: gate_execution=FAIL(缺少 /Users/lincolnhu/uter/.uap/reports/QUALITY-GATES.json); blocking=FAIL(子进程复验 BLOCKER 降级 PASS->FAIL / MAJOR 不阻断=true; 报告中非零 exit_code 被伪装为 PASS 的=0 条); bypass_detection=PASS(policy 声明两个绕过权限 deny=true; check() 实判 quality_gate_disable=DENY test_deletion_to_force_pass=DENY; fail_closed=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 83 个 | 报告 /Users/lincolnhu/uter/.uap/reports/QUALITY-GATES.json 不存在, 未自行创建 -> BLOCKED; 绝不因\"无失败记录\"判 PASS",
+  "content_hash": "423eb98122a0503ea7b8dc0af87d627dc6d9de1526cbb886f7aea306af4b782e"
+}

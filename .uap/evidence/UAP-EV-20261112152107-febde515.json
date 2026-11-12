@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152107-febde515",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152057-0316a361",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:21:07.929Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:code_review",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-9\",\"name\":\"code_review\",\"idempotent\":true,\"handler\":\"code_review\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "code review: 80 findings, 0 blockers",
+  "content_hash": "79310c107c15be6e68cdffc87d1048c5234e97f19631164d440df02f9938f2e2"
+}

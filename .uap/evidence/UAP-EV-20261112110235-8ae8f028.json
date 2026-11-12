@@ -1,0 +1,32 @@
+{
+  "evidence_id": "UAP-EV-20261112110235-8ae8f028",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-TEST-20261112110235-a92a472a",
+  "trace_id": "UAP-TRACE-20261112110235-ed2b812e",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "recorded_at": "2026-11-12T11:02:35.966Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:__uap_test_always_fail__",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-1\",\"attempts\":3}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "step_failed",
+      "message": "always broken"
+    }
+  ],
+  "summary": "__uap_test_always_fail__ failed: always broken",
+  "content_hash": "091214560f1c0f4fba724ceee2d118c570c625e9f55eb73bfff9ae85d98d9dd4"
+}

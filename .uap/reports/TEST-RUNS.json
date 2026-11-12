@@ -1,0 +1,387 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:35.227Z",
+  "executor_ids": [
+    "quality.engineering",
+    "quality.testing",
+    "quality.gates"
+  ],
+  "node_version": "v22.22.2",
+  "environment": "local",
+  "runs": [
+    {
+      "command": "node --test .uap/tests/runtime.test.mjs",
+      "args": [
+        "--test",
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "exit_code": 0,
+      "signal": null,
+      "timed_out": false,
+      "spawn_error": null,
+      "duration_ms": 944,
+      "stdout_summary": "TAP version 13\n# Subtest: 类别1 Runtime 启动\n    # Subtest: orchestrator.health() 返回 10 个组件健康卡且每个组件带结构化 checks\n    ok 1 - orchestrator.health() 返回 10 个组件健康卡且每个组件带结构化 checks\n      ---\n      duration_ms: 243.540061\n      type: 'test'\n      ...\n    1..1\nok 1 - 类别1 Runtime 启动\n  ---\n  duration_ms: 244.678882\n  type: 'suite'\n  ...\n# Subtest: 类别2 配置加载\n    # Subtest: 6 份 YAML 全部可解析且关键键存在\n    ok 1 - 6 份 YAML 全部可解析且关键键存在\n      ---\n      duration_ms: 5.179798\n      type: 'test'\n      ...\n    # Subtest: parseYAML 拒绝非法输入（重复键 / tab 缩进 / 块标量 / 未闭合流序列）\n    ok 2 - parseYAML 拒绝非法输入（重复键 / tab 缩进 / 块标量 / 未闭合流序列）\n      ---\n      duration_ms: 1.575987\n      type: 'test'\n      ...\n    1..2\nok 2 - 类别2 配置加载\n  ---\n  duration_ms: 7.122641\n  type: 'suite'\n  ...\n# Subtest: 类别3 规范注册表\n    # Subtest: registryIntegrity() 检查数组",
+      "stderr_summary": "",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "status": "PASSED_EXECUTED",
+      "blocked_reason": null
+    },
+    {
+      "command": "node --test .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 1390,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261112142322-03ec0a2f"
+      ],
+      "recorded_at": "2026-11-12T14:23:22.147Z"
+    },
+    {
+      "command": "node --test .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 1855,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261112151832-7f745087"
+      ],
+      "recorded_at": "2026-11-12T15:18:32.070Z"
+    },
+    {
+      "command": "node --test .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 2005,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261112152110-a5e71753"
+      ],
+      "recorded_at": "2026-11-12T15:21:10.802Z"
+    },
+    {
+      "command": "node --test .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 2217,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261112152432-9ddaed6b"
+      ],
+      "recorded_at": "2026-11-12T15:24:32.859Z"
+    },
+    {
+      "command": "node --test .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 2285,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261112163955-301897bb"
+      ],
+      "recorded_at": "2026-11-12T16:39:55.084Z"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "executed": 1,
+    "passed": 1,
+    "blocked": 0,
+    "failed": 0
+  },
+  "test_plan": {
+    "generated_at": "2026-11-12T11:02:36.211Z",
+    "layers": [
+      {
+        "layer": "unit.go",
+        "source": "*_test.go",
+        "discovered_test_files": 438,
+        "sample": [
+          "main_docs_test.go",
+          "common/api_type_task_plugin_test.go",
+          "common/audio_case_test.go",
+          "controller/access_token_audit_test.go",
+          "controller/admin_user_verification_test.go",
+          "service/admission_quota_test.go",
+          "service/alipay_query_test.go",
+          "model/accounting_tx_test.go",
+          "model/audit_log_test.go",
+          "relay/alpha_search_handler_test.go"
+        ],
+        "gate_command": "go test ./..."
+      },
+      {
+        "layer": "unit.web",
+        "source": "web/src/**/*.test.ts(x)",
+        "discovered_test_files": 287,
+        "sample": [
+          "web/src/components/__tests__/command-menu.test.tsx",
+          "web/src/components/__tests__/datetime-picker-time.test.tsx",
+          "web/src/components/__tests__/html-content.test.tsx",
+          "web/src/components/__tests__/payment-icon-by-name.test.tsx",
+          "web/src/components/ai-elements/__tests__/code-block-editor.test.tsx",
+          "web/src/components/ai-elements/__tests__/response-fade-render.test.tsx",
+          "web/src/components/ai-elements/__tests__/response-fade.test.ts",
+          "web/src/components/data-table/core/__tests__/pagination.test.tsx"
+        ],
+        "gate_command": "bun run test"
+      },
+      {
+        "layer": "uap.runtime",
+        "source": ".uap/tests/*.test.mjs",
+        "discovered_test_files": 1,
+        "gate_command": "node --test .uap/tests/*.test.mjs",
+        "status": "READY"
+      },
+      {
+        "layer": "e2e",
+        "source": "web/e2e",
+        "gate_command": "playwright test",
+        "status": "NOT_RUN_LOCAL_GATE"
+      },
+      {
+        "layer": "quality_gate",
+        "source": "scripts/verify-all.sh",
+        "gate_command": "./scripts/verify-all.sh",
+        "local_equivalent": "./scripts/verify-all.sh --quick"
+      }
+    ],
+    "ci_test_commands": [
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 109,
+        "command": "go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 113,
+        "command": "go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 117,
+        "command": "GOWORK=off go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 121,
+        "command": "GOWORK=off go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 139,
+        "command": "make test"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 192,
+        "command": "go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 197,
+        "command": "go test -race -count=1 ./e2e/..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 201,
+        "command": "GOWORK=off go test -race -count=1 ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 205,
+        "command": "GOWORK=off go test -race -count=1 ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 209,
+        "command": "GOWORK=off go test -race -count=1 ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 354,
+        "command": "node --test desktop-secrets.test.js"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 390,
+        "command": "bun run test"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 409,
+        "command": "bun run verify:contrast"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 418,
+        "command": "bun run test:visual"
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 87,
+        "command": "make test"
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 94,
+        "command": "go test ./..."
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 150,
+        "command": "node --test desktop-secrets.test.js"
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 179,
+        "command": "bun run test"
+      }
+    ],
+    "policy": "plan lists real discovered tests; nothing is marked PASS unless actually executed"
+  },
+  "gate_plan": {
+    "verify_all_exists": true,
+    "gates": [
+      {
+        "command": "bun run i18n:sync",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "./scripts/verify-all.sh",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "gofmt -l .",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "go vet ./...",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "make test",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run typecheck",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run lint",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run test",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run lint:design:strict",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run copyright:check",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run build:check",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run dev",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run build",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run i18n:",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bunx vitest run src/design-system/__tests__",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "tsgo -b --force",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run test:visual",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run test:visual:e2e",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      }
+    ],
+    "note": "gates are defined by AGENTS.md / CI; this engine only records them, none is claimed as run or passed"
+  },
+  "policy": {
+    "never_mark_unrun_as_pass": true,
+    "blocked_not_pass": true
+  }
+}

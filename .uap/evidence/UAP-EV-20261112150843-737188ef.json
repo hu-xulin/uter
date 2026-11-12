@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112150843-737188ef",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112150838-609e5147",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:08:43.608Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:unit_tests",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"unit_tests\",\"idempotent\":true,\"handler\":\"unit_tests\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality gates: 1 gates, 0 failures",
+  "content_hash": "14c27b631b82b35c588e969858c6835c4b07cd1cdad0943f2bfe8ea8543ef5aa"
+}

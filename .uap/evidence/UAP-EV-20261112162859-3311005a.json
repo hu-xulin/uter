@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112162859-3311005a",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:28:59.071Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate --only cross_platform.h5_integrity",
+  "exit_code": 3,
+  "duration_ms": 5,
+  "inputs": "{\"argv\":[\"validate\",\"--only\",\"cross_platform.h5_integrity\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "usage_error",
+      "message": "unknown validator: --only. Registered: 32"
+    }
+  ],
+  "summary": "unknown validator: --only. Registered: 32",
+  "content_hash": "fcae920bd2440d12f46367dbbd78857f2b19778f57e78d944c43163a66edfe5f"
+}

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112105626-5884a0a6",
+  "kind": "runtime_start",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:26.504Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap doctor",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"components\":10}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "runtime start: 10/10 components healthy, registry 37/37",
+  "content_hash": "b2fe7495151ad6887f66c9ee352aadec516ff86eed290b027ced643c4323dd94"
+}

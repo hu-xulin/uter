@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151448-ce7c101c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:14:48.561Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.requirement_traceability",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.requirement_traceability\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.requirement_traceability 实检: feature_ids=PASS(product-model.json features=56 唯一ID=56; feature-registry.yaml feature_id 行=56; 格式 UTER-XXX-NNN); requirement_coverage=PASS(requirement-registry.yaml requirement_id 行=124; product-model mappings=124; 带 acceptance_ids 行=124); acceptance_criteria=PASS(规范 11 sections/验收条件=true; AC- 唯一ID=373; 覆盖报告存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 710 个 | 真实读取 docs/product/registry 业务产物(56 features / 124 requirements / 124 mappings), 非只读规范文字",
+  "content_hash": "745697f3f3e884d8121fa297802eeeccbb6ab98b858cd16854a97a51fbac7bea"
+}

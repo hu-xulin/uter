@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151504-6177c08d",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112151504-7f56aae3",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:15:04.975Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:create_execution_plan",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"create_execution_plan\",\"idempotent\":true,\"handler\":\"create_execution_plan\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "resolved DAG: 32 specs in 9 levels",
+  "content_hash": "789e76698f9abd247ed8bb66278120f5f394bf448306639e4f7a4eaca672cce7"
+}

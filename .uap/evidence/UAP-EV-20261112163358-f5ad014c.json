@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112163358-f5ad014c",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:33:58.438Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.h5_integrity",
+  "exit_code": 0,
+  "duration_ms": 78883,
+  "inputs": "{\"argv\":[\"validate\",\"cross_platform.h5_integrity\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "validate: 1/1 validators passed with real checks",
+  "content_hash": "6f3e12d1819e626e182f9d0323717bde845c5cbfe1e7146cccbb4fe5c96a47da"
+}

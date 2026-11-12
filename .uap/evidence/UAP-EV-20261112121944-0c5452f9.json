@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112121944-0c5452f9",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T12:19:44.663Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.engineering_integrity",
+  "exit_code": 1,
+  "duration_ms": 240,
+  "inputs": "{\"argv\":[\"validate\",\"quality.engineering_integrity\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "validate: 1/1 validators FAILED"
+    }
+  ],
+  "summary": "validate: 1/1 validators FAILED",
+  "content_hash": "2fd6b3c86249314b9fa5e1616148cce4a140c07e560a212b41309f830ceb44b0"
+}

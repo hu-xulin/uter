@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112105532-b8cc24bb",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:55:32.987Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap repair --json",
+  "exit_code": 0,
+  "duration_ms": 51,
+  "inputs": "{\"argv\":[\"repair\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "repair: 2 defects auto-repaired, 0 critical open",
+  "content_hash": "d66e0512712477d95363170274ea2c23c224be7a9fedac06ecb53b8f6879ecba"
+}

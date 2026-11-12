@@ -1,0 +1,128 @@
+schema_version: "1.0"
+mapping_id: "UAP-EXECUTION-MAPPING"
+
+execution:
+  mode: "local"
+  branch_policy: "no_branch_creation"
+  default_environment: "local"
+  dry_run_for_production: true
+  max_repair_attempts_per_root_cause: 3
+  preserve_user_changes: true
+
+engines:
+  core:
+    architecture: .uap/runtime/orchestrator
+    autonomous_execution: .uap/runtime/task-engine
+    evidence: .uap/runtime/evidence-engine
+
+  product:
+    requirements: .uap/engines/product
+    prototype_sync: .uap/engines/product
+    business_rules: .uap/engines/product
+
+  architecture:
+    analyzer: .uap/engines/architecture
+    api_database: .uap/engines/architecture
+    adr: .uap/engines/architecture
+
+  agents:
+    registry: .uap/runtime/agent-runtime
+    execution: .uap/runtime/agent-runtime
+    collaboration: .uap/runtime/agent-runtime
+    recovery: .uap/runtime/recovery-engine
+
+  development:
+    coding_standard: .uap/engines/development
+    code_review: .uap/engines/code-review
+    dependencies: .uap/engines/development
+
+  quality:
+    engineering: .uap/engines/testing
+    testing: .uap/engines/testing
+    auto_repair: .uap/engines/auto-repair
+    gates: .uap/engines/testing
+
+  security:
+    policy: .uap/runtime/policy-engine
+    application: .uap/engines/security
+    financial_integrity: .uap/engines/security
+    reliability: .uap/engines/security
+
+  cross_platform:
+    web: .uap/engines/cross-platform
+    h5: .uap/engines/cross-platform
+    consistency: .uap/engines/cross-platform
+
+  delivery:
+    ci_cd: .uap/engines/delivery
+    deployment: .uap/engines/delivery
+    observability: .uap/engines/delivery
+
+  evolution:
+    knowledge: .uap/engines/knowledge
+    continuous: .uap/engines/knowledge
+
+# Concrete, importable ESM modules. registryIntegrity() verifies every path
+# exists, and the executor-coverage validator dynamically imports each module
+# and calls its health() export. Directory paths above are logical groupings.
+executor_entries:
+  core.architecture: .uap/runtime/orchestrator/index.mjs
+  core.autonomous_execution: .uap/runtime/task-engine/index.mjs
+  core.evidence: .uap/runtime/evidence-engine/index.mjs
+  security.policy: .uap/runtime/policy-engine/index.mjs
+  product.requirements: .uap/engines/product/index.mjs
+  product.prototype_sync: .uap/engines/product/index.mjs
+  product.business_rules: .uap/engines/product/index.mjs
+  architecture.analyzer: .uap/engines/architecture/index.mjs
+  architecture.api_database: .uap/engines/architecture/index.mjs
+  architecture.adr: .uap/engines/architecture/index.mjs
+  agents.registry: .uap/runtime/agent-runtime/index.mjs
+  agents.execution: .uap/runtime/agent-runtime/index.mjs
+  agents.collaboration: .uap/runtime/agent-runtime/index.mjs
+  agents.recovery: .uap/runtime/recovery-engine/index.mjs
+  development.coding_standard: .uap/engines/development/index.mjs
+  development.code_review: .uap/engines/code-review/index.mjs
+  development.dependencies: .uap/engines/development/index.mjs
+  quality.engineering: .uap/engines/testing/index.mjs
+  quality.testing: .uap/engines/testing/index.mjs
+  quality.auto_repair: .uap/engines/auto-repair/index.mjs
+  quality.gates: .uap/engines/testing/index.mjs
+  security.application: .uap/engines/security/index.mjs
+  security.financial_integrity: .uap/engines/security/index.mjs
+  security.reliability: .uap/engines/security/index.mjs
+  cross_platform.web: .uap/engines/cross-platform/index.mjs
+  cross_platform.h5: .uap/engines/cross-platform/index.mjs
+  cross_platform.consistency: .uap/engines/cross-platform/index.mjs
+  delivery.ci_cd: .uap/engines/delivery/index.mjs
+  delivery.deployment: .uap/engines/delivery/index.mjs
+  delivery.observability: .uap/engines/delivery/index.mjs
+  evolution.knowledge: .uap/engines/knowledge/index.mjs
+  evolution.continuous: .uap/engines/knowledge/index.mjs
+
+execution_contract:
+  required_input:
+    - task_id
+    - specification_ids
+    - scope
+    - constraints
+    - acceptance_criteria
+
+  required_output:
+    - status
+    - summary
+    - changed_files
+    - validation_results
+    - evidence_refs
+    - blocked_reasons
+
+  failure_policy:
+    retryable: bounded_retry
+    permission_denied: block
+    missing_dependency: block
+    validation_failed: repair_then_revalidate
+    unrecoverable: fail
+
+  evidence:
+    directory: .uap/evidence
+    reports_directory: .uap/reports
+    persist_task_state: true

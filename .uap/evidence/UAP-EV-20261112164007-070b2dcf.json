@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164007-070b2dcf",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112164007-659ba4cb",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:40:07.071Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:classify_defect",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"classify_defect\",\"idempotent\":true,\"handler\":\"classify_defect\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "classify_defect: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "85620e2324cc10c58670b3e8a58e3905d3f50750d281d170a0849461925ea1e4"
+}

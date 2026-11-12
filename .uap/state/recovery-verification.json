@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-11-12T16:39:52.542Z",
+  "ok": true,
+  "checks": {
+    "child_process_crashed": true,
+    "state_persisted_before_crash": true,
+    "step1_completed_before_crash": true,
+    "recovery_reached_succeeded": true,
+    "completed_steps_not_repeated": true,
+    "recovery_evidence_written": true
+  },
+  "final_state": "SUCCEEDED",
+  "probe_task_id": "UAP-TASK-INTERRUPT-20261112163952-5b38d23a"
+}

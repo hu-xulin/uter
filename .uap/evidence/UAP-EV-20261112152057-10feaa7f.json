@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152057-10feaa7f",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152057-0f723d17",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:57.197Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:calculate_impact",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"calculate_impact\",\"idempotent\":true,\"handler\":\"calculate_impact\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "calculate_impact: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "2905c4e359c118b2b3be190241b7b808dde2a1e2b4fc26f93becf4693105c0da"
+}

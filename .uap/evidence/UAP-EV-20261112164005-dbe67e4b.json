@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112164005-dbe67e4b",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112164002-cd43eca9",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T16:40:05.362Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:run_runtime_tests",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-6\",\"name\":\"run_runtime_tests\",\"idempotent\":true,\"handler\":\"run_runtime_tests\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "UAP tests passed: 1 files, exit 0",
+  "content_hash": "f6a34f04da96057346e588d6e1f42a093147abbe328cd0edf19dfdc509b29f68"
+}

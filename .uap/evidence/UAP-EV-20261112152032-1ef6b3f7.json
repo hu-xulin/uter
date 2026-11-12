@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152032-1ef6b3f7",
+  "kind": "agent_invocation",
+  "task_id": "UAP-TASK-20261112152019-fbd0cf50",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:32.029Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "agent:uap-repair-agent",
+  "exit_code": 0,
+  "duration_ms": 413,
+  "inputs": "{\"action\":\"agent.invoke\",\"permission\":\"project_read\",\"objective\":\"re-run auto-repair engine sandbox exercise to regenerate its artifact\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "bounded sandbox repair: defect_detected=true strategies_tried=3 selected=S1-delegate-to-central-helper final_status=FIXED; node --check exit_codes=[0,0,0,0]",
+  "content_hash": "e210fcc58ba985fa049a53091fa97fe95826343f61bd89668f3f12a000ebae2e"
+}

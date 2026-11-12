@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112143634-e1013d7f",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112143634-f344f2e6",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T14:36:34.330Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:test_idempotency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-4\",\"name\":\"test_idempotency\",\"idempotent\":true,\"handler\":\"test_idempotency\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "test_idempotency: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "b88483939d74c2d2532ea27e9c6048fd5bca4ad5f93a4ef663d1b34598b080ca"
+}

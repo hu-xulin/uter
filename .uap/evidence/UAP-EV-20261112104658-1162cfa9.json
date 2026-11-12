@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112104658-1162cfa9",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:46:58.174Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap doctor --json",
+  "exit_code": 1,
+  "duration_ms": 344,
+  "inputs": "{\"argv\":[\"doctor\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "doctor: runtime not healthy (2 components failing, recovery=false)"
+    }
+  ],
+  "summary": "doctor: runtime not healthy (2 components failing, recovery=false)",
+  "content_hash": "6001b4a532b6ac6e7d0a10c679b907ab5e9cd9da9a5539d20d75469944be0272"
+}

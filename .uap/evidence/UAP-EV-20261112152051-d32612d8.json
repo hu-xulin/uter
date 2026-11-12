@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152051-d32612d8",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:51.962Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.reliability_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.reliability_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.reliability_integrity 实检: health=PASS(动态 import 并调用 health().ok===true: 4/4 (state-machine=true,scheduler=true,resource-manager=true,event-system=true)); timeout=PASS(runCommand 真实运行 exit_code=0 timed_out=false spawn_error=none; proc.mjs 含 setTimeout/timeoutMs=true); retry=PASS(TASK_TRANSITIONS FAILED->QUEUED=true; WAITING_RECOVERY->QUEUED=true (有界可重试路径真实存在)); recovery=PASS(导出 health/execute=true; BASELINE git.policy 含 no_destructive_git/preserve_user_changes=true; 依赖 DAG 无环=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1070 个 | 动态 import 4 个 runtime 模块并调用 health().ok===true 证明可运行; runCommand 真实记录 exit_code; 重试/恢复基于共享状态机与 BASELINE 策略",
+  "content_hash": "67b6a15048c2cea0bb182d8d34e362166ac297d5a975bdea7ee1dd2cf813b986"
+}

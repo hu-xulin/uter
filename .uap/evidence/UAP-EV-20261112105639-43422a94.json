@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112105639-43422a94",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:56:39.982Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.ci_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.ci_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.pipeline_config",
+      "message": "pipeline_config: ci.yml bytes=14538 含 verify-all/gofmt/go vet/bun run/exit 1=false; BASELINE.ci_workflows=9 个; release-gate.yml=true"
+    }
+  ],
+  "summary": "delivery.ci_integrity 实检: pipeline_config=FAIL(ci.yml bytes=14538 含 verify-all/gofmt/go vet/bun run/exit 1=false; BASELINE.ci_workflows=9 个; release-gate.yml=true); local_equivalent=PASS(verify-all.sh bytes=7896; BASELINE.real_gate_commands=11 条; AGENTS.md 声明 verify-all.sh=true); failure_propagation=PASS(ci.yml 含 exit 1=true; verify-all.sh 含 exit 非零传播=true; 真实门禁命令覆盖 go/前端=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 90 个 | 真实读取 .github/workflows/ci.yml、scripts/verify-all.sh、BASELINE 门禁命令清单并核对失败非零退出传播",
+  "content_hash": "96e74ac064dcaf2094fb904e444f461dd1beea9de98039783ff43556a601c375"
+}

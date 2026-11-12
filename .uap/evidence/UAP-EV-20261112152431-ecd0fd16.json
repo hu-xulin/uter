@@ -1,0 +1,26 @@
+{
+  "evidence_id": "UAP-EV-20261112152431-ecd0fd16",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-INTERRUPT-20261112152431-30afe77d",
+  "trace_id": "UAP-TRACE-20261112152431-704fe12d",
+  "specification_ids": [
+    "UAP-03-004"
+  ],
+  "recorded_at": "2026-11-12T15:24:31.992Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:probe.step3",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-3\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "probe.step3 succeeded",
+  "content_hash": "841a93242f2332f530e20886d59ba437d89b6b1a44ec6b255fd564418cd135f8"
+}

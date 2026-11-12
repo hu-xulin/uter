@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uap://schemas/evidence",
+  "title": "UAP Evidence",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "kind",
+    "recorded_at",
+    "environment",
+    "command",
+    "exit_code"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "pattern": "^UAP-EV-"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "trace_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "specification_ids": {
+      "type": "array"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "platform",
+        "node",
+        "cwd"
+      ]
+    },
+    "command": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "exit_code": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "duration_ms": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "inputs": {
+      "type": "string"
+    },
+    "stdout": {
+      "type": "string"
+    },
+    "stderr": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array"
+    },
+    "findings": {
+      "type": "array"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "content_hash": {
+      "type": "string"
+    }
+  }
+}

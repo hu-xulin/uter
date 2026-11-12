@@ -1,0 +1,2441 @@
+{
+  "runs": [
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143631-4196c0cf",
+      "workflow_id": "uap-bootstrap",
+      "task_id": "UAP-TASK-20261112143631-4196c0cf",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112143632-5a982e36",
+        "UAP-EV-20261112143632-dc9176df",
+        "UAP-EV-20261112143632-51f9680e",
+        "UAP-EV-20261112143632-15872991",
+        "UAP-EV-20261112143632-a5a967d7",
+        "UAP-EV-20261112143634-1efbd5a3",
+        "UAP-EV-20261112143634-446eae4e"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T14:36:34.526Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143632-5a982e36",
+            "UAP-EV-20261112143632-dc9176df",
+            "UAP-EV-20261112143632-51f9680e",
+            "UAP-EV-20261112143632-15872991",
+            "UAP-EV-20261112143632-a5a967d7",
+            "UAP-EV-20261112143634-1efbd5a3",
+            "UAP-EV-20261112143634-446eae4e"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "runtime_health_check",
+      "started_at": "2026-11-12T14:36:31.924Z",
+      "finished_at": "2026-11-12T14:36:34.556Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143634-a399726a",
+      "workflow_id": "uap-full-audit",
+      "task_id": "UAP-TASK-20261112143634-a399726a",
+      "state": "SUCCEEDED",
+      "steps_total": 11,
+      "steps_succeeded": 11,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112143634-774dc955",
+        "UAP-EV-20261112143634-a31e6a7d",
+        "UAP-EV-20261112143634-26dc3f68",
+        "UAP-EV-20261112143634-93197f94",
+        "UAP-EV-20261112143634-359da050",
+        "UAP-EV-20261112143634-712dd77c",
+        "UAP-EV-20261112143634-0c33597c",
+        "UAP-EV-20261112143634-49101972",
+        "UAP-EV-20261112143634-7169ae72",
+        "UAP-EV-20261112143634-833affbf",
+        "UAP-EV-20261112143634-8e0bfb53",
+        "UAP-EV-20261112143634-58cdd585"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T14:36:34.943Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143634-774dc955",
+            "UAP-EV-20261112143634-a31e6a7d",
+            "UAP-EV-20261112143634-26dc3f68",
+            "UAP-EV-20261112143634-93197f94",
+            "UAP-EV-20261112143634-359da050",
+            "UAP-EV-20261112143634-712dd77c",
+            "UAP-EV-20261112143634-0c33597c",
+            "UAP-EV-20261112143634-49101972",
+            "UAP-EV-20261112143634-7169ae72",
+            "UAP-EV-20261112143634-833affbf",
+            "UAP-EV-20261112143634-8e0bfb53",
+            "UAP-EV-20261112143634-58cdd585"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "audit_evidence_complete",
+      "started_at": "2026-11-12T14:36:34.570Z",
+      "finished_at": "2026-11-12T14:36:34.982Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143634-31f21b4e",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112143634-31f21b4e",
+      "state": "BLOCKED",
+      "steps_total": 6,
+      "steps_succeeded": 5,
+      "steps_blocked": 1,
+      "evidence_refs": [
+        "UAP-EV-20261112143635-7acd8f04",
+        "UAP-EV-20261112143635-258bd88f",
+        "UAP-EV-20261112143635-e32ded3e",
+        "UAP-EV-20261112143635-6dbcdd87",
+        "UAP-EV-20261112143635-602fd920",
+        "UAP-EV-20261112143635-ae6e4b12",
+        "UAP-EV-20261112143635-8ac7db8d"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-12T14:36:35.794Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143635-7acd8f04",
+            "UAP-EV-20261112143635-258bd88f",
+            "UAP-EV-20261112143635-e32ded3e",
+            "UAP-EV-20261112143635-6dbcdd87",
+            "UAP-EV-20261112143635-602fd920",
+            "UAP-EV-20261112143635-ae6e4b12",
+            "UAP-EV-20261112143635-8ac7db8d"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "1 steps not SUCCEEDED"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "task_blocked",
+              "message": "quality gates report 1 failing gates (real exit codes)"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 2 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T14:36:34.996Z",
+      "finished_at": "2026-11-12T14:36:35.829Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143635-bbbe5f03",
+      "workflow_id": "uap-defect-repair",
+      "task_id": "UAP-TASK-20261112143635-bbbe5f03",
+      "state": "BLOCKED",
+      "steps_total": 8,
+      "steps_succeeded": 5,
+      "steps_blocked": 3,
+      "evidence_refs": [
+        "UAP-EV-20261112143635-cfb3e4a3",
+        "UAP-EV-20261112143635-73483537",
+        "UAP-EV-20261112143635-c29eaf6c",
+        "UAP-EV-20261112143635-5bb5e7d0",
+        "UAP-EV-20261112143635-a603c72f",
+        "UAP-EV-20261112143635-65cc4984",
+        "UAP-EV-20261112143635-f390cbe1"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-12T14:36:35.972Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143635-cfb3e4a3",
+            "UAP-EV-20261112143635-73483537",
+            "UAP-EV-20261112143635-c29eaf6c",
+            "UAP-EV-20261112143635-5bb5e7d0",
+            "UAP-EV-20261112143635-a603c72f",
+            "UAP-EV-20261112143635-65cc4984",
+            "UAP-EV-20261112143635-f390cbe1"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "3 steps not SUCCEEDED"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "step_evidence_missing",
+              "message": "2 steps have no evidence"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "task_blocked",
+              "message": "quality gates report 1 failing gates (real exit codes)"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 3 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "defect_verified_or_blocked",
+      "started_at": "2026-11-12T14:36:35.840Z",
+      "finished_at": "2026-11-12T14:36:36.016Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143636-65a4b482",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112143636-65a4b482",
+      "state": "BLOCKED",
+      "steps_total": 9,
+      "steps_succeeded": 2,
+      "steps_blocked": 7,
+      "evidence_refs": [
+        "UAP-EV-20261112143641-0e560626",
+        "UAP-EV-20261112143641-7724bb3d",
+        "UAP-EV-20261112143641-459911ea",
+        "UAP-EV-20261112143641-e43f7e99"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-12T14:36:41.861Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143641-0e560626",
+            "UAP-EV-20261112143641-7724bb3d",
+            "UAP-EV-20261112143641-459911ea",
+            "UAP-EV-20261112143641-e43f7e99"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "7 steps not SUCCEEDED"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "step_evidence_missing",
+              "message": "6 steps have no evidence"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "task_blocked",
+              "message": "quality gates report 1 failing gates (real exit codes)"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 3 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T14:36:36.029Z",
+      "finished_at": "2026-11-12T14:36:41.894Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143641-9c96d80b",
+      "workflow_id": "uap-financial-verification",
+      "task_id": "UAP-TASK-20261112143641-9c96d80b",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112143641-ca061210",
+        "UAP-EV-20261112143641-3e96d7e7",
+        "UAP-EV-20261112143641-92e38861",
+        "UAP-EV-20261112143641-772bb0b9",
+        "UAP-EV-20261112143641-089cbbb0",
+        "UAP-EV-20261112143641-6319c245",
+        "UAP-EV-20261112143641-38ae017e",
+        "UAP-EV-20261112143642-6cf59665",
+        "UAP-EV-20261112143642-95b92bdc"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T14:36:42.016Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143641-ca061210",
+            "UAP-EV-20261112143641-3e96d7e7",
+            "UAP-EV-20261112143641-92e38861",
+            "UAP-EV-20261112143641-772bb0b9",
+            "UAP-EV-20261112143641-089cbbb0",
+            "UAP-EV-20261112143641-6319c245",
+            "UAP-EV-20261112143641-38ae017e",
+            "UAP-EV-20261112143642-6cf59665",
+            "UAP-EV-20261112143642-95b92bdc"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "financial_integrity_verified",
+      "started_at": "2026-11-12T14:36:41.903Z",
+      "finished_at": "2026-11-12T14:36:42.047Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143642-1cd047e6",
+      "workflow_id": "uap-final-verification",
+      "task_id": "UAP-TASK-20261112143642-1cd047e6",
+      "state": "BLOCKED",
+      "steps_total": 9,
+      "steps_succeeded": 5,
+      "steps_blocked": 4,
+      "evidence_refs": [
+        "UAP-EV-20261112143642-dea8834d",
+        "UAP-EV-20261112143642-520892a3",
+        "UAP-EV-20261112143642-4c6ad844",
+        "UAP-EV-20261112143642-6e764eb1",
+        "UAP-EV-20261112143642-d2816eaf",
+        "UAP-EV-20261112143642-10c91282",
+        "UAP-EV-20261112143642-e234912a"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-12T14:36:42.149Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143642-dea8834d",
+            "UAP-EV-20261112143642-520892a3",
+            "UAP-EV-20261112143642-4c6ad844",
+            "UAP-EV-20261112143642-6e764eb1",
+            "UAP-EV-20261112143642-d2816eaf",
+            "UAP-EV-20261112143642-10c91282",
+            "UAP-EV-20261112143642-e234912a"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "4 steps not SUCCEEDED"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "step_evidence_missing",
+              "message": "3 steps have no evidence"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "task_blocked",
+              "message": "quality gates report 1 failing gates (real exit codes)"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 3 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "full_operational_acceptance",
+      "started_at": "2026-11-12T14:36:42.056Z",
+      "finished_at": "2026-11-12T14:36:42.178Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112143754-15f94101",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112143754-15f94101",
+      "state": "BLOCKED",
+      "steps_total": 9,
+      "steps_succeeded": 2,
+      "steps_blocked": 7,
+      "evidence_refs": [
+        "UAP-EV-20261112143759-8f671531",
+        "UAP-EV-20261112143759-add7dd35",
+        "UAP-EV-20261112143759-ee76013c",
+        "UAP-EV-20261112143759-5aba81e8"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-12T14:37:59.250Z",
+          "evidence_refs": [
+            "UAP-EV-20261112143759-8f671531",
+            "UAP-EV-20261112143759-add7dd35",
+            "UAP-EV-20261112143759-ee76013c",
+            "UAP-EV-20261112143759-5aba81e8"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "7 steps not SUCCEEDED"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "step_evidence_missing",
+              "message": "6 steps have no evidence"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "task_blocked",
+              "message": "quality gates report 1 failing gates (real exit codes)"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 3 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T14:37:54.340Z",
+      "finished_at": "2026-11-12T14:37:59.288Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150835-24b97f9e",
+      "workflow_id": "uap-bootstrap",
+      "task_id": "UAP-TASK-20261112150835-24b97f9e",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112150835-e4ca3fa2",
+        "UAP-EV-20261112150835-44b61c74",
+        "UAP-EV-20261112150835-aaada221",
+        "UAP-EV-20261112150835-02fa9748",
+        "UAP-EV-20261112150835-c0e54fec",
+        "UAP-EV-20261112150837-251c1e56",
+        "UAP-EV-20261112150837-01f68a06"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:08:37.314Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150835-e4ca3fa2",
+            "UAP-EV-20261112150835-44b61c74",
+            "UAP-EV-20261112150835-aaada221",
+            "UAP-EV-20261112150835-02fa9748",
+            "UAP-EV-20261112150835-c0e54fec",
+            "UAP-EV-20261112150837-251c1e56",
+            "UAP-EV-20261112150837-01f68a06"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "runtime_health_check",
+      "started_at": "2026-11-12T15:08:35.236Z",
+      "finished_at": "2026-11-12T15:08:37.350Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150837-c6171bf0",
+      "workflow_id": "uap-full-audit",
+      "task_id": "UAP-TASK-20261112150837-c6171bf0",
+      "state": "SUCCEEDED",
+      "steps_total": 11,
+      "steps_succeeded": 11,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112150837-cd705a4a",
+        "UAP-EV-20261112150837-78515eab",
+        "UAP-EV-20261112150837-14d06c50",
+        "UAP-EV-20261112150837-c935a2e3",
+        "UAP-EV-20261112150837-54962993",
+        "UAP-EV-20261112150837-251d42b0",
+        "UAP-EV-20261112150837-df06233d",
+        "UAP-EV-20261112150837-31229508",
+        "UAP-EV-20261112150837-8167d9f9",
+        "UAP-EV-20261112150837-93b199a8",
+        "UAP-EV-20261112150837-6b38ecd7",
+        "UAP-EV-20261112150837-d2478ff5"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:08:37.672Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150837-cd705a4a",
+            "UAP-EV-20261112150837-78515eab",
+            "UAP-EV-20261112150837-14d06c50",
+            "UAP-EV-20261112150837-c935a2e3",
+            "UAP-EV-20261112150837-54962993",
+            "UAP-EV-20261112150837-251d42b0",
+            "UAP-EV-20261112150837-df06233d",
+            "UAP-EV-20261112150837-31229508",
+            "UAP-EV-20261112150837-8167d9f9",
+            "UAP-EV-20261112150837-93b199a8",
+            "UAP-EV-20261112150837-6b38ecd7",
+            "UAP-EV-20261112150837-d2478ff5"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "audit_evidence_complete",
+      "started_at": "2026-11-12T15:08:37.362Z",
+      "finished_at": "2026-11-12T15:08:37.707Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150837-a0e504e8",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112150837-a0e504e8",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112150837-89c67a1b",
+        "UAP-EV-20261112150837-3c5e693f",
+        "UAP-EV-20261112150837-45340643",
+        "UAP-EV-20261112150837-e3eb9033",
+        "UAP-EV-20261112150838-a3332a1f",
+        "UAP-EV-20261112150838-0851d903",
+        "UAP-EV-20261112150838-57747182"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:08:38.268Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150837-89c67a1b",
+            "UAP-EV-20261112150837-3c5e693f",
+            "UAP-EV-20261112150837-45340643",
+            "UAP-EV-20261112150837-e3eb9033",
+            "UAP-EV-20261112150838-a3332a1f",
+            "UAP-EV-20261112150838-0851d903",
+            "UAP-EV-20261112150838-57747182"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T15:08:37.720Z",
+      "finished_at": "2026-11-12T15:08:38.304Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150838-90f31104",
+      "workflow_id": "uap-defect-repair",
+      "task_id": "UAP-TASK-20261112150838-90f31104",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112150838-93ed862e",
+        "UAP-EV-20261112150838-15b7448f",
+        "UAP-EV-20261112150838-8b87c373",
+        "UAP-EV-20261112150838-3f6c3b42",
+        "UAP-EV-20261112150838-91a8f269",
+        "UAP-EV-20261112150838-6fbf0931",
+        "UAP-EV-20261112150838-19a0056d",
+        "UAP-EV-20261112150838-63d5af36",
+        "UAP-EV-20261112150838-bcc8114b"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:08:38.448Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150838-93ed862e",
+            "UAP-EV-20261112150838-15b7448f",
+            "UAP-EV-20261112150838-8b87c373",
+            "UAP-EV-20261112150838-3f6c3b42",
+            "UAP-EV-20261112150838-91a8f269",
+            "UAP-EV-20261112150838-6fbf0931",
+            "UAP-EV-20261112150838-19a0056d",
+            "UAP-EV-20261112150838-63d5af36",
+            "UAP-EV-20261112150838-bcc8114b"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "defect_verified_or_blocked",
+      "started_at": "2026-11-12T15:08:38.313Z",
+      "finished_at": "2026-11-12T15:08:38.486Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150838-609e5147",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112150838-609e5147",
+      "state": "BLOCKED",
+      "steps_total": 9,
+      "steps_succeeded": 5,
+      "steps_blocked": 4,
+      "evidence_refs": [
+        "UAP-EV-20261112150843-e7500db0",
+        "UAP-EV-20261112150843-d6c8fae3",
+        "UAP-EV-20261112150843-089dde13",
+        "UAP-EV-20261112150843-7678a14c",
+        "UAP-EV-20261112150843-0de73072",
+        "UAP-EV-20261112150843-43416b76",
+        "UAP-EV-20261112150843-aa63c8bf"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-12T15:08:43.798Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150843-e7500db0",
+            "UAP-EV-20261112150843-d6c8fae3",
+            "UAP-EV-20261112150843-089dde13",
+            "UAP-EV-20261112150843-7678a14c",
+            "UAP-EV-20261112150843-0de73072",
+            "UAP-EV-20261112150843-43416b76",
+            "UAP-EV-20261112150843-aa63c8bf"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "4 steps not SUCCEEDED"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "step_evidence_missing",
+              "message": "3 steps have no evidence"
+            },
+            {
+              "severity": "BLOCKER",
+              "code": "task_blocked",
+              "message": "7 secret-shaped literals found"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 3 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T15:08:38.496Z",
+      "finished_at": "2026-11-12T15:08:43.840Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150843-f5c0468f",
+      "workflow_id": "uap-financial-verification",
+      "task_id": "UAP-TASK-20261112150843-f5c0468f",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112150843-c79cb464",
+        "UAP-EV-20261112150843-466b7362",
+        "UAP-EV-20261112150843-7dffcb29",
+        "UAP-EV-20261112150843-05cbd527",
+        "UAP-EV-20261112150843-10a402ee",
+        "UAP-EV-20261112150843-b3b9eea9",
+        "UAP-EV-20261112150843-b6237a35",
+        "UAP-EV-20261112150843-26571e74",
+        "UAP-EV-20261112150844-33ff9d10"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:08:43.982Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150843-c79cb464",
+            "UAP-EV-20261112150843-466b7362",
+            "UAP-EV-20261112150843-7dffcb29",
+            "UAP-EV-20261112150843-05cbd527",
+            "UAP-EV-20261112150843-10a402ee",
+            "UAP-EV-20261112150843-b3b9eea9",
+            "UAP-EV-20261112150843-b6237a35",
+            "UAP-EV-20261112150843-26571e74",
+            "UAP-EV-20261112150844-33ff9d10"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "financial_integrity_verified",
+      "started_at": "2026-11-12T15:08:43.849Z",
+      "finished_at": "2026-11-12T15:08:44.020Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112150844-1c18b28e",
+      "workflow_id": "uap-final-verification",
+      "task_id": "UAP-TASK-20261112150844-1c18b28e",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112150844-77958b66",
+        "UAP-EV-20261112150844-06099c33",
+        "UAP-EV-20261112150844-2f4115a7",
+        "UAP-EV-20261112150844-f6a9c2bc",
+        "UAP-EV-20261112150844-0be24a33",
+        "UAP-EV-20261112150844-ca792ac2",
+        "UAP-EV-20261112150844-365528ef",
+        "UAP-EV-20261112150844-a3eace81",
+        "UAP-EV-20261112150844-4e3324d5",
+        "UAP-EV-20261112150844-12bd84ed"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:08:44.192Z",
+          "evidence_refs": [
+            "UAP-EV-20261112150844-77958b66",
+            "UAP-EV-20261112150844-06099c33",
+            "UAP-EV-20261112150844-2f4115a7",
+            "UAP-EV-20261112150844-f6a9c2bc",
+            "UAP-EV-20261112150844-0be24a33",
+            "UAP-EV-20261112150844-ca792ac2",
+            "UAP-EV-20261112150844-365528ef",
+            "UAP-EV-20261112150844-a3eace81",
+            "UAP-EV-20261112150844-4e3324d5",
+            "UAP-EV-20261112150844-12bd84ed"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "full_operational_acceptance",
+      "started_at": "2026-11-12T15:08:44.031Z",
+      "finished_at": "2026-11-12T15:08:44.232Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151158-bddd9382",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112151158-bddd9382",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151159-e5b9db8e",
+        "UAP-EV-20261112151159-79f4d283",
+        "UAP-EV-20261112151159-190cd64d",
+        "UAP-EV-20261112151159-1fe765fd",
+        "UAP-EV-20261112151159-90e98893",
+        "UAP-EV-20261112151159-b2557a55",
+        "UAP-EV-20261112151159-c933f8fa"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:11:59.550Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151159-e5b9db8e",
+            "UAP-EV-20261112151159-79f4d283",
+            "UAP-EV-20261112151159-190cd64d",
+            "UAP-EV-20261112151159-1fe765fd",
+            "UAP-EV-20261112151159-90e98893",
+            "UAP-EV-20261112151159-b2557a55",
+            "UAP-EV-20261112151159-c933f8fa"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T15:11:58.999Z",
+      "finished_at": "2026-11-12T15:11:59.592Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151501-65f1905a",
+      "workflow_id": "uap-bootstrap",
+      "task_id": "UAP-TASK-20261112151501-65f1905a",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151502-4f9c5d79",
+        "UAP-EV-20261112151502-f7aa5f22",
+        "UAP-EV-20261112151502-f963ebf6",
+        "UAP-EV-20261112151502-51af6d18",
+        "UAP-EV-20261112151502-def18cc3",
+        "UAP-EV-20261112151504-ad13b10e",
+        "UAP-EV-20261112151504-9df9494f"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:04.435Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151502-4f9c5d79",
+            "UAP-EV-20261112151502-f7aa5f22",
+            "UAP-EV-20261112151502-f963ebf6",
+            "UAP-EV-20261112151502-51af6d18",
+            "UAP-EV-20261112151502-def18cc3",
+            "UAP-EV-20261112151504-ad13b10e",
+            "UAP-EV-20261112151504-9df9494f"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "runtime_health_check",
+      "started_at": "2026-11-12T15:15:01.950Z",
+      "finished_at": "2026-11-12T15:15:04.483Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151504-e08d314a",
+      "workflow_id": "uap-full-audit",
+      "task_id": "UAP-TASK-20261112151504-e08d314a",
+      "state": "SUCCEEDED",
+      "steps_total": 11,
+      "steps_succeeded": 11,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151504-e14dc025",
+        "UAP-EV-20261112151504-9b5dca7c",
+        "UAP-EV-20261112151504-c3321acf",
+        "UAP-EV-20261112151504-726c0cb0",
+        "UAP-EV-20261112151504-7a223cc2",
+        "UAP-EV-20261112151504-8d90d16e",
+        "UAP-EV-20261112151504-29a734f0",
+        "UAP-EV-20261112151504-d7053d9d",
+        "UAP-EV-20261112151504-d275a3ef",
+        "UAP-EV-20261112151504-1581b873",
+        "UAP-EV-20261112151504-63a42609",
+        "UAP-EV-20261112151504-2af2d088"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:04.863Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151504-e14dc025",
+            "UAP-EV-20261112151504-9b5dca7c",
+            "UAP-EV-20261112151504-c3321acf",
+            "UAP-EV-20261112151504-726c0cb0",
+            "UAP-EV-20261112151504-7a223cc2",
+            "UAP-EV-20261112151504-8d90d16e",
+            "UAP-EV-20261112151504-29a734f0",
+            "UAP-EV-20261112151504-d7053d9d",
+            "UAP-EV-20261112151504-d275a3ef",
+            "UAP-EV-20261112151504-1581b873",
+            "UAP-EV-20261112151504-63a42609",
+            "UAP-EV-20261112151504-2af2d088"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "audit_evidence_complete",
+      "started_at": "2026-11-12T15:15:04.496Z",
+      "finished_at": "2026-11-12T15:15:04.913Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151504-7f56aae3",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112151504-7f56aae3",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151504-f9f0601a",
+        "UAP-EV-20261112151504-64f74ff0",
+        "UAP-EV-20261112151504-05a0c876",
+        "UAP-EV-20261112151505-5377c12f",
+        "UAP-EV-20261112151505-32a668d8",
+        "UAP-EV-20261112151505-0f35204d",
+        "UAP-EV-20261112151505-fc24f344"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:05.512Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151504-f9f0601a",
+            "UAP-EV-20261112151504-64f74ff0",
+            "UAP-EV-20261112151504-05a0c876",
+            "UAP-EV-20261112151505-5377c12f",
+            "UAP-EV-20261112151505-32a668d8",
+            "UAP-EV-20261112151505-0f35204d",
+            "UAP-EV-20261112151505-fc24f344"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T15:15:04.925Z",
+      "finished_at": "2026-11-12T15:15:05.561Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151505-80d6e859",
+      "workflow_id": "uap-defect-repair",
+      "task_id": "UAP-TASK-20261112151505-80d6e859",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151505-ac9e9490",
+        "UAP-EV-20261112151505-3a3804a1",
+        "UAP-EV-20261112151505-ced2004d",
+        "UAP-EV-20261112151505-4fde22b8",
+        "UAP-EV-20261112151505-0da67511",
+        "UAP-EV-20261112151505-7c4b44ca",
+        "UAP-EV-20261112151505-99909ea1",
+        "UAP-EV-20261112151505-861f5f99",
+        "UAP-EV-20261112151505-eec575fb"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:05.744Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151505-ac9e9490",
+            "UAP-EV-20261112151505-3a3804a1",
+            "UAP-EV-20261112151505-ced2004d",
+            "UAP-EV-20261112151505-4fde22b8",
+            "UAP-EV-20261112151505-0da67511",
+            "UAP-EV-20261112151505-7c4b44ca",
+            "UAP-EV-20261112151505-99909ea1",
+            "UAP-EV-20261112151505-861f5f99",
+            "UAP-EV-20261112151505-eec575fb"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "defect_verified_or_blocked",
+      "started_at": "2026-11-12T15:15:05.572Z",
+      "finished_at": "2026-11-12T15:15:05.797Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151505-5fda0eab",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112151505-5fda0eab",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151510-e3dd34eb",
+        "UAP-EV-20261112151510-a519fb96",
+        "UAP-EV-20261112151510-4ec239dd",
+        "UAP-EV-20261112151510-4054c347",
+        "UAP-EV-20261112151510-69f12bc2",
+        "UAP-EV-20261112151511-d5a81a22",
+        "UAP-EV-20261112151511-716edb8f",
+        "UAP-EV-20261112151516-f860163d",
+        "UAP-EV-20261112151516-334861ed",
+        "UAP-EV-20261112151516-e782d5c0"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:16.337Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151510-e3dd34eb",
+            "UAP-EV-20261112151510-a519fb96",
+            "UAP-EV-20261112151510-4ec239dd",
+            "UAP-EV-20261112151510-4054c347",
+            "UAP-EV-20261112151510-69f12bc2",
+            "UAP-EV-20261112151511-d5a81a22",
+            "UAP-EV-20261112151511-716edb8f",
+            "UAP-EV-20261112151516-f860163d",
+            "UAP-EV-20261112151516-334861ed",
+            "UAP-EV-20261112151516-e782d5c0"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T15:15:05.808Z",
+      "finished_at": "2026-11-12T15:15:16.399Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151516-b136c077",
+      "workflow_id": "uap-financial-verification",
+      "task_id": "UAP-TASK-20261112151516-b136c077",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151516-6349ec03",
+        "UAP-EV-20261112151516-5c1c5096",
+        "UAP-EV-20261112151516-dacd36bc",
+        "UAP-EV-20261112151516-25038ec8",
+        "UAP-EV-20261112151516-ba85d49e",
+        "UAP-EV-20261112151516-292a0d6a",
+        "UAP-EV-20261112151516-9518d68f",
+        "UAP-EV-20261112151516-7d73bcab",
+        "UAP-EV-20261112151516-8b8089a5"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:16.589Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151516-6349ec03",
+            "UAP-EV-20261112151516-5c1c5096",
+            "UAP-EV-20261112151516-dacd36bc",
+            "UAP-EV-20261112151516-25038ec8",
+            "UAP-EV-20261112151516-ba85d49e",
+            "UAP-EV-20261112151516-292a0d6a",
+            "UAP-EV-20261112151516-9518d68f",
+            "UAP-EV-20261112151516-7d73bcab",
+            "UAP-EV-20261112151516-8b8089a5"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "financial_integrity_verified",
+      "started_at": "2026-11-12T15:15:16.410Z",
+      "finished_at": "2026-11-12T15:15:16.641Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112151516-3922d161",
+      "workflow_id": "uap-final-verification",
+      "task_id": "UAP-TASK-20261112151516-3922d161",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112151516-d0353272",
+        "UAP-EV-20261112151516-85258c9c",
+        "UAP-EV-20261112151516-0b509ec0",
+        "UAP-EV-20261112151516-dc4f3b2b",
+        "UAP-EV-20261112151516-45b1d953",
+        "UAP-EV-20261112151516-e30fbc6d",
+        "UAP-EV-20261112151516-ffce4a23",
+        "UAP-EV-20261112151516-6c729003",
+        "UAP-EV-20261112151516-cdada8db",
+        "UAP-EV-20261112151516-d2e77fff"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:15:16.855Z",
+          "evidence_refs": [
+            "UAP-EV-20261112151516-d0353272",
+            "UAP-EV-20261112151516-85258c9c",
+            "UAP-EV-20261112151516-0b509ec0",
+            "UAP-EV-20261112151516-dc4f3b2b",
+            "UAP-EV-20261112151516-45b1d953",
+            "UAP-EV-20261112151516-e30fbc6d",
+            "UAP-EV-20261112151516-ffce4a23",
+            "UAP-EV-20261112151516-6c729003",
+            "UAP-EV-20261112151516-cdada8db",
+            "UAP-EV-20261112151516-d2e77fff"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "full_operational_acceptance",
+      "started_at": "2026-11-12T15:15:16.652Z",
+      "finished_at": "2026-11-12T15:15:16.909Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152052-7430c80b",
+      "workflow_id": "uap-bootstrap",
+      "task_id": "UAP-TASK-20261112152052-7430c80b",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152053-c96b85be",
+        "UAP-EV-20261112152053-a126668c",
+        "UAP-EV-20261112152053-16580051",
+        "UAP-EV-20261112152053-f27d5d6f",
+        "UAP-EV-20261112152053-05470393",
+        "UAP-EV-20261112152055-ff58081f",
+        "UAP-EV-20261112152055-aca1f5a7"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:20:55.732Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152053-c96b85be",
+            "UAP-EV-20261112152053-a126668c",
+            "UAP-EV-20261112152053-16580051",
+            "UAP-EV-20261112152053-f27d5d6f",
+            "UAP-EV-20261112152053-05470393",
+            "UAP-EV-20261112152055-ff58081f",
+            "UAP-EV-20261112152055-aca1f5a7"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "runtime_health_check",
+      "started_at": "2026-11-12T15:20:52.979Z",
+      "finished_at": "2026-11-12T15:20:55.791Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152055-1eca1df6",
+      "workflow_id": "uap-full-audit",
+      "task_id": "UAP-TASK-20261112152055-1eca1df6",
+      "state": "SUCCEEDED",
+      "steps_total": 11,
+      "steps_succeeded": 11,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152055-b86b3c90",
+        "UAP-EV-20261112152055-63a4177b",
+        "UAP-EV-20261112152056-e0fbe392",
+        "UAP-EV-20261112152056-39b2a583",
+        "UAP-EV-20261112152056-49081b2b",
+        "UAP-EV-20261112152056-e322cc89",
+        "UAP-EV-20261112152056-b560ee81",
+        "UAP-EV-20261112152056-ea22cd8d",
+        "UAP-EV-20261112152056-47e5e3a0",
+        "UAP-EV-20261112152056-973e426a",
+        "UAP-EV-20261112152056-a2067a0c",
+        "UAP-EV-20261112152056-f343e65d"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:20:56.226Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152055-b86b3c90",
+            "UAP-EV-20261112152055-63a4177b",
+            "UAP-EV-20261112152056-e0fbe392",
+            "UAP-EV-20261112152056-39b2a583",
+            "UAP-EV-20261112152056-49081b2b",
+            "UAP-EV-20261112152056-e322cc89",
+            "UAP-EV-20261112152056-b560ee81",
+            "UAP-EV-20261112152056-ea22cd8d",
+            "UAP-EV-20261112152056-47e5e3a0",
+            "UAP-EV-20261112152056-973e426a",
+            "UAP-EV-20261112152056-a2067a0c",
+            "UAP-EV-20261112152056-f343e65d"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "audit_evidence_complete",
+      "started_at": "2026-11-12T15:20:55.807Z",
+      "finished_at": "2026-11-12T15:20:56.288Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152056-bebdfcbb",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112152056-bebdfcbb",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152056-51c17766",
+        "UAP-EV-20261112152056-f731c271",
+        "UAP-EV-20261112152056-cbefc4c0",
+        "UAP-EV-20261112152056-73012eaa",
+        "UAP-EV-20261112152057-29ed157f",
+        "UAP-EV-20261112152057-91598eb0",
+        "UAP-EV-20261112152057-fd582a99"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:20:57.043Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152056-51c17766",
+            "UAP-EV-20261112152056-f731c271",
+            "UAP-EV-20261112152056-cbefc4c0",
+            "UAP-EV-20261112152056-73012eaa",
+            "UAP-EV-20261112152057-29ed157f",
+            "UAP-EV-20261112152057-91598eb0",
+            "UAP-EV-20261112152057-fd582a99"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T15:20:56.301Z",
+      "finished_at": "2026-11-12T15:20:57.104Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152057-0f723d17",
+      "workflow_id": "uap-defect-repair",
+      "task_id": "UAP-TASK-20261112152057-0f723d17",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152057-376d73d6",
+        "UAP-EV-20261112152057-c38b0ac9",
+        "UAP-EV-20261112152057-ae02a0c0",
+        "UAP-EV-20261112152057-41a8c9c7",
+        "UAP-EV-20261112152057-d8c45c18",
+        "UAP-EV-20261112152057-bd678a51",
+        "UAP-EV-20261112152057-2ed27dce",
+        "UAP-EV-20261112152057-be68e5f6",
+        "UAP-EV-20261112152057-4bbaf20d"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:20:57.323Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152057-376d73d6",
+            "UAP-EV-20261112152057-c38b0ac9",
+            "UAP-EV-20261112152057-ae02a0c0",
+            "UAP-EV-20261112152057-41a8c9c7",
+            "UAP-EV-20261112152057-d8c45c18",
+            "UAP-EV-20261112152057-bd678a51",
+            "UAP-EV-20261112152057-2ed27dce",
+            "UAP-EV-20261112152057-be68e5f6",
+            "UAP-EV-20261112152057-4bbaf20d"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "defect_verified_or_blocked",
+      "started_at": "2026-11-12T15:20:57.121Z",
+      "finished_at": "2026-11-12T15:20:57.387Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152057-0316a361",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112152057-0316a361",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152102-f771818c",
+        "UAP-EV-20261112152102-cfe6884b",
+        "UAP-EV-20261112152102-b8113fc9",
+        "UAP-EV-20261112152102-e16995eb",
+        "UAP-EV-20261112152102-941371f1",
+        "UAP-EV-20261112152102-73767eba",
+        "UAP-EV-20261112152102-85a055d7",
+        "UAP-EV-20261112152107-25fc856f",
+        "UAP-EV-20261112152107-aa638eb7",
+        "UAP-EV-20261112152107-2fba77a7"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:21:07.957Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152102-f771818c",
+            "UAP-EV-20261112152102-cfe6884b",
+            "UAP-EV-20261112152102-b8113fc9",
+            "UAP-EV-20261112152102-e16995eb",
+            "UAP-EV-20261112152102-941371f1",
+            "UAP-EV-20261112152102-73767eba",
+            "UAP-EV-20261112152102-85a055d7",
+            "UAP-EV-20261112152107-25fc856f",
+            "UAP-EV-20261112152107-aa638eb7",
+            "UAP-EV-20261112152107-2fba77a7"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T15:20:57.399Z",
+      "finished_at": "2026-11-12T15:21:08.026Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152108-13b9aef4",
+      "workflow_id": "uap-financial-verification",
+      "task_id": "UAP-TASK-20261112152108-13b9aef4",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152108-d603f595",
+        "UAP-EV-20261112152108-00a94c59",
+        "UAP-EV-20261112152108-bbbffc4f",
+        "UAP-EV-20261112152108-95d65419",
+        "UAP-EV-20261112152108-200fd672",
+        "UAP-EV-20261112152108-88565046",
+        "UAP-EV-20261112152108-33eec30a",
+        "UAP-EV-20261112152108-75cadaf6",
+        "UAP-EV-20261112152108-0b814b96"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:21:08.245Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152108-d603f595",
+            "UAP-EV-20261112152108-00a94c59",
+            "UAP-EV-20261112152108-bbbffc4f",
+            "UAP-EV-20261112152108-95d65419",
+            "UAP-EV-20261112152108-200fd672",
+            "UAP-EV-20261112152108-88565046",
+            "UAP-EV-20261112152108-33eec30a",
+            "UAP-EV-20261112152108-75cadaf6",
+            "UAP-EV-20261112152108-0b814b96"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "financial_integrity_verified",
+      "started_at": "2026-11-12T15:21:08.042Z",
+      "finished_at": "2026-11-12T15:21:08.308Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152108-eac30954",
+      "workflow_id": "uap-final-verification",
+      "task_id": "UAP-TASK-20261112152108-eac30954",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152108-7e074839",
+        "UAP-EV-20261112152108-cfa2912e",
+        "UAP-EV-20261112152108-b4cacae7",
+        "UAP-EV-20261112152108-d0b5becb",
+        "UAP-EV-20261112152108-117d2d27",
+        "UAP-EV-20261112152108-f6206afd",
+        "UAP-EV-20261112152108-5e960a80",
+        "UAP-EV-20261112152108-ccb711cf",
+        "UAP-EV-20261112152108-d07535d8",
+        "UAP-EV-20261112152108-8f22ba1a"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:21:08.559Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152108-7e074839",
+            "UAP-EV-20261112152108-cfa2912e",
+            "UAP-EV-20261112152108-b4cacae7",
+            "UAP-EV-20261112152108-d0b5becb",
+            "UAP-EV-20261112152108-117d2d27",
+            "UAP-EV-20261112152108-f6206afd",
+            "UAP-EV-20261112152108-5e960a80",
+            "UAP-EV-20261112152108-ccb711cf",
+            "UAP-EV-20261112152108-d07535d8",
+            "UAP-EV-20261112152108-8f22ba1a"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "full_operational_acceptance",
+      "started_at": "2026-11-12T15:21:08.322Z",
+      "finished_at": "2026-11-12T15:21:08.621Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152414-470bed81",
+      "workflow_id": "uap-bootstrap",
+      "task_id": "UAP-TASK-20261112152414-470bed81",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152414-af42d256",
+        "UAP-EV-20261112152414-a7a7b02d",
+        "UAP-EV-20261112152414-fa901ede",
+        "UAP-EV-20261112152414-94abd905",
+        "UAP-EV-20261112152415-eb850580",
+        "UAP-EV-20261112152417-8e887d3b",
+        "UAP-EV-20261112152417-1433046a"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:17.251Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152414-af42d256",
+            "UAP-EV-20261112152414-a7a7b02d",
+            "UAP-EV-20261112152414-fa901ede",
+            "UAP-EV-20261112152414-94abd905",
+            "UAP-EV-20261112152415-eb850580",
+            "UAP-EV-20261112152417-8e887d3b",
+            "UAP-EV-20261112152417-1433046a"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "runtime_health_check",
+      "started_at": "2026-11-12T15:24:14.201Z",
+      "finished_at": "2026-11-12T15:24:17.321Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152417-22491855",
+      "workflow_id": "uap-full-audit",
+      "task_id": "UAP-TASK-20261112152417-22491855",
+      "state": "SUCCEEDED",
+      "steps_total": 11,
+      "steps_succeeded": 11,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152417-ea253036",
+        "UAP-EV-20261112152417-bbc8aa4d",
+        "UAP-EV-20261112152417-99cd119c",
+        "UAP-EV-20261112152417-3167c61f",
+        "UAP-EV-20261112152417-f321f700",
+        "UAP-EV-20261112152417-98cd2854",
+        "UAP-EV-20261112152417-c49b0ea9",
+        "UAP-EV-20261112152417-2735d8a2",
+        "UAP-EV-20261112152417-4e6c5877",
+        "UAP-EV-20261112152417-5934db36",
+        "UAP-EV-20261112152417-17213b5e",
+        "UAP-EV-20261112152417-ef2db60b"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:17.783Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152417-ea253036",
+            "UAP-EV-20261112152417-bbc8aa4d",
+            "UAP-EV-20261112152417-99cd119c",
+            "UAP-EV-20261112152417-3167c61f",
+            "UAP-EV-20261112152417-f321f700",
+            "UAP-EV-20261112152417-98cd2854",
+            "UAP-EV-20261112152417-c49b0ea9",
+            "UAP-EV-20261112152417-2735d8a2",
+            "UAP-EV-20261112152417-4e6c5877",
+            "UAP-EV-20261112152417-5934db36",
+            "UAP-EV-20261112152417-17213b5e",
+            "UAP-EV-20261112152417-ef2db60b"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "audit_evidence_complete",
+      "started_at": "2026-11-12T15:24:17.334Z",
+      "finished_at": "2026-11-12T15:24:17.850Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152417-e45dc2e5",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112152417-e45dc2e5",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152417-46536bbd",
+        "UAP-EV-20261112152417-732e5a65",
+        "UAP-EV-20261112152417-4691f932",
+        "UAP-EV-20261112152417-40b7c714",
+        "UAP-EV-20261112152418-75616756",
+        "UAP-EV-20261112152418-ce7c1b00",
+        "UAP-EV-20261112152418-32c34cb1"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:18.635Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152417-46536bbd",
+            "UAP-EV-20261112152417-732e5a65",
+            "UAP-EV-20261112152417-4691f932",
+            "UAP-EV-20261112152417-40b7c714",
+            "UAP-EV-20261112152418-75616756",
+            "UAP-EV-20261112152418-ce7c1b00",
+            "UAP-EV-20261112152418-32c34cb1"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T15:24:17.867Z",
+      "finished_at": "2026-11-12T15:24:18.703Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152418-ba1878fb",
+      "workflow_id": "uap-defect-repair",
+      "task_id": "UAP-TASK-20261112152418-ba1878fb",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152418-3d00e286",
+        "UAP-EV-20261112152418-4c2f34c3",
+        "UAP-EV-20261112152418-12a381c3",
+        "UAP-EV-20261112152418-cbe1eddd",
+        "UAP-EV-20261112152418-99b185ca",
+        "UAP-EV-20261112152418-a1bcc791",
+        "UAP-EV-20261112152418-8b73e1cd",
+        "UAP-EV-20261112152418-1750bd64",
+        "UAP-EV-20261112152418-558fcb53"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:18.948Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152418-3d00e286",
+            "UAP-EV-20261112152418-4c2f34c3",
+            "UAP-EV-20261112152418-12a381c3",
+            "UAP-EV-20261112152418-cbe1eddd",
+            "UAP-EV-20261112152418-99b185ca",
+            "UAP-EV-20261112152418-a1bcc791",
+            "UAP-EV-20261112152418-8b73e1cd",
+            "UAP-EV-20261112152418-1750bd64",
+            "UAP-EV-20261112152418-558fcb53"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "defect_verified_or_blocked",
+      "started_at": "2026-11-12T15:24:18.719Z",
+      "finished_at": "2026-11-12T15:24:19.025Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152419-1313c9ed",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112152419-1313c9ed",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152424-f46bbc36",
+        "UAP-EV-20261112152424-7bcfa561",
+        "UAP-EV-20261112152424-7c30684e",
+        "UAP-EV-20261112152424-d6864528",
+        "UAP-EV-20261112152424-7d1646a2",
+        "UAP-EV-20261112152424-433ef8be",
+        "UAP-EV-20261112152424-e6278cf7",
+        "UAP-EV-20261112152429-eb4627b3",
+        "UAP-EV-20261112152429-9fba3612",
+        "UAP-EV-20261112152429-9eaa5bf8"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:29.695Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152424-f46bbc36",
+            "UAP-EV-20261112152424-7bcfa561",
+            "UAP-EV-20261112152424-7c30684e",
+            "UAP-EV-20261112152424-d6864528",
+            "UAP-EV-20261112152424-7d1646a2",
+            "UAP-EV-20261112152424-433ef8be",
+            "UAP-EV-20261112152424-e6278cf7",
+            "UAP-EV-20261112152429-eb4627b3",
+            "UAP-EV-20261112152429-9fba3612",
+            "UAP-EV-20261112152429-9eaa5bf8"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T15:24:19.039Z",
+      "finished_at": "2026-11-12T15:24:29.772Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152429-18858a85",
+      "workflow_id": "uap-financial-verification",
+      "task_id": "UAP-TASK-20261112152429-18858a85",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152429-264cb7a5",
+        "UAP-EV-20261112152429-7ee123d8",
+        "UAP-EV-20261112152429-455d8ac3",
+        "UAP-EV-20261112152429-74dee2bb",
+        "UAP-EV-20261112152429-344de118",
+        "UAP-EV-20261112152429-8c9ffa55",
+        "UAP-EV-20261112152429-0e305165",
+        "UAP-EV-20261112152429-ea1b4ed5",
+        "UAP-EV-20261112152430-11dcc545"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:30.017Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152429-264cb7a5",
+            "UAP-EV-20261112152429-7ee123d8",
+            "UAP-EV-20261112152429-455d8ac3",
+            "UAP-EV-20261112152429-74dee2bb",
+            "UAP-EV-20261112152429-344de118",
+            "UAP-EV-20261112152429-8c9ffa55",
+            "UAP-EV-20261112152429-0e305165",
+            "UAP-EV-20261112152429-ea1b4ed5",
+            "UAP-EV-20261112152430-11dcc545"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "financial_integrity_verified",
+      "started_at": "2026-11-12T15:24:29.785Z",
+      "finished_at": "2026-11-12T15:24:30.088Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112152430-130b6d45",
+      "workflow_id": "uap-final-verification",
+      "task_id": "UAP-TASK-20261112152430-130b6d45",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112152430-2b8e7b47",
+        "UAP-EV-20261112152430-4ed0c517",
+        "UAP-EV-20261112152430-e0d0f6d1",
+        "UAP-EV-20261112152430-e18f0624",
+        "UAP-EV-20261112152430-8b3dd9dd",
+        "UAP-EV-20261112152430-2995c2f6",
+        "UAP-EV-20261112152430-e3f35336",
+        "UAP-EV-20261112152430-1b8b8d85",
+        "UAP-EV-20261112152430-901c0710",
+        "UAP-EV-20261112152430-f468b093"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T15:24:30.375Z",
+          "evidence_refs": [
+            "UAP-EV-20261112152430-2b8e7b47",
+            "UAP-EV-20261112152430-4ed0c517",
+            "UAP-EV-20261112152430-e0d0f6d1",
+            "UAP-EV-20261112152430-e18f0624",
+            "UAP-EV-20261112152430-8b3dd9dd",
+            "UAP-EV-20261112152430-2995c2f6",
+            "UAP-EV-20261112152430-e3f35336",
+            "UAP-EV-20261112152430-1b8b8d85",
+            "UAP-EV-20261112152430-901c0710",
+            "UAP-EV-20261112152430-f468b093"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "full_operational_acceptance",
+      "started_at": "2026-11-12T15:24:30.105Z",
+      "finished_at": "2026-11-12T15:24:30.447Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164002-cd43eca9",
+      "workflow_id": "uap-bootstrap",
+      "task_id": "UAP-TASK-20261112164002-cd43eca9",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164002-19144670",
+        "UAP-EV-20261112164002-382a7de8",
+        "UAP-EV-20261112164002-d7b65043",
+        "UAP-EV-20261112164002-3699769b",
+        "UAP-EV-20261112164003-e4eee629",
+        "UAP-EV-20261112164005-3adac8c7",
+        "UAP-EV-20261112164005-7db11bc8"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:05.384Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164002-19144670",
+            "UAP-EV-20261112164002-382a7de8",
+            "UAP-EV-20261112164002-d7b65043",
+            "UAP-EV-20261112164002-3699769b",
+            "UAP-EV-20261112164003-e4eee629",
+            "UAP-EV-20261112164005-3adac8c7",
+            "UAP-EV-20261112164005-7db11bc8"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "runtime_health_check",
+      "started_at": "2026-11-12T16:40:02.005Z",
+      "finished_at": "2026-11-12T16:40:05.467Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164005-66d1f4c3",
+      "workflow_id": "uap-full-audit",
+      "task_id": "UAP-TASK-20261112164005-66d1f4c3",
+      "state": "SUCCEEDED",
+      "steps_total": 11,
+      "steps_succeeded": 11,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164005-d89af934",
+        "UAP-EV-20261112164005-b6f17fd1",
+        "UAP-EV-20261112164005-0777d41a",
+        "UAP-EV-20261112164005-211d8fc7",
+        "UAP-EV-20261112164005-0a9333f7",
+        "UAP-EV-20261112164005-a5d37743",
+        "UAP-EV-20261112164005-85a84884",
+        "UAP-EV-20261112164005-70b0b3d5",
+        "UAP-EV-20261112164005-7afd17b4",
+        "UAP-EV-20261112164005-8b24eb97",
+        "UAP-EV-20261112164005-5679b769",
+        "UAP-EV-20261112164006-bf49dd28"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:05.965Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164005-d89af934",
+            "UAP-EV-20261112164005-b6f17fd1",
+            "UAP-EV-20261112164005-0777d41a",
+            "UAP-EV-20261112164005-211d8fc7",
+            "UAP-EV-20261112164005-0a9333f7",
+            "UAP-EV-20261112164005-a5d37743",
+            "UAP-EV-20261112164005-85a84884",
+            "UAP-EV-20261112164005-70b0b3d5",
+            "UAP-EV-20261112164005-7afd17b4",
+            "UAP-EV-20261112164005-8b24eb97",
+            "UAP-EV-20261112164005-5679b769",
+            "UAP-EV-20261112164006-bf49dd28"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "audit_evidence_complete",
+      "started_at": "2026-11-12T16:40:05.483Z",
+      "finished_at": "2026-11-12T16:40:06.046Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164006-84d4f144",
+      "workflow_id": "uap-implementation",
+      "task_id": "UAP-TASK-20261112164006-84d4f144",
+      "state": "SUCCEEDED",
+      "steps_total": 6,
+      "steps_succeeded": 6,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164006-cd3fe72c",
+        "UAP-EV-20261112164006-5f7ef98c",
+        "UAP-EV-20261112164006-207a37f3",
+        "UAP-EV-20261112164006-882474e3",
+        "UAP-EV-20261112164006-dc037036",
+        "UAP-EV-20261112164006-71a3bd5b",
+        "UAP-EV-20261112164006-befb455c"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:06.924Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164006-cd3fe72c",
+            "UAP-EV-20261112164006-5f7ef98c",
+            "UAP-EV-20261112164006-207a37f3",
+            "UAP-EV-20261112164006-882474e3",
+            "UAP-EV-20261112164006-dc037036",
+            "UAP-EV-20261112164006-71a3bd5b",
+            "UAP-EV-20261112164006-befb455c"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "implementation_verified",
+      "started_at": "2026-11-12T16:40:06.062Z",
+      "finished_at": "2026-11-12T16:40:07.008Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164007-659ba4cb",
+      "workflow_id": "uap-defect-repair",
+      "task_id": "UAP-TASK-20261112164007-659ba4cb",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164007-573e50d5",
+        "UAP-EV-20261112164007-c6713f57",
+        "UAP-EV-20261112164007-19f0a32c",
+        "UAP-EV-20261112164007-b0d42e1e",
+        "UAP-EV-20261112164007-9aaa22a2",
+        "UAP-EV-20261112164007-555b7ea4",
+        "UAP-EV-20261112164007-6708dfdd",
+        "UAP-EV-20261112164007-2c7e65aa",
+        "UAP-EV-20261112164007-878da92f"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:07.289Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164007-573e50d5",
+            "UAP-EV-20261112164007-c6713f57",
+            "UAP-EV-20261112164007-19f0a32c",
+            "UAP-EV-20261112164007-b0d42e1e",
+            "UAP-EV-20261112164007-9aaa22a2",
+            "UAP-EV-20261112164007-555b7ea4",
+            "UAP-EV-20261112164007-6708dfdd",
+            "UAP-EV-20261112164007-2c7e65aa",
+            "UAP-EV-20261112164007-878da92f"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "defect_verified_or_blocked",
+      "started_at": "2026-11-12T16:40:07.023Z",
+      "finished_at": "2026-11-12T16:40:07.370Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164007-c2fd4842",
+      "workflow_id": "uap-quality-gate",
+      "task_id": "UAP-TASK-20261112164007-c2fd4842",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164012-534fbd16",
+        "UAP-EV-20261112164012-5d6facd8",
+        "UAP-EV-20261112164013-b2b3bf66",
+        "UAP-EV-20261112164013-8bb8cbb2",
+        "UAP-EV-20261112164013-c2f083b0",
+        "UAP-EV-20261112164013-9c8d7461",
+        "UAP-EV-20261112164013-40bb1de2",
+        "UAP-EV-20261112164018-43525822",
+        "UAP-EV-20261112164018-233b570f",
+        "UAP-EV-20261112164018-2445fbf3"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:18.842Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164012-534fbd16",
+            "UAP-EV-20261112164012-5d6facd8",
+            "UAP-EV-20261112164013-b2b3bf66",
+            "UAP-EV-20261112164013-8bb8cbb2",
+            "UAP-EV-20261112164013-c2f083b0",
+            "UAP-EV-20261112164013-9c8d7461",
+            "UAP-EV-20261112164013-40bb1de2",
+            "UAP-EV-20261112164018-43525822",
+            "UAP-EV-20261112164018-233b570f",
+            "UAP-EV-20261112164018-2445fbf3"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "all_required_gates_pass",
+      "started_at": "2026-11-12T16:40:07.386Z",
+      "finished_at": "2026-11-12T16:40:18.920Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164018-f0fc75bf",
+      "workflow_id": "uap-financial-verification",
+      "task_id": "UAP-TASK-20261112164018-f0fc75bf",
+      "state": "SUCCEEDED",
+      "steps_total": 8,
+      "steps_succeeded": 8,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164018-26dc69d5",
+        "UAP-EV-20261112164019-bc4ba729",
+        "UAP-EV-20261112164019-a2e482b4",
+        "UAP-EV-20261112164019-896fd713",
+        "UAP-EV-20261112164019-cce8f79c",
+        "UAP-EV-20261112164019-ef8dd5c2",
+        "UAP-EV-20261112164019-1155f836",
+        "UAP-EV-20261112164019-377210d2",
+        "UAP-EV-20261112164019-9d3794c3"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:19.198Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164018-26dc69d5",
+            "UAP-EV-20261112164019-bc4ba729",
+            "UAP-EV-20261112164019-a2e482b4",
+            "UAP-EV-20261112164019-896fd713",
+            "UAP-EV-20261112164019-cce8f79c",
+            "UAP-EV-20261112164019-ef8dd5c2",
+            "UAP-EV-20261112164019-1155f836",
+            "UAP-EV-20261112164019-377210d2",
+            "UAP-EV-20261112164019-9d3794c3"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "financial_integrity_verified",
+      "started_at": "2026-11-12T16:40:18.937Z",
+      "finished_at": "2026-11-12T16:40:19.278Z"
+    },
+    {
+      "run_id": "UAP-RUN-UAP-TASK-20261112164019-ca41237c",
+      "workflow_id": "uap-final-verification",
+      "task_id": "UAP-TASK-20261112164019-ca41237c",
+      "state": "SUCCEEDED",
+      "steps_total": 9,
+      "steps_succeeded": 9,
+      "steps_blocked": 0,
+      "evidence_refs": [
+        "UAP-EV-20261112164019-79b7082c",
+        "UAP-EV-20261112164019-a412d5d1",
+        "UAP-EV-20261112164019-f7fef8e4",
+        "UAP-EV-20261112164019-494e9bd5",
+        "UAP-EV-20261112164019-826f818d",
+        "UAP-EV-20261112164019-14540267",
+        "UAP-EV-20261112164019-d3b20dbb",
+        "UAP-EV-20261112164019-3d931a74",
+        "UAP-EV-20261112164019-cec89b93",
+        "UAP-EV-20261112164019-d8cd8e54"
+      ],
+      "validation": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-12T16:40:19.598Z",
+          "evidence_refs": [
+            "UAP-EV-20261112164019-79b7082c",
+            "UAP-EV-20261112164019-a412d5d1",
+            "UAP-EV-20261112164019-f7fef8e4",
+            "UAP-EV-20261112164019-494e9bd5",
+            "UAP-EV-20261112164019-826f818d",
+            "UAP-EV-20261112164019-14540267",
+            "UAP-EV-20261112164019-d3b20dbb",
+            "UAP-EV-20261112164019-3d931a74",
+            "UAP-EV-20261112164019-cec89b93",
+            "UAP-EV-20261112164019-d8cd8e54"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "acceptance": "full_operational_acceptance",
+      "started_at": "2026-11-12T16:40:19.296Z",
+      "finished_at": "2026-11-12T16:40:19.677Z"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152049-5280b7e2",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:20:49.129Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.execution_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.execution_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.execution_integrity 实检: task_execution=PASS(tasks.json: 125 任务, SUCCEEDED=96, 含 evidence_refs 的 SUCCEEDED=96); dependency_order=PASS(复核 UAP-TASK-HEALTH-20261112104051-18ebd06c 的 3 次迁移, 非法迁移=0, 终态=SUCCEEDED); bounded_retry=PASS(execution.max_repair_attempts_per_root_cause=3; SUCCEEDED 任务 retry_count<=上限=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1048 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复验 TASK_TRANSITIONS/executorResult: exit_code=0 terminal=true shape=true",
+  "content_hash": "73e89d7627550cff0920552a6c953fd28def5b9167df7ffec20b380048004768"
+}

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112110157-18a0c00d",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112110157-71fa6868",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T11:01:57.172Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:verify_reconciliation",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-8\",\"name\":\"verify_reconciliation\",\"idempotent\":true,\"handler\":\"verify_reconciliation\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "recovery verified: state=SUCCEEDED, repeated_steps=undefined",
+  "content_hash": "aa1f41dea5a295c0dc577af2385304cbb2955a1fb5d8f99dff729e2cb697284d"
+}

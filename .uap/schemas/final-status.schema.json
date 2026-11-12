@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uap://schemas/final-status",
+  "title": "UAP Final Status",
+  "type": "object",
+  "required": [
+    "platform",
+    "version",
+    "overall_status",
+    "specifications",
+    "machine_configs",
+    "system_entrypoints",
+    "runtime",
+    "executors",
+    "validators",
+    "uter_compliance",
+    "evidence_index"
+  ],
+  "properties": {
+    "platform": {
+      "const": "UAP"
+    },
+    "version": {
+      "type": "string"
+    },
+    "overall_status": {
+      "enum": [
+        "NOT_BUILT",
+        "PARTIALLY_BUILT",
+        "IMPLEMENTED_NOT_VERIFIED",
+        "PARTIALLY_VERIFIED",
+        "FULLY_VERIFIED",
+        "FULLY_OPERATIONAL",
+        "BLOCKED",
+        "FAILED"
+      ]
+    },
+    "specifications": {
+      "type": "object"
+    },
+    "machine_configs": {
+      "type": "object"
+    },
+    "system_entrypoints": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "executors": {
+      "type": "object"
+    },
+    "validators": {
+      "type": "object"
+    },
+    "uter_compliance": {
+      "enum": [
+        "NOT_ASSESSED",
+        "PARTIALLY_COMPLIANT",
+        "NOT_FULLY_VERIFIED",
+        "FULLY_COMPLIANT",
+        "BLOCKED"
+      ]
+    },
+    "critical_defects": {
+      "type": "integer"
+    },
+    "open_defects": {
+      "type": "integer"
+    },
+    "blocked_items": {
+      "type": "array"
+    },
+    "evidence_index": {
+      "type": "string"
+    }
+  }
+}

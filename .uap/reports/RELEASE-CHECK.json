@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-11-12T17:05:01.046Z",
+  "checks": {
+    "production_deploy_denied": true,
+    "registry_integrity": true,
+    "runtime_health_passed": true,
+    "full_validation_all_pass": true,
+    "uap_tests_passed": true,
+    "quality_gates_passed": true,
+    "no_open_critical_defects": true,
+    "final_status_generated": true,
+    "final_status_claims_success": true
+  },
+  "failed": [],
+  "open_critical_defects": [],
+  "deploy_decision": {
+    "decision": "DENY",
+    "reason": "permission not declared for this agent"
+  },
+  "note": "release check is a gate only; no deploy is performed"
+}

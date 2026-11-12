@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152323-fb634e7c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:23:23.287Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.architecture_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.architecture_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.architecture_integrity 实检: module_presence=PASS(32/32 规范文件 >=2000B 且含 11 sections 与自身 ID); dependency_integrity=PASS(自算依赖图 cycles=0 missing_deps=0; registry.unique_ids=true,registry.dependencies_exist=true,registry.dependencies_acyclic=true); interface_integrity=PASS(动态 import 10 个 runtime 模块, 10 个导出 component+health()) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 1300 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复跑 registryIntegrity: exit_code=0 timed_out=false spawn_error=none 37/37 checks",
+  "content_hash": "6ccde37f1d8d73412586d12516972f3cb7033a7b5a98de5585336f0d808830fb"
+}

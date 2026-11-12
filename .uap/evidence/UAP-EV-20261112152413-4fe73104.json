@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112152413-4fe73104",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:13.988Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate --all",
+  "exit_code": 2,
+  "duration_ms": 4112,
+  "inputs": "{\"argv\":[\"validate\",\"--all\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "validate: 2/32 validators BLOCKED/NOT_EXECUTED"
+    }
+  ],
+  "summary": "validate: 2/32 validators BLOCKED/NOT_EXECUTED",
+  "content_hash": "184f04d4350a020c77305d4eda3583629b15e6c38687a678f4700b1ec1fc7c5f"
+}

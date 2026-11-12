@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112104615-3e657111",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T10:46:15.624Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap status --json",
+  "exit_code": 1,
+  "duration_ms": 105,
+  "inputs": "{\"argv\":[\"status\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "unhandled error: Cannot read properties of undefined (reading 'validator-registry')"
+    }
+  ],
+  "summary": "unhandled error: Cannot read properties of undefined (reading 'validator-registry')",
+  "content_hash": "08cb5ad73f5099b9ef4fec938ace723b300725decc948a401e334db4cc689dc6"
+}

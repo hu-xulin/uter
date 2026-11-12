@@ -81,7 +81,7 @@ export function LegalConsent({
       />
       <Label
         htmlFor='legal-consent'
-        className='text-muted-foreground items-start gap-1 text-left text-xs font-normal'
+        className='text-muted-foreground relative items-start gap-1 text-left text-xs font-normal after:absolute after:-inset-x-3 after:-inset-y-2 after:content-[""]'
       >
         <span>
           {t('I have read and agree to the')}{' '}

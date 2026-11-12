@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261112152359-6ee6a79c",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:23:59.312Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap release check",
+  "exit_code": 3,
+  "duration_ms": 0,
+  "inputs": "{\"argv\":[\"release check\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "usage_error",
+      "message": "unknown command: release check"
+    }
+  ],
+  "summary": "unknown command: release check",
+  "content_hash": "fcc927c35ffa69cf6757773c1073f4f6a64620f2da7f3ca655fa4d549ec0751e"
+}

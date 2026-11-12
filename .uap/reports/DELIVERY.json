@@ -1,0 +1,1811 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-12T11:02:37.999Z",
+  "executor_ids": [
+    "delivery.ci_cd",
+    "delivery.deployment",
+    "delivery.observability"
+  ],
+  "workflows": [
+    {
+      "file": ".github/workflows/ci.yml",
+      "job_count": 7,
+      "jobs": [
+        "ueqe-review",
+        "backend",
+        "race",
+        "coverage",
+        "vulnscan",
+        "desktop",
+        "frontend"
+      ],
+      "run_command_count": 45,
+      "uses_step_count": 16
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job_count": 3,
+      "jobs": [
+        "gate",
+        "build_single_arch",
+        "create_manifests"
+      ],
+      "run_command_count": 10,
+      "uses_step_count": 9
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job_count": 4,
+      "jobs": [
+        "gate",
+        "prepare",
+        "build_single_arch",
+        "create_manifests"
+      ],
+      "run_command_count": 11,
+      "uses_step_count": 10
+    },
+    {
+      "file": ".github/workflows/electron-build.yml",
+      "job_count": 3,
+      "jobs": [
+        "gate",
+        "build",
+        "release"
+      ],
+      "run_command_count": 5,
+      "uses_step_count": 9
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job_count": 4,
+      "jobs": [
+        "quality-gate",
+        "coverage",
+        "secrets",
+        "report"
+      ],
+      "run_command_count": 8,
+      "uses_step_count": 6
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job_count": 4,
+      "jobs": [
+        "backend",
+        "vulnscan",
+        "desktop",
+        "frontend"
+      ],
+      "run_command_count": 14,
+      "uses_step_count": 7
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job_count": 4,
+      "jobs": [
+        "gate",
+        "linux",
+        "macos",
+        "windows"
+      ],
+      "run_command_count": 16,
+      "uses_step_count": 13
+    },
+    {
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job_count": 2,
+      "jobs": [
+        "prepare-release",
+        "gitcode-release-assets"
+      ],
+      "run_command_count": 3,
+      "uses_step_count": 2
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job_count": 4,
+      "jobs": [
+        "vulnerabilities",
+        "secrets",
+        "workflow-permissions",
+        "report"
+      ],
+      "run_command_count": 7,
+      "uses_step_count": 10
+    }
+  ],
+  "job_count": 35,
+  "ci_command_count": 119,
+  "ci_commands": [
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "ueqe-review",
+      "line": 46,
+      "command": "bun install --frozen-lockfile"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "ueqe-review",
+      "line": 48,
+      "command": "./scripts/make-frontend-placeholder.sh"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "ueqe-review",
+      "line": 50,
+      "command": "bash scripts/quality/uter-quality.sh review"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 78,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 86,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 109,
+      "command": "go vet ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 113,
+      "command": "go vet ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 117,
+      "command": "GOWORK=off go vet ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 121,
+      "command": "GOWORK=off go vet ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 124,
+      "command": "go build ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 128,
+      "command": "go build ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 132,
+      "command": "GOWORK=off go build ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 136,
+      "command": "GOWORK=off go build ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "line": 139,
+      "command": "make test"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "line": 186,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "line": 192,
+      "command": "go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "line": 197,
+      "command": "go test -race -count=1 ./e2e/..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "line": 201,
+      "command": "GOWORK=off go test -race -count=1 ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "line": 205,
+      "command": "GOWORK=off go test -race -count=1 ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "line": 209,
+      "command": "GOWORK=off go test -race -count=1 ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "line": 239,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "line": 247,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "line": 252,
+      "command": "go tool cover -func=coverage.out | tail -1"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "line": 255,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "line": 270,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "line": 303,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "line": 308,
+      "command": "govulncheck ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "line": 312,
+      "command": "govulncheck ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "line": 316,
+      "command": "govulncheck ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "line": 322,
+      "command": "govulncheck ./..."
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "desktop",
+      "line": 350,
+      "command": "node --check main.js"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "desktop",
+      "line": 354,
+      "command": "node --test desktop-secrets.test.js"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 374,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 384,
+      "command": "bun install --frozen-lockfile"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 387,
+      "command": "bun run typecheck"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 390,
+      "command": "bun run test"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 393,
+      "command": "bun run lint"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 406,
+      "command": "bun run design:tokens:check"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 409,
+      "command": "bun run verify:contrast"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 412,
+      "command": "bun run lint:design:strict"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 415,
+      "command": "bunx playwright install chromium"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 418,
+      "command": "bun run test:visual"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 422,
+      "command": "bun run components:registry:check"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 430,
+      "command": "bun run copyright:check"
+    },
+    {
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "line": 433,
+      "command": "bun run build:check"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "line": 60,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "line": 100,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "line": 138,
+      "command": "cosign sign --yes calciumion/uter@${{ steps.build.outputs.digest }}"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "line": 141,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "line": 161,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "line": 171,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "line": 184,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "line": 191,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "line": 201,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "line": 206,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "prepare",
+      "line": 35,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "prepare",
+      "line": 52,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "line": 96,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "line": 111,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "line": 150,
+      "command": "cosign sign --yes calciumion/uter@${{ steps.build.outputs.digest }}"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "line": 153,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "line": 174,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "line": 187,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "line": 194,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "line": 204,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "line": 209,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "line": 56,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "line": 70,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "line": 79,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "line": 104,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "line": 118,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "line": 62,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "line": 69,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "line": 74,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "line": 83,
+      "command": "go tool cover -func=coverage.out | tail -1 | tee -a \"$GITHUB_STEP_SUMMARY\""
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "secrets",
+      "line": 107,
+      "command": "go install github.com/zricethezav/gitleaks/v8@v8.30.1"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "secrets",
+      "line": 110,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "report",
+      "line": 131,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "report",
+      "line": 146,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "line": 58,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "line": 64,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "line": 73,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "line": 87,
+      "command": "make test"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "line": 94,
+      "command": "go test ./..."
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "vulnscan",
+      "line": 110,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "vulnscan",
+      "line": 115,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "desktop",
+      "line": 146,
+      "command": "node --check main.js"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "desktop",
+      "line": 150,
+      "command": "node --test desktop-secrets.test.js"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "line": 173,
+      "command": "bun install --frozen-lockfile"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "line": 176,
+      "command": "bun run typecheck"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "line": 179,
+      "command": "bun run test"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "line": 182,
+      "command": "bun run lint"
+    },
+    {
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "line": 188,
+      "command": "bun run lint:design:strict"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "line": 34,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "line": 48,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "line": 62,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "line": 66,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "line": 73,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "line": 83,
+      "command": "sha256sum uter-* > checksums-linux.txt"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "line": 105,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "line": 119,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "line": 129,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "line": 133,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "line": 141,
+      "command": "shasum -a 256 uter-macos-* > checksums-macos.txt"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "line": 166,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "line": 180,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "line": 190,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "line": 194,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "line": 202,
+      "command": "sha256sum uter-*.exe > checksums-windows.txt"
+    },
+    {
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job": "prepare-release",
+      "line": 44,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job": "prepare-release",
+      "line": 152,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job": "prepare-release",
+      "line": 187,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "vulnerabilities",
+      "line": 54,
+      "command": "go install golang.org/x/vuln/cmd/govulncheck@v1.9.0"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "vulnerabilities",
+      "line": 57,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "secrets",
+      "line": 98,
+      "command": "go install github.com/zricethezav/gitleaks/v8@v8.30.1"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "secrets",
+      "line": 101,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "workflow-permissions",
+      "line": 117,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "report",
+      "line": 184,
+      "command": "|"
+    },
+    {
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "report",
+      "line": 201,
+      "command": "|"
+    }
+  ],
+  "local_equivalent_commands": [
+    {
+      "ci_command": "bun install --frozen-lockfile",
+      "file": ".github/workflows/ci.yml",
+      "job": "ueqe-review",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "./scripts/make-frontend-placeholder.sh",
+      "file": ".github/workflows/ci.yml",
+      "job": "ueqe-review",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bash scripts/quality/uter-quality.sh review",
+      "file": ".github/workflows/ci.yml",
+      "job": "ueqe-review",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go vet ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": "go vet ./...",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "go vet ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": "go vet ./...",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "GOWORK=off go vet ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": "go vet ./...",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "GOWORK=off go vet ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": "go vet ./...",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "go build ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go build ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "GOWORK=off go build ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "GOWORK=off go build ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "make test",
+      "file": ".github/workflows/ci.yml",
+      "job": "backend",
+      "local_equivalent": "make test",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/...",
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go test -race -count=1 ./e2e/...",
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "GOWORK=off go test -race -count=1 ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "GOWORK=off go test -race -count=1 ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "GOWORK=off go test -race -count=1 ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "race",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go tool cover -func=coverage.out | tail -1",
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "govulncheck ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "govulncheck ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "govulncheck ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "govulncheck ./...",
+      "file": ".github/workflows/ci.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "node --check main.js",
+      "file": ".github/workflows/ci.yml",
+      "job": "desktop",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "node --test desktop-secrets.test.js",
+      "file": ".github/workflows/ci.yml",
+      "job": "desktop",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun install --frozen-lockfile",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun run typecheck",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run typecheck",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run test",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run test",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run lint",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run lint",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run design:tokens:check",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun run verify:contrast",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun run lint:design:strict",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run lint",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bunx playwright install chromium",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun run test:visual",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run test",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run components:registry:check",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun run copyright:check",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run copyright:check",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run build:check",
+      "file": ".github/workflows/ci.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run build:check",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "cosign sign --yes calciumion/uter@${{ steps.build.outputs.digest }}",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-build.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "prepare",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "prepare",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "cosign sign --yes calciumion/uter@${{ steps.build.outputs.digest }}",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "build_single_arch",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/docker-image-branch.yml",
+      "job": "create_manifests",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/electron-build.yml",
+      "job": "build",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go tool cover -func=coverage.out | tail -1 | tee -a \"$GITHUB_STEP_SUMMARY\"",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "coverage",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go install github.com/zricethezav/gitleaks/v8@v8.30.1",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "secrets",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "secrets",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "report",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/nightly-full-audit.yml",
+      "job": "report",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "make test",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "local_equivalent": "make test",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "go test ./...",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "backend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "vulnscan",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "node --check main.js",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "desktop",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "node --test desktop-secrets.test.js",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "desktop",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun install --frozen-lockfile",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "bun run typecheck",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run typecheck",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run test",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run test",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run lint",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run lint",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "bun run lint:design:strict",
+      "file": ".github/workflows/release-gate.yml",
+      "job": "frontend",
+      "local_equivalent": "bun run lint",
+      "source": "AGENTS.md"
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "sha256sum uter-* > checksums-linux.txt",
+      "file": ".github/workflows/release.yml",
+      "job": "linux",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "shasum -a 256 uter-macos-* > checksums-macos.txt",
+      "file": ".github/workflows/release.yml",
+      "job": "macos",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "sha256sum uter-*.exe > checksums-windows.txt",
+      "file": ".github/workflows/release.yml",
+      "job": "windows",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job": "prepare-release",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job": "prepare-release",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/sync-release-to-gitcode.yml",
+      "job": "prepare-release",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go install golang.org/x/vuln/cmd/govulncheck@v1.9.0",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "vulnerabilities",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "vulnerabilities",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "go install github.com/zricethezav/gitleaks/v8@v8.30.1",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "secrets",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "secrets",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "workflow-permissions",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "report",
+      "local_equivalent": null,
+      "source": null
+    },
+    {
+      "ci_command": "|",
+      "file": ".github/workflows/weekly-security-audit.yml",
+      "job": "report",
+      "local_equivalent": null,
+      "source": null
+    }
+  ],
+  "local_gate_command_count": 18,
+  "deployment_files": [
+    {
+      "path": "scripts/verify-all.sh",
+      "exists": true,
+      "size": 9635
+    },
+    {
+      "path": "Dockerfile",
+      "exists": true,
+      "size": 2826
+    },
+    {
+      "path": "build-prod.sh",
+      "exists": true,
+      "size": 180
+    },
+    {
+      "path": "Makefile",
+      "exists": true,
+      "size": 3919
+    },
+    {
+      "path": "docker-compose.yml",
+      "exists": true,
+      "size": 4570
+    },
+    {
+      "path": "docker-compose.yaml",
+      "exists": false,
+      "size": 0
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "exists": true,
+      "size": 7514
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "exists": true,
+      "size": 7906
+    },
+    {
+      "path": "docker-compose.dev.yml",
+      "exists": true,
+      "size": 2238
+    },
+    {
+      "path": "docker-compose.multidb.yml",
+      "exists": true,
+      "size": 2087
+    }
+  ],
+  "deployment_sources": [
+    {
+      "file": "Dockerfile",
+      "from": "oven/bun:1.4.0@sha256:5ff609364c049b54eb0ff560ec96319729a972078ef2c755d758f0c6ef89c2d6 AS frontend",
+      "expose": "3000",
+      "cmd_or_entrypoint": "[\"/uter\"]"
+    },
+    {
+      "file": "docker-compose.dev.yml",
+      "services": 6,
+      "restart_policy_present": true,
+      "image_refs": 3
+    },
+    {
+      "file": "docker-compose.multidb.yml",
+      "services": 4,
+      "restart_policy_present": false,
+      "image_refs": 4
+    },
+    {
+      "file": "docker-compose.yml",
+      "services": 5,
+      "restart_policy_present": true,
+      "image_refs": 3
+    },
+    {
+      "file": "build-prod.sh",
+      "first_commands": [
+        "set -e",
+        "echo \"[1/2] 构建前端正式版...\"",
+        "cd web",
+        "bun install",
+        "bun run build",
+        "echo \"\"",
+        "echo \"[2/2] 启动后端服务（已内嵌新前端）...\"",
+        "cd .."
+      ]
+    }
+  ],
+  "rollback_sources": {
+    "found": false,
+    "anchors": [],
+    "gap": "no explicit rollback procedure found in workflows/scripts"
+  },
+  "observability_anchors": [
+    {
+      "type": "go_dependency",
+      "name": "prometheus",
+      "source": "go.mod"
+    },
+    {
+      "type": "go_dependency",
+      "name": "pyroscope",
+      "source": "go.mod"
+    },
+    {
+      "type": "go_dependency",
+      "name": "opentelemetry",
+      "source": "go.mod"
+    },
+    {
+      "type": "go_dependency",
+      "name": "otel",
+      "source": "go.mod"
+    },
+    {
+      "type": "go_dependency",
+      "name": "grafana",
+      "source": "go.mod"
+    },
+    {
+      "type": "controller",
+      "name": "perf_metrics.go",
+      "source": "controller/perf_metrics.go"
+    },
+    {
+      "type": "controller",
+      "name": "uptime_kuma.go",
+      "source": "controller/uptime_kuma.go"
+    }
+  ],
+  "gaps": [
+    {
+      "type": "no_explicit_rollback_procedure",
+      "detail": "no explicit rollback procedure found in workflows/scripts"
+    }
+  ]
+}

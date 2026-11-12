@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112152429-dba779a5",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261112152429-18858a85",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:24:29.853Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_refund_state_machine",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"inspect_refund_state_machine\",\"idempotent\":true,\"handler\":\"inspect_refund_state_machine\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspect_refund_state_machine: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "38f38fe3d4631fb95054aa78b0abd1f78289dfc83bdf61e45e3a85641ade6e5b"
+}

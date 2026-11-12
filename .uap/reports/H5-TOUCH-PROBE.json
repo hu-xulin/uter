@@ -1,0 +1,393 @@
+{
+  "generated_at": "2026-11-12T16:05:19.855Z",
+  "target": "http://localhost:3000",
+  "viewport": "mobile-390",
+  "pages": [
+    {
+      "url": "/",
+      "count": 6,
+      "findings": [
+        {
+          "tag": "a",
+          "cls": "text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm ",
+          "aria": "",
+          "text": "用户协议",
+          "rect": "56x22",
+          "effective_hit": "56x22",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x4625]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 20
+        },
+        {
+          "tag": "a",
+          "cls": "text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm ",
+          "aria": "",
+          "text": "隐私政策",
+          "rect": "56x22",
+          "effective_hit": "56x22",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x4625]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 20
+        },
+        {
+          "tag": "a",
+          "cls": "text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm ",
+          "aria": "",
+          "text": "充值协议",
+          "rect": "56x22",
+          "effective_hit": "56x22",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x4625]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 20
+        },
+        {
+          "tag": "a",
+          "cls": "text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm ",
+          "aria": "",
+          "text": "粤ICP备2026158037号",
+          "rect": "148x22",
+          "effective_hit": "148x22",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x4625]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 4
+        },
+        {
+          "tag": "a",
+          "cls": "text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm ",
+          "aria": "",
+          "text": "粤公网安备44030002018502号",
+          "rect": "203x22",
+          "effective_hit": "203x22",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x4625]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 4
+        },
+        {
+          "tag": "a",
+          "cls": "hover:text-foreground transition-colors",
+          "aria": "",
+          "text": "优特智能",
+          "rect": "56x17",
+          "effective_hit": "56x17",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x4625]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        }
+      ]
+    },
+    {
+      "url": "/sign-in",
+      "count": 4,
+      "findings": [
+        {
+          "tag": "span",
+          "cls": "peer border-input focus-visible:border-ring focus-visible:ring-ring aria-invalid",
+          "aria": "",
+          "text": "",
+          "rect": "16x16",
+          "effective_hit": "38x30",
+          "pseudo_extends": true,
+          "ancestor_clickable": "div.notranslate [390x844]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 99
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "1x1",
+          "effective_hit": "1x1",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x844]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 668
+        },
+        {
+          "tag": "a",
+          "cls": "text-fg-link font-medium",
+          "aria": "",
+          "text": "用户协议",
+          "rect": "48x15",
+          "effective_hit": "48x15",
+          "pseudo_extends": false,
+          "ancestor_clickable": "label.flex select-none group-data-[disabled=tr [206x18]",
+          "ancestor_bigger": true,
+          "label_wrapped": true,
+          "nearest_gap_px": 19
+        },
+        {
+          "tag": "a",
+          "cls": "text-fg-link font-medium",
+          "aria": "",
+          "text": "隐私政策",
+          "rect": "48x15",
+          "effective_hit": "48x15",
+          "pseudo_extends": false,
+          "ancestor_clickable": "label.flex select-none group-data-[disabled=tr [206x18]",
+          "ancestor_bigger": true,
+          "label_wrapped": true,
+          "nearest_gap_px": 19
+        }
+      ]
+    },
+    {
+      "url": "/sign-in",
+      "count": 4,
+      "findings": [
+        {
+          "tag": "span",
+          "cls": "peer border-input focus-visible:border-ring focus-visible:ring-ring aria-invalid",
+          "aria": "",
+          "text": "",
+          "rect": "16x16",
+          "effective_hit": "38x30",
+          "pseudo_extends": true,
+          "ancestor_clickable": "div.notranslate [390x844]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 99
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "1x1",
+          "effective_hit": "1x1",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x844]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 668
+        },
+        {
+          "tag": "a",
+          "cls": "text-fg-link font-medium",
+          "aria": "",
+          "text": "用户协议",
+          "rect": "48x15",
+          "effective_hit": "48x15",
+          "pseudo_extends": false,
+          "ancestor_clickable": "label.flex select-none group-data-[disabled=tr [206x18]",
+          "ancestor_bigger": true,
+          "label_wrapped": true,
+          "nearest_gap_px": 19
+        },
+        {
+          "tag": "a",
+          "cls": "text-fg-link font-medium",
+          "aria": "",
+          "text": "隐私政策",
+          "rect": "48x15",
+          "effective_hit": "48x15",
+          "pseudo_extends": false,
+          "ancestor_clickable": "label.flex select-none group-data-[disabled=tr [206x18]",
+          "ancestor_bigger": true,
+          "label_wrapped": true,
+          "nearest_gap_px": 19
+        }
+      ]
+    },
+    {
+      "url": "/sign-in",
+      "count": 4,
+      "findings": [
+        {
+          "tag": "span",
+          "cls": "peer border-input focus-visible:border-ring focus-visible:ring-ring aria-invalid",
+          "aria": "",
+          "text": "",
+          "rect": "16x16",
+          "effective_hit": "38x30",
+          "pseudo_extends": true,
+          "ancestor_clickable": "div.notranslate [390x844]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 99
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "1x1",
+          "effective_hit": "1x1",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x844]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": 668
+        },
+        {
+          "tag": "a",
+          "cls": "text-fg-link font-medium",
+          "aria": "",
+          "text": "用户协议",
+          "rect": "48x15",
+          "effective_hit": "48x15",
+          "pseudo_extends": false,
+          "ancestor_clickable": "label.flex select-none group-data-[disabled=tr [206x18]",
+          "ancestor_bigger": true,
+          "label_wrapped": true,
+          "nearest_gap_px": 19
+        },
+        {
+          "tag": "a",
+          "cls": "text-fg-link font-medium",
+          "aria": "",
+          "text": "隐私政策",
+          "rect": "48x15",
+          "effective_hit": "48x15",
+          "pseudo_extends": false,
+          "ancestor_clickable": "label.flex select-none group-data-[disabled=tr [206x18]",
+          "ancestor_bigger": true,
+          "label_wrapped": true,
+          "nearest_gap_px": 19
+        }
+      ]
+    },
+    {
+      "url": "/docs",
+      "count": 8,
+      "findings": [
+        {
+          "tag": "a",
+          "cls": "",
+          "aria": "",
+          "text": "Midjourney-Proxy(Plu",
+          "rect": "178x20",
+          "effective_hit": "178x20",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "13x13",
+          "effective_hit": "13x13",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "a",
+          "cls": "",
+          "aria": "",
+          "text": "Suno API",
+          "rect": "69x20",
+          "effective_hit": "69x20",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "a",
+          "cls": "",
+          "aria": "",
+          "text": "OpenAI Realtime API",
+          "rect": "159x20",
+          "effective_hit": "159x20",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "13x13",
+          "effective_hit": "13x13",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "13x13",
+          "effective_hit": "13x13",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "13x13",
+          "effective_hit": "13x13",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        },
+        {
+          "tag": "input",
+          "cls": "",
+          "aria": "",
+          "text": "",
+          "rect": "13x13",
+          "effective_hit": "13x13",
+          "pseudo_extends": false,
+          "ancestor_clickable": "div.notranslate [390x1894]",
+          "ancestor_bigger": true,
+          "label_wrapped": false,
+          "nearest_gap_px": null
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_below_24": 26,
+    "by_tag": {
+      "a": 15,
+      "span": 3,
+      "input": 8
+    },
+    "pseudo_extended": 3,
+    "ancestor_clickable_bigger": 26,
+    "label_wrapped": 6,
+    "spacing_ge_24": 6,
+    "raw_unmitigated": 0,
+    "size_breakdown": {
+      "only_width_small": 0,
+      "only_height_small": 15,
+      "both_small": 11
+    }
+  }
+}

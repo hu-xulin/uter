@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261112151422-2929010b",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-12T15:14:22.568Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task create --objective=regenerate coding standard artifact from real source --spec=UAP-04-001 --agent=uap-development-agent",
+  "exit_code": 0,
+  "duration_ms": 24,
+  "inputs": "{\"argv\":[\"task\",\"create\",\"--objective=regenerate coding standard artifact from real source\",\"--spec=UAP-04-001\",\"--agent=uap-development-agent\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task created: UAP-TASK-20261112151422-e03bbc2d",
+  "content_hash": "ed91638d10cfb0139655e15a5eb012bf6a6aa76a17d7a2a7d06ee50635c80c0a"
+}
