@@ -103,7 +103,7 @@ describe('sidebar active state', () => {
     // design-system-2.0 §17（2026-11-03 复裁定）给定的两个值；改任一值都要
     // 重算对比度（浅色 5.11:1 / 深色 4.97:1）。
     expect(theme).toContain(
-      '--sidebar-active-foreground: var(--aes-brand-soft-foreground)'
+      '--sidebar-active-foreground: var(--uter-brand-soft-foreground)'
     )
     expect(brandTokens.themes.light.brand.softForeground.$value).toBe('#5558D8')
     expect(brandTokens.themes.dark.brand.softForeground.$value).toBe('#B1B3FF')
@@ -117,7 +117,7 @@ describe('sidebar active state', () => {
     // 专用 Token 解决的是「浅底上的文本对比度」，不是改品牌主色。
     // 若有人为了达线直接调 --primary，这条会失败 —— 那是品牌决策，要走评审。
     // 2026-11-03 终裁「柔和渐进式 Hover」：浅 #5B5EE6 / 深 #8B8DF5。
-    expect(theme).toContain('--primary: var(--aes-brand-primary)')
+    expect(theme).toContain('--primary: var(--uter-brand-primary)')
     expect(brandTokens.themes.light.brand.primary.$value).toBe('#5B5EE6')
     expect(brandTokens.themes.dark.brand.primary.$value).toBe('#A1A3F7')
   })

@@ -1,13 +1,12 @@
 name: Nightly full audit (quality, tests, security, coverage)
 
-# Nightly 全量审计 —— 实施规范 §8.5 Mode D
-# （uaes/standards/engineering-quality/README.md「Nightly Audit」）。
+# Nightly 全量审计（quality, tests, security, coverage）
 #
 # 调度：cron '0 19 * * *' = 每天 UTC 19:00 = 北京时间每天 03:00（UTC+8）。
 # 支持在 Actions 页手动 workflow_dispatch（可指定分支）。
 #
 # 职责（规范 Mode D）：全仓库审查、自动测试、依赖漏洞检查、安全扫描、
-# 覆盖率检查。按 §8.1 整合原则复用既有工作流：核心门禁直接
+# 覆盖率检查。复用既有工作流：核心门禁直接
 # workflow_call release-gate.yml（与 CI / 发布流程同一把尺子），在其
 # 之上补充 CI 尚未覆盖的两项 —— 关键路径覆盖率阈值与密钥扫描。
 #

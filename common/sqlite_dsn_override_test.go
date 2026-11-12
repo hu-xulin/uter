@@ -8,7 +8,7 @@ import (
 // The default DSN and any SQLITE_PATH override must both retain the two
 // parameters that make concurrent payment/balance writes correct:
 // `_txlock=immediate` (BEGIN IMMEDIATE) and `_pragma=busy_timeout(...)`.
-// See common/database.go and uaes/standards/DATABASE-STANDARD.md §15.5.
+// See common/database.go.
 func TestEnsureSQLiteConcurrencyPragmas(t *testing.T) {
 	cases := []struct {
 		name         string

@@ -113,7 +113,7 @@ describe('brand-subtle foreground', () => {
     // design-system-2.0 §11.2（2026-11-03 复裁定）：浅 #5959CC（on #F3F3FD = 5.11:1）/
     // 深 #8B8DF5（on #25264A = 4.97:1）。
     expect(THEME).toContain(
-      '--primary-subtle-foreground: var(--aes-brand-soft-foreground)'
+      '--primary-subtle-foreground: var(--uter-brand-soft-foreground)'
     )
     expect(BRAND_TOKENS.themes.light.brand.softForeground.$value).toBe(
       '#5558D8'

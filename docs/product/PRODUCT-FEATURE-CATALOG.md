@@ -157,7 +157,7 @@
 - model/*.go
 - *_test.go / *.test.ts / web/e2e
 
-治理基线：AGENTS.md / web/AGENTS.md / .ai/AIES.md / .aes/AI-GOVERNANCE-ENTRY.md / uaes/standards/
+治理基线：AGENTS.md / web/AGENTS.md
 
 设计基线：`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（UTER Design System 3.0；不使用已废弃的 2.1）
 

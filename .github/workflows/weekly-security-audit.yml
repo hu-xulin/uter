@@ -1,17 +1,15 @@
 name: Weekly security audit
 
-# 每周安全审计 —— 实施规范 §8.6 Mode E
-# （uaes/standards/engineering-quality/README.md「Weekly Security Audit」）。
+# 每周安全审计
 #
 # 调度：cron '0 19 * * 1' = 每周一 UTC 19:00 = 北京时间周二 03:00（UTC+8）。
 # 支持在 Actions 页手动 workflow_dispatch（可指定分支）。
 #
-# 职责（规范 Mode E）：深度依赖漏洞扫描、密钥风险、GitHub Actions
-# 权限审查、安全风险汇总。规范中的「支付及计费专项审查」「权限和
-# 认证代码审查」属于人工/AI 审查条款（见 uaes/standards/CONFLICT-REPORT.md
-# 附录 A-1），不伪造自动化，由审查人按周执行并对照本报告。
+# 职责：深度依赖漏洞扫描、密钥风险、GitHub Actions 权限审查、安全风险汇总。
+# 支付及计费专项审查、权限和认证代码审查属于人工/AI 审查条款，不伪造自动化，
+# 由审查人按周执行并对照本报告。
 #
-# 记录（§8.6）：各 job 结果与扫描原文写入 Job Summary 留档；发现
+# 记录：各 job 结果与扫描原文写入 Job Summary 留档；发现
 # 可达漏洞或密钥命中或权限风险 → 自动创建/更新 quality-alert issue。
 
 on:

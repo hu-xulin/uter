@@ -25,7 +25,7 @@ const SOURCE = resolve(WEB_ROOT, 'src/design-system/source/brand.tokens.json')
 const OUTPUT = resolve(WEB_ROOT, 'src/design-system/tokens/generated/brand.css')
 const CHECK_ONLY = process.argv.includes('--check')
 const source = JSON.parse(readFileSync(SOURCE, 'utf8'))
-const metadata = source.$extensions?.['com.uter.aes']
+const metadata = source.$extensions?.['com.uter.tokens']
 if (
   metadata?.id !== 'UTER-BRAND-TOKEN-SOURCE' ||
   !/^\d+\.\d+\.\d+$/.test(metadata.version ?? '')
@@ -82,7 +82,7 @@ const render = (theme) =>
   keys
     .map(
       (key) =>
-        '  --aes-brand-' +
+        '  --uter-brand-' +
         names[key] +
         ': ' +
         source.themes[theme].brand[key].$value +
@@ -110,12 +110,12 @@ const output = [
   '*/',
   '',
   '/*',
-  ' * GENERATED FILE — DO NOT EDIT. UAES-05-002 §7 / UAES-05-011-006.',
+  ' * GENERATED FILE — DO NOT EDIT.',
   ' * Source: src/design-system/source/brand.tokens.json',
   ' * Source version: ' + metadata.version + ' (' + metadata.status + ')',
   ' * Generator: scripts/generate-design-tokens.mjs',
   ' * Generator version: 1.1.0',
-  ' * Spec: UAES-05-002 §6, UAES-05-011-006, UAES-05-GATE-001 DQ-024',
+  ' * Spec: docs/design-system/UTER-DESIGN-SYSTEM-3.0.md',
   ' */',
   ':root {',
   render('light'),

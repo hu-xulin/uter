@@ -16,7 +16,7 @@ const colorsPath = join(SRC, 'design-system/tokens/colors.css')
 const typographyPath = join(SRC, 'design-system/foundations/typography.css')
 const source = JSON.parse(readFileSync(tokenSourcePath, 'utf8'))
 const schema = JSON.parse(readFileSync(tokenSchemaPath, 'utf8'))
-const metadata = source.$extensions?.['com.uter.aes']
+const metadata = source.$extensions?.['com.uter.tokens']
 const machine = metadata?.machineAuthorization
 const themes = source.themes
 const values = (theme) =>
@@ -58,12 +58,12 @@ const walk = (dir, out = []) => {
 const extensionKeys = Object.keys(source.$extensions || {})
 add(
   'TOKEN_NAMESPACE',
-  extensionKeys.length === 1 && extensionKeys[0] === 'com.uter.aes',
+  extensionKeys.length === 1 && extensionKeys[0] === 'com.uter.tokens',
   `extensions=${extensionKeys.join(',') || 'MISSING'}`
 )
 add(
   'TOKEN_MACHINE_AUTHORIZATION',
-  machine?.policy === 'AES-AUTONOMOUS-GOVERNANCE-POLICY' &&
+  machine?.policy === 'UTER-DESIGN-SYSTEM-GOVERNANCE' &&
     machine?.mode === 'AUTONOMOUS_MACHINE_EVIDENCE' &&
     ['AUTO_ACCEPTED', 'AUTO_REJECTED', 'AUTO_BLOCKED'].includes(
       machine?.decision
@@ -76,7 +76,7 @@ add(
 )
 add(
   'TOKEN_SCHEMA_MACHINE_AUTHORIZATION',
-  schema.properties?.$extensions?.required?.includes('com.uter.aes') === true &&
+  schema.properties?.$extensions?.required?.includes('com.uter.tokens') === true &&
     schema.$defs?.metadata?.required?.includes('machineAuthorization') ===
       true &&
     schema.$defs?.metadata?.properties?.changeApproval === undefined &&

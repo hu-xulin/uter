@@ -4,13 +4,18 @@
   "title": "UTER Brand Tokens (DTCG-compatible)",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$extensions", "themes"],
+  "required": [
+    "$extensions",
+    "themes"
+  ],
   "properties": {
     "$extensions": {
       "type": "object",
-      "required": ["com.uter.aes"],
+      "required": [
+        "com.uter.tokens"
+      ],
       "properties": {
-        "com.uter.aes": {
+        "com.uter.tokens": {
           "$ref": "#/$defs/metadata"
         }
       },
@@ -18,7 +23,10 @@
     },
     "themes": {
       "type": "object",
-      "required": ["light", "dark"],
+      "required": [
+        "light",
+        "dark"
+      ],
       "properties": {
         "light": {
           "$ref": "#/$defs/theme"
@@ -55,7 +63,11 @@
           "const": "UTER Design System 3.0"
         },
         "status": {
-          "enum": ["DRAFT", "ACTIVE", "DEPRECATED"]
+          "enum": [
+            "DRAFT",
+            "ACTIVE",
+            "DEPRECATED"
+          ]
         },
         "sourceCommit": {
           "type": "string",
@@ -74,15 +86,6 @@
         "notes": {
           "type": "string"
         },
-        "registryPointer": {
-          "type": "string"
-        },
-        "governingStandard": {
-          "type": "string"
-        },
-        "governingColorStandard": {
-          "type": "string"
-        },
         "governingSchema": {
           "type": "string"
         },
@@ -94,7 +97,9 @@
     },
     "theme": {
       "type": "object",
-      "required": ["brand"],
+      "required": [
+        "brand"
+      ],
       "properties": {
         "brand": {
           "$ref": "#/$defs/colorGroup"
@@ -148,7 +153,10 @@
     },
     "colorToken": {
       "type": "object",
-      "required": ["$value", "$description"],
+      "required": [
+        "$value",
+        "$description"
+      ],
       "properties": {
         "$value": {
           "$ref": "#/$defs/hex"
@@ -176,13 +184,17 @@
       ],
       "properties": {
         "policy": {
-          "const": "AES-AUTONOMOUS-GOVERNANCE-POLICY"
+          "const": "UTER-DESIGN-SYSTEM-GOVERNANCE"
         },
         "mode": {
           "const": "AUTONOMOUS_MACHINE_EVIDENCE"
         },
         "decision": {
-          "enum": ["AUTO_ACCEPTED", "AUTO_REJECTED", "AUTO_BLOCKED"]
+          "enum": [
+            "AUTO_ACCEPTED",
+            "AUTO_REJECTED",
+            "AUTO_BLOCKED"
+          ]
         },
         "evidence": {
           "type": "array",

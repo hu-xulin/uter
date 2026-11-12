@@ -1,6 +1,6 @@
 {
   "$extensions": {
-    "com.uter.aes": {
+    "com.uter.tokens": {
       "id": "UTER-BRAND-TOKEN-SOURCE",
       "version": "1.0.0",
       "designSystem": "UTER Design System 3.0",
@@ -23,20 +23,15 @@
         "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
       },
       "notes": "Light primary is user-confirmed. Remaining values are carried forward from the UTER Design System 3.0 source and are subject to automated contrast, responsive visual-layout, keyboard-focus and WCAG 2.2 verification. No human approval or third-party sign-off is required; DRAFT remains until machine evidence passes.",
-      "registryPointer": ".aes/uter-governance-registry.yaml",
-      "governingStandard": "AES-05-002",
-      "governingColorStandard": "AES-05-003",
       "governingSchema": "web/src/design-system/source/brand.tokens.schema.json",
       "changeApproval": "NOT_VERIFIED",
-      "approvalNote": "UAES-05-001-009: high-impact brand colour changes require human approval. No Exception ID, approver or approval date has been supplied.",
       "machineAuthorization": {
-        "policy": "AES-AUTONOMOUS-GOVERNANCE-POLICY",
+        "policy": "UTER-DESIGN-SYSTEM-GOVERNANCE",
         "mode": "AUTONOMOUS_MACHINE_EVIDENCE",
         "decision": "AUTO_BLOCKED",
         "evidence": [
           "web/scripts/verify-contrast.mjs",
-          "web/scripts/visual-regression.mjs",
-          "scripts/quality/ai-specs-check.sh"
+          "web/scripts/visual-regression.mjs"
         ],
         "human_signature_dependency": "NONE",
         "third_party_signature_dependency": "NONE",

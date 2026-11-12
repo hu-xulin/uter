@@ -25,9 +25,10 @@ fail() { echo "FAIL: $*" >&2; exit 1; }
 command -v gitleaks >/dev/null 2>&1 || fail "gitleaks not installed"
 [ -f "$CONFIG" ] || fail "missing $CONFIG"
 
-# Guard: the exact-regex allowlist must stay at the three reviewed patterns.
+# Guard: the exact-regex allowlist must stay at the five reviewed patterns
+# (3 from 2026-11-08 review + 2 from 2026-11-12 review, see gitleaks.toml).
 REGEX_COUNT="$(awk '/^regexes = \[/{in_regex=1; next} in_regex && /^\]/{exit} in_regex && /^  '\'\'\''/{n++} END{print n+0}' "$CONFIG")"
-[ "$REGEX_COUNT" = "3" ] || fail "allowlist regex count changed ($REGEX_COUNT, expected 3); review and update this test"
+[ "$REGEX_COUNT" = "5" ] || fail "allowlist regex count changed ($REGEX_COUNT, expected 5); review and update this test"
 
 CORPUS="$WORK/corpus.md"
 cat > "$CORPUS" <<'EOF'
@@ -39,6 +40,12 @@ Security scope prose:
 
 Historical finding quote:
   "match": "OpenAPI commit: `4aa9c0849049a640aaa27fae11870adc92367b62`"
+
+Test-log SQL evidence (token digest, not the token):
+  SELECT * FROM `user_access_tokens` WHERE token_hash = "611eea4fc299dd89f27f385f2a5d8031a400ec0df7a9a2cc2e0acd6fa980f800" ORDER BY id;
+
+Compliance evidence boolean assertion:
+  "checked": "private_material_absent=true and sealed=true"
 EOF
 
 POSITIVE="$WORK/positive.json"

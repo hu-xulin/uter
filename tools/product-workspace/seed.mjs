@@ -20,7 +20,7 @@ export const SCAN_META = {
   backend: 'Go 1.27.3 + Gin + GORM (router/, controller/, service/, model/, relay/)',
   design_system: 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md',
   governance:
-    'AGENTS.md / web/AGENTS.md / .ai/AIES.md / .aes/AI-GOVERNANCE-ENTRY.md / uaes/standards/',
+    'AGENTS.md / web/AGENTS.md',
   evidence_sources: [
     'web/src/routes/**/*.tsx (71 route files)',
     'web/src/features/** (36 feature modules)',

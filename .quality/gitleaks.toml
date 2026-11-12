@@ -7,27 +7,43 @@ useDefault = true
 
 # 2026-11-08 人工复核补充（核验人：WorkBuddy，逐行核对 6 条 generic-api-key 命中，均为误报）：
 #   (a) ED25519 key SHA256:<43 chars> 是「公钥指纹」，出现在 AES 规范签名验证结果中，
-#       可追溯至 aes/.aes/spec-registry/SPECIFICATION-REGISTRY.yaml:151，不是私钥或凭据。
-#       命中文件：.aes/reports/aes-integration-status.json:43、
-#       reports/.../governance-refresh-verification.log:63、reports/.../re-audit.log:262。
-#   (b) application/API security 是 D15 安全评估与报告生成器里的散文措辞，
-#       被 generic-api-key 误当作 key=value 赋值。命中文件：D15-SECURITY-ASSESSMENT.md:22、
-#       scripts/quality/aes-governance-reports.py:491。
+#       不是私钥或凭据（原命中文件已随 AES 治理体系于 2026-11-12 退休删除）。
+#   (b) application/API security 是历史安全评估报告里的散文措辞，
+#       被 generic-api-key 误当作 key=value 赋值（原命中文件已于 2026-11-12 删除）。
 #   (c) OpenAPI commit: `<40hex>` 是 MA-06 历史证据文件内引用的 Git commit SHA（证据自引用），
 #       命中文件：evidence/manual-acceptance/MA-06-finding.json:14。
 # 采用「行级精确正则」而非「整文件放行」，并用 scripts/quality/gitleaks-allowlist.test.sh
 # 做负向探针：同一个文件里注入真实形态密钥仍必须被检出。
+#
+# 2026-11-12 人工复核补充（核验人：WorkBuddy，对 2026-11-12 HEAD 全量 89 条命中逐条
+# 核对 distinct secret 值（仅 4 个），均为误报，无任何真实凭据）：
+#   (d) curl-auth-header 87 条全部命中 web/src/docs-content/** 的 API 文档示例，
+#       secret 值仅为占位符 sk-your-api-key / YOUR_API_KEY。旧豁免路径
+#       ^docs-web/content/ 因文档树迁移至 web/src/docs-content/ 而失效（路径型豁免
+#       需随文档树位置维护）。本条与旧条目同理由、同风险边界：文档示例目录内
+#       不承载真实凭据，且 docs CI 检查（web-docs-content）持续约束其内容来源。
+#   (e) generic-api-key 曾命中 .aes/reports/p13-evidence/...（已随 AES 退休删除）的
+#       `token_hash = "<64hex>"`——测试日志里 SQL 引用 token 的 SHA-256 哈希值，
+#       哈希不可逆，不含凭据本体；采用行级正则（仅匹配 token_hash 赋值行）而非
+#       整文件放行。豁免保留为防御性配置，防止同类哈希断言再次误报。
+#   (f) `private_material_absent=true` 是合规证据 JSON 的布尔断言键值（原命中文件
+#       reports/compliance/** 已于 2026-11-12 删除），与 (b) 同类（断言措辞被当
+#       key=value），行级精确豁免，保留为防御性配置。
 [allowlist]
-description = "误报豁免：文档示例 / 测试夹具 / 密钥处理代码 / 已核验误报文本（2026-10-31 全量核验 + 2026-11-08 6 条复核）"
+description = "误报豁免：文档示例 / 测试夹具 / 密钥处理代码 / 已核验误报文本（2026-10-31 全量核验 + 2026-11-08 6 条复核 + 2026-11-12 89 条复核）"
 regexTarget = "line"
 regexes = [
   '''ED25519 key SHA256:[A-Za-z0-9+/=]{43}''',
   '''application/API security''',
   '''OpenAPI commit: `[0-9a-f]{40}`''',
+  '''token_hash = "[0-9a-f]{64}"''',
+  '''private_material_absent=true''',
 ]
 paths = [
   # API 文档中的 curl 调用示例（占位 token，如 sk-xxxx / YOUR_API_KEY）
   '''^docs-web/content/''',
+  # 2026-11-12：文档树迁移后的当前位置（旧条目 ^docs-web/content/ 保留以覆盖历史分支）
+  '''^web/src/docs-content/''',
   # Go 与前端测试夹具（构造的假 token / 假 PEM）
   '''_test\.go$''',
   '''(^|/)__tests__/''',

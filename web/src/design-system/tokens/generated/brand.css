@@ -18,31 +18,31 @@ For commercial licensing, please contact support@uter.ai
 */
 
 /*
- * GENERATED FILE — DO NOT EDIT. UAES-05-002 §7 / UAES-05-011-006.
+ * GENERATED FILE — DO NOT EDIT.
  * Source: src/design-system/source/brand.tokens.json
  * Source version: 1.0.0 (DRAFT)
  * Generator: scripts/generate-design-tokens.mjs
  * Generator version: 1.1.0
- * Spec: UAES-05-002 §6, UAES-05-011-006, UAES-05-GATE-001 DQ-024
+ * Spec: docs/design-system/UTER-DESIGN-SYSTEM-3.0.md
  */
 :root {
-  --aes-brand-primary: #5B5EE6;
-  --aes-brand-primary-foreground: #FFFFFF;
-  --aes-brand-hover: #4F52D1;
-  --aes-brand-active: #4A4DC5;
-  --aes-brand-soft: #F0F0FF;
-  --aes-brand-soft-foreground: #5558D8;
-  --aes-brand-border: #D9DAFF;
-  --aes-brand-subtle-surface: #FAFBFC;
+  --uter-brand-primary: #5B5EE6;
+  --uter-brand-primary-foreground: #FFFFFF;
+  --uter-brand-hover: #4F52D1;
+  --uter-brand-active: #4A4DC5;
+  --uter-brand-soft: #F0F0FF;
+  --uter-brand-soft-foreground: #5558D8;
+  --uter-brand-border: #D9DAFF;
+  --uter-brand-subtle-surface: #FAFBFC;
 }
 
 .dark {
-  --aes-brand-primary: #A1A3F7;
-  --aes-brand-primary-foreground: #020617;
-  --aes-brand-hover: #B1B3FF;
-  --aes-brand-active: #9294F7;
-  --aes-brand-soft: #25264A;
-  --aes-brand-soft-foreground: #B1B3FF;
-  --aes-brand-border: #45466F;
-  --aes-brand-subtle-surface: #0F172A;
+  --uter-brand-primary: #A1A3F7;
+  --uter-brand-primary-foreground: #020617;
+  --uter-brand-hover: #B1B3FF;
+  --uter-brand-active: #9294F7;
+  --uter-brand-soft: #25264A;
+  --uter-brand-soft-foreground: #B1B3FF;
+  --uter-brand-border: #45466F;
+  --uter-brand-subtle-surface: #0F172A;
 }

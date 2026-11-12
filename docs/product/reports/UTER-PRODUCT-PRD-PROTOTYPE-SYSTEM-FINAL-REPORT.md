@@ -33,10 +33,10 @@ cp docs/product/history/v1.json             /tmp/uter-history-v1.backup.json
 | 规范 | 路径 / 版本 | 状态 |
 | --- | --- | --- |
 | 项目入口 | `AGENTS.md`、`CLAUDE.md` | 已加载 |
-| 执行方法论 | `.ai/README.md`、`.ai/AIES.md`（L0–L4、阶段 0–11 SOP） | 已加载 |
+| 执行方法论 | `.ai/README.md`、`.ai/AIES.md`（L0–L4、阶段 0–11 SOP） | 已于 2026-11-12 退休删除 |
 | 设计系统 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | **唯一有效基线**；主色 `#5B5EE6`、PC 正文 14px、最小 12px、圆角 10px、语义 Token 优先 |
-| 治理 | `.aes/aes-pin.json` · `registry_version 1.12.2` · `specification_version 2.0.0` · `ACTIVE` | 当前有效 |
-| 域规范 | `uaes/standards/`、`web/AGENTS.md` | 已加载 |
+| 治理 | AES 治理体系（`.aes/`、`uaes/standards/`） | 已于 2026-11-12 退休删除，待新规范 |
+| 域规范 | `AGENTS.md`、`web/AGENTS.md` | 当前有效 |
 | 废弃基线 | `UTER Design System 2.1`、UAES 当前治理实体 | **未作为基线使用**（UAES 仅作历史/删除状态识别） |
 
 ### 1.3 扫描范围

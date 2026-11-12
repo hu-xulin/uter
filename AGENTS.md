@@ -55,42 +55,21 @@ right scope every time:
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
 | Design system / typography / color | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (single authoritative file, 2026-11-03 起唯一标准) |
-| Execution methodology | `.ai/UTER-EXECUTION-METHOD.md` + `.ai/README.md` |
-| Domain standards (architecture / API contract / database / payment / billing / security / UX / change / documentation) | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准，含「代码事实锚点」章节） |
-| Engineering quality standards (code review / testing / auto-fix / quality gate) | `docs/ai-specs/engineering-quality/` |
+| Domain standards (architecture / API contract / database / payment / billing / security / UX / change / documentation) | （待新规范体系 — pending replacement standards; none in force until re-published） |
+| Engineering quality standards (code review / testing / auto-fix / quality gate) | （待新规范体系 — pending replacement standards） |
 
 Re-read them when you **start a new session**, **switch to a different task**,
 or **descend into a subdirectory that has its own `AGENTS.md`**. Never rely on
 recollection of rules from a previous session — context is rebuilt fresh each
 time, and remembered rules are exactly how regressions get reintroduced.
 
-**Task-based spec routing (mandatory).** In addition to the scope table above,
-load the specs matched to the task type before writing any code. Multiple rows
-apply when a task spans types (e.g. a payment feature also routes as "All code
-changes"). Spec standards live under `docs/ai-specs/`:
-
-| 开发任务 / Task type | 必须加载的规范 / Required specs |
-|---|---|
-| 所有开发任务 / All development tasks | AI Execution: `docs/ai-specs/AI-EXECUTION-STANDARD.md` + Development: `docs/ai-specs/DEVELOPMENT-STANDARD.md` |
-| 新功能 / New features | Product Requirements: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
-| UI 开发 / UI development | Design System: `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` + UX Interaction: `docs/ai-specs/UX-INTERACTION-STANDARD.md` |
-| API 开发 / API development | API Contract: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Security: `docs/ai-specs/SECURITY-STANDARD.md` |
-| 数据库开发 / Database work | Database: `docs/ai-specs/DATABASE-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
-| 支付开发 / Payment work | Product: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + API: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Database: `docs/ai-specs/DATABASE-STANDARD.md` + Security: `docs/ai-specs/SECURITY-STANDARD.md` |
-| Token 计费 / Token billing | Product: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + Database: `docs/ai-specs/DATABASE-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
-| 代码审查 / Code review | Code Review: `docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md` + Quality Gate: `docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md` |
-| 自动化测试 / Test authoring | Automated Test: `docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md` + Quality Gate: `docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md` |
-| 自动修复 / Auto-fix | Auto Fix: `docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md` + Code Review: `docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md` + Automated Test: `docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md` + Quality Gate: `docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md` |
-| 所有代码变更 / All code changes | Change Management: `docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md` + Engineering Quality: `docs/ai-specs/engineering-quality/` |
-| 认证开发 / Auth development | Security: `docs/ai-specs/SECURITY-STANDARD.md` + API Contract: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md`（另须遵守本文件 Authentication Security / OWASP 节） |
-| 代码重构 / Refactoring | Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` + Development: `docs/ai-specs/DEVELOPMENT-STANDARD.md` + Change Management: `docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md` |
-| 文档更新 / Docs updates | Documentation: `docs/ai-specs/DOCUMENTATION-STANDARD.md` + 对应业务规范 |
-
-支付/计费/认证任务在本文件「Billing safety invariants」「Authentication Security
-(OWASP Mandatory)」「Database compatibility」各节与本表规范**同时**适用；业务规则
-确认（金额、状态机、幂等键）以 `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md`
-§4–§6 为准。已知规范间冲突的裁定记录在 `docs/ai-specs/CONFLICT-REPORT.md`，
-修改任何规范前先读它。
+**Task-based spec routing (mandatory).** The previous domain-standard corpus
+(`docs/ai-specs/`, `uaes/standards/`) has been retired on 2026-11-12 pending
+replacement by a new standard system. Until the new corpus is published, the
+binding sources are this file, `web/AGENTS.md`, and
+`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`. Payment/billing/auth work must
+still follow the "Billing safety invariants", "Authentication Security (OWASP
+Mandatory)" and "Database compatibility" sections of this file.
 
 ### 2. Automated Quality Gates
 
@@ -126,93 +105,12 @@ so and label the result unverified.
   never fold pre-existing modifications into your own commit.
 - **Stage explicitly**: `git add <path>` only. `git add -A` / `-u` is forbidden.
   Review with `git diff --cached --name-status` before committing.
-- **Governing specification**: `docs/ai-specs/UTER-AES-GOVERNANCE-ARCHITECTURE-WORKBUDDY-EXECUTION-SPECIFICATION.md` (`UTER-AES-GOV-001`) is the Uter project execution layer. AES universal P00–P12 is owned by the separate `aes` repository; Uter owns only its project layer and UTER P13. Read `.aes/uter-governance-registry.yaml` and `.aes/INTEGRATION.md` before changing governance files.
-- **Repository separation**: UTER P13 and Uter business rules MUST stay in this repository. Never write them into AES `standards/`, `.aes/registry/` or the AES Registry; never copy AES generic standard text into a competing local standard. Enforced by `scripts/quality/aes-integration-check.mjs` and the Uter internal gate.
 - **P09 / P10 separation**: P09 Quality Engineering *proves* whether engineering quality meets requirements (test strategy, execution, defect closure, metrics, quality gates); P10 Security & Reliability *defines* the security and reliability requirements the system must meet. Security testing is required by P10 and executed/recorded by the P09 test system. Neither substitutes for the other. Enforced by `scripts/quality/uter-p09-p10-boundary-check.rb`.
-- **Authorized delivery workflow**: governance migration work is performed on `main` as explicitly directed; do not create branches or PRs for this task. Remote writes to GitHub `main` require explicit user authorization (granted for the current migration). Never force-push, merge, deploy, write production data, or change real payment configuration.
-- **Baseline preservation**: pre-existing uncommitted changes must be preserved and staged only by explicit path (`git add <path>`); never `git add -A`, never `git reset --hard` / `git clean` / `git restore` on user files.
-- **No unauthorized git actions**: any action outside that explicit scope remains denied; never infer additional permissions from task completion.
 - **No destructive shell operations**: never `rm -rf`, never `git clean -fd`.
   Remove files via the OS trash/recycle mechanism, in batches of at most 10,
   verifying after each batch.
 - **Never stage secrets or local state**: `.env`, `*.db` / `-shm` / `-wal`,
   `logs/`, build artifacts must not enter commits, code, or documentation.
-
-## AI Spec System (`docs/ai-specs/`)
-
-**Project identity:** Uter — an AI API gateway aggregating 40+ upstream providers
-with user management, billing, and an admin console, operated by Uter.ai. The
-authoritative AI development specs live in `docs/ai-specs/`; they domain-expand
-the four disciplines above (this file stays the constitution). On conflict,
-resolve by precedence, never by convenience:
-
-1. `AGENTS.md` (this file) and `web/AGENTS.md` (frontend scope)
-2. `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (UI design values and rules)
-3. `docs/ai-specs/*` (domain standards; `engineering-quality/` = quality process)
-4. `.ai/UTER-EXECUTION-METHOD.md` (execution methodology)
-
-### Spec index
-
-All paths relative to `docs/ai-specs/` unless noted:
-
-| Spec | File | Governs |
-|---|---|---|
-| AI 执行 | `AI-EXECUTION-STANDARD.md` | Agent 行为、决策边界、停止条件、执行真实性 |
-| 产品需求 | `PRODUCT-REQUIREMENTS-STANDARD.md` | 需求定义、业务规则、状态机、验收标准 |
-| 架构 | `ARCHITECTURE-STANDARD.md` | 模块边界、依赖方向、Relay 架构、ADR |
-| 开发 | `DEVELOPMENT-STANDARD.md` | Go/TS/React 编码、错误处理、日志、依赖 |
-| API 契约 | `API-CONTRACT-STANDARD.md` | 请求/响应/错误结构、幂等、兼容性 |
-| 数据库 | `DATABASE-STANDARD.md` | Schema、事务、余额/订单/Token 计费专项 |
-| 安全 | `SECURITY-STANDARD.md` | 认证、权限、输入验证、支付、Relay 安全 |
-| UX 交互 | `UX-INTERACTION-STANDARD.md` | 交互状态、防重复、支付/Token 展示、无障碍 |
-| 文档 | `DOCUMENTATION-STANDARD.md` | 文档同步、ADR、准确性 |
-| 变更管理 | `CHANGE-MANAGEMENT-STANDARD.md` | 本地 main、机器门禁、证据、远程操作禁止项 |
-| 工程质量组 | `engineering-quality/`（README + CODE-REVIEW / AUTOMATED-TEST / AUTO-FIX / QUALITY-GATE） | UEQE 五引擎与统一质量门禁 |
-
-Known cross-spec conflicts and their resolutions are recorded in
-`docs/ai-specs/CONFLICT-REPORT.md`; read it before amending any spec.
-
-### Task routing
-
-完整任务类型 → 必读规范映射见本文件「AI Agent Operating Discipline」§1
-Rule Auto-Loading 的 **Task-based spec routing** 表（单一事实源，两处不得
-各自维护），按任务类型先读齐对应规范再动手。`engineering-quality` 指
-`docs/ai-specs/engineering-quality/` 全组。
-
-### Automated enforcement and review checklists
-
-可自动化项已接入真实执行流程（不要只建脚本不调用）：
-
-| 规范域 | 自动化检查 | 调用入口 |
-|---|---|---|
-| Development | gofmt / go vet / golangci-lint + tsgo / eslint | `uter-quality.sh review`、`verify-all.sh`、CI |
-| Testing | Go test ×4 模块（root / relaykit / tokenkit / tokenkit/tokenkit）+ vitest + spec-guards | `uter-quality.sh test` |
-| Security | govulncheck + gitleaks + 敏感文件抽查 | `uter-quality.sh security` |
-| UX / Design | 设计令牌门禁 T1–T16 + design-system 守卫测试 | `bun run lint:design:strict` |
-| Coverage | 按包阈值（与 CI 同口径） | `uter-quality.sh coverage` |
-| Spec integrity | 15 份规范在库 + AGENTS.md 路由引用有效 | `uter-quality.sh review`（review.ai-specs 子项） |
-| Change Mgmt（部分） | pre-commit 身份/暂存区/令牌门禁 | git hooks |
-
-所有规范符合性检查必须由可执行机器验证器完成，包括 API 契约、数据库迁移矩阵、支付/计费异常场景、UX 状态覆盖、ADR 需求映射和文档一致性。历史 `CONFLICT-REPORT.md` 不再是执行清单。缺少验证器或证据时自动标记 BLOCKED/NOT_VERIFIED，并通过代码与 CI 自动补齐；不得转为人工待办或第三方审核。
-
-### Branch strategy
-
-**强制本地 main-only 策略（唯一工作分支为 main）：**
-
-- 所有审计、规范修订、缺陷修复、测试、文档更新和质量门禁整改只允许在本地现有 `main` 工作树执行。
-- 开始写操作前检查当前分支、HEAD、工作区状态和完整 diff；当前分支不是 `main` 时自动停止写操作，不得擅自切换。
-- 禁止创建、切换、复用或删除执行分支；禁止创建 linked worktree 和 Pull Request。
-- 默认禁止 Push、Merge、Rebase、Force Push、Deploy 和任何远程写接口；本地 Commit 仅在 AES 机器策略和独立复验全部 PASS 后允许。
-- 不覆盖用户未提交修改；禁止 `git reset --hard`、`git clean -fd` 或其他破坏性清理。
-- 远程 main 与本地基线发生漂移时保留本地状态并自动 BLOCKED；不得自动覆盖或推送远端。
-- 不因仓库存在历史非 main 分支而自动删除、重写或请求人工裁定；这些分支不属于当前执行工作树。
-- **本次治理执行**：已明确授权直接修改 GitHub `main`；该一次性授权不授予后续 WorkBuddy 远程写入、Push、PR、Merge、部署、生产写、真实支付配置修改或覆盖未提交内容的权限。
-
-### Documentation sync
-
-代码变更后按 DOCUMENTATION-STANDARD §6 对照表检查是否需更新文档；`docs/`
-目录新增文件仍需用户显式要求（见本文件「Documentation files」节）。
-`docs/ai-specs/`（含其 `engineering-quality/` 子目录）的准入已由用户显式授权。
 
 ## Rules
 
@@ -442,82 +340,3 @@ compilation.
 
 **Pull Requests:** Disabled by the current local main-only governance policy. Agents MUST NOT create, update, review or merge Pull Requests. The repository templates remain historical reference material only and do not grant execution permission.
 
-
-## AES / UTER Governance Architecture
-
-AES is the sole enterprise governance source for universal P00–P12. Uter owns product implementation and the project-specific UTER-P13 extension. The repositories remain separate and AES requirements are inherited by reference, not copied into a competing Uter enterprise standard.
-
-Canonical Uter governance assets:
-- Machine pin: `.aes/aes-pin.json`
-- Integration contract: `.aes/INTEGRATION.md`
-- Project registry: `.aes/uter-governance-registry.yaml`
-- Project extension: `.aes/UTER-P13-BUSINESS-DOMAIN-ENGINEERING.md`
-- Historical migration evidence: `reports/compliance/uaes-full-migration-2026-11-06/` (immutable provenance; not an active approval queue)
-
-P00–P12 standards are loaded from the AES repository identified by the machine pin. Uter's `docs/ai-specs/` documents remain project-specific overlays where they contain product facts, API contracts, database rules, payment semantics, UX details or technology-specific constraints. They must map to AES requirements and must not duplicate or override universal AES requirements. Exact duplicates with no Uter-specific semantics are superseded by reference and may be removed only after the machine dependency scan proves no references remain.
-
-P09 Quality Engineering proves whether engineering quality meets requirements. P10 Security & Reliability defines security and reliability requirements. P09 executes and records the tests required by P10; neither domain may substitute for the other.
-
-All internal governance, specification review, acceptance, remediation closure and release-readiness decisions are automated. No human approval or third-party signature is an internal acceptance prerequisite. NOT_RUN, BLOCKED, UNKNOWN and NOT_VERIFIED are never PASS. External legal/regulatory obligations and real production/fund actions remain deny-by-default machine boundaries; no external certification or signature is fabricated.
-
-The AES machine governance engine, independent verifier and CI gates are the only accepted internal decision path. Every Agent must load the canonical governance block and the AI-Native execution block below before work.
- 
-- Before any local commit, release candidate or artifact publication, run `node scripts/quality/l4-global-conformance-gate.mjs` with `AES_ROOT` set to the canonical AES checkout. A missing P13 report or any non-PASS evidence blocks the action.
-
-# AES Autonomous Governance Bootstrap Block
-
-This block binds every Agent to the single machine governance engine. It grants no new permissions and cannot weaken existing permission constraints.
-
-## AES_AUTONOMOUS_GOVERNANCE / AI_NATIVE_GOVERNANCE — Canonical AES machine policy
-
-- marker: AUTONOMOUS_GOVERNANCE
-- canonical_marker: AES_AUTONOMOUS_GOVERNANCE
-- compatibility_marker: AI_NATIVE_GOVERNANCE
-- canonical_repository: https://github.com/hu-xulin/aes
-- governed_rule_identity_verifier: quality/scripts/aes/governed-fingerprint.mjs
-- canonical_engine_entrypoint: governance/ai-native/engine/cli.mjs
-- governance_mode: AUTONOMOUS_MACHINE_ONLY
-- governance_dependency: ZERO_HUMAN_DEPENDENCY
-- decision_engine: governance/ai-native/engine/cli.mjs
-- policy_engine: governance/ai-native/engine/policy-engine.mjs
-- acceptance_engine: governance/ai-native/engine/acceptance-engine.mjs
-- independent_verifier: governance/ai-native/engine/independent-review.mjs
-- evidence_engine: governance/ai-native/engine/evidence-engine.mjs
-- evidence_mode: AUTONOMOUS_MACHINE_EVIDENCE
-- default_decision: DENY_UNLESS_VERIFIED
-
-## Mandatory load order
-
-1. Resolve AES_ROOT from an explicit environment variable or the sibling `../aes` checkout; never silently treat a Uter-local copy as the canonical AES source.
-2. Load the canonical AES governance standard and registry from AES_ROOT.
-3. Load the Agent's repository entrypoint and project policy.
-4. Run `node governance/ai-native/engine/cli.mjs self-check` with AES_ROOT as the working directory.
-5. Recompute the governed rule identity using `node quality/scripts/aes/governed-fingerprint.mjs --json --require-intact`; reject missing, stale, or broken seals.
-6. Verify task identity, scope, permission envelope and repository baseline.
-7. Execute only declared actions and commands.
-8. Run all required acceptance rules.
-9. Invoke independent machine verification.
-10. Append evidence and recompute status.
-
-## Action boundaries
-
-- A0–A5: bounded internal engineering actions within declared permissions.
-- A6: out-of-scope operations; always AUTO_DENY.
-- Production database mutation, real-funds operation, production credential access, irreversible external side effects, permission escalation and policy self-modification are denied by machine policy.
-- A denied action produces an immutable decision record and BLOCKED result; no interactive approval task is created.
-
-## Evidence and decision rules
-
-- All decisions use real command execution, content hashes and append-only evidence.
-- The verifier reads source files independently and recomputes the result.
-- The executor cannot write or override its own success state.
-- NOT_RUN, UNKNOWN, SKIPPED, BLOCKED, FAILED and NOT_VERIFIED never count as PASS.
-- Internal release readiness is computed from current mandatory requirement evidence only.
-- Internal machine verification is not a human signature, legal authorization or third-party certification.
-
-## Protected invariants
-
-- `agent_can_modify_own_policy: false`
-- `max_delegatable_level: A2`
-- Uter `downstream-policy.json` hard constraints remain enforced.
-- No Agent may modify this block to expand its own authority.
