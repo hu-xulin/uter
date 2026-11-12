@@ -2,55 +2,55 @@ TAP version 13
 # Subtest: machine evidence executes three real AES verifiers with recorded exit codes
 ok 1 - machine evidence executes three real AES verifiers with recorded exit codes
   ---
-  duration_ms: 628.76027
+  duration_ms: 536.280589
   type: 'test'
   ...
 # Subtest: no signature, human signer or third-party dependency remains in the trust chain
 ok 2 - no signature, human signer or third-party dependency remains in the trust chain
   ---
-  duration_ms: 1205.5385
+  duration_ms: 1063.532085
   type: 'test'
   ...
 # Subtest: the pinned commit really carries all seven current governance artefacts
 ok 3 - the pinned commit really carries all seven current governance artefacts
   ---
-  duration_ms: 121.380892
+  duration_ms: 95.084367
   type: 'test'
   ...
 # Subtest: a missing AES verifier directory makes discovery fail closed
 ok 4 - a missing AES verifier directory makes discovery fail closed
   ---
-  duration_ms: 111.767441
+  duration_ms: 94.28791
   type: 'test'
   ...
 # Subtest: machine evidence fails closed when the AES verifiers are absent
 ok 5 - machine evidence fails closed when the AES verifiers are absent
   ---
-  duration_ms: 104.743682
+  duration_ms: 95.111633
   type: 'test'
   ...
 # Subtest: pin verification rejects null, missing and non-existent commits
 ok 6 - pin verification rejects null, missing and non-existent commits
   ---
-  duration_ms: 67.068466
+  duration_ms: 66.2917
   type: 'test'
   ...
 # Subtest: product conformance evidence is absent -> acceptance stays fail-closed
 ok 7 - product conformance evidence is absent -> acceptance stays fail-closed
   ---
-  duration_ms: 1.830448
+  duration_ms: 1.811852
   type: 'test'
   ...
 # Subtest: technical wiring alone never promotes integration status to INTEGRATED
 ok 8 - technical wiring alone never promotes integration status to INTEGRATED
   ---
-  duration_ms: 736.946404
+  duration_ms: 664.564283
   type: 'test'
   ...
 # Subtest: the adapter CLI real call chain emits a real discovery with machine evidence
 ok 9 - the adapter CLI real call chain emits a real discovery with machine evidence
   ---
-  duration_ms: 678.392447
+  duration_ms: 646.573866
   type: 'test'
   ...
 1..9
@@ -61,4 +61,4 @@ ok 9 - the adapter CLI real call chain emits a real discovery with machine evide
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 3790.984242
+# duration_ms 3406.919692

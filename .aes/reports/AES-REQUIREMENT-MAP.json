@@ -1,8 +1,8 @@
 {
   "report_id": "UTER-AES-REQUIREMENT-TRACEABILITY",
-  "generated_at": "2026-11-12T00:04:09.671Z",
-  "governance_head": "ab5d80408f10895b8210f0ce9bd5403d38392ecf",
-  "product_head": "cb214b36c0ee520057d396ece45ca0abf166dc02",
+  "generated_at": "2026-11-12T01:19:31.752Z",
+  "governance_head": "4268be466be147457c4dea3301b2516960780420",
+  "product_head": "6871a005f55551c139d6645d17ae305018cd3d03",
   "source": "AES .aes/registry/requirements.yaml (re-derived, TRACEABILITY.md not trusted)",
   "requirement_count": 2150,
   "records": [
