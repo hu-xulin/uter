@@ -3,7 +3,7 @@
 - **生成方式**：在 `audit/api-contract-drift` 分支新增 `router/route_dump_test.go`
   （env `UTER_DUMP_ROUTES=1` 时 dump `engine.Routes()`），得到**权威路由表 357 条**，
   与 `docs-dev/openapi/api.json`（136 路径）/ `relay.json`（38 路径）做机器比对。
-- **目的**：把"路由↔OpenAPI 实现漂移"这一 AES PR #15 未完门禁，从静态扫描的噪声
+- **目的**：把"路由↔OpenAPI 实现漂移"这一 PR #15 未完门禁，从静态扫描的噪声
   收敛为可复核的真值表；并为后续按路由表自动生成 OpenAPI 提供工具。
 - **状态**：本审计只报事实，不替 API 合同负责人做 A/B/C 业务决策。
 
