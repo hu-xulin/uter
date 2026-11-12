@@ -2,109 +2,109 @@ TAP version 13
 # Subtest: PC-01: a complete current matrix builds and re-verifies PASS
 ok 1 - PC-01: a complete current matrix builds and re-verifies PASS
   ---
-  duration_ms: 921.787232
+  duration_ms: 858.562081
   type: 'test'
   ...
 # Subtest: PC-02: generated markdown exists and carries the honest state counts
 ok 2 - PC-02: generated markdown exists and carries the honest state counts
   ---
-  duration_ms: 862.755779
+  duration_ms: 725.003763
   type: 'test'
   ...
 # Subtest: PC-03: an evidence-only commit does not invalidate the SHA-bound matrix
 ok 3 - PC-03: an evidence-only commit does not invalidate the SHA-bound matrix
   ---
-  duration_ms: 1232.136444
+  duration_ms: 979.393604
   type: 'test'
   ...
 # Subtest: NC-01: a missing mandatory field is rejected
 ok 4 - NC-01: a missing mandatory field is rejected
   ---
-  duration_ms: 0.399697
+  duration_ms: 0.409112
   type: 'test'
   ...
 # Subtest: NC-02: a forged per-requirement PASS without evidence is rejected
 ok 5 - NC-02: a forged per-requirement PASS without evidence is rejected
   ---
-  duration_ms: 0.372286
+  duration_ms: 0.35718
   type: 'test'
   ...
 # Subtest: NC-03: PASS with NOT_RUN execution is rejected
 ok 6 - NC-03: PASS with NOT_RUN execution is rejected
   ---
-  duration_ms: 0.203202
+  duration_ms: 0.194304
   type: 'test'
   ...
 # Subtest: NC-04: a state outside the 7-state model is rejected
 ok 7 - NC-04: a state outside the 7-state model is rejected
   ---
-  duration_ms: 0.270119
+  duration_ms: 0.252616
   type: 'test'
   ...
 # Subtest: NC-05: duplicate requirement IDs are rejected
 ok 8 - NC-05: duplicate requirement IDs are rejected
   ---
-  duration_ms: 819.66236
+  duration_ms: 726.698912
   type: 'test'
   ...
 # Subtest: NC-06: a truncated matrix (2149 records) is rejected
 ok 9 - NC-06: a truncated matrix (2149 records) is rejected
   ---
-  duration_ms: 909.911277
+  duration_ms: 746.267756
   type: 'test'
   ...
 # Subtest: NC-07: evidence bound to a foreign HEAD is rejected
 ok 10 - NC-07: evidence bound to a foreign HEAD is rejected
   ---
-  duration_ms: 824.544666
+  duration_ms: 692.526591
   type: 'test'
   ...
 # Subtest: NC-08: stale evidence (48h) is rejected
 ok 11 - NC-08: stale evidence (48h) is rejected
   ---
-  duration_ms: 853.017414
+  duration_ms: 682.968056
   type: 'test'
   ...
 # Subtest: NC-09: tampering with one byte of the matrix is detected
 ok 12 - NC-09: tampering with one byte of the matrix is detected
   ---
-  duration_ms: 914.73877
+  duration_ms: 866.403009
   type: 'test'
   ...
 # Subtest: NC-11: a moved AES revision that changed a governed input invalidates the binding
 ok 13 - NC-11: a moved AES revision that changed a governed input invalidates the binding
   ---
-  duration_ms: 1278.762604
+  duration_ms: 1041.832099
   type: 'test'
   ...
 # Subtest: NC-12: an AES checkout without the output-only policy still accepts an exact match
 ok 14 - NC-12: an AES checkout without the output-only policy still accepts an exact match
   ---
-  duration_ms: 830.213572
+  duration_ms: 676.396673
   type: 'test'
   ...
 # Subtest: NC-13: an apostrophe inside a policy comment does not drop real prefixes
 ok 15 - NC-13: an apostrophe inside a policy comment does not drop real prefixes
   ---
-  duration_ms: 886.048858
+  duration_ms: 825.314248
   type: 'test'
   ...
 # Subtest: NC-10: deleting the matrix fails closed
 ok 16 - NC-10: deleting the matrix fails closed
   ---
-  duration_ms: 842.577207
+  duration_ms: 788.702938
   type: 'test'
   ...
 # Subtest: NC-11: a commit touching governed source invalidates the matrix
 ok 17 - NC-11: a commit touching governed source invalidates the matrix
   ---
-  duration_ms: 1186.113805
+  duration_ms: 945.921809
   type: 'test'
   ...
 # Subtest: NC-12: output-only path classification never hides a governed input
 ok 18 - NC-12: output-only path classification never hides a governed input
   ---
-  duration_ms: 780.580874
+  duration_ms: 695.84
   type: 'test'
   ...
 1..18
@@ -115,4 +115,4 @@ ok 18 - NC-12: output-only path classification never hides a governed input
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 13313.533607
+# duration_ms 11383.103066

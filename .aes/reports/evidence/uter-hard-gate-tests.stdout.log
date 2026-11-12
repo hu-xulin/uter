@@ -2,85 +2,85 @@ TAP version 13
 # Subtest: PC-01: the unmodified control context passes all 10 hard gates
 ok 1 - PC-01: the unmodified control context passes all 10 hard gates
   ---
-  duration_ms: 18.194696
+  duration_ms: 16.843486
   type: 'test'
   ...
 # Subtest: NC-01 / HG-01: a missing normative specification FAILs
 ok 2 - NC-01 / HG-01: a missing normative specification FAILs
   ---
-  duration_ms: 4.432762
+  duration_ms: 3.563033
   type: 'test'
   ...
 # Subtest: NC-02 / HG-01: an empty (0-byte) specification is not a PASS
 ok 3 - NC-02 / HG-01: an empty (0-byte) specification is not a PASS
   ---
-  duration_ms: 1.969936
+  duration_ms: 1.658102
   type: 'test'
   ...
 # Subtest: NC-03 / HG-02: a second normative source or duplicate ID FAILs
 ok 4 - NC-03 / HG-02: a second normative source or duplicate ID FAILs
   ---
-  duration_ms: 7.322521
+  duration_ms: 5.685035
   type: 'test'
   ...
 # Subtest: NC-04 / HG-03: a requirement without a verifier FAILs
 ok 5 - NC-04 / HG-03: a requirement without a verifier FAILs
   ---
-  duration_ms: 2.110908
+  duration_ms: 1.7926
   type: 'test'
   ...
 # Subtest: NC-05 / HG-04: a verifier whose implementation does not exist FAILs
 ok 6 - NC-05 / HG-04: a verifier whose implementation does not exist FAILs
   ---
-  duration_ms: 8.073426
+  duration_ms: 7.204401
   type: 'test'
   ...
 # Subtest: NC-06 / HG-05: a requirement without tests, or a missing negative suite, FAILs
 ok 7 - NC-06 / HG-05: a requirement without tests, or a missing negative suite, FAILs
   ---
-  duration_ms: 4.968134
+  duration_ms: 3.585995
   type: 'test'
   ...
 # Subtest: NC-07 / HG-06: missing or stale evidence FAILs
 ok 8 - NC-07 / HG-06: missing or stale evidence FAILs
   ---
-  duration_ms: 2.846578
+  duration_ms: 3.004598
   type: 'test'
   ...
 # Subtest: NC-08 / HG-07: evidence bound to a different revision FAILs
 ok 9 - NC-08 / HG-07: evidence bound to a different revision FAILs
   ---
-  duration_ms: 8.856454
+  duration_ms: 7.002912
   type: 'test'
   ...
 # Subtest: NC-09 / HG-08: agent privilege escalation FAILs
 ok 10 - NC-09 / HG-08: agent privilege escalation FAILs
   ---
-  duration_ms: 6.76955
+  duration_ms: 5.73048
   type: 'test'
   ...
 # Subtest: NC-10 / HG-09: a CI security-gate bypass FAILs
 ok 11 - NC-10 / HG-09: a CI security-gate bypass FAILs
   ---
-  duration_ms: 7.454263
+  duration_ms: 6.952478
   type: 'test'
   ...
 # Subtest: NC-11 / HG-10: an unapproved forced specification change FAILs
 ok 12 - NC-11 / HG-10: an unapproved forced specification change FAILs
   ---
-  duration_ms: 1.230057
+  duration_ms: 1.17096
   type: 'test'
   ...
 # Subtest: NC-12: any single FAIL dominates the aggregate verdict
 ok 13 - NC-12: any single FAIL dominates the aggregate verdict
   ---
-  duration_ms: 14.268401
+  duration_ms: 12.683244
   type: 'test'
   ...
 # Subtest: PC-02: a diagnostic `|| true` outside a check line is not a false positive
 ok 14 - PC-02: a diagnostic `|| true` outside a check line is not a false positive
   ---
-  duration_ms: 0.766837
+  duration_ms: 0.775915
   type: 'test'
   ...
 1..14
@@ -91,4 +91,4 @@ ok 14 - PC-02: a diagnostic `|| true` outside a check line is not a false positi
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 253.622282
+# duration_ms 229.785922

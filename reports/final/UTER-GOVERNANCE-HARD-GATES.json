@@ -1,11 +1,11 @@
 {
   "report_id": "UTER-GOVERNANCE-HARD-GATES",
   "tool_id": "uter-governance-hard-gates@1.0.0",
-  "generated_at": "2026-11-11T18:21:09.208Z",
+  "generated_at": "2026-11-12T00:05:26.393Z",
   "uter_root": "/Users/lincolnhu/uter",
   "aes_root": "/Users/lincolnhu/aes",
-  "uter_head": "2570c2ecd8d7430526a0c4df7eac0167f8b93a20",
-  "aes_head": "dcd0734bc73e552de90b6d9a0801b4c18fb2cc99",
+  "uter_head": "cb214b36c0ee520057d396ece45ca0abf166dc02",
+  "aes_head": "ab5d80408f10895b8210f0ce9bd5403d38392ecf",
   "state_model": [
     "PASS",
     "FAIL",
@@ -86,7 +86,7 @@
   ],
   "evidence": {
     "manifest": ".aes/reports/UTER-EVIDENCE-MANIFEST.json",
-    "manifest_generated_at": "2026-11-11T18:21:05.535Z",
+    "manifest_generated_at": "2026-11-12T00:05:10.114Z",
     "manifest_age_hours": 0,
     "head_policy": {
       "ok": true,
