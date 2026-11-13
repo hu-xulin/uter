@@ -1,0 +1,85 @@
+{
+  "task_id": "UAP-CANARY-REPAIR",
+  "title": "金丝雀修复：为独立复核链路在任意 HEAD 产生真实修复事件与新鲜账本",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "defect": {
+    "description": ".uap/tests/fixtures/repair-canary.mjs 的 add() 按契约应返回两数之和，提交态实现为 a * b（刻意提交的缺陷态，作为修复金丝雀）。复现探针 repair-canary.repro.mjs 在缺陷态下失败。",
+    "impact": "无业务影响 —— 金丝雀是 UAP 专用 fixture；其价值是让 independent-review 的 git_head_matches（fail-closed）在任意 HEAD 上都有可验证的新鲜账本。",
+    "reproduction_test": ".uap/tests/fixtures/repair-canary.repro.mjs"
+  },
+  "scope": {
+    "allowed_paths": [
+      ".uap/tests/fixtures/repair-canary.mjs"
+    ],
+    "review_authorizations": []
+  },
+  "patch": {
+    "file": ".uap/tests/fixtures/repair-canary.mjs",
+    "old": "export function add(a, b) {\n  return a * b;\n}",
+    "new": "export function add(a, b) {\n  return a + b;\n}"
+  },
+  "reproduction_test": {
+    "command": "node",
+    "args": [
+      ".uap/tests/fixtures/repair-canary.repro.mjs"
+    ]
+  },
+  "root_cause_probe": {
+    "command": "node",
+    "args": [
+      "-e",
+      "import('.uap/tests/fixtures/repair-canary.mjs').then(m => { if (m.add(2,3) === 5) { console.error('canary already fixed'); process.exit(1); } console.log('canary defect present'); })"
+    ]
+  },
+  "targeted_tests": [
+    {
+      "command": "node",
+      "args": [
+        ".uap/tests/fixtures/repair-canary.repro.mjs"
+      ]
+    },
+    {
+      "command": "node",
+      "args": [
+        "--check",
+        ".uap/tests/fixtures/repair-canary.mjs"
+      ]
+    }
+  ],
+  "regression_tests": [
+    {
+      "command": "node",
+      "args": [
+        "--check",
+        ".uap/tests/fixtures/repair-canary.repro.mjs"
+      ]
+    },
+    {
+      "command": "git",
+      "args": [
+        "diff",
+        "--check",
+        "--",
+        ".uap/tests/fixtures/repair-canary.mjs"
+      ]
+    }
+  ],
+  "independent_verification": {
+    "command": "node",
+    "args": [
+      ".uap/engines/auto-repair/independent-review.mjs"
+    ],
+    "env": {}
+  },
+  "limits": {
+    "max_attempts": 3,
+    "timeout_ms": 120000,
+    "retry_delay_ms": 300
+  }
+}

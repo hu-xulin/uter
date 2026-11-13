@@ -13,7 +13,29 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const REVIEW = path.join(ROOT, '.uap', 'engines', 'auto-repair', 'independent-review.mjs');
 
-test('独立复核路径可从磁盘重算哈希并独立重跑定向/回归测试', () => {
+test('独立复核路径可从磁盘重算哈希并独立重跑定向/回归测试', async () => {
+  // 顺序无关性保障：独立复核校验「最新账本绑定当前 git HEAD」（fail-closed，
+  // 不可放宽）。任何新提交都会使历史账本过期 —— 因此本测试先通过修复金丝雀
+  // （提交态缺陷 fixture）在当前 HEAD 上产生一次真实修复事件（真实引擎、
+  // 真实补丁、真实账本，绝不伪造），再复核。
+  const { runRealRepair } = await import('../engines/auto-repair/real-code-repair.mjs');
+  const canary = '.uap/tests/fixtures/repair-canary.mjs';
+  // 恢复金丝雀的提交态缺陷（该 fixture 提交态即缺陷态，不可能含用户 WIP，
+  // 此恢复是确定性的，不是破坏性 git 操作）。
+  const restore = spawnSync('git', ['checkout', '--', canary], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(restore.status, 0, `金丝雀恢复失败：${restore.stderr}`);
+  let run;
+  try {
+    run = await runRealRepair({
+      taskFile: path.join(ROOT, '.uap/state/repair-tasks/UAP-CANARY-REPAIR.json'),
+      dryRun: false,
+    });
+    assert.equal(run.status, 'SUCCEEDED', `金丝雀修复未成功：${JSON.stringify(run.blockers)}`);
+  } finally {
+    // 无论成败都恢复提交态，保持工作区干净（下一轮从同一确定性状态开始）。
+    spawnSync('git', ['checkout', '--', canary], { cwd: ROOT });
+  }
+
   const result = spawnSync(process.execPath, [REVIEW], {
     cwd: ROOT,
     encoding: 'utf8',
