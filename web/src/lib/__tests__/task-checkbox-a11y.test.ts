@@ -23,7 +23,10 @@ import { labelTaskListCheckboxes } from '../task-checkbox-a11y'
 function gfmTaskList(items: string[]): HTMLTemplateElement {
   const template = document.createElement('template')
   template.innerHTML = `<ul class="contains-task-list">${items
-    .map((item) => `<li class="task-list-item"><input type="checkbox" disabled> ${item}</li>`)
+    .map(
+      (item) =>
+        `<li class="task-list-item"><input type="checkbox" disabled> ${item}</li>`
+    )
     .join('')}</ul>`
   return template
 }
@@ -61,9 +64,13 @@ describe('labelTaskListCheckboxes', () => {
 
     expect(labeled).toBe(0)
     expect(
-      template.content.querySelector('input[aria-label="已有名称"]')?.getAttribute('aria-label')
+      template.content
+        .querySelector('input[aria-label="已有名称"]')
+        ?.getAttribute('aria-label')
     ).toBe('已有名称')
-    expect(template.content.querySelector('input#opt-in')?.hasAttribute('aria-label')).toBe(false)
+    expect(
+      template.content.querySelector('input#opt-in')?.hasAttribute('aria-label')
+    ).toBe(false)
   })
 
   it('空条目不生成空名称，且重复调用保持幂等', () => {

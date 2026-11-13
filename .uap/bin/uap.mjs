@@ -92,6 +92,13 @@ function parseArgv(argv) {
     if (raw === '--all') { flags.add('all'); continue; }
     if (raw === '--full') { flags.add('full'); continue; }
     if (raw === '--final') { flags.add('final'); continue; }
+    // Real-repair routing flags. Kept explicit (instead of a generic flag
+    // parser) so an unknown flag still lands in positional and is reported
+    // as a usage error rather than silently ignored.
+    if (raw === '--real' || raw === '--verify' || raw === '--dry-run' || raw === '--apply') {
+      flags.add(raw.slice(2));
+      continue;
+    }
     if (raw.startsWith('--') && raw.includes('=')) {
       const [k, ...rest] = raw.slice(2).split('=');
       options[k] = rest.join('=');
@@ -605,7 +612,203 @@ async function cmdTask({ positional, options }) {
 }
 
 // ---------------------------------------------------------------- repair ----
-async function cmdRepair({ positional }) {
+// ------------------------------------------- real code repair (main CLI) ----
+// §5.3: the real repair engine used to be reachable ONLY through the
+// standalone .uap/bin/uap-real-repair.mjs script. These handlers route the
+// SAME engine through the official CLI, so every entry point shares the CLI's
+// config, policy, logging and evidence recording. The engine is imported
+// dynamically: a broken repair engine must never take down unrelated commands.
+
+function realRepairSummary(run) {
+  return {
+    execution_id: run.execution_id,
+    task_id: run.task_id,
+    status: run.status,
+    attempts: run.attempts,
+    max_attempts: run.max_attempts,
+    target_file: run.target_file,
+    classification: run.classification,
+    reproduction_before_exit: run.reproduction_before?.exit_code ?? null,
+    independent_review_exit: run.independent_review?.exit_code ?? null,
+    evidence_ids: run.evidence_ids || [],
+    ledger: run.ledger_path,
+    report_file: run.report_file,
+    result_file: run.result_file,
+    blockers: run.blockers || [],
+    stages: (run.stages || []).map((s) => `${s.stage}:${s.status}`),
+  };
+}
+
+async function cmdRepairReal({ flags, options }) {
+  const taskFile = options.task || null;
+  if (!taskFile) {
+    return usage('repair --real requires --task=<repair-task.json>', {
+      example: 'uap repair --real --task=.uap/state/repair-tasks/UAP-REAL-REPAIR-002.json',
+      also: ['--dry-run analyses without writing business code'],
+    });
+  }
+  const resolved = path.isAbsolute(taskFile) ? taskFile : rootPath(taskFile);
+  if (!exists(resolved)) return blocked(`repair --real: task file not found: ${taskFile}`);
+  let engine;
+  try {
+    engine = await import('../engines/auto-repair/real-code-repair.mjs');
+  } catch (error) {
+    return blocked(`repair --real: engine unavailable: ${error.message}`);
+  }
+  const run = await engine.runRealRepair({ taskFile: resolved, dryRun: flags.has('dry-run') });
+  const data = realRepairSummary(run);
+  if (run.status === 'SUCCEEDED' || run.status === 'DRY_RUN') {
+    return ok(`repair --real: ${run.task_id} ${run.status} (${run.attempts}/${run.max_attempts})`, data);
+  }
+  return blocked(`repair --real: ${run.task_id} ${run.status}: ${data.blockers.join('; ')}`, data);
+}
+
+/** Independent regression verification. Also exposed as top-level `verify-repair`. */
+async function cmdRepairVerify({ options }) {
+  const review = uapPath('engines', 'auto-repair', 'independent-review.mjs');
+  if (!exists(review)) return blocked('verify-repair: independent-review.mjs is missing');
+  const ledgerDir = uapPath('state', 'repair-ledger');
+  const ledgers = listFiles(ledgerDir, { filter: (f) => f.endsWith('.json') })
+    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+  const chosen = options.ledger
+    ? (path.isAbsolute(options.ledger) ? options.ledger : rootPath(options.ledger))
+    : ledgers[0];
+  if (!chosen || !exists(chosen)) {
+    return blocked('verify-repair: no repair ledger found; run `uap repair --real` first', {
+      ledger_dir: relToRoot(ledgerDir),
+    });
+  }
+  const ledgerData = readJSON(chosen, null);
+  const r = await runCommand({
+    command: 'node',
+    args: [relToRoot(review)],
+    timeoutMs: 300000,
+    env: { UAP_REPAIR_LEDGER: relToRoot(chosen) },
+  });
+  let verdict = null;
+  try { verdict = JSON.parse((r.stdout || '').trim().split('\n').pop()); } catch { /* reported as FAIL below */ }
+  const data = {
+    ledger: relToRoot(chosen),
+    ledger_git_head: ledgerData?.git_head ?? null,
+    current_git_head: gitHead(),
+    ledger_bound_to_current_head: ledgerData?.git_head === gitHead(),
+    reviewer_exit_code: r.exit_code,
+    verdict: verdict?.verdict ?? null,
+    checks: verdict?.checks?.length ?? 0,
+    commands_rerun: verdict?.commands_rerun ?? null,
+    failures: verdict?.failures ?? [],
+    stdout_tail: (r.stdout || '').slice(-1500),
+  };
+  if (r.exit_code === 0 && verdict?.verdict === 'PASS') {
+    return ok(`verify-repair: PASS (${data.checks} independent checks, ${data.commands_rerun} commands re-run)`, data);
+  }
+  // Fail-closed: a ledger bound to an older HEAD, a missing verdict or a
+  // reviewer failure is a real FAIL, never a silent pass-through.
+  return fail(`verify-repair: ${verdict?.verdict || 'NO_VERDICT'} — ${data.failures.slice(0, 3).join(' | ') || `reviewer exit=${r.exit_code}`}`, data);
+}
+
+function repairResultRows() {
+  const dir = uapPath('state', 'repair-tasks');
+  return listFiles(dir, { filter: (f) => f.endsWith('.result.json') })
+    .map((file) => {
+      const j = readJSON(file, null);
+      if (!j || !j.task_id) return null;
+      return {
+        task_id: j.task_id, status: j.status, attempts: j.attempts,
+        max_attempts: j.max_attempts, target_file: j.target_file,
+        independent_review_exit: j.independent_review?.exit_code ?? null,
+        evidence_count: (j.evidence_ids || []).length,
+        git_head: j.git_head, finished_at: j.finished_at,
+        blockers: j.blockers || [], file: relToRoot(file),
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => String(b.finished_at || '').localeCompare(String(a.finished_at || '')));
+}
+
+function repairEvidenceRows(taskId) {
+  const rows = [];
+  for (const id of listEvidence()) {
+    const rec = readJSON(path.join(EVIDENCE, `${id}.json`), null);
+    if (!rec || !String(rec.kind || '').startsWith('real_code_repair')) continue;
+    if (taskId && rec.task_id !== taskId && rec.trace_id !== taskId
+        && !(rec.inputs || '').includes(taskId)) continue;
+    const v = verifyEvidence(id);
+    rows.push({
+      evidence_id: id, kind: rec.kind, task_id: rec.task_id,
+      command: rec.command, exit_code: rec.exit_code,
+      hash_valid: v.hash_valid, binding_status: rec.execution?.binding_status || 'LEGACY_UNBOUND',
+      execution_id: rec.execution_id, git_head: rec.git_head,
+      content_hash: rec.content_hash,
+    });
+  }
+  return rows.sort((a, b) => String(a.evidence_id).localeCompare(String(b.evidence_id)));
+}
+
+function cmdRepairQuery({ positional, options }) {
+  const kind = positional[0];
+  const id = positional[1] || options.task || null;
+  if (kind === 'status') {
+    const rows = repairResultRows();
+    const selected = id ? rows.filter((r) => r.task_id === id) : rows;
+    if (id && !selected.length) return blocked(`repair status: no result for ${id}`, { known: rows.map((r) => r.task_id) });
+    return ok(`repair status: ${selected.length} recorded run(s)`, { runs: selected });
+  }
+  if (kind === 'evidence') {
+    const rows = repairEvidenceRows(id);
+    if (id && !rows.length) return blocked(`repair evidence: no evidence for ${id}`);
+    const invalid = rows.filter((r) => !r.hash_valid);
+    return ok(`repair evidence: ${rows.length} record(s), ${invalid.length} hash-invalid`, {
+      records: rows, hash_invalid: invalid.map((r) => r.evidence_id),
+    });
+  }
+  return usage(`repair ${kind || '(none)'} is not a query; use status|evidence`, {
+    available: ['repair status [task-id]', 'repair evidence [task-id]'],
+  });
+}
+
+async function cmdRepairResume({ positional, flags }) {
+  const taskId = positional[1];
+  if (!taskId) return usage('repair resume requires <task-id> [--apply]');
+  const resultFile = uapPath('state', 'repair-tasks', `${taskId}.result.json`);
+  if (!exists(resultFile)) return blocked(`repair resume: no result for ${taskId}`);
+  const prev = readJSON(resultFile, null);
+  if (!prev) return blocked(`repair resume: unreadable result for ${taskId}`);
+  // Recovery must never repeat a completed non-idempotent operation.
+  if (prev.status === 'SUCCEEDED') {
+    return ok(`repair resume: ${taskId} already SUCCEEDED; no side effect repeated`, {
+      task_id: taskId, status: prev.status, attempts: prev.attempts,
+    });
+  }
+  if (prev.attempts >= prev.max_attempts) {
+    return blocked(`repair resume: ${taskId} exhausted ${prev.attempts}/${prev.max_attempts} attempts; manual review required`, {
+      blockers: prev.blockers,
+    });
+  }
+  if (!flags.has('apply')) {
+    return blocked(`repair resume: ${taskId} status=${prev.status}; re-running a real code repair is non-idempotent. `
+      + 'Inspect blockers, then pass --apply explicitly.', {
+      status: prev.status, attempts: prev.attempts, blockers: prev.blockers,
+      command_to_apply: `uap repair resume ${taskId} --apply`,
+    });
+  }
+  const taskFile = uapPath('state', 'repair-tasks', `${taskId}.json`);
+  if (!exists(taskFile)) return blocked(`repair resume: task definition missing: ${relToRoot(taskFile)}`);
+  const dirty = await runCommand({ command: 'git', args: ['status', '--short', '--', prev.target_file], timeoutMs: 15000 });
+  if ((dirty.stdout || '').trim()) {
+    return blocked(`repair resume: ${prev.target_file} has uncommitted changes; WIP protection refuses to re-apply a patch`);
+  }
+  return cmdRepairReal({ flags: new Set(), options: { task: taskFile } });
+}
+
+async function cmdRepair(parsed) {
+  const { positional, flags, options } = parsed;
+  // §5.3 incremental routing: the legacy governance-repair path below is
+  // untouched; only these explicit subcommands/flags divert to the real engine.
+  if (flags.has('real') || options.task) return cmdRepairReal(parsed);
+  if (flags.has('verify')) return cmdRepairVerify(parsed);
+  if (positional[0] === 'status' || positional[0] === 'evidence') return cmdRepairQuery(parsed);
+  if (positional[0] === 'resume') return cmdRepairResume(parsed);
   const registryFile = FILES.defects;
   const data0 = readJSON(registryFile, null);
   if (!data0) return blocked('repair: DEFECT-REGISTRY.json does not exist; run `uap audit` first');
@@ -861,7 +1064,24 @@ async function cmdExecution({ positional }) {
       ledger_entries: executionHistory().length, health: executionHealth(),
     });
   }
-  return usage(`unknown execution subcommand: ${sub}`, { available: ['show', 'start [reason]'] });
+  if (sub === 'state') {
+    // Full execution state: identity + current verdict + evidence freshness.
+    // Computed from the same snapshot as `status`, so they cannot disagree.
+    const e = currentExecution();
+    const verdict = statusVerdict();
+    return ok(`execution state: ${verdict.overall_status || 'UNKNOWN'}`, {
+      execution: e,
+      head_now: gitHead(),
+      fingerprint_now: worktreeFingerprint(),
+      ledger_entries: executionHistory().length,
+      overall_status: verdict.overall_status || null,
+      claim_allowed: verdict.claim_allowed ?? null,
+      counts: verdict.counts || null,
+      reasons: verdict.reasons || [],
+      health: executionHealth(),
+    });
+  }
+  return usage(`unknown execution subcommand: ${sub}`, { available: ['show', 'state', 'start [reason]'] });
 }
 
 // --------------------------------------------------------- verify status ----
@@ -967,6 +1187,7 @@ async function dispatch(parsed) {
     case 'report': return cmdReport(parsed);
     case 'execution': return cmdExecution(parsed);
     case 'verify-status': return cmdVerifyStatus(parsed);
+    case 'verify-repair': return cmdRepairVerify(parsed);
     case 'workflow': return cmdWorkflow(parsed);
     case 'schemas': return cmdSchemas(parsed);
     case 'help': case '--help': case '-h': case undefined: return { status: 'OK', exit_code: EXIT.OK, summary: 'help', data: { help: helpText() } };

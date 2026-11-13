@@ -1,0 +1,881 @@
+{
+  "schema_version": "1.0",
+  "generator": "node .uap/tools/capture-baseline.mjs",
+  "execution_id": null,
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "base_commit": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+  "remote_main_commit": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+  "head_matches_remote_main": true,
+  "audit_timestamp": "2026-11-13T09:13:26.232Z",
+  "runtime_environment": {
+    "platform": "darwin",
+    "arch": "x64",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter"
+  },
+  "toolchain_versions": {
+    "node": "v22.22.2",
+    "go": "go version go1.27.4 darwin/amd64",
+    "bun": "1.4.2",
+    "git": "git version 2.55.0",
+    "npm": "10.9.7"
+  },
+  "working_tree_status": {
+    "total": 107,
+    "staged": 0,
+    "unstaged": 85,
+    "untracked": 22,
+    "paths": [
+      " M .github/workflows/ci.yml",
+      " M .uap/state/cli-last.json",
+      " M .uap/state/current-execution.json",
+      " M .uap/state/events.jsonl",
+      " M .uap/state/executions.jsonl",
+      " M .uap/state/policy-audit.jsonl",
+      " M .uap/state/recovery-verification.json",
+      " M .uap/state/runtime-health.json",
+      " M .uap/state/tasks.json",
+      " M controller/task_plugin.go",
+      " M controller/task_plugin_test.go",
+      " M docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+      " M docs/design-system/showcase.html",
+      " M docs/design-system/showcase.tokens.js",
+      " M pkg/jsplugin/fetch.go",
+      " M scripts/verify-all.sh",
+      " M web/package.json",
+      " M web/scripts/add-showcase-anchors.mjs",
+      " M web/scripts/check-design-tokens.mjs",
+      " M web/scripts/sync-design-showcase.mjs",
+      " M web/src/components/ai-elements/response-renderer-blocks.tsx",
+      " M web/src/components/config-drawer.tsx",
+      " M web/src/components/data-table/toolbar/bulk-actions.tsx",
+      " M web/src/components/json-code-editor.tsx",
+      " M web/src/components/layout/components/system-brand.tsx",
+      " M web/src/components/skip-to-main.tsx",
+      " M web/src/components/tag-input.tsx",
+      " M web/src/components/ui/accordion.tsx",
+      " M web/src/components/ui/badge.tsx",
+      " M web/src/components/ui/button.tsx",
+      " M web/src/components/ui/card.tsx",
+      " M web/src/components/ui/checkbox.tsx",
+      " M web/src/components/ui/combobox.tsx",
+      " M web/src/components/ui/drawer.tsx",
+      " M web/src/components/ui/input-group.tsx",
+      " M web/src/components/ui/input.tsx",
+      " M web/src/components/ui/item.tsx",
+      " M web/src/components/ui/markdown.tsx",
+      " M web/src/components/ui/native-select.tsx",
+      " M web/src/components/ui/navigation-menu.tsx",
+      " M web/src/components/ui/radio-group.tsx",
+      " M web/src/components/ui/resizable.tsx",
+      " M web/src/components/ui/scroll-area.tsx",
+      " M web/src/components/ui/secret-file-input.tsx",
+      " M web/src/components/ui/select.tsx",
+      " M web/src/components/ui/sidebar.tsx",
+      " M web/src/components/ui/slider.tsx",
+      " M web/src/components/ui/switch.tsx",
+      " M web/src/components/ui/tabs.tsx",
+      " M web/src/components/ui/textarea.tsx",
+      " M web/src/components/ui/toggle.tsx",
+      " M web/src/design-system/__tests__/accessibility.test.ts",
+      " M web/src/design-system/__tests__/spec-guards.test.ts",
+      " M web/src/design-system/__tests__/tokens.test.ts",
+      " M web/src/design-system/components/typography/heading.tsx",
+      " M web/src/design-system/foundations/accessibility.css",
+      " M web/src/design-system/foundations/typography.css",
+      " M web/src/design-system/tokens/chart-typography.ts",
+      " M web/src/design-system/tokens/semantic.css",
+      " M web/src/design-system/tokens/typography.css",
+      " M web/src/features/about/about-viewer.tsx",
+      " M web/src/features/auth/auth-layout.tsx",
+      " M web/src/features/channels/components/dialogs/advanced-custom-editor-dialog.tsx",
+      " M web/src/features/channels/components/numeric-spinner-input.tsx",
+      " M web/src/features/customer-service/CustomerServiceWidget.css",
+      " M web/src/features/dashboard/components/overview/overview-dashboard.tsx",
+      " M web/src/features/dashboard/components/ui/panel-wrapper.tsx",
+      " M web/src/features/docs/native/content-card.tsx",
+      " M web/src/features/docs/native/docs-page-footer.tsx",
+      " M web/src/features/docs/native/native-docs-view.tsx",
+      " M web/src/features/docs/native/page-nav.tsx",
+      " M web/src/features/docs/native/prose-classes.ts",
+      " M web/src/features/home/components/sections/hero.tsx",
+      " M web/src/features/keys/components/api-key-group-combobox.tsx",
+      " M web/src/features/legal/legal-document.tsx",
+      " M web/src/features/playground/components/input/playground-input.tsx",
+      " M web/src/features/profile/components/checkin-calendar-card.tsx",
+      " M web/src/features/rankings/components/rankings-hero.tsx",
+      " M web/src/features/system-info/components/system-instances-panel.tsx",
+      " M web/src/features/system-settings/models/visual-billing-document-editor.tsx",
+      " M web/src/features/usage-logs/components/columns/common-logs-columns.tsx",
+      " M web/src/lib/__tests__/task-checkbox-a11y.test.ts",
+      " M web/src/routes/_public/about/$section.tsx",
+      " M web/src/styles/theme-presets.css",
+      " M web/src/styles/theme.css",
+      "?? .uap/evidence/UAP-EV-20261113090247-e098a0c3.json",
+      "?? .uap/evidence/UAP-EV-20261113090247-e96a594b.json",
+      "?? .uap/evidence/UAP-EV-20261113090248-1ca3f8cf.json",
+      "?? .uap/evidence/UAP-EV-20261113090248-4cfa7275.json",
+      "?? .uap/evidence/UAP-EV-20261113090248-97ccc8fd.json",
+      "?? .uap/evidence/UAP-EV-20261113090248-9e2859b4.json",
+      "?? .uap/evidence/UAP-EV-20261113090248-b70a2a01.json",
+      "?? .uap/evidence/UAP-EV-20261113090248-fe5cf6ea.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-3eefbb44.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-52d3316c.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-6750b3c2.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-6c77bf8f.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-83b23951.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-ef004f48.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-f205bff1.json",
+      "?? .uap/evidence/UAP-EV-20261113090249-f507c39b.json",
+      "?? .uap/evidence/UAP-EV-20261113090250-c63c54e5.json",
+      "?? .uap/evidence/UAP-EV-20261113090250-e3ffe2a2.json",
+      "?? .uap/evidence/UAP-EV-20261113090340-0e28bbca.json",
+      "?? .uap/evidence/UAP-EV-20261113090744-b078cd59.json",
+      "?? .uap/reports/CURRENT-EXECUTION-BASELINE.json",
+      "?? .uap/tools/capture-baseline.mjs"
+    ]
+  },
+  "existing_wip": {
+    "tracked_modified_count": 85,
+    "untracked_count": 22,
+    "files": [
+      {
+        "path": ".github/workflows/ci.yml",
+        "code": " M",
+        "sha256": "453ccaaa688970132ea5d3b5185b632858195a483eae1ae2501114d52032ef90",
+        "bytes": 17407
+      },
+      {
+        "path": ".uap/state/cli-last.json",
+        "code": " M",
+        "sha256": "374d3fc30a6bce3b8b0ea240479267b7d674d43fdc16e06926013f626a932b88",
+        "bytes": 1365
+      },
+      {
+        "path": ".uap/state/current-execution.json",
+        "code": " M",
+        "sha256": "20f4ba86442da2cc89ac0100324e838997be8e037d89d6d144a70270f0cb546d",
+        "bytes": 316
+      },
+      {
+        "path": ".uap/state/events.jsonl",
+        "code": " M",
+        "sha256": "f4850e14ef23189d68fe5f26140b96fa47c234c6c4bf8740d99d8a5a5dbaf234",
+        "bytes": 1368556
+      },
+      {
+        "path": ".uap/state/executions.jsonl",
+        "code": " M",
+        "sha256": "7f04201eafeeaae2486cf65c4ed71a1e108fa2610e385d59eed2dae14e510978",
+        "bytes": 5518
+      },
+      {
+        "path": ".uap/state/policy-audit.jsonl",
+        "code": " M",
+        "sha256": "cab78061ca13e0ec22a96e189fefb5bdb7bd5b48300fa53340940c66e5b2e2f8",
+        "bytes": 433456
+      },
+      {
+        "path": ".uap/state/recovery-verification.json",
+        "code": " M",
+        "sha256": "ba5b299c31e5068424749e5606a2548c9aa48cb77157b674ecd9a80b8c538234",
+        "bytes": 416
+      },
+      {
+        "path": ".uap/state/runtime-health.json",
+        "code": " M",
+        "sha256": "7c62e3941170f189d20c78c184872fb56bbad25a4cb02decf4c34bfa29174799",
+        "bytes": 4551
+      },
+      {
+        "path": ".uap/state/tasks.json",
+        "code": " M",
+        "sha256": "6186eb28a63de939203afe49f83fad10a3c3fe1aeb6f790a4444c5411742d722",
+        "bytes": 2008359
+      },
+      {
+        "path": "controller/task_plugin.go",
+        "code": " M",
+        "sha256": "b13c64df7e628a142460499d08f52949ca0cc6f97328872299bf1de952737a42",
+        "bytes": 35857
+      },
+      {
+        "path": "controller/task_plugin_test.go",
+        "code": " M",
+        "sha256": "9fdf36bc05284a3e4394c71d2e11887e024695243364e3b8e727d6c56ca68adc",
+        "bytes": 60504
+      },
+      {
+        "path": "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "code": " M",
+        "sha256": "3d05b3db8c7656b1879fb4ba439fd4718761453f562580aef435eeaf8dfb6dc2",
+        "bytes": 197053
+      },
+      {
+        "path": "docs/design-system/showcase.html",
+        "code": " M",
+        "sha256": "c824200c6ca7d6b96123fdb7ea767f6d3f33fc9999c8eb2032e8201f73e04a80",
+        "bytes": 86313
+      },
+      {
+        "path": "docs/design-system/showcase.tokens.js",
+        "code": " M",
+        "sha256": "828737a8454598bb822f0d13b784d11f08ed62c80c5e04e56493e22e485061c7",
+        "bytes": 30037
+      },
+      {
+        "path": "pkg/jsplugin/fetch.go",
+        "code": " M",
+        "sha256": "791f7e0acdbb8b17869cd4b16ced42a7c2dd4f1aac08112bedea55a808c9f7ab",
+        "bytes": 9675
+      },
+      {
+        "path": "scripts/verify-all.sh",
+        "code": " M",
+        "sha256": "60ba64d5a2d9383a6fe4db25ba106ef60f837d95aa84ae4aa365cbfc0119fbf1",
+        "bytes": 9949
+      },
+      {
+        "path": "web/package.json",
+        "code": " M",
+        "sha256": "1d03b9d46b09124a3558a4c1bf598941bcc6272295856c572215bff914b669ee",
+        "bytes": 6220
+      },
+      {
+        "path": "web/scripts/add-showcase-anchors.mjs",
+        "code": " M",
+        "sha256": "c16061a9f56b570fdf09055404dccf04d5683245b49fa2b10c68464030dde8dd",
+        "bytes": 9417
+      },
+      {
+        "path": "web/scripts/check-design-tokens.mjs",
+        "code": " M",
+        "sha256": "128c1f28d2f1810b3732279598ec710f7fac0ad0ba8a877e2bac5e792d20cfec",
+        "bytes": 32392
+      },
+      {
+        "path": "web/scripts/sync-design-showcase.mjs",
+        "code": " M",
+        "sha256": "d8cc7cc1bfc749caca8c398a1936c6a38292b48d974525a743a546359091b531",
+        "bytes": 29371
+      },
+      {
+        "path": "web/src/components/ai-elements/response-renderer-blocks.tsx",
+        "code": " M",
+        "sha256": "e8731a459ba248242015b098090373e026ca964cb958fb536ef8362891faa218",
+        "bytes": 5396
+      },
+      {
+        "path": "web/src/components/config-drawer.tsx",
+        "code": " M",
+        "sha256": "3fab2cf96f307034e5793a2118a1fcd5661dcd065d572d4a85e53f3e7010d18b",
+        "bytes": 21056
+      },
+      {
+        "path": "web/src/components/data-table/toolbar/bulk-actions.tsx",
+        "code": " M",
+        "sha256": "bc3f1877126a1f723dc5f89d53fddd5956b79ccc843f2575df6e46703275c0d4",
+        "bytes": 8168
+      },
+      {
+        "path": "web/src/components/json-code-editor.tsx",
+        "code": " M",
+        "sha256": "d0f14006e64fe7fd57630a8ca610a0554c4ed41d28a065c1c29bc6b43dd46437",
+        "bytes": 9951
+      },
+      {
+        "path": "web/src/components/layout/components/system-brand.tsx",
+        "code": " M",
+        "sha256": "fe353a2ccf874d4ffed66bcec1d139c37e56fe2721c5dc185e0c21afd76d911e",
+        "bytes": 3531
+      },
+      {
+        "path": "web/src/components/skip-to-main.tsx",
+        "code": " M",
+        "sha256": "78f4df7c7c682b68d77e8808621243f387a5459b1e78de1d5d5d127e971bd11f",
+        "bytes": 1192
+      },
+      {
+        "path": "web/src/components/tag-input.tsx",
+        "code": " M",
+        "sha256": "ffead92914abe977987d67108b47e7cf83bbff4d710b57900b971a357aec4e7c",
+        "bytes": 3679
+      },
+      {
+        "path": "web/src/components/ui/accordion.tsx",
+        "code": " M",
+        "sha256": "186124b0d5e39fac7cfc035d1d8e842996a84529ce37504f03ff8ec69f452400",
+        "bytes": 3307
+      },
+      {
+        "path": "web/src/components/ui/badge.tsx",
+        "code": " M",
+        "sha256": "13389747f13ade561fc43d4b50db113871582b2921992af306ba01223beb850b",
+        "bytes": 3612
+      },
+      {
+        "path": "web/src/components/ui/button.tsx",
+        "code": " M",
+        "sha256": "b365d1882d9bad32517e185f636d13fde8ba68114c4819cfa7d2b3662ed92016",
+        "bytes": 9596
+      },
+      {
+        "path": "web/src/components/ui/card.tsx",
+        "code": " M",
+        "sha256": "20ce20b9c0c50a7cba15cda799f9a2a9146805019e0cc0009272e916ab729410",
+        "bytes": 4476
+      },
+      {
+        "path": "web/src/components/ui/checkbox.tsx",
+        "code": " M",
+        "sha256": "a6e937c7438e9c722db3bb0e662073ba0e9e9ab9517bb524da57c3029bd9978e",
+        "bytes": 2064
+      },
+      {
+        "path": "web/src/components/ui/combobox.tsx",
+        "code": " M",
+        "sha256": "4ebaf2ac8c3f9ae01cad04e6cb724b5607e1d25903faecd7ec3ba9265f54beee",
+        "bytes": 15270
+      },
+      {
+        "path": "web/src/components/ui/drawer.tsx",
+        "code": " M",
+        "sha256": "b72a6b291dadec4ac9ae69a01a7b90cd1c5e73586cf800dee76464da6bfe7114",
+        "bytes": 5834
+      },
+      {
+        "path": "web/src/components/ui/input-group.tsx",
+        "code": " M",
+        "sha256": "17673f2811d990301701fca3a94430dca9c8012ae02b74e03ec4f25d9f7823f3",
+        "bytes": 7016
+      },
+      {
+        "path": "web/src/components/ui/input.tsx",
+        "code": " M",
+        "sha256": "e66ca747917b9b7fc7154240b6ce74e6a80cde4bee114beb3e77f0d6d9b19623",
+        "bytes": 4147
+      },
+      {
+        "path": "web/src/components/ui/item.tsx",
+        "code": " M",
+        "sha256": "c4cd2587bcb85751fa8249bd81283a5fca1921096b89e2983a13722444b83e6e",
+        "bytes": 5496
+      },
+      {
+        "path": "web/src/components/ui/markdown.tsx",
+        "code": " M",
+        "sha256": "878109e01bf83ceb0b68980abf2c2ccc233546908728270eebfecfbf324c9126",
+        "bytes": 24384
+      },
+      {
+        "path": "web/src/components/ui/native-select.tsx",
+        "code": " M",
+        "sha256": "3b253f0a91c9f117575ec5d7873b7afe9a396e1dd26674de6888411239027091",
+        "bytes": 3044
+      },
+      {
+        "path": "web/src/components/ui/navigation-menu.tsx",
+        "code": " M",
+        "sha256": "35c8a36c5a9559bc94b2f7c72c3e953fc05b6f2fe597083d3a8723c18f7c478d",
+        "bytes": 8024
+      },
+      {
+        "path": "web/src/components/ui/radio-group.tsx",
+        "code": " M",
+        "sha256": "e733e194d3a14f80505e5a499b249fb3b98dc26cdfbe9bef39f94deec8c2c318",
+        "bytes": 2365
+      },
+      {
+        "path": "web/src/components/ui/resizable.tsx",
+        "code": " M",
+        "sha256": "87e1b73415003a89a196abd1669b4645f294cd6fab8b1825d1e7889199be617f",
+        "bytes": 2682
+      },
+      {
+        "path": "web/src/components/ui/scroll-area.tsx",
+        "code": " M",
+        "sha256": "b90a13f55b6dea95da6e4fb5a419df31723f912721630dc2a5e09436ee2c0eff",
+        "bytes": 2301
+      },
+      {
+        "path": "web/src/components/ui/secret-file-input.tsx",
+        "code": " M",
+        "sha256": "f55f93c5856f0bd2d509bf7432d7fa9e63ea310c2359e77e837618c58a532ca9",
+        "bytes": 10976
+      },
+      {
+        "path": "web/src/components/ui/select.tsx",
+        "code": " M",
+        "sha256": "8fc3db19ffe6c78b2472d26759e985d6ef5eda64db2d6c59d362256d05731535",
+        "bytes": 8053
+      },
+      {
+        "path": "web/src/components/ui/sidebar.tsx",
+        "code": " M",
+        "sha256": "bfa79889213bbdebee91b5f8b963d8ea337721feb48589b96bbe08f2f7aeef15",
+        "bytes": 22933
+      },
+      {
+        "path": "web/src/components/ui/slider.tsx",
+        "code": " M",
+        "sha256": "5a5850c5facceb6c090331458385504112d4f15262ebe3dd4974402ec477f663",
+        "bytes": 2917
+      },
+      {
+        "path": "web/src/components/ui/switch.tsx",
+        "code": " M",
+        "sha256": "7c9fd58fe1e4b0561903070e8ab7146e06aa0b6a96fd83a961dfb5d41f32eaa3",
+        "bytes": 2399
+      },
+      {
+        "path": "web/src/components/ui/tabs.tsx",
+        "code": " M",
+        "sha256": "3189606687431b1a7248219804296d979d69a99384b99c5d1a255c7140e49f55",
+        "bytes": 6284
+      },
+      {
+        "path": "web/src/components/ui/textarea.tsx",
+        "code": " M",
+        "sha256": "d75797edc8369304c1a00e7d4c4bafa23fc5e23118487b60eb7e6b96cd60a178",
+        "bytes": 2971
+      },
+      {
+        "path": "web/src/components/ui/toggle.tsx",
+        "code": " M",
+        "sha256": "4e42707e22bbb3cbddfd8db7fb019db9e5ccf3abdc517a3f7bb5496c48a8a475",
+        "bytes": 2570
+      },
+      {
+        "path": "web/src/design-system/__tests__/accessibility.test.ts",
+        "code": " M",
+        "sha256": "f1a09a35efef3f4b6030f0ecc7d56c9958b7901274938ef39b6e5854b67e6ec7",
+        "bytes": 5498
+      },
+      {
+        "path": "web/src/design-system/__tests__/spec-guards.test.ts",
+        "code": " M",
+        "sha256": "6d711e21e55f426888a52716a65ef055f8d056b45baf7f24deed3e8a7208bbe8",
+        "bytes": 36916
+      },
+      {
+        "path": "web/src/design-system/__tests__/tokens.test.ts",
+        "code": " M",
+        "sha256": "8c9a21dc9864b805d0dd8ac871aabe1e062daac499b4c5579836a8ef6a81b442",
+        "bytes": 15459
+      },
+      {
+        "path": "web/src/design-system/components/typography/heading.tsx",
+        "code": " M",
+        "sha256": "12f0b00e2331222edf94f8bab78861b7e90d6ad5326d6fadaea52541acce68fe",
+        "bytes": 4042
+      },
+      {
+        "path": "web/src/design-system/foundations/accessibility.css",
+        "code": " M",
+        "sha256": "db45097df71fc6f8fb03eb493f0fce50ca990bb345c7e912bed2b56b61080b16",
+        "bytes": 3520
+      },
+      {
+        "path": "web/src/design-system/foundations/typography.css",
+        "code": " M",
+        "sha256": "c6b270c0c4000bd0bc529137de945e1665c1d650ca82e7eb571ef2ba4a9a0b90",
+        "bytes": 10502
+      },
+      {
+        "path": "web/src/design-system/tokens/chart-typography.ts",
+        "code": " M",
+        "sha256": "2f6b6360f899e63c1d8f17edef0cf06eb78a56f9ab287ded922c9902fa7aa0f2",
+        "bytes": 2154
+      },
+      {
+        "path": "web/src/design-system/tokens/semantic.css",
+        "code": " M",
+        "sha256": "4bd6d396ca0fed785355decf0901e474539e7456fe519fae6ac45862807f878b",
+        "bytes": 9783
+      },
+      {
+        "path": "web/src/design-system/tokens/typography.css",
+        "code": " M",
+        "sha256": "056f5b6357e2ecab6b91ef8542153509781c73a0a03a703381453d1d51b1a7fe",
+        "bytes": 10771
+      },
+      {
+        "path": "web/src/features/about/about-viewer.tsx",
+        "code": " M",
+        "sha256": "a9063a5fd5874050f9070ff6f75a12321677f8ffb154cde64ce56dd958f92bfd",
+        "bytes": 13677
+      },
+      {
+        "path": "web/src/features/auth/auth-layout.tsx",
+        "code": " M",
+        "sha256": "bd9d931e5ce5cd30ccbca5c5ec10015629a22f31f880419aeb961da5876d5c57",
+        "bytes": 2444
+      },
+      {
+        "path": "web/src/features/channels/components/dialogs/advanced-custom-editor-dialog.tsx",
+        "code": " M",
+        "sha256": "ee66770cd23429739d0e23f16a1d8929dbb8e938c1130006fec5584bcbb57597",
+        "bytes": 66718
+      },
+      {
+        "path": "web/src/features/channels/components/numeric-spinner-input.tsx",
+        "code": " M",
+        "sha256": "f2c3e1acd3986844c878016ed82204d48f6b9a0058c2c4f172981bc996aea24a",
+        "bytes": 6922
+      },
+      {
+        "path": "web/src/features/customer-service/CustomerServiceWidget.css",
+        "code": " M",
+        "sha256": "6ef84f9879c6446e190da42df9c05f0f396643e91373fff8b448ef1aeef2846b",
+        "bytes": 6570
+      },
+      {
+        "path": "web/src/features/dashboard/components/overview/overview-dashboard.tsx",
+        "code": " M",
+        "sha256": "b052535697e6811e91e7fef275bea0e7f55b5956488107a3b47e08897e634ca0",
+        "bytes": 30079
+      },
+      {
+        "path": "web/src/features/dashboard/components/ui/panel-wrapper.tsx",
+        "code": " M",
+        "sha256": "763ade04039d4751f6b07efcb7f0bd553ce691019bdb503a6fd5de0b1042051a",
+        "bytes": 3725
+      },
+      {
+        "path": "web/src/features/docs/native/content-card.tsx",
+        "code": " M",
+        "sha256": "534f395598abcf05dc7c3da112168d5ac2bd23f9d2996359435ae141ad2a6e15",
+        "bytes": 1554
+      },
+      {
+        "path": "web/src/features/docs/native/docs-page-footer.tsx",
+        "code": " M",
+        "sha256": "427a254399a333cb861ae0a8ca048ddc29c1446e05701a366c4b06be18156aaa",
+        "bytes": 3152
+      },
+      {
+        "path": "web/src/features/docs/native/native-docs-view.tsx",
+        "code": " M",
+        "sha256": "fce33ecc34e57f8dde054f15ac1ec954a99ca68b31ca2488b22f19c2b0ab4133",
+        "bytes": 5458
+      },
+      {
+        "path": "web/src/features/docs/native/page-nav.tsx",
+        "code": " M",
+        "sha256": "78513b71bdcc7edae1a1a2e961fd155009d8b7112840231dcd377bbda39b5a35",
+        "bytes": 2727
+      },
+      {
+        "path": "web/src/features/docs/native/prose-classes.ts",
+        "code": " M",
+        "sha256": "890723d529f4eed0ba0698c180c829ba595d83f44ca1db732b709e1334b7dd13",
+        "bytes": 3428
+      },
+      {
+        "path": "web/src/features/home/components/sections/hero.tsx",
+        "code": " M",
+        "sha256": "ba9d4ffb3a29a983fb0a159dab6da8d61235455e322dc5842c25f2029cec101b",
+        "bytes": 12297
+      },
+      {
+        "path": "web/src/features/keys/components/api-key-group-combobox.tsx",
+        "code": " M",
+        "sha256": "aa7e780e5ffff313b6ee7fbdfe758b46178a4981f1ee1db9774c11d074c6a3b8",
+        "bytes": 8032
+      },
+      {
+        "path": "web/src/features/legal/legal-document.tsx",
+        "code": " M",
+        "sha256": "04397cb8aa8878231c6bc58106e6fe862cd7bdb3c468c76e967dde768add04cf",
+        "bytes": 8760
+      },
+      {
+        "path": "web/src/features/playground/components/input/playground-input.tsx",
+        "code": " M",
+        "sha256": "b34b5b36e2f77ba1f08577dc5e26cf52bfd1060f93b5f880c2c04b47b494cb84",
+        "bytes": 5507
+      },
+      {
+        "path": "web/src/features/profile/components/checkin-calendar-card.tsx",
+        "code": " M",
+        "sha256": "3ef109f9d36e2fa60b49e477425973e0bc72c24853e38eb39e639e9fd3ab281c",
+        "bytes": 19150
+      },
+      {
+        "path": "web/src/features/rankings/components/rankings-hero.tsx",
+        "code": " M",
+        "sha256": "9d3d7e625060dc60ee33764eec7b0a8021695d90ced536bf5e84435bd0de2aad",
+        "bytes": 3084
+      },
+      {
+        "path": "web/src/features/system-info/components/system-instances-panel.tsx",
+        "code": " M",
+        "sha256": "365a2c45be867ca82c6a5ccf36af53b29a3fa268b5be99ee9eb200c616a8a988",
+        "bytes": 26251
+      },
+      {
+        "path": "web/src/features/system-settings/models/visual-billing-document-editor.tsx",
+        "code": " M",
+        "sha256": "8fd2305df5f08725c8a3456c538e21a3f5e1b14e88777a8eadfeef66e6b8de89",
+        "bytes": 17255
+      },
+      {
+        "path": "web/src/features/usage-logs/components/columns/common-logs-columns.tsx",
+        "code": " M",
+        "sha256": "53450f4cb56dd454be9ea650f929174be8f98ed2a9e23eb2489fcdab4da40d51",
+        "bytes": 32393
+      },
+      {
+        "path": "web/src/lib/__tests__/task-checkbox-a11y.test.ts",
+        "code": " M",
+        "sha256": "243c68e9c26ba6e995f6ef9b35b02d8ffea28421c677e6d7b2226314d2de1b54",
+        "bytes": 3437
+      },
+      {
+        "path": "web/src/routes/_public/about/$section.tsx",
+        "code": " M",
+        "sha256": "4ebcc9191817293e0e3c5c9ed5ba3c9302f01d65fdcbc12a1cf69fab5de39fff",
+        "bytes": 1791
+      },
+      {
+        "path": "web/src/styles/theme-presets.css",
+        "code": " M",
+        "sha256": "bfa094bbeee4655110f6abeff27cadf649c82f34e5b7a075fe1f0095c0ea9572",
+        "bytes": 31444
+      },
+      {
+        "path": "web/src/styles/theme.css",
+        "code": " M",
+        "sha256": "9d8810d19082657233b869d9d645e693f32b17a896e8540317f59b45cf6cc871",
+        "bytes": 41399
+      }
+    ]
+  },
+  "previous_report_versions": [
+    {
+      "file": ".uap/reports/AUDIT-REPORT.json",
+      "generated_at": "2026-11-13T03:12:40.612Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 32440
+    },
+    {
+      "file": ".uap/reports/AUTO-REPAIR.json",
+      "generated_at": "2026-11-12T15:20:31.615Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 8443
+    },
+    {
+      "file": ".uap/reports/BUILD-RESULTS.json",
+      "generated_at": "2026-11-13T03:12:36.565Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 1540
+    },
+    {
+      "file": ".uap/reports/CODE-REVIEW.json",
+      "generated_at": "2026-11-12T11:02:34.958Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 78653
+    },
+    {
+      "file": ".uap/reports/CROSS-PLATFORM.json",
+      "generated_at": "2026-11-12T11:02:37.552Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 19295
+    },
+    {
+      "file": ".uap/reports/CURRENT-EXECUTION-BASELINE.json",
+      "generated_at": null,
+      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+      "execution_id": null,
+      "bytes": 30017
+    },
+    {
+      "file": ".uap/reports/DEFECT-REGISTRY.json",
+      "generated_at": "2026-11-13T03:14:14.255Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 3412
+    },
+    {
+      "file": ".uap/reports/DELIVERY.json",
+      "generated_at": "2026-11-12T11:02:37.999Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 44027
+    },
+    {
+      "file": ".uap/reports/DEPLOY-DRY-RUN.json",
+      "generated_at": "2026-11-13T03:14:13.678Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 1636
+    },
+    {
+      "file": ".uap/reports/EVIDENCE-INDEX.json",
+      "generated_at": "2026-11-13T03:32:54.980Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 441
+    },
+    {
+      "file": ".uap/reports/FINAL-STATUS.json",
+      "generated_at": "2026-11-13T03:32:04.264Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 7311
+    },
+    {
+      "file": ".uap/reports/FINANCIAL-INTEGRITY.json",
+      "generated_at": "2026-11-13T03:12:40.612Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 14137
+    },
+    {
+      "file": ".uap/reports/H5-BROWSER-MATRIX.json",
+      "generated_at": "2026-11-13T03:14:05.355Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 43905
+    },
+    {
+      "file": ".uap/reports/H5-TOUCH-PROBE.json",
+      "generated_at": "2026-11-12T16:05:19.855Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 11731
+    },
+    {
+      "file": ".uap/reports/QUALITY-GATES.json",
+      "generated_at": "2026-11-12T17:03:35.815Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 9843
+    },
+    {
+      "file": ".uap/reports/RELEASE-CHECK.json",
+      "generated_at": "2026-11-13T03:12:37.064Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 647
+    },
+    {
+      "file": ".uap/reports/REPAIR-RUN.json",
+      "generated_at": null,
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 244
+    },
+    {
+      "file": ".uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json",
+      "generated_at": "2026-11-13T01:35:31.367Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 586633
+    },
+    {
+      "file": ".uap/reports/RUNTIME-TEST-RESULTS.json",
+      "generated_at": "2026-11-13T07:19:11.573Z",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "execution_id": "UAP-EXEC-20261113071825-f4b0c0b2",
+      "bytes": 4657
+    },
+    {
+      "file": ".uap/reports/SECURITY-SCAN.json",
+      "generated_at": "2026-11-12T11:02:36.758Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 15316
+    },
+    {
+      "file": ".uap/reports/SPEC-HEADER-REPAIR.json",
+      "generated_at": "2026-11-12T10:55:32.967Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 792
+    },
+    {
+      "file": ".uap/reports/STATUS-CONSISTENCY.json",
+      "generated_at": "2026-11-13T03:32:56.359Z",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "execution_id": "UAP-EXEC-20261113033035-5159bf71",
+      "bytes": 3772
+    },
+    {
+      "file": ".uap/reports/TEST-RUNS.json",
+      "generated_at": "2026-11-12T11:02:35.227Z",
+      "git_head": null,
+      "execution_id": null,
+      "bytes": 21201
+    },
+    {
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "generated_at": "2026-11-13T03:14:14.160Z",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+      "bytes": 4137322
+    }
+  ],
+  "stale_reports": [
+    {
+      "file": ".uap/reports/RUNTIME-TEST-RESULTS.json",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "generated_at": "2026-11-13T07:19:11.573Z"
+    },
+    {
+      "file": ".uap/reports/STATUS-CONSISTENCY.json",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "generated_at": "2026-11-13T03:32:56.359Z"
+    },
+    {
+      "file": ".uap/reports/VALIDATION-RESULTS.json",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "generated_at": "2026-11-13T03:14:14.160Z"
+    }
+  ],
+  "reports_without_version_binding": [
+    ".uap/reports/AUDIT-REPORT.json",
+    ".uap/reports/AUTO-REPAIR.json",
+    ".uap/reports/BUILD-RESULTS.json",
+    ".uap/reports/CODE-REVIEW.json",
+    ".uap/reports/CROSS-PLATFORM.json",
+    ".uap/reports/DEFECT-REGISTRY.json",
+    ".uap/reports/DELIVERY.json",
+    ".uap/reports/DEPLOY-DRY-RUN.json",
+    ".uap/reports/EVIDENCE-INDEX.json",
+    ".uap/reports/FINAL-STATUS.json",
+    ".uap/reports/FINANCIAL-INTEGRITY.json",
+    ".uap/reports/H5-BROWSER-MATRIX.json",
+    ".uap/reports/H5-TOUCH-PROBE.json",
+    ".uap/reports/QUALITY-GATES.json",
+    ".uap/reports/RELEASE-CHECK.json",
+    ".uap/reports/REPAIR-RUN.json",
+    ".uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json",
+    ".uap/reports/SECURITY-SCAN.json",
+    ".uap/reports/SPEC-HEADER-REPAIR.json",
+    ".uap/reports/TEST-RUNS.json"
+  ],
+  "scope": {
+    "task": "UAP final closure: specification completeness, real autonomous repair, independent verification, Uter compliance",
+    "branch_policy": "local main only; no branch, no PR, no push, no production deploy",
+    "forbidden": [
+      "production deploy",
+      "production database write",
+      "real payment",
+      "real refund",
+      "secret export",
+      "destructive git"
+    ]
+  },
+  "integrity_notes": [
+    "All fields come from real commands; nothing here is a verdict.",
+    "Historical reports are bound to older commits and are stale for this HEAD.",
+    "Evidence for this run must be bound to verification_execution (see --bind)."
+  ]
+}

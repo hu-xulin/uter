@@ -24,10 +24,7 @@ import { resolveDocsLocaleCode, type DocsLocaleCode } from '@/lib/docs-link'
 import { labelTaskListCheckboxes } from '@/lib/task-checkbox-a11y'
 
 import { Callout } from './callout'
-import {
-  docRefForPagePath,
-  NATIVE_USER_GUIDE_PATH,
-} from './docs-content'
+import { docRefForPagePath, NATIVE_USER_GUIDE_PATH } from './docs-content'
 import { loadNativeDoc } from './docs-loader'
 import { NativeDocsShell, type TocItem } from './docs-shell'
 import { PROSE_CLASSES } from './prose-classes'
@@ -126,7 +123,9 @@ export function NativeDocsView({
 
   // The guide's landing is a synthesised card page, not a Markdown
   // document. Applying the prose scale here would override its `page-title`
-  // with the Markdown h1 rule (24/32) and restyle the cards' own type.
+  // (30/38/600, §1.8) with the Markdown h1 rule (20/28) and restyle the
+  // cards' own type. The 72ch reading width of §1.12 would also clip the
+  // multi-column chapter grid.
   const isSyntheticIndex =
     pagePath.replace(/\/+$/, '') === NATIVE_USER_GUIDE_PATH
 

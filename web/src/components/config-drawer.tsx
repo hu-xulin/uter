@@ -176,7 +176,7 @@ function RadioGroupItem(props: {
         className={cn(
           'ring-border relative rounded-md ring-[1px]',
           'group-data-checked:ring-primary',
-          'group-focus-visible:ring-1'
+          'group-focus-visible:ring-2'
         )}
         role='img'
         aria-hidden='false'
@@ -268,7 +268,7 @@ function PresetConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-1',
+                'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >
@@ -343,7 +343,7 @@ function RadiusConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-1',
+                'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >
@@ -430,7 +430,7 @@ function ScaleConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-1',
+                'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >
@@ -571,7 +571,7 @@ function ContentLayoutConfig() {
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
                 'group-data-checked:ring-primary',
-                'group-focus-visible:ring-1',
+                'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >

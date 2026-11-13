@@ -785,11 +785,13 @@ export function Markdown(props: MarkdownProps) {
          * not a dependency — so the scale is pinned with explicit
          * descendant selectors instead.
          *
-         * 规范 §1.2「内容排版（Markdown prose）」：Markdown 标题自成一套，
-         * 比界面层级（28/22/18/15）**低一到两档** —— h1 24/32、h2 18/28、
-         * h3 16/24、h4 14/20，正文 body-long 16/26，行内与围栏代码 mono 14/20。
+         * 规范 §1.8「内容排版（Markdown prose）」：Markdown 标题自成一套，
+         * 比界面层级（30/24/18/16）**低一到两档** —— h1 20/28、h2 18/26、
+         * h3 16/24、h4 14/22，正文 body-long 16/26，行内与围栏代码 mono 13/20。
          * 规范点名了此前的错误：把 Markdown 的 h1 抬到界面 30px，会让回答里的
-         * 标题比它所在卡片的标题（18px）还大，页面层级当场塌掉。 */
+         * 标题比它所在卡片的标题（18px）还大，页面层级当场塌掉。
+         * §1.12 的 72ch 宽度由文档 / 协议容器负责，AI 对话气泡由父级
+         * `max-w-[84%]` 负责，这里保持 `max-w-none` 不重复限宽。 */
         'max-w-none text-long',
         '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold',
         '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-lg [&_h2]:font-semibold',

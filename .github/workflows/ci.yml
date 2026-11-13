@@ -405,6 +405,11 @@ jobs:
       - name: Design token source sync
         run: bun run design:tokens:check
 
+      # §28.3 / §18.1：核查页的页内内联快照必须与 TOKEN-MANIFEST 逐值一致，
+      # 否则 file:// 单文件打开会展示旧值（历史上曾因此被迫起本地 HTTP 服务）。
+      - name: Design showcase data chain
+        run: bun run design:showcase:check
+
       - name: Brand contrast verification
         run: bun run verify:contrast
 

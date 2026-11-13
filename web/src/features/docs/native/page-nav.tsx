@@ -28,12 +28,12 @@ import { useTranslation } from 'react-i18next'
  * `<Link>` targets without a union of router options leaking into this
  * shared component.
  *
- * §5 assigns cards `rounded-lg` (12px); §15.1 fixes the focus ring at 1px.
+ * §5 assigns cards `rounded-lg` (12px); §15.1 fixes the focus ring at 2px.
  * Navigation selected state uses `text-sidebar-active-foreground`, never
  * `text-primary` (§2.3, contrast).
  */
 export const PAGE_NAV_CARD_CLASS =
-  'focus-visible:ring-ring hover:bg-muted group flex min-w-0 flex-col gap-1 rounded-lg border p-4 no-underline transition-colors outline-none focus-visible:ring-1'
+  'focus-visible:ring-ring hover:bg-muted group flex min-w-0 flex-col gap-1 rounded-lg border p-4 no-underline transition-colors outline-none focus-visible:ring-2'
 
 export function PageNavCardContent({
   direction,

@@ -1513,7 +1513,7 @@
       "root_cause": "疑似真实密钥字面量出现在改动文件中",
       "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
       "code": "CR-SECRET-LITERAL",
-      "matched_text": "\"redacted_snippet\": \"\\\"matched_text\\\": \\\"\\\\\\\"redacted_snippet\\\\\\\": \\\\\\\"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',\\\\\\\",\\\"\","
+      "matched_text": "\"redacted_snippet\": \"\\\"matched_text\\\": \\\"\\\\\\\"redacted_snippet\\\\\\\": \\\\\\\"'EXAMPLE-REDACTED-PRIVATE-KEY-PLACEHOLDER',\\\\\\\",\\\"\","
     },
     {
       "severity": "INFO",
@@ -1563,7 +1563,7 @@
       "root_cause": "疑似真实密钥字面量出现在改动文件中",
       "suggestion": "立即轮换密钥，改用环境变量/密钥管理，禁止提交明文",
       "code": "CR-SECRET-LITERAL",
-      "matched_text": "\"redacted_snippet\": \"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',\","
+      "matched_text": "\"redacted_snippet\": \"'EXAMPLE-REDACTED-PRIVATE-KEY-PLACEHOLDER',\","
     },
     {
       "severity": "INFO",

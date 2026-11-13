@@ -1,0 +1,92 @@
+{
+  "task_id": "UAP-REAL-REPAIR-002",
+  "title": "修复独立复核脚本硬编码单案例测试导致的假绿验证",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-003",
+    "UAP-00-001-REQ-005",
+    "UAP-00-001-REQ-007",
+    "UAP-00-001-REQ-010",
+    "UAP-00-001-REQ-011"
+  ],
+  "defect": {
+    "description": "independent-review.mjs 把定向测试、关联回归、go vet 硬编码成 common/request_path.go 单一历史案例，完全不读 ledger.commands；对任何其他缺陷都会重跑无关测试并给出 PASS，无法检查原始缺陷是否消失、关联功能是否回归。",
+    "impact": "UAP 声称具备「独立回归验证」，但第二个及以后的真实代码修复都可能得到未经核实的 PASS，形成假验收闭环。",
+    "reproduction_test": ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+  },
+  "scope": {
+    "allowed_paths": [
+      ".uap/engines/auto-repair/independent-review.mjs"
+    ],
+    "review_authorizations": []
+  },
+  "patch": {
+    "file": ".uap/engines/auto-repair/independent-review.mjs",
+    "old": "  // 独立重跑定向测试与关联回归：不采信修复 Agent 记录的结果。\n  const repro = sh('go', ['test', './model/', '-run', '^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$', '-count=1']);\n  add('reproduction_test_now_passes', repro.exit_code === 0,\n    `exit=${repro.exit_code} ${(repro.stdout + repro.stderr).slice(0, 400)}`);\n  const canonical = sh('go', ['test', './common/', '-run', '^TestCanonicalUpstreamPath', '-count=1']);\n  add('existing_canonical_path_tests_pass', canonical.exit_code === 0,\n    `exit=${canonical.exit_code} ${(canonical.stdout + canonical.stderr).slice(0, 400)}`);\n  const vet = sh('go', ['vet', './common/', './model/']);\n  add('go_vet_clean', vet.exit_code === 0,\n    `exit=${vet.exit_code} ${(vet.stdout + vet.stderr).slice(0, 400)}`);\n\n  const verdict = {\n    component: 'independent-repair-review',\n    verdict: failures.length === 0 ? 'PASS' : 'FAIL',\n    at: new Date().toISOString(),\n    ledger: ledger ? rel(ledgerFile) : null,\n    checks,\n    failures,\n    commands: [repro, canonical, vet].map((c) => ({ command: c.command, exit_code: c.exit_code })),\n  };\n",
+    "new": "  // 独立重跑定向测试与关联回归：不采信修复 Agent 记录的结果。\n  //\n  // 命令必须来自本次修复账本（ledger.commands = 修复引擎真实执行过的\n  // targeted_tests + regression_tests），绝不能硬编码成某一个历史缺陷的测试。\n  // 硬编码会让第二个缺陷被「验证」无关测试并返回假绿 PASS。\n  const rerunnable = (ledger?.commands || []).map((c, index) => {\n    const tokens = String(c.command || '').trim().split(/\\s+/).filter(Boolean);\n    const args = Array.isArray(c.args) && c.args.length ? c.args : tokens.slice(1);\n    return {\n      label: `independent_rerun_recorded_command_${index + 1}`,\n      exe: tokens[0] || null,\n      args,\n      recorded_exit_code: c.exit_code,\n      command: tokens[0] ? `${tokens[0]} ${args.join(' ')}` : '',\n    };\n  }).filter((c) => c.exe && c.args.length);\n\n  add('ledger_has_commands_to_rerun', rerunnable.length > 0,\n    `rerunnable=${rerunnable.length} recorded=${(ledger?.commands || []).length}`);\n\n  const rerunResults = [];\n  for (const c of rerunnable) {\n    const r = sh(c.exe, c.args, 180000);\n    const output = `${r.stdout}\\n${r.stderr}`;\n    // \"go test -run <name>\" 匹配不到用例时仍返回 0（只打印\n    // \"no tests to run\"）。把它算作 PASS 会让写错测试名的验证器假绿。\n    const emptyRun = /no tests to run|no test files/i.test(output);\n    const passed = r.exit_code === 0 && !emptyRun;\n    add(c.label, passed,\n      `exit=${r.exit_code} no_tests_to_run=${emptyRun} cmd=${c.command}`);\n    rerunResults.push({\n      command: c.command,\n      exit_code: r.exit_code,\n      no_tests_to_run: emptyRun,\n      recorded_exit_code: c.recorded_exit_code,\n      passed,\n    });\n  }\n\n  const verdict = {\n    component: 'independent-repair-review',\n    verdict: failures.length === 0 ? 'PASS' : 'FAIL',\n    at: new Date().toISOString(),\n    ledger: ledger ? rel(ledgerFile) : null,\n    checks,\n    failures,\n    commands: rerunResults.map((c) => ({ command: c.command, exit_code: c.exit_code, passed: c.passed })),\n    commands_rerun: rerunResults.length,\n    independent_rerun_passed: rerunResults.filter((c) => c.passed).length,\n  };\n"
+  },
+  "reproduction_test": {
+    "command": "node",
+    "args": [
+      ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+    ]
+  },
+  "root_cause_probe": {
+    "command": "git",
+    "args": [
+      "grep",
+      "-n",
+      "TestReproTrailingSlashCanonicalPathBreaksChannelMatching",
+      "--",
+      ".uap/engines/auto-repair/independent-review.mjs"
+    ]
+  },
+  "targeted_tests": [
+    {
+      "command": "node",
+      "args": [
+        ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+      ]
+    },
+    {
+      "command": "node",
+      "args": [
+        "--check",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ]
+    }
+  ],
+  "regression_tests": [
+    {
+      "command": "node",
+      "args": [
+        "--check",
+        ".uap/bin/uap.mjs"
+      ]
+    },
+    {
+      "command": "git",
+      "args": [
+        "diff",
+        "--check",
+        "--",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ]
+    }
+  ],
+  "independent_verification": {
+    "command": "node",
+    "args": [
+      ".uap/engines/auto-repair/independent-review.mjs"
+    ],
+    "env": {}
+  },
+  "limits": {
+    "max_attempts": 3,
+    "timeout_ms": 180000,
+    "retry_delay_ms": 300
+  }
+}

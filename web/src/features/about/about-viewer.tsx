@@ -84,7 +84,7 @@ function teaserOf(section: AboutSection): string {
 }
 
 const SIDEBAR_LINK_CLASS =
-  'focus-visible:ring-ring block rounded-md py-1.5 pr-2 pl-2 no-underline transition-colors outline-none focus-visible:ring-1'
+  'focus-visible:ring-ring block rounded-md py-1.5 pr-2 pl-2 no-underline transition-colors outline-none focus-visible:ring-2'
 const SIDEBAR_ACTIVE_CLASS =
   'bg-primary-subtle text-sidebar-active-foreground font-medium'
 const SIDEBAR_IDLE_CLASS =
@@ -395,8 +395,7 @@ export function AboutSectionViewer({ section: slug }: { section: string }) {
   const { section, index } = found
   const toc = outlineOfSection(section, index)
 
-  const previousSlug =
-    index > 0 ? ABOUT_SECTION_SLUGS[index - 1] : undefined
+  const previousSlug = index > 0 ? ABOUT_SECTION_SLUGS[index - 1] : undefined
   const nextSlug =
     index < ABOUT_SECTION_SLUGS.length - 1
       ? ABOUT_SECTION_SLUGS[index + 1]

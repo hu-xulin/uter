@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T03:12:39.947Z",
+  "generated_at": "2026-11-13T09:02:50.080Z",
   "ok": true,
   "checks": {
     "child_process_crashed": true,
@@ -10,5 +10,5 @@
     "recovery_evidence_written": true
   },
   "final_state": "SUCCEEDED",
-  "probe_task_id": "UAP-TASK-INTERRUPT-20261113031239-715f3e09"
+  "probe_task_id": "UAP-TASK-INTERRUPT-20261113090249-fdf9969d"
 }

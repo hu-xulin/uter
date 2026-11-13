@@ -145,7 +145,10 @@ function BundledLegalDocument({
   return (
     <PublicLayout>
       <div className='mx-auto w-full max-w-3xl px-6 py-10'>
-        <Heading variant='section-title' level={1} className='mt-6 mb-2'>
+        {/* §1.8: a document's first-level title uses the interface
+         * `page-title` (30/38/600). PROSE_CLASSES only styles the Markdown
+         * body ladder (20/18/16/14) and must not be applied to this heading. */}
+        <Heading variant='page-title' level={1} className='mt-6 mb-2'>
           {title}
         </Heading>
         <div className={PROSE_CLASSES}>

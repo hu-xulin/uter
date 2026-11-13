@@ -221,9 +221,9 @@ For commercial licensing, please contact support@uter.ai
     box-shadow 0.15s;
 }
 .cs-input:focus {
-  /* 焦点环按规范 §15.1：恒 1px、满色，走 ring Token，不用 3px 半透明手写色。 */
+  /* 焦点环按规范 §15.1：恒 2px、满色，走 ring Token，不用 3px 半透明手写色。 */
   border-color: var(--ring);
-  box-shadow: 0 0 0 1px var(--ring);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 .cs-send {

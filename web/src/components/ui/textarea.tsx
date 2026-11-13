@@ -41,12 +41,13 @@ function Textarea({
         // 「最小约 3 行」= 3×20 + 2×10 + 2×1 ≈ 72px（min-h-18）。
         // 此前 min-h-16（64px）在 14/20 字号下只能装 2 行多一点。
         //
-        // 焦点环与 Input 同档 **1px 外扩**（规范 2.1 Textarea 写的就是 1px；
-        // 2px 会让「1px 边框 + 2px 环」看起来像双线框）。错误态同步收到 1px。
+        // 焦点环与 Input 同档 **2px 贴边**（3.0 §15.1，2026-11-13 定档）。
+        // 边框保持 1px 中性色，环用 `ring` 满色，靠颜色而非粗细区分；
+        // 错误态同为 2px，只换 destructive 色。
         // 悬停态与 Input 同源（规范 §11.2/§11.4）：border-strong Token。
-        // 焦点态不改边框色（不设 focus-visible:border-ring）：1px 满色焦点环
+        // 焦点态不改边框色（不设 focus-visible:border-ring）：2px 满色焦点环
         // 单独承担焦点指示（PR #31 focus-ring 修复），边框保持 border-input。
-        'border-input hover:border-border-strong placeholder:text-muted-foreground focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-md border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
+        'border-input hover:border-border-strong placeholder:text-muted-foreground focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-md border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-2',
         // 与 Input 一致：字号统一走 `text-long`（16px）满足 AES P4 H5 无障碍
         // （≥16px 防 iOS 聚焦自动缩放）；mono 仅额外叠 `font-mono` 字形族，
         // 不再用 13px 的 `text-mono` 档，size 与字形拆开避免 twMerge 冲突。

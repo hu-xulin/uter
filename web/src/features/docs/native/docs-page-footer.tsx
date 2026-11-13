@@ -22,11 +22,7 @@ import type { DocsLocaleCode } from '@/lib/docs-link'
 import { cn } from '@/lib/utils'
 
 import { sidebarEntries, type SidebarNode } from './docs-content'
-import {
-  PAGE_NAV_CARD_CLASS,
-  PageNav,
-  PageNavCardContent,
-} from './page-nav'
+import { PAGE_NAV_CARD_CLASS, PageNav, PageNavCardContent } from './page-nav'
 
 /**
  * Previous / next page cards for a native docs page.
@@ -47,7 +43,10 @@ function flattenPages(entries: SidebarNode[]): FlatPage[] {
   for (const entry of entries) {
     if (entry.url.includes('#')) continue
     if (!entry.noIndex) {
-      out.push({ title: entry.title, splat: entry.url.replace(/^\/docs\//, '') })
+      out.push({
+        title: entry.title,
+        splat: entry.url.replace(/^\/docs\//, ''),
+      })
     }
     if (entry.children) out.push(...flattenPages(entry.children))
   }
@@ -79,10 +78,7 @@ export function DocsPageFooter({
             params={{ _splat: previous.splat }}
             className={PAGE_NAV_CARD_CLASS}
           >
-            <PageNavCardContent
-              direction='previous'
-              title={previous.title}
-            />
+            <PageNavCardContent direction='previous' title={previous.title} />
           </Link>
         ) : undefined
       }

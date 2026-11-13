@@ -126,6 +126,9 @@ if command -v bun >/dev/null 2>&1 && [ -d "$ROOT/web" ]; then
   step "前端 类型检查 (tsgo)"    'bun run typecheck 2>&1'                 "$ROOT/web"
   step "前端 Lint (oxlint+i18n)" 'bun run lint 2>&1'                      "$ROOT/web"
   step "设计令牌门禁 (strict)"   'bun run lint:design:strict 2>&1'        "$ROOT/web"
+  # §28.3：规范声明 ↔ 运行真源 ↔ 展示页（含 file:// 单文件内联快照）逐值一致。
+  # 这道门禁缺失时，改了规范值但没刷新快照，离线打开核查页只会看到旧值。
+  step "设计展示页数据链校验"   'bun run design:showcase:check 2>&1'      "$ROOT/web"
   step "版权头检查"              'bun run copyright:check 2>&1'           "$ROOT/web"
   step "格式检查"                'bun run format:check 2>&1'              "$ROOT/web"
   if [ "$QUICK" -eq 1 ]; then

@@ -38,7 +38,7 @@
       "pattern_id": "private_key_block",
       "file": ".uap/reports/CODE-REVIEW.json",
       "line": 1516,
-      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"\\\\\\\"matched_text\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"redacted_snippet\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END ",
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"\\\\\\\"matched_text\\\\\\\": \\\\\\\"\\\\\\\\\\\\\\\"redacted_snippet\\\\\\\\\\\\\\\": \\\\\\\\\\\\\\\"'EXAMPLE-REDACTED-PRIVATE-KEY-PLACEHOLDER ",
       "possible_test_fixture": false
     },
     {
@@ -65,7 +65,7 @@
       "pattern_id": "private_key_block",
       "file": ".uap/reports/CODE-REVIEW.json",
       "line": 1566,
-      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',\\\",\"",
+      "redacted_snippet": "\"matched_text\": \"\\\"redacted_snippet\\\": \\\"'EXAMPLE-REDACTED-PRIVATE-KEY-PLACEHOLDER',\\\",\"",
       "possible_test_fixture": false
     },
     {
@@ -191,7 +191,7 @@
       "pattern_id": "private_key_block",
       "file": "web/src/lib/secret.test.ts",
       "line": 80,
-      "redacted_snippet": "'-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',",
+      "redacted_snippet": "'EXAMPLE-REDACTED-PRIVATE-KEY-PLACEHOLDER',",
       "possible_test_fixture": true
     },
     {

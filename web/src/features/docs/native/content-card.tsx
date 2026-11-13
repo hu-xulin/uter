@@ -24,14 +24,13 @@ For commercial licensing, please contact support@uter.ai
  * two-column grid of "title + opening sentence" cards. Both the user guide
  * landing and the About landing still use that shape, so the shell lives
  * here rather than being restyled twice. §5 assigns cards `radius-lg`
- * (12px), and §15.1 fixes the focus ring at 1px.
+ * (12px), and §15.1 fixes the focus ring at 2px.
  */
 export const CONTENT_CARD_GRID_CLASS = 'mt-8 grid gap-3 sm:grid-cols-2'
 
 export const CONTENT_CARD_CLASS =
-  'focus-visible:ring-ring hover:bg-muted flex h-full flex-col rounded-lg border p-6 no-underline transition-colors outline-none focus-visible:ring-1'
+  'focus-visible:ring-ring hover:bg-muted flex h-full flex-col rounded-lg border p-6 no-underline transition-colors outline-none focus-visible:ring-2'
 
-export const CONTENT_CARD_TITLE_CLASS =
-  'text-xl text-fg-primary font-semibold'
+export const CONTENT_CARD_TITLE_CLASS = 'text-xl text-fg-primary font-semibold'
 
 export const CONTENT_CARD_TEASER_CLASS = 'text-md text-fg-secondary mt-2'

@@ -695,91 +695,146 @@ describe('brand color source', () => {
   })
 })
 
-/* ── 1.2 内容排版（Markdown prose）阶梯 ──────────────────────────────── */
+/* ── §1.8 内容排版（Markdown prose）阶梯 ─────────────────────────────── */
 
 /**
- * 规范 §1.2「内容排版（Markdown prose）」：Markdown 的标题自成一套，比界面
- * 层级（30 / 24 / 18 / 16）低一到两档 —— h1 24/32、h2 18/28、h3 16/24、
- * h4 14/20。规范点名了此前的错误：把 Markdown 的 h1 抬到界面 30px，会让回答
+ * 规范 §1.8 / §28「markdown prose ladder」：Markdown 的标题自成一套，比界面
+ * 层级（30 / 24 / 18 / 16）低一到两档 —— h1 20/28、h2 18/26、h3 16/24、
+ * h4 14/22。规范点名了此前的错误：把 Markdown 的 h1 抬到界面 30px，会让回答
  * 里的标题比它所在卡片的标题（18px）还大，「页面层级当场塌掉」。
  *
- * `components/ui/markdown.tsx` 正是踩过这条的渲染器（`RichContent` 的
- * markdown 分支、协议正文），2026-10-28 才从界面阶梯改回本表。
+ * 三处渲染 Markdown 的地方必须用同一套值：
+ *   `components/ui/markdown.tsx`（RichContent / 协议正文）、
+ *   `components/ai-elements/response-renderer-blocks.tsx`（AI 回答）、
+ *   `features/docs/native/prose-classes.ts`（原生文档 / 内置法务正文）。
+ * 2026-11-13 前 `prose-classes.ts` 漏在守卫之外，长期停留在
+ * h1 24/32 / h2 text-xl 的旧界面阶梯 —— 本组用例把它一并钉死。
  */
 describe('markdown prose ladder', () => {
-  const LADDER: { expect: RegExp; why: string }[] = [
-    { expect: /\[&_h1\]:text-2xl/, why: 'Markdown h1 = 20/28（text-2xl）' },
-    { expect: /\[&_h2\]:text-lg/, why: 'Markdown h2 = 18/26（text-lg）' },
-    { expect: /\[&_h3\]:text-base/, why: 'Markdown h3 = 16/24（text-base）' },
-    { expect: /\[&_h4\]:text-sm/, why: 'Markdown h4 = 14/22（text-sm）' },
+  const LADDER: { expect: RegExp; forbid: RegExp; why: string }[] = [
+    {
+      expect: /\[&_h1\]:text-2xl/,
+      forbid: /\[&_h1\]:text-(?:3xl|4xl)/,
+      why: 'Markdown h1 = 20/28（text-2xl）',
+    },
+    {
+      expect: /\[&_h2\]:text-lg/,
+      forbid: /\[&_h2\]:text-(?:xl|2xl)/,
+      why: 'Markdown h2 = 18/26（text-lg）',
+    },
+    {
+      expect: /\[&_h3\]:text-base/,
+      forbid: /\[&_h3\]:text-(?:lg|xl)/,
+      why: 'Markdown h3 = 16/24（text-base）',
+    },
+    {
+      expect: /\[&_h4\]:text-sm/,
+      forbid: /\[&_h4\]:text-(?:base|lg)/,
+      why: 'Markdown h4 = 14/22（text-sm）',
+    },
   ]
 
-  it('keeps markdown headings one or two tiers below the UI ladder', () => {
-    const body = fileBody('components/ui/markdown.tsx')
-    const missing = LADDER.filter((l) => !l.expect.test(body)).map((l) => ({
-      file: 'components/ui/markdown.tsx',
-      line: 0,
-      text: `${l.why}（期望匹配 ${String(l.expect)}）`,
-    }))
-    expect(
-      missing,
-      `规范 §1.2：Markdown 标题比界面低一到两档。以下档位缺失或被改动：\n${fmt(
-        missing
-      )}`
-    ).toEqual([])
+  const PROSE_FILES: string[] = [
+    'components/ui/markdown.tsx',
+    'features/docs/native/prose-classes.ts',
+  ]
+
+  it.each(PROSE_FILES)(
+    '%s keeps markdown headings below the UI ladder',
+    (file) => {
+      const body = fileBody(file)
+      const missing = LADDER.filter(
+        (l) => !l.expect.test(body) || l.forbid.test(body)
+      ).map((l) => ({
+        file,
+        line: 0,
+        text: `${l.why}（期望匹配 ${String(l.expect)}，且不得匹配 ${String(l.forbid)}）`,
+      }))
+      expect(
+        missing,
+        `规范 §1.8：Markdown 标题比界面低一到两档。以下档位缺失或被改动：\n${fmt(
+          missing
+        )}`
+      ).toEqual([])
+    }
+  )
+
+  it('keeps the AI-answer headingClasses on the same ladder', () => {
+    const body = fileBody('components/ai-elements/response-renderer-blocks.tsx')
+    const pairs: Array<[RegExp, string]> = [
+      [/1:\s*'[^']*text-2xl/, 'h1 = text-2xl (20/28)'],
+      [/2:\s*'[^']*text-lg/, 'h2 = text-lg (18/26)'],
+      [/3:\s*'[^']*text-base/, 'h3 = text-base (16/24)'],
+      [/4:\s*'[^']*text-sm/, 'h4 = text-sm (14/22)'],
+    ]
+    const missing = pairs
+      .filter(([re]) => !re.test(body))
+      .map(([, why]) => ({
+        file: 'response-renderer-blocks.tsx',
+        line: 0,
+        text: why,
+      }))
+    expect(missing, `规范 §1.8：AI 回答标题档位不符\n${fmt(missing)}`).toEqual(
+      []
+    )
   })
 
-  it('never puts a markdown h1 at the UI h1 size (30px)', () => {
-    const body = fileBody('components/ui/markdown.tsx')
+  it('caps long-form document prose at the §1.12 reading width', () => {
+    const body = fileBody('features/docs/native/prose-classes.ts')
     expect(
-      /\[&_h1\]:text-3xl/.test(body),
-      '规范 §1.2：Markdown 的 h1 不得用 30px —— 那是界面 h1 的档位，会让正文标题与页面标题同号'
-    ).toBe(false)
+      body,
+      '规范 §1.12：文档 / 协议正文须收在 max-w-[72ch]，不得继续用 max-w-none'
+    ).toContain('max-w-[72ch]')
+    expect(/'max-w-none text-long'/.test(body)).toBe(false)
   })
 })
 
 describe('focus indicator', () => {
   /**
-   * 规范 §15.1：**全站只有一种焦点指示器**
-   * —— 1px 环、`ring` 满色、贴着元素边框外沿（`outline-offset: 0`）。
+   * 规范 §15.1 / §28 `a11y.focusRing`：**全站只有一种焦点指示器**
+   * —— 2px 环、`ring` 满色、贴着元素边框外沿（`outline-offset: 0`）。
    *
    * 回归背景（2026-10-28）：规范把「输入框外侧焦点环」写清之后，代码里仍有
-   * 四种各自的版本 —— playground 输入舱 `ring-primary/15`（1px 半透明）、
+   * 四种各自的版本 —— playground 输入舱 `ring-primary/15`（半透明环）、
    * API Key 分组下拉 `ring-[3px]` + `ring-ring/20`、数字输入框编辑态在容器上
    * 再叠一圈 `ring-primary/30 ring-1`（同一屏两套）、滑块 `ring-ring/50`
    * （宽度对、颜色半透明）。它们单看都「有个焦点效果」，合起来就是五种焦点
    * 语言。这条守卫把宽度、颜色、offset 三件事一起钉住。
    *
-   * 宽度口径变更（2026-10-29）：此前是「表单控件 1px、其余 2px」两档，规范
-   * 已改为全站 1px。两档并存的代价是同一次 Tab 序列里焦点环粗细会跳（按钮
-   * 2px → 输入框 1px → 按钮 2px），而且 2px 环压在 1px 描边的卡片上会被读成
-   * 双线框。现在只有 1px 一种，2px / 3px / 4px 在任何位置都红。
-   * （2026-11-03 复裁定：design-system-2.0 曾改回 2px，最终维持 1px 口径。）
+   * 宽度沿革：2026-10-29 由「表单 1px / 其余 2px」两档统一收窄到 1px；
+   * design-system-2.0 曾改回 2px、2026-11-03 复裁定维持 1px；
+   * **2026-11-13 用户裁决重定为 2px** —— 1px 环在 36px 控件与 1px 描边的
+   * 界面上辨识度不足。现在只有 2px 一种，1px / 3px / 4px 在任何位置都红。
+   * 改值须按 §28.2 把 Manifest、semantic.css、组件层、守卫、showcase 同提交。
    *
    * 允许的例外：
    * - `ring-0`：容器包裹输入框时，内层控件把环让给容器（InputGroup 体系）；
    * - `ring-destructive/*`、`ring-warning/*`：状态语义色，环跟随元素自身的
    *   状态边框，不是另造一套焦点色；
-   * - `aria-invalid:ring-2`：校验失败时的状态描边，不是焦点指示器（规范把
-   *   错误态与焦点态定义为两件事），宽度跟随 stroke-destructive 的 2px 强调档。
+   * - `aria-invalid:ring-2`：校验失败时的状态描边，不是焦点指示器；与焦点环
+   *   **同宽 2px**，靠 `destructive` 颜色区分（§15.1），不靠粗细区分。
    */
   const SEMANTIC_RING_COLORS = /^focus-visible:ring-(?:destructive|warning)\//
 
-  it('keeps every focus ring at 1px', () => {
+  it('keeps every focus ring at 2px', () => {
     const hits: Hit[] = []
     for (const file of FILES) {
       file.lines.forEach((text, index) => {
-        const match = text.match(/focus-visible:ring-(?:\[([\d.]+)px\]|(\d+))/)
+        // `outline-N` 原生兜底也纳入同一宽度口径：§15.1 明确
+        // `focus-visible:outline-1` 不得再用 1px。
+        const match = text.match(
+          /focus-visible:(?:ring|outline)-(?:\[([\d.]+)px\]|(\d+))/
+        )
         if (!match) return
         const px = Number(match[1] ?? match[2])
-        // 0 = 把环让给容器；1 = 规范规定值（2026-11-03 复裁定）。
-        if (px === 0 || px === 1) return
+        // 0 = 把环让给容器；2 = 规范规定值（2026-11-13 用户裁决）。
+        if (px === 0 || px === 2) return
         hits.push({ file: file.rel, line: index + 1, text: text.trim() })
       })
     }
     expect(
       hits,
-      `规范 §15.1：焦点环恒 1px 满色（把环让给容器时用 ring-0）。2px / 3px / 4px 会让同一屏出现多种粗细的焦点语言：\n${fmt(hits)}`
+      `规范 §15.1：焦点环恒 2px 满色（把环让给容器时用 ring-0）。1px / 3px / 4px 会让同一屏出现多种粗细的焦点语言：\n${fmt(hits)}`
     ).toEqual([])
   })
 
@@ -788,7 +843,7 @@ describe('focus indicator', () => {
     for (const file of FILES) {
       file.lines.forEach((text, index) => {
         // `ring-ring/50`、`ring-primary/15` 这类：宽度可能对，颜色是半透明。
-        // 它们把 `--tw-ring-color` 改成带 alpha 的值，`focus-visible:ring-1`
+        // 它们把 `--tw-ring-color` 改成带 alpha 的值，`focus-visible:ring-2`
         // 继承的就是这个颜色 —— 等于第二套焦点色。
         for (const token of text.match(/focus-visible:ring-[a-z-]+\/\d+/g) ??
           []) {
@@ -835,7 +890,7 @@ describe('focus indicator', () => {
     ).toEqual([])
   })
 
-  it('keeps the base focus ring at 1px with no offset', () => {
+  it('keeps the base focus ring at 2px with no offset', () => {
     const css = fileBody('design-system/foundations/accessibility.css')
     expect(
       css,
@@ -851,11 +906,11 @@ describe('focus indicator', () => {
     const semantic = fileBody('design-system/tokens/semantic.css')
     expect(
       semantic,
-      '规范 §15.1 / §17.1：焦点环宽度 Token 唯一来源是语义层，恒 1px（2026-11-03 复裁定）'
-    ).toContain('--ds-focus-ring-width: 1px')
+      '规范 §15.1 / §28：焦点环宽度 Token 唯一来源是语义层，恒 2px（2026-11-13 用户裁决）'
+    ).toContain('--ds-focus-ring-width: 2px')
   })
 
-  it('keeps every form control on the shared 1px focus ring', () => {
+  it('keeps every form control on the shared 2px focus ring', () => {
     for (const rel of [
       'components/ui/input.tsx',
       'components/ui/textarea.tsx',
@@ -863,11 +918,10 @@ describe('focus indicator', () => {
     ]) {
       const body = fileBody(rel)
       // 规范 §15.1：Input / Textarea / Select 用全站统一的
-      // 1px 满色焦点环（2026-11-03 复裁定，回到 2026-10-29 口径）。
-      expect(
-        body,
-        `规范 §15.1：${rel} 的焦点环必须是 1px 满色`
-      ).toContain('focus-visible:ring-1')
+      // 2px 满色焦点环（2026-11-13 用户裁决）。
+      expect(body, `规范 §15.1：${rel} 的焦点环必须是 2px 满色`).toContain(
+        'focus-visible:ring-2'
+      )
       expect(
         body,
         `规范 §15.1 / §2.2：${rel} 的焦点环颜色必须是 ring`
@@ -887,12 +941,12 @@ describe('focus indicator', () => {
     // 但宽度和颜色仍必须是全站那一套。
     expect(
       body,
-      '规范 §15.1：输入舱聚焦态必须是 1px 的 ring 满色环（曾用 ring-primary/15 的半透明环）'
+      '规范 §15.1：输入舱聚焦态必须是 2px 的 ring 满色环（曾用 ring-primary/15 的半透明环）'
     ).toContain('focus-within:ring-ring')
     expect(
       body,
-      '规范 §15.1：输入舱的占位环必须与聚焦环同宽（1px），否则过渡时盒子会跳'
-    ).toContain('ring-1 ring-transparent')
+      '规范 §15.1：输入舱的占位环必须与聚焦环同宽（2px），否则过渡时盒子会跳'
+    ).toContain('ring-2 ring-transparent')
     expect(body, '规范 §15.1：输入舱不得再出现半透明品牌焦点环').not.toContain(
       'focus-within:ring-primary/'
     )

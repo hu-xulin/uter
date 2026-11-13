@@ -1,6 +1,7 @@
 /* eslint-disable */
 /* 自动生成：docs/design-system/showcase.tokens.js —— 唯一来源是 UTER-DESIGN-SYSTEM-3.0.md §28 TOKEN-MANIFEST。
- * 禁止手工编辑。运行 node web/scripts/sync-design-showcase.mjs 重新生成。 */
+ * 禁止手工编辑。运行 node web/scripts/sync-design-showcase.mjs 重新生成。
+ * 主交付是 showcase.html 的页内内联快照；本文件仅作旧版兼容回退。 */
 window.__UTER_TOKEN_MANIFEST__ = {
   "$schema": "uter://design-system/token-manifest/1",
   "spec": "UTER-DESIGN-SYSTEM-3.0.md",
@@ -17,7 +18,7 @@ window.__UTER_TOKEN_MANIFEST__ = {
     "h5InputMin": 16,
     "contentMax": 1280,
     "contentMaxWide": 1800,
-    "focusRingWidth": 1,
+    "focusRingWidth": 2,
     "focusRingOffset": 0,
     "touchTargetMin": 24,
     "touchTargetRecommended": 44
@@ -1047,7 +1048,7 @@ window.__UTER_TOKEN_MANIFEST__ = {
       "uiComponent": 3
     },
     "focusRing": {
-      "width": 1,
+      "width": 2,
       "offset": 0,
       "style": "满色、贴边、:focus-visible"
     },
@@ -1227,11 +1228,13 @@ window.__UTER_TOKEN_MANIFEST_META__ = {
   "source": "UTER-DESIGN-SYSTEM-3.0.md §28 TOKEN-MANIFEST",
   "spec": "UTER-DESIGN-SYSTEM-3.0.md",
   "version": "3.0.1",
-  "generatedAt": "2026-11-13T04:39:22.444Z",
+  "generatedAt": "2026-11-13T08:54:47.656Z",
+  "manifestHash": "81c89b84949327be",
+  "standalone": true,
   "verification": {
     "summary": "15 PASS / 0 FAIL（写入快照前的 15 项校验）",
     "command": "node web/scripts/sync-design-showcase.mjs --check",
-    "checkedAt": "2026-11-13T04:39:22.445Z",
+    "checkedAt": "2026-11-13T08:54:47.658Z",
     "note": "实时解析模式下以 --check 的实际输出为准（§18.2 第 24 区 / §28.4）"
   },
   "warning": "派生产物，禁止手工编辑；改值请改 §28 后重新运行本脚本"

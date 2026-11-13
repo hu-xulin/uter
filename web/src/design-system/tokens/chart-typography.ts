@@ -24,7 +24,7 @@ For commercial licensing, please contact support@uter.ai
  * 文件里散落着 `fontSize: 12` / `fontSize: 11` 这样的裸数字 —— 11px 甚至
  * 低于字号阶梯的下限（caption 12px），却没有任何地方会报错。
  *
- * 规范第八节要求「改一处 Token，全站跟着变」。canvas 拿不到 CSS，就把阶梯
+ * 规范 §17.1 / §17.7 要求「改一处 Token，全站跟着变」。canvas 拿不到 CSS，就把阶梯
  * 值在 TS 侧**镜像**一份：所有图表都从这里取值，字号调整只改这一个文件。
  * `scripts/check-design-tokens.mjs` 的 T4 规则因此可以继续拦截裸数字，
  * 只对引用本文件的写法放行。

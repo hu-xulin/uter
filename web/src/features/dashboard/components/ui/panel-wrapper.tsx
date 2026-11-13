@@ -76,7 +76,7 @@ export function PanelWrapper(props: PanelWrapperProps) {
   const resolvedEmptyMessage = props.emptyMessage ?? t('No data available')
   const height = props.height ?? 'h-64'
   // 面板就是一张卡片，圆角必须跟 Card 同档（r-lg = 1.2×0.625rem = 12px，
-  // 3.0 规范 §5：lg=卡片/弹窗档；2026-11-03 圆角七档定版后
+  // 3.0 规范 §5 / §28 radius.scale（圆角九档）：lg=卡片/弹窗档，
   // Card 与本面板同为 rounded-lg）。
   const frameClassName = cn(
     'overflow-hidden rounded-lg border bg-card',

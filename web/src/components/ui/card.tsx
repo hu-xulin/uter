@@ -63,9 +63,9 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='card-title'
       className={cn(
-        /* 卡片标题 18px / 600 / 28px。sm 尺寸档只收紧内边距与间距，
-           不再把标题压到 16px —— 16px 在九档里只有 body(400) 一档，
-           压下去会让「卡片标题」与正文同号（规范 1.2 硬规则 1）。 */
+        /* 卡片标题 18px / 600 / 26px（§1.2 `text-lg` / §1.3 / §13.3）。
+           sm 尺寸档只收紧内边距与间距，不再把标题压到 16px —— 16px 在
+           §1.2 是「行标题 / 设置字段」档，压下去会让卡片标题与它同号。 */
         'text-lg font-semibold',
         className
       )}

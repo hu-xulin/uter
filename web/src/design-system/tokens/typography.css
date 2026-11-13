@@ -147,7 +147,8 @@ For commercial licensing, please contact support@uter.ai
  * ~1.35× 放大，行高同比放大以维持原阶梯的阅读节奏。
  *
  * 为什么声明在这里而不是 `styles/theme-presets.css`：
- * 规范第八节要求「字号、行高、字重、字体」由 Typography 统一管理，主题只管
+ * 规范 §17.7「主题维度独立性」要求「字号、行高、字重、字体」由 Typography
+ * 统一管理，主题只管
  * 颜色、密度只管间距。此前这段覆盖写在主题预设文件里，等于让字号阶梯出现
  * 了第二个来源 —— 改 `typography.css` 的基准值对这个预设无效，改这个预设
  * 也不会影响其他预设，两边迟早对不上。现在两个来源合一，`check-design-tokens`

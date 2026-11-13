@@ -251,12 +251,15 @@ For commercial licensing, please contact support@uter.ai
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* ── Radius ladder（UTER-DESIGN-SYSTEM-3.0 §5，2026-11-03 圆角七档定版）──
+  /* ── Radius ladder（UTER-DESIGN-SYSTEM-3.0 §5 / §28 radius.scale，圆角九档）──
    * 基准 --radius = 0.625rem（10px）= 默认控件档 r-md，其余档位按系数推导：
    *   xs×0.6 / sm×0.8 / md×1 / lg×1.2 / xl×1.4 / 2xl×1.6 / 3xl×1.8 / 4xl×2
-   * →  6 / 8 / 10 / 12 / 14 / 16 / 18 / 20 px。
-   * 档位用途：md=输入框/按钮/标签页触发器（默认控件档）、lg=卡片/弹窗/
-   * 标签页容器/图标按钮、xl=强调容器、2xl=展示型卡片。
+   * →  6 / 8 / 10 / 12 / 14 / 16 / 18 / 20 px；`rounded-full` 是第九档（特殊档，
+   * Tailwind 内建，不在此重复声明）。旧版只登记到 16px 并自称「七档」，
+   * 属文档滞后；3xl / 4xl 由 primitives.css 与 semantic.css 长期持有，
+   * 这里补齐后三处口径才一致。
+   * 档位用途：md=输入框/按钮/标签页触发器、lg=卡片/弹窗/图标按钮、
+   * xl=强调容器、2xl=展示型卡片、3xl=超大容器、4xl=全幅面板。
    * `data-theme-radius` 预设改基准就能整体缩放，不需要逐档改值。 */
   --radius-xs: calc(var(--radius) * 0.6);
   --radius-sm: calc(var(--radius) * 0.8);
@@ -264,6 +267,8 @@ For commercial licensing, please contact support@uter.ai
   --radius-lg: calc(var(--radius) * 1.2);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-3xl: calc(var(--radius) * 1.8);
+  --radius-4xl: calc(var(--radius) * 2);
 }
 
 :root {

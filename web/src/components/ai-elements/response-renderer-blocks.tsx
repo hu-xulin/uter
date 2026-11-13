@@ -36,10 +36,12 @@ import { cn } from '@/lib/utils'
 import { getNodeKey } from './response-content'
 import type { BlockRendererOptions } from './response-types'
 
-/* Markdown 标题字号必须落在九档阶梯内（12 / 14 / 16 / 18 / 24 / 30 / 36）。
- * 此前 h1 用的是 20px（`text-xl`）—— 那一档不在阶梯里，是历史遗留的
- * 「兼容档」；正文流里的 h1 应该对齐区块标题（24/600），h2 对齐卡片标题
- * （18/600），h3 起才逐级降到 16 / 14 / 12。 */
+/* 规范 §1.8 / §28「markdown prose ladder」：AI 回答里的 Markdown 标题
+ * 自成一套，比界面层级低一到两档 —— h1 20/28、h2 18/26、h3 16/24、
+ * h4 14/22；h5 同为 14/22 但用 tertiary 色，h6 为 12/18 + uppercase。
+ * 这一套必须与 `components/ui/markdown.tsx` 和
+ * `features/docs/native/prose-classes.ts` 逐值一致。界面标题
+ * （Heading / CardTitle / DialogTitle）不得借用本表（§1.3）。 */
 const headingClasses = {
   1: 'mt-6 mb-3 text-2xl font-semibold',
   2: 'mt-6 mb-3 text-lg font-semibold',

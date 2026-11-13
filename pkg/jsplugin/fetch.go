@@ -31,7 +31,7 @@ type FetchResponse struct {
 }
 
 // The utils.fetch limits are part of the published plugin contract
-// (docs/plugin-api/v1.md). A fetcher reads at most MaxFetchBodyBytes+1 bytes
+// (docs-dev/plugin-api/v1.md). A fetcher reads at most MaxFetchBodyBytes+1 bytes
 // so that the engine can reject a longer body.
 const (
 	maxFetchesPerCall   = 4

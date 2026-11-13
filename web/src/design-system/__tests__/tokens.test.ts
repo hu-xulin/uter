@@ -24,14 +24,16 @@ import { describe, expect, it } from 'vitest'
 /**
  * 设计系统 Token 的守卫测试。
  *
- * 文档第十节要求「文档中的字号表由 Token 生成，或通过自动化检查确保
+ * §19.4 / §28.3 要求「文档中的字号表由 Token 生成，或通过自动化检查确保
  * 一致」。这份测试就是那个检查：它把 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`
- * 里的九档字号表**硬编码**成期望值，再去解析真实的 CSS 文件。
+ * 的 §1.2 字号表与 §28 `TOKEN-MANIFEST.typography` **硬编码**成期望值，
+ * 再去解析真实的 CSS 文件（运行真源是 `tokens/typography.css`）。
  *
  * 因此任何一次「顺手把 text-sm 改成 15px」都会让测试变红，而不是等
  * 三个月后有人发现页面字号不一致。
  *
- * 字号真源已迁至 UTER-DESIGN-SYSTEM-3.0.md §1.2（十档），旧 design-system.md 已废止删除。
+ * 3.0 阶梯是 **11 个主档 + 7 个配套档**；旧 design-system.md 与
+ * design-system-2.0.md 均已废止删除，UTER-DESIGN-SYSTEM-3.0.md 是唯一真源。
  */
 
 const DS_DIR = join(process.cwd(), 'src', 'design-system')
@@ -65,7 +67,7 @@ function toPx(value: string): number {
 }
 
 /**
- * 文档 1.2 节的字号表 —— 唯一权威来源。
+ * 3.0 §1.2 主档 + 配套档（与 §28 TOKEN-MANIFEST.typography 同值）。
  * [token, 字号px, 行高px, 语义角色]
  */
 const LADDER: Array<[string, number, number, string]> = [
@@ -254,14 +256,14 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     return Number.NaN
   }
 
-  it('默认基准 0.625rem(10px) 推出 6/8/10/12/14/16 六档（3.0 §5）', () => {
+  it('默认基准 0.625rem(10px) 推出 6/8/10/12/14/16/18/20 八档（§5 九档含 full）', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
     // 出现「文档 12px、页面 10px」，这里把差异钉死。
-    // UTER-DESIGN-SYSTEM-3.0 §5（圆角七档定版，含 full）：基准 0.625rem
-    // （10px = 默认控件档 r-md），系数 xs×0.6 / sm×0.8 / md×1 / lg×1.2 /
-    // xl×1.4 / 2xl×1.6；阶梯到 2xl 为止，full 由 --radius-full 另行承担。
+    // UTER-DESIGN-SYSTEM-3.0 §5 / §28 radius.scale（圆角九档，含 full）：
+    // 基准 0.625rem（10px = 默认控件档 r-md），系数 xs×0.6 → 4xl×2；
+    // `rounded-full` 是特殊档，由 Tailwind 内建提供，不在 theme.css 重复声明。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
@@ -276,23 +278,22 @@ describe('theme.css 圆角阶梯与文档一致', () => {
       ['lg', 12],
       ['xl', 14],
       ['2xl', 16],
+      ['3xl', 18],
+      ['4xl', 20],
     ]
     for (const [step, px] of EXPECTED) {
       const declaration = readVar(themeCss, `radius-${step}`) as string
       expect(declaration, `--radius-${step} 未声明`).toBeDefined()
       expect(resolveLadderPx(declaration, base), `圆角 ${step}`).toBe(px)
     }
-
-    // 3.0 收紧为七档：theme.css 不得再出现 3xl / 4xl 圆角档。
-    expect(readVar(themeCss, 'radius-3xl')).toBeUndefined()
-    expect(readVar(themeCss, 'radius-4xl')).toBeUndefined()
   })
 })
 
 describe('showcase 核查页与 Token 真源一致', () => {
-  // design-system-2.0 §4「规范与代码的断层」：核查页（showcase*.html）里的
-  // Token 块是 theme.css / primitives.css 的手工副本。本测试把「改了规范、
-  // 核查页没跟上」的断层钉死：任何一边单独改动都会让测试变红。
+  // 3.0 §18.1 / §28「数据链」：核查页（showcase.html）的页内内联快照与
+  // showcase.tokens.js 兼容回退，都是 §28 TOKEN-MANIFEST 的派生产物。
+  // 本测试把「改了规范、核查页没跟上」的断层钉死：任何一边单独改动都会
+  // 让测试变红；逐值 / 哈希校验另见 `web/scripts/sync-design-showcase.mjs`。
   const DOCS_DIR = join(process.cwd(), '..', 'docs', 'design-system')
   const readDoc = (name: string) => readFileSync(join(DOCS_DIR, name), 'utf8')
 

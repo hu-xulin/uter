@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/plugins"
@@ -983,6 +984,7 @@ func TestUploadTaskPluginPreflightConflict(t *testing.T) {
 }
 
 func TestUploadTaskPluginReportsUnknownMetaField(t *testing.T) {
+	require.NoError(t, i18n.Init())
 	body, err := common.Marshal(map[string]any{
 		"source": `export const meta = { futureField: true };`,
 	})
@@ -1002,9 +1004,55 @@ func TestUploadTaskPluginReportsUnknownMetaField(t *testing.T) {
 	}
 	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
 	assert.False(t, response.Success)
-	assert.Equal(t, `Plugin metadata contains an unknown field "futureField". If this plugin was downloaded from the official marketplace, it may require a newer version of new-api. Try updating new-api and installing the plugin again.`, response.Message)
-	assert.Equal(t, `Plugin metadata contains an unknown field "{{field}}". If this plugin was downloaded from the official marketplace, it may require a newer version of new-api. Try updating new-api and installing the plugin again.`, response.MessageKey)
-	assert.Equal(t, map[string]any{"field": "futureField"}, response.MessageParams)
+	// 上游 new-api 的硬编码英文文案（含 "new-api" 品牌）不得回流到用户可见响应。
+	// 错误必须走后端 i18n，把 {{.Field}} 渲染成真实字段名并按 Accept-Language 出中文。
+	assert.Contains(t, response.Message, "futureField")
+	assert.Contains(t, response.Message, "uter")
+	assert.NotContains(t, response.Message, "new-api")
+	assert.NotContains(t, response.Message, "Plugin metadata contains")
+	assert.Empty(t, response.MessageKey, "服务端已翻译，不应再下发 message_key 交给前端翻译")
+	assert.Empty(t, response.MessageParams)
+}
+
+// TestUploadTaskPluginLocalizesCapabilityErrors 钉住上游对齐时被一起删掉的
+// CapabilityError 国际化分支：CapabilityError 仍由 registry 抛出，若 controller
+// 不再识别它，用户会看到裸英文 "unsupported/duplicate required capability"。
+func TestUploadTaskPluginLocalizesCapabilityErrors(t *testing.T) {
+	require.NoError(t, i18n.Init())
+	for _, tc := range []struct {
+		name       string
+		capability string
+		contains   string
+	}{
+		{"unsupported", `["json-clone@2"]`, "暂不支持"},
+		{"duplicate", `["json-clone@1","json-clone@1"]`, "重复声明"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := fmt.Sprintf(`export const meta = {apiVersion: 1, key: "capability-case", name: "Capability", version: "1.0.0", author: {name: "Test"}, models: ["doc"], fetchMode: "per_task", requiredCapabilities: %s};
+export function buildSubmitRequest() { return {}; }
+export function parseSubmitResponse() { return {}; }
+export function parseTaskResult() { return {}; }`, tc.capability)
+			body, err := common.Marshal(map[string]any{"source": source})
+			require.NoError(t, err)
+			recorder := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(recorder)
+			c.Request = httptest.NewRequest(http.MethodPost, "/api/plugin/task", bytes.NewReader(body))
+			c.Request.Header.Set("Content-Type", "application/json")
+			c.Request.Header.Set("Accept-Language", "zh-CN")
+			UploadTaskPlugin(c)
+			require.Equal(t, http.StatusOK, recorder.Code)
+			var response struct {
+				Success bool   `json:"success"`
+				Message string `json:"message"`
+			}
+			require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
+			assert.False(t, response.Success)
+			assert.Contains(t, response.Message, tc.contains)
+			assert.Contains(t, response.Message, "json-clone")
+			assert.NotContains(t, response.Message, "unsupported required capability")
+			assert.NotContains(t, response.Message, "duplicate required capability")
+		})
+	}
 }
 
 func TestUploadTaskPluginRejectsMetaViolatingV1Schema(t *testing.T) {

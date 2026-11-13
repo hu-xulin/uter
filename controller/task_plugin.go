@@ -18,6 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
@@ -28,10 +29,25 @@ import (
 
 const maxTaskPluginSourceBytes = 8 << 20
 
+// taskPluginCompileError maps the plugin registry's typed errors to the
+// translated messages in i18n/locales/*.yaml. Upstream new-api emits raw
+// English text here; Uter deliberately routes all three through ApiErrorI18n
+// so the console shows the requester's language and the product's own name.
+// Keep the three cases together: dropping any one leaves a dead i18n key and
+// reintroduces an untranslated upstream string into a user-facing response.
 func taskPluginCompileError(c *gin.Context, err error) {
 	var unknownField *jsplugin.UnknownMetaFieldError
 	if errors.As(err, &unknownField) {
-		common.ApiErrorT(c, "Plugin metadata contains an unknown field \"{{field}}\". If this plugin was downloaded from the official marketplace, it may require a newer version of new-api. Try updating new-api and installing the plugin again.", map[string]any{"field": unknownField.Field})
+		common.ApiErrorI18n(c, i18n.MsgTaskPluginUnknownMetaField, map[string]any{"Field": unknownField.Field})
+		return
+	}
+	var capabilityErr *jsplugin.CapabilityError
+	if errors.As(err, &capabilityErr) {
+		if capabilityErr.Duplicate {
+			common.ApiErrorI18n(c, i18n.MsgTaskPluginDuplicateCapability, map[string]any{"Capability": capabilityErr.Name})
+		} else {
+			common.ApiErrorI18n(c, i18n.MsgTaskPluginUnsupportedCapability, map[string]any{"Capability": capabilityErr.Name})
+		}
 		return
 	}
 	common.ApiError(c, err)
@@ -72,7 +88,7 @@ func UploadTaskPlugin(c *gin.Context) {
 		return
 	}
 	if err = jsplugin.ValidateV1Meta(loaded.Meta); err != nil {
-		common.ApiErrorMsg(c, err.Error())
+		taskPluginCompileError(c, err)
 		return
 	}
 	icon := strings.TrimSpace(request.Icon)

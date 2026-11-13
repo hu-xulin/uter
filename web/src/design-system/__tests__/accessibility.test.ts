@@ -26,8 +26,8 @@ import { describe, expect, it } from 'vitest'
  *
  * 这一层以前是「注释里的承诺，实现里没有」：
  *   · 注释写「统一 2px 外扩环，不允许组件用 outline:none 抹掉」，而 19 个
- *     基础组件正是 `outline-none` + `focus-visible:ring-2`，两种几何并存，
- *     Tab 时焦点环会在「外扩 2px」和「贴边」之间跳；
+ *     基础组件正是 `outline-none` + `focus-visible:ring-*`（贴边环），两种
+ *     几何并存，Tab 时焦点环会在「外扩」和「贴边」之间跳；
  *   · 注释写「触控目标不小于 24×24」，而 `.ds-touch-target` 零调用，
  *     真正 16px 的图标按钮一个都没被它兜住。
  *
@@ -64,14 +64,14 @@ describe('焦点指示器', () => {
     // `--ds-color-focus-ring`（colors.css）与 `--ds-focus-ring-color`
     // （semantic.css）曾是同一个值的两个名字，前者零引用。
     expect(colorsCss).not.toContain('--ds-color-focus-ring')
-    // 规范 §15.1：焦点环恒 1px（2026-11-03 复裁定）。
-    expect(semanticCss).toContain('--ds-focus-ring-width: 1px')
+    // 规范 §15.1 / §28：焦点环恒 2px（2026-11-13 用户裁决）。
+    expect(semanticCss).toContain('--ds-focus-ring-width: 2px')
     expect(semanticCss).toContain('--ds-focus-ring-color: var(--ring)')
     expect(accessibilityCss).toContain('var(--ds-focus-ring-color)')
   })
 
-  it('原生元素与组件是同一种几何：贴边 1px 环', () => {
-    // 组件层是 `focus-visible:ring-1` = `box-shadow: 0 0 0 1px`，贴在边框外沿
+  it('原生元素与组件是同一种几何：贴边 2px 环', () => {
+    // 组件层是 `focus-visible:ring-2` = `box-shadow: 0 0 0 2px`，贴在边框外沿
     // 且没有间隙。基础层用 outline 兜底时必须 `outline-offset: 0`；
     // 写成非 0 就会和组件不一致 —— 同一次 Tab 里焦点环会「跳一下」。
     expect(accessibilityCss).toMatch(
@@ -81,9 +81,10 @@ describe('焦点指示器', () => {
   })
 
   it('基础组件的焦点写法没有被改掉', () => {
-    // 规范 §15.1：全站统一 1px 满色（2026-11-03 复裁定，
-    // design-system-2.0 曾短暂改 2px 后回退）—— 环宽只能有一个值，
-    // 2px/3px/4px 与半透明环都违规。
+    // 规范 §15.1 / §28：全站统一 2px 满色（2026-11-13 用户裁决，
+    // 由 1px 改回）—— 环宽只能有一个值，1px/3px/4px、任意 px 写死值
+    // 与半透明环都违规。此断言与上一行 `toContain('focus-visible:ring-2')`
+    // 必须互补：允许值只有 2，禁止集合里不能含 2。
     for (const rel of [
       'components/ui/button.tsx',
       'components/ui/toggle.tsx',
@@ -91,11 +92,11 @@ describe('焦点指示器', () => {
       'components/ui/select.tsx',
       'components/ui/textarea.tsx',
     ]) {
-      expect(read(rel), `${rel} 缺少 focus-visible:ring-1`).toContain(
-        'focus-visible:ring-1'
+      expect(read(rel), `${rel} 缺少 focus-visible:ring-2`).toContain(
+        'focus-visible:ring-2'
       )
       expect(read(rel), `${rel} 不应再有其他宽度的焦点环`).not.toMatch(
-        /focus-visible:ring-(2|3|4)\b/
+        /focus-visible:ring-(?:1|3|4|\[[\d.]+px\])(?![\w-])/
       )
     }
   })

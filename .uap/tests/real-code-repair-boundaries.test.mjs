@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -50,14 +51,25 @@ test('WIP 保护：目标文件存在未提交修改时必须拒绝修复（真�
   const task = JSON.parse(read('.uap/state/repair-tasks/UAP-REAL-REPAIR-001.json'));
   task.task_id = 'UAP-NEG-WIP';
   const taskFile = path.join(ROOT, '.uap/state/repair-tasks/UAP-NEG-WIP.json');
+  const targetAbs = path.join(ROOT, task.patch.file);
+  // 该负向用例此前假定 common/request_path.go 天然带未提交修改；历史缺陷被
+  // 修复并落库后文件变干净，WIP 分支永远走不到，引擎会在更后面的「复现
+  // 测试已通过」处终止，导致用例红。这里改为真实制造一个临时脏文件，
+  // 并用 Buffer 快照精确还原，既不依赖历史状态、也不覆盖任何用户 WIP。
+  const original = fs.readFileSync(targetAbs);
   fs.writeFileSync(taskFile, `${JSON.stringify(task, null, 2)}\n`, 'utf8');
-  const before = sha256(read('common/request_path.go'));
+  fs.appendFileSync(targetAbs, '\n// UAP WIP-protection negative test marker (restored in finally)\n', 'utf8');
+  const before = sha256(read(task.patch.file));
+  const cleanProbe = spawnSync('git', ['status', '--short', '--', task.patch.file],
+    { cwd: ROOT, encoding: 'utf8' });
+  assert.ok((cleanProbe.stdout || '').trim(), '前置条件：目标文件必须确实处于未提交修改状态');
   try {
     const run = await runRealRepair({ taskFile, dryRun: false });
     assert.equal(run.status, 'BLOCKED', JSON.stringify(run.blockers));
     assert.ok(run.blockers.join(' ').includes('USER_WIP_PROTECTED'), run.blockers.join(' '));
-    assert.equal(sha256(read('common/request_path.go')), before, '禁止覆盖用户/前序未提交修改');
+    assert.equal(sha256(read(task.patch.file)), before, '禁止覆盖用户/前序未提交修改');
   } finally {
+    fs.writeFileSync(targetAbs, original);
     fs.unlinkSync(taskFile);
   }
 });

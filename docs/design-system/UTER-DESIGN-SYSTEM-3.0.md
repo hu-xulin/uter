@@ -1992,8 +1992,8 @@ stroke-width: 2px;
    这类区间 —— 20px / 22px 不在 §12.3 五档内。
 3. **键盘焦点由基座兜底，不需要每处手写**。  
    `design-system/foundations/accessibility.css` 对  
-   `:where(a, button, [role='button'], [tabindex]):focus-visible` 画 1px 环；组件层  
-   写的是 `focus-visible:ring-1 focus-visible:ring-ring`，两者几何必须一致。
+   `:where(a, button, [role='button'], [tabindex]):focus-visible` 画 2px 环；组件层  
+   写的是 `focus-visible:ring-2 focus-visible:ring-ring`，两者几何必须一致。
 4. 隐藏型（`hidden` / `sr-only` / `opacity-0` 覆盖层）不参与统计，也不受样式约束。
 
 > 历史教训：这一节上一版写的是「只要它是用户会点、点了会触发操作的入口，就必须用  
@@ -2017,7 +2017,7 @@ stroke-width: 2px;
 | Alert 内边距    | 16px                      | `Alert` 的 `p-4`，图标与文字间距 `gap-x-3`（12px）                                    |
 | Sidebar 宽    | 220px（`13.75rem`）         | `SIDEBAR_WIDTH` = 13.75rem                                                 |
 | Toast 宽      | ≈356px                    | `sonner` 的默认宽度                                                             |
-| 焦点环          | 2px 品牌色                   | `--ds-focus-ring-width` 2px + `--ring`（组件层一律 `focus-visible:ring-1`，§15.1） |
+| 焦点环          | 2px 品牌色                   | `--ds-focus-ring-width` 2px + `--ring`（组件层一律 `focus-visible:ring-2`，§15.1） |
 | 圆角           | 控件 10px / 卡片弹窗 12px       | `--radius-md` / `--radius-lg`（§5 九档）；图标按钮同卡片档 12px（§10.2）                  |
 
 各组件的字号 / 字重 / 行高 / 圆角落点。**行高一律跟随 §1.2 档位**：  
@@ -2165,7 +2165,12 @@ Selected 是持续选中状态，Active 是用户按下时的瞬时状态，两�
 ```
 
 **全站恒为 2px，且贴边（无 offset —— 不存在 `--ds-focus-ring-offset` Token，  
-`outline-offset` 恒为 0）。**
+`outline-offset` 恒为 0）。值以 §28 `TOKEN-MANIFEST` 的
+`meta.focusRingWidth` / `a11y.focusRing.width` 为准，运行真源是
+`web/src/design-system/tokens/semantic.css`。2026-11-13 用户裁决由 1px
+改回 2px：1px 环在 36px 控件与 1px 描边的界面上对比不够显眼，2px 满色
+品牌环更容易在 Light / Dark 两种底上被一眼看见；**宽度只有 2px 一档**，
+不存在「表单 1px / 其余 2px」的两档并存。**
 
 必须：
 
@@ -2175,20 +2180,22 @@ Selected 是持续选中状态，Active 是用户按下时的瞬时状态，两�
 - 不得被父容器裁切。
 - 不得被浮层覆盖。
 - 不得在无替代方案的情况下删除默认焦点。
-- 组件层一律写 `focus-visible:ring-1`；原生兜底走同一 Token 的 `outline`。
-- 输入舱这类「容器承担焦点环」的结构，基态必须是 `ring-1 ring-transparent` 占位，否则过渡时会跳。
+- 组件层一律写 `focus-visible:ring-2`；原生兜底走同一 Token 的 `outline`（宽度同为 2px）。
+- 输入舱这类「容器承担焦点环」的结构，基态必须是 `ring-2 ring-transparent` 占位，否则过渡时会跳；滑块的 hover / active 环同宽。
+- `focus-visible:outline-1` 这类原生兜底不得再用 1px，宽度口径跟随 `ring-2`。
+- 错误态 `aria-invalid:ring-2` 宽度与焦点环相同，但颜色是 `destructive`，靠颜色而非粗细区分。
 
-不属于焦点指示器、**不受 1px 约束**的三类环：
+不属于焦点指示器、**不受本条宽度约束**的三类环（判定看语义，不看 `ring-N` 数字）：
 
 | 环                     | 宽度    | 说明            |
 | --------------------- | ----- | ------------- |
-| `aria-invalid:ring-2` | 2px   | 错误态提示，不是焦点指示器 |
+| 装饰性 `ring-1` 描边（弹层 / 卡片 / 日历格） | 1px | 视觉分隔，不承载焦点语义，不写 `focus-visible:` 前缀 |
 | avatar 镂空环            | 由尺寸决定 | 视觉分隔          |
 | 选中态 `ring-offset-2`   | 2px   | 偏移量不是宽度       |
 
 焦点环对比度按 WCAG 2.2 AA 的 1.4.11（非文本对比度 3:1）验收。
 
-注意：WCAG 2.2 的 Focus Appearance（2.4.13）属于 AAA，不得将其误称为 AA 要求。本规范不采用 2px 宽度 —— 在 14px 正文与 36px 控件的高度体系下，2px 环会与 1px 描边体系打架，视觉上像「控件变胖了一圈」；1px 贴边环配合品牌色已经满足 3:1 非文本对比度。
+注意：WCAG 2.2 的 Focus Appearance（2.4.13）属于 AAA，不得将其误称为 AA 要求。2px 是本规范的**唯一**宽度，改值必须按 §27.3 / §28.2 先改 §28 Manifest，再同步 `semantic.css`、组件层、守卫、`showcase.html` 快照，**五者同提交**；只改其中一处会留下同屏粗细不一致的焦点环。
 
 ## 15.2 对比度
 
@@ -2650,15 +2657,36 @@ body {
 
 所有展示数据必须来自 **§28 `TOKEN-MANIFEST`**。`docs/design-system/showcase.html`
 在运行时读取本规范中的 `TOKEN-MANIFEST` 代码块，把值注入 CSS 自定义属性并渲染全部
-区域；它自身**不保存任何色值、字号、尺寸常量**。唯一例外是 `:root` 里一组
+区域；它自身**不维护任何色值、字号、尺寸常量**。唯一例外是 `:root` 里一组
 **刻意偏离全部设计刻度的降级可读性占位**（仅在 Manifest 加载失败时生效），
 由 §28.3 ⑥ 逐值扫描强制拦截：一旦它与任何 Manifest 声明值相同即判 FAIL。
 
-- 通过 HTTP 打开时：改 §28 的值 → 刷新页面即生效，无需重新生成。
-- 通过 `file://` 打开时：读取同目录 `showcase.tokens.js` 离线快照（由 §28.4 同步脚本
-  从同一个 `TOKEN-MANIFEST` 生成），并在页头显示「离线快照」标记与生成时间。
+- **核查页必须单文件独立生效**：把 `showcase.html` 单独放到任意目录、用
+  `file://` 双击打开即可完整渲染 24 个区域，**不需要**在本目录执行
+  `python3 -m http.server`，也不依赖同目录任何伴生文件。
+- 通过 `file://` 打开时：读取**页内内联快照**（`<script id="uter-manifest-snapshot">`，
+  由 §28.4 同步脚本从同一个 `TOKEN-MANIFEST` 生成并写入），页头显示「离线快照」
+  标记与生成时间。`file://` 下不发起 `fetch`（必然被 CORS 拒绝），也不显示
+  任何「请启动本地 HTTP 服务」的提示。
+- 通过 HTTP 打开时：改 §28 的值 → 刷新页面即生效，无需重新生成；实时解析失败时
+  回退到同一份页内内联快照。
+- `showcase.tokens.js` 是**旧版兼容回退**的派生产物，与页内快照由同一脚本同步生成；
+  两者都由 `--check` 逐值比对 §28，任一漂移即判 FAIL。
 - `docs/design-system/showcase-3.0.html` 是视觉回归 track 1 的**像素基线对象**，
   保留为既有资产，但不再是任何值的真源；它的硬编码 Token 块不得反向驱动规范。
+  该文件与其生成器 `web/scripts/generate-design-showcase.mjs` 中的旧标题
+  （「字号十档」「圆角七档」）、旧圆角基准 8px、旧焦点环 1px 均为**历史基线快照**，
+  按像素基线「不改动」的要求保留，不得引用为 3.0 口径，也不得据此回改
+  §1.2 / §5 / §15.1 / §28。**2026-11-13 焦点环由 1px 改为 2px 后，这一冻结基线
+  里的 `--focus-ring-width: 1px` 与「§15.1 不存在 2px 档」文案同样不作同步**——
+  它记录的是 2026-10-29 的像素状态，不是现行声明；现行值只看 §28 Manifest、
+  `semantic.css` 与 `showcase.html` 内联快照。同理，
+  `docs/design-system/audit/evidence/` 下的审计证据也是带日期的历史记录，不随
+  后续裁决回改。新的目视核查一律以本文件规定的 `showcase.html` 为准。
+
+**改了 §28 的值后，离线打开要生效只需一步**：在仓库根运行
+`node web/scripts/sync-design-showcase.mjs`（该命令会重新生成页内快照并跑完
+§28.3 全部校验）；`--check` 则只校验不写文件，适合接进 CI 门禁。
 
 禁止：
 
@@ -2967,10 +2995,11 @@ bunx vitest run src/design-system/__tests__        # Token / 守卫测试
 > ⚠️ **静态检查只能确定「某个值是否来自批准的 Token」，不能确定「页面看起来对不对」。**
 > 视觉差异不一定是缺陷，截图一致也不意味着交互与无障碍合格（§18.4 / §21.4）。
 
-> **代码注释里的 2.0 章节号映射**（`web/scripts/check-design-tokens.mjs` 属并行修改中
-> 的文件，本轮不改动其注释，也不影响任何规则判定，以本表为准）：
-> `§1.5`（投影 / 辉光）→ 3.0 §8；`§1.6`（动效时长）→ 3.0 §9；
-> `§24`（基线机制 / 只减不增）→ 3.0 §19.5。待该文件负责人统一注释后删除本条。
+> **2.0 章节号映射已统一**（2026-11-13）：`web/scripts/check-design-tokens.mjs`
+> 的注释已按 3.0 重写 —— `§1.5`（投影 / 辉光）→ §8，`§1.6`（动效时长）→ §9，
+> `§11.3`（透明度冒充文字层级）→ §2.4，`§24`（基线机制 / 只减不增）→ §19.5。
+> 规则判定本身从未依赖这些章节号；其它文件若再出现 2.0 的 `§1.5/§1.6/§24`
+> 引用，一律按本表回指 3.0，不得另立口径。
 
 ---
 
@@ -3438,7 +3467,7 @@ AI 助手必须按以下顺序执行，不得只完成文档或展示页就宣�
 | 图标库 | `@hugeicons/*`、`@heroicons/*`、`react-icons/*` | `lucide-react` | §12.3 |
 | 图标描边 | 调用点写 `strokeWidth`，或取值不是 2 | 由 `IconProvider` 注入 | §12.3 |
 | 图标尺寸 | 五档之外的 20 / 22 / 28 / 36 / 40 | 16 / 18 / 24 / 32 / 48 | §12.3 |
-| 焦点环 | `outline: none` 无替代、`ring-2` 及以上 | §28 `a11y.focusRing` | §15.1 |
+| 焦点环 | `outline: none` 无替代、焦点环宽度不是 2px（`ring-1` / `ring-3` 及以上）、带 alpha 的焦点色 | §28 `a11y.focusRing` | §15.1 |
 | 触控目标 | 小于 24×24 且无 `.ds-touch-target` | `.ds-touch-target` | §15.3 |
 | 颜色语义 | 用 `chart-N` 表达成功 / 失败 | `{status}` Token | §2.8 |
 | 输入字号 | **H5 表单输入低于 16px** | 表单输入默认至少 16px（iOS 防放大），H5 常规正文仍 14px | §1.7 / §16.3 |
@@ -3677,22 +3706,24 @@ E28 **不进 `ALLOWLIST`**：渐变色值本来就声明在 `tokens/colors.css`�
 ```
 UTER-DESIGN-SYSTEM-3.0.md §28 TOKEN-MANIFEST   ← 唯一改值入口
    ├─→ showcase.html（HTTP 打开时运行时 fetch 本文件，刷新即生效）
-   ├─→ showcase.tokens.js（file:// 离线快照，由 §28.4 同步脚本生成）
+   ├─→ showcase.html 页内内联快照（file:// 单文件独立生效，§28.4 同步脚本生成）
+   ├─→ showcase.tokens.js（旧版兼容回退，同一脚本同步生成）
    ├─→ 投影一致性校验（§28.3，检查 §1–§17 表格与声明是否同值）
    └─→ 运行真源一致性校验（§28.3，检查 CSS Token 与声明是否同值）
 ```
 
 改值流程：① 只改 §28 `TOKEN-MANIFEST` 中对应字段 → ② 运行
-`node web/scripts/sync-design-showcase.mjs`（生成离线快照、校验两层真源、报告需要同步的
-投影表与代码文件）→ ③ 按报告同步运行真源与投影表 → ④ 复核 `showcase.html`。
+`node web/scripts/sync-design-showcase.mjs`（重新生成页内内联快照与兼容回退文件、
+校验两层真源、报告需要同步的投影表与代码文件）→ ③ 按报告同步运行真源与投影表
+→ ④ 复核 `showcase.html`（**离线打开同样生效，无需启动 HTTP 服务**）。
 **禁止**先改 `showcase.html` 或先改 CSS 再倒推文档（§24 / §27.3）。
 
 ## 28.3 一致性校验
 
 `node web/scripts/sync-design-showcase.mjs --check` 为只校验、不写文件模式。
 **前置**：Manifest 可提取、为合法 JSON、含 `spec` / `version`；失败即 `BLOCKED`
-（退出码 2），不进入下表。前置通过后脚本固定输出 **7 类共 16 条 `record()`**
-（下表「点数」列合计必须为 16）；文档与脚本必须逐项对齐，新增检查点须同步改写本节。
+（退出码 2），不进入下表。前置通过后脚本固定输出 **7 类共 17 条 `record()`**
+（下表「点数」列合计必须为 17）；文档与脚本必须逐项对齐，新增检查点须同步改写本节。
 
 | 类别 | 校验内容 | 点数 |
 |---|---|---:|
@@ -3702,26 +3733,34 @@ UTER-DESIGN-SYSTEM-3.0.md §28 TOKEN-MANIFEST   ← 唯一改值入口
 | ④ 投影表 | §1.2 字号、§5 圆角、§7.1 密度，以及 §6.2 语义别名 / §10.2 按钮 / §11.1 控件 / §14.2 导航尺寸取值行与声明一致 | 4 |
 | ⑤ 声明内部 | `meta` ↔ `a11y` ↔ `radius` ↔ `typography` 同值派生索引不漂移；`sections` 的 `no` / `id` / `spec` 合法且唯一；`pending` 字段完整且与 §28.6 表格逐项对应；`spacing.semantic.landed` 别名均指向真实 `density.params` 键 | 1 |
 | ⑥ 展示页 | 运行时解析 Manifest；`:root` 不含任何 Manifest 声明值（HEX / `oklch` / 缓动 / 时长 / 尺寸数值）；24 区数量与渲染器一一对应；14 组主要声明字段均有展示 | 5 |
-| ⑦ 离线快照 | `showcase.tokens.js` 的 Manifest 与 §28 声明同值；缺失或过期时退出码 1 | 1 |
+| ⑦ 内联 / 离线快照 | `showcase.html` 页内内联快照存在且 Manifest 与 §28 声明逐值相等、`manifestHash` 自洽（保证 `file://` 单文件生效）；`showcase.tokens.js` 兼容回退同值且哈希自洽；任一缺失或过期时退出码 1 | 2 |
 
 任一项 `FAIL` 即视为「规范与实现漂移」，按 §28.2 收敛，不得静默放行。
 退出码：`0 = 全部通过`、`1 = 存在漂移`、`2 = 输入缺失（BLOCKED）`。
-生成模式（不带 `--check`）在前 15 项全绿时才写快照，并把本次校验摘要写入
-`showcase.tokens.js` 的 `META.verification`，供 §18.2 第 24 区展示（§28.4）。
+生成模式（不带 `--check`）在前 15 项全绿时才写快照（页内内联快照 +
+`showcase.tokens.js`），并把本次校验摘要写入回退文件的
+`META.verification`，供 §18.2 第 24 区展示（§28.4）。
 
 ## 28.4 同步脚本
 
 在**仓库根**执行（脚本按自身位置解析路径，任意 cwd 均可）：
 
 ```bash
-node web/scripts/sync-design-showcase.mjs           # 生成 / 更新 showcase.tokens.js
+node web/scripts/sync-design-showcase.mjs           # 生成页内内联快照 + showcase.tokens.js
 node web/scripts/sync-design-showcase.mjs --check  # 只校验，不写文件（CI / 本地门禁）
 ```
 
-脚本只读取本文档的 `TOKEN-MANIFEST` 块，不解析散文表格；因此改散文措辞不会破坏它。
-`showcase.tokens.js` 是**派生产物**，不是真源，禁止手工编辑。
+脚本的值输入只读取本文档的 `TOKEN-MANIFEST` 块；投影表抽查按 **Markdown 表格
+单元格**逐值比对（列对齐空格不影响结果），不解析散文措辞，因此改散文或重排
+表格都不会破坏它 —— 2026-11-13 前用精确串匹配时，表格一被格式化就误报 4 项
+「投影表缺行」，进而拒绝刷新离线快照，`file://` 只能看到旧值。
 
-脚本在生成模式下会把本次校验的 PASS / FAIL 汇总写入快照的
+两份产物（`showcase.html` 的页内内联快照、`showcase.tokens.js` 兼容回退）都是
+**派生产物**，不是真源，禁止手工编辑；`--check` 会逐值比对并校验
+`manifestHash`，任一漂移即退出码 1。页内内联快照让核查页**单文件双击即生效**，
+不需要在 `docs/design-system/` 下起 `python3 -m http.server`（§18.1）。
+
+脚本在生成模式下会把本次校验的 PASS / FAIL 汇总写入回退文件的
 `META.verification`，供 §18.2 第 24 区展示（§28.3）。
 
 
@@ -3745,7 +3784,7 @@ node web/scripts/sync-design-showcase.mjs --check  # 只校验，不写文件（
     "h5InputMin": 16,
     "contentMax": 1280,
     "contentMaxWide": 1800,
-    "focusRingWidth": 1,
+    "focusRingWidth": 2,
     "focusRingOffset": 0,
     "touchTargetMin": 24,
     "touchTargetRecommended": 44
@@ -4016,7 +4055,7 @@ node web/scripts/sync-design-showcase.mjs --check  # 只校验，不写文件（
   "breakpoints": {"sm": 640, "md": 768, "lg": 1024, "xl": 1280, "2xl": 1536},
   "a11y": {
     "contrast": {"normalText": 4.5, "largeText": 3, "uiComponent": 3},
-    "focusRing": {"width": 1, "offset": 0, "style": "满色、贴边、:focus-visible"},
+    "focusRing": {"width": 2, "offset": 0, "style": "满色、贴边、:focus-visible"},
     "touchTarget": {"minimum": 24, "recommended": 44}
   },
   "pending": [

@@ -18,30 +18,35 @@ For commercial licensing, please contact support@uter.ai
 */
 
 /*
- * Markdown prose scale — explicit descendant selectors, aligned with
- * design-spec §1.2 / §1.3. Markdown headings are their own scale
- * (§1.3 E14 exception): one or two steps below the interface headings.
+ * Markdown prose scale — explicit descendant selectors for native docs and
+ * bundled legal documents. Design-spec §1.8「内容排版（Markdown prose）」and
+ * §28 `TOKEN-MANIFEST` are the authority: Markdown headings are their own
+ * ladder, one or two steps below the interface headings (§1.3), and the
+ * same ladder applies to `components/ui/markdown.tsx` and
+ * `ai-elements/response-renderer-blocks.tsx`.
  *
- *   h1 24/32 / 600  → `text-3xl` (section-title)
- *   h2 18/26 / 600  → `text-xl`  (card-title)
- *   h3 16/24 / 600  → `text-base`(group-title)
+ *   h1 20/28 / 600  → `text-2xl`
+ *   h2 18/26 / 600  → `text-lg`
+ *   h3 16/24 / 600  → `text-base`
  *   h4 14/22 / 600  → `text-sm`
  *   body / list items 16/26 → `text-long`
  *
- * The previous values (`text-2xl` / `text-lg` / `text-base`) rendered the
- * document title at 20/28 — smaller than an h2 card title should be —
- * and left table headers at 16/26 while cells were 14/22. Both are
- * corrected below; table cells now share one scale. Card-like blocks
- * (code blocks, images) use `rounded-lg` per §5 (Card = 12px).
+ * The document-level first heading is rendered separately as the interface
+ * `page-title` (30/38/600, §1.8) by `user-guide-index.tsx` and
+ * `legal-document.tsx`; it must not borrow this Markdown ladder.
+ *
+ * `max-w-[72ch]` is §1.12: 16/26 long-form copy must not stretch across a
+ * 1280px content area. Card-like blocks (code blocks, images) use
+ * `rounded-lg` per §5 (Card = 12px).
  *
  * Lives in its own module (not alongside the view components) so that
  * fast-refresh still works: files exporting components must not also
  * export plain constants.
  */
 export const PROSE_CLASSES = [
-  'max-w-none text-long',
-  '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-semibold [&_h1]:scroll-mt-20',
-  '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:scroll-mt-20',
+  'max-w-[72ch] text-long',
+  '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:scroll-mt-20',
+  '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:scroll-mt-20',
   '[&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:scroll-mt-20',
   '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-sm [&_h4]:font-semibold',
   '[&_p]:my-2 [&_p]:text-long [&_strong]:font-semibold [&_em]:italic',

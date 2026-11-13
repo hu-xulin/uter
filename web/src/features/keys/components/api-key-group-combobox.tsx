@@ -105,7 +105,7 @@ export function ApiKeyGroupCombobox({
             data-auto-group-effect={isAutoSelected ? 'trigger' : undefined}
             disabled={disabled}
             className={cn(
-              // 焦点环按规范 §15.1：1px、`ring` 满色、贴边 offset 0。此前是
+              // 焦点环按规范 §15.1：2px、`ring` 满色、贴边 offset 0。此前是
               // `ring-[3px]` + `ring-ring/20` 的半透明环，宽度和颜色都不是全站
               // 那一套。`data-popup-open` 是下拉打开态，视觉上等同聚焦，所以
               // 跟焦点环用同一档。

@@ -37,10 +37,10 @@ For commercial licensing, please contact support@uter.ai
  *   T7  调色板直用颜色     `bg-emerald-500`（未走语义 Token）
  *   T8  裸色值             `'#6366f1'` / `rgba(15,23,42,…)`（未走 Token）
  *   T9  行高覆盖           `leading-*`（行高由字号 Token 自带，不再单独覆盖）
- *   T10 任意圆角           `rounded-[3px]`（圆角阶梯只有 xs/sm/md/lg/xl/2xl）
- *   T11 未登记动效节奏     `duration-300` / `ease-[cubic-bezier(…)]`（§1.6 只有五组）
+ *   T10 任意圆角           `rounded-[3px]`（§5 圆角九档 xs→4xl + full）
+ *   T11 未登记动效节奏     `duration-300` / `ease-[cubic-bezier(…)]`（§9 只有五组）
  *   T12 字距类             `tracking-*`（统一移除，`tracking-normal` 放行）
- *   T13 透明度冒充文字层级 `text-foreground/60`（§11.3 禁止，改 `text-fg-secondary`）
+ *   T13 透明度冒充文字层级 `text-foreground/60`（§2.4 禁止，改 `text-fg-secondary`）
  *   T14 透明度凑悬停       `hover:bg-primary/90`（§2.2 禁止，改用 `*-hover` Token）
  *   T15 透明度凑浅底       `bg-warning/10`（§2.2 禁止，改用 `*-soft` / `*-subtle`）
  *   T16 低于最小字号       `text-[11px]` / `font-size: 10px`（§1.2 全站下限 12px）
@@ -65,7 +65,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const SRC = join(ROOT, 'src')
 const STRICT = process.argv.includes('--strict')
 
-// 基线模式（规范 §24「基线机制」）：把存量违规与本次新增区分开。
+// 基线模式（规范 §19.5「基线机制」）：把存量违规与本次新增区分开。
 //   --baseline        只对比基线里没有的条目；有新增即退出码 1（给 CI 用）
 //   --write-baseline  把当前违规写进快照；条数只允许下降（"基线只减不增"）
 //   --force-baseline  配合上一条，确需扩容时显式声明（必须写清理由）
@@ -108,7 +108,7 @@ const OVERLAY_ALLOWLIST = [
  *   · T1 主题预设的字号覆盖   → 并入 `design-system/tokens/typography.css`
  *   · T2 错误页 7rem 状态码   → 改用 display 档（`text-4xl`）
  *   · T4 图表 canvas 字号     → 收敛到 `design-system/tokens/chart-typography.ts`
- *   · T6 营销页/拖拽投影      → 删除（规范 §1.5：非浮层不投影）
+ *   · T6 营销页/拖拽投影      → 删除（规范 §8：非浮层不投影）
  *   · T7 调色板直用颜色       → 新增 `syntax-*` Token + 改走 `chart-*` /
  *                              `*-soft` / 品牌色 / 状态色语义
  *
@@ -149,8 +149,8 @@ const RULES = {
   T7: '调色板直用颜色（bg/text/border-{slate|emerald|…}-{shade}，未走语义 Token）',
   T8: '裸色值（#hex / rgba()，未走 Token）',
   T9: '行高覆盖（leading-…，行高应由字号 Token 决定）',
-  T10: '任意圆角（rounded-[…]，圆角阶梯只有 xs/sm/md/lg/xl/2xl）',
-  T11: '未登记动效节奏（duration-N / ease-[cubic-bezier(…)]，§1.6 只有五组时长）',
+  T10: '任意圆角（rounded-[…]，§5 圆角九档 xs→4xl + full）',
+  T11: '未登记动效节奏（duration-N / ease-[cubic-bezier(…)]，§9 只有五组时长）',
   T12: '字距类（tracking-*，规范统一移除，字距由字号 Token 自带）',
   T13: '透明度冒充文字层级（text-foreground/NN，改用 text-fg-secondary / text-fg-tertiary）',
   T14: '透明度凑悬停（hover:bg-{primary|secondary|destructive|success}/NN，改用 *-hover Token）',
@@ -255,7 +255,7 @@ const T15_RE = opacityUtilityRe(
 )
 
 /**
- * 规范 §1.5 允许的全部投影 / 辉光 Token（2026-10-28 定档）。
+ * 规范 §8 允许的全部投影 / 辉光 Token（2026-10-28 定档）。
  *
  * 四档投影按「元素是否离开文档流」分工，一档辉光表达状态语义：
  *   none       静止的页面内元素
@@ -265,7 +265,7 @@ const T15_RE = opacityUtilityRe(
  *   marketing  营销展示卡片（脱离页面平面）
  *   glow-online 在线状态点
  *
- * 新增档位必须先改 `design-system/tokens/elevation.css` 与规范 §1.5，
+ * 新增档位必须先改 `design-system/tokens/elevation.css` 与规范 §8，
  * 再往这个集合里加 —— 只改一边会被门禁拦下。
  */
 const ELEVATION_TOKENS = new Set([
@@ -422,7 +422,7 @@ for (const abs of walk(SRC)) {
 
     // T6：非浮层投影。`shadow-none` / `!shadow-none` 是在取消投影，放行。
     //
-    // 规范 §1.5 只认四档投影 + 一档状态辉光，写法必须是
+    // 规范 §8 只认四档投影 + 一档状态辉光，写法必须是
     // `shadow-(--ds-elevation-{none|popover|overlay|raised|marketing})`
     // 或 `shadow-(--ds-glow-online)`。引用不存在的档位（例如自造
     // `--ds-elevation-card`）同样是违规 —— 否则「只许四档」就形同虚设。
@@ -470,7 +470,8 @@ for (const abs of walk(SRC)) {
 
     // T10：任意圆角
     //
-    // 圆角阶梯是 6/8/10/12/14/16/9999（见 tokens/primitives）。`rounded-[3px]`
+    // 圆角九档是 6/8/10/12/14/16/18/20/9999（§5 / §28 radius.scale）。
+    // `rounded-[3px]`
     // 这类自造档位会让同一层级的控件圆角不一致。
     // 放行 `rounded-[inherit]`：滚动区视口必须继承外层圆角，没有对应工具类；
     // 放行 `rounded-[var(--radius-…)]`：引用 Token 是正确写法。
@@ -484,7 +485,7 @@ for (const abs of walk(SRC)) {
 
     // T11：未登记的动效节奏
     //
-    // 规范 §1.6 把时长分成五组，写法只有两种：`ds-motion-*` 工具类
+    // 规范 §9 把时长分成五组，写法只有两种：`ds-motion-*` 工具类
     // （时长与缓动一起下发），或 keyframes 里的 `var(--ds-motion-*)`。
     // `duration-300` / `duration-[0.35s]` / `ease-[cubic-bezier(…)]` 都是
     // 在阶梯外自造节奏 —— 单看一处「只是慢了一点」，全站叠起来就是
@@ -564,7 +565,7 @@ const violations = findings.filter((f) => !isAllowed(f.file, f.rule))
 //
 // 为什么这么做：一次全量清理之前，存量违规会一直卡住开发，于是大家要么绕过
 // 门禁、要么在赶工时把几十处一起改坏。基线让「历史遗留」与「本次引入」分开
-// 计价 —— 新增必须为零，存量排期清理，清理完条数只许下降（规范 §24）。
+// 计价 —— 新增必须为零，存量排期清理，清理完条数只许下降（规范 §19.5）。
 //
 // 条目的身份是 **规则 + 文件 + 证据串**，刻意不含行号：无关 commit 挪动一行就
 // 会让整份基线作废，那是给未来制造噪音。行号仍写进快照，只为人工定位用。
@@ -599,7 +600,7 @@ if (WRITE_BASELINE) {
   if (entries.length > previousCount && !FORCE_BASELINE) {
     console.error(
       `✗ 基线不允许变多：快照 ${previousCount} 条 → 现在 ${entries.length} 条。\n` +
-        `  规范 §24 要求「基线只减不增」。先修掉多出来的 ${entries.length - previousCount} 处，\n` +
+        `  规范 §19.5 要求「基线只减不增」。先修掉多出来的 ${entries.length - previousCount} 处，\n` +
         `  确属必须扩容时用 --force-baseline 并在提交说明里写明理由。`
     )
     process.exit(2)
@@ -698,7 +699,7 @@ if (violations.length === 0) {
 const allowed = findings.length - violations.length
 if (allowed > 0) {
   // 这些**都不是例外**，分开报数是为了避免误读：
-  //   · 浮层投影    规范 §1.5 明确规定「投影只留给弹窗与浮层」，是合规写法
+  //   · 浮层投影    规范 §8 明确规定「投影只留给弹窗与浮层」，是合规写法
   //   · 颜色所有者  Token 定义处本身就该写色值（调色板、品牌色、SVG 图形）
   //   · 已登记例外  ALLOWLIST 里逐条写了理由的真例外
   const allowedFindings = findings.filter((f) => !violations.includes(f))
@@ -713,7 +714,7 @@ if (allowed > 0) {
   ).length
   const exceptionCount = allowed - overlayCount - ownerCount
   if (overlayCount > 0) {
-    console.log(`\n浮层投影（规范 §1.5 允许，不计入违规）：${overlayCount} 处`)
+    console.log(`\n浮层投影（规范 §8 允许，不计入违规）：${overlayCount} 处`)
   }
   if (ownerCount > 0) {
     console.log(`Token 定义处色值（颜色的落点，不计入违规）：${ownerCount} 处`)

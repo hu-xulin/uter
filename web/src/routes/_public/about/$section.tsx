@@ -19,11 +19,11 @@ For commercial licensing, please contact support@uter.ai
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 
+import { AboutSectionViewer } from '@/features/about'
 import {
   ABOUT_SECTION_SLUGS,
   type AboutSectionSlug,
 } from '@/features/about/about-shared'
-import { AboutSectionViewer } from '@/features/about'
 
 /**
  * One chapter of the company profile at `/about/<slug>`.

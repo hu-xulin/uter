@@ -1,30 +1,37 @@
 {
-  "status": "FAIL",
-  "exit_code": 1,
-  "summary": "test: node --test exited 1 (6 files)",
+  "status": "PASS",
+  "exit_code": 0,
+  "summary": "execution UAP-EXEC-20261113090340-f934dd39",
   "data": {
-    "generated_at": "2026-11-13T07:19:11.573Z",
-    "mode": "all",
-    "test_files": [
-      ".uap/tests/independent-repair-review.test.mjs",
-      ".uap/tests/independent-verification.test.mjs",
-      ".uap/tests/real-code-repair-boundaries.test.mjs",
-      ".uap/tests/runtime.test.mjs",
-      ".uap/tests/status-consistency.test.mjs",
-      ".uap/tests/status-snapshot.test.mjs"
-    ],
-    "command": "node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
-    "exit_code": 1,
-    "timed_out": false,
-    "duration_ms": 46226,
-    "stdout_tail": "行产物写入影响\n      ---\n      duration_ms: 57.945728\n      type: 'test'\n      ...\n    # Subtest: currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n    not ok 3 - currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n      ---\n      duration_ms: 189.189714\n      type: 'test'\n      location: '/Users/lincolnhu/uter/.uap/tests/status-snapshot.test.mjs:33:3'\n      failureType: 'testCodeFailure'\n      error: |-\n        Expected values to be strictly equal:\n        + actual - expected\n        \n        + 'UAP-EXEC-20261113071825-f4b0c0b2'\n        - 'UAP-EXEC-20261113071825-50ede860'\n                                   ^\n        \n      code: 'ERR_ASSERTION'\n      name: 'AssertionError'\n      expected: 'UAP-EXEC-20261113071825-50ede860'\n      actual: 'UAP-EXEC-20261113071825-f4b0c0b2'\n      operator: 'strictEqual'\n      stack: |-\n        TestContext.<anonymous> (file:///Users/lincolnhu/uter/.uap/tests/status-snapshot.test.mjs:37:12)\n        Test.runInAsyncScope (node:async_hooks:214:14)\n        Test.run (node:internal/test_runner/test:1047:25)\n        Suite.processPendingSubtests (node:internal/test_runner/test:744:18)\n        Test.postRun (node:internal/test_runner/test:1173:19)\n        Test.run (node:internal/test_runner/test:1101:12)\n        async Suite.processPendingSubtests (node:internal/test_runner/test:744:7)\n      ...\n    1..3\nnot ok 32 - 执行身份绑定\n  ---\n  duration_ms: 266.113015\n  type: 'suite'\n  location: '/Users/lincolnhu/uter/.uap/tests/status-snapshot.test.mjs:20:1'\n  failureType: 'subtestsFailed'\n  error: '1 subtest failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n# Subtest: 真实快照适配器\n    # Subtest: 从真实追踪矩阵构造 538 条要求与 32 份规范\n    ok 1 - 从真实追踪矩阵构造 538 条要求与 32 份规范\n      ---\n      duration_ms: 134.646257\n      type: 'test'\n      ...\n    # Subtest: stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n      ---\n      duration_ms: 391.450852\n      type: 'test'\n      ...\n    # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n    ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n      ---\n      duration_ms: 164.130295\n      type: 'test'\n      ...\n    # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n      ---\n      duration_ms: 2806.936055\n      type: 'test'\n      ...\n    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n      ---\n      duration_ms: 635.857244\n      type: 'test'\n      ...\n    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致\n    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致\n      ---\n      duration_ms: 997.77534\n      type: 'test'\n      ...\n    1..6\nok 33 - 真实快照适配器\n  ---\n  duration_ms: 5142.163218\n  type: 'suite'\n  ...\n# Subtest: 证据链 fail-closed\n    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败\n    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败\n      ---\n      duration_ms: 0.651755\n      type: 'test'\n      ...\n    1..1\nok 34 - 证据链 fail-closed\n  ---\n  duration_ms: 0.888135\n  type: 'suite'\n  ...\n1..34\n# tests 68\n# suites 26\n# pass 65\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 46132.031537\n",
-    "stderr_tail": "",
-    "execution_id": "UAP-EXEC-20261113071825-f4b0c0b2",
-    "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
-    "worktree_fingerprint": "f28d1de6abab1494e3d4f7b905b1cab69076b331b7e39f3daa0d7f6e3beb2e41"
+    "execution": {
+      "execution_id": "UAP-EXEC-20261113090340-f934dd39",
+      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+      "worktree_fingerprint": "f054b1a63a694c7b7361404e5402d9db2ae4db6b27fcc5b1c036b1694e7ca846",
+      "started_at": "2026-11-13T09:03:40.319Z",
+      "started_by": "code-version-changed",
+      "status": "RUNNING"
+    },
+    "head_now": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+    "fingerprint_now": "f054b1a63a694c7b7361404e5402d9db2ae4db6b27fcc5b1c036b1694e7ca846",
+    "ledger_entries": 19,
+    "health": {
+      "component": "runtime.status-engine.execution",
+      "version": "1.0.0",
+      "ok": true,
+      "checks": {
+        "git_head_resolved": true,
+        "worktree_fingerprint_resolved": true,
+        "ledger_present": true,
+        "identity_stable": true
+      },
+      "execution_id": "UAP-EXEC-20261113090340-f934dd39",
+      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+      "worktree_fingerprint": "f054b1a63a694c7b7361404e5402d9db2ae4db6b27fcc5b1c036b1694e7ca846",
+      "checked_at": "2026-11-13T09:07:44.098Z"
+    }
   },
-  "command": "test --all",
-  "duration_ms": 46322,
-  "generated_at": "2026-11-13T07:19:11.667Z",
-  "evidence_ref": "UAP-EV-20261113071911-2fc150ed"
+  "command": "execution show",
+  "duration_ms": 220,
+  "generated_at": "2026-11-13T09:07:44.100Z",
+  "evidence_ref": "UAP-EV-20261113090744-b078cd59"
 }

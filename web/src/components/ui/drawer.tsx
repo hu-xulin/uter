@@ -128,7 +128,7 @@ function DrawerTitle({
   return (
     <DrawerPrimitive.Title
       data-slot='drawer-title'
-      // 规范 1.2：弹窗/抽屉标题恒为 h3 档（18/600）。原 16/500 与正文同号，
+      // 规范 §1.3 / §13.3：弹窗/抽屉标题恒为 h3 档（18/26/600）。原 16/500 与正文同号，
       // 抽屉一打开就先「显得小」一档。
       className={cn('text-foreground text-lg font-semibold', className)}
       {...props}

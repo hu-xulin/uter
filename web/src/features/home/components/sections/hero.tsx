@@ -103,7 +103,7 @@ export function Hero(props: HeroProps) {
 
           {/* 主标题会折成 3–4 行，用多行 display 行高（1.5）而不是
               单行的 40px，否则行与行会挤在一起。行高值见
-              `--ds-line-display-multiline`（规范 §1.2）。 */}
+              `--ds-line-display-multiline`（规范 §1.10）。 */}
           <Heading
             variant='display'
             level={1}
