@@ -21,6 +21,13 @@ const PlaygroundRoutePrefix = "/pg"
 // 精确匹配失配。传入原始请求路径，返回可用于渠道能力比对的路径。
 func CanonicalUpstreamPath(path string) string {
 	path, _, _ = strings.Cut(path, "?")
+	// 渠道路由按 path 段精确比对，尾斜杠是同一端点的常见变体；不归一化会让
+	// /pg/chat/completions/ 产出 /v1/chat/completions/，与登记的
+	// /v1/chat/completions 失配，把唯一候选渠道判成不支持（503）。
+	// 保留根路径 "/"，其余路径统一去掉尾部斜杠。
+	if len(path) > 1 {
+		path = strings.TrimRight(path, "/")
+	}
 	if path == PlaygroundRoutePrefix {
 		return "/v1"
 	}
