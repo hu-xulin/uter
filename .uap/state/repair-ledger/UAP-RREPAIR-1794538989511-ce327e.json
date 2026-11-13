@@ -1,0 +1,76 @@
+{
+  "execution_id": "UAP-RREPAIR-1794538989511-ce327e",
+  "task_id": "UAP-REAL-REPAIR-001",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "target_file": "common/request_path.go",
+  "before_hash": "2c74733c3a4d2401213296153d2f5e21a6a371284296d9a71767cd54fa3bb00f",
+  "after_hash": "c62505912ddaef85084eb08de053e4a2932a3d2afa1b30a51d9aeb58d1367c13",
+  "backup_path": ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794538989511-ce327e/request_path.go",
+  "allowed_paths": [
+    "common/request_path.go"
+  ],
+  "modified_files": [
+    "common/request_path.go"
+  ],
+  "max_attempts": 3,
+  "attempts": 1,
+  "commands": [
+    {
+      "command": "go test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1",
+      "args": [
+        "test",
+        "./model/",
+        "-run",
+        "^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$",
+        "-count=1"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 9541,
+      "stdout": "ok  \tgithub.com/uter-ai/uter/model\t1.567s\n",
+      "stderr": ""
+    },
+    {
+      "command": "go test ./common/ -run ^TestCanonicalUpstreamPath -count=1",
+      "args": [
+        "test",
+        "./common/",
+        "-run",
+        "^TestCanonicalUpstreamPath",
+        "-count=1"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 3476,
+      "stdout": "ok  \tgithub.com/uter-ai/uter/common\t1.022s\n",
+      "stderr": ""
+    },
+    {
+      "command": "go test ./common/ -count=1",
+      "args": [
+        "test",
+        "./common/",
+        "-count=1"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 3788,
+      "stdout": "ok  \tgithub.com/uter-ai/uter/common\t2.186s\n",
+      "stderr": ""
+    },
+    {
+      "command": "go vet ./common/ ./model/",
+      "args": [
+        "vet",
+        "./common/",
+        "./model/"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 1424,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "status": "TESTS_PASSED"
+}
