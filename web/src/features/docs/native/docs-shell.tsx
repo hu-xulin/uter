@@ -24,6 +24,7 @@ import { PublicLayout } from '@/components/layout'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
 import { sidebarEntries, type SidebarNode } from './docs-content'
+import { DocsPageFooter } from './docs-page-footer'
 import { DocsSearchButton, DocsSearchDialog } from './docs-search'
 import { DocsToc, DocsTocInline, type TocItem } from './docs-toc'
 
@@ -133,8 +134,12 @@ function TreeItem({
       </div>
       {open &&
         node.children?.map((child) => (
+          // Two sibling folders can legitimately share a URL (both API
+          // category shelves point at `/docs/<locale>/api`), so the URL
+          // alone is not a unique key. Their labels differ, and using the
+          // label keeps the key data-derived rather than index-derived.
           <TreeItem
-            key={child.url}
+            key={`${child.url}#${child.title}`}
             node={child}
             depth={depth + 1}
             activeSplat={activeSplat}
@@ -195,6 +200,7 @@ export function NativeDocsShell({
           <div className='mx-auto max-w-3xl px-6 py-10'>
             <DocsTocInline items={toc} />
             <article>{children}</article>
+            <DocsPageFooter locale={locale} pagePath={pagePath} />
           </div>
         </main>
         <aside className='sticky top-16 hidden h-[calc(100svh-4rem)] w-56 shrink-0 overflow-y-auto py-6 xl:block'>

@@ -16,4 +16,4 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-export { AboutViewer } from './about-viewer'
+export { AboutSectionViewer, AboutViewer } from './about-viewer'

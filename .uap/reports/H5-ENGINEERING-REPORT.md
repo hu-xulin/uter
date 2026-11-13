@@ -1,6 +1,6 @@
 # H5 Engineering Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-12T17:04:41.062Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:03.890Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## H5 独立构建探测

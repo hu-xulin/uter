@@ -57,6 +57,7 @@ import { Route as AuthenticatedUsageLogsAuditRouteImport } from './routes/_authe
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
 import { Route as PublicAboutIndexRouteImport } from './routes/_public/about/index'
+import { Route as PublicAboutSectionRouteImport } from './routes/_public/about/$section'
 import { Route as PublicDocsIndexRouteImport } from './routes/_public/docs/index'
 import { Route as PublicDocsSplatRouteImport } from './routes/_public/docs/$'
 import { Route as PublicPricingIndexRouteImport } from './routes/_public/pricing/index'
@@ -336,6 +337,11 @@ const PublicAboutIndexRoute = PublicAboutIndexRouteImport.update({
   path: '/about/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const PublicAboutSectionRoute = PublicAboutSectionRouteImport.update({
+  id: '/about/$section',
+  path: '/about/$section',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const PublicDocsIndexRoute = PublicDocsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -488,6 +494,7 @@ export interface FileRoutesByFullPath {
   '/models/$section': typeof AuthenticatedModelsSectionRoute
   '/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
   '/usage-logs/audit': typeof AuthenticatedUsageLogsAuditRoute
+  '/about/$section': typeof PublicAboutSectionRoute
   '/docs/$': typeof PublicDocsSplatRoute
   '/channels/': typeof AuthenticatedChannelsIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -554,6 +561,7 @@ export interface FileRoutesByTo {
   '/models/$section': typeof AuthenticatedModelsSectionRoute
   '/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
   '/usage-logs/audit': typeof AuthenticatedUsageLogsAuditRoute
+  '/about/$section': typeof PublicAboutSectionRoute
   '/docs/$': typeof PublicDocsSplatRoute
   '/channels': typeof AuthenticatedChannelsIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -626,6 +634,7 @@ export interface FileRoutesById {
   '/_authenticated/models/$section': typeof AuthenticatedModelsSectionRoute
   '/_authenticated/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
   '/_authenticated/usage-logs/audit': typeof AuthenticatedUsageLogsAuditRoute
+  '/_public/about/$section': typeof PublicAboutSectionRoute
   '/_public/docs/$': typeof PublicDocsSplatRoute
   '/_authenticated/channels/': typeof AuthenticatedChannelsIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -696,6 +705,7 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/usage-logs/$section'
     | '/usage-logs/audit'
+    | '/about/$section'
     | '/docs/$'
     | '/channels/'
     | '/dashboard/'
@@ -762,6 +772,7 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/usage-logs/$section'
     | '/usage-logs/audit'
+    | '/about/$section'
     | '/docs/$'
     | '/channels'
     | '/dashboard'
@@ -833,6 +844,7 @@ export interface FileRouteTypes {
     | '/_authenticated/models/$section'
     | '/_authenticated/usage-logs/$section'
     | '/_authenticated/usage-logs/audit'
+    | '/_public/about/$section'
     | '/_public/docs/$'
     | '/_authenticated/channels/'
     | '/_authenticated/dashboard/'
@@ -1224,6 +1236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAboutIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_public/about/$section': {
+      id: '/_public/about/$section'
+      path: '/about/$section'
+      fullPath: '/about/$section'
+      preLoaderRoute: typeof PublicAboutSectionRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/_public/docs/': {
       id: '/_public/docs/'
       path: '/'
@@ -1540,6 +1559,7 @@ interface PublicRouteRouteChildren {
   PublicRechargeAgreementRoute: typeof PublicRechargeAgreementRoute
   PublicUserAgreementRoute: typeof PublicUserAgreementRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicAboutSectionRoute: typeof PublicAboutSectionRoute
   PublicAboutIndexRoute: typeof PublicAboutIndexRoute
   PublicPricingIndexRoute: typeof PublicPricingIndexRoute
   PublicRankingsIndexRoute: typeof PublicRankingsIndexRoute
@@ -1552,6 +1572,7 @@ const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicRechargeAgreementRoute: PublicRechargeAgreementRoute,
   PublicUserAgreementRoute: PublicUserAgreementRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicAboutSectionRoute: PublicAboutSectionRoute,
   PublicAboutIndexRoute: PublicAboutIndexRoute,
   PublicPricingIndexRoute: PublicPricingIndexRoute,
   PublicRankingsIndexRoute: PublicRankingsIndexRoute,

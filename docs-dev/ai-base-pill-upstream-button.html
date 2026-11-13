@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>人工智能应用基座 — 上游 new-api 按钮背景标准</title>
+  <style>
+    :root {
+      /* 上游 new-api 按钮背景标准（light 主题，取自 web/src/styles/theme.css） */
+      --upstream-primary: #3EA4EC;        /* --primary: oklch(0.692 0.141 243.716) */
+      --upstream-primary-hover: #65B6F0;   /* hover: bg-primary/80 */
+      --upstream-primary-active: #0E72BC;  /* dark 主题 --primary 同族加深 */
+      --upstream-primary-fg: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background: #cfd8e3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    /* 16:9 幻灯片画布 */
+    .slide {
+      width: 960px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #EAF2FC 0%, #DCE9FA 100%);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(20, 50, 90, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 72px;
+      gap: 48px;
+    }
+
+    /* 左侧药丸：按上游 new-api 按钮背景标准上色 */
+    .pill-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--upstream-primary);
+      color: var(--upstream-primary-fg);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 14px 34px;
+      border: 1px solid transparent;
+      border-radius: 999px;            /* 药丸外形保留 */
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color .15s ease, transform .1s ease;
+      box-shadow: 0 6px 16px rgba(62, 164, 236, 0.35);
+    }
+    .pill-button:hover  { background: var(--upstream-primary-hover); }
+    .pill-button:active { background: var(--upstream-primary-active); transform: translateY(1px); }
+    .pill-button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(62, 164, 236, 0.45);
+    }
+
+    /* 右侧红字：保持原幻灯片文案与样式 */
+    .headline {
+      color: #E23B3B;
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: right;
+      max-width: 520px;
+    }
+
+    .caption {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #5b6b7d;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="pill-button" role="button" tabindex="0">人工智能应用基座</div>
+    <div class="headline">按照上游 newapi 执行，并将标准写入设计规范</div>
+  </div>
+  <div class="caption">
+    左侧药丸已按上游 new-api 按钮背景标准重做：背景 = <code>--primary #3EA4EC</code>、白字、圆角药丸、hover #65B6F0、active #0E72BC。
+  </div>
+</body>
+</html>

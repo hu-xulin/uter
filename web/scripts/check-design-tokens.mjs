@@ -41,9 +41,9 @@ For commercial licensing, please contact support@uter.ai
  *   T11 未登记动效节奏     `duration-300` / `ease-[cubic-bezier(…)]`（§1.6 只有五组）
  *   T12 字距类             `tracking-*`（统一移除，`tracking-normal` 放行）
  *   T13 透明度冒充文字层级 `text-foreground/60`（§11.3 禁止，改 `text-fg-secondary`）
- *   T14 透明度凑悬停       `hover:bg-primary/90`（§11.2 禁止，改用 `*-hover` Token）
- *   T15 透明度凑浅底       `bg-warning/10`（§11.2 禁止，改用 `*-soft` / `*-subtle`）
- *   T16 低于最小字号       `text-[11px]` / `font-size: 10px`（§12.15 全站下限 12px）
+ *   T14 透明度凑悬停       `hover:bg-primary/90`（§2.2 禁止，改用 `*-hover` Token）
+ *   T15 透明度凑浅底       `bg-warning/10`（§2.2 禁止，改用 `*-soft` / `*-subtle`）
+ *   T16 低于最小字号       `text-[11px]` / `font-size: 10px`（§1.2 全站下限 12px）
  *   T17 任意间距           `p-[3px]` / `gap-[2px]`（间距阶梯就是 Tailwind 4px 单位）
  *
  * 扫描不把硬编码一律判死：图表 canvas 的 `fontSize` 必须是数字、
@@ -155,7 +155,7 @@ const RULES = {
   T13: '透明度冒充文字层级（text-foreground/NN，改用 text-fg-secondary / text-fg-tertiary）',
   T14: '透明度凑悬停（hover:bg-{primary|secondary|destructive|success}/NN，改用 *-hover Token）',
   T15: '透明度凑浅底（bg-{success|warning|info}/NN → *-soft；bg-{primary|destructive}/NN → *-subtle）',
-  T16: '低于最小字号（规范 §12.15：全站可见文本下限 12px，布局不够用改布局不许缩字号）',
+  T16: '低于最小字号（规范 §1.2：全站可见文本下限 12px，布局不够用改布局不许缩字号）',
   T17: '任意间距（p-/m-/gap-[…]，间距阶梯就是 Tailwind 4px 单位，就近取整档）',
 }
 
@@ -210,10 +210,10 @@ const PALETTE_CLASS_RE = new RegExp(
 /**
  * T13–T15：禁止用透明度 `/NN` 凑层级、凑悬停、凑浅底。
  *
- * 规范 §11.2 / §11.3 / §25 把这三类列为禁止项并给出了替代 Token —— 理由是
+ * 规范 §2.2 / §2.4 / §25 把这三类列为禁止项并给出了替代 Token —— 理由是
  * 透明度会**随底下的颜色漂移**：`hover:bg-primary/90` 在深色底上发灰、在浅色
  * 底上泛白；`text-foreground/60` 冒充次要文字时，浅色主题可能刚好，深色主题
- * 就掉到对比度线以下（§11.5 要求每次改透明度都重算对比度，靠 opacity 根本
+ * 就掉到对比度线以下（§15.2 要求按最终渲染颜色重算对比度，靠 opacity 根本
  * 没法验证）。所以替代品是**主题无关的语义 Token**：
  *
  *   text-foreground/NN   → text-fg-secondary / text-fg-tertiary
@@ -386,7 +386,7 @@ for (const abs of walk(SRC)) {
       report('T5', rel, line, rawText)
     }
 
-    // T16：低于最小字号（规范 §12.15「Typography Minimum Size Rule」）。
+    // T16：低于最小字号（规范 §1.2「全站可见文本下限 12px」）。
     //
     // T2/T4/T5 拦的是「写法」（任意值/内联/CSS 硬编码），这条拦的是**数值**：
     // 哪怕写法走的是允许形式，只要换算成 px 后 < 12 一律违规。扫描面：
@@ -512,7 +512,7 @@ for (const abs of walk(SRC)) {
 
     // T13：透明度冒充文字层级。`text-foreground/40` 是在用不透明度伪造
     // 「次级文字」—— 二级/三级文字已有 `fg-secondary` / `fg-tertiary` 两档
-    // 语义 Token，且各自在深浅两套主题下都做过对比度实测（§11.5）。
+    // 语义 Token，且各自在深浅两套主题下都做过对比度实测（§15.2）。
     for (const _ of raw.match(T13_RE) ?? []) {
       report('T13', rel, line, rawText)
       break

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113005147-0d85b48f",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T00:51:47.401Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --help",
+  "exit_code": 0,
+  "duration_ms": 1,
+  "inputs": "{\"argv\":[\"--help\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "help",
+  "content_hash": "91926658a9d2807976e6e495c81f55211d1ee07f1ec2639dff573eee67c0c439"
+}

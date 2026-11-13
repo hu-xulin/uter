@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113071911-98cf0777",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T07:19:11.627Z",
+  "started_at": "2026-11-13T07:18:25.401Z",
+  "finished_at": "2026-11-13T07:19:11.627Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113071825-f4b0c0b2",
+    "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+    "worktree_fingerprint": "f28d1de6abab1494e3d4f7b905b1cab69076b331b7e39f3daa0d7f6e3beb2e41",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113071825-f4b0c0b2",
+  "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+  "worktree_fingerprint": "f28d1de6abab1494e3d4f7b905b1cab69076b331b7e39f3daa0d7f6e3beb2e41",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+  "exit_code": 1,
+  "duration_ms": 46226,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/independent-repair-review.test.mjs\",\".uap/tests/independent-verification.test.mjs\",\".uap/tests/real-code-repair-boundaries.test.mjs\",\".uap/tests/runtime.test.mjs\",\".uap/tests/status-consistency.test.mjs\",\".uap/tests/status-snapshot.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 6 files -> exit 1, tap pass=65 fail=3",
+  "content_hash": "a706fde18b1ccd395ac4159a94867e6164295ad0e624d25128e9c1a24884789e"
+}

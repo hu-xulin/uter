@@ -67,6 +67,7 @@ func parseStatusFilter(statusParam string) int {
 }
 
 func clearChannelInfo(channel *model.Channel) {
+	channel.BalanceDetail = channel.GetBalanceDetail()
 	if channel.ChannelInfo.IsMultiKey {
 		channel.ChannelInfo.MultiKeyDisabledReason = nil
 		channel.ChannelInfo.MultiKeyDisabledTime = nil

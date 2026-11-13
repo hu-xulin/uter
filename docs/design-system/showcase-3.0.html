@@ -6,10 +6,10 @@
 <title>UTER Design System 3.0 · 可视核查页</title>
 <style>
 /* ══════════════════════════════════════════════════════════════════
-   UTER Design System 3.0 Showcase
-   本页 :root / .dark Token 块 = 3.0 规范（UTER-DESIGN-SYSTEM-3.0.md）的
-   唯一数据真源。所有分区数值、对比度结果均由脚本运行时读取计算，
-   禁止手工填写。规范来源见各分区标注章节号（§n.n）。
+   UTER Design System 3.0 Showcase — 视觉回归 track 1 的像素基线对象（历史快照）。
+   ⚠ 本页 :root / .dark 是**派生副本，不是数据真源**；唯一值声明在
+   UTER-DESIGN-SYSTEM-3.0.md §28 TOKEN-MANIFEST，数据驱动版见 showcase.html。
+   本页数值可能滞后于 §28，禁止从本页反向定档。分区标注见各章节号（§n.n）。
    ══════════════════════════════════════════════════════════════════ */
 
 /* ── Primitive / Semantic Tokens · Light（§2 / §5 / §7 / §8 / §9）── */
@@ -119,10 +119,15 @@
   --radius-2xl: 16px;
   --radius-full: 9999px;
 
-  /* 焦点环（§15.1） */
-  --focus-ring-width: 2px;
-  --focus-ring-offset: 2px;
+  /* 焦点环（§15.1 · 2026-10-29 起恒 1px、贴边） */
+  --focus-ring-width: 1px;
+  --focus-ring-offset: 0px;
   --focus-ring-color: var(--brand-primary);
+
+  /* 品牌渐变（§17.5 · 逐值锚定上游 new-api，深浅主题同值，禁止 :root.dark 覆盖） */
+  --ds-color-brand-gradient-from: #60a5fa;
+  --ds-color-brand-gradient-via: #a78bfa;
+  --ds-color-brand-gradient-to: #a855f7;
 
   /* 阴影（§8.1 Light · 五档 Elevation + 独立 Brand Glow） */
   --shadow-xs: 0 1px 2px rgb(15 23 42 / 0.04);
@@ -720,13 +725,14 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
   <p class="note">禁止：小于 12px 的常规 UI 文本；11px / 13.5px / 17px 等非标准字号；将 13px 密集文本用于长篇正文。</p>
 </section>
 
-<!-- ═══ 2. Mono 三档（§1.5）═══ -->
+<!-- ═══ 2. Mono 四档（§1.5）═══ -->
 <section class="demo" id="mono">
-  <h2><span class="no">区域 2</span>Mono 三档 <code style="font-size:13px;color:var(--foreground-tertiary)">§1.5</code></h2>
-  <p class="lead">API Key、请求 ID、模型名称、Token 数量、代码标识必须使用 Mono 字体体系。</p>
+  <h2><span class="no">区域 2</span>Mono 四档 <code style="font-size:13px;color:var(--foreground-tertiary)">§1.5</code></h2>
+  <p class="lead">API Key、请求 ID、模型名称、Token 数量、代码标识必须使用 Mono 字体体系。2026-11-03 拍定：在三档基础上新增 mono-title 标题档。</p>
   <div class="type-row"><span class="tag">mono-xs · 12/18</span><span class="mono" style="font-size:12px;line-height:18px">sk-uter-9f3a…e21c · req_8f2a11</span></div>
   <div class="type-row"><span class="tag">mono-sm · 13/20</span><span class="mono" style="font-size:13px;line-height:20px">gpt-5.2-turbo · 1,024,000 tokens · $12.40</span></div>
   <div class="type-row"><span class="tag">mono-base · 14/22</span><span class="mono" style="font-size:14px;line-height:22px">POST /v1/chat/completions · 200 OK · 412 ms</span></div>
+  <div class="type-row"><span class="tag">mono-title · 16/22 · 600</span><span class="mono" style="font-size:16px;line-height:22px;font-weight:600">Claude Sonnet 4.5 · 定价卡片模型名</span></div>
 </section>
 
 <!-- ═══ 3. 页面层级四层（§3）═══ -->
@@ -899,7 +905,7 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
       <tr><td class="mono">Link</td><td><button class="btn btn-link">文本链接</button></td><td><button class="btn btn-link">悬停查看</button></td><td><button class="btn btn-link" disabled>禁用</button></td><td><button class="btn btn-link" aria-busy="true">处理中…</button></td></tr>
     </tbody>
   </table>
-  <p class="note">Tab 键遍历查看 :focus-visible 焦点环（§15.1：2px 宽 + 2px offset）。</p>
+  <p class="note">Tab 键遍历查看 :focus-visible 焦点环（§15.1：1px 满色、贴边、无 offset）。</p>
   <h3 class="sub">九档尺寸（高度 = 运行时读取）</h3>
   <div class="size-row">
     <button class="btn btn-primary" data-size="button-default">默认</button><span class="size-tag" data-size-tag="button-default"></span>
@@ -1011,7 +1017,7 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
 <!-- ═══ 21. 焦点环与触控目标（§15）═══ -->
 <section class="demo" id="focus">
   <h2><span class="no">区域 21</span>焦点环与触控目标 <code style="font-size:13px;color:var(--foreground-tertiary)">§15</code></h2>
-  <p class="lead">焦点环 2px 宽 + 2px offset、:focus-visible 触发；WCAG 2.2 Focus Appearance 属 AAA，本页按更高标准执行（§15.1 注意事项）。</p>
+  <p class="lead">焦点环恒 1px、贴边（offset 0，§15.1 不存在 2px 档）、:focus-visible 触发；WCAG 2.2 Focus Appearance 属 AAA，本页按更高标准执行（§15.1 注意事项）。</p>
   <table class="tbl"><thead><tr><th>Token</th><th>当前值（运行时）</th></tr></thead><tbody>
     <tr><td class="mono">--focus-ring-width</td><td class="mono" data-tok="focus-ring-width"></td></tr>
     <tr><td class="mono">--focus-ring-offset</td><td class="mono" data-tok="focus-ring-offset"></td></tr>
@@ -1031,8 +1037,35 @@ footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border
   </div>
 </section>
 
+<!-- ═══ 22. 品牌渐变与首屏演示（§17.5 · 2026-11-13 补入）═══ -->
+<section class="demo" id="brand-gradient">
+  <h2><span class="no">区域 22</span>品牌渐变与首屏演示 <code style="font-size:13px;color:var(--foreground-tertiary)">§17.5 / §26.2 E28</code></h2>
+  <p class="lead">营销首屏 / CTA 的品牌渐变标题唯一出口 <code>ds-text-gradient-brand</code>；三档停靠站逐值锚定上游 new-api（blue-400 / violet-400 / purple-500），深浅主题同值，禁止 <code>:root.dark</code> 覆盖。</p>
+  <style>
+    .ds-text-gradient-brand {
+      background-image: linear-gradient(to right, var(--ds-color-brand-gradient-from), var(--ds-color-brand-gradient-via), var(--ds-color-brand-gradient-to));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .gradient-stop-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+    .gradient-chip { width: 44px; height: 28px; border-radius: 8px; border: 1px solid var(--border); flex: none; }
+    .gradient-hero-demo {
+      font-size: 36px; line-height: 44px; font-weight: 600; letter-spacing: -0.02em;
+    }
+  </style>
+  <div class="ds-text-gradient-brand gradient-hero-demo">Uter.ai 优特智能，直达全球大模型</div>
+  <p style="font-size:13px;color:var(--foreground-tertiary);margin-top:4px">↑ 36/44 · 600 · display 档 —— 单一出口 <code>ds-text-gradient-brand</code>，不得手写 <code>from-… via-… to-…</code>（T7）。</p>
+  <h3 class="sub">三档停靠站（§17.5 实测值 · 浅色主题对页面底色）</h3>
+  <div class="gradient-stop-row"><span class="gradient-chip" id="grad-chip-from"></span><code id="grad-val-from">--ds-color-brand-gradient-from</code></div>
+  <div class="gradient-stop-row"><span class="gradient-chip" id="grad-chip-via"></span><code id="grad-val-via">--ds-color-brand-gradient-via</code></div>
+  <div class="gradient-stop-row"><span class="gradient-chip" id="grad-chip-to"></span><code id="grad-val-to">--ds-color-brand-gradient-to</code></div>
+  <h3 class="sub">验收口径（§26.2 E28 · B 类例外，不进 ALLOWLIST）</h3>
+  <p class="note">首屏品牌渐变标题是装饰性大号标题与对外传播的品牌资产：浅色 from/via 实测 2.54:1 / 2.72:1 低于大文本 3:1，已按 §26.2 登记 B 类例外 E28；逐值锚定上游优先，改深即改变品牌观感。退出条件：上游 new-api 改值或渐变移出装饰性标题场景。</p>
+</section>
+
 <footer>
-  <p><strong>验收口径（§18.4）</strong>：本页所有色值 / 尺寸标签 / 对比度结果均由脚本运行时从页内 Token 块与真实 DOM 读取计算；Pending 表示 Token 尚未定版（chart-6、Dark 阴影、Terminal ANSI palette），未通过组合如实显示 Fail。Token 定版流程：先改本页 Token 块 → 逐项验收 → 再迁入 <code>web/src/styles/theme.css</code> 与 <code>web/src/design-system/tokens/</code>（§20 迁移顺序）。</p>
+  <p><strong>验收口径（§18.4）</strong>：本页所有色值 / 尺寸标签 / 对比度结果均由脚本运行时从页内 Token 块与真实 DOM 读取计算；Pending 表示 Token 尚未定版（chart-6、Dark 阴影、Terminal ANSI palette），未通过组合如实显示 Fail。Token 定版流程（§28.2）：先改 §28 <code>TOKEN-MANIFEST</code> → 跑 <code>sync-design-showcase.mjs</code> → 同步 CSS 运行真源与投影表；禁止从本页反向定档。</p>
   <p style="margin-top:6px">UTER Design System 3.0 · Showcase · 生成于 2026-11-03 · 对应规范 UTER-DESIGN-SYSTEM-3.0.md</p>
 </footer>
 
@@ -1412,6 +1445,20 @@ document.querySelectorAll('.switch').forEach((sw) => {
 });
 buildTypeScale();
 renderAll();
+
+/* ═══════════ 区域 22 · 品牌渐变停靠站（§17.5）═══════════ */
+(function renderBrandGradient() {
+  var stops = [['from', 'grad-from'], ['via', 'grad-via'], ['to', 'grad-to']];
+  var names = { from: '--ds-color-brand-gradient-from', via: '--ds-color-brand-gradient-via', to: '--ds-color-brand-gradient-to' };
+  var style = getComputedStyle(document.documentElement);
+  stops.forEach(function (s) {
+    var val = style.getPropertyValue(names[s[0]]).trim();
+    var chip = document.getElementById('grad-chip-' + s[0]);
+    var label = document.getElementById('grad-val-' + s[0]);
+    if (chip && val) chip.style.background = val;
+    if (label && val) label.textContent = names[s[0]] + ' = ' + val;
+  });
+})();
 </script>
 </body>
 </html>

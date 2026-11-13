@@ -1,6 +1,6 @@
 # Specification Compliance Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-12T17:04:40.584Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:03.606Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 逐份规范（真实文件探测）
@@ -31,9 +31,9 @@
 | UAP-06-001 | security | 13593 | ACTIVE | 无 | security.application | security.application_integrity | PASS | YES |
 | UAP-06-002 | security | 17956 | ACTIVE | 无 | security.financial_integrity | security.financial_integrity_validator | PASS | YES |
 | UAP-06-003 | security | 14187 | ACTIVE | 无 | security.reliability | security.reliability_integrity | PASS | YES |
-| UAP-07-001 | cross-platform | 13420 | ACTIVE | 无 | cross_platform.web | cross_platform.web_integrity | PASS | YES |
+| UAP-07-001 | cross-platform | 13422 | ACTIVE | 无 | cross_platform.web | cross_platform.web_integrity | PASS | YES |
 | UAP-07-002 | cross-platform | 13081 | ACTIVE | 无 | cross_platform.h5 | cross_platform.h5_integrity | PASS | YES |
-| UAP-07-003 | cross-platform | 13676 | ACTIVE | 无 | cross_platform.consistency | cross_platform.consistency_integrity | PASS | YES |
+| UAP-07-003 | cross-platform | 13669 | ACTIVE | 无 | cross_platform.consistency | cross_platform.consistency_integrity | PASS | YES |
 | UAP-08-001 | delivery | 14836 | ACTIVE | 无 | delivery.ci_cd | delivery.ci_integrity | PASS | YES |
 | UAP-08-002 | delivery | 15533 | ACTIVE | 无 | delivery.deployment | delivery.deployment_integrity | PASS | YES |
 | UAP-08-003 | delivery | 14964 | ACTIVE | 无 | delivery.observability | delivery.observability_integrity | PASS | YES |

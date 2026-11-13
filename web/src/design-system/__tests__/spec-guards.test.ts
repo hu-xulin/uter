@@ -708,10 +708,10 @@ describe('brand color source', () => {
  */
 describe('markdown prose ladder', () => {
   const LADDER: { expect: RegExp; why: string }[] = [
-    { expect: /\[&_h1\]:text-2xl/, why: 'Markdown h1 = 24/32（text-2xl）' },
-    { expect: /\[&_h2\]:text-lg/, why: 'Markdown h2 = 18/28（text-lg）' },
+    { expect: /\[&_h1\]:text-2xl/, why: 'Markdown h1 = 20/28（text-2xl）' },
+    { expect: /\[&_h2\]:text-lg/, why: 'Markdown h2 = 18/26（text-lg）' },
     { expect: /\[&_h3\]:text-base/, why: 'Markdown h3 = 16/24（text-base）' },
-    { expect: /\[&_h4\]:text-sm/, why: 'Markdown h4 = 14/20（text-sm）' },
+    { expect: /\[&_h4\]:text-sm/, why: 'Markdown h4 = 14/22（text-sm）' },
   ]
 
   it('keeps markdown headings one or two tiers below the UI ladder', () => {
@@ -740,7 +740,7 @@ describe('markdown prose ladder', () => {
 
 describe('focus indicator', () => {
   /**
-   * 规范 §1.4 `stroke-focus`（Outside 1px）+ §1.7：**全站只有一种焦点指示器**
+   * 规范 §15.1：**全站只有一种焦点指示器**
    * —— 1px 环、`ring` 满色、贴着元素边框外沿（`outline-offset: 0`）。
    *
    * 回归背景（2026-10-28）：规范把「输入框外侧焦点环」写清之后，代码里仍有
@@ -779,7 +779,7 @@ describe('focus indicator', () => {
     }
     expect(
       hits,
-      `design-system-2.0 §13.5：焦点环恒 1px 满色（把环让给容器时用 ring-0）。2px / 3px / 4px 会让同一屏出现多种粗细的焦点语言：\n${fmt(hits)}`
+      `规范 §15.1：焦点环恒 1px 满色（把环让给容器时用 ring-0）。2px / 3px / 4px 会让同一屏出现多种粗细的焦点语言：\n${fmt(hits)}`
     ).toEqual([])
   })
 
@@ -803,7 +803,7 @@ describe('focus indicator', () => {
     }
     expect(
       hits,
-      `规范 §1.7：焦点环必须是 \`ring\` 满色，不得用 alpha 稀释。状态语义环（destructive / warning）除外：\n${fmt(hits)}`
+      `规范 §15.1：焦点环必须是 \`ring\` 满色，不得用 alpha 稀释。状态语义环（destructive / warning）除外：\n${fmt(hits)}`
     ).toEqual([])
   })
 
@@ -831,7 +831,7 @@ describe('focus indicator', () => {
     }
     expect(
       hits,
-      `规范 §1.7：焦点环贴边（outline-offset: 0 / ring 无 offset）。内缩或留缝都会让焦点环看起来「浮在元素外面」，与全站几何不一致：\n${fmt(hits)}`
+      `规范 §15.1：焦点环贴边（outline-offset: 0 / ring 无 offset）。内缩或留缝都会让焦点环看起来「浮在元素外面」，与全站几何不一致：\n${fmt(hits)}`
     ).toEqual([])
   })
 
@@ -839,19 +839,19 @@ describe('focus indicator', () => {
     const css = fileBody('design-system/foundations/accessibility.css')
     expect(
       css,
-      '规范 §1.7：原生元素的焦点环由基座兜底，必须引用 --ds-focus-ring-* 两个 Token'
+      '规范 §15.1：原生元素的焦点环由基座兜底，必须引用 --ds-focus-ring-* 两个 Token'
     ).toContain(
       'outline: var(--ds-focus-ring-width) solid var(--ds-focus-ring-color)'
     )
     expect(
       css,
-      '规范 §1.7：基座 outline-offset 必须是 0，否则与组件的 ring 几何对不上'
+      '规范 §15.1：基座 outline-offset 必须是 0，否则与组件的 ring 几何对不上'
     ).toContain('outline-offset: 0')
 
     const semantic = fileBody('design-system/tokens/semantic.css')
     expect(
       semantic,
-      'design-system-2.0 §13.5：焦点环宽度 Token 唯一来源是语义层，恒 1px（2026-11-03 复裁定）'
+      '规范 §15.1 / §17.1：焦点环宽度 Token 唯一来源是语义层，恒 1px（2026-11-03 复裁定）'
     ).toContain('--ds-focus-ring-width: 1px')
   })
 
@@ -862,19 +862,19 @@ describe('focus indicator', () => {
       'components/ui/select.tsx',
     ]) {
       const body = fileBody(rel)
-      // design-system-2.0 §13.5：Input / Textarea / Select 用全站统一的
+      // 规范 §15.1：Input / Textarea / Select 用全站统一的
       // 1px 满色焦点环（2026-11-03 复裁定，回到 2026-10-29 口径）。
       expect(
         body,
-        `design-system-2.0 §13.5：${rel} 的焦点环必须是 1px 满色`
+        `规范 §15.1：${rel} 的焦点环必须是 1px 满色`
       ).toContain('focus-visible:ring-1')
       expect(
         body,
-        `规范 §1.4 / §2.1：${rel} 的焦点环颜色必须是 ring`
+        `规范 §15.1 / §2.2：${rel} 的焦点环颜色必须是 ring`
       ).toContain('focus-visible:ring-ring')
       expect(
         body,
-        `规范 §1.7：${rel} 不得用 ring-offset 在环与边框之间留缝`
+        `规范 §15.1：${rel} 不得用 ring-offset 在环与边框之间留缝`
       ).not.toContain('ring-offset')
     }
   })
@@ -887,13 +887,13 @@ describe('focus indicator', () => {
     // 但宽度和颜色仍必须是全站那一套。
     expect(
       body,
-      'design-system-2.0 §13.5：输入舱聚焦态必须是 1px 的 ring 满色环（曾用 ring-primary/15 的半透明环）'
+      '规范 §15.1：输入舱聚焦态必须是 1px 的 ring 满色环（曾用 ring-primary/15 的半透明环）'
     ).toContain('focus-within:ring-ring')
     expect(
       body,
-      'design-system-2.0 §13.5：输入舱的占位环必须与聚焦环同宽（1px），否则过渡时盒子会跳'
+      '规范 §15.1：输入舱的占位环必须与聚焦环同宽（1px），否则过渡时盒子会跳'
     ).toContain('ring-1 ring-transparent')
-    expect(body, '规范 §1.7：输入舱不得再出现半透明品牌焦点环').not.toContain(
+    expect(body, '规范 §15.1：输入舱不得再出现半透明品牌焦点环').not.toContain(
       'focus-within:ring-primary/'
     )
   })

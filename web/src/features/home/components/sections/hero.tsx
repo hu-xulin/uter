@@ -75,7 +75,7 @@ export function Hero(props: HeroProps) {
     <section className='relative z-10 overflow-hidden px-6 pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28'>
       {/* Radial gradient background：三团光晕收在 `ds-decor-mesh-hero`
           （颜色 `--ds-decor-glow-*`、透明度 `--ds-decor-mesh-opacity-*`，
-          形状在 foundations/decoration.css，规范 §11.5）。以前这里内联
+          形状在 foundations/decoration.css，规范 §17.5）。以前这里内联
           写裸 oklch，透明度还散装在 `opacity-25 dark:opacity-[0.12]` ——
           深浅两档的取舍从此不可见。 */}
       <div
@@ -83,7 +83,7 @@ export function Hero(props: HeroProps) {
         className='ds-decor-mesh-hero pointer-events-none absolute inset-0 -z-10'
       />
       {/* Grid pattern：1px 线 + 4rem 方格 + 椭圆渐隐遮罩，同一套
-          `ds-decor-grid`（§11.5）。 */}
+          `ds-decor-grid`（§17.5）。 */}
       <div aria-hidden className='ds-decor-grid absolute inset-0 -z-10' />
 
       <div className='mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-8'>
@@ -150,7 +150,7 @@ export function Hero(props: HeroProps) {
               )
             })()}
             {/* 首屏品牌渐变：走 `@utility ds-text-gradient-brand`，三个停靠站
-                收在 `--ds-color-brand-gradient-*`（规范 §11.5）。以前这里直接
+                收在 `--ds-color-brand-gradient-*`（规范 §17.5）。以前这里直接
                 写 `from-blue-400 via-violet-400 to-purple-500`，那既绕过了
                 Token、也让「与上游渲染一致」这句话无法被验证；现在是单一
                 出口，改渐变只改 Token 一处。 */}

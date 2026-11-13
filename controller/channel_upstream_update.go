@@ -556,6 +556,9 @@ func checkAndPersistChannelUpstreamModelUpdates(
 		if err = channel.UpdateAbilities(nil); err != nil {
 			return true, autoAdded, err
 		}
+		// The changed channel abilities bump the channel topic, so every node
+		// reloads the channel cache within seconds.
+		model.BumpSyncTopic(model.SyncTopicChannels)
 	}
 	return modelsChanged, autoAdded, nil
 }
@@ -907,6 +910,9 @@ func ApplyChannelUpstreamModelUpdates(c *gin.Context) {
 
 	if modelsChanged {
 		refreshChannelRuntimeCache()
+		// The applied channel models bump the channel topic, so every node
+		// reloads the channel cache within seconds.
+		model.BumpSyncTopic(model.SyncTopicChannels)
 	}
 
 	recordManageAudit(c, "channel.upstream_apply", map[string]any{

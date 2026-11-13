@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113005422-1683bed1",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T00:54:22.617Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.api_database_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.api_database_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.api_database_integrity 实检: api_contracts=PASS(router/*.go=26 个; api-router.go=true; 插件契约 v1.schema.json=true; 规范含 API/契约/幂等=true); schema_integrity=PASS(model/*.go=193 个; go.mod/common/json.go 存在=true; 规范含 数据库/字段/约束=true); migration_safety=PASS(model/migration_dialector.go=true; common/quota_math.go=true; 规范含 迁移/幂等/三方言/备份/回滚=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 2021 个 | 基于真实 Go 代码目录(router 26 / model 193 个 .go)+插件契约+三方言迁移文件做静态核对; 不连接任何数据库",
+  "content_hash": "3bc64d56fc121fbf1cd332a70e8274bab7449a8d117922549ea0d8637637ae09"
+}

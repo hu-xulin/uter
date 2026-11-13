@@ -64,7 +64,7 @@ describe('焦点指示器', () => {
     // `--ds-color-focus-ring`（colors.css）与 `--ds-focus-ring-color`
     // （semantic.css）曾是同一个值的两个名字，前者零引用。
     expect(colorsCss).not.toContain('--ds-color-focus-ring')
-    // design-system-2.0 §13.5：焦点环恒 1px（2026-11-03 复裁定）。
+    // 规范 §15.1：焦点环恒 1px（2026-11-03 复裁定）。
     expect(semanticCss).toContain('--ds-focus-ring-width: 1px')
     expect(semanticCss).toContain('--ds-focus-ring-color: var(--ring)')
     expect(accessibilityCss).toContain('var(--ds-focus-ring-color)')
@@ -81,7 +81,7 @@ describe('焦点指示器', () => {
   })
 
   it('基础组件的焦点写法没有被改掉', () => {
-    // design-system-2.0 §13.5：全站统一 1px 满色（2026-11-03 复裁定，
+    // 规范 §15.1：全站统一 1px 满色（2026-11-03 复裁定，
     // design-system-2.0 曾短暂改 2px 后回退）—— 环宽只能有一个值，
     // 2px/3px/4px 与半透明环都违规。
     for (const rel of [

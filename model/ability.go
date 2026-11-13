@@ -364,6 +364,9 @@ func UpdateAbilityByTag(tag string, newTag *string, priority *int64, weight *uin
 var fixLock = sync.Mutex{}
 
 func FixAbility() (int, int, error) {
+	// The repaired abilities bump the channel topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	lock := fixLock.TryLock()
 	if !lock {
 		return 0, 0, common.NewMessage("A repair task is already running. Please try again later")

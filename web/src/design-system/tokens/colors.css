@@ -109,13 +109,16 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-primary-subtle: var(--primary-subtle, var(--accent));
   --ds-color-primary-border: var(--primary-border, var(--border));
 
-  /* ── 品牌渐变（首屏标题 / CTA）──────────────────────────────────────
-   * 蓝 → 紫 → 紫罗兰；浅色主题三个停靠站均满足 WCAG AA 文本对比度。
-   * 渐变只经由 `@utility ds-text-gradient-brand` 消费，禁止组件手写渐变。
-   * 深色主题在 :root.dark 中覆盖为浅色停靠站，确保两种主题均可读。 */
-  --ds-color-brand-gradient-from: #494cc7;
-  --ds-color-brand-gradient-via: #5558d8;
-  --ds-color-brand-gradient-to: #6b4fc8;
+  /* ── 品牌渐变（首屏标题 / CTA，规范 §17.5）──────────────────────────
+   * 三个停靠站逐值锚定上游 new-api 的 blue-400 / violet-400 / purple-500。
+   * 单一取值：**深浅主题共用，禁止 :root.dark 覆盖**，也不接 chart-*
+   * （chart-* 跟着主题预设漂移，而这是对外传播资产）。
+   * 浅色 from / via 未达大文本 3:1 是 §17.5 明文登记的有意例外，
+   * 不许为「修对比度」压深取值 —— 那等于改对外观感。
+   * 消费出口唯一：`@utility ds-text-gradient-brand`，组件里不得手写渐变。 */
+  --ds-color-brand-gradient-from: #60a5fa;
+  --ds-color-brand-gradient-via: #a78bfa;
+  --ds-color-brand-gradient-to: #a855f7;
 
   /* ── 描边 ──────────────────────────────────────────────────────────── */
   --ds-color-border: var(--border);
@@ -126,9 +129,5 @@ For commercial licensing, please contact support@uter.ai
      两者曾同时存在（一个零引用），见 `tokens/semantic.css`。 */
 }
 
-/* Dark-theme brand gradient: preserve the blue-violet identity with AA contrast. */
-:root.dark {
-  --ds-color-brand-gradient-from: #8b8df5;
-  --ds-color-brand-gradient-via: #a1a3f7;
-  --ds-color-brand-gradient-to: #b7b8fa;
-}
+/* 品牌渐变没有 :root.dark 覆盖：规范 §17.5 要求深浅主题逐值一致。
+   深色主题靠更暗的背景自然获得更高对比度（7.02 / 6.56 / 4.51:1）。 */

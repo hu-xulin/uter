@@ -20,13 +20,13 @@ For commercial licensing, please contact support@uter.ai
 /**
  * 生成 UTER 设计规范的可视化核查页。
  *
- * 产物：`docs/design-system/showcase-3.0.html`（仓库根 docs/design-system/，自包含单文件，双击即可打开）
+ * 产物：`docs/design-system/showcase-3.0.generated.html`（仓库根 docs/design-system/，自包含单文件，双击即可打开）
  *
- * ⚠ 覆盖警告（2026-11-03）：当前仓库里的 showcase-3.0.html 是按 3.0 §18.2
- * 手写的 21 区域自包含核查页（含运行时对比度计算/密度切换/主题联动）。
- * 运行本脚本会**整文件覆盖**它。生成器产物与手写 21 区块页结构不同——
- * 运行前先确认这次是要「机器生成版」还是保留「手写版」；若覆盖后要恢复
- * 手写版，须从 git 历史找回（git checkout <commit> -- docs/design-system/showcase-3.0.html）。
+ * ⚠ 双版本分工（2026-11-13 起）：
+ *   - `showcase-3.0.html`            —— **手写版**（22 区域，视觉回归 track 1 基线对象），本脚本**不会**覆盖它
+ *   - `showcase-3.0.generated.html`  —— **机器生成版**（本脚本产物），供人工逐项核对 Token 真值
+ * 两版结构不同；生成版页内所有数值标签在运行时从真实编译后的 CSS 读取，
+ * 改 Token 后重跑 `node scripts/generate-design-showcase.mjs` 即跟随更新。
  *
  * 为什么用 Tailwind 编译而不是手写 HTML：
  *   核查页必须展示的是**生产环境的真实值**。手写 `<span style="font-size:30px">`
@@ -36,7 +36,7 @@ For commercial licensing, please contact support@uter.ai
  *
  * 用法：
  *   node scripts/generate-design-showcase.mjs
- *   node scripts/generate-design-showcase.mjs --out ../docs/design-system/showcase-3.0.html
+ *   node scripts/generate-design-showcase.mjs --out ../docs/design-system/showcase-3.0.generated.html
  */
 
 import fs from 'node:fs'
@@ -54,7 +54,7 @@ const outIdx = args.indexOf('--out')
 const OUT_PATH =
   outIdx >= 0 && args[outIdx + 1]
     ? path.resolve(WEB_ROOT, args[outIdx + 1])
-    : path.join(REPO_ROOT, 'docs/design-system/showcase-3.0.html')
+    : path.join(REPO_ROOT, 'docs/design-system/showcase-3.0.generated.html')
 
 /* ── 1. 编译真实 Token ───────────────────────────────────────────── */
 
@@ -117,10 +117,14 @@ const CANDIDATES = [
   'text-xl',
   'text-lg',
   'text-base',
+  'text-md',
   'text-sm',
   'text-xs',
+  'text-5xl',
   'text-long',
+  'text-mono-xs',
   'text-mono',
+  'text-mono-base',
   'text-mono-code',
   'text-mono-title',
   'text-group',
@@ -1531,7 +1535,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
 
 <section id="term">
   <h2><span class="n">10</span>首屏演示 Token（term-*）</h2>
-  <p class="lead">这一组只对「渲染效果」负责：取值锚定上游 new-api，效果到位就该写 Token，不需要登记例外（规范 §11.5）。</p>
+  <p class="lead">这一组只对「渲染效果」负责：取值锚定上游 new-api，效果到位就该写 Token，不需要登记例外（规范 §17.5）。</p>
 
   <div class="card">
     <h3>代码卡实况（逐 Token 渲染，与线上同一批值）</h3>

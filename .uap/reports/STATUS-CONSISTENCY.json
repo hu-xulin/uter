@@ -1,0 +1,116 @@
+{
+  "component": "uap.verify-status-consistency",
+  "version": "1.0.0",
+  "ok": true,
+  "checked_at": "2026-11-13T03:32:56.359Z",
+  "execution_id": "UAP-EXEC-20261113033035-5159bf71",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "recomputed_status": "IMPLEMENTED_NOT_VERIFIED",
+  "report_status": "IMPLEMENTED_NOT_VERIFIED",
+  "index_status": "IMPLEMENTED_NOT_VERIFIED",
+  "verified_requirements": 0,
+  "applicable_requirements": 538,
+  "capability_gaps": [
+    "real_code_repair",
+    "independent_regression",
+    "recovery",
+    "e2e",
+    "database_integration",
+    "financial_integrity"
+  ],
+  "reasons": [
+    "stale artefacts not bound to current execution/HEAD: tests,validators",
+    "172 requirement(s) implemented but not verified",
+    "538/538 applicable requirements lack current valid evidence",
+    "502 requirement(s) have no evidence record",
+    "2 unresolved P0 blocker(s)"
+  ],
+  "checks": [
+    {
+      "name": "final_status_exists",
+      "status": "PASS",
+      "detail": "FINAL-STATUS.json present"
+    },
+    {
+      "name": "index_status_block_exists",
+      "status": "PASS",
+      "detail": "UAP-STATUS-BLOCK present"
+    },
+    {
+      "name": "index_overall_matches_report",
+      "status": "PASS",
+      "detail": "index=IMPLEMENTED_NOT_VERIFIED report=IMPLEMENTED_NOT_VERIFIED"
+    },
+    {
+      "name": "index_verified_matches_report",
+      "status": "PASS",
+      "detail": "index=0 report=0"
+    },
+    {
+      "name": "report_verified_matches_matrix",
+      "status": "PASS",
+      "detail": "report=0 matrix=0"
+    },
+    {
+      "name": "report_matches_recomputed_verdict",
+      "status": "PASS",
+      "detail": "report=IMPLEMENTED_NOT_VERIFIED recomputed=IMPLEMENTED_NOT_VERIFIED"
+    },
+    {
+      "name": "claim_allowed_matches_engine",
+      "status": "PASS",
+      "detail": "report.final_acceptance=false report.claim_allowed=false engine=false"
+    },
+    {
+      "name": "claim_allowed_matches_state_machine",
+      "status": "PASS",
+      "detail": "overall=IMPLEMENTED_NOT_VERIFIED claim_allowed=false"
+    },
+    {
+      "name": "execution_id_matches_current_run",
+      "status": "PASS",
+      "detail": "report=UAP-EXEC-20261113033035-5159bf71 index=UAP-EXEC-20261113033035-5159bf71 current=UAP-EXEC-20261113033035-5159bf71"
+    },
+    {
+      "name": "git_head_matches_current_run",
+      "status": "PASS",
+      "detail": "report=7b98646915f75026e0e643f9f4b0a6a3ff3ab67c index=7b98646915f75026e0e643f9f4b0a6a3ff3ab67c current=7b98646915f75026e0e643f9f4b0a6a3ff3ab67c"
+    },
+    {
+      "name": "three_independent_results_match_engine",
+      "status": "PASS",
+      "detail": "report.uap=NOT_FULLY_VERIFIED report.uter=NOT_FULLY_VERIFIED engine={\"specification_completeness\":\"COMPLETE\",\"uap_runtime_capability\":\"NOT_FULLY_VERIFIED\",\"uter_real_compliance\":\"NOT_FULLY_VERIFIED\"}"
+    },
+    {
+      "name": "no_stale_pass_promoted",
+      "status": "PASS",
+      "detail": "claim_allowed=false (stale artifacts: 1)"
+    },
+    {
+      "name": "p0_blockers_forbid_full_claim",
+      "status": "PASS",
+      "detail": "claim_allowed=false open_p0=2"
+    },
+    {
+      "name": "cli_process_executed",
+      "status": "PASS",
+      "detail": "uap status --json exit 0"
+    },
+    {
+      "name": "cli_overall_matches_report",
+      "status": "PASS",
+      "detail": "cli=IMPLEMENTED_NOT_VERIFIED report=IMPLEMENTED_NOT_VERIFIED"
+    },
+    {
+      "name": "cli_execution_matches_report",
+      "status": "PASS",
+      "detail": "cli=UAP-EXEC-20261113033035-5159bf71 report=UAP-EXEC-20261113033035-5159bf71"
+    },
+    {
+      "name": "cli_three_results_match_report",
+      "status": "PASS",
+      "detail": "cli=NOT_FULLY_VERIFIED report=NOT_FULLY_VERIFIED"
+    }
+  ],
+  "problems": []
+}

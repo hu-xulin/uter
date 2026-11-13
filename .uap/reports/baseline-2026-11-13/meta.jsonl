@@ -1,0 +1,5 @@
+{"command":"status","argv":["node", ".uap/bin/uap.mjs", "status"],"start":"2026-11-13T08:52:10+0800","end":"2026-11-13T08:52:12+0800","duration_s":1.98,"exit_code":0,"stdout_bytes":3264,"stderr_bytes":0}
+{"command":"doctor","argv":["node", ".uap/bin/uap.mjs", "doctor"],"start":"2026-11-13T08:52:14+0800","end":"2026-11-13T08:52:16+0800","duration_s":1.85,"exit_code":0,"stdout_bytes":1729,"stderr_bytes":0}
+{"command":"audit","argv":["node", ".uap/bin/uap.mjs", "audit"],"start":"2026-11-13T08:52:18+0800","end":"2026-11-13T08:54:00+0800","duration_s":102.77,"exit_code":0,"stdout_bytes":454,"stderr_bytes":0}
+{"command":"validate-all","argv":["node", ".uap/bin/uap.mjs", "validate", "--all"],"start":"2026-11-13T08:54:18+0800","end":"2026-11-13T08:56:26+0800","duration_s":128.23,"exit_code":0,"stdout_bytes":212,"stderr_bytes":0}
+{"command":"test-all","argv":["node", ".uap/bin/uap.mjs", "test", "--all"],"start":"2026-11-13T08:56:29+0800","end":"2026-11-13T08:56:34+0800","duration_s":4.98,"exit_code":0,"stdout_bytes":4201,"stderr_bytes":0}

@@ -27,7 +27,7 @@
 12. 必须检查不同屏幕尺寸。
 
 ## Uter 落地细则
-- 设计基线唯一来源为 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（`AGENTS.md` Rule Auto-Loading 表格标注「2026-11-03 起唯一标准」）；视觉样本 `docs/design-system/showcase-3.0.html` 必须按 §11 colors / §12 typography / §14 components / §21 responsive / §26 exceptions 对照；文档与实现冲突时设计值取 `web/src/design-system/tokens/` 与 `web/src/styles/theme.css`，规则边界取规范。
+- 设计基线唯一来源为 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（`AGENTS.md` Rule Auto-Loading 表格标注「2026-11-03 起唯一标准」）；视觉样本 `docs/design-system/showcase-3.0.html` 必须按 §1 typography / §2 colors / §10–§13 components / §16 responsive / §26 exceptions 对照；文档与实现冲突时设计值取 `web/src/design-system/tokens/` 与 `web/src/styles/theme.css`，规则边界取规范。
 - 品牌色与第三方商标色**只能声明在** `web/src/design-system/tokens/brand-colors.ts`；`web/scripts/check-design-tokens.mjs` 的 `RAW_COLOR_OWNERS` / T8 规则把该文件识别为唯一裸色值所有者，其他业务代码出现裸 hex 即违规；该文件注释明确「组件一律从这里 import，不得在业务代码里散写 hex」。
 - 设计令牌实现落在 `web/src/design-system/tokens/`（`colors.css`、`typography.css`、`spacing.css`、`primitives.css`、`semantic.css`、`elevation.css`、`generated/brand.css`、`index.css`）与 `web/src/styles/theme.css`、`web/src/styles/theme-presets.css`；生成物 `generated/brand.css` 禁止手改，必须改 `web/src/design-system/source/*.tokens.json` 后由 `bun run design:tokens:generate` 重生成。
 - UI 门禁脚本来自 `web/package.json`：`bun run typecheck`（`tsgo -b`）、`bun run lint`（`check-i18n-keys.mjs` + `oxlint`）、`bun run test`（`vitest run`）、`bun run lint:design:strict`（`node scripts/check-design-tokens.mjs --strict`，T1–T17 令牌门禁）、`bun run copyright:check`、`bun run format:check`、`bun run build:check`（`tsgo -b` + `rsbuild build`）、`bun run design:tokens:check`、`bun run verify:contrast`、`bun run components:registry:check`。

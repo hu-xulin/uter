@@ -1,5 +1,6 @@
 {
   "translation": {
+    "System task history must be kept for at least 1 day": "Lịch sử tác vụ hệ thống phải được giữ lại ít nhất 1 ngày",
     "Previous month": "Tháng trước",
     "Next month": "Tháng sau",
     "Referral link": "Liên kết giới thiệu",
@@ -7788,6 +7789,8 @@
     "docs.search.loading": "Đang tải chỉ mục tìm kiếm…",
     "docs.search.noResults": "Không tìm thấy tài liệu phù hợp",
     "Contents": "Mục lục",
-    "docs.toc.heading": "Trên trang này"
+    "docs.toc.heading": "Trên trang này",
+    "Previous page": "Trang trước",
+    "Page navigation": "Điều hướng trang"
   }
 }

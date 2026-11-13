@@ -40,7 +40,7 @@ export function CTA(props: CTAProps) {
     <section className='relative z-10 overflow-hidden px-6 py-24 md:py-32'>
       {/* Gradient mesh background：两团光晕收在 `ds-decor-mesh-cta`
           （弱一档的 `--ds-decor-glow-*-soft`，透明度 `--ds-decor-mesh-opacity-cta`，
-          规范 §11.5）。以前这里内联写裸 oklch。 */}
+          规范 §17.5）。以前这里内联写裸 oklch。 */}
       <div aria-hidden className='ds-decor-mesh-cta absolute inset-0 -z-10' />
 
       <AnimateInView
@@ -53,7 +53,7 @@ export function CTA(props: CTAProps) {
         >
           <span>{t('Ready to simplify')}</span>
           {/* 与 hero 主标题共用同一套渐变停靠站：`ds-text-gradient-brand`
-              （`--ds-color-brand-gradient-*`，规范 §11.5）。不要为了省钱手写
+              （`--ds-color-brand-gradient-*`，规范 §17.5）。不要为了省钱手写
               `from-… via-… to-…` —— 那会让两个入口的渐变各自漂移。 */}
           <span className='ds-text-gradient-brand'>
             {t('your AI integration?')}

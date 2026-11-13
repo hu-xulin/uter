@@ -84,7 +84,7 @@ const buttonVariants = cva(
         // 只有 `variant='link'` 可以配这一档：有填充或描边的按钮必须有高度。
         //
         // 高度退回行盒后只剩 20–22px，低于 WCAG 2.2 AA 2.5.8 的 24×24 下限
-        // （规范 §1.7），所以配 `.ds-touch-target`：它用居中伪元素把**命中区**
+        // （规范 §15.3），所以配 `.ds-touch-target`：它用居中伪元素把**命中区**
         // 扩到 24px，不改盒子，行内排版与文字基线都不动。
         inline: 'ds-touch-target h-auto gap-1 rounded-none px-0 py-0',
         // 内容型按钮（规范 §2.1 Button 的 wrap 档）。

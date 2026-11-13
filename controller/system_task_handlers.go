@@ -24,6 +24,30 @@ func RegisterScheduledSystemTasks() {
 	service.RegisterSystemTaskHandler(refundIntentRecoveryHandler{})
 	service.RegisterSystemTaskHandler(midjourneyRefundRecoveryHandler{})
 	service.RegisterSystemTaskHandler(midjourneyRefundOutboxHandler{})
+	service.RegisterSystemTaskHandler(systemTaskCleanupHandler{})
+}
+
+// systemTaskCleanupHandler removes the finished system task rows the
+// retention setting no longer keeps. The newest row of every type stays, so
+// the scheduler and the node sync keep reading it.
+type systemTaskCleanupHandler struct{}
+
+func (systemTaskCleanupHandler) Type() string { return model.SystemTaskTypeCleanup }
+
+func (systemTaskCleanupHandler) Enabled() bool { return true }
+
+func (systemTaskCleanupHandler) Interval() time.Duration { return 24 * time.Hour }
+
+func (systemTaskCleanupHandler) NewPayload() any { return nil }
+
+func (systemTaskCleanupHandler) Run(ctx context.Context, task *model.SystemTask, runnerID string) {
+	days := max(operation_setting.GetSystemTaskSetting().RetentionDays, 1)
+	deleted, err := model.DeleteFinishedSystemTasks(ctx, common.GetTimestamp()-int64(days)*24*60*60)
+	status := model.SystemTaskStatusSucceeded
+	if err != nil {
+		status = model.SystemTaskStatusFailed
+	}
+	finishSystemTaskHandler(task, runnerID, status, map[string]int64{"deleted_count": deleted}, err)
 }
 
 // channelTestHandler runs the scheduled "test all channels" job. Enablement and

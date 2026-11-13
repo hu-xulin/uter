@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113013118-643f96b8",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T01:31:18.223Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 3115,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/runtime.test.mjs\",\".uap/tests/status-consistency.test.mjs\",\".uap/tests/status-snapshot.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 3 files -> exit 0, tap pass=49 fail=0",
+  "content_hash": "14087e3b608e919f4735ffff8fb4a546a5b0a367766d0f1bea8520c09ab94999"
+}

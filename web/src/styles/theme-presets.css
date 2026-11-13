@@ -411,7 +411,7 @@ For commercial licensing, please contact support@uter.ai
 }
 
 /* ── Brand scale derived from the preset primary ──────────────────────── */
-/* 规范 2.0（§11.2）把品牌色拆成 6 条语义出口（primary / primary-strong /
+/* 规范 §2.2 把品牌色拆成 6 条语义出口（primary / primary-strong /
  * hover-primary / primary-active / primary-subtle / primary-border）。
  * `:root` 里写的是默认品牌浅色 #5558D8（3.0 §2.2）的实测值；预设改了 `--primary` 之后，
  * 其余 5 条必须跟着走，否则 rose-garden 的主按钮会在悬停时变成紫色。

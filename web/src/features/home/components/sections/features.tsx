@@ -141,7 +141,7 @@ export function Features(_props: FeaturesProps) {
             {['API', 'SDK', 'CLI', 'Docs'].map((n) => (
               <div
                 key={n}
-                // 规范 §1.4：容器描边恒 1px。这里是**镂空环**——用页面背景色
+                // 规范 §4.2：容器描边恒 1px。这里是**镂空环**（§15.1 的例外类）——用页面背景色
                 // 画 2px 描边，把叠在一起的圆形头像「挖」出间隙，不是容器的
                 // 边框。镂空环的宽度必须够 2px，1px 会被相邻圆形的填充吃掉。
                 className='border-background from-muted to-muted/60 text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-full border-2 bg-gradient-to-br text-sm font-normal'

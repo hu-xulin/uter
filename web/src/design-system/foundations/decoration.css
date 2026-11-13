@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Foundations · Decoration ─────────────────────────────────────────
- * 规范 §11.5「背景装饰层」：首屏（hero / CTA）的光晕、网格、遮罩的
+ * 规范 §17.5「背景装饰层」：首屏（hero / CTA）的光晕、网格、遮罩的
  * **形状**与**遮罩**收在这里；颜色与透明度收在 `styles/theme.css` 的
  * `--ds-decor-*` Token 里（浅色 :root 定义、.dark 只覆盖透明度）。
  *

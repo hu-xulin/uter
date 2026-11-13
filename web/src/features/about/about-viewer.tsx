@@ -16,21 +16,35 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { Link } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
 import { Heading } from '@/design-system'
 import {
+  CONTENT_CARD_CLASS,
+  CONTENT_CARD_GRID_CLASS,
+  CONTENT_CARD_TEASER_CLASS,
+  CONTENT_CARD_TITLE_CLASS,
+} from '@/features/docs/native/content-card'
+import {
   DocsToc,
   DocsTocInline,
   type TocItem,
 } from '@/features/docs/native/docs-toc'
-import { useActiveHeading } from '@/features/docs/native/use-active-heading'
+import {
+  PAGE_NAV_CARD_CLASS,
+  PageNav,
+  PageNavCardContent,
+} from '@/features/docs/native/page-nav'
 import { resolveDocsLocaleCode, type DocsLocaleCode } from '@/lib/docs-link'
 import { cn } from '@/lib/utils'
 
 import {
+  ABOUT_SECTION_SLUGS,
   PARTNER_GROUP_LABELS,
+  findAboutSection,
   type AboutContent,
   type AboutPartner,
   type AboutSection,
@@ -48,100 +62,121 @@ const chapterId = (index: number) => `ch-${index + 1}`
 const subSectionId = (chapter: number, sub: number) =>
   `ch-${chapter + 1}-${sub + 1}`
 
-/** 整页大纲：章节（h2）+ 子节（h3），供右侧目录使用。 */
-function outlineOf(content: AboutContent): TocItem[] {
-  return content.sections.flatMap((section, i) => [
-    { depth: 2 as const, text: section.heading, id: chapterId(i) },
-    ...(section.subSections ?? []).map((sub, j) => ({
-      depth: 3 as const,
-      text: sub.heading,
-      id: subSectionId(i, j),
-    })),
-  ])
+/**
+ * 右栏目录只列**当前章**内部的子节。
+ *
+ * 一章一页之后，章节标题已经是页面 h1，右栏不该再重复它；子节是本页
+ * 能看到的最高层级，所以统一降一级为 depth 2。
+ */
+function outlineOfSection(section: AboutSection, chapter: number): TocItem[] {
+  return (section.subSections ?? []).map((sub, i) => ({
+    depth: 2 as const,
+    text: sub.heading,
+    id: subSectionId(chapter, i),
+  }))
 }
 
+/** 卡片摘要：章节开头第一段，超长时截断。 */
+function teaserOf(section: AboutSection): string {
+  const first = section.subSections?.[0]?.paragraphs?.[0]
+  if (!first) return ''
+  return first.length > 140 ? `${first.slice(0, 140)}…` : first
+}
+
+const SIDEBAR_LINK_CLASS =
+  'focus-visible:ring-ring block rounded-md py-1.5 pr-2 pl-2 no-underline transition-colors outline-none focus-visible:ring-1'
+const SIDEBAR_ACTIVE_CLASS =
+  'bg-primary-subtle text-sidebar-active-foreground font-medium'
+const SIDEBAR_IDLE_CLASS =
+  'text-fg-secondary hover:bg-muted hover:text-fg-primary'
+
 /**
- * 左栏：九章导航。
+ * 左栏：公司名入口 + 九个一级章节，仅此而已。
  *
- * 子节默认收起，只有「当前章」展开 —— 九章四十多个子节全部铺开会比正文
- * 还长，左栏就失去了「一眼看到全书结构」的作用。
+ * 二级标题（「连接智能，创造可能」「我们的目标」……）属于章节内部大纲，
+ * 归右栏 TOC，不进左栏 —— 九章四十多个子节全铺开会比正文还长，左栏
+ * 就失去了「一眼看到全书结构」的作用。
  */
 function AboutSidebar({
   content,
-  activeId,
+  activeSlug,
 }: {
   content: AboutContent
-  activeId: string | null
+  activeSlug: string | null
 }) {
   const { t } = useTranslation()
   return (
     <nav aria-label={t('Contents')} className='text-dense flex flex-col'>
+      <Link
+        to='/about'
+        aria-current={activeSlug === null ? 'page' : undefined}
+        className={cn(
+          SIDEBAR_LINK_CLASS,
+          activeSlug === null ? SIDEBAR_ACTIVE_CLASS : SIDEBAR_IDLE_CLASS
+        )}
+      >
+        {t('footer.columns.about.title')}
+      </Link>
       {content.sections.map((section, i) => {
-        const id = chapterId(i)
-        const subs = section.subSections ?? []
-        const isActive = activeId === id
-        const hasActiveSub = subs.some(
-          (_, j) => subSectionId(i, j) === activeId
-        )
+        const slug = ABOUT_SECTION_SLUGS[i]
+        const isActive = activeSlug === slug
         return (
-          <div key={id}>
-            <a
-              href={`#${id}`}
-              aria-current={isActive ? 'location' : undefined}
-              className={cn(
-                'block rounded-md py-1.5 pr-2 pl-2 no-underline transition-colors',
-                isActive || hasActiveSub
-                  ? 'bg-primary-subtle text-sidebar-active-foreground font-medium'
-                  : 'text-fg-secondary hover:bg-muted hover:text-fg-primary'
-              )}
-            >
-              {section.heading}
-            </a>
-            {subs.length > 0 && (isActive || hasActiveSub) ? (
-              <div className='mt-0.5 mb-1 flex flex-col'>
-                {subs.map((sub, j) => {
-                  const subId = subSectionId(i, j)
-                  const subActive = activeId === subId
-                  return (
-                    <a
-                      key={subId}
-                      href={`#${subId}`}
-                      aria-current={subActive ? 'location' : undefined}
-                      className={cn(
-                        'block rounded-md py-1 pr-2 pl-6 no-underline transition-colors',
-                        subActive
-                          ? 'text-sidebar-active-foreground font-medium'
-                          : 'text-fg-secondary hover:text-fg-primary'
-                      )}
-                    >
-                      {sub.heading}
-                    </a>
-                  )
-                })}
-              </div>
-            ) : null}
-          </div>
+          <Link
+            key={slug}
+            to='/about/$section'
+            params={{ section: slug }}
+            aria-current={isActive ? 'page' : undefined}
+            className={cn(
+              SIDEBAR_LINK_CLASS,
+              isActive ? SIDEBAR_ACTIVE_CLASS : SIDEBAR_IDLE_CLASS
+            )}
+          >
+            {section.heading}
+          </Link>
         )
       })}
     </nav>
   )
 }
 
-/**
- * In-app About page for `/about` — the company profile rendered
- * natively in the SPA, no iframe, no static export.
- *
- * The framed export split the nine chapters across `/about/<lang>/<slug>/`
- * URLs the SPA route tree never had; here they are drawn continuously on
- * one page with the same content model (`about-shared.ts` + one module
- * per locale under `content/`), so the reader gets the whole profile —
- * chapters, the founder's profile block, the label/value entry cards and
- * the partner wall — without leaving the app.
- */
+/** 三栏骨架，与原生文档页同一套宽度与吸顶规则。 */
+function AboutShell({
+  locale,
+  activeSlug,
+  toc,
+  children,
+}: {
+  locale: DocsLocaleCode
+  activeSlug: string | null
+  toc: TocItem[]
+  children: ReactNode
+}) {
+  const content = ABOUT_CONTENT_BY_LOCALE[locale]
+  return (
+    <PublicLayout showMainContainer={false}>
+      <div className='h-16 shrink-0' aria-hidden='true' />
+      <div className='mx-auto flex w-full max-w-[1440px] items-start'>
+        <aside className='border-border sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
+          <AboutSidebar content={content} activeSlug={activeSlug} />
+        </aside>
+        <main className='min-w-0 flex-1'>
+          <div className='mx-auto max-w-3xl px-6 py-10'>
+            <DocsTocInline items={toc} />
+            {children}
+          </div>
+        </main>
+        <aside className='sticky top-16 hidden h-[calc(100svh-4rem)] w-56 shrink-0 overflow-y-auto py-6 xl:block'>
+          <DocsToc items={toc} />
+        </aside>
+      </div>
+    </PublicLayout>
+  )
+}
+
 function ProfileBlock({ sub }: { sub: AboutSubSection }) {
   if (!sub.profile) return null
   return (
-    <div className='mb-3 flex items-center gap-4 rounded-md border px-4 py-3'>
+    <div className='mb-3 flex items-center gap-4 rounded-lg border px-4 py-3'>
       {sub.profile.avatar ? (
         <img
           src={sub.profile.avatar}
@@ -169,7 +204,7 @@ function PartnerTile({
   locale: DocsLocaleCode
 }) {
   return (
-    <div className='flex items-center gap-2 rounded-md border px-3 py-2'>
+    <div className='flex items-center gap-2 rounded-lg border px-3 py-2'>
       <img
         src={`/img/partners/${partner.id}.svg`}
         alt=''
@@ -224,6 +259,7 @@ function PartnerWallSection({
   )
 }
 
+/** 某一章的正文，且只有这一章。 */
 function ChapterBody({
   section,
   chapter,
@@ -240,7 +276,7 @@ function ChapterBody({
         <div key={sub.heading} className='mt-6'>
           <Heading
             variant='card-title'
-            level={3}
+            level={2}
             id={subSectionId(chapter, i)}
             className='mb-2 scroll-mt-20'
           >
@@ -255,7 +291,7 @@ function ChapterBody({
           {sub.entries ? (
             <dl className='mt-3 mb-4 grid gap-3 sm:grid-cols-2'>
               {sub.entries.map((entry) => (
-                <div key={entry.label} className='rounded-md border p-4'>
+                <div key={entry.label} className='rounded-lg border p-4'>
                   <dt className='text-long text-fg-primary font-medium'>
                     {entry.label}
                   </dt>
@@ -288,52 +324,129 @@ function ChapterBody({
   )
 }
 
+/**
+ * `/about` — 公司简介的索引页。
+ *
+ * 像 Clerk 的文档站一样，这里只放标题、简介与九个一级章节的入口卡片；
+ * 正文一章一页，分别落在 `/about/<slug>`。九章内容不再全部堆在一个页面上。
+ */
 export function AboutViewer() {
   const { i18n } = useTranslation()
   const locale = resolveDocsLocaleCode(i18n.language)
   const content = ABOUT_CONTENT_BY_LOCALE[locale]
-  const outline = outlineOf(content)
-  const activeId = useActiveHeading(outline.map((item) => item.id))
 
   return (
-    <PublicLayout showMainContainer={false}>
-      <div className='h-16 shrink-0' aria-hidden='true' />
-      <div className='mx-auto flex w-full max-w-[1440px] items-start'>
-        <aside className='border-border sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
-          <AboutSidebar content={content} activeId={activeId} />
-        </aside>
-        <main className='min-w-0 flex-1'>
-          <div className='mx-auto max-w-3xl px-6 py-10'>
-            <DocsTocInline items={outline} />
-            <Heading variant='section-title' level={1} className='mt-2 mb-2'>
-              {content.title}
-            </Heading>
-            <p className='text-long text-fg-secondary mb-8'>
-              {content.description}
-            </p>
-            {content.sections.map((section, index) => (
-              <section key={section.heading} className='mb-8'>
-                <Heading
-                  variant='card-title'
-                  level={2}
-                  id={chapterId(index)}
-                  className='mb-3 scroll-mt-20'
-                >
+    <AboutShell locale={locale} activeSlug={null} toc={[]}>
+      <Heading variant='page-title' level={1} className='mt-2 mb-2'>
+        {content.title}
+      </Heading>
+      <p className='text-long text-fg-secondary mb-8'>{content.description}</p>
+      <ul className={CONTENT_CARD_GRID_CLASS}>
+        {content.sections.map((section, i) => {
+          const teaser = teaserOf(section)
+          return (
+            <li key={ABOUT_SECTION_SLUGS[i]}>
+              <Link
+                to='/about/$section'
+                params={{ section: ABOUT_SECTION_SLUGS[i] }}
+                className={CONTENT_CARD_CLASS}
+              >
+                <span className={CONTENT_CARD_TITLE_CLASS}>
                   {section.heading}
-                </Heading>
-                <ChapterBody
-                  section={section}
-                  chapter={index}
-                  locale={locale}
-                />
-              </section>
-            ))}
-          </div>
-        </main>
-        <aside className='sticky top-16 hidden h-[calc(100svh-4rem)] w-56 shrink-0 overflow-y-auto py-6 xl:block'>
-          <DocsToc items={outline} />
-        </aside>
-      </div>
-    </PublicLayout>
+                </span>
+                {teaser ? (
+                  <span className={CONTENT_CARD_TEASER_CLASS}>{teaser}</span>
+                ) : null}
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+      <PageNav
+        next={
+          <Link
+            to='/about/$section'
+            params={{ section: ABOUT_SECTION_SLUGS[0] }}
+            className={cn(PAGE_NAV_CARD_CLASS, 'items-end text-right')}
+          >
+            <PageNavCardContent
+              direction='next'
+              title={content.sections[0].heading}
+            />
+          </Link>
+        }
+      />
+    </AboutShell>
+  )
+}
+
+/**
+ * `/about/<slug>` — 一章一页。
+ *
+ * 章节标题作 h1，右栏列本章子节，正文只渲染本章；上一页 / 下一页按九章
+ * 顺序推进，第一章的「上一页」回到索引页，末章没有「下一页」。
+ */
+export function AboutSectionViewer({ section: slug }: { section: string }) {
+  const { i18n, t } = useTranslation()
+  const locale = resolveDocsLocaleCode(i18n.language)
+  const content = ABOUT_CONTENT_BY_LOCALE[locale]
+  const found = findAboutSection(content, slug)
+  if (!found) return null
+  const { section, index } = found
+  const toc = outlineOfSection(section, index)
+
+  const previousSlug =
+    index > 0 ? ABOUT_SECTION_SLUGS[index - 1] : undefined
+  const nextSlug =
+    index < ABOUT_SECTION_SLUGS.length - 1
+      ? ABOUT_SECTION_SLUGS[index + 1]
+      : undefined
+
+  const previousCard = previousSlug ? (
+    <Link
+      to='/about/$section'
+      params={{ section: previousSlug }}
+      className={PAGE_NAV_CARD_CLASS}
+    >
+      <PageNavCardContent
+        direction='previous'
+        title={content.sections[index - 1].heading}
+      />
+    </Link>
+  ) : (
+    <Link to='/about' className={PAGE_NAV_CARD_CLASS}>
+      <PageNavCardContent
+        direction='previous'
+        title={t('footer.columns.about.title')}
+      />
+    </Link>
+  )
+
+  const nextCard = nextSlug ? (
+    <Link
+      to='/about/$section'
+      params={{ section: nextSlug }}
+      className={cn(PAGE_NAV_CARD_CLASS, 'items-end text-right')}
+    >
+      <PageNavCardContent
+        direction='next'
+        title={content.sections[index + 1].heading}
+      />
+    </Link>
+  ) : undefined
+
+  return (
+    <AboutShell locale={locale} activeSlug={slug} toc={toc}>
+      <Heading
+        variant='page-title'
+        level={1}
+        id={chapterId(index)}
+        className='mt-2 mb-6 scroll-mt-20'
+      >
+        {section.heading}
+      </Heading>
+      <ChapterBody section={section} chapter={index} locale={locale} />
+      <PageNav previous={previousCard} next={nextCard} />
+    </AboutShell>
   )
 }

@@ -334,6 +334,13 @@ export function docRefForPagePath(pagePath: string): NativeDocRef | null {
   if (path.startsWith(`${USER_GUIDE_PATH}/`)) {
     return { set: 'user-guide', slug: path.slice(USER_GUIDE_PATH.length + 1) }
   }
+  // The API reference and the AI-app catalog are shelves with an index
+  // page of their own. `sidebarEntries()` links the section label straight
+  // at the *bare* section URL (`/docs/<locale>/api`), so both spellings
+  // have to resolve; without the two arms below `docRefForPagePath()`
+  // returns null and `DocsRoute` bounces the reader back to the landing.
+  if (path === 'api') return { set: 'api', slug: 'index' }
+  if (path === 'apps') return { set: 'apps', slug: 'index' }
   if (path.startsWith('api/')) return { set: 'api', slug: path.slice(4) }
   if (path.startsWith('apps/')) return { set: 'apps', slug: path.slice(5) }
   if (path.startsWith('legal/')) return { set: 'legal', slug: path.slice(6) }

@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113012451-4cf71559",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T01:24:51.249Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.financial_integrity_validator",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.financial_integrity_validator\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.financial_integrity_validator 实检: ledger_consistency=PASS(simulated_only=true; 账本/对账字段=true; 含真实结果(数值 exit_code/布尔)=true); idempotency=PASS(幂等/重复回调字段=true; 含真实结果=true); concurrency=PASS(并发字段=true; 含真实结果=true); recovery=PASS(恢复/对账字段=true; 含真实结果=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 2152 个 | simulated_only=true; 仅校验模拟数据的幂等/并发/重复回调/对账结果, 绝不声称真实生产资金验证; 未发起任何真实支付/退款",
+  "content_hash": "b233fb5ccd9471b63b4d7a6c7b50ff4d414408edcf53ececa646f93e1baa48c5"
+}

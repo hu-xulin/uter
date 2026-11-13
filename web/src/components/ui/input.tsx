@@ -52,7 +52,7 @@ function Input({
         //
         // 焦点环 2026-10-28 定为 **1px 外扩**（此前 2px）：输入框本身已有 1px
         // 边框，再叠 2px 环时整个控件看起来像双线框。环仍然贴着边框外沿
-        // （ring 无 offset，规范 §1.7 明确禁止留缝），颜色仍是 `ring` 满色
+        // （ring 无 offset，规范 §15.1 明确禁止留缝），颜色仍是 `ring` 满色
         // —— 只把宽度收到 1px。校验失败态同理收到 1px，否则同一个输入框
         // 会出现两种粗细。悬停态（规范 §11.2）：边框加深一档走 border-strong
         // Token，不用透明度凑；aria-invalid / focus-visible 的变体序在 hover

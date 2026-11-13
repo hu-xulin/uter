@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113012806-c8429538",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T01:28:06.387Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.engineering_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.engineering_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.engineering_integrity 实检: review_engine=PASS(动态 import .uap/engines/code-review/index.mjs 并调用 health(): health().ok=true); test_engine=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true); repair_engine=PASS(动态 import .uap/engines/auto-repair/index.mjs 并调用 health(): health().ok=true); gates=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 2182 个 | 4 个引擎均动态 import 且 health().ok===true",
+  "content_hash": "73dcc4d5ec267d0df72a71bfa3903c13889ca03fd24ec2d21f9f245f9c64fb0c"
+}

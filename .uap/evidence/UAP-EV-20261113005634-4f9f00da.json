@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113005634-4f9f00da",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261113005634-d0de37b9",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T00:56:34.351Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_balance_ledger",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"inspect_balance_ledger\",\"idempotent\":true,\"handler\":\"inspect_balance_ledger\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspect_balance_ledger: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "ab2d2593323e732ad632d6d00733c15b793a06be901628cdcbf4e050c9c0896a"
+}

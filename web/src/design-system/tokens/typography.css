@@ -17,11 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Layer 1 · Typography scale（唯一字号阶梯）────────────────────────
- * 十档语义字号，与 UTER-DESIGN-SYSTEM-3.0.md §1.2 的表格逐行对应：
+ * 11 主档 + 7 配套档，与 UTER-DESIGN-SYSTEM-3.0.md §1.2 / §28 逐行对应：
  *
  *   display  36 / 600 / 44   页面主视觉标题（营销页 hero）
- *   h1       28 / 600 / 36   页面标题
- *   h2       22 / 600 / 30   区块标题
+ *   h1       30 / 600 / 38   页面标题（--text-4xl）
+ *   h2       24 / 600 / 32   区块标题（--text-3xl）
  *   h3       18 / 600 / 26   卡片标题、弹窗标题
  *   body     14 / 400 / 22   常规正文、表单内容、普通说明（全站基准）
  *   body-long 16 / 400 / 26  长文本：文章、协议、帮助文档、连续阅读
@@ -36,8 +36,9 @@ For commercial licensing, please contact support@uter.ai
  * （1.50）—— 长时间阅读的段落需要呼吸感，控件文本因落在固定高度容器里
  * （按钮 h-9、输入框 h-9），行高变化不改变控件实际高度。
  *
- * group-title 是语义层级的第 4 层，取值走独立的 `--text-group`（15/22），
+ * group-title 是语义层级的第 4 层，取值走独立的 `--text-group`（16/24），
  * 不占用上表阶梯位置 —— 与 dense / mono-code / mono-title 同属「专用派生档」。
+ * 早期注释写的 15/22 是 --text-md（次级正文），不是 group-title。
  *
  * ⚠️ `body` 与 `body-sm` **同为 14/22**。两者保留两个名字是因为语义不同
  * （基准正文 vs 紧凑辅助），不是两档字号；把 `body` 当 16px 用是旧规范
@@ -61,8 +62,8 @@ For commercial licensing, please contact support@uter.ai
  * 情况，根因就是这个。`@theme`（非 inline）同时会把变量输出到
  * `:root`，所以 `var(--text-sm)` 的写法仍然可用。
  *
- * 密度档位（`[data-theme-scale]`）覆盖的是 `--text-*` 本身，因此
- * 这里的阶梯同时也是密度缩放的基线。
+ * 密度档位（`[data-theme-scale]`）**只**改 --spacing 与 --ds-* 控件尺寸，
+ * 不缩放 `--text-*`（§7.2 / §17.7）；放大文字走 simple-large 预设。
  */
 @theme {
   --text-xs: 0.75rem; /* 12px — small / caption */
@@ -120,9 +121,9 @@ For commercial licensing, please contact support@uter.ai
   --text-5xl: 2.25rem; /* 36px — 3.0 §1.2 5xl：营销展示、特殊大标题 */
   --text-5xl--line-height: 2.75rem; /* 44px */
 
-  /* group-title 专用档：15/22。2026-10-30 字体规范 v1.1 起分组标题从
-   * text-base（16/24）独立成档 —— 分组标题比 card-title 低一档后与
-   * 「行标题 / 设置字段 / 指标数值」（仍为 16px）不再共用取值。
+  /* group-title 专用档：16/24。分组标题与「行标题 / 设置字段 / 指标数值」
+   * 同为 16px，靠字重（600 vs 400/500）与语义区分，不是两个字号档。
+   * 早期注释里的 15/22 对应 --text-md（次级正文），不要与 group-title 混淆。
    * 声明在阶梯里而不是 semantic 层写死，维持「--text-* 唯一来源」。 */
   --text-md: 0.9375rem; /* 15px — 3.0 §1.2 md：次级正文 */
   --text-md--line-height: 1.5rem; /* 24px */
@@ -141,7 +142,7 @@ For commercial licensing, please contact support@uter.ai
 }
 
 /* ── 无障碍大字档（`simple-large` 预设）───────────────────────────────
- * 用户在主题里主动开启的「超大字体简易」预设。它是**同一套十档阶梯的放大
+ * 用户在主题里主动开启的「超大字体简易」预设。它是**同一套字号阶梯的放大
  * 档**，不是第二套字号体系：档位名称、用途、相对顺序完全一致，只有取值按
  * ~1.35× 放大，行高同比放大以维持原阶梯的阅读节奏。
  *

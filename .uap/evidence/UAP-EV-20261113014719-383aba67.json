@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113014719-383aba67",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261113014718-26adf2c8",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T01:47:19.077Z",
+  "started_at": "2026-11-13T01:47:19.077Z",
+  "finished_at": "2026-11-13T01:47:19.077Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113013504-1a5927b4",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "0769350a5ae115d9907383af6d7678ebea59f269da38e8631960c2badbc8070d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113013504-1a5927b4",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "worktree_fingerprint": "0769350a5ae115d9907383af6d7678ebea59f269da38e8631960c2badbc8070d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:initialize_uap_structure",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"initialize_uap_structure\",\"idempotent\":true,\"handler\":\"initialize_uap_structure\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "UAP structure initialised: 9 required files present",
+  "content_hash": "9db5cf319a2f3d714c5fde1cca5a96607e136f6a3b151e821cdc29da67443d4c"
+}

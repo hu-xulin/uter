@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113005423-4f2bfc12",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T00:54:23.594Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.recovery_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.recovery_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.recovery_integrity 实检: state_persistence=PASS(BASELINE.json 含 workspace/git/toolchain=true; .uap/state 目录存在=true); interruption_recovery=PASS(recovery-engine 导出 导出 component,health,execute 齐全; WAITING_RECOVERY 可迁移=[QUEUED,FAILED,BLOCKED,CANCELLED] (含 QUEUED/FAILED=true)); idempotency=PASS(子进程复验终态(SUCCEEDED/CANCELLED 无后继)=true 无自环=true; exit_code=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 2026 个 | 真实读取 BASELINE.json + 动态 import recovery-engine 导出 + node 子进程复验状态机幂等/终态; 不调用有写副作用的 recovery health()",
+  "content_hash": "1d74819609e57385bafadea9b05d484e8fab5344455fc851aa6b20b8da40e8d5"
+}

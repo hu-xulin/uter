@@ -67,7 +67,7 @@ For commercial licensing, please contact support@uter.ai
   --primitive-space-6: 1.5rem; /* 24px */
   --primitive-space-8: 2rem; /* 32px */
 
-  /* ── Radius primitives（design-system-2.0 §13.4：基准 10px=控件档 r-md，
+  /* ── Radius primitives（规范 §5：基准 10px=控件档 r-md，
    * 卡片/弹窗 12px；与 theme.css 的 calc 阶梯逐档对齐，改一边必须同步另一边） */
   --primitive-radius-xs: 6px;
   --primitive-radius-sm: 8px;

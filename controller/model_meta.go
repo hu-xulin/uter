@@ -131,6 +131,9 @@ func CreateModelMeta(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// The catalog change bumps the models topic, so every node refreshes its
+	// pricing within seconds.
+	model.BumpSyncTopic(model.SyncTopicModels)
 	model.RefreshPricing()
 	m.HasMetadata = m.Id > 0
 	common.ApiSuccess(c, &m)
@@ -183,6 +186,9 @@ func UpdateModelMeta(c *gin.Context) {
 			return
 		}
 	}
+	// The catalog change bumps the models topic, so every node refreshes its
+	// pricing within seconds.
+	model.BumpSyncTopic(model.SyncTopicModels)
 	model.RefreshPricing()
 	m.HasMetadata = m.Id > 0
 	common.ApiSuccess(c, &m)

@@ -14,6 +14,8 @@ import { list as listEvidence, get as getEvidence, verify as verifyEvidence } fr
 import { health as policyHealth, deniedDecisions, auditTrail } from '../runtime/policy-engine/index.mjs';
 import { listAgents, implementationExists } from '../runtime/agent-runtime/index.mjs';
 import { listWorkflows } from '../workflows/index.mjs';
+import { statusVerdict } from '../runtime/status-engine/snapshot.mjs';
+import { generateIndex } from './generate-index.mjs';
 
 export const component = 'uap.report-generator';
 export const version = '1.0.0';
@@ -81,7 +83,14 @@ function specRows(configs) {
   });
 }
 
-function threeResults({ specRowsOut, registry, runtimeCard, validation, defects, financial, gates, audit, tests }) {
+function bound(card, snapshot) {
+  return Boolean(card)
+    && card.execution_id === snapshot.execution_id
+    && card.git_head === snapshot.git_head
+    && card.worktree_fingerprint === snapshot.worktree_fingerprint;
+}
+
+function threeResults({ specRowsOut, registry, runtimeCard, validation, defects, financial, gates, audit, tests, snapshot }) {
   const specComplete = specRowsOut.filter((s) => s.complete).length;
   const specOk = specComplete === 32 && registry.ok;
   const runtimeComponents = Object.values(runtimeCard?.components || {});
@@ -96,10 +105,13 @@ function threeResults({ specRowsOut, registry, runtimeCard, validation, defects,
   const restrictedBlocked = blockedRows.filter((r) => RESTRICTED_BLOCK_CATEGORIES.has(r.block_category));
   const undeclaredBlocked = blockedRows.filter((r) => !RESTRICTED_BLOCK_CATEGORIES.has(r.block_category));
   const failCount = validation?.fail ?? 0;
+  // A historical card is not evidence for THIS code version.
+  const validationCurrent = bound(validation, snapshot);
+  const testsCurrent = bound(tests, snapshot);
   const runtimeOk = runtimeCard?.health_check_passed === true
     && runtimeComponents.length > 0 && runtimeComponents.every((c) => c.ok === true)
     && validation?.total === 32 && failCount === 0 && undeclaredBlocked.length === 0
-    && tests?.exit_code === 0;
+    && tests?.exit_code === 0 && validationCurrent && testsCurrent;
   const list = defects?.defects || [];
   const openP0 = list.filter((d) => d.severity === 'P0' && !['FIXED', 'VERIFIED', 'ACCEPTED_RISK'].includes(d.status)).length;
   const openP1 = list.filter((d) => d.severity === 'P1' && !['FIXED', 'VERIFIED', 'ACCEPTED_RISK'].includes(d.status)).length;
@@ -109,7 +121,9 @@ function threeResults({ specRowsOut, registry, runtimeCard, validation, defects,
   const uterOk = Boolean(audit) && Boolean(defects) && Boolean(financial)
     && financial.failed === 0 && financial.blocked === 0
     && validation?.total === 32 && validation?.pass === 32
-    && gates?.failed === 0 && openP0 === 0 && openP1 === 0;
+    && gates?.failed === 0 && openP0 === 0 && openP1 === 0
+    && validationCurrent && testsCurrent
+    && financial?.simulated_only !== true;  // simulation is not real financial integrity
   const restrictedList = restrictedBlocked.map((r) => ({ validator_id: r.validator_id, block_category: r.block_category }));
   return {
     specification_completeness: {
@@ -128,9 +142,11 @@ function threeResults({ specRowsOut, registry, runtimeCard, validation, defects,
         validators_blocked_restricted: restrictedBlocked.length,
         validators_blocked_undeclared: undeclaredBlocked.length,
         uap_tests_exit_code: tests?.exit_code ?? null,
+        tests_bound_to_current_execution: testsCurrent,
+        validators_bound_to_current_execution: validationCurrent,
         verdict_detail: runtimeOk
-          ? `Runtime 健康 ${runtimeComponents.filter((c) => c.ok === true).length}/${runtimeComponents.length} 组件健康; 32 个验证器 ${validation?.pass ?? 0} PASS / ${failCount} FAIL; ${restrictedBlocked.length} 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=${tests?.exit_code ?? 'n/a'}`
-          : `Runtime 健康组件 ${runtimeComponents.filter((c) => c.ok === true).length}/${runtimeComponents.length}; 验证器 ${validation?.pass ?? 0} PASS / ${failCount} FAIL / 未声明受限的 BLOCKED ${undeclaredBlocked.length} 项`,
+          ? `Runtime 健康 ${runtimeComponents.filter((c) => c.ok === true).length}/${runtimeComponents.length} 组件健康; 32 个验证器 ${validation?.pass ?? 0} PASS / ${failCount} FAIL; ${restrictedBlocked.length} 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=${tests?.exit_code ?? 'n/a'}; 卡片已绑定当前 execution_id/HEAD/worktree`
+          : `Runtime 健康组件 ${runtimeComponents.filter((c) => c.ok === true).length}/${runtimeComponents.length}; 验证器 ${validation?.pass ?? 0} PASS / ${failCount} FAIL / 未声明受限的 BLOCKED ${undeclaredBlocked.length} 项; 当前执行绑定 validators=${validationCurrent} tests=${testsCurrent}（历史卡片不计为当前能力证据）`,
       },
     },
     uter_real_compliance: {
@@ -147,9 +163,11 @@ function threeResults({ specRowsOut, registry, runtimeCard, validation, defects,
         validators_fail: failCount,
         validators_total: validation?.total ?? 0,
         restricted_blocked_items: restrictedList,
+        financial_simulated_only: financial?.simulated_only ?? null,
+        validators_bound_to_current_execution: validationCurrent,
         verdict_detail: uterOk
-          ? `审计/缺陷/资金/门禁全部通过, 32/32 验证器 PASS`
-          : `可执行检查: 验证器 ${validation?.pass ?? 0}/${validation?.total ?? 0} PASS, ${failCount} FAIL; 质量门禁失败数=${gates?.failed ?? 'n/a'}; 开放 P0=${openP0} P1=${openP1}; 受限未执行 ${restrictedList.length} 项${restrictedList.length ? ` (${restrictedList.map((r) => `${r.validator_id}:${r.block_category}`).join(', ')})` : ''} -> 见 BLOCKED-ITEMS.md`,
+          ? `审计/缺陷/资金/门禁全部通过, 32/32 验证器 PASS, 且卡片绑定当前执行`
+          : `可执行检查: 验证器 ${validation?.pass ?? 0}/${validation?.total ?? 0} PASS, ${failCount} FAIL; 质量门禁失败数=${gates?.failed ?? 'n/a'}; 开放 P0=${openP0} P1=${openP1}; 资金验证 simulated_only=${financial?.simulated_only ?? 'n/a'}; 当前执行绑定 validators=${validationCurrent} tests=${testsCurrent}; 受限未执行 ${restrictedList.length} 项${restrictedList.length ? ` (${restrictedList.map((r) => `${r.validator_id}:${r.block_category}`).join(', ')})` : ''} -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。`,
       },
     },
   };
@@ -159,7 +177,9 @@ function finalStatus(ctx) {
   const { configs, registry, specRowsOut, runtimeCard, validation, defects, financial, gates, audit, tests, three, executorProbes, validatorImpl, runtimeCardExists } = ctx;
   const agents = listAgents();
   const workflows = listWorkflows();
-  const specVerified = specRowsOut.filter((s) => s.validator_status === 'PASS').length;
+  // Derived from the SAME status-engine verdict used by the index and CLI.
+  // A validator PASS on a stale card is not a verified specification.
+  const specVerified = ctx.engine.specVer.verified_specs;
   const specFailed = specRowsOut.filter((s) => s.validator_status === 'FAIL').length;
   const specBlocked = specRowsOut.filter((s) => ['BLOCKED', 'NOT_EXECUTED'].includes(s.validator_status)).length;
   const execPaths = Object.values(executorEntries(configs)).filter((x) => typeof x === 'string');
@@ -180,18 +200,39 @@ function finalStatus(ctx) {
     return t.includes('UAP Agent Entry Point') || t.includes('UAP Claude Code Entry Point');
   }).length;
 
-  const uapOperational = three.uap_runtime_capability.status === 'FULLY_OPERATIONAL';
-  const uterCompliant = three.uter_real_compliance.status === 'FULLY_COMPLIANT';
-  let overall;
-  if (uapOperational && uterCompliant) overall = 'FULLY_OPERATIONAL';
-  else if (blockedItems.some((b) => b.severity === 'BLOCKER') && !runtimeCardExists) overall = 'BLOCKED';
-  else if (validation?.pass > 0 || tests?.exit_code === 0) overall = 'PARTIALLY_VERIFIED';
-  else overall = 'IMPLEMENTED_NOT_VERIFIED';
+  const verdict = ctx.engine.verdict;
+  const snap = ctx.engine.snapshot;
+  const uapOperational = verdict.three_independent_results.uap_runtime_capability === 'FULLY_OPERATIONAL';
+  const uterCompliant = verdict.three_independent_results.uter_real_compliance === 'FULLY_COMPLIANT';
+  const overall = verdict.overall_status;
+  const validationIsCurrent = Boolean(validation)
+    && validation.execution_id === verdict.execution_id
+    && validation.git_head === verdict.git_head
+    && validation.worktree_fingerprint === snap.worktree_fingerprint;
+  const testsAreCurrent = Boolean(tests)
+    && tests.execution_id === verdict.execution_id
+    && tests.git_head === verdict.git_head
+    && tests.worktree_fingerprint === snap.worktree_fingerprint;
 
   return {
     platform: 'UAP',
     version: readVersion(),
     overall_status: overall,
+    claim_allowed: verdict.claim_allowed,
+    status_engine: {
+      computed_by: verdict.computed_by,
+      execution_id: verdict.execution_id,
+      git_head: verdict.git_head,
+      worktree_fingerprint: snap.worktree_fingerprint,
+      counts: verdict.counts,
+      capabilities: verdict.capabilities,
+      capability_gaps: verdict.capability_gaps,
+      reasons: verdict.reasons,
+      claim_allowed: verdict.claim_allowed,
+      p0_blockers: snap.p0_blockers,
+      evidence_chain: ctx.engine.evidence_chain,
+      stale_historical_artefacts: verdict.reasons.filter((r) => r.includes('stale artefacts')),
+    },
     generated_at: nowISO(),
     generated_from: 'uap report (real command results, never copied from the template)',
     specifications: { total: specById(configs).size, complete: specRowsOut.filter((s) => s.complete).length, verified: specVerified, blocked: specBlocked, failed: specFailed },
@@ -201,8 +242,10 @@ function finalStatus(ctx) {
       implemented: true,
       started: runtimeCardExists,
       health_check_passed: runtimeCard?.health_check_passed ?? false,
-      end_to_end_passed: Boolean(validation) && validation.total === 32 && validation.fail === 0 && tests?.exit_code === 0,
-      all_validators_passed: Boolean(validation) && validation.total === 32 && validation.pass === 32,
+      end_to_end_passed: validationIsCurrent && testsAreCurrent && verdict.claim_allowed,
+      all_validators_passed: validationIsCurrent && validation.total === 32 && validation.pass === 32,
+      validation_bound_to_current_execution: validationIsCurrent,
+      tests_bound_to_current_execution: testsAreCurrent,
       recovery_test_passed: recovery?.ok === true,
       components_total: Object.keys(runtimeCard?.components || {}).length,
       components_healthy: Object.values(runtimeCard?.components || {}).filter((c) => c.ok === true).length,
@@ -215,8 +258,8 @@ function finalStatus(ctx) {
     final_acceptance: {
       uap_fully_operational: uapOperational,
       uter_fully_compliant: uterCompliant,
-      both_satisfied: uapOperational && uterCompliant,
-      claim_allowed: uapOperational && uterCompliant,
+      both_satisfied: verdict.claim_allowed,
+      claim_allowed: verdict.claim_allowed,
       restricted_blocked_items: three.uter_real_compliance.evidence?.restricted_blocked_items || [],
       claim_note: '规范完整性 / UAP 运行能力 / Uter 合规性三者分别取证, 不可互相替代; 受限未执行项一律记入 BLOCKED-ITEMS.md, 不计入通过',
     },
@@ -294,8 +337,29 @@ export async function generateReports({ final = false } = {}) {
     } catch { validatorFunctions.set(impl, []); }
   }
 
-  const three = threeResults({ specRowsOut, registry, runtimeCard, validation, defects, financial, gates, audit, tests });
-  const ctx = { configs, registry, specRowsOut, runtimeCard, validation, defects, financial, gates, audit, tests, three, executorProbes, validatorImpl, runtimeCardExists: Boolean(runtimeCard) };
+  // ONE status source for the index, the CLI and every report. The first pass
+  // establishes the spec-verification counts; the second binds the report
+  // claims and the index declaration to that exact verdict instance, so the
+  // three artifacts cannot disagree.
+  const probe = statusVerdict();
+  const engine = statusVerdict({
+    claims: {
+      specifications_verified: probe.specVer.verified_specs,
+      overall_status: probe.verdict.overall_status,
+    },
+    indexDeclaration: {
+      verified_specs: probe.specVer.verified_specs,
+      total_specs: probe.specVer.total_specs,
+      overall_status: probe.verdict.overall_status,
+    },
+  });
+  const three = threeResults({ specRowsOut, registry, runtimeCard, validation, defects, financial, gates, audit, tests, snapshot: engine.snapshot });
+  // Detailed evidence stays; the three verdict labels come from the engine.
+  three.specification_completeness.status = engine.verdict.three_independent_results.specification_completeness;
+  three.uap_runtime_capability.status = engine.verdict.three_independent_results.uap_runtime_capability;
+  three.uter_real_compliance.status = engine.verdict.three_independent_results.uter_real_compliance;
+
+  const ctx = { configs, registry, specRowsOut, runtimeCard, validation, defects, financial, gates, audit, tests, three, executorProbes, validatorImpl, runtimeCardExists: Boolean(runtimeCard), engine };
   const blockedItems = collectBlocked(ctx);
   ctx.blockedItems = blockedItems;
 
@@ -491,10 +555,25 @@ export async function generateReports({ final = false } = {}) {
   status.generated_by_real_run = true;
   writeJSON(FILES.finalStatus, status);
   written.push('FINAL-STATUS.json');
+  // The index is regenerated from the SAME verdict object, in the same run.
+  const indexResult = generateIndex(engine);
 
   return {
     generated_at: nowISO(), written, total: written.length,
     overall_status: status.overall_status,
+    status_engine: {
+      execution_id: engine.verdict.execution_id,
+      git_head: engine.verdict.git_head,
+      counts: engine.verdict.counts,
+      claim_allowed: engine.verdict.claim_allowed,
+      capability_gaps: engine.verdict.capability_gaps,
+    },
+    specification_index: {
+      file: relToRoot(indexResult.file),
+      overall_status: indexResult.verdict.overall_status,
+      verified_specs: indexResult.specVer.verified_specs,
+      total_specs: indexResult.specVer.total_specs,
+    },
     three_independent_results: three,
     blocking_findings: registry.findings.length,
     blocked_items: blockedItems.length,

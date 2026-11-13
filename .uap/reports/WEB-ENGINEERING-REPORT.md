@@ -1,6 +1,6 @@
 # Web Engineering Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-12T17:04:41.061Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:03.890Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 技术栈探测
@@ -11,10 +11,11 @@ web/package.json 存在；脚本 39 个：dev, build, build:check, docs:search-i
 
 | 命令 | 退出码 | 耗时 |
 | --- | --- | --- |
-| go build ./... | 0 | 27535ms |
-| bun run typecheck | 0 | 8753ms |
+| bun run build:check | 0 | 30925ms |
+| go build ./... | 0 | 44111ms |
+| bun run typecheck | 0 | 8982ms |
 
 
 ## 前端文件统计
 
-web/src 下 TS/TSX 文件 1518 个；设计系统目录 存在。
+web/src 下 TS/TSX 文件 1522 个；设计系统目录 存在。

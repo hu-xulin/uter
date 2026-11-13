@@ -368,8 +368,8 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = getTopNavActive(pathname, link, links)
               const linkClassName = cn(
-                // 规范 §3.2：移动端全屏菜单是触屏列表，一级项用 16/24
-                // （`text-base` + 500），不是桌面一级导航的 14/20。
+                // 规范 §1.11：移动端全屏菜单是触屏列表，一级项用 16/24
+                // （`text-base` + 500），不是桌面一级导航的 14/22。
                 // 触屏点按面积与可读性都要求大一档；此前注释写着 16/24、
                 // 类名却是 `text-sm`，注释和实现各说各话。
                 'ds-motion-marketing flex items-center gap-3 py-3 text-base font-medium transition-all',

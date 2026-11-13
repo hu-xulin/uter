@@ -1,0 +1,30 @@
+{
+  "evidence_id": "UAP-EV-20261113013117-45221fe1",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-TEST-20261113013117-8515cd42",
+  "trace_id": "UAP-TRACE-20261113013117-1a9e2d14",
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T01:31:17.422Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-TEST-20261113013117-8515cd42",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"uap-tester behaviour probe\",\"specification_ids\":[\"UAP-00-001\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "steps_unfinished",
+      "message": "1 steps not SUCCEEDED"
+    }
+  ],
+  "summary": "task UAP-TASK-TEST-20261113013117-8515cd42 finished: FAILED",
+  "content_hash": "ea09f6fec836e875aa9519d338844687d141c62b54ddd352bed2eec4c57803bf"
+}

@@ -1,5 +1,6 @@
 {
   "translation": {
+    "System task history must be kept for at least 1 day": "L'historique des tâches système doit être conservé pendant au moins 1 jour",
     "Previous month": "Mois précédent",
     "Next month": "Mois suivant",
     "Referral link": "Lien de parrainage",
@@ -7788,6 +7789,8 @@
     "docs.search.loading": "Chargement de l'index de recherche…",
     "docs.search.noResults": "Aucune page trouvée",
     "Contents": "Sommaire",
-    "docs.toc.heading": "Sur cette page"
+    "docs.toc.heading": "Sur cette page",
+    "Previous page": "Page précédente",
+    "Page navigation": "Navigation de page"
   }
 }

@@ -1,0 +1,19 @@
+[UAP] PASS (exit 0) — audit clean: 4157 files, 19 financial checks, 0 blockers
+{
+  "generated_at": "2026-11-13T00:54:00.058Z",
+  "registry_findings": 0,
+  "audit_files_scanned": 4157,
+  "audit_findings": 24,
+  "audit_blockers": 0,
+  "financial": {
+    "simulated_only": true,
+    "total": 19,
+    "passed": 19,
+    "failed": 0,
+    "blocked": 0
+  },
+  "defects": 3,
+  "open_defects": 0,
+  "missing_tools": []
+}
+evidence: UAP-EV-20261113005400-1a124498

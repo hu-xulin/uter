@@ -1,0 +1,24 @@
+{
+  "evidence_id": "UAP-EV-20261113013117-7f4c25d4",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261113013117-ab2bf4e5",
+  "trace_id": null,
+  "specification_ids": [],
+  "recorded_at": "2026-11-13T01:31:17.871Z",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:test_failure_recovery",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-7\",\"name\":\"test_failure_recovery\",\"idempotent\":true,\"handler\":\"test_failure_recovery\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "recovery verified: state=SUCCEEDED, repeated_steps=undefined",
+  "content_hash": "12f1182968f7acbfbfe11f9404e4ada1fc3e9e7fc6a0eba770ea6a0548516a20"
+}

@@ -1,10 +1,10 @@
 # 真实业务代码自动修复验证报告
 
-- **Execution ID**：`UAP-RREPAIR-1794540465823-a79c5c`
+- **Execution ID**：`UAP-RREPAIR-1794554305534-fd4e99`
 - **Task ID**：`UAP-NEG-WIP`
 - **Workflow**：`uap-defect-repair` / `uap-final-verification`（本引擎为真实代码分支）
-- **Git HEAD**：`7b98646915f75026e0e643f9f4b0a6a3ff3ab67c`
-- **开始 / 结束**：2026-11-13T03:27:45.823Z → 2026-11-13T03:27:45.873Z
+- **Git HEAD**：`c80f19b55fa74b0e1f034707967e271d719328f7`
+- **开始 / 结束**：2026-11-13T07:18:25.534Z → 2026-11-13T07:18:46.749Z
 - **最终结论**：**BLOCKED**（attempts=0/3，失败升级=NO）
 - **修复对象**：`common/request_path.go`
 - **修复前 SHA256**：`null`
@@ -21,7 +21,7 @@
 - **缺陷**：common.CanonicalUpstreamPath 归一化站内 /pg/* 别名时未剥离尾斜杠，/pg/chat/completions/ 产出 /v1/chat/completions/，而下游 AdvancedCustom 路由匹配 (relaykit/dto/channel_settings.go:437) 使用 configuredPath == requestPath 精确相等比对，导致按 /v1/chat/completions 登记的渠道被误判为不支持。
 - **影响**：站内调试台带尾斜杠的请求会清空候选渠道集，最终返回「分组下没有可用渠道」503；plugin-router.go:270 显式关闭 RedirectTrailingSlash，relay_info.go:374 与 advancedcustom/adaptor.go:387,392 会再次从 RequestURLPath 取路径，因此该路径可达。
 - **根因证据**：`not executed ` → exit null
-- **复现测试（修复前）**：exit null（非 0 证明缺陷真实存在）
+- **复现测试（修复前）**：exit 0（非 0 证明缺陷真实存在）
 
 ## 权限分级
 
@@ -29,20 +29,24 @@
 |---|---|---|---|
 | `common/request_path.go` | NOT_REACHED | false | 未执行到权限分级 |
 
-策略引擎决策：0 条，全部 ALLOW（DENY 即 fail-closed 终止）。
+策略引擎决策：2 条，全部 ALLOW（DENY 即 fail-closed 终止）。
 
 ## 执行阶段与角色分离
 
 | 阶段 | Agent | 状态 | 说明 |
 |---|---|---|---|
-| 阻断 | `uap-orchestrator` | BLOCKED | 目标文件存在用户未提交修改，禁止覆盖：common/request_path.go |
+| 保护用户未提交修改 | `uap-orchestrator` | PASS | git status --short -- common/request_path.go 为空 |
+| 发现问题 | `uap-orchestrator` | PASS | common.CanonicalUpstreamPath 归一化站内 /pg/* 别名时未剥离尾斜杠，/pg/chat/completions/ 产出 /v1/chat/completions/，而下游 AdvancedCustom 路由匹配 (relaykit/dto/channel_settings.go:437) 使用 configuredPath == requestPath 精确相等比对，导致按 /v1/chat/completions 登记的渠道被误判为不支持。 |
+| 定位业务模块 | `uap-development-agent` | PASS | common/request_path.go |
+| 阻断 | `uap-orchestrator` | BLOCKED | 复现测试在修复前已通过，缺陷不成立或已被修复，终止以免制造假闭环 |
 
 ## 真实执行命令
 
 | 命令 | 阶段 | 退出码 | 耗时(ms) |
 |---|---|---:|---:|
-| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 16 |
-| `git status --short -- common/request_path.go status --short -- common/request_path.go` | baseline | 0 | 33 |
+| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 17 |
+| `git status --short -- common/request_path.go status --short -- common/request_path.go` | baseline | 0 | 23 |
+| `go test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1 test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1` | reproduction_before | 0 | 21166 |
 
 ## 证据
 
@@ -50,4 +54,4 @@
 
 ## 阻断 / 未解决
 
-- USER_WIP_PROTECTED: 目标文件存在用户未提交修改，禁止覆盖：common/request_path.go
+- ERROR: 复现测试在修复前已通过，缺陷不成立或已被修复，终止以免制造假闭环

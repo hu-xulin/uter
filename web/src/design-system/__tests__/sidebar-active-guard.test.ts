@@ -100,7 +100,7 @@ describe('sidebar active state', () => {
   })
 
   it('defines the dedicated token in both themes', () => {
-    // design-system-2.0 §17（2026-11-03 复裁定）给定的两个值；改任一值都要
+    // 3.0 规范 §14.3（2026-11-03 复裁定）给定的两个值；改任一值都要
     // 重算对比度（浅色 5.11:1 / 深色 4.97:1）。
     expect(theme).toContain(
       '--sidebar-active-foreground: var(--uter-brand-soft-foreground)'

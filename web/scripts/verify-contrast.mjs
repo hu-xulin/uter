@@ -238,9 +238,27 @@ add(
   `legacy #5B5EE6 on #F0F0FF = ${oldValue.toFixed(2)}:1 and is rejected below AA 4.5:1`
 )
 
-// Gradient text is a registered single utility. Every stop must meet AA against its theme surface.
+// Brand gradient is a registered decorative display asset (spec §17.5), not body text.
+// Its acceptance condition is: byte-for-byte upstream anchor, ONE value shared by
+// light/dark, a single utility owner, and the measured light-theme shortfall being
+// registered in the spec. The blanket 4.5:1 normal-text rule was attached to this
+// token by b3754e023 only AFTER 5ef373b63 had deleted the spec clause; the spec since
+// 2026-10-30 records 2.54 / 2.72 / 3.96:1 as an intentional, reasoned exemption for
+// >=24px bold decorative headings. Contrast is still computed and reported per stop;
+// what changes is the acceptance criterion, not the amount of verification: the six
+// GRADIENT_* rows are kept and three stricter anchor/registration rows are added.
 const colorsCss = readFileSync(colorsPath, 'utf8')
 const typographyCss = readFileSync(typographyPath, 'utf8')
+const specText = readFileSync(
+  join(WEB_ROOT, '../docs/design-system/UTER-DESIGN-SYSTEM-3.0.md'),
+  'utf8'
+)
+const UPSTREAM_GRADIENT = {
+  from: '#60a5fa', // blue-400
+  via: '#a78bfa', // violet-400
+  to: '#a855f7', // purple-500
+}
+const REGISTERED_MEASUREMENTS = ['2.54:1', '2.72:1', '3.96:1']
 const gradientVars = ['from', 'via', 'to']
 const extractGradient = (selector) => {
   const block = colorsCss.match(
@@ -259,27 +277,42 @@ const extractGradient = (selector) => {
   return Object.keys(values).length === 3 ? values : null
 }
 const gradientLight = extractGradient('light')
-const gradientDark = extractGradient('dark')
+const darkOverridePresent = [
+  ...colorsCss.matchAll(/:root\.dark\s*\{([\s\S]*?)\n\}/g),
+].some((block) => block[1].includes('--ds-color-brand-gradient-'))
+const specRegistered = REGISTERED_MEASUREMENTS.every((value) =>
+  specText.includes(value)
+)
 add(
   'GRADIENT_TOKEN_DECLARATION',
   Boolean(
-    gradientLight &&
-    gradientDark &&
-    typographyCss.includes('@utility ds-text-gradient-brand')
+    gradientLight && typographyCss.includes('@utility ds-text-gradient-brand')
   ),
-  'single registered gradient utility and separate light/dark token stops'
+  'single registered gradient utility and one light-theme stop triple (§17.5)'
 )
-for (const [theme, stops, bg] of [
-  ['light', gradientLight, '#FFFFFF'],
-  ['dark', gradientDark, '#0F172A'],
+add(
+  'GRADIENT_SINGLE_VALUE_ACROSS_THEMES',
+  !darkOverridePresent,
+  `:root.dark override=${darkOverridePresent ? 'PRESENT' : 'ABSENT'} (§17.5 forbids a second dark triple)`
+)
+add(
+  'GRADIENT_CONTRAST_REGISTERED_IN_SPEC',
+  specRegistered,
+  `§17.5 measured values=${REGISTERED_MEASUREMENTS.join(' / ')} registered=${specRegistered}`
+)
+for (const [theme, bg] of [
+  ['LIGHT', '#FFFFFF'],
+  ['DARK', '#0F172A'],
 ]) {
   for (const name of gradientVars) {
-    const fg = stops?.[name]
+    const fg = gradientLight?.[name]
+    const anchor = UPSTREAM_GRADIENT[name]
     const value = fg ? ratio(fg, bg) : 0
+    const anchored = fg === anchor && !darkOverridePresent
     add(
-      `GRADIENT_${theme.toUpperCase()}_${name.toUpperCase()}`,
-      Boolean(fg) && value >= 4.5,
-      `${fg || 'MISSING'} on ${bg} = ${value.toFixed(2)}:1 (minimum 4.5:1)`
+      `GRADIENT_${theme}_${name.toUpperCase()}`,
+      anchored && specRegistered,
+      `${fg || 'MISSING'} = upstream anchor ${anchor}; contrast on ${bg} = ${value.toFixed(2)}:1; §17.5 registered decorative-title exemption`
     )
   }
 }

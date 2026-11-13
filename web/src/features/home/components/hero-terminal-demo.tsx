@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils'
  *
  * 2026-10-30 之前这里是一水的调色板类名（`text-emerald-600 dark:text-emerald-400`
  * 之类），门禁只能把它整文件登记成例外。**那不是例外，是规范缺了 token** ——
- * 现在全部收进 `term-*` 语义 Token（规范 §11.5）：效果没变，写法换成了不可手
+ * 现在全部收进 `term-*` 语义 Token（规范 §17.5）：效果没变，写法换成了不可手
  * 滑的形式，换主题预设也不会漂移。
  */
 type AccentTone = 'emerald' | 'amber' | 'blue' | 'violet'

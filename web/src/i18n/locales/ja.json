@@ -1,5 +1,6 @@
 {
   "translation": {
+    "System task history must be kept for at least 1 day": "システムタスクの履歴は少なくとも 1 日保持する必要があります",
     "Previous month": "前の月",
     "Next month": "次の月",
     "Referral link": "紹介リンク",
@@ -7788,6 +7789,8 @@
     "docs.search.loading": "検索インデックスを読み込み中…",
     "docs.search.noResults": "一致するドキュメントがありません",
     "Contents": "目次",
-    "docs.toc.heading": "このページの内容"
+    "docs.toc.heading": "このページの内容",
+    "Previous page": "前のページ",
+    "Page navigation": "ページナビゲーション"
   }
 }

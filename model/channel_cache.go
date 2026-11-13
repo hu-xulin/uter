@@ -548,6 +548,34 @@ func filterEnabledCandidateIDs(ids []int) []int {
 	return kept
 }
 
+// CacheUpdateChannelStatus publishes a new status for a cached channel. A
+// channel that is no longer enabled leaves the group to model to channels
+// index, so no request is routed to it.
+func CacheUpdateChannelStatus(id int, status int) {
+	if !common.MemoryCacheEnabled {
+		return
+	}
+	channelSyncLock.Lock()
+	defer channelSyncLock.Unlock()
+	if channel, ok := channelsIDM[id]; ok {
+		channel.Status = status
+	}
+	if status != common.ChannelStatusEnabled {
+		// delete the channel from group2model2channels
+		for group, model2channels := range group2model2channels {
+			for model, channels := range model2channels {
+				for i, channelId := range channels {
+					if channelId == id {
+						// remove the channel from the slice
+						group2model2channels[group][model] = append(channels[:i], channels[i+1:]...)
+						break
+					}
+				}
+			}
+		}
+	}
+}
+
 func CacheUpdateChannel(channel *Channel) {
 	if !common.MemoryCacheEnabled {
 		return

@@ -138,6 +138,21 @@ export const ABOUT_SECTION_SLUGS = [
 export type AboutSectionSlug = (typeof ABOUT_SECTION_SLUGS)[number]
 
 /**
+ * Resolve a URL slug back to the chapter that owns it. Positional, so a
+ * language switch keeps the reader on the same chapter: both locales
+ * carry the same nine chapters in the same order.
+ */
+export function findAboutSection(
+  content: AboutContent,
+  slug: string
+): { section: AboutSection; index: number } | null {
+  const index = ABOUT_SECTION_SLUGS.indexOf(slug as AboutSectionSlug)
+  if (index < 0) return null
+  const section = content.sections[index]
+  return section ? { section, index } : null
+}
+
+/**
  * The model brands shown at the foot of 「我们的合作伙伴」.
  *
  * Grouped the way the chapter's own prose groups them — the models the

@@ -53,6 +53,11 @@ export default defineConfig({
     // 语言锁 zh-CN（国内主战场），切英文口径用 VISUAL_LOCALE 覆盖。
     timezoneId: 'Asia/Shanghai',
     locale: process.env.VISUAL_LOCALE ?? 'zh-CN',
+    // 主题默认跟随系统（theme-provider 的 DEFAULT_THEME='system'）。不显式
+    // 锁死 colorScheme 时，截图的明暗取决于运行机器的系统主题，整页配色反转
+    // 会产生 0.9+ 的伪回归 diff。锁成可复现的单一口径，而不是放宽
+    // maxDiffPixelRatio 来掩盖真实回归。基线重采集也统一用这个口径。
+    colorScheme: process.env.VISUAL_COLOR_SCHEME === 'dark' ? 'dark' : 'light',
     trace: 'retain-on-failure',
   },
   expect: {

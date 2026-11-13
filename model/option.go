@@ -68,6 +68,7 @@ func InitOptionMap() {
 	common.OptionMap["DataExportEnabled"] = strconv.FormatBool(common.DataExportEnabled)
 	common.OptionMap["ChannelDisableThreshold"] = strconv.FormatFloat(common.ChannelDisableThreshold, 'f', -1, 64)
 	common.OptionMap["EmailDomainRestrictionEnabled"] = strconv.FormatBool(common.EmailDomainRestrictionEnabled)
+	common.OptionMap[operation_setting.SystemTaskRetentionDaysOptionKey] = strconv.Itoa(operation_setting.GetSystemTaskSetting().RetentionDays)
 	common.OptionMap["EmailAliasRestrictionEnabled"] = strconv.FormatBool(common.EmailAliasRestrictionEnabled)
 	common.OptionMap["EmailDomainWhitelist"] = strings.Join(common.EmailDomainWhitelist, ",")
 	common.OptionMap["SMTPServer"] = ""
@@ -333,6 +334,7 @@ func applyMinTopUpOption(key, value string) error {
 }
 
 func UpdateOption(key string, value string) error {
+	defer BumpSyncTopic(SyncTopicOptions)
 	// SMTPAccounts 保存前先合并凭据：Token 留空或回传掩码串时沿用库中原值，
 	// 并校验结构。合并后的规范化 JSON 才进入校验-落库-内存更新链路。
 	if key == "SMTPAccounts" {
@@ -341,6 +343,9 @@ func UpdateOption(key string, value string) error {
 			return err
 		}
 		value = merged
+	}
+	if key == operation_setting.SystemTaskRetentionDaysOptionKey {
+		return operation_setting.ValidateSystemTaskRetentionDays(value)
 	}
 	if IsRequestPolicyOption(key) {
 		return UpdateRequestPolicyOptions(map[string]string{key: value})
@@ -383,6 +388,7 @@ func UpdateOptionsBulk(values map[string]string) error {
 	if len(values) == 0 {
 		return nil
 	}
+	defer BumpSyncTopic(SyncTopicOptions)
 	for key := range values {
 		if IsPasskeyDomainOption(key) {
 			_, err := UpdatePasskeyDomainOptions(values, false, "")

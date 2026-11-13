@@ -23,6 +23,12 @@ import { Heading } from '@/design-system'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
 import {
+  CONTENT_CARD_CLASS,
+  CONTENT_CARD_GRID_CLASS,
+  CONTENT_CARD_TEASER_CLASS,
+  CONTENT_CARD_TITLE_CLASS,
+} from './content-card'
+import {
   USER_GUIDE_CHAPTER_SLUGS,
   USER_GUIDE_PATH,
   userGuideChapterTitle,
@@ -34,10 +40,11 @@ import {
  * The guide is split into a page per chapter, so — exactly like the
  * framed export's index — this is a synthesised card page rather than a
  * Markdown document: the guide's title and blurb, then one card per
- * chapter. Each card's summary is the chapter's own opening sentence,
- * extracted from the migrated Markdown so the index cannot drift out of
- * date as the chapters are rewritten (the same rule the framed export
- * follows with its server-side teaser).
+ * chapter. Each card's summary is the chapter's own opening prose, read
+ * from the build-time docs search index that is regenerated from the same
+ * MDX corpus — so the cards cannot drift out of date as chapters are
+ * rewritten (the same rule the framed export followed with its server-side
+ * teaser).
  */
 
 /** The guide's own title and blurb, in the reader's language. */
@@ -81,39 +88,33 @@ const GUIDE_IDENTITY: Record<
 }
 
 /**
- * The chapter sources, loaded lazily as raw text — one small chunk per
- * chapter, fetched only when a reader opens this index.
+ * Chapter teasers come from the build-time docs search index
+ * (`public/docs-search/<locale>.json`), which `generate-docs-search-index.mjs`
+ * derives from these very MDX files — one entry per chapter, in every locale.
+ *
+ * Rspack's `import.meta.glob` ignores both `query: '?raw'` and `as: 'raw'`
+ * for `.mdx` here and hands back the compiled `MDXContent` component, so
+ * reading the Markdown source at runtime is not an option. The index is the
+ * canonical plain-text view of the corpus and is already generated before
+ * every build.
  */
-const chapterSources = import.meta.glob<string>(
-  '../../../docs-content/user-guide/*.mdx',
-  { query: '?raw', import: 'default' }
-)
-
-/**
- * The chapter's opening prose: the first meaningful line before the
- * first `##`, skipping the `#` title, fenced code, tables and raw JSX
- * the way the framed export's block parser does.
- */
-function teaserOf(source: string): string {
-  let inFence = false
-  for (const rawLine of source.split('\n')) {
-    const line = rawLine.trim()
-    if (line.startsWith('```')) {
-      inFence = !inFence
-      continue
-    }
-    if (inFence || line === '' || line.startsWith('#')) continue
-    if (line.startsWith('|') || line.startsWith('<')) continue
-    const prose = line
-      .replace(/^[-*]\s+/, '')
-      .replace(/^\d+\.\s+/, '')
-      .replaceAll(/[*_`[\]()]/g, '')
-    if (prose) return prose.length > 140 ? `${prose.slice(0, 140)}…` : prose
+async function loadTeasers(
+  locale: DocsLocaleCode
+): Promise<Record<string, string>> {
+  const response = await fetch(`/docs-search/${locale}.json`)
+  if (!response.ok) return {}
+  const rows = (await response.json()) as { p: string; b?: string }[]
+  const teasers: Record<string, string> = {}
+  for (const slug of USER_GUIDE_CHAPTER_SLUGS) {
+    const row = rows.find((r) => r.p === `${USER_GUIDE_PATH}/${slug}`)
+    if (!row?.b) continue
+    const text = row.b.trim()
+    teasers[slug] = text.length > 140 ? `${text.slice(0, 140)}…` : text
   }
-  return ''
+  return teasers
 }
 
-/** One chapter card. */
+/** One chapter card — the framed export's `ContentCardGrid` shape. */
 function ChapterCard({
   locale,
   slug,
@@ -124,16 +125,20 @@ function ChapterCard({
   teaser: string
 }) {
   return (
-    <Link
-      to='/docs/$'
-      params={{ _splat: `${locale}/${USER_GUIDE_PATH}/${slug}` }}
-      className='hover:bg-muted block rounded-md border p-4 no-underline transition-colors'
-    >
-      <p className='text-long text-fg-primary mb-1 font-medium'>
-        {userGuideChapterTitle(locale, slug) ?? slug}
-      </p>
-      {teaser ? <p className='text-dense text-fg-secondary'>{teaser}</p> : null}
-    </Link>
+    <li>
+      <Link
+        to='/docs/$'
+        params={{ _splat: `${locale}/${USER_GUIDE_PATH}/${slug}` }}
+        className={CONTENT_CARD_CLASS}
+      >
+        <span className={CONTENT_CARD_TITLE_CLASS}>
+          {userGuideChapterTitle(locale, slug) ?? slug}
+        </span>
+        {teaser ? (
+          <span className={CONTENT_CARD_TEASER_CLASS}>{teaser}</span>
+        ) : null}
+      </Link>
+    </li>
   )
 }
 
@@ -142,41 +147,30 @@ export function UserGuideIndex({ locale }: { locale: DocsLocaleCode }) {
 
   useEffect(() => {
     let alive = true
-    const loaded: Record<string, string> = {}
-    Promise.all(
-      USER_GUIDE_CHAPTER_SLUGS.map(async (slug) => {
-        const source =
-          chapterSources[`../../../docs-content/user-guide/${slug}.mdx`]
-        if (!source) return
-        try {
-          loaded[slug] = teaserOf(await source())
-        } catch {
-          // A missing chapter renders a card without a teaser; the rest
-          // of the index stays up.
-        }
-      })
-    )
-      .then(() => {
-        if (alive) setTeasers(loaded)
+    // A language switch must not briefly show the previous locale's prose.
+    setTeasers({})
+    loadTeasers(locale)
+      .then((value) => {
+        if (alive) setTeasers(value)
       })
       .catch(() => {
-        // Raw-chunk load failures leave the affected cards without a
-        // teaser; the rest of the index stays up.
+        // An index that has not been generated yet leaves the cards
+        // without teasers; the links and the rest of the page stay up.
       })
     return () => {
       alive = false
     }
-  }, [])
+  }, [locale])
 
   const identity = GUIDE_IDENTITY[locale]
 
   return (
     <div>
-      <Heading variant='section-title' level={1} className='mt-6 mb-2'>
+      <Heading variant='page-title' level={1} className='mt-6 mb-2'>
         {identity.title}
       </Heading>
       <p className='text-long text-fg-secondary mb-8'>{identity.description}</p>
-      <div className='grid gap-4 sm:grid-cols-2'>
+      <ul className={CONTENT_CARD_GRID_CLASS}>
         {USER_GUIDE_CHAPTER_SLUGS.map((slug) => (
           <ChapterCard
             key={slug}
@@ -185,7 +179,7 @@ export function UserGuideIndex({ locale }: { locale: DocsLocaleCode }) {
             teaser={teasers[slug] ?? ''}
           />
         ))}
-      </div>
+      </ul>
     </div>
   )
 }

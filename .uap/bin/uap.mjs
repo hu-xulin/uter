@@ -22,6 +22,9 @@ import { listAgents, implementationExists, invoke as invokeAgent } from '../runt
 import { runValidator, runAll as runAllValidators, coverage as validatorCoverage, health as validatorHealth } from '../validators/index.mjs';
 import { listWorkflows, runWorkflow, runAll as runAllWorkflows, stepExecutor, health as workflowHealth } from '../workflows/index.mjs';
 import { normalizeSpecHeaders } from '../tools/normalize-spec-headers.mjs';
+import { statusVerdict } from '../runtime/status-engine/snapshot.mjs';
+import { currentExecution, startExecution, bindExecution, executionHistory, gitHead, worktreeFingerprint, health as executionHealth } from '../runtime/status-engine/execution.mjs';
+import { verifyStatusConsistency } from '../tools/verify-status-consistency.mjs';
 
 export const component = 'uap.cli';
 export const version = '1.0.0';
@@ -224,6 +227,14 @@ async function cmdStatus({ flags }) {
   const specs = specCompleteness(configs);
   const runtime = runtimeCapability();
   const uter = uterCompliance();
+  // Single source of truth: the CLI must not disagree with FINAL-STATUS.json
+  // or SPECIFICATION-INDEX.md. Detailed probes are kept, but every verdict
+  // label is taken from computeFinalStatus().
+  const engine = statusVerdict();
+  const verdict = engine.verdict;
+  const execution = currentExecution();
+  runtime.status = verdict.three_independent_results.uap_runtime_capability;
+  uter.status = verdict.three_independent_results.uter_real_compliance;
   // coverage() takes a validator context, not the raw config map.
   const cov = validatorCoverage({ configs });
   const ev = evidenceStats();
@@ -237,10 +248,23 @@ async function cmdStatus({ flags }) {
     // The three acceptance results are deliberately separate and never derived
     // from one another: documents, a running platform and project compliance
     // each require their own evidence.
-    three_independent_results: {
-      specification_completeness: specs.status,
-      uap_runtime_capability: runtime.status,
-      uter_real_compliance: uter.status,
+    three_independent_results: verdict.three_independent_results,
+    final_status: {
+      ...verdict,
+      specification_verification: {
+        verified_specs: engine.specVer.verified_specs,
+        total_specs: engine.specVer.total_specs,
+      },
+      evidence_chain: engine.evidence_chain,
+      diagnostics: engine.snapshot.diagnostics,
+    },
+    execution: {
+      execution_id: execution.execution_id,
+      git_head: execution.git_head,
+      worktree_fingerprint: execution.worktree_fingerprint,
+      started_at: execution.started_at,
+      started_by: execution.started_by,
+      ledger_entries: executionHistory().length,
     },
     machine_configs: CONFIG_NAMES.map((n) => ({ name: n, parsed: Boolean(configs[n]), bytes: fs.statSync(path.join(UAP, 'config', `${n}.yaml`)).size })),
     system_entrypoints: ['AGENTS.md', 'CLAUDE.md'].map((n) => ({ name: n, exists: exists(rootPath(n)), has_uap_entry: exists(rootPath(n)) ? readText(rootPath(n)).includes('UAP Agent Entry Point') || readText(rootPath(n)).includes('UAP Claude Code Entry Point') || readText(rootPath(n)).includes('# UAP ') : false })),
@@ -255,7 +279,7 @@ async function cmdStatus({ flags }) {
     reports_missing: reports.filter((r) => !r.exists).map((r) => r.name),
     defects: readJSON(FILES.defects, null)?.defects?.length ?? null,
   };
-  return ok(`UAP ${readVersion()}: registry ${data.registry.checks_passed}/${data.registry.checks_total}, specs=${specs.status}, runtime=${runtime.status}, Uter=${uter.status}`, data);
+  return ok(`UAP ${readVersion()}: ${verdict.overall_status} (${verdict.counts.verified}/${verdict.counts.applicable} requirements verified), claim_allowed=${verdict.claim_allowed}, execution=${execution.execution_id}`, data);
 }
 
 // ---------------------------------------------------------------- doctor ----
@@ -403,10 +427,11 @@ async function cmdAudit() {
   // VALIDATION-RESULTS.json would register defects that no longer exist and
   // miss ones that do. The audit therefore runs the validators itself.
   const validation = await runAllValidators();
-  writeJSON(reportPath('VALIDATION-RESULTS.json'), {
+  writeJSON(reportPath('VALIDATION-RESULTS.json'), bindExecution({
     generated_at: validation.generated_at, mode: 'all', total: validation.total,
     pass: validation.pass, fail: validation.fail, blocked: validation.blocked, results: validation.results,
-  });
+    exit_code: validation.fail === 0 && validation.blocked === 0 ? 0 : 1,
+  }));
   const defects = buildDefectRegistry({ audit, financial, registry, validation });
   writeJSON(FILES.defects, defects);
 
@@ -445,13 +470,14 @@ async function cmdValidate({ flags, positional }) {
   }
   const results = [];
   for (const id of selected) results.push(await runValidator(id));
-  const summary = {
+  const summary = bindExecution({
     generated_at: nowISO(), mode: target ? 'single' : (flags.has('all') ? 'all' : 'core'),
     total: results.length, pass: results.filter((r) => r.status === 'PASS').length,
     fail: results.filter((r) => r.status === 'FAIL').length,
     blocked: results.filter((r) => r.status === 'BLOCKED' || r.status === 'NOT_EXECUTED').length,
+    exit_code: results.every((r) => r.status === 'PASS') ? 0 : 1,
     results,
-  };
+  });
   // Do not overwrite a full validation run with a partial one.
   if (flags.has('all') || !exists(reportPath('VALIDATION-RESULTS.json'))) writeJSON(reportPath('VALIDATION-RESULTS.json'), summary);
   const data = { mode: summary.mode, total: summary.total, pass: summary.pass, fail: summary.fail, blocked: summary.blocked,
@@ -472,12 +498,12 @@ async function cmdTest({ flags, positional }) {
     if (!files.length) files = all;
   }
   const r = await runCommand({ command: 'node', args: ['--test', ...files.map((f) => relToRoot(f))], timeoutMs: 300000 });
-  const data = {
+  const data = bindExecution({
     generated_at: nowISO(), mode: flags.has('all') ? 'all' : 'selected',
     test_files: files.map((f) => relToRoot(f)), command: r.command,
     exit_code: r.exit_code, timed_out: r.timed_out, duration_ms: r.duration_ms,
     stdout_tail: r.stdout.slice(-3000), stderr_tail: r.stderr.slice(-1500),
-  };
+  });
   writeJSON(reportPath('RUNTIME-TEST-RESULTS.json'), data);
   // Every test run — passing or failing — gets its own immutable evidence
   // record, and is merged into TEST-RUNS.json with an explicit evidence_refs
@@ -821,6 +847,36 @@ async function cmdReport({ flags }) {
   return ok(`report: ${out.written.length} deliverables written from real run data`, out);
 }
 
+// ------------------------------------------------------------ execution ----
+async function cmdExecution({ positional }) {
+  const sub = positional[0];
+  if (sub === 'start') {
+    const e = startExecution(`uap execution start: ${positional.slice(1).join(' ') || 'manual'}`);
+    return ok(`execution started: ${e.execution_id}`, { execution: e, ledger_entries: executionHistory().length });
+  }
+  if (sub === 'show' || !sub) {
+    const e = currentExecution();
+    return ok(`execution ${e.execution_id}`, {
+      execution: e, head_now: gitHead(), fingerprint_now: worktreeFingerprint(),
+      ledger_entries: executionHistory().length, health: executionHealth(),
+    });
+  }
+  return usage(`unknown execution subcommand: ${sub}`, { available: ['show', 'start [reason]'] });
+}
+
+// --------------------------------------------------------- verify status ----
+async function cmdVerifyStatus() {
+  const r = verifyStatusConsistency({ withCli: true });
+  const data = {
+    checks: r.checks, problems: r.problems,
+    recomputed_status: r.recomputed_status, report_status: r.report_status, index_status: r.index_status,
+    execution_id: r.execution_id, git_head: r.git_head, reasons: r.reasons,
+    artefact: '.uap/reports/STATUS-CONSISTENCY.json',
+  };
+  if (!r.ok) return fail(`status consistency FAILED: ${r.problems.length} disagreement(s)`, data);
+  return ok(`status consistency PASS: ${r.checks.filter((c) => c.status === 'PASS').length}/${r.checks.length} independent checks`, data);
+}
+
 // -------------------------------------------------------------- workflow ----
 async function cmdWorkflow({ flags, positional }) {
   const sub = positional[0];
@@ -880,7 +936,10 @@ Commands:
   repair [defect-id]         Bounded auto-repair + independent re-verification
   build [--full]             node --check, go build, web typecheck [--full: verify-all.sh]
   release check              Quality-gate verdict; proves production deploy is denied
-  report [--final]           Generate all required reports + FINAL-STATUS.json
+  report [--final]           Generate all required reports + FINAL-STATUS.json + index
+  execution show             Current execution identity (id / HEAD / worktree fingerprint)
+  execution start [reason]   Open a new verification run (append-only ledger)
+  verify-status              Independent 3-way status consistency check
   workflow list              List 7 registered workflows
   workflow run <id> | --all  Execute workflows end-to-end
   schemas                    Validate the 7 machine-readable JSON Schemas
@@ -906,6 +965,8 @@ async function dispatch(parsed) {
     case 'build': return cmdBuild(parsed);
     case 'release': return positional[0] === 'check' ? cmdReleaseCheck(parsed) : usage('usage: uap release check');
     case 'report': return cmdReport(parsed);
+    case 'execution': return cmdExecution(parsed);
+    case 'verify-status': return cmdVerifyStatus(parsed);
     case 'workflow': return cmdWorkflow(parsed);
     case 'schemas': return cmdSchemas(parsed);
     case 'help': case '--help': case '-h': case undefined: return { status: 'OK', exit_code: EXIT.OK, summary: 'help', data: { help: helpText() } };

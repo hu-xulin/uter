@@ -118,6 +118,10 @@ func main() {
 		return
 	}
 
+	// The newest sync task of every topic is read before the startup loads, so
+	// a write made while they run is reloaded once the node sync loop starts.
+	service.ReadStartupSyncRevisions()
+
 	common.SysLog(common.LogText("New API %s started", common.Version))
 	checkNativeDocsAssets()
 	if os.Getenv("GIN_MODE") != "debug" {
@@ -171,6 +175,16 @@ func main() {
 	// 非阻塞路径会先返回空参考价，首个访客就看不到官方价划线与折扣角标。
 	// WarmPresetRatios 内部异步执行，不阻塞启动。
 	controller.WarmPresetRatios()
+
+	// Every node reloads a topic within seconds of a write to it on any node.
+	// The periodic reloads below stay for writes that do not bump a topic.
+	service.RegisterSyncTopic(model.SyncTopicOptions, func(context.Context) error { model.InitOptionMap(); return nil })
+	service.RegisterSyncTopic(model.SyncTopicChannels, func(context.Context) error { model.InitChannelCache(); return nil })
+	service.RegisterSyncTopic(model.SyncTopicAuthz, func(context.Context) error { return authz.ReloadPolicy() })
+	service.RegisterSyncTopic(model.SyncTopicPlugins, func(context.Context) error { controller.SyncTaskPluginsOnce(); return nil })
+	service.RegisterSyncTopic(model.SyncTopicOAuthProviders, func(context.Context) error { return oauth.LoadCustomProviders() })
+	service.RegisterSyncTopic(model.SyncTopicModels, func(context.Context) error { model.RefreshPricing(); return nil })
+	service.StartNodeSync()
 
 	// 热更新配置
 	go model.SyncOptions(common.SyncFrequency)
@@ -430,6 +444,12 @@ func InitResources() error {
 		if err := model.MigrateRetiredFrontendOptions(); err != nil {
 			common.SysError(common.LogText("failed to migrate retired frontend options: %s", err.Error()))
 		}
+		if err := model.MigrateSensitiveWords(); err != nil {
+			common.SysError(common.LogText("failed to migrate sensitive words: %s", err.Error()))
+		}
+		// The master rewrote the built-in role policies, so every node
+		// reloads the policy within seconds.
+		model.BumpSyncTopic(model.SyncTopicAuthz)
 	}
 	model.InitOptionMap()
 

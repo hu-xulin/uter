@@ -43,7 +43,7 @@ export function Callout({
 }) {
   return (
     <div
-      className={`my-4 rounded-md border p-4 text-sm [&_ol]:my-1 [&_p]:my-1 [&_ul]:my-1 ${
+      className={`my-4 rounded-lg border p-4 text-sm [&_ol]:my-1 [&_p]:my-1 [&_ul]:my-1 ${
         TONES[type] ?? TONES.info
       }`}
     >

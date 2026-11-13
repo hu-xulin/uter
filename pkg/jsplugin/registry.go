@@ -108,6 +108,9 @@ type Meta struct {
 	UsageExamples        []UsageExample              `json:"usageExamples,omitempty"`
 	UsageProfiles        []UsageProfile              `json:"usageProfiles,omitempty"`
 	Auth                 AuthMeta                    `json:"auth"`
+	// Relay is the provider part: the Advanced Custom routes a task plugin
+	// channel bound to the plugin serves.
+	Relay []dto.AdvancedCustomRoute `json:"relay,omitempty"`
 }
 
 // UsageProfile replaces the plugin's default usage metadata for its models.

@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { EVIDENCE, ROOT } from '../_lib/paths.mjs';
-import { newId, nowISO, hash, writeEvidence, readJSON, redact } from '../_lib/util.mjs';
+import { newId, nowISO, hash, writeEvidence, readJSON, readText, redact } from '../_lib/util.mjs';
+import { currentExecution } from '../status-engine/execution.mjs';
 
 export const component = 'evidence-engine';
 export const version = '1.0.0';
@@ -13,13 +14,46 @@ export const version = '1.0.0';
 export function record(input = {}) {
   const evidence_id = input.evidence_id || newId('UAP-EV');
   const file = path.join(EVIDENCE, `${evidence_id}.json`);
+  const finished_at = nowISO();
+  const duration = Number(input.duration_ms) || 0;
+  const started_at = new Date(new Date(finished_at).getTime() - duration).toISOString();
+
+  // §8: every evidence record is bound to the exact execution, HEAD and
+  // business-code fingerprint it was produced against. Fail-closed: if the
+  // identity cannot be established, the record is still written but is marked
+  // BINDING_FAILED and can never be counted as a current PASS.
+  let binding;
+  try {
+    const e = currentExecution();
+    binding = {
+      execution_id: e.execution_id,
+      git_head: e.git_head,
+      worktree_fingerprint: e.worktree_fingerprint,
+      binding_status: 'BOUND',
+      binding_error: null,
+    };
+  } catch (error) {
+    binding = {
+      execution_id: null, git_head: null, worktree_fingerprint: null,
+      binding_status: 'BINDING_FAILED', binding_error: error.message,
+    };
+  }
+
   const record = {
     evidence_id,
     kind: input.kind || 'command_result',
     task_id: input.task_id || null,
     trace_id: input.trace_id || null,
     specification_ids: input.specification_ids || [],
-    recorded_at: nowISO(),
+    requirement_ids: input.requirement_ids || [],
+    recorded_at: finished_at,
+    started_at,
+    finished_at,
+    execution: binding,
+    execution_id: binding.execution_id,
+    git_head: binding.git_head,
+    worktree_fingerprint: binding.worktree_fingerprint,
+    modified_files: input.modified_files || [],
     environment: {
       platform: process.platform,
       node: process.version,
@@ -52,7 +86,49 @@ export function verify(evidence_id) {
   const rec = get(evidence_id);
   if (!rec) return { valid: false, reason: 'not_found' };
   const expected = hash(JSON.stringify({ ...rec, content_hash: null }));
-  return { valid: expected === rec.content_hash, reason: expected === rec.content_hash ? 'hash_match' : 'hash_mismatch', evidence_id };
+  const hashValid = expected === rec.content_hash;
+  // Hash integrity and execution binding are reported separately: a historical
+  // record may be untampered yet unusable as evidence for the CURRENT run.
+  const bindingValid = rec.execution?.binding_status === 'BOUND'
+    && Boolean(rec.execution_id) && Boolean(rec.git_head)
+    && Boolean(rec.worktree_fingerprint);
+  return {
+    valid: hashValid,
+    reason: hashValid ? 'hash_match' : 'hash_mismatch',
+    hash_valid: hashValid,
+    binding_valid: bindingValid,
+    binding_status: rec.execution?.binding_status || 'LEGACY_UNBOUND',
+    evidence_id,
+  };
+}
+
+/** Structured evidence records that belong to the current execution. */
+export function currentEvidence() {
+  let e;
+  try { e = currentExecution(); } catch { return []; }
+  if (!fs.existsSync(EVIDENCE)) return [];
+  const out = [];
+  for (const f of fs.readdirSync(EVIDENCE).filter((x) => x.endsWith('.json'))) {
+    let rec;
+    try { rec = JSON.parse(readText(path.join(EVIDENCE, f))); } catch { continue; }
+    if (rec.execution_id !== e.execution_id) continue;
+    const v = verify(rec.evidence_id);
+    out.push({
+      evidence_id: rec.evidence_id,
+      execution_id: rec.execution_id,
+      git_head: rec.git_head,
+      worktree_fingerprint: rec.worktree_fingerprint,
+      recorded_at: rec.recorded_at,
+      hash_valid: v.hash_valid,
+      binding_valid: v.binding_valid,
+      exit_code: rec.exit_code,
+      command: rec.command,
+      specification_ids: rec.specification_ids || [],
+      requirement_ids: rec.requirement_ids || [],
+      modified_files: rec.modified_files || [],
+    });
+  }
+  return out;
 }
 
 export function list() {

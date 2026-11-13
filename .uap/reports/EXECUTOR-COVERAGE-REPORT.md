@@ -1,6 +1,6 @@
 # Executor Coverage Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-12T17:04:40.586Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:03.607Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 逐项映射（真实动态 import）
@@ -9,7 +9,7 @@
 | --- | --- | --- | --- | --- | --- |
 | core.architecture | .uap/runtime/orchestrator/index.mjs | YES | YES | aggregate,dispatch,execute,health,plan,start | — |
 | core.autonomous_execution | .uap/runtime/task-engine/index.mjs | YES | YES | cancelTask,createTask,defaultValidator,execute,getTask,hasStepHandler,health,listStepHandlers,listTasks,markInterrupted,pauseTask,registerStepHandler,resumeTask,runTask,updateTask | — |
-| core.evidence | .uap/runtime/evidence-engine/index.mjs | YES | YES | execute,get,health,list,record,resolveAll,verify | — |
+| core.evidence | .uap/runtime/evidence-engine/index.mjs | YES | YES | currentEvidence,execute,get,health,list,record,resolveAll,verify | — |
 | product.requirements | .uap/engines/product/index.mjs | YES | YES | execute,health | — |
 | product.prototype_sync | .uap/engines/product/index.mjs | YES | YES | execute,health | — |
 | product.business_rules | .uap/engines/product/index.mjs | YES | YES | execute,health | — |

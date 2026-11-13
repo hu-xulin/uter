@@ -24,6 +24,7 @@ const (
 	SystemTaskTypeRefundIntentRecovery     = "refund_intent_recovery"
 	SystemTaskTypeMidjourneyRefundRecovery = "midjourney_refund_recovery"
 	SystemTaskTypeMidjourneyRefundOutbox   = "midjourney_refund_outbox"
+	SystemTaskTypeCleanup                  = "cleanup"
 )
 
 var ErrSystemTaskLockLost = errors.New("system task lock lost")

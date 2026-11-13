@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-12T16:40:33.488Z",
+  "generated_at": "2026-11-13T03:12:40.612Z",
   "registry": {
     "ok": true,
     "findings": 0
   },
   "audit": {
-    "generated_at": "2026-11-12T16:40:33.482Z",
+    "generated_at": "2026-11-13T03:12:40.599Z",
     "domains": [
       {
         "domain": "authentication",
@@ -211,7 +211,7 @@
           {
             "severity": "INFO",
             "code": "env_git_status",
-            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=8",
+            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1186",
             "domain": "environment"
           },
           {
@@ -238,7 +238,7 @@
       {
         "path": "model/",
         "exists": true,
-        "file_count": 196
+        "file_count": 197
       },
       {
         "path": "service/",
@@ -263,12 +263,12 @@
       {
         "path": "web/src/",
         "exists": true,
-        "file_count": 2140
+        "file_count": 2144
       },
       {
         "path": "web/src/features/",
         "exists": true,
-        "file_count": 1036
+        "file_count": 1039
       },
       {
         "path": "scripts/",
@@ -302,7 +302,7 @@
         "exit_code": 0,
         "timed_out": false,
         "spawn_error": null,
-        "stdout_preview": "M AGENTS.md\n M CLAUDE.md\n M web/scripts/verify-contrast.mjs\n M web/src/design-system/source/brand.tokens.schema.json\n M web/src/features/auth/components/legal-consent.tsx\n M web/src/features/docs/nati",
+        "stdout_preview": "M .uap/SPECIFICATION-INDEX.md\n M .uap/bin/uap.mjs\n M .uap/cross-platform/UAP-07-001-WEB-ENGINEERING.md\n M .uap/cross-platform/UAP-07-002-H5-ENGINEERING.md\n M .uap/cross-platform/UAP-07-003-CROSS-PLATF",
         "stderr_preview": ""
       },
       {
@@ -322,7 +322,7 @@
         "stderr_preview": ""
       }
     ],
-    "files_scanned_total": 4157,
+    "files_scanned_total": 4165,
     "findings": [
       {
         "severity": "INFO",
@@ -474,7 +474,7 @@
       {
         "severity": "INFO",
         "code": "env_git_status",
-        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=8",
+        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1186",
         "domain": "environment"
       },
       {
@@ -490,7 +490,7 @@
         "domain": "environment"
       }
     ],
-    "summary": "扫描 13 个路径（真实文件计数合计 4157，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
+    "summary": "扫描 13 个路径（真实文件计数合计 4165，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
     "blockers": 0,
     "severities": [
       "BLOCKER",
@@ -500,7 +500,7 @@
     ]
   },
   "financial": {
-    "generated_at": "2026-11-12T16:40:33.488Z",
+    "generated_at": "2026-11-13T03:12:40.612Z",
     "simulated_only": true,
     "safety": {
       "network_calls": 0,

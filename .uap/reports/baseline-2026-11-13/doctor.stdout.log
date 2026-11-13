@@ -1,0 +1,82 @@
+[UAP] PASS (exit 0) — doctor: 10 components healthy, recovery probe passed
+{
+  "started": true,
+  "health_check_passed": true,
+  "evidence_ref": "UAP-EV-20261113005216-80b779d2",
+  "registry": {
+    "ok": true,
+    "checks_passed": 37,
+    "checks_total": 37,
+    "findings": 0
+  },
+  "components": [
+    {
+      "name": "orchestrator",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "task-engine",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "state-machine",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "event-system",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "scheduler",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "resource-manager",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "recovery-engine",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "agent-runtime",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "evidence-engine",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "policy-engine",
+      "ok": true,
+      "error": null
+    }
+  ],
+  "recovery": {
+    "component": "recovery-engine",
+    "version": "1.0.0",
+    "ok": true,
+    "checks": {
+      "child_process_crashed": true,
+      "state_persisted_before_crash": true,
+      "step1_completed_before_crash": true,
+      "recovery_reached_succeeded": true,
+      "completed_steps_not_repeated": true,
+      "recovery_evidence_written": true
+    },
+    "probe_task_id": "UAP-TASK-INTERRUPT-20261113005216-93c4c529",
+    "final_state": "SUCCEEDED",
+    "checked_at": "2026-11-13T00:52:16.698Z"
+  },
+  "generated_at": "2026-11-13T00:52:16.216Z"
+}
+evidence: UAP-EV-20261113005216-de2ff1b9

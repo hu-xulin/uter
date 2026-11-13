@@ -1,13 +1,77 @@
 {
   "platform": "UAP",
   "version": "1.0.0",
-  "overall_status": "FULLY_OPERATIONAL",
-  "generated_at": "2026-11-12T17:04:41.392Z",
+  "overall_status": "IMPLEMENTED_NOT_VERIFIED",
+  "claim_allowed": false,
+  "status_engine": {
+    "computed_by": "runtime.status-engine/computeFinalStatus",
+    "execution_id": "UAP-EXEC-20261113033035-5159bf71",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "b94c32915ceb499f0c9dd39b87c366f44fef8cfb21614d4e6b8509ad118cb5d7",
+    "counts": {
+      "requirements_total": 538,
+      "applicable": 538,
+      "not_applicable": 0,
+      "not_implemented": 0,
+      "partially_implemented": 0,
+      "implemented": 366,
+      "implemented_not_verified": 172,
+      "verified": 0,
+      "blocked_requirements": 0
+    },
+    "capabilities": {
+      "real_code_repair": false,
+      "independent_regression": false,
+      "recovery": false,
+      "e2e": false,
+      "database_integration": false,
+      "financial_integrity": false
+    },
+    "capability_gaps": [
+      "real_code_repair",
+      "independent_regression",
+      "recovery",
+      "e2e",
+      "database_integration",
+      "financial_integrity"
+    ],
+    "reasons": [
+      "stale artefacts not bound to current execution/HEAD: tests,validators",
+      "172 requirement(s) implemented but not verified",
+      "538/538 applicable requirements lack current valid evidence",
+      "502 requirement(s) have no evidence record",
+      "2 unresolved P0 blocker(s)"
+    ],
+    "claim_allowed": false,
+    "p0_blockers": [
+      {
+        "id": "UAP-P0-REAL-CODE-REPAIR",
+        "status": "OPEN",
+        "category": "CAPABILITY_GAP",
+        "title": "auto-repair 仅修复 sandbox fixture，尚未完成真实 Uter 业务代码修复闭环"
+      },
+      {
+        "id": "UAP-P0-INDEPENDENT-REGRESSION",
+        "status": "OPEN",
+        "category": "CAPABILITY_GAP",
+        "title": "缺少独立回归路径（不得由 UAP 自验证充当唯一验收依据）"
+      }
+    ],
+    "evidence_chain": {
+      "ok": true,
+      "problems": [],
+      "checked": 4
+    },
+    "stale_historical_artefacts": [
+      "stale artefacts not bound to current execution/HEAD: tests,validators"
+    ]
+  },
+  "generated_at": "2026-11-13T03:32:04.264Z",
   "generated_from": "uap report (real command results, never copied from the template)",
   "specifications": {
     "total": 32,
     "complete": 32,
-    "verified": 32,
+    "verified": 0,
     "blocked": 0,
     "failed": 0
   },
@@ -26,8 +90,10 @@
     "implemented": true,
     "started": true,
     "health_check_passed": true,
-    "end_to_end_passed": true,
-    "all_validators_passed": true,
+    "end_to_end_passed": false,
+    "all_validators_passed": false,
+    "validation_bound_to_current_execution": false,
+    "tests_bound_to_current_execution": false,
     "recovery_test_passed": true,
     "components_total": 10,
     "components_healthy": 10
@@ -36,7 +102,7 @@
     "registered": 32,
     "unique_implementations": 16,
     "implemented": 16,
-    "verified": 32
+    "verified": 0
   },
   "validators": {
     "registered": 32,
@@ -49,7 +115,7 @@
   },
   "workflows": {
     "registered": 7,
-    "runs": 44
+    "runs": 54
   },
   "three_independent_results": {
     "specification_completeness": {
@@ -62,7 +128,7 @@
       }
     },
     "uap_runtime_capability": {
-      "status": "FULLY_OPERATIONAL",
+      "status": "NOT_FULLY_VERIFIED",
       "evidence": {
         "health_check_passed": true,
         "components_healthy": 10,
@@ -73,11 +139,13 @@
         "validators_blocked_restricted": 0,
         "validators_blocked_undeclared": 0,
         "uap_tests_exit_code": 0,
-        "verdict_detail": "Runtime 健康 10/10 组件健康; 32 个验证器 32 PASS / 0 FAIL; 0 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=0"
+        "tests_bound_to_current_execution": false,
+        "validators_bound_to_current_execution": false,
+        "verdict_detail": "Runtime 健康组件 10/10; 验证器 32 PASS / 0 FAIL / 未声明受限的 BLOCKED 0 项; 当前执行绑定 validators=false tests=false（历史卡片不计为当前能力证据）"
       }
     },
     "uter_real_compliance": {
-      "status": "FULLY_COMPLIANT",
+      "status": "NOT_FULLY_VERIFIED",
       "evidence": {
         "audit_executed": true,
         "defect_registry_built": true,
@@ -90,19 +158,21 @@
         "validators_fail": 0,
         "validators_total": 32,
         "restricted_blocked_items": [],
-        "verdict_detail": "审计/缺陷/资金/门禁全部通过, 32/32 验证器 PASS"
+        "financial_simulated_only": true,
+        "validators_bound_to_current_execution": false,
+        "verdict_detail": "可执行检查: 验证器 32/32 PASS, 0 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=0; 资金验证 simulated_only=true; 当前执行绑定 validators=false tests=false; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。"
       }
     }
   },
   "final_acceptance": {
-    "uap_fully_operational": true,
-    "uter_fully_compliant": true,
-    "both_satisfied": true,
-    "claim_allowed": true,
+    "uap_fully_operational": false,
+    "uter_fully_compliant": false,
+    "both_satisfied": false,
+    "claim_allowed": false,
     "restricted_blocked_items": [],
     "claim_note": "规范完整性 / UAP 运行能力 / Uter 合规性三者分别取证, 不可互相替代; 受限未执行项一律记入 BLOCKED-ITEMS.md, 不计入通过"
   },
-  "uter_compliance": "FULLY_COMPLIANT",
+  "uter_compliance": "NOT_FULLY_VERIFIED",
   "critical_defects": 0,
   "open_defects": 0,
   "blocked_items": [

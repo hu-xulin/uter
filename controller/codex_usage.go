@@ -133,6 +133,9 @@ func fetchCodexChannelWhamData(
 			encoded, encErr := common.Marshal(oauthKey)
 			if encErr == nil {
 				_ = model.DB.Model(&model.Channel{}).Where("id = ?", ch.Id).Update("key", string(encoded)).Error
+				// The rewritten channel key bumps the channel topic, so every
+				// node reloads the channel cache within seconds.
+				model.BumpSyncTopic(model.SyncTopicChannels)
 				model.InitChannelCache()
 			}
 

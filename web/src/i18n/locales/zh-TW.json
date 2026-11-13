@@ -1,5 +1,6 @@
 {
   "translation": {
+    "System task history must be kept for at least 1 day": "系統任務歷史至少需要保留 1 天",
     "Previous month": "上個月",
     "Next month": "下個月",
     "Referral link": "推廣連結",
@@ -7788,6 +7789,8 @@
     "docs.search.loading": "正在載入搜尋索引…",
     "docs.search.noResults": "未找到相關文件",
     "Contents": "內容導覽",
-    "docs.toc.heading": "目錄"
+    "docs.toc.heading": "目錄",
+    "Previous page": "上一頁",
+    "Page navigation": "頁面導覽"
   }
 }

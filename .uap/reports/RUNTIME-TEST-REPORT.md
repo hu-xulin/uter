@@ -1,6 +1,6 @@
 # Runtime Test Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-12T17:04:40.625Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:03.638Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 10 个核心组件健康
@@ -21,89 +21,101 @@
 
 ## UAP 自身测试
 
-命令：`node --test .uap/tests/runtime.test.mjs`
+命令：`node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs`
 
-真实退出码：**0**；耗时 2285ms；测试文件 1 个。
+真实退出码：**0**；耗时 16013ms；测试文件 6 个。
 
 ```
-stDeny 权限组全为 deny；配置无 AES/UAES 引用；COMMAND_ALLOWLIST 不含 curl
+
+    # Subtest: git HEAD 来自真实仓库且是 40 位 sha
+    ok 1 - git HEAD 来自真实仓库且是 40 位 sha
       ---
-      duration_ms: 8.693923
+      duration_ms: 16.416776
+      type: 'test'
+      ...
+    # Subtest: worktree 指纹稳定，且不受 UAP 运行产物写入影响
+    ok 2 - worktree 指纹稳定，且不受 UAP 运行产物写入影响
+      ---
+      duration_ms: 67.830084
+      type: 'test'
+      ...
+    # Subtest: currentExecution 返回同一身份，且绑定字段不可被调用方伪造
+    ok 3 - currentExecution 返回同一身份，且绑定字段不可被调用方伪造
+      ---
+      duration_ms: 133.231246
+      type: 'test'
+      ...
+    1..3
+ok 32 - 执行身份绑定
+  ---
+  duration_ms: 218.825417
+  type: 'suite'
+  ...
+# Subtest: 真实快照适配器
+    # Subtest: 从真实追踪矩阵构造 538 条要求与 32 份规范
+    ok 1 - 从真实追踪矩阵构造 538 条要求与 32 份规范
+      ---
+      duration_ms: 85.886765
+      type: 'test'
+      ...
+    # Subtest: stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS
+    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS
+      ---
+      duration_ms: 67.5223
+      type: 'test'
+      ...
+    # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale
+    ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale
+      ---
+      duration_ms: 86.581294
+      type: 'test'
+      ...
+    # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功
+    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功
+      ---
+      duration_ms: 1201.047327
+      type: 'test'
+      ...
+    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数
+    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数
+      ---
+      duration_ms: 226.253315
+      type: 'test'
+      ...
+    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致
+    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致
+      ---
+      duration_ms: 210.802462
+      type: 'test'
+      ...
+    1..6
+ok 33 - 真实快照适配器
+  ---
+  duration_ms: 1878.753331
+  type: 'suite'
+  ...
+# Subtest: 证据链 fail-closed
+    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败
+    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败
+      ---
+      duration_ms: 0.233087
       type: 'test'
       ...
     1..1
-ok 14 - 类别14 安全边界
+ok 34 - 证据链 fail-closed
   ---
-  duration_ms: 8.833581
+  duration_ms: 0.330436
   type: 'suite'
   ...
-# Subtest: 类别15 质量门禁阻断
-    # Subtest: defaultValidator 对未成功步骤/无证据步骤返回 FAIL；合规任务返回 PASS
-    ok 1 - defaultValidator 对未成功步骤/无证据步骤返回 FAIL；合规任务返回 PASS
-      ---
-      duration_ms: 0.26779
-      type: 'test'
-      ...
-    # Subtest: assertTransition(CREATED,SUCCEEDED) 抛 IllegalTransitionError（fail-closed）
-    ok 2 - assertTransition(CREATED,SUCCEEDED) 抛 IllegalTransitionError（fail-closed）
-      ---
-      duration_ms: 0.230282
-      type: 'test'
-      ...
-    1..2
-ok 15 - 类别15 质量门禁阻断
-  ---
-  duration_ms: 0.65082
-  type: 'suite'
-  ...
-# Subtest: 类别16 模拟支付退款
-    # Subtest: financialSimulation()：simulated_only=true、>=13 检查、PASS 检查有 evidence 且可追溯真实源码、无真实外部调用
-    ok 1 - financialSimulation()：simulated_only=true、>=13 检查、PASS 检查有 evidence 且可追溯真实源码、无真实外部调用
-      ---
-      duration_ms: 16.455595
-      type: 'test'
-      ...
-    1..1
-ok 16 - 类别16 模拟支付退款
-  ---
-  duration_ms: 16.553831
-  type: 'suite'
-  ...
-# Subtest: 类别17 自动修复闭环
-    # Subtest: normalizeSpecHeaders({dryRun:true}) 返回 scanned/fixed/already_ok/unfixable 且连续两次幂等
-    ok 1 - normalizeSpecHeaders({dryRun:true}) 返回 scanned/fixed/already_ok/unfixable 且连续两次幂等
-      ---
-      duration_ms: 14.049219
-      type: 'test'
-      ...
-    1..1
-ok 17 - 类别17 自动修复闭环
-  ---
-  duration_ms: 14.156404
-  type: 'suite'
-  ...
-# Subtest: 类别18 状态机
-    # Subtest: TASK_STATES 9 个；legalNext(SUCCEEDED) 为空；canTransition(RUNNING,WAITING_RECOVERY)=true；transition 原地更新并追加合法 history
-    ok 1 - TASK_STATES 9 个；legalNext(SUCCEEDED) 为空；canTransition(RUNNING,WAITING_RECOVERY)=true；transition 原地更新并追加合法 history
-      ---
-      duration_ms: 0.273006
-      type: 'test'
-      ...
-    1..1
-ok 18 - 类别18 状态机
-  ---
-  duration_ms: 0.356441
-  type: 'suite'
-  ...
-1..18
-# tests 25
-# suites 18
-# pass 25
+1..34
+# tests 68
+# suites 26
+# pass 68
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 2172.354401
+# duration_ms 15905.491318
 
 ```
 
@@ -111,7 +123,12 @@ ok 18 - 类别18 状态机
 
 | 文件 |
 | --- |
+| .uap/tests/independent-repair-review.test.mjs |
+| .uap/tests/independent-verification.test.mjs |
+| .uap/tests/real-code-repair-boundaries.test.mjs |
 | .uap/tests/runtime.test.mjs |
+| .uap/tests/status-consistency.test.mjs |
+| .uap/tests/status-snapshot.test.mjs |
 
 
 ## 中断恢复

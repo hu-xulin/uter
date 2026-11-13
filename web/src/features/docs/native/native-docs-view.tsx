@@ -21,9 +21,13 @@ import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { resolveDocsLocaleCode, type DocsLocaleCode } from '@/lib/docs-link'
+import { labelTaskListCheckboxes } from '@/lib/task-checkbox-a11y'
 
 import { Callout } from './callout'
-import { docRefForPagePath } from './docs-content'
+import {
+  docRefForPagePath,
+  NATIVE_USER_GUIDE_PATH,
+} from './docs-content'
 import { loadNativeDoc } from './docs-loader'
 import { NativeDocsShell, type TocItem } from './docs-shell'
 import { PROSE_CLASSES } from './prose-classes'
@@ -104,6 +108,10 @@ export function NativeDocsView({
     if (!Doc) return
     const container = articleRef.current
     if (!container) return
+    // remark-gfm renders checklist items as disabled checkboxes without a
+    // label; give each one the item text as its accessible name so the docs
+    // page has no critical axe `label` violation.
+    labelTaskListCheckboxes(container)
     const items: TocItem[] = []
     container.querySelectorAll('h2, h3').forEach((heading) => {
       if (!heading.id) return
@@ -116,9 +124,18 @@ export function NativeDocsView({
     setToc(items)
   }, [Doc, locale])
 
+  // The guide's landing is a synthesised card page, not a Markdown
+  // document. Applying the prose scale here would override its `page-title`
+  // with the Markdown h1 rule (24/32) and restyle the cards' own type.
+  const isSyntheticIndex =
+    pagePath.replace(/\/+$/, '') === NATIVE_USER_GUIDE_PATH
+
   return (
     <NativeDocsShell locale={locale} pagePath={pagePath} toc={toc}>
-      <div ref={articleRef} className={PROSE_CLASSES}>
+      <div
+        ref={articleRef}
+        className={isSyntheticIndex ? 'max-w-none' : PROSE_CLASSES}
+      >
         {Doc ? (
           // The compiled MDX resolves `_components` from `props.components`
           // first, so the Callout is passed explicitly — the `MDXProvider`

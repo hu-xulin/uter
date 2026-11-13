@@ -23,6 +23,7 @@ import 'katex/dist/katex.min.css'
 import { Marked, Renderer, type MarkedExtension, type Tokens } from 'marked'
 import { useMemo } from 'react'
 
+import { labelTaskListCheckboxes } from '@/lib/task-checkbox-a11y'
 import { cn } from '@/lib/utils'
 
 interface MarkdownProps {
@@ -724,13 +725,17 @@ const markdownParser = new Marked({
 
 markdownParser.use(...markdownExtensions)
 
-function addExternalLinkAttributes(html: string, baseUrl?: string): string {
+function postProcessRenderedHtml(html: string, baseUrl?: string): string {
   if (typeof window === 'undefined') {
     return html
   }
 
   const template = document.createElement('template')
   template.innerHTML = html
+
+  // GFM task-list checkboxes arrive without an accessible name. Label them
+  // from their list-item text so axe's critical `label` rule cannot fire.
+  labelTaskListCheckboxes(template.content)
 
   template.content.querySelectorAll('a[href]').forEach((link) => {
     if (baseUrl) {
@@ -763,7 +768,7 @@ function renderMarkdown(
   })
   const html = DOMPurify.sanitize(parsedHtml, sanitizeOptions)
 
-  return addExternalLinkAttributes(html, baseUrl)
+  return postProcessRenderedHtml(html, baseUrl)
 }
 
 export function Markdown(props: MarkdownProps) {

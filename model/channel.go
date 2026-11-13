@@ -57,6 +57,9 @@ type Channel struct {
 
 	// cache info
 	Keys []string `json:"-" gorm:"-"`
+	// BalanceDetail is the last balance query in channel responses; see
+	// GetBalanceDetail.
+	BalanceDetail *ChannelBalanceDetail `json:"balance_detail,omitempty" gorm:"-"`
 }
 
 const ChannelStatusReasonAllKeysDisabled = "All keys are disabled"
@@ -455,6 +458,9 @@ func GetChannelById(id int, selectAll bool) (*Channel, error) {
 }
 
 func BatchInsertChannels(channels []Channel) error {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	if len(channels) == 0 {
 		return nil
 	}
@@ -484,6 +490,9 @@ func BatchInsertChannels(channels []Channel) error {
 }
 
 func BatchDeleteChannels(ids []int) (int64, error) {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	if len(ids) == 0 {
 		return 0, nil
 	}
@@ -551,6 +560,7 @@ func (channel *Channel) GetStatusCodeMapping() string {
 }
 
 func (channel *Channel) Insert() error {
+	defer BumpSyncTopic(SyncTopicChannels)
 	var err error
 	err = DB.Create(channel).Error
 	if err != nil {
@@ -561,6 +571,7 @@ func (channel *Channel) Insert() error {
 }
 
 func (channel *Channel) Update() error {
+	defer BumpSyncTopic(SyncTopicChannels)
 	// If this is a multi-key channel, recalculate MultiKeySize based on the current key list to avoid inconsistency after editing keys
 	if channel.ChannelInfo.IsMultiKey {
 		var keyStr string
@@ -630,6 +641,7 @@ func (channel *Channel) UpdateBalance(balance float64) {
 }
 
 func (channel *Channel) Delete() error {
+	defer BumpSyncTopic(SyncTopicChannels)
 	var err error
 	err = DB.Delete(channel).Error
 	if err != nil {
@@ -771,6 +783,14 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 	}
 
 	shouldUpdateAbilities := false
+	// The status change bumps the channel topic only when the status really
+	// changed, so an automatic probe that keeps the status does not make every
+	// node reload. It runs after the ability update deferred below.
+	defer func() {
+		if shouldUpdateAbilities {
+			BumpSyncTopic(SyncTopicChannels)
+		}
+	}()
 	defer func() {
 		if shouldUpdateAbilities {
 			err := UpdateAbilityStatus(channelId, status == common.ChannelStatusEnabled)
@@ -828,6 +848,9 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 }
 
 func EnableChannelByTag(tag string) error {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	err := DB.Model(&Channel{}).Where("tag = ?", tag).Update("status", common.ChannelStatusEnabled).Error
 	if err != nil {
 		return err
@@ -837,6 +860,9 @@ func EnableChannelByTag(tag string) error {
 }
 
 func DisableChannelByTag(tag string) error {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	// Explicit tag-level disable also cancels automatic restoration for
 	// channels that were already disabled because all keys were unavailable.
 	var channels []Channel
@@ -859,6 +885,9 @@ func DisableChannelByTag(tag string) error {
 }
 
 func EditChannelByTag(tag string, newTag *string, modelMapping *string, models *string, group *string, priority *int64, weight *uint, paramOverride *string, headerOverride *string) error {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	updateData := Channel{}
 	shouldReCreateAbilities := false
 	updatedTag := tag
@@ -954,6 +983,9 @@ func DeleteChannelByStatus(status int64) (int64, error) {
 }
 
 func DeleteDisabledChannel() (int64, error) {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	result := DB.Where("status = ? or status = ?", common.ChannelStatusAutoDisabled, common.ChannelStatusManuallyDisabled).Delete(&Channel{})
 	return result.RowsAffected, result.Error
 }
@@ -1139,6 +1171,9 @@ func GetChannelsByIds(ids []int) ([]*Channel, error) {
 }
 
 func BatchSetChannelTag(ids []int, tag *string) error {
+	// A write to the channels bumps its sync topic, so every node reloads
+	// the channel cache within seconds.
+	defer BumpSyncTopic(SyncTopicChannels)
 	// 开启事务
 	tx := DB.Begin()
 	if tx.Error != nil {

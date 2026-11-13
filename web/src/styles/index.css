@@ -189,7 +189,7 @@ For commercial licensing, please contact support@uter.ai
   padding-inline: 2rem;
 }
 
-/* 内容区宽度的唯一写法（规范 §3.1）。
+/* 内容区宽度的唯一写法（规范 §16.2）。
  *
  * 以前这里是写死的 1280px / 1536px，与 `design-system/tokens/spacing.css`
  * 里的 `--ds-content-max*` 各说各话，于是业务代码宁可直接写

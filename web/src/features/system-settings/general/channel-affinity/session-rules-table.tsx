@@ -86,7 +86,7 @@ export function SessionRulesTable(props: SessionRulesTableProps) {
 
   return (
     <StaticDataTable
-      // 焦点环按规范 §1.7：贴边、`outline-offset: 0`。此前的 `-outline-offset-2`
+      // 焦点环按规范 §15.1：贴边、`outline-offset: 0`。此前的 `-outline-offset-2`
       // 把 2px 环画到容器内侧，与全站「外侧、不留缝」的几何相反。
       className='focus-visible:outline-ring overflow-x-auto rounded-none border-0 focus-visible:outline-offset-0'
       containerProps={{

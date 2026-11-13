@@ -147,7 +147,7 @@ export function NumericSpinnerInput({
         className={cn(
           'group/spinner border-input inline-flex h-7 items-center gap-0 rounded-md border transition-colors',
           !disabled && 'hover:bg-muted/60',
-          // 编辑态只换底色，不再叠环：内层 input 已有规范 §1.7 的 2px `ring`
+          // 编辑态只换底色，不再叠环：内层 Input 已有规范 §15.1 的 1px `ring`
           // 焦点环，容器上再画一圈 1px `ring-primary/30` 等于同一屏出现两套
           // 焦点指示器（而且是半透明的第二套颜色）。
           editing && 'bg-muted/60'

@@ -59,7 +59,7 @@ function Slider({
           <SliderPrimitive.Thumb
             data-slot='slider-thumb'
             key={index}
-            // 焦点环按 2.0 §13.5（2026-11-03 复裁定 1px）：`ring` 满色。此前
+            // 焦点环按规范 §15.1（2026-11-03 复裁定 1px）：`ring` 满色。此前
             // `ring-ring/50` 把
             // `--tw-ring-color` 设成半透明，`focus-visible:ring-1` 继承的就是
             // 这个颜色 —— 宽度对了、颜色不对，等于第二套焦点色。

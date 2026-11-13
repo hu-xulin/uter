@@ -223,7 +223,7 @@ describe('分组标题档（group-title）', () => {
   })
 })
 
-describe('圆角 Token 对应 design-system-2.0 §13.4', () => {
+describe('圆角 Token 对应规范 §5', () => {
   it('七个圆角档位与文档一致', () => {
     const SHAPE: Array<[string, number]> = [
       ['xs', 6],

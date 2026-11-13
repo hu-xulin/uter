@@ -380,8 +380,9 @@ The approved design system is the single source of truth for all UI implementati
 **Visual specimen: `docs/design-system/showcase-3.0.html`** — open it to see every
 font size, color, size tier, and component rendered with the real tokens.
 
-Before changing any UI code, read the relevant chapters of the spec (§11 colors,
-§12 typography, §14 components, §21 responsive, §26 exceptions) and the implementation under
+Before changing any UI code, read the relevant chapters of the spec (§1 typography,
+§2 colors, §10–§13 components, §15 focus/accessibility, §16 responsive,
+§26 exceptions) and the implementation under
 `web/src/design-system/`. If the documentation conflicts with the implementation,
 do not silently choose one: design values come from code (`tokens/`, `theme.css`),
 rules and boundaries come from the spec.
@@ -396,14 +397,15 @@ rules and boundaries come from the spec.
   restrictions.
 - Preserve existing design-system APIs and naming conventions.
 - Follow the approved Web and H5 responsive rules: desktop and mobile share one
-  type scale; input text is 14px on every platform (no H5 16px exception).
+  type scale; H5 form input text defaults to at least 16px (iOS Safari
+  auto-zoom guard, spec §1.7) while regular body text stays 14px.
 - Implement all applicable interaction states, loading states, empty states, error
   states, and accessibility behavior.
 - Do not change unrelated business logic while implementing UI changes.
 - If a target effect must match another product (e.g. "same look as upstream"),
   encode that **effect** as a token or a spec clause and implement against it.
   Matching another codebase's class names is never a reason to register an
-  exception or to bypass tokens. See spec §11.5 / §26.
+  exception or to bypass tokens. See spec §17.5 / §26.
 
 **Before implementation:** inspect the relevant design rules and existing
 components; identify reusable components and tokens; identify affected pages,
@@ -419,7 +421,7 @@ claim a test passed unless it was actually executed and its result verified.
 
 ```bash
 cd web
-bun run lint:design:strict                    # T1–T16 token gate
+bun run lint:design:strict                    # T1–T17 token gate
 bunx vitest run src/design-system/__tests__   # guard tests
 npx tsgo -b --force                           # frontend type gate
 ```
@@ -448,7 +450,8 @@ bun run test:visual:e2e    # track 2: Playwright diff of real routes, needs the 
 the approved rules, introduces no new token violations, required checks pass (or
 remaining failures are documented with command, output, and reason), existing
 functionality is intact, verification evidence is provided, and any design-system
-exception is registered in the spec (§26) and the gate's `ALLOWLIST`.
+exception is registered in the spec (§26; A-class scanning exceptions also go in
+the gate's `ALLOWLIST`, B-class acceptance-scope exceptions like E28 do not).
 
 Never report full compliance based solely on visual inspection or a successful
 compilation.

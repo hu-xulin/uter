@@ -65,6 +65,7 @@ type UserBase struct {
 	SubQuotaLimit  int64  `json:"sub_quota_limit"`
 	AuthVersion    int64  `json:"-"`
 	CacheSchema    int    `json:"-"`
+	CacheMAC       string `json:"-"`
 }
 
 func (user *UserBase) WriteContext(c *gin.Context) {
@@ -195,6 +196,15 @@ func cacheGetUserBase(userId int) (*UserBase, error) {
 	}
 	if userCache.Id != userId || userCache.CacheSchema != userCacheSchemaVersion || userCache.AuthVersion <= 0 {
 		return nil, fmt.Errorf("user cache schema is stale")
+	}
+	// The signature covers the fields that decide what the entry grants, so a
+	// tampered entry is refused instead of being served.
+	expectedMAC, err := userCacheMAC(&userCache)
+	if err != nil {
+		return nil, err
+	}
+	if !validAuthCacheMAC(expectedMAC, userCache.CacheMAC, 0) {
+		return nil, fmt.Errorf("user cache signature is invalid")
 	}
 	floor, err := getUserAuthVersionFloor(userId)
 	if err != nil {

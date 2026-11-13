@@ -926,6 +926,9 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 	if authzTouched {
+		// The changed authorization bumps the authz topic, so every node
+		// reloads the policy within seconds.
+		model.BumpSyncTopic(model.SyncTopicAuthz)
 		if err := authz.ReloadPolicy(); err != nil {
 			common.ApiError(c, err)
 			return
@@ -1279,6 +1282,9 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	if authzTouched {
+		// The changed authorization bumps the authz topic, so every node
+		// reloads the policy within seconds.
+		model.BumpSyncTopic(model.SyncTopicAuthz)
 		if err := authz.ReloadPolicy(); err != nil {
 			common.ApiError(c, err)
 			return
@@ -1424,6 +1430,9 @@ func ManageUser(c *gin.Context) {
 			common.ApiError(c, err)
 			return
 		}
+		// The changed authorization bumps the authz topic, so every node
+		// reloads the policy within seconds.
+		model.BumpSyncTopic(model.SyncTopicAuthz)
 		if err := authz.ReloadPolicy(); err != nil {
 			common.ApiError(c, err)
 			return

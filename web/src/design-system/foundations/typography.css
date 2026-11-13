@@ -213,7 +213,7 @@ For commercial licensing, please contact support@uter.ai
 
 /* ── 品牌渐变文字 ─────────────────────────────────────────────────────
  * 首屏主标题的渐变行与 CTA 副标题共用一套停靠站（`--ds-color-brand-gradient-*`，
- * 见规范 §11.5）。收成一个工具类而不是让调用方拼 5 个 Tailwind 类，原因有三：
+ * 见规范 §17.5）。收成一个工具类而不是让调用方拼 5 个 Tailwind 类，原因有三：
  *   1. `bg-clip-text` + `text-transparent` 是一组**必须同时存在**的写法，
  *      漏掉后者会渲染成看不见的字；
  *   2. 以前调用方直接写 `from-blue-400 via-violet-400 to-purple-500`，

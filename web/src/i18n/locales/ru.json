@@ -1,5 +1,6 @@
 {
   "translation": {
+    "System task history must be kept for at least 1 day": "История системных задач должна храниться не менее 1 дня",
     "Previous month": "Предыдущий месяц",
     "Next month": "Следующий месяц",
     "Referral link": "Реферальная ссылка",
@@ -7788,6 +7789,8 @@
     "docs.search.loading": "Загрузка поискового индекса…",
     "docs.search.noResults": "Ничего не найдено",
     "Contents": "Содержание",
-    "docs.toc.heading": "На этой странице"
+    "docs.toc.heading": "На этой странице",
+    "Previous page": "Предыдущая страница",
+    "Page navigation": "Навигация по страницам"
   }
 }

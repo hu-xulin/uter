@@ -1,0 +1,10 @@
+[UAP] PASS (exit 0) — validate: 32/32 validators passed with real checks
+{
+  "mode": "all",
+  "total": 32,
+  "pass": 32,
+  "fail": 0,
+  "blocked": 0,
+  "failures": []
+}
+evidence: UAP-EV-20261113005626-d190d955
