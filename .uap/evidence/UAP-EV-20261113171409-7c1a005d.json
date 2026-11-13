@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113171409-7c1a005d",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T17:14:09.253Z",
+  "started_at": "2026-11-13T17:14:09.253Z",
+  "finished_at": "2026-11-13T17:14:09.253Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113171355-b01f08c1",
+    "git_head": "f728955561bdd297d03af7576354a363982d2186",
+    "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113171355-b01f08c1",
+  "git_head": "f728955561bdd297d03af7576354a363982d2186",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-database (go test ./model/ -run TestPhase2DB|TestIsolatedDB -count=1 -json)",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"package\":\"./model/\",\"run\":\"TestPhase2DB|TestIsolatedDB\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "database integration: 24 pass / 0 fail / 0 skip",
+  "content_hash": "2acb120629732df2598567d85affb5ae958f34e8fc01ef24705d758508d37a49"
+}

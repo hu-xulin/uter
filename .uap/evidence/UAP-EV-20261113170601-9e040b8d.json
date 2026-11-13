@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113170601-9e040b8d",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T17:06:01.339Z",
+  "started_at": "2026-11-13T17:06:01.339Z",
+  "finished_at": "2026-11-13T17:06:01.339Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+    "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+    "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+  "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.api_database_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.api_database_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.api_database_integrity 实检: api_contracts=PASS(router/*.go=26 个; api-router.go=true; 插件契约 v1.schema.json=true; 规范含 API/契约/幂等=true); schema_integrity=PASS(model/*.go=204 个; go.mod/common/json.go 存在=true; 规范含 数据库/字段/约束=true); migration_safety=PASS(model/migration_dialector.go=true; common/quota_math.go=true; 规范含 迁移/幂等/三方言/备份/回滚=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 5922 个 | 基于真实 Go 代码目录(router 26 / model 193 个 .go)+插件契约+三方言迁移文件做静态核对; 不连接任何数据库",
+  "content_hash": "57714fad20e05274f98e2db8e8a2193118d9bb6ba1aa04b55d33c8b418dc99b3"
+}

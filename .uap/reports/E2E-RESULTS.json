@@ -1,30 +1,29 @@
 {
-  "generated_at": "2026-11-13T16:54:02.079Z",
+  "generated_at": "2026-11-13T17:41:44.363Z",
   "status": "FAIL",
   "problems": [
-    "axe exit=1, failed=0",
-    "business e2e exit=1, failed=18"
+    "axe exit=1, failed=1"
   ],
   "browser_runs": [
     {
       "suite": "axe",
       "target": "http://localhost:3003",
       "exit_code": 1,
-      "passed": 0,
-      "failed": 0
+      "passed": 13,
+      "failed": 1
     },
     {
       "suite": "business",
       "target": "http://localhost:3100",
-      "exit_code": 1,
-      "passed": 6,
-      "failed": 18,
+      "exit_code": 0,
+      "passed": 24,
+      "failed": 0,
       "stats": {
-        "startTime": "2026-11-13T16:53:32.293Z",
-        "duration": 30063.992,
-        "expected": 5,
+        "startTime": "2026-11-13T17:41:37.361Z",
+        "duration": 6962.303,
+        "expected": 23,
         "skipped": 1,
-        "unexpected": 18,
+        "unexpected": 0,
         "flaky": 0
       },
       "scenarios": [
@@ -34,7 +33,7 @@
         },
         {
           "title": "biz_02 密码登录成功（真实凭据）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_03 错误密码登录被拒绝",
@@ -50,15 +49,15 @@
         },
         {
           "title": "biz_06 已登录读取个人信息 /api/user/self",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_07 会话刷新成功且 access token 轮换",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_08 登出后受保护 API 失效",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_09 站点状态 /api/status（公开）",
@@ -70,75 +69,75 @@
         },
         {
           "title": "biz_11 定价接口 /api/pricing（登录态）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_12 排行榜 /api/rankings（登录态）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_13 密钥列表 /api/token/（登录态）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_14 创建密钥 POST /api/token/",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_15 更新密钥改名并回读验证",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_16 删除密钥后列表不再包含",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_17 用户可用模型 /api/user/models",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_18 用户分组 /api/user/self/groups",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_19 用户日志 /api/log/self（登录态）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_24 用户用量统计 /api/log/self/stat",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_22 普通用户访问管理 API 被 403 拒绝",
-          "ok": false
+          "ok": true
         },
         {
           "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
-          "ok": false
+          "ok": true
         }
       ],
       "stderr_tail": ""
     }
   ],
   "axe": {
-    "command": "npx playwright test --config e2e/axe/playwright.config.ts --reporter=json",
+    "command": "npx playwright test --config e2e/axe/playwright.config.ts",
     "exit_code": 1,
     "target": "http://localhost:3003",
-    "passed": 0,
-    "failed": 0,
+    "passed": 13,
+    "failed": 1,
     "critical_violations": [],
     "skipped_note": "skipped authed group requires VISUAL_TEST credentials; never deleted to force 0 skipped"
   },
-  "execution_id": "UAP-EXEC-20261113162154-f31378a6",
-  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
-  "worktree_fingerprint": "43edacd4b625a7947e9a3e9f4ab6d607fda932ab7d3bc0dc264b55fb8f0d575c",
-  "evidence_ref": "UAP-EV-20261113165402-75c173e9"
+  "execution_id": "UAP-EXEC-20261113171750-6afc5fa2",
+  "git_head": "f728955561bdd297d03af7576354a363982d2186",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "evidence_ref": "UAP-EV-20261113174144-de5abd40"
 }

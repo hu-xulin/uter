@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113170727-46e4c919",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T17:07:27.750Z",
+  "started_at": "2026-11-13T17:07:27.750Z",
+  "finished_at": "2026-11-13T17:07:27.750Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+    "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+    "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+  "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.observability_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.observability_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "delivery.observability_integrity 实检: structured_logs=PASS(动态 import event-system 并调用 health().ok===true: health().ok=true; 导出 publish()=true); traceability=PASS(runCommand 真实返回含 6/6 个可追溯字段(command/cwd/started_at/duration_ms/exit_code/timed_out); exit_code=0); secret_redaction=PASS(子进程复跑 redact(): password 被 REDACTED=true; exit_code=0; policy-engine 源码用 redact()=true; policy redact_secrets=true=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 5943 个 | 动态 import event-system 调用 health() + runCommand 真实返回可追溯字段 + node 子进程复跑 redact(); 全程本地只读/模拟",
+  "content_hash": "20a7bcb133adde247f194058dbc64ebb0c62cfd64318968a1d2cc5d95dba96e3"
+}

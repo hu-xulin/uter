@@ -1,32 +1,36 @@
 {
-  "generated_at": "2026-11-13T03:12:36.565Z",
-  "uap_modules_checked": 67,
+  "generated_at": "2026-11-13T17:07:59.732Z",
+  "uap_modules_checked": 87,
   "syntax_failures": [],
   "commands": [
     {
       "command": "bun run build:check",
-      "exit_code": 0,
-      "duration_ms": 30925,
-      "stderr_tail": "file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-public-routes-render.test.tsx\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\nWarning: Route file \"/Users/lincolnhu/uter/web/src/routes/__tests__/root-setup-status.test.ts\" does not export a Route. This file will not be included in the route tree.\n\nIf this file is not intended to be a route, you can exclude it using one of these options:\n  1. Rename the file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-root-setup-status.test.ts\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\n"
+      "exit_code": 1,
+      "duration_ms": 8657,
+      "stderr_tail": "$ node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && tsgo -b && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/\nerror: script \"build:check\" exited with code 1\n"
     },
     {
       "command": "go build ./...",
-      "exit_code": 0,
-      "duration_ms": 44111,
-      "stderr_tail": ""
+      "exit_code": 1,
+      "duration_ms": 5556,
+      "stderr_tail": "main.go:51:12: pattern web/dist: no matching files found\n"
     },
     {
       "command": "bun run typecheck",
-      "exit_code": 0,
-      "duration_ms": 8982,
-      "stderr_tail": "$ tsgo -b\n"
+      "exit_code": 1,
+      "duration_ms": 5529,
+      "stderr_tail": "$ tsgo -b\nerror: script \"typecheck\" exited with code 1\n"
     }
   ],
   "quality_gate": null,
   "moved_artifacts": [
     {
       "artifact": "web/dist",
-      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794539472543"
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794589659988"
+    },
+    {
+      "artifact": ".quality/.state/head-tree",
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter--quality--state-head-tree-before-build-1794589659988"
     }
   ]
 }

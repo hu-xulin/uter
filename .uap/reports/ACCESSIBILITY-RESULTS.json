@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-11-13T16:54:02.126Z",
+  "generated_at": "2026-11-13T17:41:44.412Z",
   "status": "FAIL",
   "critical": 0,
   "serious": 0,
-  "passed": 0,
-  "failed": 0,
+  "passed": 13,
+  "failed": 1,
   "target": "http://localhost:3003",
-  "execution_id": "UAP-EXEC-20261113162154-f31378a6",
-  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
-  "worktree_fingerprint": "43edacd4b625a7947e9a3e9f4ab6d607fda932ab7d3bc0dc264b55fb8f0d575c"
+  "execution_id": "UAP-EXEC-20261113171750-6afc5fa2",
+  "git_head": "f728955561bdd297d03af7576354a363982d2186",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 }

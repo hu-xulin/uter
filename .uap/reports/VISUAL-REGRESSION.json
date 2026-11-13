@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-13T16:52:55.721Z",
-  "command": "npx playwright test --config e2e/visual/playwright.config.ts --reporter=json",
+  "generated_at": "2026-11-13T17:17:13.974Z",
+  "command": "npx playwright test --config e2e/visual/playwright.config.ts",
   "exit_code": 1,
   "total_specs": 29,
   "passed": 26,
@@ -184,11 +184,11 @@
       "message_excerpt": ""
     }
   ],
-  "stdout_tail": "Index\": 0,\n                  \"status\": \"passed\",\n                  \"duration\": 1028,\n                  \"errors\": [],\n                  \"stdout\": [],\n                  \"stderr\": [],\n                  \"retry\": 0,\n                  \"startTime\": \"2026-11-13T16:52:54.154Z\",\n                  \"annotations\": [],\n                  \"attachments\": []\n                }\n              ],\n              \"status\": \"expected\"\n            }\n          ],\n          \"id\": \"349fc90c6061c792a808-acdf4b0885b762b3f424\",\n          \"file\": \"public.spec.ts\",\n          \"line\": 21,\n          \"column\": 5\n        }\n      ]\n    }\n  ],\n  \"errors\": [],\n  \"stats\": {\n    \"startTime\": \"2026-11-13T16:50:19.112Z\",\n    \"duration\": 156567.26499999998,\n    \"expected\": 26,\n    \"skipped\": 0,\n    \"unexpected\": 3,\n    \"flaky\": 0\n  }\n}\n",
+  "stdout_tail": "    Error Context: .visual-e2e/results/authed-鉴权页面基线---mobile-chromium/error-context.md\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    .visual-e2e/results/authed-鉴权页面基线---mobile-chromium/trace.zip\n    Usage:\n\n        npx playwright show-trace .visual-e2e/results/authed-鉴权页面基线---mobile-chromium/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3 failed\n    [auth-setup] › e2e/visual/auth.setup.spec.ts:21:1 › 登录链路冒烟：凭据可登录 ───────────────────────────────\n    [chromium] › e2e/visual/authed.spec.ts:32:3 › 鉴权页面基线 - desktop ─────────────────────────────────\n    [chromium] › e2e/visual/authed.spec.ts:32:3 › 鉴权页面基线 - mobile ──────────────────────────────────\n  26 passed (2.6m)\n",
   "stderr_tail": "",
   "json_parsed": true,
-  "execution_id": "UAP-EXEC-20261113162154-f31378a6",
-  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
-  "worktree_fingerprint": "43edacd4b625a7947e9a3e9f4ab6d607fda932ab7d3bc0dc264b55fb8f0d575c",
-  "evidence_ref": "UAP-EV-20261113165255-cb0b4cd4"
+  "execution_id": "UAP-EXEC-20261113171355-b01f08c1",
+  "git_head": "f728955561bdd297d03af7576354a363982d2186",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "evidence_ref": "UAP-EV-20261113171714-db76cd31"
 }

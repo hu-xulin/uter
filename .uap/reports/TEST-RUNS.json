@@ -697,6 +697,87 @@
         "UAP-EV-20261113160330-3c2c595d"
       ],
       "recorded_at": "2026-11-13T16:03:30.793Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 40837,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 119,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113170546-484e80e7"
+      ],
+      "recorded_at": "2026-11-13T17:05:46.344Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 42953,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 115,
+        "fail": 4
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113171403-5ed77a2e"
+      ],
+      "recorded_at": "2026-11-13T17:14:03.323Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 44463,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 119,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113171758-b0073157"
+      ],
+      "recorded_at": "2026-11-13T17:17:58.649Z"
     }
   ],
   "summary": {

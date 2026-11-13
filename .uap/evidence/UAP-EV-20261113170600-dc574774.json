@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113170600-dc574774",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T17:06:00.096Z",
+  "started_at": "2026-11-13T17:06:00.096Z",
+  "finished_at": "2026-11-13T17:06:00.096Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+    "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+    "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+  "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.execution_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.execution_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.execution_integrity 实检: task_execution=PASS(tasks.json: 723 任务, SUCCEEDED=566, 含 evidence_refs 的 SUCCEEDED=566); dependency_order=PASS(复核 UAP-TASK-HEALTH-20261112104051-18ebd06c 的 3 次迁移, 非法迁移=0, 终态=SUCCEEDED); bounded_retry=PASS(execution.max_repair_attempts_per_root_cause=3; SUCCEEDED 任务 retry_count<=上限=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 5915 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复验 TASK_TRANSITIONS/executorResult: exit_code=0 terminal=true shape=true",
+  "content_hash": "1cf8a26bf8f31234b8f6c927974cd9cd35e5bff37302868ca21d916547529a5a"
+}

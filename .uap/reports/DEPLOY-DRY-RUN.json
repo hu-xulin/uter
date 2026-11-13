@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T15:27:10.858Z",
+  "generated_at": "2026-11-13T17:07:27.437Z",
   "target": "http://localhost:3000",
   "mode": "dry-run rehearsal (authorized by AUTH-DEPLOY-2026-11-12; local artifacts only)",
   "version": {
@@ -39,7 +39,7 @@
     {
       "name": "boundary_temp_only",
       "ok": true,
-      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-5fLl9x (os.tmpdir), 仓库无演练产物"
+      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-VqRDPq (os.tmpdir), 仓库无演练产物"
     }
   ],
   "verdict": {
