@@ -1,8 +1,8 @@
 # UAP 1.0 — 规范索引
 
-<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261113033035-5159bf71","git_head":"7b98646915f75026e0e643f9f4b0a6a3ff3ab67c","overall_status":"IMPLEMENTED_NOT_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":0,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-13T03:32:04.272Z"} -->
+<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261113110829-78fb9a01","git_head":"412f0a28b12f60aadec5cfd21bb25d5cd5975ecc","overall_status":"IMPLEMENTED_NOT_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":0,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-13T11:24:10.879Z"} -->
 
-- 生成时间：2026-11-13T03:32:04.272Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
+- 生成时间：2026-11-13T11:24:10.879Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
 - 规范总数：**32**
 - 注册表完整性：**PASS**（37/37 项检查，0 条阻断发现）
 
@@ -11,17 +11,17 @@
 | 字段 | 值 |
 | --- | --- |
 | 计算函数 | `runtime.status-engine/computeFinalStatus` |
-| execution_id | `UAP-EXEC-20261113033035-5159bf71` |
-| git_head | `7b98646915f75026e0e643f9f4b0a6a3ff3ab67c` |
+| execution_id | `UAP-EXEC-20261113110829-78fb9a01` |
+| git_head | `412f0a28b12f60aadec5cfd21bb25d5cd5975ecc` |
 | **overall_status** | **IMPLEMENTED_NOT_VERIFIED** |
 | claim_allowed | false |
 | 适用要求 / 已验证 | 538 / 0 |
 | 规范已验证 / 总数 | 0 / 32 |
-| 能力缺口 | real_code_repair, independent_regression, recovery, e2e, database_integration, financial_integrity |
+| 能力缺口 | e2e, database_integration, financial_integrity |
 
 > 状态口径由状态机给出：`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
 > 规范文件头的 `ACTIVE` 只表示「规范已建成」，不表示「已验证」；`IMPLEMENTED_NOT_VERIFIED` 不得自动改成 PASS。
-> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`172 requirement(s) implemented but not verified`；`538/538 applicable requirements lack current valid evidence`；`502 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
+> 判定原因：`172 requirement(s) implemented but not verified`；`538/538 applicable requirements lack current valid evidence`；`502 requirement(s) have no evidence record`
 
 ## 统一章节要求
 

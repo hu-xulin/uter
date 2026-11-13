@@ -1,19 +1,19 @@
 {
-  "run_id": "UAP-RUN-UAP-TASK-20261113030912-c6f58b54",
+  "run_id": "UAP-RUN-UAP-TASK-20261113111445-0ec2bee3",
   "workflow_id": "uap-bootstrap",
-  "task_id": "UAP-TASK-20261113030912-c6f58b54",
+  "task_id": "UAP-TASK-20261113111445-0ec2bee3",
   "state": "SUCCEEDED",
   "steps_total": 6,
   "steps_succeeded": 6,
   "steps_blocked": 0,
   "evidence_refs": [
-    "UAP-EV-20261113030912-ae449a2e",
-    "UAP-EV-20261113030913-ed31cb2e",
-    "UAP-EV-20261113030913-149a41ef",
-    "UAP-EV-20261113030913-b1de5ac2",
-    "UAP-EV-20261113030914-06c6b101",
-    "UAP-EV-20261113030923-72c81703",
-    "UAP-EV-20261113030923-1f2d2db6"
+    "UAP-EV-20261113111446-4fd4d77a",
+    "UAP-EV-20261113111446-03a5373b",
+    "UAP-EV-20261113111446-cb4608af",
+    "UAP-EV-20261113111446-96173dd5",
+    "UAP-EV-20261113111448-efa8381c",
+    "UAP-EV-20261113111507-b737d8d9",
+    "UAP-EV-20261113111508-5510f876"
   ],
   "validation": [
     {
@@ -21,15 +21,15 @@
       "status": "PASS",
       "executed": true,
       "exit_code": 0,
-      "checked_at": "2026-11-13T03:09:23.351Z",
+      "checked_at": "2026-11-13T11:15:08.048Z",
       "evidence_refs": [
-        "UAP-EV-20261113030912-ae449a2e",
-        "UAP-EV-20261113030913-ed31cb2e",
-        "UAP-EV-20261113030913-149a41ef",
-        "UAP-EV-20261113030913-b1de5ac2",
-        "UAP-EV-20261113030914-06c6b101",
-        "UAP-EV-20261113030923-72c81703",
-        "UAP-EV-20261113030923-1f2d2db6"
+        "UAP-EV-20261113111446-4fd4d77a",
+        "UAP-EV-20261113111446-03a5373b",
+        "UAP-EV-20261113111446-cb4608af",
+        "UAP-EV-20261113111446-96173dd5",
+        "UAP-EV-20261113111448-efa8381c",
+        "UAP-EV-20261113111507-b737d8d9",
+        "UAP-EV-20261113111508-5510f876"
       ],
       "findings": [],
       "checks_run": [
@@ -45,6 +45,6 @@
     }
   ],
   "acceptance": "runtime_health_check",
-  "started_at": "2026-11-13T03:09:12.682Z",
-  "finished_at": "2026-11-13T03:09:23.475Z"
+  "started_at": "2026-11-13T11:14:45.866Z",
+  "finished_at": "2026-11-13T11:15:08.267Z"
 }

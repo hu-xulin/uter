@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113103002-04e10396",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T10:30:02.467Z",
+  "started_at": "2026-11-13T10:30:02.467Z",
+  "finished_at": "2026-11-13T10:30:02.467Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113102910-e2a56e4d",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "347052842606e8e659050911996e9e4e4b0105462a721b958b29853d938ea1dc",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113102910-e2a56e4d",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "347052842606e8e659050911996e9e4e4b0105462a721b958b29853d938ea1dc",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.dependency_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.dependency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=PASS(BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 3387 个 | 真实读取 go.sum/go.mod/web/package.json/BASELINE + 配置明文密钥正则扫描; 未安装/删除任何依赖",
+  "content_hash": "1c41a606a0a5d2a61cb99b70b8602ed9d6be00d1dfd61976a7ab36dac30feb0c"
+}

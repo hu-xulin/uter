@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113110854-977804b3",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261113110854-7a2081f6",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:08:54.655Z",
+  "started_at": "2026-11-13T11:08:54.655Z",
+  "finished_at": "2026-11-13T11:08:54.655Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_balance_ledger",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-3\",\"name\":\"inspect_balance_ledger\",\"idempotent\":true,\"handler\":\"inspect_balance_ledger\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspect_balance_ledger: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "786db839b592bcf0ca70939a93da0917d57bd3b9c7c01a517cef031a7afb8d4b"
+}

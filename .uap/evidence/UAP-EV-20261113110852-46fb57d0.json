@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261113110852-46fb57d0",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-INTERRUPT-20261113110852-aac9464f",
+  "trace_id": "UAP-TRACE-20261113110852-799b91a9",
+  "specification_ids": [
+    "UAP-03-004"
+  ],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:08:52.732Z",
+  "started_at": "2026-11-13T11:08:52.732Z",
+  "finished_at": "2026-11-13T11:08:52.732Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:probe.step2",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-2\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "probe.step2 succeeded",
+  "content_hash": "47f4eb2b11133a68c164036dfde9ae77303438adfda1e64080c231b089cc5879"
+}

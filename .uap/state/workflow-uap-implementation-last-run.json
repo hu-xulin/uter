@@ -1,19 +1,19 @@
 {
-  "run_id": "UAP-RUN-UAP-TASK-20261113030924-cd793a91",
+  "run_id": "UAP-RUN-UAP-TASK-20261113111510-176df4e7",
   "workflow_id": "uap-implementation",
-  "task_id": "UAP-TASK-20261113030924-cd793a91",
+  "task_id": "UAP-TASK-20261113111510-176df4e7",
   "state": "SUCCEEDED",
   "steps_total": 6,
   "steps_succeeded": 6,
   "steps_blocked": 0,
   "evidence_refs": [
-    "UAP-EV-20261113030924-22d069a5",
-    "UAP-EV-20261113030924-217e4905",
-    "UAP-EV-20261113030925-de04cf76",
-    "UAP-EV-20261113030925-15e586d7",
-    "UAP-EV-20261113030926-98a985a3",
-    "UAP-EV-20261113030926-470ccf18",
-    "UAP-EV-20261113030926-c11c1692"
+    "UAP-EV-20261113111510-f841140c",
+    "UAP-EV-20261113111510-60868887",
+    "UAP-EV-20261113111510-eb0f075a",
+    "UAP-EV-20261113111510-ef8f575c",
+    "UAP-EV-20261113111512-4e3e19bb",
+    "UAP-EV-20261113111512-2b3fe6df",
+    "UAP-EV-20261113111513-25074aa4"
   ],
   "validation": [
     {
@@ -21,15 +21,15 @@
       "status": "PASS",
       "executed": true,
       "exit_code": 0,
-      "checked_at": "2026-11-13T03:09:26.294Z",
+      "checked_at": "2026-11-13T11:15:12.957Z",
       "evidence_refs": [
-        "UAP-EV-20261113030924-22d069a5",
-        "UAP-EV-20261113030924-217e4905",
-        "UAP-EV-20261113030925-de04cf76",
-        "UAP-EV-20261113030925-15e586d7",
-        "UAP-EV-20261113030926-98a985a3",
-        "UAP-EV-20261113030926-470ccf18",
-        "UAP-EV-20261113030926-c11c1692"
+        "UAP-EV-20261113111510-f841140c",
+        "UAP-EV-20261113111510-60868887",
+        "UAP-EV-20261113111510-eb0f075a",
+        "UAP-EV-20261113111510-ef8f575c",
+        "UAP-EV-20261113111512-4e3e19bb",
+        "UAP-EV-20261113111512-2b3fe6df",
+        "UAP-EV-20261113111513-25074aa4"
       ],
       "findings": [],
       "checks_run": [
@@ -45,6 +45,6 @@
     }
   ],
   "acceptance": "implementation_verified",
-  "started_at": "2026-11-13T03:09:24.810Z",
-  "finished_at": "2026-11-13T03:09:26.405Z"
+  "started_at": "2026-11-13T11:15:10.349Z",
+  "finished_at": "2026-11-13T11:15:13.169Z"
 }

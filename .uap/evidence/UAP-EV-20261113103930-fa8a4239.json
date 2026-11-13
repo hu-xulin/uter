@@ -1,0 +1,53 @@
+{
+  "evidence_id": "UAP-EV-20261113103930-fa8a4239",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "trace_id": "UAP-RREPAIR-1794566356873-86eec3",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-003",
+    "UAP-00-001-REQ-005",
+    "UAP-00-001-REQ-007",
+    "UAP-00-001-REQ-010",
+    "UAP-00-001-REQ-011"
+  ],
+  "recorded_at": "2026-11-13T10:39:30.393Z",
+  "started_at": "2026-11-13T10:39:22.796Z",
+  "finished_at": "2026-11-13T10:39:30.393Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+  "exit_code": 1,
+  "duration_ms": 7597,
+  "inputs": "{\"args\":[\".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs\"],\"phase\":\"reproduction_before\"}",
+  "stdout": "",
+  "stderr": "PROBE FAIL: expected exactly 1 ledger-driven rerun check, got 0. The reviewer is still hard-coding commands instead of reading ledger.commands.\nreviewer stdout: {\"component\":\"independent-repair-review\",\"verdict\":\"FAIL\",\"at\":\"2026-11-13T10:39:24.490Z\",\"ledger\":\"../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-review-probe-25057.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\"../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-review-probe-25057.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":false,\"detail\":\"disk=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 ledger=1111111111111111111111111111111111111111111111111111111111111111\"},{\"name\":\"before_hash_matches_backup\",\"ok\":false,\"detail\":\"backup=missing ledger=0000000000000000000000000000000000000000000000000000000000000000\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"0000000000000000000000000000000000000000000000000000000000000000 -> 1111111111111111111111111111111111111111111111111111111111111111\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"1 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/engines/auto-repair/independent-review.mjs allowed=.uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":false,\"detail\":\"changed=[]\"},{\"na\n",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794566356873-86eec3/independent-review.mjs"
+  ],
+  "findings": [
+    "before=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67",
+    "after=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857"
+  ],
+  "summary": "[reproduction_before] SUCCEEDED",
+  "content_hash": "ed3ea310123aff886ab8f3c89a76c0d51b5644f3799f51422e319fd6b06a482f"
+}

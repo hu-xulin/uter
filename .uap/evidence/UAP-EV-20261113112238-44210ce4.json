@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113112238-44210ce4",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:22:38.666Z",
+  "started_at": "2026-11-13T11:22:38.666Z",
+  "finished_at": "2026-11-13T11:22:38.666Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.consistency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.consistency\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.consistency 实检: module_boundaries=PASS(10 个域目录存在=10/10; 登记 domain 全部合法=true (10 个); spec 数=32; unique_ids=true); dependency_graph=PASS(自算 DAG cycles=0 missing_deps=0; registry dependencies_exist/acyclic=true/true); architecture_evidence=PASS(规范含证据要求章节=true; registry validator 映射/唯一/无孤儿=true; .uap/evidence/*.json 当前=4715 条(运行时产物,如实记录)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 4715 个 | 按 10 域目录 + 自算依赖 DAG + 证据章节/映射完整性真实复算",
+  "content_hash": "c785d668e34b5e19f0480fb6b5fa86b3f0e83815e8b776cde0097784f1277a16"
+}

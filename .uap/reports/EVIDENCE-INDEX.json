@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-13T03:32:54.980Z",
+  "generated_at": "2026-11-13T11:24:14.656Z",
   "source": "uap acceptance-report-generator",
   "evidence_dir": ".uap/evidence/",
-  "total": 3093,
-  "hash_valid": 3093,
-  "execution_bound": 811,
+  "total": 4745,
+  "hash_valid": 4745,
+  "execution_bound": 2463,
   "raw_logs": ".uap/state/acceptance-20261113/logs/",
   "integrity_rule": "content_hash = sha256(JSON.stringify({...record, content_hash: null}))",
   "note": "历史证据不会因代码版本变化被提升为当前 PASS（fail-closed）。"

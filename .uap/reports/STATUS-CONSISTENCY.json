@@ -2,28 +2,23 @@
   "component": "uap.verify-status-consistency",
   "version": "1.0.0",
   "ok": true,
-  "checked_at": "2026-11-13T03:32:56.359Z",
-  "execution_id": "UAP-EXEC-20261113033035-5159bf71",
-  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "checked_at": "2026-11-13T11:25:06.049Z",
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
   "recomputed_status": "IMPLEMENTED_NOT_VERIFIED",
   "report_status": "IMPLEMENTED_NOT_VERIFIED",
   "index_status": "IMPLEMENTED_NOT_VERIFIED",
   "verified_requirements": 0,
   "applicable_requirements": 538,
   "capability_gaps": [
-    "real_code_repair",
-    "independent_regression",
-    "recovery",
     "e2e",
     "database_integration",
     "financial_integrity"
   ],
   "reasons": [
-    "stale artefacts not bound to current execution/HEAD: tests,validators",
     "172 requirement(s) implemented but not verified",
     "538/538 applicable requirements lack current valid evidence",
-    "502 requirement(s) have no evidence record",
-    "2 unresolved P0 blocker(s)"
+    "502 requirement(s) have no evidence record"
   ],
   "checks": [
     {
@@ -69,12 +64,12 @@
     {
       "name": "execution_id_matches_current_run",
       "status": "PASS",
-      "detail": "report=UAP-EXEC-20261113033035-5159bf71 index=UAP-EXEC-20261113033035-5159bf71 current=UAP-EXEC-20261113033035-5159bf71"
+      "detail": "report=UAP-EXEC-20261113110829-78fb9a01 index=UAP-EXEC-20261113110829-78fb9a01 current=UAP-EXEC-20261113110829-78fb9a01"
     },
     {
       "name": "git_head_matches_current_run",
       "status": "PASS",
-      "detail": "report=7b98646915f75026e0e643f9f4b0a6a3ff3ab67c index=7b98646915f75026e0e643f9f4b0a6a3ff3ab67c current=7b98646915f75026e0e643f9f4b0a6a3ff3ab67c"
+      "detail": "report=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc index=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc current=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc"
     },
     {
       "name": "three_independent_results_match_engine",
@@ -84,12 +79,12 @@
     {
       "name": "no_stale_pass_promoted",
       "status": "PASS",
-      "detail": "claim_allowed=false (stale artifacts: 1)"
+      "detail": "claim_allowed=false (stale artifacts: 0)"
     },
     {
       "name": "p0_blockers_forbid_full_claim",
       "status": "PASS",
-      "detail": "claim_allowed=false open_p0=2"
+      "detail": "claim_allowed=false open_p0=0"
     },
     {
       "name": "cli_process_executed",
@@ -104,7 +99,7 @@
     {
       "name": "cli_execution_matches_report",
       "status": "PASS",
-      "detail": "cli=UAP-EXEC-20261113033035-5159bf71 report=UAP-EXEC-20261113033035-5159bf71"
+      "detail": "cli=UAP-EXEC-20261113110829-78fb9a01 report=UAP-EXEC-20261113110829-78fb9a01"
     },
     {
       "name": "cli_three_results_match_report",

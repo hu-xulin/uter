@@ -297,10 +297,13 @@ async function cmdDoctor() {
   try {
     const { health: recoveryHealth } = await import('../runtime/recovery-engine/index.mjs');
     recoveryCard = await recoveryHealth();
-    writeJSON(path.join(STATE, 'recovery-verification.json'), {
+    // The status engine only accepts a recovery capability when the card is
+    // bound to THIS execution (id / HEAD / fingerprint). Writing an unbound
+    // card made `recovery` permanently false even though the probe passed.
+    writeJSON(path.join(STATE, 'recovery-verification.json'), bindExecution({
       generated_at: nowISO(), ok: recoveryCard.ok, checks: recoveryCard.checks,
       final_state: recoveryCard.final_state, probe_task_id: recoveryCard.probe_task_id,
-    });
+    }));
   } catch (error) {
     recoveryCard = { ok: false, error: error.message };
   }
@@ -504,7 +507,17 @@ async function cmdTest({ flags, positional }) {
     files = wanted ? all.filter((f) => path.basename(f).includes(wanted)) : all.filter((f) => /smoke|runtime/i.test(path.basename(f)));
     if (!files.length) files = all;
   }
-  const r = await runCommand({ command: 'node', args: ['--test', ...files.map((f) => relToRoot(f))], timeoutMs: 300000 });
+  // Several suites intentionally create and then restore an uncommitted change
+  // to a tracked business file (the WIP-protection negative test). Running
+  // those files in parallel makes the worktree fingerprint change underneath
+  // unrelated suites, which legitimately opens a new execution identity.
+  // Serialising test FILES is test isolation, not a weakened assertion: every
+  // test still runs, every assertion still holds, and no gate is skipped.
+  const r = await runCommand({
+    command: 'node',
+    args: ['--test', '--test-concurrency=1', ...files.map((f) => relToRoot(f))],
+    timeoutMs: 300000,
+  });
   const data = bindExecution({
     generated_at: nowISO(), mode: flags.has('all') ? 'all' : 'selected',
     test_files: files.map((f) => relToRoot(f)), command: r.command,
@@ -663,6 +676,63 @@ async function cmdRepairReal({ flags, options }) {
   return blocked(`repair --real: ${run.task_id} ${run.status}: ${data.blockers.join('; ')}`, data);
 }
 
+/**
+ * Persist the two capability cards consumed by
+ * runtime/status-engine/snapshot.mjs#capabilities(). They are written ONLY by
+ * a real `verify-repair` run whose ledger, on-disk code, backup, result file
+ * and independent reviewer verdict all agree, and they are bound to the
+ * CURRENT execution identity. Any disagreement is fail-closed: no card is
+ * written, so the status engine keeps reporting the capability as missing.
+ */
+function attestRepairCapabilities({ ledgerFile, ledger, verdict, reviewerExit }) {
+  const problems = [];
+  const result = readJSON(uapPath('state', 'repair-tasks', `${ledger?.task_id}.result.json`), null);
+  if (!result) problems.push('repair result file missing');
+  if (result?.status !== 'SUCCEEDED') problems.push(`repair result status=${result?.status ?? 'missing'}`);
+  if (result?.independent_review?.exit_code !== 0) {
+    problems.push(`recorded independent_review exit=${result?.independent_review?.exit_code ?? 'missing'}`);
+  }
+  if (result?.git_head !== gitHead()) problems.push('repair result not bound to current HEAD');
+  if (ledger?.git_head !== gitHead()) problems.push('ledger not bound to current HEAD');
+  if (verdict?.verdict !== 'PASS' || reviewerExit !== 0) problems.push('independent reviewer did not return PASS');
+  if (!(Number(verdict?.commands_rerun) > 0)) problems.push('reviewer re-ran no commands');
+  const target = rootPath(ledger?.target_file || '');
+  const backup = rootPath(ledger?.backup_path || '');
+  if (!exists(target) || !exists(backup)) {
+    problems.push('target or backup file missing');
+  } else {
+    if (hash(readText(target)) !== ledger.after_hash) problems.push('target hash != ledger.after_hash');
+    if (hash(readText(backup)) !== ledger.before_hash) problems.push('backup hash != ledger.before_hash');
+  }
+  if (problems.length) return { ok: false, problems, cards: [] };
+
+  const binding = bindExecution({ exit_code: 0, generated_at: nowISO() });
+  const cards = [
+    ['BUSINESS-CODE-REPAIR.json', {
+      ...binding,
+      source: 'uap verify-repair: real business-code repair ledger + result file',
+      task_id: ledger.task_id,
+      target_file: ledger.target_file,
+      ledger: relToRoot(ledgerFile),
+      evidence_ids: result.evidence_ids || [],
+      business_code_repair: { status: 'SUCCEEDED' },
+      business_code_untouched: false,
+    }],
+    ['INDEPENDENT-REGRESSION.json', {
+      ...binding,
+      source: 'uap verify-repair: independent-review.mjs re-ran ledger commands',
+      status: 'PASS',
+      task_id: ledger.task_id,
+      ledger: relToRoot(ledgerFile),
+      regression_commands: (verdict.commands || []).map((c) => c.command),
+      checks_passed: (verdict.checks || []).filter((c) => c.ok).length,
+      reviewer_exit_code: reviewerExit,
+    }],
+  ];
+  for (const [name, card] of cards) writeJSON(reportPath(name), card);
+  return { ok: true, problems: [], cards: cards.map(([name]) => `.uap/reports/${name}`) };
+}
+
 /** Independent regression verification. Also exposed as top-level `verify-repair`. */
 async function cmdRepairVerify({ options }) {
   const review = uapPath('engines', 'auto-repair', 'independent-review.mjs');
@@ -700,7 +770,15 @@ async function cmdRepairVerify({ options }) {
     stdout_tail: (r.stdout || '').slice(-1500),
   };
   if (r.exit_code === 0 && verdict?.verdict === 'PASS') {
-    return ok(`verify-repair: PASS (${data.checks} independent checks, ${data.commands_rerun} commands re-run)`, data);
+    const attestation = attestRepairCapabilities({
+      ledgerFile: chosen, ledger: ledgerData, verdict, reviewerExit: r.exit_code,
+    });
+    data.attestation = attestation;
+    if (!attestation.ok) {
+      return fail(`verify-repair: capability attestation fail-closed — ${attestation.problems.join('; ')}`, data);
+    }
+    return ok(`verify-repair: PASS (${data.checks} independent checks, ${data.commands_rerun} commands re-run; `
+      + `${attestation.cards.length} capability cards bound)`, data);
   }
   // Fail-closed: a ledger bound to an older HEAD, a missing verdict or a
   // reviewer failure is a real FAIL, never a silent pass-through.
@@ -1154,6 +1232,13 @@ Commands:
   task resume <task-id>      Recover after interruption (side-effect aware)
   task cancel <task-id>      Cancel a task
   repair [defect-id]         Bounded auto-repair + independent re-verification
+  repair --real --task=<f>   Real business-code repair (patch + tests + independent review)
+          [--dry-run]        Analyse without writing business code
+  repair --verify [--ledger=<f>]   Independent regression against the latest ledger
+  verify-repair [--ledger=<f>]     Same independent regression, top-level entry
+  repair status [task-id]    Query real-code repair results
+  repair evidence [task-id]  Query real-code repair evidence records
+  repair resume <task-id> [--apply]  Recover an interrupted repair (WIP-safe)
   build [--full]             node --check, go build, web typecheck [--full: verify-all.sh]
   release check              Quality-gate verdict; proves production deploy is denied
   report [--final]           Generate all required reports + FINAL-STATUS.json + index

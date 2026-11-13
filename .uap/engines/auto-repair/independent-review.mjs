@@ -90,15 +90,43 @@ function main() {
   }
 
   // 独立重跑定向测试与关联回归：不采信修复 Agent 记录的结果。
-  const repro = sh('go', ['test', './model/', '-run', '^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$', '-count=1']);
-  add('reproduction_test_now_passes', repro.exit_code === 0,
-    `exit=${repro.exit_code} ${(repro.stdout + repro.stderr).slice(0, 400)}`);
-  const canonical = sh('go', ['test', './common/', '-run', '^TestCanonicalUpstreamPath', '-count=1']);
-  add('existing_canonical_path_tests_pass', canonical.exit_code === 0,
-    `exit=${canonical.exit_code} ${(canonical.stdout + canonical.stderr).slice(0, 400)}`);
-  const vet = sh('go', ['vet', './common/', './model/']);
-  add('go_vet_clean', vet.exit_code === 0,
-    `exit=${vet.exit_code} ${(vet.stdout + vet.stderr).slice(0, 400)}`);
+  //
+  // 命令必须来自本次修复账本（ledger.commands = 修复引擎真实执行过的
+  // targeted_tests + regression_tests），绝不能硬编码成某一个历史缺陷的测试。
+  // 硬编码会让第二个缺陷被「验证」无关测试并返回假绿 PASS。
+  const rerunnable = (ledger?.commands || []).map((c, index) => {
+    const tokens = String(c.command || '').trim().split(/\s+/).filter(Boolean);
+    const args = Array.isArray(c.args) && c.args.length ? c.args : tokens.slice(1);
+    return {
+      label: `independent_rerun_recorded_command_${index + 1}`,
+      exe: tokens[0] || null,
+      args,
+      recorded_exit_code: c.exit_code,
+      command: tokens[0] ? `${tokens[0]} ${args.join(' ')}` : '',
+    };
+  }).filter((c) => c.exe && c.args.length);
+
+  add('ledger_has_commands_to_rerun', rerunnable.length > 0,
+    `rerunnable=${rerunnable.length} recorded=${(ledger?.commands || []).length}`);
+
+  const rerunResults = [];
+  for (const c of rerunnable) {
+    const r = sh(c.exe, c.args, 180000);
+    const output = `${r.stdout}\n${r.stderr}`;
+    // "go test -run <name>" 匹配不到用例时仍返回 0（只打印
+    // "no tests to run"）。把它算作 PASS 会让写错测试名的验证器假绿。
+    const emptyRun = /no tests to run|no test files/i.test(output);
+    const passed = r.exit_code === 0 && !emptyRun;
+    add(c.label, passed,
+      `exit=${r.exit_code} no_tests_to_run=${emptyRun} cmd=${c.command}`);
+    rerunResults.push({
+      command: c.command,
+      exit_code: r.exit_code,
+      no_tests_to_run: emptyRun,
+      recorded_exit_code: c.recorded_exit_code,
+      passed,
+    });
+  }
 
   const verdict = {
     component: 'independent-repair-review',
@@ -107,7 +135,9 @@ function main() {
     ledger: ledger ? rel(ledgerFile) : null,
     checks,
     failures,
-    commands: [repro, canonical, vet].map((c) => ({ command: c.command, exit_code: c.exit_code })),
+    commands: rerunResults.map((c) => ({ command: c.command, exit_code: c.exit_code, passed: c.passed })),
+    commands_rerun: rerunResults.length,
+    independent_rerun_passed: rerunResults.filter((c) => c.passed).length,
   };
   process.stdout.write(`${JSON.stringify(verdict)}\n`);
   process.exitCode = failures.length === 0 ? 0 : 1;

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * 真实业务代码修复命令行入口（独立于 .uap/bin/uap.mjs）。
+ * 真实业务代码修复命令行入口。
  *
- * 不修改 .uap/bin/uap.mjs 的原因：该文件在执行时属于用户未提交的并发 WIP，
- * UAP 1.0 §2.1 / §14 明确禁止覆盖用户已有修改。待该 WIP 落库后，可把本入口
- * 作为 `uap repair --real --task <file>` 的一个分支合入主 CLI。
+ * 正式入口已经整合进主 CLI：`uap repair --real --task=<file>` 会复用同一个
+ * `runRealRepair` 引擎、统一配置 / 权限 / 日志 / 证据机制。本文件保留为兼容
+ * 的独立调用方式（例如 CI 里只想直接跑引擎时），不再作为唯一可达路径。
  *
  * 用法：
  *   node .uap/bin/uap-real-repair.mjs --task .uap/state/repair-tasks/<id>.json [--dry-run]

@@ -1,9 +1,9 @@
 # 运行时验证报告
 
-> 本段落由 `.uap/tools/acceptance-report-generator.mjs` 于 2026-11-13T03:32:54.652Z 从本次真实执行产物自动生成；不覆盖任何已有内容。
+> 本段落由 `.uap/tools/acceptance-report-generator.mjs` 于 2026-11-13T11:24:14.332Z 从本次真实执行产物自动生成；不覆盖任何已有内容。
 
 - **执行日期**：2026-11-13
-- **Git HEAD**：`7b98646915f75026e0e643f9f4b0a6a3ff3ab67c`
+- **Git HEAD**：`412f0a28b12f60aadec5cfd21bb25d5cd5975ecc`
 - **分支**：`main`
 - **最终状态（程序化计算）**：**IMPLEMENTED_NOT_VERIFIED**（claim_allowed=false）
 - **原始日志**：`.uap/state/acceptance-20261113/logs/`
@@ -14,7 +14,7 @@
 | 32 个 Validator | uap validate --all | 32/32 PASS |
 | 7 个 JSON Schema | uap schemas | PASS |
 | 7 个 Workflow | uap workflow run --all | 7/7 SUCCEEDED |
-| UAP 测试门禁 | uap test --all | 6 文件 / 61+ tests / 0 fail |
+| UAP 测试门禁 | uap test --all | 7 文件 / 61+ tests / 0 fail |
 | 崩溃恢复 | uap doctor recovery probe | PASS |
 | Agent 角色分离 | 真实修复闭环 | 15 个阶段、7 类 Agent |
 

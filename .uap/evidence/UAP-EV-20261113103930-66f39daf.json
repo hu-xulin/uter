@@ -1,0 +1,53 @@
+{
+  "evidence_id": "UAP-EV-20261113103930-66f39daf",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "trace_id": "UAP-RREPAIR-1794566356873-86eec3",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-003",
+    "UAP-00-001-REQ-005",
+    "UAP-00-001-REQ-007",
+    "UAP-00-001-REQ-010",
+    "UAP-00-001-REQ-011"
+  ],
+  "recorded_at": "2026-11-13T10:39:30.833Z",
+  "started_at": "2026-11-13T10:39:28.050Z",
+  "finished_at": "2026-11-13T10:39:30.833Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+  "exit_code": 0,
+  "duration_ms": 2783,
+  "inputs": "{\"args\":[\".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs\"],\"phase\":\"targeted_test_attempt_1\"}",
+  "stdout": "PROBE PASS: reviewer is ledger-driven and rejects an empty test run\n",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794566356873-86eec3/independent-review.mjs"
+  ],
+  "findings": [
+    "before=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67",
+    "after=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857"
+  ],
+  "summary": "[targeted_test_attempt_1] SUCCEEDED",
+  "content_hash": "6b4844c19cf152ba55f32dbeda44c137650be17797bbe068f8e9898b7e51d544"
+}

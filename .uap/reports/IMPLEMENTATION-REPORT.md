@@ -1,6 +1,6 @@
 # UAP 1.0 Implementation Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:03.605Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T11:24:09.863Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 结论（三项独立验收，不可互相替代）

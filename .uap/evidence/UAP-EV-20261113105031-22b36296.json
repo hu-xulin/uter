@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113105031-22b36296",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-TEST-20261113105031-b4d34ff0",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T10:50:31.914Z",
+  "started_at": "2026-11-13T10:50:31.914Z",
+  "finished_at": "2026-11-13T10:50:31.914Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113104501-231442e4",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "1f3d38bf57340f53c21acacf7192cf52be5e9b4f946d7dd94e8bd30c52532870",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113104501-231442e4",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "1f3d38bf57340f53c21acacf7192cf52be5e9b4f946d7dd94e8bd30c52532870",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:validate_environment",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"name\":\"validate_environment\"}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "toolchain: node v22.22.2, go go version go1.27.4 darwin/amd64, bun 1.4.2",
+  "content_hash": "02ba80ef459ab44d7cd6cee62121770caf7c1a59013cc907d0402d154868bd7a"
+}

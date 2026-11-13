@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113111227-14fd7b3e",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:12:27.167Z",
+  "started_at": "2026-11-13T11:12:27.167Z",
+  "finished_at": "2026-11-13T11:12:27.167Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate evolution.knowledge_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"evolution.knowledge_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "evolution.knowledge_integrity 实检: source_traceability=PASS(32 条规范均声明 file 字段=32/32; product-model.json source_of_truth=true; docs/adr/README.md=true; VERSION=1.0.0; (规范文件当前实际落盘 32/32, 如实记录)); stale_knowledge=PASS(registry.status_values=true; 已落盘规范文件状态非法=0; 32 条均声明 criticality=true; VERSION 非空=true); conflict_detection=PASS(registry ID 唯一/无孤儿验证器/依赖存在=true; product-model.conflicts=0; change-registry conflicts:[]=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 4493 个 | 真实读取规范注册表/业务 SSOT/ADR/VERSION 并核验状态合法性; 规范文件落盘 32/32 如实记录(并行施工中间态), 未把\"已登记\"当作\"已落盘\"",
+  "content_hash": "825ad5a1a639239925a176482cce2b57e9a87e5775fb97ffec2b54c12a8d3c4a"
+}

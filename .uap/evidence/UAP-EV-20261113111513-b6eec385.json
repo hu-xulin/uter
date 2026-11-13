@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113111513-b6eec385",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261113111513-98cfd4f7",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:15:13.436Z",
+  "started_at": "2026-11-13T11:15:13.436Z",
+  "finished_at": "2026-11-13T11:15:13.436Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:identify_root_cause",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"identify_root_cause\",\"idempotent\":true,\"handler\":\"identify_root_cause\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "identify_root_cause: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "33a431dc4370b88e7bc8a8a48adc04b6d6a6cc3830393b0a441469767755011e"
+}

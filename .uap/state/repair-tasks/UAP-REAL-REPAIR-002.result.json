@@ -1,0 +1,344 @@
+{
+  "execution_id": "UAP-RREPAIR-1794566356873-86eec3",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "started_at": "2026-11-13T10:39:16.873Z",
+  "finished_at": "2026-11-13T10:39:31.027Z",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "status": "SUCCEEDED",
+  "attempts": 1,
+  "max_attempts": 3,
+  "escalated": false,
+  "target_file": ".uap/engines/auto-repair/independent-review.mjs",
+  "defect": {
+    "description": "independent-review.mjs 把定向测试、关联回归、go vet 硬编码成 common/request_path.go 单一历史案例，完全不读 ledger.commands；对任何其他缺陷都会重跑无关测试并给出 PASS，无法检查原始缺陷是否消失、关联功能是否回归。",
+    "impact": "UAP 声称具备「独立回归验证」，但第二个及以后的真实代码修复都可能得到未经核实的 PASS，形成假验收闭环。",
+    "reproduction_test": ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+  },
+  "stages": [
+    {
+      "stage": "保护用户未提交修改",
+      "agent_id": "uap-orchestrator",
+      "status": "PASS",
+      "detail": "git status --short -- .uap/engines/auto-repair/independent-review.mjs 为空",
+      "at": "2026-11-13T10:39:16.904Z"
+    },
+    {
+      "stage": "发现问题",
+      "agent_id": "uap-orchestrator",
+      "status": "PASS",
+      "detail": "independent-review.mjs 把定向测试、关联回归、go vet 硬编码成 common/request_path.go 单一历史案例，完全不读 ledger.commands；对任何其他缺陷都会重跑无关测试并给出 PASS，无法检查原始缺陷是否消失、关联功能是否回归。",
+      "at": "2026-11-13T10:39:16.907Z"
+    },
+    {
+      "stage": "定位业务模块",
+      "agent_id": "uap-development-agent",
+      "status": "PASS",
+      "detail": ".uap/engines/auto-repair/independent-review.mjs",
+      "at": "2026-11-13T10:39:16.907Z"
+    },
+    {
+      "stage": "建立缺陷复现测试",
+      "agent_id": "uap-test-agent",
+      "status": "PASS",
+      "detail": "exit=1（预期非 0）",
+      "at": "2026-11-13T10:39:24.504Z"
+    },
+    {
+      "stage": "读取代码上下文与根因分析",
+      "agent_id": "uap-development-agent",
+      "status": "PASS",
+      "detail": "git grep -n TestReproTrailingSlashCanonicalPathBreaksChannelMatching -- .uap/engines/auto-repair/independent-review.mjs exit=0",
+      "at": "2026-11-13T10:39:24.521Z"
+    },
+    {
+      "stage": "权限策略检查",
+      "agent_id": "uap-security-agent",
+      "status": "PASS",
+      "detail": "7 条策略决策全部 ALLOW；分级=AUTO_ALLOW",
+      "at": "2026-11-13T10:39:24.527Z"
+    },
+    {
+      "stage": "生成修复方案",
+      "agent_id": "uap-repair-agent",
+      "status": "PASS",
+      "detail": "单锚点精确字符串补丁，已验证唯一匹配",
+      "at": "2026-11-13T10:39:24.527Z"
+    },
+    {
+      "stage": "修复尝试 1/3",
+      "agent_id": "uap-repair-agent",
+      "status": "RUNNING",
+      "detail": "应用补丁",
+      "at": "2026-11-13T10:39:24.528Z"
+    },
+    {
+      "stage": "修复尝试 1/3",
+      "agent_id": "uap-repair-agent",
+      "status": "PASS",
+      "detail": "定向测试与关联回归全部通过",
+      "at": "2026-11-13T10:39:27.460Z"
+    },
+    {
+      "stage": "定向测试",
+      "agent_id": "uap-test-agent",
+      "status": "PASS",
+      "detail": "2 条命令全部 exit 0",
+      "at": "2026-11-13T10:39:27.460Z"
+    },
+    {
+      "stage": "关联回归测试",
+      "agent_id": "uap-test-agent",
+      "status": "PASS",
+      "detail": "2 条命令全部 exit 0",
+      "at": "2026-11-13T10:39:27.460Z"
+    },
+    {
+      "stage": "独立代码审查",
+      "agent_id": "uap-review-agent",
+      "status": "PASS",
+      "detail": "exit=0",
+      "at": "2026-11-13T10:39:30.392Z"
+    },
+    {
+      "stage": "独立验证",
+      "agent_id": "uap-security-agent",
+      "status": "PASS",
+      "detail": "independent-review.mjs 复核哈希/范围/测试",
+      "at": "2026-11-13T10:39:30.392Z"
+    },
+    {
+      "stage": "保存证据",
+      "agent_id": "uap-orchestrator",
+      "status": "PASS",
+      "detail": "Evidence Engine 追加写入",
+      "at": "2026-11-13T10:39:30.392Z"
+    },
+    {
+      "stage": "更新任务状态",
+      "agent_id": "uap-orchestrator",
+      "status": "PASS",
+      "detail": "SUCCEEDED",
+      "at": "2026-11-13T10:39:30.392Z"
+    }
+  ],
+  "commands": [
+    {
+      "command": "git rev-parse HEAD",
+      "args": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 13,
+      "stdout": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc\n",
+      "stderr": "",
+      "phase": "baseline"
+    },
+    {
+      "command": "git status --short -- .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        "status",
+        "--short",
+        "--",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 16,
+      "stdout": "",
+      "stderr": "",
+      "phase": "baseline"
+    },
+    {
+      "command": "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+      "args": [
+        ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+      ],
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 7597,
+      "stdout": "",
+      "stderr": "PROBE FAIL: expected exactly 1 ledger-driven rerun check, got 0. The reviewer is still hard-coding commands instead of reading ledger.commands.\nreviewer stdout: {\"component\":\"independent-repair-review\",\"verdict\":\"FAIL\",\"at\":\"2026-11-13T10:39:24.490Z\",\"ledger\":\"../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-review-probe-25057.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\"../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-review-probe-25057.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":false,\"detail\":\"disk=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 ledger=1111111111111111111111111111111111111111111111111111111111111111\"},{\"name\":\"before_hash_matches_backup\",\"ok\":false,\"detail\":\"backup=missing ledger=0000000000000000000000000000000000000000000000000000000000000000\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"0000000000000000000000000000000000000000000000000000000000000000 -> 1111111111111111111111111111111111111111111111111111111111111111\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"1 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/engines/auto-repair/independent-review.mjs allowed=.uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":false,\"detail\":\"changed=[]\"},{\"na\n",
+      "phase": "reproduction_before"
+    },
+    {
+      "command": "git grep -n TestReproTrailingSlashCanonicalPathBreaksChannelMatching -- .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        "grep",
+        "-n",
+        "TestReproTrailingSlashCanonicalPathBreaksChannelMatching",
+        "--",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 17,
+      "stdout": ".uap/engines/auto-repair/independent-review.mjs:93:  const repro = sh('go', ['test', './model/', '-run', '^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$', '-count=1']);\n",
+      "stderr": "",
+      "phase": "root_cause"
+    },
+    {
+      "command": "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+      "args": [
+        ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 2783,
+      "stdout": "PROBE PASS: reviewer is ledger-driven and rejects an empty test run\n",
+      "stderr": "",
+      "phase": "targeted_test_attempt_1"
+    },
+    {
+      "command": "node --check .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        "--check",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 69,
+      "stdout": "",
+      "stderr": "",
+      "phase": "targeted_test_attempt_1"
+    },
+    {
+      "command": "node --check .uap/bin/uap.mjs",
+      "args": [
+        "--check",
+        ".uap/bin/uap.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 62,
+      "stdout": "",
+      "stderr": "",
+      "phase": "regression_attempt_1"
+    },
+    {
+      "command": "git diff --check -- .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        "diff",
+        "--check",
+        "--",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 18,
+      "stdout": "",
+      "stderr": "",
+      "phase": "regression_attempt_1"
+    },
+    {
+      "command": "node .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 2932,
+      "stdout": "{\"component\":\"independent-repair-review\",\"verdict\":\"PASS\",\"at\":\"2026-11-13T10:39:30.386Z\",\"ledger\":\".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":true,\"detail\":\"disk=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857 ledger=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857\"},{\"name\":\"before_hash_matches_backup\",\"ok\":true,\"detail\":\"backup=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 ledger=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 -> 7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"4 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/engines/auto-repair/independent-review.mjs allowed=.uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":true,\"detail\":\"changed=[.uap/engines/auto-repair/independent-review.mjs]\"},{\"name\":\"ledger_has_commands_to_rerun\",\"ok\":true,\"detail\":\"rerunnable=4 recorded=4\"},{\"name\":\"independent_rerun_recorded_command_1\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs\"},{\"name\":\"independent_rerun_recorded_command_2\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"independent_rerun_recorded_command_3\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/bin/uap.mjs\"},{\"name\":\"independent_rerun_recorded_command_4\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=git diff --check -- .uap/engines/auto-repair/independent-review.mjs\"}],\"failures\":[],\"commands\":[{\"command\":\"node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/engines/auto-repair/independent-review.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/bin/uap.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"git diff --check -- .uap/engines/auto-repair/independent-review.mjs\",\"exit_code\":0,\"passed\":true}],\"commands_rerun\":4,\"independent_rerun_passed\":4}\n",
+      "stderr": "",
+      "phase": "independent_review"
+    }
+  ],
+  "policy_decisions": [
+    {
+      "agent_id": "uap-orchestrator",
+      "permission": "project_read",
+      "decision": "ALLOW",
+      "action": "defect_discovery"
+    },
+    {
+      "agent_id": "uap-development-agent",
+      "permission": "project_read",
+      "decision": "ALLOW",
+      "action": "root_cause_analysis"
+    },
+    {
+      "agent_id": "uap-repair-agent",
+      "permission": "project_write",
+      "decision": "ALLOW",
+      "action": "apply_real_code_patch"
+    },
+    {
+      "agent_id": "uap-repair-agent",
+      "permission": "local_command",
+      "decision": "ALLOW",
+      "action": "run_tests"
+    },
+    {
+      "agent_id": "uap-test-agent",
+      "permission": "local_command",
+      "decision": "ALLOW",
+      "action": "targeted_and_regression_tests"
+    },
+    {
+      "agent_id": "uap-review-agent",
+      "permission": "project_read",
+      "decision": "ALLOW",
+      "action": "independent_code_review"
+    },
+    {
+      "agent_id": "uap-security-agent",
+      "permission": "project_read",
+      "decision": "ALLOW",
+      "action": "security_verification"
+    }
+  ],
+  "classification": {
+    "level": "AUTO_ALLOW",
+    "reason": "普通业务代码，在任务授权范围内自动允许",
+    "auto_allow": true
+  },
+  "reproduction_before": {
+    "command": "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+    "args": [
+      ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+    ],
+    "exit_code": 1,
+    "timed_out": false,
+    "duration_ms": 7597,
+    "stdout": "",
+    "stderr": "PROBE FAIL: expected exactly 1 ledger-driven rerun check, got 0. The reviewer is still hard-coding commands instead of reading ledger.commands.\nreviewer stdout: {\"component\":\"independent-repair-review\",\"verdict\":\"FAIL\",\"at\":\"2026-11-13T10:39:24.490Z\",\"ledger\":\"../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-review-probe-25057.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\"../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-review-probe-25057.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":false,\"detail\":\"disk=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 ledger=1111111111111111111111111111111111111111111111111111111111111111\"},{\"name\":\"before_hash_matches_backup\",\"ok\":false,\"detail\":\"backup=missing ledger=0000000000000000000000000000000000000000000000000000000000000000\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"0000000000000000000000000000000000000000000000000000000000000000 -> 1111111111111111111111111111111111111111111111111111111111111111\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"1 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/engines/auto-repair/independent-review.mjs allowed=.uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":false,\"detail\":\"changed=[]\"},{\"na\n"
+  },
+  "root_cause": {
+    "command": "git grep -n TestReproTrailingSlashCanonicalPathBreaksChannelMatching -- .uap/engines/auto-repair/independent-review.mjs",
+    "args": [
+      "grep",
+      "-n",
+      "TestReproTrailingSlashCanonicalPathBreaksChannelMatching",
+      "--",
+      ".uap/engines/auto-repair/independent-review.mjs"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_ms": 17,
+    "stdout": ".uap/engines/auto-repair/independent-review.mjs:93:  const repro = sh('go', ['test', './model/', '-run', '^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$', '-count=1']);\n",
+    "stderr": ""
+  },
+  "independent_review": {
+    "command": "node",
+    "args": [
+      ".uap/engines/auto-repair/independent-review.mjs"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"component\":\"independent-repair-review\",\"verdict\":\"PASS\",\"at\":\"2026-11-13T10:39:30.386Z\",\"ledger\":\".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":true,\"detail\":\"disk=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857 ledger=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857\"},{\"name\":\"before_hash_matches_backup\",\"ok\":true,\"detail\":\"backup=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 ledger=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67 -> 7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"4 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/engines/auto-repair/independent-review.mjs allowed=.uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":true,\"detail\":\"changed=[.uap/engines/auto-repair/independent-review.mjs]\"},{\"name\":\"ledger_has_commands_to_rerun\",\"ok\":true,\"detail\":\"rerunnable=4 recorded=4\"},{\"name\":\"independent_rerun_recorded_command_1\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs\"},{\"name\":\"independent_rerun_recorded_command_2\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/engines/auto-repair/independent-review.mjs\"},{\"name\":\"independent_rerun_recorded_command_3\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/bin/uap.mjs\"},{\"name\":\"independent_rerun_recorded_command_4\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=git diff --check -- .uap/engines/auto-repair/independent-review.mjs\"}],\"failures\":[],\"commands\":[{\"command\":\"node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/engines/auto-repair/independent-review.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/bin/uap.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"git diff --check -- .uap/engines/auto-repair/independent-review.mjs\",\"exit_code\":0,\"passed\":true}],\"commands_rerun\":4,\"independent_rerun_passed\":4}\n"
+  },
+  "before_hash": "926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67",
+  "after_hash": "7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857",
+  "backup_path": ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794566356873-86eec3/independent-review.mjs",
+  "ledger_path": ".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json",
+  "evidence_ids": [
+    "UAP-EV-20261113103930-fa8a4239",
+    "UAP-EV-20261113103930-66f39daf",
+    "UAP-EV-20261113103930-cd79f9c5",
+    "UAP-EV-20261113103930-4161261f",
+    "UAP-EV-20261113103930-05963514",
+    "UAP-EV-20261113103930-4667284d",
+    "UAP-EV-20261113103930-ab83b103"
+  ],
+  "blockers": []
+}

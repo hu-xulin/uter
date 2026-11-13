@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113103904-03ce6844",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T10:39:04.717Z",
+  "started_at": "2026-11-13T10:38:56.233Z",
+  "finished_at": "2026-11-13T10:39:04.717Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113103611-0b71e0e5",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "688dae22961b13501b459b6b7eb0b10fa7ca4b949ffa085a2c9a7a8233c43abe",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113103611-0b71e0e5",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "688dae22961b13501b459b6b7eb0b10fa7ca4b949ffa085a2c9a7a8233c43abe",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap repair --real --task=.uap/state/repair-tasks/UAP-REAL-REPAIR-002.json --dry-run",
+  "exit_code": 0,
+  "duration_ms": 8484,
+  "inputs": "{\"argv\":[\"repair\",\"--real\",\"--task=.uap/state/repair-tasks/UAP-REAL-REPAIR-002.json\",\"--dry-run\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "repair --real: UAP-REAL-REPAIR-002 DRY_RUN (0/3)",
+  "content_hash": "3762aaed717a1d595ba6c78ed87e089ad231eebb4ae6116cabd770e1363ed5c2"
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T09:02:50.080Z",
+  "generated_at": "2026-11-13T11:10:46.280Z",
   "ok": true,
   "checks": {
     "child_process_crashed": true,
@@ -10,5 +10,8 @@
     "recovery_evidence_written": true
   },
   "final_state": "SUCCEEDED",
-  "probe_task_id": "UAP-TASK-INTERRUPT-20261113090249-fdf9969d"
+  "probe_task_id": "UAP-TASK-INTERRUPT-20261113111045-b319fd60",
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720"
 }

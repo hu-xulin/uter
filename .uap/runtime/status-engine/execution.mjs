@@ -22,18 +22,30 @@ export const version = '1.0.0';
 
 const CURRENT = path.join(STATE, 'current-execution.json');
 const HISTORY = path.join(STATE, 'executions.jsonl');
+// Atomic cross-process lock. `mkdirSync` is atomic on every supported platform,
+// unlike an exclusive-create file + read/modify/write cycle. Without this lock
+// two parallel `node --test` workers both observe a stale identity and each
+// open a NEW execution in the same millisecond, so evidence produced during a
+// single verification run ends up bound to different execution_ids.
+const LOCK = path.join(STATE, '.execution-identity.lock');
+const LOCK_STALE_MS = 30_000;
 
 const VOLATILE_PREFIXES = Object.freeze([
   '.uap/state/', '.uap/reports/', '.uap/evidence/',
   '.uap/state', '.uap/reports', '.uap/evidence',
 ]);
 
-function git(args) {
+function git(args, { trim = true } = {}) {
   try {
-    return execFileSync('git', args, {
+    const output = execFileSync('git', args, {
       cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
       timeout: 15000,
-    }).trim();
+    });
+    // `git status --porcelain` encodes the status in the first two columns of
+    // EVERY line. Trimming the whole output strips the leading space of the
+    // FIRST line and corrupts its 3-column prefix, so worktreeFingerprint()
+    // must request the raw output.
+    return trim ? output.trim() : output;
   } catch (error) {
     // fail-closed: never fabricate a HEAD or a clean worktree
     return null;
@@ -48,7 +60,7 @@ export function gitHead() {
 
 /** Stable fingerprint of TRACKED business-code changes. */
 export function worktreeFingerprint() {
-  const out = git(['status', '--porcelain=v1', '--untracked-files=no']);
+  const out = git(['status', '--porcelain=v1', '--untracked-files=no'], { trim: false });
   if (out === null) return null;
   const lines = out.split('\n').map((l) => l.trimEnd()).filter(Boolean)
     .filter((line) => {
@@ -67,8 +79,35 @@ export function executionHistory() {
     .filter(Boolean);
 }
 
-/** Explicitly open a new verification run. */
-export function startExecution(reason = 'manual') {
+function acquireIdentityLock() {
+  fs.mkdirSync(STATE, { recursive: true });
+  const deadline = Date.now() + 5_000;
+  for (;;) {
+    try {
+      fs.mkdirSync(LOCK);
+      return true;
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      // A crashed process may leave a directory behind. Reclaim only locks
+      // that are demonstrably stale; never remove a live holder's lock.
+      try {
+        const age = Date.now() - fs.statSync(LOCK).mtimeMs;
+        if (age > LOCK_STALE_MS) {
+          fs.rmdirSync(LOCK);
+          continue;
+        }
+      } catch { /* lock released concurrently; retry immediately */ }
+      if (Date.now() >= deadline) return false;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 15);
+    }
+  }
+}
+
+function releaseIdentityLock() {
+  try { fs.rmdirSync(LOCK); } catch { /* already released */ }
+}
+
+function writeExecution(reason) {
   const head = gitHead();
   if (!head) throw new Error('cannot establish execution identity: git rev-parse HEAD failed');
   const execution = {
@@ -79,16 +118,29 @@ export function startExecution(reason = 'manual') {
     started_by: reason,
     status: 'RUNNING',
   };
-  fs.mkdirSync(STATE, { recursive: true });
   fs.appendFileSync(HISTORY, `${JSON.stringify(execution)}\n`, 'utf8');
   writeJSON(CURRENT, execution);
   return execution;
+}
+
+/** Explicitly open a new verification run. */
+export function startExecution(reason = 'manual') {
+  if (!acquireIdentityLock()) throw new Error('execution identity lock timed out');
+  try {
+    return writeExecution(reason);
+  } finally {
+    releaseIdentityLock();
+  }
 }
 
 /**
  * Return the identity of the current verification run. If the code version
  * changed, a fresh identity is opened; the old one is retained in the ledger
  * so its evidence can never be promoted to a PASS for the new code.
+ *
+ * The slow path takes a cross-process lock and RE-READS the identity after
+ * acquiring it: a concurrent worker may have already opened the identity we
+ * need, in which case we adopt it instead of opening a duplicate.
  */
 export function currentExecution() {
   const head = gitHead();
@@ -96,7 +148,15 @@ export function currentExecution() {
   const cur = readJSON(CURRENT, null);
   if (cur && cur.execution_id && cur.git_head === head
       && cur.worktree_fingerprint === fp) return cur;
-  return startExecution(cur ? 'code-version-changed' : 'bootstrap');
+  if (!acquireIdentityLock()) throw new Error('execution identity lock timed out');
+  try {
+    const latest = readJSON(CURRENT, null);
+    if (latest && latest.execution_id && latest.git_head === head
+        && latest.worktree_fingerprint === fp) return latest;
+    return writeExecution(latest ? 'code-version-changed' : 'bootstrap');
+  } finally {
+    releaseIdentityLock();
+  }
 }
 
 /** Bind an artefact to the current execution. */

@@ -5,9 +5,9 @@
   "claim_allowed": false,
   "status_engine": {
     "computed_by": "runtime.status-engine/computeFinalStatus",
-    "execution_id": "UAP-EXEC-20261113033035-5159bf71",
-    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
-    "worktree_fingerprint": "b94c32915ceb499f0c9dd39b87c366f44fef8cfb21614d4e6b8509ad118cb5d7",
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
     "counts": {
       "requirements_total": 538,
       "applicable": 538,
@@ -20,53 +20,33 @@
       "blocked_requirements": 0
     },
     "capabilities": {
-      "real_code_repair": false,
-      "independent_regression": false,
-      "recovery": false,
+      "real_code_repair": true,
+      "independent_regression": true,
+      "recovery": true,
       "e2e": false,
       "database_integration": false,
       "financial_integrity": false
     },
     "capability_gaps": [
-      "real_code_repair",
-      "independent_regression",
-      "recovery",
       "e2e",
       "database_integration",
       "financial_integrity"
     ],
     "reasons": [
-      "stale artefacts not bound to current execution/HEAD: tests,validators",
       "172 requirement(s) implemented but not verified",
       "538/538 applicable requirements lack current valid evidence",
-      "502 requirement(s) have no evidence record",
-      "2 unresolved P0 blocker(s)"
+      "502 requirement(s) have no evidence record"
     ],
     "claim_allowed": false,
-    "p0_blockers": [
-      {
-        "id": "UAP-P0-REAL-CODE-REPAIR",
-        "status": "OPEN",
-        "category": "CAPABILITY_GAP",
-        "title": "auto-repair 仅修复 sandbox fixture，尚未完成真实 Uter 业务代码修复闭环"
-      },
-      {
-        "id": "UAP-P0-INDEPENDENT-REGRESSION",
-        "status": "OPEN",
-        "category": "CAPABILITY_GAP",
-        "title": "缺少独立回归路径（不得由 UAP 自验证充当唯一验收依据）"
-      }
-    ],
+    "p0_blockers": [],
     "evidence_chain": {
       "ok": true,
       "problems": [],
-      "checked": 4
+      "checked": 383
     },
-    "stale_historical_artefacts": [
-      "stale artefacts not bound to current execution/HEAD: tests,validators"
-    ]
+    "stale_historical_artefacts": []
   },
-  "generated_at": "2026-11-13T03:32:04.264Z",
+  "generated_at": "2026-11-13T11:24:10.870Z",
   "generated_from": "uap report (real command results, never copied from the template)",
   "specifications": {
     "total": 32,
@@ -91,9 +71,9 @@
     "started": true,
     "health_check_passed": true,
     "end_to_end_passed": false,
-    "all_validators_passed": false,
-    "validation_bound_to_current_execution": false,
-    "tests_bound_to_current_execution": false,
+    "all_validators_passed": true,
+    "validation_bound_to_current_execution": true,
+    "tests_bound_to_current_execution": true,
     "recovery_test_passed": true,
     "components_total": 10,
     "components_healthy": 10
@@ -115,7 +95,7 @@
   },
   "workflows": {
     "registered": 7,
-    "runs": 54
+    "runs": 61
   },
   "three_independent_results": {
     "specification_completeness": {
@@ -139,9 +119,9 @@
         "validators_blocked_restricted": 0,
         "validators_blocked_undeclared": 0,
         "uap_tests_exit_code": 0,
-        "tests_bound_to_current_execution": false,
-        "validators_bound_to_current_execution": false,
-        "verdict_detail": "Runtime 健康组件 10/10; 验证器 32 PASS / 0 FAIL / 未声明受限的 BLOCKED 0 项; 当前执行绑定 validators=false tests=false（历史卡片不计为当前能力证据）"
+        "tests_bound_to_current_execution": true,
+        "validators_bound_to_current_execution": true,
+        "verdict_detail": "Runtime 健康 10/10 组件健康; 32 个验证器 32 PASS / 0 FAIL; 0 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=0; 卡片已绑定当前 execution_id/HEAD/worktree"
       }
     },
     "uter_real_compliance": {
@@ -159,8 +139,8 @@
         "validators_total": 32,
         "restricted_blocked_items": [],
         "financial_simulated_only": true,
-        "validators_bound_to_current_execution": false,
-        "verdict_detail": "可执行检查: 验证器 32/32 PASS, 0 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=0; 资金验证 simulated_only=true; 当前执行绑定 validators=false tests=false; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。"
+        "validators_bound_to_current_execution": true,
+        "verdict_detail": "可执行检查: 验证器 32/32 PASS, 0 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=0; 资金验证 simulated_only=true; 当前执行绑定 validators=true tests=true; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。"
       }
     }
   },

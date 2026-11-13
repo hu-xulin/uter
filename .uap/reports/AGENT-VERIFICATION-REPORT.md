@@ -1,9 +1,9 @@
 # Agent 验证报告
 
-> 本段落由 `.uap/tools/acceptance-report-generator.mjs` 于 2026-11-13T03:32:54.652Z 从本次真实执行产物自动生成；不覆盖任何已有内容。
+> 本段落由 `.uap/tools/acceptance-report-generator.mjs` 于 2026-11-13T11:24:14.332Z 从本次真实执行产物自动生成；不覆盖任何已有内容。
 
 - **执行日期**：2026-11-13
-- **Git HEAD**：`7b98646915f75026e0e643f9f4b0a6a3ff3ab67c`
+- **Git HEAD**：`412f0a28b12f60aadec5cfd21bb25d5cd5975ecc`
 - **分支**：`main`
 - **最终状态（程序化计算）**：**IMPLEMENTED_NOT_VERIFIED**（claim_allowed=false）
 - **原始日志**：`.uap/state/acceptance-20261113/logs/`

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113103945-e525d1a6",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T10:39:45.388Z",
+  "started_at": "2026-11-13T10:39:42.487Z",
+  "finished_at": "2026-11-13T10:39:45.388Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-repair",
+  "exit_code": 0,
+  "duration_ms": 2901,
+  "inputs": "{\"argv\":[\"verify-repair\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "verify-repair: PASS (15 independent checks, 4 commands re-run)",
+  "content_hash": "688d54473ae1482f248c3cad566fb68c335fb766afebe4e6fa1f1b95df8f1198"
+}

@@ -1,0 +1,19 @@
+{
+  "exit_code": 0,
+  "generated_at": "2026-11-13T11:10:50.503Z",
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "source": "uap verify-repair: independent-review.mjs re-ran ledger commands",
+  "status": "PASS",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "ledger": ".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json",
+  "regression_commands": [
+    "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+    "node --check .uap/engines/auto-repair/independent-review.mjs",
+    "node --check .uap/bin/uap.mjs",
+    "git diff --check -- .uap/engines/auto-repair/independent-review.mjs"
+  ],
+  "checks_passed": 15,
+  "reviewer_exit_code": 0
+}

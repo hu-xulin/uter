@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113110216-4d8ef64e",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:02:16.479Z",
+  "started_at": "2026-11-13T11:02:16.479Z",
+  "finished_at": "2026-11-13T11:02:16.479Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "8573e7a8d751128b8ad8c600df3fd33c01297d05280f7bfbd32b5e8ae62093f9",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "8573e7a8d751128b8ad8c600df3fd33c01297d05280f7bfbd32b5e8ae62093f9",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.repair_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.repair_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.repair_integrity 实检: root_cause=PASS(failure_policy retryable=bounded_retry permission_denied=block missing_dependency=block unrecoverable=fail (按根因分类)); bounded_retry=PASS(max_repair_attempts_per_root_cause=3; 子进程复验 FAILED->QUEUED 重试路径存在=true 且有界(<=3)=true; exit_code=0); regression=PASS(回归入口 verify-all.sh/ci.yml 存在=true; preserve_user_changes=true; validation_failed=repair_then_revalidate; BASELINE 已改跟踪文件=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 4299 个 | 真实读取 execution-mapping 失败策略/重试上限 + node 子进程复验重试路径有界 + 回归门禁入口; 不调用 auto-repair 引擎 execute()",
+  "content_hash": "4bf6cae29da65b4f6fea68527d18b895f3cb00c7d69407baf82abea70dbdbf9e"
+}

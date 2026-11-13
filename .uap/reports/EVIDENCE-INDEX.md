@@ -1,11 +1,11 @@
 # Evidence Index
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T03:32:04.259Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T11:24:10.864Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 汇总
 
-证据总数 **3090**；SHA-256 校验通过 **3090**；失败 **0**。证据为 append-only，同 ID 覆盖写入会被拒绝。
+证据总数 **4741**；SHA-256 校验通过 **4741**；失败 **0**。证据为 append-only，同 ID 覆盖写入会被拒绝。
 
 ## 逐条索引
 
@@ -3073,6 +3073,1625 @@
 | UAP-EV-20261113033036-3c4a3b51 | cli_command | uap status --json | 0 | 2026-11-13T03:30:36.501Z | HASH_OK |
 | UAP-EV-20261113033101-056a3f40 | cli_command | uap verify-status | 1 | 2026-11-13T03:31:01.924Z | HASH_OK |
 | UAP-EV-20261113033101-e7f98db9 | cli_command | uap status --json | 0 | 2026-11-13T03:31:01.860Z | HASH_OK |
+| UAP-EV-20261113033204-5a9aa3e8 | cli_command | uap report --final | 0 | 2026-11-13T03:32:04.277Z | HASH_OK |
+| UAP-EV-20261113033205-0de85bf1 | cli_command | uap status --json | 0 | 2026-11-13T03:32:05.528Z | HASH_OK |
+| UAP-EV-20261113033205-627974b1 | cli_command | uap verify-status | 0 | 2026-11-13T03:32:05.590Z | HASH_OK |
+| UAP-EV-20261113033256-573eaff4 | cli_command | uap verify-status | 0 | 2026-11-13T03:32:56.360Z | HASH_OK |
+| UAP-EV-20261113033256-a71b176b | cli_command | uap status --json | 0 | 2026-11-13T03:32:56.306Z | HASH_OK |
+| UAP-EV-20261113043845-0a4773ef | cli_command | uap status | 0 | 2026-11-13T04:38:45.902Z | HASH_OK |
+| UAP-EV-20261113062924-0167131f | task_result | uap task run UAP-TASK-HEALTH-20261113062924-81b94ae7 | 0 | 2026-11-13T06:29:24.658Z | HASH_OK |
+| UAP-EV-20261113062924-5c9656f6 | task_step | step:__health_step__ | 0 | 2026-11-13T06:29:24.447Z | HASH_OK |
+| UAP-EV-20261113062925-183fcecd | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113062925-a114ebc2 | 0 | 2026-11-13T06:29:25.893Z | HASH_OK |
+| UAP-EV-20261113062925-416617d8 | task_step | step:probe.step2 | 0 | 2026-11-13T06:29:25.516Z | HASH_OK |
+| UAP-EV-20261113062925-8b37247e | task_step | step:probe.step3 | 0 | 2026-11-13T06:29:25.609Z | HASH_OK |
+| UAP-EV-20261113062925-954d50cc | task_step | step:probe.step1 | 0 | 2026-11-13T06:29:25.251Z | HASH_OK |
+| UAP-EV-20261113062925-a141c1b0 | health_probe | evidence-engine.health() | 0 | 2026-11-13T06:29:25.952Z | HASH_OK |
+| UAP-EV-20261113062925-c1b46103 | task_result | uap task run UAP-TASK-INTERRUPT-20261113062925-a114ebc2 | 0 | 2026-11-13T06:29:25.774Z | HASH_OK |
+| UAP-EV-20261113062925-e7f3777c | recovery | uap task resume UAP-TASK-INTERRUPT-20261113062925-a114ebc2 | 0 | 2026-11-13T06:29:25.390Z | HASH_OK |
+| UAP-EV-20261113062926-194c0aff | task_step | step:probe.step3 | 0 | 2026-11-13T06:29:26.643Z | HASH_OK |
+| UAP-EV-20261113062926-4def0ec7 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113062926-5203c6d3 | 0 | 2026-11-13T06:29:26.490Z | HASH_OK |
+| UAP-EV-20261113062926-5e83d2c8 | task_step | step:probe.step2 | 0 | 2026-11-13T06:29:26.582Z | HASH_OK |
+| UAP-EV-20261113062926-62a9ed09 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113062926-5203c6d3 | 0 | 2026-11-13T06:29:26.994Z | HASH_OK |
+| UAP-EV-20261113062926-8a7fe9db | task_step | step:probe.step1 | 0 | 2026-11-13T06:29:26.390Z | HASH_OK |
+| UAP-EV-20261113062926-e55d803b | task_result | uap task run UAP-TASK-INTERRUPT-20261113062926-5203c6d3 | 0 | 2026-11-13T06:29:26.776Z | HASH_OK |
+| UAP-EV-20261113062927-0f8b39cc | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T06:29:27.539Z | HASH_OK |
+| UAP-EV-20261113062927-3e02ab84 | task_result | uap task run UAP-TASK-TEST-20261113062927-eaaa83f9 | 1 | 2026-11-13T06:29:27.692Z | HASH_OK |
+| UAP-EV-20261113062927-7f1bc18a | workflow_step | workflow:validate_environment | 0 | 2026-11-13T06:29:27.960Z | HASH_OK |
+| UAP-EV-20261113062927-9b521e99 | task_result | uap task run UAP-TASK-TEST-20261113062927-918484fb | 0 | 2026-11-13T06:29:27.335Z | HASH_OK |
+| UAP-EV-20261113062927-b6e82c36 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T06:29:27.172Z | HASH_OK |
+| UAP-EV-20261113062928-1c53a201 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T06:29:28.392Z | HASH_OK |
+| UAP-EV-20261113062928-1fa5321b | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T06:29:28.542Z | HASH_OK |
+| UAP-EV-20261113062928-20bfdc9b | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T06:29:28.977Z | HASH_OK |
+| UAP-EV-20261113062928-219de82e | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T06:29:28.820Z | HASH_OK |
+| UAP-EV-20261113062928-6d7d9325 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T06:29:28.685Z | HASH_OK |
+| UAP-EV-20261113062928-791ea189 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T06:29:28.251Z | HASH_OK |
+| UAP-EV-20261113062928-793ec8ca | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T06:29:28.196Z | HASH_OK |
+| UAP-EV-20261113062928-812ba890 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T06:29:28.600Z | HASH_OK |
+| UAP-EV-20261113062928-b06186cf | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T06:29:28.449Z | HASH_OK |
+| UAP-EV-20261113062928-c935d86b | task_step | step:test_idempotency | 0 | 2026-11-13T06:29:28.734Z | HASH_OK |
+| UAP-EV-20261113062928-e8cd0445 | task_step | step:test_concurrency | 0 | 2026-11-13T06:29:28.863Z | HASH_OK |
+| UAP-EV-20261113062928-fd3b16a9 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T06:29:28.933Z | HASH_OK |
+| UAP-EV-20261113062929-03893936 | task_result | uap task run UAP-TASK-20261113062928-844427ba | 0 | 2026-11-13T06:29:29.330Z | HASH_OK |
+| UAP-EV-20261113062929-2e81a478 | task_step | step:verify_reconciliation | 0 | 2026-11-13T06:29:29.204Z | HASH_OK |
+| UAP-EV-20261113062929-ed66c958 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T06:29:29.162Z | HASH_OK |
+| UAP-EV-20261113062929-fbef4e87 | task_step | step:test_failure_recovery | 0 | 2026-11-13T06:29:29.091Z | HASH_OK |
+| UAP-EV-20261113062929-ffda0e62 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T06:29:29.049Z | HASH_OK |
+| UAP-EV-20261113062942-1098f1ea | cli_command | uap test --all | 1 | 2026-11-13T06:29:42.319Z | HASH_OK |
+| UAP-EV-20261113062942-bef835ea | runtime_test_run | node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 1 | 2026-11-13T06:29:42.265Z | HASH_OK |
+| UAP-EV-20261113071022-8c1def7a | task_result | uap task run UAP-TASK-HEALTH-20261113071022-4a5ba034 | 0 | 2026-11-13T07:10:22.560Z | HASH_OK |
+| UAP-EV-20261113071022-e7dbcf77 | task_step | step:__health_step__ | 0 | 2026-11-13T07:10:22.336Z | HASH_OK |
+| UAP-EV-20261113071023-378b3cf1 | task_result | uap task run UAP-TASK-INTERRUPT-20261113071023-caa56ad4 | 0 | 2026-11-13T07:10:23.492Z | HASH_OK |
+| UAP-EV-20261113071023-399a7238 | task_step | step:probe.step3 | 0 | 2026-11-13T07:10:23.381Z | HASH_OK |
+| UAP-EV-20261113071023-48d8a88c | task_step | step:probe.step1 | 0 | 2026-11-13T07:10:23.125Z | HASH_OK |
+| UAP-EV-20261113071023-5413202a | health_probe | evidence-engine.health() | 0 | 2026-11-13T07:10:23.625Z | HASH_OK |
+| UAP-EV-20261113071023-56f0c9f7 | task_step | step:probe.step2 | 0 | 2026-11-13T07:10:23.310Z | HASH_OK |
+| UAP-EV-20261113071023-6a81422f | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113071023-caa56ad4 | 0 | 2026-11-13T07:10:23.582Z | HASH_OK |
+| UAP-EV-20261113071023-caf12b07 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113071023-caa56ad4 | 0 | 2026-11-13T07:10:23.224Z | HASH_OK |
+| UAP-EV-20261113071024-0d18173b | task_result | uap task run UAP-TASK-INTERRUPT-20261113071023-667d34d9 | 0 | 2026-11-13T07:10:24.396Z | HASH_OK |
+| UAP-EV-20261113071024-24bd10d3 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113071023-667d34d9 | 0 | 2026-11-13T07:10:24.125Z | HASH_OK |
+| UAP-EV-20261113071024-2cb3b7b9 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T07:10:24.570Z | HASH_OK |
+| UAP-EV-20261113071024-3a17e0e0 | task_step | step:probe.step1 | 0 | 2026-11-13T07:10:24.020Z | HASH_OK |
+| UAP-EV-20261113071024-3ca3c473 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T07:10:24.897Z | HASH_OK |
+| UAP-EV-20261113071024-993655d1 | task_step | step:probe.step3 | 0 | 2026-11-13T07:10:24.275Z | HASH_OK |
+| UAP-EV-20261113071024-b96000a5 | task_step | step:probe.step2 | 0 | 2026-11-13T07:10:24.216Z | HASH_OK |
+| UAP-EV-20261113071024-d8ee29b1 | task_result | uap task run UAP-TASK-TEST-20261113071024-af6858f1 | 0 | 2026-11-13T07:10:24.679Z | HASH_OK |
+| UAP-EV-20261113071024-ddf2bd80 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113071023-667d34d9 | 0 | 2026-11-13T07:10:24.474Z | HASH_OK |
+| UAP-EV-20261113071025-8e9c56fc | task_result | uap task run UAP-TASK-TEST-20261113071024-928272d0 | 1 | 2026-11-13T07:10:25.243Z | HASH_OK |
+| UAP-EV-20261113071025-a4fdfcab | workflow_step | workflow:validate_environment | 0 | 2026-11-13T07:10:25.861Z | HASH_OK |
+| UAP-EV-20261113071026-244fc0ea | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T07:10:26.449Z | HASH_OK |
+| UAP-EV-20261113071026-2d708e3b | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T07:10:26.220Z | HASH_OK |
+| UAP-EV-20261113071026-3c58ea5a | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T07:10:26.408Z | HASH_OK |
+| UAP-EV-20261113071026-42810938 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T07:10:26.333Z | HASH_OK |
+| UAP-EV-20261113071026-5b777630 | task_step | step:verify_reconciliation | 0 | 2026-11-13T07:10:26.979Z | HASH_OK |
+| UAP-EV-20261113071026-5b9fb9c3 | task_step | step:test_idempotency | 0 | 2026-11-13T07:10:26.553Z | HASH_OK |
+| UAP-EV-20261113071026-65b4edb3 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T07:10:26.759Z | HASH_OK |
+| UAP-EV-20261113071026-6708aef6 | task_step | step:test_failure_recovery | 0 | 2026-11-13T07:10:26.889Z | HASH_OK |
+| UAP-EV-20261113071026-7eedaea8 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T07:10:26.794Z | HASH_OK |
+| UAP-EV-20261113071026-8810ca1c | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T07:10:26.292Z | HASH_OK |
+| UAP-EV-20261113071026-9f367219 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T07:10:26.945Z | HASH_OK |
+| UAP-EV-20261113071026-ab1bf727 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T07:10:26.854Z | HASH_OK |
+| UAP-EV-20261113071026-b5558b74 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T07:10:26.511Z | HASH_OK |
+| UAP-EV-20261113071026-c37906c9 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T07:10:26.154Z | HASH_OK |
+| UAP-EV-20261113071026-ef155de7 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T07:10:26.623Z | HASH_OK |
+| UAP-EV-20261113071026-f493f6a5 | task_step | step:test_concurrency | 0 | 2026-11-13T07:10:26.682Z | HASH_OK |
+| UAP-EV-20261113071027-62d9f993 | task_result | uap task run UAP-TASK-20261113071025-8eb279b7 | 0 | 2026-11-13T07:10:27.100Z | HASH_OK |
+| UAP-EV-20261113071041-7762868f | cli_command | uap test --all | 1 | 2026-11-13T07:10:41.370Z | HASH_OK |
+| UAP-EV-20261113071041-a0bb660b | runtime_test_run | node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 1 | 2026-11-13T07:10:41.332Z | HASH_OK |
+| UAP-EV-20261113071555-240f61bd | task_result | uap task run UAP-TASK-HEALTH-20261113071555-e3512d72 | 0 | 2026-11-13T07:15:55.568Z | HASH_OK |
+| UAP-EV-20261113071555-74906bd9 | task_step | step:__health_step__ | 0 | 2026-11-13T07:15:55.336Z | HASH_OK |
+| UAP-EV-20261113071556-02a3406c | health_probe | evidence-engine.health() | 0 | 2026-11-13T07:15:56.707Z | HASH_OK |
+| UAP-EV-20261113071556-04637c15 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113071556-093f0bc6 | 0 | 2026-11-13T07:15:56.266Z | HASH_OK |
+| UAP-EV-20261113071556-267c59f9 | task_result | uap task run UAP-TASK-INTERRUPT-20261113071556-093f0bc6 | 0 | 2026-11-13T07:15:56.570Z | HASH_OK |
+| UAP-EV-20261113071556-3f14082e | task_step | step:probe.step1 | 0 | 2026-11-13T07:15:56.164Z | HASH_OK |
+| UAP-EV-20261113071556-6368f991 | task_step | step:probe.step3 | 0 | 2026-11-13T07:15:56.443Z | HASH_OK |
+| UAP-EV-20261113071556-7e40b88c | task_step | step:probe.step2 | 0 | 2026-11-13T07:15:56.363Z | HASH_OK |
+| UAP-EV-20261113071556-bf93b33d | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113071556-093f0bc6 | 0 | 2026-11-13T07:15:56.659Z | HASH_OK |
+| UAP-EV-20261113071557-0559c73a | task_step | step:probe.step3 | 0 | 2026-11-13T07:15:57.412Z | HASH_OK |
+| UAP-EV-20261113071557-0dc50ac7 | task_result | uap task run UAP-TASK-INTERRUPT-20261113071557-f4f5404c | 0 | 2026-11-13T07:15:57.526Z | HASH_OK |
+| UAP-EV-20261113071557-38e5eaa9 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T07:15:57.776Z | HASH_OK |
+| UAP-EV-20261113071557-39ac599e | recovery | uap task resume UAP-TASK-INTERRUPT-20261113071557-f4f5404c | 0 | 2026-11-13T07:15:57.256Z | HASH_OK |
+| UAP-EV-20261113071557-8602347f | task_result | uap task run UAP-TASK-TEST-20261113071557-c740f042 | 0 | 2026-11-13T07:15:57.890Z | HASH_OK |
+| UAP-EV-20261113071557-db7fbc8d | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113071557-f4f5404c | 0 | 2026-11-13T07:15:57.660Z | HASH_OK |
+| UAP-EV-20261113071557-e4b7f3d1 | task_step | step:probe.step2 | 0 | 2026-11-13T07:15:57.347Z | HASH_OK |
+| UAP-EV-20261113071557-fe5d44dc | task_step | step:probe.step1 | 0 | 2026-11-13T07:15:57.115Z | HASH_OK |
+| UAP-EV-20261113071558-3c52c936 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T07:15:58.281Z | HASH_OK |
+| UAP-EV-20261113071558-7d642fad | task_result | uap task run UAP-TASK-TEST-20261113071558-5d4a57a0 | 1 | 2026-11-13T07:15:58.643Z | HASH_OK |
+| UAP-EV-20261113071559-170180e2 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T07:15:59.706Z | HASH_OK |
+| UAP-EV-20261113071559-509a3d03 | task_step | step:test_concurrency | 0 | 2026-11-13T07:15:59.898Z | HASH_OK |
+| UAP-EV-20261113071559-5d6cfb7c | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T07:15:59.463Z | HASH_OK |
+| UAP-EV-20261113071559-6415629e | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T07:15:59.388Z | HASH_OK |
+| UAP-EV-20261113071559-7112a231 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T07:15:59.967Z | HASH_OK |
+| UAP-EV-20261113071559-946bbdb2 | task_step | step:test_idempotency | 0 | 2026-11-13T07:15:59.760Z | HASH_OK |
+| UAP-EV-20261113071559-9c78765b | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T07:15:59.623Z | HASH_OK |
+| UAP-EV-20261113071559-9e4be3ee | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T07:15:59.849Z | HASH_OK |
+| UAP-EV-20261113071559-a3da7055 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T07:15:59.344Z | HASH_OK |
+| UAP-EV-20261113071559-b6f5ce47 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T07:15:59.580Z | HASH_OK |
+| UAP-EV-20261113071559-bf59fd96 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T07:15:59.509Z | HASH_OK |
+| UAP-EV-20261113071559-f51e875d | workflow_step | workflow:validate_environment | 0 | 2026-11-13T07:15:59.163Z | HASH_OK |
+| UAP-EV-20261113071600-1c9d0cfc | task_step | step:test_failure_recovery | 0 | 2026-11-13T07:16:00.126Z | HASH_OK |
+| UAP-EV-20261113071600-1feba46b | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T07:16:00.009Z | HASH_OK |
+| UAP-EV-20261113071600-2c250a67 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T07:16:00.188Z | HASH_OK |
+| UAP-EV-20261113071600-7c7cfeca | task_result | uap task run UAP-TASK-20261113071559-d5596f6a | 0 | 2026-11-13T07:16:00.371Z | HASH_OK |
+| UAP-EV-20261113071600-8be07b9d | task_step | step:verify_reconciliation | 0 | 2026-11-13T07:16:00.232Z | HASH_OK |
+| UAP-EV-20261113071600-a5b905c5 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T07:16:00.084Z | HASH_OK |
+| UAP-EV-20261113071616-082d47e9 | runtime_test_run | node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 1 | 2026-11-13T07:16:16.529Z | HASH_OK |
+| UAP-EV-20261113071616-61faa85b | cli_command | uap test --all | 1 | 2026-11-13T07:16:16.567Z | HASH_OK |
+| UAP-EV-20261113071825-b572139f | task_step | step:__health_step__ | 0 | 2026-11-13T07:18:25.648Z | HASH_OK |
+| UAP-EV-20261113071826-2aae94c2 | task_result | uap task run UAP-TASK-HEALTH-20261113071825-beab2466 | 0 | 2026-11-13T07:18:26.122Z | HASH_OK |
+| UAP-EV-20261113071827-27822d3f | task_step | step:probe.step1 | 0 | 2026-11-13T07:18:27.383Z | HASH_OK |
+| UAP-EV-20261113071827-3f8b4c26 | task_step | step:probe.step3 | 0 | 2026-11-13T07:18:27.975Z | HASH_OK |
+| UAP-EV-20261113071827-63c7930b | task_step | step:probe.step2 | 0 | 2026-11-13T07:18:27.836Z | HASH_OK |
+| UAP-EV-20261113071827-b014e0f2 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113071827-00d7a2d4 | 0 | 2026-11-13T07:18:27.654Z | HASH_OK |
+| UAP-EV-20261113071828-982e9605 | task_result | uap task run UAP-TASK-INTERRUPT-20261113071827-00d7a2d4 | 0 | 2026-11-13T07:18:28.701Z | HASH_OK |
+| UAP-EV-20261113071829-345584e2 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113071827-00d7a2d4 | 0 | 2026-11-13T07:18:29.004Z | HASH_OK |
+| UAP-EV-20261113071829-554b1690 | health_probe | evidence-engine.health() | 0 | 2026-11-13T07:18:29.180Z | HASH_OK |
+| UAP-EV-20261113071830-9eba0b33 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113071830-a95ae9e5 | 0 | 2026-11-13T07:18:30.594Z | HASH_OK |
+| UAP-EV-20261113071830-a31fbf33 | task_step | step:probe.step1 | 0 | 2026-11-13T07:18:30.401Z | HASH_OK |
+| UAP-EV-20261113071830-be423554 | task_step | step:probe.step2 | 0 | 2026-11-13T07:18:30.828Z | HASH_OK |
+| UAP-EV-20261113071830-df409455 | task_step | step:probe.step3 | 0 | 2026-11-13T07:18:30.966Z | HASH_OK |
+| UAP-EV-20261113071831-3810d490 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113071830-a95ae9e5 | 0 | 2026-11-13T07:18:31.513Z | HASH_OK |
+| UAP-EV-20261113071831-9544e86d | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T07:18:31.804Z | HASH_OK |
+| UAP-EV-20261113071831-b345dc2e | task_result | uap task run UAP-TASK-INTERRUPT-20261113071830-a95ae9e5 | 0 | 2026-11-13T07:18:31.347Z | HASH_OK |
+| UAP-EV-20261113071832-7eb1fa10 | task_result | uap task run UAP-TASK-TEST-20261113071831-2fe0eec3 | 0 | 2026-11-13T07:18:32.221Z | HASH_OK |
+| UAP-EV-20261113071832-7f24860f | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T07:18:32.675Z | HASH_OK |
+| UAP-EV-20261113071833-b58b6f87 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T07:18:33.754Z | HASH_OK |
+| UAP-EV-20261113071833-bb9c05e4 | task_result | uap task run UAP-TASK-TEST-20261113071832-74cbb75c | 1 | 2026-11-13T07:18:33.131Z | HASH_OK |
+| UAP-EV-20261113071834-1007024e | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T07:18:34.380Z | HASH_OK |
+| UAP-EV-20261113071834-3d7c3662 | task_step | step:test_idempotency | 0 | 2026-11-13T07:18:34.664Z | HASH_OK |
+| UAP-EV-20261113071834-5700a8c1 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T07:18:34.616Z | HASH_OK |
+| UAP-EV-20261113071834-8153ffda | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T07:18:34.753Z | HASH_OK |
+| UAP-EV-20261113071834-8aa69846 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T07:18:34.193Z | HASH_OK |
+| UAP-EV-20261113071834-8ab1c6d8 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T07:18:34.047Z | HASH_OK |
+| UAP-EV-20261113071834-9da7f3ea | task_step | step:test_concurrency | 0 | 2026-11-13T07:18:34.814Z | HASH_OK |
+| UAP-EV-20261113071834-a62fae94 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T07:18:34.314Z | HASH_OK |
+| UAP-EV-20261113071834-d85a1d2e | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T07:18:34.530Z | HASH_OK |
+| UAP-EV-20261113071834-ecfa1af3 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T07:18:34.981Z | HASH_OK |
+| UAP-EV-20261113071834-f30a45fb | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T07:18:34.468Z | HASH_OK |
+| UAP-EV-20261113071834-faaecf64 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T07:18:34.910Z | HASH_OK |
+| UAP-EV-20261113071835-2ae3e104 | task_step | step:verify_reconciliation | 0 | 2026-11-13T07:18:35.368Z | HASH_OK |
+| UAP-EV-20261113071835-31fd04cd | task_result | uap task run UAP-TASK-20261113071833-8411ef67 | 0 | 2026-11-13T07:18:35.622Z | HASH_OK |
+| UAP-EV-20261113071835-38089985 | task_step | step:test_failure_recovery | 0 | 2026-11-13T07:18:35.168Z | HASH_OK |
+| UAP-EV-20261113071835-845adec9 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T07:18:35.299Z | HASH_OK |
+| UAP-EV-20261113071835-888c5f8b | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T07:18:35.090Z | HASH_OK |
+| UAP-EV-20261113071911-2fc150ed | cli_command | uap test --all | 1 | 2026-11-13T07:19:11.668Z | HASH_OK |
+| UAP-EV-20261113071911-98cf0777 | runtime_test_run | node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 1 | 2026-11-13T07:19:11.627Z | HASH_OK |
+| UAP-EV-20261113090247-e098a0c3 | cli_command | uap status | 0 | 2026-11-13T09:02:47.421Z | HASH_OK |
+| UAP-EV-20261113090247-e96a594b | task_step | step:__health_step__ | 0 | 2026-11-13T09:02:47.821Z | HASH_OK |
+| UAP-EV-20261113090248-1ca3f8cf | task_step | step:probe.step2 | 0 | 2026-11-13T09:02:48.661Z | HASH_OK |
+| UAP-EV-20261113090248-4cfa7275 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113090248-0217209d | 0 | 2026-11-13T09:02:48.547Z | HASH_OK |
+| UAP-EV-20261113090248-97ccc8fd | task_step | step:probe.step3 | 0 | 2026-11-13T09:02:48.743Z | HASH_OK |
+| UAP-EV-20261113090248-9e2859b4 | task_result | uap task run UAP-TASK-INTERRUPT-20261113090248-0217209d | 0 | 2026-11-13T09:02:48.892Z | HASH_OK |
+| UAP-EV-20261113090248-b70a2a01 | task_result | uap task run UAP-TASK-HEALTH-20261113090247-fc80b6a3 | 0 | 2026-11-13T09:02:48.014Z | HASH_OK |
+| UAP-EV-20261113090248-fe5cf6ea | task_step | step:probe.step1 | 0 | 2026-11-13T09:02:48.422Z | HASH_OK |
+| UAP-EV-20261113090249-3eefbb44 | runtime_start | uap doctor | 0 | 2026-11-13T09:02:49.189Z | HASH_OK |
+| UAP-EV-20261113090249-52d3316c | task_step | step:probe.step2 | 0 | 2026-11-13T09:02:49.679Z | HASH_OK |
+| UAP-EV-20261113090249-6750b3c2 | task_step | step:probe.step3 | 0 | 2026-11-13T09:02:49.762Z | HASH_OK |
+| UAP-EV-20261113090249-6c77bf8f | task_result | uap task run UAP-TASK-INTERRUPT-20261113090249-fdf9969d | 0 | 2026-11-13T09:02:49.911Z | HASH_OK |
+| UAP-EV-20261113090249-83b23951 | health_probe | evidence-engine.health() | 0 | 2026-11-13T09:02:49.064Z | HASH_OK |
+| UAP-EV-20261113090249-ef004f48 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113090249-fdf9969d | 0 | 2026-11-13T09:02:49.562Z | HASH_OK |
+| UAP-EV-20261113090249-f205bff1 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113090248-0217209d | 0 | 2026-11-13T09:02:49.003Z | HASH_OK |
+| UAP-EV-20261113090249-f507c39b | task_step | step:probe.step1 | 0 | 2026-11-13T09:02:49.434Z | HASH_OK |
+| UAP-EV-20261113090250-c63c54e5 | cli_command | uap doctor | 0 | 2026-11-13T09:02:50.081Z | HASH_OK |
+| UAP-EV-20261113090250-e3ffe2a2 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113090249-fdf9969d | 0 | 2026-11-13T09:02:50.023Z | HASH_OK |
+| UAP-EV-20261113090340-0e28bbca | cli_command | uap --help | 0 | 2026-11-13T09:03:40.153Z | HASH_OK |
+| UAP-EV-20261113090744-b078cd59 | cli_command | uap execution show | 0 | 2026-11-13T09:07:44.100Z | HASH_OK |
+| UAP-EV-20261113091705-18988eb4 | task_step | step:__health_step__ | 0 | 2026-11-13T09:17:05.681Z | HASH_OK |
+| UAP-EV-20261113091706-f6756fab | task_result | uap task run UAP-TASK-HEALTH-20261113091705-5622af82 | 0 | 2026-11-13T09:17:06.936Z | HASH_OK |
+| UAP-EV-20261113091707-4f5e4faf | task_step | step:probe.step1 | 0 | 2026-11-13T09:17:07.785Z | HASH_OK |
+| UAP-EV-20261113091708-38c64ec7 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113091707-8b143693 | 0 | 2026-11-13T09:17:08.002Z | HASH_OK |
+| UAP-EV-20261113091708-41a4fac6 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113091707-8b143693 | 0 | 2026-11-13T09:17:08.766Z | HASH_OK |
+| UAP-EV-20261113091708-58024955 | task_result | uap task run UAP-TASK-INTERRUPT-20261113091707-8b143693 | 0 | 2026-11-13T09:17:08.584Z | HASH_OK |
+| UAP-EV-20261113091708-6462c48b | task_step | step:probe.step2 | 0 | 2026-11-13T09:17:08.201Z | HASH_OK |
+| UAP-EV-20261113091708-ad99d544 | health_probe | evidence-engine.health() | 0 | 2026-11-13T09:17:08.918Z | HASH_OK |
+| UAP-EV-20261113091708-b8069e80 | task_step | step:probe.step3 | 0 | 2026-11-13T09:17:08.343Z | HASH_OK |
+| UAP-EV-20261113091709-d01d4947 | task_step | step:probe.step1 | 0 | 2026-11-13T09:17:09.829Z | HASH_OK |
+| UAP-EV-20261113091710-3aea3c89 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113091709-f40752b0 | 0 | 2026-11-13T09:17:10.071Z | HASH_OK |
+| UAP-EV-20261113091710-9683ea23 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113091709-f40752b0 | 0 | 2026-11-13T09:17:10.848Z | HASH_OK |
+| UAP-EV-20261113091710-a5cceb7c | task_result | uap task run UAP-TASK-INTERRUPT-20261113091709-f40752b0 | 0 | 2026-11-13T09:17:10.675Z | HASH_OK |
+| UAP-EV-20261113091710-c9e29f09 | task_step | step:probe.step2 | 0 | 2026-11-13T09:17:10.262Z | HASH_OK |
+| UAP-EV-20261113091710-ed554ab1 | task_step | step:probe.step3 | 0 | 2026-11-13T09:17:10.433Z | HASH_OK |
+| UAP-EV-20261113091711-8b161a5a | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T09:17:11.631Z | HASH_OK |
+| UAP-EV-20261113091711-a622d01d | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T09:17:11.056Z | HASH_OK |
+| UAP-EV-20261113091711-ea9340b2 | task_result | uap task run UAP-TASK-TEST-20261113091711-e2a0016b | 1 | 2026-11-13T09:17:11.891Z | HASH_OK |
+| UAP-EV-20261113091711-f9be8c97 | task_result | uap task run UAP-TASK-TEST-20261113091710-9f25186d | 0 | 2026-11-13T09:17:11.280Z | HASH_OK |
+| UAP-EV-20261113091712-3ad126dd | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T09:17:12.590Z | HASH_OK |
+| UAP-EV-20261113091712-9c02fd48 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T09:17:12.681Z | HASH_OK |
+| UAP-EV-20261113091712-c2c4405d | workflow_step | workflow:validate_environment | 0 | 2026-11-13T09:17:12.364Z | HASH_OK |
+| UAP-EV-20261113091712-d045e5e8 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T09:17:12.905Z | HASH_OK |
+| UAP-EV-20261113091712-f5e0a170 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T09:17:12.815Z | HASH_OK |
+| UAP-EV-20261113091713-0d152ca0 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T09:17:13.861Z | HASH_OK |
+| UAP-EV-20261113091713-629d749f | task_step | step:test_idempotency | 0 | 2026-11-13T09:17:13.355Z | HASH_OK |
+| UAP-EV-20261113091713-92aa38b7 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T09:17:13.057Z | HASH_OK |
+| UAP-EV-20261113091713-9a56fbf0 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T09:17:13.948Z | HASH_OK |
+| UAP-EV-20261113091713-9f0aa8f9 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T09:17:13.503Z | HASH_OK |
+| UAP-EV-20261113091713-d62d49b9 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T09:17:13.275Z | HASH_OK |
+| UAP-EV-20261113091713-e340f37d | task_step | step:test_concurrency | 0 | 2026-11-13T09:17:13.622Z | HASH_OK |
+| UAP-EV-20261113091713-e3af0a72 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T09:17:13.145Z | HASH_OK |
+| UAP-EV-20261113091714-4ec44ff4 | task_result | uap task run UAP-TASK-20261113091712-a0ccec18 | 0 | 2026-11-13T09:17:14.774Z | HASH_OK |
+| UAP-EV-20261113091714-63aa8798 | task_step | step:verify_reconciliation | 0 | 2026-11-13T09:17:14.532Z | HASH_OK |
+| UAP-EV-20261113091714-6e6eccf4 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T09:17:14.233Z | HASH_OK |
+| UAP-EV-20261113091714-c523903b | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T09:17:14.438Z | HASH_OK |
+| UAP-EV-20261113091714-fa8ddbe6 | task_step | step:test_failure_recovery | 0 | 2026-11-13T09:17:14.299Z | HASH_OK |
+| UAP-EV-20261113091801-9d52ab12 | task_step | step:__health_step__ | 0 | 2026-11-13T09:18:01.936Z | HASH_OK |
+| UAP-EV-20261113091802-968e2cee | task_step | step:probe.step1 | 0 | 2026-11-13T09:18:02.995Z | HASH_OK |
+| UAP-EV-20261113091802-9c852cf1 | task_result | uap task run UAP-TASK-HEALTH-20261113091801-c1411b92 | 0 | 2026-11-13T09:18:02.275Z | HASH_OK |
+| UAP-EV-20261113091803-5c220861 | task_step | step:probe.step3 | 0 | 2026-11-13T09:18:03.438Z | HASH_OK |
+| UAP-EV-20261113091803-622c65b6 | health_probe | evidence-engine.health() | 0 | 2026-11-13T09:18:03.862Z | HASH_OK |
+| UAP-EV-20261113091803-ad94bc0a | task_step | step:probe.step2 | 0 | 2026-11-13T09:18:03.326Z | HASH_OK |
+| UAP-EV-20261113091803-d11af6a3 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113091802-9097f500 | 0 | 2026-11-13T09:18:03.785Z | HASH_OK |
+| UAP-EV-20261113091803-d968e979 | task_result | uap task run UAP-TASK-INTERRUPT-20261113091802-9097f500 | 0 | 2026-11-13T09:18:03.645Z | HASH_OK |
+| UAP-EV-20261113091803-e510f3ef | recovery | uap task resume UAP-TASK-INTERRUPT-20261113091802-9097f500 | 0 | 2026-11-13T09:18:03.178Z | HASH_OK |
+| UAP-EV-20261113091804-4f2723ec | recovery | uap task resume UAP-TASK-INTERRUPT-20261113091804-3e625f35 | 0 | 2026-11-13T09:18:04.874Z | HASH_OK |
+| UAP-EV-20261113091804-eb74c922 | task_step | step:probe.step1 | 0 | 2026-11-13T09:18:04.581Z | HASH_OK |
+| UAP-EV-20261113091805-3887f3cb | task_step | step:probe.step3 | 0 | 2026-11-13T09:18:05.301Z | HASH_OK |
+| UAP-EV-20261113091805-3f03f436 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113091804-3e625f35 | 0 | 2026-11-13T09:18:05.845Z | HASH_OK |
+| UAP-EV-20261113091805-3f265676 | task_step | step:probe.step2 | 0 | 2026-11-13T09:18:05.139Z | HASH_OK |
+| UAP-EV-20261113091805-6b0d652b | task_result | uap task run UAP-TASK-INTERRUPT-20261113091804-3e625f35 | 0 | 2026-11-13T09:18:05.588Z | HASH_OK |
+| UAP-EV-20261113091806-44aa08d3 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T09:18:06.138Z | HASH_OK |
+| UAP-EV-20261113091806-470ac31c | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T09:18:06.590Z | HASH_OK |
+| UAP-EV-20261113091806-7dc45ec7 | task_result | uap task run UAP-TASK-TEST-20261113091806-a5f786a9 | 1 | 2026-11-13T09:18:06.796Z | HASH_OK |
+| UAP-EV-20261113091806-f402d722 | task_result | uap task run UAP-TASK-TEST-20261113091805-20915e9d | 0 | 2026-11-13T09:18:06.355Z | HASH_OK |
+| UAP-EV-20261113091807-0edb8a39 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T09:18:07.223Z | HASH_OK |
+| UAP-EV-20261113091807-2f5d7af5 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T09:18:07.801Z | HASH_OK |
+| UAP-EV-20261113091807-6830cd6f | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T09:18:07.909Z | HASH_OK |
+| UAP-EV-20261113091807-94b0300b | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T09:18:07.490Z | HASH_OK |
+| UAP-EV-20261113091807-bf358ead | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T09:18:07.738Z | HASH_OK |
+| UAP-EV-20261113091807-cd493875 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T09:18:07.593Z | HASH_OK |
+| UAP-EV-20261113091807-cd98827c | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T09:18:07.971Z | HASH_OK |
+| UAP-EV-20261113091808-194d63e7 | task_step | step:verify_reconciliation | 0 | 2026-11-13T09:18:08.918Z | HASH_OK |
+| UAP-EV-20261113091808-1fccef15 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T09:18:08.445Z | HASH_OK |
+| UAP-EV-20261113091808-23ff1c84 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T09:18:08.067Z | HASH_OK |
+| UAP-EV-20261113091808-4c879d08 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T09:18:08.550Z | HASH_OK |
+| UAP-EV-20261113091808-6cc2d010 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T09:18:08.803Z | HASH_OK |
+| UAP-EV-20261113091808-9c739f6c | task_step | step:test_failure_recovery | 0 | 2026-11-13T09:18:08.609Z | HASH_OK |
+| UAP-EV-20261113091808-a1761095 | task_step | step:test_concurrency | 0 | 2026-11-13T09:18:08.286Z | HASH_OK |
+| UAP-EV-20261113091808-b23e9b86 | task_step | step:test_idempotency | 0 | 2026-11-13T09:18:08.128Z | HASH_OK |
+| UAP-EV-20261113091808-c962294e | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T09:18:08.229Z | HASH_OK |
+| UAP-EV-20261113091808-de460ec6 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T09:18:08.385Z | HASH_OK |
+| UAP-EV-20261113091809-50e99c98 | task_result | uap task run UAP-TASK-20261113091807-b4ec956b | 0 | 2026-11-13T09:18:09.241Z | HASH_OK |
+| UAP-EV-20261113102910-d77e4c28 | cli_command | uap --help | 0 | 2026-11-13T10:29:10.631Z | HASH_OK |
+| UAP-EV-20261113102911-a322673d | cli_command | uap status | 0 | 2026-11-13T10:29:11.990Z | HASH_OK |
+| UAP-EV-20261113102958-02b3f6e0 | task_result | uap task run UAP-TASK-HEALTH-20261113102958-4fe800dc | 0 | 2026-11-13T10:29:58.524Z | HASH_OK |
+| UAP-EV-20261113102958-72a24ba3 | task_step | step:__health_step__ | 0 | 2026-11-13T10:29:58.406Z | HASH_OK |
+| UAP-EV-20261113102958-a271d0c9 | task_step | step:probe.step1 | 0 | 2026-11-13T10:29:58.792Z | HASH_OK |
+| UAP-EV-20261113102958-c98f6212 | task_step | step:probe.step2 | 0 | 2026-11-13T10:29:58.957Z | HASH_OK |
+| UAP-EV-20261113102958-f7e5be2b | recovery | uap task resume UAP-TASK-INTERRUPT-20261113102958-127b36b0 | 0 | 2026-11-13T10:29:58.879Z | HASH_OK |
+| UAP-EV-20261113102959-14a159b6 | runtime_start | uap doctor | 0 | 2026-11-13T10:29:59.323Z | HASH_OK |
+| UAP-EV-20261113102959-6204567c | recovery | uap task resume UAP-TASK-INTERRUPT-20261113102959-f81b112a | 0 | 2026-11-13T10:29:59.589Z | HASH_OK |
+| UAP-EV-20261113102959-68541c33 | task_step | step:probe.step3 | 0 | 2026-11-13T10:29:59.729Z | HASH_OK |
+| UAP-EV-20261113102959-72e3fd6a | task_step | step:probe.step1 | 0 | 2026-11-13T10:29:59.499Z | HASH_OK |
+| UAP-EV-20261113102959-7c95202b | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113102958-127b36b0 | 0 | 2026-11-13T10:29:59.195Z | HASH_OK |
+| UAP-EV-20261113102959-9fbc8798 | task_result | uap task run UAP-TASK-INTERRUPT-20261113102958-127b36b0 | 0 | 2026-11-13T10:29:59.118Z | HASH_OK |
+| UAP-EV-20261113102959-a670ebd0 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:29:59.234Z | HASH_OK |
+| UAP-EV-20261113102959-b2f2fb9e | cli_command | uap doctor | 0 | 2026-11-13T10:29:59.954Z | HASH_OK |
+| UAP-EV-20261113102959-bbd452fe | task_result | uap task run UAP-TASK-INTERRUPT-20261113102959-f81b112a | 0 | 2026-11-13T10:29:59.837Z | HASH_OK |
+| UAP-EV-20261113102959-c2d801bc | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113102959-f81b112a | 0 | 2026-11-13T10:29:59.917Z | HASH_OK |
+| UAP-EV-20261113102959-e8e56da5 | task_step | step:probe.step3 | 0 | 2026-11-13T10:29:59.014Z | HASH_OK |
+| UAP-EV-20261113102959-efde2d49 | task_step | step:probe.step2 | 0 | 2026-11-13T10:29:59.670Z | HASH_OK |
+| UAP-EV-20261113103000-32493dc5 | validator_result | uap validate core.evidence_integrity | 0 | 2026-11-13T10:30:00.723Z | HASH_OK |
+| UAP-EV-20261113103000-5b6e4690 | validator_result | uap validate core.execution_integrity | 0 | 2026-11-13T10:30:00.367Z | HASH_OK |
+| UAP-EV-20261113103000-863f7767 | validator_result | uap validate security.permission_boundary | 0 | 2026-11-13T10:30:00.431Z | HASH_OK |
+| UAP-EV-20261113103000-d615c784 | validator_result | uap validate core.architecture_integrity | 0 | 2026-11-13T10:30:00.230Z | HASH_OK |
+| UAP-EV-20261113103000-de7951f7 | validator_result | uap validate product.business_rule_integrity | 0 | 2026-11-13T10:30:00.894Z | HASH_OK |
+| UAP-EV-20261113103000-e103f66a | validator_result | uap validate product.prototype_consistency | 0 | 2026-11-13T10:30:00.840Z | HASH_OK |
+| UAP-EV-20261113103000-fd5fa3a8 | validator_result | uap validate product.requirement_traceability | 0 | 2026-11-13T10:30:00.782Z | HASH_OK |
+| UAP-EV-20261113103001-0373182e | validator_result | uap validate agents.recovery_integrity | 0 | 2026-11-13T10:30:01.513Z | HASH_OK |
+| UAP-EV-20261113103001-04b38a73 | validator_result | uap validate agents.execution_integrity | 0 | 2026-11-13T10:30:01.348Z | HASH_OK |
+| UAP-EV-20261113103001-3e0ca681 | validator_result | uap validate architecture.adr_integrity | 0 | 2026-11-13T10:30:01.105Z | HASH_OK |
+| UAP-EV-20261113103001-4a80f1af | validator_result | uap validate agents.registry_integrity | 0 | 2026-11-13T10:30:01.153Z | HASH_OK |
+| UAP-EV-20261113103001-9f94e071 | validator_result | uap validate architecture.consistency | 0 | 2026-11-13T10:30:01.008Z | HASH_OK |
+| UAP-EV-20261113103001-d798633c | validator_result | uap validate agents.collaboration_integrity | 0 | 2026-11-13T10:30:01.395Z | HASH_OK |
+| UAP-EV-20261113103001-d9285c55 | validator_result | uap validate architecture.api_database_integrity | 0 | 2026-11-13T10:30:01.057Z | HASH_OK |
+| UAP-EV-20261113103002-014421cb | validator_result | uap validate quality.gate_integrity | 0 | 2026-11-13T10:30:02.887Z | HASH_OK |
+| UAP-EV-20261113103002-04e10396 | validator_result | uap validate development.dependency_integrity | 0 | 2026-11-13T10:30:02.467Z | HASH_OK |
+| UAP-EV-20261113103002-1e9a26f9 | validator_result | uap validate development.coding_compliance | 0 | 2026-11-13T10:30:02.296Z | HASH_OK |
+| UAP-EV-20261113103002-33ea0e54 | validator_result | uap validate quality.repair_integrity | 0 | 2026-11-13T10:30:02.766Z | HASH_OK |
+| UAP-EV-20261113103002-6cb9572b | validator_result | uap validate quality.test_integrity | 0 | 2026-11-13T10:30:02.652Z | HASH_OK |
+| UAP-EV-20261113103002-8fd60071 | validator_result | uap validate quality.engineering_integrity | 0 | 2026-11-13T10:30:02.606Z | HASH_OK |
+| UAP-EV-20261113103002-dce18ee2 | validator_result | uap validate development.review_integrity | 0 | 2026-11-13T10:30:02.416Z | HASH_OK |
+| UAP-EV-20261113103003-0304a915 | validator_result | uap validate security.application_integrity | 0 | 2026-11-13T10:30:03.133Z | HASH_OK |
+| UAP-EV-20261113103003-0ec51675 | validator_result | uap validate security.reliability_integrity | 0 | 2026-11-13T10:30:03.331Z | HASH_OK |
+| UAP-EV-20261113103003-12a60001 | validator_result | uap validate cross_platform.web_integrity | 0 | 2026-11-13T10:30:03.492Z | HASH_OK |
+| UAP-EV-20261113103003-3123431b | validator_result | uap validate security.financial_integrity_validator | 0 | 2026-11-13T10:30:03.179Z | HASH_OK |
+| UAP-EV-20261113103118-58ab3ed9 | validator_result | uap validate cross_platform.consistency_integrity | 0 | 2026-11-13T10:31:18.411Z | HASH_OK |
+| UAP-EV-20261113103118-ad4e4942 | validator_result | uap validate delivery.ci_integrity | 0 | 2026-11-13T10:31:18.462Z | HASH_OK |
+| UAP-EV-20261113103118-d23c15a8 | validator_result | uap validate cross_platform.h5_integrity | 0 | 2026-11-13T10:31:18.284Z | HASH_OK |
+| UAP-EV-20261113103126-931213fb | validator_result | uap validate delivery.deployment_integrity | 0 | 2026-11-13T10:31:26.620Z | HASH_OK |
+| UAP-EV-20261113103126-a731a080 | validator_result | uap validate delivery.observability_integrity | 0 | 2026-11-13T10:31:26.887Z | HASH_OK |
+| UAP-EV-20261113103126-fce21079 | validator_result | uap validate evolution.knowledge_integrity | 0 | 2026-11-13T10:31:26.948Z | HASH_OK |
+| UAP-EV-20261113103127-840d64f6 | validator_result | uap validate evolution.evolution_integrity | 0 | 2026-11-13T10:31:27.069Z | HASH_OK |
+| UAP-EV-20261113103127-edf04a74 | cli_command | uap validate --all | 0 | 2026-11-13T10:31:27.170Z | HASH_OK |
+| UAP-EV-20261113103145-0a8676fc | task_step | step:__health_step__ | 0 | 2026-11-13T10:31:45.751Z | HASH_OK |
+| UAP-EV-20261113103145-48917df8 | task_result | uap task run UAP-TASK-HEALTH-20261113103145-2c5e9957 | 0 | 2026-11-13T10:31:45.915Z | HASH_OK |
+| UAP-EV-20261113103146-1bd59da9 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113103146-2f6db027 | 0 | 2026-11-13T10:31:46.400Z | HASH_OK |
+| UAP-EV-20261113103146-991dc441 | task_step | step:probe.step2 | 0 | 2026-11-13T10:31:46.518Z | HASH_OK |
+| UAP-EV-20261113103146-9ae15e02 | task_step | step:probe.step3 | 0 | 2026-11-13T10:31:46.801Z | HASH_OK |
+| UAP-EV-20261113103146-c5655631 | task_result | uap task run UAP-TASK-INTERRUPT-20261113103146-2f6db027 | 0 | 2026-11-13T10:31:46.951Z | HASH_OK |
+| UAP-EV-20261113103146-ef7381b2 | task_step | step:probe.step1 | 0 | 2026-11-13T10:31:46.288Z | HASH_OK |
+| UAP-EV-20261113103147-0e76eb5c | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113103146-2f6db027 | 0 | 2026-11-13T10:31:47.057Z | HASH_OK |
+| UAP-EV-20261113103147-1b3559f6 | task_step | step:probe.step3 | 0 | 2026-11-13T10:31:47.656Z | HASH_OK |
+| UAP-EV-20261113103147-2c780fa5 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:31:47.101Z | HASH_OK |
+| UAP-EV-20261113103147-690a8c16 | task_step | step:probe.step1 | 0 | 2026-11-13T10:31:47.428Z | HASH_OK |
+| UAP-EV-20261113103147-7628c901 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113103147-7597694f | 0 | 2026-11-13T10:31:47.515Z | HASH_OK |
+| UAP-EV-20261113103147-8fe186c4 | task_result | uap task run UAP-TASK-INTERRUPT-20261113103147-7597694f | 0 | 2026-11-13T10:31:47.760Z | HASH_OK |
+| UAP-EV-20261113103147-d70d3c5f | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113103147-7597694f | 0 | 2026-11-13T10:31:47.838Z | HASH_OK |
+| UAP-EV-20261113103147-edb20699 | task_step | step:probe.step2 | 0 | 2026-11-13T10:31:47.595Z | HASH_OK |
+| UAP-EV-20261113103147-f6e63b29 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:31:47.936Z | HASH_OK |
+| UAP-EV-20261113103148-04d3f72f | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:31:48.773Z | HASH_OK |
+| UAP-EV-20261113103148-1171b481 | task_result | uap task run UAP-TASK-TEST-20261113103148-3d0e3708 | 1 | 2026-11-13T10:31:48.288Z | HASH_OK |
+| UAP-EV-20261113103148-1c9a50a5 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:31:48.474Z | HASH_OK |
+| UAP-EV-20261113103148-2b984db8 | task_result | uap task run UAP-TASK-TEST-20261113103147-d916a5ea | 0 | 2026-11-13T10:31:48.048Z | HASH_OK |
+| UAP-EV-20261113103148-31e65da9 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:31:48.675Z | HASH_OK |
+| UAP-EV-20261113103148-42fc2bed | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:31:48.809Z | HASH_OK |
+| UAP-EV-20261113103148-4f0dec07 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:31:48.711Z | HASH_OK |
+| UAP-EV-20261113103148-7d1c7a37 | task_step | step:test_idempotency | 0 | 2026-11-13T10:31:48.906Z | HASH_OK |
+| UAP-EV-20261113103148-acfa0c63 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:31:48.576Z | HASH_OK |
+| UAP-EV-20261113103148-b0b8202d | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:31:48.969Z | HASH_OK |
+| UAP-EV-20261113103148-bd8e565c | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:31:48.612Z | HASH_OK |
+| UAP-EV-20261113103148-d5ce4078 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:31:48.871Z | HASH_OK |
+| UAP-EV-20261113103148-e42edcc2 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:31:48.178Z | HASH_OK |
+| UAP-EV-20261113103149-1e1d6b97 | task_step | step:test_concurrency | 0 | 2026-11-13T10:31:49.005Z | HASH_OK |
+| UAP-EV-20261113103149-210f2876 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:31:49.246Z | HASH_OK |
+| UAP-EV-20261113103149-61c08cf5 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:31:49.157Z | HASH_OK |
+| UAP-EV-20261113103149-8c0f973c | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:31:49.101Z | HASH_OK |
+| UAP-EV-20261113103149-aaf77a20 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:31:49.189Z | HASH_OK |
+| UAP-EV-20261113103149-bda7b743 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:31:49.066Z | HASH_OK |
+| UAP-EV-20261113103149-eb910dce | task_result | uap task run UAP-TASK-20261113103148-99f7b8af | 0 | 2026-11-13T10:31:49.378Z | HASH_OK |
+| UAP-EV-20261113103149-fe443df4 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:31:49.278Z | HASH_OK |
+| UAP-EV-20261113103202-21f8f9f9 | cli_command | uap test --all | 1 | 2026-11-13T10:32:02.223Z | HASH_OK |
+| UAP-EV-20261113103202-d915b0aa | runtime_test_run | node --test .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 1 | 2026-11-13T10:32:02.190Z | HASH_OK |
+| UAP-EV-20261113103248-364dd75d | recovery | uap task resume UAP-TASK-INTERRUPT-20261113103248-e7f15bbb | 0 | 2026-11-13T10:32:48.966Z | HASH_OK |
+| UAP-EV-20261113103248-641cea7a | task_result | uap task run UAP-TASK-HEALTH-20261113103248-1895bd47 | 0 | 2026-11-13T10:32:48.412Z | HASH_OK |
+| UAP-EV-20261113103248-e13b91d5 | task_step | step:probe.step1 | 0 | 2026-11-13T10:32:48.852Z | HASH_OK |
+| UAP-EV-20261113103248-f93b6538 | task_step | step:__health_step__ | 0 | 2026-11-13T10:32:48.268Z | HASH_OK |
+| UAP-EV-20261113103249-09ecbd63 | task_result | uap task run UAP-TASK-INTERRUPT-20261113103248-e7f15bbb | 0 | 2026-11-13T10:32:49.335Z | HASH_OK |
+| UAP-EV-20261113103249-1fb4a235 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113103249-f63309ee | 0 | 2026-11-13T10:32:49.916Z | HASH_OK |
+| UAP-EV-20261113103249-2a6b2555 | task_step | step:probe.step1 | 0 | 2026-11-13T10:32:49.816Z | HASH_OK |
+| UAP-EV-20261113103249-b43d911f | task_step | step:probe.step3 | 0 | 2026-11-13T10:32:49.155Z | HASH_OK |
+| UAP-EV-20261113103249-f84492fc | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:32:49.464Z | HASH_OK |
+| UAP-EV-20261113103249-f845157b | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113103248-e7f15bbb | 0 | 2026-11-13T10:32:49.422Z | HASH_OK |
+| UAP-EV-20261113103249-fdb6a012 | task_step | step:probe.step2 | 0 | 2026-11-13T10:32:49.070Z | HASH_OK |
+| UAP-EV-20261113103250-153dc8c5 | task_step | step:probe.step3 | 0 | 2026-11-13T10:32:50.067Z | HASH_OK |
+| UAP-EV-20261113103250-22bc0de2 | task_result | uap task run UAP-TASK-TEST-20261113103250-b3a6636a | 0 | 2026-11-13T10:32:50.534Z | HASH_OK |
+| UAP-EV-20261113103250-6157e256 | task_result | uap task run UAP-TASK-TEST-20261113103250-acdcaa04 | 1 | 2026-11-13T10:32:50.822Z | HASH_OK |
+| UAP-EV-20261113103250-70dad6b3 | task_step | step:probe.step2 | 0 | 2026-11-13T10:32:50.003Z | HASH_OK |
+| UAP-EV-20261113103250-b0919771 | task_result | uap task run UAP-TASK-INTERRUPT-20261113103249-f63309ee | 0 | 2026-11-13T10:32:50.191Z | HASH_OK |
+| UAP-EV-20261113103250-b4118ecf | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113103249-f63309ee | 0 | 2026-11-13T10:32:50.306Z | HASH_OK |
+| UAP-EV-20261113103250-ddad8b34 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:32:50.679Z | HASH_OK |
+| UAP-EV-20261113103250-f4bd75e0 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:32:50.415Z | HASH_OK |
+| UAP-EV-20261113103251-10adbc65 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:32:51.618Z | HASH_OK |
+| UAP-EV-20261113103251-1e49ce93 | task_step | step:test_concurrency | 0 | 2026-11-13T10:32:51.561Z | HASH_OK |
+| UAP-EV-20261113103251-29b7a39b | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:32:51.845Z | HASH_OK |
+| UAP-EV-20261113103251-2d9b433e | task_step | step:test_idempotency | 0 | 2026-11-13T10:32:51.455Z | HASH_OK |
+| UAP-EV-20261113103251-32e43f28 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:32:51.158Z | HASH_OK |
+| UAP-EV-20261113103251-3cbb3280 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:32:51.038Z | HASH_OK |
+| UAP-EV-20261113103251-47881380 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:32:51.815Z | HASH_OK |
+| UAP-EV-20261113103251-5b381ff4 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:32:51.368Z | HASH_OK |
+| UAP-EV-20261113103251-68374ef0 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:32:51.660Z | HASH_OK |
+| UAP-EV-20261113103251-6e6b77e5 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:32:51.338Z | HASH_OK |
+| UAP-EV-20261113103251-a8ef08e2 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:32:51.525Z | HASH_OK |
+| UAP-EV-20261113103251-b0fccdf8 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:32:51.281Z | HASH_OK |
+| UAP-EV-20261113103251-c9eb47e3 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:32:51.190Z | HASH_OK |
+| UAP-EV-20261113103251-d82bea13 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:32:51.424Z | HASH_OK |
+| UAP-EV-20261113103251-e1c09ec4 | task_result | uap task run UAP-TASK-20261113103251-8bda7942 | 0 | 2026-11-13T10:32:51.952Z | HASH_OK |
+| UAP-EV-20261113103251-e371a56b | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:32:51.722Z | HASH_OK |
+| UAP-EV-20261113103251-e54c04bd | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:32:51.250Z | HASH_OK |
+| UAP-EV-20261113103251-fd74feee | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:32:51.757Z | HASH_OK |
+| UAP-EV-20261113103904-03ce6844 | cli_command | uap repair --real --task=.uap/state/repair-tasks/UAP-REAL-REPAIR-002.json --dry-run | 0 | 2026-11-13T10:39:04.717Z | HASH_OK |
+| UAP-EV-20261113103930-05963514 | real_code_repair_command | git diff --check -- .uap/engines/auto-repair/independent-review.mjs | 0 | 2026-11-13T10:39:30.932Z | HASH_OK |
+| UAP-EV-20261113103930-4161261f | real_code_repair_command | node --check .uap/bin/uap.mjs | 0 | 2026-11-13T10:39:30.899Z | HASH_OK |
+| UAP-EV-20261113103930-4667284d | real_code_repair_command | node .uap/engines/auto-repair/independent-review.mjs | 0 | 2026-11-13T10:39:30.963Z | HASH_OK |
+| UAP-EV-20261113103930-66f39daf | real_code_repair_command | node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs | 0 | 2026-11-13T10:39:30.833Z | HASH_OK |
+| UAP-EV-20261113103930-ab83b103 | real_code_repair_result | — | 0 | 2026-11-13T10:39:30.994Z | HASH_OK |
+| UAP-EV-20261113103930-cd79f9c5 | real_code_repair_command | node --check .uap/engines/auto-repair/independent-review.mjs | 0 | 2026-11-13T10:39:30.865Z | HASH_OK |
+| UAP-EV-20261113103930-fa8a4239 | real_code_repair_command | node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs | 1 | 2026-11-13T10:39:30.393Z | HASH_OK |
+| UAP-EV-20261113103931-e19a76aa | cli_command | uap repair --real --task=.uap/state/repair-tasks/UAP-REAL-REPAIR-002.json | 0 | 2026-11-13T10:39:31.028Z | HASH_OK |
+| UAP-EV-20261113103945-e525d1a6 | cli_command | uap verify-repair | 0 | 2026-11-13T10:39:45.388Z | HASH_OK |
+| UAP-EV-20261113104100-281674ce | cli_command | uap --help | 0 | 2026-11-13T10:41:00.497Z | HASH_OK |
+| UAP-EV-20261113104101-6b1627d7 | task_result | uap task run UAP-TASK-HEALTH-20261113104101-9111dd89 | 0 | 2026-11-13T10:41:01.616Z | HASH_OK |
+| UAP-EV-20261113104101-ce7cb42e | task_step | step:__health_step__ | 0 | 2026-11-13T10:41:01.437Z | HASH_OK |
+| UAP-EV-20261113104102-0cebd06b | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104101-76eba80e | 0 | 2026-11-13T10:41:02.148Z | HASH_OK |
+| UAP-EV-20261113104102-1c990e0f | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:41:02.657Z | HASH_OK |
+| UAP-EV-20261113104102-250f8b82 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104101-76eba80e | 0 | 2026-11-13T10:41:02.523Z | HASH_OK |
+| UAP-EV-20261113104102-5ecade36 | task_step | step:probe.step3 | 0 | 2026-11-13T10:41:02.342Z | HASH_OK |
+| UAP-EV-20261113104102-655160f3 | task_step | step:probe.step1 | 0 | 2026-11-13T10:41:02.039Z | HASH_OK |
+| UAP-EV-20261113104102-bca28354 | task_step | step:probe.step2 | 0 | 2026-11-13T10:41:02.250Z | HASH_OK |
+| UAP-EV-20261113104102-f507e5c9 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104101-76eba80e | 0 | 2026-11-13T10:41:02.614Z | HASH_OK |
+| UAP-EV-20261113104103-0ee292cc | task_step | step:probe.step3 | 0 | 2026-11-13T10:41:03.295Z | HASH_OK |
+| UAP-EV-20261113104103-2ff87c1d | task_result | uap task run UAP-TASK-INTERRUPT-20261113104102-8665c699 | 0 | 2026-11-13T10:41:03.428Z | HASH_OK |
+| UAP-EV-20261113104103-3ed1b54e | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:41:03.637Z | HASH_OK |
+| UAP-EV-20261113104103-4bddf704 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:41:03.912Z | HASH_OK |
+| UAP-EV-20261113104103-5e379370 | task_step | step:probe.step1 | 0 | 2026-11-13T10:41:03.026Z | HASH_OK |
+| UAP-EV-20261113104103-799548bb | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104102-8665c699 | 0 | 2026-11-13T10:41:03.137Z | HASH_OK |
+| UAP-EV-20261113104103-7aa51f2b | task_result | uap task run UAP-TASK-TEST-20261113104103-eed4c414 | 0 | 2026-11-13T10:41:03.755Z | HASH_OK |
+| UAP-EV-20261113104103-7adae3c4 | task_step | step:probe.step2 | 0 | 2026-11-13T10:41:03.229Z | HASH_OK |
+| UAP-EV-20261113104103-fd251716 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104102-8665c699 | 0 | 2026-11-13T10:41:03.531Z | HASH_OK |
+| UAP-EV-20261113104104-1decb842 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:41:04.384Z | HASH_OK |
+| UAP-EV-20261113104104-1ebee99a | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:41:04.997Z | HASH_OK |
+| UAP-EV-20261113104104-41d98d11 | task_result | uap task run UAP-TASK-TEST-20261113104103-87e27629 | 1 | 2026-11-13T10:41:04.043Z | HASH_OK |
+| UAP-EV-20261113104104-58ebf8b8 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:41:04.891Z | HASH_OK |
+| UAP-EV-20261113104104-5cbb643f | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:41:04.552Z | HASH_OK |
+| UAP-EV-20261113104104-69fe7877 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:41:04.238Z | HASH_OK |
+| UAP-EV-20261113104104-6e5bd8f4 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:41:04.346Z | HASH_OK |
+| UAP-EV-20261113104104-778dec5c | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:41:04.591Z | HASH_OK |
+| UAP-EV-20261113104104-7afb15b7 | task_step | step:test_concurrency | 0 | 2026-11-13T10:41:04.824Z | HASH_OK |
+| UAP-EV-20261113104104-8e9d7400 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:41:04.449Z | HASH_OK |
+| UAP-EV-20261113104104-c3f69ba6 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:41:04.929Z | HASH_OK |
+| UAP-EV-20261113104104-c5f1ddce | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:41:04.767Z | HASH_OK |
+| UAP-EV-20261113104104-c7c48cc8 | task_step | step:test_idempotency | 0 | 2026-11-13T10:41:04.702Z | HASH_OK |
+| UAP-EV-20261113104104-e65f3d73 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:41:04.486Z | HASH_OK |
+| UAP-EV-20261113104104-efedd54a | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:41:04.662Z | HASH_OK |
+| UAP-EV-20261113104105-35fc6ddb | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:41:05.043Z | HASH_OK |
+| UAP-EV-20261113104105-61631189 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:41:05.107Z | HASH_OK |
+| UAP-EV-20261113104105-ad54beba | task_result | uap task run UAP-TASK-20261113104104-2e8d7ef2 | 0 | 2026-11-13T10:41:05.262Z | HASH_OK |
+| UAP-EV-20261113104105-cda30d51 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:41:05.141Z | HASH_OK |
+| UAP-EV-20261113104112-3eee2ee0 | cli_command | uap test --all | 1 | 2026-11-13T10:41:12.362Z | HASH_OK |
+| UAP-EV-20261113104112-7f904f49 | runtime_test_run | node --test .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 1 | 2026-11-13T10:41:12.323Z | HASH_OK |
+| UAP-EV-20261113104153-6de6908a | task_step | step:__health_step__ | 0 | 2026-11-13T10:41:53.643Z | HASH_OK |
+| UAP-EV-20261113104153-7cda9f34 | task_result | uap task run UAP-TASK-HEALTH-20261113104153-6707bc66 | 0 | 2026-11-13T10:41:53.809Z | HASH_OK |
+| UAP-EV-20261113104154-122ec984 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104154-ba9e9b2e | 0 | 2026-11-13T10:41:54.348Z | HASH_OK |
+| UAP-EV-20261113104154-3d27b39e | task_result | uap task run UAP-TASK-INTERRUPT-20261113104154-ba9e9b2e | 0 | 2026-11-13T10:41:54.789Z | HASH_OK |
+| UAP-EV-20261113104154-5317f9a1 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:41:54.925Z | HASH_OK |
+| UAP-EV-20261113104154-97bb692a | task_step | step:probe.step3 | 0 | 2026-11-13T10:41:54.650Z | HASH_OK |
+| UAP-EV-20261113104154-97cc5fad | task_step | step:probe.step2 | 0 | 2026-11-13T10:41:54.471Z | HASH_OK |
+| UAP-EV-20261113104154-a679d32d | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104154-ba9e9b2e | 0 | 2026-11-13T10:41:54.882Z | HASH_OK |
+| UAP-EV-20261113104154-c30e79e7 | task_step | step:probe.step1 | 0 | 2026-11-13T10:41:54.226Z | HASH_OK |
+| UAP-EV-20261113104155-04274e4d | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:41:55.850Z | HASH_OK |
+| UAP-EV-20261113104155-1d3b6134 | task_step | step:probe.step3 | 0 | 2026-11-13T10:41:55.533Z | HASH_OK |
+| UAP-EV-20261113104155-6f36cf95 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104155-b9ebd9f1 | 0 | 2026-11-13T10:41:55.654Z | HASH_OK |
+| UAP-EV-20261113104155-961a1dd0 | task_step | step:probe.step1 | 0 | 2026-11-13T10:41:55.290Z | HASH_OK |
+| UAP-EV-20261113104155-de54536d | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104155-b9ebd9f1 | 0 | 2026-11-13T10:41:55.746Z | HASH_OK |
+| UAP-EV-20261113104155-e195839e | task_step | step:probe.step2 | 0 | 2026-11-13T10:41:55.471Z | HASH_OK |
+| UAP-EV-20261113104155-ef8c5234 | task_result | uap task run UAP-TASK-TEST-20261113104155-a22fe855 | 0 | 2026-11-13T10:41:55.963Z | HASH_OK |
+| UAP-EV-20261113104155-f8e4c3a4 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104155-b9ebd9f1 | 0 | 2026-11-13T10:41:55.386Z | HASH_OK |
+| UAP-EV-20261113104156-08988cd9 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:41:56.546Z | HASH_OK |
+| UAP-EV-20261113104156-1c82c59f | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:41:56.131Z | HASH_OK |
+| UAP-EV-20261113104156-36b87beb | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:41:56.441Z | HASH_OK |
+| UAP-EV-20261113104156-5910bdfd | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:41:56.688Z | HASH_OK |
+| UAP-EV-20261113104156-8cfdd25e | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:41:56.583Z | HASH_OK |
+| UAP-EV-20261113104156-96e2b59e | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:41:56.868Z | HASH_OK |
+| UAP-EV-20261113104156-9ab40885 | task_step | step:test_idempotency | 0 | 2026-11-13T10:41:56.905Z | HASH_OK |
+| UAP-EV-20261113104156-b5b490b3 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:41:56.651Z | HASH_OK |
+| UAP-EV-20261113104156-c61a3c52 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:41:56.798Z | HASH_OK |
+| UAP-EV-20261113104156-d2b9e210 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:41:56.756Z | HASH_OK |
+| UAP-EV-20261113104156-e275a0f5 | task_result | uap task run UAP-TASK-TEST-20261113104156-89aa3ed6 | 1 | 2026-11-13T10:41:56.252Z | HASH_OK |
+| UAP-EV-20261113104156-e957bff6 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:41:56.991Z | HASH_OK |
+| UAP-EV-20261113104157-02278abb | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:41:57.092Z | HASH_OK |
+| UAP-EV-20261113104157-05b50826 | task_result | uap task run UAP-TASK-20261113104156-b8db058b | 0 | 2026-11-13T10:41:57.400Z | HASH_OK |
+| UAP-EV-20261113104157-06553036 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:41:57.267Z | HASH_OK |
+| UAP-EV-20261113104157-32870ec2 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:41:57.298Z | HASH_OK |
+| UAP-EV-20261113104157-5b8882d2 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:41:57.124Z | HASH_OK |
+| UAP-EV-20261113104157-630f650f | task_step | step:test_concurrency | 0 | 2026-11-13T10:41:57.029Z | HASH_OK |
+| UAP-EV-20261113104157-847eb553 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:41:57.211Z | HASH_OK |
+| UAP-EV-20261113104157-d1762c09 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:41:57.179Z | HASH_OK |
+| UAP-EV-20261113104413-448951fd | task_step | step:__health_step__ | 0 | 2026-11-13T10:44:13.838Z | HASH_OK |
+| UAP-EV-20261113104414-3e3dd33f | task_result | uap task run UAP-TASK-HEALTH-20261113104413-ea4f416d | 0 | 2026-11-13T10:44:14.016Z | HASH_OK |
+| UAP-EV-20261113104414-bb3b9686 | task_step | step:probe.step1 | 0 | 2026-11-13T10:44:14.795Z | HASH_OK |
+| UAP-EV-20261113104414-e3c80420 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104414-c6b797d9 | 0 | 2026-11-13T10:44:14.969Z | HASH_OK |
+| UAP-EV-20261113104415-2b094f31 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104414-c6b797d9 | 0 | 2026-11-13T10:44:15.524Z | HASH_OK |
+| UAP-EV-20261113104415-3fdfd5f3 | task_step | step:probe.step3 | 0 | 2026-11-13T10:44:15.244Z | HASH_OK |
+| UAP-EV-20261113104415-9367ff22 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104414-c6b797d9 | 0 | 2026-11-13T10:44:15.651Z | HASH_OK |
+| UAP-EV-20261113104415-ebdec7b3 | task_step | step:probe.step2 | 0 | 2026-11-13T10:44:15.157Z | HASH_OK |
+| UAP-EV-20261113104415-f1f1d5e6 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:44:15.703Z | HASH_OK |
+| UAP-EV-20261113104416-103073d3 | task_step | step:probe.step2 | 0 | 2026-11-13T10:44:16.387Z | HASH_OK |
+| UAP-EV-20261113104416-28fdbe49 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104416-5cfd7c7c | 0 | 2026-11-13T10:44:16.616Z | HASH_OK |
+| UAP-EV-20261113104416-8e64992b | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104416-5cfd7c7c | 0 | 2026-11-13T10:44:16.744Z | HASH_OK |
+| UAP-EV-20261113104416-a9caf62c | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104416-5cfd7c7c | 0 | 2026-11-13T10:44:16.282Z | HASH_OK |
+| UAP-EV-20261113104416-bfb25bd8 | task_step | step:probe.step1 | 0 | 2026-11-13T10:44:16.164Z | HASH_OK |
+| UAP-EV-20261113104416-e699a9f1 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:44:16.922Z | HASH_OK |
+| UAP-EV-20261113104416-f6afb9ab | task_step | step:probe.step3 | 0 | 2026-11-13T10:44:16.455Z | HASH_OK |
+| UAP-EV-20261113104417-755565a4 | task_result | uap task run UAP-TASK-TEST-20261113104417-374e29cb | 1 | 2026-11-13T10:44:17.489Z | HASH_OK |
+| UAP-EV-20261113104417-a03ab1e0 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:44:17.995Z | HASH_OK |
+| UAP-EV-20261113104417-a45db52b | task_result | uap task run UAP-TASK-TEST-20261113104416-5d2c4516 | 0 | 2026-11-13T10:44:17.123Z | HASH_OK |
+| UAP-EV-20261113104417-b75e6bae | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:44:17.774Z | HASH_OK |
+| UAP-EV-20261113104417-d489cf1e | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:44:17.322Z | HASH_OK |
+| UAP-EV-20261113104418-402d7400 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:44:18.280Z | HASH_OK |
+| UAP-EV-20261113104418-5cbcfee8 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:44:18.965Z | HASH_OK |
+| UAP-EV-20261113104418-8c385eda | task_step | step:test_concurrency | 0 | 2026-11-13T10:44:18.686Z | HASH_OK |
+| UAP-EV-20261113104418-929a40df | task_step | step:test_idempotency | 0 | 2026-11-13T10:44:18.539Z | HASH_OK |
+| UAP-EV-20261113104418-99884cda | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:44:18.821Z | HASH_OK |
+| UAP-EV-20261113104418-a0c2580a | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:44:18.634Z | HASH_OK |
+| UAP-EV-20261113104418-bbabca56 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:44:18.141Z | HASH_OK |
+| UAP-EV-20261113104418-bf6f42c3 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:44:18.458Z | HASH_OK |
+| UAP-EV-20261113104418-cb9a538e | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:44:18.911Z | HASH_OK |
+| UAP-EV-20261113104418-d52d18e0 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:44:18.337Z | HASH_OK |
+| UAP-EV-20261113104418-ee1a8f9e | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:44:18.188Z | HASH_OK |
+| UAP-EV-20261113104418-efe3de97 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:44:18.773Z | HASH_OK |
+| UAP-EV-20261113104418-f8e5e19e | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:44:18.050Z | HASH_OK |
+| UAP-EV-20261113104419-1548065a | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:44:19.056Z | HASH_OK |
+| UAP-EV-20261113104419-63586383 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:44:19.104Z | HASH_OK |
+| UAP-EV-20261113104419-98eb5ebe | task_result | uap task run UAP-TASK-20261113104417-b3d55e8c | 0 | 2026-11-13T10:44:19.275Z | HASH_OK |
+| UAP-EV-20261113104429-c657e0b3 | task_step | step:__health_step__ | 0 | 2026-11-13T10:44:29.754Z | HASH_OK |
+| UAP-EV-20261113104430-7e6190e4 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104430-20b91af1 | 0 | 2026-11-13T10:44:30.999Z | HASH_OK |
+| UAP-EV-20261113104430-997a989c | task_step | step:probe.step1 | 0 | 2026-11-13T10:44:30.795Z | HASH_OK |
+| UAP-EV-20261113104430-c3d789d4 | task_result | uap task run UAP-TASK-HEALTH-20261113104429-3b127b52 | 0 | 2026-11-13T10:44:30.037Z | HASH_OK |
+| UAP-EV-20261113104431-1c0d083c | task_step | step:probe.step3 | 0 | 2026-11-13T10:44:31.402Z | HASH_OK |
+| UAP-EV-20261113104431-28459f68 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:44:31.921Z | HASH_OK |
+| UAP-EV-20261113104431-44078bf1 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104430-20b91af1 | 0 | 2026-11-13T10:44:31.638Z | HASH_OK |
+| UAP-EV-20261113104431-5063b013 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104430-20b91af1 | 0 | 2026-11-13T10:44:31.844Z | HASH_OK |
+| UAP-EV-20261113104431-e83db8ca | task_step | step:probe.step2 | 0 | 2026-11-13T10:44:31.160Z | HASH_OK |
+| UAP-EV-20261113104432-7b532368 | task_step | step:probe.step1 | 0 | 2026-11-13T10:44:32.716Z | HASH_OK |
+| UAP-EV-20261113104432-bcfe4cd5 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104432-6d8fd93b | 0 | 2026-11-13T10:44:32.908Z | HASH_OK |
+| UAP-EV-20261113104433-1a78ee65 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:44:33.983Z | HASH_OK |
+| UAP-EV-20261113104433-1f45a6ad | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104432-6d8fd93b | 0 | 2026-11-13T10:44:33.451Z | HASH_OK |
+| UAP-EV-20261113104433-20b5b378 | task_step | step:probe.step3 | 0 | 2026-11-13T10:44:33.164Z | HASH_OK |
+| UAP-EV-20261113104433-2eddf6fd | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:44:33.590Z | HASH_OK |
+| UAP-EV-20261113104433-33e384d2 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104432-6d8fd93b | 0 | 2026-11-13T10:44:33.324Z | HASH_OK |
+| UAP-EV-20261113104433-8334baca | task_step | step:probe.step2 | 0 | 2026-11-13T10:44:33.052Z | HASH_OK |
+| UAP-EV-20261113104433-a9476840 | task_result | uap task run UAP-TASK-TEST-20261113104433-a7987a82 | 0 | 2026-11-13T10:44:33.753Z | HASH_OK |
+| UAP-EV-20261113104434-022f7cd9 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:44:34.792Z | HASH_OK |
+| UAP-EV-20261113104434-aa0a17ae | task_result | uap task run UAP-TASK-TEST-20261113104433-19fb2ac8 | 1 | 2026-11-13T10:44:34.151Z | HASH_OK |
+| UAP-EV-20261113104434-c20b7909 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:44:34.972Z | HASH_OK |
+| UAP-EV-20261113104434-c5f324d0 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:44:34.637Z | HASH_OK |
+| UAP-EV-20261113104434-cc8ee1f6 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:44:34.578Z | HASH_OK |
+| UAP-EV-20261113104434-e887edc9 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:44:34.734Z | HASH_OK |
+| UAP-EV-20261113104434-f2508216 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:44:34.912Z | HASH_OK |
+| UAP-EV-20261113104434-fbbf32b0 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:44:34.426Z | HASH_OK |
+| UAP-EV-20261113104435-0ad20211 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:44:35.635Z | HASH_OK |
+| UAP-EV-20261113104435-25d9c775 | task_step | step:test_concurrency | 0 | 2026-11-13T10:44:35.328Z | HASH_OK |
+| UAP-EV-20261113104435-283760f6 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:44:35.578Z | HASH_OK |
+| UAP-EV-20261113104435-61f105e4 | task_step | step:test_idempotency | 0 | 2026-11-13T10:44:35.159Z | HASH_OK |
+| UAP-EV-20261113104435-6c606e74 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:44:35.111Z | HASH_OK |
+| UAP-EV-20261113104435-9598d603 | task_result | uap task run UAP-TASK-20261113104434-71b06ab7 | 0 | 2026-11-13T10:44:35.964Z | HASH_OK |
+| UAP-EV-20261113104435-97e73dc3 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:44:35.482Z | HASH_OK |
+| UAP-EV-20261113104435-a0451a05 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:44:35.773Z | HASH_OK |
+| UAP-EV-20261113104435-b4b20b17 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:44:35.427Z | HASH_OK |
+| UAP-EV-20261113104435-b82540de | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:44:35.728Z | HASH_OK |
+| UAP-EV-20261113104435-d98d652a | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:44:35.271Z | HASH_OK |
+| UAP-EV-20261113104501-17311b52 | task_step | step:__health_step__ | 0 | 2026-11-13T10:45:01.946Z | HASH_OK |
+| UAP-EV-20261113104502-64ee5d14 | task_result | uap task run UAP-TASK-HEALTH-20261113104501-f5b5accc | 0 | 2026-11-13T10:45:02.597Z | HASH_OK |
+| UAP-EV-20261113104504-0a8c1669 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104503-d600fe4a | 0 | 2026-11-13T10:45:04.546Z | HASH_OK |
+| UAP-EV-20261113104504-bf2986d5 | task_step | step:probe.step1 | 0 | 2026-11-13T10:45:04.109Z | HASH_OK |
+| UAP-EV-20261113104505-0346c7cb | task_step | step:probe.step2 | 0 | 2026-11-13T10:45:05.118Z | HASH_OK |
+| UAP-EV-20261113104505-12d0adae | task_step | step:probe.step3 | 0 | 2026-11-13T10:45:05.295Z | HASH_OK |
+| UAP-EV-20261113104505-8b49839b | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104503-d600fe4a | 0 | 2026-11-13T10:45:05.798Z | HASH_OK |
+| UAP-EV-20261113104505-a114265b | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:45:05.869Z | HASH_OK |
+| UAP-EV-20261113104505-c408a263 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104503-d600fe4a | 0 | 2026-11-13T10:45:05.585Z | HASH_OK |
+| UAP-EV-20261113104506-1ed127ed | task_step | step:probe.step2 | 0 | 2026-11-13T10:45:06.994Z | HASH_OK |
+| UAP-EV-20261113104506-ad3414a8 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104506-ce09937b | 0 | 2026-11-13T10:45:06.831Z | HASH_OK |
+| UAP-EV-20261113104506-daf3f593 | task_step | step:probe.step1 | 0 | 2026-11-13T10:45:06.644Z | HASH_OK |
+| UAP-EV-20261113104507-145bc9a1 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104506-ce09937b | 0 | 2026-11-13T10:45:07.349Z | HASH_OK |
+| UAP-EV-20261113104507-18f372e9 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:45:07.719Z | HASH_OK |
+| UAP-EV-20261113104507-939e8a5c | task_result | uap task run UAP-TASK-TEST-20261113104507-8ce33917 | 0 | 2026-11-13T10:45:07.936Z | HASH_OK |
+| UAP-EV-20261113104507-a302dbc7 | task_step | step:probe.step3 | 0 | 2026-11-13T10:45:07.121Z | HASH_OK |
+| UAP-EV-20261113104507-c6c4f0ca | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104506-ce09937b | 0 | 2026-11-13T10:45:07.509Z | HASH_OK |
+| UAP-EV-20261113104508-5822b93d | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:45:08.808Z | HASH_OK |
+| UAP-EV-20261113104508-90d2fb42 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:45:08.272Z | HASH_OK |
+| UAP-EV-20261113104508-ce7851e4 | task_result | uap task run UAP-TASK-TEST-20261113104508-81acf8fa | 1 | 2026-11-13T10:45:08.465Z | HASH_OK |
+| UAP-EV-20261113104508-dc443049 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:45:08.974Z | HASH_OK |
+| UAP-EV-20261113104509-380c1556 | task_step | step:test_concurrency | 0 | 2026-11-13T10:45:09.663Z | HASH_OK |
+| UAP-EV-20261113104509-50d47af1 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:45:09.030Z | HASH_OK |
+| UAP-EV-20261113104509-52072def | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:45:09.768Z | HASH_OK |
+| UAP-EV-20261113104509-6ef7eef6 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:45:09.962Z | HASH_OK |
+| UAP-EV-20261113104509-79e456bc | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:45:09.453Z | HASH_OK |
+| UAP-EV-20261113104509-a42d596a | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:45:09.910Z | HASH_OK |
+| UAP-EV-20261113104509-b6148454 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:45:09.327Z | HASH_OK |
+| UAP-EV-20261113104509-be0a0a24 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:45:09.818Z | HASH_OK |
+| UAP-EV-20261113104509-c970468d | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:45:09.266Z | HASH_OK |
+| UAP-EV-20261113104509-d9f943d0 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:45:09.124Z | HASH_OK |
+| UAP-EV-20261113104509-e36660af | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:45:09.613Z | HASH_OK |
+| UAP-EV-20261113104509-e51f9909 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:45:09.170Z | HASH_OK |
+| UAP-EV-20261113104509-eba0090a | task_step | step:test_idempotency | 0 | 2026-11-13T10:45:09.504Z | HASH_OK |
+| UAP-EV-20261113104510-d41e2cd7 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:45:10.109Z | HASH_OK |
+| UAP-EV-20261113104510-d931c2b0 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:45:10.061Z | HASH_OK |
+| UAP-EV-20261113104510-edbf7c04 | task_result | uap task run UAP-TASK-20261113104508-fb3dfeeb | 0 | 2026-11-13T10:45:10.272Z | HASH_OK |
+| UAP-EV-20261113104950-fa8698e8 | task_step | step:__health_step__ | 0 | 2026-11-13T10:49:50.992Z | HASH_OK |
+| UAP-EV-20261113104951-41f5bd83 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:49:51.827Z | HASH_OK |
+| UAP-EV-20261113104951-4840568e | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104951-7a6434cc | 0 | 2026-11-13T10:49:51.790Z | HASH_OK |
+| UAP-EV-20261113104951-6045cbc5 | task_step | step:probe.step2 | 0 | 2026-11-13T10:49:51.554Z | HASH_OK |
+| UAP-EV-20261113104951-7ac0de8e | task_step | step:probe.step1 | 0 | 2026-11-13T10:49:51.386Z | HASH_OK |
+| UAP-EV-20261113104951-7b939797 | task_step | step:probe.step3 | 0 | 2026-11-13T10:49:51.608Z | HASH_OK |
+| UAP-EV-20261113104951-bd324790 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104951-7a6434cc | 0 | 2026-11-13T10:49:51.712Z | HASH_OK |
+| UAP-EV-20261113104951-bea743e4 | task_result | uap task run UAP-TASK-HEALTH-20261113104950-ad63952a | 0 | 2026-11-13T10:49:51.107Z | HASH_OK |
+| UAP-EV-20261113104951-e981e732 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104951-7a6434cc | 0 | 2026-11-13T10:49:51.475Z | HASH_OK |
+| UAP-EV-20261113104952-0a680f90 | task_step | step:probe.step2 | 0 | 2026-11-13T10:49:52.296Z | HASH_OK |
+| UAP-EV-20261113104952-3b23f671 | task_result | uap task run UAP-TASK-TEST-20261113104952-a4d18c68 | 0 | 2026-11-13T10:49:52.751Z | HASH_OK |
+| UAP-EV-20261113104952-58ad1bd3 | task_step | step:probe.step1 | 0 | 2026-11-13T10:49:52.126Z | HASH_OK |
+| UAP-EV-20261113104952-660cfce9 | task_result | uap task run UAP-TASK-INTERRUPT-20261113104952-61e7c7f0 | 0 | 2026-11-13T10:49:52.456Z | HASH_OK |
+| UAP-EV-20261113104952-6b2f4f80 | task_step | step:probe.step3 | 0 | 2026-11-13T10:49:52.350Z | HASH_OK |
+| UAP-EV-20261113104952-6fb960ea | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:49:52.630Z | HASH_OK |
+| UAP-EV-20261113104952-77445c67 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113104952-61e7c7f0 | 0 | 2026-11-13T10:49:52.537Z | HASH_OK |
+| UAP-EV-20261113104952-f2ad2884 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:49:52.902Z | HASH_OK |
+| UAP-EV-20261113104952-ff8fe952 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113104952-61e7c7f0 | 0 | 2026-11-13T10:49:52.216Z | HASH_OK |
+| UAP-EV-20261113104953-1db533e8 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:49:53.590Z | HASH_OK |
+| UAP-EV-20261113104953-3500a7ca | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:49:53.399Z | HASH_OK |
+| UAP-EV-20261113104953-3b982c39 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:49:53.704Z | HASH_OK |
+| UAP-EV-20261113104953-601264a2 | task_result | uap task run UAP-TASK-TEST-20261113104952-495a54b7 | 1 | 2026-11-13T10:49:53.020Z | HASH_OK |
+| UAP-EV-20261113104953-78e14236 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:49:53.530Z | HASH_OK |
+| UAP-EV-20261113104953-78e701f9 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:49:53.823Z | HASH_OK |
+| UAP-EV-20261113104953-7c219e00 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:49:53.304Z | HASH_OK |
+| UAP-EV-20261113104953-8dd33c8d | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:49:53.876Z | HASH_OK |
+| UAP-EV-20261113104953-92080b11 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:49:53.434Z | HASH_OK |
+| UAP-EV-20261113104953-99d246c0 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:49:53.338Z | HASH_OK |
+| UAP-EV-20261113104953-a0a560a6 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:49:53.964Z | HASH_OK |
+| UAP-EV-20261113104953-b6f40f9c | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:49:53.495Z | HASH_OK |
+| UAP-EV-20261113104953-b9000327 | task_step | step:test_concurrency | 0 | 2026-11-13T10:49:53.746Z | HASH_OK |
+| UAP-EV-20261113104953-d8cdac9f | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:49:53.201Z | HASH_OK |
+| UAP-EV-20261113104953-e53bcd64 | task_step | step:test_idempotency | 0 | 2026-11-13T10:49:53.625Z | HASH_OK |
+| UAP-EV-20261113104954-0b435500 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:49:54.120Z | HASH_OK |
+| UAP-EV-20261113104954-1a48ba69 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:49:54.014Z | HASH_OK |
+| UAP-EV-20261113104954-55fcf238 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:49:54.088Z | HASH_OK |
+| UAP-EV-20261113104954-9ec92f38 | task_result | uap task run UAP-TASK-20261113104953-7be5f665 | 0 | 2026-11-13T10:49:54.393Z | HASH_OK |
+| UAP-EV-20261113105009-95cf590c | task_result | uap task run UAP-TASK-HEALTH-20261113105009-560806a9 | 0 | 2026-11-13T10:50:09.793Z | HASH_OK |
+| UAP-EV-20261113105009-ac4a987c | task_step | step:__health_step__ | 0 | 2026-11-13T10:50:09.681Z | HASH_OK |
+| UAP-EV-20261113105010-1183d0e2 | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:10.979Z | HASH_OK |
+| UAP-EV-20261113105010-15e76034 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105009-735864d2 | 0 | 2026-11-13T10:50:10.153Z | HASH_OK |
+| UAP-EV-20261113105010-1718fe72 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105010-84952210 | 0 | 2026-11-13T10:50:10.894Z | HASH_OK |
+| UAP-EV-20261113105010-185d61d4 | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:10.064Z | HASH_OK |
+| UAP-EV-20261113105010-251c4775 | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:10.802Z | HASH_OK |
+| UAP-EV-20261113105010-3eebd45c | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105009-735864d2 | 0 | 2026-11-13T10:50:10.464Z | HASH_OK |
+| UAP-EV-20261113105010-718de766 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105009-735864d2 | 0 | 2026-11-13T10:50:10.390Z | HASH_OK |
+| UAP-EV-20261113105010-8e6b2411 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:50:10.502Z | HASH_OK |
+| UAP-EV-20261113105010-9bd663ac | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:10.285Z | HASH_OK |
+| UAP-EV-20261113105010-e2bf5e3b | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:10.231Z | HASH_OK |
+| UAP-EV-20261113105011-15598705 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:50:11.962Z | HASH_OK |
+| UAP-EV-20261113105011-64371282 | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:11.038Z | HASH_OK |
+| UAP-EV-20261113105011-9686df5f | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105010-84952210 | 0 | 2026-11-13T10:50:11.224Z | HASH_OK |
+| UAP-EV-20261113105011-a1082033 | task_result | uap task run UAP-TASK-TEST-20261113105011-241c6f28 | 1 | 2026-11-13T10:50:11.684Z | HASH_OK |
+| UAP-EV-20261113105011-a1696c8b | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:50:11.576Z | HASH_OK |
+| UAP-EV-20261113105011-ad108ece | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:50:11.861Z | HASH_OK |
+| UAP-EV-20261113105011-ca87db04 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:50:11.321Z | HASH_OK |
+| UAP-EV-20261113105011-ddd88aa3 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105010-84952210 | 0 | 2026-11-13T10:50:11.142Z | HASH_OK |
+| UAP-EV-20261113105011-e09bd199 | task_result | uap task run UAP-TASK-TEST-20261113105011-956f514c | 0 | 2026-11-13T10:50:11.435Z | HASH_OK |
+| UAP-EV-20261113105011-f62bc93a | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:50:11.996Z | HASH_OK |
+| UAP-EV-20261113105012-160a4e37 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:50:12.410Z | HASH_OK |
+| UAP-EV-20261113105012-26e6f961 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:50:12.608Z | HASH_OK |
+| UAP-EV-20261113105012-3ab500ed | task_step | step:test_idempotency | 0 | 2026-11-13T10:50:12.266Z | HASH_OK |
+| UAP-EV-20261113105012-400236e7 | task_step | step:test_concurrency | 0 | 2026-11-13T10:50:12.356Z | HASH_OK |
+| UAP-EV-20261113105012-4112971c | task_result | uap task run UAP-TASK-20261113105011-189fd8d1 | 0 | 2026-11-13T10:50:12.711Z | HASH_OK |
+| UAP-EV-20261113105012-4a39c3a6 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:50:12.237Z | HASH_OK |
+| UAP-EV-20261113105012-53228b36 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:50:12.494Z | HASH_OK |
+| UAP-EV-20261113105012-669d1c4e | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:50:12.182Z | HASH_OK |
+| UAP-EV-20261113105012-680ba8aa | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:50:12.326Z | HASH_OK |
+| UAP-EV-20261113105012-6d3834cd | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:50:12.439Z | HASH_OK |
+| UAP-EV-20261113105012-7d19ceba | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:50:12.065Z | HASH_OK |
+| UAP-EV-20261113105012-83648057 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:50:12.095Z | HASH_OK |
+| UAP-EV-20261113105012-8bd859a4 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:50:12.524Z | HASH_OK |
+| UAP-EV-20261113105012-b8d0e452 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:50:12.579Z | HASH_OK |
+| UAP-EV-20261113105012-bca6cf86 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:50:12.152Z | HASH_OK |
+| UAP-EV-20261113105029-0e5ede3d | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:29.563Z | HASH_OK |
+| UAP-EV-20261113105029-386992c5 | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:29.743Z | HASH_OK |
+| UAP-EV-20261113105029-3df0739d | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:29.808Z | HASH_OK |
+| UAP-EV-20261113105029-46ddc8d9 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105029-d0ff5335 | 0 | 2026-11-13T10:50:29.925Z | HASH_OK |
+| UAP-EV-20261113105029-50c6bf8c | task_step | step:__health_step__ | 0 | 2026-11-13T10:50:29.142Z | HASH_OK |
+| UAP-EV-20261113105029-a325d032 | task_result | uap task run UAP-TASK-HEALTH-20261113105029-015d20db | 0 | 2026-11-13T10:50:29.262Z | HASH_OK |
+| UAP-EV-20261113105029-b00cf7f8 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105029-d0ff5335 | 0 | 2026-11-13T10:50:29.658Z | HASH_OK |
+| UAP-EV-20261113105030-08c4725a | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105030-68a1f821 | 0 | 2026-11-13T10:50:30.463Z | HASH_OK |
+| UAP-EV-20261113105030-11ee8177 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105029-d0ff5335 | 0 | 2026-11-13T10:50:30.006Z | HASH_OK |
+| UAP-EV-20261113105030-1b7c6155 | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:30.663Z | HASH_OK |
+| UAP-EV-20261113105030-29628d1e | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:50:30.046Z | HASH_OK |
+| UAP-EV-20261113105030-2cf4a601 | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:30.357Z | HASH_OK |
+| UAP-EV-20261113105030-a81c01cc | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:30.585Z | HASH_OK |
+| UAP-EV-20261113105030-b57ddf7f | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105030-68a1f821 | 0 | 2026-11-13T10:50:30.899Z | HASH_OK |
+| UAP-EV-20261113105030-c067be4c | task_result | uap task run UAP-TASK-INTERRUPT-20261113105030-68a1f821 | 0 | 2026-11-13T10:50:30.806Z | HASH_OK |
+| UAP-EV-20261113105031-1f36980c | task_result | uap task run UAP-TASK-TEST-20261113105030-78af21b0 | 0 | 2026-11-13T10:50:31.167Z | HASH_OK |
+| UAP-EV-20261113105031-22b36296 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:50:31.914Z | HASH_OK |
+| UAP-EV-20261113105031-6043e078 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:50:31.331Z | HASH_OK |
+| UAP-EV-20261113105031-82f38a59 | task_result | uap task run UAP-TASK-TEST-20261113105031-27302134 | 1 | 2026-11-13T10:50:31.468Z | HASH_OK |
+| UAP-EV-20261113105031-99cf5440 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:50:31.036Z | HASH_OK |
+| UAP-EV-20261113105032-081af483 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:50:32.792Z | HASH_OK |
+| UAP-EV-20261113105032-0d346447 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:50:32.381Z | HASH_OK |
+| UAP-EV-20261113105032-16b0ab9d | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:50:32.923Z | HASH_OK |
+| UAP-EV-20261113105032-45b20177 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:50:32.604Z | HASH_OK |
+| UAP-EV-20261113105032-55e3765a | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:50:32.338Z | HASH_OK |
+| UAP-EV-20261113105032-5894109d | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:50:32.468Z | HASH_OK |
+| UAP-EV-20261113105032-764f35fa | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:50:32.210Z | HASH_OK |
+| UAP-EV-20261113105032-925dbccb | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:50:32.746Z | HASH_OK |
+| UAP-EV-20261113105032-b57a7a22 | task_step | step:test_concurrency | 0 | 2026-11-13T10:50:32.653Z | HASH_OK |
+| UAP-EV-20261113105032-ccb2b324 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:50:32.126Z | HASH_OK |
+| UAP-EV-20261113105032-d179f0d9 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:50:32.253Z | HASH_OK |
+| UAP-EV-20261113105032-d9fb712e | task_step | step:test_idempotency | 0 | 2026-11-13T10:50:32.512Z | HASH_OK |
+| UAP-EV-20261113105032-fc78bcd9 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:50:32.072Z | HASH_OK |
+| UAP-EV-20261113105032-ff119a90 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:50:32.878Z | HASH_OK |
+| UAP-EV-20261113105033-1966c290 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:50:33.049Z | HASH_OK |
+| UAP-EV-20261113105033-5b140f37 | task_result | uap task run UAP-TASK-20261113105031-643b39d9 | 0 | 2026-11-13T10:50:33.251Z | HASH_OK |
+| UAP-EV-20261113105033-7ec1a443 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:50:33.006Z | HASH_OK |
+| UAP-EV-20261113105035-7b486e0e | task_step | step:__health_step__ | 0 | 2026-11-13T10:50:35.926Z | HASH_OK |
+| UAP-EV-20261113105036-5c21f788 | task_result | uap task run UAP-TASK-HEALTH-20261113105035-278567cf | 0 | 2026-11-13T10:50:36.223Z | HASH_OK |
+| UAP-EV-20261113105036-acf7ff74 | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:36.922Z | HASH_OK |
+| UAP-EV-20261113105037-04de877a | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105036-2060aed2 | 0 | 2026-11-13T10:50:37.118Z | HASH_OK |
+| UAP-EV-20261113105037-bc5015a2 | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:37.330Z | HASH_OK |
+| UAP-EV-20261113105037-d20d8f72 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105036-2060aed2 | 0 | 2026-11-13T10:50:37.956Z | HASH_OK |
+| UAP-EV-20261113105037-e5c0b11e | task_result | uap task run UAP-TASK-INTERRUPT-20261113105036-2060aed2 | 0 | 2026-11-13T10:50:37.793Z | HASH_OK |
+| UAP-EV-20261113105037-fda078f8 | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:37.579Z | HASH_OK |
+| UAP-EV-20261113105038-45376574 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:50:38.038Z | HASH_OK |
+| UAP-EV-20261113105038-5e7ee959 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105038-1480ce8e | 0 | 2026-11-13T10:50:38.798Z | HASH_OK |
+| UAP-EV-20261113105038-62dc410a | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:38.639Z | HASH_OK |
+| UAP-EV-20261113105039-09818f78 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105038-1480ce8e | 0 | 2026-11-13T10:50:39.328Z | HASH_OK |
+| UAP-EV-20261113105039-2ed98ec5 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105038-1480ce8e | 0 | 2026-11-13T10:50:39.473Z | HASH_OK |
+| UAP-EV-20261113105039-5bb5e0ee | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:50:39.665Z | HASH_OK |
+| UAP-EV-20261113105039-8d0783ad | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:39.002Z | HASH_OK |
+| UAP-EV-20261113105039-f8eb2f1f | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:39.105Z | HASH_OK |
+| UAP-EV-20261113105039-fbedf7da | task_result | uap task run UAP-TASK-TEST-20261113105039-1c8ab0f5 | 0 | 2026-11-13T10:50:39.848Z | HASH_OK |
+| UAP-EV-20261113105040-32010dd7 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:50:40.922Z | HASH_OK |
+| UAP-EV-20261113105040-463475e9 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:50:40.562Z | HASH_OK |
+| UAP-EV-20261113105040-6543d9c9 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:50:40.776Z | HASH_OK |
+| UAP-EV-20261113105040-65ce615c | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:50:40.112Z | HASH_OK |
+| UAP-EV-20261113105040-8c9a0092 | task_result | uap task run UAP-TASK-TEST-20261113105039-043c95eb | 1 | 2026-11-13T10:50:40.290Z | HASH_OK |
+| UAP-EV-20261113105040-b9d260aa | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:50:40.722Z | HASH_OK |
+| UAP-EV-20261113105040-bfb1cd6c | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:50:40.871Z | HASH_OK |
+| UAP-EV-20261113105041-08f70b6f | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:50:41.329Z | HASH_OK |
+| UAP-EV-20261113105041-2430f125 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:50:41.175Z | HASH_OK |
+| UAP-EV-20261113105041-36c0ae33 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:50:41.463Z | HASH_OK |
+| UAP-EV-20261113105041-42b35c7d | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:50:41.086Z | HASH_OK |
+| UAP-EV-20261113105041-4cea0cc9 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:50:41.719Z | HASH_OK |
+| UAP-EV-20261113105041-4cf265bd | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:50:41.606Z | HASH_OK |
+| UAP-EV-20261113105041-734ec354 | task_result | uap task run UAP-TASK-20261113105040-4a839a38 | 0 | 2026-11-13T10:50:41.875Z | HASH_OK |
+| UAP-EV-20261113105041-7410bf35 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:50:41.678Z | HASH_OK |
+| UAP-EV-20261113105041-910bb8d6 | task_step | step:test_concurrency | 0 | 2026-11-13T10:50:41.374Z | HASH_OK |
+| UAP-EV-20261113105041-a1a633cd | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:50:41.569Z | HASH_OK |
+| UAP-EV-20261113105041-a1f2e6fb | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:50:41.499Z | HASH_OK |
+| UAP-EV-20261113105041-b3a63fca | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:50:41.027Z | HASH_OK |
+| UAP-EV-20261113105041-fbbfb898 | task_step | step:test_idempotency | 0 | 2026-11-13T10:50:41.218Z | HASH_OK |
+| UAP-EV-20261113105050-68aea98b | task_step | step:__health_step__ | 0 | 2026-11-13T10:50:50.366Z | HASH_OK |
+| UAP-EV-20261113105050-faf3d40e | task_result | uap task run UAP-TASK-HEALTH-20261113105050-5bd96ac5 | 0 | 2026-11-13T10:50:50.710Z | HASH_OK |
+| UAP-EV-20261113105051-8ada2e83 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105051-f60643ac | 0 | 2026-11-13T10:50:51.522Z | HASH_OK |
+| UAP-EV-20261113105051-d7384674 | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:51.772Z | HASH_OK |
+| UAP-EV-20261113105051-e52108c8 | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:51.349Z | HASH_OK |
+| UAP-EV-20261113105051-f37622a8 | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:51.864Z | HASH_OK |
+| UAP-EV-20261113105052-3010778e | task_step | step:probe.step1 | 0 | 2026-11-13T10:50:52.756Z | HASH_OK |
+| UAP-EV-20261113105052-344d9102 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105052-362b016b | 0 | 2026-11-13T10:50:52.903Z | HASH_OK |
+| UAP-EV-20261113105052-58c9d109 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105051-f60643ac | 0 | 2026-11-13T10:50:52.052Z | HASH_OK |
+| UAP-EV-20261113105052-b2f86a0e | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105051-f60643ac | 0 | 2026-11-13T10:50:52.185Z | HASH_OK |
+| UAP-EV-20261113105052-b7d6c096 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:50:52.242Z | HASH_OK |
+| UAP-EV-20261113105053-1a09e6e3 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105052-362b016b | 0 | 2026-11-13T10:50:53.441Z | HASH_OK |
+| UAP-EV-20261113105053-20c5977b | task_result | uap task run UAP-TASK-INTERRUPT-20261113105052-362b016b | 0 | 2026-11-13T10:50:53.313Z | HASH_OK |
+| UAP-EV-20261113105053-5af86127 | task_step | step:probe.step2 | 0 | 2026-11-13T10:50:53.036Z | HASH_OK |
+| UAP-EV-20261113105053-5c4ebc8d | task_step | step:probe.step3 | 0 | 2026-11-13T10:50:53.143Z | HASH_OK |
+| UAP-EV-20261113105053-693e5803 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:50:53.589Z | HASH_OK |
+| UAP-EV-20261113105053-f7d065ef | task_result | uap task run UAP-TASK-TEST-20261113105053-29f4579e | 0 | 2026-11-13T10:50:53.760Z | HASH_OK |
+| UAP-EV-20261113105054-08b95d39 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:50:54.655Z | HASH_OK |
+| UAP-EV-20261113105054-34277437 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:50:54.910Z | HASH_OK |
+| UAP-EV-20261113105054-56092384 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:50:54.605Z | HASH_OK |
+| UAP-EV-20261113105054-5e44b326 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:50:54.751Z | HASH_OK |
+| UAP-EV-20261113105054-5f22229d | task_result | uap task run UAP-TASK-TEST-20261113105053-d653b79a | 1 | 2026-11-13T10:50:54.180Z | HASH_OK |
+| UAP-EV-20261113105054-7fe738c3 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:50:54.445Z | HASH_OK |
+| UAP-EV-20261113105054-936b105c | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:50:54.807Z | HASH_OK |
+| UAP-EV-20261113105054-ae0cc190 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:50:54.004Z | HASH_OK |
+| UAP-EV-20261113105054-b18aa278 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:50:54.960Z | HASH_OK |
+| UAP-EV-20261113105055-146f2fc8 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:50:55.565Z | HASH_OK |
+| UAP-EV-20261113105055-39ad5f04 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:50:55.071Z | HASH_OK |
+| UAP-EV-20261113105055-557a5c3c | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:50:55.488Z | HASH_OK |
+| UAP-EV-20261113105055-5597739a | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:50:55.368Z | HASH_OK |
+| UAP-EV-20261113105055-82601138 | task_result | uap task run UAP-TASK-20261113105054-c9701886 | 0 | 2026-11-13T10:50:55.737Z | HASH_OK |
+| UAP-EV-20261113105055-92cd786d | task_step | step:test_concurrency | 0 | 2026-11-13T10:50:55.248Z | HASH_OK |
+| UAP-EV-20261113105055-a13bd96b | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:50:55.448Z | HASH_OK |
+| UAP-EV-20261113105055-b065b038 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:50:55.331Z | HASH_OK |
+| UAP-EV-20261113105055-d02ae69e | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:50:55.205Z | HASH_OK |
+| UAP-EV-20261113105055-e0d03654 | task_step | step:test_idempotency | 0 | 2026-11-13T10:50:55.115Z | HASH_OK |
+| UAP-EV-20261113105055-eb632d82 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:50:55.602Z | HASH_OK |
+| UAP-EV-20261113105237-4ddc3aae | task_step | step:__health_step__ | 0 | 2026-11-13T10:52:37.705Z | HASH_OK |
+| UAP-EV-20261113105237-ed9ef612 | task_result | uap task run UAP-TASK-HEALTH-20261113105237-ff6e1002 | 0 | 2026-11-13T10:52:37.853Z | HASH_OK |
+| UAP-EV-20261113105238-2b37f473 | task_step | step:probe.step2 | 0 | 2026-11-13T10:52:38.524Z | HASH_OK |
+| UAP-EV-20261113105238-4046eda2 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105238-ddcd88cd | 0 | 2026-11-13T10:52:38.766Z | HASH_OK |
+| UAP-EV-20261113105238-48b04f11 | task_step | step:probe.step1 | 0 | 2026-11-13T10:52:38.272Z | HASH_OK |
+| UAP-EV-20261113105238-72293253 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105238-ddcd88cd | 0 | 2026-11-13T10:52:38.882Z | HASH_OK |
+| UAP-EV-20261113105238-92e7806b | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:52:38.935Z | HASH_OK |
+| UAP-EV-20261113105238-ae8681fe | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105238-ddcd88cd | 0 | 2026-11-13T10:52:38.404Z | HASH_OK |
+| UAP-EV-20261113105238-f7eb5db7 | task_step | step:probe.step3 | 0 | 2026-11-13T10:52:38.606Z | HASH_OK |
+| UAP-EV-20261113105239-18d70563 | task_step | step:probe.step2 | 0 | 2026-11-13T10:52:39.641Z | HASH_OK |
+| UAP-EV-20261113105239-3f5b8556 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105239-02556474 | 0 | 2026-11-13T10:52:39.523Z | HASH_OK |
+| UAP-EV-20261113105239-5dcf8753 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105239-02556474 | 0 | 2026-11-13T10:52:39.881Z | HASH_OK |
+| UAP-EV-20261113105239-79fd5eda | task_step | step:probe.step3 | 0 | 2026-11-13T10:52:39.721Z | HASH_OK |
+| UAP-EV-20261113105239-7e96423a | task_step | step:probe.step1 | 0 | 2026-11-13T10:52:39.393Z | HASH_OK |
+| UAP-EV-20261113105240-51bbb763 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:52:40.499Z | HASH_OK |
+| UAP-EV-20261113105240-854e5f00 | task_result | uap task run UAP-TASK-TEST-20261113105240-4c65edb0 | 0 | 2026-11-13T10:52:40.300Z | HASH_OK |
+| UAP-EV-20261113105240-a695ef18 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:52:40.141Z | HASH_OK |
+| UAP-EV-20261113105240-a9bfac84 | task_result | uap task run UAP-TASK-TEST-20261113105240-24d35c4a | 1 | 2026-11-13T10:52:40.663Z | HASH_OK |
+| UAP-EV-20261113105240-e45492a3 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:52:40.915Z | HASH_OK |
+| UAP-EV-20261113105240-f75c9ea1 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105239-02556474 | 0 | 2026-11-13T10:52:40.005Z | HASH_OK |
+| UAP-EV-20261113105241-0f2f08ea | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:52:41.716Z | HASH_OK |
+| UAP-EV-20261113105241-0fd353b1 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:52:41.119Z | HASH_OK |
+| UAP-EV-20261113105241-27663138 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:52:41.203Z | HASH_OK |
+| UAP-EV-20261113105241-35b5c74f | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:52:41.246Z | HASH_OK |
+| UAP-EV-20261113105241-5f45bc02 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:52:41.758Z | HASH_OK |
+| UAP-EV-20261113105241-606cf84c | task_step | step:test_idempotency | 0 | 2026-11-13T10:52:41.501Z | HASH_OK |
+| UAP-EV-20261113105241-6975ee12 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:52:41.070Z | HASH_OK |
+| UAP-EV-20261113105241-74db8e4f | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:52:41.883Z | HASH_OK |
+| UAP-EV-20261113105241-7f5df13b | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:52:41.592Z | HASH_OK |
+| UAP-EV-20261113105241-a70081f4 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:52:41.841Z | HASH_OK |
+| UAP-EV-20261113105241-c064a952 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:52:41.331Z | HASH_OK |
+| UAP-EV-20261113105241-da7475a6 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:52:41.375Z | HASH_OK |
+| UAP-EV-20261113105241-eb7b6515 | task_step | step:test_concurrency | 0 | 2026-11-13T10:52:41.634Z | HASH_OK |
+| UAP-EV-20261113105241-ebc89caa | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:52:41.966Z | HASH_OK |
+| UAP-EV-20261113105241-f46e9f5e | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:52:41.460Z | HASH_OK |
+| UAP-EV-20261113105242-142228ed | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:52:42.009Z | HASH_OK |
+| UAP-EV-20261113105242-62d528e3 | task_result | uap task run UAP-TASK-20261113105240-bd55bc5b | 0 | 2026-11-13T10:52:42.168Z | HASH_OK |
+| UAP-EV-20261113105301-69598fb3 | task_result | uap task run UAP-TASK-HEALTH-20261113105301-43aaa3bf | 0 | 2026-11-13T10:53:01.993Z | HASH_OK |
+| UAP-EV-20261113105301-d134e558 | task_step | step:__health_step__ | 0 | 2026-11-13T10:53:01.834Z | HASH_OK |
+| UAP-EV-20261113105302-2dbe484d | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105302-55539c21 | 0 | 2026-11-13T10:53:02.552Z | HASH_OK |
+| UAP-EV-20261113105302-67c13d6f | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:02.418Z | HASH_OK |
+| UAP-EV-20261113105302-9a9a854c | task_result | uap task run UAP-TASK-INTERRUPT-20261113105302-55539c21 | 0 | 2026-11-13T10:53:02.918Z | HASH_OK |
+| UAP-EV-20261113105302-c477a8d0 | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:02.753Z | HASH_OK |
+| UAP-EV-20261113105302-cbd7d6f7 | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:02.671Z | HASH_OK |
+| UAP-EV-20261113105303-10632c92 | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:03.822Z | HASH_OK |
+| UAP-EV-20261113105303-8e91b96f | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:03.910Z | HASH_OK |
+| UAP-EV-20261113105303-ab324357 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:53:03.090Z | HASH_OK |
+| UAP-EV-20261113105303-cc1472f8 | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:03.559Z | HASH_OK |
+| UAP-EV-20261113105303-d5d4345c | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105303-99d8059f | 0 | 2026-11-13T10:53:03.698Z | HASH_OK |
+| UAP-EV-20261113105303-d680d3bd | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105302-55539c21 | 0 | 2026-11-13T10:53:03.035Z | HASH_OK |
+| UAP-EV-20261113105304-20776467 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:53:04.730Z | HASH_OK |
+| UAP-EV-20261113105304-2f793b7e | task_result | uap task run UAP-TASK-TEST-20261113105304-0d7c4b48 | 0 | 2026-11-13T10:53:04.523Z | HASH_OK |
+| UAP-EV-20261113105304-4860937b | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105303-99d8059f | 0 | 2026-11-13T10:53:04.208Z | HASH_OK |
+| UAP-EV-20261113105304-51bb7afc | task_result | uap task run UAP-TASK-INTERRUPT-20261113105303-99d8059f | 0 | 2026-11-13T10:53:04.079Z | HASH_OK |
+| UAP-EV-20261113105304-525820aa | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:53:04.356Z | HASH_OK |
+| UAP-EV-20261113105304-aee6dc5d | task_result | uap task run UAP-TASK-TEST-20261113105304-9ae0e71b | 1 | 2026-11-13T10:53:04.901Z | HASH_OK |
+| UAP-EV-20261113105305-0050735b | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:53:05.590Z | HASH_OK |
+| UAP-EV-20261113105305-4a6b9bb8 | task_step | step:test_idempotency | 0 | 2026-11-13T10:53:05.782Z | HASH_OK |
+| UAP-EV-20261113105305-513f6e05 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:53:05.870Z | HASH_OK |
+| UAP-EV-20261113105305-987d33f1 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:53:05.314Z | HASH_OK |
+| UAP-EV-20261113105305-a0e7215e | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:53:05.363Z | HASH_OK |
+| UAP-EV-20261113105305-b78c4a0b | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:53:05.453Z | HASH_OK |
+| UAP-EV-20261113105305-bc208643 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:53:05.501Z | HASH_OK |
+| UAP-EV-20261113105305-beb9d39d | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:53:05.638Z | HASH_OK |
+| UAP-EV-20261113105305-bfb0b7fa | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:53:05.158Z | HASH_OK |
+| UAP-EV-20261113105305-e8178226 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:53:05.733Z | HASH_OK |
+| UAP-EV-20261113105305-ed7f3dee | task_step | step:test_concurrency | 0 | 2026-11-13T10:53:05.917Z | HASH_OK |
+| UAP-EV-20261113105306-1492e6ae | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:53:06.309Z | HASH_OK |
+| UAP-EV-20261113105306-36e6a5a2 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:53:06.008Z | HASH_OK |
+| UAP-EV-20261113105306-3a596b2d | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:53:06.138Z | HASH_OK |
+| UAP-EV-20261113105306-74acab06 | task_result | uap task run UAP-TASK-20261113105305-3883e6a3 | 0 | 2026-11-13T10:53:06.469Z | HASH_OK |
+| UAP-EV-20261113105306-9a545fef | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:53:06.267Z | HASH_OK |
+| UAP-EV-20261113105306-9c557321 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:53:06.056Z | HASH_OK |
+| UAP-EV-20261113105306-ce787b2e | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:53:06.181Z | HASH_OK |
+| UAP-EV-20261113105325-452f7455 | task_step | step:__health_step__ | 0 | 2026-11-13T10:53:25.893Z | HASH_OK |
+| UAP-EV-20261113105326-0567360a | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:26.726Z | HASH_OK |
+| UAP-EV-20261113105326-83dc0813 | task_result | uap task run UAP-TASK-HEALTH-20261113105325-2acf3abd | 0 | 2026-11-13T10:53:26.047Z | HASH_OK |
+| UAP-EV-20261113105326-86caa05a | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:26.471Z | HASH_OK |
+| UAP-EV-20261113105326-a616d14c | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105326-688151bc | 0 | 2026-11-13T10:53:26.605Z | HASH_OK |
+| UAP-EV-20261113105326-d7e2210d | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:26.808Z | HASH_OK |
+| UAP-EV-20261113105326-e8029c51 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105326-688151bc | 0 | 2026-11-13T10:53:26.969Z | HASH_OK |
+| UAP-EV-20261113105327-08112d6d | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105326-688151bc | 0 | 2026-11-13T10:53:27.087Z | HASH_OK |
+| UAP-EV-20261113105327-0a4279f8 | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:27.601Z | HASH_OK |
+| UAP-EV-20261113105327-13516368 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:53:27.139Z | HASH_OK |
+| UAP-EV-20261113105327-3a94a995 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105327-c4ef6e1e | 0 | 2026-11-13T10:53:27.740Z | HASH_OK |
+| UAP-EV-20261113105327-40a13aae | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:27.864Z | HASH_OK |
+| UAP-EV-20261113105327-5386f8d4 | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:27.953Z | HASH_OK |
+| UAP-EV-20261113105328-b054d2fe | task_result | uap task run UAP-TASK-TEST-20261113105328-10ea3906 | 1 | 2026-11-13T10:53:28.961Z | HASH_OK |
+| UAP-EV-20261113105328-b2b09e54 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:53:28.785Z | HASH_OK |
+| UAP-EV-20261113105328-c2c90249 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105327-c4ef6e1e | 0 | 2026-11-13T10:53:28.127Z | HASH_OK |
+| UAP-EV-20261113105328-d42c1881 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105327-c4ef6e1e | 0 | 2026-11-13T10:53:28.264Z | HASH_OK |
+| UAP-EV-20261113105328-d6712c7d | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:53:28.413Z | HASH_OK |
+| UAP-EV-20261113105328-e34c918d | task_result | uap task run UAP-TASK-TEST-20261113105328-9b142dab | 0 | 2026-11-13T10:53:28.579Z | HASH_OK |
+| UAP-EV-20261113105329-03938c65 | task_step | step:test_idempotency | 0 | 2026-11-13T10:53:29.846Z | HASH_OK |
+| UAP-EV-20261113105329-22ef3ac8 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:53:29.702Z | HASH_OK |
+| UAP-EV-20261113105329-28bd775e | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:53:29.563Z | HASH_OK |
+| UAP-EV-20261113105329-2b9d78eb | task_step | step:test_concurrency | 0 | 2026-11-13T10:53:29.983Z | HASH_OK |
+| UAP-EV-20261113105329-335181aa | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:53:29.654Z | HASH_OK |
+| UAP-EV-20261113105329-6e821a86 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:53:29.799Z | HASH_OK |
+| UAP-EV-20261113105329-71df36cf | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:53:29.424Z | HASH_OK |
+| UAP-EV-20261113105329-901ee538 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:53:29.935Z | HASH_OK |
+| UAP-EV-20261113105329-9041ae7e | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:53:29.376Z | HASH_OK |
+| UAP-EV-20261113105329-a0940b6c | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:53:29.514Z | HASH_OK |
+| UAP-EV-20261113105329-eb25e6af | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:53:29.220Z | HASH_OK |
+| UAP-EV-20261113105330-0a0ac217 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:53:30.116Z | HASH_OK |
+| UAP-EV-20261113105330-0c5eb80a | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:53:30.201Z | HASH_OK |
+| UAP-EV-20261113105330-45b6a96d | task_result | uap task run UAP-TASK-20261113105329-6a60b82b | 0 | 2026-11-13T10:53:30.531Z | HASH_OK |
+| UAP-EV-20261113105330-84945fe1 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:53:30.243Z | HASH_OK |
+| UAP-EV-20261113105330-85d83b57 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:53:30.073Z | HASH_OK |
+| UAP-EV-20261113105330-9c37ae9a | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:53:30.328Z | HASH_OK |
+| UAP-EV-20261113105330-f6559680 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:53:30.370Z | HASH_OK |
+| UAP-EV-20261113105332-204b6edc | task_step | step:__health_step__ | 0 | 2026-11-13T10:53:32.960Z | HASH_OK |
+| UAP-EV-20261113105333-0925cf55 | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:33.877Z | HASH_OK |
+| UAP-EV-20261113105333-1bb92818 | task_result | uap task run UAP-TASK-HEALTH-20261113105332-86a06972 | 0 | 2026-11-13T10:53:33.253Z | HASH_OK |
+| UAP-EV-20261113105334-bd6dd766 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:53:34.758Z | HASH_OK |
+| UAP-EV-20261113105334-c210c673 | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:34.365Z | HASH_OK |
+| UAP-EV-20261113105334-d6a5dddc | task_result | uap task run UAP-TASK-INTERRUPT-20261113105333-5f8a0e4d | 0 | 2026-11-13T10:53:34.560Z | HASH_OK |
+| UAP-EV-20261113105334-e21ade8e | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:34.266Z | HASH_OK |
+| UAP-EV-20261113105334-e9964ddd | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105333-5f8a0e4d | 0 | 2026-11-13T10:53:34.055Z | HASH_OK |
+| UAP-EV-20261113105334-f1463cad | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105333-5f8a0e4d | 0 | 2026-11-13T10:53:34.699Z | HASH_OK |
+| UAP-EV-20261113105335-07721ccb | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105335-1445b06a | 0 | 2026-11-13T10:53:35.444Z | HASH_OK |
+| UAP-EV-20261113105335-22e1752b | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:35.669Z | HASH_OK |
+| UAP-EV-20261113105335-6121d2b5 | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:35.287Z | HASH_OK |
+| UAP-EV-20261113105335-b72d5e32 | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:35.573Z | HASH_OK |
+| UAP-EV-20261113105335-c785523a | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105335-1445b06a | 0 | 2026-11-13T10:53:35.988Z | HASH_OK |
+| UAP-EV-20261113105335-e68a5bcc | task_result | uap task run UAP-TASK-INTERRUPT-20261113105335-1445b06a | 0 | 2026-11-13T10:53:35.862Z | HASH_OK |
+| UAP-EV-20261113105336-07fa6e82 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:53:36.583Z | HASH_OK |
+| UAP-EV-20261113105336-48da05ca | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:53:36.145Z | HASH_OK |
+| UAP-EV-20261113105336-95d736ae | task_result | uap task run UAP-TASK-TEST-20261113105336-90c17b5e | 1 | 2026-11-13T10:53:36.756Z | HASH_OK |
+| UAP-EV-20261113105336-fa1af963 | task_result | uap task run UAP-TASK-TEST-20261113105336-c281d532 | 0 | 2026-11-13T10:53:36.338Z | HASH_OK |
+| UAP-EV-20261113105337-39763055 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:53:37.318Z | HASH_OK |
+| UAP-EV-20261113105337-537c0ab7 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:53:37.165Z | HASH_OK |
+| UAP-EV-20261113105337-5bdbdc68 | task_step | step:test_idempotency | 0 | 2026-11-13T10:53:37.670Z | HASH_OK |
+| UAP-EV-20261113105337-5fb8ba10 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:53:37.367Z | HASH_OK |
+| UAP-EV-20261113105337-6855a957 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:53:37.882Z | HASH_OK |
+| UAP-EV-20261113105337-6b491c7c | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:53:37.213Z | HASH_OK |
+| UAP-EV-20261113105337-750e80da | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:53:37.458Z | HASH_OK |
+| UAP-EV-20261113105337-911fbb5e | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:53:37.757Z | HASH_OK |
+| UAP-EV-20261113105337-a86ddad3 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:53:37.527Z | HASH_OK |
+| UAP-EV-20261113105337-d9f6d2ba | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:53:37.925Z | HASH_OK |
+| UAP-EV-20261113105337-f407c2df | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:53:37.022Z | HASH_OK |
+| UAP-EV-20261113105337-f6477b3a | task_step | step:test_concurrency | 0 | 2026-11-13T10:53:37.798Z | HASH_OK |
+| UAP-EV-20261113105337-fdd5b253 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:53:37.623Z | HASH_OK |
+| UAP-EV-20261113105338-085a7501 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:53:38.044Z | HASH_OK |
+| UAP-EV-20261113105338-6b2ad4ad | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:53:38.008Z | HASH_OK |
+| UAP-EV-20261113105338-8328daf9 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:53:38.118Z | HASH_OK |
+| UAP-EV-20261113105338-a9917a10 | task_result | uap task run UAP-TASK-20261113105337-58f9e54e | 0 | 2026-11-13T10:53:38.305Z | HASH_OK |
+| UAP-EV-20261113105338-e88dda6e | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:53:38.155Z | HASH_OK |
+| UAP-EV-20261113105346-803d7f34 | task_step | step:__health_step__ | 0 | 2026-11-13T10:53:46.776Z | HASH_OK |
+| UAP-EV-20261113105347-4d152333 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105347-b60e3cd6 | 0 | 2026-11-13T10:53:47.838Z | HASH_OK |
+| UAP-EV-20261113105347-a5b6b596 | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:47.659Z | HASH_OK |
+| UAP-EV-20261113105347-b522057d | task_result | uap task run UAP-TASK-HEALTH-20261113105346-1b73b648 | 0 | 2026-11-13T10:53:47.052Z | HASH_OK |
+| UAP-EV-20261113105348-7c3cd1e9 | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:48.115Z | HASH_OK |
+| UAP-EV-20261113105348-81dc6295 | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:48.212Z | HASH_OK |
+| UAP-EV-20261113105348-aa73b0e4 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:53:48.604Z | HASH_OK |
+| UAP-EV-20261113105348-e8f9e361 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105347-b60e3cd6 | 0 | 2026-11-13T10:53:48.410Z | HASH_OK |
+| UAP-EV-20261113105348-ec488677 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105347-b60e3cd6 | 0 | 2026-11-13T10:53:48.544Z | HASH_OK |
+| UAP-EV-20261113105349-251a6ff8 | task_step | step:probe.step2 | 0 | 2026-11-13T10:53:49.437Z | HASH_OK |
+| UAP-EV-20261113105349-47a9a335 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105349-cb343477 | 0 | 2026-11-13T10:53:49.705Z | HASH_OK |
+| UAP-EV-20261113105349-62d8228d | task_step | step:probe.step3 | 0 | 2026-11-13T10:53:49.530Z | HASH_OK |
+| UAP-EV-20261113105349-6504283c | task_step | step:probe.step1 | 0 | 2026-11-13T10:53:49.131Z | HASH_OK |
+| UAP-EV-20261113105349-d95dd726 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:53:49.985Z | HASH_OK |
+| UAP-EV-20261113105349-dab85ea5 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105349-cb343477 | 0 | 2026-11-13T10:53:49.830Z | HASH_OK |
+| UAP-EV-20261113105349-e5c036e9 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105349-cb343477 | 0 | 2026-11-13T10:53:49.291Z | HASH_OK |
+| UAP-EV-20261113105350-09a0a9e8 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:53:50.875Z | HASH_OK |
+| UAP-EV-20261113105350-21bdf446 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:53:50.435Z | HASH_OK |
+| UAP-EV-20261113105350-2dfecf6d | task_result | uap task run UAP-TASK-TEST-20261113105349-cb996567 | 0 | 2026-11-13T10:53:50.207Z | HASH_OK |
+| UAP-EV-20261113105350-77732a0a | task_result | uap task run UAP-TASK-TEST-20261113105350-17394aeb | 1 | 2026-11-13T10:53:50.611Z | HASH_OK |
+| UAP-EV-20261113105351-094d01a6 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:53:51.405Z | HASH_OK |
+| UAP-EV-20261113105351-2862a242 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:53:51.359Z | HASH_OK |
+| UAP-EV-20261113105351-57674cd9 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:53:51.496Z | HASH_OK |
+| UAP-EV-20261113105351-5a447bb4 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:53:51.102Z | HASH_OK |
+| UAP-EV-20261113105351-5f626359 | task_step | step:test_idempotency | 0 | 2026-11-13T10:53:51.540Z | HASH_OK |
+| UAP-EV-20261113105351-63a8aefd | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:53:51.753Z | HASH_OK |
+| UAP-EV-20261113105351-7088dd08 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:53:51.883Z | HASH_OK |
+| UAP-EV-20261113105351-739cb66f | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:53:51.200Z | HASH_OK |
+| UAP-EV-20261113105351-74796010 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:53:51.245Z | HASH_OK |
+| UAP-EV-20261113105351-7b424fb4 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:53:51.926Z | HASH_OK |
+| UAP-EV-20261113105351-98a08337 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:53:51.045Z | HASH_OK |
+| UAP-EV-20261113105351-cbe7663c | task_step | step:test_concurrency | 0 | 2026-11-13T10:53:51.667Z | HASH_OK |
+| UAP-EV-20261113105351-e06ec853 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:53:51.797Z | HASH_OK |
+| UAP-EV-20261113105351-faae165d | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:53:51.627Z | HASH_OK |
+| UAP-EV-20261113105352-56edc89d | task_result | uap task run UAP-TASK-20261113105350-3d9ffa09 | 0 | 2026-11-13T10:53:52.209Z | HASH_OK |
+| UAP-EV-20261113105352-8c681bc3 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:53:52.054Z | HASH_OK |
+| UAP-EV-20261113105352-94493384 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:53:52.012Z | HASH_OK |
+| UAP-EV-20261113105644-a79673c2 | task_result | uap task run UAP-TASK-HEALTH-20261113105644-be28e70b | 0 | 2026-11-13T10:56:44.886Z | HASH_OK |
+| UAP-EV-20261113105644-e1e9bf1e | task_step | step:__health_step__ | 0 | 2026-11-13T10:56:44.621Z | HASH_OK |
+| UAP-EV-20261113105645-17ec9d44 | task_step | step:probe.step2 | 0 | 2026-11-13T10:56:45.945Z | HASH_OK |
+| UAP-EV-20261113105645-c6f50e88 | task_step | step:probe.step1 | 0 | 2026-11-13T10:56:45.474Z | HASH_OK |
+| UAP-EV-20261113105645-f740844c | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105645-74c8c2b6 | 0 | 2026-11-13T10:56:45.662Z | HASH_OK |
+| UAP-EV-20261113105646-1f7ea382 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105645-74c8c2b6 | 0 | 2026-11-13T10:56:46.458Z | HASH_OK |
+| UAP-EV-20261113105646-b9d1d732 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:56:46.519Z | HASH_OK |
+| UAP-EV-20261113105646-c2944309 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105645-74c8c2b6 | 0 | 2026-11-13T10:56:46.313Z | HASH_OK |
+| UAP-EV-20261113105646-c4605a05 | task_step | step:probe.step3 | 0 | 2026-11-13T10:56:46.051Z | HASH_OK |
+| UAP-EV-20261113105647-88bbfaf5 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105646-0bc76a8f | 0 | 2026-11-13T10:56:47.474Z | HASH_OK |
+| UAP-EV-20261113105647-8cc62cec | task_step | step:probe.step1 | 0 | 2026-11-13T10:56:47.313Z | HASH_OK |
+| UAP-EV-20261113105647-b6dceca1 | task_step | step:probe.step3 | 0 | 2026-11-13T10:56:47.717Z | HASH_OK |
+| UAP-EV-20261113105647-bc01c86d | task_step | step:probe.step2 | 0 | 2026-11-13T10:56:47.619Z | HASH_OK |
+| UAP-EV-20261113105647-e195320b | task_result | uap task run UAP-TASK-INTERRUPT-20261113105646-0bc76a8f | 0 | 2026-11-13T10:56:47.893Z | HASH_OK |
+| UAP-EV-20261113105648-0a1f6793 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:56:48.176Z | HASH_OK |
+| UAP-EV-20261113105648-4298474e | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105646-0bc76a8f | 0 | 2026-11-13T10:56:48.017Z | HASH_OK |
+| UAP-EV-20261113105648-60b118f7 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:56:48.581Z | HASH_OK |
+| UAP-EV-20261113105648-8d165d6e | task_result | uap task run UAP-TASK-TEST-20261113105648-b1a12971 | 0 | 2026-11-13T10:56:48.353Z | HASH_OK |
+| UAP-EV-20261113105648-b68d1abf | task_result | uap task run UAP-TASK-TEST-20261113105648-e547220e | 1 | 2026-11-13T10:56:48.754Z | HASH_OK |
+| UAP-EV-20261113105649-00ca9369 | task_step | step:test_idempotency | 0 | 2026-11-13T10:56:49.669Z | HASH_OK |
+| UAP-EV-20261113105649-06ea1600 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:56:49.358Z | HASH_OK |
+| UAP-EV-20261113105649-48db3dd8 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:56:49.958Z | HASH_OK |
+| UAP-EV-20261113105649-4f0e7c89 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:56:49.908Z | HASH_OK |
+| UAP-EV-20261113105649-64108f65 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:56:49.270Z | HASH_OK |
+| UAP-EV-20261113105649-64bb35d9 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:56:49.060Z | HASH_OK |
+| UAP-EV-20261113105649-98608d26 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:56:49.759Z | HASH_OK |
+| UAP-EV-20261113105649-9ef2d4c6 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:56:49.536Z | HASH_OK |
+| UAP-EV-20261113105649-aad1c1bc | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:56:49.625Z | HASH_OK |
+| UAP-EV-20261113105649-c0728acb | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:56:49.224Z | HASH_OK |
+| UAP-EV-20261113105649-d5f61daf | task_step | step:test_concurrency | 0 | 2026-11-13T10:56:49.804Z | HASH_OK |
+| UAP-EV-20261113105649-e8b55430 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:56:49.402Z | HASH_OK |
+| UAP-EV-20261113105649-ff0f4387 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:56:49.492Z | HASH_OK |
+| UAP-EV-20261113105650-38a915c9 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:56:50.275Z | HASH_OK |
+| UAP-EV-20261113105650-3c056e3c | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:56:50.227Z | HASH_OK |
+| UAP-EV-20261113105650-803716bd | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:56:50.129Z | HASH_OK |
+| UAP-EV-20261113105650-88e2c53e | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:56:50.065Z | HASH_OK |
+| UAP-EV-20261113105650-fa00a05b | task_result | uap task run UAP-TASK-20261113105649-ca6b0e04 | 0 | 2026-11-13T10:56:50.457Z | HASH_OK |
+| UAP-EV-20261113105659-876e2926 | task_result | uap task run UAP-TASK-HEALTH-20261113105659-1ba68179 | 0 | 2026-11-13T10:56:59.808Z | HASH_OK |
+| UAP-EV-20261113105659-abc4e2e9 | task_step | step:__health_step__ | 0 | 2026-11-13T10:56:59.545Z | HASH_OK |
+| UAP-EV-20261113105700-88905979 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105700-e7ea05be | 0 | 2026-11-13T10:57:00.574Z | HASH_OK |
+| UAP-EV-20261113105700-a0bbe875 | task_step | step:probe.step1 | 0 | 2026-11-13T10:57:00.391Z | HASH_OK |
+| UAP-EV-20261113105700-ad2d6106 | task_step | step:probe.step2 | 0 | 2026-11-13T10:57:00.833Z | HASH_OK |
+| UAP-EV-20261113105700-c4785feb | task_step | step:probe.step3 | 0 | 2026-11-13T10:57:00.942Z | HASH_OK |
+| UAP-EV-20261113105701-1d14a98a | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:57:01.357Z | HASH_OK |
+| UAP-EV-20261113105701-5d5fd250 | task_step | step:probe.step1 | 0 | 2026-11-13T10:57:01.888Z | HASH_OK |
+| UAP-EV-20261113105701-a075c0d5 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105700-e7ea05be | 0 | 2026-11-13T10:57:01.294Z | HASH_OK |
+| UAP-EV-20261113105701-c47e65d1 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105700-e7ea05be | 0 | 2026-11-13T10:57:01.155Z | HASH_OK |
+| UAP-EV-20261113105702-081332c5 | task_step | step:probe.step2 | 0 | 2026-11-13T10:57:02.191Z | HASH_OK |
+| UAP-EV-20261113105702-26ee12c1 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105701-ac88939f | 0 | 2026-11-13T10:57:02.583Z | HASH_OK |
+| UAP-EV-20261113105702-3bbefb13 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105701-ac88939f | 0 | 2026-11-13T10:57:02.044Z | HASH_OK |
+| UAP-EV-20261113105702-4d508f28 | task_result | uap task run UAP-TASK-TEST-20261113105702-1163829c | 0 | 2026-11-13T10:57:02.958Z | HASH_OK |
+| UAP-EV-20261113105702-73683d4b | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:57:02.742Z | HASH_OK |
+| UAP-EV-20261113105702-9868cb9c | task_result | uap task run UAP-TASK-INTERRUPT-20261113105701-ac88939f | 0 | 2026-11-13T10:57:02.460Z | HASH_OK |
+| UAP-EV-20261113105702-f257cedb | task_step | step:probe.step3 | 0 | 2026-11-13T10:57:02.282Z | HASH_OK |
+| UAP-EV-20261113105703-01653f81 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:57:03.887Z | HASH_OK |
+| UAP-EV-20261113105703-2abaf75a | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:57:03.187Z | HASH_OK |
+| UAP-EV-20261113105703-332de520 | task_result | uap task run UAP-TASK-TEST-20261113105703-41e63bb3 | 1 | 2026-11-13T10:57:03.372Z | HASH_OK |
+| UAP-EV-20261113105703-382d8633 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:57:03.650Z | HASH_OK |
+| UAP-EV-20261113105703-852d8e10 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:57:03.988Z | HASH_OK |
+| UAP-EV-20261113105703-be66d510 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:57:03.834Z | HASH_OK |
+| UAP-EV-20261113105704-1aaf2fa4 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:57:04.059Z | HASH_OK |
+| UAP-EV-20261113105704-2e1509c2 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:57:04.544Z | HASH_OK |
+| UAP-EV-20261113105704-4be32289 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:57:04.583Z | HASH_OK |
+| UAP-EV-20261113105704-816ac5ed | task_step | step:test_concurrency | 0 | 2026-11-13T10:57:04.459Z | HASH_OK |
+| UAP-EV-20261113105704-8babd9c1 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:57:04.285Z | HASH_OK |
+| UAP-EV-20261113105704-8e19da3e | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:57:04.667Z | HASH_OK |
+| UAP-EV-20261113105704-93d99bbc | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:57:04.150Z | HASH_OK |
+| UAP-EV-20261113105704-cedba5f9 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:57:04.782Z | HASH_OK |
+| UAP-EV-20261113105704-cfe4c98a | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:57:04.705Z | HASH_OK |
+| UAP-EV-20261113105704-dc002138 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:57:04.416Z | HASH_OK |
+| UAP-EV-20261113105704-e7968f2d | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:57:04.825Z | HASH_OK |
+| UAP-EV-20261113105704-f0161cce | task_step | step:test_idempotency | 0 | 2026-11-13T10:57:04.329Z | HASH_OK |
+| UAP-EV-20261113105704-f8b4594e | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:57:04.198Z | HASH_OK |
+| UAP-EV-20261113105705-cd6d911e | task_result | uap task run UAP-TASK-20261113105703-b683cab5 | 0 | 2026-11-13T10:57:05.002Z | HASH_OK |
+| UAP-EV-20261113105713-22b8e1e7 | task_step | step:__health_step__ | 0 | 2026-11-13T10:57:13.981Z | HASH_OK |
+| UAP-EV-20261113105714-18ac0729 | task_result | uap task run UAP-TASK-HEALTH-20261113105713-ec400c01 | 0 | 2026-11-13T10:57:14.250Z | HASH_OK |
+| UAP-EV-20261113105714-b684fc9d | task_step | step:probe.step1 | 0 | 2026-11-13T10:57:14.837Z | HASH_OK |
+| UAP-EV-20261113105715-020c7a12 | task_step | step:probe.step3 | 0 | 2026-11-13T10:57:15.367Z | HASH_OK |
+| UAP-EV-20261113105715-140a1726 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:57:15.767Z | HASH_OK |
+| UAP-EV-20261113105715-32aa8b6e | task_step | step:probe.step2 | 0 | 2026-11-13T10:57:15.268Z | HASH_OK |
+| UAP-EV-20261113105715-45caf608 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105714-970d93c4 | 0 | 2026-11-13T10:57:15.709Z | HASH_OK |
+| UAP-EV-20261113105715-e3794117 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105714-970d93c4 | 0 | 2026-11-13T10:57:15.571Z | HASH_OK |
+| UAP-EV-20261113105715-f9c633fc | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105714-970d93c4 | 0 | 2026-11-13T10:57:15.018Z | HASH_OK |
+| UAP-EV-20261113105716-2418211e | task_step | step:probe.step3 | 0 | 2026-11-13T10:57:16.690Z | HASH_OK |
+| UAP-EV-20261113105716-7b6c95e9 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105716-a77238fb | 0 | 2026-11-13T10:57:16.454Z | HASH_OK |
+| UAP-EV-20261113105716-8dedb9f6 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105716-a77238fb | 0 | 2026-11-13T10:57:16.883Z | HASH_OK |
+| UAP-EV-20261113105716-cb46db48 | task_step | step:probe.step1 | 0 | 2026-11-13T10:57:16.301Z | HASH_OK |
+| UAP-EV-20261113105716-f25ad9e4 | task_step | step:probe.step2 | 0 | 2026-11-13T10:57:16.596Z | HASH_OK |
+| UAP-EV-20261113105717-12f36f71 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105716-a77238fb | 0 | 2026-11-13T10:57:17.013Z | HASH_OK |
+| UAP-EV-20261113105717-5851e5c8 | task_result | uap task run UAP-TASK-TEST-20261113105717-f2f3a30b | 1 | 2026-11-13T10:57:17.806Z | HASH_OK |
+| UAP-EV-20261113105717-999d71a5 | task_result | uap task run UAP-TASK-TEST-20261113105717-2d5029a1 | 0 | 2026-11-13T10:57:17.390Z | HASH_OK |
+| UAP-EV-20261113105717-b429bbbc | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:57:17.613Z | HASH_OK |
+| UAP-EV-20261113105717-fd1c57f4 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:57:17.173Z | HASH_OK |
+| UAP-EV-20261113105718-0fdb2e0c | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:57:18.547Z | HASH_OK |
+| UAP-EV-20261113105718-2aaadfdb | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:57:18.983Z | HASH_OK |
+| UAP-EV-20261113105718-2e7919fa | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:57:18.397Z | HASH_OK |
+| UAP-EV-20261113105718-34c32fcc | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:57:18.811Z | HASH_OK |
+| UAP-EV-20261113105718-6e410c56 | task_step | step:test_concurrency | 0 | 2026-11-13T10:57:18.854Z | HASH_OK |
+| UAP-EV-20261113105718-82842927 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:57:18.684Z | HASH_OK |
+| UAP-EV-20261113105718-a1d60e1f | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:57:18.442Z | HASH_OK |
+| UAP-EV-20261113105718-aba3c0cc | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:57:18.593Z | HASH_OK |
+| UAP-EV-20261113105718-d74eabbe | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:57:18.298Z | HASH_OK |
+| UAP-EV-20261113105718-df88cd11 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:57:18.245Z | HASH_OK |
+| UAP-EV-20261113105718-e323839c | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:57:18.080Z | HASH_OK |
+| UAP-EV-20261113105718-e535d90a | task_step | step:test_idempotency | 0 | 2026-11-13T10:57:18.727Z | HASH_OK |
+| UAP-EV-20261113105718-f323e08c | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:57:18.940Z | HASH_OK |
+| UAP-EV-20261113105719-604a7fe9 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:57:19.066Z | HASH_OK |
+| UAP-EV-20261113105719-8d9e9553 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:57:19.217Z | HASH_OK |
+| UAP-EV-20261113105719-9988db72 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:57:19.103Z | HASH_OK |
+| UAP-EV-20261113105719-ccba2f4e | task_result | uap task run UAP-TASK-20261113105718-070e4e58 | 0 | 2026-11-13T10:57:19.380Z | HASH_OK |
+| UAP-EV-20261113105719-f96460b7 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:57:19.178Z | HASH_OK |
+| UAP-EV-20261113105727-42082e51 | task_step | step:__health_step__ | 0 | 2026-11-13T10:57:27.715Z | HASH_OK |
+| UAP-EV-20261113105727-b5286cbd | task_result | uap task run UAP-TASK-HEALTH-20261113105727-3adc614c | 0 | 2026-11-13T10:57:27.995Z | HASH_OK |
+| UAP-EV-20261113105728-76eeee7f | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105728-b9cbf8d6 | 0 | 2026-11-13T10:57:28.864Z | HASH_OK |
+| UAP-EV-20261113105728-c346218e | task_step | step:probe.step1 | 0 | 2026-11-13T10:57:28.659Z | HASH_OK |
+| UAP-EV-20261113105729-13182b28 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105728-b9cbf8d6 | 0 | 2026-11-13T10:57:29.519Z | HASH_OK |
+| UAP-EV-20261113105729-20d5e71d | task_result | uap task run UAP-TASK-INTERRUPT-20261113105728-b9cbf8d6 | 0 | 2026-11-13T10:57:29.379Z | HASH_OK |
+| UAP-EV-20261113105729-592de58d | task_step | step:probe.step3 | 0 | 2026-11-13T10:57:29.174Z | HASH_OK |
+| UAP-EV-20261113105729-8962fc47 | task_step | step:probe.step2 | 0 | 2026-11-13T10:57:29.075Z | HASH_OK |
+| UAP-EV-20261113105729-bfeeaed6 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:57:29.579Z | HASH_OK |
+| UAP-EV-20261113105730-166b888d | task_step | step:probe.step1 | 0 | 2026-11-13T10:57:30.110Z | HASH_OK |
+| UAP-EV-20261113105730-301696bd | task_result | uap task run UAP-TASK-INTERRUPT-20261113105729-fc91bc15 | 0 | 2026-11-13T10:57:30.686Z | HASH_OK |
+| UAP-EV-20261113105730-744486e0 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:57:30.977Z | HASH_OK |
+| UAP-EV-20261113105730-dabcabca | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105729-fc91bc15 | 0 | 2026-11-13T10:57:30.815Z | HASH_OK |
+| UAP-EV-20261113105730-db2555f5 | task_step | step:probe.step3 | 0 | 2026-11-13T10:57:30.504Z | HASH_OK |
+| UAP-EV-20261113105730-e127d3e8 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105729-fc91bc15 | 0 | 2026-11-13T10:57:30.263Z | HASH_OK |
+| UAP-EV-20261113105730-f7cdd7bf | task_step | step:probe.step2 | 0 | 2026-11-13T10:57:30.409Z | HASH_OK |
+| UAP-EV-20261113105731-0f3cb176 | task_result | uap task run UAP-TASK-TEST-20261113105730-b31e758f | 0 | 2026-11-13T10:57:31.198Z | HASH_OK |
+| UAP-EV-20261113105731-3e2dd7f3 | task_result | uap task run UAP-TASK-TEST-20261113105731-83fa98cb | 1 | 2026-11-13T10:57:31.609Z | HASH_OK |
+| UAP-EV-20261113105731-7b07fda0 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:57:31.425Z | HASH_OK |
+| UAP-EV-20261113105731-f4405c0e | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:57:31.881Z | HASH_OK |
+| UAP-EV-20261113105732-093fad09 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:57:32.796Z | HASH_OK |
+| UAP-EV-20261113105732-340c48fd | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:57:32.622Z | HASH_OK |
+| UAP-EV-20261113105732-3985d68e | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:57:32.116Z | HASH_OK |
+| UAP-EV-20261113105732-41cf2ecd | task_step | step:test_concurrency | 0 | 2026-11-13T10:57:32.665Z | HASH_OK |
+| UAP-EV-20261113105732-55ba52c9 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:57:32.370Z | HASH_OK |
+| UAP-EV-20261113105732-694e0e66 | task_step | step:test_idempotency | 0 | 2026-11-13T10:57:32.540Z | HASH_OK |
+| UAP-EV-20261113105732-74e00bc2 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:57:32.884Z | HASH_OK |
+| UAP-EV-20261113105732-866fa1ec | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:57:32.754Z | HASH_OK |
+| UAP-EV-20261113105732-86d291ca | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:57:32.221Z | HASH_OK |
+| UAP-EV-20261113105732-98fc8343 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:57:32.277Z | HASH_OK |
+| UAP-EV-20261113105732-a7c1b59b | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:57:32.501Z | HASH_OK |
+| UAP-EV-20261113105732-d117539a | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:57:32.927Z | HASH_OK |
+| UAP-EV-20261113105732-d2c27ccd | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:57:32.062Z | HASH_OK |
+| UAP-EV-20261113105732-ed35ef16 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:57:32.416Z | HASH_OK |
+| UAP-EV-20261113105733-443c012e | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:57:33.013Z | HASH_OK |
+| UAP-EV-20261113105733-7b8c530b | task_result | uap task run UAP-TASK-20261113105731-b413a288 | 0 | 2026-11-13T10:57:33.226Z | HASH_OK |
+| UAP-EV-20261113105733-d5d5e87a | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:57:33.056Z | HASH_OK |
+| UAP-EV-20261113105759-14f9ab7f | task_result | uap task run UAP-TASK-HEALTH-20261113105759-5d07dc0a | 0 | 2026-11-13T10:57:59.567Z | HASH_OK |
+| UAP-EV-20261113105759-e7171044 | task_step | step:__health_step__ | 0 | 2026-11-13T10:57:59.386Z | HASH_OK |
+| UAP-EV-20261113105800-00d69bba | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105759-ca67a8aa | 0 | 2026-11-13T10:58:00.160Z | HASH_OK |
+| UAP-EV-20261113105800-3024e433 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105759-ca67a8aa | 0 | 2026-11-13T10:58:00.550Z | HASH_OK |
+| UAP-EV-20261113105800-365714d3 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105759-ca67a8aa | 0 | 2026-11-13T10:58:00.681Z | HASH_OK |
+| UAP-EV-20261113105800-7914bc51 | task_step | step:probe.step3 | 0 | 2026-11-13T10:58:00.375Z | HASH_OK |
+| UAP-EV-20261113105800-ae46a5d2 | health_probe | evidence-engine.health() | 0 | 2026-11-13T10:58:00.735Z | HASH_OK |
+| UAP-EV-20261113105800-d05e8ea5 | task_step | step:probe.step2 | 0 | 2026-11-13T10:58:00.287Z | HASH_OK |
+| UAP-EV-20261113105800-d84897e2 | task_step | step:probe.step1 | 0 | 2026-11-13T10:58:00.009Z | HASH_OK |
+| UAP-EV-20261113105801-176a00a6 | task_step | step:probe.step1 | 0 | 2026-11-13T10:58:01.194Z | HASH_OK |
+| UAP-EV-20261113105801-1a89eabe | recovery | uap task resume UAP-TASK-INTERRUPT-20261113105801-3153d3de | 0 | 2026-11-13T10:58:01.338Z | HASH_OK |
+| UAP-EV-20261113105801-76cd61e5 | task_step | step:probe.step2 | 0 | 2026-11-13T10:58:01.468Z | HASH_OK |
+| UAP-EV-20261113105801-b200389b | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113105801-3153d3de | 0 | 2026-11-13T10:58:01.859Z | HASH_OK |
+| UAP-EV-20261113105801-cb469253 | task_step | step:probe.step3 | 0 | 2026-11-13T10:58:01.555Z | HASH_OK |
+| UAP-EV-20261113105801-d91954a5 | task_result | uap task run UAP-TASK-INTERRUPT-20261113105801-3153d3de | 0 | 2026-11-13T10:58:01.731Z | HASH_OK |
+| UAP-EV-20261113105802-27419db4 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T10:58:02.858Z | HASH_OK |
+| UAP-EV-20261113105802-3fa36f81 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T10:58:02.417Z | HASH_OK |
+| UAP-EV-20261113105802-9b3ede5a | task_result | uap task run UAP-TASK-TEST-20261113105801-a7a6918a | 0 | 2026-11-13T10:58:02.199Z | HASH_OK |
+| UAP-EV-20261113105802-bdfa6536 | task_result | uap task run UAP-TASK-TEST-20261113105802-848e4db2 | 1 | 2026-11-13T10:58:02.593Z | HASH_OK |
+| UAP-EV-20261113105802-cbe88835 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T10:58:02.017Z | HASH_OK |
+| UAP-EV-20261113105803-09774477 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T10:58:03.837Z | HASH_OK |
+| UAP-EV-20261113105803-24385eee | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T10:58:03.162Z | HASH_OK |
+| UAP-EV-20261113105803-26d90946 | task_step | step:test_failure_recovery | 0 | 2026-11-13T10:58:03.881Z | HASH_OK |
+| UAP-EV-20261113105803-2c5a422f | task_step | step:test_idempotency | 0 | 2026-11-13T10:58:03.478Z | HASH_OK |
+| UAP-EV-20261113105803-2cf3ef13 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T10:58:03.206Z | HASH_OK |
+| UAP-EV-20261113105803-3931b8f1 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T10:58:03.704Z | HASH_OK |
+| UAP-EV-20261113105803-4b95fd0f | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T10:58:03.343Z | HASH_OK |
+| UAP-EV-20261113105803-77340a2e | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T10:58:03.433Z | HASH_OK |
+| UAP-EV-20261113105803-8b8340db | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T10:58:03.072Z | HASH_OK |
+| UAP-EV-20261113105803-8cfdec83 | task_step | step:test_concurrency | 0 | 2026-11-13T10:58:03.616Z | HASH_OK |
+| UAP-EV-20261113105803-8fbad4cd | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T10:58:03.573Z | HASH_OK |
+| UAP-EV-20261113105803-aa5689a1 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T10:58:03.022Z | HASH_OK |
+| UAP-EV-20261113105803-cbe4d88e | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T10:58:03.970Z | HASH_OK |
+| UAP-EV-20261113105803-e671643e | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T10:58:03.296Z | HASH_OK |
+| UAP-EV-20261113105803-ecd1af4b | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T10:58:03.747Z | HASH_OK |
+| UAP-EV-20261113105804-e596d2fe | task_result | uap task run UAP-TASK-20261113105802-b2d3427b | 0 | 2026-11-13T10:58:04.186Z | HASH_OK |
+| UAP-EV-20261113105804-f36196a5 | task_step | step:verify_reconciliation | 0 | 2026-11-13T10:58:04.013Z | HASH_OK |
+| UAP-EV-20261113105806-9543d856 | runtime_test_run | node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 0 | 2026-11-13T10:58:06.305Z | HASH_OK |
+| UAP-EV-20261113105806-e03d37d8 | cli_command | uap test --all | 0 | 2026-11-13T10:58:06.352Z | HASH_OK |
+| UAP-EV-20261113110145-3f085b39 | task_step | step:__health_step__ | 0 | 2026-11-13T11:01:45.598Z | HASH_OK |
+| UAP-EV-20261113110145-53b2d7ae | task_result | uap task run UAP-TASK-HEALTH-20261113110145-719620ec | 0 | 2026-11-13T11:01:45.781Z | HASH_OK |
+| UAP-EV-20261113110146-1750841f | task_step | step:probe.step3 | 0 | 2026-11-13T11:01:46.601Z | HASH_OK |
+| UAP-EV-20261113110146-3bba37ac | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113110146-bb83df2b | 0 | 2026-11-13T11:01:46.914Z | HASH_OK |
+| UAP-EV-20261113110146-3e464b7d | task_result | uap task run UAP-TASK-INTERRUPT-20261113110146-bb83df2b | 0 | 2026-11-13T11:01:46.785Z | HASH_OK |
+| UAP-EV-20261113110146-4c3f5d36 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113110146-bb83df2b | 0 | 2026-11-13T11:01:46.381Z | HASH_OK |
+| UAP-EV-20261113110146-5060c3fc | task_step | step:probe.step1 | 0 | 2026-11-13T11:01:46.236Z | HASH_OK |
+| UAP-EV-20261113110146-b8af6872 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:01:46.968Z | HASH_OK |
+| UAP-EV-20261113110146-eb19bfc5 | task_step | step:probe.step2 | 0 | 2026-11-13T11:01:46.510Z | HASH_OK |
+| UAP-EV-20261113110147-22619a26 | task_step | step:probe.step3 | 0 | 2026-11-13T11:01:47.732Z | HASH_OK |
+| UAP-EV-20261113110147-84964a0b | task_step | step:probe.step2 | 0 | 2026-11-13T11:01:47.643Z | HASH_OK |
+| UAP-EV-20261113110147-e9dda271 | runtime_start | uap doctor | 0 | 2026-11-13T11:01:47.086Z | HASH_OK |
+| UAP-EV-20261113110147-ed8424f6 | task_step | step:probe.step1 | 0 | 2026-11-13T11:01:47.369Z | HASH_OK |
+| UAP-EV-20261113110147-f31b8fbf | task_result | uap task run UAP-TASK-INTERRUPT-20261113110147-e9523eb6 | 0 | 2026-11-13T11:01:47.913Z | HASH_OK |
+| UAP-EV-20261113110147-f4490b63 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113110147-e9523eb6 | 0 | 2026-11-13T11:01:47.513Z | HASH_OK |
+| UAP-EV-20261113110148-e6fbd5d7 | cli_command | uap test --all | 3 | 2026-11-13T11:01:48.558Z | HASH_OK |
+| UAP-EV-20261113110148-f0f98103 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113110147-e9523eb6 | 0 | 2026-11-13T11:01:48.044Z | HASH_OK |
+| UAP-EV-20261113110148-f1266505 | cli_command | uap validate --all | 3 | 2026-11-13T11:01:48.332Z | HASH_OK |
+| UAP-EV-20261113110148-f8bf6638 | cli_command | uap doctor | 0 | 2026-11-13T11:01:48.096Z | HASH_OK |
+| UAP-EV-20261113110156-c86d7fb8 | cli_command | uap verify-repair | 0 | 2026-11-13T11:01:56.164Z | HASH_OK |
+| UAP-EV-20261113110158-4f2aecad | cli_command | uap status --json | 0 | 2026-11-13T11:01:58.517Z | HASH_OK |
+| UAP-EV-20261113110158-6e5e058b | cli_command | uap verify-status | 1 | 2026-11-13T11:01:58.582Z | HASH_OK |
+| UAP-EV-20261113110158-ae7670a6 | cli_command | uap release check | 3 | 2026-11-13T11:01:58.826Z | HASH_OK |
+| UAP-EV-20261113110212-6ab3128a | validator_result | uap validate core.execution_integrity | 0 | 2026-11-13T11:02:12.924Z | HASH_OK |
+| UAP-EV-20261113110212-aa2f5645 | validator_result | uap validate core.architecture_integrity | 0 | 2026-11-13T11:02:12.714Z | HASH_OK |
+| UAP-EV-20261113110213-0c32e369 | validator_result | uap validate product.requirement_traceability | 0 | 2026-11-13T11:02:13.590Z | HASH_OK |
+| UAP-EV-20261113110213-1a58f757 | validator_result | uap validate core.evidence_integrity | 0 | 2026-11-13T11:02:13.495Z | HASH_OK |
+| UAP-EV-20261113110213-2d3968e8 | validator_result | uap validate architecture.consistency | 0 | 2026-11-13T11:02:13.859Z | HASH_OK |
+| UAP-EV-20261113110213-3daaa291 | validator_result | uap validate security.permission_boundary | 0 | 2026-11-13T11:02:13.022Z | HASH_OK |
+| UAP-EV-20261113110213-91a2a549 | validator_result | uap validate architecture.api_database_integrity | 0 | 2026-11-13T11:02:13.931Z | HASH_OK |
+| UAP-EV-20261113110213-a739e10b | validator_result | uap validate product.prototype_consistency | 0 | 2026-11-13T11:02:13.682Z | HASH_OK |
+| UAP-EV-20261113110213-d361c51c | validator_result | uap validate product.business_rule_integrity | 0 | 2026-11-13T11:02:13.766Z | HASH_OK |
+| UAP-EV-20261113110214-113b9839 | validator_result | uap validate architecture.adr_integrity | 0 | 2026-11-13T11:02:14.000Z | HASH_OK |
+| UAP-EV-20261113110214-3cf2a0b0 | validator_result | uap validate agents.execution_integrity | 0 | 2026-11-13T11:02:14.348Z | HASH_OK |
+| UAP-EV-20261113110214-7691d287 | validator_result | uap validate agents.collaboration_integrity | 0 | 2026-11-13T11:02:14.420Z | HASH_OK |
+| UAP-EV-20261113110214-7955c38a | validator_result | uap validate agents.registry_integrity | 0 | 2026-11-13T11:02:14.072Z | HASH_OK |
+| UAP-EV-20261113110214-c5be23ee | validator_result | uap validate agents.recovery_integrity | 0 | 2026-11-13T11:02:14.598Z | HASH_OK |
+| UAP-EV-20261113110215-91c12b04 | validator_result | uap validate development.coding_compliance | 0 | 2026-11-13T11:02:15.797Z | HASH_OK |
+| UAP-EV-20261113110215-ea33b638 | validator_result | uap validate development.review_integrity | 0 | 2026-11-13T11:02:15.980Z | HASH_OK |
+| UAP-EV-20261113110216-4d8ef64e | validator_result | uap validate quality.repair_integrity | 0 | 2026-11-13T11:02:16.479Z | HASH_OK |
+| UAP-EV-20261113110216-6dbef5a3 | validator_result | uap validate development.dependency_integrity | 0 | 2026-11-13T11:02:16.050Z | HASH_OK |
+| UAP-EV-20261113110216-76fa1da7 | validator_result | uap validate quality.test_integrity | 0 | 2026-11-13T11:02:16.300Z | HASH_OK |
+| UAP-EV-20261113110216-86c3f349 | validator_result | uap validate quality.engineering_integrity | 0 | 2026-11-13T11:02:16.232Z | HASH_OK |
+| UAP-EV-20261113110216-9b0e0751 | validator_result | uap validate quality.gate_integrity | 0 | 2026-11-13T11:02:16.658Z | HASH_OK |
+| UAP-EV-20261113110217-758ebe7a | validator_result | uap validate security.reliability_integrity | 0 | 2026-11-13T11:02:17.316Z | HASH_OK |
+| UAP-EV-20261113110217-ca995b57 | validator_result | uap validate security.financial_integrity_validator | 0 | 2026-11-13T11:02:17.067Z | HASH_OK |
+| UAP-EV-20261113110217-e3fcd1c3 | validator_result | uap validate cross_platform.web_integrity | 0 | 2026-11-13T11:02:17.551Z | HASH_OK |
+| UAP-EV-20261113110217-ff4d5a88 | validator_result | uap validate security.application_integrity | 0 | 2026-11-13T11:02:17.000Z | HASH_OK |
+| UAP-EV-20261113110336-1111cdf4 | validator_result | uap validate cross_platform.consistency_integrity | 0 | 2026-11-13T11:03:36.302Z | HASH_OK |
+| UAP-EV-20261113110336-4724a1a5 | validator_result | uap validate delivery.ci_integrity | 0 | 2026-11-13T11:03:36.377Z | HASH_OK |
+| UAP-EV-20261113110336-b3723cb3 | validator_result | uap validate cross_platform.h5_integrity | 0 | 2026-11-13T11:03:36.096Z | HASH_OK |
+| UAP-EV-20261113110345-328320c3 | validator_result | uap validate delivery.deployment_integrity | 0 | 2026-11-13T11:03:45.195Z | HASH_OK |
+| UAP-EV-20261113110345-5e855a25 | validator_result | uap validate evolution.knowledge_integrity | 0 | 2026-11-13T11:03:45.629Z | HASH_OK |
+| UAP-EV-20261113110345-8fd0fba4 | validator_result | uap validate evolution.evolution_integrity | 0 | 2026-11-13T11:03:45.800Z | HASH_OK |
+| UAP-EV-20261113110345-9398848b | validator_result | uap validate delivery.observability_integrity | 0 | 2026-11-13T11:03:45.543Z | HASH_OK |
+| UAP-EV-20261113110345-fdf4b8e9 | cli_command | uap validate --all | 0 | 2026-11-13T11:03:45.947Z | HASH_OK |
+| UAP-EV-20261113110407-33ddb22a | task_result | uap task run UAP-TASK-HEALTH-20261113110406-36a1c0c3 | 0 | 2026-11-13T11:04:07.210Z | HASH_OK |
+| UAP-EV-20261113110407-3bf0d520 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113110407-96e49947 | 0 | 2026-11-13T11:04:07.795Z | HASH_OK |
+| UAP-EV-20261113110407-6b8c8b15 | task_step | step:probe.step2 | 0 | 2026-11-13T11:04:07.924Z | HASH_OK |
+| UAP-EV-20261113110407-d797b8ea | task_step | step:__health_step__ | 0 | 2026-11-13T11:04:07.032Z | HASH_OK |
+| UAP-EV-20261113110407-dd0d5c45 | task_step | step:probe.step1 | 0 | 2026-11-13T11:04:07.652Z | HASH_OK |
+| UAP-EV-20261113110408-46d95df7 | task_step | step:probe.step1 | 0 | 2026-11-13T11:04:08.841Z | HASH_OK |
+| UAP-EV-20261113110408-4ad71678 | task_result | uap task run UAP-TASK-INTERRUPT-20261113110407-96e49947 | 0 | 2026-11-13T11:04:08.186Z | HASH_OK |
+| UAP-EV-20261113110408-5e9dd294 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:04:08.368Z | HASH_OK |
+| UAP-EV-20261113110408-884812ba | recovery | uap task resume UAP-TASK-INTERRUPT-20261113110408-60554363 | 0 | 2026-11-13T11:04:08.986Z | HASH_OK |
+| UAP-EV-20261113110408-b34cabab | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113110407-96e49947 | 0 | 2026-11-13T11:04:08.313Z | HASH_OK |
+| UAP-EV-20261113110408-ea32350e | task_step | step:probe.step3 | 0 | 2026-11-13T11:04:08.011Z | HASH_OK |
+| UAP-EV-20261113110409-2505b7c7 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T11:04:09.668Z | HASH_OK |
+| UAP-EV-20261113110409-3e01be69 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113110408-60554363 | 0 | 2026-11-13T11:04:09.508Z | HASH_OK |
+| UAP-EV-20261113110409-5a642cba | task_result | uap task run UAP-TASK-INTERRUPT-20261113110408-60554363 | 0 | 2026-11-13T11:04:09.380Z | HASH_OK |
+| UAP-EV-20261113110409-800e4a5d | task_result | uap task run UAP-TASK-TEST-20261113110409-fab66a4c | 0 | 2026-11-13T11:04:09.847Z | HASH_OK |
+| UAP-EV-20261113110409-d90d6210 | task_step | step:probe.step3 | 0 | 2026-11-13T11:04:09.207Z | HASH_OK |
+| UAP-EV-20261113110409-fd78ceeb | task_step | step:probe.step2 | 0 | 2026-11-13T11:04:09.119Z | HASH_OK |
+| UAP-EV-20261113110410-456baab2 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T11:04:10.511Z | HASH_OK |
+| UAP-EV-20261113110410-554a241d | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T11:04:10.966Z | HASH_OK |
+| UAP-EV-20261113110410-5c4b74a1 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T11:04:10.869Z | HASH_OK |
+| UAP-EV-20261113110410-ab5574c7 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T11:04:10.819Z | HASH_OK |
+| UAP-EV-20261113110410-c18bb796 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T11:04:10.724Z | HASH_OK |
+| UAP-EV-20261113110410-cdbff1be | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T11:04:10.674Z | HASH_OK |
+| UAP-EV-20261113110410-d26e5230 | task_result | uap task run UAP-TASK-TEST-20261113110409-7a26ca12 | 1 | 2026-11-13T11:04:10.245Z | HASH_OK |
+| UAP-EV-20261113110410-e9bb8242 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T11:04:10.067Z | HASH_OK |
+| UAP-EV-20261113110411-208032de | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T11:04:11.512Z | HASH_OK |
+| UAP-EV-20261113110411-36cde87c | task_step | step:verify_reconciliation | 0 | 2026-11-13T11:04:11.691Z | HASH_OK |
+| UAP-EV-20261113110411-60bb7ff3 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T11:04:11.378Z | HASH_OK |
+| UAP-EV-20261113110411-611ce3d0 | task_step | step:test_concurrency | 0 | 2026-11-13T11:04:11.289Z | HASH_OK |
+| UAP-EV-20261113110411-6508790d | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T11:04:11.244Z | HASH_OK |
+| UAP-EV-20261113110411-66304022 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T11:04:11.017Z | HASH_OK |
+| UAP-EV-20261113110411-6a9f8eb7 | task_result | uap task run UAP-TASK-20261113110410-e7104ed1 | 0 | 2026-11-13T11:04:11.865Z | HASH_OK |
+| UAP-EV-20261113110411-7f37bc73 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T11:04:11.107Z | HASH_OK |
+| UAP-EV-20261113110411-bb6c23aa | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T11:04:11.646Z | HASH_OK |
+| UAP-EV-20261113110411-c3bcd704 | task_step | step:test_idempotency | 0 | 2026-11-13T11:04:11.151Z | HASH_OK |
+| UAP-EV-20261113110411-cf14aa58 | task_step | step:test_failure_recovery | 0 | 2026-11-13T11:04:11.558Z | HASH_OK |
+| UAP-EV-20261113110411-f5a59645 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T11:04:11.423Z | HASH_OK |
+| UAP-EV-20261113110414-adc5c270 | cli_command | uap test --all | 0 | 2026-11-13T11:04:14.140Z | HASH_OK |
+| UAP-EV-20261113110414-be37f704 | cli_command | uap release check | 1 | 2026-11-13T11:04:14.413Z | HASH_OK |
+| UAP-EV-20261113110414-f1b4126e | runtime_test_run | node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 0 | 2026-11-13T11:04:14.093Z | HASH_OK |
+| UAP-EV-20261113110416-994a59c7 | cli_command | uap verify-status | 1 | 2026-11-13T11:04:16.111Z | HASH_OK |
+| UAP-EV-20261113110416-ded335e3 | cli_command | uap status --json | 0 | 2026-11-13T11:04:16.048Z | HASH_OK |
+| UAP-EV-20261113110436-b5d759ca | cli_command | uap release check | 1 | 2026-11-13T11:04:36.394Z | HASH_OK |
+| UAP-EV-20261113110517-a36d9dac | cli_command | uap report --final | 0 | 2026-11-13T11:05:17.269Z | HASH_OK |
+| UAP-EV-20261113110850-2b2e934c | task_result | uap task run UAP-TASK-HEALTH-20261113110850-282fb6c0 | 0 | 2026-11-13T11:08:50.816Z | HASH_OK |
+| UAP-EV-20261113110850-37e14d2e | task_step | step:__health_step__ | 0 | 2026-11-13T11:08:50.637Z | HASH_OK |
+| UAP-EV-20261113110851-18e9ebbd | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113110851-06904967 | 0 | 2026-11-13T11:08:51.933Z | HASH_OK |
+| UAP-EV-20261113110851-3d9363c5 | task_step | step:probe.step1 | 0 | 2026-11-13T11:08:51.261Z | HASH_OK |
+| UAP-EV-20261113110851-5994f622 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113110851-06904967 | 0 | 2026-11-13T11:08:51.407Z | HASH_OK |
+| UAP-EV-20261113110851-5f2ec52e | task_result | uap task run UAP-TASK-INTERRUPT-20261113110851-06904967 | 0 | 2026-11-13T11:08:51.804Z | HASH_OK |
+| UAP-EV-20261113110851-82e77f23 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:08:51.987Z | HASH_OK |
+| UAP-EV-20261113110851-93562f1b | task_step | step:probe.step3 | 0 | 2026-11-13T11:08:51.626Z | HASH_OK |
+| UAP-EV-20261113110851-f9591e30 | task_step | step:probe.step2 | 0 | 2026-11-13T11:08:51.537Z | HASH_OK |
+| UAP-EV-20261113110852-46fb57d0 | task_step | step:probe.step2 | 0 | 2026-11-13T11:08:52.732Z | HASH_OK |
+| UAP-EV-20261113110852-7a674660 | task_step | step:probe.step1 | 0 | 2026-11-13T11:08:52.467Z | HASH_OK |
+| UAP-EV-20261113110852-9e078e6b | recovery | uap task resume UAP-TASK-INTERRUPT-20261113110852-aac9464f | 0 | 2026-11-13T11:08:52.610Z | HASH_OK |
+| UAP-EV-20261113110852-d24d58ab | task_step | step:probe.step3 | 0 | 2026-11-13T11:08:52.811Z | HASH_OK |
+| UAP-EV-20261113110853-381086ff | task_result | uap task run UAP-TASK-TEST-20261113110853-af97c5f5 | 1 | 2026-11-13T11:08:53.919Z | HASH_OK |
+| UAP-EV-20261113110853-6f26e028 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T11:08:53.328Z | HASH_OK |
+| UAP-EV-20261113110853-be1c41ad | task_result | uap task run UAP-TASK-INTERRUPT-20261113110852-aac9464f | 0 | 2026-11-13T11:08:53.038Z | HASH_OK |
+| UAP-EV-20261113110853-c245c7c1 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113110852-aac9464f | 0 | 2026-11-13T11:08:53.168Z | HASH_OK |
+| UAP-EV-20261113110853-ec19ddc7 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T11:08:53.736Z | HASH_OK |
+| UAP-EV-20261113110853-f630f13d | task_result | uap task run UAP-TASK-TEST-20261113110853-febdebd7 | 0 | 2026-11-13T11:08:53.511Z | HASH_OK |
+| UAP-EV-20261113110854-3d6967fc | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T11:08:54.359Z | HASH_OK |
+| UAP-EV-20261113110854-5fd9733b | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T11:08:54.507Z | HASH_OK |
+| UAP-EV-20261113110854-669a69e1 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T11:08:54.802Z | HASH_OK |
+| UAP-EV-20261113110854-8f4aa7a5 | task_step | step:test_idempotency | 0 | 2026-11-13T11:08:54.852Z | HASH_OK |
+| UAP-EV-20261113110854-977804b3 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T11:08:54.655Z | HASH_OK |
+| UAP-EV-20261113110854-b4ff4a08 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T11:08:54.558Z | HASH_OK |
+| UAP-EV-20261113110854-bc3bdb28 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T11:08:54.705Z | HASH_OK |
+| UAP-EV-20261113110854-bfa9d7b0 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T11:08:54.410Z | HASH_OK |
+| UAP-EV-20261113110854-ea1c9383 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T11:08:54.954Z | HASH_OK |
+| UAP-EV-20261113110854-fe208c44 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T11:08:54.194Z | HASH_OK |
+| UAP-EV-20261113110855-17f76523 | task_step | step:verify_reconciliation | 0 | 2026-11-13T11:08:55.411Z | HASH_OK |
+| UAP-EV-20261113110855-1b5d42d4 | task_step | step:test_failure_recovery | 0 | 2026-11-13T11:08:55.275Z | HASH_OK |
+| UAP-EV-20261113110855-47dacaf7 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T11:08:55.094Z | HASH_OK |
+| UAP-EV-20261113110855-51be80d6 | task_result | uap task run UAP-TASK-20261113110854-7a2081f6 | 0 | 2026-11-13T11:08:55.587Z | HASH_OK |
+| UAP-EV-20261113110855-8d88d5b2 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T11:08:55.230Z | HASH_OK |
+| UAP-EV-20261113110855-92949e8a | task_step | step:test_concurrency | 0 | 2026-11-13T11:08:55.005Z | HASH_OK |
+| UAP-EV-20261113110855-9f00b00d | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T11:08:55.366Z | HASH_OK |
+| UAP-EV-20261113110855-c8dc373d | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T11:08:55.139Z | HASH_OK |
+| UAP-EV-20261113110857-1ea2e037 | cli_command | uap test --all | 0 | 2026-11-13T11:08:57.805Z | HASH_OK |
+| UAP-EV-20261113110857-af14bd79 | runtime_test_run | node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 0 | 2026-11-13T11:08:57.757Z | HASH_OK |
+| UAP-EV-20261113110903-3b552375 | cli_command | uap verify-repair | 0 | 2026-11-13T11:09:03.741Z | HASH_OK |
+| UAP-EV-20261113110922-5c646106 | cli_command | uap report --final | 0 | 2026-11-13T11:09:22.366Z | HASH_OK |
+| UAP-EV-20261113110923-0d3bfd88 | cli_command | uap status --json | 0 | 2026-11-13T11:09:23.970Z | HASH_OK |
+| UAP-EV-20261113110924-ec477e19 | cli_command | uap verify-status | 0 | 2026-11-13T11:09:24.030Z | HASH_OK |
+| UAP-EV-20261113111036-3e090637 | task_step | step:probe.step1 | 0 | 2026-11-13T11:10:36.867Z | HASH_OK |
+| UAP-EV-20261113111036-7ead4b21 | task_step | step:__health_step__ | 0 | 2026-11-13T11:10:36.224Z | HASH_OK |
+| UAP-EV-20261113111036-83ab49eb | task_result | uap task run UAP-TASK-HEALTH-20261113111036-20f6a345 | 0 | 2026-11-13T11:10:36.410Z | HASH_OK |
+| UAP-EV-20261113111037-1d6c8914 | task_step | step:probe.step2 | 0 | 2026-11-13T11:10:37.144Z | HASH_OK |
+| UAP-EV-20261113111037-232c8751 | task_step | step:probe.step3 | 0 | 2026-11-13T11:10:37.235Z | HASH_OK |
+| UAP-EV-20261113111037-5f1dca87 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111036-eb6351b9 | 0 | 2026-11-13T11:10:37.014Z | HASH_OK |
+| UAP-EV-20261113111037-8fa60715 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111036-eb6351b9 | 0 | 2026-11-13T11:10:37.414Z | HASH_OK |
+| UAP-EV-20261113111037-b5843955 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111036-eb6351b9 | 0 | 2026-11-13T11:10:37.544Z | HASH_OK |
+| UAP-EV-20261113111037-e6961c03 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:10:37.599Z | HASH_OK |
+| UAP-EV-20261113111038-69f63309 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T11:10:38.920Z | HASH_OK |
+| UAP-EV-20261113111038-6fba3d49 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111037-eba193b8 | 0 | 2026-11-13T11:10:38.626Z | HASH_OK |
+| UAP-EV-20261113111038-7d6e2a90 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111037-eba193b8 | 0 | 2026-11-13T11:10:38.224Z | HASH_OK |
+| UAP-EV-20261113111038-870ba9ff | task_step | step:probe.step2 | 0 | 2026-11-13T11:10:38.355Z | HASH_OK |
+| UAP-EV-20261113111038-8962a453 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111037-eba193b8 | 0 | 2026-11-13T11:10:38.756Z | HASH_OK |
+| UAP-EV-20261113111038-c5dd3eff | task_step | step:probe.step1 | 0 | 2026-11-13T11:10:38.076Z | HASH_OK |
+| UAP-EV-20261113111038-d777cacb | task_step | step:probe.step3 | 0 | 2026-11-13T11:10:38.445Z | HASH_OK |
+| UAP-EV-20261113111039-5b02f358 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T11:10:39.332Z | HASH_OK |
+| UAP-EV-20261113111039-77480308 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T11:10:39.997Z | HASH_OK |
+| UAP-EV-20261113111039-78ef06cb | task_result | uap task run UAP-TASK-TEST-20261113111038-37bfe7cf | 0 | 2026-11-13T11:10:39.105Z | HASH_OK |
+| UAP-EV-20261113111039-8a8dc9f7 | workflow_step | workflow:validate_environment | 0 | 2026-11-13T11:10:39.777Z | HASH_OK |
+| UAP-EV-20261113111039-9597094c | task_result | uap task run UAP-TASK-TEST-20261113111039-d488fc67 | 1 | 2026-11-13T11:10:39.511Z | HASH_OK |
+| UAP-EV-20261113111039-dc185e05 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T11:10:39.947Z | HASH_OK |
+| UAP-EV-20261113111040-04c44f42 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T11:10:40.142Z | HASH_OK |
+| UAP-EV-20261113111040-105fb209 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T11:10:40.513Z | HASH_OK |
+| UAP-EV-20261113111040-1d68363a | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T11:10:40.096Z | HASH_OK |
+| UAP-EV-20261113111040-22a75525 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T11:10:40.235Z | HASH_OK |
+| UAP-EV-20261113111040-28044e8c | task_step | step:test_idempotency | 0 | 2026-11-13T11:10:40.415Z | HASH_OK |
+| UAP-EV-20261113111040-29bac967 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T11:10:40.648Z | HASH_OK |
+| UAP-EV-20261113111040-372098c3 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T11:10:40.371Z | HASH_OK |
+| UAP-EV-20261113111040-6afd81aa | task_step | step:test_concurrency | 0 | 2026-11-13T11:10:40.558Z | HASH_OK |
+| UAP-EV-20261113111040-a9c1e29b | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T11:10:40.692Z | HASH_OK |
+| UAP-EV-20261113111040-b8012d24 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T11:10:40.784Z | HASH_OK |
+| UAP-EV-20261113111040-bc4fbddf | task_step | step:test_failure_recovery | 0 | 2026-11-13T11:10:40.828Z | HASH_OK |
+| UAP-EV-20261113111040-d4844c89 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T11:10:40.280Z | HASH_OK |
+| UAP-EV-20261113111040-efebcef6 | task_step | step:verify_reconciliation | 0 | 2026-11-13T11:10:40.965Z | HASH_OK |
+| UAP-EV-20261113111040-fefe283f | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T11:10:40.920Z | HASH_OK |
+| UAP-EV-20261113111041-0afa0c58 | task_result | uap task run UAP-TASK-20261113111039-b28893c9 | 0 | 2026-11-13T11:10:41.142Z | HASH_OK |
+| UAP-EV-20261113111043-5509f88d | cli_command | uap test --all | 0 | 2026-11-13T11:10:43.365Z | HASH_OK |
+| UAP-EV-20261113111043-9e229f56 | runtime_test_run | node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs | 0 | 2026-11-13T11:10:43.318Z | HASH_OK |
+| UAP-EV-20261113111043-e3e4dbcd | task_result | uap task run UAP-TASK-HEALTH-20261113111043-fcd6cf07 | 0 | 2026-11-13T11:10:43.916Z | HASH_OK |
+| UAP-EV-20261113111043-f3b8bce2 | task_step | step:__health_step__ | 0 | 2026-11-13T11:10:43.733Z | HASH_OK |
+| UAP-EV-20261113111044-2a91a386 | task_step | step:probe.step1 | 0 | 2026-11-13T11:10:44.383Z | HASH_OK |
+| UAP-EV-20261113111044-2f723855 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111044-3fdace8a | 0 | 2026-11-13T11:10:44.926Z | HASH_OK |
+| UAP-EV-20261113111044-33936835 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111044-3fdace8a | 0 | 2026-11-13T11:10:44.530Z | HASH_OK |
+| UAP-EV-20261113111044-33cda5f5 | task_step | step:probe.step3 | 0 | 2026-11-13T11:10:44.748Z | HASH_OK |
+| UAP-EV-20261113111044-e7fd077e | task_step | step:probe.step2 | 0 | 2026-11-13T11:10:44.659Z | HASH_OK |
+| UAP-EV-20261113111045-01a44b5f | task_step | step:probe.step2 | 0 | 2026-11-13T11:10:45.811Z | HASH_OK |
+| UAP-EV-20261113111045-6cb91573 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:10:45.111Z | HASH_OK |
+| UAP-EV-20261113111045-8889b6d1 | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111044-3fdace8a | 0 | 2026-11-13T11:10:45.057Z | HASH_OK |
+| UAP-EV-20261113111045-903e17d4 | runtime_start | uap doctor | 0 | 2026-11-13T11:10:45.234Z | HASH_OK |
+| UAP-EV-20261113111045-92387636 | task_step | step:probe.step3 | 0 | 2026-11-13T11:10:45.907Z | HASH_OK |
+| UAP-EV-20261113111045-f3368b1f | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111045-b319fd60 | 0 | 2026-11-13T11:10:45.675Z | HASH_OK |
+| UAP-EV-20261113111045-f8d5c71d | task_step | step:probe.step1 | 0 | 2026-11-13T11:10:45.525Z | HASH_OK |
+| UAP-EV-20261113111046-42de2462 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111045-b319fd60 | 0 | 2026-11-13T11:10:46.094Z | HASH_OK |
+| UAP-EV-20261113111046-986e2113 | cli_command | uap doctor | 0 | 2026-11-13T11:10:46.330Z | HASH_OK |
+| UAP-EV-20261113111046-dea2bb6c | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111045-b319fd60 | 0 | 2026-11-13T11:10:46.229Z | HASH_OK |
+| UAP-EV-20261113111050-358c2e55 | cli_command | uap verify-repair | 0 | 2026-11-13T11:10:50.556Z | HASH_OK |
+| UAP-EV-20261113111052-1d7250ab | cli_command | uap report --final | 0 | 2026-11-13T11:10:52.618Z | HASH_OK |
+| UAP-EV-20261113111054-5314a0a7 | cli_command | uap status --json | 0 | 2026-11-13T11:10:54.201Z | HASH_OK |
+| UAP-EV-20261113111054-6a7523db | validator_result | uap validate core.architecture_integrity | 0 | 2026-11-13T11:10:54.684Z | HASH_OK |
+| UAP-EV-20261113111054-aad0af19 | validator_result | uap validate core.execution_integrity | 0 | 2026-11-13T11:10:54.902Z | HASH_OK |
+| UAP-EV-20261113111054-bc89085e | cli_command | uap verify-status | 0 | 2026-11-13T11:10:54.264Z | HASH_OK |
+| UAP-EV-20261113111055-0353bbab | validator_result | uap validate product.prototype_consistency | 0 | 2026-11-13T11:10:55.617Z | HASH_OK |
+| UAP-EV-20261113111055-425b0617 | validator_result | uap validate agents.registry_integrity | 0 | 2026-11-13T11:10:55.984Z | HASH_OK |
+| UAP-EV-20261113111055-44ea7abe | validator_result | uap validate architecture.consistency | 0 | 2026-11-13T11:10:55.779Z | HASH_OK |
+| UAP-EV-20261113111055-4a53055b | validator_result | uap validate core.evidence_integrity | 0 | 2026-11-13T11:10:55.437Z | HASH_OK |
+| UAP-EV-20261113111055-8211d5f4 | validator_result | uap validate security.permission_boundary | 0 | 2026-11-13T11:10:55.001Z | HASH_OK |
+| UAP-EV-20261113111055-94df0faf | validator_result | uap validate architecture.adr_integrity | 0 | 2026-11-13T11:10:55.916Z | HASH_OK |
+| UAP-EV-20261113111055-b6fee491 | validator_result | uap validate product.business_rule_integrity | 0 | 2026-11-13T11:10:55.698Z | HASH_OK |
+| UAP-EV-20261113111055-dbd4f5fb | validator_result | uap validate architecture.api_database_integrity | 0 | 2026-11-13T11:10:55.847Z | HASH_OK |
+| UAP-EV-20261113111055-e4e37b18 | validator_result | uap validate product.requirement_traceability | 0 | 2026-11-13T11:10:55.528Z | HASH_OK |
+| UAP-EV-20261113111056-05879356 | validator_result | uap validate agents.execution_integrity | 0 | 2026-11-13T11:10:56.263Z | HASH_OK |
+| UAP-EV-20261113111056-20de45c7 | validator_result | uap validate agents.recovery_integrity | 0 | 2026-11-13T11:10:56.504Z | HASH_OK |
+| UAP-EV-20261113111056-2efd6a62 | validator_result | uap validate agents.collaboration_integrity | 0 | 2026-11-13T11:10:56.330Z | HASH_OK |
+| UAP-EV-20261113111057-360ae717 | validator_result | uap validate development.dependency_integrity | 0 | 2026-11-13T11:10:57.874Z | HASH_OK |
+| UAP-EV-20261113111057-598fc038 | validator_result | uap validate development.coding_compliance | 0 | 2026-11-13T11:10:57.632Z | HASH_OK |
+| UAP-EV-20261113111057-edebf8d5 | validator_result | uap validate development.review_integrity | 0 | 2026-11-13T11:10:57.805Z | HASH_OK |
+| UAP-EV-20261113111058-483be595 | validator_result | uap validate quality.gate_integrity | 0 | 2026-11-13T11:10:58.471Z | HASH_OK |
+| UAP-EV-20261113111058-5cf6018c | validator_result | uap validate security.financial_integrity_validator | 0 | 2026-11-13T11:10:58.867Z | HASH_OK |
+| UAP-EV-20261113111058-7d2ab616 | validator_result | uap validate security.application_integrity | 0 | 2026-11-13T11:10:58.800Z | HASH_OK |
+| UAP-EV-20261113111058-ba7593ac | validator_result | uap validate quality.repair_integrity | 0 | 2026-11-13T11:10:58.294Z | HASH_OK |
+| UAP-EV-20261113111058-c8e568dc | validator_result | uap validate quality.test_integrity | 0 | 2026-11-13T11:10:58.113Z | HASH_OK |
+| UAP-EV-20261113111058-fe7abcd6 | validator_result | uap validate quality.engineering_integrity | 0 | 2026-11-13T11:10:58.043Z | HASH_OK |
+| UAP-EV-20261113111059-76f5f0e8 | validator_result | uap validate security.reliability_integrity | 0 | 2026-11-13T11:10:59.108Z | HASH_OK |
+| UAP-EV-20261113111059-f3aa279c | validator_result | uap validate cross_platform.web_integrity | 0 | 2026-11-13T11:10:59.334Z | HASH_OK |
+| UAP-EV-20261113111217-904d7846 | validator_result | uap validate cross_platform.consistency_integrity | 0 | 2026-11-13T11:12:17.400Z | HASH_OK |
+| UAP-EV-20261113111217-a3ef0093 | validator_result | uap validate cross_platform.h5_integrity | 0 | 2026-11-13T11:12:17.178Z | HASH_OK |
+| UAP-EV-20261113111217-b794db54 | validator_result | uap validate delivery.ci_integrity | 0 | 2026-11-13T11:12:17.471Z | HASH_OK |
+| UAP-EV-20261113111226-f7ff32d4 | validator_result | uap validate delivery.deployment_integrity | 0 | 2026-11-13T11:12:26.713Z | HASH_OK |
+| UAP-EV-20261113111227-14fd7b3e | validator_result | uap validate evolution.knowledge_integrity | 0 | 2026-11-13T11:12:27.167Z | HASH_OK |
+| UAP-EV-20261113111227-3ec3b096 | validator_result | uap validate evolution.evolution_integrity | 0 | 2026-11-13T11:12:27.333Z | HASH_OK |
+| UAP-EV-20261113111227-d2ed0224 | validator_result | uap validate delivery.observability_integrity | 0 | 2026-11-13T11:12:27.078Z | HASH_OK |
+| UAP-EV-20261113111227-fcdb6795 | cli_command | uap validate --all | 0 | 2026-11-13T11:12:27.484Z | HASH_OK |
+| UAP-EV-20261113111229-b08acaa7 | cli_command | uap status | 0 | 2026-11-13T11:12:29.668Z | HASH_OK |
+| UAP-EV-20261113111446-03a5373b | task_step | step:validate_environment | 0 | 2026-11-13T11:14:46.591Z | HASH_OK |
+| UAP-EV-20261113111446-2a9056cc | workflow_step | workflow:validate_environment | 0 | 2026-11-13T11:14:46.548Z | HASH_OK |
+| UAP-EV-20261113111446-2ec61140 | workflow_step | workflow:inspect_repository | 0 | 2026-11-13T11:14:46.244Z | HASH_OK |
+| UAP-EV-20261113111446-4fd4d77a | task_step | step:inspect_repository | 0 | 2026-11-13T11:14:46.286Z | HASH_OK |
+| UAP-EV-20261113111446-96173dd5 | task_step | step:validate_specification_registry | 0 | 2026-11-13T11:14:46.887Z | HASH_OK |
+| UAP-EV-20261113111446-cb4608af | task_step | step:initialize_uap_structure | 0 | 2026-11-13T11:14:46.725Z | HASH_OK |
+| UAP-EV-20261113111446-db0c0aa5 | workflow_step | workflow:validate_specification_registry | 0 | 2026-11-13T11:14:46.843Z | HASH_OK |
+| UAP-EV-20261113111446-e1273722 | workflow_step | workflow:initialize_uap_structure | 0 | 2026-11-13T11:14:46.678Z | HASH_OK |
+| UAP-EV-20261113111447-0b02905e | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111447-874f4ade | 0 | 2026-11-13T11:14:47.875Z | HASH_OK |
+| UAP-EV-20261113111447-22a92a40 | task_step | step:probe.step1 | 0 | 2026-11-13T11:14:47.723Z | HASH_OK |
+| UAP-EV-20261113111447-5c8de345 | task_step | step:__health_step__ | 0 | 2026-11-13T11:14:47.097Z | HASH_OK |
+| UAP-EV-20261113111447-5efa380c | task_result | uap task run UAP-TASK-HEALTH-20261113111446-fcc5ffb4 | 0 | 2026-11-13T11:14:47.276Z | HASH_OK |
+| UAP-EV-20261113111447-b22b408c | task_step | step:probe.step2 | 0 | 2026-11-13T11:14:47.994Z | HASH_OK |
+| UAP-EV-20261113111448-1e267679 | workflow_step | workflow:initialize_runtime | 0 | 2026-11-13T11:14:48.575Z | HASH_OK |
+| UAP-EV-20261113111448-3e2b7d6c | task_step | step:probe.step3 | 0 | 2026-11-13T11:14:48.073Z | HASH_OK |
+| UAP-EV-20261113111448-56eabfb2 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:14:48.446Z | HASH_OK |
+| UAP-EV-20261113111448-603772de | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111447-874f4ade | 0 | 2026-11-13T11:14:48.391Z | HASH_OK |
+| UAP-EV-20261113111448-b6a53021 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111447-874f4ade | 0 | 2026-11-13T11:14:48.257Z | HASH_OK |
+| UAP-EV-20261113111448-efa8381c | task_step | step:initialize_runtime | 0 | 2026-11-13T11:14:48.627Z | HASH_OK |
+| UAP-EV-20261113111449-2772480e | task_result | uap task run UAP-TASK-HEALTH-20261113111449-b3744bf8 | 0 | 2026-11-13T11:14:49.657Z | HASH_OK |
+| UAP-EV-20261113111449-6108b594 | task_step | step:__health_step__ | 0 | 2026-11-13T11:14:49.353Z | HASH_OK |
+| UAP-EV-20261113111450-af0d4a3e | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111450-025bcbce | 0 | 2026-11-13T11:14:50.911Z | HASH_OK |
+| UAP-EV-20261113111450-e14bc20e | task_step | step:probe.step1 | 0 | 2026-11-13T11:14:50.526Z | HASH_OK |
+| UAP-EV-20261113111451-551f0b8f | task_step | step:probe.step2 | 0 | 2026-11-13T11:14:51.383Z | HASH_OK |
+| UAP-EV-20261113111451-7e60493b | task_result | uap task run UAP-TASK-INTERRUPT-20261113111450-025bcbce | 0 | 2026-11-13T11:14:51.843Z | HASH_OK |
+| UAP-EV-20261113111451-cf150c3d | task_step | step:probe.step3 | 0 | 2026-11-13T11:14:51.526Z | HASH_OK |
+| UAP-EV-20261113111452-52ae3d3c | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:14:52.140Z | HASH_OK |
+| UAP-EV-20261113111452-6a0e0155 | task_step | step:probe.step1 | 0 | 2026-11-13T11:14:52.984Z | HASH_OK |
+| UAP-EV-20261113111452-d117846d | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111450-025bcbce | 0 | 2026-11-13T11:14:52.038Z | HASH_OK |
+| UAP-EV-20261113111453-26c674f2 | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111452-15e5755a | 0 | 2026-11-13T11:14:53.250Z | HASH_OK |
+| UAP-EV-20261113111453-57b1ad43 | task_step | step:probe.step2 | 0 | 2026-11-13T11:14:53.455Z | HASH_OK |
+| UAP-EV-20261113111453-5e7fbb33 | task_step | step:probe.step3 | 0 | 2026-11-13T11:14:53.588Z | HASH_OK |
+| UAP-EV-20261113111453-7b154678 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111452-15e5755a | 0 | 2026-11-13T11:14:53.894Z | HASH_OK |
+| UAP-EV-20261113111454-00782387 | task_result | uap task run UAP-TASK-TEST-20261113111454-e75b77e0 | 0 | 2026-11-13T11:14:54.469Z | HASH_OK |
+| UAP-EV-20261113111454-47b593fa | task_result | uap task run UAP-TASK-TEST-20261113111454-5fdcc52e | 1 | 2026-11-13T11:14:54.954Z | HASH_OK |
+| UAP-EV-20261113111454-7d34c564 | task_step | step:__uap_test_retry_then_ok__ | 0 | 2026-11-13T11:14:54.236Z | HASH_OK |
+| UAP-EV-20261113111454-ce946f93 | task_step | step:__uap_test_always_fail__ | 1 | 2026-11-13T11:14:54.725Z | HASH_OK |
+| UAP-EV-20261113111454-f45ca17f | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111452-15e5755a | 0 | 2026-11-13T11:14:54.057Z | HASH_OK |
+| UAP-EV-20261113111455-0e494d13 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T11:14:55.978Z | HASH_OK |
+| UAP-EV-20261113111455-171d96ca | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T11:14:55.661Z | HASH_OK |
+| UAP-EV-20261113111455-2d52e36c | workflow_step | workflow:validate_environment | 0 | 2026-11-13T11:14:55.277Z | HASH_OK |
+| UAP-EV-20261113111455-460dc765 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T11:14:55.822Z | HASH_OK |
+| UAP-EV-20261113111455-5bab1587 | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T11:14:55.716Z | HASH_OK |
+| UAP-EV-20261113111455-a910a03e | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T11:14:55.549Z | HASH_OK |
+| UAP-EV-20261113111455-e8361c16 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T11:14:55.471Z | HASH_OK |
+| UAP-EV-20261113111455-ff168a71 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T11:14:55.875Z | HASH_OK |
+| UAP-EV-20261113111456-1657b29d | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T11:14:56.488Z | HASH_OK |
+| UAP-EV-20261113111456-2e943053 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T11:14:56.321Z | HASH_OK |
+| UAP-EV-20261113111456-3e09600d | task_step | step:test_idempotency | 0 | 2026-11-13T11:14:56.036Z | HASH_OK |
+| UAP-EV-20261113111456-4ef06f0f | task_step | step:test_failure_recovery | 0 | 2026-11-13T11:14:56.542Z | HASH_OK |
+| UAP-EV-20261113111456-62204117 | task_step | step:test_concurrency | 0 | 2026-11-13T11:14:56.217Z | HASH_OK |
+| UAP-EV-20261113111456-734c89a1 | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T11:14:56.650Z | HASH_OK |
+| UAP-EV-20261113111456-7d2e64c6 | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T11:14:56.369Z | HASH_OK |
+| UAP-EV-20261113111456-ce119cc7 | task_step | step:verify_reconciliation | 0 | 2026-11-13T11:14:56.723Z | HASH_OK |
+| UAP-EV-20261113111456-ce58591e | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T11:14:56.150Z | HASH_OK |
+| UAP-EV-20261113111457-289ba0d1 | task_result | uap task run UAP-TASK-20261113111455-75e81c8e | 0 | 2026-11-13T11:14:57.000Z | HASH_OK |
+| UAP-EV-20261113111507-69da9833 | workflow_step | workflow:run_runtime_tests | 0 | 2026-11-13T11:15:07.893Z | HASH_OK |
+| UAP-EV-20261113111507-b737d8d9 | task_step | step:run_runtime_tests | 0 | 2026-11-13T11:15:07.945Z | HASH_OK |
+| UAP-EV-20261113111508-490ecd9e | workflow_step | workflow:scan_requirements | 0 | 2026-11-13T11:15:08.691Z | HASH_OK |
+| UAP-EV-20261113111508-4bedf361 | workflow_step | workflow:scan_architecture | 0 | 2026-11-13T11:15:08.837Z | HASH_OK |
+| UAP-EV-20261113111508-5510f876 | task_result | uap task run UAP-TASK-20261113111445-0ec2bee3 | 0 | 2026-11-13T11:15:08.153Z | HASH_OK |
+| UAP-EV-20261113111508-967b1d56 | task_step | step:scan_requirements | 0 | 2026-11-13T11:15:08.736Z | HASH_OK |
+| UAP-EV-20261113111508-9eb706f3 | task_step | step:scan_architecture | 0 | 2026-11-13T11:15:08.883Z | HASH_OK |
+| UAP-EV-20261113111508-b7285cb6 | workflow_step | workflow:scan_agents | 0 | 2026-11-13T11:15:08.978Z | HASH_OK |
+| UAP-EV-20261113111508-db3e0f94 | task_step | step:inspect_project | 0 | 2026-11-13T11:15:08.580Z | HASH_OK |
+| UAP-EV-20261113111508-e825367d | workflow_step | workflow:inspect_project | 0 | 2026-11-13T11:15:08.535Z | HASH_OK |
+| UAP-EV-20261113111509-02156125 | task_step | step:scan_quality | 0 | 2026-11-13T11:15:09.308Z | HASH_OK |
+| UAP-EV-20261113111509-1dd88607 | workflow_step | workflow:scan_cross_platform | 0 | 2026-11-13T11:15:09.561Z | HASH_OK |
+| UAP-EV-20261113111509-3b9c899d | task_step | step:scan_development | 0 | 2026-11-13T11:15:09.162Z | HASH_OK |
+| UAP-EV-20261113111509-69820833 | workflow_step | workflow:scan_security | 0 | 2026-11-13T11:15:09.403Z | HASH_OK |
+| UAP-EV-20261113111509-779d67e4 | workflow_step | workflow:scan_delivery | 0 | 2026-11-13T11:15:09.699Z | HASH_OK |
+| UAP-EV-20261113111509-8b9269c5 | workflow_step | workflow:scan_quality | 0 | 2026-11-13T11:15:09.260Z | HASH_OK |
+| UAP-EV-20261113111509-b4c9966b | task_step | step:scan_delivery | 0 | 2026-11-13T11:15:09.745Z | HASH_OK |
+| UAP-EV-20261113111509-b7065e14 | workflow_step | workflow:scan_knowledge | 0 | 2026-11-13T11:15:09.846Z | HASH_OK |
+| UAP-EV-20261113111509-c1626816 | workflow_step | workflow:scan_development | 0 | 2026-11-13T11:15:09.117Z | HASH_OK |
+| UAP-EV-20261113111509-ce77241a | task_step | step:scan_agents | 0 | 2026-11-13T11:15:09.023Z | HASH_OK |
+| UAP-EV-20261113111509-d29ff330 | task_step | step:scan_security | 0 | 2026-11-13T11:15:09.451Z | HASH_OK |
+| UAP-EV-20261113111509-e02cb222 | workflow_step | workflow:build_defect_registry | 0 | 2026-11-13T11:15:09.982Z | HASH_OK |
+| UAP-EV-20261113111509-fa996149 | task_step | step:scan_cross_platform | 0 | 2026-11-13T11:15:09.606Z | HASH_OK |
+| UAP-EV-20261113111509-fafd9038 | task_step | step:scan_knowledge | 0 | 2026-11-13T11:15:09.891Z | HASH_OK |
+| UAP-EV-20261113111510-177cb23c | workflow_step | workflow:implement_missing_capabilities | 0 | 2026-11-13T11:15:10.730Z | HASH_OK |
+| UAP-EV-20261113111510-3b462b8b | workflow_step | workflow:create_execution_plan | 0 | 2026-11-13T11:15:10.589Z | HASH_OK |
+| UAP-EV-20261113111510-60868887 | task_step | step:create_execution_plan | 0 | 2026-11-13T11:15:10.635Z | HASH_OK |
+| UAP-EV-20261113111510-609b717f | workflow_step | workflow:resolve_dependencies | 0 | 2026-11-13T11:15:10.450Z | HASH_OK |
+| UAP-EV-20261113111510-6af5ff34 | task_step | step:build_defect_registry | 0 | 2026-11-13T11:15:10.027Z | HASH_OK |
+| UAP-EV-20261113111510-b2457b5b | task_result | uap task run UAP-TASK-20261113111508-dc87359f | 0 | 2026-11-13T11:15:10.210Z | HASH_OK |
+| UAP-EV-20261113111510-d26a16e0 | workflow_step | workflow:implement_missing_validators | 0 | 2026-11-13T11:15:10.868Z | HASH_OK |
+| UAP-EV-20261113111510-eb0f075a | task_step | step:implement_missing_capabilities | 0 | 2026-11-13T11:15:10.774Z | HASH_OK |
+| UAP-EV-20261113111510-ef8f575c | task_step | step:implement_missing_validators | 0 | 2026-11-13T11:15:10.913Z | HASH_OK |
+| UAP-EV-20261113111510-f841140c | task_step | step:resolve_dependencies | 0 | 2026-11-13T11:15:10.495Z | HASH_OK |
+| UAP-EV-20261113111511-4089498a | task_step | step:__health_step__ | 0 | 2026-11-13T11:15:11.131Z | HASH_OK |
+| UAP-EV-20261113111511-78ad0044 | task_step | step:probe.step1 | 0 | 2026-11-13T11:15:11.780Z | HASH_OK |
+| UAP-EV-20261113111511-bb4aabd0 | task_result | uap task run UAP-TASK-HEALTH-20261113111511-18b49718 | 0 | 2026-11-13T11:15:11.325Z | HASH_OK |
+| UAP-EV-20261113111511-f3837fef | recovery | uap task resume UAP-TASK-INTERRUPT-20261113111511-2472917e | 0 | 2026-11-13T11:15:11.930Z | HASH_OK |
+| UAP-EV-20261113111512-2498f03b | task_step | step:probe.step3 | 0 | 2026-11-13T11:15:12.157Z | HASH_OK |
+| UAP-EV-20261113111512-2b3fe6df | task_step | step:execute_targeted_tests | 0 | 2026-11-13T11:15:12.861Z | HASH_OK |
+| UAP-EV-20261113111512-4bd1b20f | task_step | step:probe.step2 | 0 | 2026-11-13T11:15:12.065Z | HASH_OK |
+| UAP-EV-20261113111512-4e3e19bb | task_step | step:integrate_runtime | 0 | 2026-11-13T11:15:12.703Z | HASH_OK |
+| UAP-EV-20261113111512-9d89a9a5 | workflow_step | workflow:execute_targeted_tests | 0 | 2026-11-13T11:15:12.810Z | HASH_OK |
+| UAP-EV-20261113111512-c99cf619 | workflow_step | workflow:integrate_runtime | 0 | 2026-11-13T11:15:12.652Z | HASH_OK |
+| UAP-EV-20261113111512-d75dd6be | recovery_result | uap task resume UAP-TASK-INTERRUPT-20261113111511-2472917e | 0 | 2026-11-13T11:15:12.478Z | HASH_OK |
+| UAP-EV-20261113111512-e9bc6675 | health_probe | evidence-engine.health() | 0 | 2026-11-13T11:15:12.532Z | HASH_OK |
+| UAP-EV-20261113111512-ea8fd6a1 | task_result | uap task run UAP-TASK-INTERRUPT-20261113111511-2472917e | 0 | 2026-11-13T11:15:12.346Z | HASH_OK |
+| UAP-EV-20261113111513-25074aa4 | task_result | uap task run UAP-TASK-20261113111510-176df4e7 | 0 | 2026-11-13T11:15:13.050Z | HASH_OK |
+| UAP-EV-20261113111513-5190a0f3 | workflow_step | workflow:apply_authorized_repair | 0 | 2026-11-13T11:15:13.858Z | HASH_OK |
+| UAP-EV-20261113111513-57330546 | task_step | step:classify_defect | 0 | 2026-11-13T11:15:13.341Z | HASH_OK |
+| UAP-EV-20261113111513-692b47c8 | task_step | step:identify_root_cause | 0 | 2026-11-13T11:15:13.482Z | HASH_OK |
+| UAP-EV-20261113111513-724f66ff | workflow_step | workflow:classify_defect | 0 | 2026-11-13T11:15:13.296Z | HASH_OK |
+| UAP-EV-20261113111513-8048a278 | workflow_step | workflow:generate_repair_plan | 0 | 2026-11-13T11:15:13.716Z | HASH_OK |
+| UAP-EV-20261113111513-97d63dbf | task_step | step:calculate_impact | 0 | 2026-11-13T11:15:13.621Z | HASH_OK |
+| UAP-EV-20261113111513-a9fed7d7 | workflow_step | workflow:calculate_impact | 0 | 2026-11-13T11:15:13.576Z | HASH_OK |
+| UAP-EV-20261113111513-ab15e00a | task_step | step:apply_authorized_repair | 0 | 2026-11-13T11:15:13.905Z | HASH_OK |
+| UAP-EV-20261113111513-b6eec385 | workflow_step | workflow:identify_root_cause | 0 | 2026-11-13T11:15:13.436Z | HASH_OK |
+| UAP-EV-20261113111513-ddb26878 | task_step | step:generate_repair_plan | 0 | 2026-11-13T11:15:13.762Z | HASH_OK |
+| UAP-EV-20261113111514-13edcedf | workflow_step | workflow:persist_evidence | 0 | 2026-11-13T11:15:14.298Z | HASH_OK |
+| UAP-EV-20261113111514-27579ee9 | task_step | step:persist_evidence | 0 | 2026-11-13T11:15:14.357Z | HASH_OK |
+| UAP-EV-20261113111514-704cd43a | task_step | step:run_regression | 0 | 2026-11-13T11:15:14.052Z | HASH_OK |
+| UAP-EV-20261113111514-80cf9ba5 | task_step | step:independent_review | 0 | 2026-11-13T11:15:14.201Z | HASH_OK |
+| UAP-EV-20261113111514-a6aa375c | workflow_step | workflow:independent_review | 0 | 2026-11-13T11:15:14.149Z | HASH_OK |
+| UAP-EV-20261113111514-d1d34e6b | task_result | uap task run UAP-TASK-20261113111513-98cfd4f7 | 0 | 2026-11-13T11:15:14.550Z | HASH_OK |
+| UAP-EV-20261113111514-e790a527 | workflow_step | workflow:run_regression | 0 | 2026-11-13T11:15:14.006Z | HASH_OK |
+| UAP-EV-20261113111522-0ca8dea4 | workflow_step | workflow:unit_tests | 0 | 2026-11-13T11:15:22.294Z | HASH_OK |
+| UAP-EV-20261113111522-2a485e3f | workflow_step | workflow:end_to_end_tests | 0 | 2026-11-13T11:15:22.575Z | HASH_OK |
+| UAP-EV-20261113111522-3df606dc | task_step | step:lint | 0 | 2026-11-13T11:15:22.059Z | HASH_OK |
+| UAP-EV-20261113111522-4c02e426 | workflow_step | workflow:typecheck | 0 | 2026-11-13T11:15:22.154Z | HASH_OK |
+| UAP-EV-20261113111522-4f155fec | task_step | step:typecheck | 0 | 2026-11-13T11:15:22.200Z | HASH_OK |
+| UAP-EV-20261113111522-4f8d6045 | workflow_step | workflow:integration_tests | 0 | 2026-11-13T11:15:22.435Z | HASH_OK |
+| UAP-EV-20261113111522-62afc03b | task_step | step:unit_tests | 0 | 2026-11-13T11:15:22.340Z | HASH_OK |
+| UAP-EV-20261113111522-9b3ba2fb | workflow_step | workflow:lint | 0 | 2026-11-13T11:15:22.014Z | HASH_OK |
+| UAP-EV-20261113111522-d7344e38 | task_step | step:end_to_end_tests | 0 | 2026-11-13T11:15:22.620Z | HASH_OK |
+| UAP-EV-20261113111522-f81ec02b | task_step | step:integration_tests | 0 | 2026-11-13T11:15:22.481Z | HASH_OK |
+| UAP-EV-20261113111523-0a48eba1 | task_step | step:dependency_scan | 0 | 2026-11-13T11:15:23.541Z | HASH_OK |
+| UAP-EV-20261113111523-7049412c | workflow_step | workflow:security_scan | 0 | 2026-11-13T11:15:23.076Z | HASH_OK |
+| UAP-EV-20261113111523-be3b4100 | task_step | step:security_scan | 0 | 2026-11-13T11:15:23.120Z | HASH_OK |
+| UAP-EV-20261113111523-c1d5c4ec | workflow_step | workflow:dependency_scan | 0 | 2026-11-13T11:15:23.495Z | HASH_OK |
+| UAP-EV-20261113111530-2dcea159 | task_result | uap task run UAP-TASK-20261113111514-3a06f53e | 0 | 2026-11-13T11:15:30.904Z | HASH_OK |
+| UAP-EV-20261113111530-6c87be2c | workflow_step | workflow:code_review | 0 | 2026-11-13T11:15:30.674Z | HASH_OK |
+| UAP-EV-20261113111530-94f56fad | task_step | step:code_review | 0 | 2026-11-13T11:15:30.718Z | HASH_OK |
+| UAP-EV-20261113111530-9dc0b97b | workflow_step | workflow:build | 0 | 2026-11-13T11:15:30.532Z | HASH_OK |
+| UAP-EV-20261113111530-ac650e27 | task_step | step:build | 0 | 2026-11-13T11:15:30.578Z | HASH_OK |
+| UAP-EV-20261113111531-2b694d84 | workflow_step | workflow:test_idempotency | 0 | 2026-11-13T11:15:31.573Z | HASH_OK |
+| UAP-EV-20261113111531-3827dc90 | task_step | step:inspect_balance_ledger | 0 | 2026-11-13T11:15:31.477Z | HASH_OK |
+| UAP-EV-20261113111531-52037e34 | workflow_step | workflow:test_failure_recovery | 0 | 2026-11-13T11:15:31.991Z | HASH_OK |
+| UAP-EV-20261113111531-53cb2aeb | task_step | step:test_duplicate_notifications | 0 | 2026-11-13T11:15:31.897Z | HASH_OK |
+| UAP-EV-20261113111531-54dd2916 | workflow_step | workflow:inspect_balance_ledger | 0 | 2026-11-13T11:15:31.431Z | HASH_OK |
+| UAP-EV-20261113111531-5d6b0e75 | workflow_step | workflow:inspect_refund_state_machine | 0 | 2026-11-13T11:15:31.289Z | HASH_OK |
+| UAP-EV-20261113111531-8943ec60 | workflow_step | workflow:inspect_payment_state_machine | 0 | 2026-11-13T11:15:31.150Z | HASH_OK |
+| UAP-EV-20261113111531-8c82cbeb | task_step | step:inspect_refund_state_machine | 0 | 2026-11-13T11:15:31.335Z | HASH_OK |
+| UAP-EV-20261113111531-ad18f50f | task_step | step:test_concurrency | 0 | 2026-11-13T11:15:31.757Z | HASH_OK |
+| UAP-EV-20261113111531-ae9d3b97 | task_step | step:test_idempotency | 0 | 2026-11-13T11:15:31.619Z | HASH_OK |
+| UAP-EV-20261113111531-c43535e1 | workflow_step | workflow:test_duplicate_notifications | 0 | 2026-11-13T11:15:31.852Z | HASH_OK |
+| UAP-EV-20261113111531-d6398161 | workflow_step | workflow:test_concurrency | 0 | 2026-11-13T11:15:31.713Z | HASH_OK |
+| UAP-EV-20261113111531-fff15f36 | task_step | step:inspect_payment_state_machine | 0 | 2026-11-13T11:15:31.196Z | HASH_OK |
+| UAP-EV-20261113111532-253f913e | task_step | step:verify_reconciliation | 0 | 2026-11-13T11:15:32.180Z | HASH_OK |
+| UAP-EV-20261113111532-2ca1bcd1 | workflow_step | workflow:validate_all_specifications | 0 | 2026-11-13T11:15:32.625Z | HASH_OK |
+| UAP-EV-20261113111532-3ccd4e0b | task_step | step:validate_all_executors | 0 | 2026-11-13T11:15:32.811Z | HASH_OK |
+| UAP-EV-20261113111532-622fceed | task_result | uap task run UAP-TASK-20261113111531-4286d335 | 0 | 2026-11-13T11:15:32.378Z | HASH_OK |
+| UAP-EV-20261113111532-8876cb12 | task_step | step:validate_all_agents | 0 | 2026-11-13T11:15:32.952Z | HASH_OK |
+| UAP-EV-20261113111532-9b75b39f | task_step | step:validate_all_specifications | 0 | 2026-11-13T11:15:32.670Z | HASH_OK |
+| UAP-EV-20261113111532-aca63dfb | workflow_step | workflow:verify_reconciliation | 0 | 2026-11-13T11:15:32.134Z | HASH_OK |
+| UAP-EV-20261113111532-bd269a43 | task_step | step:test_failure_recovery | 0 | 2026-11-13T11:15:32.037Z | HASH_OK |
+| UAP-EV-20261113111532-cece887d | workflow_step | workflow:validate_all_agents | 0 | 2026-11-13T11:15:32.906Z | HASH_OK |
+| UAP-EV-20261113111532-f91f0ee7 | workflow_step | workflow:validate_all_executors | 0 | 2026-11-13T11:15:32.766Z | HASH_OK |
+| UAP-EV-20261113111533-0c8e5511 | workflow_step | workflow:run_end_to_end_workflows | 0 | 2026-11-13T11:15:33.472Z | HASH_OK |
+| UAP-EV-20261113111533-191337b2 | workflow_step | workflow:validate_all_workflows | 0 | 2026-11-13T11:15:33.047Z | HASH_OK |
+| UAP-EV-20261113111533-2db57121 | workflow_step | workflow:verify_recovery | 0 | 2026-11-13T11:15:33.613Z | HASH_OK |
+| UAP-EV-20261113111533-325c6488 | task_step | step:verify_recovery | 0 | 2026-11-13T11:15:33.658Z | HASH_OK |
+| UAP-EV-20261113111533-3e5fc867 | task_step | step:validate_all_validators | 0 | 2026-11-13T11:15:33.239Z | HASH_OK |
+| UAP-EV-20261113111533-4c718d77 | task_step | step:run_end_to_end_workflows | 0 | 2026-11-13T11:15:33.519Z | HASH_OK |
+| UAP-EV-20261113111533-592d57a3 | task_step | step:validate_all_workflows | 0 | 2026-11-13T11:15:33.092Z | HASH_OK |
+| UAP-EV-20261113111533-83ca7b93 | workflow_step | workflow:generate_final_report | 0 | 2026-11-13T11:15:33.751Z | HASH_OK |
+| UAP-EV-20261113111533-b1c60f5c | workflow_step | workflow:run_full_quality_gate | 0 | 2026-11-13T11:15:33.333Z | HASH_OK |
+| UAP-EV-20261113111533-b2408c7e | task_step | step:generate_final_report | 0 | 2026-11-13T11:15:33.810Z | HASH_OK |
+| UAP-EV-20261113111533-c2783536 | task_result | uap task run UAP-TASK-20261113111532-283162f8 | 0 | 2026-11-13T11:15:33.999Z | HASH_OK |
+| UAP-EV-20261113111533-c7baa09f | task_step | step:run_full_quality_gate | 0 | 2026-11-13T11:15:33.378Z | HASH_OK |
+| UAP-EV-20261113111533-feaae7c5 | workflow_step | workflow:validate_all_validators | 0 | 2026-11-13T11:15:33.193Z | HASH_OK |
+| UAP-EV-20261113111534-37989399 | validator_result | uap validate core.architecture_integrity | 0 | 2026-11-13T11:15:34.807Z | HASH_OK |
+| UAP-EV-20261113111534-3f4b28f6 | validator_result | uap validate core.execution_integrity | 0 | 2026-11-13T11:15:34.993Z | HASH_OK |
+| UAP-EV-20261113111534-4710cb4a | cli_command | uap workflow run --all | 0 | 2026-11-13T11:15:34.120Z | HASH_OK |
+| UAP-EV-20261113111535-05d599f8 | validator_result | uap validate architecture.api_database_integrity | 0 | 2026-11-13T11:15:35.805Z | HASH_OK |
+| UAP-EV-20261113111535-646438e3 | validator_result | uap validate product.requirement_traceability | 0 | 2026-11-13T11:15:35.569Z | HASH_OK |
+| UAP-EV-20261113111535-72f84c3c | validator_result | uap validate product.business_rule_integrity | 0 | 2026-11-13T11:15:35.694Z | HASH_OK |
+| UAP-EV-20261113111535-99f8c1ae | validator_result | uap validate architecture.adr_integrity | 0 | 2026-11-13T11:15:35.854Z | HASH_OK |
+| UAP-EV-20261113111535-b53f2d2a | validator_result | uap validate security.permission_boundary | 0 | 2026-11-13T11:15:35.074Z | HASH_OK |
+| UAP-EV-20261113111535-c306c87e | validator_result | uap validate agents.registry_integrity | 0 | 2026-11-13T11:15:35.902Z | HASH_OK |
+| UAP-EV-20261113111535-d6c768d1 | validator_result | uap validate product.prototype_consistency | 0 | 2026-11-13T11:15:35.634Z | HASH_OK |
+| UAP-EV-20261113111535-e3fa7b52 | validator_result | uap validate architecture.consistency | 0 | 2026-11-13T11:15:35.757Z | HASH_OK |
+| UAP-EV-20261113111535-e7de8344 | validator_result | uap validate core.evidence_integrity | 0 | 2026-11-13T11:15:35.501Z | HASH_OK |
+| UAP-EV-20261113111536-3505ae64 | validator_result | uap validate agents.collaboration_integrity | 0 | 2026-11-13T11:15:36.204Z | HASH_OK |
+| UAP-EV-20261113111536-48b8e289 | validator_result | uap validate agents.recovery_integrity | 0 | 2026-11-13T11:15:36.361Z | HASH_OK |
+| UAP-EV-20261113111536-ecfeb204 | validator_result | uap validate agents.execution_integrity | 0 | 2026-11-13T11:15:36.156Z | HASH_OK |
+| UAP-EV-20261113111537-09bd8e0d | validator_result | uap validate development.dependency_integrity | 0 | 2026-11-13T11:15:37.672Z | HASH_OK |
+| UAP-EV-20261113111537-85942765 | validator_result | uap validate development.coding_compliance | 0 | 2026-11-13T11:15:37.467Z | HASH_OK |
+| UAP-EV-20261113111537-a6d66562 | validator_result | uap validate development.review_integrity | 0 | 2026-11-13T11:15:37.624Z | HASH_OK |
+| UAP-EV-20261113111537-bde5416f | validator_result | uap validate quality.test_integrity | 0 | 2026-11-13T11:15:37.880Z | HASH_OK |
+| UAP-EV-20261113111537-ed320e6d | validator_result | uap validate quality.engineering_integrity | 0 | 2026-11-13T11:15:37.829Z | HASH_OK |
+| UAP-EV-20261113111538-178a7883 | validator_result | uap validate quality.gate_integrity | 0 | 2026-11-13T11:15:38.207Z | HASH_OK |
+| UAP-EV-20261113111538-404e1e3a | validator_result | uap validate security.application_integrity | 0 | 2026-11-13T11:15:38.529Z | HASH_OK |
+| UAP-EV-20261113111538-4571e9ac | validator_result | uap validate security.financial_integrity_validator | 0 | 2026-11-13T11:15:38.577Z | HASH_OK |
+| UAP-EV-20261113111538-a7da2560 | validator_result | uap validate security.reliability_integrity | 0 | 2026-11-13T11:15:38.859Z | HASH_OK |
+| UAP-EV-20261113111538-f525eb1d | validator_result | uap validate quality.repair_integrity | 0 | 2026-11-13T11:15:38.037Z | HASH_OK |
+| UAP-EV-20261113111539-b7306476 | validator_result | uap validate cross_platform.web_integrity | 0 | 2026-11-13T11:15:39.083Z | HASH_OK |
+| UAP-EV-20261113111656-12973f01 | validator_result | uap validate delivery.ci_integrity | 0 | 2026-11-13T11:16:56.334Z | HASH_OK |
+| UAP-EV-20261113111656-195139c8 | validator_result | uap validate cross_platform.consistency_integrity | 0 | 2026-11-13T11:16:56.283Z | HASH_OK |
+| UAP-EV-20261113111656-a2cefabb | validator_result | uap validate cross_platform.h5_integrity | 0 | 2026-11-13T11:16:56.179Z | HASH_OK |
+| UAP-EV-20261113111705-10ddebe8 | validator_result | uap validate evolution.knowledge_integrity | 0 | 2026-11-13T11:17:05.653Z | HASH_OK |
+| UAP-EV-20261113111705-6b2b5fab | validator_result | uap validate delivery.deployment_integrity | 0 | 2026-11-13T11:17:05.232Z | HASH_OK |
+| UAP-EV-20261113111705-b5c2f0af | validator_result | uap validate delivery.observability_integrity | 0 | 2026-11-13T11:17:05.585Z | HASH_OK |
+| UAP-EV-20261113111705-d2830b96 | validator_result | uap validate evolution.evolution_integrity | 0 | 2026-11-13T11:17:05.796Z | HASH_OK |
+| UAP-EV-20261113111706-9dde1845 | cli_command | uap audit | 0 | 2026-11-13T11:17:06.004Z | HASH_OK |
+| UAP-EV-20261113112236-4d476356 | validator_result | uap validate core.execution_integrity | 0 | 2026-11-13T11:22:36.901Z | HASH_OK |
+| UAP-EV-20261113112236-af507284 | validator_result | uap validate core.architecture_integrity | 0 | 2026-11-13T11:22:36.658Z | HASH_OK |
+| UAP-EV-20261113112237-9b4335cb | validator_result | uap validate security.permission_boundary | 0 | 2026-11-13T11:22:37.005Z | HASH_OK |
+| UAP-EV-20261113112238-00280bcb | validator_result | uap validate agents.registry_integrity | 0 | 2026-11-13T11:22:38.876Z | HASH_OK |
+| UAP-EV-20261113112238-23578ead | validator_result | uap validate product.business_rule_integrity | 0 | 2026-11-13T11:22:38.581Z | HASH_OK |
+| UAP-EV-20261113112238-2eafd804 | validator_result | uap validate core.evidence_integrity | 0 | 2026-11-13T11:22:38.320Z | HASH_OK |
+| UAP-EV-20261113112238-44210ce4 | validator_result | uap validate architecture.consistency | 0 | 2026-11-13T11:22:38.666Z | HASH_OK |
+| UAP-EV-20261113112238-53db6b62 | validator_result | uap validate architecture.adr_integrity | 0 | 2026-11-13T11:22:38.807Z | HASH_OK |
+| UAP-EV-20261113112238-9133ae55 | validator_result | uap validate product.prototype_consistency | 0 | 2026-11-13T11:22:38.498Z | HASH_OK |
+| UAP-EV-20261113112238-ad28b8c5 | validator_result | uap validate architecture.api_database_integrity | 0 | 2026-11-13T11:22:38.737Z | HASH_OK |
+| UAP-EV-20261113112238-b9c6e11e | validator_result | uap validate product.requirement_traceability | 0 | 2026-11-13T11:22:38.402Z | HASH_OK |
+| UAP-EV-20261113112239-3ef487f2 | validator_result | uap validate agents.execution_integrity | 0 | 2026-11-13T11:22:39.142Z | HASH_OK |
+| UAP-EV-20261113112239-66943882 | validator_result | uap validate agents.recovery_integrity | 0 | 2026-11-13T11:22:39.388Z | HASH_OK |
+| UAP-EV-20261113112239-a1f6f2ff | validator_result | uap validate agents.collaboration_integrity | 0 | 2026-11-13T11:22:39.211Z | HASH_OK |
+| UAP-EV-20261113112240-3333b441 | validator_result | uap validate development.dependency_integrity | 0 | 2026-11-13T11:22:40.718Z | HASH_OK |
+| UAP-EV-20261113112240-47058b09 | validator_result | uap validate development.review_integrity | 0 | 2026-11-13T11:22:40.648Z | HASH_OK |
+| UAP-EV-20261113112240-8bf92bd5 | validator_result | uap validate quality.engineering_integrity | 0 | 2026-11-13T11:22:40.946Z | HASH_OK |
+| UAP-EV-20261113112240-af507bfa | validator_result | uap validate development.coding_compliance | 0 | 2026-11-13T11:22:40.474Z | HASH_OK |
+| UAP-EV-20261113112241-035c14c5 | validator_result | uap validate quality.test_integrity | 0 | 2026-11-13T11:22:41.003Z | HASH_OK |
+| UAP-EV-20261113112241-1b2b169e | validator_result | uap validate security.financial_integrity_validator | 0 | 2026-11-13T11:22:41.737Z | HASH_OK |
+| UAP-EV-20261113112241-3bc0fe65 | validator_result | uap validate security.application_integrity | 0 | 2026-11-13T11:22:41.667Z | HASH_OK |
+| UAP-EV-20261113112241-4a62e0e4 | validator_result | uap validate security.reliability_integrity | 0 | 2026-11-13T11:22:41.988Z | HASH_OK |
+| UAP-EV-20261113112241-5f7f5d54 | validator_result | uap validate quality.gate_integrity | 0 | 2026-11-13T11:22:41.336Z | HASH_OK |
+| UAP-EV-20261113112241-e9395170 | validator_result | uap validate quality.repair_integrity | 0 | 2026-11-13T11:22:41.157Z | HASH_OK |
+| UAP-EV-20261113112242-6c39acb7 | validator_result | uap validate cross_platform.web_integrity | 0 | 2026-11-13T11:22:42.218Z | HASH_OK |
+| UAP-EV-20261113112359-14449b82 | validator_result | uap validate cross_platform.consistency_integrity | 0 | 2026-11-13T11:23:59.367Z | HASH_OK |
+| UAP-EV-20261113112359-81bd49bf | validator_result | uap validate delivery.ci_integrity | 0 | 2026-11-13T11:23:59.438Z | HASH_OK |
+| UAP-EV-20261113112359-d7bea96d | validator_result | uap validate cross_platform.h5_integrity | 0 | 2026-11-13T11:23:59.242Z | HASH_OK |
+| UAP-EV-20261113112407-a9190f18 | validator_result | uap validate delivery.deployment_integrity | 0 | 2026-11-13T11:24:07.938Z | HASH_OK |
+| UAP-EV-20261113112408-10faf64e | validator_result | uap validate delivery.observability_integrity | 0 | 2026-11-13T11:24:08.295Z | HASH_OK |
+| UAP-EV-20261113112408-1d3cdfe5 | validator_result | uap validate evolution.evolution_integrity | 0 | 2026-11-13T11:24:08.545Z | HASH_OK |
+| UAP-EV-20261113112408-ba94f26d | cli_command | uap validate --all | 0 | 2026-11-13T11:24:08.695Z | HASH_OK |
+| UAP-EV-20261113112408-ebcce709 | validator_result | uap validate evolution.knowledge_integrity | 0 | 2026-11-13T11:24:08.384Z | HASH_OK |
 | UAP-EV-TEST-20261112110157-67704179 | uap_tester_probe | uap test | 0 | 2026-11-12T11:01:57.069Z | HASH_OK |
 | UAP-EV-TEST-20261112110221-fc0cdd84 | uap_tester_probe | uap test | 0 | 2026-11-12T11:02:21.760Z | HASH_OK |
 | UAP-EV-TEST-20261112110235-cd846fe0 | uap_tester_probe | uap test | 0 | 2026-11-12T11:02:35.979Z | HASH_OK |
@@ -3101,6 +4720,38 @@
 | UAP-EV-TEST-20261113030455-42509378 | uap_tester_probe | uap test | 0 | 2026-11-13T03:04:55.511Z | HASH_OK |
 | UAP-EV-TEST-20261113030916-3d2dc328 | uap_tester_probe | uap test | 0 | 2026-11-13T03:09:16.986Z | HASH_OK |
 | UAP-EV-TEST-20261113032748-e41ee4ed | uap_tester_probe | uap test | 0 | 2026-11-13T03:27:48.519Z | HASH_OK |
+| UAP-EV-TEST-20261113062927-8b84fa85 | uap_tester_probe | uap test | 0 | 2026-11-13T06:29:27.790Z | HASH_OK |
+| UAP-EV-TEST-20261113071025-ab3f2be7 | uap_tester_probe | uap test | 0 | 2026-11-13T07:10:25.578Z | HASH_OK |
+| UAP-EV-TEST-20261113071558-521f337c | uap_tester_probe | uap test | 0 | 2026-11-13T07:15:58.848Z | HASH_OK |
+| UAP-EV-TEST-20261113071833-1c3d4631 | uap_tester_probe | uap test | 0 | 2026-11-13T07:18:33.330Z | HASH_OK |
+| UAP-EV-TEST-20261113091712-494bf57e | uap_tester_probe | uap test | 0 | 2026-11-13T09:17:12.073Z | HASH_OK |
+| UAP-EV-TEST-20261113091806-5b7115ab | uap_tester_probe | uap test | 0 | 2026-11-13T09:18:06.946Z | HASH_OK |
+| UAP-EV-TEST-20261113103148-edcb2860 | uap_tester_probe | uap test | 0 | 2026-11-13T10:31:48.357Z | HASH_OK |
+| UAP-EV-TEST-20261113103250-89dfea6a | uap_tester_probe | uap test | 0 | 2026-11-13T10:32:50.907Z | HASH_OK |
+| UAP-EV-TEST-20261113104104-2604ad4d | uap_tester_probe | uap test | 0 | 2026-11-13T10:41:04.119Z | HASH_OK |
+| UAP-EV-TEST-20261113104156-4f3d8a1f | uap_tester_probe | uap test | 0 | 2026-11-13T10:41:56.325Z | HASH_OK |
+| UAP-EV-TEST-20261113104417-2a899cff | uap_tester_probe | uap test | 0 | 2026-11-13T10:44:17.595Z | HASH_OK |
+| UAP-EV-TEST-20261113104434-e1601c14 | uap_tester_probe | uap test | 0 | 2026-11-13T10:44:34.250Z | HASH_OK |
+| UAP-EV-TEST-20261113104508-67b77cb6 | uap_tester_probe | uap test | 0 | 2026-11-13T10:45:08.601Z | HASH_OK |
+| UAP-EV-TEST-20261113104953-2a1faac3 | uap_tester_probe | uap test | 0 | 2026-11-13T10:49:53.093Z | HASH_OK |
+| UAP-EV-TEST-20261113105011-b7bd79c1 | uap_tester_probe | uap test | 0 | 2026-11-13T10:50:11.755Z | HASH_OK |
+| UAP-EV-TEST-20261113105031-ea99f36d | uap_tester_probe | uap test | 0 | 2026-11-13T10:50:31.560Z | HASH_OK |
+| UAP-EV-TEST-20261113105040-c31fb49d | uap_tester_probe | uap test | 0 | 2026-11-13T10:50:40.398Z | HASH_OK |
+| UAP-EV-TEST-20261113105054-fba5164a | uap_tester_probe | uap test | 0 | 2026-11-13T10:50:54.286Z | HASH_OK |
+| UAP-EV-TEST-20261113105240-43d32b26 | uap_tester_probe | uap test | 0 | 2026-11-13T10:52:40.763Z | HASH_OK |
+| UAP-EV-TEST-20261113105305-9fa45d2c | uap_tester_probe | uap test | 0 | 2026-11-13T10:53:05.008Z | HASH_OK |
+| UAP-EV-TEST-20261113105329-0549ff82 | uap_tester_probe | uap test | 0 | 2026-11-13T10:53:29.068Z | HASH_OK |
+| UAP-EV-TEST-20261113105336-7b4bd0f2 | uap_tester_probe | uap test | 0 | 2026-11-13T10:53:36.863Z | HASH_OK |
+| UAP-EV-TEST-20261113105350-e26cfd35 | uap_tester_probe | uap test | 0 | 2026-11-13T10:53:50.722Z | HASH_OK |
+| UAP-EV-TEST-20261113105648-dd3ceb3c | uap_tester_probe | uap test | 0 | 2026-11-13T10:56:48.885Z | HASH_OK |
+| UAP-EV-TEST-20261113105703-3892cce2 | uap_tester_probe | uap test | 0 | 2026-11-13T10:57:03.486Z | HASH_OK |
+| UAP-EV-TEST-20261113105717-74b8ede7 | uap_tester_probe | uap test | 0 | 2026-11-13T10:57:17.918Z | HASH_OK |
+| UAP-EV-TEST-20261113105731-07dca027 | uap_tester_probe | uap test | 0 | 2026-11-13T10:57:31.720Z | HASH_OK |
+| UAP-EV-TEST-20261113105802-b1d2f014 | uap_tester_probe | uap test | 0 | 2026-11-13T10:58:02.700Z | HASH_OK |
+| UAP-EV-TEST-20261113110410-2c5737c6 | uap_tester_probe | uap test | 0 | 2026-11-13T11:04:10.354Z | HASH_OK |
+| UAP-EV-TEST-20261113110854-59f679b6 | uap_tester_probe | uap test | 0 | 2026-11-13T11:08:54.035Z | HASH_OK |
+| UAP-EV-TEST-20261113111039-2fb393a4 | uap_tester_probe | uap test | 0 | 2026-11-13T11:10:39.622Z | HASH_OK |
+| UAP-EV-TEST-20261113111455-74c703ae | uap_tester_probe | uap test | 0 | 2026-11-13T11:14:55.093Z | HASH_OK |
 
 
 ## 证据契约

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113110215-ea33b638",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:02:15.980Z",
+  "started_at": "2026-11-13T11:02:15.980Z",
+  "finished_at": "2026-11-13T11:02:15.980Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "8573e7a8d751128b8ad8c600df3fd33c01297d05280f7bfbd32b5e8ae62093f9",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "8573e7a8d751128b8ad8c600df3fd33c01297d05280f7bfbd32b5e8ae62093f9",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.review_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.review_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.review_integrity 实检: review_execution=PASS(执行器不得自报 validation_results(assertExecutorResult 拒绝)=true; 正常 executorResult 通过=true; code_review 执行器已登记=true); finding_schema=PASS(finding() 返回 severity/code/message/extra 结构=true); blocking_rules=PASS(BLOCKER 降级 PASS->FAIL / MAJOR 不阻断 / executed:false 降级=true (p1=FAIL p2=PASS p3=FAIL)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 4295 个 | node 子进程真实复验 执行器/验证器分离 + finding schema + BLOCKER-only 阻断; 未调用 code-review 引擎 execute() 给自己盖章",
+  "content_hash": "7ed5bffb5418ed4db40e07762aeb0aa41c37960acb769cd3fd7c1f0208855934"
+}

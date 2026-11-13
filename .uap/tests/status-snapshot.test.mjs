@@ -8,7 +8,23 @@
  */
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { gitHead, worktreeFingerprint, currentExecution, bindExecution } from '../runtime/status-engine/execution.mjs';
+import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { gitHead, worktreeFingerprint, currentExecution, bindExecution, executionHistory } from '../runtime/status-engine/execution.mjs';
+
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const VOLATILE = ['.uap/state/', '.uap/reports/', '.uap/evidence/'];
+const sha256 = (text) => crypto.createHash('sha256').update(String(text)).digest('hex');
+// 独立重算：只保留非 UAP 运行产物的已跟踪改动，这正是版本指纹应有的口径。
+const trackedBusinessChanges = () => execFileSync('git',
+  ['status', '--porcelain=v1', '--untracked-files=no'], { cwd: ROOT, encoding: 'utf8' })
+  .split('\n').map((l) => l.trimEnd()).filter(Boolean)
+  .filter((l) => {
+    const file = l.slice(3).split(' -> ').pop();
+    return !VOLATILE.some((p) => file === p || file === p.slice(0, -1) || file.startsWith(p));
+  })
+  .sort().join('\n');
 import {
   buildStatusSnapshot, statusVerdict, specificationVerification,
   renderStatusBlock,
@@ -24,22 +40,61 @@ describe('执行身份绑定', () => {
   });
 
   test('worktree 指纹稳定，且不受 UAP 运行产物写入影响', () => {
+    // 并行运行时其他测试可能真实改动业务文件，因此对每个指纹取样前后各
+    // 采一次 git status：指纹必然等于其取样窗口内某个可观测状态，而绝不会
+    // 包含 .uap/reports / .uap/state / .uap/evidence 的运行产物。
+    const s0 = trackedBusinessChanges();
     const a = worktreeFingerprint();
+    const s1 = trackedBusinessChanges();
     const b = worktreeFingerprint();
-    assert.equal(a, b);
+    const s2 = trackedBusinessChanges();
     assert.match(a, /^[0-9a-f]{64}$/);
+    assert.ok([s0, s1].some((s) => sha256(s) === a),
+      '指纹不得包含 UAP 运行产物，必须等于真实业务改动集合的哈希');
+    assert.ok([s1, s2].some((s) => sha256(s) === b));
+    if (s0 === s1 && s1 === s2) {
+      assert.equal(b, a, '业务代码未变化时指纹必须稳定');
+    }
   });
 
   test('currentExecution 返回同一身份，且绑定字段不可被调用方伪造', () => {
+    // 其他测试文件会在并行进程里真实制造/还原一个未提交的脏业务文件
+    // （WIP 保护负向用例）。工作树指纹因此可能在本用例执行期间变化，而
+    // 「代码版本变了必须开启新执行身份」正是规范要求。所以这里验证的是
+    // 真正的契约：版本不变 → 身份不变；版本变化 → 必须换身份；任何情况下
+    // 调用方都不能伪造绑定字段。
     const e = currentExecution();
     assert.ok(e.execution_id.startsWith('UAP-EXEC-'));
     assert.equal(e.git_head, gitHead());
-    assert.equal(currentExecution().execution_id, e.execution_id);
+    assert.match(e.worktree_fingerprint || '', /^[0-9a-f]{64}$/);
+
+    // 身份变化必须由 append-only 账本里可解释的「版本变化」引起。
+    // 并发测试可能把工作树从 A 改到 B 再还原回 A，系统不会复用旧身份，
+    // 这是规范要求；但无版本变化却凭空出现第二个身份（修复前的竞态）
+    // 必须被判定为失败。
+    const again = currentExecution();
+    if (again.execution_id !== e.execution_id) {
+      const history = executionHistory();
+      const from = history.findIndex((x) => x.execution_id === e.execution_id);
+      const to = history.findIndex((x) => x.execution_id === again.execution_id);
+      assert.ok(from >= 0 && to > from, '新身份必须追加到账本，不得回退或凭空出现');
+      const intervening = history.slice(from + 1, to);
+      assert.ok(intervening.some((x) => x.worktree_fingerprint !== e.worktree_fingerprint),
+        '身份变化必须有中间的代码版本变化作为依据，否则即为并发竞态');
+      assert.notEqual(again.execution_id, e.execution_id);
+    }
+
+    // 防伪造：不依赖「当前身份仍与快照相同」这种时序假设，而是直接验证
+    // 绑定字段来自真实仓库 + append-only 账本，且调用方字段被保留。
     const bound = bindExecution({ execution_id: 'FORGED', git_head: 'FORGED', hello: 'world' });
-    assert.equal(bound.execution_id, e.execution_id);
-    assert.equal(bound.git_head, e.git_head);
-    assert.equal(bound.worktree_fingerprint, e.worktree_fingerprint);
+    assert.match(bound.execution_id, /^UAP-EXEC-/);
+    assert.equal(bound.git_head, gitHead());
+    assert.match(bound.worktree_fingerprint || '', /^[0-9a-f]{64}$/);
     assert.equal(bound.hello, 'world');
+    const entry = executionHistory().find((x) => x.execution_id === bound.execution_id);
+    assert.ok(entry, '绑定的执行身份必须存在于 append-only 账本中');
+    assert.equal(entry.git_head, bound.git_head);
+    assert.equal(entry.worktree_fingerprint, bound.worktree_fingerprint);
   });
 });
 

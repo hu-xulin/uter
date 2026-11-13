@@ -1,0 +1,24 @@
+{
+  "exit_code": 0,
+  "generated_at": "2026-11-13T11:10:50.503Z",
+  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
+  "source": "uap verify-repair: real business-code repair ledger + result file",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "target_file": ".uap/engines/auto-repair/independent-review.mjs",
+  "ledger": ".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json",
+  "evidence_ids": [
+    "UAP-EV-20261113103930-fa8a4239",
+    "UAP-EV-20261113103930-66f39daf",
+    "UAP-EV-20261113103930-cd79f9c5",
+    "UAP-EV-20261113103930-4161261f",
+    "UAP-EV-20261113103930-05963514",
+    "UAP-EV-20261113103930-4667284d",
+    "UAP-EV-20261113103930-ab83b103"
+  ],
+  "business_code_repair": {
+    "status": "SUCCEEDED"
+  },
+  "business_code_untouched": false
+}

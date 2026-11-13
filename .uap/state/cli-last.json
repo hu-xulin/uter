@@ -1,37 +1,110 @@
 {
   "status": "PASS",
   "exit_code": 0,
-  "summary": "execution UAP-EXEC-20261113090340-f934dd39",
+  "summary": "status consistency PASS: 17/17 independent checks",
   "data": {
-    "execution": {
-      "execution_id": "UAP-EXEC-20261113090340-f934dd39",
-      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
-      "worktree_fingerprint": "f054b1a63a694c7b7361404e5402d9db2ae4db6b27fcc5b1c036b1694e7ca846",
-      "started_at": "2026-11-13T09:03:40.319Z",
-      "started_by": "code-version-changed",
-      "status": "RUNNING"
-    },
-    "head_now": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
-    "fingerprint_now": "f054b1a63a694c7b7361404e5402d9db2ae4db6b27fcc5b1c036b1694e7ca846",
-    "ledger_entries": 19,
-    "health": {
-      "component": "runtime.status-engine.execution",
-      "version": "1.0.0",
-      "ok": true,
-      "checks": {
-        "git_head_resolved": true,
-        "worktree_fingerprint_resolved": true,
-        "ledger_present": true,
-        "identity_stable": true
+    "checks": [
+      {
+        "name": "final_status_exists",
+        "status": "PASS",
+        "detail": "FINAL-STATUS.json present"
       },
-      "execution_id": "UAP-EXEC-20261113090340-f934dd39",
-      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
-      "worktree_fingerprint": "f054b1a63a694c7b7361404e5402d9db2ae4db6b27fcc5b1c036b1694e7ca846",
-      "checked_at": "2026-11-13T09:07:44.098Z"
-    }
+      {
+        "name": "index_status_block_exists",
+        "status": "PASS",
+        "detail": "UAP-STATUS-BLOCK present"
+      },
+      {
+        "name": "index_overall_matches_report",
+        "status": "PASS",
+        "detail": "index=IMPLEMENTED_NOT_VERIFIED report=IMPLEMENTED_NOT_VERIFIED"
+      },
+      {
+        "name": "index_verified_matches_report",
+        "status": "PASS",
+        "detail": "index=0 report=0"
+      },
+      {
+        "name": "report_verified_matches_matrix",
+        "status": "PASS",
+        "detail": "report=0 matrix=0"
+      },
+      {
+        "name": "report_matches_recomputed_verdict",
+        "status": "PASS",
+        "detail": "report=IMPLEMENTED_NOT_VERIFIED recomputed=IMPLEMENTED_NOT_VERIFIED"
+      },
+      {
+        "name": "claim_allowed_matches_engine",
+        "status": "PASS",
+        "detail": "report.final_acceptance=false report.claim_allowed=false engine=false"
+      },
+      {
+        "name": "claim_allowed_matches_state_machine",
+        "status": "PASS",
+        "detail": "overall=IMPLEMENTED_NOT_VERIFIED claim_allowed=false"
+      },
+      {
+        "name": "execution_id_matches_current_run",
+        "status": "PASS",
+        "detail": "report=UAP-EXEC-20261113110829-78fb9a01 index=UAP-EXEC-20261113110829-78fb9a01 current=UAP-EXEC-20261113110829-78fb9a01"
+      },
+      {
+        "name": "git_head_matches_current_run",
+        "status": "PASS",
+        "detail": "report=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc index=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc current=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc"
+      },
+      {
+        "name": "three_independent_results_match_engine",
+        "status": "PASS",
+        "detail": "report.uap=NOT_FULLY_VERIFIED report.uter=NOT_FULLY_VERIFIED engine={\"specification_completeness\":\"COMPLETE\",\"uap_runtime_capability\":\"NOT_FULLY_VERIFIED\",\"uter_real_compliance\":\"NOT_FULLY_VERIFIED\"}"
+      },
+      {
+        "name": "no_stale_pass_promoted",
+        "status": "PASS",
+        "detail": "claim_allowed=false (stale artifacts: 0)"
+      },
+      {
+        "name": "p0_blockers_forbid_full_claim",
+        "status": "PASS",
+        "detail": "claim_allowed=false open_p0=0"
+      },
+      {
+        "name": "cli_process_executed",
+        "status": "PASS",
+        "detail": "uap status --json exit 0"
+      },
+      {
+        "name": "cli_overall_matches_report",
+        "status": "PASS",
+        "detail": "cli=IMPLEMENTED_NOT_VERIFIED report=IMPLEMENTED_NOT_VERIFIED"
+      },
+      {
+        "name": "cli_execution_matches_report",
+        "status": "PASS",
+        "detail": "cli=UAP-EXEC-20261113110829-78fb9a01 report=UAP-EXEC-20261113110829-78fb9a01"
+      },
+      {
+        "name": "cli_three_results_match_report",
+        "status": "PASS",
+        "detail": "cli=NOT_FULLY_VERIFIED report=NOT_FULLY_VERIFIED"
+      }
+    ],
+    "problems": [],
+    "recomputed_status": "IMPLEMENTED_NOT_VERIFIED",
+    "report_status": "IMPLEMENTED_NOT_VERIFIED",
+    "index_status": "IMPLEMENTED_NOT_VERIFIED",
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "reasons": [
+      "172 requirement(s) implemented but not verified",
+      "538/538 applicable requirements lack current valid evidence",
+      "502 requirement(s) have no evidence record"
+    ],
+    "artefact": ".uap/reports/STATUS-CONSISTENCY.json"
   },
-  "command": "execution show",
-  "duration_ms": 220,
-  "generated_at": "2026-11-13T09:07:44.100Z",
-  "evidence_ref": "UAP-EV-20261113090744-b078cd59"
+  "command": "verify-status",
+  "duration_ms": 1473,
+  "generated_at": "2026-11-13T11:25:06.049Z",
+  "evidence_ref": "UAP-EV-20261113112506-1caa16a4"
 }

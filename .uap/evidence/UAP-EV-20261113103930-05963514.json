@@ -1,0 +1,53 @@
+{
+  "evidence_id": "UAP-EV-20261113103930-05963514",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "trace_id": "UAP-RREPAIR-1794566356873-86eec3",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-003",
+    "UAP-00-001-REQ-005",
+    "UAP-00-001-REQ-007",
+    "UAP-00-001-REQ-010",
+    "UAP-00-001-REQ-011"
+  ],
+  "recorded_at": "2026-11-13T10:39:30.932Z",
+  "started_at": "2026-11-13T10:39:30.914Z",
+  "finished_at": "2026-11-13T10:39:30.932Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "29df55a99bea232d77cc4556a2998f48527ed6c74699c8285678e5ac5d12d112",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "git diff --check -- .uap/engines/auto-repair/independent-review.mjs",
+  "exit_code": 0,
+  "duration_ms": 18,
+  "inputs": "{\"args\":[\"diff\",\"--check\",\"--\",\".uap/engines/auto-repair/independent-review.mjs\"],\"phase\":\"regression_attempt_1\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794566356873-86eec3.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794566356873-86eec3/independent-review.mjs"
+  ],
+  "findings": [
+    "before=926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67",
+    "after=7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857"
+  ],
+  "summary": "[regression_attempt_1] SUCCEEDED",
+  "content_hash": "e913951c79f26eb8fedfd3186d2efb33ecd0e517d520e253a536f52e0ea3935b"
+}

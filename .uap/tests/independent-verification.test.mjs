@@ -138,10 +138,19 @@ describe('独立验收：状态口径（独立重算，不调用 computeFinalSta
     }
   });
 
-  test('P0 阻断项未被隐藏或删除', () => {
+  test('P0 阻断项与能力缺口一致，且不得被隐藏或静默关闭', () => {
     const p0 = finalStatus.status_engine.p0_blockers || [];
-    assert.ok(p0.length > 0, '真实存在的 P0 blocker 不得被清空');
     for (const b of p0) assert.equal(b.status, 'OPEN', `blocker ${b.id} 不得被静默关闭`);
+    // 原断言假定「永远至少有一个 P0」，这只在能力尚未建成时成立。真实修复
+    // 闭环完成后 P0 应当被真实关闭 —— 因此改为更强的口径：每个尚未证明的
+    // 修复/回归能力都必须对应一个 OPEN 的 CAPABILITY_GAP，一个都不能少。
+    const caps = finalStatus.status_engine.capabilities;
+    const expected = ['real_code_repair', 'independent_regression']
+      .filter((k) => caps[k] !== true).length;
+    const capBlockers = p0.filter((b) => b.category === 'CAPABILITY_GAP');
+    assert.equal(capBlockers.length, expected,
+      `未证明的能力必须有对应 OPEN 阻断项: caps=${JSON.stringify(caps)} p0=${JSON.stringify(p0)}`);
+    if (p0.length > 0) assert.equal(finalStatus.claim_allowed, false);
   });
 });
 

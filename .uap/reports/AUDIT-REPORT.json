@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-13T03:12:40.612Z",
+  "generated_at": "2026-11-13T11:15:34.625Z",
   "registry": {
     "ok": true,
     "findings": 0
   },
   "audit": {
-    "generated_at": "2026-11-13T03:12:40.599Z",
+    "generated_at": "2026-11-13T11:15:34.619Z",
     "domains": [
       {
         "domain": "authentication",
@@ -148,7 +148,7 @@
           {
             "severity": "INFO",
             "code": "designsystem_docs_files",
-            "message": "docs/design-system/ 真实文件计数 = 21",
+            "message": "docs/design-system/ 真实文件计数 = 23",
             "file": "docs/design-system/",
             "domain": "frontend-design-system"
           }
@@ -162,14 +162,14 @@
           {
             "severity": "INFO",
             "code": "cicd_ci_yml_content",
-            "message": ".github/workflows/ci.yml 真实字节长度 = 17117，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+            "message": ".github/workflows/ci.yml 真实字节长度 = 17407，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
             "file": ".github/workflows/ci.yml",
             "domain": "ci-cd"
           },
           {
             "severity": "INFO",
             "code": "cicd_verify_all_content",
-            "message": "scripts/verify-all.sh 真实字节长度 = 9635，非空指令锚点匹配 2/5: [echo, bun]",
+            "message": "scripts/verify-all.sh 真实字节长度 = 9949，非空指令锚点匹配 2/5: [echo, bun]",
             "file": "scripts/verify-all.sh",
             "domain": "ci-cd"
           }
@@ -211,7 +211,7 @@
           {
             "severity": "INFO",
             "code": "env_git_status",
-            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1186",
+            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1399",
             "domain": "environment"
           },
           {
@@ -238,12 +238,12 @@
       {
         "path": "model/",
         "exists": true,
-        "file_count": 197
+        "file_count": 206
       },
       {
         "path": "service/",
         "exists": true,
-        "file_count": 162
+        "file_count": 164
       },
       {
         "path": "middleware/",
@@ -263,7 +263,7 @@
       {
         "path": "web/src/",
         "exists": true,
-        "file_count": 2144
+        "file_count": 2146
       },
       {
         "path": "web/src/features/",
@@ -283,7 +283,7 @@
       {
         "path": "docs/design-system/",
         "exists": true,
-        "file_count": 21
+        "file_count": 23
       },
       {
         "path": "relaykit/",
@@ -302,7 +302,7 @@
         "exit_code": 0,
         "timed_out": false,
         "spawn_error": null,
-        "stdout_preview": "M .uap/SPECIFICATION-INDEX.md\n M .uap/bin/uap.mjs\n M .uap/cross-platform/UAP-07-001-WEB-ENGINEERING.md\n M .uap/cross-platform/UAP-07-002-H5-ENGINEERING.md\n M .uap/cross-platform/UAP-07-003-CROSS-PLATF",
+        "stdout_preview": "M .uap/SPECIFICATION-INDEX.md\n M .uap/bin/uap-real-repair.mjs\n M .uap/bin/uap.mjs\n M .uap/engines/auto-repair/independent-review.mjs\n M .uap/reports/AGENT-COMPLIANCE-REPORT.md\n M .uap/reports/AGENT-VE",
         "stderr_preview": ""
       },
       {
@@ -322,7 +322,7 @@
         "stderr_preview": ""
       }
     ],
-    "files_scanned_total": 4165,
+    "files_scanned_total": 4180,
     "findings": [
       {
         "severity": "INFO",
@@ -432,21 +432,21 @@
       {
         "severity": "INFO",
         "code": "designsystem_docs_files",
-        "message": "docs/design-system/ 真实文件计数 = 21",
+        "message": "docs/design-system/ 真实文件计数 = 23",
         "file": "docs/design-system/",
         "domain": "frontend-design-system"
       },
       {
         "severity": "INFO",
         "code": "cicd_ci_yml_content",
-        "message": ".github/workflows/ci.yml 真实字节长度 = 17117，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+        "message": ".github/workflows/ci.yml 真实字节长度 = 17407，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
         "file": ".github/workflows/ci.yml",
         "domain": "ci-cd"
       },
       {
         "severity": "INFO",
         "code": "cicd_verify_all_content",
-        "message": "scripts/verify-all.sh 真实字节长度 = 9635，非空指令锚点匹配 2/5: [echo, bun]",
+        "message": "scripts/verify-all.sh 真实字节长度 = 9949，非空指令锚点匹配 2/5: [echo, bun]",
         "file": "scripts/verify-all.sh",
         "domain": "ci-cd"
       },
@@ -474,7 +474,7 @@
       {
         "severity": "INFO",
         "code": "env_git_status",
-        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1186",
+        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1399",
         "domain": "environment"
       },
       {
@@ -490,7 +490,7 @@
         "domain": "environment"
       }
     ],
-    "summary": "扫描 13 个路径（真实文件计数合计 4165，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
+    "summary": "扫描 13 个路径（真实文件计数合计 4180，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
     "blockers": 0,
     "severities": [
       "BLOCKER",
@@ -500,7 +500,7 @@
     ]
   },
   "financial": {
-    "generated_at": "2026-11-13T03:12:40.612Z",
+    "generated_at": "2026-11-13T11:15:34.625Z",
     "simulated_only": true,
     "safety": {
       "network_calls": 0,

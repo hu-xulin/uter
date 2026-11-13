@@ -1,0 +1,69 @@
+{
+  "execution_id": "UAP-RREPAIR-1794566356873-86eec3",
+  "task_id": "UAP-REAL-REPAIR-002",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "target_file": ".uap/engines/auto-repair/independent-review.mjs",
+  "before_hash": "926c6d9b6b5664139c207a757fabd05e7430161620eefb5fc76896a9d4697c67",
+  "after_hash": "7a480e30dc32e6563853299c2c084f083d352c6ae18c91abe1d5bbae9cd18857",
+  "backup_path": ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794566356873-86eec3/independent-review.mjs",
+  "allowed_paths": [
+    ".uap/engines/auto-repair/independent-review.mjs"
+  ],
+  "modified_files": [
+    ".uap/engines/auto-repair/independent-review.mjs"
+  ],
+  "max_attempts": 3,
+  "attempts": 1,
+  "commands": [
+    {
+      "command": "node .uap/tests/fixtures/independent-review-ledger-driven-probe.mjs",
+      "args": [
+        ".uap/tests/fixtures/independent-review-ledger-driven-probe.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 2783,
+      "stdout": "PROBE PASS: reviewer is ledger-driven and rejects an empty test run\n",
+      "stderr": ""
+    },
+    {
+      "command": "node --check .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        "--check",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 69,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check .uap/bin/uap.mjs",
+      "args": [
+        "--check",
+        ".uap/bin/uap.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 62,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --check -- .uap/engines/auto-repair/independent-review.mjs",
+      "args": [
+        "diff",
+        "--check",
+        "--",
+        ".uap/engines/auto-repair/independent-review.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 18,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "status": "TESTS_PASSED"
+}

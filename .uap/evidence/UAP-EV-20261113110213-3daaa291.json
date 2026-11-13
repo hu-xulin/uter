@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113110213-3daaa291",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T11:02:13.022Z",
+  "started_at": "2026-11-13T11:02:13.022Z",
+  "finished_at": "2026-11-13T11:02:13.022Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "worktree_fingerprint": "8573e7a8d751128b8ad8c600df3fd33c01297d05280f7bfbd32b5e8ae62093f9",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "worktree_fingerprint": "8573e7a8d751128b8ad8c600df3fd33c01297d05280f7bfbd32b5e8ae62093f9",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.permission_boundary",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.permission_boundary\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.permission_boundary 实检: least_privilege=PASS(default_effect=deny; 未注册 agent=DENY; 未声明权限=DENY; 已声明最小权限放行=ALLOW(控制组,证明非全 DENY 假阳性)); denied_operations=PASS(12/12 高危权限实判 DENY (含 production_write/real_payment/force_push/quality_gate_disable); 未拒绝=无; fail_closed=true); audit_logging=PASS(policy-audit.jsonl 行数 2729->2744 (新增 15); 新增 DENY 且命中高危权限=12) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 4282 个 | 真实调用 policy-engine.check() 产生决策并核对审计日志追加; 未连接生产库/未发起任何真实支付; 仅模拟/本地策略",
+  "content_hash": "9176840ccae501c345e512c995aec9c841a8026f8db225baf9e5dfaee43ad3a2"
+}
