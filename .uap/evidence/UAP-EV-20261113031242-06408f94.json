@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113031242-06408f94",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T03:12:42.820Z",
+  "started_at": "2026-11-13T03:12:42.820Z",
+  "finished_at": "2026-11-13T03:12:42.820Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.execution_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.execution_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.execution_integrity 实检: execution_contract=PASS(required_input 覆盖 5/5; required_output 覆盖 6/6); structured_output=PASS(agent-runtime 导出 导出 component,health,execute 齐全; 子进程复跑 executorResult 结构 ok=true; exit_code=0); timeout=PASS(runCommand 真实运行 exit_code=0 timed_out=false spawn_error=none; proc.mjs 含 setTimeout/timeoutMs=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 3008 个 | 动态 import agent-runtime 验证导出 + node 子进程复验 executorResult 结构 + runCommand 真实运行记录 exit_code",
+  "content_hash": "5e8b5930420ebb3fe0a59d5800271b11fbba1a8033431d16428bfe4e1c95c60f"
+}

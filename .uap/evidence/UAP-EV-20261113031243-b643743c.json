@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113031243-b643743c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T03:12:43.057Z",
+  "started_at": "2026-11-13T03:12:43.057Z",
+  "finished_at": "2026-11-13T03:12:43.057Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.recovery_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.recovery_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.recovery_integrity 实检: state_persistence=PASS(BASELINE.json 含 workspace/git/toolchain=true; .uap/state 目录存在=true); interruption_recovery=PASS(recovery-engine 导出 导出 component,health,execute 齐全; WAITING_RECOVERY 可迁移=[QUEUED,FAILED,BLOCKED,CANCELLED] (含 QUEUED/FAILED=true)); idempotency=PASS(子进程复验终态(SUCCEEDED/CANCELLED 无后继)=true 无自环=true; exit_code=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 3008 个 | 真实读取 BASELINE.json + 动态 import recovery-engine 导出 + node 子进程复验状态机幂等/终态; 不调用有写副作用的 recovery health()",
+  "content_hash": "33e4f70a7f2e7eb8816fa960ca60d8991353f25eecfd91ea52a65b70f8ee7cdd"
+}

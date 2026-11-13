@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113022422-0dd12bf3",
+  "kind": "runtime_start",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T02:24:22.668Z",
+  "started_at": "2026-11-13T02:24:22.668Z",
+  "finished_at": "2026-11-13T02:24:22.668Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113022122-e1e27663",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "537285952788d1606d68a135ebbc0785b25cb8b37120198f22b883db4b7c3477",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113022122-e1e27663",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "worktree_fingerprint": "537285952788d1606d68a135ebbc0785b25cb8b37120198f22b883db4b7c3477",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap doctor",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"components\":10}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "runtime start: 10/10 components healthy, registry 37/37",
+  "content_hash": "87c48e1ca1821c53fdaf3fdefd245dc49806567a34cf0b6b648fd7582c605aa1"
+}

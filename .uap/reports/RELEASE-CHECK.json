@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T17:05:01.046Z",
+  "generated_at": "2026-11-13T03:12:37.064Z",
   "checks": {
     "production_deploy_denied": true,
     "registry_integrity": true,
@@ -9,9 +9,11 @@
     "quality_gates_passed": true,
     "no_open_critical_defects": true,
     "final_status_generated": true,
-    "final_status_claims_success": true
+    "final_status_claims_success": false
   },
-  "failed": [],
+  "failed": [
+    "final_status_claims_success"
+  ],
   "open_critical_defects": [],
   "deploy_decision": {
     "decision": "DENY",

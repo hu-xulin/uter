@@ -1,0 +1,52 @@
+{
+  "evidence_id": "UAP-EV-20261113030342-fc8531a8",
+  "kind": "real_code_repair_result",
+  "task_id": "UAP-REAL-REPAIR-001",
+  "trace_id": "UAP-RREPAIR-1794538989511-ce327e",
+  "specification_ids": [
+    "UAP-03-002",
+    "UAP-05-002",
+    "UAP-05-003"
+  ],
+  "requirement_ids": [
+    "UAP-03-002-REQ-011",
+    "UAP-05-002-REQ-005",
+    "UAP-05-003-REQ-001",
+    "UAP-05-003-REQ-011",
+    "UAP-05-003-REQ-014"
+  ],
+  "recorded_at": "2026-11-13T03:03:42.766Z",
+  "started_at": "2026-11-13T03:03:42.766Z",
+  "finished_at": "2026-11-13T03:03:42.766Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": null,
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"attempts\":1,\"target_file\":\"common/request_path.go\",\"classification\":{\"level\":\"AUTO_ALLOW\",\"reason\":\"普通业务代码，在任务授权范围内自动允许\",\"auto_allow\":true}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794538989511-ce327e.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794538989511-ce327e/request_path.go",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT.md"
+  ],
+  "findings": [],
+  "summary": "真实业务代码修复闭环 SUCCEEDED",
+  "content_hash": "88636d295c630cdc2a28f783b6bad3e8f921b308dbb58e2fcd11f2ba99c18d63"
+}

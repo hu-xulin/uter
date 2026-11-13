@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-11-13T03:32:55.039Z",
+  "overall": "IMPLEMENTED_NOT_VERIFIED",
+  "claim_allowed": false,
+  "requirements": 538,
+  "verified": 0,
+  "findings": 12,
+  "fixed": 4,
+  "open": 4,
+  "blocked": 3,
+  "new_test_files": 4,
+  "new_test_cases": 23,
+  "evidence": {
+    "total": 3093,
+    "hashValid": 3093,
+    "bound": 811
+  },
+  "outputs": [
+    "BASELINE-AUDIT-REPORT.md: SKIPPED (已含复验段落，原有内容完整保留)",
+    "REQUIREMENT-TRACEABILITY-MATRIX.md: SKIPPED (已含复验段落，原有内容完整保留)",
+    "SPECIFICATION-COMPLIANCE-REPORT.md: SKIPPED (由 uap report --final 程序化生成，本生成器不覆盖)",
+    "WORKFLOW-VERIFICATION-REPORT.md: SKIPPED (由 uap report --final 程序化生成，本生成器不覆盖)",
+    "FINANCIAL-INTEGRITY-REPORT.md: SKIPPED (由 uap report --final 程序化生成，本生成器不覆盖)",
+    "RUNTIME-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "EXECUTOR-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "VALIDATOR-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "AGENT-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "AUTO-REPAIR-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "UTER-COMPLIANCE-REPORT.md: REGENERATED (自有文件，幂等)",
+    "DATABASE-INTEGRATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "E2E-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "SECURITY-VERIFICATION-REPORT.md: REGENERATED (自有文件，幂等)",
+    "FINAL-ACCEPTANCE-REPORT.md: REGENERATED (自有文件，幂等)",
+    "EVIDENCE-INDEX.json: CREATED"
+  ]
+}

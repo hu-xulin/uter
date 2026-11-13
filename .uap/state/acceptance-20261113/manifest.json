@@ -1,0 +1,319 @@
+{
+  "generated_at": "2026-11-13T03:27:07.942Z",
+  "run_date": "2026-11-13",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "branch": "main",
+  "baseline_dirty_count": 712,
+  "stage_a": [
+    {
+      "cmd": "uap status",
+      "exit": 0,
+      "start": null,
+      "log": ".uap/state/acceptance-20261113/logs/status.stdout.log"
+    },
+    {
+      "cmd": "uap doctor",
+      "exit": 0,
+      "start": null,
+      "log": ".uap/state/acceptance-20261113/logs/doctor.stdout.log"
+    },
+    {
+      "cmd": "uap audit",
+      "exit": 0,
+      "start": null,
+      "log": ".uap/state/acceptance-20261113/logs/audit.stdout.log"
+    },
+    {
+      "cmd": "uap validate --all",
+      "exit": 0,
+      "start": null,
+      "log": ".uap/state/acceptance-20261113/logs/validate-all.stdout.log"
+    },
+    {
+      "cmd": "uap test --all",
+      "exit": 0,
+      "start": null,
+      "log": ".uap/state/acceptance-20261113/logs/test-all.stdout.log"
+    }
+  ],
+  "stage_c": [
+    {
+      "name": "workflow-all",
+      "cmd": "node .uap/bin/uap.mjs workflow run --all",
+      "exit": 0,
+      "start": "2026-11-13T11:09:12+0800"
+    },
+    {
+      "name": "validate-all",
+      "cmd": "node .uap/bin/uap.mjs validate --all",
+      "exit": 0,
+      "start": "2026-11-13T11:09:40+0800"
+    },
+    {
+      "name": "schemas",
+      "cmd": "node .uap/bin/uap.mjs schemas",
+      "exit": 0,
+      "start": "2026-11-13T11:11:07+0800"
+    },
+    {
+      "name": "build",
+      "cmd": "node .uap/bin/uap.mjs build",
+      "exit": 0,
+      "start": "2026-11-13T11:11:07+0800"
+    },
+    {
+      "name": "release-check",
+      "cmd": "node .uap/bin/uap.mjs release check",
+      "exit": 1,
+      "start": "2026-11-13T11:12:36+0800"
+    },
+    {
+      "name": "doctor",
+      "cmd": "node .uap/bin/uap.mjs doctor",
+      "exit": 0,
+      "start": "2026-11-13T11:12:37+0800"
+    },
+    {
+      "name": "audit",
+      "cmd": "node .uap/bin/uap.mjs audit",
+      "exit": 0,
+      "start": "2026-11-13T11:12:40+0800"
+    }
+  ],
+  "stage_e": [
+    {
+      "name": "typecheck",
+      "cmd": "bun run typecheck",
+      "exit": 0
+    },
+    {
+      "name": "lint",
+      "cmd": "bun run lint",
+      "exit": 0
+    },
+    {
+      "name": "design-strict",
+      "cmd": "bun run design-strict",
+      "exit": 0
+    },
+    {
+      "name": "unit-test",
+      "cmd": "bun run unit-test",
+      "exit": 0
+    },
+    {
+      "name": "build-check",
+      "cmd": "bun run build-check",
+      "exit": 0
+    }
+  ],
+  "go_test": {
+    "exit": 0,
+    "pass": 52,
+    "fail": 0,
+    "log": ".uap/state/acceptance-20261113/logs/go-test-all.log"
+  },
+  "e2e": {
+    "command": "bun run test:axe + bun run test:visual:e2e (真实 Chromium)",
+    "exit": 1,
+    "axe_exit": 1,
+    "axe_passed": 12,
+    "axe_failed": 1,
+    "axe_skipped": 1,
+    "visual_exit": 1,
+    "visual_passed": 10,
+    "visual_failed": 19,
+    "visual_skipped": 0
+  },
+  "frontend_unit": {
+    "exit": 0,
+    "test_files": 0,
+    "log": ".uap/state/acceptance-20261113/logs/stageE-unit-test.log"
+  },
+  "logs": [
+    {
+      "file": "audit.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "audit.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "audit.stdout.log",
+      "sha256": "ac3bdc85f7f9b9785b31992b021447eba556f0cfc7d5d315c3578296faeae0c7"
+    },
+    {
+      "file": "doctor.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "doctor.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "doctor.stdout.log",
+      "sha256": "348a50829e401f0d02f54d79bdf3868926b25be3f8e320919ec502de0cea5477"
+    },
+    {
+      "file": "e2e-axe.log",
+      "sha256": "0380a01df82ab45c25200bbed95d2d77b3be8cbf9cac944666a6cbe6c3157237"
+    },
+    {
+      "file": "e2e-results.txt",
+      "sha256": "e8550657cfa66eea4abd7c1f6db8ca680c949035bc737dd454f5662a62b811e5"
+    },
+    {
+      "file": "e2e-visual.log",
+      "sha256": "77b981fc2dc5551673332ab76eea0a622deb302cf9bf9c14ce1e7f63bce07901"
+    },
+    {
+      "file": "financial-simulation.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "go-test-all.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "go-test-all.log",
+      "sha256": "38f3ac3df90ae2e7e700c2030257f011237a34d6120c9034ec31eb27881c042e"
+    },
+    {
+      "file": "go-test-before.log",
+      "sha256": "eddb83e1de386408294fc1499646e088d1d64f37d48ba77037b8413dd53da81e"
+    },
+    {
+      "file": "go-vet.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "independent.stdout.log",
+      "sha256": "8075404905ece5acfd7653ed30d03996ffeb0d74d14bbdcb3c01b2a7757467e6"
+    },
+    {
+      "file": "probe.out",
+      "sha256": "6ed0e091b3c2107fa1223a66dec613c75d68f4206a7b264691767cfbb6f9ae83"
+    },
+    {
+      "file": "real-repair-dryrun.log",
+      "sha256": "a01c49d956a521edba77976eee6ca19134602e5c1ae8bb10b1fd25e6dc7cdc29"
+    },
+    {
+      "file": "real-repair-exec.log",
+      "sha256": "c536d829188e96f037fd190ae073c8eeb2b7746950e67ab78bd617867a6afff9"
+    },
+    {
+      "file": "repair-boundaries.log",
+      "sha256": "c4e0cf16e24dd6c068a9e27cf04ca2224aebc4c1b82e0f3f88a05ab622e2d896"
+    },
+    {
+      "file": "repro-before.log",
+      "sha256": "41f4bedd7c41f8b8b8560a78e093e59b7fa689bdfa30884cf38e385cca63e573"
+    },
+    {
+      "file": "stageC-audit.log",
+      "sha256": "ab6eb9db967328ffd48dbb20ccf8ef235e9261de0e34cda68411525751d2594c"
+    },
+    {
+      "file": "stageC-build.log",
+      "sha256": "e46d69467289ebb9462246d101935feba764d98aec11495b4089a45181e1c1c4"
+    },
+    {
+      "file": "stageC-doctor.log",
+      "sha256": "90da664725700eb6c91dac4e0c0381622691b1a459484536126b220b5df3490d"
+    },
+    {
+      "file": "stageC-release-check.log",
+      "sha256": "f7d647c896b0348bd1792b43fcda472cc9a20d37b674313256385f9569f3a2a3"
+    },
+    {
+      "file": "stageC-results.txt",
+      "sha256": "7206ad215bf3f682b434d037e102fcbe3675a1e0814a218eb0a1edd0104350e6"
+    },
+    {
+      "file": "stageC-schemas.log",
+      "sha256": "e1ebda638e33123fe287783b875b68c637585dbe789902a7c494f053e9ea0f6b"
+    },
+    {
+      "file": "stageC-validate-all.log",
+      "sha256": "f863b2a8b069e3f880d185bdd5df74e35c081a7a03a6e45ff17a0ac9ee96c62b"
+    },
+    {
+      "file": "stageC-workflow-all.log",
+      "sha256": "c1247d5836d89a351ac9e54c64b938dff15fd6ef9f02b1ee6e5b2ac82ef37e80"
+    },
+    {
+      "file": "stageE-build-check.log",
+      "sha256": "74eca2623213f9f27b0e39e2508d91f6179e049e44c1ba4f81d0bb1b2bcc737d"
+    },
+    {
+      "file": "stageE-design-strict.log",
+      "sha256": "f1e6706d54d26602ebe4166c7a0b73f3204b4e73843d5fa83a63228be239dd47"
+    },
+    {
+      "file": "stageE-lint.log",
+      "sha256": "a086fe69cdbf49fc18d678091a311c3f50603f97801f308b60e8519538e73c5a"
+    },
+    {
+      "file": "stageE-results.txt",
+      "sha256": "9302400f50ed0abf89fce6778d8229bc86b267abd15cb5863e1d44a89dd92a95"
+    },
+    {
+      "file": "stageE-typecheck.log",
+      "sha256": "5b79a0e507fbfe3ee9fe68d86a274c3dec57408303abba3ba342ef01f4551dbe"
+    },
+    {
+      "file": "stageE-unit-test.log",
+      "sha256": "f43197afd11fb78e3eb4d33d0fd6c95b1bae0150642848bf089ab722b3d92939"
+    },
+    {
+      "file": "status.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "status.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "status.stdout.log",
+      "sha256": "aab1af7ebf397f38987bf73adaa23ba200e6e294d451ddc365c63f30a4f90565"
+    },
+    {
+      "file": "test-all-after.stdout.log",
+      "sha256": "184e29228f05df87278ce2c82b5b23312ea49875e3cf555d86d66c0bb281fc8e"
+    },
+    {
+      "file": "test-all-postrepair.log",
+      "sha256": "377eb762510e3f6b07ba421f2d7f53747d6e7dcc6dcff0f6bbd0b100526df8df"
+    },
+    {
+      "file": "test-all.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "test-all.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "test-all.stdout.log",
+      "sha256": "196368943a028efbc4b1d66ed140d9725776bb38e8d49ed5a46d545c1138f78e"
+    },
+    {
+      "file": "validate-all.exit",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "validate-all.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "validate-all.stdout.log",
+      "sha256": "d4c807de61f34221ec6d4ebfe2396503bebb9ed382261aede0b09d4027d15fa2"
+    },
+    {
+      "file": "uap-baseline-status-20261113.txt",
+      "sha256": "b4c884b20bba1d4a567cf79b6899b0eb66a6ea96187c1d2dc29b56f1dafe2d42"
+    }
+  ]
+}

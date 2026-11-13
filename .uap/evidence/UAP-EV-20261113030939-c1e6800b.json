@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113030939-c1e6800b",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261113030938-de5d2667",
+  "trace_id": "UAP-TRACE-20261113030938-e011147d",
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T03:09:39.031Z",
+  "started_at": "2026-11-13T03:09:39.031Z",
+  "finished_at": "2026-11-13T03:09:39.031Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+    "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+    "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+  "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+  "worktree_fingerprint": "63d0f13bda92cc62d210c9f29b1781c9682d1ee389c4204c3253d630bab9fa02",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261113030938-de5d2667",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"Execute workflow Financial Integrity Verification\",\"specification_ids\":[\"UAP-00-001\",\"UAP-00-002\",\"UAP-00-003\",\"UAP-00-004\",\"UAP-01-001\",\"UAP-01-002\",\"UAP-01-003\",\"UAP-02-001\",\"UAP-02-002\",\"UAP-02-003\",\"UAP-03-001\",\"UAP-03-002\",\"UAP-03-003\",\"UAP-03-004\",\"UAP-04-001\",\"UAP-04-002\",\"UAP-04-003\",\"UAP-05-001\",\"UAP-05-002\",\"UAP-05-003\",\"UAP-05-004\",\"UAP-06-001\",\"UAP-06-002\",\"UAP-06-003\",\"UAP-07-001\",\"UAP-07-002\",\"UAP-07-003\",\"UAP-08-001\",\"UAP-08-002\",\"UAP-08-003\",\"UAP-09-001\",\"UAP-09-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-20261113030938-de5d2667 finished: SUCCEEDED",
+  "content_hash": "0d65772be4a061ed15d62da8d218b126146670523effa49d40bc01d6983d7bf8"
+}
