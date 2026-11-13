@@ -1,0 +1,79 @@
+{
+  "batch_id": "devops_and_delivery",
+  "batch_name": "DevOps & Delivery",
+  "specs": [
+    "UAP-08-001",
+    "UAP-08-002",
+    "UAP-08-003"
+  ],
+  "probes": [
+    "ci.workflows",
+    "runtime.release-deny",
+    "go.build",
+    "web.typecheck",
+    "web.lint",
+    "runtime.verify-status",
+    "go.race"
+  ],
+  "executed_at": "2026-11-13T15:28:39.668Z",
+  "probe_results": [
+    {
+      "probe_id": "ci.workflows",
+      "ok": true,
+      "exit_code": 0,
+      "command": "read 9 CI workflow files and check required gates",
+      "output_hash": "4a467a2bd83618f3194688182622c08e4dc8f41365360f1ec07cee777876440a",
+      "detail": "9 workflows, gates found: typecheck,lint,test,build,security"
+    },
+    {
+      "probe_id": "runtime.release-deny",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap release check --json",
+      "output_hash": "0cbe1a44e0594aae884c7c51c50fe0b982884f8b60def09d3ce33780a6431a70",
+      "detail": "release check exit=1 (expected 1), deploy_decision=DENY present=true"
+    },
+    {
+      "probe_id": "go.build",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go build ./...",
+      "output_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "detail": "GOWORK=off go build ./... exit=0"
+    },
+    {
+      "probe_id": "web.typecheck",
+      "ok": false,
+      "exit_code": 1,
+      "command": "bun run typecheck",
+      "output_hash": "cb4b515c8cce07991778aa86356ff9fddc90500b06bdcc920ba88cd7f9f3dbf3",
+      "detail": "web typecheck exit=1"
+    },
+    {
+      "probe_id": "web.lint",
+      "ok": false,
+      "exit_code": 1,
+      "command": "bun run lint",
+      "output_hash": "c267c697419b43c457b97f83fe4777baabeaaf6606c0d6424a2cfa317ebf9061",
+      "detail": "web lint exit=1"
+    },
+    {
+      "probe_id": "runtime.verify-status",
+      "ok": false,
+      "exit_code": 1,
+      "command": "./uap verify-status --json",
+      "output_hash": "c9c8948ef89e9cdf6db4779605192c0dd77b9f9d68f9a3345c97908b713ec8e8",
+      "detail": "uap verify-status exit=1"
+    },
+    {
+      "probe_id": "go.race",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./model/ -run TestIsolatedDBConcurrent|TestPhase2DB -race -count=1",
+      "output_hash": "25a2bf0b1fa362a7c25e7597b109329e7342a887dfc89036862790805600c5d8",
+      "detail": "go test -race (concurrent DB) exit=0"
+    }
+  ],
+  "pass": 4,
+  "total": 7
+}

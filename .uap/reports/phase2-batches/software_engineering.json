@@ -1,0 +1,70 @@
+{
+  "batch_id": "software_engineering",
+  "batch_name": "Software Engineering",
+  "specs": [
+    "UAP-04-001",
+    "UAP-04-002",
+    "UAP-04-003"
+  ],
+  "probes": [
+    "go.build",
+    "go.vet",
+    "web.lint",
+    "web.copyright",
+    "ci.workflows",
+    "runtime.validators"
+  ],
+  "executed_at": "2026-11-13T15:23:27.304Z",
+  "probe_results": [
+    {
+      "probe_id": "go.build",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go build ./...",
+      "output_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "detail": "GOWORK=off go build ./... exit=0"
+    },
+    {
+      "probe_id": "go.vet",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go vet ./common/ ./model/ ./controller/ ./service/",
+      "output_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "detail": "GOWORK=off go vet (4 pkgs) exit=0"
+    },
+    {
+      "probe_id": "web.lint",
+      "ok": false,
+      "exit_code": 1,
+      "command": "bun run lint",
+      "output_hash": "c267c697419b43c457b97f83fe4777baabeaaf6606c0d6424a2cfa317ebf9061",
+      "detail": "web lint exit=1"
+    },
+    {
+      "probe_id": "web.copyright",
+      "ok": false,
+      "exit_code": 1,
+      "command": "bun run copyright:check",
+      "output_hash": "dddb19eec755f5389ddf56ded2e493d909c2598e970a6ebb6d981b4acc01d2ad",
+      "detail": "web copyright check exit=1"
+    },
+    {
+      "probe_id": "ci.workflows",
+      "ok": true,
+      "exit_code": 0,
+      "command": "read 9 CI workflow files and check required gates",
+      "output_hash": "4a467a2bd83618f3194688182622c08e4dc8f41365360f1ec07cee777876440a",
+      "detail": "9 workflows, gates found: typecheck,lint,test,build,security"
+    },
+    {
+      "probe_id": "runtime.validators",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap validate --all --json",
+      "output_hash": "1a5e16d883a54963441614c4956d0313e03cd52d2c3749251c9802d58fbe6042",
+      "detail": "validate --all -> exit=0, pass=32/32, fail=0"
+    }
+  ],
+  "pass": 4,
+  "total": 6
+}

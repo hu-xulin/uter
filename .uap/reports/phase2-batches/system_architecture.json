@@ -1,0 +1,79 @@
+{
+  "batch_id": "system_architecture",
+  "batch_name": "System Architecture",
+  "specs": [
+    "UAP-02-001",
+    "UAP-02-002",
+    "UAP-02-003"
+  ],
+  "probes": [
+    "go.build",
+    "go.vet",
+    "go.db-integration",
+    "card.database",
+    "go.race",
+    "contract.exports",
+    "reg.executors"
+  ],
+  "executed_at": "2026-11-13T15:21:24.920Z",
+  "probe_results": [
+    {
+      "probe_id": "go.build",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go build ./...",
+      "output_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "detail": "GOWORK=off go build ./... exit=0"
+    },
+    {
+      "probe_id": "go.vet",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go vet ./common/ ./model/ ./controller/ ./service/",
+      "output_hash": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "detail": "GOWORK=off go vet (4 pkgs) exit=0"
+    },
+    {
+      "probe_id": "go.db-integration",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB -count=1 -v",
+      "output_hash": "9034abcd437bf4d83cec8d74b17a3663a653d70071cd4a860a411a412f660fab",
+      "detail": "isolated file-backed SQLite: exit=0, PASS=30, FAIL=0"
+    },
+    {
+      "probe_id": "card.database",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read DATABASE-INTEGRATION.json produced by uap verify-database",
+      "output_hash": "00fc7ea27b764e37e4f47109a0c277570199e119eeeb17d142b739f954ff56ff",
+      "detail": "status=MISSING, transactions=24"
+    },
+    {
+      "probe_id": "go.race",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./model/ -run TestIsolatedDBConcurrent|TestPhase2DB -race -count=1",
+      "output_hash": "a11735fb6ae29dec43f1bae39ecd458ba59e11376bcacb7adc66ee8f3c8708f7",
+      "detail": "go test -race (concurrent DB) exit=0"
+    },
+    {
+      "probe_id": "contract.exports",
+      "ok": true,
+      "exit_code": 0,
+      "command": "import runtime/_lib/contract.mjs + assertValidatorResult negative probe",
+      "output_hash": "5c8f1a21012d6dbf479232c5dc4179853c7c263718f6eeafdd57a5eedcf804c9",
+      "detail": "exports missing=0, rejects malformed=true"
+    },
+    {
+      "probe_id": "reg.executors",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse execution-mapping.yaml + stat executor paths",
+      "output_hash": "d0784f54b8ef27417773ebf4c044b840584ba15c642bb2ea5b19d7e5e6c97009",
+      "detail": "34 executor entries, missing=0"
+    }
+  ],
+  "pass": 6,
+  "total": 7
+}

@@ -1,0 +1,194 @@
+{
+  "generated_at": "2026-11-13T16:52:55.721Z",
+  "command": "npx playwright test --config e2e/visual/playwright.config.ts --reporter=json",
+  "exit_code": 1,
+  "total_specs": 29,
+  "passed": 26,
+  "total_diffs": 3,
+  "classified": 3,
+  "unclassified": 0,
+  "baseline_updated": false,
+  "items": [
+    {
+      "title": "登录链路冒烟：凭据可登录",
+      "ok": false,
+      "category": "test_environment_credential",
+      "message_excerpt": "Error: API 登录失败：HTTP 200 Password login has been disabled by administrator\n\n   at lib/login.ts:92\n\n  90 |   }\n  91 |   if (!response.ok() || body.success !== true) {\n> 92 |     throw new Error(\n     |           ^\n  93 |       `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`\n  94 |     )\n  95 |   }\n    at loginViaApi (/Users/lincolnhu/uter/web/e2e/visual/lib/login.ts:92:11)\n    at /Users/lincolnhu/uter/web/e2e/visual/auth.setup.spec.ts:22:3"
+    },
+    {
+      "title": "鉴权页面基线 - desktop",
+      "ok": false,
+      "category": "test_environment_credential",
+      "message_excerpt": "Error: API 登录失败：HTTP 200 Password login has been disabled by administrator\n\n   at lib/login.ts:92\n\n  90 |   }\n  91 |   if (!response.ok() || body.success !== true) {\n> 92 |     throw new Error(\n     |           ^\n  93 |       `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`\n  94 |     )\n  95 |   }\n    at loginViaApi (/Users/lincolnhu/uter/web/e2e/visual/lib/login.ts:92:11)\n    at /Users/lincolnhu/uter/web/e2e/visual/authed.spec.ts:33:5"
+    },
+    {
+      "title": "鉴权页面基线 - mobile",
+      "ok": false,
+      "category": "test_environment_credential",
+      "message_excerpt": "Error: API 登录失败：HTTP 200 Password login has been disabled by administrator\n\n   at lib/login.ts:92\n\n  90 |   }\n  91 |   if (!response.ok() || body.success !== true) {\n> 92 |     throw new Error(\n     |           ^\n  93 |       `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`\n  94 |     )\n  95 |   }\n    at loginViaApi (/Users/lincolnhu/uter/web/e2e/visual/lib/login.ts:92:11)\n    at /Users/lincolnhu/uter/web/e2e/visual/authed.spec.ts:33:5"
+    },
+    {
+      "title": "home - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "home - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "about - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "about - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "pricing - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "pricing - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "rankings - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "rankings - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "docs - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "docs - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "sign-in - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "sign-in - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "sign-up - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "sign-up - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "forgot-password - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "forgot-password - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "error-404 - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "error-404 - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "error-500 - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "error-500 - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "privacy-policy - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "privacy-policy - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "user-agreement - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "user-agreement - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "recharge-agreement - desktop",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    },
+    {
+      "title": "recharge-agreement - mobile",
+      "ok": true,
+      "category": "UNCLASSIFIED",
+      "message_excerpt": ""
+    }
+  ],
+  "stdout_tail": "Index\": 0,\n                  \"status\": \"passed\",\n                  \"duration\": 1028,\n                  \"errors\": [],\n                  \"stdout\": [],\n                  \"stderr\": [],\n                  \"retry\": 0,\n                  \"startTime\": \"2026-11-13T16:52:54.154Z\",\n                  \"annotations\": [],\n                  \"attachments\": []\n                }\n              ],\n              \"status\": \"expected\"\n            }\n          ],\n          \"id\": \"349fc90c6061c792a808-acdf4b0885b762b3f424\",\n          \"file\": \"public.spec.ts\",\n          \"line\": 21,\n          \"column\": 5\n        }\n      ]\n    }\n  ],\n  \"errors\": [],\n  \"stats\": {\n    \"startTime\": \"2026-11-13T16:50:19.112Z\",\n    \"duration\": 156567.26499999998,\n    \"expected\": 26,\n    \"skipped\": 0,\n    \"unexpected\": 3,\n    \"flaky\": 0\n  }\n}\n",
+  "stderr_tail": "",
+  "json_parsed": true,
+  "execution_id": "UAP-EXEC-20261113162154-f31378a6",
+  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+  "worktree_fingerprint": "43edacd4b625a7947e9a3e9f4ab6d607fda932ab7d3bc0dc264b55fb8f0d575c",
+  "evidence_ref": "UAP-EV-20261113165255-cb0b4cd4"
+}

@@ -1,37 +1,48 @@
 {
-  "run_id": "UAP-RUN-UAP-TASK-20261113111445-0ec2bee3",
+  "run_id": "UAP-RUN-UAP-TASK-20261113152327-feb0fc34",
   "workflow_id": "uap-bootstrap",
-  "task_id": "UAP-TASK-20261113111445-0ec2bee3",
-  "state": "SUCCEEDED",
+  "task_id": "UAP-TASK-20261113152327-feb0fc34",
+  "state": "BLOCKED",
   "steps_total": 6,
-  "steps_succeeded": 6,
-  "steps_blocked": 0,
+  "steps_succeeded": 5,
+  "steps_blocked": 1,
   "evidence_refs": [
-    "UAP-EV-20261113111446-4fd4d77a",
-    "UAP-EV-20261113111446-03a5373b",
-    "UAP-EV-20261113111446-cb4608af",
-    "UAP-EV-20261113111446-96173dd5",
-    "UAP-EV-20261113111448-efa8381c",
-    "UAP-EV-20261113111507-b737d8d9",
-    "UAP-EV-20261113111508-5510f876"
+    "UAP-EV-20261113152327-f4a58b7c",
+    "UAP-EV-20261113152328-c04ff3cc",
+    "UAP-EV-20261113152328-5c390c9a",
+    "UAP-EV-20261113152328-d9050cf0",
+    "UAP-EV-20261113152330-a5fce8b1",
+    "UAP-EV-20261113152359-f5483502",
+    "UAP-EV-20261113152359-38d6839e"
   ],
   "validation": [
     {
       "validator_id": "core.task_default_validator",
-      "status": "PASS",
+      "status": "FAIL",
       "executed": true,
-      "exit_code": 0,
-      "checked_at": "2026-11-13T11:15:08.048Z",
+      "exit_code": 1,
+      "checked_at": "2026-11-13T15:23:59.795Z",
       "evidence_refs": [
-        "UAP-EV-20261113111446-4fd4d77a",
-        "UAP-EV-20261113111446-03a5373b",
-        "UAP-EV-20261113111446-cb4608af",
-        "UAP-EV-20261113111446-96173dd5",
-        "UAP-EV-20261113111448-efa8381c",
-        "UAP-EV-20261113111507-b737d8d9",
-        "UAP-EV-20261113111508-5510f876"
+        "UAP-EV-20261113152327-f4a58b7c",
+        "UAP-EV-20261113152328-c04ff3cc",
+        "UAP-EV-20261113152328-5c390c9a",
+        "UAP-EV-20261113152328-d9050cf0",
+        "UAP-EV-20261113152330-a5fce8b1",
+        "UAP-EV-20261113152359-f5483502",
+        "UAP-EV-20261113152359-38d6839e"
       ],
-      "findings": [],
+      "findings": [
+        {
+          "severity": "BLOCKER",
+          "code": "steps_unfinished",
+          "message": "1 steps not SUCCEEDED"
+        },
+        {
+          "severity": "BLOCKER",
+          "code": "task_blocked",
+          "message": "UAP tests exited 1"
+        }
+      ],
       "checks_run": [
         "all_steps_succeeded",
         "step_evidence_present",
@@ -39,12 +50,12 @@
         "no_blocking_errors"
       ],
       "commands": [],
-      "summary": "4 checks, 0 blocking findings",
+      "summary": "4 checks, 2 blocking findings",
       "duration_ms": 0,
       "block_category": null
     }
   ],
   "acceptance": "runtime_health_check",
-  "started_at": "2026-11-13T11:14:45.866Z",
-  "finished_at": "2026-11-13T11:15:08.267Z"
+  "started_at": "2026-11-13T15:23:27.555Z",
+  "finished_at": "2026-11-13T15:24:00.072Z"
 }

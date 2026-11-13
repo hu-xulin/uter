@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T11:23:59.225Z",
+  "generated_at": "2026-11-13T15:27:00.666Z",
   "target": "http://localhost:3000",
   "blocked": false,
   "browser": "playwright chromium (headless, real render)",

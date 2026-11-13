@@ -1,0 +1,71 @@
+{
+  "batch_id": "agent_engineering",
+  "batch_name": "Agent Engineering",
+  "specs": [
+    "UAP-03-001",
+    "UAP-03-002",
+    "UAP-03-003",
+    "UAP-03-004"
+  ],
+  "probes": [
+    "reg.agents",
+    "reg.workflows",
+    "runtime.workflows",
+    "runtime.doctor",
+    "runtime.repair",
+    "policy.runtime-deny"
+  ],
+  "executed_at": "2026-11-13T15:24:39.515Z",
+  "probe_results": [
+    {
+      "probe_id": "reg.agents",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse agent-registry.yaml",
+      "output_hash": "1303108fb8fb0d03e756a01286c2032cfd24de3fa715b41d5fe9ff5eeb5c0394",
+      "detail": "11 registered agents (expected 11)"
+    },
+    {
+      "probe_id": "reg.workflows",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse workflow-registry.yaml",
+      "output_hash": "dc0ac02244aa4fb2aa31b980cbc2097533251f8270859940599d2b82df427040",
+      "detail": "7 registered workflows"
+    },
+    {
+      "probe_id": "runtime.workflows",
+      "ok": false,
+      "exit_code": 1,
+      "command": "./uap workflow run --all --json",
+      "output_hash": "cdac5b43e07f7932bf4d139f1f548e69cc29be7a330ab7f78916dc5c47011ec8",
+      "detail": "uap workflow run --all exit=1"
+    },
+    {
+      "probe_id": "runtime.doctor",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap doctor --json",
+      "output_hash": "38a26d272d4a9e3e2caa89e5d710649521c08d783608a371870198b399dce153",
+      "detail": "uap doctor --json exit=0"
+    },
+    {
+      "probe_id": "runtime.repair",
+      "ok": false,
+      "exit_code": 1,
+      "command": "./uap verify-repair --json",
+      "output_hash": "860e700ea6ca7f7d2eec5b9072c6935f65c4f07958c959a7e91552e65f958304",
+      "detail": "uap verify-repair exit=1"
+    },
+    {
+      "probe_id": "policy.runtime-deny",
+      "ok": true,
+      "exit_code": 0,
+      "command": "import policy-engine and verify it loads a default-deny policy",
+      "output_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
+      "detail": "policy engine importable, default deny=true"
+    }
+  ],
+  "pass": 4,
+  "total": 6
+}

@@ -1,24 +1,28 @@
 {
   "component": "uap.verify-status-consistency",
   "version": "1.0.0",
-  "ok": true,
-  "checked_at": "2026-11-13T11:25:06.049Z",
-  "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
-  "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+  "ok": false,
+  "checked_at": "2026-11-13T15:28:41.887Z",
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
   "recomputed_status": "IMPLEMENTED_NOT_VERIFIED",
   "report_status": "IMPLEMENTED_NOT_VERIFIED",
   "index_status": "IMPLEMENTED_NOT_VERIFIED",
   "verified_requirements": 0,
   "applicable_requirements": 538,
   "capability_gaps": [
+    "real_code_repair",
+    "independent_regression",
     "e2e",
     "database_integration",
     "financial_integrity"
   ],
   "reasons": [
+    "stale artefacts not bound to current execution/HEAD: tests",
     "172 requirement(s) implemented but not verified",
     "538/538 applicable requirements lack current valid evidence",
-    "502 requirement(s) have no evidence record"
+    "502 requirement(s) have no evidence record",
+    "2 unresolved P0 blocker(s)"
   ],
   "checks": [
     {
@@ -63,13 +67,13 @@
     },
     {
       "name": "execution_id_matches_current_run",
-      "status": "PASS",
-      "detail": "report=UAP-EXEC-20261113110829-78fb9a01 index=UAP-EXEC-20261113110829-78fb9a01 current=UAP-EXEC-20261113110829-78fb9a01"
+      "status": "FAIL",
+      "detail": "report=UAP-EXEC-20261113110829-78fb9a01 index=UAP-EXEC-20261113110829-78fb9a01 current=UAP-EXEC-20261113150247-f8ac4369"
     },
     {
       "name": "git_head_matches_current_run",
-      "status": "PASS",
-      "detail": "report=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc index=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc current=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc"
+      "status": "FAIL",
+      "detail": "report=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc index=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc current=9a72347877de8d97c1d029f8c59e0c91d0f17cc3"
     },
     {
       "name": "three_independent_results_match_engine",
@@ -79,12 +83,12 @@
     {
       "name": "no_stale_pass_promoted",
       "status": "PASS",
-      "detail": "claim_allowed=false (stale artifacts: 0)"
+      "detail": "claim_allowed=false (stale artifacts: 1)"
     },
     {
       "name": "p0_blockers_forbid_full_claim",
       "status": "PASS",
-      "detail": "claim_allowed=false open_p0=0"
+      "detail": "claim_allowed=false open_p0=2"
     },
     {
       "name": "cli_process_executed",
@@ -98,8 +102,8 @@
     },
     {
       "name": "cli_execution_matches_report",
-      "status": "PASS",
-      "detail": "cli=UAP-EXEC-20261113110829-78fb9a01 report=UAP-EXEC-20261113110829-78fb9a01"
+      "status": "FAIL",
+      "detail": "cli=UAP-EXEC-20261113150247-f8ac4369 report=UAP-EXEC-20261113110829-78fb9a01"
     },
     {
       "name": "cli_three_results_match_report",
@@ -107,5 +111,9 @@
       "detail": "cli=NOT_FULLY_VERIFIED report=NOT_FULLY_VERIFIED"
     }
   ],
-  "problems": []
+  "problems": [
+    "execution_id_matches_current_run: report=UAP-EXEC-20261113110829-78fb9a01 index=UAP-EXEC-20261113110829-78fb9a01 current=UAP-EXEC-20261113150247-f8ac4369",
+    "git_head_matches_current_run: report=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc index=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc current=9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "cli_execution_matches_report: cli=UAP-EXEC-20261113150247-f8ac4369 report=UAP-EXEC-20261113110829-78fb9a01"
+  ]
 }

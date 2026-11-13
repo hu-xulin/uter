@@ -1,0 +1,50 @@
+{
+  "batch_id": "knowledge_engineering",
+  "batch_name": "Knowledge Engineering",
+  "specs": [
+    "UAP-09-001"
+  ],
+  "probes": [
+    "docs.baseline",
+    "spec.statements",
+    "matrix.stable",
+    "runtime.evidence-index"
+  ],
+  "executed_at": "2026-11-13T15:18:45.627Z",
+  "probe_results": [
+    {
+      "probe_id": "docs.baseline",
+      "ok": true,
+      "exit_code": 0,
+      "command": "stat 4 governance baseline documents",
+      "output_hash": "eb304355e052a5d3d708cfde28e9e79552b6819796a241793789d77521a26f90",
+      "detail": "missing=none"
+    },
+    {
+      "probe_id": "spec.statements",
+      "ok": true,
+      "exit_code": 0,
+      "command": "re-parse 32 spec files and compare statement_sha256 against matrix",
+      "output_hash": "973f53f7f248e6ccbbb246a6ab901297757170a9cc8e2fb72e11b84d120b4d8d",
+      "detail": "402 mandatory statements hash-verified, drifts=0"
+    },
+    {
+      "probe_id": "matrix.stable",
+      "ok": true,
+      "exit_code": 0,
+      "command": "node .uap/tools/requirement-matrix.mjs --check",
+      "output_hash": "e1e264bcf380965a71dc673558d66b0e5605192abf712e676278c9c87b8fd0d6",
+      "detail": "requirement ID stability --check exit=0"
+    },
+    {
+      "probe_id": "runtime.evidence-index",
+      "ok": true,
+      "exit_code": 0,
+      "command": "recompute sha256 for 600 evidence records",
+      "output_hash": "dfe263dedf8a46f645dce1f678dd0e52266ef3f6122d6dd00fac774ebf9025fb",
+      "detail": "evidence files=5011, hash_valid=600, broken=0"
+    }
+  ],
+  "pass": 4,
+  "total": 4
+}

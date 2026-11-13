@@ -43,7 +43,8 @@
     "design:showcase:check": "node scripts/sync-design-showcase.mjs --check",
     "verify:contrast": "node scripts/verify-contrast.mjs",
     "components:registry:check": "node scripts/check-component-registry.mjs",
-    "components:registry:strict": "node scripts/check-component-registry.mjs --strict"
+    "components:registry:strict": "node scripts/check-component-registry.mjs --strict",
+    "test:business:e2e": "playwright test --config e2e/business/playwright.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

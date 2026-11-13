@@ -16,6 +16,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { currentEvidence } from '../runtime/evidence-engine/index.mjs';
+import { verificationOverlay } from './requirement-verification.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
@@ -206,6 +207,48 @@ export function extractRequirements() {
 
 export function buildMatrix() {
   const { requirements, specs, tests, current } = extractRequirements();
+  // Real Phase-2 verification overlay. It is produced by actually executing
+  // declared probes (uap verify-requirements) and is STALE-checked inside
+  // verificationOverlay(): an overlay from another code version is ignored,
+  // never promoted into the current run.
+  const overlay = verificationOverlay();
+  const ovCounts = {};
+  const VERIFIED_STATE = 'FULLY_VERIFIED';
+  for (const r of requirements) {
+    const ov = overlay?.get(r.requirement_id) || null;
+    if (!ov) continue;
+    // Fail-closed mapping into the matrix's own fields. A requirement is
+    // VERIFIED only when the overlay itself says FULLY_VERIFIED.
+    r.verification_state = ov.verification_state;
+    r.verification_reason = ov.reason || null;
+    r.coverage_basis = ov.coverage_basis || null;
+    r.probes = ov.probes || [];
+    r.blocked_dependency_id = ov.blocked_dependency_id || null;
+    r.unblock_condition = ov.unblock_condition || null;
+    r.na_reason = ov.na_reason || null;
+    r.na_basis = ov.na_basis || null;
+    r.na_approval = ov.na_approval || null;
+    r.evidence_hash = ov.evidence_hash || null;
+    if (ov.verification_state === VERIFIED_STATE) {
+      r.verification_status = 'VERIFIED';
+    } else if (ov.verification_state === 'NOT_APPLICABLE') {
+      r.verification_status = 'NOT_APPLICABLE';
+      r.implementation_status = 'NOT_APPLICABLE';
+      // Replace the generic traceability blockers with the real N/A reason.
+      r.blockers = ['not_applicable_with_reviewed_basis'];
+    } else if (ov.verification_state === 'BLOCKED') {
+      r.verification_status = 'BLOCKED';
+      r.implementation_status = 'BLOCKED';
+      // Only the REAL external dependency is a blocker here.
+      r.blockers = [`external_dependency:${ov.blocked_dependency_id || 'undeclared'}`];
+    } else {
+      r.verification_status = ov.verification_state;
+    }
+    if (ov.verification_state === 'NOT_BUILT' || ov.verification_state === 'PARTIALLY_BUILT') {
+      r.implementation_status = ov.verification_state;
+    }
+    ovCounts[ov.verification_state] = (ovCounts[ov.verification_state] || 0) + 1;
+  }
   const counts = {};
   for (const r of requirements) {
     counts[r.implementation_status] = (counts[r.implementation_status] || 0) + 1;
@@ -235,6 +278,11 @@ export function buildMatrix() {
     },
     implementation_status_counts: counts,
     verification_status_counts: vcounts,
+    verification_state_counts: ovCounts,
+    verification_overlay: overlay ? {
+      source: '.uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json',
+      generator: 'uap verify-requirements (real probe execution + independent validator)',
+    } : { source: null, note: 'no current-version verification overlay present' },
     specifications: specs.map((s) => ({
       specification_id: s.id,
       requirement_ids: bySpec[s.id] || [],

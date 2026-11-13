@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261113134801-cf7caf78",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T13:48:01.407Z",
+  "started_at": "2026-11-13T13:48:01.324Z",
+  "finished_at": "2026-11-13T13:48:01.407Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113122116-87d83004",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113122116-87d83004",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap release check --json",
+  "exit_code": 1,
+  "duration_ms": 83,
+  "inputs": "{\"argv\":[\"release\",\"check\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "release check BLOCKED: 1 gates not satisfied (final_status_claims_success)"
+    }
+  ],
+  "summary": "release check BLOCKED: 1 gates not satisfied (final_status_claims_success)",
+  "content_hash": "8957b87d63a28a0f85e1cd4766f240a152ea8feb21c018cf9eb63b293835d131"
+}

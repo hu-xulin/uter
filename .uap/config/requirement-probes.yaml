@@ -1,0 +1,172 @@
+schema_version: "1.0"
+registry_id: "UAP-PHASE-2-REQUIREMENT-PROBES"
+implementation: .uap/tools/requirement-verification.mjs
+independent_validator: .uap/tools/requirement-independent-validator.mjs
+probe_library: .uap/tools/requirement-probes.mjs
+
+# Coverage policy. A requirement may be FULLY_VERIFIED only when EVERY probe
+# mapped to it really executed, exited 0, was re-checked by the independent
+# validator, and produced a hash-valid evidence record bound to this execution.
+# A statement is never verified by mere document existence.
+policy:
+  fail_closed: true
+  require_independent_recheck: true
+  require_evidence_hash_valid: true
+  require_implementation_reference: true
+  one_generic_report_for_all_requirements: forbidden
+  empty_evidence_files: forbidden
+
+# The 13 mandated execution batches. `specs` are the repo's OWN registered
+# specification IDs (definitions are not renamed). Every one of the 32 specs
+# appears in exactly one batch so all 538 requirements are covered.
+batches:
+  - id: uap_foundation
+    name: UAP Foundation
+    specs: [UAP-00-001, UAP-00-004]
+    probes: [reg.specifications, reg.validators, reg.executors, contract.exports, spec.statements, matrix.stable, runtime.health, runtime.cli, runtime.status-engine, runtime.evidence, runtime.evidence-index]
+  - id: ai_governance
+    name: AI Governance
+    specs: [UAP-00-002, UAP-00-003]
+    probes: [reg.agents, reg.workflows, reg.policy, policy.runtime-deny, runtime.release-deny, runtime.doctor, runtime.workflows, runtime.validators]
+  - id: product_engineering
+    name: Product Engineering
+    specs: [UAP-01-001, UAP-01-002, UAP-01-003]
+    probes: [spec.statements, matrix.stable, go.payment-security, card.e2e, card.visual, card.database]
+  - id: knowledge_engineering
+    name: Knowledge Engineering
+    specs: [UAP-09-001]
+    probes: [docs.baseline, spec.statements, matrix.stable, runtime.evidence-index]
+  - id: system_architecture
+    name: System Architecture
+    specs: [UAP-02-001, UAP-02-002, UAP-02-003]
+    probes: [go.build, go.vet, go.db-integration, card.database, go.race, contract.exports, reg.executors]
+  - id: experience_and_design
+    name: Experience & Design
+    specs: [UAP-07-001]
+    probes: [web.typecheck, web.design-strict, web.design-tokens, card.visual, card.accessibility, docs.baseline]
+  - id: software_engineering
+    name: Software Engineering
+    specs: [UAP-04-001, UAP-04-002, UAP-04-003]
+    probes: [go.build, go.vet, web.lint, web.copyright, ci.workflows, runtime.validators]
+  - id: cross_platform
+    name: Cross-Platform
+    specs: [UAP-07-002, UAP-07-003]
+    probes: [web.typecheck, card.e2e, card.accessibility, card.visual, web.unit]
+  - id: agent_engineering
+    name: Agent Engineering
+    specs: [UAP-03-001, UAP-03-002, UAP-03-003, UAP-03-004]
+    probes: [reg.agents, reg.workflows, runtime.workflows, runtime.doctor, runtime.repair, policy.runtime-deny]
+  - id: quality_engineering
+    name: Quality Engineering
+    specs: [UAP-05-001, UAP-05-002, UAP-05-003, UAP-05-004]
+    probes: [runtime.uap-tests, runtime.validators, runtime.repair, go.refund-integrity, go.payment-sandbox, web.unit, card.visual, card.security]
+  - id: security_and_reliability
+    name: Security & Reliability
+    specs: [UAP-06-001, UAP-06-002, UAP-06-003]
+    probes: [reg.policy, policy.runtime-deny, security.secret-scan, go.payment-security, go.refund-integrity, go.db-integration, card.security, card.payment-sandbox, runtime.release-deny]
+  - id: devops_and_delivery
+    name: DevOps & Delivery
+    specs: [UAP-08-001, UAP-08-002, UAP-08-003]
+    probes: [ci.workflows, runtime.release-deny, go.build, web.typecheck, web.lint, runtime.verify-status, go.race]
+  - id: lifecycle_and_evolution
+    name: Lifecycle & Evolution
+    specs: [UAP-09-002]
+    probes: [docs.baseline, runtime.verify-status, matrix.stable, runtime.evidence-index, spec.statements]
+
+# Explicit statement-level keyword -> additional probe rules. These are
+# DECLARED rules, not fuzzy text similarity: a requirement gains an extra
+# probe only when its statement contains the literal keyword. The absence of a
+# keyword never creates a PASS; it leaves the requirement unverified.
+keyword_rules:
+  - keyword: 规范
+    probes: [reg.specifications, spec.statements, matrix.stable]
+  - keyword: 验证器
+    probes: [reg.validators, runtime.validators]
+  - keyword: 执行器
+    probes: [reg.executors, runtime.workflows]
+  - keyword: 证据
+    probes: [runtime.evidence, runtime.evidence-index]
+  - keyword: 权限
+    probes: [reg.policy, policy.runtime-deny, runtime.release-deny]
+  - keyword: 密钥
+    probes: [security.secret-scan, reg.policy]
+  - keyword: 状态
+    probes: [runtime.status-engine, runtime.verify-status]
+  - keyword: 任务
+    probes: [runtime.workflows, runtime.doctor]
+  - keyword: 数据库
+    probes: [go.db-integration, card.database, go.race]
+  - keyword: 事务
+    probes: [go.db-integration]
+  - keyword: 金额
+    probes: [go.payment-security, go.db-integration]
+  - keyword: 支付
+    probes: [go.payment-sandbox, go.payment-security, card.payment-sandbox]
+  - keyword: 退款
+    probes: [go.refund-integrity, go.payment-sandbox]
+  - keyword: 并发
+    probes: [go.db-integration, go.race]
+  - keyword: 幂等
+    probes: [go.db-integration, go.payment-sandbox]
+  - keyword: 测试
+    probes: [runtime.uap-tests, web.unit]
+  - keyword: 构建
+    probes: [go.build]
+  - keyword: 部署
+    probes: [ci.workflows, runtime.release-deny]
+  - keyword: CI
+    probes: [ci.workflows]
+  - keyword: 安全
+    probes: [security.secret-scan, reg.policy]
+  - keyword: 移动
+    probes: [card.e2e, card.accessibility]
+  - keyword: 视口
+    probes: [card.visual, card.accessibility]
+  - keyword: 前端
+    probes: [web.typecheck, web.lint]
+  - keyword: 接口
+    probes: [go.build, go.vet]
+  - keyword: 健康检查
+    probes: [runtime.doctor, runtime.health]
+  - keyword: 恢复
+    probes: [runtime.doctor, runtime.repair, go.db-integration]
+  - keyword: 审查
+    probes: [runtime.repair, web.copyright]
+  - keyword: 设计
+    probes: [web.design-strict, web.design-tokens]
+  - keyword: 报告
+    probes: [runtime.evidence-index, runtime.verify-status]
+  - keyword: 日志
+    probes: [security.secret-scan, runtime.evidence]
+  - keyword: 依赖
+    probes: [go.build, go.vet]
+
+# NOT_APPLICABLE is deliberately EMPTY by default. These 32 governance specs
+# describe the UAP platform itself, so every statement is in scope. Any future
+# N/A must list requirement_id + reason + basis + approving validator here.
+not_applicable_rules: []
+
+# BLOCKED is restricted to REAL external dependencies. Ordinary code defects
+# must never be entered here. Each entry names the dependency and unblock
+# condition; the engine cross-checks the statement for the literal keyword.
+blocked_rules:
+  - id: EXT-PRODUCTION-DEPLOY
+    keywords: [生产发布, 生产部署, 正式发布]
+    dependency: "Explicit production deployment authorisation (permission-policy.yaml production_deploy: deny)"
+    unblock_condition: "Written user authorisation + policy change"
+  - id: EXT-REAL-PAYMENT
+    keywords: [真实支付, 真实资金, 真实交易]
+    dependency: "Real payment provider account and production credentials (real_payment: deny)"
+    unblock_condition: "Explicit authorisation + provider sandbox/production credentials"
+  - id: EXT-REAL-REFUND
+    keywords: [真实退款]
+    dependency: "Real refund authorisation (real_refund: deny)"
+    unblock_condition: "Explicit authorisation + live refund capability"
+  - id: EXT-PROVIDER-SANDBOX
+    keywords: [服务商沙箱, 支付渠道沙箱, 真实网关交互]
+    dependency: "Payment provider sandbox account / test merchant credentials"
+    unblock_condition: "User supplies genuine sandbox AppID + keys"
+  - id: EXT-H5-DEVICE
+    keywords: [真机, 真实设备, 设备农场]
+    dependency: "Physical H5 device / device-farm credentials"
+    unblock_condition: "Device farm access or physical devices"

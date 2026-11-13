@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113161050-6eac873e",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T16:10:50.554Z",
+  "started_at": "2026-11-13T16:10:21.498Z",
+  "finished_at": "2026-11-13T16:10:50.554Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113160926-f6e30d5f",
+    "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+    "worktree_fingerprint": "6c3ce4da120114da62b79fe26667f84e07d854233da36ad4c2d5a5673a104268",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113160926-f6e30d5f",
+  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+  "worktree_fingerprint": "6c3ce4da120114da62b79fe26667f84e07d854233da36ad4c2d5a5673a104268",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-security",
+  "exit_code": 0,
+  "duration_ms": 29056,
+  "inputs": "{\"argv\":[\"verify-security\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security verification PASS: negative tests + secret scan + policy denies",
+  "content_hash": "cb5f73ce6d27a83d6e6fbdfec58481680431faf8ca3e68c749bec490d0963e96"
+}

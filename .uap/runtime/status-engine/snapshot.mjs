@@ -174,6 +174,11 @@ export function buildStatusSnapshot({ claims, indexDeclaration } = {}) {
     blockers: r.blockers || [],
     na_reason: r.na_reason ?? null,
     na_approval: r.na_approval ?? null,
+    na_basis: r.na_basis ?? null,
+    verification_state: r.verification_state ?? null,
+    verification_reason: r.verification_reason ?? null,
+    blocked_dependency_id: r.blocked_dependency_id ?? null,
+    unblock_condition: r.unblock_condition ?? null,
   }));
 
   const injectedClaims = claims || {

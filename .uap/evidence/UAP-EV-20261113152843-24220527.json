@@ -1,0 +1,54 @@
+{
+  "evidence_id": "UAP-EV-20261113152843-24220527",
+  "kind": "requirement_batch_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-03-001",
+    "UAP-03-002",
+    "UAP-03-003",
+    "UAP-03-004"
+  ],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:28:43.143Z",
+  "started_at": "2026-11-13T15:28:43.143Z",
+  "finished_at": "2026-11-13T15:28:43.143Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-requirements --batch=agent_engineering",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"probes\":[\"reg.agents\",\"reg.workflows\",\"runtime.workflows\",\"runtime.doctor\",\"runtime.repair\",\"policy.runtime-deny\"]}",
+  "stdout": "[{\"probe_id\":\"reg.agents\",\"ok\":true,\"exit_code\":0,\"command\":\"parse agent-registry.yaml\",\"output_hash\":\"1303108fb8fb0d03e756a01286c2032cfd24de3fa715b41d5fe9ff5eeb5c0394\",\"detail\":\"11 registered agents (expected 11)\"},{\"probe_id\":\"reg.workflows\",\"ok\":true,\"exit_code\":0,\"command\":\"parse workflow-registry.yaml\",\"output_hash\":\"dc0ac02244aa4fb2aa31b980cbc2097533251f8270859940599d2b82df427040\",\"detail\":\"7 registered workflows\"},{\"probe_id\":\"runtime.workflows\",\"ok\":false,\"exit_code\":1,\"command\":\"./uap workflow run --all --json\",\"output_hash\":\"cdac5b43e07f7932bf4d139f1f548e69cc29be7a330ab7f78916dc5c47011ec8\",\"detail\":\"uap workflow run --all exit=1\"},{\"probe_id\":\"runtime.doctor\",\"ok\":true,\"exit_code\":0,\"command\":\"./uap doctor --json\",\"output_hash\":\"38a26d272d4a9e3e2caa89e5d710649521c08d783608a371870198b399dce153\",\"detail\":\"uap doctor --json exit=0\"},{\"probe_id\":\"runtime.repair\",\"ok\":false,\"exit_code\":1,\"command\":\"./uap verify-repair --json\",\"output_hash\":\"860e700ea6ca7f7d2eec5b9072c6935f65c4f07958c959a7e91552e65f958304\",\"detail\":\"uap verify-repair exit=1\"},{\"probe_id\":\"policy.runtime-deny\",\"ok\":true,\"exit_code\":0,\"command\":\"import policy-engine and verify it loads a default-deny policy\",\"output_hash\":\"1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6\",\"detail\":\"policy engine importable, default deny=true\"}]",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "runtime.workflows: uap workflow run --all exit=1"
+    },
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "runtime.repair: uap verify-repair exit=1"
+    }
+  ],
+  "summary": "batch agent_engineering: 4/6 real probes passed; 0 requirements fully verified by this batch",
+  "content_hash": "37d10952142b3f4b8407a4b0fa8615351b427a6d24c13ccf32f133f13c4093ac"
+}

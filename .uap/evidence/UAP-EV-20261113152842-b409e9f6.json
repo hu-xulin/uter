@@ -1,0 +1,41 @@
+{
+  "evidence_id": "UAP-EV-20261113152842-b409e9f6",
+  "kind": "requirement_batch_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-00-001",
+    "UAP-00-004"
+  ],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:28:42.729Z",
+  "started_at": "2026-11-13T15:28:42.729Z",
+  "finished_at": "2026-11-13T15:28:42.729Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-requirements --batch=uap_foundation",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"probes\":[\"reg.specifications\",\"reg.validators\",\"reg.executors\",\"contract.exports\",\"spec.statements\",\"matrix.stable\",\"runtime.health\",\"runtime.cli\",\"runtime.status-engine\",\"runtime.evidence\",\"runtime.evidence-index\"]}",
+  "stdout": "[{\"probe_id\":\"reg.specifications\",\"ok\":true,\"exit_code\":0,\"command\":\"parse specification-registry.yaml + stat 32 spec files\",\"output_hash\":\"8b983d6950edfbb2dd6ab5c45b8096af2871aa8d6e0714059fa14db316d26bdf\",\"detail\":\"32 specs, missing files=0, incomplete mapping=0\"},{\"probe_id\":\"reg.validators\",\"ok\":true,\"exit_code\":0,\"command\":\"parse validator-registry.yaml + stat implementations\",\"output_hash\":\"a58fc2072f40e0a115cd08242a44bc771441e28564adcdd0ddd54ca44a21df76\",\"detail\":\"32 validators, missing=0\"},{\"probe_id\":\"reg.executors\",\"ok\":true,\"exit_code\":0,\"command\":\"parse execution-mapping.yaml + stat executor paths\",\"output_hash\":\"d0784f54b8ef27417773ebf4c044b840584ba15c642bb2ea5b19d7e5e6c97009\",\"detail\":\"34 executor entries, missing=0\"},{\"probe_id\":\"contract.exports\",\"ok\":true,\"exit_code\":0,\"command\":\"import runtime/_lib/contract.mjs + assertValidatorResult negative probe\",\"output_hash\":\"5c8f1a21012d6dbf479232c5dc4179853c7c263718f6eeafdd57a5eedcf804c9\",\"detail\":\"exports missing=0, rejects malformed=true\"},{\"probe_id\":\"spec.statements\",\"ok\":true,\"exit_code\":0,\"command\":\"re-parse 32 spec files and compare statement_sha256 against matrix\",\"output_hash\":\"973f53f7f248e6ccbbb246a6ab901297757170a9cc8e2fb72e11b84d120b4d8d\",\"detail\":\"402 mandatory statements hash-verified, drifts=0\"},{\"probe_id\":\"matrix.stable\",\"ok\":true,\"exit_code\":0,\"command\":\"node .uap/tools/requirement-matrix.mjs --check\",\"output_hash\":\"e1e264bcf380965a71dc673558d66b0e5605192abf712e676278c9c87b8fd0d6\",\"detail\":\"requirement ID stability --check exit=0\"},{\"probe_id\":\"runtime.health\",\"ok\":true,\"exit_code\":0,\"command\":\"import 11 runtime index.mjs and call health() when exported\",\"output_hash\":\"264cad455c3dc195df9f5fbce2aed71b2136f5128bbc60ab75b111e822f7bd05\",\"detail\":\"11 runtime components, problems=0\"},{\"probe_id\":\"runtime.cli\",\"ok\":true,\"exit_code\":0,\"command\":\"./uap --help\",\"output_hash\":\"883640a2e9780c00e42668b3a8338962d8b33ab9f04c9d7ded3d28a141bbe81d\",\"detail\":\"CLI help exit=0, missing commands=none\"},{\"probe_id\":\"runtime.status-engine\",\"ok\":true,\"exit_code\":0,\"command\":\"import status-engine/index.mjs + health()\",\"output_hash\":\"264be4075bef9db9f4bc1856460ed8da92e8dfab11e103b01ad67193a6d08c35\",\"detail\":\"status-engine self-check ok=true\"},{\"probe_id\":\"runtime.evidence\",\"ok\":true,\"exit_code\":0,\"command\":\"evidence-engine record() -> get() -> verify() -> hash-tamper negative probe\",\"output_hash\":\"8a41d8876084ca0e0b9ac1a394f2fa41863709a8b1418d813c6bea8d61de3c22\",\"detail\":\"evidence=UAP-EV-20261113151534-f8eecfd3, hash_valid=true, binding_valid=true, tamper_rejected=true\"},{\"probe_id\":\"runtime.evidence-index\",\"ok\":true,\"exit_code\":0,\"command\":\"recompute sha256 for 600 evidence records\",\"output_hash\":\"27555b23a583b425402107e2f198798a54dc26c036d63842a42fd82a533d95e5\",\"detail\":\"evidence files=4782, hash_valid=600, broken=0\"}]",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "batch uap_foundation: 11/11 real probes passed; 0 requirements fully verified by this batch",
+  "content_hash": "5a6d4eee5f7243fc41f10a86d0fa5166e2ff1f41d6b166a6bb6b64723e089116"
+}

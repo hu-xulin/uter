@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261113152439-40a5e672",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:24:39.450Z",
+  "started_at": "2026-11-13T15:24:34.207Z",
+  "finished_at": "2026-11-13T15:24:39.450Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-repair --json",
+  "exit_code": 1,
+  "duration_ms": 5243,
+  "inputs": "{\"argv\":[\"verify-repair\",\"--json\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "verify-repair: FAIL — git_head_matches: disk=9a72347877de8d97c1d029f8c59e0c91d0f17cc3 ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc | git_diff_confined_to_authorized_file: changed=[]"
+    }
+  ],
+  "summary": "verify-repair: FAIL — git_head_matches: disk=9a72347877de8d97c1d029f8c59e0c91d0f17cc3 ledger=412f0a28b12f60aadec5cfd21bb25d5cd5975ecc | git_diff_confined_to_authorized_file: changed=[]",
+  "content_hash": "6888ae9536c68c059999b250f2b14c3cfb9917d7319cfc75ef2ce758f9729f3e"
+}

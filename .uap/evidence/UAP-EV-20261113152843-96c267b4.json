@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261113152843-96c267b4",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:28:43.534Z",
+  "started_at": "2026-11-13T15:15:28.208Z",
+  "finished_at": "2026-11-13T15:28:43.534Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-requirements",
+  "exit_code": 1,
+  "duration_ms": 795326,
+  "inputs": "{\"argv\":[\"verify-requirements\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "requirement verification FAILED (exit=1)"
+    }
+  ],
+  "summary": "requirement verification FAILED (exit=1)",
+  "content_hash": "30dbe18c62751f7dddd9b425e50a68f971693b220fe890ab4614ee0231c734d5"
+}

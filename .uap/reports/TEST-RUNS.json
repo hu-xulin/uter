@@ -562,6 +562,141 @@
         "UAP-EV-20261113111043-9e229f56"
       ],
       "recorded_at": "2026-11-13T11:10:43.270Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 79012,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 117,
+        "fail": 2
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113153642-458fb7d3"
+      ],
+      "recorded_at": "2026-11-13T15:36:42.863Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 77446,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 117,
+        "fail": 2
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113153823-3377d81d"
+      ],
+      "recorded_at": "2026-11-13T15:38:23.470Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 78243,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 117,
+        "fail": 2
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113153956-0e40107a"
+      ],
+      "recorded_at": "2026-11-13T15:39:56.314Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 74726,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 117,
+        "fail": 2
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113154147-1f98c7ea"
+      ],
+      "recorded_at": "2026-11-13T15:41:47.136Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 90162,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 119,
+        "pass": 118,
+        "fail": 1
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261113160330-3c2c595d"
+      ],
+      "recorded_at": "2026-11-13T16:03:30.793Z"
     }
   ],
   "summary": {

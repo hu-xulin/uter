@@ -1,0 +1,192 @@
+{
+  "schema_version": "1.0",
+  "report_id": "PHASE-2-REMAINING-WORK",
+  "generated_at": "2026-11-13T20:20:48+08:00",
+  "generated_by": "phase-2 baseline reassessment (read-only inspection of real artefacts)",
+  "git_head_at_baseline": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "branch": "main",
+  "execution_id": "UAP-EXEC-20261113122116-87d83004",
+  "prior_phase": {
+    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+    "head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+    "status": "IMPLEMENTED_NOT_VERIFIED",
+    "note": "Prior FINAL-STATUS.json is bound to the OLD head/execution. It is stale against current HEAD and cannot be inherited as a current PASS (status engine is fail-closed)."
+  },
+  "worktree_snapshot": {
+    "status_lines_before": 5,
+    "status_detail": [
+      "M .uap/state/cli-last.json",
+      "M .uap/state/current-execution.json",
+      "M .uap/state/events.jsonl",
+      "M .uap/state/executions.jsonl",
+      "?? .uap/evidence/UAP-EV-20261113122116-13aba171.json"
+    ],
+    "user_wip_policy": "docs/design-system/showcase-3.0.html was already committed as a deletion in 9a7234787 (previous phase, user explicitly authorised '全部提交GitHub'). There is NO live uncommitted WIP to protect. It will NOT be resurrected, and tests that reference it will NOT be weakened."
+  },
+  "prior_results_current_validity": {
+    "method": "re-read reports and compare execution_id/git_head against current HEAD; stale ones marked MUST_REVERIFY",
+    "items": [
+      { "id": "doctor_10_10", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "validate_32_32", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "uap_tests_70_70", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "workflow_7_7", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "audit_0_blockers", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "verify_status_17_17", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "real_code_repair_2_cases", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "verify_repair_15_checks", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "go_build_vet_test", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "frontend_static_checks", "prior": "PASS", "binding": "old execution", "current_validity": "MUST_REVERIFY" },
+      { "id": "axe_current_source_13_0_1", "prior": "PASS against isolated dev server :3399", "binding": "old execution", "current_validity": "MUST_REVERIFY" }
+    ]
+  },
+  "environment_constraints": [
+    { "id": "ENV-001", "fact": "Docker daemon is NOT running (docker info fails). Testcontainers / containerised PostgreSQL / MySQL are unavailable this session.", "impact": "Use the project's DEFAULT supported real DB: file-backed SQLite via glebarez/sqlite with WAL + busy_timeout + BEGIN IMMEDIATE in an isolated temp directory.", "severity": "P1" },
+    { "id": "ENV-002", "fact": "redis-server binary exists; :6379 is occupied by the user's working Redis and must not be disturbed. An isolated Redis can be started on another port.", "impact": "Isolated full-stack E2E uses a separate Redis port + separate SQLite file + separate backend port.", "severity": "P2" },
+    { "id": "ENV-003", "fact": "Project memory red line: ONLY the existing root account Uter.ai is allowed. Creating ANY account (local/E2E/smoke/script/Docker/CI) is forbidden; no password-hash change, no login bypass, no seed-insert to fake login.", "impact": "biz_01_registration and 'independent test account' scenarios are BLOCKED_BY_POLICY, not faked. All other E2E uses the allowed root account.", "severity": "P0" },
+    { "id": "ENV-004", "fact": "No topup refund route exists in router/api-router.go; refunds are billing-session RefundIntent, not a user-facing refund endpoint.", "impact": "biz_20/biz_21 refund E2E scenarios must be verified at the billing/DB layer, explicitly labelled, not invented as an API.", "severity": "P1" },
+    { "id": "ENV-005", "fact": "No real payment-provider sandbox credentials exist in the repo; .env contains only local dev config.", "impact": "Real provider sandbox interaction = BLOCKED_EXTERNAL_DEPENDENCY. Local gateway simulation must be labelled LOCAL_SIMULATION only.", "severity": "P0" },
+    { "id": "ENV-006", "fact": "permission-policy.yaml: production_read/write/deploy, real_payment, real_refund, secret_export, destructive_git, branch_creation are DENY; default_effect=deny.", "impact": "Production verification stays BLOCKED_BY_DESIGN; local/CI/isolated DB/sandbox work is explicitly ALLOWED and must not be misclassified as blocked.", "severity": "P0" },
+    { "id": "ENV-007", "fact": "web/e2e/visual has 44 baseline PNGs; prior run recorded 19 FAIL / 10 PASS. 16 are real pixel diffs, 3 are auth/credential related.", "impact": "Each of the 19 must be classified with evidence before any baseline update.", "severity": "P1" },
+    { "id": "ENV-008", "fact": "The :3000 service is a launchd-managed uter-bin compiled earlier with an OLD embedded web/dist; :3001 and :3200 are user working services.", "impact": "Never use :3000 results as current-source results; never kill these services. Use an isolated port for current-code verification.", "severity": "P0" }
+  ],
+  "task_groups": [
+    {
+      "task_id": "P2-G1",
+      "priority": "P0",
+      "category": "Requirement 追踪和证据闭环",
+      "description": "538 requirements in REQUIREMENT-TRACEABILITY-MATRIX.json currently have verification_status NOT_VERIFIED for all 538, 0 linked test cases, 502 with no evidence record. Build a real per-requirement verification engine that executes concrete probes against real implementation (validators, runtime exports, registries, Go/Node commands), not document tasks, and classify all 538 into the 7 mandated states.",
+      "related_requirement_ids": "ALL-538 (see REQUIREMENT-TRACEABILITY-MATRIX.json)",
+      "affected_files": [".uap/tools/requirement-verification.mjs", ".uap/config/requirement-probes.yaml", ".uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json", ".uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json", ".uap/runtime/status-engine/index.mjs", ".uap/runtime/status-engine/snapshot.mjs", ".uap/bin/uap.mjs"],
+      "dependencies": [],
+      "current_status": "OPEN",
+      "execution_plan": "Group by the 13 mandated domains (mapped onto the repo's 32 specs / 10 registry domains). Define a probe library of real executable checks per spec (UAP validators, CLI commands, Go tests, registry/export assertions). Run each probe for real, hash its output, bind evidence to current execution. Independently re-execute a deterministic subset. Compute per-requirement status from real probe results, never from a blanket PASS. Extend the status engine to understand the 7 states.",
+      "verification_plan": "uap verify-requirements --all; independent validator re-runs probes and compares hashes; negative tests prove no-evidence/SHA-mismatch/independent-failure cannot yield VERIFIED; matrix --check proves ID stability.",
+      "evidence_required": "One real evidence record per executed probe (command + exit_code + stdout hash + execution binding), plus a per-requirement results row referencing those evidence IDs; no empty evidence files.",
+      "completion_criteria": "All 538 rows have a computed status with an auditable reason; every FULLY_VERIFIED row references >=1 real passing command bound to current execution; N/A rows carry reason+independent approval; BLOCKED rows name the real external dependency."
+    },
+    {
+      "task_id": "P2-G2",
+      "priority": "P1",
+      "category": "视觉回归问题",
+      "description": "Prior run: visual 10 PASS / 19 FAIL. None of the 19 were classified. Need per-item classification across the 6 mandated categories with screenshot evidence, then fix real UI defects only, then re-run all visual tests.",
+      "related_requirement_ids": ["UAP-07-001", "UAP-07-002", "UAP-07-003", "UAP-05-002"],
+      "affected_files": ["web/e2e/visual/", "web/.visual-e2e/", ".uap/reports/VISUAL-REGRESSION-REPORT.md"],
+      "dependencies": ["isolated current-code frontend on a dedicated port"],
+      "current_status": "OPEN",
+      "execution_plan": "Rebuild current-source frontend on an isolated port (never :3000 old binary). Re-run test:visual:e2e to regenerate diffs. For each of the 19 items record page path, actual/expected screenshots, diff region, root-cause category, before/after result. Fix only genuine UI defects; update baselines only for reviewed intentional design changes, one at a time.",
+      "verification_plan": "Full visual suite re-run with fixed viewport/locale/timezone/theme; report pass/fail counts and per-item classification with evidence paths.",
+      "evidence_required": "Per-item screenshot + diff image paths + classification record + reviewer verdict; no bulk baseline rewrite.",
+      "completion_criteria": "Every diff has a classification and evidence; real UI defects fixed; no baseline updated without a reviewed design-change justification."
+    },
+    {
+      "task_id": "P2-G3",
+      "priority": "P0",
+      "category": "完整业务 E2E",
+      "description": "No full business-flow E2E suite exists. Only visual/axe Playwright suites exist. Need a real 24-scenario suite using real browser + real API + isolated DB.",
+      "related_requirement_ids": ["UAP-05-002", "UAP-06-001", "UAP-02-002", "UAP-07-002"],
+      "affected_files": ["web/e2e/business/", "web/package.json", ".uap/reports/BUSINESS-E2E-REPORT.md", ".uap/reports/ACCESSIBILITY-REPORT.md"],
+      "dependencies": ["P2-G4 isolated DB", "isolated backend + Redis on dedicated ports", "P2-G5 local payment simulation"],
+      "current_status": "OPEN",
+      "execution_plan": "Build web/e2e/business with biz_01..biz_24 ids, real page.goto / request calls, a service gate that fails loudly when unreachable, cleanup of only self-created data. Registration scenario blocked by the account red line; refund scenarios mapped to the real billing layer. Check the single skipped axe test and try to restore it without deleting tests.",
+      "verification_plan": "--list proves all specs are valid; real run against the isolated stack with pass/fail/skip counts; axe re-run for Critical/Serious regressions.",
+      "evidence_required": "Playwright JSON report, per-scenario real result, service-gate output, accessibility results.",
+      "completion_criteria": "24 ids covered by real specs; a real run executed (or a specific documented environmental blocker), no scenario faked as passed."
+    },
+    {
+      "task_id": "P2-G4",
+      "priority": "P0",
+      "category": "真实数据库集成",
+      "description": "Prior report declared BLOCKED because no dedicated suite existed, but the repo already has model/isolated_db_integration_test.go with 6 real file-backed SQLite cases. Need the full 20 scenarios + 4 fault injections, wired into the UAP CLI.",
+      "related_requirement_ids": ["UAP-02-002", "UAP-06-002", "UAP-06-003", "UAP-05-004"],
+      "affected_files": ["model/phase2_db_integration_test.go", ".uap/bin/uap.mjs", ".uap/reports/DATABASE-INTEGRATION-REPORT.md", ".uap/reports/DATABASE-INTEGRATION.json"],
+      "dependencies": [],
+      "current_status": "IN_PROGRESS",
+      "execution_plan": "Use real file-backed SQLite (project default driver, WAL + busy_timeout + BEGIN IMMEDIATE) in t.TempDir(); 20 numbered scenarios db_01..db_20 + 4 fault injections; real transactions, real concurrency, real close/reopen crash recovery; never :memory:, never mock repository, never source scan as PASS.",
+      "verification_plan": "GOWORK=off go test ./model/ -run TestPhase2DB -count=1 -json, real exit code; results parsed into a bound capability card by uap verify-database.",
+      "evidence_required": "go test -json output, per-subtest pass/fail, bound DATABASE-INTEGRATION.json with transactions array.",
+      "completion_criteria": "Real isolated DB used; 20+4 scenarios executed with real exit codes; no double-credit / duplicate-order / lost-update; uap verify-database reaches PASS only from real results."
+    },
+    {
+      "task_id": "P2-G5",
+      "priority": "P0",
+      "category": "支付沙箱和财务完整性",
+      "description": "FINANCIAL-INTEGRITY-REPORT.md is simulated_only=true (static source-anchor matching + in-process memory simulation). Need a real payment interface abstraction, a LOCAL_SIMULATION adapter, signature/notify/query/refund/idempotency tests, 12 fund-safety scenarios and fault injection; real-provider sandbox stays BLOCKED_EXTERNAL_DEPENDENCY.",
+      "related_requirement_ids": ["UAP-06-002", "UAP-06-001", "UAP-01-003", "UAP-05-003"],
+      "affected_files": ["service/paymentsandbox/", ".uap/reports/FINANCIAL-INTEGRITY-REPORT.md", ".uap/reports/PAYMENT-SANDBOX-REPORT.md", ".uap/bin/uap.mjs"],
+      "dependencies": ["P2-G4"],
+      "current_status": "IN_PROGRESS",
+      "execution_plan": "Inspect real payment code first (already mapped). Add a Gateway interface + LocalSimulationGateway with runtime-generated RSA keys, real order state machine, real signature rejection, idempotent notifications, amount-snapshot checks, fail-closed config validation rejecting production hosts. Cover the 12 mandated fund-safety scenarios and fault injections. Label strictly LOCAL_SIMULATION; never claim PAYMENT_SANDBOX_VERIFIED.",
+      "verification_plan": "GOWORK=off go test ./service/paymentsandbox/ -count=1 -json; config negative tests; uap verify-payment produces a bound card whose status reflects LOCAL_SIMULATION or BLOCKED_EXTERNAL_DEPENDENCY.",
+      "evidence_required": "Go test JSON, config-rejection results, financial scenario matrix, explicit separation of LOCAL_SIMULATION vs PAYMENT_SANDBOX_VERIFIED.",
+      "completion_criteria": "All locally executable checks pass; no production key read; no real fund movement; external gateway verification explicitly BLOCKED with unblock conditions."
+    },
+    {
+      "task_id": "P2-G6",
+      "priority": "P0",
+      "category": "最终 UAP / Uter 独立验收",
+      "description": "Wire 7 new capabilities into UAP (Registry/Executor/Validator/Workflow/CLI/Test/Evidence/Status), add 7 negative tests, build a unified evidence index, run full re-verification, and generate all 13 reports with metrics computed from real runs.",
+      "related_requirement_ids": ["UAP-00-004", "UAP-05-004", "UAP-08-001", "UAP-09-002"],
+      "affected_files": [".uap/config/*.yaml", ".uap/validators/", ".uap/workflows/", ".uap/bin/uap.mjs", ".uap/tests/", ".uap/reports/"],
+      "dependencies": ["P2-G1", "P2-G2", "P2-G3", "P2-G4", "P2-G5"],
+      "current_status": "OPEN",
+      "execution_plan": "Add CLI commands verify-requirements / verify-visual / verify-e2e / verify-database / verify-payment / verify-security; add validators + workflow entries + tests; extend capabilities() only with additional keys if genuine real attestations exist; never hand-edit status fields to true. Add 7 negative tests in isolation. Generate evidence index with hash-bound records.",
+      "verification_plan": "Full UAP doctor/validate/test/workflow/verify-status/report + Go build/vet/test/race + frontend typecheck/lint/design/test/build + new capability commands + security scan.",
+      "evidence_required": "Bound evidence for every PASS, unified EVIDENCE-INDEX.json, all 13 reports.",
+      "completion_criteria": "All metrics computed from this run; final status derived by status engine; any unverified item remains explicitly NOT_VERIFIED/BLOCKED; no false FULLY_OPERATIONAL claim."
+    }
+  ],
+  "additional_p0_p1_findings": [
+    {
+      "task_id": "P2-X1",
+      "priority": "P0",
+      "category": "状态引擎分类能力缺口",
+      "description": "computeFinalStatus()/snapshot only understand IMPLEMENTED / IMPLEMENTED_NOT_VERIFIED / NOT_IMPLEMENTED / PARTIALLY_IMPLEMENTED / VERIFIED. The 7 mandated requirement states (NOT_BUILT, PARTIALLY_BUILT, PARTIALLY_VERIFIED, FULLY_VERIFIED, NOT_APPLICABLE, BLOCKED) cannot be represented. Extending probes alone would be silently ignored.",
+      "affected_files": [".uap/runtime/status-engine/index.mjs", ".uap/runtime/status-engine/snapshot.mjs", ".uap/tests/status-snapshot.test.mjs"],
+      "current_status": "OPEN",
+      "execution_plan": "Add explicit state handling with fail-closed semantics: N/A requires reason+approval, BLOCKED excluded from verified, PARTIALLY_VERIFIED never counted as verified, and add unit tests covering each.",
+      "verification_plan": "status-engine health() + status-snapshot tests + verify-status 3-way consistency.",
+      "evidence_required": "UAP test -json output for the new state tests.",
+      "completion_criteria": "Status engine computes counts for all 7 states from real matrix rows."
+    },
+    {
+      "task_id": "P2-X2",
+      "priority": "P1",
+      "category": "历史报告归属冲突",
+      "description": "report-generator.mjs owns 17 reports (incl. FINANCIAL-INTEGRITY-REPORT.md) while acceptance-report-generator.mjs owns another set and SKIPS generator-owned ones. Phase 2 must not produce duplicate/contradictory reports.",
+      "affected_files": [".uap/tools/report-generator.mjs", ".uap/tools/acceptance-report-generator.mjs", ".uap/reports/"],
+      "current_status": "OPEN",
+      "execution_plan": "Define a single owner per report name; phase-2 reports are written by one generator only; keep the old simulated_only financial result as an explicitly labelled historical layer.",
+      "verification_plan": "Grep for duplicate headers / conflicting status in generated reports.",
+      "evidence_required": "Report ownership map in PHASE-2-EXECUTION-REPORT.md.",
+      "completion_criteria": "No two generators write the same report with contradictory conclusions."
+    },
+    {
+      "task_id": "P2-X3",
+      "priority": "P1",
+      "category": "前端 vitest 已知失败",
+      "description": "3 showcase-3.0.html vitest cases fail with ENOENT because the user's WIP deletion was committed last phase. Must not restore the file or weaken the tests to force green.",
+      "affected_files": ["web/src/design-system/__tests__/tokens.test.ts"],
+      "current_status": "KNOWN_FAILURE_NOT_REGRESSION",
+      "execution_plan": "Attribute in an isolated HEAD copy (as done last phase) and report honestly. Only fix if a real product defect exists.",
+      "verification_plan": "Isolated copy with the HEAD version restored => 43/43 green proves attribution.",
+      "evidence_required": "Attribution log.",
+      "completion_criteria": "Failure remains disclosed, not hidden by deleting tests or restoring WIP."
+    }
+  ],
+  "blocked_external_dependencies": [
+    { "id": "EXT-001", "item": "Real payment provider sandbox interaction", "reason": "No provider sandbox account / test merchant credentials in the repo; policy forbids reading production keys.", "unblock_condition": "User supplies a genuine sandbox AppID/keys for Alipay/WeChat/Creem/Waffo and authorises sandbox calls.", "classification": "BLOCKED_EXTERNAL_DEPENDENCY", "local_substitute": "LOCAL_SIMULATION gateway adapter (clearly labelled, never promoted)" },
+    { "id": "EXT-002", "item": "Production deployment / production DB write / real refund / real payment", "reason": "permission-policy.yaml DENY; user did not grant production authorisation in this phase.", "unblock_condition": "Explicit written production authorisation plus a policy change.", "classification": "BLOCKED_BY_DESIGN", "local_substitute": "isolated local DB + LOCAL_SIMULATION" },
+    { "id": "EXT-003", "item": "Creating an independent E2E test account", "reason": "Project memory red line forbids creating any account for local/E2E/smoke/script/Docker/CI.", "unblock_condition": "User explicitly lifts the red line, or supplies an already-existing non-root account.", "classification": "BLOCKED_BY_POLICY", "local_substitute": "allowed existing root account Uter.ai, isolated DB copy" },
+    { "id": "EXT-004", "item": "H5 real-device matrix", "reason": "No physical devices / device farm available.", "unblock_condition": "Device farm credentials or real devices.", "classification": "BLOCKED_EXTERNAL_DEPENDENCY", "local_substitute": "Playwright mobile viewport emulation" },
+    { "id": "EXT-005", "item": "Containerised PostgreSQL/MySQL multi-DB integration", "reason": "Docker daemon is down; no external DB server exposed.", "unblock_condition": "Start Docker daemon or provide an isolated DB DSN.", "classification": "BLOCKED_ENVIRONMENT", "local_substitute": "real file-backed SQLite, the project's DEFAULT supported DB" }
+  ],
+  "summary": {
+    "task_groups": 6,
+    "additional_findings": 3,
+    "total_tasks": 9,
+    "p0": 6,
+    "p1": 3,
+    "blocked_external_dependencies": 5,
+    "note": "This inventory is a baseline, not a completion claim. Task statuses are updated by real execution results in PHASE-2-EXECUTION-REPORT.md."
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "batch_id": "ai_governance",
+  "batch_name": "AI Governance",
+  "specs": [
+    "UAP-00-002",
+    "UAP-00-003"
+  ],
+  "probes": [
+    "reg.agents",
+    "reg.workflows",
+    "reg.policy",
+    "policy.runtime-deny",
+    "runtime.release-deny",
+    "runtime.doctor",
+    "runtime.workflows",
+    "runtime.validators"
+  ],
+  "executed_at": "2026-11-13T15:18:23.011Z",
+  "probe_results": [
+    {
+      "probe_id": "reg.agents",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse agent-registry.yaml",
+      "output_hash": "1303108fb8fb0d03e756a01286c2032cfd24de3fa715b41d5fe9ff5eeb5c0394",
+      "detail": "11 registered agents (expected 11)"
+    },
+    {
+      "probe_id": "reg.workflows",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse workflow-registry.yaml",
+      "output_hash": "dc0ac02244aa4fb2aa31b980cbc2097533251f8270859940599d2b82df427040",
+      "detail": "7 registered workflows"
+    },
+    {
+      "probe_id": "reg.policy",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse permission-policy.yaml (default deny + 7 production denies + fail_closed)",
+      "output_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
+      "detail": "default_effect=deny, fail_closed=true, 7 denies present: true"
+    },
+    {
+      "probe_id": "policy.runtime-deny",
+      "ok": true,
+      "exit_code": 0,
+      "command": "import policy-engine and verify it loads a default-deny policy",
+      "output_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
+      "detail": "policy engine importable, default deny=true"
+    },
+    {
+      "probe_id": "runtime.release-deny",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap release check --json",
+      "output_hash": "d25b1862eb954f91738fde656271505d5f4fef4ac84c53d79de01956ce199497",
+      "detail": "release check exit=1 (expected 1), deploy_decision=DENY present=true"
+    },
+    {
+      "probe_id": "runtime.doctor",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap doctor --json",
+      "output_hash": "21ab9d5ba93ced6c5fb37fa64f2ce8417d38b6bdcd2e7ddec6da07fd747f4a1a",
+      "detail": "uap doctor --json exit=0"
+    },
+    {
+      "probe_id": "runtime.workflows",
+      "ok": false,
+      "exit_code": 1,
+      "command": "./uap workflow run --all --json",
+      "output_hash": "45aa0324193fbde66ccb2765c68cbe1042442fab1f5a1036c5a324c90eb964ac",
+      "detail": "uap workflow run --all exit=1"
+    },
+    {
+      "probe_id": "runtime.validators",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap validate --all --json",
+      "output_hash": "3ca18499d86fbdb939083da37ae0d5131430fb06c7468b83e37663aa0c846114",
+      "detail": "validate --all -> exit=0, pass=32/32, fail=0"
+    }
+  ],
+  "pass": 7,
+  "total": 8
+}

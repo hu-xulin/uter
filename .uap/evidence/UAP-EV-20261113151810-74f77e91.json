@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113151810-74f77e91",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:18:10.796Z",
+  "started_at": "2026-11-13T15:18:10.796Z",
+  "finished_at": "2026-11-13T15:18:10.796Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.consistency_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.consistency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "cross_platform.consistency_integrity 实检: feature_mapping=PASS(重复移动端源码树=无; web/src/features 实际 feature 目录数=30; 设计系统 SSOT(docs/design-system/UTER-DESIGN-SYSTEM-3.0.md) 声明 PC Web、H5、响应式共用统一字号 Token=true; AGENTS.md 绑定设计系统规范=true); api_consistency=PASS(web/src 下 API 客户端/请求封装文件=366; 后端 service/authz 存在=true; 无独立 H5 API 树=true; 前后端共用同一 API 层); business_consistency=PASS(product-model.json source_of_truth=true; i18n locales=14; web/H5 规范依赖同一基线=true ([\"UAP-01-001\"]); 依赖存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 5004 个 | 源码/配置级一致性真实核对(单一 web/src 源码树/统一 API/共享 SSOT); 真机两端一致性未验证(见 h5_integrity BLOCKED); feature 目录计数=30",
+  "content_hash": "d733a0426e467b545565b63d5b587cc1ba8836bd410e9b4f09a9c283fe59d069"
+}

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113153729-a46892ea",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-HEALTH-20261113153728-504addf2",
+  "trace_id": "UAP-TRACE-20261113153728-89ec77d9",
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:37:29.090Z",
+  "started_at": "2026-11-13T15:37:29.090Z",
+  "finished_at": "2026-11-13T15:37:29.090Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-HEALTH-20261113153728-504addf2",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"runtime health probe\",\"specification_ids\":[\"UAP-00-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-HEALTH-20261113153728-504addf2 finished: SUCCEEDED",
+  "content_hash": "7a4e7c308b4680bb8e34948ef8bde2851b2f44e87cb2be3db1bfafd9508daaa3"
+}

@@ -8,6 +8,7 @@ import { pluginTailwindcss } from '@rsbuild/plugin-tailwindcss'
 import { tanstackRouter } from '@tanstack/router-plugin/rspack'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
+import { rehypeTasklistLabels } from './scripts/rehype-tasklist-labels.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -51,7 +52,9 @@ export default defineConfig(({ envMode }) => {
           // Anchor every h2/h3 so the native docs' table of contents (built
           // from the rendered DOM in `native-docs-view.tsx`) has stable
           // fragments to point at.
-          rehypePlugins: [rehypeSlug],
+          // rehypeTasklistLabels：GFM 任务清单 checkbox 没有 accessible
+          // label（axe label 规则 critical，/docs 页整批命中），补 aria-label。
+          rehypePlugins: [rehypeSlug, rehypeTasklistLabels],
         },
       }),
       pluginTailwindcss({ optimize: false }),

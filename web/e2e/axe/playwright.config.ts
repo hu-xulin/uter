@@ -48,6 +48,9 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: '../../.axe-e2e/report' }],
+    // 机读产物：UAP verify-e2e 读这份文件而不是解析 stdout（stdout 会与
+    // list 输出/截断互相干扰，曾导致「exit=1 但 0 规格被解析」的假诊断）。
+    ['json', { outputFile: '../../.axe-e2e/report.json' }],
   ],
   use: {
     channel: process.env.PLAYWRIGHT_CHANNEL,

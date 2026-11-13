@@ -28,6 +28,10 @@ export const FINAL_STATES = Object.freeze([
 const APPLICABLE_REQ_STATES = new Set([
   'NOT_IMPLEMENTED', 'PARTIALLY_IMPLEMENTED', 'IMPLEMENTED',
   'IMPLEMENTED_NOT_VERIFIED', 'VERIFIED', 'BLOCKED',
+  // Phase 2 seven-state taxonomy: a requirement that is not built / partially
+  // built / partially verified is still an APPLICABLE requirement — it simply
+  // has not reached FULLY_VERIFIED yet.
+  'NOT_BUILT', 'PARTIALLY_BUILT', 'PARTIALLY_VERIFIED',
 ]);
 
 /** True when an artefact belongs to this exact execution and code version. */
@@ -72,6 +76,10 @@ export function computeFinalStatus(snapshot = {}) {
     partially_implemented: applicable.filter((r) => r.implementation_status === 'PARTIALLY_IMPLEMENTED').length,
     implemented: applicable.filter((r) => r.implementation_status === 'IMPLEMENTED').length,
     implemented_not_verified: applicable.filter((r) => r.implementation_status === 'IMPLEMENTED_NOT_VERIFIED').length,
+    not_built: applicable.filter((r) => r.implementation_status === 'NOT_BUILT').length,
+    partially_built: applicable.filter((r) => r.implementation_status === 'PARTIALLY_BUILT').length,
+    partially_verified: applicable.filter((r) => r.verification_state === 'PARTIALLY_VERIFIED'
+      || (r.verification_state === undefined && r.verification_status === 'PARTIALLY_VERIFIED')).length,
     verified: 0,
     blocked_requirements: applicable.filter((r) => r.implementation_status === 'BLOCKED').length,
   };
@@ -86,7 +94,13 @@ export function computeFinalStatus(snapshot = {}) {
   for (const r of applicable) {
     const implemented = ['IMPLEMENTED', 'IMPLEMENTED_NOT_VERIFIED', 'VERIFIED'].includes(r.implementation_status);
     const hasTest = (r.test_cases || []).length > 0;
-    const testPassed = hasTest && (r.test_cases || []).some((t) => passingTestNames.has(t));
+    // Matrix rows store `${file}::${name}` for traceability; TAP passing names
+    // are bare test names. Compare the name part so a genuinely passing test
+    // can be matched — a failing/absent name still can never pass this gate.
+    const testPassed = hasTest && (r.test_cases || []).some((t) => {
+      const bare = typeof t === 'string' && t.includes('::') ? t.split('::').slice(1).join('::') : t;
+      return passingTestNames.has(bare) || passingTestNames.has(t);
+    });
     const evidenceCurrent = (r.evidence || []).some((e) => {
       if (typeof e === 'string') return false; // a bare id proves no binding
       if (e.execution_id !== snapshot.execution_id || e.git_head !== snapshot.git_head || e.hash_valid !== true) return false;
@@ -94,7 +108,10 @@ export function computeFinalStatus(snapshot = {}) {
       return true;
     });
     const noBlocker = (r.blockers || []).length === 0;
-    if (implemented && hasTest && testPassed && evidenceCurrent && noBlocker
+    // When the Phase-2 seven-state field is present it is authoritative and
+    // stricter: only FULLY_VERIFIED may be counted as verified.
+    const stateAllows = r.verification_state === undefined || r.verification_state === 'FULLY_VERIFIED';
+    if (implemented && hasTest && testPassed && evidenceCurrent && noBlocker && stateAllows
         && r.verification_status === 'VERIFIED') counts.verified += 1;
   }
 

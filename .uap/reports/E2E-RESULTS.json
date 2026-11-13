@@ -1,0 +1,144 @@
+{
+  "generated_at": "2026-11-13T16:54:02.079Z",
+  "status": "FAIL",
+  "problems": [
+    "axe exit=1, failed=0",
+    "business e2e exit=1, failed=18"
+  ],
+  "browser_runs": [
+    {
+      "suite": "axe",
+      "target": "http://localhost:3003",
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "suite": "business",
+      "target": "http://localhost:3100",
+      "exit_code": 1,
+      "passed": 6,
+      "failed": 18,
+      "stats": {
+        "startTime": "2026-11-13T16:53:32.293Z",
+        "duration": 30063.992,
+        "expected": 5,
+        "skipped": 1,
+        "unexpected": 18,
+        "flaky": 0
+      },
+      "scenarios": [
+        {
+          "title": "biz_01 注册新用户 [BLOCKED_BY_POLICY]",
+          "ok": true
+        },
+        {
+          "title": "biz_02 密码登录成功（真实凭据）",
+          "ok": false
+        },
+        {
+          "title": "biz_03 错误密码登录被拒绝",
+          "ok": true
+        },
+        {
+          "title": "biz_04 未登录调用受保护 API 被 401 拒绝",
+          "ok": true
+        },
+        {
+          "title": "biz_05 未登录访问受保护页面跳转登录页",
+          "ok": true
+        },
+        {
+          "title": "biz_06 已登录读取个人信息 /api/user/self",
+          "ok": false
+        },
+        {
+          "title": "biz_07 会话刷新成功且 access token 轮换",
+          "ok": false
+        },
+        {
+          "title": "biz_08 登出后受保护 API 失效",
+          "ok": false
+        },
+        {
+          "title": "biz_09 站点状态 /api/status（公开）",
+          "ok": true
+        },
+        {
+          "title": "biz_10 公告接口 /api/notice（公开）",
+          "ok": true
+        },
+        {
+          "title": "biz_11 定价接口 /api/pricing（登录态）",
+          "ok": false
+        },
+        {
+          "title": "biz_12 排行榜 /api/rankings（登录态）",
+          "ok": false
+        },
+        {
+          "title": "biz_13 密钥列表 /api/token/（登录态）",
+          "ok": false
+        },
+        {
+          "title": "biz_14 创建密钥 POST /api/token/",
+          "ok": false
+        },
+        {
+          "title": "biz_15 更新密钥改名并回读验证",
+          "ok": false
+        },
+        {
+          "title": "biz_16 删除密钥后列表不再包含",
+          "ok": false
+        },
+        {
+          "title": "biz_17 用户可用模型 /api/user/models",
+          "ok": false
+        },
+        {
+          "title": "biz_18 用户分组 /api/user/self/groups",
+          "ok": false
+        },
+        {
+          "title": "biz_19 用户日志 /api/log/self（登录态）",
+          "ok": false
+        },
+        {
+          "title": "biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
+          "ok": false
+        },
+        {
+          "title": "biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
+          "ok": false
+        },
+        {
+          "title": "biz_24 用户用量统计 /api/log/self/stat",
+          "ok": false
+        },
+        {
+          "title": "biz_22 普通用户访问管理 API 被 403 拒绝",
+          "ok": false
+        },
+        {
+          "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
+          "ok": false
+        }
+      ],
+      "stderr_tail": ""
+    }
+  ],
+  "axe": {
+    "command": "npx playwright test --config e2e/axe/playwright.config.ts --reporter=json",
+    "exit_code": 1,
+    "target": "http://localhost:3003",
+    "passed": 0,
+    "failed": 0,
+    "critical_violations": [],
+    "skipped_note": "skipped authed group requires VISUAL_TEST credentials; never deleted to force 0 skipped"
+  },
+  "execution_id": "UAP-EXEC-20261113162154-f31378a6",
+  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+  "worktree_fingerprint": "43edacd4b625a7947e9a3e9f4ab6d607fda932ab7d3bc0dc264b55fb8f0d575c",
+  "evidence_ref": "UAP-EV-20261113165402-75c173e9"
+}

@@ -1,0 +1,318 @@
+{
+  "generated_at": "2026-11-13T16:10:17.092Z",
+  "status": "PASS",
+  "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB -count=1 -json",
+  "exit_code": 0,
+  "timed_out": false,
+  "subtests": [
+    {
+      "name": "TestPhase2DBIntegration/db_01_connection",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_01_connection",
+        "    phase2_db_integration_test.go:242: observed PRAGMA journal_mode=\"wal\"",
+        "--- PASS: TestPhase2DBIntegration/db_01_connection (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_02_schema_init",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_02_schema_init",
+        "--- PASS: TestPhase2DBIntegration/db_02_schema_init (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_03_migration",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_03_migration",
+        "--- PASS: TestPhase2DBIntegration/db_03_migration (0.04s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_04_migration_rollback",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_04_migration_rollback",
+        "    phase2_db_integration_test.go:291: confirmed: failed in-transaction DDL rolled back; no down-migration framework exists",
+        "--- PASS: TestPhase2DBIntegration/db_04_migration_rollback (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_05_transaction_commit",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_05_transaction_commit",
+        "--- PASS: TestPhase2DBIntegration/db_05_transaction_commit (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_06_transaction_rollback",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_06_transaction_rollback",
+        "--- PASS: TestPhase2DBIntegration/db_06_transaction_rollback (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_07_concurrent_writes",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_07_concurrent_writes",
+        "--- PASS: TestPhase2DBIntegration/db_07_concurrent_writes (0.07s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_08_unique_constraint",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_08_unique_constraint",
+        "--- PASS: TestPhase2DBIntegration/db_08_unique_constraint (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_09_foreign_key",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_09_foreign_key",
+        "    phase2_db_integration_test.go:392: observed PRAGMA foreign_keys=0, top_ups FK relations=0",
+        "    phase2_db_integration_test.go:405: FK NOT enforced (foreign_keys=0, relations=0): orphan order accepted and persisted",
+        "--- PASS: TestPhase2DBIntegration/db_09_foreign_key (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_10_data_consistency",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_10_data_consistency",
+        "    phase2_db_integration_test.go:440: balance=850 ledgerSum=850 expected=850",
+        "--- PASS: TestPhase2DBIntegration/db_10_data_consistency (0.04s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_11_idempotency",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_11_idempotency",
+        "--- PASS: TestPhase2DBIntegration/db_11_idempotency (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_12_duplicate_request",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_12_duplicate_request",
+        "--- PASS: TestPhase2DBIntegration/db_12_duplicate_request (0.05s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_13_lock_contention",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_13_lock_contention",
+        "--- PASS: TestPhase2DBIntegration/db_13_lock_contention (0.09s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_14_lock_timeout",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_14_lock_timeout",
+        "    phase2_db_integration_test.go:538: observed PRAGMA busy_timeout=30000",
+        "--- PASS: TestPhase2DBIntegration/db_14_lock_timeout (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_15_connection_interrupt",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_15_connection_interrupt",
+        "    phase2_db_integration_test.go:556: post-close errors: raw=sql: database is closed gorm=sql: database is closed",
+        "--- PASS: TestPhase2DBIntegration/db_15_connection_interrupt (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_18_connection_pool",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_18_connection_pool",
+        "    phase2_db_integration_test.go:578: pool stats: maxOpen=4 open=2 inUse=0 idle=2 waitCount=4",
+        "--- PASS: TestPhase2DBIntegration/db_18_connection_pool (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_19_integrity_check",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_19_integrity_check",
+        "    phase2_db_integration_test.go:597: observed PRAGMA integrity_check=\"ok\"",
+        "--- PASS: TestPhase2DBIntegration/db_19_integrity_check (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_20_order_balance_ledger_consistency",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_20_order_balance_ledger_consistency",
+        "--- PASS: TestPhase2DBIntegration/db_20_order_balance_ledger_consistency (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_16_process_crash",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_16_process_crash",
+        "--- PASS: TestPhase2DBIntegration/db_16_process_crash (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_17_transaction_recovery",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/db_17_transaction_recovery",
+        "--- PASS: TestPhase2DBIntegration/db_17_transaction_recovery (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_01_crash_before_commit",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/fault_01_crash_before_commit",
+        "--- PASS: TestPhase2DBIntegration/fault_01_crash_before_commit (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_02_commit_then_response_lost",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/fault_02_commit_then_response_lost",
+        "--- PASS: TestPhase2DBIntegration/fault_02_commit_then_response_lost (0.03s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_03_same_request_concurrently",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/fault_03_same_request_concurrently",
+        "--- PASS: TestPhase2DBIntegration/fault_03_same_request_concurrently (0.07s)"
+      ]
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_04_partial_success_then_crash",
+      "action": "pass",
+      "output": [
+        "=== RUN   TestPhase2DBIntegration/fault_04_partial_success_then_crash",
+        "    phase2_db_integration_test.go:764: injected 3rd-write failure: constraint failed: UNIQUE constraint failed: phase2_crash_rows.id (1555)",
+        "--- PASS: TestPhase2DBIntegration/fault_04_partial_success_then_crash (0.03s)"
+      ]
+    }
+  ],
+  "pass": 24,
+  "fail": 0,
+  "skip": 0,
+  "database": "real file-backed SQLite (glebarez/sqlite, WAL + busy_timeout + BEGIN IMMEDIATE) in t.TempDir()",
+  "simulated_only": false,
+  "transactions": [
+    {
+      "name": "TestPhase2DBIntegration/db_01_connection",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_02_schema_init",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_03_migration",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_04_migration_rollback",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_05_transaction_commit",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_06_transaction_rollback",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_07_concurrent_writes",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_08_unique_constraint",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_09_foreign_key",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_10_data_consistency",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_11_idempotency",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_12_duplicate_request",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_13_lock_contention",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_14_lock_timeout",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_15_connection_interrupt",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_18_connection_pool",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_19_integrity_check",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_20_order_balance_ledger_consistency",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_16_process_crash",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/db_17_transaction_recovery",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_01_crash_before_commit",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_02_commit_then_response_lost",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_03_same_request_concurrently",
+      "result": "pass"
+    },
+    {
+      "name": "TestPhase2DBIntegration/fault_04_partial_success_then_crash",
+      "result": "pass"
+    }
+  ],
+  "execution_id": "UAP-EXEC-20261113160926-f6e30d5f",
+  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+  "worktree_fingerprint": "6c3ce4da120114da62b79fe26667f84e07d854233da36ad4c2d5a5673a104268",
+  "evidence_ref": "UAP-EV-20261113161017-4cf6c7c3"
+}

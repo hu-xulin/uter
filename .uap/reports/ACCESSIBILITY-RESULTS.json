@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-11-13T16:54:02.126Z",
+  "status": "FAIL",
+  "critical": 0,
+  "serious": 0,
+  "passed": 0,
+  "failed": 0,
+  "target": "http://localhost:3003",
+  "execution_id": "UAP-EXEC-20261113162154-f31378a6",
+  "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+  "worktree_fingerprint": "43edacd4b625a7947e9a3e9f4ab6d607fda932ab7d3bc0dc264b55fb8f0d575c"
+}

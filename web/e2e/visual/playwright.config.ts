@@ -36,6 +36,9 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: '../../.visual-e2e/report' }],
+    // 机读产物：UAP verify-visual 读这份文件而不是解析 stdout（与 axe 轨
+    // 同因：stdout 解析在并发/截断下不可靠）。
+    ['json', { outputFile: '../../.visual-e2e/report.json' }],
   ],
   use: {
     // 默认空 → 使用 Playwright 自带 Chromium（授权 D：下载官方二进制）。

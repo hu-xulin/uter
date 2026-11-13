@@ -1,22 +1,22 @@
 {
-  "run_id": "UAP-RUN-UAP-TASK-20261113111514-3a06f53e",
+  "run_id": "UAP-RUN-UAP-TASK-20261113152407-6d210002",
   "workflow_id": "uap-quality-gate",
-  "task_id": "UAP-TASK-20261113111514-3a06f53e",
+  "task_id": "UAP-TASK-20261113152407-6d210002",
   "state": "SUCCEEDED",
   "steps_total": 9,
   "steps_succeeded": 9,
   "steps_blocked": 0,
   "evidence_refs": [
-    "UAP-EV-20261113111522-3df606dc",
-    "UAP-EV-20261113111522-4f155fec",
-    "UAP-EV-20261113111522-62afc03b",
-    "UAP-EV-20261113111522-f81ec02b",
-    "UAP-EV-20261113111522-d7344e38",
-    "UAP-EV-20261113111523-be3b4100",
-    "UAP-EV-20261113111523-0a48eba1",
-    "UAP-EV-20261113111530-ac650e27",
-    "UAP-EV-20261113111530-94f56fad",
-    "UAP-EV-20261113111530-2dcea159"
+    "UAP-EV-20261113152416-8f9fd0e8",
+    "UAP-EV-20261113152416-17ac3610",
+    "UAP-EV-20261113152416-c2e6c25a",
+    "UAP-EV-20261113152416-2936f010",
+    "UAP-EV-20261113152416-adee3109",
+    "UAP-EV-20261113152417-d9b0789f",
+    "UAP-EV-20261113152417-01c18acf",
+    "UAP-EV-20261113152426-38325632",
+    "UAP-EV-20261113152426-567755f3",
+    "UAP-EV-20261113152426-f6f3b5df"
   ],
   "validation": [
     {
@@ -24,18 +24,18 @@
       "status": "PASS",
       "executed": true,
       "exit_code": 0,
-      "checked_at": "2026-11-13T11:15:30.810Z",
+      "checked_at": "2026-11-13T15:24:26.529Z",
       "evidence_refs": [
-        "UAP-EV-20261113111522-3df606dc",
-        "UAP-EV-20261113111522-4f155fec",
-        "UAP-EV-20261113111522-62afc03b",
-        "UAP-EV-20261113111522-f81ec02b",
-        "UAP-EV-20261113111522-d7344e38",
-        "UAP-EV-20261113111523-be3b4100",
-        "UAP-EV-20261113111523-0a48eba1",
-        "UAP-EV-20261113111530-ac650e27",
-        "UAP-EV-20261113111530-94f56fad",
-        "UAP-EV-20261113111530-2dcea159"
+        "UAP-EV-20261113152416-8f9fd0e8",
+        "UAP-EV-20261113152416-17ac3610",
+        "UAP-EV-20261113152416-c2e6c25a",
+        "UAP-EV-20261113152416-2936f010",
+        "UAP-EV-20261113152416-adee3109",
+        "UAP-EV-20261113152417-d9b0789f",
+        "UAP-EV-20261113152417-01c18acf",
+        "UAP-EV-20261113152426-38325632",
+        "UAP-EV-20261113152426-567755f3",
+        "UAP-EV-20261113152426-f6f3b5df"
       ],
       "findings": [],
       "checks_run": [
@@ -51,6 +51,6 @@
     }
   ],
   "acceptance": "all_required_gates_pass",
-  "started_at": "2026-11-13T11:15:14.700Z",
-  "finished_at": "2026-11-13T11:15:31.018Z"
+  "started_at": "2026-11-13T15:24:07.530Z",
+  "finished_at": "2026-11-13T15:24:26.780Z"
 }

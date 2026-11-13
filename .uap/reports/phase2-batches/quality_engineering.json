@@ -1,0 +1,89 @@
+{
+  "batch_id": "quality_engineering",
+  "batch_name": "Quality Engineering",
+  "specs": [
+    "UAP-05-001",
+    "UAP-05-002",
+    "UAP-05-003",
+    "UAP-05-004"
+  ],
+  "probes": [
+    "runtime.uap-tests",
+    "runtime.validators",
+    "runtime.repair",
+    "go.refund-integrity",
+    "go.payment-sandbox",
+    "web.unit",
+    "card.visual",
+    "card.security"
+  ],
+  "executed_at": "2026-11-13T15:27:29.612Z",
+  "probe_results": [
+    {
+      "probe_id": "runtime.uap-tests",
+      "ok": false,
+      "exit_code": 1,
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "output_hash": "0fec0bf01a53e1309fd66f5c6809df85451247e0e398cbc5118ade573ffbafd8",
+      "detail": "node --test --all -> exit=1, pass=118, fail=1"
+    },
+    {
+      "probe_id": "runtime.validators",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap validate --all --json",
+      "output_hash": "957644a992ead5fc1efbdd50fdc1e2eba74c26389ddb5e28bdca8dfa4ff72145",
+      "detail": "validate --all -> exit=0, pass=32/32, fail=0"
+    },
+    {
+      "probe_id": "runtime.repair",
+      "ok": false,
+      "exit_code": 1,
+      "command": "./uap verify-repair --json",
+      "output_hash": "cb0a90a10ef6cb86dc1404a58ce66fdd64175e2cc348847d6355545b71ac67f3",
+      "detail": "uap verify-repair exit=1"
+    },
+    {
+      "probe_id": "go.refund-integrity",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./model/ ./service/ -run TestRefund|TestBilling|TestTaskBilling|TestQuota -count=1 -v",
+      "output_hash": "0be62fa42d82160fc842a71114bde8a18ec4786b3adf96f7824a1942bf03fcea",
+      "detail": "refund intent / billing CAS / quota tests: exit=0, PASS=53, FAIL=0"
+    },
+    {
+      "probe_id": "go.payment-sandbox",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./service/paymentsandbox/ -count=1 -v",
+      "output_hash": "4f664f0e9e833791d50580bf98b7770354267f162cb6f01994fc51692a882851",
+      "detail": "LOCAL_SIMULATION gateway tests: exit=0, PASS=21, FAIL=0"
+    },
+    {
+      "probe_id": "web.unit",
+      "ok": false,
+      "exit_code": 1,
+      "command": "bun run test",
+      "output_hash": "c4e15af51b91211c87beb880c9071f4e1045c76507e56f361e6c5c3fe9fb6c54",
+      "detail": "web vitest exit=1 (3 known failures from committed WIP deletion are reported honestly)"
+    },
+    {
+      "probe_id": "card.visual",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read VISUAL-REGRESSION.json produced by uap verify-visual",
+      "output_hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "detail": "classified=MISSING/?, unclassified=?"
+    },
+    {
+      "probe_id": "card.security",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read SECURITY-VERIFICATION.json produced by uap verify-security",
+      "output_hash": "ac24ba7f7b438c08eedbca384e563a5c64b45d3d1298ccb850ee25218a0fb03c",
+      "detail": "status=PASS, negative_tests=1"
+    }
+  ],
+  "pass": 3,
+  "total": 8
+}

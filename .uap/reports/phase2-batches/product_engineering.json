@@ -1,0 +1,70 @@
+{
+  "batch_id": "product_engineering",
+  "batch_name": "Product Engineering",
+  "specs": [
+    "UAP-01-001",
+    "UAP-01-002",
+    "UAP-01-003"
+  ],
+  "probes": [
+    "spec.statements",
+    "matrix.stable",
+    "go.payment-security",
+    "card.e2e",
+    "card.visual",
+    "card.database"
+  ],
+  "executed_at": "2026-11-13T15:18:43.779Z",
+  "probe_results": [
+    {
+      "probe_id": "spec.statements",
+      "ok": true,
+      "exit_code": 0,
+      "command": "re-parse 32 spec files and compare statement_sha256 against matrix",
+      "output_hash": "973f53f7f248e6ccbbb246a6ab901297757170a9cc8e2fb72e11b84d120b4d8d",
+      "detail": "402 mandatory statements hash-verified, drifts=0"
+    },
+    {
+      "probe_id": "matrix.stable",
+      "ok": true,
+      "exit_code": 0,
+      "command": "node .uap/tools/requirement-matrix.mjs --check",
+      "output_hash": "e1e264bcf380965a71dc673558d66b0e5605192abf712e676278c9c87b8fd0d6",
+      "detail": "requirement ID stability --check exit=0"
+    },
+    {
+      "probe_id": "go.payment-security",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./controller/ -run TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcile|TestQueryAlipayOrder|TestQueryWechatOrder|Test.*AmountSnapshot -count=1 -v",
+      "output_hash": "14fce56fa5cfa7f33132d6013a48d1817c3aba7959935c4a9ab947d9422a5b6b",
+      "detail": "callback signature/amount-snapshot/reconcile tests: exit=0, PASS=29, FAIL=0"
+    },
+    {
+      "probe_id": "card.e2e",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read E2E-RESULTS.json produced by uap verify-e2e",
+      "output_hash": "33a9dd41b88301220fda340f8ef3892d71a1262420b5f94f9f84649f7caa0d6b",
+      "detail": "status=FAIL, browser_runs=2"
+    },
+    {
+      "probe_id": "card.visual",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read VISUAL-REGRESSION.json produced by uap verify-visual",
+      "output_hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "detail": "classified=MISSING/?, unclassified=?"
+    },
+    {
+      "probe_id": "card.database",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read DATABASE-INTEGRATION.json produced by uap verify-database",
+      "output_hash": "00fc7ea27b764e37e4f47109a0c277570199e119eeeb17d142b739f954ff56ff",
+      "detail": "status=MISSING, transactions=24"
+    }
+  ],
+  "pass": 3,
+  "total": 6
+}

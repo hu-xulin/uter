@@ -1,0 +1,97 @@
+{
+  "batch_id": "security_and_reliability",
+  "batch_name": "Security & Reliability",
+  "specs": [
+    "UAP-06-001",
+    "UAP-06-002",
+    "UAP-06-003"
+  ],
+  "probes": [
+    "reg.policy",
+    "policy.runtime-deny",
+    "security.secret-scan",
+    "go.payment-security",
+    "go.refund-integrity",
+    "go.db-integration",
+    "card.security",
+    "card.payment-sandbox",
+    "runtime.release-deny"
+  ],
+  "executed_at": "2026-11-13T15:28:01.169Z",
+  "probe_results": [
+    {
+      "probe_id": "reg.policy",
+      "ok": true,
+      "exit_code": 0,
+      "command": "parse permission-policy.yaml (default deny + 7 production denies + fail_closed)",
+      "output_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
+      "detail": "default_effect=deny, fail_closed=true, 7 denies present: true"
+    },
+    {
+      "probe_id": "policy.runtime-deny",
+      "ok": true,
+      "exit_code": 0,
+      "command": "import policy-engine and verify it loads a default-deny policy",
+      "output_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
+      "detail": "policy engine importable, default deny=true"
+    },
+    {
+      "probe_id": "security.secret-scan",
+      "ok": false,
+      "exit_code": 1,
+      "command": "gitleaks detect --no-git --source .uap/reports --no-banner --exit-code 0",
+      "output_hash": "347563bda0a331160f7506a4942c1f5eab3f8104680580274edf53272839419f",
+      "detail": "gitleaks on .uap/reports exit=0, leak_indicator=true"
+    },
+    {
+      "probe_id": "go.payment-security",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./controller/ -run TestPaymentCallbacksRejectForgedSignatures|TestAlipayReconcile|TestQueryAlipayOrder|TestQueryWechatOrder|Test.*AmountSnapshot -count=1 -v",
+      "output_hash": "a6fd6b98a19afedaee3bf7c39d6ce253818e0ac436d0be9ac2f1c5b0faf9550a",
+      "detail": "callback signature/amount-snapshot/reconcile tests: exit=0, PASS=29, FAIL=0"
+    },
+    {
+      "probe_id": "go.refund-integrity",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./model/ ./service/ -run TestRefund|TestBilling|TestTaskBilling|TestQuota -count=1 -v",
+      "output_hash": "81ec66d5b9f7b18c2fedd377c70b0de02645a6c569ad2638ef2ae8d1946a6607",
+      "detail": "refund intent / billing CAS / quota tests: exit=0, PASS=53, FAIL=0"
+    },
+    {
+      "probe_id": "go.db-integration",
+      "ok": true,
+      "exit_code": 0,
+      "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB -count=1 -v",
+      "output_hash": "09b26863750ff93aeeceb6d81da42d944ad5f4fff1117b1db755fd6f5498327c",
+      "detail": "isolated file-backed SQLite: exit=0, PASS=30, FAIL=0"
+    },
+    {
+      "probe_id": "card.security",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read SECURITY-VERIFICATION.json produced by uap verify-security",
+      "output_hash": "ac24ba7f7b438c08eedbca384e563a5c64b45d3d1298ccb850ee25218a0fb03c",
+      "detail": "status=PASS, negative_tests=1"
+    },
+    {
+      "probe_id": "card.payment-sandbox",
+      "ok": false,
+      "exit_code": 1,
+      "command": "read PAYMENT-SANDBOX.json produced by uap verify-payment",
+      "output_hash": "763d85cb22e6ad7ae8e845dc2a1341de981b0ad08159a52853ed8c4a7bc109f1",
+      "detail": "mode=LOCAL_SIMULATION, status=MISSING, gateway_verified=false"
+    },
+    {
+      "probe_id": "runtime.release-deny",
+      "ok": true,
+      "exit_code": 0,
+      "command": "./uap release check --json",
+      "output_hash": "f9d9cbd5c12336ecc2dee8160e87aa3f5ff6123443d571e9beac8ab1c046c8bf",
+      "detail": "release check exit=1 (expected 1), deploy_decision=DENY present=true"
+    }
+  ],
+  "pass": 6,
+  "total": 9
+}

@@ -43,3 +43,4 @@ src/i18n/locales/_reports/
 /playwright-report/
 /test-results/
 .axe-e2e/
+.business-e2e/

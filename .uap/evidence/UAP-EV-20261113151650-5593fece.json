@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261113151650-5593fece",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:16:50.557Z",
+  "started_at": "2026-11-13T15:16:50.557Z",
+  "finished_at": "2026-11-13T15:16:50.557Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.reliability_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.reliability_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.reliability_integrity 实检: health=PASS(动态 import 并调用 health().ok===true: 4/4 (state-machine=true,scheduler=true,resource-manager=true,event-system=true)); timeout=PASS(runCommand 真实运行 exit_code=0 timed_out=false spawn_error=none; proc.mjs 含 setTimeout/timeoutMs=true); retry=PASS(TASK_TRANSITIONS FAILED->QUEUED=true; WAITING_RECOVERY->QUEUED=true (有界可重试路径真实存在)); recovery=PASS(导出 health/execute=true; BASELINE git.policy 含 no_destructive_git/preserve_user_changes=true; 依赖 DAG 无环=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 5001 个 | 动态 import 4 个 runtime 模块并调用 health().ok===true 证明可运行; runCommand 真实记录 exit_code; 重试/恢复基于共享状态机与 BASELINE 策略",
+  "content_hash": "c06bcc2273ee807a9b4f8813efd94154cfcc058da9596835177016d351b152dc"
+}

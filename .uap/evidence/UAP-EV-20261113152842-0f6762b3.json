@@ -1,0 +1,66 @@
+{
+  "evidence_id": "UAP-EV-20261113152842-0f6762b3",
+  "kind": "requirement_batch_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-07-001"
+  ],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-13T15:28:42.986Z",
+  "started_at": "2026-11-13T15:28:42.986Z",
+  "finished_at": "2026-11-13T15:28:42.986Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+    "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+    "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-requirements --batch=experience_and_design",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"probes\":[\"web.typecheck\",\"web.design-strict\",\"web.design-tokens\",\"card.visual\",\"card.accessibility\",\"docs.baseline\"]}",
+  "stdout": "[{\"probe_id\":\"web.typecheck\",\"ok\":false,\"exit_code\":1,\"command\":\"bun run typecheck\",\"output_hash\":\"cb4b515c8cce07991778aa86356ff9fddc90500b06bdcc920ba88cd7f9f3dbf3\",\"detail\":\"web typecheck exit=1\"},{\"probe_id\":\"web.design-strict\",\"ok\":false,\"exit_code\":1,\"command\":\"bun run lint:design:strict\",\"output_hash\":\"a43687380fee2cccb06a59e39ffd06d1aa7256b1428bef3772fc95b9270c3114\",\"detail\":\"web design-system strict exit=1\"},{\"probe_id\":\"web.design-tokens\",\"ok\":false,\"exit_code\":1,\"command\":\"bun run design:tokens:check\",\"output_hash\":\"883f93f3354dde04a3e3d278c0dcb05196e3fc000674e7e4facbe29d316ff6b9\",\"detail\":\"design token guard exit=1\"},{\"probe_id\":\"card.visual\",\"ok\":false,\"exit_code\":1,\"command\":\"read VISUAL-REGRESSION.json produced by uap verify-visual\",\"output_hash\":\"74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b\",\"detail\":\"classified=MISSING/?, unclassified=?\"},{\"probe_id\":\"card.accessibility\",\"ok\":false,\"exit_code\":1,\"command\":\"read ACCESSIBILITY-RESULTS.json produced by uap verify-e2e\",\"output_hash\":\"b691bd5d9e2ff2b7029a9d745f18dddfe92686dc66d9c1c654060e281e9ac554\",\"detail\":\"status=FAIL, critical=0, serious=0\"},{\"probe_id\":\"docs.baseline\",\"ok\":true,\"exit_code\":0,\"command\":\"stat 4 governance baseline documents\",\"output_hash\":\"eb304355e052a5d3d708cfde28e9e79552b6819796a241793789d77521a26f90\",\"detail\":\"missing=none\"}]",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "web.typecheck: web typecheck exit=1"
+    },
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "web.design-strict: web design-system strict exit=1"
+    },
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "web.design-tokens: design token guard exit=1"
+    },
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "card.visual: classified=MISSING/?, unclassified=?"
+    },
+    {
+      "severity": "WARN",
+      "code": "probe_not_passed",
+      "message": "card.accessibility: status=FAIL, critical=0, serious=0"
+    }
+  ],
+  "summary": "batch experience_and_design: 1/6 real probes passed; 0 requirements fully verified by this batch",
+  "content_hash": "95ed254f2b91bbfafe4dd249fe265c076bd46cb5d07916c4102d8f8e4e7e8b7c"
+}
