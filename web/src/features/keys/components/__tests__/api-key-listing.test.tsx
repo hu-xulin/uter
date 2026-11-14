@@ -182,7 +182,7 @@ afterEach(() => {
     .setConfig({ currency: { ...DEFAULT_CURRENCY_CONFIG } })
 })
 
-it('shows desktop remaining and used amounts side by side without labels, with the currency only in the header', () => {
+it('shows desktop remaining and used amounts side by side with the Used amount label, with the currency only in the header', () => {
   renderQuota()
   expect(
     screen.getByRole('columnheader', { name: 'Quota ($)' })
@@ -190,15 +190,17 @@ it('shows desktop remaining and used amounts side by side without labels, with t
   const trigger = screen.getByRole('button', {
     name: /Remaining 80; Remaining percentage 40%; Used amount 120/,
   })
-  expect(trigger).toHaveTextContent('80120')
-  expect(trigger).not.toHaveTextContent(/Remaining|Used amount/)
+  // 表格变体在已用额度前显式渲染「Used amount」标签（axe
+  // label-content-name-mismatch 修复的一部分），可见文本为「80 Used amount 120」。
+  expect(trigger).toHaveTextContent('80 Used amount 120')
   // 两列按内容分配，不是 1:1 等分：等分时半列只有 ~40px，「无限制」需要
   // 42px 就会被截成「无…」。剩余额度拿 auto（按内容），已用额度拿剩下的。
   expect(
     trigger.querySelector('[data-slot="api-key-quota-values"]')
   ).toHaveClass('grid-cols-[auto_minmax(0,1fr)]')
   expect(within(trigger).getByText('80')).toHaveClass('text-left')
-  expect(within(trigger).getByText('120')).toHaveClass('text-right')
+  // 已用额度与「Used amount」标签同处一个右对齐 span，故按合并文本定位。
+  expect(within(trigger).getByText('Used amount 120')).toHaveClass('text-right')
   expect(trigger.parentElement).toHaveClass('max-w-45')
   expect(trigger).not.toHaveTextContent('$')
   expect(trigger.querySelector('svg')).toBeNull()
@@ -233,8 +235,8 @@ it('shows unlimited with cumulative usage and explains it on demand', async () =
   renderQuota({ ...key, unlimited_quota: true })
   const button = screen.getByRole('button', { name: /Unlimited/ })
   expect(button).toHaveTextContent('Unlimited')
-  expect(button).toHaveTextContent('Unlimited120')
-  expect(button).not.toHaveTextContent(/Remaining|Used amount/)
+  // 已用额度前显式渲染「Used amount」标签，可见文本为「Unlimited Used amount 120」。
+  expect(button).toHaveTextContent('Unlimited Used amount 120')
   expect(within(button).getByText('Unlimited')).toHaveClass('text-left')
   expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
   await userEvent.click(button)
@@ -537,7 +539,9 @@ it('keeps mobile quota readable and opens complete model and IP restrictions by 
   const quota = screen.getByRole('button', {
     name: /Unlimited; Used amount 4,490.16/,
   })
-  expect(quota).toHaveTextContent('Remaining($)UnlimitedUsed amount4,490.16')
+  // 卡片（移动端）变体可见文本为「Remaining($) Unlimited Used amount 4,490.16」，
+  // 各段之间由组件渲染的空白文本节点分隔（axe 修复，视觉零变化）。
+  expect(quota).toHaveTextContent('Remaining($) Unlimited Used amount 4,490.16')
   expect(quota.parentElement).toHaveClass('w-full')
   expect(quota.parentElement).not.toHaveClass('max-w-45')
   expect(quota.querySelector('[data-slot="api-key-quota-values"]')).toHaveClass(

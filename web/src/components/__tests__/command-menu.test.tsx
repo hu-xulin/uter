@@ -94,7 +94,10 @@ async function searchEntriesFor(role: number, sidebarModulesAdmin = '') {
     </QueryClientProvider>
   )
 
-  await userEvent.click(await screen.findByRole('button', { name: 'Search' }))
+  // 搜索按钮的可访问名称为「Search ⌘K」（search.tsx 为通过 axe
+  // label-content-name-mismatch 校验，将可见的快捷键徽标一并纳入 aria-label），
+  // 故用部分匹配而非精确匹配。
+  await userEvent.click(await screen.findByRole('button', { name: /Search/ }))
   const options = await screen.findAllByRole('option')
   return options.map((option) => option.textContent)
 }
