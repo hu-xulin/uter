@@ -342,3 +342,15 @@
 | 实测 | `node scripts/check-clerk-boundary.mjs` → `verdict: PASS` / `errors: 0` / `checksPassed: 5`，扫描 **84** 依赖 / **1,287** 源文件 / **11** 能力 / **1,288** 业务红线项 | `UDS5-S21` §8 / §9 |
 | 登记 | `UDS5-S21` §8 / §9 / §10（`S21-D10` 三项闭合、`S21-D12` 记 `AUTOMATED_BY_C5`）；`UDS5-S24` §8 / §13（`design:clerk:check` 由「未接 CI」改为「已接 CI」） | `UDS5-S21`、`UDS5-S24` |
 | 边界 | 零业务 / 资金 / 认证 / 授权代码改动；`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` 零改动；并发 WIP 全部隔离，不进暂存区 | 本节 / 提交清单 |
+
+## 6.5 节点九：2026-11-15 · E28 深色渐变对比度回正 + lint 清零
+
+> 用户指令：「对比度脚本实测深色值是 7.02 / 6.56 / 4.51（背景 #0F172A），第二轮把 03 改向 13 的旧值方向错了，必须按运行时真值回正；lint 13 个 error 确认是否由新增文件引入并清零；修复其他发现的任何问题。」
+
+| 类型 | 动作 | 落点 |
+|---|---|---|
+| 根因 | E28 品牌渐变深色三停靠站对比度，运行时 `verify-contrast.mjs` 以深色背景 `#0F172A` 实测为 **7.02 / 6.56 / 4.51:1`（输出 `GRADIENT_DARK_FROM/VIA/TO`）；第二轮误将 `UDS5-S03` §6 的记录值对齐到 `UDS5-S13` §6 按 `#020617` 算出的旧值 **7.93 / 7.41 / 5.10:1**，与运行时真值不符 | `verify-contrast.mjs:303-318`；`UDS5-S03` §6 / `UDS5-S13` §6 / §3.7 |
+| 回正 | 全部按运行时真值改回：深色背景统一记为 `#0F172A`、深色三值 **7.02 / 6.56 / 4.51:1` | `UDS5-S03` §6（L152）、`UDS5-S13` §6（L270）、`UDS5-S01` 概览表 E28 行（L551）、`UTER-DESIGN-SYSTEM-3.0.md` §17.5 深色列、`SHOWCASE-5.0.html`（L367） |
+| lint | `bun run lint` 实测 **3 个 error**（非 13），全部为 `eslint(no-empty-pattern)` 空对象绑定 `{}`，集中在 `web/e2e/visual/*.spec.ts`；**非新增文件引入**（新增的 `clerk-boundary` / `design-showcase-5.0` 脚本与测试零 lint error）。改为 `async (_, testInfo)`（`no-unused-vars` 的 `argsIgnorePattern: ^_` 放行），`bun run lint` → **exit 0 / 0 error / 78 warning**（warning 存量未动） | `web/e2e/visual/{auth.setup,authed,public}.spec.ts` |
+| 门禁 | 复跑通过：`bun run lint` exit 0、`node scripts/verify-contrast.mjs` PASS（31/0）、`design:showcase:5:check` exit 0、`design:5:check` errors 0、`design:clerk:check` errors 0 | 本节 |
+| 隔离 | 仅暂存 8 个意图文件；`.uap/**`、`web/e2e/axe/**`、`web/e2e/business/**`、`web/src/__axe-experiment.test.ts`、`web/src/styles/theme.css`、`model/phase2_business_functions_test.go` 等 540+ 并发 WIP 全部排除，不进暂存区 | 提交清单 |

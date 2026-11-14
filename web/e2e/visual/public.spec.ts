@@ -19,7 +19,7 @@ test.describe.configure({ mode: 'default' })
 
 // 公开页用例是「真正执行」的：给每条补一条 UAP_STATUS:PASS/FAIL 终态注解，
 // 让机读报告不依赖 `ok` 字段猜状态（失败时写 FAIL，绝不假通过）。
-test.afterEach(async ({}, testInfo) => finalizeUapStatus(testInfo))
+test.afterEach(async (_, testInfo) => finalizeUapStatus(testInfo))
 
 for (const route of routes) {
   for (const viewport of VIEWPORTS) {
