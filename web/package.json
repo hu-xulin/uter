@@ -47,6 +47,7 @@
     "design:5:check": "node scripts/check-design-system-5.0.mjs",
     "design:5:sync": "node scripts/check-design-system-5.0.mjs --generate",
     "design:5:strict": "node scripts/check-design-system-5.0.mjs --strict",
+    "design:clerk:check": "node scripts/check-clerk-boundary.mjs",
     "test:business:e2e": "playwright test --config e2e/business/playwright.config.ts"
   },
   "dependencies": {
