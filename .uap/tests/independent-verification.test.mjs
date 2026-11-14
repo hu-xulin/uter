@@ -81,11 +81,25 @@ describe('独立验收：规范与追踪矩阵（不依赖 UAP 自身实现）',
     const withTest = reqs.filter((r) => (r.test_cases || []).length > 0).length;
     const withCurrentEvidence = reqs.filter((r) => (r.evidence || []).some(
       (e) => typeof e === 'object' && e.hash_valid === true)).length;
-    const verified = reqs.filter((r) => r.verification_status === 'VERIFIED').length;
-    // 这是当前真实基线，不是断言「必须有证据」——用于防止后续有人偷偷把
-    // 状态改成 VERIFIED 却仍无证据。状态报告必须如实反映这些缺口。
-    assert.equal(verified, finalStatus.status_engine.counts.verified);
-    assert.equal(verified, 0, '当前基线：0 条已验证（若此断言失败，须重新核对而非直接改数字）');
+    const verifiedRows = reqs.filter((r) => r.verification_status === 'VERIFIED');
+    // 2026-11-14 基线更新（P2-06 整改后）：旧基线 0 条 VERIFIED → 现在每一条
+    // VERIFIED 都必须绑定真实 BEHAVIOR_EXECUTION 证据（go test 实跑 + sha256
+    // + 当前执行绑定）。若此数字变化，必须重新核对每条证据，而不是直接改数字。
+    assert.equal(verifiedRows.length, matrix.states.VERIFIED,
+      'verification_status 计数必须与矩阵 states 同源');
+    assert.equal(finalStatus.status_engine.counts.verified, verifiedRows.length,
+      'FINAL-STATUS 与矩阵的 VERIFIED 计数必须同源');
+    // 每一条 VERIFIED 都必须有真实行为证据 + 执行绑定（独立复核，不信任引擎）。
+    for (const r of verifiedRows) {
+      const refs = r.evidence_refs || [];
+      assert.ok(refs.length > 0 && refs.every((e) => e.probe_kind === 'BEHAVIOR_EXECUTION'),
+        `${r.requirement_id}: VERIFIED 缺少真实行为证据`);
+      assert.ok(r.execution_id && r.git_head && r.worktree_fingerprint,
+        `${r.requirement_id}: VERIFIED 缺少执行绑定`);
+      assert.ok((r.test_cases || []).length > 0,
+        `${r.requirement_id}: VERIFIED 未绑定任何真实测试用例`);
+    }
+    assert.ok(verifiedRows.length < reqs.length, '真实缺口：绝大多数要求仍未验证');
     assert.ok(withTest < reqs.length, '真实缺口：仍有要求未绑定测试用例');
     assert.ok(withCurrentEvidence < reqs.length, '真实缺口：仍有要求无当前有效证据');
     assert.ok(finalStatus.status_engine.reasons.some((s) => s.includes('lack current valid evidence')),

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114024651-7f7104e8",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T02:46:51.796Z",
+  "started_at": "2026-11-14T02:46:29.302Z",
+  "finished_at": "2026-11-14T02:46:51.796Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-database",
+  "exit_code": 0,
+  "duration_ms": 22494,
+  "inputs": "{\"argv\":[\"verify-database\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "database integration PASS: 47 real isolated-DB scenarios, FK proof verified",
+  "content_hash": "878fc15ce0f00096d48d8b1aa289b75fdffa9587c887b8e725ab86b7ff21f4a4"
+}

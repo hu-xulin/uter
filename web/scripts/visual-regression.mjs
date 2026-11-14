@@ -15,7 +15,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { chromium } from '@playwright/test'
 
 const WEB_ROOT = resolve(process.cwd())
-const SHOWCASE = resolve(WEB_ROOT, '../docs/design-system/showcase-3.0.html')
+const SHOWCASE = resolve(WEB_ROOT, '../docs/design-system/showcase.html')
 const REPORT_PATH =
   process.env.VISUAL_AUDIT_REPORT ||
   resolve(process.env.RUNNER_TEMP || '/tmp', 'uter-visual-a11y-report.json')
@@ -34,11 +34,11 @@ const hash = (value) => createHash('sha256').update(value).digest('hex')
 if (
   !SHOWCASE ||
   !pathToFileURL(SHOWCASE).href ||
-  !SHOWCASE.endsWith('showcase-3.0.html')
+  !SHOWCASE.endsWith('showcase.html')
 ) {
-  add('SHOWCASE_PATH', false, 'Design System 3.0 showcase path is invalid')
+  add('SHOWCASE_PATH', false, 'Design System showcase path is invalid')
 } else {
-  add('SHOWCASE_PATH', true, 'Design System 3.0 showcase path resolved', {
+  add('SHOWCASE_PATH', true, 'Design System showcase path resolved', {
     path: SHOWCASE,
   })
 }
@@ -296,8 +296,8 @@ const report = {
   schema_version: '1.0.0',
   engine: 'UTER_DESIGN_SYSTEM_VISUAL_A11Y_AUDIT',
   generated_at: new Date().toISOString(),
-  design_system: 'UTER Design System 3.0',
-  target: 'docs/design-system/showcase-3.0.html',
+  design_system: 'UTER Design System',
+  target: 'docs/design-system/showcase.html',
   viewport_matrix: VIEWPORTS,
   theme_matrix: THEMES,
   verdict: failures.length ? 'FAIL' : 'PASS',

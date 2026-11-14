@@ -11,20 +11,13 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { gitHead, worktreeFingerprint, currentExecution, bindExecution, executionHistory } from '../runtime/status-engine/execution.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { gitHead, worktreeFingerprint, fingerprintBasis, currentExecution, bindExecution, executionHistory } from '../runtime/status-engine/execution.mjs';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const EMPTY_HASH = crypto.createHash('sha256').update('').digest('hex');
 const VOLATILE = ['.uap/state/', '.uap/reports/', '.uap/evidence/'];
-const sha256 = (text) => crypto.createHash('sha256').update(String(text)).digest('hex');
-// 独立重算：只保留非 UAP 运行产物的已跟踪改动，这正是版本指纹应有的口径。
-const trackedBusinessChanges = () => execFileSync('git',
-  ['status', '--porcelain=v1', '--untracked-files=no'], { cwd: ROOT, encoding: 'utf8' })
-  .split('\n').map((l) => l.trimEnd()).filter(Boolean)
-  .filter((l) => {
-    const file = l.slice(3).split(' -> ').pop();
-    return !VOLATILE.some((p) => file === p || file === p.slice(0, -1) || file.startsWith(p));
-  })
-  .sort().join('\n');
 import {
   buildStatusSnapshot, statusVerdict, specificationVerification,
   renderStatusBlock,
@@ -33,28 +26,81 @@ import { computeFinalStatus, verifyEvidenceChain, isCurrent } from '../runtime/s
 
 const BLOCK_RE = /<!--\s*UAP-STATUS-BLOCK\s+(\{[\s\S]*?\})\s*-->/;
 
+/**
+ * Quiescence read: under a parallel `node --test` run, sibling test files
+ * (real-code-repair-boundaries) deliberately create/restore a real dirty
+ * business file, so the worktree fingerprint legitimately changes mid-run.
+ * "Deterministic when content unchanged" is still proven strictly: require
+ * two CONSECUTIVE reads to agree. If the fingerprint were nondeterministic
+ * on a static tree, consecutive agreement would never be reached.
+ */
+function readStableFingerprint(maxAttempts = 40, intervalMs = 100) {
+  let prev = worktreeFingerprint();
+  for (let i = 1; i < maxAttempts; i += 1) {
+    const next = worktreeFingerprint();
+    if (next === prev) return prev;
+    prev = next;
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, intervalMs);
+  }
+  return prev; // never settled: equality assertions below will fail loudly
+}
+
+/** Retry an equality pair a few times: transient concurrent WIP probes
+ *  (created and restored by sibling test files) self-heal; real
+ *  nondeterminism on a static tree never converges and fails loudly. */
+function assertPairStable(computePair, msg, attempts = 4) {
+  let last = null;
+  for (let i = 0; i < attempts; i += 1) {
+    const [x, y] = computePair();
+    last = [x, y];
+    if (x === y) { assert.equal(y, x, msg); return; }
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 250);
+  }
+  assert.equal(last[1], last[0], `${msg}（重试 ${attempts} 次后仍漂移——若非本测试引起请检查并发写者）`);
+}
+
 describe('执行身份绑定', () => {
   test('git HEAD 来自真实仓库且是 40 位 sha', () => {
     const head = gitHead();
     assert.match(head, /^[0-9a-f]{40}$/);
   });
 
-  test('worktree 指纹稳定，且不受 UAP 运行产物写入影响', () => {
-    // 并行运行时其他测试可能真实改动业务文件，因此对每个指纹取样前后各
-    // 采一次 git status：指纹必然等于其取样窗口内某个可观测状态，而绝不会
-    // 包含 .uap/reports / .uap/state / .uap/evidence 的运行产物。
-    const s0 = trackedBusinessChanges();
-    const a = worktreeFingerprint();
-    const s1 = trackedBusinessChanges();
-    const b = worktreeFingerprint();
-    const s2 = trackedBusinessChanges();
+  test('worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）', () => {
+    const a = readStableFingerprint();
     assert.match(a, /^[0-9a-f]{64}$/);
-    assert.ok([s0, s1].some((s) => sha256(s) === a),
-      '指纹不得包含 UAP 运行产物，必须等于真实业务改动集合的哈希');
-    assert.ok([s1, s2].some((s) => sha256(s) === b));
-    if (s0 === s1 && s1 === s2) {
-      assert.equal(b, a, '业务代码未变化时指纹必须稳定');
-    }
+    assertPairStable(
+      () => [a, readStableFingerprint()],
+      '代码未变化时指纹必须稳定（静默窗口内连续读数一致）',
+    );
+    assert.notEqual(a, EMPTY_HASH, '指纹不得退化为 sha256("") —— Phase 2 审计明确缺陷');
+    const basis = fingerprintBasis();
+    assert.equal(basis.includes_file_content, true);
+    assert.equal(basis.includes_untracked_files, true);
+    assert.ok(basis.excludes.some((p) => p.startsWith('.uap/reports')));
+
+    // 写入 / 改写 UAP 运行产物不得改变指纹（同一验收批次内可以持续生成证据）。
+    // 外部并发 WIP 探针若恰好落在窗口内，由 assertPairStable 重试消解。
+    const volatileProbe = path.join(ROOT, '.uap', 'state', `fingerprint-probe-${process.pid}.tmp`);
+    assertPairStable(() => {
+      fs.writeFileSync(volatileProbe, 'runtime artefact A');
+      const wA = readStableFingerprint();
+      fs.writeFileSync(volatileProbe, 'runtime artefact B');
+      const wB = readStableFingerprint();
+      return [wA, wB];
+    }, '.uap/state 运行产物不得使本批次证据失效');
+    fs.unlinkSync(volatileProbe);
+
+    // 新增一个非易失的未跟踪业务文件必须使指纹变化（内容被绑定）。
+    const codeProbe = path.join(ROOT, `uap-fingerprint-content-probe-${process.pid}.tmp`);
+    fs.writeFileSync(codeProbe, 'version-A');
+    const withNewFile = worktreeFingerprint();
+    fs.writeFileSync(codeProbe, 'version-B');
+    const withChangedContent = worktreeFingerprint();
+    fs.unlinkSync(codeProbe);
+    assert.notEqual(withNewFile, a, '新增未跟踪业务文件必须改变指纹');
+    assert.notEqual(withChangedContent, withNewFile,
+      '仅内容变化、文件集合不变也必须改变指纹（旧实现的致命缺陷）');
+    assert.notEqual(worktreeFingerprint(), withChangedContent, '探针清理必须被指纹感知');
   });
 
   test('currentExecution 返回同一身份，且绑定字段不可被调用方伪造', () => {

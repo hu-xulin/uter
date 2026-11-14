@@ -1,0 +1,449 @@
+# UDS5-R01 — UTER Design System 5.0 规范注册表
+# 唯一正式规范注册表。所有条目必须有唯一 ID、真实存在的文档、真实的实现与验证入口。
+# 规则：DRAFT/PENDING 不得作为正式规范；DEPRECATED 不得继续作为当前标准；禁止重复规范。
+schema_version: "1.0"
+registry_id: "UDS5-R01"
+design_system: "UTER Design System 5.0"
+version: "5.0.0"
+status: "ACTIVE"
+effective_date: "2026-11-14"
+supersedes: "UTER Design System 3.0 (docs/design-system/UTER-DESIGN-SYSTEM-3.0.md, 保留为历史版本)"
+governing_document: "docs/design-system/uter-design-system-5.0/01-UTER-DESIGN-SYSTEM-5.0.md"
+validator: "web/scripts/check-design-system-5.0.mjs"
+owner: "Uter.ai"
+
+status_values:
+  - ACTIVE
+  - DEPRECATED
+  - PENDING
+  - DRAFT
+
+standards:
+  - id: UDS5-S01
+    name: "UTER Design System 5.0 总纲"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "全站设计、前端组件、页面模板、Token 与自动化治理"
+    document: "docs/design-system/uter-design-system-5.0/01-UTER-DESIGN-SYSTEM-5.0.md"
+    dependencies: []
+    implementation: "AGENTS.md; web/AGENTS.md; web/src/design-system/"
+    verification: "web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S02
+    name: "Foundation 基础设计规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "品牌基础、视觉语言、设计原则、Token 使用约束"
+    document: "docs/design-system/uter-design-system-5.0/02-FOUNDATION-STANDARD.md"
+    dependencies: [UDS5-S01]
+    implementation: "web/src/design-system/foundations/; web/src/design-system/tokens/"
+    verification: "web/scripts/check-design-tokens.mjs (T1-T17)"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S03
+    name: "Color 色彩规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "品牌/中性/表面/文字/边框/语义/图表/明暗主题色"
+    document: "docs/design-system/uter-design-system-5.0/03-COLOR-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02]
+    implementation: "web/src/design-system/source/brand.tokens.json; web/src/design-system/tokens/{generated/brand,colors,semantic}.css; web/src/styles/theme.css"
+    verification: "web/scripts/verify-contrast.mjs; web/scripts/generate-design-tokens.mjs --check; lint:design:strict (T8/T13/T14/T15)"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S04
+    name: "Typography 字体规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "字体家族、字号阶梯、字重、行高、语义排版角色"
+    document: "docs/design-system/uter-design-system-5.0/04-TYPOGRAPHY-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02]
+    implementation: "web/src/design-system/tokens/typography.css; web/src/design-system/foundations/typography.css; web/src/design-system/tokens/chart-typography.ts"
+    verification: "lint:design:strict (T1/T2/T3/T4/T5/T9/T12/T16); web/src/design-system/__tests__/tokens.test.ts"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S05
+    name: "Spacing 间距规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "4pt 基础单位、语义间距、密度与响应式间距"
+    document: "docs/design-system/uter-design-system-5.0/05-SPACING-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02]
+    implementation: "web/src/design-system/tokens/spacing.css; web/src/styles/theme-presets.css"
+    verification: "lint:design:strict (T17); web/scripts/sync-design-showcase.mjs --check"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S06
+    name: "Radius and Shape 圆角与形状规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "圆角八档、组件形状、Pill 与 Circle"
+    document: "docs/design-system/uter-design-system-5.0/06-RADIUS-AND-SHAPE-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02]
+    implementation: "web/src/styles/theme.css (--radius); web/src/design-system/tokens/primitives.css"
+    verification: "lint:design:strict (T10); web/src/design-system/__tests__/tokens.test.ts"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S07
+    name: "Elevation and Border 投影与边框规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "1px 边框、6 档 elevation、层叠与 z-index"
+    document: "docs/design-system/uter-design-system-5.0/07-ELEVATION-AND-BORDER-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02]
+    implementation: "web/src/design-system/tokens/elevation.css; web/src/design-system/foundations/accessibility.css"
+    verification: "lint:design:strict (T6); web/src/design-system/__tests__/elevation-motion.test.ts"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S08
+    name: "Iconography 图标规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "图标库、尺寸、描边、对齐与无障碍标签"
+    document: "docs/design-system/uter-design-system-5.0/08-ICONOGRAPHY-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02]
+    implementation: "web/src/design-system/foundations/icons.css; web/src/design-system/tokens/brand-colors.ts"
+    verification: "web/src/design-system/__tests__/spec-guards.test.ts"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S09
+    name: "Motion 动效规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "时长、缓动、状态动效与 Reduce Motion"
+    document: "docs/design-system/uter-design-system-5.0/09-MOTION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02, UDS5-S13]
+    implementation: "web/src/design-system/foundations/motion.css; web/src/design-system/tokens/elevation.css"
+    verification: "lint:design:strict (T11); web/src/design-system/__tests__/elevation-motion.test.ts"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S10
+    name: "Theme 主题规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "Light/Dark、主题继承、系统主题、组件主题、自定义主题"
+    document: "docs/design-system/uter-design-system-5.0/10-THEME-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S03, UDS5-S05]
+    implementation: "web/src/styles/theme.css; web/src/styles/theme-presets.css; web/src/design-system/tokens/generated/brand.css"
+    verification: "web/scripts/check-design-system-5.0.mjs (light/dark parity); verify-contrast.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S11
+    name: "Layout 布局规范"
+    version: "5.0.0"
+    category: layout
+    status: ACTIVE
+    scope: "App Shell、容器、栅格、Sidebar、Header、最大/最小宽度"
+    document: "docs/design-system/uter-design-system-5.0/11-LAYOUT-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S05]
+    implementation: "web/src/components/layout/; web/src/routes/__root.tsx; web/src/routes/_authenticated/system-settings/"
+    verification: "web/src/features/**/__tests__/; web/e2e/visual/"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S12
+    name: "Responsive 响应式规范"
+    version: "5.0.0"
+    category: layout
+    status: ACTIVE
+    scope: "PC Web / H5 / 断点 / 平台支持边界"
+    document: "docs/design-system/uter-design-system-5.0/12-RESPONSIVE-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S11]
+    implementation: "web/src/styles/theme.css; web/src/features/wallet/lib/payment.ts; web/e2e/visual/"
+    verification: "web/e2e/visual/ (22 页 x 2 视口, 本地轨); test:visual"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S13
+    name: "Accessibility 无障碍规范"
+    version: "5.0.0"
+    category: foundation
+    status: ACTIVE
+    scope: "WCAG 2.2 AA 目标、键盘、焦点、ARIA、对比度、触控"
+    document: "docs/design-system/uter-design-system-5.0/13-ACCESSIBILITY-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S03, UDS5-S09]
+    implementation: "web/src/design-system/foundations/accessibility.css; web/src/design-system/__tests__/"
+    verification: "web/scripts/verify-contrast.mjs; web/e2e/axe/; web/src/design-system/__tests__/status-badge-contrast.test.ts"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S14
+    name: "Component 组件规范"
+    version: "5.0.0"
+    category: component
+    status: ACTIVE
+    scope: "组件 22 项契约、A-N 14 类清单、状态矩阵、重复实现治理"
+    document: "docs/design-system/uter-design-system-5.0/14-COMPONENT-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S02, UDS5-S13]
+    implementation: "web/src/components/ui/; web/src/design-system/component-registry.json; web/src/components/data-table/"
+    verification: "web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S15
+    name: "Component API 组件接口规范"
+    version: "5.0.0"
+    category: component
+    status: ACTIVE
+    scope: "Props、受控/非受控、Composition、Slot、Ref、废弃策略"
+    document: "docs/design-system/uter-design-system-5.0/15-COMPONENT-API-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S14]
+    implementation: "web/src/components/ui/button.tsx; web/AGENTS.md (3.2/3.3)"
+    verification: "bun run typecheck; bun run lint; web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S16
+    name: "Page Template 页面模板规范"
+    version: "5.0.0"
+    category: template
+    status: ACTIVE
+    scope: "12 类页面模板、Page Header、状态与响应式行为"
+    document: "docs/design-system/uter-design-system-5.0/16-PAGE-TEMPLATE-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S11, UDS5-S14]
+    implementation: "web/src/routes/ (73 个路由源码); web/src/features/ (30 个目录)"
+    verification: "web/src/routes/__tests__/; web/e2e/visual/; web/e2e/business/"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S17
+    name: "Interaction 交互规范"
+    version: "5.0.0"
+    category: pattern
+    status: ACTIVE
+    scope: "15 类交互的成功/失败/取消/加载/异常五态"
+    document: "docs/design-system/uter-design-system-5.0/17-INTERACTION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S09, UDS5-S13]
+    implementation: "web/src/components/ui/; web/src/styles/theme.css"
+    verification: "lint:design:strict (T14); web/src/components/ui/__tests__/"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S18
+    name: "Form and Validation 表单与校验规范"
+    version: "5.0.0"
+    category: pattern
+    status: ACTIVE
+    scope: "字段校验、服务端错误、错误优先级、未保存提醒、防重复提交"
+    document: "docs/design-system/uter-design-system-5.0/18-FORM-AND-VALIDATION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S14, UDS5-S17]
+    implementation: "web/src/components/ui/{form,field,label,form-label-tier,input-otp}.tsx; web/src/features/**/lib/"
+    verification: "web/src/features/**/__tests__/; bun run i18n:check"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S19
+    name: "Data Display 数据展示规范"
+    version: "5.0.0"
+    category: pattern
+    status: ACTIVE
+    scope: "数据密度、数值/货币/时间格式、表格 11 项能力、状态分支"
+    document: "docs/design-system/uter-design-system-5.0/19-DATA-DISPLAY-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S14, UDS5-S16]
+    implementation: "web/src/components/data-table/ (24 导出); web/src/lib/format; web/src/lib/currency; web/src/i18n/languages"
+    verification: "web/src/components/data-table/__tests__/; web/src/features/**/__tests__/"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S20
+    name: "Notification 通知规范"
+    version: "5.0.0"
+    category: pattern
+    status: ACTIVE
+    scope: "Toast/Snackbar/Alert/Banner/通知中心与五类反馈分级"
+    document: "docs/design-system/uter-design-system-5.0/20-NOTIFICATION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S17, UDS5-S18]
+    implementation: "web/src/components/ui/{sonner,alert}.tsx; web/src/components/{empty-state,error-state,loading-state}.tsx; web/src/lib/handle-server-error"
+    verification: "web/src/features/**/__tests__/; web/AGENTS.md 3.9 归属规则"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S21
+    name: "Clerk 设计参考专项规范"
+    version: "5.0.0"
+    category: reference
+    status: ACTIVE
+    scope: "Clerk 外部参考的 14 项对照、借鉴边界与禁止事项"
+    document: "docs/design-system/uter-design-system-5.0/CLERK-DESIGN-REFERENCE-STANDARD.md"
+    dependencies: [UDS5-S01]
+    implementation: "仅规范映射；不引入任何 Clerk SDK 或运行时依赖"
+    verification: "audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md; web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S22
+    name: "Uter 业务组件适配规范"
+    version: "5.0.0"
+    category: application
+    status: ACTIVE
+    scope: "Dashboard/用户/密钥/模型/渠道/钱包/充值/支付/退款/消费/订单/价格/统计/设置/权限"
+    document: "docs/design-system/uter-design-system-5.0/BUSINESS-UI-ADAPTATION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S14, UDS5-S16]
+    implementation: "web/src/features/ (30 目录); web/src/routes/ (73 路由)"
+    verification: "web/e2e/business/; web/e2e/visual/; web/src/features/**/__tests__/"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S23
+    name: "组件展示与规范对应系统规范"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "组件展示中心 12 项能力与文档-代码双向关联"
+    document: "docs/design-system/uter-design-system-5.0/COMPONENT-DOCUMENTATION-AND-PREVIEW-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S14, UDS5-S24]
+    implementation: "docs/design-system/showcase.html; web/scripts/sync-design-showcase.mjs; docs/design-system/uter-design-system-5.0/COMPONENT-REGISTRY.yaml"
+    verification: "bun run design:showcase:check; bun run test:visual"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S24
+    name: "设计系统自动化治理规范"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "Token/组件/页面/规范一致性检查与 CI 接入"
+    document: "docs/design-system/uter-design-system-5.0/DESIGN-SYSTEM-AUTOMATION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S03, UDS5-S14]
+    implementation: "web/scripts/check-design-tokens.mjs; web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs; .github/workflows/ci.yml"
+    verification: "bun run design:5:check; bun run lint:design:strict; CI frontend job"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S25
+    name: "设计系统验收规范"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "6 组验收清单、状态定义与最终验收 12 项条件"
+    document: "docs/design-system/uter-design-system-5.0/DESIGN-SYSTEM-ACCEPTANCE-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S24]
+    implementation: "docs/design-system/uter-design-system-5.0/FINAL-ACCEPTANCE-REPORT.md"
+    verification: "bun run design:5:check; 独立只读审计过程"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S26
+    name: "设计系统变更记录"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "3.0 至 5.0 时间线与变更分类"
+    document: "docs/design-system/uter-design-system-5.0/DESIGN-SYSTEM-CHANGELOG.md"
+    dependencies: [UDS5-S01]
+    implementation: "docs/design-system/uter-design-system-5.0/"
+    verification: "web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S27
+    name: "3.0 到 5.0 迁移指南"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "保留/合并/删除/版本统一四类迁移动作与回滚"
+    document: "docs/design-system/uter-design-system-5.0/DESIGN-SYSTEM-MIGRATION-GUIDE.md"
+    dependencies: [UDS5-S01, UDS5-S26]
+    implementation: "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md (历史保留); web/src/design-system/component-registry.json"
+    verification: "web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S28
+    name: "废弃规范治理标准"
+    version: "5.0.0"
+    category: governance
+    status: ACTIVE
+    scope: "废弃判定、登记格式、迁移机制与自动注册检查"
+    document: "docs/design-system/uter-design-system-5.0/DESIGN-SYSTEM-DEPRECATION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S26, UDS5-S27]
+    implementation: "docs/design-system/uter-design-system-5.0/DESIGN-STANDARD-REGISTRY.yaml"
+    verification: "web/scripts/check-design-system-5.0.mjs"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-AUDIT-01
+    name: "5.0 基线审计报告"
+    version: "5.0.0"
+    category: audit
+    status: ACTIVE
+    scope: "仓库、3.0 规范、Token、组件、页面、测试、CI、平台的事实基线"
+    document: "docs/design-system/uter-design-system-5.0/audit/BASELINE-AUDIT.md"
+    dependencies: [UDS5-S01]
+    implementation: "全仓只读审计"
+    verification: "本文件 §1 证据来源与 §4.4 门禁实测"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-AUDIT-02
+    name: "Clerk 官方设计参考核实报告"
+    version: "5.0.0"
+    category: audit
+    status: ACTIVE
+    scope: "9 个官方来源核实与 23 项 Adopt/Adapt/Reject 决策"
+    document: "docs/design-system/uter-design-system-5.0/audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md"
+    dependencies: [UDS5-S01, UDS5-S21]
+    implementation: "无代码引入"
+    verification: "本文件 §1 官方 URL 清单与 §4 禁止事项复核"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-R01
+    name: "设计规范注册表"
+    version: "5.0.0"
+    category: registry
+    status: ACTIVE
+    scope: "全部正式规范的唯一注册入口"
+    document: "docs/design-system/uter-design-system-5.0/DESIGN-STANDARD-REGISTRY.yaml"
+    dependencies: [UDS5-S01]
+    implementation: "web/scripts/check-design-system-5.0.mjs"
+    verification: "bun run design:5:check"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-R02
+    name: "组件注册表 5.0 YAML 投影"
+    version: "5.0.0"
+    category: registry
+    status: ACTIVE
+    scope: "65 个已注册组件与规范/代码/测试路径的双向关联"
+    document: "docs/design-system/uter-design-system-5.0/COMPONENT-REGISTRY.yaml"
+    dependencies: [UDS5-S01, UDS5-S14, UDS5-S23]
+    implementation: "web/src/design-system/component-registry.json (唯一真源); web/scripts/check-design-system-5.0.mjs --generate"
+    verification: "bun run design:5:check; bun run components:registry:check"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-F01
+    name: "5.0 最终验收报告"
+    version: "5.0.0"
+    category: acceptance
+    status: ACTIVE
+    scope: "最终状态、清单、测试证据、遗留问题与独立验收"
+    document: "docs/design-system/uter-design-system-5.0/FINAL-ACCEPTANCE-REPORT.md"
+    dependencies: [UDS5-S25, UDS5-S24]
+    implementation: "docs/design-system/uter-design-system-5.0/"
+    verification: "独立只读审计过程; 真实命令退出码"
+    owner: "Uter.ai"
+    mandatory: true

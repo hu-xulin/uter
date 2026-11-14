@@ -1,5 +1,5 @@
 /**
- * UAP Requirement extraction + traceability matrix.
+ * UAP Requirement extraction + strict traceability matrix (audit P2-06).
  *
  * IDs are STABLE by construction: `<spec-id>-REQ-<ordinal>` / `-ACC-<ordinal>`
  * derive only from the specification ID and the item's position in the
@@ -8,21 +8,26 @@
  * requirement. A per-statement sha256 is stored separately to detect wording
  * drift without changing the ID.
  *
- *   node .uap/tools/requirement-matrix.mjs            # regenerate JSON + MD
- *   node .uap/tools/requirement-matrix.mjs --check    # verify stability, no writes
+ *   node .uap/tools/requirement-matrix.mjs            # regenerate strict matrix
+ *   node .uap/tools/requirement-matrix.mjs --check   # verify ID stability only
+ *
+ * The strict 4-state status (RequirementStatus) is produced by
+ * requirement-verification.mjs. This module reads that tool's real RESULTS.json
+ * (with a current-execution stale check) and overlays it, so that BOTH the
+ * verification tool AND a standalone matrix regeneration yield the SAME honest
+ * strict fields. Extraction alone NEVER claims a VERIFIED status.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { currentEvidence } from '../runtime/evidence-engine/index.mjs';
-import { verificationOverlay } from './requirement-verification.mjs';
+import { currentExecution } from '../runtime/status-engine/execution.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
 const UAP = path.join(ROOT, '.uap');
 const OUT_JSON = path.join(UAP, 'reports', 'REQUIREMENT-TRACEABILITY-MATRIX.json');
-const OUT_MD = path.join(UAP, 'reports', 'REQUIREMENT-TRACEABILITY-MATRIX.md');
+const RESULTS = path.join(UAP, 'reports', 'REQUIREMENT-VERIFICATION-RESULTS.json');
 
 const SECTIONS = [
   { key: '强制性要求', tag: 'REQ' },
@@ -32,6 +37,7 @@ const SECTIONS = [
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 const readIf = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '');
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
+const readJSON = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return d; } };
 
 /** Minimal, deterministic YAML reader for the two registries we need. */
 function loadSpecRegistry() {
@@ -52,9 +58,6 @@ function loadValidatorImpls() {
   const out = new Map();
   let cur = null;
   for (const line of text.split('\n')) {
-    // IDs may contain digits (e.g. cross_platform.h5_integrity). A letters-only
-    // class silently dropped those entries and made real implementations look
-    // absent in the matrix.
     const mId = line.match(/^\s*-\s*id:\s*([a-z][a-z0-9_.]+)\s*$/);
     if (mId) { cur = mId[1]; out.set(cur, null); continue; }
     if (!cur) continue;
@@ -88,36 +91,15 @@ function collectTestCases() {
 }
 
 /**
- * Structured evidence for the CURRENT execution only.
- *
- * A bare evidence id string proves nothing: status-engine requires an object
- * carrying execution_id / git_head / worktree_fingerprint / hash_valid. Only
- * records that were really written by this run and whose SHA-256 verifies are
- * returned. Evidence is linked to a requirement ONLY by an explicit
- * requirement_ids / specification_ids declaration on the record — never by
- * guessing from text similarity.
+ * BASE extraction. Honest by construction: no requirement is VERIFIED here.
+ * A status is assigned ONLY by the strict verification overlay (RESULTS.json),
+ * never by file existence, a test-case name, or a spec's self-declared header.
  */
-function loadCurrentEvidence() {
-  const f = path.join(UAP, 'state', 'current-execution.json');
-  let execution = null;
-  if (fs.existsSync(f)) {
-    try { execution = JSON.parse(fs.readFileSync(f, 'utf8')); } catch { execution = null; }
-  }
-  const evidence = currentEvidence().filter((e) => e.hash_valid && e.binding_valid);
-  return {
-    executionId: execution?.execution_id || null,
-    head: execution?.git_head || null,
-    fingerprint: execution?.worktree_fingerprint || null,
-    evidence,
-  };
-}
-
 export function extractRequirements() {
   const registry = loadSpecRegistry();
   const validatorImpls = loadValidatorImpls();
   const executorImpls = loadExecutorImpls();
   const tests = collectTestCases();
-  const current = loadCurrentEvidence();
   const requirements = [];
 
   for (const spec of registry) {
@@ -151,30 +133,8 @@ export function extractRequirements() {
           .filter((t) => t.name.includes(spec.id) || t.name.includes(id) || t.name.includes(`${tag}-`))
           .map((t) => `${t.file}::${t.name}`);
 
-        // Status is derived from evidence, not from the spec's self-declared
-        // header. A current-execution evidence record is required for VERIFIED.
-        const evidence = current.evidence
-          .filter((e) => (e.requirement_ids || []).includes(id)
-            || ((e.requirement_ids || []).length === 0 && (e.specification_ids || []).includes(spec.id)))
-          .map((e) => ({
-            evidence_id: e.evidence_id,
-            execution_id: e.execution_id,
-            git_head: e.git_head,
-            worktree_fingerprint: e.worktree_fingerprint,
-            hash_valid: e.hash_valid,
-            recorded_at: e.recorded_at,
-            exit_code: e.exit_code,
-            command: e.command,
-          }));
         const implemented = implementationFiles.length > 0;
-        let implementationStatus;
-        if (!implemented) implementationStatus = 'NOT_IMPLEMENTED';
-        else if (declaredStatus === 'IMPLEMENTED_NOT_VERIFIED') implementationStatus = 'IMPLEMENTED_NOT_VERIFIED';
-        else implementationStatus = 'IMPLEMENTED';
-
-        const verificationStatus = evidence.length && testCases.length
-          ? 'VERIFIED'
-          : (testCases.length ? 'IMPLEMENTED_NOT_VERIFIED' : 'NOT_VERIFIED');
+        const implementationStatus = implemented ? 'IMPLEMENTED' : 'NOT_IMPLEMENTED';
 
         requirements.push({
           requirement_id: id,
@@ -189,85 +149,111 @@ export function extractRequirements() {
           executor_ids: spec.executor ? [spec.executor] : [],
           validator_ids: spec.validator ? [spec.validator] : [],
           test_cases: testCases,
-          last_execution_id: current.executionId,
-          verification_status: verificationStatus,
-          evidence,
-          blockers: [
-            ...(implementationFiles.length < 2 ? ['implementation_file_missing'] : []),
-            ...(testCases.length === 0 ? ['no_linked_test_case'] : []),
-            ...(evidence.length === 0 ? ['no_current_execution_evidence'] : []),
-          ],
+          // Honest baseline: extraction NEVER verifies a requirement.
+          verification_status: 'NOT_VERIFIED',
+          verification_state: 'NOT_VERIFIED',
+          status: 'NOT_VERIFIED',
+          status_reason: 'NO_VALIDATOR: 尚未由严格验证引擎执行真实行为断言',
+          original_text: statement,
+          module: spec.id,
+          code_locations: implementationFiles,
+          tests: testCases,
+          acceptance_criteria: `[${key}] ${statement}`,
+          actual_result: '未执行任何真实行为命令；提取阶段不产生验证结论',
+          evidence_refs: [],
+          verified_at: null,
+          execution_id: null,
+          git_head: null,
+          worktree_fingerprint: null,
+          evidence: [],
+          blockers: implemented ? [] : ['implementation_file_missing'],
           owner: null,
         });
       });
     }
   }
-  return { requirements, specs: registry, tests, current };
+  return { requirements, specs: registry, tests };
+}
+
+/**
+ * Apply the strict verification overlay from RESULTS.json, but ONLY when that
+ * file was produced against the CURRENT execution (id / HEAD / worktree
+ * fingerprint). A stale overlay can never promote a historical PASS.
+ */
+export function strictOverlay() {
+  const j = readJSON(RESULTS, null);
+  if (!j?.rows?.length) return null;
+  let e;
+  try { e = currentExecution(); } catch { return null; }
+  if (j.execution_id !== e.execution_id || j.git_head !== e.git_head
+      || j.worktree_fingerprint !== e.worktree_fingerprint) return null;
+  return new Map(j.rows.map((r) => [r.requirement_id, r]));
+}
+
+/** Merge strict result rows into base extraction rows (for standalone regen). */
+function applyOverlay(requirements, overlay) {
+  if (!overlay) return requirements;
+  for (const r of requirements) {
+    const ov = overlay.get(r.requirement_id);
+    if (!ov) continue;
+    for (const k of ['status', 'status_reason', 'actual_result', 'evidence_refs',
+      'verified_at', 'execution_id', 'git_head', 'worktree_fingerprint',
+      'module', 'code_locations', 'tests', 'acceptance_criteria',
+      'verification_status', 'verification_state', 'implementation_status',
+      'evidence', 'blockers', 'na_reason', 'na_basis', 'na_approval']) {
+      if (ov[k] !== undefined) r[k] = ov[k];
+    }
+  }
+  return requirements;
+}
+
+/** Count states from requirement rows (single source of truth for states:). */
+export function computeStatesFromRows(rows) {
+  const states = { VERIFIED: 0, NOT_VERIFIED: 0, BLOCKED: 0, NOT_APPLICABLE: 0 };
+  for (const r of rows) {
+    const s = r.status;
+    if (Object.prototype.hasOwnProperty.call(states, s)) states[s] += 1;
+  }
+  return states;
 }
 
 export function buildMatrix() {
-  const { requirements, specs, tests, current } = extractRequirements();
-  // Real Phase-2 verification overlay. It is produced by actually executing
-  // declared probes (uap verify-requirements) and is STALE-checked inside
-  // verificationOverlay(): an overlay from another code version is ignored,
-  // never promoted into the current run.
-  const overlay = verificationOverlay();
-  const ovCounts = {};
-  const VERIFIED_STATE = 'FULLY_VERIFIED';
-  for (const r of requirements) {
-    const ov = overlay?.get(r.requirement_id) || null;
-    if (!ov) continue;
-    // Fail-closed mapping into the matrix's own fields. A requirement is
-    // VERIFIED only when the overlay itself says FULLY_VERIFIED.
-    r.verification_state = ov.verification_state;
-    r.verification_reason = ov.reason || null;
-    r.coverage_basis = ov.coverage_basis || null;
-    r.probes = ov.probes || [];
-    r.blocked_dependency_id = ov.blocked_dependency_id || null;
-    r.unblock_condition = ov.unblock_condition || null;
-    r.na_reason = ov.na_reason || null;
-    r.na_basis = ov.na_basis || null;
-    r.na_approval = ov.na_approval || null;
-    r.evidence_hash = ov.evidence_hash || null;
-    if (ov.verification_state === VERIFIED_STATE) {
-      r.verification_status = 'VERIFIED';
-    } else if (ov.verification_state === 'NOT_APPLICABLE') {
-      r.verification_status = 'NOT_APPLICABLE';
-      r.implementation_status = 'NOT_APPLICABLE';
-      // Replace the generic traceability blockers with the real N/A reason.
-      r.blockers = ['not_applicable_with_reviewed_basis'];
-    } else if (ov.verification_state === 'BLOCKED') {
-      r.verification_status = 'BLOCKED';
-      r.implementation_status = 'BLOCKED';
-      // Only the REAL external dependency is a blocker here.
-      r.blockers = [`external_dependency:${ov.blocked_dependency_id || 'undeclared'}`];
-    } else {
-      r.verification_status = ov.verification_state;
-    }
-    if (ov.verification_state === 'NOT_BUILT' || ov.verification_state === 'PARTIALLY_BUILT') {
-      r.implementation_status = ov.verification_state;
-    }
-    ovCounts[ov.verification_state] = (ovCounts[ov.verification_state] || 0) + 1;
-  }
-  const counts = {};
-  for (const r of requirements) {
-    counts[r.implementation_status] = (counts[r.implementation_status] || 0) + 1;
-  }
-  const vcounts = {};
-  for (const r of requirements) vcounts[r.verification_status] = (vcounts[r.verification_status] || 0) + 1;
+  const { requirements, specs, tests } = extractRequirements();
+  const overlay = strictOverlay();
+  applyOverlay(requirements, overlay);
+  return assembleMatrix(requirements, specs, tests, overlay);
+}
+
+function assembleMatrix(requirements, specs, tests, overlay) {
+  const implCounts = {};
+  const verCounts = {};
   const bySpec = {};
-  for (const r of requirements) (bySpec[r.specification_id] ||= []).push(r.requirement_id);
+  for (const r of requirements) {
+    implCounts[r.implementation_status] = (implCounts[r.implementation_status] || 0) + 1;
+    verCounts[r.verification_status] = (verCounts[r.verification_status] || 0) + 1;
+    (bySpec[r.specification_id] ||= []).push(r.requirement_id);
+  }
+  const states = computeStatesFromRows(requirements);
+  let execution = null;
+  try { execution = currentExecution(); } catch { execution = null; }
   return {
-    schema_version: '1.0',
+    schema_version: '2.0',
+    status_model: 'RequirementStatus = VERIFIED | NOT_VERIFIED | BLOCKED | NOT_APPLICABLE',
     generated_at: new Date().toISOString(),
-    generator: 'node .uap/tools/requirement-matrix.mjs',
+    generator: 'node .uap/tools/requirement-verification.mjs (strict) / requirement-matrix.mjs',
     id_policy: 'stable: <spec-id>-REQ|ACC-<ordinal-in-section>; text hash stored separately, never used to mint IDs',
+    // Flat binding fields are REQUIRED: the evidence manifest's
+    // REQUIRED_REPORT_FIELDS and the final acceptance gate read them
+    // uniformly from every final report (nested `execution` kept for
+    // human readability + binding_policy documentation).
+    execution_id: execution?.execution_id || null,
+    git_head: execution?.git_head || null,
+    worktree_fingerprint: execution?.worktree_fingerprint || null,
     execution: {
-      id: current.executionId,
-      git_head: current.head,
-      worktree_fingerprint: current.fingerprint,
-      evidence_records_current: current.evidence.length,
-      binding_policy: 'explicit requirement_ids / specification_ids on real, hash-valid evidence records only',
+      id: execution?.execution_id || null,
+      git_head: execution?.git_head || null,
+      worktree_fingerprint: execution?.worktree_fingerprint || null,
+      binding_policy: 'VERIFIED requires a real BEHAVIOR_EXECUTION command bound to THIS execution with a distinct output assertion and hash-valid evidence',
     },
     totals: {
       specifications: specs.length,
@@ -276,13 +262,13 @@ export function buildMatrix() {
       acceptance: requirements.filter((r) => r.section === '验收条件').length,
       discovered_test_cases: tests.length,
     },
-    implementation_status_counts: counts,
-    verification_status_counts: vcounts,
-    verification_state_counts: ovCounts,
+    implementation_status_counts: implCounts,
+    verification_status_counts: verCounts,
+    states,
     verification_overlay: overlay ? {
       source: '.uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json',
-      generator: 'uap verify-requirements (real probe execution + independent validator)',
-    } : { source: null, note: 'no current-version verification overlay present' },
+      generator: 'requirement-verification.mjs (real behaviour probes + independent validator)',
+    } : { source: null, note: 'no current-version strict overlay present' },
     specifications: specs.map((s) => ({
       specification_id: s.id,
       requirement_ids: bySpec[s.id] || [],
@@ -292,83 +278,43 @@ export function buildMatrix() {
   };
 }
 
-function mdReport(m) {
-  const lines = [
-    '# UAP 1.0 — 规范追踪矩阵',
-    '',
-    `> 由 \`node .uap/tools/requirement-matrix.mjs\` 从 32 份规范原文真实提取生成。`,
-    `> 生成时间：${m.generated_at}。ID 策略：${m.id_policy}。`,
-    '',
-    '## 汇总',
-    '',
-    `| 项 | 数量 |`,
-    `| --- | ---: |`,
-    `| 规范 | ${m.totals.specifications} |`,
-    `| 要求总数 | ${m.totals.requirements} |`,
-    `| 强制性要求 | ${m.totals.mandatory} |`,
-    `| 验收条件 | ${m.totals.acceptance} |`,
-    `| 已发现测试用例 | ${m.totals.discovered_test_cases} |`,
-    '',
-    '## 实现状态分布',
-    '',
-    '| 状态 | 数量 |',
-    '| --- | ---: |',
-    ...Object.entries(m.implementation_status_counts).sort().map(([k, v]) => `| ${k} | ${v} |`),
-    '',
-    '## 验证状态分布',
-    '',
-    '| 状态 | 数量 |',
-    '| --- | ---: |',
-    ...Object.entries(m.verification_status_counts).sort().map(([k, v]) => `| ${k} | ${v} |`),
-    '',
-    '> `VERIFIED` 只在该要求同时具备「当前执行 ID 的证据」与「真实链接的测试用例」时出现；',
-    '> 规范头部自述的 `ACTIVE` 不会被当作验证证据。',
-    '',
-    '## 按规范索引',
-    '',
-    '| 规范 | 自述状态 | 要求数 | 要求 ID 范围 |',
-    '| --- | --- | ---: | --- |',
-    ...m.specifications.map((s) => `| ${s.specification_id} | ${s.declared_status} | ${s.requirement_ids.length} | ${s.requirement_ids[0] || '—'} … ${s.requirement_ids.at(-1) || '—'} |`),
-    '',
-    '## 要求明细',
-    '',
-    '| Requirement ID | 状态 | 验证 | 实现文件 | 测试 | 阻断 | 要求 |',
-    '| --- | --- | --- | --- | ---: | --- | --- |',
-    ...m.requirements.map((r) => `| \`${r.requirement_id}\` | ${r.implementation_status} | ${r.verification_status} | ${r.implementation_files.length} | ${r.test_cases.length} | ${r.blockers.length} | ${r.requirement.replace(/\|/g, '\\|').slice(0, 90)} |`),
-    '',
-    '> 完整字段（含 statement_sha256 / evidence / executor_ids / validator_ids / owner）见',
-    '> `.uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json`。',
-    '',
-  ];
-  return lines.join('\n');
-}
-
-const checkOnly = process.argv.includes('--check');
-const m = buildMatrix();
-
-// Stability guard: IDs must be unique, and identical to a previously written
-// matrix if the spec texts have not changed.
-const ids = m.requirements.map((r) => r.requirement_id);
-if (new Set(ids).size !== ids.length) {
-  console.error('FATAL: duplicate requirement IDs');
-  process.exit(1);
-}
-if (fs.existsSync(OUT_JSON)) {
-  const prev = JSON.parse(fs.readFileSync(OUT_JSON, 'utf8'));
-  const prevIds = (prev.requirements || []).map((r) => r.requirement_id);
-  if (prevIds.length && (prevIds.length !== ids.length || prevIds.some((x, i) => x !== ids[i]))) {
-    console.error('FATAL: requirement ID set changed — refusing to silently renumber');
-    process.exit(1);
+/** ID-stability guard: a regenerated matrix must never silently renumber. */
+function assertStableIds(rows) {
+  const ids = rows.map((r) => r.requirement_id);
+  if (new Set(ids).size !== ids.length) throw new Error('duplicate requirement IDs');
+  if (fs.existsSync(OUT_JSON)) {
+    const prev = readJSON(OUT_JSON, null);
+    const prevIds = (prev?.requirements || []).map((r) => r.requirement_id);
+    if (prevIds.length && (prevIds.length !== ids.length || prevIds.some((x, i) => x !== ids[i]))) {
+      throw new Error('requirement ID set changed — refusing to silently renumber');
+    }
   }
 }
 
-if (checkOnly) {
-  console.log(`CHECK OK: ${m.totals.requirements} requirements, IDs stable, ` +
-    `${m.totals.specifications} specs, ${m.totals.discovered_test_cases} test cases discovered`);
-} else {
+/**
+ * Write the strict matrix JSON (the ONE owned generated artifact).
+ * `rows` may already be fully enriched (from verifyRequirements) or base rows.
+ */
+export function writeMatrix(rows, { specs = null, tests = null, overlay = null } = {}) {
+  assertStableIds(rows);
+  const s = specs || loadSpecRegistry();
+  const t = tests || collectTestCases();
+  const m = assembleMatrix(rows, s, t, overlay);
+  fs.mkdirSync(path.dirname(OUT_JSON), { recursive: true });
   fs.writeFileSync(OUT_JSON, `${JSON.stringify(m, null, 2)}\n`, 'utf8');
-  fs.writeFileSync(OUT_MD, mdReport(m), 'utf8');
+  return m;
+}
+
+const checkOnly = process.argv.includes('--check');
+if (checkOnly) {
+  const { requirements, specs, tests } = extractRequirements();
+  assertStableIds(requirements);
+  console.log(`CHECK OK: ${requirements.length} requirements, IDs stable, ` +
+    `${specs.length} specs, ${tests.length} test cases discovered`);
+} else if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
+  const m = buildMatrix();
+  fs.mkdirSync(path.dirname(OUT_JSON), { recursive: true });
+  fs.writeFileSync(OUT_JSON, `${JSON.stringify(m, null, 2)}\n`, 'utf8');
   console.log(`matrix written: ${m.totals.requirements} requirements / ${m.totals.specifications} specs`);
-  console.log(`implementation: ${JSON.stringify(m.implementation_status_counts)}`);
-  console.log(`verification  : ${JSON.stringify(m.verification_status_counts)}`);
+  console.log(`states: ${JSON.stringify(m.states)}`);
 }

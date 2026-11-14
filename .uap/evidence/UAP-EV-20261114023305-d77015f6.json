@@ -1,0 +1,42 @@
+{
+  "evidence_id": "UAP-EV-20261114023305-d77015f6",
+  "kind": "requirement_behavior_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-02-002"
+  ],
+  "requirement_ids": [
+    "UAP-02-002-REQ-004"
+  ],
+  "recorded_at": "2026-11-14T02:33:05.864Z",
+  "started_at": "2026-11-14T02:33:05.864Z",
+  "finished_at": "2026-11-14T02:33:05.864Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114023304-bed901e1",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "4a285c9c43be5c10d3758121142c732182181f7156c1ca09c32b2e055df11a6e",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114023304-bed901e1",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "4a285c9c43be5c10d3758121142c732182181f7156c1ca09c32b2e055df11a6e",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "go test ./model/ -count=1 -v -run TestPhase2DBIntegration/db_09_foreign_key",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"assertions\":[{\"name\":\"db_09_foreign_key_enforced\",\"required_output\":[\"FK enforced\",\"orphan rejected\"],\"found\":true}]}",
+  "stdout": "=== RUN   TestPhase2DBIntegration\n=== RUN   TestPhase2DBIntegration/db_09_foreign_key\n    phase2_db_integration_test.go:436: observed PRAGMA foreign_keys=1, top_ups FK relations=1\n    phase2_db_integration_test.go:462: FK enforced (foreign_keys=1, relations=1): legal order accepted, orphan rejected\n--- PASS: TestPhase2DBIntegration (0.06s)\n    --- PASS: TestPhase2DBIntegration/db_09_foreign_key (0.06s)\nPASS\nok  \tgithub.com/uter-ai/uter/model\t2.198s\n",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "behaviour run bhv.model-foreign-key: 1/1 distinct assertions observed in real stdout",
+  "content_hash": "a05d50cc5738d63f6340bdd8ea81e6d5f46861240d6303de0faeb8424c5982ca"
+}

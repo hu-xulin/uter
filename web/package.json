@@ -44,6 +44,9 @@
     "verify:contrast": "node scripts/verify-contrast.mjs",
     "components:registry:check": "node scripts/check-component-registry.mjs",
     "components:registry:strict": "node scripts/check-component-registry.mjs --strict",
+    "design:5:check": "node scripts/check-design-system-5.0.mjs",
+    "design:5:sync": "node scripts/check-design-system-5.0.mjs --generate",
+    "design:5:strict": "node scripts/check-design-system-5.0.mjs --strict",
     "test:business:e2e": "playwright test --config e2e/business/playwright.config.ts"
   },
   "dependencies": {

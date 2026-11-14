@@ -416,6 +416,13 @@ func migrateDB() error {
 	if err != nil {
 		return err
 	}
+	// Versioned schema migrations (the real top_ups.user_id FK, the reversible
+	// index upgrade) run right after AutoMigrate has created/updated the base
+	// tables and before any other startup step. See model/schema_migrations.go
+	// and model/MIGRATION-INVENTORY.md. A failed migration aborts startup.
+	if err := MigrateSchemaUp(DB); err != nil {
+		return fmt.Errorf("versioned schema migration failed: %w", err)
+	}
 	if err := InitializeUserAuthVersions(); err != nil {
 		return err
 	}

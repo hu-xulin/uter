@@ -1,143 +1,365 @@
 {
-  "generated_at": "2026-11-13T17:41:44.363Z",
+  "status_model": "UAP-TEST-STATUS-1.0",
   "status": "FAIL",
+  "suite": "e2e",
+  "command": "npx playwright test --config e2e/axe/playwright.config.ts + playwright business",
+  "exit_code": 1,
+  "items": [
+    {
+      "id": "axe_0_axe: 鉴权页批量扫描",
+      "title": "axe: 鉴权页批量扫描",
+      "status": "SKIPPED",
+      "reason": "runner reported status=skipped",
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "skipped"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_1_axe: 公开页 /",
+      "title": "axe: 公开页 /",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_2_axe: 公开页 /about",
+      "title": "axe: 公开页 /about",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_3_axe: 公开页 /pricing",
+      "title": "axe: 公开页 /pricing",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_4_axe: 公开页 /rankings",
+      "title": "axe: 公开页 /rankings",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_5_axe: 公开页 /docs",
+      "title": "axe: 公开页 /docs",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_6_axe: 公开页 /sign-in",
+      "title": "axe: 公开页 /sign-in",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_7_axe: 公开页 /sign-up",
+      "title": "axe: 公开页 /sign-up",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_8_axe: 公开页 /forgot-password",
+      "title": "axe: 公开页 /forgot-password",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_9_axe: 公开页 /404",
+      "title": "axe: 公开页 /404",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_10_axe: 公开页 /500",
+      "title": "axe: 公开页 /500",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_11_axe: 公开页 /privacy-policy",
+      "title": "axe: 公开页 /privacy-policy",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_12_axe: 公开页 /user-agreement",
+      "title": "axe: 公开页 /user-agreement",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_13_axe: 公开页 /recharge-agreement",
+      "title": "axe: 公开页 /recharge-agreement",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    }
+  ],
+  "counts": {
+    "PASS": 13,
+    "FAIL": 0,
+    "SKIPPED": 1,
+    "BLOCKED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "total": 14,
+  "pass": 13,
+  "fail": 0,
+  "blocked": 0,
+  "skipped": 1,
+  "not_run": 0,
+  "not_applicable": 0,
   "problems": [
-    "axe exit=1, failed=1"
+    "business e2e exit=1"
   ],
   "browser_runs": [
     {
       "suite": "axe",
-      "target": "http://localhost:3003",
-      "exit_code": 1,
-      "passed": 13,
-      "failed": 1
-    },
-    {
-      "suite": "business",
-      "target": "http://localhost:3100",
+      "target": "http://localhost:3101",
       "exit_code": 0,
-      "passed": 24,
+      "passed": 13,
       "failed": 0,
+      "skipped": 1,
+      "blocked": 0,
       "stats": {
-        "startTime": "2026-11-13T17:41:37.361Z",
-        "duration": 6962.303,
-        "expected": 23,
+        "startTime": "2026-11-14T05:02:36.628Z",
+        "duration": 144458.16,
+        "expected": 13,
         "skipped": 1,
         "unexpected": 0,
         "flaky": 0
       },
       "scenarios": [
         {
-          "title": "biz_01 注册新用户 [BLOCKED_BY_POLICY]",
-          "ok": true
+          "title": "axe: 鉴权页批量扫描",
+          "status": "SKIPPED",
+          "ok": false,
+          "reason": "runner reported status=skipped"
         },
         {
-          "title": "biz_02 密码登录成功（真实凭据）",
-          "ok": true
+          "title": "axe: 公开页 /",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_03 错误密码登录被拒绝",
-          "ok": true
+          "title": "axe: 公开页 /about",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_04 未登录调用受保护 API 被 401 拒绝",
-          "ok": true
+          "title": "axe: 公开页 /pricing",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_05 未登录访问受保护页面跳转登录页",
-          "ok": true
+          "title": "axe: 公开页 /rankings",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_06 已登录读取个人信息 /api/user/self",
-          "ok": true
+          "title": "axe: 公开页 /docs",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_07 会话刷新成功且 access token 轮换",
-          "ok": true
+          "title": "axe: 公开页 /sign-in",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_08 登出后受保护 API 失效",
-          "ok": true
+          "title": "axe: 公开页 /sign-up",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_09 站点状态 /api/status（公开）",
-          "ok": true
+          "title": "axe: 公开页 /forgot-password",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_10 公告接口 /api/notice（公开）",
-          "ok": true
+          "title": "axe: 公开页 /404",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_11 定价接口 /api/pricing（登录态）",
-          "ok": true
+          "title": "axe: 公开页 /500",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_12 排行榜 /api/rankings（登录态）",
-          "ok": true
+          "title": "axe: 公开页 /privacy-policy",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_13 密钥列表 /api/token/（登录态）",
-          "ok": true
+          "title": "axe: 公开页 /user-agreement",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
-          "title": "biz_14 创建密钥 POST /api/token/",
-          "ok": true
-        },
-        {
-          "title": "biz_15 更新密钥改名并回读验证",
-          "ok": true
-        },
-        {
-          "title": "biz_16 删除密钥后列表不再包含",
-          "ok": true
-        },
-        {
-          "title": "biz_17 用户可用模型 /api/user/models",
-          "ok": true
-        },
-        {
-          "title": "biz_18 用户分组 /api/user/self/groups",
-          "ok": true
-        },
-        {
-          "title": "biz_19 用户日志 /api/log/self（登录态）",
-          "ok": true
-        },
-        {
-          "title": "biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
-          "ok": true
-        },
-        {
-          "title": "biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
-          "ok": true
-        },
-        {
-          "title": "biz_24 用户用量统计 /api/log/self/stat",
-          "ok": true
-        },
-        {
-          "title": "biz_22 普通用户访问管理 API 被 403 拒绝",
-          "ok": true
-        },
-        {
-          "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
-          "ok": true
+          "title": "axe: 公开页 /recharge-agreement",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         }
-      ],
+      ]
+    },
+    {
+      "suite": "business",
+      "target": "http://localhost:3100",
+      "exit_code": 1,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "blocked": 0,
+      "stats": {
+        "startTime": "2026-11-14T05:05:03.523Z",
+        "duration": 94.09400000000005,
+        "expected": 0,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "scenarios": [],
       "stderr_tail": ""
     }
   ],
   "axe": {
     "command": "npx playwright test --config e2e/axe/playwright.config.ts",
-    "exit_code": 1,
-    "target": "http://localhost:3003",
+    "exit_code": 0,
+    "target": "http://localhost:3101",
     "passed": 13,
-    "failed": 1,
+    "failed": 0,
+    "skipped": 1,
+    "blocked": 0,
     "critical_violations": [],
-    "skipped_note": "skipped authed group requires VISUAL_TEST credentials; never deleted to force 0 skipped"
+    "serious_violations": 0
   },
-  "execution_id": "UAP-EXEC-20261113171750-6afc5fa2",
-  "git_head": "f728955561bdd297d03af7576354a363982d2186",
-  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "evidence_ref": "UAP-EV-20261113174144-de5abd40"
+  "test_authentication": {
+    "isolated": true,
+    "mechanism": "isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass",
+    "production_auth_policy_modified": false
+  },
+  "skipped_note": "1 skipped / 0 blocked — never counted as PASS",
+  "generated_at": "2026-11-14T05:05:03.713Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "test_environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true
+  },
+  "requirement_ids": [],
+  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "evidence_ref": "UAP-EV-20261114050504-c4e40486"
 }

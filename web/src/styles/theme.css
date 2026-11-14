@@ -356,7 +356,9 @@ For commercial licensing, please contact support@uter.ai
   --accent-foreground: #0f172a;
   --destructive: #dc2626;
   --destructive-foreground: #f8fafc;
-  --success: #16a34a;
+  /* green-700 #15803d：白底 5.02:1（green-600 #16a34a 仅 3.29:1，axe
+   * color-contrast serious —— 13px 常规文本需 4.5:1）。见 3.0 规范。 */
+  --success: #15803d;
   --success-foreground: #f8fafc;
   --warning: oklch(0.681 0.162 75.834);
   --warning-foreground: oklch(0.145 0 0);

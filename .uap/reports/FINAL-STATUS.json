@@ -1,187 +1,203 @@
 {
+  "schema_version": "2.0",
   "platform": "UAP",
   "version": "1.0.0",
-  "overall_status": "IMPLEMENTED_NOT_VERIFIED",
+  "generated_at": "2026-11-14T05:19:23.853Z",
+  "generated_from": "uap accept (final acceptance gate, real command results)",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "overall_status": "FAILED",
   "claim_allowed": false,
-  "status_engine": {
-    "computed_by": "runtime.status-engine/computeFinalStatus",
-    "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
-    "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
-    "worktree_fingerprint": "ea1cfc836e16cd7a0676cad1b9dff3ce6d09993bd50b741a725531634d2d5720",
-    "counts": {
-      "requirements_total": 538,
-      "applicable": 538,
-      "not_applicable": 0,
-      "not_implemented": 0,
-      "partially_implemented": 0,
-      "implemented": 366,
-      "implemented_not_verified": 172,
-      "verified": 0,
-      "blocked_requirements": 0
-    },
-    "capabilities": {
-      "real_code_repair": true,
-      "independent_regression": true,
-      "recovery": true,
-      "e2e": false,
-      "database_integration": false,
-      "financial_integrity": false
-    },
-    "capability_gaps": [
-      "e2e",
-      "database_integration",
-      "financial_integrity"
-    ],
-    "reasons": [
-      "172 requirement(s) implemented but not verified",
-      "538/538 applicable requirements lack current valid evidence",
-      "502 requirement(s) have no evidence record"
-    ],
-    "claim_allowed": false,
-    "p0_blockers": [],
-    "evidence_chain": {
-      "ok": true,
-      "problems": [],
-      "checked": 383
-    },
-    "stale_historical_artefacts": []
-  },
-  "generated_at": "2026-11-13T11:24:10.870Z",
-  "generated_from": "uap report (real command results, never copied from the template)",
-  "specifications": {
-    "total": 32,
-    "complete": 32,
-    "verified": 0,
-    "blocked": 0,
-    "failed": 0
-  },
-  "machine_configs": {
-    "total": 6,
-    "verified": 6,
-    "failed": 0,
-    "registry_ok": true
-  },
-  "system_entrypoints": {
-    "total": 2,
-    "verified": 2,
-    "failed": 0
-  },
-  "runtime": {
-    "implemented": true,
-    "started": true,
-    "health_check_passed": true,
-    "end_to_end_passed": false,
-    "all_validators_passed": true,
-    "validation_bound_to_current_execution": true,
-    "tests_bound_to_current_execution": true,
-    "recovery_test_passed": true,
-    "components_total": 10,
-    "components_healthy": 10
-  },
-  "executors": {
-    "registered": 32,
-    "unique_implementations": 16,
-    "implemented": 16,
-    "verified": 0
-  },
-  "validators": {
-    "registered": 32,
-    "implemented": 32,
-    "verified": 32
-  },
-  "agents": {
-    "registered": 11,
-    "implemented": 11
-  },
-  "workflows": {
-    "registered": 7,
-    "runs": 61
-  },
+  "status_model": "UAP-TEST-STATUS-1.0",
   "three_independent_results": {
+    "uap_platform": {
+      "status": "FAILED"
+    },
+    "uter_business_system": {
+      "status": "FAILED"
+    },
+    "real_payment_gateway": {
+      "status": "BLOCKED",
+      "mode": "LOCAL_SIMULATION"
+    },
     "specification_completeness": {
-      "status": "COMPLETE",
-      "evidence": {
-        "specs_complete": 32,
-        "specs_total": 32,
-        "registry_ok": true,
-        "registry_summary": "37/37 registry checks passed, 0 blocking findings"
-      }
+      "status": "COMPLETE"
     },
     "uap_runtime_capability": {
-      "status": "NOT_FULLY_VERIFIED",
-      "evidence": {
-        "health_check_passed": true,
-        "components_healthy": 10,
-        "components_total": 10,
-        "validators_pass": 32,
-        "validators_fail": 0,
-        "validators_total": 32,
-        "validators_blocked_restricted": 0,
-        "validators_blocked_undeclared": 0,
-        "uap_tests_exit_code": 0,
-        "tests_bound_to_current_execution": true,
-        "validators_bound_to_current_execution": true,
-        "verdict_detail": "Runtime 健康 10/10 组件健康; 32 个验证器 32 PASS / 0 FAIL; 0 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=0; 卡片已绑定当前 execution_id/HEAD/worktree"
-      }
+      "status": "FAILED"
     },
     "uter_real_compliance": {
-      "status": "NOT_FULLY_VERIFIED",
-      "evidence": {
-        "audit_executed": true,
-        "defect_registry_built": true,
-        "financial_failed": 0,
-        "financial_blocked": 0,
-        "quality_gates_failed": 0,
-        "open_p0": 0,
-        "open_p1": 0,
-        "validators_pass": 32,
-        "validators_fail": 0,
-        "validators_total": 32,
-        "restricted_blocked_items": [],
-        "financial_simulated_only": true,
-        "validators_bound_to_current_execution": true,
-        "verdict_detail": "可执行检查: 验证器 32/32 PASS, 0 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=0; 资金验证 simulated_only=true; 当前执行绑定 validators=true tests=true; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。"
-      }
+      "status": "FAILED"
     }
   },
-  "final_acceptance": {
-    "uap_fully_operational": false,
-    "uter_fully_compliant": false,
-    "both_satisfied": false,
-    "claim_allowed": false,
-    "restricted_blocked_items": [],
-    "claim_note": "规范完整性 / UAP 运行能力 / Uter 合规性三者分别取证, 不可互相替代; 受限未执行项一律记入 BLOCKED-ITEMS.md, 不计入通过"
+  "uter_compliance": "FAILED",
+  "overall_system_status": "FAILED",
+  "fully_verified": false,
+  "fully_operational_allowed": false,
+  "counts": {
+    "requirements_total": 538,
+    "requirements": {
+      "VERIFIED": 6,
+      "NOT_VERIFIED": 526,
+      "BLOCKED": 6,
+      "NOT_APPLICABLE": 0
+    },
+    "gate_groups": 6,
+    "gate_groups_pass": 3,
+    "gate_groups_fail": 3,
+    "necessary_blocked": 2,
+    "necessary_unverified": 532,
+    "accessibility": {
+      "passed": 13,
+      "failed": 0,
+      "skipped": 1,
+      "status": "BLOCKED"
+    },
+    "visual": {
+      "total": 29,
+      "passed": 0,
+      "diffs": 29,
+      "baseline_updated": false,
+      "exit_code": 1,
+      "status": "FAIL"
+    }
   },
-  "uter_compliance": "NOT_FULLY_VERIFIED",
-  "critical_defects": 0,
-  "open_defects": 0,
   "blocked_items": [
     {
-      "id": "AUTH:production_deploy",
-      "severity": "BLOCKED_BY_DESIGN",
-      "reason": "requires explicit production authorization; UAP performs local simulation only",
-      "source": ".uap/config/permission-policy.yaml"
+      "id": "EXT-PROVIDER-SANDBOX",
+      "reason": "{\"id\":\"EXT-PROVIDER-SANDBOX\",\"reason\":\"no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox\",\"missing_conditions\":[\"provider sandbox AppID / merchant id\",\"provider sandbox private key / API key (never read from production config)\",\"verified sandbox endpoint reachability\",\"explicit user authorisation for sandbox calls\"],\"unblock_condition\":\"user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment\"}",
+      "impact": "real payment gateway verification cannot be claimed; FULLY_VERIFIED is not allowed"
     },
     {
-      "id": "AUTH:production_database_write",
-      "severity": "BLOCKED_BY_DESIGN",
-      "reason": "requires explicit production authorization; UAP performs local simulation only",
-      "source": ".uap/config/permission-policy.yaml"
-    },
-    {
-      "id": "AUTH:real_payment",
-      "severity": "BLOCKED_BY_DESIGN",
-      "reason": "requires explicit production authorization; UAP performs local simulation only",
-      "source": ".uap/config/permission-policy.yaml"
-    },
-    {
-      "id": "AUTH:real_refund",
-      "severity": "BLOCKED_BY_DESIGN",
-      "reason": "requires explicit production authorization; UAP performs local simulation only",
-      "source": ".uap/config/permission-policy.yaml"
+      "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
+      "reason": "532 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
+      "impact": "full requirement closure not achieved"
     }
   ],
-  "evidence_index": ".uap/reports/EVIDENCE-INDEX.md",
+  "problems": [
+    "accessibility: status=BLOCKED passed=13 failed=0",
+    "visual: status=FAIL exit=1 diffs=29",
+    "visual: 26 unclassified diff(s)",
+    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
+    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
+    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
+    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
+    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
+    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch",
+    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch",
+    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
+    "uap: 3 build/typecheck command(s) failed",
+    "532 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+  ],
+  "final_acceptance": {
+    "claim_allowed": false,
+    "gate_status": "FAILED",
+    "report": ".uap/reports/FINAL-ACCEPTANCE.json",
+    "evidence_manifest_hash": "32ba9c01c16fe555872dff761e253f9cf096e499a2e6bf5ef174ba59f7264d95",
+    "command": "node .uap/tools/final-acceptance-gate.mjs",
+    "uap_fully_operational": false
+  },
+  "status_engine": {
+    "computed_by": "uap.final-acceptance-gate",
+    "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+    "counts": {
+      "requirements_total": 538,
+      "verified": 6,
+      "applicable": 538
+    },
+    "reasons": [
+      "accessibility: status=BLOCKED passed=13 failed=0",
+      "visual: status=FAIL exit=1 diffs=29",
+      "visual: 26 unclassified diff(s)",
+      "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
+      "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
+      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
+      "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
+      "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
+      "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
+      "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch",
+      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch",
+      "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch",
+      "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
+      "uap: 3 build/typecheck command(s) failed",
+      "532 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+    ],
+    "claim_allowed": false,
+    "capabilities": {
+      "real_code_repair": false,
+      "independent_regression": false
+    },
+    "p0_blockers": [
+      {
+        "id": "CAPABILITY-GAP-real_code_repair",
+        "category": "CAPABILITY_GAP",
+        "status": "OPEN",
+        "detail": "capability real_code_repair not proven by the UAP runtime self-tests"
+      },
+      {
+        "id": "CAPABILITY-GAP-independent_regression",
+        "category": "CAPABILITY_GAP",
+        "status": "OPEN",
+        "detail": "capability independent_regression not proven by the UAP runtime self-tests"
+      }
+    ]
+  },
   "report_count": 18,
   "reports": [
     "IMPLEMENTATION-REPORT.md",
@@ -203,5 +219,12 @@
     "BLOCKED-ITEMS.md",
     "FINAL-STATUS.json"
   ],
-  "generated_by_real_run": true
+  "specifications": {
+    "total": 32,
+    "complete": 32,
+    "verified": 0,
+    "blocked": 0,
+    "failed": 0
+  },
+  "final_acceptance_note": "FULLY_VERIFIED is impossible while a necessary verification is BLOCKED or unverified. Local payment simulation is never treated as a real provider sandbox."
 }

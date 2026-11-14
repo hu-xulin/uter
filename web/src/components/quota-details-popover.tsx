@@ -54,7 +54,13 @@ export function QuotaDetailsPopover(props: QuotaDetailsPopoverProps) {
             />
           }
         >
-          {props.children}
+          {/* axe label-content-name-mismatch：可访问名称必须包含可见文本的
+              tokens（连续子序列）。注意 `aria-hidden` 帮不上忙 —— axe 的
+              visible-text 计算按「屏幕可见性」走，不读 aria-hidden；真正
+              的修复在各调用方：触发器内的裸数字必须配上文字标签，且数字
+              之间保留空白文本节点，让可见文本 tokens 成为 aria-label
+              tokens 的连续子序列（见 api-key-quota-cell / user-quota-cell）。 */}
+          <span className='contents'>{props.children}</span>
         </PopoverTrigger>
         {props.afterTrigger}
       </div>

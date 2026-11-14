@@ -1,194 +1,579 @@
 {
-  "generated_at": "2026-11-13T17:17:13.974Z",
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "status": "FAIL",
+  "suite": "visual_regression",
   "command": "npx playwright test --config e2e/visual/playwright.config.ts",
   "exit_code": 1,
-  "total_specs": 29,
-  "passed": 26,
-  "total_diffs": 3,
-  "classified": 3,
-  "unclassified": 0,
-  "baseline_updated": false,
   "items": [
+    {
+      "id": "visual_0_登录链路冒烟：凭据可登录",
+      "title": "登录链路冒烟：凭据可登录",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_1_鉴权页面基线 - desktop",
+      "title": "鉴权页面基线 - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_2_鉴权页面基线 - mobile",
+      "title": "鉴权页面基线 - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_3_home - desktop",
+      "title": "home - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_4_home - mobile",
+      "title": "home - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_5_about - desktop",
+      "title": "about - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_6_about - mobile",
+      "title": "about - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_7_pricing - desktop",
+      "title": "pricing - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_8_pricing - mobile",
+      "title": "pricing - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_9_rankings - desktop",
+      "title": "rankings - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_10_rankings - mobile",
+      "title": "rankings - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_11_docs - desktop",
+      "title": "docs - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_12_docs - mobile",
+      "title": "docs - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_13_sign-in - desktop",
+      "title": "sign-in - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_14_sign-in - mobile",
+      "title": "sign-in - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_15_sign-up - desktop",
+      "title": "sign-up - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_16_sign-up - mobile",
+      "title": "sign-up - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_17_forgot-password - desktop",
+      "title": "forgot-password - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_18_forgot-password - mobile",
+      "title": "forgot-password - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_19_error-404 - desktop",
+      "title": "error-404 - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_20_error-404 - mobile",
+      "title": "error-404 - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_21_error-500 - desktop",
+      "title": "error-500 - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_22_error-500 - mobile",
+      "title": "error-500 - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_23_privacy-policy - desktop",
+      "title": "privacy-policy - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_24_privacy-policy - mobile",
+      "title": "privacy-policy - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_25_user-agreement - desktop",
+      "title": "user-agreement - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_26_user-agreement - mobile",
+      "title": "user-agreement - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_27_recharge-agreement - desktop",
+      "title": "recharge-agreement - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_28_recharge-agreement - mobile",
+      "title": "recharge-agreement - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    }
+  ],
+  "counts": {
+    "PASS": 0,
+    "FAIL": 29,
+    "SKIPPED": 0,
+    "BLOCKED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "total": 29,
+  "pass": 0,
+  "fail": 29,
+  "blocked": 0,
+  "skipped": 0,
+  "not_run": 0,
+  "not_applicable": 0,
+  "total_specs": 29,
+  "passed": 0,
+  "total_diffs": 29,
+  "classified": 3,
+  "unclassified": 26,
+  "baseline_updated": false,
+  "legacy_items": [
     {
       "title": "登录链路冒烟：凭据可登录",
       "ok": false,
       "category": "test_environment_credential",
-      "message_excerpt": "Error: API 登录失败：HTTP 200 Password login has been disabled by administrator\n\n   at lib/login.ts:92\n\n  90 |   }\n  91 |   if (!response.ok() || body.success !== true) {\n> 92 |     throw new Error(\n     |           ^\n  93 |       `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`\n  94 |     )\n  95 |   }\n    at loginViaApi (/Users/lincolnhu/uter/web/e2e/visual/lib/login.ts:92:11)\n    at /Users/lincolnhu/uter/web/e2e/visual/auth.setup.spec.ts:22:3"
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).not.\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: not \u001b[32m/\\/sign-in/\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3101\u001b[7m/sign-in\u001b[27m?redirect=%2Fdashboard\"\u001b[39m\nTimeout: 20000ms\n\nCall log:\n\u001b[2m  - Expect \"not toHaveURL\" with timeout 20000ms\u001b[22m\n\u001b[2m    43 × locator resolved to <html lang=\"en\" dir=\"ltr\" class=\"font-inter light\" data-app-channel=\"2k6e8r7p\" data-build-rev=\"rv.0000.2k6e8r7p\">…</html>\u001b[22m\n\u001b[2m       - "
     },
     {
       "title": "鉴权页面基线 - desktop",
       "ok": false,
       "category": "test_environment_credential",
-      "message_excerpt": "Error: API 登录失败：HTTP 200 Password login has been disabled by administrator\n\n   at lib/login.ts:92\n\n  90 |   }\n  91 |   if (!response.ok() || body.success !== true) {\n> 92 |     throw new Error(\n     |           ^\n  93 |       `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`\n  94 |     )\n  95 |   }\n    at loginViaApi (/Users/lincolnhu/uter/web/e2e/visual/lib/login.ts:92:11)\n    at /Users/lincolnhu/uter/web/e2e/visual/authed.spec.ts:33:5"
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  64445 pixels (ratio 0.05 of all image pixels) are different.\n\n  Snapshot: dashboard-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[2"
     },
     {
       "title": "鉴权页面基线 - mobile",
       "ok": false,
       "category": "test_environment_credential",
-      "message_excerpt": "Error: API 登录失败：HTTP 200 Password login has been disabled by administrator\n\n   at lib/login.ts:92\n\n  90 |   }\n  91 |   if (!response.ok() || body.success !== true) {\n> 92 |     throw new Error(\n     |           ^\n  93 |       `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`\n  94 |     )\n  95 |   }\n    at loginViaApi (/Users/lincolnhu/uter/web/e2e/visual/lib/login.ts:92:11)\n    at /Users/lincolnhu/uter/web/e2e/visual/authed.spec.ts:33:5"
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  34015 pixels (ratio 0.11 of all image pixels) are different.\n\n  Snapshot: dashboard-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m"
     },
     {
       "title": "home - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3453 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: home-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(home-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - "
     },
     {
       "title": "home - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3305 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: home-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(home-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 33"
     },
     {
       "title": "about - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: about-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  "
     },
     {
       "title": "about - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4301 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: about-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - "
     },
     {
       "title": "pricing - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  29320 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: pricing-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b"
     },
     {
       "title": "pricing - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  24684 pixels (ratio 0.08 of all image pixels) are different.\n\n  Snapshot: pricing-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2"
     },
     {
       "title": "rankings - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  29320 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: rankings-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m"
     },
     {
       "title": "rankings - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  24684 pixels (ratio 0.08 of all image pixels) are different.\n\n  Snapshot: rankings-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b"
     },
     {
       "title": "docs - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  45370 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: docs-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(docs-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  -"
     },
     {
       "title": "docs - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  33855 pixels (ratio 0.11 of all image pixels) are different.\n\n  Snapshot: docs-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(docs-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 3"
     },
     {
       "title": "sign-in - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  29320 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: sign-in-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b"
     },
     {
       "title": "sign-in - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  24684 pixels (ratio 0.08 of all image pixels) are different.\n\n  Snapshot: sign-in-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2"
     },
     {
       "title": "sign-up - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  5929 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: sign-up-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-up-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b["
     },
     {
       "title": "sign-up - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4362 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: sign-up-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-up-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m"
     },
     {
       "title": "forgot-password - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4933 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: forgot-password-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - font"
     },
     {
       "title": "forgot-password - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4362 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: forgot-password-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts "
     },
     {
       "title": "error-404 - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4362 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-404-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22"
     },
     {
       "title": "error-404 - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4362 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: error-404-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n"
     },
     {
       "title": "error-500 - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4380 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-500-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-500-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22"
     },
     {
       "title": "error-500 - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4380 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: error-500-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-500-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n"
     },
     {
       "title": "privacy-policy - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  29582 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: privacy-policy-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts"
     },
     {
       "title": "privacy-policy - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  25385 pixels (ratio 0.08 of all image pixels) are different.\n\n  Snapshot: privacy-policy-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts l"
     },
     {
       "title": "user-agreement - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  34750 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: user-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(user-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts"
     },
     {
       "title": "user-agreement - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  26958 pixels (ratio 0.09 of all image pixels) are different.\n\n  Snapshot: user-agreement-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(user-agreement-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts l"
     },
     {
       "title": "recharge-agreement - desktop",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  37908 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: recharge-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(recharge-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m "
     },
     {
       "title": "recharge-agreement - mobile",
-      "ok": true,
-      "category": "UNCLASSIFIED",
-      "message_excerpt": ""
+      "ok": false,
+      "category": "needs_manual_classification",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  25691 pixels (ratio 0.08 of all image pixels) are different.\n\n  Snapshot: recharge-agreement-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(recharge-agreement-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  -"
     }
   ],
-  "stdout_tail": "    Error Context: .visual-e2e/results/authed-鉴权页面基线---mobile-chromium/error-context.md\n\n    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────\n    .visual-e2e/results/authed-鉴权页面基线---mobile-chromium/trace.zip\n    Usage:\n\n        npx playwright show-trace .visual-e2e/results/authed-鉴权页面基线---mobile-chromium/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  3 failed\n    [auth-setup] › e2e/visual/auth.setup.spec.ts:21:1 › 登录链路冒烟：凭据可登录 ───────────────────────────────\n    [chromium] › e2e/visual/authed.spec.ts:32:3 › 鉴权页面基线 - desktop ─────────────────────────────────\n    [chromium] › e2e/visual/authed.spec.ts:32:3 › 鉴权页面基线 - mobile ──────────────────────────────────\n  26 passed (2.6m)\n",
+  "test_authentication": {
+    "isolated": true,
+    "mechanism": "isolated test stack (DB copy + dedicated port/env); existing authorised test account only; no production auth change",
+    "production_auth_policy_modified": false,
+    "accounts_created": 0,
+    "production_build_modified": false
+  },
+  "stdout_tail": "omium] › e2e/visual/public.spec.ts:26:5 › error-500 - desktop ──────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-500 - mobile ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - desktop ─────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - mobile ──────────────────────\n",
   "stderr_tail": "",
   "json_parsed": true,
-  "execution_id": "UAP-EXEC-20261113171355-b01f08c1",
-  "git_head": "f728955561bdd297d03af7576354a363982d2186",
-  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "evidence_ref": "UAP-EV-20261113171714-db76cd31"
+  "generated_at": "2026-11-14T05:11:27.140Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "test_environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true
+  },
+  "requirement_ids": [],
+  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "evidence_ref": "UAP-EV-20261114051127-c666220a"
 }

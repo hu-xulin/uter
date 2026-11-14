@@ -1,0 +1,120 @@
+{
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "status": "PASS",
+  "suite": "database_migrations",
+  "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers -count=1 -json",
+  "exit_code": 0,
+  "items": [
+    {
+      "id": "migration_upgrade",
+      "title": "migration upgrade",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "migration_rollback",
+      "title": "migration rollback",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "migration_failure_recovery",
+      "title": "migration failure_recovery",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "migration_idempotent",
+      "title": "migration idempotent",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "migration_version_consistency",
+      "title": "migration version_consistency",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "migration_business_data_integrity",
+      "title": "migration business_data_integrity",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    }
+  ],
+  "counts": {
+    "PASS": 6,
+    "FAIL": 0,
+    "SKIPPED": 0,
+    "BLOCKED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "total": 6,
+  "pass": 6,
+  "fail": 0,
+  "blocked": 0,
+  "skipped": 0,
+  "not_run": 0,
+  "not_applicable": 0,
+  "migrations": {
+    "upgrade": "PASS",
+    "rollback": "PASS",
+    "failure_recovery": "PASS",
+    "idempotent": "PASS",
+    "version_consistency": "PASS",
+    "business_data_integrity": "PASS"
+  },
+  "inventory": [
+    {
+      "check": "upgrade",
+      "result": "PASS"
+    },
+    {
+      "check": "rollback",
+      "result": "PASS"
+    },
+    {
+      "check": "failure_recovery",
+      "result": "PASS"
+    },
+    {
+      "check": "idempotent",
+      "result": "PASS"
+    },
+    {
+      "check": "version_consistency",
+      "result": "PASS"
+    },
+    {
+      "check": "business_data_integrity",
+      "result": "PASS"
+    }
+  ],
+  "inventory_count": 6,
+  "migration_framework": ".uap/reports/../model/schema_migrations.go",
+  "upgrade": "PASS",
+  "rollback": "PASS",
+  "generated_by": "real go test -json markers from model/schema_migrations_test.go",
+  "generated_at": "2026-11-14T02:46:48.983Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "test_environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true
+  },
+  "requirement_ids": [],
+  "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
+  "evidence_ref": "UAP-EV-20261114024651-c5bda657"
+}

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114025628-46289356",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T02:56:28.329Z",
+  "started_at": "2026-11-14T02:55:46.799Z",
+  "finished_at": "2026-11-14T02:56:28.329Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114025542-07c59bb9",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "f6af070a894451bbf2110ce4379459fa43b300fd75cd705709fac6f4a9482354",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114025542-07c59bb9",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "f6af070a894451bbf2110ce4379459fa43b300fd75cd705709fac6f4a9482354",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test --test-concurrency=1 .uap/tests/runtime.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 41530,
+  "inputs": "{\"mode\":\"selected\",\"test_files\":[\".uap/tests/runtime.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 1 files -> exit 0, tap pass=25 fail=0",
+  "content_hash": "bd84b061b72ae603f4ad1f4c6327ce1e28026e626ad57b1f9a8be47555150762"
+}

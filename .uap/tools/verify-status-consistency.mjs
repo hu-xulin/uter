@@ -1,29 +1,43 @@
 /**
- * INDEPENDENT status consistency verifier.
+ * INDEPENDENT status / evidence consistency verifier — Phase 2 hardened.
  *
- * It deliberately does NOT trust the report generator. It recomputes the
- * verdict from raw artifacts (matrix, test card, validator card, evidence),
- * then compares the three published artifacts against that recomputation:
- *   - .uap/reports/FINAL-STATUS.json
- *   - .uap/SPECIFICATION-INDEX.md (machine-readable UAP-STATUS-BLOCK)
- *   - `./uap status --json` executed as a separate process
+ * The old verifier only compared FINAL-STATUS.json, the index block and the
+ * CLI, and NEVER checked worktree_fingerprint, capability cards, evidence
+ * hashes, or the evidence manifest. The audit found reports bound to three
+ * different HEADs and an empty-string fingerprint all passing that check.
  *
- * Any disagreement is a FAIL. A historical PASS card, a hand-edited status
- * field or a report that was not regenerated after a code change is detected.
+ * This version:
+ *   - treats the final acceptance gate result (when bound to the current
+ *     execution) as the authoritative verdict;
+ *   - requires execution_id + git_head + worktree_fingerprint on EVERY final
+ *     card and checks the fingerprint is still the CURRENT worktree;
+ *   - recomputes card counts from raw items and rejects BLOCKED/SKIPPED/NOT_RUN
+ *     promoted to PASS;
+ *   - verifies the evidence manifest and every entry hash;
+ *   - compares FINAL-STATUS.json, the machine-readable index block and an
+ *     independent `uap status --json` process against the same verdict.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
-import { ROOT, FILES, UAP } from '../runtime/_lib/paths.mjs';
-import { readJSON, readText, exists, nowISO } from '../runtime/_lib/util.mjs';
+import { ROOT, FILES, UAP, REPORTS } from '../runtime/_lib/paths.mjs';
+import { readJSON, readText, exists, nowISO, writeJSON } from '../runtime/_lib/util.mjs';
 import { statusVerdict } from '../runtime/status-engine/snapshot.mjs';
+import { gitHead, worktreeFingerprint, currentExecution } from '../runtime/status-engine/execution.mjs';
+import { verifyEvidenceManifest, verifyFinalReportBindings, FINAL_REPORTS } from '../runtime/evidence-engine/manifest.mjs';
+import { summarize, TEST_STATUS } from '../runtime/status-engine/test-status.mjs';
 
 export const component = 'uap.verify-status-consistency';
-export const version = '1.0.0';
+export const version = '2.0.0';
 
 const STATUS_BLOCK_RE = /<!--\s*UAP-STATUS-BLOCK\s+(\{[\s\S]*?\})\s*-->/;
 const CLI = path.join(UAP, 'bin', 'uap.mjs');
+const CARDS = Object.freeze([
+  'DATABASE-INTEGRATION.json', 'PAYMENT-SANDBOX.json', 'E2E-RESULTS.json',
+  'ACCESSIBILITY-RESULTS.json', 'VISUAL-REGRESSION.json', 'SECURITY-VERIFICATION.json',
+  'RUNTIME-TEST-RESULTS.json', 'VALIDATION-RESULTS.json',
+]);
 
 function parseIndexBlock() {
   if (!exists(FILES.index)) return null;
@@ -36,8 +50,7 @@ function runCliStatus() {
   try {
     const out = execFileSync(process.execPath, [CLI, 'status', '--json'], {
       cwd: ROOT, encoding: 'utf8', timeout: 180000,
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, UAP_ROOT: ROOT },
+      stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, UAP_ROOT: ROOT },
     });
     return { ok: true, result: JSON.parse(out) };
   } catch (error) {
@@ -45,7 +58,7 @@ function runCliStatus() {
   }
 }
 
-/** @returns {{ok: boolean, problems: string[], checks: Array, recomputed: object}} */
+/** @returns {{ok: boolean, problems: string[], checks: Array}} */
 export function verifyStatusConsistency({ withCli = true } = {}) {
   const checks = [];
   const problems = [];
@@ -54,57 +67,90 @@ export function verifyStatusConsistency({ withCli = true } = {}) {
     if (!ok) problems.push(`${name}: ${detail}`);
   };
 
-  const engine = statusVerdict();          // independent recompute, no injected claims
-  const verdict = engine.verdict;
+  const execution = currentExecution();
+  const legacy = statusVerdict();
+  const gate = readJSON(path.join(REPORTS, 'FINAL-ACCEPTANCE.json'), null);
+  const gateIsCurrent = Boolean(gate && gate.execution_id === execution.execution_id
+    && gate.git_head === execution.git_head
+    && gate.worktree_fingerprint === execution.worktree_fingerprint);
   const finalCard = readJSON(FILES.finalStatus, null);
   const block = parseIndexBlock();
 
+  const authoritative = gateIsCurrent ? gate.status : legacy.verdict.overall_status;
+  const claimAllowed = gateIsCurrent ? gate.claim_allowed === true : legacy.verdict.claim_allowed;
+  const reportOverall = gateIsCurrent ? (gate.overall_status || null) : (finalCard?.overall_status ?? null);
+  const recomputed = gateIsCurrent ? gate.status : legacy.verdict.overall_status;
+
   add('final_status_exists', Boolean(finalCard), finalCard ? 'FINAL-STATUS.json present' : 'FINAL-STATUS.json missing');
+  add('final_acceptance_exists', Boolean(gate), gate ? 'FINAL-ACCEPTANCE.json present' : 'final acceptance gate has not been run');
   add('index_status_block_exists', Boolean(block), block ? 'UAP-STATUS-BLOCK present' : 'index has no machine-readable status block');
 
-  const reportOverall = finalCard?.overall_status ?? null;
-  const indexOverall = block?.overall_status ?? null;
-  const reportVerified = finalCard?.specifications?.verified ?? null;
-  const indexVerified = block?.specifications_verified ?? null;
-  const matrixVerified = engine.specVer.verified_specs;
+  add('final_acceptance_bound_to_current_execution', gateIsCurrent,
+    gate ? `gate=${gate.execution_id}/${gate.git_head}/${String(gate.worktree_fingerprint).slice(0, 12)} current=${execution.execution_id}/${execution.git_head}/${String(execution.worktree_fingerprint).slice(0, 12)}` : 'gate missing');
 
-  add('index_overall_matches_report', reportOverall !== null && reportOverall === indexOverall,
-    `index=${indexOverall} report=${reportOverall}`);
-  add('index_verified_matches_report', reportVerified !== null && reportVerified === indexVerified,
-    `index=${indexVerified} report=${reportVerified}`);
-  add('report_verified_matches_matrix', reportVerified === matrixVerified,
-    `report=${reportVerified} matrix=${matrixVerified}`);
-  add('report_matches_recomputed_verdict', reportOverall === verdict.overall_status,
-    `report=${reportOverall} recomputed=${verdict.overall_status}`);
+  add('report_matches_recomputed_verdict', reportOverall === recomputed,
+    `report=${reportOverall} recomputed=${recomputed}`);
+  add('index_overall_matches_report', block?.overall_status === reportOverall,
+    `index=${block?.overall_status} report=${reportOverall}`);
   add('claim_allowed_matches_engine',
-    finalCard?.final_acceptance?.claim_allowed === verdict.claim_allowed
-    && finalCard?.claim_allowed === verdict.claim_allowed,
-    `report.final_acceptance=${finalCard?.final_acceptance?.claim_allowed} report.claim_allowed=${finalCard?.claim_allowed} engine=${verdict.claim_allowed}`);
+    finalCard?.claim_allowed === claimAllowed && finalCard?.final_acceptance?.claim_allowed === claimAllowed,
+    `report=${finalCard?.claim_allowed} gate=${claimAllowed}`);
   add('claim_allowed_matches_state_machine',
-    verdict.claim_allowed === ['FULLY_VERIFIED', 'FULLY_OPERATIONAL'].includes(reportOverall),
-    `overall=${reportOverall} claim_allowed=${verdict.claim_allowed}`);
-  add('execution_id_matches_current_run',
-    Boolean(finalCard?.status_engine?.execution_id)
-    && finalCard.status_engine.execution_id === verdict.execution_id
-    && block?.execution_id === verdict.execution_id,
-    `report=${finalCard?.status_engine?.execution_id} index=${block?.execution_id} current=${verdict.execution_id}`);
-  add('git_head_matches_current_run',
-    finalCard?.status_engine?.git_head === verdict.git_head && block?.git_head === verdict.git_head,
-    `report=${finalCard?.status_engine?.git_head} index=${block?.git_head} current=${verdict.git_head}`);
-  add('three_independent_results_match_engine',
-    finalCard?.three_independent_results?.uap_runtime_capability?.status === verdict.three_independent_results.uap_runtime_capability
-    && finalCard?.three_independent_results?.uter_real_compliance?.status === verdict.three_independent_results.uter_real_compliance,
-    `report.uap=${finalCard?.three_independent_results?.uap_runtime_capability?.status} report.uter=${finalCard?.three_independent_results?.uter_real_compliance?.status} engine=${JSON.stringify(verdict.three_independent_results)}`);
+    claimAllowed === ['FULLY_VERIFIED', 'FULLY_OPERATIONAL'].includes(recomputed),
+    `overall=${recomputed} claim_allowed=${claimAllowed}`);
 
-  const stale = verdict.reasons.filter((r) => r.includes('stale artefacts'));
-  add('no_stale_pass_promoted', !(verdict.claim_allowed && stale.length),
-    verdict.claim_allowed ? `claim_allowed=true with stale artifacts: ${stale.join(';')}` : `claim_allowed=false (stale artifacts: ${stale.length})`);
-  add('p0_blockers_forbid_full_claim',
-    !(verdict.claim_allowed && engine.snapshot.p0_blockers.length > 0),
-    `claim_allowed=${verdict.claim_allowed} open_p0=${engine.snapshot.p0_blockers.length}`);
+  const bindings = verifyFinalReportBindings({ execution });
+  add('all_final_reports_bound_to_same_batch', bindings.ok,
+    bindings.ok ? `${bindings.checked.length} final reports bound` : bindings.problems.join('; '));
 
-  // Independent process path: the CLI must not be able to report a different
-  // status than the published report.
+  // Fingerprint must be a REAL, content-bearing hash and must still describe
+  // the current worktree. The old empty-string fingerprint is rejected.
+  const fpNow = worktreeFingerprint();
+  const EMPTY = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+  add('worktree_fingerprint_is_not_empty_hash', fpNow !== EMPTY && /^[0-9a-f]{64}$/.test(String(fpNow)),
+    `fingerprint=${fpNow}`);
+  add('code_unchanged_since_batch_start', fpNow === execution.worktree_fingerprint,
+    `now=${fpNow} bound=${execution.worktree_fingerprint}`);
+  add('git_head_matches_current_run', gitHead() === execution.git_head,
+    `now=${gitHead()} bound=${execution.git_head}`);
+
+  // Every capability card must be bound AND its counts must be recomputable.
+  const cardProblems = [];
+  for (const name of CARDS) {
+    const card = readJSON(path.join(REPORTS, name), null);
+    if (!card) { cardProblems.push(`${name}: missing`); continue; }
+    for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'generated_at']) {
+      if (!card[field]) cardProblems.push(`${name}: missing ${field}`);
+    }
+    if (card.execution_id !== execution.execution_id) cardProblems.push(`${name}: execution_id=${card.execution_id}`);
+    if (card.git_head !== execution.git_head) cardProblems.push(`${name}: git_head=${card.git_head}`);
+    if (card.worktree_fingerprint !== execution.worktree_fingerprint) cardProblems.push(`${name}: fingerprint mismatch`);
+    if (card.status === 'PASS' && Number(card.exit_code ?? 1) !== 0 && name !== 'E2E-RESULTS.json') {
+      cardProblems.push(`${name}: status=PASS but exit_code=${card.exit_code}`);
+    }
+    if (Array.isArray(card.items) && card.items.length) {
+      const s = summarize(card.items);
+      for (const k of Object.keys(s.counts)) {
+        if (Number(card.counts?.[k] ?? 0) !== s.counts[k]) {
+          cardProblems.push(`${name}: counts.${k}=${card.counts?.[k]} but items contain ${s.counts[k]}`);
+        }
+      }
+      if (card.status === 'PASS' && (s.counts.BLOCKED || s.counts.SKIPPED || s.counts.NOT_RUN || s.counts.FAIL)) {
+        cardProblems.push(`${name}: status=PASS while items include non-PASS states`);
+      }
+    }
+  }
+  add('capability_cards_have_real_counts_and_bindings', cardProblems.length === 0,
+    cardProblems.length ? cardProblems.join('; ') : `${CARDS.length} cards verified`);
+
+  const manifest = verifyEvidenceManifest({ strictCurrent: true, execution });
+  add('evidence_manifest_hashes_and_bindings', manifest.ok,
+    manifest.ok ? `${manifest.checked} file hashes verified` : manifest.problems.join('; '));
+  add('no_stale_pass_promoted', !(claimAllowed && (gateIsCurrent === false || !manifest.ok)),
+    `claim_allowed=${claimAllowed} gate_current=${gateIsCurrent} manifest_ok=${manifest.ok}`);
+  add('p0_blockers_forbid_full_claim', !(claimAllowed && legacy.snapshot.p0_blockers.length > 0),
+    `claim_allowed=${claimAllowed} open_p0=${legacy.snapshot.p0_blockers.length}`);
+
   let cli = null;
   if (withCli) {
     cli = runCliStatus();
@@ -113,32 +159,29 @@ export function verifyStatusConsistency({ withCli = true } = {}) {
       const cliFinal = cli.result?.data?.final_status;
       add('cli_overall_matches_report', cliFinal?.overall_status === reportOverall,
         `cli=${cliFinal?.overall_status} report=${reportOverall}`);
-      add('cli_execution_matches_report', cliFinal?.execution_id === finalCard?.status_engine?.execution_id,
-        `cli=${cliFinal?.execution_id} report=${finalCard?.status_engine?.execution_id}`);
-      add('cli_three_results_match_report',
-        cli.result?.data?.three_independent_results?.uter_real_compliance === finalCard?.three_independent_results?.uter_real_compliance?.status,
-        `cli=${cli.result?.data?.three_independent_results?.uter_real_compliance} report=${finalCard?.three_independent_results?.uter_real_compliance?.status}`);
+      add('cli_execution_matches_report', cliFinal?.execution_id === execution.execution_id,
+        `cli=${cliFinal?.execution_id} current=${execution.execution_id}`);
     }
   }
 
   const result = {
     component, version, ok: problems.length === 0,
     checked_at: nowISO(),
-    execution_id: verdict.execution_id,
-    git_head: verdict.git_head,
-    recomputed_status: verdict.overall_status,
+    execution_id: execution.execution_id,
+    git_head: execution.git_head,
+    worktree_fingerprint: execution.worktree_fingerprint,
+    recomputed_status: recomputed,
     report_status: reportOverall,
-    index_status: indexOverall,
-    verified_requirements: verdict.counts.verified,
-    applicable_requirements: verdict.counts.applicable,
-    capability_gaps: verdict.capability_gaps,
-    reasons: verdict.reasons,
+    index_status: block?.overall_status ?? null,
+    verified_requirements: gateIsCurrent ? (gate.checks?.find((c) => c.id === '6.4_requirements')?.details?.counts?.VERIFIED ?? 0) : legacy.verdict.counts.verified,
+    applicable_requirements: gateIsCurrent ? (gate.checks?.find((c) => c.id === '6.4_requirements')?.details?.total ?? 538) : legacy.verdict.counts.applicable,
+    capability_gaps: legacy.verdict.capability_gaps,
+    reasons: gateIsCurrent ? gate.problems : legacy.verdict.reasons,
     checks,
     problems,
+    gate_is_current: gateIsCurrent,
   };
-  if (fs.existsSync(path.dirname(FILES.finalStatus))) {
-    fs.writeFileSync(path.join(ROOT, '.uap', 'reports', 'STATUS-CONSISTENCY.json'), `${JSON.stringify(result, null, 2)}\n`, 'utf8');
-  }
+  writeJSON(path.join(REPORTS, 'STATUS-CONSISTENCY.json'), result);
   return result;
 }
 

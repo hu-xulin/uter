@@ -20,12 +20,12 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '../..');
 const UAP = path.join(ROOT, '.uap');
 
-const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');
+export const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');
 const read = (p) => (fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : null);
 const readJSON = (p) => { try { return JSON.parse(read(p) || 'null'); } catch { return null; } };
 const exists = (p) => fs.existsSync(p);
 
-function sh(command, args = [], { timeout = 120000, env = {} } = {}) {
+export function sh(command, args = [], { timeout = 120000, env = {} } = {}) {
   const started = Date.now();
   const r = spawnSync(command, args, {
     cwd: ROOT, encoding: 'utf8', timeout,
@@ -509,6 +509,147 @@ export async function runProbes(ids = PROBE_IDS) {
     catch (e) { out[id] = { id, ok: false, exit_code: 1, detail: `probe threw: ${e.message}`, skipped: false, output_hash: null, command: id }; }
     // Make the result indistinguishable from a real command output for hashing.
     out[id].probe_hash = sha(JSON.stringify(out[id]));
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------------ kinds */
+/**
+ * Honest `probe_kind` classification for EVERY registered probe.
+ *
+ *   STATIC_EXISTENCE   — file / dir / symbol / config-key / text-hash / report
+ *                        card reads. These NEVER exercise runtime behaviour and
+ *                        MUST NOT produce a VERIFIED verdict on their own.
+ *   BEHAVIOR_EXECUTION — runs a real command / real assertion against running
+ *                        code. The legacy ones below are GENERIC whole-suite /
+ *                        whole-CLI / whole-build runs; they are real executions
+ *                        but do NOT assert a distinct behaviour per requirement,
+ *                        so they are shared generic evidence, not a per-
+ *                        requirement behaviour assertion.
+ *   EXTERNAL_DEPENDENCY— needs a sandbox / physical device / production
+ *                        authorisation that is intentionally unavailable.
+ *
+ * Any probe not listed here is classified STATIC_EXISTENCE (fail-closed): an
+ * unknown probe must never be able to promote a requirement to VERIFIED.
+ */
+export const PROBE_KINDS = Object.freeze({
+  // ---- static existence (file / symbol / config-key / text / report card) --
+  'reg.specifications': 'STATIC_EXISTENCE',
+  'reg.validators': 'STATIC_EXISTENCE',
+  'reg.executors': 'STATIC_EXISTENCE',
+  'reg.agents': 'STATIC_EXISTENCE',
+  'reg.workflows': 'STATIC_EXISTENCE',
+  'reg.policy': 'STATIC_EXISTENCE',
+  'spec.statements': 'STATIC_EXISTENCE',
+  'runtime.evidence-index': 'STATIC_EXISTENCE',
+  'policy.runtime-deny': 'STATIC_EXISTENCE',
+  'ci.workflows': 'STATIC_EXISTENCE',
+  'docs.baseline': 'STATIC_EXISTENCE',
+  'card.database': 'STATIC_EXISTENCE',
+  'card.payment-sandbox': 'STATIC_EXISTENCE',
+  'card.e2e': 'STATIC_EXISTENCE',
+  'card.visual': 'STATIC_EXISTENCE',
+  'card.accessibility': 'STATIC_EXISTENCE',
+  'card.security': 'STATIC_EXISTENCE',
+  // ---- real command executions (generic / shared evidence) -----------------
+  'contract.exports': 'BEHAVIOR_EXECUTION',
+  'matrix.stable': 'BEHAVIOR_EXECUTION',
+  'runtime.health': 'BEHAVIOR_EXECUTION',
+  'runtime.cli': 'BEHAVIOR_EXECUTION',
+  'runtime.status-engine': 'BEHAVIOR_EXECUTION',
+  'runtime.evidence': 'BEHAVIOR_EXECUTION',
+  'runtime.validators': 'BEHAVIOR_EXECUTION',
+  'runtime.doctor': 'BEHAVIOR_EXECUTION',
+  'runtime.workflows': 'BEHAVIOR_EXECUTION',
+  'runtime.repair': 'BEHAVIOR_EXECUTION',
+  'runtime.verify-status': 'BEHAVIOR_EXECUTION',
+  'runtime.release-deny': 'BEHAVIOR_EXECUTION',
+  'runtime.uap-tests': 'BEHAVIOR_EXECUTION',
+  'security.secret-scan': 'BEHAVIOR_EXECUTION',
+  'go.build': 'BEHAVIOR_EXECUTION',
+  'go.vet': 'BEHAVIOR_EXECUTION',
+  'go.db-integration': 'BEHAVIOR_EXECUTION',
+  'go.payment-sandbox': 'BEHAVIOR_EXECUTION',
+  'go.payment-security': 'BEHAVIOR_EXECUTION',
+  'go.refund-integrity': 'BEHAVIOR_EXECUTION',
+  'go.race': 'BEHAVIOR_EXECUTION',
+  'web.typecheck': 'BEHAVIOR_EXECUTION',
+  'web.lint': 'BEHAVIOR_EXECUTION',
+  'web.design-strict': 'BEHAVIOR_EXECUTION',
+  'web.copyright': 'BEHAVIOR_EXECUTION',
+  'web.unit': 'BEHAVIOR_EXECUTION',
+  'web.design-tokens': 'BEHAVIOR_EXECUTION',
+});
+
+export function probeKind(id) {
+  return PROBE_KINDS[id] || 'STATIC_EXISTENCE';
+}
+
+/** Counts per `probe_kind` — used by the honesty audit summary. */
+export function probeKindCounts() {
+  const out = { STATIC_EXISTENCE: 0, BEHAVIOR_EXECUTION: 0, EXTERNAL_DEPENDENCY: 0 };
+  for (const id of PROBE_IDS) out[probeKind(id)] += 1;
+  return out;
+}
+
+/**
+ * Execute a BOUNDED set of real behaviour suite runs. Each run is ONE command
+ * and carries a list of DISTINCT assertions; each assertion is bound to exactly
+ * ONE requirement and requires a specific substring in the real stdout (plus
+ * absence of forbidden substrings). `exit_code===0` alone is NOT enough — the
+ * required output assertion must actually be observed.
+ *
+ * `runs` are the `behavior_probes` from requirement-probes.yaml:
+ *   { id, command, args, env, timeout_ms, assertions: [
+ *       { name, required_output: [str], forbid_output: [str],
+ *         requirement_id, behavior } ] }
+ */
+export async function runBehaviorProbes(runs = [], { dryRun = false } = {}) {
+  const out = [];
+  for (const run of runs) {
+    const assertions = (run.assertions || []).map((a) => ({
+      name: a.name,
+      requirement_id: a.requirement_id,
+      behavior: a.behavior || null,
+      required_output: a.required_output || [],
+      forbid_output: a.forbid_output || [],
+    }));
+    if (dryRun) {
+      out.push({
+        id: run.id, command: `${run.command} ${(run.args || []).join(' ')}`.trim(),
+        probe_kind: run.probe_kind || 'BEHAVIOR_EXECUTION',
+        dry_run: true, skipped: true, exit_code: null, output_hash: null,
+        stdout: '', duration_ms: 0,
+        assertions: assertions.map((a) => ({ ...a, found: false, reason: 'DRY_RUN_NOT_EXECUTED' })),
+      });
+      continue;
+    }
+    const r = sh(run.command, run.args || [], {
+      timeout: run.timeout_ms || 180000, env: run.env || {},
+    });
+    const stdout = r.stdout || '';
+    const evaluated = assertions.map((a) => {
+      const missing = (a.required_output || []).filter((s) => !stdout.includes(s));
+      const forbidden = (a.forbid_output || []).filter((s) => stdout.includes(s));
+      const found = r.exit_code === 0 && missing.length === 0 && forbidden.length === 0;
+      return {
+        ...a,
+        found,
+        observed: found,
+        missing_required_output: missing,
+        forbidden_output_present: forbidden,
+        reason: found ? 'REQUIRED_ASSERTION_OBSERVED'
+          : (r.exit_code !== 0 ? `COMMAND_EXIT_${r.exit_code}`
+            : (missing.length ? `MISSING_OUTPUT:${missing.join('|')}` : `FORBIDDEN_OUTPUT:${forbidden.join('|')}`)),
+      };
+    });
+    out.push({
+      id: run.id, command: r.command, probe_kind: run.probe_kind || 'BEHAVIOR_EXECUTION',
+      dry_run: false, skipped: false, exit_code: r.exit_code,
+      output_hash: r.output_hash, stdout, duration_ms: r.duration_ms,
+      timed_out: r.timed_out,
+      assertions: evaluated,
+    });
   }
   return out;
 }

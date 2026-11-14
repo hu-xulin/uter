@@ -4,16 +4,25 @@ implementation: .uap/tools/requirement-verification.mjs
 independent_validator: .uap/tools/requirement-independent-validator.mjs
 probe_library: .uap/tools/requirement-probes.mjs
 
-# Coverage policy. A requirement may be FULLY_VERIFIED only when EVERY probe
-# mapped to it really executed, exited 0, was re-checked by the independent
-# validator, and produced a hash-valid evidence record bound to this execution.
-# A statement is never verified by mere document existence.
+# Coverage policy (strict 4-state model, audit P2-06).
+# RequirementStatus = VERIFIED | NOT_VERIFIED | BLOCKED | NOT_APPLICABLE.
+# A requirement may be VERIFIED ONLY when a REAL BEHAVIOR_EXECUTION probe ran a
+# command with exit_code 0, a DISTINCT required output assertion was observed,
+# and a hash-valid evidence record is bound to THIS execution. A STATIC_EXISTENCE
+# probe (file/dir/symbol/config-key/report-card read) can NEVER yield VERIFIED.
+# A generic whole-suite command shared by many requirements without a distinct
+# assertion each is rejected as PROBE_SHARED_EVIDENCE. A statement is never
+# verified by mere document/config existence or by a probe's exit_code alone.
 policy:
   fail_closed: true
-  require_independent_recheck: true
+  status_model: 'VERIFIED | NOT_VERIFIED | BLOCKED | NOT_APPLICABLE'
+  require_behavior_execution: true
+  require_distinct_output_assertion: true
   require_evidence_hash_valid: true
-  require_implementation_reference: true
+  require_current_execution_binding: true
+  static_existence_never_verifies: true
   one_generic_report_for_all_requirements: forbidden
+  one_test_covers_unrelated_requirements: forbidden
   empty_evidence_files: forbidden
 
 # The 13 mandated execution batches. `specs` are the repo's OWN registered
@@ -170,3 +179,125 @@ blocked_rules:
     keywords: [真机, 真实设备, 设备农场]
     dependency: "Physical H5 device / device-farm credentials"
     unblock_condition: "Device farm access or physical devices"
+
+# ---------------------------------------------------------------------------
+# HONEST probe_kind classification (audit P2-06).
+# The authoritative map lives in requirement-probes.mjs (PROBE_KINDS); this
+# block documents the SAME classification in the auditable config.
+#   STATIC_EXISTENCE   = file / dir / symbol / config-key / text-hash / report
+#                        card reads; NEVER sufficient for VERIFIED.
+#   BEHAVIOR_EXECUTION = real command execution (but the legacy 27 are GENERIC
+#                        whole-suite / whole-CLI / whole-build runs, i.e. shared
+#                        evidence, NOT a distinct assertion per requirement).
+#   EXTERNAL_DEPENDENCY= sandbox / physical device / production authorisation.
+probe_kinds:
+  static_existence:
+    - reg.specifications
+    - reg.validators
+    - reg.executors
+    - reg.agents
+    - reg.workflows
+    - reg.policy
+    - spec.statements
+    - runtime.evidence-index
+    - policy.runtime-deny
+    - ci.workflows
+    - docs.baseline
+    - card.database
+    - card.payment-sandbox
+    - card.e2e
+    - card.visual
+    - card.accessibility
+    - card.security
+  behavior_command_generic:
+    - contract.exports
+    - matrix.stable
+    - runtime.health
+    - runtime.cli
+    - runtime.status-engine
+    - runtime.evidence
+    - runtime.validators
+    - runtime.doctor
+    - runtime.workflows
+    - runtime.repair
+    - runtime.verify-status
+    - runtime.release-deny
+    - runtime.uap-tests
+    - security.secret-scan
+    - go.build
+    - go.vet
+    - go.db-integration
+    - go.payment-sandbox
+    - go.payment-security
+    - go.refund-integrity
+    - go.race
+    - web.typecheck
+    - web.lint
+    - web.design-strict
+    - web.copyright
+    - web.unit
+    - web.design-tokens
+  external_dependency: []
+
+# ---------------------------------------------------------------------------
+# BOUNDED real behaviour verification (audit P2-06).
+# Each run is ONE real command. Each assertion is a DISTINCT '--- PASS: TestX'
+# (or equivalent) observation bound to EXACTLY ONE requirement whose distinct
+# behaviour that test genuinely asserts (balance not double-credited, forged
+# signature rejected, four query states, one refund effect, amount snapshot,
+# enforced foreign key). A shared command may cover several requirements ONLY
+# because each references its OWN distinct assertion — otherwise the engine
+# rejects it as PROBE_SHARED_EVIDENCE.
+# Required output assertions are checked IN the real stdout; exit_code===0 of a
+# static scan alone is NEVER enough.
+behavior_probes:
+  - id: bhv.paymentsandbox
+    probe_kind: BEHAVIOR_EXECUTION
+    command: go
+    args: [test, ./service/paymentsandbox/, -count=1, -v, -run, 'TestDuplicateNotificationIsIdempotent|TestSignatureVerificationRejectsTampered|TestOrderQueryFourState|TestRefundStatusIdempotent|TestAmountSnapshotMismatchRejected']
+    env: { GOWORK: off }
+    timeout_ms: 180000
+    assertions:
+      - name: TestDuplicateNotificationIsIdempotent
+        required_output: ['--- PASS: TestDuplicateNotificationIsIdempotent']
+        forbid_output: ['--- FAIL: TestDuplicateNotificationIsIdempotent']
+        requirement_id: UAP-06-002-REQ-004
+        behavior: 重复支付成功通知不能重复增加余额（LedgerCount==1、CreditedQuota 只入账一次）
+      - name: TestSignatureVerificationRejectsTampered
+        required_output: ['--- PASS: TestSignatureVerificationRejectsTampered']
+        forbid_output: ['--- FAIL: TestSignatureVerificationRejectsTampered']
+        requirement_id: UAP-06-002-REQ-007
+        behavior: 被篡改签名的支付成功通知必须被拒绝
+      - name: TestOrderQueryFourState
+        required_output: ['--- PASS: TestOrderQueryFourState']
+        forbid_output: ['--- FAIL: TestOrderQueryFourState']
+        requirement_id: UAP-06-002-REQ-002
+        behavior: 订单查单覆盖 created/paid/notfound/closed 四态状态机
+      - name: TestRefundStatusIdempotent
+        required_output: ['--- PASS: TestRefundStatusIdempotent']
+        forbid_output: ['--- FAIL: TestRefundStatusIdempotent']
+        requirement_id: UAP-06-002-REQ-003
+        behavior: 重复退款请求只产生一次退款副作用（RefundEffectCount==1）
+      - name: TestAmountSnapshotMismatchRejected
+        required_output: ['--- PASS: TestAmountSnapshotMismatchRejected']
+        forbid_output: ['--- FAIL: TestAmountSnapshotMismatchRejected']
+        requirement_id: UAP-06-002-REQ-006
+        behavior: 实付金额与本地订单快照不一致时拒绝入账（CreditedQuota==0）
+  - id: bhv.model-foreign-key
+    probe_kind: BEHAVIOR_EXECUTION
+    command: go
+    args: [test, ./model/, -count=1, -v, -run, 'TestPhase2DBIntegration/db_09_foreign_key']
+    env: { GOWORK: off }
+    timeout_ms: 300000
+    assertions:
+      - name: db_09_foreign_key_enforced
+        required_output: ['FK enforced', 'orphan rejected']
+        forbid_output: ['FK NOT enforced', 'orphan order accepted']
+        requirement_id: UAP-02-002-REQ-004
+        behavior: SQLite 外键约束真正启用，孤儿子订单插入被拒绝（PRAGMA foreign_keys=1 且关系>0）
+
+# EXTERNAL_DEPENDENCY probes are intentionally NOT executable here: they need
+# real provider sandbox credentials / physical H5 devices / production
+# authorisation. Requirements needing them are classified BLOCKED by
+# blocked_rules above, never VERIFIED by a substitute static probe.
+external_dependency_probes: []

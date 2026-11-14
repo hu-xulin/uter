@@ -778,6 +778,53 @@
         "UAP-EV-20261113171758-b0073157"
       ],
       "recorded_at": "2026-11-13T17:17:58.649Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 41530,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261114025628-46289356"
+      ],
+      "recorded_at": "2026-11-14T02:56:27.746Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 285985,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 130,
+        "pass": 130,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261114030152-a085f330"
+      ],
+      "recorded_at": "2026-11-14T03:01:52.145Z"
     }
   ],
   "summary": {

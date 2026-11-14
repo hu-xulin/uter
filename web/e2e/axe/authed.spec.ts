@@ -48,12 +48,33 @@ test('axe: 鉴权页批量扫描', async ({ page }) => {
   // 凭据已配置但产品侧禁用了密码登录（如站点仅开放 OAuth）时，
   // 无法建立会话属于「没测」而不是「违规」：显式 skip 并写明原因，
   // 与「缺凭据跳过」同一口径，绝不允许退化成假通过。
+  // 注意：test.skip 内部会抛特殊异常，必须放在 try/catch 之外，
+  // 否则会被上面的 catch 吞掉、退化为「登录失败却扫了登录页还当基线」。
+  let loginError: unknown = null
   try {
     await loginViaApi(page)
   } catch (err) {
+    loginError = err
+  }
+  if (loginError) {
     test.skip(
       true,
-      `无法建立登录态，鉴权页 axe 扫描未执行：${(err as Error).message}`
+      `无法建立登录态，鉴权页 axe 扫描未执行：${(loginError as Error).message}`
+    )
+  }
+
+  // 探活：API 登录成功后访问首个鉴权路由。SPA 会在加载后把未登录态客户端弹回
+  // /sign-in（不是服务端 302），所以等一小段再判定 URL。若仍被弹回 /sign-in，
+  // 说明当前栈无法建立「页面级」会话——后端 new_api_refresh 会话 cookie 的
+  // Path=/api/user/auth 不随 /dashboard 顶部导航携带，且 API 登录不写 SPA 存储
+  // （无 access_token），鉴权页守卫据此判未登录。这属于「测不了」而非「违规」：
+  // 显式 skip，绝不与真实违规混为一谈（也不洗白成通过）。
+  await page.goto(routes[0].path, { waitUntil: 'domcontentloaded' })
+  await page.waitForTimeout(2000)
+  if (/\/sign-in/.test(page.url())) {
+    test.skip(
+      true,
+      `登录态未能在页面级生效（访问 ${routes[0].path} 被弹回 /sign-in），鉴权页 axe 扫描未执行`
     )
   }
 

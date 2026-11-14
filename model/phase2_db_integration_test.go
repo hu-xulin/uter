@@ -36,8 +36,9 @@ import (
 // SQLite database in t.TempDir() and uses ONLY its own *gorm.DB handle. The
 // global model.DB / model.LOG_DB and any production database file are never
 // opened or mutated. The DSN mirrors production (WAL + busy_timeout(30000) +
-// BEGIN IMMEDIATE), so closing and reopening a file is a genuine crash-
-// recovery check rather than an in-memory shortcut.
+// BEGIN IMMEDIATE + foreign_keys(1) via common.SQLiteForeignKeysEnabledDSN),
+// so closing and reopening a file is a genuine crash-recovery check rather
+// than an in-memory shortcut, and FK enforcement is real on every connection.
 //
 // All helpers are private with a distinct "phase2" prefix so this file compiles
 // standalone and never redeclares symbols from isolated_db_integration_test.go.
@@ -50,11 +51,13 @@ import (
 // the production DB or require mutating global state, both forbidden here.
 // Their equivalents are built with real SQL on the isolated handle instead.
 
-const phase2Pragma = "?_pragma=busy_timeout(30000)&_pragma=journal_mode(WAL)&_txlock=immediate"
-
+// phase2Open builds its DSN through the shared production helper, so every
+// test exercises the exact real connection-init path (WAL, busy timeout, BEGIN
+// IMMEDIATE and per-connection foreign_keys(1)) without duplicating any pragma
+// literal. See common.SQLiteForeignKeysEnabledDSN.
 func phase2Open(t *testing.T, path string) *gorm.DB {
 	t.Helper()
-	db, err := gorm.Open(sqlite.Open(path+phase2Pragma), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(common.SQLiteForeignKeysEnabledDSN(path)), &gorm.Config{
 		// Expected unique-constraint / closed-pool failures are asserted below;
 		// logging every rejected statement would bury the real result.
 		Logger: logger.Default.LogMode(logger.Silent),
@@ -79,9 +82,21 @@ func phase2NewDB(t *testing.T) (*gorm.DB, string) {
 	path := filepath.Join(t.TempDir(), "phase2-integration.db")
 	db := phase2Open(t, path)
 	require.NoError(t, db.AutoMigrate(&User{}, &TopUp{}, &Log{}, &RefundIntent{}))
+	// Mirror the real startup path: AutoMigrate creates the base tables, then
+	// the versioned migration framework adds the real FK constraints.
+	require.NoError(t, MigrateSchemaUp(db))
 	require.NoError(t, db.Exec(
 		"CREATE TABLE IF NOT EXISTS phase2_crash_rows (id INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT)").Error)
 	return db, path
+}
+
+// phase2IndexExists reports whether an index is present in the SQLite schema.
+func phase2IndexExists(t *testing.T, db *gorm.DB, name string) bool {
+	t.Helper()
+	var n int64
+	require.NoError(t, db.Raw(
+		"SELECT COUNT(*) FROM sqlite_master WHERE type = 'index' AND name = ?", name).Scan(&n).Error)
+	return n > 0
 }
 
 // phase2User builds an obviously-EXAMPLE synthetic row. It is a constraint /
@@ -275,20 +290,43 @@ func TestPhase2DBIntegration(t *testing.T) {
 	t.Run("db_04_migration_rollback", func(t *testing.T) {
 		db, _ := phase2NewDB(t)
 		defer phase2Close(t, db)
-		// The project has NO down-migration framework: rollback correctness here
-		// rests on SQLite's transactional DDL (a failed migration inside a tx
-		// leaves no half-applied schema). We inject a failure after a DDL step.
-		injected := errors.New("injected migration failure")
-		err := db.Transaction(func(tx *gorm.DB) error {
-			if e := tx.Exec("CREATE TABLE phase2_migration_should_vanish (id INTEGER)").Error; e != nil {
-				return e
-			}
-			return injected
-		})
-		require.ErrorIs(t, err, injected)
-		require.False(t, db.Migrator().HasTable("phase2_migration_should_vanish"),
-			"SQLite DDL is transactional: a failed migration must leave NO table")
-		t.Logf("confirmed: failed in-transaction DDL rolled back; no down-migration framework exists")
+		// Business data must survive an upgrade + rollback untouched.
+		sentinel := phase2User("rollback-sentinel", 321)
+		require.NoError(t, db.Create(&sentinel).Error)
+
+		// A real versioned framework exists now: startup applied V1 (FK) + V2
+		// (reversible index) and recorded both in schema_migrations.
+		version, err := SchemaVersion(db)
+		require.NoError(t, err)
+		require.Equal(t, LatestSchemaVersion(), version)
+		require.True(t, phase2IndexExists(t, db, V2TopUpUserStatusIndex))
+		require.NoError(t, VerifySchemaVersionConsistency(db))
+
+		// Real down migration: roll V2 back to V1. V2.Down drops the index and
+		// the framework removes the V2 version record, both in one transaction.
+		require.NoError(t, MigrateSchemaDown(db, 1))
+		require.False(t, phase2IndexExists(t, db, V2TopUpUserStatusIndex),
+			"V2 Down must actually drop the index")
+		version, err = SchemaVersion(db)
+		require.NoError(t, err)
+		require.Equal(t, 1, version, "V2 version record must be removed")
+		require.Equal(t, int64(1), phase2CountUsers(t, db, "rollback-sentinel"),
+			"business rows must survive the down migration")
+		require.NoError(t, VerifySchemaVersionConsistency(db),
+			"schema/ledger stay consistent after a real down migration")
+
+		// V1 is irreversible: rolling back past it must fail closed and leave
+		// the schema exactly as it was (the pre-check forbids a partial rollback).
+		err = MigrateSchemaDown(db, 0)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "irreversible")
+		version, err = SchemaVersion(db)
+		require.NoError(t, err)
+		require.Equal(t, 1, version, "irreversible refusal must not change the version")
+		require.False(t, phase2IndexExists(t, db, V2TopUpUserStatusIndex),
+			"no partial rollback: V2 stays rolled back")
+		require.Equal(t, int64(1), phase2CountUsers(t, db, "rollback-sentinel"))
+		t.Logf("real down migration exercised: V2 rolled back, V1 rollback refused (irreversible)")
 	})
 
 	// ------------------------------------------------------------------
@@ -366,8 +404,14 @@ func TestPhase2DBIntegration(t *testing.T) {
 	t.Run("db_08_unique_constraint", func(t *testing.T) {
 		db, _ := phase2NewDB(t)
 		defer phase2Close(t, db)
-		first := phase2CreateOrder(t, db, "EXAMPLE-TRADE-NO-0001", 1, 10, 0, "")
-		duplicate := TopUp{TradeNo: first.TradeNo, Money: 10, Amount: 10, PaymentMethod: "EXAMPLE-METHOD"}
+		// V1 added a real FK top_ups.user_id -> users.id, so a legal parent user
+		// is required. Creating one is correct business behaviour, not a
+		// weakened assertion. The unique trade_no index is recreated by V1's
+		// table rebuild, which this subtest verifies is still enforced.
+		user := phase2User("unique-user", 0)
+		require.NoError(t, db.Create(&user).Error)
+		first := phase2CreateOrder(t, db, "EXAMPLE-TRADE-NO-0001", user.Id, 10, 0, "")
+		duplicate := TopUp{TradeNo: first.TradeNo, UserId: user.Id, Money: 10, Amount: 10, PaymentMethod: "EXAMPLE-METHOD"}
 		err := db.Create(&duplicate).Error
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "UNIQUE constraint failed")
@@ -391,23 +435,31 @@ func TestPhase2DBIntegration(t *testing.T) {
 		}
 		t.Logf("observed PRAGMA foreign_keys=%d, top_ups FK relations=%d", fkOn, fkRelations)
 
-		// Honest assertion: insert a child order whose user_id points at a
-		// NON-existent user and document what the engine REALLY does.
-		orphan := phase2CreateOrderOrError(t, db, "EXAMPLE-ORPHAN-ORDER", 99999999, 10)
-		var persisted int64 = phase2CountOrdersByTrade(t, db, "EXAMPLE-ORPHAN-ORDER")
-
-		if fkOn == 0 || fkRelations == 0 {
-			// REAL observed behavior for this GORM schema: no FK is declared on
-			// top_ups and foreign_keys is off, so the orphan is accepted.
-			require.NoError(t, orphan, "observed: orphan child insert is ACCEPTED")
-			require.Equal(t, int64(1), persisted,
-				"documents REAL observed behavior: FK is NOT enforced; orphan order persists")
-			t.Logf("FK NOT enforced (foreign_keys=%d, relations=%d): orphan order accepted and persisted", fkOn, fkRelations)
-		} else {
-			require.Error(t, orphan, "FK enforced: orphan child must be rejected")
-			require.Equal(t, int64(0), persisted)
-			t.Logf("FK enforced (foreign_keys=%d, relations=%d): orphan rejected", fkOn, fkRelations)
+		// FAIL CLOSED. The previous suite treated "FK off / no relations /
+		// orphan accepted" as a PASS (require.NoError) — a FALSE PASS masking a
+		// real data-integrity defect. Any of those conditions now fails hard.
+		if fkOn != 1 {
+			t.Fatalf("PRAGMA foreign_keys must be 1 on every connection, got %d", fkOn)
 		}
+		if fkRelations == 0 {
+			t.Fatalf("top_ups must declare at least one FK relation (V1 migration missing)")
+		}
+
+		// A legal parent + order is accepted.
+		user := phase2User("fk-legal-user", 0)
+		require.NoError(t, db.Create(&user).Error)
+		require.NoError(t, phase2CreateOrderOrError(t, db, "EXAMPLE-LEGAL-ORDER", user.Id, 10),
+			"a legal order referencing an existing user must succeed")
+		require.Equal(t, int64(1), phase2CountOrdersByTrade(t, db, "EXAMPLE-LEGAL-ORDER"))
+
+		// An orphan order MUST be rejected and NOT persisted.
+		orphan := phase2CreateOrderOrError(t, db, "EXAMPLE-ORPHAN-ORDER", 99999999, 10)
+		if orphan == nil {
+			t.Fatalf("orphan order referencing a non-existent user was ACCEPTED (FK not enforced)")
+		}
+		require.Equal(t, int64(0), phase2CountOrdersByTrade(t, db, "EXAMPLE-ORPHAN-ORDER"),
+			"orphan order must NOT be persisted")
+		t.Logf("FK enforced (foreign_keys=%d, relations=%d): legal order accepted, orphan rejected", fkOn, fkRelations)
 	})
 
 	// ------------------------------------------------------------------

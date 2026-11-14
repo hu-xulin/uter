@@ -256,6 +256,47 @@ func ValidateConfig(cfg Config) error {
 }
 
 // ---------------------------------------------------------------------------
+// Gateway verification evidence — the ONLY way gateway_verified may be true
+// ---------------------------------------------------------------------------
+
+// ProviderSandboxEvidence is the record required to legitimately claim that a
+// REAL payment-provider sandbox was contacted and verified. It can ONLY be
+// produced by a genuine sandbox run: real sandbox credentials, a reachable
+// sandbox endpoint, and a provider-signed response receipt. This repository
+// has NONE of those, so no such evidence is ever recorded here and the
+// package never sets gateway_verified=true.
+//
+// It is deliberately a distinct type from Config: passing a Config (even one
+// with CredentialsPresent=true) is NOT evidence of a completed sandbox run.
+type ProviderSandboxEvidence struct {
+	Mode             Mode
+	SandboxReceiptID string // opaque id of a provider-signed sandbox response
+	VerifiedAt       int64  // unix ts of the verified real sandbox interaction
+}
+
+// GatewayVerifiedFromEvidence is the fail-closed gate for gateway_verified.
+// It returns true ONLY when real, non-placeholder sandbox evidence is
+// recorded. LOCAL_SIMULATION, nil evidence, EXAMPLE receipts and missing
+// timestamps can NEVER set it true. A local simulation is never gateway
+// verification. No caller in this package supplies real evidence, so in
+// practice the value is always false here.
+func GatewayVerifiedFromEvidence(e *ProviderSandboxEvidence) bool {
+	if e == nil {
+		return false
+	}
+	if e.Mode != ModeProviderSandbox { // LOCAL_SIMULATION never counts
+		return false
+	}
+	if isExampleOrEmpty(e.SandboxReceiptID) {
+		return false
+	}
+	if e.VerifiedAt <= 0 {
+		return false
+	}
+	return true
+}
+
+// ---------------------------------------------------------------------------
 // Order / notification vocabulary (LOCAL_SIMULATION only)
 // ---------------------------------------------------------------------------
 
@@ -367,6 +408,11 @@ type Gateway interface {
 // disclosed in Checks["sandbox_store_isolated"].
 type VerificationReport struct {
 	Mode                       Mode              `json:"mode"`
+	// GatewayVerified is ALWAYS false for a local simulation. It may only become
+	// true via GatewayVerifiedFromEvidence with recorded REAL provider sandbox
+	// evidence — which this repository does not have. A local simulation is
+	// never gateway verification.
+	GatewayVerified            bool              `json:"gateway_verified"`
 	NetworkCallsToRealProvider int64             `json:"network_calls_to_real_provider"`
 	RealPayments               int64             `json:"real_payments"`
 	RealRefunds                int64             `json:"real_refunds"`
@@ -789,6 +835,7 @@ func (g *LocalSimulationGateway) Report() VerificationReport {
 	defer g.stats.mu.Unlock()
 	return VerificationReport{
 		Mode:                       ModeLocalSimulation,
+		GatewayVerified:            GatewayVerifiedFromEvidence(nil), // always false: no real sandbox evidence exists
 		NetworkCallsToRealProvider: g.stats.networkCalls,
 		RealPayments:               g.stats.realPayments,
 		RealRefunds:                g.stats.realRefunds,

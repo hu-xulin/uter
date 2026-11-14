@@ -1,12 +1,232 @@
 {
-  "generated_at": "2026-11-13T17:41:44.412Z",
-  "status": "FAIL",
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "status": "BLOCKED",
+  "suite": "accessibility",
+  "command": "npx playwright test --config e2e/axe/playwright.config.ts",
+  "exit_code": 0,
+  "items": [
+    {
+      "id": "axe_0_axe: 鉴权页批量扫描",
+      "title": "axe: 鉴权页批量扫描",
+      "status": "SKIPPED",
+      "reason": "runner reported status=skipped",
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "skipped"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_1_axe: 公开页 /",
+      "title": "axe: 公开页 /",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_2_axe: 公开页 /about",
+      "title": "axe: 公开页 /about",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_3_axe: 公开页 /pricing",
+      "title": "axe: 公开页 /pricing",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_4_axe: 公开页 /rankings",
+      "title": "axe: 公开页 /rankings",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_5_axe: 公开页 /docs",
+      "title": "axe: 公开页 /docs",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_6_axe: 公开页 /sign-in",
+      "title": "axe: 公开页 /sign-in",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_7_axe: 公开页 /sign-up",
+      "title": "axe: 公开页 /sign-up",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_8_axe: 公开页 /forgot-password",
+      "title": "axe: 公开页 /forgot-password",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_9_axe: 公开页 /404",
+      "title": "axe: 公开页 /404",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_10_axe: 公开页 /500",
+      "title": "axe: 公开页 /500",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_11_axe: 公开页 /privacy-policy",
+      "title": "axe: 公开页 /privacy-policy",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_12_axe: 公开页 /user-agreement",
+      "title": "axe: 公开页 /user-agreement",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    },
+    {
+      "id": "axe_13_axe: 公开页 /recharge-agreement",
+      "title": "axe: 公开页 /recharge-agreement",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "axe"
+    }
+  ],
+  "counts": {
+    "PASS": 13,
+    "FAIL": 0,
+    "SKIPPED": 1,
+    "BLOCKED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "total": 14,
+  "pass": 13,
+  "fail": 0,
+  "blocked": 0,
+  "skipped": 1,
+  "not_run": 0,
+  "not_applicable": 0,
+  "target": "http://localhost:3101",
+  "passed": 13,
+  "failed": 0,
   "critical": 0,
   "serious": 0,
-  "passed": 13,
-  "failed": 1,
-  "target": "http://localhost:3003",
-  "execution_id": "UAP-EXEC-20261113171750-6afc5fa2",
-  "git_head": "f728955561bdd297d03af7576354a363982d2186",
-  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  "critical_violations": [],
+  "test_authentication": {
+    "isolated": true,
+    "mechanism": "isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass",
+    "production_auth_policy_modified": false
+  },
+  "generated_at": "2026-11-14T05:05:04.667Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "test_environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true
+  },
+  "requirement_ids": [],
+  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "evidence_ref": "UAP-EV-20261114050504-c4e40486"
 }

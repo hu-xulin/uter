@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114024725-a5a71517",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T02:47:25.829Z",
+  "started_at": "2026-11-14T02:47:15.298Z",
+  "finished_at": "2026-11-14T02:47:25.829Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114024726-6ba01f4a",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "d1148dae290a51372cdc016b7f56c76abbf8f844d374505468cd8c914766cb49",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114024726-6ba01f4a",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "d1148dae290a51372cdc016b7f56c76abbf8f844d374505468cd8c914766cb49",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-payment",
+  "exit_code": 0,
+  "duration_ms": 10531,
+  "inputs": "{\"argv\":[\"verify-payment\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "payment: LOCAL_SIMULATION PASS (30 real tests); real-provider sandbox remains BLOCKED_EXTERNAL_DEPENDENCY",
+  "content_hash": "911c693ef6e74c386b16d84802b98097512a9ca923c41fef77477d116487bcfe"
+}

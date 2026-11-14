@@ -4255,3 +4255,325 @@
 {"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-13T17:17:52.751Z"}
 {"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-13T17:17:52.751Z"}
 {"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261113171752-a88e94df","at":"2026-11-13T17:17:52.752Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:18:28.411Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:18:28.417Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_write","agent_id":"uap-repair-agent","tool":null,"command":null,"action":"apply_real_code_patch","at":"2026-11-14T02:18:29.010Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-repair-agent","tool":null,"command":"go","action":"run_tests","at":"2026-11-14T02:18:29.016Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-test-agent","tool":null,"command":"go","action":"targeted_and_regression_tests","at":"2026-11-14T02:18:29.024Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-review-agent","tool":null,"command":null,"action":"independent_code_review","at":"2026-11-14T02:18:29.026Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-security-agent","tool":null,"command":null,"action":"security_verification","at":"2026-11-14T02:18:29.028Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:18:30.121Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:18:30.129Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.545Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.551Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.555Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.557Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.559Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.562Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.565Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:32.567Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:35.634Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.303Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.305Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"not-a-real-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.306Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.310Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"health_probe","at":"2026-11-14T02:18:36.313Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.316Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.318Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.320Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.322Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.324Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.327Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.329Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.331Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.332Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.334Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:18:36.335Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:18:36.404Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:18:36.405Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:18:36.406Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__ghost__","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:36.407Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:18:36.408Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-14T02:18:36.409Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261114021836-d696547a","at":"2026-11-14T02:18:36.410Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:18:41.811Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:18:41.813Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:18:45.456Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:18:45.463Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:18:59.034Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:18:59.036Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:19:17.297Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:19:17.303Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_write","agent_id":"uap-repair-agent","tool":null,"command":null,"action":"apply_real_code_patch","at":"2026-11-14T02:19:18.317Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-repair-agent","tool":null,"command":"go","action":"run_tests","at":"2026-11-14T02:19:18.320Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-test-agent","tool":null,"command":"go","action":"targeted_and_regression_tests","at":"2026-11-14T02:19:18.325Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-review-agent","tool":null,"command":null,"action":"independent_code_review","at":"2026-11-14T02:19:18.327Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-security-agent","tool":null,"command":null,"action":"security_verification","at":"2026-11-14T02:19:18.331Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:19:19.922Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:19:19.929Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.465Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.475Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.481Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.484Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.487Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.489Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.492Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:22.494Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:28.693Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.360Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.361Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"not-a-real-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.363Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.366Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"health_probe","at":"2026-11-14T02:19:29.369Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.372Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.374Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.377Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.379Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.382Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.384Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.386Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.389Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.400Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.402Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:19:29.403Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:19:29.482Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:19:29.483Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:19:29.485Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__ghost__","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:29.487Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:19:29.489Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-14T02:19:29.490Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261114021929-18d4e19d","at":"2026-11-14T02:19:29.492Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:19:33.595Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:19:33.598Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:19:36.657Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:19:36.662Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:19:47.786Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:19:47.789Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:20:19.981Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:20:19.988Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_write","agent_id":"uap-repair-agent","tool":null,"command":null,"action":"apply_real_code_patch","at":"2026-11-14T02:20:20.724Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-repair-agent","tool":null,"command":"go","action":"run_tests","at":"2026-11-14T02:20:20.727Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-test-agent","tool":null,"command":"go","action":"targeted_and_regression_tests","at":"2026-11-14T02:20:20.731Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-review-agent","tool":null,"command":null,"action":"independent_code_review","at":"2026-11-14T02:20:20.734Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-security-agent","tool":null,"command":null,"action":"security_verification","at":"2026-11-14T02:20:20.737Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:20:21.946Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:20:21.952Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.952Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.960Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.966Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.968Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.970Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.973Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.976Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:24.979Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:29.718Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.878Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.881Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"not-a-real-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.883Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.886Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"health_probe","at":"2026-11-14T02:20:30.889Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.891Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.894Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.897Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.903Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.906Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.908Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.910Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.912Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.914Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.916Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:20:30.921Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:20:31.012Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:20:31.014Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:20:31.020Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__ghost__","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:31.023Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:20:31.025Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-14T02:20:31.026Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261114022031-925fc09f","at":"2026-11-14T02:20:31.029Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:20:35.534Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:20:35.536Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:20:38.624Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:20:38.629Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:20:49.251Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:20:49.255Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.415Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.425Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.429Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.431Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.433Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.435Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.438Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:33:15.440Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:33:30.197Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:33:30.202Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:33:41.634Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:33:41.637Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.025Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.030Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.033Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.035Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.037Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.039Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.041Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:34:43.042Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:34:57.756Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:34:57.760Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:35:06.671Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:35:06.675Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:51.970Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:51.976Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:51.979Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:51.984Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:51.988Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:52.053Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:52.057Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:35:52.061Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:36:03.733Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:36:03.737Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:36:13.797Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:36:13.799Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:48:23.310Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:48:23.315Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_write","agent_id":"uap-repair-agent","tool":null,"command":null,"action":"apply_real_code_patch","at":"2026-11-14T02:48:23.627Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-repair-agent","tool":null,"command":"go","action":"run_tests","at":"2026-11-14T02:48:23.630Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-test-agent","tool":null,"command":"go","action":"targeted_and_regression_tests","at":"2026-11-14T02:48:23.633Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-review-agent","tool":null,"command":null,"action":"independent_code_review","at":"2026-11-14T02:48:23.635Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-security-agent","tool":null,"command":null,"action":"security_verification","at":"2026-11-14T02:48:23.636Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.628Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.635Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.639Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.641Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.645Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.648Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.650Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:48:32.652Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:48:47.967Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:48:47.972Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:48:59.375Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:48:59.378Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:49:27.428Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:49:27.432Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:49:40.370Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:49:40.372Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:50:01.608Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.316Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.318Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"not-a-real-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.321Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.323Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"health_probe","at":"2026-11-14T02:50:02.327Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.330Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.333Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.334Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.336Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.337Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.339Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.341Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.342Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.345Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.347Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:50:02.348Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:50:02.428Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:50:02.429Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:50:02.430Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__ghost__","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:50:02.431Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:50:02.432Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-14T02:50:02.433Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261114025002-16649973","at":"2026-11-14T02:50:02.434Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.650Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.663Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.669Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.673Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.677Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.682Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.686Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:53:15.689Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:53:46.060Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:53:46.067Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:54:08.705Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:54:08.715Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:55:56.615Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.047Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.052Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"not-a-real-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.056Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.060Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"health_probe","at":"2026-11-14T02:55:58.065Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.074Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.079Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.088Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.091Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.095Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.098Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.101Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.107Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.112Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.117Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T02:55:58.126Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:55:58.274Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:55:58.279Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T02:55:58.283Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__ghost__","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:55:58.288Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:55:58.290Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-14T02:55:58.298Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261114025558-9f3c6e21","at":"2026-11-14T02:55:58.300Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:57:10.093Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:57:10.101Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_write","agent_id":"uap-repair-agent","tool":null,"command":null,"action":"apply_real_code_patch","at":"2026-11-14T02:57:10.654Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-repair-agent","tool":null,"command":"go","action":"run_tests","at":"2026-11-14T02:57:10.659Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"local_command","agent_id":"uap-test-agent","tool":null,"command":"go","action":"targeted_and_regression_tests","at":"2026-11-14T02:57:10.664Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-review-agent","tool":null,"command":null,"action":"independent_code_review","at":"2026-11-14T02:57:10.668Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-security-agent","tool":null,"command":null,"action":"security_verification","at":"2026-11-14T02:57:10.670Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.575Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.589Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.594Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.598Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.602Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.606Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.610Z"}
+{"decision":"DENY","reason":"agent is not registered","agent_id":null,"tool":null,"command":null,"action":"unspecified","at":"2026-11-14T02:57:34.614Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:58:04.114Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:58:04.122Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:58:28.765Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:58:28.774Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:59:24.033Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:59:24.042Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"defect_discovery","at":"2026-11-14T02:59:50.434Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"root_cause_analysis","at":"2026-11-14T02:59:50.439Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T03:00:37.397Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.642Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.647Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"not-a-real-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.652Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.656Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"health_probe","at":"2026-11-14T03:00:38.660Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.665Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.668Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.671Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.674Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.676Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.679Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.681Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.689Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.692Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.693Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"health_probe","at":"2026-11-14T03:00:38.695Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T03:00:38.836Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T03:00:38.839Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester","at":"2026-11-14T03:00:38.842Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__ghost__","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T03:00:38.845Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"unspecified","at":"2026-11-14T03:00:38.848Z"}
+{"decision":"DENY","reason":"command is not in the local command allowlist","permission":"local_command","agent_id":"uap-development-agent","tool":null,"command":"curl","action":"unspecified","at":"2026-11-14T03:00:38.853Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"uap-tester-deny-M-20261114030038-750b4ec5","at":"2026-11-14T03:00:38.857Z"}
+{"decision":"DENY","reason":"agent is not registered","permission":"project_read","agent_id":"__uap_unregistered__","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.387Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"product_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.394Z"}
+{"decision":"ALLOW","reason":"permission granted","permission":"project_read","agent_id":"uap-orchestrator","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.399Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_read","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.401Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_write","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.404Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"production_deploy","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.410Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_payment","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.416Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"real_refund","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.420Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"secret_export","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.423Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"force_push","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.425Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_creation","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.427Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"branch_switch","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.430Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"destructive_git","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.432Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"quality_gate_disable","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.436Z"}
+{"decision":"DENY","reason":"permission not declared for this agent","permission":"test_deletion_to_force_pass","agent_id":"uap-development-agent","tool":null,"command":null,"action":"permission_boundary_probe","at":"2026-11-14T03:02:10.440Z"}

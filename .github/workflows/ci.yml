@@ -426,6 +426,13 @@ jobs:
       - name: React component registry
         run: bun run components:registry:check
 
+      # UTER Design System 5.0：规范注册表 / 组件注册表投影 / Token 一致性结构门禁。
+      # 本步骤只新增结构性硬约束（ID 唯一、文档存在且非空、注册表与真源一致、
+      # Token 跨文件无重复、Light/Dark 成对）。已知缺口由脚本显式打印为
+      # NOT_VERIFIED 并在最终验收报告登记；不降低 T1-T17、ALLOWLIST 或 baseline 阈值。
+      - name: Design system 5.0 governance
+        run: bun run design:5:check
+
       # 版权头检查：只补缺失的 AGPL 头，不动任何代码格式，可安全设为必需。
       # 格式检查（format:check）**不要**设为必需：它按仓库根目录递归跑 oxfmt，
       # 会把 public/plugins 下的第三方插件与根级配置文件一起格式化，当前有

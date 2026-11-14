@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114021937-97b3b6fb",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261114021937-2a8028e1",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T02:19:37.741Z",
+  "started_at": "2026-11-14T02:19:37.741Z",
+  "finished_at": "2026-11-14T02:19:37.741Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114021926-a331afa5",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "d619832fc9076c7077f5f3a00ca72e30e5359e95af3701d6f778597c1c30bfa2",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114021926-a331afa5",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "d619832fc9076c7077f5f3a00ca72e30e5359e95af3701d6f778597c1c30bfa2",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_payment_state_machine",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"inspect_payment_state_machine\",\"idempotent\":true,\"handler\":\"inspect_payment_state_machine\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspect_payment_state_machine: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "945304717a3a7d0cee40f699568a1a09a9ee0749c75f9243d9186f9df2e5f7f4"
+}

@@ -1,0 +1,69 @@
+{
+  "execution_id": "UAP-RREPAIR-1794622757052-07b136",
+  "task_id": "UAP-CANARY-REPAIR",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "target_file": ".uap/tests/fixtures/repair-canary.mjs",
+  "before_hash": "66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+  "after_hash": "4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1",
+  "backup_path": ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794622757052-07b136/repair-canary.mjs",
+  "allowed_paths": [
+    ".uap/tests/fixtures/repair-canary.mjs"
+  ],
+  "modified_files": [
+    ".uap/tests/fixtures/repair-canary.mjs"
+  ],
+  "max_attempts": 3,
+  "attempts": 1,
+  "commands": [
+    {
+      "command": "node .uap/tests/fixtures/repair-canary.repro.mjs",
+      "args": [
+        ".uap/tests/fixtures/repair-canary.repro.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 308,
+      "stdout": "repair-canary repro PASS\n",
+      "stderr": ""
+    },
+    {
+      "command": "node --check .uap/tests/fixtures/repair-canary.mjs",
+      "args": [
+        "--check",
+        ".uap/tests/fixtures/repair-canary.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 280,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check .uap/tests/fixtures/repair-canary.repro.mjs",
+      "args": [
+        "--check",
+        ".uap/tests/fixtures/repair-canary.repro.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 240,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --check -- .uap/tests/fixtures/repair-canary.mjs",
+      "args": [
+        "diff",
+        "--check",
+        "--",
+        ".uap/tests/fixtures/repair-canary.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 212,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "status": "TESTS_PASSED"
+}

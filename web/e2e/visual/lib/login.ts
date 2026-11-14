@@ -65,6 +65,38 @@ function readVisualCredentials(): VisualCredentials {
 }
 
 /**
+ * 后端明确报告「管理员已禁用密码登录」的字面量特征。
+ * 该文案来自 PasswordLoginEnabled=false 的运营配置，属于**环境性不可用**，
+ * 与「用户名或密码错误」这种真实的鉴权失败必须严格区分。
+ */
+export const PASSWORD_LOGIN_DISABLED_MESSAGE =
+  /password login has been disabled by administrator/i
+
+export type VisualAuthUnavailableReason = 'PASSWORD_LOGIN_DISABLED'
+
+/**
+ * 目标栈未开放密码登录时抛出的精确、可判定错误。
+ *
+ * 与 `Error`（凭据错误 / 网络错误 / 非 JSON 响应）分开的原因：
+ *  - `Error`            → 真 FAIL，绝不吞掉；
+ *  - 本错误            → 当目标不是测试专用隔离栈时判 BLOCKED（生产运营配置
+ *                        PasswordLoginEnabled=false，审计红线禁止修改）。
+ * 隔离栈上若仍抛本错误，说明隔离副本没配好，同样是真 FAIL，不会被洗白。
+ */
+export class VisualAuthUnavailableError extends Error {
+  readonly reason: VisualAuthUnavailableReason = 'PASSWORD_LOGIN_DISABLED'
+  readonly httpStatus: number
+  readonly backendMessage: string
+
+  constructor(backendMessage: string, httpStatus: number) {
+    super(`目标栈未开放密码登录（PasswordLoginEnabled=false）：${backendMessage}`)
+    this.name = 'VisualAuthUnavailableError'
+    this.httpStatus = httpStatus
+    this.backendMessage = backendMessage
+  }
+}
+
+/**
  * 通过登录 API 建立登录态（cookie 直接写入 page 所在 context）。
  * 失败立即抛错——绝不允许「没登录却截了登录页还当基线」。
  */
@@ -89,8 +121,13 @@ export async function loginViaApi(page: Page): Promise<void> {
     // 非 JSON 响应按失败处理
   }
   if (!response.ok() || body.success !== true) {
-    throw new Error(
-      `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`
-    )
+    const message = body.message ?? '(无错误信息)'
+    // 严格校验保持不变：success !== true 一律失败，绝不吞掉。
+    // 仅把「后端明确禁用密码登录」这一类升级为可判定的 typed error，
+    // 供鉴权轨区分「环境 BLOCKED」与「凭据错误 FAIL」。
+    if (PASSWORD_LOGIN_DISABLED_MESSAGE.test(message)) {
+      throw new VisualAuthUnavailableError(message, response.status())
+    }
+    throw new Error(`API 登录失败：HTTP ${response.status()} ${message}`)
   }
 }

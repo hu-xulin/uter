@@ -126,6 +126,9 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
               className='shrink-0'
               onClick={handleCopy}
               disabled={isLoading}
+              // icon-only 按钮必须有可访问名称（axe button-name critical）：
+              // 与 tooltip 同源（复制/加载中/已复制），状态变化时名称同步更新。
+              aria-label={copyTooltip}
             />
           }
         >

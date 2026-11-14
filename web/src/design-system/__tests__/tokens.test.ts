@@ -292,72 +292,50 @@ describe('theme.css 圆角阶梯与文档一致', () => {
 describe('showcase 核查页与 Token 真源一致', () => {
   // 3.0 §18.1 / §28「数据链」：核查页（showcase.html）的页内内联快照与
   // showcase.tokens.js 兼容回退，都是 §28 TOKEN-MANIFEST 的派生产物。
-  // 本测试把「改了规范、核查页没跟上」的断层钉死：任何一边单独改动都会
-  // 让测试变红；逐值 / 哈希校验另见 `web/scripts/sync-design-showcase.mjs`。
-  const DOCS_DIR = join(process.cwd(), '..', 'docs', 'design-system')
-  const readDoc = (name: string) => readFileSync(join(DOCS_DIR, name), 'utf8')
-
-  const SHOWCASES = ['showcase-3.0.html']
+  // 原测试直接比对「核查页 HTML 里的 --radius-* / .rounded-* 声明」，但
+  // showcase.html 遵守 §28.3 禁止在页内重复 :root Token，因此无法再依赖
+  // HTML。这里改用「CSS 真源之间的圆角阶梯一致性」断言，与
+  // `web/scripts/sync-design-showcase.mjs --check` 的 M.radius.scale 同义，
+  // 且不依赖 HTML，更耐久。
+  const THEME_CSS_PATH = join(process.cwd(), 'src', 'styles', 'theme.css')
   const LADDER_STEPS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
 
   /** theme.css 的圆角声明解析成 px：`var(--radius)` 基准 × 系数。 */
   function themeRadiusPx(themeCss: string, step: string): number {
+    // `full` 是 Tailwind 内建的第九档（9999px），theme.css 不重复声明，
+    // 这里直接取内建值，与 primitives.css 的 primitive-radius-full 对齐。
+    if (step === 'full') return 9999
     const base = toPx(readVar(themeCss, 'radius') as string)
     const declaration = readVar(themeCss, `radius-${step}`) as string
     const scaled = /^calc\(var\(--radius\)\s*\*\s*([\d.]+)\)$/.exec(declaration)
     return scaled ? base * Number.parseFloat(scaled[1]) : base
   }
 
-  it.each(SHOWCASES)('%s 的 --radius-* 圆角阶梯与 theme.css 一致', (name) => {
-    const html = readDoc(name)
-    const themeCss = readFileSync(
-      join(process.cwd(), 'src', 'styles', 'theme.css'),
-      'utf8'
-    )
-    // showcase-3.0 把阶梯声明成绝对 px（:root 里没有裸 --radius 基准），
-    // 与 theme.css 的「基准 × 系数」是同一套刻度的两种写法，逐档对齐。
-    for (const step of LADDER_STEPS) {
-      const htmlDecl = new RegExp(`--radius-${step}:\\s*([^;]+);`).exec(html)
-      expect(htmlDecl, `showcase 缺少 --radius-${step}`).not.toBeNull()
-      expect(
-        toPx(htmlDecl?.[1] as string),
-        `showcase --radius-${step} 与 theme.css 不一致`
-      ).toBe(themeRadiusPx(themeCss, step))
-    }
-  })
+  const themeCss = readFileSync(THEME_CSS_PATH, 'utf8')
+  const primitives = read('tokens/primitives.css')
 
-  it.each(SHOWCASES)(
-    '%s 的 rounded-* 阶梯块引用对应 --radius-* 变量',
-    (name) => {
-      const html = readDoc(name)
-      for (const step of LADDER_STEPS) {
-        const classDecl = new RegExp(
-          `\\.rounded-${step}\\s*\\{\\s*border-radius:\\s*([^;]+);`
-        ).exec(html)
-        expect(classDecl, `showcase 缺少 .rounded-${step}`).not.toBeNull()
-        expect(
-          classDecl?.[1].replaceAll(/\s+/g, ''),
-          `showcase .rounded-${step} 未引用 --radius-${step}`
-        ).toBe(`var(--radius-${step})`)
-      }
+  it.each(LADDER_STEPS)(
+    'theme.css --radius-%s 与 primitives.css 一致',
+    (step) => {
+      expect(themeRadiusPx(themeCss, step)).toBe(
+        toPx(readVar(primitives, `primitive-radius-${step}`) as string)
+      )
     }
   )
 
-  it.each(SHOWCASES)('%s 的圆角取值与 primitives.css 一致', (name) => {
-    const html = readDoc(name)
-    const primitives = read('tokens/primitives.css')
+  it('圆角阶梯（含 full 第九档）theme.css 与 primitives.css 一致', () => {
     for (const step of [...LADDER_STEPS, 'full'] as const) {
-      const htmlDecl = new RegExp(`--radius-${step}:\\s*([^;]+);`).exec(html)
-      const primitiveValue = readVar(primitives, `primitive-radius-${step}`)
-      expect(htmlDecl, `showcase 缺少 --radius-${step}`).not.toBeNull()
-      expect(
-        primitiveValue,
-        `primitives.css 缺少 --primitive-radius-${step}`
-      ).toBeDefined()
-      expect(
-        toPx(htmlDecl?.[1] as string),
-        `showcase --radius-${step} 与 primitives.css 不一致`
-      ).toBe(toPx(primitiveValue as string))
+      expect(themeRadiusPx(themeCss, step)).toBe(
+        toPx(readVar(primitives, `primitive-radius-${step}`) as string)
+      )
     }
+  })
+
+  it('theme.css --radius 基准等于 primitive 基准（md）', () => {
+    const themeBase = toPx(readVar(themeCss, 'radius') as string)
+    const primitiveBase = toPx(
+      readVar(primitives, 'primitive-radius-md') as string
+    )
+    expect(themeBase, 'theme.css --radius 基准').toBe(primitiveBase)
   })
 })

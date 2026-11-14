@@ -1,0 +1,526 @@
+{
+  "schema_version": "1.0",
+  "component": "uap.final-acceptance-gate",
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "generated_at": "2026-11-14T05:19:23.701Z",
+  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "command": "node .uap/tools/final-acceptance-gate.mjs",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter"
+  },
+  "status": "FAILED",
+  "overall_status": "FAILED",
+  "claim_allowed": false,
+  "fully_operational_allowed": false,
+  "uap_platform_status": "FAILED",
+  "uter_business_status": "FAILED",
+  "payment_gateway_status": "BLOCKED",
+  "overall_system_status": "FAILED",
+  "counts": {
+    "gate_groups": 6,
+    "gate_groups_pass": 3,
+    "gate_groups_fail": 3,
+    "necessary_blocked": 2,
+    "necessary_unverified": 532,
+    "problems": 39
+  },
+  "blocked_items": [
+    {
+      "id": "EXT-PROVIDER-SANDBOX",
+      "reason": "{\"id\":\"EXT-PROVIDER-SANDBOX\",\"reason\":\"no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox\",\"missing_conditions\":[\"provider sandbox AppID / merchant id\",\"provider sandbox private key / API key (never read from production config)\",\"verified sandbox endpoint reachability\",\"explicit user authorisation for sandbox calls\"],\"unblock_condition\":\"user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment\"}",
+      "impact": "real payment gateway verification cannot be claimed; FULLY_VERIFIED is not allowed"
+    },
+    {
+      "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
+      "reason": "532 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
+      "impact": "full requirement closure not achieved"
+    }
+  ],
+  "checks": [
+    {
+      "id": "6.1_database",
+      "status": "PASS",
+      "problems": [],
+      "details": {
+        "foreign_keys_enabled": true,
+        "orphan_insert_rejected": true,
+        "orphan_persisted": false,
+        "fk_after_restart": true,
+        "connection_pool_fk_consistent": true,
+        "foreign_key_relations": 1,
+        "transaction_checks": 46,
+        "migrations": {
+          "upgrade": "PASS",
+          "rollback": "PASS",
+          "failure_recovery": "PASS",
+          "idempotent": "PASS",
+          "version_consistency": "PASS",
+          "business_data_integrity": "PASS"
+        },
+        "inventory_count": 6
+      }
+    },
+    {
+      "id": "6.2_6.3_tests",
+      "status": "FAIL",
+      "problems": [
+        "accessibility: status=BLOCKED passed=13 failed=0",
+        "visual: status=FAIL exit=1 diffs=29",
+        "visual: 26 unclassified diff(s)"
+      ],
+      "details": {
+        "e2e_counts": {
+          "PASS": 13,
+          "FAIL": 0,
+          "SKIPPED": 1,
+          "BLOCKED": 0,
+          "NOT_RUN": 0,
+          "NOT_APPLICABLE": 0
+        },
+        "e2e_reported_pass": 13,
+        "e2e_recomputed": {
+          "PASS": 13,
+          "FAIL": 0,
+          "SKIPPED": 1,
+          "BLOCKED": 0,
+          "NOT_RUN": 0,
+          "NOT_APPLICABLE": 0
+        },
+        "necessary_blocked_e2e": 1,
+        "accessibility": {
+          "passed": 13,
+          "failed": 0,
+          "skipped": 1,
+          "status": "BLOCKED"
+        },
+        "visual": {
+          "total": 29,
+          "passed": 0,
+          "diffs": 29,
+          "baseline_updated": false,
+          "exit_code": 1,
+          "status": "FAIL"
+        },
+        "test_auth_isolated": true,
+        "security": {
+          "status": "PASS",
+          "counts": {
+            "PASS": 48,
+            "FAIL": 0,
+            "SKIPPED": 0,
+            "BLOCKED": 0,
+            "NOT_RUN": 0,
+            "NOT_APPLICABLE": 0
+          },
+          "business_negative_suite": {
+            "executed": true,
+            "categories": 38,
+            "passed": 38,
+            "blocked": 0,
+            "details": [
+              {
+                "id": "n01",
+                "status": "PASS",
+                "detail": "no credentials -"
+              },
+              {
+                "id": "n02",
+                "status": "PASS",
+                "detail": "common user -"
+              },
+              {
+                "id": "n03",
+                "status": "PASS",
+                "detail": "PAT scope enforcement: usage:read token denied on profile route"
+              },
+              {
+                "id": "n04",
+                "status": "PASS",
+                "detail": "wrong password rejected; tampered session JWT -"
+              },
+              {
+                "id": "n05",
+                "status": "PASS",
+                "detail": "forged epay signature -"
+              },
+              {
+                "id": "n06",
+                "status": "PASS",
+                "detail": "missing/empty/wrong-key signatures all rejected"
+              },
+              {
+                "id": "n07",
+                "status": "PASS",
+                "detail": "replayed notification acknowledged but credited exactly once (DB balance asserted)"
+              },
+              {
+                "id": "n08",
+                "status": "PASS",
+                "detail": "duplicate notification with different provider trade_no -"
+              },
+              {
+                "id": "n09",
+                "status": "PASS",
+                "detail": "SQL injection payloads in request_id filter read no extra rows, leak nothing"
+              },
+              {
+                "id": "n10",
+                "status": "PASS",
+                "detail": "stored XSS payload JSON-escaped, never reflected raw"
+              },
+              {
+                "id": "n11",
+                "status": "PASS",
+                "detail": "401 and malformed-JSON responses leak no stack traces, keys or DB details"
+              },
+              {
+                "id": "n12",
+                "status": "PASS",
+                "detail": "403 response is generic, no internal query/table/constraint details"
+              },
+              {
+                "id": "n13",
+                "status": "PASS",
+                "detail": "CriticalRateLimit: 3 allowed then 429 with Retry-After"
+              },
+              {
+                "id": "n14",
+                "status": "PASS",
+                "detail": "8 concurrent duplicate callbacks -"
+              },
+              {
+                "id": "n15",
+                "status": "PASS",
+                "detail": "PUT /api/user/self with quota=999999 leaves stored quota untouched"
+              },
+              {
+                "id": "n16",
+                "status": "PASS",
+                "detail": "valid signature + ProviderAmount 0.01/100.00 vs order 10.00 -"
+              },
+              {
+                "id": "n17",
+                "status": "PASS",
+                "detail": "refund intent bound to its owner: cross-user refund rejected, owner refund succeeds"
+              },
+              {
+                "id": "n18",
+                "status": "PASS",
+                "detail": "admin -"
+              },
+              {
+                "id": "n19",
+                "status": "PASS",
+                "detail": "cross-site Origin -"
+              },
+              {
+                "id": "n01",
+                "status": "PASS",
+                "detail": "no credentials -"
+              },
+              {
+                "id": "n02",
+                "status": "PASS",
+                "detail": "common user -"
+              },
+              {
+                "id": "n03",
+                "status": "PASS",
+                "detail": "PAT scope enforcement: usage:read token denied on profile route"
+              },
+              {
+                "id": "n04",
+                "status": "PASS",
+                "detail": "wrong password rejected; tampered session JWT -"
+              },
+              {
+                "id": "n05",
+                "status": "PASS",
+                "detail": "forged epay signature -"
+              },
+              {
+                "id": "n06",
+                "status": "PASS",
+                "detail": "missing/empty/wrong-key signatures all rejected"
+              },
+              {
+                "id": "n07",
+                "status": "PASS",
+                "detail": "replayed notification acknowledged but credited exactly once (DB balance asserted)"
+              },
+              {
+                "id": "n08",
+                "status": "PASS",
+                "detail": "duplicate notification with different provider trade_no -"
+              },
+              {
+                "id": "n09",
+                "status": "PASS",
+                "detail": "SQL injection payloads in request_id filter read no extra rows, leak nothing"
+              },
+              {
+                "id": "n10",
+                "status": "PASS",
+                "detail": "stored XSS payload JSON-escaped, never reflected raw"
+              },
+              {
+                "id": "n11",
+                "status": "PASS",
+                "detail": "401 and malformed-JSON responses leak no stack traces, keys or DB details"
+              },
+              {
+                "id": "n12",
+                "status": "PASS",
+                "detail": "403 response is generic, no internal query/table/constraint details"
+              },
+              {
+                "id": "n13",
+                "status": "PASS",
+                "detail": "CriticalRateLimit: 3 allowed then 429 with Retry-After"
+              },
+              {
+                "id": "n14",
+                "status": "PASS",
+                "detail": "8 concurrent duplicate callbacks -"
+              },
+              {
+                "id": "n15",
+                "status": "PASS",
+                "detail": "PUT /api/user/self with quota=999999 leaves stored quota untouched"
+              },
+              {
+                "id": "n16",
+                "status": "PASS",
+                "detail": "valid signature + ProviderAmount 0.01/100.00 vs order 10.00 -"
+              },
+              {
+                "id": "n17",
+                "status": "PASS",
+                "detail": "refund intent bound to its owner: cross-user refund rejected, owner refund succeeds"
+              },
+              {
+                "id": "n18",
+                "status": "PASS",
+                "detail": "admin -"
+              },
+              {
+                "id": "n19",
+                "status": "PASS",
+                "detail": "cross-site Origin -"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "6.4_requirements",
+      "status": "PASS",
+      "problems": [],
+      "details": {
+        "total": 538,
+        "counts": {
+          "VERIFIED": 6,
+          "NOT_VERIFIED": 526,
+          "BLOCKED": 6,
+          "NOT_APPLICABLE": 0
+        },
+        "invalid_status": 0,
+        "verified_without_evidence": 0,
+        "static_only_verified": 0
+      }
+    },
+    {
+      "id": "6.5_payment",
+      "status": "PASS",
+      "problems": [],
+      "details": {
+        "mode": "LOCAL_SIMULATION",
+        "gateway_verified": false,
+        "real_payments": 0,
+        "real_refunds": 0,
+        "network_calls": 0,
+        "gateway_status": "BLOCKED",
+        "blocked_reason": {
+          "id": "EXT-PROVIDER-SANDBOX",
+          "reason": "no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox",
+          "missing_conditions": [
+            "provider sandbox AppID / merchant id",
+            "provider sandbox private key / API key (never read from production config)",
+            "verified sandbox endpoint reachability",
+            "explicit user authorisation for sandbox calls"
+          ],
+          "unblock_condition": "user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment"
+        }
+      }
+    },
+    {
+      "id": "6.6_evidence",
+      "status": "FAIL",
+      "problems": [
+        "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
+        "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
+        "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
+        "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
+        "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+        "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
+        "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
+        "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+        "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+        "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
+        "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
+        "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
+        "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
+        "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch",
+        "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch",
+        "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch",
+        "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4",
+        "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+        "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch"
+      ],
+      "details": {
+        "manifest": {
+          "ok": false,
+          "checked": 14,
+          "problems": [
+            "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+            "DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
+            "DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+            "DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
+            "PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+            "PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
+            "REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+            "REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
+            "REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+            "REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+            "RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+            "RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
+            "SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+            "SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
+            "VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
+            "VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+            "VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest"
+          ],
+          "hash": "32ba9c01c16fe555872dff761e253f9cf096e499a2e6bf5ef174ba59f7264d95"
+        },
+        "bindings": {
+          "ok": false,
+          "checked": 14,
+          "problems": [
+            "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+            "DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
+            "DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+            "DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
+            "PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+            "PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
+            "SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+            "SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
+            "REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+            "REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch",
+            "REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+            "REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch",
+            "RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4",
+            "RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch",
+            "VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4",
+            "VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+            "VALIDATION-RESULTS.json: worktree_fingerprint mismatch"
+          ]
+        },
+        "status_consistency": {
+          "ok": false,
+          "problems": 5
+        }
+      }
+    },
+    {
+      "id": "uap_self",
+      "status": "FAIL",
+      "problems": [
+        "uap: 3 build/typecheck command(s) failed"
+      ],
+      "details": {
+        "uap_tests": {
+          "exit_code": 0,
+          "status": null
+        },
+        "validators": {
+          "total": 32,
+          "pass": 32,
+          "fail": 0,
+          "blocked": 0,
+          "exit_code": 0
+        },
+        "build": {
+          "commands": 3,
+          "failed": 3
+        }
+      }
+    }
+  ],
+  "problems": [
+    "accessibility: status=BLOCKED passed=13 failed=0",
+    "visual: status=FAIL exit=1 diffs=29",
+    "visual: 26 unclassified diff(s)",
+    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
+    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
+    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
+    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
+    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
+    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch",
+    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch",
+    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
+    "uap: 3 build/typecheck command(s) failed",
+    "532 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+  ],
+  "evidence_manifest_hash": "32ba9c01c16fe555872dff761e253f9cf096e499a2e6bf5ef174ba59f7264d95",
+  "evidence_manifest_path": ".uap/reports/EVIDENCE-MANIFEST.json",
+  "note": "FULLY_VERIFIED is impossible while a necessary verification is BLOCKED or unverified. Local payment simulation is never treated as a real provider sandbox."
+}

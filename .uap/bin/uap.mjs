@@ -25,6 +25,15 @@ import { normalizeSpecHeaders } from '../tools/normalize-spec-headers.mjs';
 import { statusVerdict } from '../runtime/status-engine/snapshot.mjs';
 import { currentExecution, startExecution, bindExecution, executionHistory, gitHead, worktreeFingerprint, health as executionHealth } from '../runtime/status-engine/execution.mjs';
 import { verifyStatusConsistency } from '../tools/verify-status-consistency.mjs';
+// Phase-2 remediation: one strict test-status model for EVERY capability card.
+import {
+  TEST_STATUS, TEST_STATUSES, summarize, makeCard,
+  normalizePlaywrightSpec, normalizeGoAction, annotationOf,
+} from '../runtime/status-engine/test-status.mjs';
+import {
+  generateEvidenceManifest, verifyEvidenceManifest, repositoryIdentity,
+} from '../runtime/evidence-engine/manifest.mjs';
+import { runFinalAcceptance } from '../tools/final-acceptance-gate.mjs';
 
 export const component = 'uap.cli';
 export const version = '1.0.0';
@@ -123,6 +132,42 @@ function usage(summary, data = {}) {
 }
 
 function reportPath(name) { return path.join(REPORTS, name); }
+
+/**
+ * Build a strict, execution-bound capability card. Every final report gets
+ * repository / branch / commit SHA / execution_id / worktree fingerprint /
+ * generated_at / command / environment / real counts — from THIS run.
+ */
+function bindCard({ suite, command, exit_code, items, extra = {} }) {
+  const repo = repositoryIdentity();
+  return bindExecution({
+    ...makeCard({ suite, command, exit_code, items, extra }),
+    generated_at: nowISO(),
+    repository: repo.repository,
+    branch: repo.branch,
+    commit_sha: repo.commit_sha,
+    test_environment: {
+      platform: process.platform, node: process.version, cwd: ROOT,
+      isolated: true,
+    },
+    requirement_ids: extra.requirement_ids || [],
+  });
+}
+
+/** Parse `PHASE2_DB_METRIC k=v` / `PHASE2_MIGRATION k=v` lines from real go test output. */
+function parseMarkers(stdout, prefix) {
+  const out = {};
+  for (const line of String(stdout || '').split('\n')) {
+    const i = line.indexOf(prefix);
+    if (i < 0) continue;
+    const body = line.slice(i + prefix.length).trim();
+    const m = /^(\w+)\s*=\s*(\S+)/.exec(body);
+    if (m) out[m[1]] = m[2];
+  }
+  return out;
+}
+
+function boolMetric(v) { return v === 'true' || v === '1'; }
 
 async function optionalTool(name) {
   const file = uapPath('tools', `${name}.mjs`);
@@ -1175,6 +1220,80 @@ async function cmdVerifyStatus() {
   return ok(`status consistency PASS: ${r.checks.filter((c) => c.status === 'PASS').length}/${r.checks.length} independent checks`, data);
 }
 
+// ---------------------------------------------------------------- accept ----
+/**
+ * Final acceptance closure (P2-11). Ordered phases, all real:
+ *   1. prepare  — the gate runs and writes FINAL-ACCEPTANCE.json /
+ *                 FINAL-STATUS.json with the evidence check honestly marked
+ *                 pending (the manifest cannot exist before its inputs).
+ *   2. manifest — the evidence manifest is generated over those outputs.
+ *   3. verify   — the gate re-runs strictly (manifest now verifiable) and
+ *                 rewrites the outputs with the verified evidence details.
+ *   4. manifest — regenerated AGAIN over the FINAL bytes (the verify pass
+ *                 changed FINAL-ACCEPTANCE.json, so the previous manifest is
+ *                 stale by construction).
+ *   5. confirm  — a read-only gate pass proves the fixed point: every check,
+ *                 including manifest integrity, is green WITHOUT any write.
+ *   6. consistency — the 3-way status consistency verifier runs and its
+ *                 verdict is persisted to STATUS-CONSISTENCY.json.
+ * Exit codes: FULLY_VERIFIED -> 0, NOT_ACCEPTED -> 2 (blocked), FAILED -> 1.
+ * A claim is never allowed while a necessary verification is BLOCKED.
+ */
+async function cmdAccept({ flags }) {
+  const checkOnly = flags.has('check');
+  if (checkOnly) {
+    const confirm = runFinalAcceptance({ write: false, evidencePhase: 'verify' });
+    const consistency = verifyStatusConsistency({ withCli: true });
+    return acceptResult(confirm, consistency, { mode: 'check-only' });
+  }
+
+  const prepare = runFinalAcceptance({ write: true, evidencePhase: 'prepare' });
+  const manifestPrepared = generateEvidenceManifest();
+  const verify = runFinalAcceptance({ write: true, evidencePhase: 'verify' });
+  const manifestFinal = generateEvidenceManifest();
+  const confirm = runFinalAcceptance({ write: false, evidencePhase: 'verify' });
+  const consistency = verifyStatusConsistency({ withCli: true });
+  writeJSON(path.join(REPORTS, 'STATUS-CONSISTENCY.json'), {
+    ...consistency,
+    generated_by: 'uap accept',
+    manifest_entries_hashed: Array.isArray(manifestFinal.entries) ? manifestFinal.entries.length : null,
+  });
+  return acceptResult(confirm, consistency, {
+    mode: 'full-closure',
+    prepare_status: prepare.status,
+    verify_status: verify.status,
+    manifest_entries: Array.isArray(manifestFinal.entries) ? manifestFinal.entries.length : null,
+    manifest_missing: manifestFinal.missing_reports ?? [],
+  });
+}
+
+function acceptResult(confirm, consistency, extra = {}) {
+  const data = {
+    ...extra,
+    gate_status: confirm.status,
+    overall_status: confirm.overall_status,
+    claim_allowed: confirm.claim_allowed,
+    counts: confirm.counts,
+    blocked_items: confirm.blocked_items,
+    problems: confirm.problems.slice(0, 30),
+    status_consistency: {
+      ok: consistency.ok,
+      checks_passed: consistency.checks.filter((c) => c.status === 'PASS').length,
+      checks_total: consistency.checks.length,
+      problems: consistency.problems.slice(0, 15),
+    },
+    evidence_manifest_path: '.uap/reports/EVIDENCE-MANIFEST.json',
+  };
+  const consistencySuffix = consistency.ok ? 'consistency PASS' : `consistency FAILED (${consistency.problems.length})`;
+  if (confirm.status === 'FULLY_VERIFIED') {
+    return ok(`final acceptance: FULLY_VERIFIED, ${consistencySuffix}`, data);
+  }
+  if (confirm.status === 'FAILED') {
+    return { status: 'FAIL', exit_code: EXIT.FAIL, summary: `final acceptance: FAILED, ${consistencySuffix}`, data };
+  }
+  return { status: 'BLOCKED', exit_code: EXIT.BLOCKED, summary: `final acceptance: ${confirm.status}, ${consistencySuffix} — necessary verifications remain BLOCKED/unverified`, data };
+}
+
 // ------------------------------------------------- phase 2 capabilities -----
 // Each command runs REAL commands, parses their real output and writes a
 // fail-closed capability card bound to the current execution. A card is only
@@ -1205,71 +1324,164 @@ function goSubtests(stdout) {
 }
 
 async function cmdVerifyDatabase() {
-  const r = await runGoTest('./model/', 'TestPhase2DB|TestIsolatedDB');
-  const subtests = goSubtests(r.stdout).filter((t) => t.name.includes('/') && t.action);
-  const pass = subtests.filter((t) => t.action === 'pass').length;
-  const failCount = subtests.filter((t) => t.action === 'fail').length;
-  const skip = subtests.filter((t) => t.action === 'skip').length;
-  const data = bindExecution({
-    generated_at: nowISO(),
-    status: r.exit_code === 0 && failCount === 0 && pass >= 20 ? 'PASS' : 'FAIL',
-    command: r.command, exit_code: r.exit_code, timed_out: r.timed_out,
-    subtests, pass, fail: failCount, skip,
-    // A real file-backed SQLite database in t.TempDir() is used — NOT a mock
-    // repository, NOT :memory:, NOT a source scan.
-    database: 'real file-backed SQLite (glebarez/sqlite, WAL + busy_timeout + BEGIN IMMEDIATE) in t.TempDir()',
-    simulated_only: false,
-    transactions: subtests.map((t) => ({ name: t.name, result: t.action })),
+  // TestPhase2EvidenceMarkers emits the PHASE2_DB_METRIC / PHASE2_MIGRATION
+  // lines this card's FK proof and migration inventory are built from — it
+  // MUST be part of the same real run (never parse a stale/separate output).
+  const r = await runGoTest('./model/', 'TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers');
+  const subtests = goSubtests(r.stdout).filter((t) => t.action);
+  const items = subtests.map((t) => {
+    const status = normalizeGoAction(t.action);
+    return {
+      id: t.name, title: t.name, status,
+      reason: status === TEST_STATUS.SKIPPED ? `go test action=${t.action}` : null,
+      runner_ok: t.action === 'pass',
+      output: (t.output || []).slice(-6),
+    };
+  });
+  // go test -json emits t.Logf lines INSIDE JSON string values, where `\n` is
+  // a two-character escape — splitting the raw stdout by newline therefore
+  // concatenates the marker value with trailing JSON garbage. Parse the
+  // markers from the DECODED per-test output instead.
+  const markerText = subtests.flatMap((t) => t.output).join('\n');
+  const metrics = parseMarkers(markerText, 'PHASE2_DB_METRIC');
+  const migrations = parseMarkers(markerText, 'PHASE2_MIGRATION');
+  const requiredBool = ['foreign_keys', 'orphan_rejected', 'orphan_persisted', 'fk_after_restart', 'pool_fk_consistent'];
+  const missingMetrics = requiredBool.filter((k) => metrics[k] === undefined);
+  const fkRelations = Number(metrics.relations ?? metrics.fk_relations ?? 0);
+  const fkProof = {
+    foreign_keys_enabled: boolMetric(metrics.foreign_keys),
+    foreign_key_relations: fkRelations,
+    orphan_insert_rejected: boolMetric(metrics.orphan_rejected),
+    orphan_persisted: metrics.orphan_persisted === undefined ? null : boolMetric(metrics.orphan_persisted),
+    fk_after_restart: boolMetric(metrics.fk_after_restart),
+    connection_pool_fk_consistent: boolMetric(metrics.pool_fk_consistent),
+  };
+  // A card may never claim PASS when FK is off / orphans are accepted. This is
+  // the exact false-pass the independent audit found in db_09.
+  const integrityProofFailed = missingMetrics.length > 0 || !fkProof.foreign_keys_enabled
+    || fkRelations < 1 || !fkProof.orphan_insert_rejected || fkProof.orphan_persisted !== false
+    || !fkProof.fk_after_restart || !fkProof.connection_pool_fk_consistent;
+  if (integrityProofFailed) {
+    items.push({
+      id: 'DB_FK_INTEGRITY_PROOF', title: 'foreign key integrity proof from real file-backed SQLite',
+      status: TEST_STATUS.FAIL,
+      reason: `missing metrics: ${missingMetrics.join(',') || 'none'}; ${JSON.stringify(fkProof)}`,
+      runner_ok: false,
+    });
+  } else {
+    items.push({
+      id: 'DB_FK_INTEGRITY_PROOF', title: 'foreign key integrity proof from real file-backed SQLite',
+      status: TEST_STATUS.PASS, reason: null, runner_ok: true,
+    });
+  }
+  const data = bindCard({
+    suite: 'database_integration', command: r.command, exit_code: r.exit_code,
+    items,
+    extra: {
+      ...fkProof,
+      missing_metrics: missingMetrics,
+      subtests,
+      timed_out: r.timed_out,
+      database: 'real file-backed SQLite (glebarez/sqlite, WAL + busy_timeout + BEGIN IMMEDIATE + foreign_keys(1)) in t.TempDir()',
+      simulated_only: false,
+      transactions: subtests.map((t) => ({ name: t.name, result: t.action })),
+      migrations,
+    },
+  });
+  const migCard = bindCard({
+    suite: 'database_migrations', command: r.command, exit_code: r.exit_code,
+    items: Object.entries(migrations).map(([k, v]) => ({
+      id: `migration_${k}`, title: `migration ${k}`, status: v === 'PASS' ? TEST_STATUS.PASS : TEST_STATUS.FAIL,
+      reason: v === 'PASS' ? null : `reported ${v}`, runner_ok: v === 'PASS',
+    })),
+    extra: {
+      migrations,
+      inventory: Object.entries(migrations).map(([k, v]) => ({ check: k, result: v })),
+      inventory_count: Object.keys(migrations).length,
+      migration_framework: '.uap/reports/../model/schema_migrations.go',
+      upgrade: migrations.upgrade ?? null,
+      rollback: migrations.rollback ?? null,
+      generated_by: 'real go test -json markers from model/schema_migrations_test.go',
+    },
   });
   writeJSON(reportPath('DATABASE-INTEGRATION.json'), data);
+  writeJSON(reportPath('DATABASE-MIGRATIONS.json'), migCard);
   const ev = record({
     kind: 'capability_card', command: `uap verify-database (${r.command})`, exit_code: r.exit_code,
-    summary: `database integration: ${pass} pass / ${failCount} fail / ${skip} skip`,
-    inputs: { package: './model/', run: 'TestPhase2DB|TestIsolatedDB' },
+    summary: `database integration: ${data.counts.PASS} pass / ${data.counts.FAIL} fail / ${data.counts.SKIPPED} skip; FK proof=${integrityProofFailed ? 'FAIL' : 'PASS'}`,
+    inputs: { package: './model/', fk_metrics: metrics, migrations },
   });
   data.evidence_ref = ev.evidence_id;
+  migCard.evidence_ref = ev.evidence_id;
   writeJSON(reportPath('DATABASE-INTEGRATION.json'), data);
-  if (r.exit_code !== 0 || failCount > 0 || pass < 20) {
-    return fail(`database integration FAILED: exit=${r.exit_code} pass=${pass} fail=${failCount} skip=${skip}`, data);
+  writeJSON(reportPath('DATABASE-MIGRATIONS.json'), migCard);
+  if (data.status !== 'PASS' || r.exit_code !== 0) {
+    return fail(`database integration FAILED: exit=${r.exit_code} pass=${data.pass} fail=${data.fail} fk_proof=${integrityProofFailed ? 'FAIL' : 'PASS'} missing=${missingMetrics.join(',')}`, { database: data, migrations: migCard });
   }
-  return ok(`database integration PASS: ${pass}/${subtests.length} real isolated-DB scenarios`, data);
+  return ok(`database integration PASS: ${data.total} real isolated-DB scenarios, FK proof verified`, { database: data, migrations: migCard });
 }
 
 async function cmdVerifyPayment() {
   const r = await runGoTest('./service/paymentsandbox/', 'Test');
   const subtests = goSubtests(r.stdout).filter((t) => t.action);
-  const pass = subtests.filter((t) => t.action === 'pass').length;
-  const failCount = subtests.filter((t) => t.action === 'fail').length;
-  const data = bindExecution({
-    generated_at: nowISO(),
-    status: r.exit_code === 0 && failCount === 0 && pass > 0 ? 'PASS' : 'FAIL',
-    command: r.command, exit_code: r.exit_code, timed_out: r.timed_out,
-    subtests, pass, fail: failCount,
-    // Mandated labelling: local simulation is NEVER reported as a real
-    // provider sandbox. Interaction with a real provider sandbox stays
-    // BLOCKED_EXTERNAL_DEPENDENCY until genuine sandbox credentials exist.
-    mode: 'LOCAL_SIMULATION',
-    gateway_verified: false,
-    blocked_external_dependency: {
-      id: 'EXT-PROVIDER-SANDBOX',
-      reason: 'no real payment-provider sandbox credentials in this repository; ValidateConfig fails closed on ModeProviderSandbox',
-      unblock_condition: 'user supplies genuine sandbox AppID/keys and authorises sandbox calls',
+  const items = subtests.map((t) => {
+    const status = normalizeGoAction(t.action);
+    return {
+      id: t.name, title: t.name, status,
+      reason: status === TEST_STATUS.SKIPPED ? `go test action=${t.action}` : null,
+      runner_ok: t.action === 'pass', output: (t.output || []).slice(-4),
+    };
+  });
+  const gatewayProbe = parseMarkers(r.stdout, 'PAYMENT_GATEWAY_PROBE');
+  const sandboxEvidence = readJSON(reportPath('PAYMENT-SANDBOX-EVIDENCE.json'), null);
+  // A real sandbox PASS requires BOTH a genuine recorded evidence file AND the
+  // probe declaring a real sandbox endpoint. Nothing here can fabricate it.
+  const gatewayVerified = Array.isArray(sandboxEvidence?.sandbox_requests)
+    && sandboxEvidence.sandbox_requests.length > 0
+    && gatewayProbe.mode === 'PROVIDER_SANDBOX'
+    && gatewayProbe.endpoint_verified === 'true';
+  const data = bindCard({
+    suite: 'payment_sandbox', command: r.command, exit_code: r.exit_code,
+    items,
+    extra: {
+      subtests, timed_out: r.timed_out,
+      // Mandated labelling: local simulation is NEVER reported as a real
+      // provider sandbox. The gateway stays BLOCKED until genuine sandbox
+      // credentials + endpoints + authorisation exist.
+      mode: gatewayVerified ? 'PROVIDER_SANDBOX' : 'LOCAL_SIMULATION',
+      gateway_verified: gatewayVerified,
+      gateway_status: gatewayVerified ? 'PASS' : 'BLOCKED',
+      blocked_external_dependency: gatewayVerified ? null : {
+        id: 'EXT-PROVIDER-SANDBOX',
+        reason: 'no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox',
+        missing_conditions: [
+          'provider sandbox AppID / merchant id',
+          'provider sandbox private key / API key (never read from production config)',
+          'verified sandbox endpoint reachability',
+          'explicit user authorisation for sandbox calls',
+        ],
+        unblock_condition: 'user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment',
+      },
+      gateway_blocked_reason: gatewayVerified ? null : 'EXT-PROVIDER-SANDBOX: missing sandbox credentials/endpoints/authorisation',
+      sandbox_evidence: gatewayVerified ? sandboxEvidence.sandbox_requests : [],
+      gateway_probe: gatewayProbe,
+      real_payments: 0, real_refunds: 0, network_calls_to_real_provider: 0,
+      real_sandbox_requests: gatewayVerified ? sandboxEvidence.sandbox_requests.length : 0,
+      production_credentials_read: 0,
+      checks: subtests.map((t) => ({ name: t.name, result: t.action })),
     },
-    real_payments: 0, real_refunds: 0, network_calls_to_real_provider: 0,
-    production_credentials_read: 0,
-    checks: subtests.map((t) => ({ name: t.name, result: t.action })),
   });
   writeJSON(reportPath('PAYMENT-SANDBOX.json'), data);
   const ev = record({
     kind: 'capability_card', command: `uap verify-payment (${r.command})`, exit_code: r.exit_code,
-    summary: `payment sandbox: LOCAL_SIMULATION ${pass} pass / ${failCount} fail; provider sandbox BLOCKED_EXTERNAL_DEPENDENCY`,
+    summary: `payment: ${data.mode} ${data.counts.PASS} pass / ${data.counts.FAIL} fail; gateway=${gatewayVerified ? 'PASS' : 'BLOCKED'}`,
   });
   data.evidence_ref = ev.evidence_id;
   writeJSON(reportPath('PAYMENT-SANDBOX.json'), data);
-  if (r.exit_code !== 0 || failCount > 0) {
-    return fail(`payment sandbox FAILED: exit=${r.exit_code} pass=${pass} fail=${failCount}`, data);
+  if (data.status !== 'PASS' || r.exit_code !== 0) {
+    return fail(`payment sandbox FAILED: exit=${r.exit_code} pass=${data.pass} fail=${data.fail}`, data);
   }
-  return ok(`payment sandbox: LOCAL_SIMULATION PASS (${pass} real tests); real-provider sandbox remains BLOCKED_EXTERNAL_DEPENDENCY`, data);
+  return ok(`payment: LOCAL_SIMULATION PASS (${data.total} real tests); real-provider sandbox remains BLOCKED_EXTERNAL_DEPENDENCY`, data);
 }
 
 /** 递归收集 Playwright JSON reporter 的全部 specs（suite 可嵌套文件级子层）。 */
@@ -1283,85 +1495,135 @@ function collectPlaywrightSpecs(suites) {
 }
 
 async function cmdVerifyE2E() {
-  const results = { browser_runs: [], axe: null };
-  let overall = 'PASS';
   const problems = [];
-  // 1. Accessibility (axe) against the isolated/current target when available.
   const axeTarget = process.env.VISUAL_BASE_URL || 'http://localhost:3000';
-  // Axe config emits a JSON outputFile (web/.axe-e2e/report.json) — same
-  // file-based contract as the business suite; stdout parsing is not reliable.
+  const businessTarget = process.env.BUSINESS_BASE_URL || 'http://localhost:3100';
+  const testAuthIsolated = process.env.UAP_TEST_STACK === 'isolated'
+    || (Boolean(process.env.VISUAL_BASE_URL) && !/:3000\b/.test(axeTarget));
   const axeReport = path.join(ROOT, 'web', '.axe-e2e', 'report.json');
   if (fs.existsSync(axeReport)) fs.rmSync(axeReport, { force: true });
   const axe = await runCommand({
     command: 'npx', args: ['playwright', 'test', '--config', 'e2e/axe/playwright.config.ts'],
-    cwd: path.join(ROOT, 'web'), timeoutMs: 600000,
+    cwd: path.join(ROOT, 'web'), timeoutMs: 900000,
   });
   const axeJson = readJSON(axeReport, null);
   const axeSpecs = collectPlaywrightSpecs(axeJson?.suites);
-  const axePass = axeSpecs.filter((s) => s.ok).length;
-  const axeFailSpecs = axeSpecs.filter((s) => !s.ok);
-  const criticalViolations = [];
-  for (const spec of axeFailSpecs) {
-    for (const err of spec.errors || []) criticalViolations.push({ spec: spec.title, message: String(err.message || err).slice(0, 300) });
-  }
-  results.axe = {
-    command: axe.command, exit_code: axe.exit_code, target: axeTarget,
-    passed: axePass, failed: axeFailSpecs.length, critical_violations: criticalViolations,
-    skipped_note: 'skipped authed group requires VISUAL_TEST credentials; never deleted to force 0 skipped',
-  };
-  results.browser_runs.push({ suite: 'axe', target: axeTarget, exit_code: axe.exit_code, passed: axePass, failed: axeFailSpecs.length });
-  if (axe.exit_code !== 0) { overall = 'FAIL'; problems.push(`axe exit=${axe.exit_code}, failed=${axeFailSpecs.length}`); }
 
-  // 2. Business-flow E2E when the suite exists and a target is reachable.
-  //    The business config already emits a JSON outputFile (web/.business-e2e/
-  //    report.json) — reading the file avoids stdout-parsing fragility (list
-  //    reporter output interleaving, output truncation) and keeps exit_code +
-  //    per-spec results fully auditable.
+  // Walk the FULL Playwright tree for assertion errors: spec.errors alone is
+  // often empty while test.results[].errors holds the real axe violations.
+  const deepErrors = (s) => {
+    const msgs = [];
+    for (const t of s.tests || []) {
+      for (const r of t.results || []) for (const e of r.errors || []) msgs.push(String(e.message || e));
+      for (const e of t.errors || []) msgs.push(String(e.message || e));
+    }
+    for (const e of s.errors || []) msgs.push(String(e.message || e));
+    return msgs;
+  };
+  const criticalViolations = [];
+  let seriousViolations = 0;
+  for (const spec of axeSpecs) {
+    for (const msg of deepErrors(spec)) {
+      if (/critical\/|critical\b/i.test(msg)) criticalViolations.push({ spec: spec.title, message: msg.slice(0, 400) });
+      const seriousCount = (msg.match(/serious\//g) || []).length;
+      seriousViolations += seriousCount;
+    }
+  }
+
   const businessDir = path.join(ROOT, 'web', 'e2e', 'business');
+  let biz = null, bizJson = null, bizSpecs = [];
   if (fs.existsSync(businessDir)) {
     const bizReport = path.join(ROOT, 'web', '.business-e2e', 'report.json');
     if (fs.existsSync(bizReport)) fs.rmSync(bizReport, { force: true });
-    const biz = await runCommand({
+    biz = await runCommand({
       command: 'npx', args: ['playwright', 'test', '--config', 'e2e/business/playwright.config.ts'],
       cwd: path.join(ROOT, 'web'), timeoutMs: 900000,
     });
-    const bizJson = readJSON(bizReport, null);
-    const bizSpecs = collectPlaywrightSpecs(bizJson?.suites);
-    const bizPass = bizSpecs.filter((s) => s.ok).length;
-    const bizFail = bizSpecs.filter((s) => !s.ok);
-    results.browser_runs.push({
-      suite: 'business', target: process.env.BUSINESS_BASE_URL || 'http://localhost:3100',
-      exit_code: biz.exit_code, passed: bizPass, failed: bizFail.length,
-      stats: bizJson?.stats || null,
-      scenarios: bizSpecs.map((s) => ({ title: s.title, ok: s.ok })),
-      stderr_tail: (biz.stderr || '').slice(-600),
-    });
-    if (biz.exit_code !== 0) { overall = overall === 'PASS' ? 'FAIL' : overall; problems.push(`business e2e exit=${biz.exit_code}, failed=${bizFail.length}`); }
-  } else {
-    results.browser_runs.push({ suite: 'business', exit_code: null, note: 'suite not built yet — reported honestly, never faked' });
+    bizJson = readJSON(bizReport, null);
+    bizSpecs = collectPlaywrightSpecs(bizJson?.suites);
   }
 
-  const data = bindExecution({
-    generated_at: nowISO(), status: overall, problems,
-    browser_runs: results.browser_runs, axe: results.axe,
+  // Strict normalisation: a skipped/blocked spec with ok=true becomes
+  // SKIPPED/BLOCKED and can NEVER be counted as PASS (audit P2-03).
+  const axeItems = axeSpecs.map((s, i) => ({ ...normalizePlaywrightSpec(s, i), id: `axe_${i}_${s.title}`, suite: 'axe' }));
+  const bizItems = bizSpecs.map((s, i) => ({ ...normalizePlaywrightSpec(s, i), id: `biz_${i}_${s.title}`, suite: 'business' }));
+  const items = [...axeItems, ...bizItems];
+  const combinedExit = (Number(axe.exit_code) || 0) || (biz ? (Number(biz.exit_code) || 0) : 1);
+
+  const axeSummary = summarize(axeItems);
+  const bizSummary = summarize(bizItems);
+  const browserRuns = [
+    {
+      suite: 'axe', target: axeTarget, exit_code: axe.exit_code,
+      passed: axeSummary.counts.PASS, failed: axeSummary.counts.FAIL,
+      skipped: axeSummary.counts.SKIPPED, blocked: axeSummary.counts.BLOCKED,
+      stats: axeJson?.stats || null,
+      scenarios: axeItems.map((s) => ({ title: s.title, status: s.status, ok: s.status === TEST_STATUS.PASS, reason: s.reason })),
+    },
+    {
+      suite: 'business', target: businessTarget, exit_code: biz?.exit_code ?? null,
+      passed: bizSummary.counts.PASS, failed: bizSummary.counts.FAIL,
+      skipped: bizSummary.counts.SKIPPED, blocked: bizSummary.counts.BLOCKED,
+      stats: bizJson?.stats || null,
+      scenarios: bizItems.map((s) => ({ title: s.title, status: s.status, ok: s.status === TEST_STATUS.PASS, reason: s.reason })),
+      stderr_tail: (biz?.stderr || '').slice(-600),
+    },
+  ];
+  if (axe.exit_code !== 0) problems.push(`axe exit=${axe.exit_code}`);
+  if (biz && biz.exit_code !== 0) problems.push(`business e2e exit=${biz.exit_code}`);
+  if (!biz) problems.push('business e2e suite not present — NOT_RUN');
+
+  const data = bindCard({
+    suite: 'e2e', command: `${axe.command} + playwright business`,
+    exit_code: combinedExit, items,
+    extra: {
+      problems, browser_runs: browserRuns,
+      axe: {
+        command: axe.command, exit_code: axe.exit_code, target: axeTarget,
+        passed: axeSummary.counts.PASS, failed: axeSummary.counts.FAIL,
+        skipped: axeSummary.counts.SKIPPED, blocked: axeSummary.counts.BLOCKED,
+        critical_violations: criticalViolations, serious_violations: seriousViolations,
+      },
+      test_authentication: {
+        isolated: testAuthIsolated,
+        mechanism: testAuthIsolated ? 'isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass' : 'NOT_ISOLATED',
+        production_auth_policy_modified: false,
+      },
+      skipped_note: `${axeSummary.counts.SKIPPED + bizSummary.counts.SKIPPED} skipped / ${axeSummary.counts.BLOCKED + bizSummary.counts.BLOCKED} blocked — never counted as PASS`,
+    },
+  });
+  // Accessibility has its own strict, bound card (real executed counts).
+  const ax = bindCard({
+    suite: 'accessibility', command: axe.command, exit_code: axe.exit_code,
+    items: axeItems,
+    extra: {
+      target: axeTarget,
+      passed: axeSummary.counts.PASS,
+      failed: axeSummary.counts.FAIL,
+      skipped: axeSummary.counts.SKIPPED,
+      critical: criticalViolations.length,
+      serious: seriousViolations,
+      critical_violations: criticalViolations,
+      test_authentication: data.test_authentication,
+    },
   });
   writeJSON(reportPath('E2E-RESULTS.json'), data);
-  const ax = bindExecution({
-    generated_at: nowISO(),
-    status: axe.exit_code === 0 ? 'PASS' : 'FAIL',
-    critical: results.axe.critical_violations.length,
-    serious: 0,
-    passed: axePass, failed: axeFailSpecs.length, target: axeTarget,
-  });
   writeJSON(reportPath('ACCESSIBILITY-RESULTS.json'), ax);
   const ev = record({
-    kind: 'capability_card', command: 'uap verify-e2e (playwright axe + business)', exit_code: overall === 'PASS' ? 0 : 1,
-    summary: `e2e: ${overall}; runs=${results.browser_runs.length}`,
+    kind: 'capability_card', command: 'uap verify-e2e (playwright axe + business)', exit_code: combinedExit,
+    summary: `e2e: ${data.status}; PASS=${data.counts.PASS} FAIL=${data.counts.FAIL} BLOCKED=${data.counts.BLOCKED} SKIPPED=${data.counts.SKIPPED}`,
   });
   data.evidence_ref = ev.evidence_id;
+  ax.evidence_ref = ev.evidence_id;
   writeJSON(reportPath('E2E-RESULTS.json'), data);
-  if (overall !== 'PASS') return fail(`e2e FAILED: ${problems.join('; ')}`, data);
-  return ok(`e2e PASS: ${results.browser_runs.length} real browser run(s)`, data);
+  writeJSON(reportPath('ACCESSIBILITY-RESULTS.json'), ax);
+  if (data.status === 'FAIL' || ax.status === 'FAIL') {
+    return fail(`e2e FAILED: ${problems.join('; ')}; PASS=${data.pass} FAIL=${data.fail} BLOCKED=${data.blocked} SKIPPED=${data.skipped}`, { e2e: data, accessibility: ax });
+  }
+  if (data.status !== 'PASS' || ax.status !== 'PASS') {
+    return blocked(`e2e NOT FULLY VERIFIED: ${data.status} (${data.counts.BLOCKED} blocked / ${data.counts.SKIPPED} skipped / ${data.counts.NOT_RUN} not-run) — never reported as PASS`, { e2e: data, accessibility: ax });
+  }
+  return ok(`e2e PASS: ${data.total} real browser specs (${data.pass} pass)`, { e2e: data, accessibility: ax });
 }
 
 async function cmdVerifyVisual() {
@@ -1400,68 +1662,143 @@ async function cmdVerifyVisual() {
   });
   const diffs = items.filter((i) => !i.ok);
   const classified = items.filter((i) => i.category !== 'UNCLASSIFIED' && i.category !== 'needs_manual_classification').length;
-  const data = bindExecution({
-    generated_at: nowISO(), command: viz.command, exit_code: viz.exit_code,
-    total_specs: items.length, passed: items.length - diffs.length, total_diffs: diffs.length,
-    classified, unclassified: diffs.length - classified,
-    // Never bulk-update baselines to force green.
-    baseline_updated: false,
-    items,
-    // Diagnostics for parse/run anomalies: an exit≠0 with 0 parsed specs means
-    // the suite failed before producing a JSON payload — keep the tails honest.
-    stdout_tail: (viz.stdout || '').slice(-800),
-    stderr_tail: (viz.stderr || '').slice(-800),
-    json_parsed: vizJson !== null,
+  const strictItems = specs.map((s, i) => ({ ...normalizePlaywrightSpec(s, i), id: `visual_${i}_${s.title}` }));
+  const summary = summarize(strictItems);
+  const testAuthIsolated = process.env.UAP_TEST_STACK === 'isolated'
+    || (Boolean(process.env.VISUAL_BASE_URL) && !/:3000\b/.test(process.env.VISUAL_BASE_URL));
+  const data = bindCard({
+    suite: 'visual_regression', command: viz.command, exit_code: viz.exit_code,
+    items: strictItems,
+    extra: {
+      total_specs: strictItems.length,
+      passed: summary.counts.PASS,
+      total_diffs: diffs.length,
+      classified, unclassified: diffs.length - classified,
+      // Never bulk-update baselines to force green.
+      baseline_updated: false,
+      legacy_items: items,
+      test_authentication: {
+        isolated: testAuthIsolated,
+        mechanism: testAuthIsolated ? 'isolated test stack (DB copy + dedicated port/env); existing authorised test account only; no production auth change' : 'NOT_ISOLATED',
+        production_auth_policy_modified: false,
+        accounts_created: 0,
+        production_build_modified: false,
+      },
+      // Diagnostics for parse/run anomalies: an exit≠0 with 0 parsed specs
+      // means the suite failed before producing a JSON payload.
+      stdout_tail: (viz.stdout || '').slice(-800),
+      stderr_tail: (viz.stderr || '').slice(-800),
+      json_parsed: vizJson !== null,
+    },
   });
   writeJSON(reportPath('VISUAL-REGRESSION.json'), data);
   const ev = record({
     kind: 'capability_card', command: `uap verify-visual (${viz.command})`, exit_code: viz.exit_code,
-    summary: `visual: ${items.length - diffs.length} pass / ${diffs.length} diffs, ${classified} classified`,
+    summary: `visual: ${data.counts.PASS} pass / ${data.counts.FAIL} fail / ${data.counts.BLOCKED} blocked, ${classified} classified`,
   });
   data.evidence_ref = ev.evidence_id;
   writeJSON(reportPath('VISUAL-REGRESSION.json'), data);
-  return ok(`visual regression: ${items.length - diffs.length}/${items.length} pass, ${diffs.length} diffs (${classified} classified)`, data);
+  // FAIL propagation was missing entirely before: this command used to return
+  // ok() unconditionally even with exit_code=1 and 3 diffs.
+  if (data.status === 'FAIL' || viz.exit_code !== 0 || diffs.length > 0) {
+    return fail(`visual regression FAILED: exit=${viz.exit_code} pass=${data.pass} fail=${data.fail} diffs=${diffs.length} unclassified=${diffs.length - classified}`, data);
+  }
+  if (data.status !== 'PASS') {
+    return blocked(`visual regression NOT FULLY VERIFIED: ${data.status} (${data.counts.BLOCKED} blocked / ${data.counts.SKIPPED} skipped)`, data);
+  }
+  return ok(`visual regression PASS: ${data.total}/${data.total_specs} real specs, baseline_updated=false`, data);
 }
 
 async function cmdVerifySecurity() {
+  const items = [];
+  const results = [];
   const testsDir = uapPath('tests');
   const negFile = path.join(testsDir, 'phase2-security-negative.test.mjs');
-  const results = [];
   if (fs.existsSync(negFile)) {
     const r = await runCommand({
-      command: 'node', args: ['--test', '--test-concurrency=1', relToRoot(negFile)], timeoutMs: 300000,
+      command: 'node', args: ['--test', '--test-concurrency=1', relToRoot(negFile)], timeoutMs: 600000,
     });
     const names = [...r.stdout.matchAll(/^\s*ok \d+ - (.+)$/gm)].map((m) => m[1].trim());
     const fails = [...r.stdout.matchAll(/^\s*not ok \d+ - (.+)$/gm)].map((m) => m[1].trim());
+    for (const n of names) items.push({ id: `neg_${n}`, title: n, status: TEST_STATUS.PASS, reason: null, runner_ok: true });
+    for (const n of fails) items.push({ id: `neg_fail_${n}`, title: n, status: TEST_STATUS.FAIL, reason: 'node:test not ok', runner_ok: false });
     results.push({ suite: 'security_negative_tests', exit_code: r.exit_code, passed: names.length, failed: fails.length, tests: names });
-    var negExit = r.exit_code;
-    var negFails = fails;
+    if (r.exit_code !== 0) items.push({ id: 'neg_suite_exit', title: 'negative test suite exit code', status: TEST_STATUS.FAIL, reason: `exit=${r.exit_code}`, runner_ok: false });
   } else {
-    results.push({ suite: 'security_negative_tests', exit_code: null, note: 'negative test file not built yet — reported honestly' });
-    var negExit = 1;
-    var negFails = ['negative test file missing'];
+    results.push({ suite: 'security_negative_tests', exit_code: null, note: 'negative test file missing — reported honestly' });
+    items.push({ id: 'neg_suite_missing', title: 'negative test suite', status: TEST_STATUS.FAIL, reason: 'test file missing', runner_ok: false });
   }
-  const leak = await runCommand({
-    command: 'gitleaks', args: ['detect', '--no-git', '--source', '.uap/reports', '--no-banner', '--exit-code', '0'],
-    timeoutMs: 180000,
+
+  // Real BUSINESS negative tests (Go handlers, isolated DB), not just UAP-meta
+  // tests. Each category must emit a `NEG <id> <status> <detail>` line.
+  const go = await runGoTest('./controller/', 'TestPhase2SecurityNegative', ['-v'], 600000);
+  const negLines = [...String(go.stdout || '').split('\n')]
+    .map((l) => /NEG\s+(\S+)\s+(PASS|FAIL|BLOCKED|NOT_RUN)\s*([^"\\]*)/.exec(l))
+    .filter(Boolean);
+  const categories = negLines.map((m) => ({ id: m[1], status: m[2], detail: m[3].trim().replace(/\\n$/, '') }));
+  for (const c of categories) {
+    items.push({
+      id: `business_neg_${c.id}`, title: `business negative: ${c.id}`,
+      status: c.status, reason: c.status === TEST_STATUS.PASS ? null : (c.detail || `status=${c.status}`),
+      runner_ok: c.status === TEST_STATUS.PASS,
+    });
+  }
+  if (!categories.length) {
+    items.push({ id: 'business_neg_missing', title: 'business negative-test categories', status: TEST_STATUS.FAIL, reason: 'no NEG category lines produced by real Go suite', runner_ok: false });
+  }
+  results.push({
+    suite: 'business_security_negative', exit_code: go.exit_code,
+    categories: categories.length, passed: categories.filter((c) => c.status === 'PASS').length,
+    failed: categories.filter((c) => c.status !== 'PASS').length,
+    details: categories,
   });
-  const leakClean = leak.exit_code === 0;
-  const data = bindExecution({
-    generated_at: nowISO(),
-    status: negExit === 0 && leakClean ? 'PASS' : 'FAIL',
-    negative_tests: results,
-    gitleaks: { command: leak.command, exit_code: leak.exit_code, clean: leakClean },
-    permission_policy: { default_effect: 'deny', production_denies_verified: true },
+  if (go.exit_code !== 0) items.push({ id: 'business_neg_exit', title: 'business negative suite exit code', status: TEST_STATUS.FAIL, reason: `exit=${go.exit_code}`, runner_ok: false });
+
+  // Secret scan must be able to FAIL. `--exit-code 0` (the old behaviour) made
+  // leakClean unconditionally true, which the audit called out.
+  const leakReport = path.join(process.env.TMPDIR || '/tmp', `uap-gitleaks-${process.pid}.json`);
+  try { if (fs.existsSync(leakReport)) fs.rmSync(leakReport, { force: true }); } catch { /* reported honestly below */ }
+  const leak = await runCommand({
+    command: 'gitleaks', args: ['detect', '--no-git', '--source', '.uap/reports', '--no-banner',
+      '--exit-code', '1', '--report-format', 'json', '--report-path', leakReport],
+    timeoutMs: 300000,
+  });
+  const findings = readJSON(leakReport, null);
+  const findingCount = Array.isArray(findings) ? findings.length : 0;
+  const leakClean = leak.exit_code === 0 && findingCount === 0;
+  items.push({
+    id: 'gitleaks_reports', title: 'secret scan over final reports',
+    status: leakClean ? TEST_STATUS.PASS : TEST_STATUS.FAIL,
+    reason: leakClean ? null : `exit=${leak.exit_code} findings=${findingCount}`,
+    runner_ok: leakClean,
+  });
+
+  const data = bindCard({
+    suite: 'security_verification',
+    command: `node --test ${relToRoot(negFile)} + go test ./controller/ -run TestPhase2SecurityNegative + gitleaks detect`,
+    exit_code: leakClean && go.exit_code === 0 && !items.some((i) => i.status === TEST_STATUS.FAIL) ? 0 : 1,
+    items,
+    extra: {
+      negative_tests: results,
+      business_negative_suite: {
+        executed: categories.length > 0, categories: categories.length,
+        passed: categories.filter((c) => c.status === 'PASS').length,
+        blocked: categories.filter((c) => c.status !== 'PASS').length,
+        details: categories,
+      },
+      gitleaks: { command: leak.command, exit_code: leak.exit_code, clean: leakClean, findings: findingCount },
+      permission_policy: { default_effect: 'deny', production_denies_verified: true },
+    },
   });
   writeJSON(reportPath('SECURITY-VERIFICATION.json'), data);
   const ev = record({
-    kind: 'capability_card', command: 'uap verify-security (negative tests + gitleaks)', exit_code: data.status === 'PASS' ? 0 : 1,
-    summary: `security: negative_tests=${negExit}, gitleaks_clean=${leakClean}`,
+    kind: 'capability_card', command: 'uap verify-security (business negative tests + gitleaks)', exit_code: data.exit_code,
+    summary: `security: PASS=${data.counts.PASS} FAIL=${data.counts.FAIL} business_categories=${categories.length} gitleaks_clean=${leakClean}`,
   });
   data.evidence_ref = ev.evidence_id;
   writeJSON(reportPath('SECURITY-VERIFICATION.json'), data);
-  if (data.status !== 'PASS') return fail(`security verification FAILED: negExit=${negExit} fails=${negFails.length} gitleaks_clean=${leakClean}`, data);
-  return ok('security verification PASS: negative tests + secret scan + policy denies', data);
+  if (data.status !== 'PASS') return fail(`security verification FAILED: PASS=${data.pass} FAIL=${data.fail} business_categories=${categories.length} gitleaks_clean=${leakClean}`, data);
+  return ok(`security verification PASS: ${data.total} real negative checks + clean secret scan`, data);
 }
 
 async function cmdVerifyRequirements({ flags }) {
@@ -1475,8 +1812,27 @@ async function cmdVerifyRequirements({ flags }) {
   });
   const counts = /states: (\{.*\})/.exec(r.stdout)?.[1];
   if (counts) { try { data.counts = JSON.parse(counts); } catch { /* honest tail only */ } }
-  if (r.exit_code !== 0) return fail(`requirement verification FAILED (exit=${r.exit_code})`, data);
-  return ok(`requirement verification complete: ${String(r.stdout).trim().split('\n')[0] || 'done'}`, data);
+  // Strict post-run validation of the REAL regenerated matrix. A file that
+  // merely exists, or a matrix with fewer than 538 rows, is not verification.
+  const matrix = readJSON(reportPath('REQUIREMENT-TRACEABILITY-MATRIX.json'), null);
+  const rows = matrix?.requirements || matrix?.items || [];
+  const problems = [];
+  if (rows.length !== 538) problems.push(`matrix has ${rows.length} rows, expected 538`);
+  const allowed = new Set(['VERIFIED', 'NOT_VERIFIED', 'BLOCKED', 'NOT_APPLICABLE']);
+  const invalid = rows.filter((x) => !allowed.has(x.status || x.verification_status));
+  if (invalid.length) problems.push(`${invalid.length} row(s) with invalid/unset status`);
+  const bogusVerified = rows.filter((x) => (x.status || x.verification_status) === 'VERIFIED'
+    && (!(x.evidence_refs || x.evidence || []).length || !x.actual_result
+      || /STATIC_EXISTENCE|FILE_ONLY/i.test(String(x.probe_kind || ''))));
+  if (bogusVerified.length) problems.push(`${bogusVerified.length} VERIFIED row(s) without behaviour evidence`);
+  for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'generated_at']) {
+    if (!matrix?.[field]) problems.push(`matrix missing binding field ${field}`);
+  }
+  data.matrix_validation = { total: rows.length, invalid: invalid.length, bogus_verified: bogusVerified.length, problems };
+  if (r.exit_code !== 0 || problems.length) {
+    return fail(`requirement verification FAILED: exit=${r.exit_code}; ${problems.join('; ')}`, data);
+  }
+  return ok(`requirement verification complete: ${rows.length} requirements with honest statuses`, data);
 }
 
 // -------------------------------------------------------------- workflow ----
@@ -1549,6 +1905,7 @@ Commands:
   execution show             Current execution identity (id / HEAD / worktree fingerprint)
   execution start [reason]   Open a new verification run (append-only ledger)
   verify-status              Independent 3-way status consistency check
+  accept                     Final acceptance gate + evidence manifest closure [--check]
   verify-requirements [--batch=X]  Execute the real Phase-2 requirement probes
   verify-database            Real isolated-DB integration card (go test)
   verify-payment             LOCAL_SIMULATION payment card (never real gateway)
@@ -1582,6 +1939,7 @@ async function dispatch(parsed) {
     case 'report': return cmdReport(parsed);
     case 'execution': return cmdExecution(parsed);
     case 'verify-status': return cmdVerifyStatus(parsed);
+    case 'accept': return cmdAccept(parsed);
     case 'verify-repair': return cmdRepairVerify(parsed);
     case 'verify-database': return cmdVerifyDatabase(parsed);
     case 'verify-payment': return cmdVerifyPayment(parsed);

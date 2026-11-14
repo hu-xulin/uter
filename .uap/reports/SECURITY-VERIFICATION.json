@@ -1,11 +1,367 @@
 {
-  "generated_at": "2026-11-13T17:14:33.922Z",
+  "status_model": "UAP-TEST-STATUS-1.0",
   "status": "PASS",
+  "suite": "security_verification",
+  "command": "node --test .uap/tests/phase2-security-negative.test.mjs + go test ./controller/ -run TestPhase2SecurityNegative + gitleaks detect",
+  "exit_code": 0,
+  "items": [
+    {
+      "id": "neg_N1 没有有效证据的 requirement 不能产生 VERIFIED",
+      "title": "N1 没有有效证据的 requirement 不能产生 VERIFIED",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N2 哈希不一致 / 绑定不一致的证据不能产生 VERIFIED",
+      "title": "N2 哈希不一致 / 绑定不一致的证据不能产生 VERIFIED",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N3 独立验证失败时引擎不得输出 PASS",
+      "title": "N3 独立验证失败时引擎不得输出 PASS",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N4 沙箱配置误指向生产网关必须被拒绝执行",
+      "title": "N4 沙箱配置误指向生产网关必须被拒绝执行",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N5 未授权生产操作必须被权限策略拒绝（fail-closed）",
+      "title": "N5 未授权生产操作必须被权限策略拒绝（fail-closed）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N6 重复任务不能造成重复资金副作用（真实隔离库故障注入）",
+      "title": "N6 重复任务不能造成重复资金副作用（真实隔离库故障注入）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N7 用户 WIP 不能被自动修复覆盖（既有边界测试真实通过）",
+      "title": "N7 用户 WIP 不能被自动修复覆盖（既有边界测试真实通过）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N8 Go handler 层 19 类业务安全负向测试必须全部真实 PASS（TestPhase2SecurityNegative）",
+      "title": "N8 Go handler 层 19 类业务安全负向测试必须全部真实 PASS（TestPhase2SecurityNegative）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_Phase 2 安全负向测试",
+      "title": "Phase 2 安全负向测试",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n01",
+      "title": "business negative: n01",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n02",
+      "title": "business negative: n02",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n03",
+      "title": "business negative: n03",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n04",
+      "title": "business negative: n04",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n05",
+      "title": "business negative: n05",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n06",
+      "title": "business negative: n06",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n07",
+      "title": "business negative: n07",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n08",
+      "title": "business negative: n08",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n09",
+      "title": "business negative: n09",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n10",
+      "title": "business negative: n10",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n11",
+      "title": "business negative: n11",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n12",
+      "title": "business negative: n12",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n13",
+      "title": "business negative: n13",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n14",
+      "title": "business negative: n14",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n15",
+      "title": "business negative: n15",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n16",
+      "title": "business negative: n16",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n17",
+      "title": "business negative: n17",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n18",
+      "title": "business negative: n18",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n19",
+      "title": "business negative: n19",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n01",
+      "title": "business negative: n01",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n02",
+      "title": "business negative: n02",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n03",
+      "title": "business negative: n03",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n04",
+      "title": "business negative: n04",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n05",
+      "title": "business negative: n05",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n06",
+      "title": "business negative: n06",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n07",
+      "title": "business negative: n07",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n08",
+      "title": "business negative: n08",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n09",
+      "title": "business negative: n09",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n10",
+      "title": "business negative: n10",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n11",
+      "title": "business negative: n11",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n12",
+      "title": "business negative: n12",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n13",
+      "title": "business negative: n13",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n14",
+      "title": "business negative: n14",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n15",
+      "title": "business negative: n15",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n16",
+      "title": "business negative: n16",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n17",
+      "title": "business negative: n17",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n18",
+      "title": "business negative: n18",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n19",
+      "title": "business negative: n19",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "gitleaks_reports",
+      "title": "secret scan over final reports",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    }
+  ],
+  "counts": {
+    "PASS": 48,
+    "FAIL": 0,
+    "SKIPPED": 0,
+    "BLOCKED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "total": 48,
+  "pass": 48,
+  "fail": 0,
+  "blocked": 0,
+  "skipped": 0,
+  "not_run": 0,
+  "not_applicable": 0,
   "negative_tests": [
     {
       "suite": "security_negative_tests",
       "exit_code": 0,
-      "passed": 8,
+      "passed": 9,
       "failed": 0,
       "tests": [
         "N1 没有有效证据的 requirement 不能产生 VERIFIED",
@@ -15,21 +371,431 @@
         "N5 未授权生产操作必须被权限策略拒绝（fail-closed）",
         "N6 重复任务不能造成重复资金副作用（真实隔离库故障注入）",
         "N7 用户 WIP 不能被自动修复覆盖（既有边界测试真实通过）",
+        "N8 Go handler 层 19 类业务安全负向测试必须全部真实 PASS（TestPhase2SecurityNegative）",
         "Phase 2 安全负向测试"
+      ]
+    },
+    {
+      "suite": "business_security_negative",
+      "exit_code": 0,
+      "categories": 38,
+      "passed": 38,
+      "failed": 0,
+      "details": [
+        {
+          "id": "n01",
+          "status": "PASS",
+          "detail": "no credentials -"
+        },
+        {
+          "id": "n02",
+          "status": "PASS",
+          "detail": "common user -"
+        },
+        {
+          "id": "n03",
+          "status": "PASS",
+          "detail": "PAT scope enforcement: usage:read token denied on profile route"
+        },
+        {
+          "id": "n04",
+          "status": "PASS",
+          "detail": "wrong password rejected; tampered session JWT -"
+        },
+        {
+          "id": "n05",
+          "status": "PASS",
+          "detail": "forged epay signature -"
+        },
+        {
+          "id": "n06",
+          "status": "PASS",
+          "detail": "missing/empty/wrong-key signatures all rejected"
+        },
+        {
+          "id": "n07",
+          "status": "PASS",
+          "detail": "replayed notification acknowledged but credited exactly once (DB balance asserted)"
+        },
+        {
+          "id": "n08",
+          "status": "PASS",
+          "detail": "duplicate notification with different provider trade_no -"
+        },
+        {
+          "id": "n09",
+          "status": "PASS",
+          "detail": "SQL injection payloads in request_id filter read no extra rows, leak nothing"
+        },
+        {
+          "id": "n10",
+          "status": "PASS",
+          "detail": "stored XSS payload JSON-escaped, never reflected raw"
+        },
+        {
+          "id": "n11",
+          "status": "PASS",
+          "detail": "401 and malformed-JSON responses leak no stack traces, keys or DB details"
+        },
+        {
+          "id": "n12",
+          "status": "PASS",
+          "detail": "403 response is generic, no internal query/table/constraint details"
+        },
+        {
+          "id": "n13",
+          "status": "PASS",
+          "detail": "CriticalRateLimit: 3 allowed then 429 with Retry-After"
+        },
+        {
+          "id": "n14",
+          "status": "PASS",
+          "detail": "8 concurrent duplicate callbacks -"
+        },
+        {
+          "id": "n15",
+          "status": "PASS",
+          "detail": "PUT /api/user/self with quota=999999 leaves stored quota untouched"
+        },
+        {
+          "id": "n16",
+          "status": "PASS",
+          "detail": "valid signature + ProviderAmount 0.01/100.00 vs order 10.00 -"
+        },
+        {
+          "id": "n17",
+          "status": "PASS",
+          "detail": "refund intent bound to its owner: cross-user refund rejected, owner refund succeeds"
+        },
+        {
+          "id": "n18",
+          "status": "PASS",
+          "detail": "admin -"
+        },
+        {
+          "id": "n19",
+          "status": "PASS",
+          "detail": "cross-site Origin -"
+        },
+        {
+          "id": "n01",
+          "status": "PASS",
+          "detail": "no credentials -"
+        },
+        {
+          "id": "n02",
+          "status": "PASS",
+          "detail": "common user -"
+        },
+        {
+          "id": "n03",
+          "status": "PASS",
+          "detail": "PAT scope enforcement: usage:read token denied on profile route"
+        },
+        {
+          "id": "n04",
+          "status": "PASS",
+          "detail": "wrong password rejected; tampered session JWT -"
+        },
+        {
+          "id": "n05",
+          "status": "PASS",
+          "detail": "forged epay signature -"
+        },
+        {
+          "id": "n06",
+          "status": "PASS",
+          "detail": "missing/empty/wrong-key signatures all rejected"
+        },
+        {
+          "id": "n07",
+          "status": "PASS",
+          "detail": "replayed notification acknowledged but credited exactly once (DB balance asserted)"
+        },
+        {
+          "id": "n08",
+          "status": "PASS",
+          "detail": "duplicate notification with different provider trade_no -"
+        },
+        {
+          "id": "n09",
+          "status": "PASS",
+          "detail": "SQL injection payloads in request_id filter read no extra rows, leak nothing"
+        },
+        {
+          "id": "n10",
+          "status": "PASS",
+          "detail": "stored XSS payload JSON-escaped, never reflected raw"
+        },
+        {
+          "id": "n11",
+          "status": "PASS",
+          "detail": "401 and malformed-JSON responses leak no stack traces, keys or DB details"
+        },
+        {
+          "id": "n12",
+          "status": "PASS",
+          "detail": "403 response is generic, no internal query/table/constraint details"
+        },
+        {
+          "id": "n13",
+          "status": "PASS",
+          "detail": "CriticalRateLimit: 3 allowed then 429 with Retry-After"
+        },
+        {
+          "id": "n14",
+          "status": "PASS",
+          "detail": "8 concurrent duplicate callbacks -"
+        },
+        {
+          "id": "n15",
+          "status": "PASS",
+          "detail": "PUT /api/user/self with quota=999999 leaves stored quota untouched"
+        },
+        {
+          "id": "n16",
+          "status": "PASS",
+          "detail": "valid signature + ProviderAmount 0.01/100.00 vs order 10.00 -"
+        },
+        {
+          "id": "n17",
+          "status": "PASS",
+          "detail": "refund intent bound to its owner: cross-user refund rejected, owner refund succeeds"
+        },
+        {
+          "id": "n18",
+          "status": "PASS",
+          "detail": "admin -"
+        },
+        {
+          "id": "n19",
+          "status": "PASS",
+          "detail": "cross-site Origin -"
+        }
       ]
     }
   ],
+  "business_negative_suite": {
+    "executed": true,
+    "categories": 38,
+    "passed": 38,
+    "blocked": 0,
+    "details": [
+      {
+        "id": "n01",
+        "status": "PASS",
+        "detail": "no credentials -"
+      },
+      {
+        "id": "n02",
+        "status": "PASS",
+        "detail": "common user -"
+      },
+      {
+        "id": "n03",
+        "status": "PASS",
+        "detail": "PAT scope enforcement: usage:read token denied on profile route"
+      },
+      {
+        "id": "n04",
+        "status": "PASS",
+        "detail": "wrong password rejected; tampered session JWT -"
+      },
+      {
+        "id": "n05",
+        "status": "PASS",
+        "detail": "forged epay signature -"
+      },
+      {
+        "id": "n06",
+        "status": "PASS",
+        "detail": "missing/empty/wrong-key signatures all rejected"
+      },
+      {
+        "id": "n07",
+        "status": "PASS",
+        "detail": "replayed notification acknowledged but credited exactly once (DB balance asserted)"
+      },
+      {
+        "id": "n08",
+        "status": "PASS",
+        "detail": "duplicate notification with different provider trade_no -"
+      },
+      {
+        "id": "n09",
+        "status": "PASS",
+        "detail": "SQL injection payloads in request_id filter read no extra rows, leak nothing"
+      },
+      {
+        "id": "n10",
+        "status": "PASS",
+        "detail": "stored XSS payload JSON-escaped, never reflected raw"
+      },
+      {
+        "id": "n11",
+        "status": "PASS",
+        "detail": "401 and malformed-JSON responses leak no stack traces, keys or DB details"
+      },
+      {
+        "id": "n12",
+        "status": "PASS",
+        "detail": "403 response is generic, no internal query/table/constraint details"
+      },
+      {
+        "id": "n13",
+        "status": "PASS",
+        "detail": "CriticalRateLimit: 3 allowed then 429 with Retry-After"
+      },
+      {
+        "id": "n14",
+        "status": "PASS",
+        "detail": "8 concurrent duplicate callbacks -"
+      },
+      {
+        "id": "n15",
+        "status": "PASS",
+        "detail": "PUT /api/user/self with quota=999999 leaves stored quota untouched"
+      },
+      {
+        "id": "n16",
+        "status": "PASS",
+        "detail": "valid signature + ProviderAmount 0.01/100.00 vs order 10.00 -"
+      },
+      {
+        "id": "n17",
+        "status": "PASS",
+        "detail": "refund intent bound to its owner: cross-user refund rejected, owner refund succeeds"
+      },
+      {
+        "id": "n18",
+        "status": "PASS",
+        "detail": "admin -"
+      },
+      {
+        "id": "n19",
+        "status": "PASS",
+        "detail": "cross-site Origin -"
+      },
+      {
+        "id": "n01",
+        "status": "PASS",
+        "detail": "no credentials -"
+      },
+      {
+        "id": "n02",
+        "status": "PASS",
+        "detail": "common user -"
+      },
+      {
+        "id": "n03",
+        "status": "PASS",
+        "detail": "PAT scope enforcement: usage:read token denied on profile route"
+      },
+      {
+        "id": "n04",
+        "status": "PASS",
+        "detail": "wrong password rejected; tampered session JWT -"
+      },
+      {
+        "id": "n05",
+        "status": "PASS",
+        "detail": "forged epay signature -"
+      },
+      {
+        "id": "n06",
+        "status": "PASS",
+        "detail": "missing/empty/wrong-key signatures all rejected"
+      },
+      {
+        "id": "n07",
+        "status": "PASS",
+        "detail": "replayed notification acknowledged but credited exactly once (DB balance asserted)"
+      },
+      {
+        "id": "n08",
+        "status": "PASS",
+        "detail": "duplicate notification with different provider trade_no -"
+      },
+      {
+        "id": "n09",
+        "status": "PASS",
+        "detail": "SQL injection payloads in request_id filter read no extra rows, leak nothing"
+      },
+      {
+        "id": "n10",
+        "status": "PASS",
+        "detail": "stored XSS payload JSON-escaped, never reflected raw"
+      },
+      {
+        "id": "n11",
+        "status": "PASS",
+        "detail": "401 and malformed-JSON responses leak no stack traces, keys or DB details"
+      },
+      {
+        "id": "n12",
+        "status": "PASS",
+        "detail": "403 response is generic, no internal query/table/constraint details"
+      },
+      {
+        "id": "n13",
+        "status": "PASS",
+        "detail": "CriticalRateLimit: 3 allowed then 429 with Retry-After"
+      },
+      {
+        "id": "n14",
+        "status": "PASS",
+        "detail": "8 concurrent duplicate callbacks -"
+      },
+      {
+        "id": "n15",
+        "status": "PASS",
+        "detail": "PUT /api/user/self with quota=999999 leaves stored quota untouched"
+      },
+      {
+        "id": "n16",
+        "status": "PASS",
+        "detail": "valid signature + ProviderAmount 0.01/100.00 vs order 10.00 -"
+      },
+      {
+        "id": "n17",
+        "status": "PASS",
+        "detail": "refund intent bound to its owner: cross-user refund rejected, owner refund succeeds"
+      },
+      {
+        "id": "n18",
+        "status": "PASS",
+        "detail": "admin -"
+      },
+      {
+        "id": "n19",
+        "status": "PASS",
+        "detail": "cross-site Origin -"
+      }
+    ]
+  },
   "gitleaks": {
-    "command": "gitleaks detect --no-git --source .uap/reports --no-banner --exit-code 0",
+    "command": "gitleaks detect --no-git --source .uap/reports --no-banner --exit-code 1 --report-format json --report-path /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-gitleaks-21300.json",
     "exit_code": 0,
-    "clean": true
+    "clean": true,
+    "findings": 0
   },
   "permission_policy": {
     "default_effect": "deny",
     "production_denies_verified": true
   },
-  "execution_id": "UAP-EXEC-20261113171355-b01f08c1",
-  "git_head": "f728955561bdd297d03af7576354a363982d2186",
-  "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "evidence_ref": "UAP-EV-20261113171433-70f0ca9c"
+  "generated_at": "2026-11-14T02:55:41.435Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "test_environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true
+  },
+  "requirement_ids": [],
+  "execution_id": "UAP-EXEC-20261114025542-07c59bb9",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "f6af070a894451bbf2110ce4379459fa43b300fd75cd705709fac6f4a9482354",
+  "evidence_ref": "UAP-EV-20261114025544-1181e81e"
 }

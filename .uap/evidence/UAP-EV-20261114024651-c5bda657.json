@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114024651-c5bda657",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T02:46:51.455Z",
+  "started_at": "2026-11-14T02:46:51.455Z",
+  "finished_at": "2026-11-14T02:46:51.455Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-database (go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers -count=1 -json)",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"package\":\"./model/\",\"fk_metrics\":{\"foreign_keys\":\"1\",\"fk_relations\":\"1\",\"orphan_rejected\":\"true\",\"orphan_persisted\":\"false\",\"fk_after_restart\":\"true\",\"pool_fk_consistent\":\"true\"},\"migrations\":{\"upgrade\":\"PASS\",\"rollback\":\"PASS\",\"failure_recovery\":\"PASS\",\"idempotent\":\"PASS\",\"version_consistency\":\"PASS\",\"business_data_integrity\":\"PASS\"}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "database integration: 47 pass / 0 fail / 0 skip; FK proof=PASS",
+  "content_hash": "d25d7f71cd0092849b26eff83026b3e500ea427d22112fa6266c757468c196cd"
+}

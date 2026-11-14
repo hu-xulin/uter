@@ -1,152 +1,84 @@
 {
   "status": "FAIL",
   "exit_code": 1,
-  "summary": "e2e FAILED: axe exit=1, failed=1",
+  "summary": "final acceptance: FAILED, consistency FAILED (5)",
   "data": {
-    "generated_at": "2026-11-13T17:41:44.363Z",
-    "status": "FAIL",
-    "problems": [
-      "axe exit=1, failed=1"
-    ],
-    "browser_runs": [
+    "mode": "full-closure",
+    "prepare_status": "FAILED",
+    "verify_status": "FAILED",
+    "manifest_entries": 14,
+    "manifest_missing": [],
+    "gate_status": "FAILED",
+    "overall_status": "FAILED",
+    "claim_allowed": false,
+    "counts": {
+      "gate_groups": 6,
+      "gate_groups_pass": 3,
+      "gate_groups_fail": 3,
+      "necessary_blocked": 2,
+      "necessary_unverified": 532,
+      "problems": 39
+    },
+    "blocked_items": [
       {
-        "suite": "axe",
-        "target": "http://localhost:3003",
-        "exit_code": 1,
-        "passed": 13,
-        "failed": 1
+        "id": "EXT-PROVIDER-SANDBOX",
+        "reason": "{\"id\":\"EXT-PROVIDER-SANDBOX\",\"reason\":\"no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox\",\"missing_conditions\":[\"provider sandbox AppID / merchant id\",\"provider sandbox private key / API key (never read from production config)\",\"verified sandbox endpoint reachability\",\"explicit user authorisation for sandbox calls\"],\"unblock_condition\":\"user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment\"}",
+        "impact": "real payment gateway verification cannot be claimed; FULLY_VERIFIED is not allowed"
       },
       {
-        "suite": "business",
-        "target": "http://localhost:3100",
-        "exit_code": 0,
-        "passed": 24,
-        "failed": 0,
-        "stats": {
-          "startTime": "2026-11-13T17:41:37.361Z",
-          "duration": 6962.303,
-          "expected": 23,
-          "skipped": 1,
-          "unexpected": 0,
-          "flaky": 0
-        },
-        "scenarios": [
-          {
-            "title": "biz_01 注册新用户 [BLOCKED_BY_POLICY]",
-            "ok": true
-          },
-          {
-            "title": "biz_02 密码登录成功（真实凭据）",
-            "ok": true
-          },
-          {
-            "title": "biz_03 错误密码登录被拒绝",
-            "ok": true
-          },
-          {
-            "title": "biz_04 未登录调用受保护 API 被 401 拒绝",
-            "ok": true
-          },
-          {
-            "title": "biz_05 未登录访问受保护页面跳转登录页",
-            "ok": true
-          },
-          {
-            "title": "biz_06 已登录读取个人信息 /api/user/self",
-            "ok": true
-          },
-          {
-            "title": "biz_07 会话刷新成功且 access token 轮换",
-            "ok": true
-          },
-          {
-            "title": "biz_08 登出后受保护 API 失效",
-            "ok": true
-          },
-          {
-            "title": "biz_09 站点状态 /api/status（公开）",
-            "ok": true
-          },
-          {
-            "title": "biz_10 公告接口 /api/notice（公开）",
-            "ok": true
-          },
-          {
-            "title": "biz_11 定价接口 /api/pricing（登录态）",
-            "ok": true
-          },
-          {
-            "title": "biz_12 排行榜 /api/rankings（登录态）",
-            "ok": true
-          },
-          {
-            "title": "biz_13 密钥列表 /api/token/（登录态）",
-            "ok": true
-          },
-          {
-            "title": "biz_14 创建密钥 POST /api/token/",
-            "ok": true
-          },
-          {
-            "title": "biz_15 更新密钥改名并回读验证",
-            "ok": true
-          },
-          {
-            "title": "biz_16 删除密钥后列表不再包含",
-            "ok": true
-          },
-          {
-            "title": "biz_17 用户可用模型 /api/user/models",
-            "ok": true
-          },
-          {
-            "title": "biz_18 用户分组 /api/user/self/groups",
-            "ok": true
-          },
-          {
-            "title": "biz_19 用户日志 /api/log/self（登录态）",
-            "ok": true
-          },
-          {
-            "title": "biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
-            "ok": true
-          },
-          {
-            "title": "biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
-            "ok": true
-          },
-          {
-            "title": "biz_24 用户用量统计 /api/log/self/stat",
-            "ok": true
-          },
-          {
-            "title": "biz_22 普通用户访问管理 API 被 403 拒绝",
-            "ok": true
-          },
-          {
-            "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
-            "ok": true
-          }
-        ],
-        "stderr_tail": ""
+        "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
+        "reason": "532 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
+        "impact": "full requirement closure not achieved"
       }
     ],
-    "axe": {
-      "command": "npx playwright test --config e2e/axe/playwright.config.ts",
-      "exit_code": 1,
-      "target": "http://localhost:3003",
-      "passed": 13,
-      "failed": 1,
-      "critical_violations": [],
-      "skipped_note": "skipped authed group requires VISUAL_TEST credentials; never deleted to force 0 skipped"
+    "problems": [
+      "accessibility: status=BLOCKED passed=13 failed=0",
+      "visual: status=FAIL exit=1 diffs=29",
+      "visual: 26 unclassified diff(s)",
+      "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
+      "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
+      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
+      "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
+      "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
+      "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
+      "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch"
+    ],
+    "status_consistency": {
+      "ok": false,
+      "checks_passed": 14,
+      "checks_total": 19,
+      "problems": [
+        "index_overall_matches_report: index=IMPLEMENTED_NOT_VERIFIED report=FAILED",
+        "all_final_reports_bound_to_same_batch: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
+        "capability_cards_have_real_counts_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b; PAYMENT-SANDBOX.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870; VALIDATION-RESULTS.json: fingerprint mismatch",
+        "evidence_manifest_hashes_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
+        "cli_overall_matches_report: cli=IMPLEMENTED_NOT_VERIFIED report=FAILED"
+      ]
     },
-    "execution_id": "UAP-EXEC-20261113171750-6afc5fa2",
-    "git_head": "f728955561bdd297d03af7576354a363982d2186",
-    "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "evidence_ref": "UAP-EV-20261113174144-de5abd40"
+    "evidence_manifest_path": ".uap/reports/EVIDENCE-MANIFEST.json"
   },
-  "command": "verify-e2e",
-  "duration_ms": 182160,
-  "generated_at": "2026-11-13T17:41:44.508Z",
-  "evidence_ref": "UAP-EV-20261113174144-c87af3b3"
+  "command": "accept",
+  "duration_ms": 10143,
+  "generated_at": "2026-11-14T05:19:30.609Z",
+  "evidence_ref": "UAP-EV-20261114051930-6d5a1538"
 }

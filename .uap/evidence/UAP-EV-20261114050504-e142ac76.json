@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261114050504-e142ac76",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T05:05:04.984Z",
+  "started_at": "2026-11-14T05:02:34.432Z",
+  "finished_at": "2026-11-14T05:05:04.984Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+    "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-e2e",
+  "exit_code": 1,
+  "duration_ms": 150552,
+  "inputs": "{\"argv\":[\"verify-e2e\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "e2e FAILED: business e2e exit=1; PASS=13 FAIL=0 BLOCKED=0 SKIPPED=1"
+    }
+  ],
+  "summary": "e2e FAILED: business e2e exit=1; PASS=13 FAIL=0 BLOCKED=0 SKIPPED=1",
+  "content_hash": "77210fa3f18b6b77d3116da4d916e1585ad67f0a8dacad9a4af416f790fc70f9"
+}

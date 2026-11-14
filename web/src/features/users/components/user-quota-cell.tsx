@@ -66,11 +66,17 @@ export function UserQuotaCell(props: UserQuotaCellProps) {
           >
             {formattedRemaining}
           </span>
+          {/* 空白文本节点：见 api-key-quota-cell 内注释 —— 没有它，相邻的
+              「0」与「已用 0」会拼成 axe 分词器里的同一个 token「0已用」，
+              与 aria-label tokens 不再匹配。空白文本节点不产生盒子。 */}
+          {' '}
           <span
             data-table-text='secondary'
             className='text-muted-foreground flex items-baseline gap-1 text-xs font-normal'
           >
             <span>{t('Used amount')}</span>
+            {/* 空白文本节点：没有它「已用」与数字会拼成一个 token。 */}
+            {' '}
             <span>{formattedUsed}</span>
           </span>
         </span>

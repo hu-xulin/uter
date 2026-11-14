@@ -1,403 +1,115 @@
 {
   "validator_id": "phase2.requirement_independent_validator",
-  "generated_at": "2026-11-13T16:04:16.150Z",
-  "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
-  "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
-  "worktree_fingerprint": "f9ff1575c4a2a7741ae5e996341b687d35c9d06f8c0d85c15cf747fb1fc92c2d",
-  "ok": false,
+  "generated_at": "2026-11-14T02:47:51.680Z",
+  "execution_id": "UAP-EXEC-20261114024749-0d25182b",
+  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "worktree_fingerprint": "50331c1b2ae5024f3634685462789bce47d8beef5c4092efd42387492d522478",
+  "ok": true,
   "checks": [
     {
       "name": "execution_identity_present",
       "ok": true,
-      "detail": "UAP-EXEC-20261113150247-f8ac4369 @ 9a72347877de8d97c1d029f8c59e0c91d0f17cc3"
+      "detail": "UAP-EXEC-20261114024749-0d25182b @ d83e81f3ed69182c612b3c1dc8dec165caa0fccd"
     },
     {
-      "name": "recheck_card.accessibility_verdict",
+      "name": "states_line_matches_matrix",
       "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
+      "detail": "derived={\"VERIFIED\":6,\"NOT_VERIFIED\":526,\"BLOCKED\":6,\"NOT_APPLICABLE\":0} emitted={\"VERIFIED\":6,\"NOT_VERIFIED\":526,\"BLOCKED\":6,\"NOT_APPLICABLE\":0}"
     },
     {
-      "name": "recheck_card.database_verdict",
+      "name": "all_538_requirements_present",
       "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
+      "detail": "538 rows"
     },
     {
-      "name": "recheck_card.e2e_verdict",
+      "name": "states_sum_to_total",
       "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
+      "detail": "sum=538 total=538"
     },
     {
-      "name": "recheck_card.payment-sandbox_verdict",
+      "name": "verified_UAP-02-002-REQ-004_has_evidence_refs",
       "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
+      "detail": "1 refs"
     },
     {
-      "name": "recheck_card.security_verdict",
-      "ok": false,
-      "detail": "first exit=1/ok=false recheck exit=0/ok=true"
-    },
-    {
-      "name": "recheck_card.visual_verdict",
+      "name": "verified_UAP-02-002-REQ-004_has_real_actual_result",
       "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
+      "detail": "go test ./model/ -count=1 -v -run TestPhase2DBIntegration/db"
     },
     {
-      "name": "recheck_contract.exports_verdict",
+      "name": "verified_UAP-06-002-REQ-002_has_evidence_refs",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "1 refs"
     },
     {
-      "name": "recheck_docs.baseline_verdict",
+      "name": "verified_UAP-06-002-REQ-002_has_real_actual_result",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "go test ./service/paymentsandbox/ -count=1 -v -run TestDupli"
     },
     {
-      "name": "recheck_go.payment-security_verdict",
+      "name": "verified_UAP-06-002-REQ-003_has_evidence_refs",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "1 refs"
     },
     {
-      "name": "recheck_matrix.stable_verdict",
+      "name": "verified_UAP-06-002-REQ-003_has_real_actual_result",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "go test ./service/paymentsandbox/ -count=1 -v -run TestDupli"
     },
     {
-      "name": "recheck_policy.runtime-deny_verdict",
+      "name": "verified_UAP-06-002-REQ-004_has_evidence_refs",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "1 refs"
     },
     {
-      "name": "recheck_reg.agents_verdict",
+      "name": "verified_UAP-06-002-REQ-004_has_real_actual_result",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "go test ./service/paymentsandbox/ -count=1 -v -run TestDupli"
     },
     {
-      "name": "recheck_reg.executors_verdict",
+      "name": "verified_UAP-06-002-REQ-006_has_evidence_refs",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "1 refs"
     },
     {
-      "name": "recheck_reg.policy_verdict",
+      "name": "verified_UAP-06-002-REQ-006_has_real_actual_result",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "go test ./service/paymentsandbox/ -count=1 -v -run TestDupli"
     },
     {
-      "name": "recheck_reg.specifications_verdict",
+      "name": "verified_UAP-06-002-REQ-007_has_evidence_refs",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "1 refs"
     },
     {
-      "name": "recheck_reg.validators_verdict",
+      "name": "verified_UAP-06-002-REQ-007_has_real_actual_result",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
+      "detail": "go test ./service/paymentsandbox/ -count=1 -v -run TestDupli"
     },
     {
-      "name": "recheck_reg.workflows_verdict",
+      "name": "verified_evidence_all_hash_bound",
       "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
-    },
-    {
-      "name": "recheck_runtime.cli_verdict",
-      "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
-    },
-    {
-      "name": "recheck_runtime.health_verdict",
-      "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
-    },
-    {
-      "name": "recheck_runtime.uap-tests_verdict",
-      "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
-    },
-    {
-      "name": "recheck_security.secret-scan_verdict",
-      "ok": false,
-      "detail": "first exit=1/ok=false recheck exit=0/ok=true"
-    },
-    {
-      "name": "recheck_spec.statements_verdict",
-      "ok": true,
-      "detail": "first exit=0/ok=true recheck exit=0/ok=true"
-    },
-    {
-      "name": "recheck_web.design-tokens_verdict",
-      "ok": true,
-      "detail": "first exit=1/ok=false recheck exit=1/ok=false"
-    },
-    {
-      "name": "rechecked_probe_count",
-      "ok": true,
-      "detail": "23 probes re-executed"
-    },
-    {
-      "name": "evidence_records_present",
-      "ok": true,
-      "detail": "13 batch evidence records, 13 fully valid"
-    },
-    {
-      "name": "evidence_all_hash_bound",
-      "ok": true,
-      "detail": "13/13"
+      "detail": "6 valid evidence refs / 6 VERIFIED rows"
     },
     {
       "name": "no_blanket_pass",
       "ok": true,
-      "detail": "27 passing probes, 27 distinct commands"
+      "detail": "6 VERIFIED rows, 6 distinct assertion keys"
     },
     {
-      "name": "registry_batches_present",
-      "ok": false,
-      "detail": "0 batches"
-    },
-    {
-      "name": "matrix_requirements_present",
+      "name": "all_non_verified_have_reason",
       "ok": true,
-      "detail": "538 requirements"
+      "detail": "0 without reason"
     }
   ],
-  "problems": [
-    "recheck_card.security_verdict: first exit=1/ok=false recheck exit=0/ok=true",
-    "recheck_security.secret-scan_verdict: first exit=1/ok=false recheck exit=0/ok=true",
-    "registry_batches_present: 0 batches"
-  ],
-  "rechecked": [
-    "card.accessibility",
-    "card.database",
-    "card.e2e",
-    "card.payment-sandbox",
-    "card.security",
-    "card.visual",
-    "contract.exports",
-    "docs.baseline",
-    "go.payment-security",
-    "matrix.stable",
-    "policy.runtime-deny",
-    "reg.agents",
-    "reg.executors",
-    "reg.policy",
-    "reg.specifications",
-    "reg.validators",
-    "reg.workflows",
-    "runtime.cli",
-    "runtime.health",
-    "runtime.uap-tests",
-    "security.secret-scan",
-    "spec.statements",
-    "web.design-tokens"
-  ],
-  "rechecked_count": 23,
-  "comparisons": [
-    {
-      "probe_id": "card.accessibility",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "b691bd5d9e2ff2b7029a9d745f18dddfe92686dc66d9c1c654060e281e9ac554",
-      "recheck_hash": "b691bd5d9e2ff2b7029a9d745f18dddfe92686dc66d9c1c654060e281e9ac554"
-    },
-    {
-      "probe_id": "card.database",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "00fc7ea27b764e37e4f47109a0c277570199e119eeeb17d142b739f954ff56ff",
-      "recheck_hash": "00fc7ea27b764e37e4f47109a0c277570199e119eeeb17d142b739f954ff56ff"
-    },
-    {
-      "probe_id": "card.e2e",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "33a9dd41b88301220fda340f8ef3892d71a1262420b5f94f9f84649f7caa0d6b",
-      "recheck_hash": "33a9dd41b88301220fda340f8ef3892d71a1262420b5f94f9f84649f7caa0d6b"
-    },
-    {
-      "probe_id": "card.payment-sandbox",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "763d85cb22e6ad7ae8e845dc2a1341de981b0ad08159a52853ed8c4a7bc109f1",
-      "recheck_hash": "763d85cb22e6ad7ae8e845dc2a1341de981b0ad08159a52853ed8c4a7bc109f1"
-    },
-    {
-      "probe_id": "card.security",
-      "first_exit": 1,
-      "recheck_exit": 0,
-      "same_exit": false,
-      "same_verdict": false,
-      "first_hash": "ac24ba7f7b438c08eedbca384e563a5c64b45d3d1298ccb850ee25218a0fb03c",
-      "recheck_hash": "ac24ba7f7b438c08eedbca384e563a5c64b45d3d1298ccb850ee25218a0fb03c"
-    },
-    {
-      "probe_id": "card.visual",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
-      "recheck_hash": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
-    },
-    {
-      "probe_id": "contract.exports",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "5c8f1a21012d6dbf479232c5dc4179853c7c263718f6eeafdd57a5eedcf804c9",
-      "recheck_hash": "5c8f1a21012d6dbf479232c5dc4179853c7c263718f6eeafdd57a5eedcf804c9"
-    },
-    {
-      "probe_id": "docs.baseline",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "eb304355e052a5d3d708cfde28e9e79552b6819796a241793789d77521a26f90",
-      "recheck_hash": "eb304355e052a5d3d708cfde28e9e79552b6819796a241793789d77521a26f90"
-    },
-    {
-      "probe_id": "go.payment-security",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "a6fd6b98a19afedaee3bf7c39d6ce253818e0ac436d0be9ac2f1c5b0faf9550a",
-      "recheck_hash": "e07331535798dbcef2267498f8d1f4834b5bb804e509e6a81759ff83700353fc"
-    },
-    {
-      "probe_id": "matrix.stable",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "e1e264bcf380965a71dc673558d66b0e5605192abf712e676278c9c87b8fd0d6",
-      "recheck_hash": "e1e264bcf380965a71dc673558d66b0e5605192abf712e676278c9c87b8fd0d6"
-    },
-    {
-      "probe_id": "policy.runtime-deny",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
-      "recheck_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6"
-    },
-    {
-      "probe_id": "reg.agents",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "1303108fb8fb0d03e756a01286c2032cfd24de3fa715b41d5fe9ff5eeb5c0394",
-      "recheck_hash": "1303108fb8fb0d03e756a01286c2032cfd24de3fa715b41d5fe9ff5eeb5c0394"
-    },
-    {
-      "probe_id": "reg.executors",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "d0784f54b8ef27417773ebf4c044b840584ba15c642bb2ea5b19d7e5e6c97009",
-      "recheck_hash": "d0784f54b8ef27417773ebf4c044b840584ba15c642bb2ea5b19d7e5e6c97009"
-    },
-    {
-      "probe_id": "reg.policy",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6",
-      "recheck_hash": "1063330f58ac9e621c480c297c9feef9bfd2d4c03b2737b397731ddb844c9de6"
-    },
-    {
-      "probe_id": "reg.specifications",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "8b983d6950edfbb2dd6ab5c45b8096af2871aa8d6e0714059fa14db316d26bdf",
-      "recheck_hash": "8b983d6950edfbb2dd6ab5c45b8096af2871aa8d6e0714059fa14db316d26bdf"
-    },
-    {
-      "probe_id": "reg.validators",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "a58fc2072f40e0a115cd08242a44bc771441e28564adcdd0ddd54ca44a21df76",
-      "recheck_hash": "a58fc2072f40e0a115cd08242a44bc771441e28564adcdd0ddd54ca44a21df76"
-    },
-    {
-      "probe_id": "reg.workflows",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "dc0ac02244aa4fb2aa31b980cbc2097533251f8270859940599d2b82df427040",
-      "recheck_hash": "dc0ac02244aa4fb2aa31b980cbc2097533251f8270859940599d2b82df427040"
-    },
-    {
-      "probe_id": "runtime.cli",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "883640a2e9780c00e42668b3a8338962d8b33ab9f04c9d7ded3d28a141bbe81d",
-      "recheck_hash": "883640a2e9780c00e42668b3a8338962d8b33ab9f04c9d7ded3d28a141bbe81d"
-    },
-    {
-      "probe_id": "runtime.health",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "264cad455c3dc195df9f5fbce2aed71b2136f5128bbc60ab75b111e822f7bd05",
-      "recheck_hash": "264cad455c3dc195df9f5fbce2aed71b2136f5128bbc60ab75b111e822f7bd05"
-    },
-    {
-      "probe_id": "runtime.uap-tests",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "0fec0bf01a53e1309fd66f5c6809df85451247e0e398cbc5118ade573ffbafd8",
-      "recheck_hash": "2741b603db14ed575babae734e2be2642767281493a635322b60d4e68e74be37"
-    },
-    {
-      "probe_id": "security.secret-scan",
-      "first_exit": 1,
-      "recheck_exit": 0,
-      "same_exit": false,
-      "same_verdict": false,
-      "first_hash": "347563bda0a331160f7506a4942c1f5eab3f8104680580274edf53272839419f",
-      "recheck_hash": "c28753e8ace671c948189c311c8f9afa5f5c75a5889a30d527fc21363ad64ad0"
-    },
-    {
-      "probe_id": "spec.statements",
-      "first_exit": 0,
-      "recheck_exit": 0,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "973f53f7f248e6ccbbb246a6ab901297757170a9cc8e2fb72e11b84d120b4d8d",
-      "recheck_hash": "973f53f7f248e6ccbbb246a6ab901297757170a9cc8e2fb72e11b84d120b4d8d"
-    },
-    {
-      "probe_id": "web.design-tokens",
-      "first_exit": 1,
-      "recheck_exit": 1,
-      "same_exit": true,
-      "same_verdict": true,
-      "first_hash": "883f93f3354dde04a3e3d278c0dcb05196e3fc000674e7e4facbe29d316ff6b9",
-      "recheck_hash": "883f93f3354dde04a3e3d278c0dcb05196e3fc000674e7e4facbe29d316ff6b9"
-    }
-  ],
-  "evidence_checked": 13,
-  "evidence_valid": 13,
-  "integrity_rule": "re-execute real probes + recompute evidence sha256 from disk + re-check execution binding; fail closed on any disagreement"
+  "problems": [],
+  "derived_states": {
+    "VERIFIED": 6,
+    "NOT_VERIFIED": 526,
+    "BLOCKED": 6,
+    "NOT_APPLICABLE": 0
+  },
+  "checked_evidence_refs": 6,
+  "verified_rows": 6,
+  "integrity_rule": "re-derive 4-state counts + recompute every VERIFIED evidence sha256 from disk + re-check execution binding + distinct assertions; fail closed on any disagreement"
 }

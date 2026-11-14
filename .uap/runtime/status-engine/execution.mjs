@@ -35,6 +35,17 @@ const VOLATILE_PREFIXES = Object.freeze([
   '.uap/state', '.uap/reports', '.uap/evidence',
 ]);
 
+// Pathspec exclusions keep runtime-only artefacts out of the diff hashes. A
+// report written during a verification run must NOT invalidate evidence
+// produced earlier in the SAME run. Business-code content MUST.
+const DIFF_EXCLUDES = Object.freeze([
+  ':(exclude).uap/state', ':(exclude).uap/reports', ':(exclude).uap/evidence',
+]);
+
+function isVolatile(file) {
+  return VOLATILE_PREFIXES.some((p) => file === p || file.startsWith(p));
+}
+
 function git(args, { trim = true } = {}) {
   try {
     const output = execFileSync('git', args, {
@@ -58,17 +69,69 @@ export function gitHead() {
   return head && /^[0-9a-f]{40}$/.test(head) ? head : null;
 }
 
-/** Stable fingerprint of TRACKED business-code changes. */
+/**
+ * Content-bearing fingerprint of the ACTUAL worktree.
+ *
+ * Phase-2 audit defect: the old implementation hashed only `git status` status
+ * LINES (XY code + path) with `--untracked-files=no`. Consequences:
+ *   - a clean tree hashed the empty string -> every report carried
+ *     `e3b0c442...` (SHA256 of ""), which proves nothing;
+ *   - editing a file's CONTENT without changing the set of modified files left
+ *     the fingerprint unchanged, so reports stayed "valid" for different code;
+ *   - newly created (untracked) business files were invisible.
+ *
+ * The new fingerprint binds: HEAD, the exact status lines, the full unstaged
+ * diff, the full staged diff, and the CONTENT of every non-volatile untracked
+ * file. Runtime artefacts under .uap/{state,reports,evidence} are excluded so
+ * writing evidence does not invalidate its own run; everything else counts.
+ *
+ * It is independently recomputable:
+ *   git -C <root> status --porcelain=v1 --untracked-files=all
+ *   git -C <root> diff --binary -- . ':(exclude).uap/state' ... etc.
+ *   sha256 of each non-volatile untracked file (base64 of raw bytes)
+ */
 export function worktreeFingerprint() {
-  const out = git(['status', '--porcelain=v1', '--untracked-files=no'], { trim: false });
-  if (out === null) return null;
+  const head = gitHead();
+  const out = git(['status', '--porcelain=v1', '--untracked-files=all'], { trim: false });
+  if (out === null || head === null) return null;
   const lines = out.split('\n').map((l) => l.trimEnd()).filter(Boolean)
-    .filter((line) => {
-      const file = line.slice(3).split(' -> ').pop();
-      return !VOLATILE_PREFIXES.some((p) => file === p || file.startsWith(p));
-    })
+    .filter((line) => !isVolatile(line.slice(3).split(' -> ').pop()))
     .sort();
-  return hash(lines.join('\n'));
+
+  const unstaged = git(['diff', '--binary', '--', '.', ...DIFF_EXCLUDES], { trim: false });
+  const staged = git(['diff', '--cached', '--binary', '--', '.', ...DIFF_EXCLUDES], { trim: false });
+  if (unstaged === null || staged === null) return null; // fail-closed
+
+  const parts = [
+    `head:${head}`,
+    `unstaged:${hash(unstaged)}`,
+    `staged:${hash(staged)}`,
+  ];
+  for (const line of lines) {
+    const file = line.slice(3).split(' -> ').pop();
+    parts.push(`status:${line}`);
+    // `??` entries are untracked files; bind their CONTENT, not just the name.
+    if (line.startsWith('??')) {
+      const abs = path.join(ROOT, file);
+      try {
+        if (fs.statSync(abs).isFile()) {
+          parts.push(`untracked:${file}:${hash(fs.readFileSync(abs).toString('base64'))}`);
+        }
+      } catch { /* vanished concurrently: fail closed below */ }
+    }
+  }
+  return hash(parts.sort().join('\n'));
+}
+
+/** Explain the fingerprint (used by the evidence manifest / final gate). */
+export function fingerprintBasis() {
+  return {
+    algorithm: 'sha256(sorted( head + status-lines + sha256(git diff --binary) + sha256(git diff --cached --binary) + sha256(untracked file bytes base64) ))',
+    excludes: [...VOLATILE_PREFIXES],
+    includes_untracked_files: true,
+    includes_file_content: true,
+    note: 'runtime artefacts (.uap/state, .uap/reports, .uap/evidence) are excluded; all other worktree content is bound',
+  };
 }
 
 /** Append-only execution ledger. */

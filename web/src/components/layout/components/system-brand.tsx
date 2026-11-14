@@ -57,7 +57,9 @@ export function SystemBrand(props: SystemBrandProps) {
     return (
       <Link
         to='/'
-        aria-label={t('Go to home')}
+        // 可访问名称必须包含可见文本（axe label-content-name-mismatch）：
+        // 品牌名可见，aria-label 只写「返回主页」会与之冲突。
+        aria-label={`${name} · ${t('Go to home')}`}
         className={cn(
           'text-foreground inline-flex h-7 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
           'hover:bg-accent focus-visible:ring-ring focus-visible:ring-2'

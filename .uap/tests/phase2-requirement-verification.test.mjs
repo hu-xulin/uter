@@ -21,7 +21,7 @@ const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const UAP = path.join(ROOT, '.uap');
 
 import { parseYAML } from '../runtime/_lib/yaml.mjs';
-import { classify, VERIFICATION_STATES, loadRegistry, coverageMap } from '../tools/requirement-verification.mjs';
+import { classify, classifyStrict, detectSharedEvidence, VERIFICATION_STATES, loadRegistry, coverageMap } from '../tools/requirement-verification.mjs';
 import { PROBE_IDS } from '../tools/requirement-probes.mjs';
 
 const sha = (s) => {
@@ -110,44 +110,109 @@ describe('Phase 2 分类器 fail-closed', () => {
     coverage_basis: 'test fixture',
   };
 
-  test('7 种状态集合完整且互不重叠', () => {
-    assert.deepEqual(VERIFICATION_STATES.length, 7);
-    assert.deepEqual(new Set(VERIFICATION_STATES).size, 7);
-    for (const s of ['NOT_BUILT', 'PARTIALLY_BUILT', 'IMPLEMENTED_NOT_VERIFIED', 'PARTIALLY_VERIFIED', 'FULLY_VERIFIED', 'NOT_APPLICABLE', 'BLOCKED']) {
+  test('4 种状态集合完整且互不重叠（P2-06 审计定案的分类）', () => {
+    assert.equal(VERIFICATION_STATES.length, 4);
+    assert.equal(new Set(VERIFICATION_STATES).size, 4);
+    for (const s of ['VERIFIED', 'NOT_VERIFIED', 'BLOCKED', 'NOT_APPLICABLE']) {
       assert.ok(VERIFICATION_STATES.includes(s), `missing state ${s}`);
+    }
+    // The retired 7-state taxonomy must not leak back in.
+    for (const retired of ['FULLY_VERIFIED', 'IMPLEMENTED_NOT_VERIFIED', 'PARTIALLY_VERIFIED']) {
+      assert.ok(!VERIFICATION_STATES.includes(retired), `retired state ${retired} must not exist`);
     }
   });
 
-  test('探针缺失或失败时不得 FULLY_VERIFIED', () => {
+  test('探针缺失或失败时一律 NOT_VERIFIED，绝不 VERIFIED', () => {
     const failing = { 'reg.specifications': { ok: false, exit_code: 1, command: 'x', output_hash: 'h' }, 'reg.validators': { ok: true, exit_code: 0, command: 'y', output_hash: 'h' } };
     const c = classify(sample, cov, failing, { ok: true, rechecked: ['reg.specifications'] }, REGISTRY, {});
-    assert.equal(c.state, 'PARTIALLY_VERIFIED');
+    assert.equal(c.status, 'NOT_VERIFIED');
+    assert.equal(c.evidence_refs.length, 0);
     const none = classify(sample, cov, {}, { ok: true, rechecked: [] }, REGISTRY, {});
-    assert.equal(none.state, 'IMPLEMENTED_NOT_VERIFIED');
+    assert.equal(none.status, 'NOT_VERIFIED');
+    assert.ok(none.status_reason_code, 'must carry a concrete reason code');
   });
 
-  test('只有全部探针通过且独立复核通过才 FULLY_VERIFIED', () => {
+  test('legacy 静态探针即使全部通过也绝不 VERIFIED（审计根因）', () => {
     const passing = Object.fromEntries(cov.probes.map((p) => [p, { ok: true, exit_code: 0, command: p, output_hash: 'h' }]));
     const ok = classify(sample, cov, passing, { ok: true, rechecked: cov.probes }, REGISTRY, {});
-    assert.equal(ok.state, 'FULLY_VERIFIED');
-    const noIndep = classify(sample, cov, passing, { ok: false, rechecked: [] }, REGISTRY, {});
-    assert.notEqual(noIndep.state, 'FULLY_VERIFIED');
-    const tooFew = classify({ ...sample, implementation_files: [sample.implementation_files[0]] }, cov, passing, { ok: true, rechecked: cov.probes }, REGISTRY, {});
-    assert.notEqual(tooFew.state, 'FULLY_VERIFIED');
+    assert.notEqual(ok.status, 'VERIFIED');
+    assert.equal(ok.status, 'NOT_VERIFIED');
+    // The reason must say WHY: static/shared evidence is not behaviour proof.
+    assert.ok(/FILE_EXISTENCE|SHARED_EVIDENCE|BEHAVIOR/.test(ok.status_reason_code), ok.status_reason_code);
   });
 
-  test('外部依赖只允许来自显式声明规则且必须匹配语句', () => {
+  test('外部依赖只允许来自显式声明规则且必须给出阻断条件', () => {
     const ext = classify({ ...sample, requirement: '必须支持真机验证的 H5 适配' }, cov, {}, { ok: false, rechecked: [] }, REGISTRY, {});
-    assert.equal(ext.state, 'BLOCKED');
-    assert.equal(ext.blocked_dependency_id, 'EXT-H5-DEVICE');
-    assert.ok(ext.unblock_condition);
+    assert.equal(ext.status, 'BLOCKED');
+    assert.ok(/H5 device/.test(ext.status_reason), ext.status_reason);
+    assert.ok(ext.status_reason.includes('解除条件') || ext.status_reason.includes('unblock'), ext.status_reason);
     const normal = classify({ ...sample, requirement: sample.requirement }, cov, {}, { ok: false, rechecked: [] }, REGISTRY, {});
-    assert.notEqual(normal.state, 'BLOCKED');
+    assert.notEqual(normal.status, 'BLOCKED');
+    assert.equal(normal.status, 'NOT_VERIFIED');
   });
 
-  test('NOT_APPLICABLE 没有显式登记时不得出现', () => {
+  test('NOT_APPLICABLE 没有显式业务依据登记时不得出现', () => {
     const c = classify(sample, cov, {}, { ok: false, rechecked: [] }, REGISTRY, {});
-    assert.notEqual(c.state, 'NOT_APPLICABLE');
+    assert.notEqual(c.status, 'NOT_APPLICABLE');
+    assert.equal(c.status, 'NOT_VERIFIED');
+    // A registered rule WITHOUT a basis must also fail closed.
+    const na = classifyStrict({
+      requirement: sample,
+      behaviorAssertions: [],
+      declaredProbeKinds: ['STATIC_EXISTENCE'],
+      naRule: { reason: 'x', basis: null },
+    });
+    assert.equal(na.status, 'NOT_VERIFIED');
+    assert.equal(na.status_reason_code, 'NA_BASIS_MISSING');
+  });
+
+  test('共享证据（同一命令+断言覆盖多条不相关要求）被拒绝', () => {
+    const shared = detectSharedEvidence([
+      { command: 'go test ./...', assertion_id: 'a', requirement_id: 'R1' },
+      { command: 'go test ./...', assertion_id: 'a', requirement_id: 'R2' },
+    ]);
+    assert.ok(shared.rejected.has('R1') && shared.rejected.has('R2'));
+    assert.equal(shared.conflicts.length, 1);
+  });
+
+  test('真实行为断言必须满足全部要件才 VERIFIED（哈希/绑定/独立观测）', () => {
+    const exec = { execution_id: 'UAP-EXEC-T', git_head: 'h'.repeat(40), worktree_fingerprint: 'f'.repeat(64) };
+    const base = {
+      assertion_id: 'dup-notification-idempotent', probe_id: 'p', probe_kind: 'BEHAVIOR_EXECUTION',
+      command: 'go test ./service/paymentsandbox/ -run TestDuplicateNotificationIsIdempotent',
+      exit_code: 0, output_hash: 'h1', assertion_found: true, skipped: false, raw_status: 'PASS',
+      distinct: true,
+    };
+    const full = (over = {}) => ({
+      ...base, evidence_hash: 'eh', evidence_hash_valid: true, evidence_disk_hash_valid: true,
+      evidence_binding_valid: true, evidence_output_hash: 'h1',
+      evidence_execution_id: 'UAP-EXEC-T', evidence_git_head: exec.git_head,
+      evidence_worktree_fingerprint: exec.worktree_fingerprint, ...over,
+    });
+    const okC = classifyStrict({ requirement: sample, behaviorAssertions: [full()], declaredProbeKinds: ['BEHAVIOR_EXECUTION'], execution: exec });
+    assert.equal(okC.status, 'VERIFIED');
+    assert.ok(okC.evidence_refs.length > 0 && okC.actual_result);
+    // Every single missing guard must downgrade to NOT_VERIFIED with a reason.
+    const cases = [
+      [{ ...full(), probe_kind: 'STATIC_EXISTENCE' }, 'PROBE_ONLY_FILE_EXISTENCE'],
+      [{ ...full(), exit_code: 1 }, 'BEHAVIOR_COMMAND_FAILED'],
+      [{ ...full(), assertion_found: false }, 'BEHAVIOR_ASSERTION_NOT_OBSERVED'],
+      [{ ...full(), evidence_hash_valid: false }, 'EVIDENCE_INVALID_OR_STALE'],
+      [{ ...full(), evidence_execution_id: 'OLD' }, 'EVIDENCE_INVALID_OR_STALE'],
+      [{ ...full(), skipped: true, raw_status: 'SKIPPED' }, 'BEHAVIOR_NOT_RUN'],
+      [{ ...full(), raw_status: 'BLOCKED' }, 'BEHAVIOR_NOT_RUN'],
+      [{ ...full(), evidence_execution_id: 'UAP-EXEC-OTHER' }, 'EVIDENCE_INVALID_OR_STALE'], // 绑定到别的执行批次
+      [{ ...full(), evidence_worktree_fingerprint: 'g'.repeat(64) }, 'EVIDENCE_INVALID_OR_STALE'], // 代码版本不一致
+    ];
+    for (const [assertion, expectedCode] of cases) {
+      const c = classifyStrict({
+        requirement: sample, behaviorAssertions: [assertion],
+        declaredProbeKinds: ['BEHAVIOR_EXECUTION'],
+        execution: exec,
+      });
+      assert.equal(c.status, 'NOT_VERIFIED', `${expectedCode}: got ${c.status}/${c.status_reason_code}`);
+      assert.equal(c.status_reason_code, expectedCode, `${expectedCode}: got ${c.status_reason_code}`);
+    }
   });
 
   test('批次注册表覆盖全部 32 份规范且每批探针真实注册', () => {

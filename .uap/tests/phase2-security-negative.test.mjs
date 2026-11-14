@@ -133,4 +133,43 @@ describe('Phase 2 安全负向测试', () => {
     assert.equal(failCount, 0, 'the repair-boundary suite (incl. WIP protection) must pass');
     assert.match(out, /# pass ([1-9]\d*)/, 'the suite must contain real passing assertions');
   });
+
+  test('N8 Go handler 层 19 类业务安全负向测试必须全部真实 PASS（TestPhase2SecurityNegative）', () => {
+    // controller/phase2_security_negative_test.go 对 N1–N19 每类攻击面跑真实
+    // handler 请求（隔离 :memory: SQLite，无任何真实网络/支付/凭据）。本测试
+    // 解析机器可读的 `NEG <id> <status> <detail>` 行：任何类别缺失、或状态不是
+    // PASS（含 BLOCKED/NOT_RUN）都必须让本测试失败——不允许静默降级。
+    const r = spawnSync('go', ['test', './controller/', '-run', 'TestPhase2SecurityNegative', '-count=1', '-v', '-json'], {
+      cwd: ROOT, encoding: 'utf8', timeout: 600000,
+      env: { ...process.env, GOWORK: 'off' },
+    });
+    assert.equal(r.status, 0, `go test must exit 0 (stderr: ${r.stderr?.slice(0, 800)})`);
+    const stdout = r.stdout ?? '';
+    // -json 模式下每行一个事件；NEG 行出现在 t.Logf 的 Output 事件里。
+    const results = new Map();
+    for (const line of stdout.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('{')) continue;
+      let event;
+      try { event = JSON.parse(trimmed); } catch { continue; }
+      const output = event?.Output;
+      if (typeof output !== 'string') continue;
+      for (const m of output.matchAll(/NEG (n\d{2}) (PASS|FAIL|BLOCKED|NOT_RUN) (.*)/g)) {
+        // 同一 id 会被子测试与汇总各打印一次，逐条覆盖时取更严格的状态。
+        const rank = { PASS: 0, BLOCKED: 1, NOT_RUN: 1, FAIL: 2 };
+        const prev = results.get(m[1]);
+        if (!prev || rank[m[2]] >= rank[prev.status]) results.set(m[1], { status: m[2], detail: m[3].trim() });
+      }
+    }
+    const expected = Array.from({ length: 19 }, (_, i) => `n${String(i + 1).padStart(2, '0')}`);
+    for (const id of expected) {
+      const result = results.get(id);
+      assert.ok(result, `category ${id} must print a NEG line`);
+      assert.equal(
+        result.status, 'PASS',
+        `category ${id} must PASS (got ${result.status}: ${result.detail}) — BLOCKED/NOT_RUN fail this gate`,
+      );
+    }
+    assert.equal(results.size, expected.length, 'no unexpected extra NEG categories');
+  });
 });
