@@ -164,6 +164,32 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 | `- [ ]` | Electron 桌面（补充，非上述 5 平台） | 复用同一 `web/dist` 的桌面回归 | `electron/` 加载同一产物的证据 | `NOT_VERIFIED` |
 | `- [ ]` | 全平台结论 | PART 13 汇总 | 5 平台全部 `VERIFIED` 方可宣布 `FULLY_IMPLEMENTED_AND_VERIFIED` | **不可达**（见 §4） |
 
+### 3.7 十字段交叉验收矩阵（业务域蓝图补充）
+
+> 来源：业务域蓝图《Design Quality and Acceptance Standard》§2「验收维度」10 行表。**本节是对 §3.1–§3.6 六组清单的横向交叉索引**，不新增验收项，只提供「一个验收维度落在哪一组、当前状态如何」的反查入口。
+
+| # | 验收维度 | 蓝图必检内容 | 对应本规范分组 | 仓库现状（2026-11-14 实测） |
+|---:|---|---|---|---|
+| 1 | **Token** | schema、唯一性、主题覆盖、引用、硬编码 | §3.2 第二组 | `check-design-tokens.mjs` T1–T17；`design:5:check` 实测 `tokenFiles: 8` / `uniqueTokenVariables: 245` / `crossFileTokenDuplicates: 0`；`unusedTokenCandidates: 102` 未逐项核实 → `PARTIALLY_VERIFIED` |
+| 2 | **组件** | API、变体、尺寸、状态、键盘、可访问性 | §3.3 第三组 | 65 组件已登记（`registered=65` / `discovered=65`）；证据 `VERIFIED 0 / PARTIAL 9 / NOT_VERIFIED 56`，`components:registry:strict` EXIT=1 → `FAILED` |
+| 3 | **页面** | 信息层级、流程完整、空 / 错 / 载入状态 | §3.4 第四组 | 73 路由已分组；视觉基线 **22 / 73**，`system-settings/*` 18 路由无 E2E → `NOT_VERIFIED` |
+| 4 | **视觉** | 颜色、字体、间距、圆角、层级、对齐 | §3.2 + §3.4 | `showcase` 17 条校验含 Shadow 区快照；E24 对比度 2 项 `FAILED` → `PARTIALLY_VERIFIED` |
+| 5 | **响应式** | 规定视口、溢出、滚动、遮挡 | §3.4 + §3.6 | 视觉回归仅 **2 视口**（1440×900 / 390×844），蓝图要求 8 视口 → `NOT_EXECUTED`（`UDS5-S12` `S12-D8`） |
+| 6 | **主题** | Light / Dark / System、高对比 | §3.2 + §3.5 | Light/Dark 成对校验器 **未落地**（`UDS5-S10` `S10-D4`）；高对比维度 **未实现**（`S10-D9`）→ `NOT_VERIFIED` |
+| 7 | **内容** | 文案一致、术语、金额 / 单位准确 | §3.4 + §3.5 | 蓝图要求的中英文**领域词汇表未建立**（`UDS5-S19` `S19-D1`）；文案禁区已入规范但未逐处核对（`S19-D3`）→ `NOT_VERIFIED` |
+| 8 | **国际化** | locale、长文本、日期、数字、货币 | §3.5 | 7 份 locale 齐备（`en/fr/ja/ru/vi/zh-TW/zh`）；`check-i18n-keys.mjs` 存在但**本轮未执行** → `NOT_VERIFIED` |
+| 9 | **安全** | 密钥遮蔽、支付状态真实性、危险操作确认 | §3.3 + §3.4 | 掩码 / 明文取回 / 二次验证规则见 `UDS5-S30`；支付状态真实性见 `UDS5-S31` OB-9.1…OB-9.8；**拦截器未建立** → `PARTIALLY_VERIFIED` |
+| 10 | **跨平台** | Web / H5 / Android / iOS / HarmonyOS 适配 | §3.6 第六组 + §4 | 原生三平台 **0 实现**，全平台结论**不可达** → `NOT_VERIFIED` |
+
+**矩阵读法**
+
+| 项 | 说明 |
+|---|---|
+| M-1 | 本矩阵**不替代** §3.1–§3.6 的可勾选清单；它是反查入口。**任何一格不得在对应清单未勾选时被表述为通过**。 |
+| M-2 | 蓝图 §4「人工验收不能被伪装成自动测试」：上表第 3 / 4 / 7 / 10 维含**必须人工判定**的部分（信息架构、视觉品质、文案准确性、屏幕阅读器体验），自动化扫描通过**不构成**该维通过。 |
+| M-3 | 蓝图 §7 验收报告须记录：commit SHA、运行环境、命令、测试时间、结果、失败项、截图 / 日志、例外、未覆盖范围和最终结论；**结论仅允许 `PASS` / `FAIL` / `PARTIALLY_VERIFIED` / `NOT_VERIFIED`**。 |
+| M-4 | 蓝图 §8 完成定义：**只有当规范文件、机器可读注册表、实际组件、业务页面、自动化门禁和验收证据全部闭环**，才可声明 `FULLY_IMPLEMENTED` / `FULLY_VERIFIED`。当前 10 维中 **0 维达 `VERIFIED`**，故 §1 的 `FULLY_IMPLEMENTED_AND_VERIFIED` 不可达。 |
+
 ---
 
 ## 4. 平台验收专项声明（不得用 Web 结果代替）

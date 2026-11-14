@@ -45,8 +45,11 @@
 | 1.4 | 正文 `14/22`、caption `12/18`、长文本 `16/26`、最小 `12px`；任何可见文本低于 12px 判违规 | T16 | `tokens/typography.css`、`tokens/semantic.css` |
 | 1.5 | 品牌渐变三停靠站深浅同值，禁止 `.dark` 覆盖；消费出口唯一为 `@utility ds-text-gradient-brand` | T8 / T7 | `tokens/colors.css:119-121`、`foundations/` |
 | 1.6 | 不得采用 Clerk 紫色、徽标、「Secured by Clerk」文案或任何第三方品牌资产 | 人工审查 + T7 | `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` §4 |
+| 1.7 | **品牌定位与调性**（业务域蓝图补充）：Uter 是面向开发者与团队的 AI 模型 API 使用与管理平台；品牌表达须体现**专业、可信、稳定、透明、高效**；**不得**采用过度娱乐化、金融投机化或夸张科技光效的表达 | 人工审查 | `UDS5-S01` §4.2 品牌基线 |
+| 1.8 | **品牌应用覆盖面**：登录 / 注册、控制台、账户中心、账单、邮件、短信、错误页、空状态、帮助中心与应用图标，**品牌资产在 Web / H5 与原生平台保持视觉识别一致** | 人工审查 | 邮件侧 `web/src/../common/email_template.go` `EmailBrandName`；原生平台**无实现**，见 §7 |
 
 > 1.1 的运行时差异已在 `UDS5-S01` §4.2 登记为 `Adapt` / `NOT_VERIFIED`；本轮不改写代码，不得据运行时值反推修改规范基线。
+> 1.7 的「不娱乐化 / 不金融投机化 / 不夸张科技光效」为**语气与视觉取向约束**，属人工审查项，**无对应静态门禁**（登记为 `S02-D4`）。
 
 ---
 
@@ -105,6 +108,41 @@
 | 5.5 | 图标描边统一 2px，尺寸固定 16 / 18 / 24 / 32 / 48；颜色跟随父级 `currentColor`，不设 `--ds-icon-color` | 人工审查 | `tokens/semantic.css:126-164` |
 | 5.6 | 焦点环全站只有一档（`--ds-focus-ring-width: 2px`，已裁决），原生元素兜底与组件层 `focus-visible:ring-2` 同读该 Token，改值须两处同步 | 人工 + a11y 测试（未验证） | `tokens/semantic.css:117-124` |
 | 5.7 | 3 处同名 `EmptyState` 必须统一到 `components/empty-state.tsx`；禁止新增同名实现 | 人工审查 | `web/src/components/` |
+| 5.8 | **品牌标识使用规则**（见 §5.1）——唯一正式标识、禁止重绘 / 拉伸 / 旋转 / 改字距 / 未批准描边阴影渐变、安全留白、深浅版本对应 | 人工审查 | `web/src/assets/logo.tsx`、`web/public/logo.png`、`web/src/lib/brand.ts` |
+| 5.9 | **品牌命名规则**（见 §5.2）——品牌名称大小写固定；本地化品牌名走 `localizedBrandName()`，**不得**硬编码第二套品牌名 | 人工审查 | `web/src/lib/brand.ts` `localizedBrandName()` |
+| 5.10 | **图形语言**（见 §5.3）——清晰网格、克制几何、轻量边框、明确信息层级；禁止无意义装饰渐变 / 玻璃拟态 / 大面积阴影 / 持续运动背景 | T6 / T8 / S03 §6 | `web/src/styles/theme.css`、`design-system/tokens/elevation.css` |
+
+### 5.1 品牌标识使用规则
+
+> 来源：业务域蓝图《Brand Identity Standard》§3「标识使用」+ §7「禁止事项」。**本节为硬约束**，禁止以任何理由绕过。
+
+| # | 规则 | 说明 |
+|---|---|---|
+| BI-1 | **唯一正式标识**：以仓库中已批准的 Uter Logo / SVG 为唯一正式标识。 | `web/src/assets/logo.tsx`（组件化标识）、`web/public/logo.png`（位图）、`web/src/components/layout/components/header-logo.tsx` / `system-brand.tsx`（宿主） |
+| BI-2 | **禁止重绘**：不得自行重绘、拉伸、旋转标识，不得改变字距，不得添加**未批准**的描边、阴影和渐变。 | 任何对标识本体的修改都必须走品牌资产版本流程 |
+| BI-3 | **安全留白**：标识四周须保留**至少为标识高度 1/4** 的留白；若品牌资产另有规定，以资产规范为准。 | 仓库当前 `BRAND_LOGO_BOX_CLASS` 为 `size-7`（28px）固定盒子（`web/src/lib/brand.ts`），公开页与控制台顶栏共用同一尺寸类，防止两处漂移 |
+| BI-4 | **小尺寸**：使用**专用简化图形**；**不得**把完整横版 Logo 强行缩小到不可辨识。 | |
+| BI-5 | **深浅背景**必须使用**对应的批准版本**，不得对同一资产做运行时染色 / 反色。 | 与 S10 主题规范一致（`.dark` 只翻转语义 Token，不改品牌资产本体） |
+| BI-6 | **禁止伪造标识**：不得伪造合作伙伴标识、认证徽章、支付渠道背书或安全认证。 | 硬红线 |
+| BI-7 | **禁止第三方品牌混淆**：不得使用 Clerk Logo，或让用户误以为 Uter 是 Clerk 官方产品；引用第三方服务时**必须明确服务提供方**。 | 与 `UDS5-S01` P2（不引入 Clerk SDK / 不照搬 Clerk 品牌）一致 |
+| BI-8 | **品牌资产登记**：品牌资产须有来源、版本、格式、尺寸和授权信息；Logo 在浅 / 深背景、1x / 2x / 3x 和窄屏下均须清晰。 | 登记为 `S02-D3`（资产台账未核实） |
+
+### 5.2 品牌命名规则
+
+| # | 规则 | 说明 |
+|---|---|---|
+| BN-1 | **品牌名称大小写固定**；产品代码、包名、仓库名可按技术约定保留原始大小写。 | `Uter.ai` 为正式品牌名 |
+| BN-2 | **不得**将 Uter 改写为历史名称（如 `URouters`）。 | 与既有「不得将 Uter 改写为 URouters」红线一致 |
+| BN-3 | **本地化品牌名**统一走 `localizedBrandName(locale)`：中文（`zh` / `zh-TW`）显示「优特智能 / 優特智能」（**不带** `Uter.ai` 前缀），其他语言显示短标 `Uter.ai`。 | 真实实现：`web/src/lib/brand.ts` `localizedBrandName()`；**禁止**在组件内硬编码品牌名 |
+| BN-4 | **品牌字体栈**：品牌标题使用 Inter + 中文字体回退栈（与 S04 一致）；**不得**为品牌单独引入第三套字体。 | |
+
+### 5.3 图形语言
+
+| # | 规则 | 说明 |
+|---|---|---|
+| GL-1 | 使用**清晰网格**、**克制的几何形状**、**轻量边框**和**明确的信息层级**。 | 与 S07 §1「表面优先」一致 |
+| GL-2 | **禁止**无意义的装饰渐变、玻璃拟态、大面积阴影和持续运动背景。 | 渐变只经 `@utility ds-text-gradient-brand`（S03 §6）；投影只经登记的 6 档（S07 §3）；玻璃拟态与持续运动背景当前**无 Token 支撑**，属禁止项 |
+| GL-3 | 装饰元素只经 `ds-decor-*`；`ds-decor-*` 未纳入 `colors.decoration`，保持 P3 Pending。 | S03 §3.1 |
 
 > **已裁决（`UDS5-S01` §4.2.1）**：5.0 焦点环采用 `2px` / `ring-2`，即 `semantic.css:120-123` 的运行时真值（与 3.0 §15.1 恒 `2px` / `ring-2` 一致）；运行时代码本身已是 `2px`，本轮不改任何代码值。作废的是「把 `1px` / `ring-1` 当作**焦点环宽度**」这一过时记忆（用户 PART 0 原则 A 只规定边框 1px，未规定焦点环宽度），`1px` 不再是焦点环可选基线；**装饰性 `ring-1` 描边 1px 与 `1px` 边框均为真实有效值**（不承载焦点语义，3.0 §15.1 分类，07 分册按 1px 登记），须原样保留、不得改成 2px，也不得把「1px」无差别替换。依据 `AGENTS.md`「设计值来自代码」。验证状态 `NOT_VERIFIED`（未执行浏览器级守卫复核）。
 
@@ -198,6 +236,19 @@
 
 ---
 
+## 11. 差异与例外登记
+
+| 编号 | 内容 | 状态 |
+|---|---|---|
+| S02-D1 | 业务域蓝图《Design Foundation Standard》§2「间距基准 4px，**允许 2px 微调**」↔ 仓库 T17「间距阶梯就是 Tailwind 4px 单位，就近取整档」 | **一致** ✓：Tailwind v4 的 `--spacing` 为 0.25rem 基准，`0.5` 步长即 2px，蓝图的「2px 微调」由 `p-0.5` / `gap-0.5` 天然满足，无需另立规则 |
+| S02-D2 | 业务域蓝图 §2「图标尺寸 12/14/16/18/20/24/32px」↔ 仓库守卫 `spec-guards.test.ts:454` 硬锁 **5 档 16 / 18 / 24 / 32 / 48** | **冲突**（蓝图 7 档含 12 / 14 / 20 / 28 档位，且缺 48）：**以仓库为准**（守卫为可执行门禁，蓝图为建议基线）；详见 `UDS5-S08` |
+| S02-D3 | 蓝图 §8 要求品牌资产登记「来源 / 版本 / 格式 / 尺寸 / 授权」；仓库资产分散在 `web/src/assets/logo.tsx`、`web/public/logo.png`、`web/public/waffo-logo-*.svg` 等处，**无统一资产台账** | **治理候选**（本轮未改运行时） |
+| S02-D4 | 蓝图 §1 品牌调性约束（专业 / 可信 / 稳定 / 透明 / 高效；不娱乐化 / 不金融投机化 / 不夸张科技光效）为**人工审查项**，无对应静态门禁 | `NOT_VERIFIED`（见 §1.7） |
+| S02-D5 | 蓝图 §3 要求「组件不得绕过基础层私自定义同义值」；仓库 T1–T17 已覆盖字号 / 行高 / 间距 / 圆角 / 动效 / 颜色 / 描边，**但 z-index 与阴影色未纳入基础层封闭集合** | **治理候选**：z-index 见 `UDS5-S07` §6.2 / §6.4（`S07-D3`）；阴影色由 `--ds-elevation-*` 统一管理（已覆盖） |
+| S02-D6 | 蓝图 §6 密度三档（Comfortable / Default / Compact）与仓库 `data-theme-scale` 三档**命名不一致**（仓库为 scale 维度，与 `data-theme-preset` / `data-theme-radius` 正交） | 已登记（**保留仓库命名**；语义等价，仓库为三维正交模型，见 `UDS5-S10`） |
+
+---
+
 ## 与其他规范的关系
 
 | 对象 | 关系 |
@@ -236,7 +287,7 @@
 | `web/scripts/check-component-registry.mjs`（`bun run components:registry:check`） | 组件注册双向一致性 | 已接入 `:427` |
 | `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 像素基线 | 本地专用 |
 | `bun run typecheck` / `lint` / `test` / `copyright:check` / `build:check` | 前端基础门禁 | 已接入 |
-| `web/src/design-system/__tests__/`（Vitest） | 10 个设计系统守卫测试 | 随 `bun run test` |
+| `web/src/design-system/__tests__/`（Vitest） | 11 个设计系统守卫测试 | 随 `bun run test` |
 | `web/e2e/axe/playwright.config.ts` | 无障碍 E2E | **刻意不接 CI**，仅开发机手动 |
 | `.github/workflows/ci.yml`、`release-gate.yml` | CI 编排 | — |
 
@@ -252,4 +303,4 @@
 | 验证状态 | **`NOT_VERIFIED`** |
 | 下级规范遵循关系 | 一律遵循 `UDS5-S01`，已声明 |
 
-**未验证 / 未执行清单**：`lint:design:strict` 全量扫描复跑、`design:tokens:check`、`design:showcase:check` 的 17 条校验复跑、`verify:contrast`、`components:registry:strict`、10 个守卫测试执行、全量构建（`build:check` / `scripts/verify-all.sh`）、`test:visual` 与 `test:visual:e2e` 双轨视觉回归、`test:axe`、Android / iOS / HarmonyOS 平台验收、65 组件逐项证据补齐、E24 两处对比度缺陷修复验证、焦点环 `2px` 在组件层与原生兜底的同步及回归测试验证（口径已裁决、实现未验证）、`UDS5-S01` §4.2 差异登记的统一、`--ds-font-*` 语义别名落地验证、3 处同名 `EmptyState` 合并验证、3 个纯别名压缩消失问题的根因定位。
+**未验证 / 未执行清单**：`lint:design:strict` 全量扫描复跑、`design:tokens:check`、`design:showcase:check` 的 17 条校验复跑、`verify:contrast`、`components:registry:strict`、11 个守卫测试执行、全量构建（`build:check` / `scripts/verify-all.sh`）、`test:visual` 与 `test:visual:e2e` 双轨视觉回归、`test:axe`、Android / iOS / HarmonyOS 平台验收、65 组件逐项证据补齐、E24 两处对比度缺陷修复验证、焦点环 `2px` 在组件层与原生兜底的同步及回归测试验证（口径已裁决、实现未验证）、`UDS5-S01` §4.2 差异登记的统一、`--ds-font-*` 语义别名落地验证、3 处同名 `EmptyState` 合并验证、3 个纯别名压缩消失问题的根因定位。

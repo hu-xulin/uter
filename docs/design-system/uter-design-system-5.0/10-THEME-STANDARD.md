@@ -176,6 +176,19 @@
 
 ---
 
+## 8.1 高对比与系统强制对比（业务域蓝图补充）
+
+> 来源：业务域蓝图《Theme and Styling Standard》§3「提供高对比增强选项或遵循系统强制对比设置。不得通过颜色透明度降低重要文本可读性。」
+
+| 项 | 规定 | 仓库现状 | 状态 |
+|---|---|---|---|
+| HC-1 | 须**响应系统强制对比设置**（`@media (forced-colors: active)`），使系统色覆盖下界面仍可用（边框、焦点指示、图标不得消失）。 | **未实现**：全仓 `styles/*.css` 与 `design-system/foundations/*.css` 中 `forced-colors` **0 命中** | **治理候选**（登记为 `S10-D8`） |
+| HC-2 | 须提供**高对比增强选项**（如 `data-theme-contrast='high'`）。 | **未实现**：无该维度；仓库现有三维为 `data-theme-preset` / `data-theme-radius` / `data-theme-scale` | **治理候选**（`S10-D9`） |
+| HC-3 | **不得通过颜色透明度降低重要文本可读性**。 | 仓库已有 T13 / T14 / T15 三条透明度禁令（`bg-X/NN` / `hover:bg-X/NN` / `text-foreground/NN`），方向一致 | **已覆盖** ✓ |
+| HC-4 | 高对比模式**不得**改变数据、权限或操作结果（与密度档同口径，见 §5）。 | 派生规则，无实现 | 随 HC-1 / HC-2 一并待办 |
+
+---
+
 ## 9. 禁止事项汇总
 
 1. 禁止引入 `@clerk/ui` / `@clerk/elements` / Clerk SDK / Storybook。
@@ -186,6 +199,23 @@
 6. 禁止新增语义变量只写 Light 不写 `.dark`。
 7. 禁止因参考 Clerk 替换 Uter 认证 / 用户管理 / 组织管理 / 权限逻辑（D8）。
 8. 禁止「先改实现、后补门禁」的主题值变更。
+9. 禁止用全局 `!important` 规避组件 API（基础重置与 Reduce Motion 降级除外，见 §9.1 ST-2）。
+10. 禁止在组件内部写主题分支（`.dark` 选择器 / `isDark` 判断），见 §9.1 ST-3。
+
+---
+
+## 9.1 样式架构与优先级（业务域蓝图补充）
+
+> 来源：业务域蓝图《Theme and Styling Standard》§4 / §6。
+
+| # | 规则 | 仓库现状 |
+|---|---|---|
+| ST-1 | **样式优先级**：设计 Token > 组件变体 > 页面布局样式 > 临时状态样式。 | 仓库 Token 链路（`tokens/` → `foundations/` → `theme.css` → 组件）与之同构 ✓ |
+| ST-2 | **不得用全局 `!important` 规避组件 API**；例外必须有**注释和到期清理计划**。 | 仓库 `web/src/styles/index.css` 中 `!important` **12 处命中**（`:64` `overflow: auto`、`:77-78` `overflow-wrap` / `white-space`、`:127` `overflow: unset`、`:182-183` Reduce Motion 下的 `animation` / `background`、`:467`、`:573-575` 动画降级、`:707` `animation: none`；其中 `:781` 为**注释文本**，实际生效 **11 处**）——**均属基础重置与减少动效降级**，与「规避组件 API」性质不同；组件层（`ui/`）**0 处** `!important`——**已覆盖** ✓（基础层 11 处生效 `!important` 属正当用途，**不视为违规**） |
+| ST-3 | **组件不得出现主题分支**（如在组件内写 `.dark` 选择器或 `isDark` 判断），主题只负责 Token 映射。 | 仓库组件层未见 `.dark` 分支（`design-system/tokens/generated/brand.css` 的 `.dark` 覆盖属 Token 层）；**未逐组件全量核查**，登记为 `S10-D10` |
+| ST-4 | **不得出现散落的颜色常量**；组件只消费语义 Token。 | T7 / T8 已覆盖 ✓ |
+| ST-5 | 主题切换**无闪烁或严重布局跳动**；首次加载有合理默认主题。 | 仓库有 `:root` 默认 + `data-theme-*` 三维；**切换闪烁与 FOUC 未实测**，登记为 `S10-D11` |
+| ST-6 | 所有核心组件均有 Light / Dark 覆盖。 | 仓库 `.dark` 覆盖 `theme.css:590+` + `generated/brand.css` 8 色 + `elevation.css` 2 档；**逐组件覆盖完整性未核查**，登记为 `S10-D12` |
 
 ---
 
@@ -200,6 +230,12 @@
 | S10-D5 | `brand.tokens.json` 仍为 `status: DRAFT` / `decision: AUTO_BLOCKED` | 待证据链齐备后变更（BASELINE-AUDIT §11.4 第 5 条），`NOT_VERIFIED` |
 | S10-D6 | 字体轴 `data-theme-font`（system/sans/serif）未落地，代码锁 Inter + Noto Sans SC | 保留 Pending（BASELINE-AUDIT §3.1），`NOT_VERIFIED` |
 | S10-D7 | 品牌基线六色与运行时 DTCG 值不一致；`brand.tokens.json` 仍 `DRAFT` / `AUTO_BLOCKED` | **Adapt**（详见 §10.1），`NOT_VERIFIED` |
+| S10-D8 | 蓝图 §3 要求响应系统强制对比（`forced-colors: active`）；仓库**未实现**（0 命中） | **治理候选**（见 §8.1 HC-1） |
+| S10-D9 | 蓝图 §3 要求高对比增强选项；仓库无 `data-theme-contrast` 维度 | **治理候选**（见 §8.1 HC-2） |
+| S10-D10 | 蓝图 §4「组件不得出现主题分支」；仓库组件层未见 `.dark` 分支，但**未逐组件全量核查** | `NOT_VERIFIED`（见 §9.1 ST-3） |
+| S10-D11 | 蓝图 §7 要求主题切换无闪烁 / 严重布局跳动；仓库**未实测** | `NOT_VERIFIED`（见 §9.1 ST-5） |
+| S10-D12 | 蓝图 §7 要求所有核心组件均有 Light / Dark 覆盖；逐组件覆盖完整性**未核查** | `NOT_VERIFIED`（见 §9.1 ST-6） |
+| S10-D13 | 蓝图 §6 禁止用全局 `!important` 规避组件 API；仓库 `styles/index.css` 有 12 处 `!important` 命中（其中 1 处为注释文本，实际生效 11 处），经核查**均属基础重置与 Reduce Motion 降级**，组件层 `ui/` 为 0 处 | 已登记（**不判违规**；见 §9.1 ST-2） |
 
 ### 10.1 S10-D7 · 品牌基线六色与运行时 DTCG 值差异（Adapt，2026-11-14 登记）
 

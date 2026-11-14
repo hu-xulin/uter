@@ -154,6 +154,89 @@
 
 ---
 
+## 7. 中性色与语义状态色基线对照（业务域蓝图建议 vs 运行时真值）
+
+> 来源：业务域蓝图《Color Standard》§3 中性色建议基线 / §4 语义状态色基线。
+> **裁决原则（AGENTS.md「设计值来自代码，规则来自规范」）**：蓝图标「建议基线」，仓库运行时为真值。**本节不改动任何运行时色值**，只做逐项对照与差异登记。
+
+### 7.1 中性色八项对照（逐值）
+
+| 蓝图 Token | 蓝图 Light | 蓝图 Dark | 仓库对应变量 | 仓库 Light | 仓库 Dark | 判定 |
+|---|---|---|---|---|---|---|
+| `color.bg.canvas` | `#F8FAFC` | `#0B1220` | `--background` | `#ffffff` | `#020617` | **冲突**：蓝图浅色为浅灰底、仓库为纯白；蓝图深色为靛蓝黑、仓库为 slate-950 近黑 |
+| `color.bg.surface` | `#FFFFFF` | `#111827` | `--card` | `#ffffff` | `#020617` | Light 一致；**Dark 冲突**（仓库 Dark 卡片与画布同值，无独立抬升面） |
+| `color.bg.surface-raised` | `#FFFFFF` | `#1F2937` | `--popover` | `#ffffff` | `#020617` | Light 一致；**Dark 冲突**（同上，仓库无独立抬升面） |
+| `color.fg.default` | `#0F172A` | `#F8FAFC` | `--foreground` | `#0f172a` | `#f8fafc` | **完全一致** ✓ |
+| `color.fg.muted` | `#64748B` | `#A8B3C4` | `--muted-foreground` | `#64748b` | `#94a3b8` | Light 一致 ✓；**Dark 冲突**（仓库 `#94a3b8` 浅于蓝图 `#A8B3C4`） |
+| `color.fg.subtle` | `#94A3B8` | `#8491A5` | `--ds-color-text-tertiary` | `color-mix(in oklch, var(--muted-foreground) 88%, var(--background))` | 同式（跟随 `.dark` 变量） | **不可一一映射**：仓库三级文字为**运行时派生**，蓝图建议为固定 hex。仓库口径更灵活且随主题预设跟随，**不采纳蓝图的固定值** |
+| `color.border.default` | `#E2E8F0` | `#334155` | `--border` | `#e2e8f0` | `#334155` | **完全一致** ✓ |
+| `color.border.strong` | `#CBD5E1` | `#475569` | `--border-strong` | `#cbd5e1` | `#475569` | **完全一致** ✓ |
+
+**结论**：中性色 8 项中 **4 项完全一致**（fg.default / border.default / border.strong + Light 侧 fg.muted / bg.surface / bg.surface-raised），**3 项冲突**（bg.canvas、bg.surface-raised 的 Dark、fg.muted 的 Dark），**1 项不可映射**（fg.subtle）。冲突项一律**保留仓库真值**，理由：
+
+1. `bg.canvas` 冲突会整体改变全站底色观感与既有视觉回归基线（22 页 × 2 视口），属**产品外观变更**，不在「补全规范」授权范围内。
+2. Dark 下 `card` / `popover` 与 `background` 同为 `#020617`，意味着 **Dark 主题缺少「抬升面」**——这是**已知的真实设计缺口**，登记为 `S03-D4` 治理候选（须由设计侧决定是否引入独立抬升面），本轮不擅自改值。
+3. `fg.subtle` 的固定 hex 写法会破坏仓库「三级文字随主题预设派生」的既有机制（§3.1「主题预设」条），**明确不采纳**。
+
+### 7.2 语义状态色四项对照
+
+| 蓝图 Token | 蓝图 Light | 蓝图 Dark | 仓库对应变量 | 仓库 Light | 仓库 Dark | 判定 |
+|---|---|---|---|---|---|---|
+| `color.success` | `#15803D` | `#4ADE80` | `--success` | `#15803d` | `#22c55e` | Light 一致 ✓；**Dark 冲突**（仓库 green-500，蓝图 green-400） |
+| `color.warning` | `#B45309` | `#FBBF24` | `--warning` | `oklch(0.681 0.162 75.834)` | `oklch(0.769 0.188 70.08)` | **表示法差异**（hex ↔ oklch），实色接近但不等值，登记待实测换算 |
+| `color.danger` | `#B91C1C` | `#F87171` | `--destructive` | `#dc2626` | `#7f1d1d` | **冲突**：仓库 Light red-600 / Dark red-900，蓝图 Light red-700 / Dark red-400。仓库 Dark 用**深红**而非亮红，属「深色下状态色不用亮色」的设计取向 |
+| `color.info` | `#0369A1` | `#38BDF8` | `--info` | `oklch(0.588 0.158 241.966)` | `oklch(0.613 0.14 239.919)` | **表示法差异**（hex ↔ oklch），登记待实测换算 |
+
+**处理口径**：
+
+- 仓库状态色全部走 `oklch()` 或 hex 混用，且 `--warning-soft` / `--success-soft` / `--info-soft` / `--destructive-soft` 四套柔和态已在运行时齐备（`theme.css:365-374` Light、`:620-628` Dark）；蓝图 §4 末尾要求「语义色的背景、边框和前景应分别提供 `*-subtle`、`*-border`、`*-foreground` Token」——**仓库已满足该结构要求**（`--{status}-soft` / `--{status}-border` / `--{status}-soft-foreground`），**该条为「已覆盖」而非缺口**。
+- 蓝图未提「状态色不得用品牌主色替代」，仓库 §3 第 9–12 类已把 success / warning / destructive / info 拆为独立四族，符合。
+- 蓝图未给状态色的**文字对比度门槛**，仓库已有更严的实测基线（`theme.css:359-361` 注释记录 `#15803d` 白底 5.02:1 的选值依据）。**以仓库为准**。
+
+### 7.3 表单与交互颜色的九项出口核对
+
+蓝图 §5 要求定义：input background / input foreground / placeholder / input border / hover border / focus ring / disabled foreground / disabled background / selected background。
+
+| 蓝图要求项 | 仓库出口 | 状态 |
+|---|---|---|
+| input background | `--ds-color-surface-muted`（`var(--muted)` `#f1f5f9` / `#1e293b`） | 已有 |
+| input foreground | `--ds-color-text-primary`（`var(--foreground)`） | 已有 |
+| placeholder | `--fg-placeholder`（`#64748b`）+ `--color-fg-placeholder`（`theme.css:187`） | 已有 |
+| input border | `--ds-stroke-color-input`（`var(--input)` `#d1d5e5` / `#45465f`）+ `--ds-color-border-input` | 已有 |
+| hover border | 无独立 Token（复用 `--ds-color-border-input` / `border-input`） | **未单列**：仓库以 `hover:border-*` 语义类表达，未提供专用 `--ds-*-input-hover` Token；登记为 `S03-D5`（非阻断） |
+| focus ring | `--ds-focus-ring-width: 2px` + `--ds-focus-ring-color: var(--ring)`（`semantic.css:123-124`） | 已有；蓝图额外要求「**外偏移 2px**」，**仓库未声明偏移量**（无 `ring-offset` / `--ds-ring-offset`），登记为 `S03-D6` |
+| disabled foreground | `--ds-color-text-disabled` | 已有 |
+| disabled background | `--muted`（组件层 `disabled:bg-muted`，如 `ui/button.tsx:52`） | 已有 |
+| selected background | `--accent`（`var(--accent)` `#f1f5f9` / `#1e293b`）+ `--ds-color-surface-accent` | 已有 |
+
+### 7.4 前景色前缀口径（蓝图 §9 与仓库实际）
+
+| 项 | 蓝图建议 | 仓库实际 | 判定 |
+|---|---|---|---|
+| 自定义前景色前缀 | `--fg-*` | `theme.css:550-556` 确有 `--fg-primary` / `--fg-secondary` / `--fg-tertiary` / `--fg-disabled` / `--fg-inverse` / `--fg-link` / `--fg-placeholder` 七项；但 `--color-fg-*` 暴露（`theme.css:183-188`）**只定义了 6 项，缺 `--color-fg-primary`** | **不一致** ✗ —— 见 `S03-D11` |
+| `--text-*` 命名空间 | 「不得占用作为自定义颜色 Token」 | 仓库 `typography.css` 把 `--text-*` 用作**字号注册机制**（Tailwind v4.3.3 的 `@theme --text-*`），**不是**颜色 Token | **表述前提不同**：Tailwind v4 中 `--text-*` 同时是字号注册入口；仓库从未用它定义颜色。蓝图的禁令意图（颜色不得占用 `--text-*`）**在仓库已自然满足**——仓库颜色前缀是 `--ds-color-*` / `--color-*` / `--fg-*` |
+| Tailwind 保留命名空间 | 「Tailwind v4 项目遵守其保留命名空间」 | 仓库 `theme.css` 注释明确记录「文字色用 `--fg-*` 前缀，**不能**叫 `--text-*`」，见 `theme.css:543` | **一致** ✓ |
+
+---
+
+## 8. 差异与例外登记
+
+| 编号 | 内容 | 状态 |
+|---|---|---|
+| S03-D1 | 蓝图 `color.bg.canvas` `#F8FAFC`/`#0B1220` ↔ 仓库 `--background` `#ffffff`/`#020617` | 已登记（**保留仓库真值**；改动属外观变更，需单独授权） |
+| S03-D2 | 蓝图 Dark `bg.surface` / `bg.surface-raised` `#111827`/`#1F2937` ↔ 仓库 `--card` / `--popover` Dark 均为 `#020617` | **治理候选**：Dark 缺独立抬升面，待设计侧裁决 |
+| S03-D3 | 蓝图 `fg.muted` Dark `#A8B3C4` ↔ 仓库 `#94a3b8` | 已登记（保留仓库真值） |
+| S03-D4 | 蓝图 `fg.subtle` 固定 hex ↔ 仓库 `color-mix()` 运行时派生 | **明确不采纳**（仓库口径可随主题预设跟随） |
+| S03-D5 | 蓝图要求 hover border 独立 Token，仓库复用 `border-input` + `hover:border-*` 语义类 | `NOT_VERIFIED`（非阻断，未单列 Token） |
+| S03-D6 | 蓝图要求焦点环「2px + 外偏移 2px」，仓库仅声明宽度 2px，**无偏移量** | `NOT_VERIFIED`（偏移量待设计侧裁决；不得擅自加 `ring-offset`） |
+| S03-D7 | 蓝图 `color.danger` Dark `#F87171` ↔ 仓库 `--destructive` Dark `#7f1d1d` | 已登记（保留仓库真值；属「深色不用亮状态色」取向） |
+| S03-D8 | 蓝图 `color.success` Dark `#4ADE80` ↔ 仓库 `#22c55e` | 已登记（保留仓库真值） |
+| S03-D9 | 蓝图 `color.warning` / `color.info` 为 hex，仓库为 `oklch()` | `NOT_VERIFIED`（实色接近，未做精确换算；不虚构等值声明） |
+| S03-D10 | 蓝图 §3 品牌 `on-primary` Dark `#17182A` ↔ 仓库 `--primary-foreground`（`--uter-brand-primary-foreground`） | `NOT_VERIFIED`（品牌前景值随 DTCG 生成，见 §2.1 差异登记） |
+| S03-D11 | **`text-fg-primary` 为死类**：`theme.css:550`（Light）与 `:749`（Dark）均声明 `--fg-primary`，但 `theme.css:183-188` 的 `--color-fg-*` 映射**只含 6 项**（`secondary` / `tertiary` / `disabled` / `link` / `placeholder` / `inverse`），**缺 `--color-fg-primary`**。Tailwind v4 中未注册的 `--color-*` 不生成对应工具类——实测构建产物 `dist/static/css/index.51e0d1c6a1.css` 中 `.text-fg-primary` 计数为 **0**（对照 `.text-fg-secondary{color:var(--fg-secondary)}` 正常生成）。全仓 `web/src` 有 **12 处**使用 `text-fg-primary`（精确分布：**基础类 8 处**——`features/about/about-viewer.tsx:190,217,243,287,295,316` 与 `features/docs/native/page-nav.tsx:58`、`features/docs/native/content-card.tsx:34`；**`hover:` 变体 4 处**——`about-viewer.tsx:91`、`features/docs/native/docs-toc.tsx:77`、`docs-shell.tsx:71,104`），这些点的颜色声明**被静默丢弃**、回落到继承色。**修复只需一行**：在 `theme.css:183` 前补 `--color-fg-primary: var(--fg-primary);`——Tailwind v4 由同一 `--color-*` 变量派生静态与 `hover:` 两种变体，**该行可同时救活全部 12 处**；重建后须验证产物中出现 `.text-fg-primary` 与 `.hover\:text-fg-primary` 两条规则。本轮**不改代码**，登记待办 | **真实代码缺陷**（非规范问题）。修复需在 `theme.css` 补 `--color-fg-primary: var(--fg-primary);` 一行并重建；本轮**不改代码**，登记待办 |
+
+---
+
 ## 与其他规范的关系
 
 | 对象 | 关系 |

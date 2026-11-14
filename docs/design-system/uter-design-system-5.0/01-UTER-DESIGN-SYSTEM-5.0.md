@@ -147,6 +147,63 @@
 
 ---
 
+## 4A. 业务风险分级（RISK 体系）
+
+> 来源：业务域蓝图《Uter Design System Overview》（`UTER-DS-00`）§8「业务风险分级」。
+
+### 4A.1 编号命名空间隔离（强制）
+
+| 编号族 | 含义 | 定义位置 | 用途 |
+|---|---|---|---|
+| `RISK-P0` / `RISK-P1` / `RISK-P2` | **业务操作风险等级**（本节） | 本节 | 决定界面交互强度：确认方式、反馈密度、可否即时生效 |
+| `P1` / `P2` / `P3`（裸写） | **仓库历史待办优先级** | `BASELINE-AUDIT` §3.1（E24 / ANSI 色板 / 图表 Token / `--ds-decor-*` 等） | 决定实现批次先后，**与业务风险无关** |
+| `E24` / `E28` | 历史缺陷 / 例外编号 | `BASELINE-AUDIT` §3.1 | 缺陷台账 |
+
+> 🔴 **强制口径**：同一份文档内出现裸写 `P1` / `P2` 时，一律指**仓库历史待办优先级**；指业务风险等级时**必须**写成 `RISK-P0` / `RISK-P1` / `RISK-P2`。两者不得混用、不得省略 `RISK-` 前缀。历史文档中的 `P1 待修`（如 E24 对比度缺陷）指待办优先级，**不是** `RISK-P1`。
+
+### 4A.2 三级定义
+
+| 等级 | 适用范围 | 强制交互要求 |
+|---|---|---|
+| `RISK-P0` | 支付、退款、余额变更（含管理员调整他人额度）、API Key 明文展示、权限提升、账户删除 | **必须**二次确认或强验证；**必须**显示影响与结果；**不得**在服务端确认前断言结果 |
+| `RISK-P1` | 渠道启停、模型价格、限额、组织成员角色变更、批量操作 | **必须**提供明确反馈、审计信息与撤销 / 恢复策略（业务允许时） |
+| `RISK-P2` | 普通偏好、筛选、排序、展示密度 | 允许即时生效，并提供可恢复体验 |
+
+### 4A.3 按条目归属（强制口径：不得整节一刀切）
+
+> 上一条 §4A.2 的适用范围是**按操作**判定的，不是按章节判定的。同一章节内既有高风险动作也有纯展示规则，**必须逐条标注**，禁止整节标为同一等级。
+
+| 判据 | 归属 |
+|---|---|
+| 触及**资金 / 凭据 / 权限 / 账户**的写操作 | `RISK-P0` |
+| 触及**配置 / 额度 / 批量 / 状态**的写操作 | `RISK-P1` |
+| 纯展示、只读、布局、格式化 | `RISK-P2` |
+
+### 4A.4 与既有规范的映射
+
+| 蓝图要求 | 仓库落点 | 状态 |
+|---|---|---|
+| `RISK-P0` 二次确认 + 说明影响 | `UDS5-S16` §5.1.5 `DP-1`（对象 / 影响 / 不可逆性三要素）、`DP-2`（确认按钮动作词）、`DP-4`（焦点陷阱 + 默认不聚焦确认键） | 已覆盖 ✓ |
+| `RISK-P0` 不得自行断言结果 | `UDS5-S19` §4.4 `CP-1`..`CP-7`（文案禁区）；`UDS5-S31` §9 资金真实性红线 `OB-9.1`..`OB-9.8` | 已覆盖 ✓ |
+| `RISK-P0` 强验证（认证域） | `UDS5-S29` §7 `SEC-1`..`SEC-13`（验证码生命周期、会话与跳转安全、人机校验不可绕过、密码传输与本地处理、不得泄露账户存在性）；step-up 强验证 scope 清单见 `service/security_verification.go:26-54` | 已覆盖 ✓ |
+| `RISK-P0` 强验证（API Key 明文域） | `UDS5-S30` §5（`TokenKeySecureVerificationRequired()` + `CriticalRateLimit()` + `DisableCache()` + 审计；scope `token.key.read`） | 已覆盖 ✓ |
+| `RISK-P0` 强验证（账户 / 用户管理域） | `UDS5-S30` §7（`account.delete` / `admin.user.delete` 二次验证）；scope 清单 `service/security_verification.go:26-54` | 已覆盖 ✓ |
+| `RISK-P1` 明确反馈 + 审计 + 可撤销 | `UDS5-S17` §10.3 操作反馈分类；`UDS5-S16` §5.1.2 `LF-3` / `LF-4`（批量选中数量 + 高风险批量二次确认） | 已覆盖 ✓ |
+| `RISK-P2` 即时生效 + 可恢复 | `UDS5-S17` §10.1 通用状态模型；`UDS5-S17` §10.2 状态一致性 `ST-1`..`ST-4` | 已覆盖 ✓ |
+| 蓝图 §7 组件六层分层 | `UDS5-S01` §6 五层架构（L1–L5） | **Adapt**（仓库为五层，蓝图为六层；Domain 层由 `UDS5-S29`..`S32` 承接） |
+
+### 4A.5 仓库现状（如实登记）
+
+| 项 | 结论 | 状态 |
+|---|---|---|
+| `RISK-P0` 操作是否**全部**走二次确认 | **未逐处核实**（删除 / 吊销 / 退款 / 权限变更入口散落各 feature） | `NOT_VERIFIED`（登记 `S01-D1`） |
+| `RISK-P1` 批量操作是否**全部**有撤销 / 恢复路径 | **未逐处核实** | `NOT_VERIFIED`（登记 `S01-D2`） |
+| 风险等级是否在代码中显式标注 | **未实现**——仓库无 `RISK-P0/P1/P2` 标记或元数据字段；本节目前只是**规范侧分级**，UI 无法按等级自动增强交互 | `NOT_IMPLEMENTED`（登记 `S01-D3`） |
+| 认证域逐条风险归属 | `UDS5-S29` §7 已按条目分三组标注（`RISK-P0` / `RISK-P1` / `RISK-P2`），见该分册 §7 归属表 | 已覆盖 ✓（`UDS5-S29` §7） |
+| API Key 域逐条风险归属 | `UDS5-S30` §5 已按条目分三组标注（`RISK-P0` 明文取回 / 撤销，`RISK-P2` 展示类），见该分册 §5 归属表 | 已覆盖 ✓（`UDS5-S30` §5） |
+
+---
+
 ## 5. Clerk 参考原则
 
 | # | 原则 | 依据 | 5.0 落地 |
@@ -371,6 +428,20 @@
 
 ---
 
+## 21. 差异与例外登记
+
+| 编号 | 内容 | 状态 |
+|---|---|---|
+| S01-D1 | 蓝图 §8 `RISK-P0` 要求「支付、退款、余额变更、API Key 明文展示、权限提升、账户删除**必须**二次确认或强验证」；仓库删除 / 吊销 / 退款 / 权限变更入口散落各 feature，**未逐处核实**是否全部走二次确认 | `NOT_VERIFIED`（见 §4A.4） |
+| S01-D2 | 蓝图 §8 `RISK-P1` 要求「撤销 / 恢复策略（如业务允许）」；仓库**未逐处核实**批量操作是否具备撤销路径 | `NOT_VERIFIED`（见 §4A.4） |
+| S01-D3 | 蓝图 §8 风险分级**未在代码中显式标注**——仓库无 `RISK-P0/P1/P2` 元数据或标记，UI 无法按等级自动增强交互强度 | `NOT_IMPLEMENTED`（见 §4A.4） |
+| S01-D4 | 蓝图 §7 组件分层为**六层**（Foundations / Primitives / Composite / Domain / Patterns / Templates）；仓库 §6 为**五层**（L1–L5），Domain 层由 `UDS5-S29`..`S32` 四份业务域分册承接 | **Adapt**（见 §4A.3） |
+| S01-D5 | 蓝图 §8 使用 `P0` / `P1` / `P2` 表示业务风险，与仓库 `BASELINE-AUDIT` §3.1 的 `P1`–`P3` **待办优先级同符号不同义** | **Adapt**（已做 `RISK-` 前缀命名空间隔离，见 §4A.1） |
+| S01-D6 | **`RISK-P0` 强验证存在代码不对称**：`controller/user.go:1367` 的 `delete` 分支挂 `requireAdminUserProof(c, service.VerificationScopeAdminUserDelete, ...)`，而同函数 `add_quota` 分支（`:1336-1338` → `controller/user_quota.go:13` `manageUserQuota`）**未挂任何强验证**。按 §4A.2，管理员调整他人额度属「余额变更」= `RISK-P0`，但仓库实现未达该级 | **真实代码缺陷**。修复须挂 `requireAdminUserProof` + `CriticalRateLimit` 并走 `UDS5-S01` §19 变更流程；本轮**不改代码**，登记待办 |
+| S01-D7 | 蓝图 §8 的 `RISK-P0` / `RISK-P1` / `RISK-P2` **未在代码中标注**（`S01-D3`），本轮已按条目落到规范文本（`S29` §7 / `S30` §5 / §7），但「规范分级 → UI 自动增强交互」的链路**仍不存在** | `NOT_IMPLEMENTED`（`S01-D3` 的延续，不重复登记） |
+
+---
+
 ## 与其他规范的关系
 
 | 对象 | 关系 |
@@ -396,7 +467,7 @@
 | 组件层 | `web/src/components/ui/`、`web/src/design-system/components/typography/heading.tsx`、`text.tsx`、`index.ts`、`web/src/design-system/component-registry.json` |
 | 模式层 | `web/src/components/data-table/`、顶层 `dialog` / `confirm-dialog` / `copy-button` / `empty-state` / `loading-state` / `error-state` |
 | 应用层 | `web/src/routes/`、`web/src/features/`、`web/src/components/layout/`、`electron/` |
-| 测试 | `web/src/design-system/__tests__/`（10 个守卫测试）、`web/e2e/{axe,business,visual}/` |
+| 测试 | `web/src/design-system/__tests__/`（11 个守卫测试）、`web/e2e/{axe,business,visual}/` |
 | 视觉标本 | `docs/design-system/showcase.html`、`showcase.tokens.js` |
 
 ## 自动化验证

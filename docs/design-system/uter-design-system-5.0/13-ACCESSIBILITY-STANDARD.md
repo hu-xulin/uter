@@ -153,26 +153,84 @@
 | Focus Not Obscured（Minimum） | 见 §3.2 |
 | 验证状态 | `NOT_VERIFIED` |
 
+### 3.13 Reflow / 200% 缩放（重排）
+
+> 来源：业务域蓝图《Accessibility Standard》§2「200% 缩放下内容和功能不丢失；重排场景按 WCAG 目标验证」。
+
+| 项 | 内容 |
+|---|---|
+| 可执行判定 | ① **200% 缩放**（浏览器页面缩放，非仅系统字号）下，页面内容与功能**不丢失、不重叠、不裁切**；② **320 CSS px 宽**下（WCAG 1.4.10 Reflow 的等效条件），除必须二维布局的内容（数据表格、代码块、图表）外，**内容以单列呈现且不产生双向滚动**；③ 固定格式区域（`position: fixed` 的顶栏 / 底栏 / 浮层）不得在缩放后遮挡正文或错误提示；④ 缩放不得依赖 JS 测量（避免 `100vw` 造成横向溢出）。 |
+| 仓库现状 | ① 五档断点 `sm 640 / md 768 / lg 1024 / xl 1280 / 2xl 1536`（S12）**最小档为 640px**，即仓库**未定义 ≤640px 的断点**，而 Reflow 的基准宽度是 320px——这是**真实的口径缺口**（登记为 `S13-D8`）；② 仓库已要求 H5 侧栏转抽屉、表格横滚 / 转卡片 / 隐藏非核心列（S12 §4、3.0 §16.3），方向与 Reflow 一致；③ T16 的 12px 下限在 200% 缩放下会变为等效 24px，不触发下限违规，但**不得**为迁就缩放而在代码里写死 12px 以下字号。 |
+| 验收方法 | 视口 360 / 390 / 480（≈ 720 / 780 / 960 逻辑宽的 200% 等价场景）+ 浏览器 200% 缩放，截图与人工走查；**须覆盖 §5 待修的 E24 两处对比度**，缩放后对比度不达标项一并登记。 |
+| 现有证据 | `12-RESPONSIVE-STANDARD.md`（断点与 H5 策略）、`check-design-tokens.mjs` T16（最小字号） |
+| 验证状态 | `NOT_VERIFIED`（本轮未执行缩放 / 重排实测） |
+
+### 3.14 Dragging Movements（拖拽操作替代）
+
+> 来源：业务域蓝图《Accessibility Standard》§3「拖拽操作提供非拖拽替代方式」。
+
+| 项 | 内容 |
+|---|---|
+| 可执行判定 | 凡**依赖拖拽**才能完成的操作（排序、拖动排序列表、拖拽上传、滑块调值、拖动窗口调整大小），**必须**提供等效的**非拖拽**替代路径：键盘（`Tab` 聚焦 + 方向键 / `Space` 拾起 + 方向键移动）、按钮（「上移 / 下移」「删除」「替换文件」），或表单替代入口。 |
+| 仓库现状 | ① 仓库存在**排序 / 优先级拖拽**组件（`features/channels/components/channel-priority-demo.tsx`、`features/channels/hooks/use-channel-priority-drag.ts`），并出现内联 `zIndex: '1000'`（`use-channel-priority-drag.ts:446`）与 `z-20` / `z-30` 局部层叠（S07 §6.3）——**该拖拽是否有非拖拽替代路径，本轮未逐组件核对**，登记为 `S13-D9`；② 文件上传、图表拖拽等场景同理待核。 |
+| 附加要求 | 拖拽操作**不得**是完成任务的唯一途径；替代路径须在**同一可达层级**（同一页面 / 同一抽屉），不得藏在需要额外导航的设置里。 |
+| 验收方法 | 逐个拖拽组件做「仅键盘完成一次任务」走查。 |
+| 验证状态 | `NOT_VERIFIED` |
+
+### 3.15 Live Region 播报去重（避免重复播报）
+
+> 来源：业务域蓝图《Accessibility Standard》§5「动态状态通过适当 live region 告知辅助技术，避免重复播报」。
+
+| 项 | 内容 |
+|---|---|
+| 可执行判定 | ① 动态状态（异步结果、校验错误、保存成功、加载完成）通过**恰当的 live region**（`aria-live="polite"` 用于非紧急、`assertive` 仅用于紧急阻断）告知辅助技术；② **同一状态变化只播报一次**——重复渲染、乐观更新回滚、React 严格模式双渲染、`useEffect` 重复触发均**不得**造成同一结果被播报多次；③ 区域本身在播报前**不应已有内容**（空区域 + 后续注入文本是最可靠模式）；④ 表单字段级错误用 `aria-describedby` 关联字段，**不**对每个字段单独开 live region（否则逐字段播报刷屏）。 |
+| 仓库现状 | ① 表单错误已有 `aria-invalid` + 就近展示 + `aria-live` 播报异步错误（S18 §5、3.0 §15.4）；② **未核实**是否存在同一错误被多处同时播报（例如行内提示 + 全局 toast 各播一次）——登记为 `S13-D10`，须在逐表单核对时确认「错误只播报一次」；③ 通知组件（`ui/sonner.tsx`）自带 live region 语义，但其与行内错误同时出现时是否重复播报，同样待核。 |
+| 附加要求 | 禁止用 `aria-live` 包裹整个页面容器或大面积区域（会导致整页内容被朗读）。 |
+| 验收方法 | 屏幕阅读器实测（至少一种主流读屏）+ 代码走查 `aria-live` / `role="status"` / `role="alert"` 的位置与宿主节点。 |
+| 验证状态 | `NOT_VERIFIED` |
+
+### 3.16 平台无障碍语义与法规优先级
+
+> 来源：业务域蓝图《Accessibility Standard》§1「以 WCAG 2.2 AA 为 Web 基线，并遵循 iOS、Android、HarmonyOS 平台无障碍语义。特殊法规或客户合同要求更高时从其规定。」
+
+| 项 | 内容 |
+|---|---|
+| 优先级 | ① 特殊法规 / 客户合同要求（更高）→ ② 平台原生无障碍语义（iOS / Android / HarmonyOS）→ ③ WCAG 2.2 AA（Web 基线）。三者冲突时**从高**，但不得低于 WCAG 2.2 AA 的 Web 基线。 |
+| 跨平台共享 | 焦点顺序、状态语义、可访问名称、错误播报四项在 Web 与原生端**必须一致**；视觉可按平台惯例差异（原生端不强求像素级一致）。 |
+| 仓库现状 | 平台验收（Android / iOS / HarmonyOS）**未执行**（BASELINE-AUDIT §8、`UDS5-S12` 同步登记），当前 5.0 的无障碍结论**仅覆盖 Web**。 |
+| 验证状态 | `NOT_VERIFIED`（平台部分 `NOT_EXECUTED`） |
+
+### 3.17 自动化 ≠ 完整验收（口径澄清）
+
+> 来源：业务域蓝图《Accessibility Standard》§7「自动化扫描通过不等于完整无障碍验收」。
+
+| 项 | 内容 |
+|---|---|
+| 规则 | 自动化（axe 类扫描）**只能**证明「可自动检测的规则集当前无违规」，**不得**表述为「无障碍验收通过」。完整验收 = 自动化扫描 + 键盘人工走查 + **至少一种主流屏幕阅读器**实测 + 200% 缩放 / Reflow 走查。 |
+| 仓库现状 | `test:axe` 轨**刻意不接 CI**（BASELINE-AUDIT §7，因像素基线依赖本机渲染）；`verify-contrast.mjs` 历史记录 31 PASS / 0 FAIL 属**快照**，本轮未执行，不继承为通过。 |
+| 报告口径 | 5.0 报告只允许 `PASS` / `FAIL` / `PARTIALLY_VERIFIED` / `NOT_VERIFIED` 四值；「自动化扫描 0 违规」只能记为其中一项证据，**不得单独构成 PASS**。 |
+
 ---
 
 ## 4. 现有证据清单（真实，不夸大）
 
-### 4.1 10 个设计系统守卫测试
+### 4.1 11 个设计系统守卫测试
 
-`web/src/design-system/__tests__/`（BASELINE-AUDIT §12 记 10 个，CLERK 参考分析 2.21 亦引）：
+`web/src/design-system/__tests__/`（**实测 11 个**，2026-11-14 复核；BASELINE-AUDIT §12 记 10 个，第 11 个 `design-system-5-governance.test.ts` 为 5.0 建立时新增、未被计入审计基线，差异登记 `S13-D13`）：
 
 | # | 文件 | 主要关联 |
 |---:|---|---|
 | 1 | `accessibility.test.ts` | Keyboard / Screen Reader / 基础 a11y |
 | 2 | `control-typography.test.ts` | Dynamic Text / 控件字号 |
-| 3 | `elevation-motion.test.ts` | S07 / S09 集合与 Dark 覆盖 |
-| 4 | `semantic-colors.test.ts` | Color Contrast / 语义色 |
-| 5 | `sidebar-active-guard.test.ts` | ARIA 状态 / Sidebar |
-| 6 | `spec-guards.test.ts` | 图标几何 / 单一来源（S08） |
-| 7 | `status-badge-contrast.test.ts` | Color Contrast / 状态徽标 |
-| 8 | `text-color-fallback.test.ts` | 文字色兜底 |
-| 9 | `token-source.test.ts` | Token 单一来源 |
-| 10 | `tokens.test.ts` | 字号阶梯 / `calc(var(--radius) * N)` |
+| 3 | `design-system-5-governance.test.ts` | **5.0 治理结构**（注册表 / 分册 / 状态口径） |
+| 4 | `elevation-motion.test.ts` | S07 / S09 集合与 Dark 覆盖 |
+| 5 | `semantic-colors.test.ts` | Color Contrast / 语义色 |
+| 6 | `sidebar-active-guard.test.ts` | ARIA 状态 / Sidebar |
+| 7 | `spec-guards.test.ts` | 图标几何 / 单一来源（S08） |
+| 8 | `status-badge-contrast.test.ts` | Color Contrast / 状态徽标 |
+| 9 | `text-color-fallback.test.ts` | 文字色兜底 |
+| 10 | `token-source.test.ts` | Token 单一来源 |
+| 11 | `tokens.test.ts` | 字号阶梯 / `calc(var(--radius) * N)` |
 
 ### 4.2 门禁脚本与测试轨
 
@@ -263,6 +321,12 @@
 | S13-D5 | `test:axe` / 视觉 E2E 刻意不接 CI（BASELINE-AUDIT §7） | `NOT_EXECUTED` |
 | S13-D6 | 65 个 `ui/` 组件证据 `VERIFIED 0` / `PARTIAL 9` / `NOT_VERIFIED 56`（BASELINE-AUDIT §5） | `NOT_VERIFIED` |
 | S13-D7 | 3 个纯别名 `--ds-color-*` 生产构建被压缩丢弃，靠 `var(--x, fallback)` 缓解 | P1 构建缺陷（BASELINE-AUDIT §3.1），`NOT_VERIFIED` |
+| S13-D8 | **Reflow 口径缺口**：仓库五档断点最小为 `sm 640`，未定义 ≤640px 断点，而 WCAG 1.4.10 的等效基准为 320 CSS px | **治理候选**（见 §3.13）；补断点属运行时改动，本轮不执行 |
+| S13-D9 | 拖拽组件（`channel-priority-demo.tsx` / `use-channel-priority-drag.ts`）是否提供非拖拽替代路径未逐组件核对 | `NOT_VERIFIED`（见 §3.14） |
+| S13-D10 | live region 是否存在同一结果被多处重复播报（行内错误 + 全局 toast / sonner）未核实 | `NOT_VERIFIED`（见 §3.15） |
+| S13-D11 | 平台无障碍语义（iOS / Android / HarmonyOS）与更高优先级法规从高规则未纳入逐平台验收 | `NOT_EXECUTED`（见 §3.16；平台验收 BASELINE-AUDIT §8） |
+| S13-D12 | 「自动化扫描通过 ≠ 完整无障碍验收」的口径已写入 §3.17，但既有报告若曾以 `test:axe` 单独作为通过依据，需按 §3.17 重新表述 | `NOT_VERIFIED`（待复核历史报告表述） |
+| S13-D13 | `BASELINE-AUDIT` §12 与本分册原 §4.1 均记「设计系统守卫测试 10 个」，**实测 11 个**——第 11 个 `design-system-5-governance.test.ts` 为 5.0 建立时新增、未被计入审计基线 | 已修正本分册 §4.1 与 §5 三处表述为 11 个；**审计报告 `BASELINE-AUDIT` §12 未改**（历史基线快照保持原样），故本条保留登记 |
 
 ---
 
@@ -321,9 +385,9 @@
 | `test:visual` / `test:visual:e2e` | 焦点/命中区视觉 | 22 页 × 2 视口基线（E2E 轨不接 CI） |
 | `sync-design-showcase.mjs`（`design:showcase:check`） | 展示一致 | `--check` 17 条校验含 Focus 区快照 |
 | `visual-regression.mjs` | 视觉 | 焦点环 / 状态可辨认的视觉复核 |
-| `accessibility.test.ts` 等 10 个守卫 | 单元测试 | `web/src/design-system/__tests__/`（非门禁脚本） |
+| `accessibility.test.ts` 等 11 个守卫 | 单元测试 | `web/src/design-system/__tests__/`（非门禁脚本） |
 
-> 说明：10 个守卫为测试文件；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
+> 说明：11 个守卫为测试文件（实测，见 §4.1）；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 
 ---
 
@@ -333,7 +397,7 @@
 |---|---|---|
 | WCAG 2.2 AA 目标逐条闭合 | `NOT_VERIFIED` | §3 全部 12 条均为目标态，未逐项复核 |
 | `verify-contrast.mjs` 31 条 | `NOT_VERIFIED` | 审计曾 31 PASS / 0 FAIL，本轮未执行，不继承为通过 |
-| 10 个守卫测试 | `NOT_VERIFIED` | 文件存在，本轮未运行 |
+| 11 个守卫测试 | `NOT_VERIFIED` | 文件存在，本轮未运行 |
 | `test:axe`（2 spec） | `NOT_EXECUTED` | 刻意不接 CI（BASELINE-AUDIT §7），本轮未执行 |
 | `test:visual` / `test:visual:e2e` | `NOT_EXECUTED` | BASELINE-AUDIT §14 明确未执行 |
 | E24 两处对比度 | `NOT_VERIFIED` | **P1 待修，不得勾选通过**（§5） |

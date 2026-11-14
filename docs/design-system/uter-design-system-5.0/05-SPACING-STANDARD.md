@@ -156,7 +156,7 @@
 | 消费工具层 | `web/src/design-system/foundations/{accessibility,decoration,icons,index,motion,typography}.css` |
 | 组件实现 | `web/src/components/ui/`、`web/src/components/data-table/`、`web/src/components/layout/` |
 | 应用 | `web/src/routes/`、`web/src/features/`、`electron/` |
-| 守卫测试 | `web/src/design-system/__tests__/`（10 个守卫测试） |
+| 守卫测试 | `web/src/design-system/__tests__/`（11 个守卫测试） |
 | 门禁 | `web/scripts/check-design-tokens.mjs`、`web/design-tokens.baseline.json` |
 | 视觉基线 | `web/e2e/visual/`、`docs/design-system/showcase.html` |
 
@@ -168,7 +168,7 @@
 | `web/scripts/sync-design-showcase.mjs --check`（`bun run design:showcase:check`） | 17 条 Manifest 一致性校验 | 已接入 `:411` |
 | `web/scripts/generate-design-tokens.mjs --check`（`bun run design:tokens:check`） | DTCG 真源与生成 CSS 同步 | 已接入 `:406` |
 | `web/scripts/verify-contrast.mjs`（`bun run verify:contrast`） | 对比度 | 已接入 `:414` |
-| `web/src/design-system/__tests__/`（`bunx vitest run src/design-system/__tests__`） | 10 个守卫测试 | 随 `bun run test` |
+| `web/src/design-system/__tests__/`（`bunx vitest run src/design-system/__tests__`） | 11 个守卫测试 | 随 `bun run test` |
 | `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 1440×900 / 390×844 双视口像素基线 | 本地专用 |
 | `web/e2e/visual/playwright.config.ts` | 真实路由视觉 E2E（需完整服务栈） | **刻意不接 CI** |
 | `bun run typecheck` / `lint` / `test` / `build:check` | 前端基础门禁 | 已接入 |
@@ -186,4 +186,4 @@
 | 验证状态 | **`NOT_VERIFIED`** |
 | 三档密度 `data-theme-scale` | 规范层已记录真实取值；跨档视觉一致性 `NOT_VERIFIED` |
 
-**未验证 / 未执行清单**：`lint:design:strict` 全量复跑（T17 逐文件扫描）、17 条 showcase 校验复跑、10 个守卫测试执行、三档密度在 1440×900 与 390×844 的视觉一致性、`test:visual` / `test:visual:e2e` 双轨视觉回归、`test:axe`、全量构建（`build:check` / `scripts/verify-all.sh`）、`[data-theme-scale]` 不缩放 `--text-*` 的机器可校验断言、`--ds-chip-height` 21px 在 4 处调用点的对齐复核、`theme.css` / `theme-presets.css` 52 个同名变量的合并、73 路由中未覆盖的视觉基线补齐、65 组件八态逐项证据、E24 对比度缺陷修复验证、焦点环 `2px`（已裁决）在 Form 场景与原生兜底的同步及回归测试验证、Android / iOS / HarmonyOS 平台验收。
+**未验证 / 未执行清单**：`lint:design:strict` 全量复跑（T17 逐文件扫描）、17 条 showcase 校验复跑、11 个守卫测试执行、三档密度在 1440×900 与 390×844 的视觉一致性、`test:visual` / `test:visual:e2e` 双轨视觉回归、`test:axe`、全量构建（`build:check` / `scripts/verify-all.sh`）、`[data-theme-scale]` 不缩放 `--text-*` 的机器可校验断言、`--ds-chip-height` 21px 在 4 处调用点的对齐复核、`theme.css` / `theme-presets.css` 52 个同名变量的合并、73 路由中未覆盖的视觉基线补齐、65 组件八态逐项证据、E24 对比度缺陷修复验证、焦点环 `2px`（已裁决）在 Form 场景与原生兜底的同步及回归测试验证、Android / iOS / HarmonyOS 平台验收。

@@ -263,7 +263,7 @@
 | `generate-design-tokens.mjs` | 真源同步 | `--check` 校验生成 CSS 与源同步，防止基准/派生档漂移 |
 | `sync-design-showcase.mjs` | 展示一致 | `--check` 的 17 条校验含圆角快照一致性 |
 | `visual-regression.mjs` | 视觉 | 22 页 × 2 视口基线，圆角变更需复核 |
-| `tokens.test.ts` / `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 内 10 个守卫之一，校验 `calc(var(--radius) * N)` 解析 |
+| `tokens.test.ts` / `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 内 11 个守卫之一，校验 `calc(var(--radius) * N)` 解析 |
 
 > 说明：`tokens.test.ts`、`elevation-motion.test.ts` 等为 `web/src/design-system/__tests__/` 下的守卫测试文件，非门禁脚本；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 

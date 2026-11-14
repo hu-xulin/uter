@@ -78,7 +78,7 @@
 | `[C04]` 缺状态 | 65 组件 contract 内有 `states`，但缺顶层 `states`；`ui/button.tsx` 内置 `loading`；八态未登记证据 | 强制 default / hover / focus / pressed / disabled / loading / error / success 八态登记 | `[UDS5-C04][BLOCK] file:line — 组件状态不齐`；`actual=缺 error/success 等 N 态`，`expected=8 态齐备且有证据` | 补齐组件八态并登记证据到展示中心（关联 `UDS5-S23` §3.3） |
 | `[C05]` 缺测试 | 65 组件 `VERIFIED 0` / `PARTIAL 9` / `NOT_VERIFIED 56`；`--strict` **EXIT=1**；288 个 `*.test.ts(x)` / 75 个 `__tests__` | 组件级「测试路径存在且结果可追溯」校验 | `[UDS5-C05][BLOCK] file:line — 组件缺测试证据`；`actual=evidence.tests[] 为空 / NOT_VERIFIED`，`expected=存在且 VERIFIED` | 按「每处改动先写回归测试」补测试；不得删除测试制造 PASS（G3） |
 | `[C06]` 缺文档 | 全仓组件 README 仅 `web/src/components/data-table/README.md` **1 份**；registry 缺 `specification_path / story_path` | 组件级「规范文档 + 展示单元 + 使用示例」存在性校验 | `[UDS5-C06][BLOCK] file:line — 组件缺文档`；`actual=无 specification_path / 无展示单元`，`expected=分册 + 展示锚点 + 示例齐备` | 按 `UDS5-S23` 补齐左效果右规范、Props、示例；文档必须存在且非空（配合 S05） |
-| `[C07]` 缺 a11y | 组件级无障碍要求 **0 处**（展示中心）；`foundations/accessibility.css`、10 个守卫测试、`verify-contrast.mjs` 31 条、`test:axe` 2 spec 存在但未落到组件级 | 组件级 a11y 字段（键盘 / 焦点 / ARIA / Reduce Motion / 对比度）登记与校验 | `[UDS5-C07][BLOCK] file:line — 组件缺 a11y 要求`；`actual=accessibility 顶层字段缺失`，`expected=齐备且有对比度证据` | 登记 E24 待修（3.76:1 / 3.30:1）与 E28 例外；`aria-expanded` / `aria-selected` 与视觉状态一致 |
+| `[C07]` 缺 a11y | 组件级无障碍要求 **0 处**（展示中心）；`foundations/accessibility.css`、11 个守卫测试、`verify-contrast.mjs` 31 条、`test:axe` 2 spec 存在但未落到组件级 | 组件级 a11y 字段（键盘 / 焦点 / ARIA / Reduce Motion / 对比度）登记与校验 | `[UDS5-C07][BLOCK] file:line — 组件缺 a11y 要求`；`actual=accessibility 顶层字段缺失`，`expected=齐备且有对比度证据` | 登记 E24 待修（3.76:1 / 3.30:1）与 E28 例外；`aria-expanded` / `aria-selected` 与视觉状态一致 |
 | `[C08]` 废弃组件仍被使用 | registry 无 `deprecated / replacement` 字段；`UDS5-AUDIT-01` §11.4 列出待废弃项（不删除） | 增「删组件检查引用」与「废弃仍用」校验（关联 `UDS5-S28`、`UDS5-S23` §4 A4） | `[UDS5-C08][BLOCK] file:line — 废弃组件仍被引用`；`actual=引用数 N`，`expected=0 且有 replacement 映射` | 先补 `replacement` 迁移映射并确认无依赖再废弃；删除前置条件见 `UDS5-S27` |
 
 ---
@@ -144,6 +144,8 @@
 | `web/scripts/add-copyright.mjs` | `copyright:check` / `copyright` | AGPL 版权头检查（只补不破坏格式） | `copyright:check`（:434）已接 |
 | `web/scripts/format-with-protected-headers.mjs` | `format:check` / `format` | 格式检查 | `format:check` **刻意未接**（:429-433，248 文件不合规） |
 | `web/scripts/check-i18n-keys.mjs` | `i18n:check`（被 `lint` 调用） | i18n 键一致性 | 经 `lint`（:393）已接 |
+| `web/scripts/check-design-system-5.0.mjs` | `design:5:check` / `design:5:sync` / `design:5:strict` | 5.0 注册表、文档 ID、组件 ID、Token 跨文件一致性（V4 部分实现） | `design:5:check` 已接 CI |
+| `web/scripts/check-clerk-boundary.mjs` | `design:clerk:check`（**本轮新增**） | Clerk 外部参考边界守卫：C1 依赖零引入 / C2 运行时零引用 / C3 品牌值零照搬 / C4 能力归属一致性；纯静态只读 | **未接 CI**（本轮新增，本地执行） |
 | `web/scripts/sync-i18n.mjs` | `i18n:sync` | i18n 同步 | 未接 |
 | `web/e2e/axe/playwright.config.ts` | `test:axe` | axe a11y E2E（2 spec） | **未接** |
 | `web/e2e/business/playwright.config.ts` | `test:business:e2e` | 业务 E2E（1 spec） | **未接** |
@@ -170,6 +172,19 @@
 | **未接** | `test:axe` | — | 刻意不设为必需（像素基线依赖本机字体 / GPU） |
 | **未接** | `test:business:e2e` | — | 刻意不设为必需（需完整服务栈） |
 | **未接** | `test:visual:e2e` | — | 刻意不设为必需 |
+
+### 9.1 脚本输出路径逃逸缺口（2026-11-14 独立复核发现）
+
+两处门禁脚本的 `--out` 参数**无路径逃逸防护**，可写入任意绝对路径：
+
+| 脚本 | 现状 | 风险 |
+|---|---|---|
+| `web/scripts/generate-design-showcase.mjs:53-56` | `path.resolve(WEB_ROOT, args[outIdx + 1])`——`path.resolve` 遇**绝对路径**即返回该路径本身，故 `--out /tmp/x.html` 会解析为 `/tmp/x.html`，**不受 `WEB_ROOT` 约束** | 可覆盖仓内任意文件（含 `web/src` 源码与 `docs/`）；`fs.writeFileSync` 无二次校验 |
+| `web/scripts/axe-audit.mjs:38-41` | `args[i + 1]` **原值直用**，连 `path.resolve` 都不做 | 同上，且默认 `/tmp/axe-audit-report.json` 说明该脚本本就面向仓外路径 |
+
+**登记状态**：`NOT_IMPLEMENTED`（本轮**不改代码**）。**修复方向**：两处均须在写入前断言目标路径落在允许目录内（showcase 脚本限 `REPO_ROOT/docs/design-system/`；axe 脚本限 `os.tmpdir()` 或显式 `--out` 白名单目录），并在越界时**报错退出**而非静默改写默认路径。
+
+> ⚠️ 该缺口属**脚本健壮性**问题，不是本轮蓝图合并引入的；此处登记以免后续把「脚本可写任意路径」误当作既定设计。
 | **未接** | `components:registry:strict` | — | 刻意不设为必需；当前 `--strict` EXIT=1（65 组件 0 VERIFIED） |
 | **未接** | `format:check` | :429-433 | 明文「不要设为必需」：递归 oxfmt 会格式化第三方插件与根级配置，当前 248 文件不合规 |
 | 未接 | `knip` / `i18n:sync` | — | 未纳入 frontend job |
@@ -223,6 +238,8 @@
 | 规范分册 | `docs/design-system/uter-design-system-5.0/*.md`（`UDS5-S01`..`UDS5-S28`） | §6 S01 / S05 | 撰写中，未全量校验 |
 
 > 本文为自动化规范；**本轮已新增 `check-design-system-5.0.mjs` 并接入 CI（`design:5:check`，覆盖 V4 部分规则）**，V3 / V4 其余子项仍为规划项。属并发 WIP 禁改的文件（12 个，见 `UDS5-AUDIT-01` §1）在对应会话合入前不得触碰。
+>
+> **本轮补充（`UDS5-S21` §8 / §10）**：新增 `check-clerk-boundary.mjs` 与 `design:clerk:check`，把 Clerk 参考红线 P1–P5 落成可执行静态门禁；配套回归测试 `web/src/design-system/__tests__/clerk-boundary.test.ts`（8 用例，红色 8/8 失败 → 绿色 8/8 通过）。2026-11-14 实测 `bun run design:clerk:check` → `verdict: PASS` / `errors: 0` / `checksPassed: 4` / 84 依赖 / 1,287 源文件 / 11 类能力；默认模式 `generated: false`，**不写任何文件**。该脚本**尚未接入 CI**，仅本地执行；接入需单独授权。
 
 ---
 

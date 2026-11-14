@@ -284,11 +284,11 @@ standards:
     version: "5.0.0"
     category: reference
     status: ACTIVE
-    scope: "Clerk 外部参考的 14 项对照、借鉴边界与禁止事项"
+    scope: "Clerk 外部参考的 18 项对照（首轮 14 项 + 本轮补充 4 项）、借鉴边界与禁止事项"
     document: "docs/design-system/uter-design-system-5.0/CLERK-DESIGN-REFERENCE-STANDARD.md"
     dependencies: [UDS5-S01]
-    implementation: "仅规范映射；不引入任何 Clerk SDK 或运行时依赖"
-    verification: "audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md; web/scripts/check-design-system-5.0.mjs"
+    implementation: "仅规范映射 + 纯静态只读边界守卫；不引入任何 Clerk SDK 或运行时依赖，不改业务/认证/授权代码"
+    verification: "audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md; web/scripts/check-design-system-5.0.mjs; web/scripts/check-clerk-boundary.mjs; web/src/design-system/__tests__/clerk-boundary.test.ts"
     owner: "Uter.ai"
     mandatory: true
 
@@ -406,6 +406,58 @@ standards:
     dependencies: [UDS5-S01, UDS5-S21]
     implementation: "无代码引入"
     verification: "本文件 §1 官方 URL 清单与 §4 禁止事项复核"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S29
+    name: "认证组件规范"
+    version: "5.0.0"
+    category: business-vertical
+    status: ACTIVE
+    scope: "认证域 9 路由 / 11 态状态机 / 字段级错误 / 安全边界；只限视觉不改认证语义"
+    document: "docs/design-system/uter-design-system-5.0/AUTHENTICATION-COMPONENT-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S11, UDS5-S12, UDS5-S13, UDS5-S14, UDS5-S15, UDS5-S17, UDS5-S18, UDS5-S20, UDS5-S21, UDS5-S22]
+    implementation: "web/src/routes/(auth)/; web/src/features/auth/; web/src/components/ui/{form,field,form-label-tier,input-otp,secret-input,input}.tsx; common/verification.go; middleware/{rate-limit,email-verification-rate-limit,turnstile-check}.go"
+    verification: "bun run design:5:check; bun run i18n:check; bun run lint:design:strict; bun run test"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S30
+    name: "用户与 API Key 组件规范"
+    version: "5.0.0"
+    category: business-vertical
+    status: ACTIVE
+    scope: "用户资料 / API Key 掩码与明文取回 / 额度与用量呈现 / 头像与身份展示（组织与组织成员归 UDS5-S31，本册只覆盖个人域 API Key 与身份展示）"
+    document: "docs/design-system/uter-design-system-5.0/USER-COMPONENT-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S03, UDS5-S11, UDS5-S13, UDS5-S14, UDS5-S15, UDS5-S17, UDS5-S18, UDS5-S19, UDS5-S20, UDS5-S22]
+    implementation: "web/src/features/{users,profile,keys}/; web/src/components/ui/{avatar,secret-input}.tsx; model/token.go; model/user_access_token.go; controller/token.go"
+    verification: "bun run design:5:check; bun run lint:design:strict; bun run test"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S31
+    name: "组织与账单组件规范"
+    version: "5.0.0"
+    category: business-vertical
+    status: ACTIVE
+    scope: "组织结构 / org_role 四级 / 配额与组织钱包 / 充值与订单状态机 / 账单呈现"
+    document: "docs/design-system/uter-design-system-5.0/ORGANIZATION-AND-BILLING-COMPONENT-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S13, UDS5-S14, UDS5-S15, UDS5-S16, UDS5-S17, UDS5-S18, UDS5-S19, UDS5-S20, UDS5-S22, UDS5-S24]
+    implementation: "web/src/features/{organization,wallet}/; web/src/routes/_authenticated/system-settings/billing/; model/{organization,topup}.go; controller/topup.go"
+    verification: "bun run design:5:check; bun run lint:design:strict; bun run test"
+    owner: "Uter.ai"
+    mandatory: true
+
+  - id: UDS5-S32
+    name: "触达与本地化规范"
+    version: "5.0.0"
+    category: business-vertical
+    status: ACTIVE
+    scope: "邮件结构与品牌兼容 / 短信（未实现，规范位）/ 触达安全 / 7 locale 国际化实施"
+    document: "docs/design-system/uter-design-system-5.0/COMMS-AND-LOCALIZATION-STANDARD.md"
+    dependencies: [UDS5-S01, UDS5-S03, UDS5-S04, UDS5-S13, UDS5-S18, UDS5-S19, UDS5-S20, UDS5-S22]
+    implementation: "common/email.go; common/email_template.go; common/email_resend.go; common/email-outlook-auth.go; common/email-ntlm_auth.go; web/src/i18n/locales/{en,zh,zh-TW,fr,ru,ja,vi}.json; web/src/i18n/static-keys.ts; web/src/i18n/languages.ts; i18n/i18n.go"
+    verification: "bun run design:5:check; bun run i18n:check; bun run lint:design:strict; bun run test"
     owner: "Uter.ai"
     mandatory: true
 

@@ -23,7 +23,7 @@
 | I-3 | 尺寸封闭 | 尺寸只用 5 档（§4），用 `size-*` 类表达，禁止任意值与 lucide `size={N}` 数值属性。 |
 | I-4 | 颜色跟随 | 图标色跟随父级文字色（`currentColor`），不写死颜色；状态色走语义 Token。 |
 | I-5 | 语义可达 | 图标按钮必须有可访问名称；纯装饰图标必须 `aria-hidden`。 |
-| I-6 | 品牌基线不动 | 3.0 §2.2 图标契约与 10 个守卫测试属既有基线（BASELINE-AUDIT §12），5.0 继承。 |
+| I-6 | 品牌基线不动 | 3.0 §2.2 图标契约与 11 个守卫测试属既有基线（BASELINE-AUDIT §12），5.0 继承。 |
 | I-7 | 例外可枚举 | 第三方品牌图标、运行时动态图标只能走登记的例外文件，不得散落。 |
 
 ---
@@ -51,7 +51,7 @@
 
 ## 3. 图标只允许 Lucide（守卫登记）
 
-守卫文件 `web/src/design-system/__tests__/spec-guards.test.ts`，是 `web/src/design-system/__tests__/` 下 10 个守卫测试之一：
+守卫文件 `web/src/design-system/__tests__/spec-guards.test.ts`，是 `web/src/design-system/__tests__/` 下 11 个守卫测试之一：
 
 | 项 | 内容 |
 |---|---|
@@ -123,8 +123,8 @@
 | 垂直对齐 | 图标与文字垂直居中（与文本行高对齐），不得靠 `margin-top: 1px` 一类魔法值微调。 |
 | 基线 | 行内图标与文字共用同一行盒；`inline-flex items-center` 对齐，禁止用绝对定位硬贴。 |
 | 图文间距 | 走 4px 间距阶梯（`UDS5-S05` / T17：`gap-*`），禁止 `gap-[…]` 任意值。 |
-| 按钮内图标 | 前置 / 后置图标 = 18px（默认档），与 label 的间距走阶梯，不随 size 逐档改图标尺寸 | `spec-guards.test.ts:502` |
-| 提示与状态 | 提示与状态图标 = 18px | `spec-guards.test.ts:512` |
+| 按钮内图标 | 前置 / 后置图标 = 18px（默认档），与 label 的间距走阶梯，不随 size 逐档改图标尺寸（`spec-guards.test.ts:502`） |
+| 提示与状态 | 提示与状态图标 = 18px（`spec-guards.test.ts:512`） |
 | 密集信息 | 16px 辅助图标与文字间距取阶梯下限，但不得把图标压到 12/14px（除非登记容器） |
 | 方向 | RTL / i18n 7 locale 下镜像语义图标（如前进/后退）需随方向翻转，功能语义不变 |
 
@@ -188,6 +188,11 @@
 | S08-D2 | `react-icon-by-name.tsx` 为运行时动态图标的登记例外 | 已核实（守卫豁免） |
 | S08-D3 | `@lobehub/icons` / `react-icons` 逐文件渲染落点未枚举 | `NOT_VERIFIED` |
 | S08-D4 | 三档 `--icon-stroke-width*` 全为 2px（历史"按尺寸分三档"口径已废） | 已核实（`spec-guards.test.ts:558-559`） |
+| S08-D5 | 业务域蓝图《Iconography and Motion Standard》§2 图标尺寸 **7 档**（12 / 14 / 16 / 18 / 20 / 24 / 32px）↔ 仓库守卫硬锁 **5 档**（16 / 18 / 24 / 32 / 48） | 已登记（**保留仓库真值**：守卫为可执行门禁；蓝图多出的 12 / 14 / 20 档与缺失的 48 档均**不采纳**） |
+| S08-D6 | 蓝图 §3「默认 1.75–2px 视觉线宽」↔ 仓库**恒 2px**（三个 `--icon-stroke-width*` 全为 2） | 已登记（**保留仓库真值**；1.75px 不采纳） |
+| S08-D7 | 蓝图 §2「图标与文字间距通常 6–8px」——仓库走 4px 阶梯（`gap-1.5` / `gap-2`），**数值一致**，但未设单一出口 | 已登记（对齐，无冲突） |
+| S08-D8 | 蓝图 §4「纯图标按钮可操作区域至少 32px」↔ 仓库 `ui/button.tsx` 的 `icon-xs` 为 **24px** | 已登记（与 `UDS5-S14` `S14-D5` 同源；仓库以 `.ds-touch-target` 伪元素扩展命中区，见 S17 §5.2 / S13 §3.10） |
+| S08-D9 | 蓝图 §1「禁止用 emoji 替代关键功能图标」；仓库图标库为 Lucide + 少量登记例外（`@lobehub/icons` / `react-icons` / 动态图标），**emoji 是否被用作关键功能图标未全量核查** | `NOT_VERIFIED` |
 
 ---
 
@@ -233,7 +238,7 @@
 | `verify:contrast`（`verify-contrast.mjs`） | 对比度 | 非文本图形对象 3:1 校验（S13 引用） |
 | `test:axe`（`axe-audit.mjs`） | 无障碍 | 图标按钮可访问名称 / `aria-hidden` 校验 |
 | `visual-regression.mjs` / `test:visual` | 视觉 | 图标尺寸/对齐变更需复核 22 页 × 2 视口基线 |
-| `spec-guards.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 10 个守卫之一，强制 `lucide-react` 单一来源与几何契约 |
+| `spec-guards.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 11 个守卫之一，强制 `lucide-react` 单一来源与几何契约 |
 
 > 说明：`spec-guards.test.ts` 为守卫测试文件；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 

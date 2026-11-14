@@ -39,7 +39,7 @@
 | README | 全仓仅 `web/src/components/data-table/README.md` 1 份 | §5 |
 | 组件展示 | `docs/design-system/showcase.html`（2,188 行 / 24 区），真实 DOM 但**非 React 实例**；无 Props、无 `UTER-CMP` 注册 ID | §5.1 |
 | Storybook | **不存在**：0 依赖、0 配置、0 `*.stories.*`、全仓字面命中 0 | §2 |
-| 设计系统守卫测试 | 10 个（`web/src/design-system/__tests__/`） | §12 |
+| 设计系统守卫测试 | **11 个**（`web/src/design-system/__tests__/`，2026-11-14 实测；审计基线记 10 个，第 11 个 `design-system-5-governance.test.ts` 为 5.0 新增，差异见 `UDS5-S13` `S13-D13`） | §12 |
 | 3.0 未闭合项 | §22 73 项全未勾选；PageHeader 尚无独立组件（`:3339`）；E24 对比度缺陷待修 | §3.1 |
 
 **效力声明**：上表为只读审计结论。本规范所有「决定」均以此基线为出发点；任何把 `VERIFIED=0` 描述为已验证、把 `EXIT=1` 描述为通过、把 Storybook 描述为存在的表述均属违规。
@@ -80,6 +80,81 @@
 - 第 1–3、9、17–19 项可直接映射到 `component-registry.schema.json` 现有字段；第 6–8、10–16 项当前**只能落到 `cva()` 实现与 `contract.states[]` 字符串**，注册表无 `variants` / 顶层 `states` 字段（§2 缺失字段）。
 - 因此「22 项齐备」在本轮是**规范要求**，不是注册表现状；补齐字段属 `UDS5-S14` 待办，须与 `check-component-registry.mjs` 校验同步（审计 §11.3 第 4 条），否则门禁失败。
 - 第 22 项要求 `evidence.tests[]` 非空；当前 65 条中 `tests=[]` 占多数，`VERIFIED=0` 的直接原因即在此。
+
+---
+
+## 3.2 组件尺寸档：业务域蓝图建议 vs 仓库真值（逐项对照）
+
+> 来源：业务域蓝图《Core Component Standard》§2–§6。**仓库尺寸档为运行时真值**，蓝图数值一律按 §3.2.4 登记差异，**不改任何代码值**。
+
+### 3.2.1 Button 尺寸档
+
+| 蓝图建议高度 | 仓库对应 | 运行时真值 | 判定 |
+|---|---|---|---|
+| 28 / 32 / 36 / 40 / 44 / 48 / 56px（**7 档**） | `--ds-button-height-sm` / `md` / `lg` | 见下表 | **冲突**：仓库为 **3 文字档 + 4 方形图标档**，且随密度档变化；蓝图 48 / 56 档**仓库无对应** |
+
+**仓库真值（`web/src/design-system/tokens/spacing.css`）**
+
+| 密度档 | `--ds-button-height-sm` | `--ds-button-height-md` | `--ds-button-height-lg` | 方形图标档（`ui/button.tsx` size） |
+|---|---:|---:|---:|---|
+| `:root` / `data-theme-scale='lg'`（comfortable，默认） | 32px | **36px** | 40px | `icon` 36 / `icon-xs` 24 / `icon-sm` 32 / `icon-lg` 40 |
+| `data-theme-scale='sm'`（紧凑） | 28px | 32px | 36px | 同上（继承默认档类名，高度随 density Token 变化） |
+| `data-theme-scale='xl'`（宽松） | 36px | 40px | 44px | 同上 |
+
+另有 2 个内容档：`inline`（高度退回文本行盒、左右内边距归零，仅允许配 `variant='link'`）与 `wrap`（可折行）。
+
+**蓝图与仓库的档位映射（结构性规则采纳，数值以仓库为准）**
+
+| # | 规则 | 说明 |
+|---|---|---|
+| BS-1 | 按钮尺寸必须由 `--ds-button-height-*` Token 表达，**禁止** `h-[…]` 任意值。 | T17 |
+| BS-2 | 尺寸档随**密度**变化，不随视口宽度变化（避免同一按钮在不同屏幕高度不一致）。 | 与 S05 密度三档一致 |
+| BS-3 | 图标按钮须为**正方形**，边长取对应文字档高度（`icon` = md、`icon-sm` = sm、`icon-lg` = lg），另设独立 `icon-xs`（24px）供密集场景使用。 | `ui/button.tsx:66-77` |
+| BS-4 | **仓库已删除** `xs` 档（原 `h-6` / `text-xs`）——它是规范外的第三档，被 11 个调用点用来把按钮压到 24px、文字压到 12px。**需要更小的纯图标按钮用 `icon-xs`；文字按钮最低就是 `sm`。** | `ui/button.tsx:60-65` 注释 |
+| BS-5 | 蓝图 §2 要求 Loading 时防重复提交、按耗时表达文案进行中——仓库已实现（`loading` → `disabled + aria-busy`，见 S18 契约第 9 / 12 条）。 | 已满足 |
+
+### 3.2.2 Input / 控件尺寸档
+
+| 蓝图建议高度 | 仓库对应 | 运行时真值 | 判定 |
+|---|---|---|---|
+| 32 / 36 / 40 / 44 / 48px（**5 档**） | `--ds-control-height-sm` / `md` | 见下表 | **冲突**：仓库为 **2 档**（`sm` / `md`），且随密度变化；蓝图 48px 档仓库无对应 |
+
+| 密度档 | `--ds-control-height-sm` | `--ds-control-height-md` |
+|---|---:|---:|
+| `:root` / `lg`（comfortable） | 36px | **40px** |
+| `sm`（紧凑） | 32px | 36px |
+| `xl`（宽松） | 40px | 44px |
+
+**仓库的第三档是「胶囊专用档」**：`--ds-chip-height: 1.3125rem`（21px，`spacing.css:57`）——21px 不是 4px 栅格整数倍，由 `text-xs`(12/16) + 上下各 2.5px 光学补正得出，**禁止并入 `--ds-control-height-*`**（S02 §5.1）。
+
+### 3.2.3 其他基础组件尺寸档
+
+| 组件 | 蓝图建议 | 仓库真值 | 真源 | 判定 |
+|---|---|---|---|---|
+| Checkbox | 16px | **16px**（`size-4`） | `ui/checkbox.tsx:31` | **一致** ✓ |
+| Radio | 16px | **16px**（`size-4`，内点 `size-2`） | `ui/radio-group.tsx:39,46-48` | **一致** ✓ |
+| Switch | 32×18 / 36×20 / 44×24（**3 档**） | default **36×20**（`h-5 w-9`）/ sm **24×14**（`h-3.5 w-6`） | `ui/switch.tsx:35` | **冲突**：仓库仅 **2 档**，且尺寸序列与蓝图不同（仓库 default 36×20 ↔ 蓝图第二档 36×20，仓库缺 32×18 与 44×24） |
+| Avatar | 24 / 32 / 40 / 48 / 64 / 80px（**6 档**） | **24 / 32 / 40px**（`sm` `size-6` / default `size-8` / `lg` `size-10`） | `ui/avatar.tsx:36` | **冲突**：仓库 **3 档**，缺 48 / 64 / 80 |
+| Badge / Tag | 未给数值 | 见 §4 的 Badge 审计 | `ui/badge.tsx`、`ui/icon-badge.tsx`、`ui/discount-badge.tsx` | 不虚构数值 |
+| Tooltip / Popover / Dropdown | 未给数值 | 见 §4 | — | — |
+| Dialog / Drawer | 未给数值 | 见 §4 | — | — |
+| Table | 未给数值 | 行高由 `--ds-table-row-padding-y` + `density` 档控制（8 / 12 / 14px） | `spacing.css:32-34,71-73,89-91` | 不虚构数值 |
+| 图标按钮可操作区域 | 「至少 32px」 | `icon-xs` 24px（密集场景），其余 32 / 36 / 40px | `ui/button.tsx:66-77` | **部分冲突**：仓库 `icon-xs` 为 24px，低于蓝图「至少 32px」；仓库已有 `.ds-touch-target` 伪元素扩展命中区（见 S17 §5.2） |
+
+### 3.2.4 差异汇总（登记）
+
+| 编号 | 内容 | 状态 |
+|---|---|---|
+| S14-D1 | 蓝图 Button 7 档高度 ↔ 仓库 3 文字档 + 4 方形图标档 + 2 内容档（随密度变化） | 已登记（**保留仓库真值**；蓝图 48 / 56 档仓库无对应） |
+| S14-D2 | 蓝图 Input 5 档高度 ↔ 仓库 2 档（`--ds-control-height-sm` / `md`，随密度变化） | 已登记（**保留仓库真值**；蓝图 48px 档无对应） |
+| S14-D3 | 蓝图 Switch 3 档（32×18 / 36×20 / 44×24）↔ 仓库 2 档（36×20 / 24×14） | 已登记（**保留仓库真值**） |
+| S14-D4 | 蓝图 Avatar 6 档 ↔ 仓库 3 档（24 / 32 / 40px） | 已登记（**保留仓库真值**） |
+| S14-D5 | 蓝图「纯图标按钮可操作区域至少 32px」↔ 仓库 `icon-xs` 为 24px | 已登记（仓库以 `.ds-touch-target` 伪元素扩展命中区；见 S17 §5.2 / S13 §3.10） |
+| S14-D6 | 蓝图密度三档（Comfortable / Default / Compact）↔ 仓库 `data-theme-scale` **四档**（`:root`/`lg` 默认 / `sm` / `xl`，其中 `:root` 与 `lg` 同值） | 已登记（**保留仓库命名与档数**；见 `UDS5-S05` / `UDS5-S10`） |
+| S14-D7 | 蓝图 §11 要求 Storybook / 组件展示用例 | **不采纳**（仓库已决定不引入 Storybook，改用 `showcase.html` + 快照校验，见 `UDS5-S01` D3 / `COMPONENT-DOCUMENTATION-AND-PREVIEW-STANDARD.md`） |
+| S14-D8 | 蓝图 §2 要求 Button 变体含 `tertiary`（仓库为 `ghost`） | 已登记（**保留仓库命名**：6 variant = `default` / `outline` / `secondary` / `ghost` / `destructive` / `link`；`ghost` 即蓝图 `tertiary/ghost` 的合并档） |
+| S14-D9 | 蓝图 §4 要求三态 Checkbox 明确 `indeterminate` 语义；仓库 `ui/checkbox.tsx` **未见 `indeterminate` 实现** | `NOT_VERIFIED`（本轮只读核查未见；登记为补齐候选，**不虚构已实现**） |
+| S14-D10 | 蓝图 §5 要求 Badge 用于状态 / Tag 用于分类，状态必须有文字或可访问名称、不得只靠颜色；仓库存在 `ui/badge.tsx`、`ui/icon-badge.tsx`、`ui/discount-badge.tsx` 三个 Badge 实现 | `NOT_VERIFIED`（三者的语义分工与「不得只靠颜色」的覆盖度未逐处核对；见 §4 的 Badge 审计行） |
 
 ---
 

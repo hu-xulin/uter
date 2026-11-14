@@ -143,15 +143,62 @@
 
 ## 6. Z-index / Stacking Context（如实登记现状）
 
+### 6.1 现状事实（只读核查结论）
+
 | 项 | 现状 | 5.0 规定 |
 |---|---|---|
-| 专用 z-index Token | **本轮只读核查未发现** `design-system/tokens/` 下存在 `--ds-z-*` / `--z-*` 之类的封闭 z-index 档（对 `web/src/design-system` 的检索无命中） | 5.0 目标：z-index 应收敛为封闭命名档并由单一出口声明；**当前未落地，登记为 `NOT_VERIFIED`**，不虚构档名与数值 |
+| 专用 z-index Token | **只读核查未发现** `web/src/design-system/tokens/` 下存在 `--ds-z-*` / `--z-*` 之类的封闭 z-index 档（该目录下仅 `brand-colors.ts`、`chart-typography.ts`、`colors.css`、`elevation.css`、`index.css`、`primitives.css`、`semantic.css`、`spacing.css`、`typography.css`，全文检索 `z-index` / `--ds-z` / `--z-` **零命中**） | 5.0 目标：z-index 应收敛为封闭命名档并由单一出口声明；**当前未落地，登记为 `NOT_VERIFIED`**，不虚构档名与数值 |
 | 当前实现 | 层叠顺序由组件 / Portal / Tailwind `z-*` 工具类与 DOM 顺序承担 | 允许沿用，但禁止以「裸 `z-[9999]`」制造不可控层叠 |
 | Stacking Context | 由 `transform` / `opacity` / `position` / `isolation` 等属性隐式创建；`foundations/motion.css` 的 transform 动画会创建局部层叠上下文 | 浮层须在最外层 Portal 容器内建立独立 Stacking Context，避免被祖先 `overflow` / `transform` 裁切 |
 | 焦点环不被裁切 | 焦点环不得被父容器圆角裁切或浮层覆盖（3.0 §15.1 / S13） | 由 Popover / Dialog 的 Portal 层级保证 |
 | 禁止 | 用 z-index 表达视觉层级、跨 Stacking Context 硬压浮层 | 违反 E-1 / Layer 定义 |
 
-> 说明：本表如实反映「运行时未提供专用 z-index Token」这一事实；5.0 将其列为治理候选（见 §11 S07-D3），**在补齐证据前不描述为已实现的封闭集合**。
+### 6.2 目标 z-index 分层（5.0 目标档，**未落地**）
+
+> 来源：业务域蓝图《Shape, Border and Elevation Standard》§4「层叠顺序」。该蓝图给出的是**分层语义**，不是仓库已实现的 Token——本节只把它登记为**目标档**，Token 落地前不得被引用为现行真值。
+
+| 语义档 | 目标 Token 名（未落地） | 目标值 | 典型宿主 | 与 §4 Layer 的关系 |
+|---|---|---:|---|---|
+| 基础层 | `--ds-z-base` | 0 | 页面根、文档流内容 | L0 |
+| 粘性层 | `--ds-z-sticky` | 100 | 粘性表头 / 粘性页头 | L1–L2（视觉重量不变，仅解决滚动重叠） |
+| 下拉层 | `--ds-z-dropdown` | 200 | Select / Combobox 触发层 | L3 |
+| 浮出层 | `--ds-z-popover` | 300 | Popover / HoverCard / Tooltip / Menu | L3 |
+| 遮罩层 | `--ds-z-overlay` | 400 | Dialog / Sheet / Drawer 的 backdrop | L4 |
+| 模态层 | `--ds-z-modal` | 500 | Dialog / Sheet / Drawer 内容面板 | L4 |
+| 轻提示层 | `--ds-z-toast` | 600 | Toast / Sonner 通知 | L4（瞬时） |
+| 关键系统层 | `--ds-z-critical` | 700 | 全局阻断遮罩、必须置顶的系统提示 | L4 |
+
+**分档规则（收敛口径）**
+
+1. **步长 100**：档位之间预留 ≥100 的间隔，使第三方插入层叠不必重排全表。
+2. **相邻档不混用**：同一交互族（backdrop 与内容面板、popover 与 tooltip）必须相邻成对，不允许出现「遮罩 400 / 内容面板 600」这种中间无主的空洞。
+3. **视觉层级 ≠ z-index**：§4 的 L0–L6 是视觉重量，§6.2 是重叠顺序。**不得**用更高 z-index 假装更高 Layer（E-1）。
+4. **单一出口**：目标档落地时，须在 `web/src/design-system/tokens/` 内单点声明并由守卫测试锁定白名单，参照 `elevation-motion.test.ts` 对 `ELEVATION_TOKENS` 的做法；不得让组件各自写 `z-[…]`。
+5. **禁止任意值**：落地后 `z-[…]` 任意 z-index 与超出最高档的裸数值一律拦截（建议归入 T 系列门禁，落地前登记为治理候选，不虚构已存在的检查项）。
+
+### 6.3 存量 z 值分布（收敛基线，如实登记）
+
+> 数据来源：`web/src` 全量 `z-[0-9]+` 检索（排除测试文件），统计时点 2026-11-14。**这是存量事实，不是合规证明。**
+
+| 工具类 | 出现次数 | 主要位置 | 收敛映射（目标） | 状态 |
+|---|---:|---|---|---|
+| `z-50` | 30（其中 `components/ui/` 24） | `ui/alert-dialog.tsx:51,77`、`ui/popover.tsx:63,68`、`ui/hover-card.tsx:54,59`、`ui/sheet.tsx:50,81`、`ui/drawer.tsx:59`、`ui/dialog.tsx`、`ui/navigation-menu.tsx:132` | 遮罩 → `--ds-z-overlay`；内容面板 → `--ds-z-modal`；Popover/HoverCard → `--ds-z-popover` | **冲突**：单一 `z-50` 同时承载 overlay / modal / popover 三种语义，目标档须拆分 | 
+| `z-100` | 1 | `ui/combobox-input.tsx:299` | `--ds-z-dropdown` | 语义已越出 `z-50` 族，属未登记例外 |
+| `z-60` | 1 | `components/ui/`（非浮层） | 待核 | `NOT_VERIFIED`（未定位到唯一宿主，见 §11 S07-D6） |
+| `z-999` | 1 | 非 `ui/` 目录 | 待核 | `NOT_VERIFIED`（同 S07-D6） |
+| `z-30` / `z-20` / `z-10` / `z-1` / `z-0` | 2 / 2 / 35 / 1 / 2 | 页面局部装饰与粘性表头（`features/home/**`、`features/channels/**`、`system-settings/models/channel-sync-models-table.tsx:103` 等） | 页面局部层级，属**组件内部层叠**，原则上不进全局档表 | 局部用法，与全局浮层档不构成冲突；需在组件层约定「局部层叠不得越过全局档基线」 |
+| 内联 `zIndex` 数值 | — | `features/dashboard/lib/flow.ts:1179-1183`（`100_000 + index` / `1_000_000 + index`） | 图表内部绘制顺序（SVG/Canvas），不属于 UI 层叠 | **豁免**：图表绘制顺序不属于 z-index 治理范围（需在组件层约定「局部层叠不得越过全局档基线」） |
+| 内联 `z-index: 2147483000` | 2 | `features/customer-service/CustomerServiceWidget.css:29`（`.cs-fab`）、`:51`（`.cs-panel`） | 客服挂件为**全局常驻悬浮控件**，必须恒在最上 | **登记例外**（见 §11 S07-D7）：该组件为 Uter 自研（非第三方 iframe），其「必须不被任何浮层遮挡」的产品诉求与目标档 `critical=700` 冲突，需在落地时保留独立「常驻全局控件」位 |
+
+### 6.4 落地路径（治理候选，非既成事实）
+
+1. 在 `web/src/design-system/tokens/` 内新增单一 z-index 声明点，落地 §6.2 八档目标 Token。
+2. 将 `ui/` 下 30 处 `z-50` 按「overlay / modal / popover / dropdown」语义拆分替换。
+3. 增加守卫测试锁定档位白名单（参照 `elevation-motion.test.ts` 的白名单范式）。
+4. 为 `z-[…]` 任意值与超档裸数值补静态拦截（登记为治理候选，**当前无对应检查项，不得宣称已生效**）。
+5. 完成 1–4 后，将 §10 的 `S07-D3` 由 `NOT_VERIFIED` 改为已落地，并回填本节存量分布为收敛后基线。
+
+> 说明：本表如实反映「运行时未提供专用 z-index Token」这一事实；§6.2 是**目标档**（来自业务域蓝图的结构性分层），**不是**已实现真值。
 
 ---
 
@@ -190,6 +237,9 @@
 5. 禁止用更高 z-index 假装更高视觉层级。
 6. 禁止裸 `rgba()` 背板 / 裸 `#hex` 边框色（T8）。
 7. 禁止用透明度凑边框 / 悬停 / 浅底层级（T13–T15）。
+8. 禁止在组件内写任意 z-index（`z-[…]`）或超出 §6.2 最高档的裸数值（§6.2 规则 5；**该拦截当前为治理候选，未落地，见 §6.4**）。
+9. 禁止用 `z-50` 单一值同时承载遮罩 / 模态 / 浮出三种语义（§6.3 收敛映射；当前存量 30 处，落地前属已知债务）。
+10. 禁止页面局部层叠越过全局浮层档基线（§6.3 局部用法口径）；图表内部绘制顺序（`features/dashboard/lib/flow.ts`）不属本条范围。
 
 ---
 
@@ -199,9 +249,14 @@
 |---|---|---|
 | S07-D1 | 3.0 §8.1 `--shadow-*` 与运行时 `--ds-elevation-*` 命名差异，见 §3.3 | 已按运行时真源说明 |
 | S07-D2 | 3.0 §8.2 登记 popover/overlay 的 Dark 值，但运行时 `.dark` 仅覆盖 marketing/raised 两档 | `NOT_VERIFIED`（口径待复核） |
-| S07-D3 | 运行时未提供专用 z-index 封闭 Token 档 | `NOT_VERIFIED`（治理候选，未落地） |
+| S07-D3 | 运行时未提供专用 z-index 封闭 Token 档 | `NOT_VERIFIED`（治理候选，未落地）；**本轮已补齐目标档与收敛路径**（§6.2 / §6.3 / §6.4），闭合条件见 §6.4 五步 |
 | S07-D4 | 边框色精确 `--ds-color-*` 键名未逐一枚举 | `NOT_VERIFIED`（不虚构键名） |
 | S07-D5 | Card 悬停投影已于 2026-11-03 复裁定删除 | 已核实（elevation.css:58-61） |
+| S07-D6 | 存量 `z-60`（1 处）与 `z-999`（1 处）的宿主**已定位**（2026-11-14 独立复核）：`z-60` → `web/src/components/ui/sidebar.tsx:211`（侧栏移动端抽屉浮层，位于 `z-50` 之上）；`z-999` → `web/src/components/skip-to-main.tsx:25`（跳过导航跳转按钮，须始终在最上层可达）。两者均**不在**目标八档语义内（`z-60` 介于 `modal=500` 与 `toast=600` 之间；`z-999` 超 `critical=700`） | 已定位宿主（**未映射到目标档**）；落地 Token 时需决定：侧栏抽屉归 `overlay=400`/`modal=500`，跳过导航归 `critical=700`；`NOT_VERIFIED` |
+| S07-D7 | 客服挂件 `CustomerServiceWidget.css:29,51` 使用 `z-index: 2147483000`，远超目标档最高位 `critical=700` | **登记例外**（产品诉求：常驻悬浮控件须不被任何浮层遮挡）；落地时需为其保留独立「常驻全局控件」位，不得简单压档 |
+| S07-D8 | 业务域蓝图《Shape, Border and Elevation Standard》§3 的 `elevation.0`–`elevation.4` 五档命名与仓库 `--ds-elevation-*` 命名体系不一致（蓝图为 5 档含 `elevation.0` 无阴影，仓库为 5 档层级投影 + 1 档状态辉光） | 已按运行时真源说明（§3.1）；蓝图仅贡献分层语义，不改运行时命名与档数 |
+| S07-D9 | 业务域蓝图 §1 圆角 9 档（0/4/6/8/12/16/20/24/9999）与仓库 8 命名档 + `rounded-full` 不一致 | 已按运行时真源说明（`UDS5-S06` §2.1）；蓝图值不采纳 |
+| S07-D10 | **负 z-index 未进目标档位**：`web/src` 有 **3 处** `-z-10`（负值）——`features/home/components/sections/hero.tsx:83,87`、`features/home/components/sections/cta.tsx:44`，均为 `ds-decor-mesh-*` / `ds-decor-grid` 装饰层置于父容器内容之下。§6.2 目标八档（`base=0` 起）**无负值档**，未覆盖这一分层语义。落地 Token 时需决定：新增 `--ds-z-decoration: -10` 档，或明确「装饰层负 z 不进 Token、以 Tailwind `-z-10` 直用」 | **登记**（目标档位缺口）；`NOT_VERIFIED` |
 
 ---
 
@@ -249,7 +304,7 @@
 | `sync-design-showcase.mjs` | 展示一致 | `--check` 的 17 条校验含 Shadow 区（showcase 第 14 区）快照 |
 | `verify:contrast`（`verify-contrast.mjs`） | 对比度 | 边框色 / 非文本对比度 3:1 校验 |
 | `visual-regression.mjs` / `test:visual` | 视觉 | 投影/边框变更需复核 22 页 × 2 视口基线 |
-| `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 10 个守卫之一，守 6 档白名单与 Dark 覆盖 |
+| `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 11 个守卫之一，守 6 档白名单与 Dark 覆盖 |
 
 > 说明：`elevation-motion.test.ts` 为守卫测试文件；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 
@@ -261,7 +316,8 @@
 |---|---|---|
 | 6 档真值与 Dark 覆盖 | `NOT_VERIFIED` | 已读取 `elevation.css` 核实声明，本轮**未执行** `check-design-tokens.mjs --strict` |
 | 边框色精确 Token 清单 | `NOT_VERIFIED` | 未逐一枚举 `colors.css` 45 个 `--ds-color-*`，不虚构键名 |
-| z-index 封闭集合 | `NOT_VERIFIED` | 运行时未提供专用 Token，治理候选未落地 |
+| z-index 封闭集合 | `NOT_VERIFIED` | 运行时未提供专用 Token；**本轮已给出目标八档（§6.2）与存量收敛基线（§6.3），但 Token 未落地**，治理候选未落地 |
+| z-index 目标八档落地 | `NOT_EXECUTED` | §6.4 五步落地路径本轮未执行（未改 `web/src` 运行时代码） |
 | Light / Dark 阴影三层共同生效 | `NOT_VERIFIED` | 未在真实渲染下复核 |
 | 65 个组件投影引用合规 | `NOT_VERIFIED` | BASELINE-AUDIT §5 记 65 组件证据 0 VERIFIED |
 | `verify:contrast` 31 条 / `test:axe` | `NOT_VERIFIED` | 审计记录曾 31 PASS / 0 FAIL，但本轮未执行，不继承为通过 |
