@@ -38,7 +38,7 @@
 | 规范版本 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | 3.0（全文唯一权威文件） | `UDS5-AUDIT-01` §3 |
 | Token Manifest 版本 | 3.0 §28.5 `TOKEN-MANIFEST` | `version 3.0.1` / `updated 2026-11-13` | `UDS5-AUDIT-01` §3 |
 | 组件注册表版本 | `web/src/design-system/component-registry.json` | `registryVersion 1.0.0` / `designSystem "UTER Design System 3.0"` | `UDS5-AUDIT-01` §5 |
-| 5.0 规范版本 | `docs/design-system/uter-design-system-5.0/*.md` | `5.0.0` / `UDS5-S01`..`UDS5-S28` | 本组元数据表 |
+| 5.0 规范版本 | `docs/design-system/uter-design-system-5.0/*.md` | `5.0.0` / `UDS5-S01`..`UDS5-S32` | 本组元数据表 |
 
 ### 2.2 「3.1」口径说明（防虚构）
 
@@ -66,7 +66,7 @@
 |---|---|---|---|---|
 | K1 品牌色全套 | `UTER-DESIGN-SYSTEM-3.0.md` §17.5 / `source/brand.tokens.json` → 5.0 颜色规范 `UDS5-S03` + 同一 DTCG 真源 | 全文继承，不改色值；品牌渐变深浅同值例外（E28）保留登记 | `generate-design-tokens.mjs --check` 源与生成 CSS 同步；`verify-contrast.mjs` 31 PASS | 无需回滚（未改动）；若误改，从备份还原 `source/brand.tokens.json` 并重跑 `design:tokens:check` |
 | K2 字体与字号阶梯 | 3.0 §1.2 / `tokens/typography.css` `@theme --text-*`（18 档） → 5.0 字体规范 `UDS5-S04` + 保留同一 CSS | 保留 `@theme --text-*`（决策 D1，删除会使全站字号静默回退）；另立 `--ds-font-*` 语义别名仅用于文档与跨端映射 | `tokens.test.ts` 断言、17 条 showcase 校验、T1 门禁、`text-sm` 等 18 个工具类 | 从备份还原 `typography.css`；重跑 `lint:design:strict` 与 `sync-design-showcase.mjs --check` |
-| K3 间距 / 边框 / 圆角 / 焦点环 | 3.0 §1.3–1.6 → 5.0 对应基础规范 | 继承 4pt 间距、1px 边框、圆角八档（5.0 纠正七档→八档）、2px 焦点环（`ring-2`，已裁决，取代 1px）、表面色差优先于重阴影 | `check-design-tokens.mjs --strict` 违规 0 | 同上，按文件备份还原 |
+| K3 间距 / 边框 / 圆角 / 焦点环 | 3.0 §1.3–1.6 → 5.0 对应基础规范 | 继承 4pt 间距、1px 边框、8 个命名派生档 + `rounded-full` 特殊档（运行时 T10 称「圆角九档」）（5.0 纠正七档→八档）、2px 焦点环（`ring-2`，已裁决，取代 1px）、表面色差优先于重阴影 | `check-design-tokens.mjs --strict` 违规 0 | 同上，按文件备份还原 |
 | K4 三层 Token 架构 + Spec/Runtime/派生产物 | 3.0 §28 Spec SSOT / `web/src/design-system/tokens/` Runtime SSOT / `showcase.html` 内联快照 → 5.0 保持一致 | 不新建第二套 TS 值 Token（决策 D6）；只补「Token 元数据注册表 + 校验器」 | 17 条 `sync-design-showcase.mjs` 校验、Manifest `3.0.1` 哈希自洽 | 还原新增校验器文件（删除即可），真源文件未动 |
 | K5 T1–T17 门禁 / ALLOWLIST / 基线 / `--strict` | 3.0 §19.5 → 5.0 `UDS5-S24` | 保留 `ALLOWLIST=[]`、`web/design-tokens.baseline.json` 0 条只减不增、`--strict` 为 CI 唯一阻断模式；**不降低阈值、不扩基线** | 门禁配置核对、`design-tokens.baseline.json` 0 条 | 还原门禁脚本与 baseline 备份；重跑严格门禁 |
 | K6 组件单一实现根 / `data-table/` / 注册表一致性 | `web/src/components/ui/*`（65）、`data-table/`（24 导出）、`component-registry.json` → 5.0 保持 | 保留单一实现根与双向一致性检查；`dropdown-menu.test.tsx` 平铺差异属 schema 显式排除（`:40`），**不补注册** | `components:registry:check`（65/65/0 errors） | 还原注册表备份；重跑 `components:registry:check` |
@@ -85,7 +85,7 @@
 | G2 52 个同名调色板 | `theme.css` / `theme-presets.css` 的 52 个同名基础键 → 单一 `:root` 基础层 + 预设只列差异键 | 重排声明，不改最终色值；`theme.css` 属并发 WIP 禁改文件 | 逐值比对 Light/Dark 与 7+ 套预设输出；`verify-contrast.mjs`；`build:check` 因并发 WIP 不执行，改只读门禁 | 还原 `theme.css` / `theme-presets.css` 备份；重跑 `lint:design:strict` |
 | G3 typography 值 ↔ 工具类映射 | `tokens/typography.css`（值）与 `foundations/typography.css`（工具类） → 补「L1 声明 ↔ L3 消费」机器可校验映射表 | 新增映射表（不新建第二套值 Token，决策 D6）；同时根治 3 个纯别名构建压缩缺陷（`foundations/typography.css:55-66`） | 映射表与 `@theme` / `@utility` 一致性校验；`var()` 引用必须有声明（T02） | 删除新增映射表并还原 `foundations/typography.css` 备份；重跑 17 条校验 |
 | G4 双产物统一 | `showcase.html` 内联快照（主交付）与 `showcase.tokens.js`（1,241 行兼容回退） → 「主交付=内联快照，回退=可选产物」 | **须先同步修改 17 条 `sync-design-showcase.mjs` 校验契约方可变更**；回退产物保留但不作为第二真源 | `sync-design-showcase.mjs --check` 17 PASS / 0 FAIL；`design:showcase:check` 已接 CI | 还原 `showcase.html` / `showcase.tokens.js` / 校验脚本备份；重跑 `design:showcase:check` |
-| G5 注册表模型投影 | `component-registry.json`「契约 + 证据」模型 → 与 5.0「路径 / 文档 / 展示」模型合并 | 由生成式 YAML 投影合并，**JSON 仍为唯一真源**；补齐 8 类字段（`layer / source / implementation_path / specification_path / test_path / story_path / variants / states / accessibility / deprecated / replacement`） | `components:registry:check` 65/65/0；`--strict` EXIT=1 须保留至证据补齐 | 还原 `component-registry.json` 备份及投影产物；重跑注册表检查 |
+| G5 注册表模型投影 | `component-registry.json`「契约 + 证据」模型 → 与 5.0「路径 / 文档 / 展示」模型合并 | 由生成式 YAML 投影合并，**JSON 仍为唯一真源**；补齐 11 项字段（`layer / source / implementation_path / specification_path / test_path / story_path / variants / states / accessibility / deprecated / replacement`） | `components:registry:check` 65/65/0；`--strict` EXIT=1 须保留至证据补齐 | 还原 `component-registry.json` 备份及投影产物；重跑注册表检查 |
 
 ---
 
@@ -121,7 +121,7 @@
 | 项 | 3.0 位置 → 5.0 位置 | 迁移动作 | 依赖检查 | 回滚方式 |
 |---|---|---|---|---|
 | V1 `designSystem` 字段 | `web/src/design-system/component-registry.json` 的 `designSystem "UTER Design System 3.0"` → `5.0` | **必须与 `web/scripts/check-component-registry.mjs:45` 的硬编码校验在同一变更内升级** | 见 §6.1 | 见 §6.1 |
-| V2 规范元数据版本 | 3.0 单文件 → 5.0 全部 28 份分册元数据表 `版本 5.0.0` / `上级规范 UDS5-S01` / `验证状态 NOT_VERIFIED` | 统一元数据口径；文档 ID 唯一且与文件名一一对应 | `UDS5-S24` S01 / S05（文档存在且非空、≥100 行、必备章节齐全） | 按文件备份还原；重跑规范一致性检查 |
+| V2 规范元数据版本 | 3.0 单文件 → 5.0 全部 32 份分册（S01–S32 = 28 基础 + 4 业务域）元数据表 `版本 5.0.0` / `上级规范 UDS5-S01` / `验证状态 NOT_VERIFIED` | 统一元数据口径；文档 ID 唯一且与文件名一一对应 | `UDS5-S24` S01 / S05（文档存在且非空、≥100 行、必备章节齐全） | 按文件备份还原；重跑规范一致性检查 |
 | V3 引用版本标注 | 3.0 §yy 引用 → 5.0 分册引用须带 `旧版:` 与变更类型 | 按 §2.3 格式标注；禁止 3.0 / 3.1 / 5.0 混用无说明 | S01 / S03 / S04 引用路径与版本归属检查 | 还原引用处文本；重跑 S04 |
 | V4 `TOKEN-MANIFEST` 版本 | 3.0 §28.5 `version 3.0.1` → 5.0 Manifest | 升级须同步内联快照与 17 条校验契约（与 G4 同一约束） | `sync-design-showcase.mjs --check` 哈希自洽、17 PASS / 0 FAIL | 还原 Manifest / 快照 / 校验脚本备份；重跑 `design:showcase:check` |
 | V5 `registryVersion` | `component-registry.json` `registryVersion 1.0.0` → 5.0 视字段补齐情况统一 | 与 V1 同变更协调；不得单独改动导致格式校验失败 | S03 注册格式校验 | 还原注册表备份 |

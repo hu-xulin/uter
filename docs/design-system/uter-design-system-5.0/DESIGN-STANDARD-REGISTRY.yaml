@@ -89,7 +89,7 @@ standards:
     version: "5.0.0"
     category: foundation
     status: ACTIVE
-    scope: "圆角八档、组件形状、Pill 与 Circle"
+    scope: "8 个 calc 命名派生档 + rounded-full 特殊档（运行时 T10 合计 9 种合法写法）、组件形状、Pill 与 Circle"
     document: "docs/design-system/uter-design-system-5.0/06-RADIUS-AND-SHAPE-STANDARD.md"
     dependencies: [UDS5-S01, UDS5-S02]
     implementation: "web/src/styles/theme.css (--radius); web/src/design-system/tokens/primitives.css"
@@ -196,7 +196,7 @@ standards:
     scope: "组件 22 项契约、A-N 14 类清单、状态矩阵、重复实现治理"
     document: "docs/design-system/uter-design-system-5.0/14-COMPONENT-STANDARD.md"
     dependencies: [UDS5-S01, UDS5-S02, UDS5-S13]
-    implementation: "web/src/components/ui/; web/src/design-system/component-registry.json; web/src/components/data-table/"
+    implementation: "web/src/components/ui/; web/src/components/ (业务封装); web/src/design-system/components/typography/; web/src/design-system/component-registry.json; web/src/components/data-table/"
     verification: "web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs"
     owner: "Uter.ai"
     mandatory: true
@@ -209,7 +209,7 @@ standards:
     scope: "Props、受控/非受控、Composition、Slot、Ref、废弃策略"
     document: "docs/design-system/uter-design-system-5.0/15-COMPONENT-API-STANDARD.md"
     dependencies: [UDS5-S01, UDS5-S14]
-    implementation: "web/src/components/ui/button.tsx; web/AGENTS.md (3.2/3.3)"
+    implementation: "web/src/components/ui/*.tsx (65 实现); web/src/design-system/components/typography/; web/AGENTS.md (3.2/3.3)"
     verification: "bun run typecheck; bun run lint; web/scripts/check-design-system-5.0.mjs"
     owner: "Uter.ai"
     mandatory: true
@@ -271,7 +271,7 @@ standards:
     version: "5.0.0"
     category: pattern
     status: ACTIVE
-    scope: "Toast/Snackbar/Alert/Banner/通知中心与五类反馈分级"
+    scope: "6 类通知组件（Toast / Snackbar / Alert / Banner / System Notification / Notification Center；后两类含规范保留位）与 5 类反馈分级"
     document: "docs/design-system/uter-design-system-5.0/20-NOTIFICATION-STANDARD.md"
     dependencies: [UDS5-S01, UDS5-S17, UDS5-S18]
     implementation: "web/src/components/ui/{sonner,alert}.tsx; web/src/components/{empty-state,error-state,loading-state}.tsx; web/src/lib/handle-server-error"
@@ -284,11 +284,11 @@ standards:
     version: "5.0.0"
     category: reference
     status: ACTIVE
-    scope: "Clerk 外部参考的 18 项对照（首轮 14 项 + 本轮补充 4 项）、借鉴边界与禁止事项"
+    scope: "Clerk 外部参考的 18 项对照（首轮 14 章 + 本轮补充 4 章）、13 个官方核对入口（首轮 9 来源 + 4 入口；按唯一 URL 去重 11）、借鉴边界与禁止事项"
     document: "docs/design-system/uter-design-system-5.0/CLERK-DESIGN-REFERENCE-STANDARD.md"
     dependencies: [UDS5-S01]
     implementation: "仅规范映射 + 纯静态只读边界守卫；不引入任何 Clerk SDK 或运行时依赖，不改业务/认证/授权代码"
-    verification: "audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md; web/scripts/check-design-system-5.0.mjs; web/scripts/check-clerk-boundary.mjs; web/src/design-system/__tests__/clerk-boundary.test.ts"
+    verification: "audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md; web/scripts/check-design-system-5.0.mjs; web/scripts/check-clerk-boundary.mjs; bun run design:clerk:check; web/src/design-system/__tests__/clerk-boundary.test.ts"
     owner: "Uter.ai"
     mandatory: true
 
@@ -297,9 +297,9 @@ standards:
     version: "5.0.0"
     category: application
     status: ACTIVE
-    scope: "Dashboard/用户/密钥/模型/渠道/钱包/充值/支付/退款/消费/订单/价格/统计/设置/权限"
+    scope: "17 个业务模块：Dashboard / 用户管理 / API Key / 模型 / 渠道 / Token 余额 / 充值 / 支付 / 退款 / 消费记录 / 订单 / 价格管理 / 统计分析 / 系统设置 / 权限管理 / 管理员功能 / 其他现有模块"
     document: "docs/design-system/uter-design-system-5.0/BUSINESS-UI-ADAPTATION-STANDARD.md"
-    dependencies: [UDS5-S01, UDS5-S14, UDS5-S16]
+    dependencies: [UDS5-S01, UDS5-S14, UDS5-S16, UDS5-S21]
     implementation: "web/src/features/ (30 目录); web/src/routes/ (73 路由)"
     verification: "web/e2e/business/; web/e2e/visual/; web/src/features/**/__tests__/"
     owner: "Uter.ai"
@@ -313,8 +313,8 @@ standards:
     scope: "组件展示中心 12 项能力与文档-代码双向关联"
     document: "docs/design-system/uter-design-system-5.0/COMPONENT-DOCUMENTATION-AND-PREVIEW-STANDARD.md"
     dependencies: [UDS5-S01, UDS5-S14, UDS5-S24]
-    implementation: "docs/design-system/showcase.html; web/scripts/sync-design-showcase.mjs; docs/design-system/uter-design-system-5.0/COMPONENT-REGISTRY.yaml"
-    verification: "bun run design:showcase:check; bun run test:visual"
+    implementation: "docs/design-system/showcase.html (3.0 Token 展示中心); docs/design-system/uter-design-system-5.0/SHOWCASE-5.0.html (5.0 全量验收视图); web/scripts/sync-design-showcase.mjs; web/scripts/generate-design-showcase-5.0.mjs; web/scripts/check-design-showcase-5.0.mjs; docs/design-system/uter-design-system-5.0/COMPONENT-REGISTRY.yaml"
+    verification: "bun run design:showcase:check; bun run design:showcase:5:generate; bun run design:showcase:5:check; web/src/design-system/__tests__/design-showcase-5.test.ts; bun run test:visual"
     owner: "Uter.ai"
     mandatory: true
 
@@ -326,8 +326,8 @@ standards:
     scope: "Token/组件/页面/规范一致性检查与 CI 接入"
     document: "docs/design-system/uter-design-system-5.0/DESIGN-SYSTEM-AUTOMATION-STANDARD.md"
     dependencies: [UDS5-S01, UDS5-S03, UDS5-S14]
-    implementation: "web/scripts/check-design-tokens.mjs; web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs; .github/workflows/ci.yml"
-    verification: "bun run design:5:check; bun run lint:design:strict; CI frontend job"
+    implementation: "web/scripts/check-design-tokens.mjs; web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs; web/scripts/check-clerk-boundary.mjs; web/scripts/generate-design-showcase-5.0.mjs; web/scripts/check-design-showcase-5.0.mjs; .github/workflows/ci.yml"
+    verification: "bun run design:5:check; bun run design:clerk:check; bun run design:showcase:5:check; bun run lint:design:strict; CI frontend job"
     owner: "Uter.ai"
     mandatory: true
 
@@ -401,7 +401,7 @@ standards:
     version: "5.0.0"
     category: audit
     status: ACTIVE
-    scope: "9 个官方来源核实与 23 项 Adopt/Adapt/Reject 决策"
+    scope: "首轮 9 个官方来源 / 23 小节 24 判定（历史快照，保持原样）；现行口径见 UDS5-S21：13 个核对入口 / 18 项对照 / 30 项决策"
     document: "docs/design-system/uter-design-system-5.0/audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md"
     dependencies: [UDS5-S01, UDS5-S21]
     implementation: "无代码引入"

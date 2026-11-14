@@ -433,6 +433,12 @@ jobs:
       - name: Design system 5.0 governance
         run: bun run design:5:check
 
+      # Clerk 外部参考边界守卫（UDS5-S21 §8 / §10）：Clerk 仅作外部设计参考，
+      # 不得进入 Uter 运行时——C1 依赖零引入 / C2 运行时零引用 / C3 品牌值零照搬 /
+      # C4 能力归属一致性 / C5 业务红线零改动。纯静态只读，本地实测 PASS / 0 违规。
+      - name: Design system 5.0 Clerk boundary
+        run: bun run design:clerk:check
+
       # 版权头检查：只补缺失的 AGPL 头，不动任何代码格式，可安全设为必需。
       # 格式检查（format:check）**不要**设为必需：它按仓库根目录递归跑 oxfmt，
       # 会把 public/plugins 下的第三方插件与根级配置文件一起格式化，当前有

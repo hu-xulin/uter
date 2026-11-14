@@ -8,15 +8,15 @@
 | 上级规范 | `UDS5-S01` |
 | 生效日期 | `2026-11-14` |
 | 适用范围 | UTER Design System 5.0 全体规范、PC Web / H5 前端视觉与组件设计、认证 / 账户 / 组织相关页面的信息架构参考；不适用于后端认证、资金、授权逻辑 |
-| 验证状态 | `NOT_VERIFIED`（本规范为参考与治理类文档，未执行代码改造与自动化验证） |
+| 验证状态 | `NOT_VERIFIED`（规范文本为参考与治理类；本轮唯一代码侧落地是纯静态只读守卫 `check-clerk-boundary.mjs` + 回归测试，`design:clerk:check` 已实测，见 §8；不代表功能 / 视觉 / 平台验收） |
 
 ---
 
 ## 1. 文档定位与效力
 
 1. **Clerk 仅为外部设计参考**。本文记录 Clerk 官方设计体系中可被 Uter 借鉴的「理念、信息架构、状态完整性」经验，用于改进 Uter 自有设计系统的组织方式与组件规范；Clerk **不是** Uter 5.0 的规范来源、不是依赖、不是运行时组件、也不是验收基准。
-2. Uter 5.0 的唯一权威规范是 `UDS5-S01` 及其下 `UDS5-S02`..`UDS5-S28` 分册；任何与本文冲突之处，以 Uter 自有规范为准。
-3. 本文事实依据为 `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md`（`UDS5-AUDIT-02`，首轮 9 个官方文档来源逐页核实）与 §2.4 本轮补充核对的 4 个官方来源（合计 13 个）与 `audit/BASELINE-AUDIT.md`（`UDS5-AUDIT-01`）；**不使用截图、旧教程、第三方解读作为事实来源**。
+2. Uter 5.0 的唯一权威规范是 `UDS5-S01` 及其下 `UDS5-S02`..`UDS5-S32` 共 32 份分册（28 基础 + 4 业务域）；任何与本文冲突之处，以 Uter 自有规范为准。
+3. 本文事实依据为 `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md`（`UDS5-AUDIT-02`，首轮 9 个官方文档来源逐页核实）与 §2.4 本轮补充核对的 4 个官方核对入口（合计 13 个入口；按唯一 URL 去重为 11）与 `audit/BASELINE-AUDIT.md`（`UDS5-AUDIT-01`）；**不使用截图、旧教程、第三方解读作为事实来源**。
 4. 本文只描述「借鉴什么、禁止什么、落到哪里」，不声明任何 Uter 代码已实现；所有 `代码实施位置` 与 `测试证据` 均标注当前状态，未执行项一律 `NOT_VERIFIED`。
 
 ---
@@ -90,9 +90,9 @@
 - 故「Uter 不采用 13px 基准、不引入 `color-mix()` 运行时派生」的结论**不变**（见 §4.1 / §4.4）；此前「Clerk 未公布 Token」表述已在 §2.1 / §2.2 与审计 §1 来源 1 / §2.1 据实纠正。
 - 品牌色 `#6c47ff` 仅作**对照参考**，Uter 品牌靛紫 `#5B5EE6` 保持不变（禁止照搬，见 §3 P1）。
 
-### 2.4 本轮补充核对的官方维度（2026-11-14，新增 4 个官方来源）
+### 2.4 本轮补充核对的官方维度（2026-11-14，新增 4 个官方核对入口 / 7 个维度）
 
-> 首轮审计（`UDS5-AUDIT-02`，9 个官方来源）覆盖了 14 项逐项规范（§4.1–§4.14）。本轮再次核对 clerk.com 官方文档，发现 `Customization overview`、Email/SMS templates、Bring your own CSS、CSS variables changelog 四处存在**首轮未纳入的官方维度**。以下逐项据实补充，并按 §3 红线给出处置判定；**全部只借鉴理念 / 信息架构，不引入任何 Clerk 运行时**。
+> 首轮审计（`UDS5-AUDIT-02`，9 个官方来源 / 23 个小节）映射到本文 14 个逐项规范章节（§4.1–§4.14）。本轮再次核对 clerk.com 官方文档，新增 4 个**核对入口**（其中 2 个为首轮已收录来源的细分页面，按入口计 9+4=13、按唯一 URL 去重为 11），展开 7 个**首轮未逐项展开的官方维度 N1–N7**；不声称这些 URL 全部为首次发现的新来源。以下逐项据实补充，并按 §3 红线给出处置判定；**全部只借鉴理念 / 信息架构，不引入任何 Clerk 运行时**。
 
 | # | 官方维度（OBSERVED） | 官方来源 | 处置判定 | 5.0 落点 |
 |---|---|---|---|---|
@@ -114,9 +114,9 @@
 |---|---|---|
 | P1 | 照搬 Clerk 品牌样式 | 不采用任何 Clerk 色值、字体、徽标、「Secured by Clerk」文案；Uter 品牌色（`#5B5EE6` 系列）、Inter + Noto Sans SC、优特智能品牌名保持不变 |
 | P2 | 引入 Clerk SDK / 运行时依赖 | 不引入 `ClerkProvider`、`@clerk/ui`、`@clerk/elements`、`@clerk/localizations`、Clerk 主题包；不新增任何 Clerk 依赖 |
-| P3 | 替换 Uter 认证 / 用户 / 组织 / 权限逻辑 | 认证（Go 后端 + Casbin）、`(auth)/` 9 路由、邮箱验证码 / step-up / WebAuthn / TOTP / 微信网页授权 / 登录 429 限流、`org_role` / `sub_quota_limit` / `EnforceOrgQuota` 等**零改动** |
+| P3 | 替换 Uter 认证 / 用户 / 组织 / 权限逻辑 | 认证（Go 后端 + Casbin）、`(auth)/` 9 路由、邮箱验证码 / step-up / WebAuthn / TOTP / 微信网页授权 / 登录 429 限流、`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` **零改动**（唯一清单见 `UDS5-S01` §5 C4） |
 | P4 | 把 Clerk 不具备的能力写成官方能力 | 逐类按 §2.2 标注 `Reject`，`Reference` 直接写「Clerk 官方未提供该能力（已核实）」 |
-| P5 | 依据旧教程 / 截图研究 | 全部事实以 `UDS5-AUDIT-02` 的 9 个官方来源为准，并主动记录 F1 / F2 两项时效性事实 |
+| P5 | 依据旧教程 / 截图研究 | 全部事实以 `UDS5-AUDIT-02` 的 9 个首轮官方来源 + §2.4 的 4 个本轮核对入口（合计 13 个入口）为准，并主动记录 F1 / F2 两项时效性事实 |
 
 ---
 
@@ -199,7 +199,7 @@
 | Clerk 原始设计特点 | `CreateOrganization` / `OrganizationProfile` / `OrganizationSwitcher` / `OrganizationList` / `InviteMembersButton`；演示 Members / Roles & Permissions / Verified domains / Billing / API keys 与 `org:member` / `org:admin` 角色 |
 | Uter 当前设计情况 | `features/organization`（8 文件）与 `_authenticated/organization/index.tsx`；正在推进 org/tenant 四项需求（配额可见性 / 组织钱包计费 / 角色数据视图 / 部门名）；组织与配额 / 计费强耦合 |
 | Uter 需要改进的地方 | 仅缺 UI 规范映射（成员列表、角色视图、切换器的视觉与状态规范）；业务逻辑不得触碰 |
-| 5.0 最终规范 | **严格限视觉**（`Adapt（严格限视觉）`）；只做成员表格、角色列表、组织切换器的 UI 规范映射；**不改 `org_role` / `sub_quota_limit` / `EnforceOrgQuota` 等业务逻辑**（决策 D8） |
+| 5.0 最终规范 | **严格限视觉**（`Adapt（严格限视觉）`）；只做成员表格、角色列表、组织切换器的 UI 规范映射；**不改 `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` 等业务逻辑**（决策 D8，唯一清单见 `UDS5-S01` §5 C4） |
 | 代码实施位置 | `web/src/features/organization/`、`web/src/routes/_authenticated/organization/index.tsx`（仅视觉层）；本轮未执行代码改造 |
 | 测试证据 | `features/users/components/__tests__/permissions.test.tsx` 等权限相关单测；5.0 组织页 UI 规范验证 `NOT_VERIFIED` |
 
@@ -253,7 +253,7 @@
 |---|---|
 | Clerk 原始设计特点 | 组件内置状态机（认证流程 step / 加载 / 失败 / 降级），`ClerkLoaded` 等按状态自动渲染；redesigned hooks 暴露 stateful objects / step methods / structured field-level errors；定制不改动组件状态机与业务逻辑 |
 | Uter 当前设计情况 | 状态 / 数据用 Zustand `^5`、TanStack Query `^5.101.2`、TanStack Table `^8.21.3`、axios；`ui/button.tsx` 内置 `loading` prop；65 组件 contract 内有 `states` 字段但顶层 `states` 缺失 |
-| Uter 需要改进的地方 | 组件须补齐 default / hover / focus / pressed / disabled / loading / error / success 八态并登记证据；registry 缺顶层 `states` 等 8 类字段 |
+| Uter 需要改进的地方 | 组件须补齐 default / hover / focus / pressed / disabled / loading / error / success 八态并登记证据；registry 缺顶层 `states` 等 11 项字段 |
 | 5.0 最终规范 | 采纳「状态是一等渲染分支、状态机与业务逻辑不被定制改动」原则；组件规范要求八态齐备并登记证据；组件注册模型补齐 `layer / source / implementation_path / specification_path / test_path / story_path / variants / states / accessibility / deprecated / replacement` 字段 |
 | 代码实施位置 | `web/src/components/ui/*.tsx`、`web/src/design-system/component-registry.json`、`web/src/stores/` 与 TanStack Query 层；本轮未执行代码改造 |
 | 测试证据 | 既有：`--strict` EXIT=1（65 组件 `VERIFIED=0` / `PARTIAL=9` / `NOT_VERIFIED=56`）；5.0 八态证据登记与 registry 字段补齐校验 `NOT_VERIFIED` |
@@ -263,7 +263,7 @@
 | 字段 | 内容 |
 |---|---|
 | Clerk 原始设计特点 | Elements（历史）自述「accessible segmented OTP input」；本次核实页面**无独立无障碍规范页、无 WCAG 2.2 AA 条款级对照或对比度数值表（F4）**；理念为「可访问性内建而非后置补丁」 |
-| Uter 当前设计情况 | `foundations/accessibility.css`、11 个守卫测试（含 `status-badge-contrast.test.ts` / `accessibility.test.ts`）、`verify-contrast.mjs` 31 条、`test:axe` 2 个 spec；E24 两处对比度不达标（浅色溢价 3.76:1、深色折扣 3.30:1）为 P1 待修 |
+| Uter 当前设计情况 | `foundations/accessibility.css`、12 个守卫测试（含 `status-badge-contrast.test.ts` / `accessibility.test.ts`）、`verify-contrast.mjs` 31 条、`test:axe` 2 个 spec；E24 两处对比度不达标（浅色溢价 3.76:1、深色折扣 3.30:1）为 P1 待修 |
 | Uter 需要改进的地方 | E24 缺陷须保持待修、不得勾选通过；E28 有意例外需持续登记；`aria-expanded` / `aria-selected` 需与视觉状态一致；官方无等价数值证据，Uter 需以自有门禁为准 |
 | 5.0 最终规范 | 以 WCAG 2.2 AA 为目标，保留 E24 待修登记与 E28 例外边界；组件级 a11y 要求须登记到展示中心与注册 ID；键盘可达、焦点管理、Reduce Motion 纳入规范；**不得虚构 Clerk 对比度数值** |
 | 代码实施位置 | `web/src/design-system/foundations/accessibility.css`、`web/src/design-system/__tests__/`、`web/scripts/verify-contrast.mjs`、`web/e2e/axe/`；本轮未执行代码改造 |
@@ -286,8 +286,8 @@
 |---|---|
 | Clerk 原始设计特点 | Theme editor 是交互式工具，在一组预置组件上实时预览不同主题，用于快速试验主题对各组件 UI 的影响；属 Dashboard 侧的产品能力，非可移植组件规范 |
 | Uter 当前设计情况 | 已有 `showcase.html` 静态展示中心 + `showcase.tokens.js` 派生快照 + `sync-design-showcase.mjs --check`（17 条校验），`design:showcase:check` 已接入 npm script；**无交互式主题编辑器** |
-| Uter 需要改进的地方 | 「可预览」与「可校验」已具备，但**主题预设切换的即时预览**未做成交互工具；且 `showcase.tokens.js` 与内联快照双产物并存，存在漂移风险（已在 `UDS5-S01` §28 登记） |
-| 5.0 最终规范 | **只借鉴「主题变更必须可见、可校验」的治理原则**，不引入交互编辑器、不新增运行时依赖；展示中心仍以 `showcase.html` + `--check` 17 条为单一出口；交互预览能力登记为 `S21-D05`（`NOT_STARTED`），不作验收要求 |
+| Uter 需要改进的地方 | 「可预览」与「可校验」已具备，但**主题预设切换的即时预览**未做成交互工具；且 `showcase.tokens.js` 与内联快照双产物并存，存在漂移风险（已在 `UDS5-S01` §26 全局计数与口径裁决表登记） |
+| 5.0 最终规范 | **只借鉴「主题变更必须可见、可校验」的治理原则**，不引入交互编辑器、不新增运行时依赖；展示中心仍以 `showcase.html` + `--check` 17 条为单一出口；交互预览能力登记为 `S21-D01`（`REGISTERED_NOT_STARTED`），不作验收要求 |
 | 代码实施位置 | `web/scripts/sync-design-showcase.mjs`、`web/scripts/generate-design-showcase.mjs`、`docs/design-system/showcase.html`（只读）；本轮未执行代码改造 |
 | 测试证据 | 既有：`sync-design-showcase.mjs --check` 17 PASS / 0 FAIL（来自 `UDS5-AUDIT-01` 只读结论，本轮未复跑）；交互预览 `NOT_STARTED` |
 
@@ -298,7 +298,7 @@
 | Clerk 原始设计特点 | Dashboard 模板编辑器支持 Edit / **Preview**（预览时 `app_logo`、`copyright` 与模板变量替换为样例值）/ Reset（撤销上次保存后的改动）/ Revert（回滚到系统默认，需二次确认）/ Copy to another instance（跨开发→预发→生产复制，需二次确认）；邮件 WYSIWYG 含工具栏、移动视图开关、HTML 模式；每模板可关 `Delivered by Clerk`，改由 `emails.created` / `sms.created` webhook 自行投递 |
 | Uter 当前设计情况 | 邮件模板由 `common/email_template.go` 的 `BuildBrandEmailHTML` 硬编码生成（`EmailBrandName` / `BrandEmail{Subject,Heading,Paragraphs,Code,Note}` / `brandEmailFont` / `ensureLinkNoUnderline`）；**无模板编辑器、无预览、无版本回滚、无多环境复制**；全仓**无独立短信网关**（`UDS5-S32` §6 整节 `NOT_IMPLEMENTED`）；邮件 HTML 不消费任何 `--ds-*` / `--text-*` Token |
 | Uter 需要改进的地方 | 可借鉴「预览 / 回滚 / 跨环境复制 / 危险操作二次确认」四项治理理念，但**不得**引入 Clerk 模板系统或新增 `emails.created` 类 webhook 契约；邮件页脚与 `lang` 固定中文、暗色模式缺失等既有缺陷优先按 `UDS5-S32` 处理 |
-| 5.0 最终规范 | 以 `UDS5-S32`（触达与本地化规范）为唯一落点；模板真源继续为 `common/email_template.go`，**任何模板改动须走代码评审而非运行时编辑器**；「预览 / 回滚 / 跨环境复制」登记为 `S21-D06`（`NOT_STARTED`），短信模板整节保持 `NOT_IMPLEMENTED`；不改变任何认证 / 资金逻辑 |
+| 5.0 最终规范 | 以 `UDS5-S32`（触达与本地化规范）为唯一落点；模板真源继续为 `common/email_template.go`，**任何模板改动须走代码评审而非运行时编辑器**；「预览 / 回滚 / 跨环境复制」登记为 `S21-D03`（`REGISTERED_NOT_IMPLEMENTED`），短信模板整节保持 `NOT_IMPLEMENTED`；不改变任何认证 / 资金逻辑 |
 | 代码实施位置 | `common/email_template.go`、`common/verification.go`（只读）；`UDS5-S32` §4–§6；本轮未执行代码改造 |
 | 测试证据 | `NOT_VERIFIED`——本轮未执行邮件渲染或模板相关测试；`UDS5-S32` 已登记邮件能力默认关闭（`EmailCodeLoginEnabled` / `EmailVerificationEnabled` = `false`） |
 
@@ -332,10 +332,10 @@
 |---|---|---|
 | `Adopt`（仅理念 / 原则） | 主题继承理念、按钮状态齐备原则、卡片表面色差优先 | 与审计一致，不含引入主题包 |
 | `Adapt`（含严格限视觉） | Design Tokens、Appearance、Authentication / User / Organization、表单、导航、反馈、组合、状态、a11y、响应式、Elements 理念；**本轮新增** N1 Theme editor 理念、N2 Custom menu items、N3 Email/SMS templates 治理理念、N4 Build your own UI、N5 simple theme 分层边界、N7 localization 键机制 | 主体处置；本轮新增 6 项均为理念 / 信息架构，不含运行时引入 |
-| `Reject` | Clerk Elements 弃用 API、Clerk SDK / 主题包、通用表格 / 图表 / 日期 / 上传 / 通知 / 空态能力归为 Clerk；**本轮新增** N6 CSS 变量驱动动态主题（不得引入 `color-mix()` 运行时派生）、headless 原语包、`cl-*` 稳定类机制、`appearance.elements`、Clerk 模板系统 | 与 §2.2、§3 一致 |
+| `Reject` | Clerk Elements 弃用 API、Clerk SDK / 主题包、通用表格 / 图表 / 日期 / 上传 / 通知 / 空态能力归为 Clerk；**本轮新增 3 条判定**：N4 依赖侧（headless 原语包）、N6（CSS 变量动态主题 / `color-mix()` 运行时派生）、N7 作契约侧（Experimental localization prop）；`cl-*` 稳定类机制、`appearance.elements`、Clerk 模板系统为 N5 / N3 的附属结论，不另计维度 | 与 §2.2、§3 一致 |
 | 明确「官方未提供」 | 11 类通用能力（§2.2） | 与 `UDS5-AUDIT-02` §1.1 / §5 结论 4 一致 |
 
-> 本文未新增任何 `Adopt` 到「引入 Clerk 运行时」的方向；所有运行时依赖相关判定均为 `Reject` 或「不引入」。本轮补充的 7 个官方维度（N1–N7）中，**6 项 `Adapt`、1 项 `Reject`**，零依赖引入；详见 §10 `S21-D01`…`S21-D09`。
+> 本文未新增任何 `Adopt` 到「引入 Clerk 运行时」的方向；所有运行时依赖相关判定均为 `Reject` 或「不引入」。本轮补充的 7 个官方维度（N1–N7）共 **9 条处置判定**：6 条 `Adapt`（N1/N2/N3/N4/N5/N7）+ 3 条 `Reject`（N4 依赖侧 / N6 / N7 作契约侧），其中 N4 / N7 为双记；零依赖引入；详见 §10 `S21-D01`…`S21-D12`。
 
 ---
 
@@ -345,7 +345,7 @@
 |---|---|---|
 | `UDS5-S01` | 上级 | 本文服从总纲的规范效力、ID 体系与验证状态口径 |
 | `UDS5-AUDIT-01` | 事实依据 | `audit/BASELINE-AUDIT.md` 提供 Uter 当前设计情况、Token / 组件 / 页面 / CI / 平台全部基线数字与决策 D1–D8 |
-| `UDS5-AUDIT-02` | 事实依据 | `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` 提供首轮 9 个官方来源、23 项逐项分析、F1–F4 时效性事实与禁止事项复核；本轮另补 4 个官方来源（§2.4） |
+| `UDS5-AUDIT-02` | 事实依据 | `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` 提供首轮 9 个官方来源、23 个小节 / 24 条判定（历史快照）、F1–F4 时效性事实与禁止事项复核；本轮另补 4 个官方来源（§2.4） |
 | `UDS5-S03`（颜色规范） | 被引用 | §4.1 的「派生单一出口」、`--ds-font-*` 别名落地 |
 | `UDS5-S04`（字体规范） | 被引用 | §4.1 / §4.2 的 `@theme --text-*` 保留与 13px 基准拒绝（决策 D1） |
 | `UDS5-S10`（主题规范） | 被引用 | §4.4 主题继承、Light/Dark 成对校验 |
@@ -357,7 +357,7 @@
 | `UDS5-S23`（组件展示规范） | 被引用 | §4.12 / §4.13 组件八态与 a11y 登记到展示中心 |
 | `UDS5-S25`（验收规范） | 被引用 | 本文所有 `NOT_VERIFIED` 项纳入平台验收「不得用 Web 结果代替」口径 |
 | `UDS5-S32`（触达与本地化规范） | 本轮新增引用 | §4.16 N3 邮件 / 短信模板治理理念的唯一落点；邮件模板真源、短信 `NOT_IMPLEMENTED`、i18n 铁律以 S32 为准 |
-| `UDS5-S26`（自动化规范） | 本轮新增引用 | §8 的 `check-clerk-boundary.mjs` 四项静态守卫登记为可执行门禁 |
+| `UDS5-S24`（自动化规范） | 本轮新增引用 | §8 的 `check-clerk-boundary.mjs` 五项静态守卫（C1–C5）登记为可执行门禁，并接入 CI |
 | `UDS5-S11`（布局规范） | 本轮新增引用 | §4.9 N2「导航项 ↔ 注册组件 ID 双向可定位」的落点（`section-registry`），当前为 `NOT_STARTED` |
 
 > 上表规范 ID 引用以 5.0 分册编号体系为准；具体分册文件名由同级目录内 `UDS5-Sxx` 与文件名一一对应表确定，本文不虚构文件名。
@@ -375,10 +375,10 @@
 | 认证 / 账户 / 组织视图 | `web/src/routes/(auth)/*`、`web/src/features/{profile,security,organization}/` | §4.5 / §4.6 / §4.7 | 存在，仅允许视觉层改造，本轮未执行 |
 | 组件注册 | `web/src/design-system/component-registry.json` | §4.12 | 存在，未改造 |
 | 门禁脚本 | `web/scripts/check-design-tokens.mjs`、`sync-design-showcase.mjs`、`verify-contrast.mjs`、`generate-design-tokens.mjs`、`check-component-registry.mjs` | §4.1 / §4.13 | 存在，未改造 |
-| Clerk 边界守卫（本轮新增） | `web/scripts/check-clerk-boundary.mjs`、`web/src/design-system/__tests__/clerk-boundary.test.ts`、`web/package.json` 的 `design:clerk:check` | §3 / §8 / §10 | **本轮新增**，纯静态只读；回归测试 8/8 通过 |
+| Clerk 边界守卫（本轮新增） | `web/scripts/check-clerk-boundary.mjs`、`web/src/design-system/__tests__/clerk-boundary.test.ts`、`web/package.json` 的 `design:clerk:check` | §3 / §8 / §10 | **本轮新增**，纯静态只读；回归测试 11/11 通过（C1–C5） |
 | i18n | `web/src/i18n/locales/*.json`（7 份 / 54,573 行） | §4.8 | 存在，未改造 |
 
-> **本轮边界**：本文主体为外部参考与治理规范；本轮**唯一**的代码侧落地是按「每处改动先写回归测试」约定新增的**纯静态只读守卫** `web/scripts/check-clerk-boundary.mjs`（配套 `web/src/design-system/__tests__/clerk-boundary.test.ts` 与 `bun run design:clerk:check`）。该守卫只读取 `package.json` / `src/` / 本文 §2.2，**不修改任何业务、认证、资金、授权代码，不新增任何 Clerk 依赖**；先跑红色（8/8 失败）再跑绿色（8/8 通过）的实测记录见 §8 与 CHANGELOG。其余落地动作按 `UDS5-S27`（迁移指南）与 `UDS5-S26`（自动化规范）分期推进。
+> **本轮边界**：本文主体为外部参考与治理规范；本轮**唯一**的代码侧落地是按「每处改动先写回归测试」约定新增的**纯静态只读守卫** `web/scripts/check-clerk-boundary.mjs`（配套 `web/src/design-system/__tests__/clerk-boundary.test.ts` 与 `bun run design:clerk:check`）。该守卫只读取 `package.json` / `src/` / 本文 §2.2 / §3，**不修改任何业务、认证、资金、授权代码，不新增任何 Clerk 依赖**；先跑红色（11/11 失败）再跑绿色（11/11 通过）的实测记录见 §8 与 CHANGELOG。其余落地动作按 `UDS5-S27`（迁移指南）与 `UDS5-S24`（自动化规范）分期推进。
 
 ---
 
@@ -390,13 +390,13 @@
 | **Clerk 运行时零引用（C2）** | 同上 | **本轮已落地** | `PASS`：扫描 `web/src` **1,287** 个生产源文件，零 `ClerkProvider` / `@clerk/*` / `cl-*` 稳定类 / 品牌背书文案；排除 `__tests__` 与 `*.test.*` 避免自命中 |
 | **品牌值零照搬（C3）** | 同上 | **本轮已落地** | `PASS`：零 `#6c47ff`、零 `--clerk-*` 变量声明；Uter 品牌靛紫 `#5B5EE6` 不变 |
 | **通用组件能力归属性（C4）** | 同上 | **本轮已落地** | `PASS`：校验本文 §2.2 的 **11** 类能力逐条标注「官方是否提供 = 否」，防止把 Uter 自有能力误写成 Clerk 能力 |
-| 守卫自身回归测试 | `bun run test -- src/design-system/__tests__/clerk-boundary.test.ts` | **本轮已落地** | 红色阶段 **8/8 失败**（脚本未创建）→ 绿色阶段 **8/8 通过**；覆盖依赖注入、源码注入、品牌色注入、能力清单删减、自身排除 5 类负例 |
+| 守卫自身回归测试 | `bun run test -- src/design-system/__tests__/clerk-boundary.test.ts` | **本轮已落地** | 红色阶段 **11/11 失败**（脚本未创建）→ 绿色阶段 **11/11 通过**；覆盖依赖注入、源码注入、品牌色注入、能力清单删减、业务红线符号登记删减、前端越界耦合、自身排除 7 类负例 |
 | Token 两层体系未倒退 | `check-design-tokens.mjs --strict` | 既有（本轮未复跑） | 审计只读结论：违规 0 / EXIT=0；`bun run design:5:check` 本轮实测 `tokenFiles: 8` / `uniqueTokenVariables: 245` / `crossFileTokenDuplicates: 0` |
 | 主题 Light/Dark 成对 | `verify-contrast.mjs`；`check-design-system-5.0.mjs` 品牌变量成对检查 | 部分存在 | 审计只读结论 31 PASS / 0 FAIL；成对校验仅覆盖 `generated/brand.css`，扩展登记为 `S21-D07`（`NOT_STARTED`） |
 | 组件八态 / a11y 登记 | `components:registry:check` / `--strict` | 既有（本轮未复跑） | `--strict` EXIT=1 保持；65 组件 `VERIFIED 0 / PARTIAL 9 / NOT_VERIFIED 56` |
-| 业务红线零改动 | 无专用脚本；靠提交范围与 §3 P3 约束 | `NOT_STARTED` | 本轮新增文件仅限守卫脚本 / 守卫测试 / `package.json` 一行 / 规范文档；**认证、资金、授权、`org_role`、`sub_quota_limit`、`EnforceOrgQuota`、`IncrOrgUsedQuota` 零改动**，登记为 `S21-D09` |
+| **业务红线零改动（C5）** | `bun run design:clerk:check` → `web/scripts/check-clerk-boundary.mjs` | **本轮已落地** | `PASS`：① 文档一致性——S21 §3 P3 行显式登记 `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` 零改动符号；② 源码耦合防护——扫描 `web/src` **1,287** 个生产源文件，零后端业务函数名（`EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota`）；`org_role` / `sub_quota_limit` 为前端合法 API 字段名，仅由文档一致性守住登记 |
 
-> **实测口径**：上表 C1–C4 与守卫回归测试均为本轮**真实执行**的命令与退出码，不是复述审计结论。`bun run design:clerk:check` 默认模式输出 `verdict: PASS` / `errors: 0` / `checksPassed: 4`，退出码 0。`test:axe` / `test:business:e2e` / `test:visual:e2e` / `components:registry:strict` / `format:check` 刻意未接 CI，相关轨道只能开发机手动执行；本轮未针对 5.0 重跑视觉 / a11y 回归。
+> **实测口径**：上表 C1–C5 与守卫回归测试均为本轮**真实执行**的命令与退出码，不是复述审计结论。`bun run design:clerk:check` 默认模式输出 `verdict: PASS` / `errors: 0` / `checksPassed: 5`，退出码 0。`test:axe` / `test:business:e2e` / `test:visual:e2e` / `components:registry:strict` / `format:check` 刻意未接 CI，相关轨道只能开发机手动执行；本轮未针对 5.0 重跑视觉 / a11y 回归。
 
 ---
 
@@ -406,9 +406,9 @@
 |---|---|---|
 | 本文 18 项逐项规范 | `IMPLEMENTED_NOT_VERIFIED` | 规范文本已撰写（首轮 14 项 + 本轮 4 项），未执行代码改造与验证 |
 | F1 / F2 / F3 / F4 事实登记 | `IMPLEMENTED` | 如实写入 §2、§4 各相关项 |
-| §2.4 本轮 N1–N7 官方维度核对 | `IMPLEMENTED` | 4 个新增官方来源逐项登记，6 `Adapt` / 1 `Reject`，见 §10 |
-| Clerk 运行时依赖零引入 | **`PARTIALLY_VERIFIED`** | 本轮 `design:clerk:check` 静态扫描 C1 / C2 / C3 通过（84 依赖 / 1,287 源文件 / 0 违规）+ 回归测试 8/8；**仅静态门禁层，不等于运行时或平台验收通过** |
-| 通用组件能力归属一致性 | **`PARTIALLY_VERIFIED`** | 本轮 C4 校验 §2.2 的 11 类能力清单通过；仅文档结构层 |
+| §2.4 本轮 N1–N7 官方维度核对 | `IMPLEMENTED` | 4 个新增核对入口逐项登记，7 维度 / 9 判定（6 `Adapt` + 3 `Reject`，N4 / N7 双记），见 §10 |
+| Clerk 运行时依赖零引入（C1–C5） | **`PARTIALLY_VERIFIED`** | 本轮 `design:clerk:check` 静态扫描 C1–C5 通过（84 依赖 / 1,287 源文件 / 11 能力 / 1,288 业务红线项 / 0 违规）+ 回归测试 11/11；**仅静态门禁层，不等于运行时或平台验收通过** |
+| 通用组件能力归属一致性 / 业务红线零改动 | **`PARTIALLY_VERIFIED`** | 本轮 C4 校验 §2.2 的 11 类能力清单通过；C5 校验 §3 P3 零改动符号登记 + 前端零后端函数耦合通过；仅文档结构 / 静态边界层 |
 | Uter 组件 / Token / 主题改造 | `NOT_STARTED` | 按迁移指南分期推进 |
 | 认证 / 账户 / 组织视觉改造 | `NOT_STARTED` | 仅允许视觉层，业务零改动 |
 | 其余自动化校验器补充 | `NOT_STARTED` | 扁平单层回退检测、Light/Dark 成对扩展、导航 ↔ 注册 ID 关联，见 §10 |
@@ -432,9 +432,9 @@
 | S21-D07 | **Light/Dark 成对校验器覆盖不足**：`check-design-system-5.0.mjs` 仅校验 `generated/brand.css` 的品牌变量 | `REGISTERED_NOT_STARTED`：`UDS5-S10` `S10-D4` 仍标 `NOT_VERIFIED`，扩展到全量语义色待办 |
 | S21-D08 | **导航项 ↔ 注册组件 ID 双向可定位** 缺实现：首轮 §4.9 仅建议文字，无落地校验器 | `REGISTERED_NOT_STARTED`：`UDS5-S11` 的 `section-registry` 为落点，本轮不改导航实现 |
 | S21-D09 | **N7 localization prop 为 Experimental**（F2），官方键机制（英文文件查键 / 嵌套键 / `{{applicationName}}` 插值）与 Uter 铁律同构 | `REJECT_AS_CONTRACT`：仅作理念对照，严禁作为稳定 i18n 契约或依赖；Uter 维持英文原文作 key + 7 locale + `static-keys.ts` 登记 |
-| S21-D10 | **首轮 §8 三项「未建立」校验器**：Clerk 依赖零引入、通用组件能力归属性、业务红线零改动 | **前两项本轮已闭合**（C1–C4 守卫 + 8/8 回归测试）；**第三项仍 `NOT_STARTED`**，改为「提交范围 + §3 P3 约束」人工把关，未新增专用脚本，不虚构为已自动化 |
+| S21-D10 | **节点六之前登记的三项「未建立」校验器**（见本文件 §8 与 CHANGELOG §6.2）：Clerk 依赖零引入、通用组件能力归属性、业务红线零改动 | **三项本轮全部闭合**：前两项由 C1–C4 守卫 + 11/11 回归测试覆盖；**第三项「业务红线零改动」本轮落地为 C5 自动化**（`check-clerk-boundary.mjs` 新增文档一致性 + 前端越界耦合双约束 + 2 例 C5 回归测试），不再依赖人工提交范围把关，非虚构 |
 | S21-D11 | **守卫脚本产物边界**：`check-clerk-boundary.mjs` 支持 `--root` / `--docs` 仅供回归测试注入沙箱，默认模式不写任何文件 | `VERIFIED`：默认模式 `generated: false`，扫描 84 依赖 / 1,287 源文件 / 11 能力，`errors: 0`；测试沙箱位于 `os.tmpdir()`，`afterAll` 清理 |
-| S21-D12 | **业务红线零改动**：本轮新增 / 修改文件不含 `web/src` 运行时代码（守卫测试位于 `__tests__`）、不含 Go 后端、不含认证 / 资金 / 授权逻辑 | `VERIFIED_BY_SCOPE`：改动清单见 CHANGELOG §6.1；`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `IncrOrgUsedQuota` 零改动 |
+| S21-D12 | **业务红线零改动**：本轮新增 / 修改文件不含 `web/src` 运行时代码（守卫测试位于 `__tests__`）、不含 Go 后端、不含认证 / 资金 / 授权逻辑；并由 C5 自动化守卫（`check-clerk-boundary.mjs`）持续兜底 | `VERIFIED_BY_SCOPE` + `AUTOMATED_BY_C5`：改动清单见 CHANGELOG §6.1；`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `IncrOrgUsedQuota` 零改动 |
 
 > 本节编号采用 `S21-Dxx` 两位数形式，与 5.0 新分册体例一致；`UDS5-S21` 首轮无差异表，本节为本轮新增，历史审计报告 `UDS5-AUDIT-02` 保持原样作历史快照。
 

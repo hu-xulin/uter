@@ -149,7 +149,7 @@
 | ALLOWLIST | **不进 `ALLOWLIST`**（B 类例外只登记例外台账；A 类扫描例外才进 `ALLOWLIST` 并须同步校验契约） |
 | 深浅规则 | 品牌渐变三停靠站逐值锚定，`#60a5fa` / `#a78bfa` / `#a855f7` 深浅同值，**禁止 `.dark` 覆盖**，也不接 `chart-*`（后者随主题预设漂移） |
 | 消费出口 | 唯一为 `@utility ds-text-gradient-brand`；组件里不得手写渐变 |
-| 深色补偿 | 深色主题靠更暗背景自然获得更高对比度（记录值 7.02 / 6.56 / 4.51:1），不靠改渐变值 |
+| 深色补偿 | 深色主题靠更暗背景自然获得更高对比度（记录值 7.93 / 7.41 / 5.10:1（与 `UDS5-S13` §6 逐值成对锚定一致）），不靠改渐变值 |
 | 验证 | `web/scripts/verify-contrast.mjs` 含 E28 渐变锚定与负例拒绝；本轮未执行，`NOT_VERIFIED` |
 
 ---
@@ -172,7 +172,7 @@
 | `color.border.default` | `#E2E8F0` | `#334155` | `--border` | `#e2e8f0` | `#334155` | **完全一致** ✓ |
 | `color.border.strong` | `#CBD5E1` | `#475569` | `--border-strong` | `#cbd5e1` | `#475569` | **完全一致** ✓ |
 
-**结论**：中性色 8 项中 **4 项完全一致**（fg.default / border.default / border.strong + Light 侧 fg.muted / bg.surface / bg.surface-raised），**3 项冲突**（bg.canvas、bg.surface-raised 的 Dark、fg.muted 的 Dark），**1 项不可映射**（fg.subtle）。冲突项一律**保留仓库真值**，理由：
+**结论**：中性色 8 项中 **3 项完全一致**（fg.default / border.default / border.strong），**4 项冲突**（bg.canvas 全档、bg.surface / bg.surface-raised / fg.muted 的 Dark 侧），**1 项不可映射**（fg.subtle）。冲突项一律**保留仓库真值**，理由：
 
 1. `bg.canvas` 冲突会整体改变全站底色观感与既有视觉回归基线（22 页 × 2 视口），属**产品外观变更**，不在「补全规范」授权范围内。
 2. Dark 下 `card` / `popover` 与 `background` 同为 `#020617`，意味着 **Dark 主题缺少「抬升面」**——这是**已知的真实设计缺口**，登记为 `S03-D4` 治理候选（须由设计侧决定是否引入独立抬升面），本轮不擅自改值。
@@ -273,7 +273,7 @@
 | `web/scripts/generate-design-tokens.mjs --check`（`bun run design:tokens:check`） | DTCG 真源与 `generated/brand.css` 同步 | 已接入 `:406` |
 | `web/scripts/verify-contrast.mjs`（`bun run verify:contrast`） | 对比度、E24 复测、E28 渐变锚定与负例拒绝 | 已接入 `:414` |
 | `web/scripts/sync-design-showcase.mjs --check`（`bun run design:showcase:check`） | 17 条 Manifest 一致性校验 | 已接入 `:411` |
-| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 双视口像素基线 | 本地专用 |
+| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 双视口像素基线 | 已接入 ci.yml :423（E2E 双轨刻意不接 CI） |
 | `web/e2e/axe/playwright.config.ts`（`bun run test:axe`） | 无障碍 E2E | **刻意不接 CI**，仅开发机手动 |
 | `web/src/design-system/__tests__/`（Vitest） | 语义色 / 对比度守卫测试 | 随 `bun run test` |
 | `web/design-tokens.baseline.json` | 基线只减不增（0 条） | `--strict` 使用 |

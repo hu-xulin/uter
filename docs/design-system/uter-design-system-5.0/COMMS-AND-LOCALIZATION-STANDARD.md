@@ -312,7 +312,7 @@
 | **S32-D10** | **locale 键集合 1 处不一致**：`zh.json` 多出 `Invalid channel ID`（其余 6 份无），来源为后端 `controller/channel.go:498` 的英文错误串；`check-i18n-keys.mjs` 只查缺键、不查多余键，故不被门禁捕获 | `REGISTERED` / `NOT_VERIFIED` |
 | **S32-D11** | **`sync-i18n.mjs` 的 base locale 会漂移**：base 按叶子键数自动选取；已提交的 `_reports/_sync-report.json` 记 `base: en.json`，但按当前文件状态复算将选中 `zh.json`（7792 > 7791）。一旦 base 变更，7 份 locale 的键序会被整体重排，**`en` 键序的「历史插入序」不成立**。本册登记 §8.2 I-8 的口径，**不改脚本** | `REGISTERED` / `NOT_VERIFIED` |
 | **S32-D12** | **未翻译存量**：`_reports/_sync-report.json` 记录 `en` 0 / `fr` 70 / `ja` 192 / `ru` 192 / `vi` 70 / `zh-TW` 174 / `zh` 162 条未翻译 | `REGISTERED` / `NOT_VERIFIED` |
-| **S32-D13** | **守卫测试计数**：`web/src/design-system/__tests__/` 实际为 **11 个** `*.test.ts`（含 `design-system-5-governance.test.ts`），与 `UDS5-S13` §4.1 均为 11 个，**差异在审计基线 `BASELINE-AUDIT` §12 记 10 个**（第 11 个为 5.0 建立时新增、未计入审计基线；`UDS5-S13` 已按 `S13-D13` 同步为 11 个，审计基线保持历史快照原样）。本文按真值写 11，**不改审计报告**（与 `UDS5-S29` 的 `D-07` 同源） | `REGISTERED` |
+| **S32-D13** | **守卫测试计数**：`web/src/design-system/__tests__/` 实际为 **11 个** `*.test.ts`（含 `design-system-5-governance.test.ts`），与 `UDS5-S13` §4.1 均为 11 个，**差异在审计基线 `BASELINE-AUDIT` §12 记 10 个**（第 11 个为 5.0 建立时新增、未计入审计基线；`UDS5-S13` 已按 `S13-D13` 同步为 11 个，审计基线保持历史快照原样）。本文按真值写 11，**不改审计报告**（与 `UDS5-S29` 的 `S29-D07` 同源） | `REGISTERED` |
 | **S32-D14** | **邮件相关守卫仅覆盖 Go 侧**：`verify-contrast.mjs` 只扫描 `web/src`，**不覆盖** `common/email_template.go` 的邮件色值；邮件正文 `#3c4043` / 标题 `#202124` 在白底上对比度充足，但页脚 `#80868b` 在白底上约 **3.68:1**、低于普通文本 4.5:1，且邮件不在任何对比度门禁范围内 | `REGISTERED` / `NOT_VERIFIED` |
 | **S32-D15** | **本分册已登记入规范注册表**：`DESIGN-STANDARD-REGISTRY.yaml` 已补登 `UDS5-S32`（`category: business-vertical`，`dependencies` 含 S01 / S03 / S04 / S13 / S18 / S19 / S20 / S22）。**已执行** `bun run design:5:check`（`web/scripts/check-design-system-5.0.mjs`，**默认模式、不带 `--generate` / `--strict`**），结果 `verdict: PASS` / `errors: 0` / `checks: 7` / `checksPassed: 7` / `standards: 37` / `registeredDocIds: 37` / `scannedMarkdown: 35`——「文档 ID 反向登记」检查已通过。**该结论仅覆盖注册表与文档 ID 的结构一致性，不构成邮件 / 短信 / i18n 域的功能 / 视觉 / 门禁 / 平台验收**；`gaps: 74` 为组件级证据缺口，与本文无关。（只读性已核实：该脚本的 `writeFileSync` 仅存在于 `--generate` 分支，默认模式不写任何文件） | `CLOSED`（2026-11-14 只读实测 `errors: 0`；结构层 `PARTIALLY_VERIFIED`） |
 | **S32-D16** | **无短信网关**：全仓短信相关检索命中 0；本册短信章节整节标 `NOT_IMPLEMENTED`，不写 provider | `NOT_IMPLEMENTED` |
@@ -406,7 +406,7 @@
 | 邮件相关 Go 单测 | `NOT_EXECUTED` | 本轮未运行 `go test`；**不宣称任何用例通过** |
 | 守卫测试 11 个 / i18n 测试 6 个 | `NOT_EXECUTED` | 已 ls 核实数量；**未执行** |
 | `i18n:check` / `i18n:sync` / `lint` / `typecheck` / `build:check` | `NOT_EXECUTED` | 本轮未运行任何门禁 |
-| `design:5:check` | **2026-11-14 已执行：`verdict: PASS` / `errors: 0` / `checksPassed: 7`**（`UDS5-S32` 已登记，见 S32-D15） | 注册一致性达 PASS；本文其余验证项仍为 `NOT_VERIFIED` / `NOT_EXECUTED` |
+| `design:5:check` | **2026-11-14 已执行：`verdict: PASS` / `errors: 0` / `checksPassed: 7`**（`UDS5-S32` 已登记，见 S32-D15） | 注册一致性结构层达 `PARTIALLY_VERIFIED`（脚本字面 `verdict: PASS`，不转写为业务验收结论）；本文其余验证项仍为 `NOT_VERIFIED` / `NOT_EXECUTED` |
 | 邮件客户端矩阵验收（Gmail / Outlook / Apple Mail / 移动端） | `NOT_EXECUTED` | 无现成脚本 |
 | PC Web / H5 平台 | `NOT_VERIFIED` | 未针对 5.0 重跑回归 |
 | Android / iOS / HarmonyOS | `NOT_VERIFIED` | 无真实实现（决策 D4），不得用 Web 结果代替 |

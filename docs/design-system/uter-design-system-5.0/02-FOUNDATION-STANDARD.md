@@ -102,7 +102,7 @@
 | # | 可执行判定 | 门禁映射 | 真实落点 |
 |---|---|---|---|
 | 5.1 | 同类控件高度必须一致；内联胶囊高度统一 `--ds-chip-height: 1.3125rem`（21px，非 4pt 整数倍，属专用档，禁止并入控件高度档） | T17 | `tokens/spacing.css:57` |
-| 5.2 | 圆角只用受控档 `xs → 4xl`（**8 个命名档**：6/8/10/12/14/16/18/20px）+ Tailwind 内建 `full`，禁止 `rounded-[3px]`；基准 `--radius: 0.625rem`(10px) 见 `web/src/styles/theme.css:274-276`，8 档 `calc(var(--radius)*N)` 见 `:264-271`；「圆角七档」是 3.0 早期只登记到 16px 的历史称谓（`theme.css:258-260` 自述「属文档滞后」），5.0 **不得沿用** | T10 | `tokens/semantic.css:94-110`、`web/src/styles/theme.css:264-276` |
+| 5.2 | 圆角只用受控档 `xs → 4xl`（**8 个命名派生档**：6/8/10/12/14/16/18/20px，另有 `rounded-full` 特殊档（运行时 T10 合计 9 种合法写法））+ Tailwind 内建 `full`，禁止 `rounded-[3px]`；基准 `--radius: 0.625rem`(10px) 见 `web/src/styles/theme.css:274-276`，8 档 `calc(var(--radius)*N)` 见 `:264-271`；「圆角七档」是 3.0 早期只登记到 16px 的历史称谓（`theme.css:258-260` 自述「属文档滞后」），5.0 **不得沿用** | T10 | `tokens/semantic.css:94-110`、`web/src/styles/theme.css:264-276` |
 | 5.3 | 动效节奏只用五组登记时长，禁止 `duration-300` / `ease-[cubic-bezier(…)]` | T11 | `foundations/motion.css`（7 个 `ds-motion-*` utility） |
 | 5.4 | 字距由字号 Token 自带，禁止 `tracking-*`；仅 `tracking-normal` 放行 | T12 | `tokens/typography.css` |
 | 5.5 | 图标描边统一 2px，尺寸固定 16 / 18 / 24 / 32 / 48；颜色跟随父级 `currentColor`，不设 `--ds-icon-color` | 人工审查 | `tokens/semantic.css:126-164` |
@@ -285,7 +285,7 @@
 | `web/scripts/sync-design-showcase.mjs --check`（`bun run design:showcase:check`） | 17 条 Manifest 一致性校验 | 已接入 `:411` |
 | `web/scripts/verify-contrast.mjs`（`bun run verify:contrast`） | 对比度与 E28 渐变锚定 | 已接入 `:414` |
 | `web/scripts/check-component-registry.mjs`（`bun run components:registry:check`） | 组件注册双向一致性 | 已接入 `:427` |
-| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 像素基线 | 本地专用 |
+| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 像素基线 | 已接入 ci.yml :423（E2E 双轨刻意不接 CI） |
 | `bun run typecheck` / `lint` / `test` / `copyright:check` / `build:check` | 前端基础门禁 | 已接入 |
 | `web/src/design-system/__tests__/`（Vitest） | 11 个设计系统守卫测试 | 随 `bun run test` |
 | `web/e2e/axe/playwright.config.ts` | 无障碍 E2E | **刻意不接 CI**，仅开发机手动 |
@@ -303,4 +303,4 @@
 | 验证状态 | **`NOT_VERIFIED`** |
 | 下级规范遵循关系 | 一律遵循 `UDS5-S01`，已声明 |
 
-**未验证 / 未执行清单**：`lint:design:strict` 全量扫描复跑、`design:tokens:check`、`design:showcase:check` 的 17 条校验复跑、`verify:contrast`、`components:registry:strict`、11 个守卫测试执行、全量构建（`build:check` / `scripts/verify-all.sh`）、`test:visual` 与 `test:visual:e2e` 双轨视觉回归、`test:axe`、Android / iOS / HarmonyOS 平台验收、65 组件逐项证据补齐、E24 两处对比度缺陷修复验证、焦点环 `2px` 在组件层与原生兜底的同步及回归测试验证（口径已裁决、实现未验证）、`UDS5-S01` §4.2 差异登记的统一、`--ds-font-*` 语义别名落地验证、3 处同名 `EmptyState` 合并验证、3 个纯别名压缩消失问题的根因定位。
+**未验证 / 未执行清单**：`lint:design:strict` 全量扫描复跑、`design:tokens:check`、`design:showcase:check` 的 17 条校验复跑、`verify:contrast`、`components:registry:strict`、12 个守卫测试执行、全量构建（`build:check` / `scripts/verify-all.sh`）、`test:visual` 与 `test:visual:e2e` 双轨视觉回归、`test:axe`、Android / iOS / HarmonyOS 平台验收、65 组件逐项证据补齐、E24 两处对比度缺陷修复验证、焦点环 `2px` 在组件层与原生兜底的同步及回归测试验证（口径已裁决、实现未验证）、`UDS5-S01` §4.2 差异登记的统一、`--ds-font-*` 语义别名落地验证、3 处同名 `EmptyState` 合并验证、3 个纯别名压缩消失问题的根因定位。

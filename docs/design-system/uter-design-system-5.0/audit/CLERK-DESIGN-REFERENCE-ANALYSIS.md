@@ -3,8 +3,10 @@
 | 字段 | 值 |
 |---|---|
 | 文档 ID | `UDS5-AUDIT-02` |
-| 版本 | `5.0.0-draft` |
-| 状态 | `IMPLEMENTED`（研究完成；`Decision` 列中的代码实施状态见各条 `Uter Adaptation`） |
+| 版本 | `5.0.0` |
+| 状态 | `ACTIVE`（注册表生命周期） |
+| 生效日期 | `2026-11-14` |
+| 验证状态 | `IMPLEMENTED_NOT_VERIFIED`（研究完成，结论未独立复测；本报告为首轮历史快照） |
 | 核实日期 | 2026-11-14 (GMT+8) |
 | 核实方式 | 对 Clerk 官方页面逐页取回并提取原文；**不使用截图、旧教程或第三方解读作为事实来源** |
 | 约束 | 用户 PART 1.3 / PART 5：不得把 Clerk 不具备的能力描述为 Clerk 官方能力；不得照搬品牌 |
@@ -33,7 +35,7 @@
 
 ---
 
-## 2. 逐项参考分析（23 项，字段严格按 PART 1.3）
+## 2. 逐项参考分析（23 个小节 / 24 条判定，字段严格按 PART 1.3）
 
 ### 2.1 品牌与视觉语言
 
@@ -283,7 +285,7 @@
 | Design Principle | 可访问性内建于组件而非后置补丁 |
 | Visual Behavior | 不适用（不得虚构数值） |
 | Interaction | 键盘可达、OTP 分段可访问 |
-| Uter Adaptation | Uter 已有 `foundations/accessibility.css`、10 个守卫测试（含 `status-badge-contrast.test.ts` / `accessibility.test.ts`）、`verify-contrast.mjs` 31 条、`test:axe` 2 个 spec；5.0 `13-ACCESSIBILITY-STANDARD.md` 以 WCAG 2.2 AA 为目标，保留 E24 待修登记 |
+| Uter Adaptation | Uter 已有 `foundations/accessibility.css`、12 个守卫测试（含 `status-badge-contrast.test.ts` / `accessibility.test.ts`）、`verify-contrast.mjs` 31 条、`test:axe` 2 个 spec；5.0 `13-ACCESSIBILITY-STANDARD.md` 以 WCAG 2.2 AA 为目标，保留 E24 待修登记 |
 | Difference | Uter 有可执行的对比度门禁与数值证据，Clerk 本次核实页面未提供等价物 |
 | Decision | **Adapt** |
 
@@ -318,11 +320,11 @@
 | Decision | 数量 | 项目 |
 |---|--:|---|
 | **Adopt** | 3 | Buttons（仅状态齐备原则）、Cards、Themes（仅理念） |
-| **Adapt** | 17 | 品牌与视觉语言、页面布局、导航、Typography、Colors、Forms、Inputs、Dialogs、Dropdowns、Popovers、Feedback、Loading、Authentication、User Management、Organization Management、Responsive、Accessibility、Component Customization（共 18，其中 Themes 计为 Adopt+Reject 双记，故本表 17 + 1 双记） |
-| **Reject** | 4 | Tables、Empty States、Clerk Elements（弃用 API 不引入）、`@clerk/ui` 主题包 / Clerk SDK / Storybook |
+| **Adapt** | 18 | 品牌与视觉语言、页面布局、导航、Typography、Colors、Forms、Inputs、Dialogs、Dropdowns、Popovers、Feedback、Loading、Authentication、User Management、Organization Management、Responsive、Accessibility、Component Customization（共 18 个小节，含 Themes 的 Adapt 侧） |
+| **Reject** | 4 | Tables、Empty States、Clerk Elements（弃用 API 不引入）、`@clerk/ui` 主题包 / Clerk SDK / Storybook（另含 Themes 的 Reject 侧双记 1 条） |
 | **不提供官方能力，明确标注** | 11 类 | Data Table、Charts、DatePicker/Calendar、FileUpload、Image/Lightbox、Toast/Banner 通用规范、Drawer/Sheet、CommandMenu、Stepper、Timeline/Tree/Transfer、Skeleton/EmptyState 通用规范 |
 
-> 计数说明：Themes 一项同时含 `Adopt`（理念）与 `Reject`（不引入包）两个判定，故上表 Adapt 计 17 项 + Themes 双记 = 正文 18 项 Adapt 判定；总计 23 项均已给出判定。
+> 计数说明：§2.1–§2.23 共 **23 个小节**；Themes（§2.22）同时含 `Adopt`（理念）与 `Reject`（不引入包）两条判定，故**判定总数 24 条** = `Adopt 3` + `Adapt 18` + `Reject 3`（Tables / Empty States / Clerk Elements + 主题包等） + Themes 双记 1。上表「Reject 4」含 Themes 的 Reject 侧 1 条，因此 3+18+4 不应再被读成 25。
 
 ---
 

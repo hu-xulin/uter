@@ -23,7 +23,7 @@
 | E-3 | 不滥用阴影 | 表格、侧边栏、页面容器、按钮、徽标一律不加阴影；Card 常态不投影。 |
 | E-4 | 封闭集合 | 投影只能是 §3 登记的 6 个 `--ds-*` 档，任意 `shadow-*` 由 T6 拦截。 |
 | E-5 | Dark 单独定义 | Dark 不得直接复制 Light 阴影值，须结合更深的阴影 + 表面色差 + 边框三层共同生效。 |
-| E-6 | 品牌基线不动 | 1px 边框、圆角八档、表面优先均属 3.0 已定案基线（BASELINE-AUDIT §11.1 第 3 条），5.0 继承并纠正为 8 个命名档（见 `UDS5-S06` §2.1）。 |
+| E-6 | 品牌基线不动 | 1px 边框、8 个命名派生档 + `rounded-full` 特殊档（运行时 T10 称「圆角九档」）、表面优先均属 3.0 已定案基线（BASELINE-AUDIT §11.1 第 3 条），5.0 继承并纠正为 8 个命名档（见 `UDS5-S06` §2.1）。 |
 | E-7 | 投影不是层级替代品 | 不得用阴影代替必要边框，不得用大范围 Glow 代替品牌色。 |
 
 > 该口径由 `web/src/design-system/tokens/elevation.css:19-45` 的文件头注释固化，并由 3.0 §8.3「使用限制」与 T6 门禁共同保证。
@@ -37,7 +37,7 @@
 | 项 | 规定 | 真源 |
 |---|---|---|
 | 标准描边宽度 | **1px** | `web/src/design-system/tokens/semantic.css:113` 的 `--ds-stroke-width: 1px` |
-| 焦点环宽度 | 见 `UDS5-S13`（口径差异已登记） | `semantic.css:123` 当前运行时为 2px |
+| 焦点环宽度 | 见 `UDS5-S13` §7：**已裁决 2px `ring-2`，无规范—代码漂移** | `semantic.css:123` 运行时为 2px |
 | 装饰性描边 | 1px `ring-1`（弹层 / 卡片 / 日历格），不承载焦点语义 | 3.0 §15.1 分类表 |
 | 禁止 | 2px 以上常规描边、用描边宽度变化表达 hover/层级 | T13–T15 / S07 |
 
@@ -193,7 +193,7 @@
 ### 6.4 落地路径（治理候选，非既成事实）
 
 1. 在 `web/src/design-system/tokens/` 内新增单一 z-index 声明点，落地 §6.2 八档目标 Token。
-2. 将 `ui/` 下 30 处 `z-50` 按「overlay / modal / popover / dropdown」语义拆分替换。
+2. 将全库 30 处 `z-50`（其中 `ui/` 下 24 处） 按「overlay / modal / popover / dropdown」语义拆分替换。
 3. 增加守卫测试锁定档位白名单（参照 `elevation-motion.test.ts` 的白名单范式）。
 4. 为 `z-[…]` 任意值与超档裸数值补静态拦截（登记为治理候选，**当前无对应检查项，不得宣称已生效**）。
 5. 完成 1–4 后，将 §10 的 `S07-D3` 由 `NOT_VERIFIED` 改为已落地，并回填本节存量分布为收敛后基线。
@@ -304,7 +304,7 @@
 | `sync-design-showcase.mjs` | 展示一致 | `--check` 的 17 条校验含 Shadow 区（showcase 第 14 区）快照 |
 | `verify:contrast`（`verify-contrast.mjs`） | 对比度 | 边框色 / 非文本对比度 3:1 校验 |
 | `visual-regression.mjs` / `test:visual` | 视觉 | 投影/边框变更需复核 22 页 × 2 视口基线 |
-| `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 11 个守卫之一，守 6 档白名单与 Dark 覆盖 |
+| `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 12 个守卫之一，守 6 档白名单与 Dark 覆盖 |
 
 > 说明：`elevation-motion.test.ts` 为守卫测试文件；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 

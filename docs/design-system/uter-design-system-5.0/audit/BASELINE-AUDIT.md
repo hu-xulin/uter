@@ -3,8 +3,10 @@
 | 字段 | 值 |
 |---|---|
 | 文档 ID | `UDS5-AUDIT-01` |
-| 版本 | `5.0.0-draft` |
-| 状态 | `IMPLEMENTED`（审计报告本身已完成；其结论中未验证项见 §14） |
+| 版本 | `5.0.0` |
+| 状态 | `ACTIVE`（注册表生命周期） |
+| 生效日期 | `2026-11-14` |
+| 验证状态 | `IMPLEMENTED_NOT_VERIFIED`（审计报告已完成，结论中未验证项见 §14；基线数字为审计时点快照） |
 | 审计日期 | 2026-11-14 (GMT+8) |
 | 审计对象 | `/Users/lincolnhu/uter` |
 | 分支 / HEAD | `main` / `d83e81f3e` |
@@ -51,7 +53,7 @@
 | i18n | i18next `^26.3.4`，7 份 locale，合计 **54,573 行** | `web/src/i18n/locales/{en,fr,ja,ru,vi,zh-TW,zh}.json` |
 | 测试 | Vitest `^5.0.4`（jsdom）、Playwright `^1.64.1`、axe-core | `web/package.json:110,135,126` |
 | Storybook | **不存在**：0 依赖、0 配置、0 `*.stories.*`、全仓 `storybook` 字面命中 0 | 全仓只读检索 |
-| 组件展示 | `docs/design-system/showcase.html`（2,188 行 / 86,313 B），24 个区域，数据驱动自 §28 Manifest | `showcase.html:8-23,1342-1487,1718` |
+| 组件展示 | `docs/design-system/showcase.html`（2,188 行 / 86,313 B），24 个区域，数据驱动自 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT） | `showcase.html:8-23,1342-1487,1718` |
 | 后端 | Go 1.27.3 + Gin + GORM，SQLite / MySQL / PostgreSQL | `AGENTS.md:130-135` |
 | 桌面端 | `electron/`（Electron `42.11.18`），加载同一 `web/dist` | `electron/package.json:2-29`、`electron/main.js:1` |
 
@@ -154,12 +156,12 @@
 
 ### 5.1 展示中心真实能力
 
-`showcase.html` 是**浏览器真实 DOM 渲染**（0 个 `<img>`、0 处 `React`），数据全部来自 §28 Manifest 内联快照，具备 Light/Dark 与密度三档的**交互切换**、24 个区域渲染器。但：
+`showcase.html` 是**浏览器真实 DOM 渲染**（0 个 `<img>`、0 处 `React`），数据全部来自 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT） 内联快照，具备 Light/Dark 与密度三档的**交互切换**、24 个区域渲染器。但：
 
-- 尺寸（9 档）、Variant（6 档）、状态（7 态）均为**并排静态展示**，不可切换；
+- 尺寸（9 档）、Variant（6 档）、状态（6 态，缺 error / success）均为**并排静态展示**，不可切换；
 - `Props` 0 处、`UTER-CMP` 注册 ID 0 处、组件级无障碍要求 0 处、代码示例 0 处；
 - **不是 `web/src/components/ui/*.tsx` 的 React 组件实例**（`web/src` 内无任何引用）；
-- 无 React 路由级展示页（80 个路由文件中 0 个 showcase/design-system 路由）、无 Storybook；
+- 无 React 路由级展示页（73 个路由文件中 0 个 showcase/design-system 路由）、无 Storybook；
 - `add-showcase-anchors.mjs:49-218` 的 22 条锚点未覆盖区域 23 `breakpoints`、24 `token-layers`；
 - `generate-design-showcase.mjs:25-29` 叙述的 `showcase-3.0.html` / `showcase-3.0.generated.html`：`showcase-3.0.html` 曾是真实像素基线文件，已于提交 `9a7234787` 删除、并由 `412f0a28b` 更名为 `showcase.html`（数据驱动展示页，禁止内联 `:root` Token 副本，见 3.0 §28.3）；其遗留引用在 `visual-regression.mjs` 与 `tokens.test.ts` 中，已于 5.0 收口阶段（2026-11-14）修正为 `showcase.html`。`showcase-3.0.generated.html` 由 `generate-design-showcase.mjs` 按需生成、不入库。故「两文件均不存在」应修正为「`showcase-3.0.html` 已退役更名、`showcase-3.0.generated.html` 按需生成」。
 
@@ -243,7 +245,7 @@
 | **D3** | 「若已有组件展示系统，优先扩展，不重复建设」 | 已有 `showcase.html`（24 区、真实 DOM、数据驱动）但无 React 实例 / Props / 注册 ID | **Adapt** | 扩展既有 showcase，不引入 Storybook（0 依赖、引入成本高于收益）；新增「规范 ↔ 代码 ↔ 注册 ID」双向关联面板 |
 | **D4** | PART 12.6 要求 5 平台分别验证；PART 13 要求全平台通过方可 `FULLY_IMPLEMENTED_AND_VERIFIED` | Android/iOS/HarmonyOS **无任何实现** | **Reject（不可达）→ 如实标记** | 三平台必须标 `NOT_VERIFIED`；因此最终状态**不可能**为 `FULLY_IMPLEMENTED_AND_VERIFIED`，须按 PART 13「只要有一项未通过就不能宣布」报告实际状态 |
 | **D5** | 「研究 Clerk Elements 的组件定制理念」 | 官方页标题为 **"Clerk Elements, Deprecated"**，Core 3（2026-03-03）起推荐 redesigned hooks | **Adapt** | 只借鉴「分层定制」理念（Themes → variables → BYO CSS → 自建 UI），**不引入、不描述为现行 API**；在参考分析中显式记录弃用事实 |
-| **D6** | PART 7 建议 `tokens/*.ts` 目录结构 | 现有真源为 CSS + `@theme` + §28 Manifest 三层，TS 侧仅有 2 个「无法语义化」的收口文件 | **Adapt** | 以实际工程架构为准（PART 7 明文允许），不新建第二套 TS 值 Token（否则产生无法解释的重复 Token，违反 PART 7 第 8 条）；改为补「Token 元数据注册表 + 校验器」 |
+| **D6** | PART 7 建议 `tokens/*.ts` 目录结构 | 现有真源为 CSS + `@theme` + 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT） 三层，TS 侧仅有 2 个「无法语义化」的收口文件 | **Adapt** | 以实际工程架构为准（PART 7 明文允许），不新建第二套 TS 值 Token（否则产生无法解释的重复 Token，违反 PART 7 第 8 条）；改为补「Token 元数据注册表 + 校验器」 |
 | **D7** | 「规范、代码、组件、页面、测试必须一致」「全部组件已注册、全部页面完成适配」 | 3.0 自身 73 项验收未勾选；65 组件证据 0 VERIFIED；73 路由中仅 22 页有视觉基线 | **Adapt + 分期** | 建立完整注册表与差距台账；代码实施按「每处改动先写回归测试」的项目约定分期推进，不一次性批量重写全站 UI（会破坏 T1–T17 严格门禁与并发 WIP） |
 | **D8** | 「不改变认证/授权/资金逻辑」 | 用户指令同时要求研究 Clerk 的 Authentication / User / Organization UI | **Adopt（严格边界）** | 仅参考视觉与信息架构，绝不引入 Clerk SDK、不替换 Uter 自建认证/组织/权限体系（PART 5 明文禁止） |
 
@@ -251,20 +253,22 @@
 
 ## 10. 设计不一致、兼容性与升级风险
 
-| 类别 | 具体项 | 风险等级 |
+| 类别 | 具体项 | 风险等级（现行 `RISK-*` 口径；本表原值见下注） |
 |---|---|---|
-| 设计不一致 | 3 处同名 `EmptyState`；4 个近似命名状态组件；`ui/empty.tsx` 与业务 `EmptyState` 并存 | P1 |
-| 无障碍 | E24 两处对比度不达标（3.76:1 / 3.30:1）；E28 有意例外需持续登记 | P1 |
-| 构建 | 3 个纯别名 `--ds-color-*` 生产构建被压缩丢弃，靠 `var(--x, fallback)` 缓解 | P1 |
-| Token | 约 93 个零静态引用变量；`theme-presets.css` 52 个同名重抄；`showcase.tokens.js` 与内联快照双产物 | P2 |
-| 组件 | 65 个组件证据全未 VERIFIED；registry 缺 8 类字段；`dropdown-menu.test.tsx` 平铺违反 `web/AGENTS.md:185` | P1 |
-| 展示 | 无 Props / 注册 ID / 组件级 a11y / 代码示例 / React 路由展示页；2 个锚点缺失；2 个过时「不存在文件」注释 | P2 |
-| 页面 | 73 路由中仅 22 页有视觉基线；`system-settings/*` 18 个路由无 E2E 覆盖 | P2 |
-| 兼容性 | 并发 WIP 211 项；全量构建与 `./uap *` 命令会写入 `.uap/state/`，可能污染他人工作 | **P0（流程）** |
-| 规范 | 3.0 与 5.0 并存期若引用不统一，会出现 3.0/5.0 混用 | P1 |
-| 平台 | 3 个平台无实现，无法验收 | **P0（结论）** |
+| 设计不一致 | 3 处同名 `EmptyState`；4 个近似命名状态组件；`ui/empty.tsx` 与业务 `EmptyState` 并存 | `RISK-P1` |
+| 无障碍 | E24 两处对比度不达标（3.76:1 / 3.30:1）；E28 有意例外需持续登记 | `RISK-P1` |
+| 构建 | 3 个纯别名 `--ds-color-*` 生产构建被压缩丢弃，靠 `var(--x, fallback)` 缓解 | `RISK-P1` |
+| Token | 约 93 个零静态引用变量；`theme-presets.css` 52 个同名重抄；`showcase.tokens.js` 与内联快照双产物 | `RISK-P2` |
+| 组件 | 65 个组件证据全未 VERIFIED；registry 缺 11 项字段；`dropdown-menu.test.tsx` 平铺违反 `web/AGENTS.md:185` | `RISK-P1` |
+| 展示 | 无 Props / 注册 ID / 组件级 a11y / 代码示例 / React 路由展示页；2 个锚点缺失；2 个过时「不存在文件」注释 | `RISK-P2` |
+| 页面 | 73 路由中仅 22 页有视觉基线；`system-settings/*` 18 个路由无 E2E 覆盖 | `RISK-P2` |
+| 兼容性 | 并发 WIP 211 项；全量构建与 `./uap *` 命令会写入 `.uap/state/`，可能污染他人工作 | **`RISK-P0`（流程）** |
+| 规范 | 3.0 与 5.0 并存期若引用不统一，会出现 3.0/5.0 混用 | `RISK-P1` |
+| 平台 | 3 个平台无实现，无法验收 | **`RISK-P0`（结论）** |
 
 ---
+
+> **命名空间注**：本表在审计时点用裸写 `P0/P1/P2` 表示风险等级；2026-11-14 口径统一后已改写为 `RISK-P0/P1/P2`（`UDS5-S01` §4A.1），裸写 `P1–P3` 仅指仓库历史待办优先级。
 
 ## 11. 保留 / 合并 / 重构 / 废弃决定
 
@@ -310,7 +314,7 @@
 |---|---|
 | 3.0 规范文档 | 1 份 / 4,111 行 / 197,053 B / 29 章 |
 | 设计 Token | 319 处定义 / 245 个唯一变量名 / 14 个 CSS / 1,518 行 |
-| 设计系统守卫测试 | 10 个（`web/src/design-system/__tests__/`） |
+| 设计系统守卫测试 | 10 个（2026-11-14 审计时点快照；现行实测 12 个，见 `UDS5-S13` `S13-D13`） |
 | 门禁脚本 | 5 个核心 + 3 个 showcase/锚点脚本，T1–T17 共 17 条规则 |
 | `ui/` 组件 | 66 个 `.tsx`（65 实现 + 1 测试）/ 65 条注册 / 11 类 |
 | 业务封装 | 7 目录 + 7 顶层 `.tsx`，`data-table/` 24 导出 |

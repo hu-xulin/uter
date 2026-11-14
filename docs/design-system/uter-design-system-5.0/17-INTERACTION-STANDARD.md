@@ -303,7 +303,7 @@
 | 业务浮层封装 | `web/src/components/dialog.tsx` / `confirm-dialog.tsx` | **只读** |
 | 动效 / 无障碍基础 | `web/src/design-system/foundations/motion.css` / `accessibility.css` | **只读** |
 | 命中区工具 | `.ds-touch-target`（`ui/button.tsx:89` 引用） | **只读** |
-| 设计系统守卫测试 | `web/src/design-system/__tests__/`（10 个，含 `accessibility.test.ts`） | **只读** |
+| 设计系统守卫测试 | `web/src/design-system/__tests__/`（12 个，含 `accessibility.test.ts`） | **只读** |
 | 前端规范 | `web/AGENTS.md`（§3.9 / 3.12 / 3.14） | **只读** |
 | 规范输出 | `docs/design-system/uter-design-system-5.0/17-INTERACTION-STANDARD.md` | **本文件（新建）** |
 

@@ -68,7 +68,7 @@
 > **数值口径澄清（重要，防止 3.0/5.0 混用）**：`web/src/styles/theme.css:258-260` 明确记录——「旧版只登记到 16px 并自称『七档』，属文档滞后；3xl / 4xl 由 `primitives.css` 与 `semantic.css` 长期持有，这里补齐后三处口径才一致」。因此：
 > - 指令中「圆角七档 6/8/10/12/14/16/18/20px」的**八个真实数值**，对应代码里 `xs→4xl` 共 **8 个命名档**；
 > - 「七档」是 3.0 早期文档只登记到 16px（`2xl`）时的历史称谓；
-> - 5.0 以运行时真源为准，登记为 **8 个命名派生档**，值域完整覆盖 `6 / 8 / 10 / 12 / 14 / 16 / 18 / 20px`，不多一档、不少一档。
+> - 5.0 以运行时真源为准，登记为 **8 个命名派生档**，值域完整覆盖 `6 / 8 / 10 / 12 / 14 / 16 / 18 / 20px`，不多一档、不少一档；`rounded-full` 为 T10 额外放行的**特殊档**（运行时 `theme.css:257` 称「第九档」），不属于这 8 个 calc 派生档，故「8 档」与「9 种合法写法」不矛盾。
 
 ---
 
@@ -205,7 +205,7 @@
 2. 禁止在 `primitives.css` / `semantic.css` / 组件层重复声明 `--radius-*`（T1 守唯一来源的同类约束）。
 3. 禁止同一功能（如两个 PrimaryButton）使用不同圆角档。
 4. 禁止用 Circle/Pill 表达普通容器，或用 Rounded 表达正圆。
-5. 禁止为「看起来更圆」新增第 9 档；新增档须先改 §28 Manifest 并同步守卫与快照，五者同提交（参照 3.0 §15.1 变更流程）。
+5. 禁止为「看起来更圆」新增第 9 档；新增档须先改 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT 追溯）与 5.0 变更流程 `UDS5-S01` §19 并同步守卫与快照，五者同提交（参照 3.0 §15.1 变更流程）。
 6. 禁止因 H5 断点改变圆角档来「解决布局」（S12）。
 
 ---
@@ -263,7 +263,7 @@
 | `generate-design-tokens.mjs` | 真源同步 | `--check` 校验生成 CSS 与源同步，防止基准/派生档漂移 |
 | `sync-design-showcase.mjs` | 展示一致 | `--check` 的 17 条校验含圆角快照一致性 |
 | `visual-regression.mjs` | 视觉 | 22 页 × 2 视口基线，圆角变更需复核 |
-| `tokens.test.ts` / `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 内 11 个守卫之一，校验 `calc(var(--radius) * N)` 解析 |
+| `tokens.test.ts` / `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 内 12 个守卫之一，校验 `calc(var(--radius) * N)` 解析 |
 
 > 说明：`tokens.test.ts`、`elevation-motion.test.ts` 等为 `web/src/design-system/__tests__/` 下的守卫测试文件，非门禁脚本；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 

@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<!-- UTER DESIGN SYSTEM 5.0 · 全量 Showcase · Uter.ai · 由 generate-design-showcase-5.0.mjs 生成，请勿手工编辑 -->
+<html lang="zh-CN" data-theme="light" data-density="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UTER Design System 5.0 · 全量 Showcase</title>
+<style>
+:root {
+  --bg: #f8fafc; --surface: #ffffff; --surface-2: #f1f5f9; --fg: #0f172a;
+  --fg-muted: #64748b; --border: #e2e8f0; --brand: #5b5ee6; --brand-strong: #494cc7;
+  --brand-deep: #3f42b0; --brand-soft: #eef0ff; --success: #16a34a; --warning: #d97706;
+  --danger: #dc2626; --info: #2563eb; --success-soft: #dcfce7; --warning-soft: #fef3c7;
+  --radius: 10px; --focus: 2px;
+  --fs-display: 36px; --fs-h1: 28px; --fs-h2: 22px; --fs-h3: 18px;
+  --fs-body: 14px; --fs-caption: 12px; --fs-dense: 13px;
+  --shadow-0: none; --shadow-1: 0 1px 2px rgba(15,23,42,.06);
+  --shadow-2: 0 2px 6px rgba(15,23,42,.09); --shadow-3: 0 6px 16px rgba(15,23,42,.11);
+  --shadow-4: 0 12px 28px rgba(15,23,42,.14); --shadow-5: 0 20px 44px rgba(15,23,42,.18);
+  --motion-fast: 100ms; --motion-base: 200ms; --motion-slow: 350ms;
+}
+html[data-theme="dark"] {
+  --bg: #0b1120; --surface: #131c31; --surface-2: #1b2740; --fg: #e2e8f0;
+  --fg-muted: #94a3b8; --border: #26324a; --brand: #8b8df5; --brand-strong: #a1a3f7;
+  --brand-deep: #b7b8fa; --brand-soft: #20264a; --success: #4ade80; --warning: #fbbf24;
+  --danger: #f87171; --info: #60a5fa; --success-soft: #143524; --warning-soft: #3a2c0d;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.4); --shadow-2: 0 2px 6px rgba(0,0,0,.45);
+  --shadow-3: 0 6px 16px rgba(0,0,0,.5); --shadow-4: 0 12px 28px rgba(0,0,0,.55);
+  --shadow-5: 0 20px 44px rgba(0,0,0,.6);
+}
+html[data-density="compact"] { --pad: 10px; --gap: 10px; }
+html[data-density="default"] { --pad: 16px; --gap: 16px; }
+html[data-density="comfortable"] { --pad: 24px; --gap: 24px; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 var(--fs-body)/1.6 "Inter Variable", "Noto Sans SC Variable", system-ui, sans-serif; }
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font: 400 var(--fs-dense)/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+:focus-visible { outline: var(--focus) solid var(--brand); outline-offset: 2px; }
+.app { display: grid; grid-template-columns: 268px minmax(0, 1fr); min-height: 100vh; }
+.sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border); padding: var(--pad); }
+.sidebar h2 { font-size: var(--fs-caption); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-muted); margin: 20px 0 8px; }
+.sidebar a { display: block; padding: 3px 6px; font-size: var(--fs-caption); border-radius: 6px; color: var(--fg); }
+.sidebar a:hover { background: var(--brand-soft); text-decoration: none; }
+.sidebar a code { font-size: var(--fs-caption); background: none; padding: 0; color: var(--brand); }
+.main { padding: var(--pad) clamp(16px, 3vw, 48px) 64px; max-width: 1440px; width: 100%; }
+.topbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.topbar h1 { font-size: var(--fs-h1); font-weight: 600; line-height: 1.28; margin: 0; }
+.topbar p { margin: 4px 0 0; color: var(--fg-muted); font-size: var(--fs-caption); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.controls label { font-size: var(--fs-caption); color: var(--fg-muted); }
+select, input, button { font-family: inherit; font-size: var(--fs-body); color: var(--fg); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+select { min-height: 32px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow-1); }
+.stat strong { display: block; font-size: var(--fs-h2); font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat span { font-size: var(--fs-caption); color: var(--fg-muted); }
+h2.section-title { font-size: var(--fs-h2); font-weight: 600; line-height: 1.36; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--brand); }
+.element { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--pad); margin-bottom: var(--gap); box-shadow: var(--shadow-1); }
+.element-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 14px; }
+.element-head h2 { font-size: var(--fs-h3); font-weight: 600; margin: 0; }
+.element-no { color: var(--brand); font-weight: 600; font-size: var(--fs-caption); }
+.note { font-size: var(--fs-caption); color: var(--fg-muted); margin: 14px 0 0; line-height: 1.7; }
+.grid-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.swatch { border: 1px solid var(--border); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+.swatch-chip { height: 34px; border-radius: 6px; border: 1px solid var(--border); }
+.swatch-val { font-size: var(--fs-caption); color: var(--fg-muted); }
+.type-stack { display: flex; flex-direction: column; gap: 8px; }
+.type-row { display: grid; grid-template-columns: 110px 1fr; align-items: baseline; gap: 12px; border-bottom: 1px dashed var(--border); padding-bottom: 6px; }
+.t-display { font-size: var(--fs-display); font-weight: 600; line-height: 1.22; }
+.t-h1 { font-size: var(--fs-h1); font-weight: 600; line-height: 1.28; }
+.t-h2 { font-size: var(--fs-h2); font-weight: 600; line-height: 1.36; }
+.t-h3 { font-size: var(--fs-h3); font-weight: 600; line-height: 1.44; }
+.t-body { font-size: var(--fs-body); }
+.t-caption { font-size: var(--fs-caption); }
+.t-dense { font-size: var(--fs-dense); }
+.t-mono { font: 400 var(--fs-dense)/1.5 ui-monospace, monospace; }
+.space-row, .radius-row, .elev-row, .motion-row { display: flex; flex-wrap: wrap; gap: 14px; }
+.space-item, .radius-item, .motion-item { display: flex; flex-direction: column; gap: 6px; align-items: center; font-size: var(--fs-caption); }
+.space-bar { height: 14px; background: var(--brand); border-radius: 3px; display: block; min-width: 8px; }
+.radius-box { width: 54px; height: 54px; background: var(--brand-soft); border: 2px solid var(--brand); display: block; }
+.elev-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; width: 120px; display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-caption); }
+.elev-0 { box-shadow: var(--shadow-0); } .elev-1 { box-shadow: var(--shadow-1); }
+.elev-2 { box-shadow: var(--shadow-2); } .elev-3 { box-shadow: var(--shadow-3); }
+.elev-4 { box-shadow: var(--shadow-4); } .elev-5 { box-shadow: var(--shadow-5); }
+.demo-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.border-1 { border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; }
+.border-decor { box-shadow: 0 0 0 1px var(--brand); padding: 8px 12px; border-radius: 8px; }
+.focus-demo { border: 1px solid var(--brand); color: var(--brand); cursor: pointer; }
+.icon-demo { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--border); padding: 8px; border-radius: 8px; }
+.motion-bar { width: 70px; height: 12px; background: var(--brand); border-radius: 6px; display: block; animation: pulse 200ms ease-in-out infinite alternate; }
+@keyframes pulse { from { opacity: .35; } to { opacity: 1; } }
+.theme-chip, .bp-chip, .chip, .state-chip, .contrast-chip, .hit-target { border: 1px solid var(--border); background: var(--surface-2); border-radius: 999px; padding: 5px 12px; font-size: var(--fs-caption); }
+.bp-chip code { background: none; padding: 0; color: var(--brand); }
+.shell-demo { display: grid; grid-template-columns: 150px 1fr; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; min-height: 130px; }
+.shell-side { background: var(--brand-soft); padding: 12px; font-size: var(--fs-caption); border-right: 1px solid var(--border); }
+.shell-main { display: flex; flex-direction: column; }
+.shell-head { border-bottom: 1px solid var(--border); padding: 8px 12px; font-size: var(--fs-caption); }
+.shell-content { padding: 12px; font-size: var(--fs-caption); color: var(--fg-muted); }
+.form-demo { display: grid; gap: 8px; max-width: 360px; }
+.form-demo label { font-size: var(--fs-caption); font-weight: 600; }
+.form-demo input { width: 100%; min-height: 36px; }
+.form-demo .otp { letter-spacing: .5em; text-align: center; }
+.field-error { color: var(--danger); font-size: var(--fs-caption); margin: 0; }
+.btn { cursor: pointer; border-radius: 8px; min-height: 36px; padding: 8px 16px; border: 1px solid transparent; font-weight: 500; }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-strong); }
+.demo-table { width: 100%; border-collapse: collapse; font-size: var(--fs-dense); }
+.demo-table th { text-align: left; font-size: var(--fs-caption); font-weight: 500; color: var(--fg-muted); border-bottom: 1px solid var(--border); padding: 8px; }
+.demo-table td { padding: 8px; border-bottom: 1px solid var(--border); }
+.demo-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.badge { border-radius: 999px; padding: 2px 8px; font-size: var(--fs-caption); }
+.badge-ok { background: var(--success-soft); color: var(--success); }
+.badge-warn { background: var(--warning-soft); color: var(--warning); }
+.state-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.notif-stack { display: grid; gap: 8px; }
+.notif { border-radius: 8px; padding: 10px 14px; font-size: var(--fs-caption); border: 1px solid var(--border); }
+.notif-toast { background: var(--brand-soft); color: var(--brand-deep); }
+.notif-snackbar { background: var(--surface-2); }
+.notif-alert { border-color: var(--danger); color: var(--danger); }
+.notif-banner { border-color: var(--info); color: var(--info); }
+.notif-system { border-style: dashed; color: var(--fg-muted); }
+.notif-center { background: var(--surface-2); }
+.matrix { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.matrix-head, .matrix-row { display: grid; grid-template-columns: 1.6fr repeat(5, 1fr); font-size: var(--fs-caption); }
+.matrix-head { background: var(--surface-2); font-weight: 600; }
+.matrix-head span, .matrix-row span { padding: 6px 8px; border-right: 1px solid var(--border); }
+.matrix-row { border-top: 1px solid var(--border); }
+.matrix-row span:not(:first-child) { text-align: center; color: var(--success); }
+.tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.tpl-card { border: 1px solid var(--border); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.tpl-thumb { height: 48px; background: linear-gradient(160deg, var(--brand-soft), var(--surface-2)); border: 1px solid var(--border); border-radius: 4px; display: block; }
+.domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.domain-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-caption); }
+.domain-card strong { font-size: var(--fs-body); color: var(--brand); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.layer-stack { display: grid; gap: 8px; }
+.layer { display: grid; grid-template-columns: 170px 1fr; gap: 12px; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: var(--fs-caption); }
+.spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 12px; }
+.spec-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow-1); }
+.spec-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.spec-head h3 { font-size: var(--fs-h3); font-weight: 600; margin: 0; flex: 1 1 160px; }
+.spec-id { color: var(--brand); }
+.pill { font-size: var(--fs-caption); background: var(--brand-soft); color: var(--brand-deep); border-radius: 999px; padding: 2px 8px; }
+.spec-scope { font-size: var(--fs-caption); color: var(--fg-muted); min-height: 40px; }
+.spec-meta { display: grid; grid-template-columns: 48px 1fr; gap: 2px 8px; font-size: var(--fs-caption); margin: 8px 0; }
+.spec-meta dt { color: var(--fg-muted); } .spec-meta dd { margin: 0; }
+.spec-links { display: flex; flex-wrap: wrap; gap: 10px; font-size: var(--fs-caption); color: var(--fg-muted); margin: 0; }
+.cmp-group { margin-bottom: 22px; }
+.cmp-group-title { font-size: var(--fs-h3); font-weight: 600; margin: 0 0 10px; }
+.cmp-group-title span { font-size: var(--fs-caption); color: var(--fg-muted); font-weight: 400; }
+.cmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.cmp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.cmp-card h4 { font-size: var(--fs-body); font-weight: 600; margin: 6px 0; }
+.cmp-id { font-size: var(--fs-caption); color: var(--brand); }
+.cmp-path { font: 400 var(--fs-caption)/1.5 ui-monospace, monospace; color: var(--fg-muted); word-break: break-all; margin: 0 0 8px; }
+.cmp-foot { display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--fs-caption); color: var(--fg-muted); border-top: 1px dashed var(--border); padding-top: 8px; }
+.lab { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--pad); }
+.lab-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.lab-stage { margin-top: 20px; padding: 24px; border: 1px dashed var(--border); border-radius: 8px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+#demo-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; border: 1px solid transparent; font-weight: 500; cursor: pointer; transition: background var(--motion-fast) ease, transform var(--motion-fast) ease; padding: 8px 16px; min-height: 36px; font-size: var(--fs-body); }
+#demo-button[data-variant="default"] { background: var(--brand); color: #fff; }
+#demo-button[data-variant="outline"] { background: transparent; color: var(--brand); border-color: var(--brand); }
+#demo-button[data-variant="secondary"] { background: var(--surface-2); color: var(--fg); }
+#demo-button[data-variant="ghost"] { background: transparent; color: var(--fg-muted); }
+#demo-button[data-variant="destructive"] { background: var(--danger); color: #fff; }
+#demo-button[data-variant="link"] { background: transparent; color: var(--brand); text-decoration: underline; }
+#demo-button[data-size="icon-xs"] { min-height: 24px; padding: 4px; font-size: var(--fs-caption); }
+#demo-button[data-size="icon-sm"], #demo-button[data-size="sm"] { min-height: 32px; padding: 5px 10px; font-size: var(--fs-caption); }
+#demo-button[data-size="lg"] { min-height: 44px; padding: 10px 20px; }
+#demo-button[data-size="icon"], #demo-button[data-size="icon-lg"] { min-height: 40px; padding: 8px; }
+#demo-button[data-size="inline"] { min-height: 24px; padding: 2px 6px; font-size: var(--fs-caption); }
+#demo-button[data-size="wrap"] { max-width: 180px; white-space: normal; text-align: left; }
+#demo-button[data-state="hover"] { opacity: .88; }
+#demo-button[data-state="focus"] { outline: var(--focus) solid var(--brand); outline-offset: 2px; }
+#demo-button[data-state="pressed"] { transform: scale(.97); }
+#demo-button[data-state="disabled"] { opacity: .5; pointer-events: none; }
+#demo-button[data-state="loading"] { opacity: .8; }
+#demo-button[data-state="error"] { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); }
+#demo-button[data-state="success"] { border-color: var(--success); box-shadow: 0 0 0 1px var(--success); }
+footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); font-size: var(--fs-caption); color: var(--fg-muted); }
+@media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; max-height: 260px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" aria-label="Showcase 分区导航">
+    <h2>UTER Design System 5.0</h2>
+    <p class="note">全量 Showcase · 规范验收视图 · 真实 DOM 渲染</p>
+    <h2>基础元素（20）</h2>
+    <a href="#el-color" aria-label="跳转到 色彩 Color">色彩 Color</a>
+<a href="#el-typography" aria-label="跳转到 字号与排版 Typography">字号与排版 Typography</a>
+<a href="#el-spacing" aria-label="跳转到 间距 Spacing">间距 Spacing</a>
+<a href="#el-radius" aria-label="跳转到 圆角 Radius and Shape">圆角 Radius and Shape</a>
+<a href="#el-elevation" aria-label="跳转到 投影与层叠 Elevation">投影与层叠 Elevation</a>
+<a href="#el-border" aria-label="跳转到 边框与焦点环 Border / Focus">边框与焦点环 Border / Focus</a>
+<a href="#el-iconography" aria-label="跳转到 图标 Iconography">图标 Iconography</a>
+<a href="#el-motion" aria-label="跳转到 动效 Motion">动效 Motion</a>
+<a href="#el-theme" aria-label="跳转到 主题 Theme">主题 Theme</a>
+<a href="#el-layout" aria-label="跳转到 布局 Layout">布局 Layout</a>
+<a href="#el-responsive" aria-label="跳转到 响应式 Responsive">响应式 Responsive</a>
+<a href="#el-accessibility" aria-label="跳转到 无障碍 Accessibility">无障碍 Accessibility</a>
+<a href="#el-form" aria-label="跳转到 表单与校验 Form and Validation">表单与校验 Form and Validation</a>
+<a href="#el-data-display" aria-label="跳转到 数据展示 Data Display">数据展示 Data Display</a>
+<a href="#el-notification" aria-label="跳转到 通知 Notification">通知 Notification</a>
+<a href="#el-interaction" aria-label="跳转到 交互 Interaction">交互 Interaction</a>
+<a href="#el-page-template" aria-label="跳转到 页面模板 Page Template">页面模板 Page Template</a>
+<a href="#el-business-domain" aria-label="跳转到 业务域 Business Domains">业务域 Business Domains</a>
+<a href="#el-component-api" aria-label="跳转到 组件 API 与八态 Component API">组件 API 与八态 Component API</a>
+<a href="#el-token-layers" aria-label="跳转到 Token 三层与真源 Token Layers">Token 三层与真源 Token Layers</a>
+    <h2>交互实验室</h2>
+    <a href="#lab">Button × Variant × Size × State</a>
+    <h2>规范分册（37）</h2>
+    <a href="#spec-UDS5-S01" aria-label="跳转到 UDS5-S01"><code>UDS5-S01</code> UTER Design System 5.0 总纲</a>
+<a href="#spec-UDS5-S02" aria-label="跳转到 UDS5-S02"><code>UDS5-S02</code> Foundation 基础设计规范</a>
+<a href="#spec-UDS5-S03" aria-label="跳转到 UDS5-S03"><code>UDS5-S03</code> Color 色彩规范</a>
+<a href="#spec-UDS5-S04" aria-label="跳转到 UDS5-S04"><code>UDS5-S04</code> Typography 字体规范</a>
+<a href="#spec-UDS5-S05" aria-label="跳转到 UDS5-S05"><code>UDS5-S05</code> Spacing 间距规范</a>
+<a href="#spec-UDS5-S06" aria-label="跳转到 UDS5-S06"><code>UDS5-S06</code> Radius and Shape 圆角与形状规范</a>
+<a href="#spec-UDS5-S07" aria-label="跳转到 UDS5-S07"><code>UDS5-S07</code> Elevation and Border 投影与边框规范</a>
+<a href="#spec-UDS5-S08" aria-label="跳转到 UDS5-S08"><code>UDS5-S08</code> Iconography 图标规范</a>
+<a href="#spec-UDS5-S09" aria-label="跳转到 UDS5-S09"><code>UDS5-S09</code> Motion 动效规范</a>
+<a href="#spec-UDS5-S10" aria-label="跳转到 UDS5-S10"><code>UDS5-S10</code> Theme 主题规范</a>
+<a href="#spec-UDS5-S11" aria-label="跳转到 UDS5-S11"><code>UDS5-S11</code> Layout 布局规范</a>
+<a href="#spec-UDS5-S12" aria-label="跳转到 UDS5-S12"><code>UDS5-S12</code> Responsive 响应式规范</a>
+<a href="#spec-UDS5-S13" aria-label="跳转到 UDS5-S13"><code>UDS5-S13</code> Accessibility 无障碍规范</a>
+<a href="#spec-UDS5-S14" aria-label="跳转到 UDS5-S14"><code>UDS5-S14</code> Component 组件规范</a>
+<a href="#spec-UDS5-S15" aria-label="跳转到 UDS5-S15"><code>UDS5-S15</code> Component API 组件接口规范</a>
+<a href="#spec-UDS5-S16" aria-label="跳转到 UDS5-S16"><code>UDS5-S16</code> Page Template 页面模板规范</a>
+<a href="#spec-UDS5-S17" aria-label="跳转到 UDS5-S17"><code>UDS5-S17</code> Interaction 交互规范</a>
+<a href="#spec-UDS5-S18" aria-label="跳转到 UDS5-S18"><code>UDS5-S18</code> Form and Validation 表单与校验规范</a>
+<a href="#spec-UDS5-S19" aria-label="跳转到 UDS5-S19"><code>UDS5-S19</code> Data Display 数据展示规范</a>
+<a href="#spec-UDS5-S20" aria-label="跳转到 UDS5-S20"><code>UDS5-S20</code> Notification 通知规范</a>
+<a href="#spec-UDS5-S21" aria-label="跳转到 UDS5-S21"><code>UDS5-S21</code> Clerk 设计参考专项规范</a>
+<a href="#spec-UDS5-S22" aria-label="跳转到 UDS5-S22"><code>UDS5-S22</code> Uter 业务组件适配规范</a>
+<a href="#spec-UDS5-S23" aria-label="跳转到 UDS5-S23"><code>UDS5-S23</code> 组件展示与规范对应系统规范</a>
+<a href="#spec-UDS5-S24" aria-label="跳转到 UDS5-S24"><code>UDS5-S24</code> 设计系统自动化治理规范</a>
+<a href="#spec-UDS5-S25" aria-label="跳转到 UDS5-S25"><code>UDS5-S25</code> 设计系统验收规范</a>
+<a href="#spec-UDS5-S26" aria-label="跳转到 UDS5-S26"><code>UDS5-S26</code> 设计系统变更记录</a>
+<a href="#spec-UDS5-S27" aria-label="跳转到 UDS5-S27"><code>UDS5-S27</code> 3.0 到 5.0 迁移指南</a>
+<a href="#spec-UDS5-S28" aria-label="跳转到 UDS5-S28"><code>UDS5-S28</code> 废弃规范治理标准</a>
+<a href="#spec-UDS5-AUDIT-01" aria-label="跳转到 UDS5-AUDIT-01"><code>UDS5-AUDIT-01</code> 5.0 基线审计报告</a>
+<a href="#spec-UDS5-AUDIT-02" aria-label="跳转到 UDS5-AUDIT-02"><code>UDS5-AUDIT-02</code> Clerk 官方设计参考核实报告</a>
+<a href="#spec-UDS5-S29" aria-label="跳转到 UDS5-S29"><code>UDS5-S29</code> 认证组件规范</a>
+<a href="#spec-UDS5-S30" aria-label="跳转到 UDS5-S30"><code>UDS5-S30</code> 用户与 API Key 组件规范</a>
+<a href="#spec-UDS5-S31" aria-label="跳转到 UDS5-S31"><code>UDS5-S31</code> 组织与账单组件规范</a>
+<a href="#spec-UDS5-S32" aria-label="跳转到 UDS5-S32"><code>UDS5-S32</code> 触达与本地化规范</a>
+<a href="#spec-UDS5-R01" aria-label="跳转到 UDS5-R01"><code>UDS5-R01</code> 设计规范注册表</a>
+<a href="#spec-UDS5-R02" aria-label="跳转到 UDS5-R02"><code>UDS5-R02</code> 组件注册表 5.0 YAML 投影</a>
+<a href="#spec-UDS5-F01" aria-label="跳转到 UDS5-F01"><code>UDS5-F01</code> 5.0 最终验收报告</a>
+    <h2>组件注册表（65）</h2>
+    <a href="#components">全部已注册组件</a>
+  </nav>
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1>UTER Design System 5.0 · 全量 Showcase</h1>
+        <p>版本 5.0.0 · 生效 2026-11-14 · 由注册表与运行时 Token 生成 · 单文件 file:// 可打开</p>
+      </div>
+      <div class="controls">
+        <label for="ctl-theme">主题</label>
+        <select id="ctl-theme" data-control="theme" aria-label="切换 Light / Dark 主题">
+          <option value="light">Light</option><option value="dark">Dark</option>
+        </select>
+        <label for="ctl-density">密度</label>
+        <select id="ctl-density" data-control="density" aria-label="切换密度档">
+          <option value="default">Default</option><option value="compact">Compact</option><option value="comfortable">Comfortable</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="覆盖统计">
+      <div class="stat"><strong>37</strong><span>注册规范条目</span></div>
+      <div class="stat"><strong>32</strong><span>分册（28 基础 + 4 业务域）</span></div>
+      <div class="stat"><strong>65</strong><span>已注册组件</span></div>
+      <div class="stat"><strong>20</strong><span>基础元素 / 模式分区</span></div>
+      <div class="stat"><strong>12</strong><span>守卫测试</span></div>
+      <div class="stat"><strong>14</strong><span>Token CSS（8+6）</span></div>
+    </section>
+
+    <h2 class="section-title" id="elements">一 · 基础元素与模式（20 类）</h2>
+    <section class="element" data-element="color" id="el-color" aria-label="元素分区 色彩 Color">
+    <header class="element-head"><span class="element-no">E01</span><h2>色彩 Color</h2><code>UDS5-S03</code></header>
+    <div class="element-body"><div class="grid-swatches">
+      <div class="swatch"><span class="swatch-chip" style="background:#5B5EE6"></span><code>brand-1</code><span class="swatch-val">靛紫主色</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#494CC7"></span><code>brand-2</code><span class="swatch-val">#494CC7</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#3F42B0"></span><code>brand-3</code><span class="swatch-val">#3F42B0</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#8B8DF5"></span><code>brand-dark-1</code><span class="swatch-val">#8B8DF5</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#A1A3F7"></span><code>brand-dark-2</code><span class="swatch-val">#A1A3F7</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#B7B8FA"></span><code>brand-dark-3</code><span class="swatch-val">#B7B8FA</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#F8FAFC"></span><code>canvas</code><span class="swatch-val">#F8FAFC</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#FFFFFF"></span><code>surface</code><span class="swatch-val">#FFFFFF</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#0F172A"></span><code>fg-primary</code><span class="swatch-val">#0F172A</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#64748B"></span><code>fg-secondary</code><span class="swatch-val">#64748B</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#E2E8F0"></span><code>border</code><span class="swatch-val">#E2E8F0</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#16A34A"></span><code>success</code><span class="swatch-val">#16A34A</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#D97706"></span><code>warning</code><span class="swatch-val">#D97706</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#DC2626"></span><code>danger</code><span class="swatch-val">#DC2626</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:#2563EB"></span><code>info</code><span class="swatch-val">#2563EB</span></div>
+      <div class="swatch"><span class="swatch-chip" style="background:linear-gradient(90deg,#5B5EE6,#818CF8,#38BDF8,#34D399,#FBBF24)"></span><code>chart-1..5</code><span class="swatch-val">图表 5 色</span></div>
+    </div>
+    <p class="note">语义色一律走 <code>-soft</code> / <code>-subtle</code> / <code>-hover</code> 派生，禁止 <code>bg-X/NN</code> 任意透明度；首屏演示色走 <code>term-*</code>、通用代码走 <code>syntax-*</code>，两套不互引。<code>text-fg-primary</code> 死类与 E24 / E28 例外均已登记差异。</p></div>
+  </section>
+<section class="element" data-element="typography" id="el-typography" aria-label="元素分区 字号与排版 Typography">
+    <header class="element-head"><span class="element-no">E02</span><h2>字号与排版 Typography</h2><code>UDS5-S04</code></header>
+    <div class="element-body"><div class="type-stack">
+      <div class="type-row"><code>display</code><span class="t-display">36 / 600 / 44</span></div>
+      <div class="type-row"><code>h1</code><span class="t-h1">28 / 600 / 36</span></div>
+      <div class="type-row"><code>h2</code><span class="t-h2">22 / 600 / 30</span></div>
+      <div class="type-row"><code>h3</code><span class="t-h3">18 / 600 / 26</span></div>
+      <div class="type-row"><code>body</code><span class="t-body">14 / 22 正文</span></div>
+      <div class="type-row"><code>caption</code><span class="t-caption">12 / 18 最小字号</span></div>
+      <div class="type-row"><code>dense</code><span class="t-dense">13px 走 text-dense</span></div>
+      <div class="type-row"><code>mono</code><span class="t-mono">13px 走 text-mono</span></div>
+    </div>
+    <p class="note">全站可见文本下限 <strong>12px</strong>（T16）；<code>text-uk-*</code> 禁用；<code>@theme --text-*</code> 是 Tailwind v4.3.3 自定义字号注册机制，保留不得删除。运行时 h1/h2 为 30/38 与 24/32，规范目标值差异已登记 <code>Adapt / NOT_VERIFIED</code>。</p></div>
+  </section>
+<section class="element" data-element="spacing" id="el-spacing" aria-label="元素分区 间距 Spacing">
+    <header class="element-head"><span class="element-no">E03</span><h2>间距 Spacing</h2><code>UDS5-S05</code></header>
+    <div class="element-body"><div class="space-row"><div class="space-item"><span class="space-bar" style="width:8px"></span><code>4px</code></div><div class="space-item"><span class="space-bar" style="width:16px"></span><code>8px</code></div><div class="space-item"><span class="space-bar" style="width:24px"></span><code>12px</code></div><div class="space-item"><span class="space-bar" style="width:32px"></span><code>16px</code></div><div class="space-item"><span class="space-bar" style="width:48px"></span><code>24px</code></div><div class="space-item"><span class="space-bar" style="width:64px"></span><code>32px</code></div><div class="space-item"><span class="space-bar" style="width:80px"></span><code>40px</code></div><div class="space-item"><span class="space-bar" style="width:96px"></span><code>48px</code></div></div>
+    <p class="note">4pt 基础单位；密度三档由 <code>data-theme-scale</code> 控制且<strong>不缩放</strong> <code>--text-*</code>；容器 1280px / 营销 1800px / 三栏 1440px 唯一声明在 <code>tokens/spacing.css:65-66</code>。T17 禁止任意间距。</p></div>
+  </section>
+<section class="element" data-element="radius" id="el-radius" aria-label="元素分区 圆角 Radius and Shape">
+    <header class="element-head"><span class="element-no">E04</span><h2>圆角 Radius and Shape</h2><code>UDS5-S06</code></header>
+    <div class="element-body"><div class="radius-row"><div class="radius-item"><span class="radius-box" style="border-radius:6px"></span><code>xs · 6px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:8px"></span><code>sm · 8px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:10px"></span><code>md · 10px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:12px"></span><code>lg · 12px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:14px"></span><code>xl · 14px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:16px"></span><code>2xl · 16px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:18px"></span><code>3xl · 18px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:20px"></span><code>4xl · 20px</code></div><div class="radius-item"><span class="radius-box" style="border-radius:9999px"></span><code>full · full</code></div></div>
+    <p class="note"><code>--radius: 0.625rem</code>(10px) × 系数 0.6/0.8/1/1.2/1.4/1.6/1.8/2 = 8 个 calc 命名派生档；<code>rounded-full</code> 为 T10 额外放行的特殊档，合计 9 种合法写法。「圆角七档」是 3.0 早期滞后称谓。</p></div>
+  </section>
+<section class="element" data-element="elevation" id="el-elevation" aria-label="元素分区 投影与层叠 Elevation">
+    <header class="element-head"><span class="element-no">E05</span><h2>投影与层叠 Elevation</h2><code>UDS5-S07</code></header>
+    <div class="element-body"><div class="elev-row"><div class="elev-card elev-0"><code>e0</code><span>层叠档 0</span></div><div class="elev-card elev-1"><code>e1</code><span>层叠档 1</span></div><div class="elev-card elev-2"><code>e2</code><span>层叠档 2</span></div><div class="elev-card elev-3"><code>e3</code><span>层叠档 3</span></div><div class="elev-card elev-4"><code>e4</code><span>层叠档 4</span></div><div class="elev-card elev-5"><code>e5</code><span>层叠档 5</span></div></div>
+    <p class="note">5 个 <code>--ds-elevation-*</code> + 1 个 <code>--ds-glow-online</code> = 6 档；Dark 覆盖 2 档。z-index 目标八档（0/100/…/700）尚未落地，存量 30 处 <code>z-50</code>（其中 ui/ 24 处）与 3 处负 z-index 已登记待迁移。</p></div>
+  </section>
+<section class="element" data-element="border" id="el-border" aria-label="元素分区 边框与焦点环 Border / Focus">
+    <header class="element-head"><span class="element-no">E06</span><h2>边框与焦点环 Border / Focus</h2><code>UDS5-S07 / S13</code></header>
+    <div class="element-body"><div class="demo-row"><span class="border-1">1px 边框</span><button type="button" class="focus-demo" aria-label="焦点环 2px 演示">聚焦我（2px ring-2）</button><span class="border-decor">装饰性 ring-1 · 1px</span></div>
+    <p class="note">边框恒 1px；焦点环 <strong>2px <code>ring-2</code></strong>（<code>--ds-focus-ring-width: 2px</code>，已裁决、无规范—代码漂移）；装饰性 <code>ring-1</code> 描边 1px 是真实有效值但不承载焦点语义。</p></div>
+  </section>
+<section class="element" data-element="iconography" id="el-iconography" aria-label="元素分区 图标 Iconography">
+    <header class="element-head"><span class="element-no">E07</span><h2>图标 Iconography</h2><code>UDS5-S08</code></header>
+    <div class="element-body"><div class="demo-row"><span class="icon-demo" aria-label="图标尺寸 16 像素"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l3 2"></path></svg><code>16px</code></span><span class="icon-demo" aria-label="图标尺寸 20 像素"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l3 2"></path></svg><code>20px</code></span><span class="icon-demo" aria-label="图标尺寸 24 像素"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l3 2"></path></svg><code>24px</code></span></div>
+    <p class="note">单一来源 <code>lucide-react</code>；描边 1.8px；交互图标必须有可访问名称，纯装饰图标 <code>aria-hidden="true"</code>；由 <code>spec-guards.test.ts</code> 守卫。</p></div>
+  </section>
+<section class="element" data-element="motion" id="el-motion" aria-label="元素分区 动效 Motion">
+    <header class="element-head"><span class="element-no">E08</span><h2>动效 Motion</h2><code>UDS5-S09</code></header>
+    <div class="element-body"><div class="motion-row"><div class="motion-item"><span class="motion-bar" style="animation-duration:100ms"></span><code>100ms</code></div><div class="motion-item"><span class="motion-bar" style="animation-duration:200ms"></span><code>200ms</code></div><div class="motion-item"><span class="motion-bar" style="animation-duration:250ms"></span><code>250ms</code></div><div class="motion-item"><span class="motion-bar" style="animation-duration:300ms"></span><code>300ms</code></div><div class="motion-item"><span class="motion-bar" style="animation-duration:350ms"></span><code>350ms</code></div><div class="motion-item"><span class="motion-bar" style="animation-duration:500ms"></span><code>500ms</code></div></div>
+    <p class="note">Dialog 背板 <code>duration-100</code>(100ms)、Sheet 面板 <code>ds-motion-base</code>(200ms)、巨型菜单 <code>ds-motion-slow</code>(350ms)；T11 拦裸 <code>duration-*</code>；<code>prefers-reduced-motion</code> 下全部降级为 0ms。</p></div>
+  </section>
+<section class="element" data-element="theme" id="el-theme" aria-label="元素分区 主题 Theme">
+    <header class="element-head"><span class="element-no">E09</span><h2>主题 Theme</h2><code>UDS5-S10</code></header>
+    <div class="element-body"><div class="demo-row"><span class="theme-chip" data-theme-chip="light">Light</span><span class="theme-chip" data-theme-chip="dark">Dark</span><span class="theme-chip" data-theme-chip="system">System</span></div>
+    <p class="note">三维正交：<code>data-theme-preset</code>（调色板）/ <code>data-theme-radius</code> / <code>data-theme-scale</code>。<code>simple-large</code> 属<strong>字号轴</strong>放大档，不改调色板（<code>theme-presets.css:465-467</code> 已排除）。Light/Dark 变量成对校验由 <code>check-design-system-5.0.mjs</code> 守护；本页右上角可实时切换。</p></div>
+  </section>
+<section class="element" data-element="layout" id="el-layout" aria-label="元素分区 布局 Layout">
+    <header class="element-head"><span class="element-no">E10</span><h2>布局 Layout</h2><code>UDS5-S11</code></header>
+    <div class="element-body"><div class="shell-demo"><div class="shell-side">Sidebar<br><code>220px / 44px</code></div><div class="shell-main"><div class="shell-head">Header · <code>48px</code></div><div class="shell-content">Content · 12 栅格 · max-width 1280px</div></div></div>
+    <p class="note">App Shell / 容器 / 栅格；Sidebar 220px（折叠 44px / 展开 272px），Header <code>--app-header-height: 3rem</code>；73 个路由源码与 30 个 feature 目录为适配基线。</p></div>
+  </section>
+<section class="element" data-element="responsive" id="el-responsive" aria-label="元素分区 响应式 Responsive">
+    <header class="element-head"><span class="element-no">E11</span><h2>响应式 Responsive</h2><code>UDS5-S12</code></header>
+    <div class="element-body"><div class="demo-row"><span class="bp-chip"><code>sm</code> 640px</span><span class="bp-chip"><code>md</code> 768px</span><span class="bp-chip"><code>lg</code> 1024px</span><span class="bp-chip"><code>xl</code> 1280px</span><span class="bp-chip"><code>2xl</code> 1536px</span></div>
+    <p class="note">PC Web / H5 双平台；22 页 × 2 视口 = 44 张视觉基线；Android / iOS / HarmonyOS 无实现，一律 <code>NOT_VERIFIED</code>，不得用 Web 结果代替。</p></div>
+  </section>
+<section class="element" data-element="accessibility" id="el-accessibility" aria-label="元素分区 无障碍 Accessibility">
+    <header class="element-head"><span class="element-no">E12</span><h2>无障碍 Accessibility</h2><code>UDS5-S13</code></header>
+    <div class="element-body"><div class="demo-row"><button type="button" class="focus-demo" aria-label="键盘可聚焦按钮">Tab 聚焦</button><span class="hit-target" aria-label="44px 命中区">44px 命中区</span><span class="contrast-chip" aria-label="对比度 4.5 比 1">AA 4.5:1</span></div>
+    <p class="note">WCAG 2.2 AA 目标、键盘 / 焦点 / ARIA / 触控命中区 ≥24px（推荐 44px）；E24 两处缺陷（3.76:1 / 3.30:1）待修；E28 品牌渐变为有意例外（浅色 from 2.54 / via 2.72 未达 3:1，to 3.96 达标；深色 7.93 / 7.41 / 5.10 全部达标）；12 个守卫测试与 31 条对比度断言。</p></div>
+  </section>
+<section class="element" data-element="form" id="el-form" aria-label="元素分区 表单与校验 Form and Validation">
+    <header class="element-head"><span class="element-no">E13</span><h2>表单与校验 Form and Validation</h2><code>UDS5-S18</code></header>
+    <div class="element-body"><form class="form-demo" onsubmit="return false" aria-label="表单元素演示">
+      <label for="demo-email">邮箱 <span aria-hidden="true">*</span></label>
+      <input id="demo-email" type="email" placeholder="name@example.com" aria-describedby="demo-err" />
+      <p id="demo-err" class="field-error" role="alert">请输入有效邮箱地址（字段级错误）</p>
+      <label for="demo-otp">一次性验证码</label>
+      <input id="demo-otp" class="otp" inputmode="numeric" maxlength="6" placeholder="000000" aria-label="六位验证码" />
+      <button type="submit" class="btn btn-primary" aria-label="提交表单（防重复提交）">提交</button>
+    </form>
+    <p class="note">字段级错误 + 服务端错误优先级 + 未保存提醒 + 防重复提交；错误态需 <code>role="alert"</code> 与 <code>aria-describedby</code>；7 份 locale 文案同步。</p></div>
+  </section>
+<section class="element" data-element="data-display" id="el-data-display" aria-label="元素分区 数据展示 Data Display">
+    <header class="element-head"><span class="element-no">E14</span><h2>数据展示 Data Display</h2><code>UDS5-S19</code></header>
+    <div class="element-body"><table class="demo-table" aria-label="数据展示表格演示"><thead><tr><th>模型</th><th>状态</th><th class="num">用量</th><th class="num">金额</th></tr></thead><tbody><tr><td>gpt-4o</td><td><span class="badge badge-ok">正常</span></td><td class="num">1,280,000</td><td class="num">¥ 12.80</td></tr><tr><td>claude-3.5</td><td><span class="badge badge-warn">限流</span></td><td class="num">860,240</td><td class="num">¥ 8.60</td></tr></tbody></table>
+    <div class="state-row"><span class="state-chip">空态 Empty</span><span class="state-chip">加载 Loading</span><span class="state-chip">错误 Error</span></div>
+    <p class="note">11 项表格能力（排序 / 筛选 / 搜索 / 分页 / 行选 / 批量 / 列可见性 / 响应式 / 空 / 加载 / 错误）；数值 <code>tabular-nums</code>、货币默认 ¥；24 个 <code>data-table/</code> 公开导出；密度档 th 12/500、td 13/400。</p></div>
+  </section>
+<section class="element" data-element="notification" id="el-notification" aria-label="元素分区 通知 Notification">
+    <header class="element-head"><span class="element-no">E15</span><h2>通知 Notification</h2><code>UDS5-S20</code></header>
+    <div class="element-body"><div class="notif-stack">
+      <div class="notif notif-toast" role="status">Toast · 操作成功</div>
+      <div class="notif notif-snackbar" role="status">Snackbar · 可撤销操作</div>
+      <div class="notif notif-alert" role="alert">Alert · 校验失败</div>
+      <div class="notif notif-banner" role="status">Banner · 系统公告</div>
+      <div class="notif notif-system" role="status">System Notification · 规范保留位</div>
+      <div class="notif notif-center" role="status">Notification Center · 通知中心聚合</div>
+    </div>
+    <p class="note">6 类通知组件（后 2 类含规范保留位）与 5 类反馈分级（成功 / 失败 / 取消 / 加载 / 异常）；<code>role="alert"</code> 仅用于需打断的错误。</p></div>
+  </section>
+<section class="element" data-element="interaction" id="el-interaction" aria-label="元素分区 交互 Interaction">
+    <header class="element-head"><span class="element-no">E16</span><h2>交互 Interaction</h2><code>UDS5-S17</code></header>
+    <div class="element-body"><div class="matrix" aria-label="交互五态矩阵"><div class="matrix-head"><span>交互类</span><span>成功</span><span>失败</span><span>取消</span><span>加载</span><span>异常</span></div><div class="matrix-row"><span>登录</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>注册</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>充值</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>退款</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>创建密钥</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>切换组织</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>保存设置</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>上传文件</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>删除资源</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>批量操作</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>搜索</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>分页</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>导出</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>邀请成员</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div><div class="matrix-row"><span>二次验证</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span><span aria-label="已定义">●</span></div></div>
+    <p class="note">15 类交互 × 五态（过程）；组件八态（default/hover/focus/pressed/disabled/loading/error/success）是<strong>状态存在性</strong>，两者互补不是冲突；展示中心现状 6 态（缺 error/success）已登记。</p></div>
+  </section>
+<section class="element" data-element="page-template" id="el-page-template" aria-label="元素分区 页面模板 Page Template">
+    <header class="element-head"><span class="element-no">E17</span><h2>页面模板 Page Template</h2><code>UDS5-S16</code></header>
+    <div class="element-body"><div class="tpl-grid"><div class="tpl-card"><span class="tpl-thumb" aria-label="仪表盘模板缩略"></span><code>T01 仪表盘</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="列表页模板缩略"></span><code>T02 列表页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="详情页模板缩略"></span><code>T03 详情页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="表单页模板缩略"></span><code>T04 表单页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="设置页模板缩略"></span><code>T05 设置页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="定价页模板缩略"></span><code>T06 定价页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="认证页模板缩略"></span><code>T07 认证页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="错误页模板缩略"></span><code>T08 错误页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="空状态页模板缩略"></span><code>T09 空状态页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="文档页模板缩略"></span><code>T10 文档页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="结算页模板缩略"></span><code>T11 结算页</code></div><div class="tpl-card"><span class="tpl-thumb" aria-label="个人资料页模板缩略"></span><code>T12 个人资料页</code></div></div>
+    <p class="note">12 类页面模板 / 12 区域；Page Header 尚无独立组件（按 §3+§6 组合，保持 Pending）；RISK 分级按条标注，禁止整节一刀切。</p></div>
+  </section>
+<section class="element" data-element="business-domain" id="el-business-domain" aria-label="元素分区 业务域 Business Domains">
+    <header class="element-head"><span class="element-no">E18</span><h2>业务域 Business Domains</h2><code>UDS5-S29 / S30 / S31 / S32 / S22</code></header>
+    <div class="element-body"><div class="domain-grid">
+      <div class="domain-card"><strong>S29 认证</strong><span>9 路由 / 11 态状态机 / 字段级错误 / 安全边界</span></div>
+      <div class="domain-card"><strong>S30 用户与 API Key</strong><span>掩码与明文取回 / 额度用量 / 头像身份</span></div>
+      <div class="domain-card"><strong>S31 组织与账单</strong><span>org_role 四级 / 配额与组织钱包 / 订单状态机</span></div>
+      <div class="domain-card"><strong>S32 触达与本地化</strong><span>邮件模板 / 短信规范位 / 7 locale / static-keys</span></div>
+    </div>
+    <div class="chip-row"><span class="chip">Dashboard</span><span class="chip">用户管理</span><span class="chip">API Key</span><span class="chip">模型</span><span class="chip">渠道</span><span class="chip">Token 余额</span><span class="chip">充值</span><span class="chip">支付</span><span class="chip">退款</span><span class="chip">消费记录</span><span class="chip">订单</span><span class="chip">价格管理</span><span class="chip">统计分析</span><span class="chip">系统设置</span><span class="chip">权限管理</span><span class="chip">管理员功能</span><span class="chip">其他现有模块</span></div>
+    <p class="note">业务红线唯一清单：<code>org_role</code> / <code>sub_quota_limit</code> / <code>EnforceOrgQuota</code> / <code>ReserveOrgQuota</code> / <code>IncrOrgUsedQuota</code> 零改动（S22 的 17 个模块只做视觉规范映射）。</p></div>
+  </section>
+<section class="element" data-element="component-api" id="el-component-api" aria-label="元素分区 组件 API 与八态 Component API">
+    <header class="element-head"><span class="element-no">E19</span><h2>组件 API 与八态 Component API</h2><code>UDS5-S14 / S15 / S23</code></header>
+    <div class="element-body"><div class="state-row"><span class="state-chip" aria-label="组件状态 default">default</span><span class="state-chip" aria-label="组件状态 hover">hover</span><span class="state-chip" aria-label="组件状态 focus">focus</span><span class="state-chip" aria-label="组件状态 pressed">pressed</span><span class="state-chip" aria-label="组件状态 disabled">disabled</span><span class="state-chip" aria-label="组件状态 loading">loading</span><span class="state-chip" aria-label="组件状态 error">error</span><span class="state-chip" aria-label="组件状态 success">success</span></div>
+    <p class="note">22 项组件契约 / A–N 14 类清单 / 65 个已注册组件是三个不同维度；Props、受控/非受控、Composition、Slot、Ref、废弃策略以 <code>ui/button.tsx</code> 与 <code>web/AGENTS.md</code> 3.2/3.3 为唯一扩展路径；<code>UTER-CMP-*</code> 注册 ID 为「规范 ↔ 代码 ↔ 展示 ↔ 测试」主键。</p></div>
+  </section>
+<section class="element" data-element="token-layers" id="el-token-layers" aria-label="元素分区 Token 三层与真源 Token Layers">
+    <header class="element-head"><span class="element-no">E20</span><h2>Token 三层与真源 Token Layers</h2><code>UDS5-S02 / S24</code></header>
+    <div class="element-body"><div class="layer-stack">
+      <div class="layer"><code>L1 Spec SSOT</code><span>3.0 §28.5 TOKEN-MANIFEST（历史）→ 5.0 注册表 §26 裁决表</span></div>
+      <div class="layer"><code>L2 Runtime SSOT</code><span>web/src/design-system/tokens/*.css（8）+ foundations/*.css（6）+ styles/theme.css</span></div>
+      <div class="layer"><code>L3 Derived</code><span>docs/design-system/showcase.html（3.0，17 条校验）+ 本页 SHOWCASE-5.0.html</span></div>
+    </div>
+    <p class="note">245 个唯一变量 / 14 个 CSS / 0 跨文件重复；<code>design:5:check</code> 的 <code>tokenFiles: 8</code> 仅计 <code>tokens/</code> 目录。派生快照禁止手工编辑，漂移即 FAIL。</p></div>
+  </section>
+
+    <h2 class="section-title" id="lab">二 · 交互实验室：Button 6 variant × 9 size × 8 state</h2>
+    <section class="lab" aria-label="Button 交互实验室">
+      <div class="lab-controls">
+        <label for="ctl-variant">Variant</label>
+        <select id="ctl-variant" data-control="variant" aria-label="切换 Button variant">
+          <option value="default">default</option><option value="outline">outline</option><option value="secondary">secondary</option><option value="ghost">ghost</option><option value="destructive">destructive</option><option value="link">link</option>
+        </select>
+        <label for="ctl-size">Size</label>
+        <select id="ctl-size" data-control="size" aria-label="切换 Button size">
+          <option value="default">default</option><option value="sm">sm</option><option value="lg">lg</option><option value="icon">icon</option><option value="icon-xs">icon-xs</option><option value="icon-sm">icon-sm</option><option value="icon-lg">icon-lg</option><option value="inline">inline</option><option value="wrap">wrap</option>
+        </select>
+        <label for="ctl-state">State</label>
+        <select id="ctl-state" data-control="state" aria-label="切换 Button 状态">
+          <option value="default">default</option><option value="hover">hover</option><option value="focus">focus</option><option value="pressed">pressed</option><option value="disabled">disabled</option><option value="loading">loading</option><option value="error">error</option><option value="success">success</option>
+        </select>
+      </div>
+      <div class="lab-stage">
+        <button type="button" id="demo-button" data-variant="default" data-size="default" data-state="default" aria-label="Button 交互演示">创建 API Key</button>
+        <span class="note" id="demo-readout" aria-live="polite">variant=default · size=default · state=default</span>
+      </div>
+      <p class="note">状态切换同步显示 <code>data-state</code> 与对应 ARIA 语义（disabled → <code>aria-disabled</code>，loading → <code>aria-busy</code>，error → <code>aria-invalid</code>）；密度档不缩放字号（T16 / §4A）。本演示为规范视图，不是 <code>web/src/components/ui/button.tsx</code> 的 React 实例。</p>
+    </section>
+
+    <h2 class="section-title" id="specs">三 · 规范分册与注册条目（37 条）</h2>
+    <div class="spec-grid"><section class="spec-card" data-spec-id="UDS5-S01" id="spec-UDS5-S01" aria-label="规范 UDS5-S01">
+      <header class="spec-head"><code class="spec-id">UDS5-S01</code><h3>UTER Design System 5.0 总纲</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">全站设计、前端组件、页面模板、Token 与自动化治理</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./01-UTER-DESIGN-SYSTEM-5.0.md" aria-label="打开 UDS5-S01 规范原文">规范原文</a><span>验证：web/scripts/check-design-system-5.0.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S02" id="spec-UDS5-S02" aria-label="规范 UDS5-S02">
+      <header class="spec-head"><code class="spec-id">UDS5-S02</code><h3>Foundation 基础设计规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">品牌基础、视觉语言、设计原则、Token 使用约束</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./02-FOUNDATION-STANDARD.md" aria-label="打开 UDS5-S02 规范原文">规范原文</a><span>验证：web/scripts/check-design-tokens.mjs (T1-T17)</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S03" id="spec-UDS5-S03" aria-label="规范 UDS5-S03">
+      <header class="spec-head"><code class="spec-id">UDS5-S03</code><h3>Color 色彩规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">品牌/中性/表面/文字/边框/语义/图表/明暗主题色</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./03-COLOR-STANDARD.md" aria-label="打开 UDS5-S03 规范原文">规范原文</a><span>验证：web/scripts/verify-contrast.mjs; web/scripts/generate-design-tokens.mjs --check; lint:design:strict (T8/T13/T14/T15)</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S04" id="spec-UDS5-S04" aria-label="规范 UDS5-S04">
+      <header class="spec-head"><code class="spec-id">UDS5-S04</code><h3>Typography 字体规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">字体家族、字号阶梯、字重、行高、语义排版角色</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./04-TYPOGRAPHY-STANDARD.md" aria-label="打开 UDS5-S04 规范原文">规范原文</a><span>验证：lint:design:strict (T1/T2/T3/T4/T5/T9/T12/T16); web/src/design-system/__tests__/tokens.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S05" id="spec-UDS5-S05" aria-label="规范 UDS5-S05">
+      <header class="spec-head"><code class="spec-id">UDS5-S05</code><h3>Spacing 间距规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">4pt 基础单位、语义间距、密度与响应式间距</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./05-SPACING-STANDARD.md" aria-label="打开 UDS5-S05 规范原文">规范原文</a><span>验证：lint:design:strict (T17); web/scripts/sync-design-showcase.mjs --check</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S06" id="spec-UDS5-S06" aria-label="规范 UDS5-S06">
+      <header class="spec-head"><code class="spec-id">UDS5-S06</code><h3>Radius and Shape 圆角与形状规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">8 个 calc 命名派生档 + rounded-full 特殊档（运行时 T10 合计 9 种合法写法）、组件形状、Pill 与 Circle</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./06-RADIUS-AND-SHAPE-STANDARD.md" aria-label="打开 UDS5-S06 规范原文">规范原文</a><span>验证：lint:design:strict (T10); web/src/design-system/__tests__/tokens.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S07" id="spec-UDS5-S07" aria-label="规范 UDS5-S07">
+      <header class="spec-head"><code class="spec-id">UDS5-S07</code><h3>Elevation and Border 投影与边框规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">1px 边框、6 档 elevation、层叠与 z-index</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./07-ELEVATION-AND-BORDER-STANDARD.md" aria-label="打开 UDS5-S07 规范原文">规范原文</a><span>验证：lint:design:strict (T6); web/src/design-system/__tests__/elevation-motion.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S08" id="spec-UDS5-S08" aria-label="规范 UDS5-S08">
+      <header class="spec-head"><code class="spec-id">UDS5-S08</code><h3>Iconography 图标规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">图标库、尺寸、描边、对齐与无障碍标签</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./08-ICONOGRAPHY-STANDARD.md" aria-label="打开 UDS5-S08 规范原文">规范原文</a><span>验证：web/src/design-system/__tests__/spec-guards.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S09" id="spec-UDS5-S09" aria-label="规范 UDS5-S09">
+      <header class="spec-head"><code class="spec-id">UDS5-S09</code><h3>Motion 动效规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">时长、缓动、状态动效与 Reduce Motion</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./09-MOTION-STANDARD.md" aria-label="打开 UDS5-S09 规范原文">规范原文</a><span>验证：lint:design:strict (T11); web/src/design-system/__tests__/elevation-motion.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S10" id="spec-UDS5-S10" aria-label="规范 UDS5-S10">
+      <header class="spec-head"><code class="spec-id">UDS5-S10</code><h3>Theme 主题规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">Light/Dark、主题继承、系统主题、组件主题、自定义主题</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./10-THEME-STANDARD.md" aria-label="打开 UDS5-S10 规范原文">规范原文</a><span>验证：web/scripts/check-design-system-5.0.mjs (light/dark parity); verify-contrast.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S11" id="spec-UDS5-S11" aria-label="规范 UDS5-S11">
+      <header class="spec-head"><code class="spec-id">UDS5-S11</code><h3>Layout 布局规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">App Shell、容器、栅格、Sidebar、Header、最大/最小宽度</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>布局层 · layout</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./11-LAYOUT-STANDARD.md" aria-label="打开 UDS5-S11 规范原文">规范原文</a><span>验证：web/src/features/**/__tests__/; web/e2e/visual/</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S12" id="spec-UDS5-S12" aria-label="规范 UDS5-S12">
+      <header class="spec-head"><code class="spec-id">UDS5-S12</code><h3>Responsive 响应式规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">PC Web / H5 / 断点 / 平台支持边界</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>布局层 · layout</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./12-RESPONSIVE-STANDARD.md" aria-label="打开 UDS5-S12 规范原文">规范原文</a><span>验证：web/e2e/visual/ (22 页 x 2 视口, 本地轨); test:visual</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S13" id="spec-UDS5-S13" aria-label="规范 UDS5-S13">
+      <header class="spec-head"><code class="spec-id">UDS5-S13</code><h3>Accessibility 无障碍规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">WCAG 2.2 AA 目标、键盘、焦点、ARIA、对比度、触控</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>基础层 · foundation</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./13-ACCESSIBILITY-STANDARD.md" aria-label="打开 UDS5-S13 规范原文">规范原文</a><span>验证：web/scripts/verify-contrast.mjs; web/e2e/axe/; web/src/design-system/__tests__/status-badge-contrast.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S14" id="spec-UDS5-S14" aria-label="规范 UDS5-S14">
+      <header class="spec-head"><code class="spec-id">UDS5-S14</code><h3>Component 组件规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">组件 22 项契约、A-N 14 类清单、状态矩阵、重复实现治理</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>组件层 · component</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./14-COMPONENT-STANDARD.md" aria-label="打开 UDS5-S14 规范原文">规范原文</a><span>验证：web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S15" id="spec-UDS5-S15" aria-label="规范 UDS5-S15">
+      <header class="spec-head"><code class="spec-id">UDS5-S15</code><h3>Component API 组件接口规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">Props、受控/非受控、Composition、Slot、Ref、废弃策略</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>组件层 · component</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./15-COMPONENT-API-STANDARD.md" aria-label="打开 UDS5-S15 规范原文">规范原文</a><span>验证：bun run typecheck; bun run lint; web/scripts/check-design-system-5.0.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S16" id="spec-UDS5-S16" aria-label="规范 UDS5-S16">
+      <header class="spec-head"><code class="spec-id">UDS5-S16</code><h3>Page Template 页面模板规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">12 类页面模板、Page Header、状态与响应式行为</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>模板层 · template</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./16-PAGE-TEMPLATE-STANDARD.md" aria-label="打开 UDS5-S16 规范原文">规范原文</a><span>验证：web/src/routes/__tests__/; web/e2e/visual/; web/e2e/business/</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S17" id="spec-UDS5-S17" aria-label="规范 UDS5-S17">
+      <header class="spec-head"><code class="spec-id">UDS5-S17</code><h3>Interaction 交互规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">15 类交互的成功/失败/取消/加载/异常五态</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>模式层 · pattern</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./17-INTERACTION-STANDARD.md" aria-label="打开 UDS5-S17 规范原文">规范原文</a><span>验证：lint:design:strict (T14); web/src/components/ui/__tests__/</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S18" id="spec-UDS5-S18" aria-label="规范 UDS5-S18">
+      <header class="spec-head"><code class="spec-id">UDS5-S18</code><h3>Form and Validation 表单与校验规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">字段校验、服务端错误、错误优先级、未保存提醒、防重复提交</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>模式层 · pattern</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./18-FORM-AND-VALIDATION-STANDARD.md" aria-label="打开 UDS5-S18 规范原文">规范原文</a><span>验证：web/src/features/**/__tests__/; bun run i18n:check</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S19" id="spec-UDS5-S19" aria-label="规范 UDS5-S19">
+      <header class="spec-head"><code class="spec-id">UDS5-S19</code><h3>Data Display 数据展示规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">数据密度、数值/货币/时间格式、表格 11 项能力、状态分支</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>模式层 · pattern</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./19-DATA-DISPLAY-STANDARD.md" aria-label="打开 UDS5-S19 规范原文">规范原文</a><span>验证：web/src/components/data-table/__tests__/; web/src/features/**/__tests__/</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S20" id="spec-UDS5-S20" aria-label="规范 UDS5-S20">
+      <header class="spec-head"><code class="spec-id">UDS5-S20</code><h3>Notification 通知规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">6 类通知组件（Toast / Snackbar / Alert / Banner / System Notification / Notification Center；后两类含规范保留位）与 5 类反馈分级</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>模式层 · pattern</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./20-NOTIFICATION-STANDARD.md" aria-label="打开 UDS5-S20 规范原文">规范原文</a><span>验证：web/src/features/**/__tests__/; web/AGENTS.md 3.9 归属规则</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S21" id="spec-UDS5-S21" aria-label="规范 UDS5-S21">
+      <header class="spec-head"><code class="spec-id">UDS5-S21</code><h3>Clerk 设计参考专项规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">Clerk 外部参考的 18 项对照（首轮 14 章 + 本轮补充 4 章）、13 个官方核对入口（首轮 9 来源 + 4 入口；按唯一 URL 去重 11）、借鉴边界与禁止事项</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>外部参考 · reference</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./CLERK-DESIGN-REFERENCE-STANDARD.md" aria-label="打开 UDS5-S21 规范原文">规范原文</a><span>验证：audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md; web/scripts/check-design-system-5.0.mjs; web/scripts/check-clerk-boundary.mjs; bun run design:clerk:check; web/src/design-system/__tests__/clerk-boundary.test.ts</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S22" id="spec-UDS5-S22" aria-label="规范 UDS5-S22">
+      <header class="spec-head"><code class="spec-id">UDS5-S22</code><h3>Uter 业务组件适配规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">17 个业务模块：Dashboard / 用户管理 / API Key / 模型 / 渠道 / Token 余额 / 充值 / 支付 / 退款 / 消费记录 / 订单 / 价格管理 / 统计分析 / 系统设置 / 权限管理 / 管理员功能 / 其他现有模块</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>业务适配 · application</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./BUSINESS-UI-ADAPTATION-STANDARD.md" aria-label="打开 UDS5-S22 规范原文">规范原文</a><span>验证：web/e2e/business/; web/e2e/visual/; web/src/features/**/__tests__/</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S23" id="spec-UDS5-S23" aria-label="规范 UDS5-S23">
+      <header class="spec-head"><code class="spec-id">UDS5-S23</code><h3>组件展示与规范对应系统规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">组件展示中心 12 项能力与文档-代码双向关联</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./COMPONENT-DOCUMENTATION-AND-PREVIEW-STANDARD.md" aria-label="打开 UDS5-S23 规范原文">规范原文</a><span>验证：bun run design:showcase:check; bun run design:showcase:5:generate; bun run design:showcase:5:check; web/src/design-system/__tests__/design-showcase-5.test.ts; bun run test:visual</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S24" id="spec-UDS5-S24" aria-label="规范 UDS5-S24">
+      <header class="spec-head"><code class="spec-id">UDS5-S24</code><h3>设计系统自动化治理规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">Token/组件/页面/规范一致性检查与 CI 接入</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./DESIGN-SYSTEM-AUTOMATION-STANDARD.md" aria-label="打开 UDS5-S24 规范原文">规范原文</a><span>验证：bun run design:5:check; bun run design:clerk:check; bun run design:showcase:5:check; bun run lint:design:strict; CI frontend job</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S25" id="spec-UDS5-S25" aria-label="规范 UDS5-S25">
+      <header class="spec-head"><code class="spec-id">UDS5-S25</code><h3>设计系统验收规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">6 组验收清单、状态定义与最终验收 12 项条件</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./DESIGN-SYSTEM-ACCEPTANCE-STANDARD.md" aria-label="打开 UDS5-S25 规范原文">规范原文</a><span>验证：bun run design:5:check; 独立只读审计过程</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S26" id="spec-UDS5-S26" aria-label="规范 UDS5-S26">
+      <header class="spec-head"><code class="spec-id">UDS5-S26</code><h3>设计系统变更记录</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">3.0 至 5.0 时间线与变更分类</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./DESIGN-SYSTEM-CHANGELOG.md" aria-label="打开 UDS5-S26 规范原文">规范原文</a><span>验证：web/scripts/check-design-system-5.0.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S27" id="spec-UDS5-S27" aria-label="规范 UDS5-S27">
+      <header class="spec-head"><code class="spec-id">UDS5-S27</code><h3>3.0 到 5.0 迁移指南</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">保留/合并/删除/版本统一四类迁移动作与回滚</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./DESIGN-SYSTEM-MIGRATION-GUIDE.md" aria-label="打开 UDS5-S27 规范原文">规范原文</a><span>验证：web/scripts/check-component-registry.mjs; web/scripts/check-design-system-5.0.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S28" id="spec-UDS5-S28" aria-label="规范 UDS5-S28">
+      <header class="spec-head"><code class="spec-id">UDS5-S28</code><h3>废弃规范治理标准</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">废弃判定、登记格式、迁移机制与自动注册检查</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · governance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./DESIGN-SYSTEM-DEPRECATION-STANDARD.md" aria-label="打开 UDS5-S28 规范原文">规范原文</a><span>验证：web/scripts/check-design-system-5.0.mjs</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-AUDIT-01" id="spec-UDS5-AUDIT-01" aria-label="规范 UDS5-AUDIT-01">
+      <header class="spec-head"><code class="spec-id">UDS5-AUDIT-01</code><h3>5.0 基线审计报告</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">仓库、3.0 规范、Token、组件、页面、测试、CI、平台的事实基线</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · audit</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./BASELINE-AUDIT.md" aria-label="打开 UDS5-AUDIT-01 规范原文">规范原文</a><span>验证：本文件 §1 证据来源与 §4.4 门禁实测</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-AUDIT-02" id="spec-UDS5-AUDIT-02" aria-label="规范 UDS5-AUDIT-02">
+      <header class="spec-head"><code class="spec-id">UDS5-AUDIT-02</code><h3>Clerk 官方设计参考核实报告</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">首轮 9 个官方来源 / 23 小节 24 判定（历史快照，保持原样）；现行口径见 UDS5-S21：13 个核对入口 / 18 项对照 / 30 项决策</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · audit</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./CLERK-DESIGN-REFERENCE-ANALYSIS.md" aria-label="打开 UDS5-AUDIT-02 规范原文">规范原文</a><span>验证：本文件 §1 官方 URL 清单与 §4 禁止事项复核</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S29" id="spec-UDS5-S29" aria-label="规范 UDS5-S29">
+      <header class="spec-head"><code class="spec-id">UDS5-S29</code><h3>认证组件规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">认证域 9 路由 / 11 态状态机 / 字段级错误 / 安全边界；只限视觉不改认证语义</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>业务域 · business-vertical</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./AUTHENTICATION-COMPONENT-STANDARD.md" aria-label="打开 UDS5-S29 规范原文">规范原文</a><span>验证：bun run design:5:check; bun run i18n:check; bun run lint:design:strict; bun run test</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S30" id="spec-UDS5-S30" aria-label="规范 UDS5-S30">
+      <header class="spec-head"><code class="spec-id">UDS5-S30</code><h3>用户与 API Key 组件规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">用户资料 / API Key 掩码与明文取回 / 额度与用量呈现 / 头像与身份展示（组织与组织成员归 UDS5-S31，本册只覆盖个人域 API Key 与身份展示）</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>业务域 · business-vertical</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./USER-COMPONENT-STANDARD.md" aria-label="打开 UDS5-S30 规范原文">规范原文</a><span>验证：bun run design:5:check; bun run lint:design:strict; bun run test</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S31" id="spec-UDS5-S31" aria-label="规范 UDS5-S31">
+      <header class="spec-head"><code class="spec-id">UDS5-S31</code><h3>组织与账单组件规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">组织结构 / org_role 四级 / 配额与组织钱包 / 充值与订单状态机 / 账单呈现</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>业务域 · business-vertical</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./ORGANIZATION-AND-BILLING-COMPONENT-STANDARD.md" aria-label="打开 UDS5-S31 规范原文">规范原文</a><span>验证：bun run design:5:check; bun run lint:design:strict; bun run test</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-S32" id="spec-UDS5-S32" aria-label="规范 UDS5-S32">
+      <header class="spec-head"><code class="spec-id">UDS5-S32</code><h3>触达与本地化规范</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">邮件结构与品牌兼容 / 短信（未实现，规范位）/ 触达安全 / 7 locale 国际化实施</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>业务域 · business-vertical</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./COMMS-AND-LOCALIZATION-STANDARD.md" aria-label="打开 UDS5-S32 规范原文">规范原文</a><span>验证：bun run design:5:check; bun run i18n:check; bun run lint:design:strict; bun run test</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-R01" id="spec-UDS5-R01" aria-label="规范 UDS5-R01">
+      <header class="spec-head"><code class="spec-id">UDS5-R01</code><h3>设计规范注册表</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">全部正式规范的唯一注册入口</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · registry</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./DESIGN-STANDARD-REGISTRY.yaml" aria-label="打开 UDS5-R01 规范原文">规范原文</a><span>验证：bun run design:5:check</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-R02" id="spec-UDS5-R02" aria-label="规范 UDS5-R02">
+      <header class="spec-head"><code class="spec-id">UDS5-R02</code><h3>组件注册表 5.0 YAML 投影</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">65 个已注册组件与规范/代码/测试路径的双向关联</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · registry</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./COMPONENT-REGISTRY.yaml" aria-label="打开 UDS5-R02 规范原文">规范原文</a><span>验证：bun run design:5:check; bun run components:registry:check</span></p>
+    </section>
+<section class="spec-card" data-spec-id="UDS5-F01" id="spec-UDS5-F01" aria-label="规范 UDS5-F01">
+      <header class="spec-head"><code class="spec-id">UDS5-F01</code><h3>5.0 最终验收报告</h3><span class="pill">ACTIVE</span></header>
+      <p class="spec-scope">最终状态、清单、测试证据、遗留问题与独立验收</p>
+      <dl class="spec-meta"><dt>分类</dt><dd>治理 / 审计 / 注册 · acceptance</dd><dt>版本</dt><dd>5.0.0</dd><dt>强制</dt><dd>是</dd></dl>
+      <p class="spec-links"><a href="./FINAL-ACCEPTANCE-REPORT.md" aria-label="打开 UDS5-F01 规范原文">规范原文</a><span>验证：独立只读审计过程; 真实命令退出码</span></p>
+    </section></div>
+
+    <h2 class="section-title" id="components">四 · 组件注册表全量（65 个 · 11 类）</h2>
+    <div class="cmp-group" aria-label="组件分类 disclosure">
+      <h3 class="cmp-group-title">disclosure <span>2 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-ACCORDION" aria-label="组件 Accordion">
+            <code class="cmp-id">UTER-CMP-ACCORDION</code>
+            <h4>Accordion</h4>
+            <p class="cmp-path">web/src/components/ui/accordion.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-COLLAPSIBLE" aria-label="组件 Collapsible">
+            <code class="cmp-id">UTER-CMP-COLLAPSIBLE</code>
+            <h4>Collapsible</h4>
+            <p class="cmp-path">web/src/components/ui/collapsible.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 overlay">
+      <h3 class="cmp-group-title">overlay <span>9 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-ALERT_DIALOG" aria-label="组件 AlertDialog">
+            <code class="cmp-id">UTER-CMP-ALERT_DIALOG</code>
+            <h4>AlertDialog</h4>
+            <p class="cmp-path">web/src/components/ui/alert-dialog.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-CONTEXT_MENU" aria-label="组件 ContextMenu">
+            <code class="cmp-id">UTER-CMP-CONTEXT_MENU</code>
+            <h4>ContextMenu</h4>
+            <p class="cmp-path">web/src/components/ui/context-menu.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-DIALOG" aria-label="组件 Dialog">
+            <code class="cmp-id">UTER-CMP-DIALOG</code>
+            <h4>Dialog</h4>
+            <p class="cmp-path">web/src/components/ui/dialog.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-DRAWER" aria-label="组件 Drawer">
+            <code class="cmp-id">UTER-CMP-DRAWER</code>
+            <h4>Drawer</h4>
+            <p class="cmp-path">web/src/components/ui/drawer.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-DROPDOWN_MENU" aria-label="组件 DropdownMenu">
+            <code class="cmp-id">UTER-CMP-DROPDOWN_MENU</code>
+            <h4>DropdownMenu</h4>
+            <p class="cmp-path">web/src/components/ui/dropdown-menu.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-HOVER_CARD" aria-label="组件 HoverCard">
+            <code class="cmp-id">UTER-CMP-HOVER_CARD</code>
+            <h4>HoverCard</h4>
+            <p class="cmp-path">web/src/components/ui/hover-card.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-POPOVER" aria-label="组件 Popover">
+            <code class="cmp-id">UTER-CMP-POPOVER</code>
+            <h4>Popover</h4>
+            <p class="cmp-path">web/src/components/ui/popover.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SHEET" aria-label="组件 Sheet">
+            <code class="cmp-id">UTER-CMP-SHEET</code>
+            <h4>Sheet</h4>
+            <p class="cmp-path">web/src/components/ui/sheet.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TOOLTIP" aria-label="组件 Tooltip">
+            <code class="cmp-id">UTER-CMP-TOOLTIP</code>
+            <h4>Tooltip</h4>
+            <p class="cmp-path">web/src/components/ui/tooltip.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 4</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 feedback">
+      <h3 class="cmp-group-title">feedback <span>6 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-ALERT" aria-label="组件 Alert">
+            <code class="cmp-id">UTER-CMP-ALERT</code>
+            <h4>Alert</h4>
+            <p class="cmp-path">web/src/components/ui/alert.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-EMPTY" aria-label="组件 Empty">
+            <code class="cmp-id">UTER-CMP-EMPTY</code>
+            <h4>Empty</h4>
+            <p class="cmp-path">web/src/components/ui/empty.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-PROGRESS" aria-label="组件 Progress">
+            <code class="cmp-id">UTER-CMP-PROGRESS</code>
+            <h4>Progress</h4>
+            <p class="cmp-path">web/src/components/ui/progress.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SKELETON" aria-label="组件 Skeleton">
+            <code class="cmp-id">UTER-CMP-SKELETON</code>
+            <h4>Skeleton</h4>
+            <p class="cmp-path">web/src/components/ui/skeleton.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SONNER" aria-label="组件 Sonner">
+            <code class="cmp-id">UTER-CMP-SONNER</code>
+            <h4>Sonner</h4>
+            <p class="cmp-path">web/src/components/ui/sonner.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SPINNER" aria-label="组件 Spinner">
+            <code class="cmp-id">UTER-CMP-SPINNER</code>
+            <h4>Spinner</h4>
+            <p class="cmp-path">web/src/components/ui/spinner.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 layout">
+      <h3 class="cmp-group-title">layout <span>7 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-ASPECT_RATIO" aria-label="组件 AspectRatio">
+            <code class="cmp-id">UTER-CMP-ASPECT_RATIO</code>
+            <h4>AspectRatio</h4>
+            <p class="cmp-path">web/src/components/ui/aspect-ratio.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-CARD" aria-label="组件 Card">
+            <code class="cmp-id">UTER-CMP-CARD</code>
+            <h4>Card</h4>
+            <p class="cmp-path">web/src/components/ui/card.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-ITEM" aria-label="组件 Item">
+            <code class="cmp-id">UTER-CMP-ITEM</code>
+            <h4>Item</h4>
+            <p class="cmp-path">web/src/components/ui/item.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-RESIZABLE" aria-label="组件 Resizable">
+            <code class="cmp-id">UTER-CMP-RESIZABLE</code>
+            <h4>Resizable</h4>
+            <p class="cmp-path">web/src/components/ui/resizable.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SCROLL_AREA" aria-label="组件 ScrollArea">
+            <code class="cmp-id">UTER-CMP-SCROLL_AREA</code>
+            <h4>ScrollArea</h4>
+            <p class="cmp-path">web/src/components/ui/scroll-area.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SEPARATOR" aria-label="组件 Separator">
+            <code class="cmp-id">UTER-CMP-SEPARATOR</code>
+            <h4>Separator</h4>
+            <p class="cmp-path">web/src/components/ui/separator.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TITLED_CARD" aria-label="组件 TitledCard">
+            <code class="cmp-id">UTER-CMP-TITLED_CARD</code>
+            <h4>TitledCard</h4>
+            <p class="cmp-path">web/src/components/ui/titled-card.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 data-display">
+      <h3 class="cmp-group-title">data-display <span>7 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-AVATAR" aria-label="组件 Avatar">
+            <code class="cmp-id">UTER-CMP-AVATAR</code>
+            <h4>Avatar</h4>
+            <p class="cmp-path">web/src/components/ui/avatar.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-BADGE" aria-label="组件 Badge">
+            <code class="cmp-id">UTER-CMP-BADGE</code>
+            <h4>Badge</h4>
+            <p class="cmp-path">web/src/components/ui/badge.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-CHART" aria-label="组件 Chart">
+            <code class="cmp-id">UTER-CMP-CHART</code>
+            <h4>Chart</h4>
+            <p class="cmp-path">web/src/components/ui/chart.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-DISCOUNT_BADGE" aria-label="组件 DiscountBadge">
+            <code class="cmp-id">UTER-CMP-DISCOUNT_BADGE</code>
+            <h4>DiscountBadge</h4>
+            <p class="cmp-path">web/src/components/ui/discount-badge.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-ICON_BADGE" aria-label="组件 IconBadge">
+            <code class="cmp-id">UTER-CMP-ICON_BADGE</code>
+            <h4>IconBadge</h4>
+            <p class="cmp-path">web/src/components/ui/icon-badge.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-KBD" aria-label="组件 Kbd">
+            <code class="cmp-id">UTER-CMP-KBD</code>
+            <h4>Kbd</h4>
+            <p class="cmp-path">web/src/components/ui/kbd.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TABLE" aria-label="组件 Table">
+            <code class="cmp-id">UTER-CMP-TABLE</code>
+            <h4>Table</h4>
+            <p class="cmp-path">web/src/components/ui/table.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 navigation">
+      <h3 class="cmp-group-title">navigation <span>8 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-BREADCRUMB" aria-label="组件 Breadcrumb">
+            <code class="cmp-id">UTER-CMP-BREADCRUMB</code>
+            <h4>Breadcrumb</h4>
+            <p class="cmp-path">web/src/components/ui/breadcrumb.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-CAROUSEL" aria-label="组件 Carousel">
+            <code class="cmp-id">UTER-CMP-CAROUSEL</code>
+            <h4>Carousel</h4>
+            <p class="cmp-path">web/src/components/ui/carousel.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-COMMAND" aria-label="组件 Command">
+            <code class="cmp-id">UTER-CMP-COMMAND</code>
+            <h4>Command</h4>
+            <p class="cmp-path">web/src/components/ui/command.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-MENUBAR" aria-label="组件 Menubar">
+            <code class="cmp-id">UTER-CMP-MENUBAR</code>
+            <h4>Menubar</h4>
+            <p class="cmp-path">web/src/components/ui/menubar.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-NAVIGATION_MENU" aria-label="组件 NavigationMenu">
+            <code class="cmp-id">UTER-CMP-NAVIGATION_MENU</code>
+            <h4>NavigationMenu</h4>
+            <p class="cmp-path">web/src/components/ui/navigation-menu.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-PAGINATION" aria-label="组件 Pagination">
+            <code class="cmp-id">UTER-CMP-PAGINATION</code>
+            <h4>Pagination</h4>
+            <p class="cmp-path">web/src/components/ui/pagination.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SIDEBAR" aria-label="组件 Sidebar">
+            <code class="cmp-id">UTER-CMP-SIDEBAR</code>
+            <h4>Sidebar</h4>
+            <p class="cmp-path">web/src/components/ui/sidebar.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TABS" aria-label="组件 Tabs">
+            <code class="cmp-id">UTER-CMP-TABS</code>
+            <h4>Tabs</h4>
+            <p class="cmp-path">web/src/components/ui/tabs.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 action">
+      <h3 class="cmp-group-title">action <span>2 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-BUTTON_GROUP" aria-label="组件 ButtonGroup">
+            <code class="cmp-id">UTER-CMP-BUTTON_GROUP</code>
+            <h4>ButtonGroup</h4>
+            <p class="cmp-path">web/src/components/ui/button-group.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-BUTTON" aria-label="组件 Button">
+            <code class="cmp-id">UTER-CMP-BUTTON</code>
+            <h4>Button</h4>
+            <p class="cmp-path">web/src/components/ui/button.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 input">
+      <h3 class="cmp-group-title">input <span>17 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-CALENDAR" aria-label="组件 Calendar">
+            <code class="cmp-id">UTER-CMP-CALENDAR</code>
+            <h4>Calendar</h4>
+            <p class="cmp-path">web/src/components/ui/calendar.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-CHECKBOX" aria-label="组件 Checkbox">
+            <code class="cmp-id">UTER-CMP-CHECKBOX</code>
+            <h4>Checkbox</h4>
+            <p class="cmp-path">web/src/components/ui/checkbox.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-COMBOBOX_INPUT" aria-label="组件 ComboboxInput">
+            <code class="cmp-id">UTER-CMP-COMBOBOX_INPUT</code>
+            <h4>ComboboxInput</h4>
+            <p class="cmp-path">web/src/components/ui/combobox-input.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-COMBOBOX" aria-label="组件 Combobox">
+            <code class="cmp-id">UTER-CMP-COMBOBOX</code>
+            <h4>Combobox</h4>
+            <p class="cmp-path">web/src/components/ui/combobox.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-INPUT_OTP" aria-label="组件 InputOtp">
+            <code class="cmp-id">UTER-CMP-INPUT_OTP</code>
+            <h4>InputOtp</h4>
+            <p class="cmp-path">web/src/components/ui/input-otp.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-INPUT" aria-label="组件 Input">
+            <code class="cmp-id">UTER-CMP-INPUT</code>
+            <h4>Input</h4>
+            <p class="cmp-path">web/src/components/ui/input.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-NATIVE_SELECT" aria-label="组件 NativeSelect">
+            <code class="cmp-id">UTER-CMP-NATIVE_SELECT</code>
+            <h4>NativeSelect</h4>
+            <p class="cmp-path">web/src/components/ui/native-select.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-RADIO_GROUP" aria-label="组件 RadioGroup">
+            <code class="cmp-id">UTER-CMP-RADIO_GROUP</code>
+            <h4>RadioGroup</h4>
+            <p class="cmp-path">web/src/components/ui/radio-group.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SECRET_FILE_INPUT" aria-label="组件 SecretFileInput">
+            <code class="cmp-id">UTER-CMP-SECRET_FILE_INPUT</code>
+            <h4>SecretFileInput</h4>
+            <p class="cmp-path">web/src/components/ui/secret-file-input.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SECRET_INPUT" aria-label="组件 SecretInput">
+            <code class="cmp-id">UTER-CMP-SECRET_INPUT</code>
+            <h4>SecretInput</h4>
+            <p class="cmp-path">web/src/components/ui/secret-input.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SECRET_TEXTAREA" aria-label="组件 SecretTextarea">
+            <code class="cmp-id">UTER-CMP-SECRET_TEXTAREA</code>
+            <h4>SecretTextarea</h4>
+            <p class="cmp-path">web/src/components/ui/secret-textarea.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SELECT" aria-label="组件 Select">
+            <code class="cmp-id">UTER-CMP-SELECT</code>
+            <h4>Select</h4>
+            <p class="cmp-path">web/src/components/ui/select.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SLIDER" aria-label="组件 Slider">
+            <code class="cmp-id">UTER-CMP-SLIDER</code>
+            <h4>Slider</h4>
+            <p class="cmp-path">web/src/components/ui/slider.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-SWITCH" aria-label="组件 Switch">
+            <code class="cmp-id">UTER-CMP-SWITCH</code>
+            <h4>Switch</h4>
+            <p class="cmp-path">web/src/components/ui/switch.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TEXTAREA" aria-label="组件 Textarea">
+            <code class="cmp-id">UTER-CMP-TEXTAREA</code>
+            <h4>Textarea</h4>
+            <p class="cmp-path">web/src/components/ui/textarea.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TOGGLE_GROUP" aria-label="组件 ToggleGroup">
+            <code class="cmp-id">UTER-CMP-TOGGLE_GROUP</code>
+            <h4>ToggleGroup</h4>
+            <p class="cmp-path">web/src/components/ui/toggle-group.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-TOGGLE" aria-label="组件 Toggle">
+            <code class="cmp-id">UTER-CMP-TOGGLE</code>
+            <h4>Toggle</h4>
+            <p class="cmp-path">web/src/components/ui/toggle.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 3</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 utility">
+      <h3 class="cmp-group-title">utility <span>1 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-DIRECTION" aria-label="组件 Direction">
+            <code class="cmp-id">UTER-CMP-DIRECTION</code>
+            <h4>Direction</h4>
+            <p class="cmp-path">web/src/components/ui/direction.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 form">
+      <h3 class="cmp-group-title">form <span>5 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-FIELD" aria-label="组件 Field">
+            <code class="cmp-id">UTER-CMP-FIELD</code>
+            <h4>Field</h4>
+            <p class="cmp-path">web/src/components/ui/field.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-FORM_LABEL_TIER" aria-label="组件 FormLabelTier">
+            <code class="cmp-id">UTER-CMP-FORM_LABEL_TIER</code>
+            <h4>FormLabelTier</h4>
+            <p class="cmp-path">web/src/components/ui/form-label-tier.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-FORM" aria-label="组件 Form">
+            <code class="cmp-id">UTER-CMP-FORM</code>
+            <h4>Form</h4>
+            <p class="cmp-path">web/src/components/ui/form.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-INPUT_GROUP" aria-label="组件 InputGroup">
+            <code class="cmp-id">UTER-CMP-INPUT_GROUP</code>
+            <h4>InputGroup</h4>
+            <p class="cmp-path">web/src/components/ui/input-group.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article><article class="cmp-card" data-component-id="UTER-CMP-LABEL" aria-label="组件 Label">
+            <code class="cmp-id">UTER-CMP-LABEL</code>
+            <h4>Label</h4>
+            <p class="cmp-path">web/src/components/ui/label.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article></div>
+    </div>
+<div class="cmp-group" aria-label="组件分类 content">
+      <h3 class="cmp-group-title">content <span>1 个</span></h3>
+      <div class="cmp-grid"><article class="cmp-card" data-component-id="UTER-CMP-MARKDOWN" aria-label="组件 Markdown">
+            <code class="cmp-id">UTER-CMP-MARKDOWN</code>
+            <h4>Markdown</h4>
+            <p class="cmp-path">web/src/components/ui/markdown.tsx</p>
+            <div class="cmp-foot"><span>ACTIVE</span><span>states 1</span><span>组件层</span></div>
+          </article></div>
+    </div>
+
+    <footer>
+      <p>唯一真源：<code>DESIGN-STANDARD-REGISTRY.yaml</code> / <code>COMPONENT-REGISTRY.yaml</code>（其真源为 <code>web/src/design-system/component-registry.json</code>）/ <code>web/src/design-system/tokens/*.css</code>。本页为派生的规范验收视图，禁止手工编辑；改注册表后需重跑 <code>design:showcase:5:generate</code> 与 <code>design:showcase:5:check</code>。</p>
+      <p>覆盖口径与全局计数裁决见 <code>01-UTER-DESIGN-SYSTEM-5.0.md</code> §26；决策 D3 与 12 项能力见 <code>COMPONENT-DOCUMENTATION-AND-PREVIEW-STANDARD.md</code> §11。零外部依赖、0 个静态截图、不引入 Storybook、不改任何业务运行时代码。</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" id="uds5-manifest">{
+  "designSystem": "UTER Design System 5.0",
+  "version": "5.0.0",
+  "effectiveDate": "2026-11-14",
+  "specIds": 37,
+  "componentIds": 65,
+  "elements": 20,
+  "controls": 5,
+  "standards": 37,
+  "generatedFrom": [
+    "DESIGN-STANDARD-REGISTRY.yaml",
+    "COMPONENT-REGISTRY.yaml",
+    "web/src/design-system/tokens/*.css"
+  ]
+}</script>
+<script>
+(function () {
+  var root = document.documentElement;
+  var theme = document.getElementById('ctl-theme');
+  var density = document.getElementById('ctl-density');
+  var variant = document.getElementById('ctl-variant');
+  var size = document.getElementById('ctl-size');
+  var state = document.getElementById('ctl-state');
+  var button = document.getElementById('demo-button');
+  var readout = document.getElementById('demo-readout');
+  function syncAria() {
+    var s = state.value;
+    if (s === 'disabled') { button.setAttribute('aria-disabled', 'true'); } else { button.removeAttribute('aria-disabled'); }
+    if (s === 'loading') { button.setAttribute('aria-busy', 'true'); } else { button.removeAttribute('aria-busy'); }
+    if (s === 'error') { button.setAttribute('aria-invalid', 'true'); } else { button.removeAttribute('aria-invalid'); }
+  }
+  function syncDemo() {
+    button.dataset.variant = variant.value;
+    button.dataset.size = size.value;
+    button.dataset.state = state.value;
+    readout.textContent = 'variant=' + variant.value + ' · size=' + size.value + ' · state=' + state.value;
+    syncAria();
+  }
+  theme.addEventListener('change', function () { root.dataset.theme = theme.value; });
+  density.addEventListener('change', function () { root.dataset.density = density.value; });
+  [variant, size, state].forEach(function (el) { el.addEventListener('change', syncDemo); });
+  syncDemo();
+})();
+</script>
+</body>
+</html>

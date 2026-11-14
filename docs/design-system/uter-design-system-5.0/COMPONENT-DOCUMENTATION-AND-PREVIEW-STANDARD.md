@@ -8,7 +8,7 @@
 | 上级规范 | `UDS5-S01` |
 | 生效日期 | `2026-11-14` |
 | 适用范围 | UTER 组件展示中心（`docs/design-system/showcase.html`）、组件文档、组件注册 ID 与「规范 ↔ 代码 ↔ 注册 ID」双向关联；PC Web / H5 |
-| 验证状态 | `NOT_VERIFIED`（本轮仅撰写规范，未改造展示中心、未执行验证） |
+| 验证状态 | `NOT_VERIFIED`（规范文本已撰写；§11 的 5.0 全量 Showcase 与回归测试已落地并实测，属**局部结构验证**，不改变整册总体验证状态，与 §10 一致） |
 
 ---
 
@@ -18,9 +18,9 @@
 |---|---|
 | 既有系统 | `docs/design-system/showcase.html` 已存在：**2,188 行 / 86,313 B**、**24 个区域**、浏览器真实 DOM 渲染（0 个 `<img>`、0 处 `React`），数据驱动自 3.0 §28 TOKEN-MANIFEST 内联快照，具备 Light/Dark 与密度三档的交互切换与 24 个区域渲染器 |
 | Storybook | **不存在**：0 依赖、0 配置、0 `*.stories.*`、全仓 `storybook` 字面命中 0 |
-| 决策 | **`Adapt`（决策 D3，`UDS5-AUDIT-01` §9）**：扩展既有 `showcase.html`，**不引入 Storybook**（引入成本高于收益），**不使用静态截图冒充组件展示** |
+| 决策 | **`Adapt`（决策 D3，`UDS5-AUDIT-01` §9）**：不新建独立展示站点、不引入 Storybook（引入成本高于收益）、不使用静态截图冒充组件展示；允许**扩展既有 `showcase.html`**（3.0 Token 展示中心）并**新增 5.0 规范全量 Showcase 验收视图**（`SHOWCASE-5.0.html`，见本文 §11），二者均为规范索引/验收视图，不是第二套组件实例展示系统 |
 | 新增方向 | 补齐 Props / 变体与状态切换 / 组件级 a11y / 代码示例 / 注册 ID，并新增「规范 ↔ 代码 ↔ 注册 ID」双向关联面板 |
-| 禁止 | 不新建第二套展示系统；不把 showcase 伪装成 `web/src/components/ui/*.tsx` 的 React 组件实例（当前 `web/src` 内无任何引用）；不以 `showcase-3.0.html` / `showcase-3.0.generated.html` 等不存在文件作为交付物 |
+| 禁止 | 不新建第二套**组件实例**展示系统（Storybook / React 路由展示页）；不把 showcase 伪装成 `web/src/components/ui/*.tsx` 的 React 组件实例（当前 `web/src` 内无任何引用）；不以 `showcase-3.0.html`（已退役更名）或 `showcase-3.0.generated.html`（按需生成、不入库的派生产物）作为交付物 |
 
 > 依据：`UDS5-AUDIT-01` §2（组件展示行）、§5.1（展示中心真实能力）、§9 D3、§11.3（展示中心重构）、`CLERK-DESIGN-REFERENCE-ANALYSIS.md` 决策表（Reject Storybook）。
 
@@ -33,7 +33,7 @@
 | 项 | 实际值 | 证据 |
 |---|---|---|
 | 文件规模 | `docs/design-system/showcase.html` **2,188 行 / 86,313 B** | `UDS5-AUDIT-01` §2、§5.1 |
-| 区域数 | **24 个区域**渲染器，数据来自 §28 Manifest 内联快照 | `showcase.html:8-23,1342-1487,1718` |
+| 区域数 | **24 个区域**渲染器，数据来自 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT） 内联快照 | `showcase.html:8-23,1342-1487,1718` |
 | 渲染方式 | 浏览器真实 DOM（`0` 个 `<img>`、`0` 处 `React`） | §5.1 |
 | 主题切换 | Light / Dark 可交互切换（`data-theme="light"`），密度三档可切换（`data-density="Default"`） | `showcase.html:2`、§5.1；`applyTheme()` / `applyDensity()` |
 | 数据链 | HTTP(S) 打开 `fetch` 规范原文；`file://` 打开读内联快照；`sync-design-showcase.mjs --check` 逐值比对，漂移即 FAIL | `showcase.html:8-23`；`17 PASS / 0 FAIL / 0 SKIP` |
@@ -43,16 +43,16 @@
 
 | 缺失项 | 实际值 | 证据 |
 |---|---|---|
-| 尺寸 / Variant / 状态切换 | 尺寸（9 档）、Variant（6 档）、状态（7 态）均为**并排静态展示，不可切换** | `UDS5-AUDIT-01` §5.1 |
+| 尺寸 / Variant / 状态切换 | 尺寸（9 档）、Variant（6 档）、状态（6 态，缺 error / success）均为**并排静态展示，不可切换** | `UDS5-AUDIT-01` §5.1 |
 | `Props` | **0 处** | §5.1 |
 | `UTER-CMP` 注册 ID | **0 处** | §5.1 |
 | 组件级无障碍要求 | **0 处** | §5.1 |
 | 代码示例（使用示例） | **0 处** | §5.1 |
-| React 路由级展示页 | **无**：80 个路由文件中 0 个 showcase / design-system 路由 | §5.1 |
+| React 路由级展示页 | **无**：73 个路由文件中 0 个 showcase / design-system 路由 | §5.1 |
 | Storybook | **无** | §2 |
 | React 组件实例 | showcase **不是** `web/src/components/ui/*.tsx` 的实例（`web/src` 内无任何引用） | §5.1 |
 | 锚点覆盖 | `add-showcase-anchors.mjs:49-218` 的 **22 条锚点未覆盖区域 23 `breakpoints`、24 `token-layers`** | §5.1 |
-| 展示页引用 | `showcase-3.0.html` 已退役更名 → `showcase.html`（2026-11-14 修正 `visual-regression.mjs` / `tokens.test.ts` 引用）；`showcase-3.0.generated.html` 按需生成不入库，非「不存在的虚构文件」 | §5.1 |
+| 展示页引用 | `showcase-3.0.html` 已退役更名 → `showcase.html`（2026-11-14 修正 `visual-regression.mjs` / `tokens.test.ts` 引用）；`showcase-3.0.generated.html` 为按需生成、不入库的派生产物；二者均不得作为交付物 | §5.1 |
 
 ### 2.3 组件注册与文档侧缺口（关联）
 
@@ -75,7 +75,7 @@
 | 字段 | 内容 |
 |---|---|
 | 5.0 要求 | 每个已登记组件具备可单独访问、可深链接的展示单元（锚点或路由片段），支持从组件注册 ID 一键定位；展示页可 `file://` 单文件打开，也可 HTTP(S) 打开，且不依赖本地起服务 |
-| 现状 | `showcase.html` 为单文件、24 个区域、具备区域锚点（`add-showcase-anchors.mjs` 22 条）；**无 React 路由级展示页**（80 路由中 0 个），`web/src` 内无引用 |
+| 现状 | `showcase.html` 为单文件、24 个区域、具备区域锚点（`add-showcase-anchors.mjs` 22 条）；**无 React 路由级展示页**（73 路由中 0 个），`web/src` 内无引用 |
 | 差距 | 22 条锚点漏区域 23 `breakpoints`、24 `token-layers`；无「组件 → 展示单元」的一对一映射；无按注册 ID 的深链接 |
 | 改造路径 | 扩展既有 `showcase.html`：补齐 23/24 区锚点；为每个 `UTER-CMP-*` 生成稳定锚点 `id`；新增注册 ID → 锚点的映射表；不新建 React 路由展示页（决策 D3 不重复建设），不引入 Storybook |
 
@@ -93,7 +93,7 @@
 | 字段 | 内容 |
 |---|---|
 | 5.0 要求 | 每个组件可交互切换 default / hover / focus / pressed / disabled / loading / error / success 八态，且切换后展示对应状态 Token 与 a11y 属性（如 `aria-disabled`） |
-| 现状 | 状态（**7 态**）为**并排静态展示，不可切换**；组件级 a11y 0 处 |
+| 现状 | 状态（**6 态，缺 error / success**）为**并排静态展示，不可切换**；组件级 a11y 0 处 |
 | 差距 | 缺交互切换器；缺八态中 error / success 的补齐；状态与 a11y 属性未联动 |
 | 改造路径 | 为每个组件加状态切换控件（radio / select），绑定 `data-state` 驱动样式；补齐八态并登记到 `component-registry.json` 顶层 `states`；每个状态标注对应 Token 与 ARIA 属性 |
 
@@ -147,7 +147,7 @@
 | 字段 | 内容 |
 |---|---|
 | 5.0 要求 | 每个组件展示单元标注组件级 a11y 要求：键盘操作、焦点管理、ARIA 属性、`aria-expanded` / `aria-selected` 与视觉状态一致、Reduce Motion、对比度数值与 WCAG 2.2 AA 对照 |
-| 现状 | 组件级无障碍要求 **0 处**；全仓有 `foundations/accessibility.css`、11 个守卫测试、`verify-contrast.mjs` 31 条、`test:axe` 2 spec，但未落到展示中心 |
+| 现状 | 组件级无障碍要求 **0 处**；全仓有 `foundations/accessibility.css`、12 个守卫测试、`verify-contrast.mjs` 31 条、`test:axe` 2 spec，但未落到展示中心 |
 | 差距 | 缺组件级 a11y 面板；E24 两处对比度缺陷（3.76:1 / 3.30:1）未登记到展示单元 |
 | 改造路径 | 每单元加 a11y 卡片，数据来自注册表顶层 `accessibility` 字段与对比度门禁输出；登记 E24 待修与 E28 例外；`test:axe` 结果作为「测试状态」输入之一（注意 `test:axe` 未接 CI） |
 
@@ -190,7 +190,7 @@
 | A4 | **删组件 → 检查引用** | 计划删除 / 废弃某组件 | 若存在任何引用则阻断，列出引用文件与 `deprecated / replacement` 迁移映射 | `deprecated` / `replacement` / 引用图 | 组件检查 Validator：废弃仍用 / 删除前依赖检查 | `NOT_VERIFIED` |
 | A5 | **改 Token → 定位受影响组件** | 修改任一 `--ds-*` / `@theme --text-*` Token | 列出消费该 Token 的全部组件、展示单元与页面，触发回归 | `contract.tokens` / Token 依赖表 | Token 检查 Validator：未使用 / 未登记 / 主题 Token 缺失 | `NOT_VERIFIED` |
 
-> 五场景共同依赖「注册 ID 作为主键」（§3.11）与「路径字段补齐」（§3.12）。当前 `component-registry.json` 缺 8 类字段，故五场景**全部 `NOT_VERIFIED`**，不得描述为已具备。
+> 五场景共同依赖「注册 ID 作为主键」（§3.11）与「路径字段补齐」（§3.12）。当前 `component-registry.json` 缺 11 项字段，故五场景**全部 `NOT_VERIFIED`**，不得描述为已具备。
 
 ---
 
@@ -203,7 +203,7 @@
 | 无 Token 副本 | 展示页 `:root` 禁止出现任何 Manifest 声明值（§28.3 校验），fallback 用不落在刻度上的中性值 | `showcase.html:24-31` |
 | 兼容回退 | `showcase.tokens.js` 为可选回退产物，主交付为内联快照；变更须先同步 17 条校验契约 | `UDS5-AUDIT-01` §11.2 |
 | 禁止截图冒充 | 组件效果必须为真实 DOM 渲染，不得用 `<img>` 静态截图代替；当前 showcase 为 0 `<img>` | §5.1、决策 D3 |
-| 过时注释清理 | `generate-design-showcase.mjs:25-29` 的 `showcase-3.0.html` / `showcase-3.0.generated.html` 叙述须删除（文件不存在） | §5.1 / §11.4 |
+| 过时注释清理 | `generate-design-showcase.mjs:25-29` 的旧叙述须删除（`showcase-3.0.html` 已退役更名；`showcase-3.0.generated.html` 为按需生成且不入库的派生产物，均不得作为交付物） | §5.1 / §11.4 |
 
 ---
 
@@ -211,11 +211,11 @@
 
 | 阶段 | 动作 | 前置条件 | 状态 |
 |---|---|---|---|
-| P0 | 补齐 23/24 区锚点；清理 2 个过时文件注释 | 不触碰 `web/e2e/visual/*` 等 12 个并发 WIP 禁改文件 | `NOT_STARTED` |
-| P1 | 定义 `UTER-CMP-*` 编号规则，补齐 registry 8 类路径字段 | 与 `UDS5-S27` 迁移指南同变更内协调 `designSystem` 字段与 `check-component-registry.mjs:45` | `NOT_STARTED` |
-| P2 | 新增左效果右规范模板、状态 / variant / 尺寸切换器、Props / 示例 / a11y / 测试状态面板 | 每处改动先写回归测试；不执行全量构建 | `NOT_STARTED` |
-| P3 | 新增双向关联面板与 5 个 Validator | 依赖 P1 路径字段 | `NOT_STARTED` |
-| P4 | 逐组件补八态证据、双主题快照、a11y 登记，推进 `--strict` 由 EXIT=1 转 EXIT=0 | 依赖 `UDS5-S24` 门禁与 `UDS5-S25` 验收 | `NOT_STARTED` |
+| Phase 0 | 补齐 23/24 区锚点；清理 2 个过时文件注释 | 不触碰 `web/e2e/visual/*` 等 12 个并发 WIP 禁改文件 | `NOT_STARTED` |
+| Phase 1 | 定义 `UTER-CMP-*` 编号规则，补齐 registry 11 项字段 | 与 `UDS5-S27` 迁移指南同变更内协调 `designSystem` 字段与 `check-component-registry.mjs:45` | `NOT_STARTED` |
+| Phase 2 | 新增左效果右规范模板、状态 / variant / 尺寸切换器、Props / 示例 / a11y / 测试状态面板 | 每处改动先写回归测试；不执行全量构建 | `NOT_STARTED` |
+| Phase 3 | 新增双向关联面板与 5 个 Validator | 依赖 Phase 1 路径字段 | `NOT_STARTED` |
+| Phase 4 | 逐组件补八态证据、双主题快照、a11y 登记，推进 `--strict` 由 EXIT=1 转 EXIT=0 | 依赖 `UDS5-S24` 门禁与 `UDS5-S25` 验收 | `NOT_STARTED` |
 
 > 约束：审计期间存在 211 项并发 WIP（51 `M` + 160 `??`），12 个文件禁改；按项目约定不执行全量构建、不批量重写，改用只读门禁验证（`UDS5-AUDIT-01` §1 / §14）。
 
@@ -246,14 +246,15 @@
 | 状态 | 含义 | 可否作为验收基线 | 必备字段 |
 |---|---|---|---|
 | `DRAFT`（草案） | 编写中 | **否** | 文档 ID / 版本 / 状态 / 适用范围 / 验证状态 |
+| `PENDING`（已登记待补齐） | 已登记但证据未齐，不得作为正式规范 / 验收依据 | **否** | 同上 + 补齐计划 |
 | `ACTIVE`（现行） | 已批准并生效 | **是** | 同上 + 生效日期 + 上级规范 + 与其他规范的关系 + 代码实施位置 + 自动化验证 + 验证状态 |
 | `DEPRECATED`（已弃用） | 不再适用但保留追溯 | **否**，必须指向替代文档 | 同上 + **替代文档 ID** + 移除计划 |
-| `ARCHIVED`（历史归档） | 仅供追溯 | **否** | 同上 + 归档原因 |
+| `ARCHIVED`（历史归档，蓝图历史态） | 仅供追溯，**不进入注册表 `status_values`** | **否** | 同上 + 归档原因 |
 
 | 项 | 规则 |
 |---|---|
-| DS-1 | **状态不得省略**；注册表 `status_values` = `ACTIVE` / `DEPRECATED` / `PENDING` / `DRAFT`，与本文档状态机对应（`PENDING` 对应「已登记待补齐」的治理候选条目）。 |
-| DS-2 | `DEPRECATED` **必须有替代文档**；无替代的不得标 `DEPRECATED`，按 `ARCHIVED` 处理。 |
+| DS-1 | **状态不得省略**；注册表 `status_values` = `ACTIVE` / `DEPRECATED` / `PENDING` / `DRAFT` 为**唯一正式枚举**，本文档状态机与之逐项对应；`ARCHIVED` 仅为蓝图历史态、不得写入注册表。 |
+| DS-2 | `DEPRECATED` **必须有替代文档**；无替代的不得标 `DEPRECATED`，按 `PENDING`（已登记待补齐）处理，并在变更日志登记；`ARCHIVED` 不属注册表枚举。 |
 | DS-3 | **禁止覆盖历史批准版本而不留记录**（蓝图 §7）；版本变更走 `UDS5-S26` 变更日志。 |
 | DS-4 | 每份规范必须包含：编号、标题、版本、状态、适用范围、规范性要求、数值 / Token、**反例**、验收方法、关联文档和变更记录（蓝图 §1）。**仓库现状**：32 份分册中「反例」与「验收方法」并非每册齐备——登记为 `S23-D1`（治理候选）。 |
 | DS-5 | **示例必须与当前 API 和 Token 匹配**；禁止展示已弃用写法而不标注；代码示例应可复制、可编译，或**明确注明伪代码**。 |
@@ -323,8 +324,9 @@
 | 检查项 | 现有实现 | 5.0 拟补充 | 当前结果 |
 |---|---|---|---|
 | 展示页数据链一致 | `design:showcase:check` → `sync-design-showcase.mjs --check`（17 PASS / 0 FAIL / 0 SKIP，EXIT=0，已接 CI） | Props / 注册 ID / 示例代码一致性的新增校验契约 | 既有通过，5.0 补充 `NOT_VERIFIED` |
+| 5.0 全量 Showcase 覆盖性 | `design:showcase:5:check` → `check-design-showcase-5.0.mjs`（纯静态只读，S1–S9 九项，`generated: false`） | 由 `design:showcase:5:generate` 在注册表变更后重生成 | **本轮实测 `verdict: PASS` / `errors: 0` / `checksPassed: 9` / 37 规范 / 65 组件 / 20 元素**；回归测试 8/8 通过 |
 | 锚点覆盖 | `add-showcase-anchors.mjs` 22 条锚点 | 区域 23 / 24 锚点补齐校验 | 缺 2 区，`NOT_VERIFIED` |
-| 注册结构 | `components:registry:check`（65/65/0 errors，已接 CI） | 8 类路径字段 + `UTER-CMP-*` 唯一性校验 | 既有通过，5.0 补充 `NOT_VERIFIED` |
+| 注册结构 | `components:registry:check`（65/65/0 errors，已接 CI） | 11 项字段 + `UTER-CMP-*` 唯一性校验 | 既有通过，5.0 补充 `NOT_VERIFIED` |
 | 组件证据 | `components:registry:strict`（`--strict` EXIT=1，**未接 CI**） | 八态 / a11y / 双主题证据登记后转 EXIT=0 | EXIT=1，`NOT_VERIFIED` |
 | 双向关联 5 场景 | 无 | A1–A5 五个 Validator | 未建立 `NOT_VERIFIED` |
 | 对比度 / a11y | `verify-contrast.mjs`（31 PASS / 0 FAIL，已接 CI）、`test:axe`（2 spec，未接 CI） | 组件级 a11y 面板数据联动 | 既有通过，5.0 补充 `NOT_VERIFIED` |
@@ -342,11 +344,29 @@
 | 决策 D3（扩展既有、不引入 Storybook、不截图冒充） | `IMPLEMENTED` | §1 已声明 |
 | 现状写实数字（24 区 / 2188 行 / Props 0 / 注册 ID 0 / a11y 0 / 示例 0 / 22 锚点漏 2 区） | `IMPLEMENTED` | §2 依据 `UDS5-AUDIT-01` §5.1 如实登记 |
 | 双向关联 5 场景（A1–A5） | `NOT_STARTED` | 依赖 registry 路径字段补齐 |
-| 状态 / variant / 尺寸切换器 | `NOT_STARTED` | §6 P2 |
-| Props / 示例 / a11y / 测试状态面板 | `NOT_STARTED` | §6 P2 |
-| `UTER-CMP-*` 注册 ID 体系 | `NOT_STARTED` | §6 P1 |
-| `--strict` 由 EXIT=1 转 EXIT=0 | `NOT_STARTED` | §6 P4，当前 65 组件 0 VERIFIED |
+| 状态 / variant / 尺寸切换器 | `NOT_STARTED` | §6 Phase 2 |
+| Props / 示例 / a11y / 测试状态面板 | `NOT_STARTED` | §6 Phase 2 |
+| `UTER-CMP-*` 注册 ID 体系 | `NOT_STARTED` | §6 Phase 1 |
+| `--strict` 由 EXIT=1 转 EXIT=0 | `NOT_STARTED` | §6 Phase 4，当前 65 组件 0 VERIFIED |
 | PC Web / H5 展示回归 | `NOT_VERIFIED` | 未针对 5.0 重跑 |
 | Android / iOS / HarmonyOS | `NOT_VERIFIED` | 无实现，不得用 Web 结果代替 |
 
 **总体验证状态：`NOT_VERIFIED`**。本文不得被解读为 `FULLY_IMPLEMENTED_AND_VERIFIED`；展示中心改造的最终状态以 `UDS5-S25`（验收规范）与最终验收报告为准。
+
+
+---
+
+## 11. 5.0 全量 Showcase（本轮落地，规范验收视图）
+
+| 项 | 值 |
+|---|---|
+| 交付物 | `docs/design-system/uter-design-system-5.0/SHOWCASE-5.0.html`（单文件、零外部依赖、`file://` 可直接打开、真实 DOM 渲染、0 个 `<img>`） |
+| 定位 | **规范验收视图 / 覆盖索引**，不是第二套组件实例展示系统；既有 `docs/design-system/showcase.html`（3.0，24 区 Token 展示中心）保持原样，仍由 `sync-design-showcase.mjs --check` 的 17 条校验守护 |
+| 覆盖 | 32 份分册（`data-spec-id="UDS5-Sxx"`）+ 37 条注册条目 + **65 个已注册组件**（`data-component-id="UTER-CMP-*"`）+ 基础元素（颜色 / 字号 / 间距 / 圆角 / 阴影 / 边框 / 图标 / 动效 / 主题 / 布局 / 断点 / 无障碍）+ 模式（表单 / 数据展示 / 通知 / 交互 / 页面模板）+ 4 个业务域 |
+| 交互 | Light / Dark、密度三档、Button 6 variant × 9 size × 8 态切换；每个演示标注 Token、状态与 a11y 属性；Reduce Motion 生效 |
+| 真源 | 组件清单取自 `COMPONENT-REGISTRY.yaml`（其唯一真源为 `web/src/design-system/component-registry.json`）；设计值取自 `web/src/design-system/tokens/*.css`，不手写第二份 Token 真值 |
+| 生成 | `web/scripts/generate-design-showcase-5.0.mjs` → `bun run design:showcase:5:generate`（注册表变更后重生成；本页禁止手工编辑） |
+| 校验 | `web/scripts/check-design-showcase-5.0.mjs`（纯静态只读，S1–S9）→ `bun run design:showcase:5:check`；回归测试 `web/src/design-system/__tests__/design-showcase-5.test.ts`（红色 8/8 失败 → 绿色 8/8 通过） |
+| 边界 | 不引入 Storybook、不新建 React 路由展示页、不伪装成 `web/src/components/ui/*.tsx` 实例、不改任何业务运行时代码 |
+
+> 本节落地后，§3 的 12 项能力中「覆盖范围索引 / 规范 ID 关联 / 全组件清单」三项在**规范视图层**已具备；Props / variant / 尺寸交互切换器 / A1–A5 双向关联 Validator 仍按 §6 分期表为 `NOT_STARTED`，不得据本节宣称 12 项能力全部完成。

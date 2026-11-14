@@ -14,7 +14,9 @@
 
 ## 1. 八状态定义与状态机
 
-### 1.1 八状态定义（全局唯一口径）
+### 1.1 八状态定义（验收记录口径；UAP 能力态见 `UDS5-S01` §0.2）
+
+> 本表是**验收记录标签**，不是 UAP §7 的能力状态机：`NOT_STARTED` / `IN_PROGRESS` / `IMPLEMENTED` / `VERIFIED` / `FULLY_VERIFIED` 为验收过程标签；UAP 八态（`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`）用于能力判级，两者交集为 `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FAILED`。对外宣布能力状态时**一律以 UAP 八态为准**。
 
 | 状态 | 含义 | 进入条件 | 退出条件 / 下一态 | 允许对外宣布 |
 |---|---|---|---|---|
@@ -52,10 +54,10 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 
 | # | 必要条件 | 验收依据 | 当前可达性 |
 |---|---|---|---|
-| N1 | `UDS5-S01`..`UDS5-S28` 共 28 份规范文档全部存在、非空、≥100 行、必备章节齐全、文档 ID 唯一且与文件名一一对应 | 第四组 S01 / S05 | **不可达（进行中）**：本轮仅撰写 `UDS5-S21`..`UDS5-S28`，其余分册由并行会话产出，未全量校验 |
+| N1 | `UDS5-S01`..`UDS5-S32` 共 32 份分册（28 基础 + 4 业务域）全部存在、非空、≥100 行、必备章节齐全、文档 ID 唯一且与文件名一一对应 | 第四组 S01 / S05 | **不可达（进行中）**：本轮仅撰写 `UDS5-S21`..`UDS5-S28`，其余分册由并行会话产出，未全量校验 |
 | N2 | Token 两层体系完整：无重复 / 缺失 / 未登记 / 硬编码，Light/Dark 成对；E24 对比度缺陷（3.76:1 / 3.30:1）修复，E28 例外登记边界清晰 | 第一组 T01–T08、第二组 E24 | **不可达**：E24 仍为 P1 待修，3 个纯别名构建压缩缺陷未根治 |
 | N3 | 65 个 `ui/` 组件全部登记、结构自洽、`--strict` **EXIT=0**、`VERIFIED` 数 = 65 | 第二组 C01 / C05、`components:registry:strict` | **不可达**：当前 `VERIFIED 0` / `PARTIAL 9` / `NOT_VERIFIED 56`，`--strict` EXIT=1 |
-| N4 | 组件注册补齐 8 类字段（`layer / source / implementation_path / specification_path / test_path / story_path / variants / states / accessibility / deprecated / replacement`），`UTER-CMP-*` ID 唯一，3 处同名 `EmptyState` 已合并 | 第二组 C02 / C03、第四组 S02 / S03 | **不可达**：8 类字段全缺，`UTER-CMP` 0 处，3 处同名仍在 |
+| N4 | 组件注册补齐 11 项字段（`layer / source / implementation_path / specification_path / test_path / story_path / variants / states / accessibility / deprecated / replacement`），`UTER-CMP-*` ID 唯一，3 处同名 `EmptyState` 已合并 | 第二组 C02 / C03、第四组 S02 / S03 | **不可达**：11 项字段全缺，`UTER-CMP` 0 处，3 处同名仍在 |
 | N5 | 组件展示中心 12 项能力齐备、双向关联 A1–A5 五场景可定位、锚点覆盖 23 / 24 区、Props / 注册 ID / a11y / 示例 / 八态 / 双主题齐备 | `UDS5-S23`、第四组 S04 | **不可达**：现状 Props 0 / 注册 ID 0 / a11y 0 / 示例 0 / 22 锚点漏 2 区 |
 | N6 | 73 个路由源码、30 个 feature、17 个业务模块全部完成 5.0 视觉 / 组件 / 交互适配；退款 / 订单保持「无独立页面」事实，无虚构 | `UDS5-S22`、第三组 P01–P02 | **不可达**：页面改造 `NOT_STARTED` |
 | N7 | 页面检查 P01–P07 全过：无未登记组件 / 无绕过基础组件 / 无硬编码设计值、五档响应式、加载 / 错误 / 空三态齐备 | 第三组 P01–P07 | **不可达**：Validator V3 未建立 |
@@ -70,7 +72,7 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 | 类别 | 不可达条件 | 原因 |
 |---|---|---|
 | **逻辑不可达** | N12 | Android / iOS / HarmonyOS 无实现（决策 D4），与 `FULLY_IMPLEMENTED_AND_VERIFIED` 互斥，无法通过任何工程手段在本轮消除 |
-| 证据不可达 | N2 / N3 / N4 / N5 / N9 / N10 | 3.0 未闭合项：E24 待修、65 组件 0 VERIFIED、8 类字段缺失、`--strict` EXIT=1、五条轨未接 CI |
+| 证据不可达 | N2 / N3 / N4 / N5 / N9 / N10 | 3.0 未闭合项：E24 待修、65 组件 0 VERIFIED、11 项字段缺失、`--strict` EXIT=1、五条轨未接 CI |
 | 实施不可达 | N1 / N6 / N7 / N8 / N11 | 5.0 文档与页面改造进行中，Validator V3 / V4 未建立，18 路由无基线 |
 
 > **本轮最终状态必须低于 `FULLY_IMPLEMENTED_AND_VERIFIED`**（`UDS5-AUDIT-01` §14 结论 C）。任何验收报告须逐条列出上述未通过 / 未验证项，不得伪装 PASS。
@@ -85,7 +87,7 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 
 | 勾选 | 验收项 | 验收方法 | 证据要求 | 当前状态 |
 |---|---|---|---|---|
-| `- [ ]` | 28 份分册全部存在 | 列目录 + 文件存在性扫描 | `docs/design-system/uter-design-system-5.0/*.md` 与 `UDS5-S01`..`UDS5-S28` 一一对应 | `IMPLEMENTED_NOT_VERIFIED`（本轮 8 份，其余并行产出） |
+| `- [ ]` | 32 份分册（S01–S32）全部存在 | 列目录 + 文件存在性扫描 | `docs/design-system/uter-design-system-5.0/*.md` 与 `UDS5-S01`..`UDS5-S32` 一一对应 | `IMPLEMENTED_NOT_VERIFIED`（本轮 8 份，其余并行产出） |
 | `- [ ]` | 每份非空且 ≥100 行 | `wc -l` 逐文件核对 | 每份行数 ≥100、禁止空文件 | `NOT_VERIFIED` |
 | `- [ ]` | 元数据表字段齐全 | 逐份检查开头元数据表 | `文档 ID` / `版本 5.0.0` / `状态 ACTIVE` / `上级规范 UDS5-S01` / `生效日期 2026-11-14` / `适用范围` / `验证状态` | `NOT_VERIFIED` |
 | `- [ ]` | 必备章节齐全 | 逐份检查 4 个章节 | `## 与其他规范的关系` / `## 代码实施位置` / `## 自动化验证` / `## 验证状态` | `NOT_VERIFIED` |
@@ -117,7 +119,7 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 | `- [ ]` | `--strict` EXIT=0（C05） | `components:registry:strict` | `VERIFIED=65` / 无 `NOT_VERIFIED` 残留 | `FAILED`（当前 EXIT=1，0 VERIFIED） |
 | `- [ ]` | 3 处同名 `EmptyState` 已合并（C02） | 重复实现扫描 | 仅 `components/empty-state.tsx` 一处，feature 侧能力缺口已记录 | `NOT_VERIFIED` |
 | `- [ ]` | 八态齐备并登记证据（C04） | C04 校验 + 展示中心 | 每组件 default/hover/focus/pressed/disabled/loading/error/success 有证据 | `NOT_VERIFIED` |
-| `- [ ]` | registry 8 类字段补齐（C03 / S03） | 注册格式校验 | `layer / source / *path / variants / states / accessibility / deprecated / replacement` 齐备 | `NOT_VERIFIED` |
+| `- [ ]` | registry 11 项字段补齐（C03 / S03） | 注册格式校验 | `layer / source / *path / variants / states / accessibility / deprecated / replacement` 齐备 | `NOT_VERIFIED` |
 | `- [ ]` | 组件级文档齐备（C06） | S05 / S06 校验 | 每组件有规范分册条目 + 展示单元 + 使用示例 | `NOT_VERIFIED` |
 | `- [ ]` | 组件级 a11y 齐备（C07） | C07 + `test:axe` | ARIA / 键盘 / 焦点 / Reduce Motion / 对比度登记 | `NOT_VERIFIED` |
 | `- [ ]` | 废弃组件无残留引用（C08） | 删组件引用检查 | `deprecated / replacement` 映射有效、引用数 0 | `NOT_VERIFIED` |
@@ -224,7 +226,7 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 |---|---|---|
 | `UDS5-S01` | 上级 | 服从总纲效力、ID 体系与验证状态口径 |
 | `UDS5-AUDIT-01` | 事实依据 | §3.1 / §4.4 / §5 / §6 / §7 / §8 / §9 D4 / §14 提供全部基线数字、未闭合项与不可达结论 |
-| `UDS5-S21` | 上游 | 14 项参考规范的 `NOT_VERIFIED` 项纳入本文验收 |
+| `UDS5-S21` | 上游 | 18 项对照的 `NOT_VERIFIED` 项纳入本文验收 |
 | `UDS5-S22` | 上游 | 17 个业务模块适配结果作为第四组页面验收证据来源 |
 | `UDS5-S23` | 上游 | 展示中心 12 项能力与双向关联纳入第三组组件验收 |
 | `UDS5-S24` | 上游 / 执行 | 五组检查与 8 类 Validator 提供验收方法；8 状态与 G1–G7 铁律一致 |
@@ -238,7 +240,7 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 
 | 类别 | 真实路径 | 本文关联 | 本轮状态 |
 |---|---|---|---|
-| 规范分册 | `docs/design-system/uter-design-system-5.0/*.md`（`UDS5-S01`..`UDS5-S28`） | §3.1 / N1 | 撰写中 |
+| 规范分册 | `docs/design-system/uter-design-system-5.0/*.md`（`UDS5-S01`..`UDS5-S32`） | §3.1 / N1 | 撰写中 |
 | 3.0 历史版本 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（4,111 行 / 197,053 B） | §3.1 | 存在，未改动 |
 | 审计事实源 | `docs/design-system/uter-design-system-5.0/audit/{BASELINE-AUDIT,CLERK-DESIGN-REFERENCE-ANALYSIS}.md` | 全文依据 | 存在，未改动 |
 | Token 真源 | `web/src/design-system/tokens/*.css`（14 个 CSS） | §3.2 | 存在，未改造 |
@@ -261,7 +263,7 @@ NOT_STARTED → IN_PROGRESS → IMPLEMENTED → IMPLEMENTED_NOT_VERIFIED
 | Token | V1 `TokenValidator`、V5 `ContrastA11yValidator` | `check-design-tokens.mjs --strict` 违规 0、`verify-contrast.mjs` 31 PASS、`sync-design-showcase.mjs --check` 17 PASS（均为审计只读实测，本轮未复跑） | `PARTIALLY_VERIFIED` |
 | 组件 | V2 `ComponentValidator`、V6 `ShowcaseAnchorValidator` | `components:registry:check` 65/65/0；`--strict` EXIT=1 | `FAILED` |
 | 页面 | V3 `PageValidator`、V7 `VisualRegressionValidator` | `test:visual` 22 页 × 2 视口 | `NOT_VERIFIED` |
-| 工程 | V8 `GateOrchestrator` | CI frontend job 11 项已接、5 项刻意未接 | `NOT_VERIFIED` |
+| 工程 | V8 `GateOrchestrator` | CI frontend job 12 项已接、8 项未接（其中 5 项刻意不设为必需，另 3 项为本轮新增本地守卫 / 未纳入 CI 的轨道） | `NOT_VERIFIED` |
 | 平台 | V5 / V7 + 原生验收（无） | PC Web / H5 基线；三平台无实现 | `NOT_VERIFIED` |
 
 > 本轮未运行任何验收命令；「现有可执行证据」仅复述 `UDS5-AUDIT-01` §4.4 / §5 / §7 / §8 只读实测结论。全量构建因 211 项并发 WIP 标 `NOT_EXECUTED`，不得伪装 PASS。

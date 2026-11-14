@@ -37,7 +37,7 @@
 | DataTable 封装 | `web/src/components/data-table/` **24 条公开导出**；`README.md` 分 `core/ layout/ toolbar/ static/ hooks/` 五子目录 | 审计 §5；已读 `README.md` |
 | README | 全仓仅 `web/src/components/data-table/README.md` 1 份 | 审计 §5 |
 | 状态标签 | `ui/badge.tsx` 族；E24 浅色溢价 3.76:1 / 深色折扣 3.30:1 低于 4.5:1，P1 待修 | 审计 §3.1 |
-| 守卫测试 | 10 个（`web/src/design-system/__tests__/`），含 `status-badge-contrast.test.ts` | 审计 §12；Clerk 分析 2.21 |
+| 守卫测试 | 12 个（`web/src/design-system/__tests__/`），含 `status-badge-contrast.test.ts` | 审计 §12；Clerk 分析 2.21 |
 | 图表 | `@visactor/vchart ^2.1.2` / `@visactor/react-vchart ^2.1.2` / `recharts 3.9.1`；P2「图表独立 Token 未定义」保持 Pending | 审计 §2 / §3.1 |
 | 证据状态 | `VERIFIED 0 / PARTIAL 9 / NOT_VERIFIED 56`；`components:registry:strict EXIT=1` | 审计 §5 |
 | **Clerk 无表格能力** | 官方组件目录无表格组件；首页「Members」「Roles & Permissions」为产品演示内容，**不是可复用表格规范** | Clerk 分析 §1.1 / 2.9 |

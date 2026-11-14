@@ -24,9 +24,9 @@
 | OB-4 | 权限名称与后端逐字一致 | 界面角色标签集合必须等于 `model.OrgRole*`；`owner`/`admin`/`department_admin`/`member` 不得增删改名 | `model/organization.go:17-20`；§2 事实基线 |
 | OB-5 | 危险操作二次确认 | 角色提升/转移、成员移除、额度上限变更等操作必须走 `ConfirmDialog` + 服务端校验；不得使用浏览器原生 `window.confirm` | `web/AGENTS.md` 3.3；`components/confirm-dialog.tsx` |
 | OB-6 | 金额呈现唯一真源 | 金额一律走 `@/lib/format` / `@/lib/currency` / `features/wallet/lib/format.ts` 的既有封装；禁止手写 `toFixed` 拼币种 | `web/AGENTS.md` 3.1；`UDS5-S19` §4.2；§8 |
-| OB-7 | 只约束呈现，不改业务 | 本规范**零改动** `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `IncrOrgUsedQuota` / 订单状态机 / 支付契约 / 授权判定 | `UDS5-S22` §1.2 R1/R2/R3 |
+| OB-7 | 只约束呈现，不改业务 | 本规范**零改动** `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` / 订单状态机 / 支付契约 / 授权判定（唯一清单见 `UDS5-S01` §5 C4） | `UDS5-S22` §1.2 R1/R2/R3 |
 | OB-8 | 不虚构页面与流程 | 仓库中不存在的组织切换器、邀请流程、订单页、退款页、发票功能、组织级 API Key、组织级账单，一律不得在界面文案、导航、验收清单中声称存在 | `UDS5-S22` §4；§13 差异登记 S31-D01、S31-D08…S31-D13 |
-| OB-9 | 视觉与组件复用既有封装 | 组织与账单页面优先复用 `ui/`（66 实现）、`data-table/`（24 导出）、`status-badge.tsx`、`confirm-dialog.tsx`；禁止绕过基础组件自绘 | `UDS5-S14` §3；`UDS5-S19` §5 |
+| OB-9 | 视觉与组件复用既有封装 | 组织与账单页面优先复用 `ui/`（65 实现 + 1 平铺测试）、`data-table/`（24 导出）、`status-badge.tsx`、`confirm-dialog.tsx`；禁止绕过基础组件自绘 | `UDS5-S14` §3；`UDS5-S19` §5 |
 
 ---
 
@@ -228,7 +228,7 @@
 
 ### 9.1 资金真实性红线（最高优先级）
 
-> **风险等级归属**：本节 8 条全部属 `UDS5-S01` §4A 的 **`RISK-P0`**（支付 / 退款 / 余额变更）。裸写 `P1` / `P2` 在本分册一律指 `UDS5-S01` §4A.1 定义的**待办优先级**，非业务风险等级。
+> **风险等级归属（按条）**：下表 8 条逐条判定后**均为** `UDS5-S01` §4A 的 **`RISK-P0`**（支付 / 退款 / 余额变更）；此处是逐条判定结果，不是整节一刀切标注（§4A.3）。裸写 `P1` / `P2` 在本分册一律指 `UDS5-S01` §4A.1 定义的**待办优先级**，非业务风险等级。
 
 | # | 规则 | 依据 |
 |---|---|---|
@@ -293,7 +293,7 @@
 | F-06 | 禁止在界面展示仓库不存在的组织角色、组织状态、订单状态、兑换码状态 | OB-2、OB-4、§8.2 |
 | F-07 | 禁止用 `window.confirm` 做危险操作二次确认；必须走 `ConfirmDialog` | OB-5、OB-5.6 |
 | F-08 | 禁止绕过 `components/ui/` 与 `components/data-table/` 自绘同等控件（现状 `features/wallet/` 与 `features/organization/` 均未复用 `data-table`，登记 S31-D06） | OB-9、`web/AGENTS.md` 3.3 |
-| F-09 | 禁止改动 `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `IncrOrgUsedQuota` / 订单状态机 / 支付契约 | OB-7、§3.2 |
+| F-09 | 禁止改动 `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` / 订单状态机 / 支付契约 | OB-7、§3.2 |
 | F-10 | 禁止把管理员「Complete Order」呈现为可用的资金结算通道（后端已禁用） | OB-9.7 |
 | F-11 | 禁止在余额、订单、成员额度处把「不限」显示为 `0` | OB-8.8 |
 | F-12 | 禁止新增依赖（Clerk SDK / Storybook / 支付 SDK / 发票库） | OB-7、§3.2 R-B4 |
@@ -356,7 +356,7 @@
 | 消费日志 | `web/src/features/usage-logs/`（80 文件；`constants.ts` 的 `LOG_TYPE_ENUM.REFUND = 6`、`components/columns/common-logs-columns.tsx`、`components/dialogs/details-dialog.tsx`） | §7.6、§10.1 | 只读 |
 | 金额格式化真源 | `web/src/lib/format.ts`、`web/src/lib/currency.ts` | §8.1 | 只读 |
 | 角色与权限 | `web/src/lib/roles.ts`（`ORG_MANAGE_ROLES` / `canManageOrganization`）、`web/src/features/users/components/__tests__/permissions.test.tsx` | §6 | 只读 |
-| 基础组件 | `web/src/components/ui/`（共 66 个 `.tsx`：`table.tsx` / `dialog.tsx` / `alert-dialog.tsx` / `badge.tsx` / `form.tsx` / `alert.tsx` / `skeleton.tsx` 等） | §12 F-08 | 只读 |
+| 基础组件 | `web/src/components/ui/`（共 66 个 `.tsx` = 65 实现 + 1 平铺测试：`table.tsx` / `dialog.tsx` / `alert-dialog.tsx` / `badge.tsx` / `form.tsx` / `alert.tsx` / `skeleton.tsx` 等） | §12 F-08 | 只读 |
 | 业务封装 | `web/src/components/confirm-dialog.tsx`、`web/src/components/status-badge.tsx`、`web/src/components/data-table/`（24 导出） | §5.6、§6.3、§8.2 | 只读 |
 | 门禁脚本 | `web/scripts/check-design-tokens.mjs`、`check-component-registry.mjs`、`check-design-system-5.0.mjs`、`verify-contrast.mjs`、`visual-regression.mjs` | 自动化验证 | 只读 |
 | 规范输出 | `docs/design-system/uter-design-system-5.0/ORGANIZATION-AND-BILLING-COMPONENT-STANDARD.md` | 全文 | **本文件（新建）** |
@@ -411,7 +411,7 @@
 | S31-D04 管理员补单入口一致性 / S31-D05 金额 `toFixed` 整改 | `NOT_STARTED` | 均属代码改动，本轮不执行 |
 | S31-D06 钱包 / 组织复用 `data-table` / S31-D07 `window.confirm` 替换为 `ConfirmDialog` | `NOT_STARTED` | 均属代码改动，本轮不执行 |
 | S31-D14 组织域成员权限 / 额度写操作缺强验证与审计 | `NOT_STARTED` | 属代码改动，本轮不执行。真实代码缺陷：`controller/organization.go` 全文无 `requireAdminUserProof` / `CriticalRateLimit` 调用，`UpdateOrganizationMember` 可同时写 `sub_quota_limit` 与 `org_role` 而无审计留痕（成员新增有审计、成员变更无）。与 `S01-D6` / `S30-D13`（平台超管 `add_quota` 分支）为**不同代码路径**，非重复登记；修复须走 `UDS5-S01` §19 变更流程 |
-| `UDS5-S31` 登记入 `DESIGN-STANDARD-REGISTRY.yaml` | `PARTIALLY_VERIFIED`（2026-11-14 实测） | **已补登**（`category: business-vertical`；`dependencies` 含 S01 / S13 / S14 / S15 / S16 / S17 / S18 / S19 / S20 / S22 / S24）。**已执行** `bun run design:5:check` → `verdict: PASS` / `errors: 0` / `checksPassed: 7` / `standards: 37` / `registeredDocIds: 37`（team-lead 于 2026-11-14 蓝图合并收口时复跑，含 S29–S32 四条新登记）；**仅**注册一致性一项达 PASS，本文其余验证项仍为 `NOT_VERIFIED` / `NOT_EXECUTED` |
+| `UDS5-S31` 登记入 `DESIGN-STANDARD-REGISTRY.yaml` | `PARTIALLY_VERIFIED`（2026-11-14 实测） | **已补登**（`category: business-vertical`；`dependencies` 含 S01 / S13 / S14 / S15 / S16 / S17 / S18 / S19 / S20 / S22 / S24）。**已执行** `bun run design:5:check` → `verdict: PASS` / `errors: 0` / `checksPassed: 7` / `standards: 37` / `registeredDocIds: 37`（team-lead 于 2026-11-14 蓝图合并收口时复跑，含 S29–S32 四条新登记）；**仅**注册一致性一项达 `PARTIALLY_VERIFIED`（脚本字面输出 `verdict: PASS`，按 `UDS5-S01` §15 不转写为业务验收结论），本文其余验证项仍为 `NOT_VERIFIED` / `NOT_EXECUTED` |
 | 门禁脚本（lint / tokens / contrast / registry / design:5:check） | `NOT_EXECUTED`（除 `design:5:check` 外） | 本轮**仅执行** `bun run design:5:check`（team-lead 复跑 + 本分册作者二次复跑，均 PASS）；`lint:design:strict` / `design:tokens:check` / `verify:contrast` / `components:registry:strict` **未运行** |
 | 单元测试 / 视觉回归 / a11y 回归 / PC Web / H5 | `NOT_EXECUTED` / `NOT_VERIFIED` | 本轮未运行；未针对本分册重跑 PC Web / H5 回归 |
 | Android / iOS / HarmonyOS | `NOT_VERIFIED` | 无实现，不得用 Web 结果代替 |

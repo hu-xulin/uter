@@ -8,7 +8,7 @@
 | 上级规范 | `UDS5-S01` |
 | 生效日期 | `2026-11-14` |
 | 适用范围 | UTER Design System 3.0 → 5.0 的版本演进记录；规范、Token、组件、页面、工程、平台的事实性变更台账 |
-| 验证状态 | `NOT_VERIFIED`（本轮仅撰写变更日志，未执行版本变更与验证） |
+| 验证状态 | `NOT_VERIFIED`（本文为变更台账；节点五 / 六仅执行 `design:5:check` 与 `design:clerk:check` 等只读门禁，其余验证命令未运行） |
 
 ---
 
@@ -42,7 +42,7 @@
 | 新增 | 3.0 规范主体框架（§0 规范效力 → §28 Token Manifest，共 29 章） | `UDS5-AUDIT-01` §3 |
 | 继承 | 品牌色全套（Light `#5B5EE6` / `#494CC7` / `#3F42B0`；Dark `#8B8DF5` / `#A1A3F7` / `#B7B8FA`）与 DTCG 真源 `source/brand.tokens.json` | `UDS5-AUDIT-01` §11.1 第 1 条 |
 | 继承 | Inter Variable + Noto Sans SC Variable；正文 14/22、caption 12/18、长文本 16/26、最小 12px、H5 输入 ≥16px | `UDS5-AUDIT-01` §2（字体基线核实）、§11.1 第 2 条 |
-| 继承 | 4pt 间距、1px 边框、圆角八档（5.0 纠正，3.0 早期自称七档）、2px 焦点环（`ring-2`，已裁决，取代 1px）、表面色差优先于重阴影 | `UDS5-AUDIT-01` §11.1 第 3 条（圆角/焦点环口径以 5.0 裁决为准） |
+| 继承 | 4pt 间距、1px 边框、8 个命名派生档 + `rounded-full` 特殊档（运行时 T10 称「圆角九档」）（5.0 纠正，3.0 早期自称七档）、2px 焦点环（`ring-2`，已裁决，取代 1px）、表面色差优先于重阴影 | `UDS5-AUDIT-01` §11.1 第 3 条（圆角/焦点环口径以 5.0 裁决为准） |
 | 合并 | （本节点无合并动作记录） | `UDS5-AUDIT-01` §11.2 为 5.0 决定，非 11-03 事实 |
 | 废弃 | （本节点无废弃动作记录） | — |
 | 待办 | 证据 mtime（11-03）**早于** 3.0 终版（11-13），属基线快照、非 3.0 终版复核；不得直接作为 5.0 验收依据 | `UDS5-AUDIT-01` §3（证据时效） |
@@ -96,7 +96,7 @@
 | 动作 | 逐条内容 | 证据来源 |
 |---|---|---|
 | 新增 | 基线审计 `audit/BASELINE-AUDIT.md`（`UDS5-AUDIT-01`）与 Clerk 参考核实 `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md`（`UDS5-AUDIT-02`） | `UDS5-AUDIT-01` 头部、`UDS5-AUDIT-02` 头部 |
-| 新增 | `docs/design-system/uter-design-system-5.0/` 规范体系（`UDS5-S01`..`UDS5-S28`），构成对 `AGENTS.md:359` 的明确授权例外（决策 D2） | `UDS5-AUDIT-01` §9 D2 |
+| 新增 | `docs/design-system/uter-design-system-5.0/` 规范体系（`UDS5-S01`..`UDS5-S32`），构成对 `AGENTS.md:359` 的明确授权例外（决策 D2） | `UDS5-AUDIT-01` §9 D2 |
 | 新增 | 8 项冲突决策 D1–D8（Adapt / Adopt / Reject / 分期） | `UDS5-AUDIT-01` §9 |
 | 新增 | 5.0 五层架构 L1–L5、「规范 ↔ 代码 ↔ 注册 ID」双向关联、8 状态验收口径、废弃治理注册表机制（规范层） | `UDS5-AUDIT-01` §5.2 口径、`UDS5-S21`/`S23`/`S25`/`S28` |
 | 继承 | 3.0 全文作为历史版本**完整保留**，不删除、不改写；品牌 / 字体 / 间距 / 三层 Token / 17 条 showcase 校验 / T1–T17 / 组件单一实现根全部继承 | `UDS5-AUDIT-01` §11.1 第 8 条、§11.1 第 1–7 条 |
@@ -127,7 +127,7 @@
 | 新增 | **注册表补登** `UDS5-S29`..`UDS5-S32` 四条（`category: business-vertical`），并补齐 `UDS5-S29` / `UDS5-S30` 的 `dependencies`（S11 / S14 / S15 等正文引用项） | `DESIGN-STANDARD-REGISTRY.yaml` |
 | 继承 | **运行时真值优先**原则贯穿全部合并：蓝图在 8 个数值轴上与仓库冲突，一律**以仓库为准**并逐条登记（字号 11px↔12px、图标 7 档↔5 档、图标描边 1.75–2px↔恒 2px、动效 6 档↔14 档、圆角 9 档↔8+full、断点 480/1440↔640/1536、Button 7 档↔3+4+2 档、Input 5 档↔2 档） | `UDS5-S07` `S07-D8`/`S07-D9`、`UDS5-S08` `S08-D5`/`S08-D6`、`UDS5-S09` `S09-D5`、`UDS5-S02` `S02-D2`、`UDS5-S12` `S12-D9`、`UDS5-S14` `S14-D1`/`S14-D2`、`UDS5-S04` `S04-D2`/`S04-D3` |
 | 合并 | **`UDS5-S07` z-index 分层**：蓝图 §4 的 8 档 scale 补齐仓库已登记缺口 `S07-D3`（运行时无专用 `--ds-z-*` Token）——补目标档 + 存量分布（`z-50` 30 处 / `z-100` 1 处 / 局部 `z-10` 35 处 / 图表绘制顺序豁免）+ 五步落地路径；**Token 未落地，状态仍 `NOT_VERIFIED`** | `UDS5-S07` §6.1–§6.4 |
-| 合并 | **`UDS5-S03` 色彩**：补中性色 8 项与语义状态色 4 项的「蓝图建议 ↔ 运行时真值」逐值对照（4 项一致 / 3 项冲突 / 1 项不可映射 / 状态色 2 项一致 2 项冲突）；补表单交互九项出口核对与 `--fg-*` 前缀口径 | `UDS5-S03` §7.1–§7.4 |
+| 合并 | **`UDS5-S03` 色彩**：补中性色 8 项与语义状态色 4 项的「蓝图建议 ↔ 运行时真值」逐值对照（3 项一致 / 4 项冲突 / 1 项不可映射 / 状态色 2 项一致 2 项冲突）；补表单交互九项出口核对与 `--fg-*` 前缀口径 | `UDS5-S03` §7.1–§7.4 |
 | 合并 | **`UDS5-S11` 栅格**：蓝图 12/8/4 列与列间距 24/16/12 **与仓库 4px 阶梯零冲突**，整条采纳为规则；补页面框架尺寸对照（侧栏 240↔220、顶栏 64↔48、页面内边距无单一出口）与内容行长 60–90 字符 | `UDS5-S11` §4.1 / §4.2 |
 | 合并 | **`UDS5-S13` 无障碍**：补 Reflow / 200% 缩放、拖拽非拖拽替代、live region 播报去重、平台语义优先级、「自动化 ≠ 完整验收」五节；**新登记 5 条缺口**（`S13-D8`..`S13-D12`），其中 `S13-D8`（Reflow 基准 320px vs 仓库最小断点 640px）为真实口径缺口 | `UDS5-S13` §3.13–§3.17 |
 | 合并 | **`UDS5-S18` 表单**：补四阶段验证时机（V-1 输入中 / V-2 失焦 / V-3 提交 / V-4 服务端）、字段四要素与布局约束、异步验证竞态保护（A-1..A-5）、错误文案与提交细则（E-1..E-4） | `UDS5-S18` §3.1–§3.4 |
@@ -144,13 +144,13 @@
 | 合并 | **`UDS5-S23` 文档治理**：补**规范性语言 MUST / SHOULD / MAY** 四档定义与**文档状态机**（Draft / ACTIVE / DEPRECATED / ARCHIVED）、结构化信息须有机器可读来源、变更影响识别要求 | `UDS5-S23` §6.1 / §6.2 |
 | 合并 | **`UDS5-S25` 验收**：补**十字段交叉验收矩阵**（Token / 组件 / 页面 / 视觉 / 响应式 / 主题 / 内容 / 国际化 / 安全 / 跨平台），10 维当前 **0 维达 `VERIFIED`** | `UDS5-S25` §3.7 |
 | 废弃 | 蓝图的 **Storybook 要求**：不引入（仓库 D3 已决定用 `showcase.html` + 快照校验） | `UDS5-S14` `S14-D7`、`UDS5-S23` §1 |
-| 废弃 | 蓝图的 **Clerk SDK 表述**：改写为「Uter 不集成 Clerk SDK；仅借鉴分步流程 / 字段级错误的信息架构理念」 | `UDS5-S29` `D-03` |
+| 废弃 | 蓝图的 **Clerk SDK 表述**：改写为「Uter 不集成 Clerk SDK；仅借鉴分步流程 / 字段级错误的信息架构理念」 | `UDS5-S29` `S29-D03` |
 | 废弃 | 蓝图的 **短信能力**：仓库**无独立短信网关**（全仓 grep 0 命中），标 `NOT_IMPLEMENTED`，**不写 provider / 费率 / 模板 / 频次** | `UDS5-S32`（短信章节） |
-| 修正 | **独立复核发现**：`common/constants.go:346-349` 后端订单状态为**四态**（含 `failed`），而前端 `web/src/features/wallet/types.ts:287` 的 `TopupStatus` 仅**三态**（缺 `'failed'`），`STATUS_CONFIG` 亦只映射三态——**失败订单落库后前端无对应状态分支**，属真实代码缺陷（须走 `UDS5-S01` §19 变更流程） | `UDS5-S31` `D-03`（team-lead 独立复核） |
+| 修正 | **独立复核发现**：`common/constants.go:346-349` 后端订单状态为**四态**（含 `failed`），而前端 `web/src/features/wallet/types.ts:287` 的 `TopupStatus` 仅**三态**（缺 `'failed'`），`STATUS_CONFIG` 亦只映射三态——**失败订单落库后前端无对应状态分支**，属真实代码缺陷（须走 `UDS5-S01` §19 变更流程） | `UDS5-S31` `S31-D03`（team-lead 独立复核） |
 | 补全 | **业务风险分级补齐**（蓝图总纲 §8）：`UDS5-S01` 新增 **§4A 业务风险分级（RISK 体系）**——三级定义（`RISK-P0` 支付/退款/余额/API Key 明文/权限提升/账户删除；`RISK-P1` 渠道启停/模型价格/限额/角色变更/批量；`RISK-P2` 偏好/筛选/排序/密度）+ **§4A.1 编号命名空间隔离**（`RISK-P*` 业务风险 vs 裸写 `P1`–`P3` 仓库待办优先级，同符号不同义）+ §4A.3 与既有 6 份分册的映射 + §4A.4 仓库现状；并回写 `S16` §5.1.5、`S29` §7、`S30` §5、`S31` §9.1 四处 `RISK-P0` 归属标注 | `UDS5-S01` §4A / §21；`UDS5-S16` §5.1.5；`UDS5-S29` §7；`UDS5-S30` §5；`UDS5-S31` §9.1 |
-| 修正 | **守卫测试数量事实偏差**：`web/src/design-system/__tests__/` **实测 11 个**（第 11 个 `design-system-5-governance.test.ts` 为 5.0 建立时新增），而 `BASELINE-AUDIT` §12 / `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.21 / 12 份分册均记 10 个——已统一修正 12 份分册的 19 处表述为 11 个；**两份审计报告保持原样**（历史基线快照），差异登记 `S13-D13` | `UDS5-S13` §4.1 / `S13-D13` |
+| 修正 | **守卫测试数量事实偏差**：`web/src/design-system/__tests__/` 审计时点记 10 个、5.0 建立时增至 11 个（新增 `design-system-5-governance.test.ts`）、Clerk 边界守卫回归测试落地后**现行实测 12 个**（新增 `clerk-boundary.test.ts`）——全站现行表述已统一为 **12 个**；两份审计报告保留 10 个原值并显式标注「审计时点快照」，差异登记 `S13-D13` | `UDS5-S13` §4.1 / `S13-D13` |
 | 修正 | **风险等级归属由「整节」改为「按条」**（teammate 独立复核驱动）：`UDS5-S01` §4A 新增 **§4A.3 按条目归属判据**（资金/凭据/权限/账户写操作 → `RISK-P0`；配置/额度/批量/状态写操作 → `RISK-P1`；纯展示只读 → `RISK-P2`），并修正 §4A.4 三处归属偏差（原 §4A.3 把 step-up / `TokenKeySecureVerificationRequired` / `CriticalRateLimit` 一并归入 `S29` §7，实测 `S29` §7 **不含** step-up 与 API Key 强验证——前者 scope 清单真源为 `service/security_verification.go:26-54`，后者归 `S30` §5）。`S29` §7 改为 13 条逐条分级（`RISK-P0` 6 条 / `RISK-P1` 2 条 / `RISK-P2` 5 条），`S30` §5 改为 13 条逐条分级（§5.1 掩码与明文边界 8 条全 `RISK-P0`；§5.2 展示与交互 5 条 = `RISK-P0` 1 / `RISK-P1` 1 / `RISK-P2` 3）、`S30` §6 新增「风险等级」列（11 条 = `RISK-P0` 1（U-6.11 额度调整）/ `RISK-P2` 10）、`S30` §7 新增「风险等级」列（10 条 = `RISK-P0` 5 / `RISK-P1` 3 / `RISK-P2` 2） | `UDS5-S01` §4A.3 / §4A.4；`UDS5-S29` §7；`UDS5-S30` §5 / §7 |
-| 修正 | **差异编号体系统一**：四份新分册原用两套编号（`S29`/`S31` 用裸 `D-01`…`D-13`，`S30`/`S32` 用 `S30-D1`…`S32-D17`）——统一为 **`Sxx-Dxx` 两位数**形式（`S29-D01`…`S29-D13`、`S30-D01`…`S30-D12`、`S31-D01`…`S31-D13`、`S32-D01`…`S32-D17`），与 `UDS5-S28` §1「编号全局唯一」要求对齐；既有 20 份分册的单数字形式**保持原样**（历史编号不重写） | `UDS5-S29` §9、`UDS5-S30` §9、`UDS5-S31` §10、`UDS5-S32` §10 |
+| 修正 | **差异编号体系统一**：四份新分册原用两套编号（`S29`/`S31` 用裸 `D-01`…`D-13`，`S30`/`S32` 用 `S30-D1`…`S32-D17`）——统一为 **`Sxx-Dxx` 两位数**形式（`S29-D01`…`S29-D13`、`S30-D01`…`S30-D15`、`S31-D01`…`S31-D14`、`S32-D01`…`S32-D17`），与 `UDS5-S28` §1「编号全局唯一」要求对齐；既有 20 份分册的单数字形式**保持原样**（历史编号不重写） | `UDS5-S29` §9、`UDS5-S30` §9、`UDS5-S31` §10、`UDS5-S32` §10 |
 | 修正 | **`UDS5-S31` 悬空引用**：`§8.2` 订单状态表把前端缺 `failed` 态误登记为 `D-02`，实为 **`D-03`**（`D-02` 是「无退款路由」）——已更正为 `S31-D03` | `UDS5-S31` §8.2 |
 | 修正 | **`UDS5-S31` 验证状态自相矛盾**：「门禁脚本」行原写「本轮未运行任何命令」，与同表上一行「已执行 `design:5:check` → PASS」矛盾——改为「本轮**仅执行** `design:5:check`（PASS）；`lint:design:strict` / `design:tokens:check` / `verify:contrast` / `components:registry:strict` **未运行**」；同时把 `standards: 36` / `registeredDocIds: 36` 更新为实测 `37` / `37`，并补齐 `dependencies` 描述（S13 / S14 / S15 / S24） | `UDS5-S31` §12 |
 | 修正 | **`text-fg-primary` 为死类（真实代码缺陷，独立复核发现）**：`theme.css:550`（Light）与 `:749`（Dark）均声明 `--fg-primary`，但 `theme.css:183-188` 的 `--color-fg-*` 映射**只含 6 项**（`secondary` / `tertiary` / `disabled` / `link` / `placeholder` / `inverse`），**缺 `--color-fg-primary`**。Tailwind v4 未注册的 `--color-*` 不生成工具类——实测构建产物 `web/dist/static/css/index.51e0d1c6a1.css` 中 `.text-fg-primary` 计数为 **0**（对照 `.text-fg-secondary{color:var(--fg-secondary)}` 正常生成）。全仓 `web/src` 有 **12 处**使用 `text-fg-primary`（**基础类 8 处**——`features/about/about-viewer.tsx` 6 处 + `features/docs/native/page-nav.tsx` 1 处 + `features/docs/native/content-card.tsx` 1 处；**`hover:` 变体 4 处**——`about-viewer.tsx` 1 处 + `docs-toc.tsx` 1 处 + `docs-shell.tsx` 2 处），这些点的颜色声明**被静默丢弃**、回落到继承色。修复需在 `theme.css` 补 `--color-fg-primary: var(--fg-primary);` 一行并重建；本轮**不改代码** | `UDS5-S03` §8 `S03-D11` |
@@ -159,7 +159,7 @@
 | 修正 | **负 z-index 缺口**（独立复核发现）：`web/src` 有 **3 处** `-z-10`（`features/home/components/sections/hero.tsx:83,87`、`cta.tsx:44`，均为 `ds-decor-mesh-*` / `ds-decor-grid` 装饰层置于内容之下），而 §6.2 目标八档（`base=0` 起）**无负值档**。新增 `S07-D10` 登记该分层缺口 | `UDS5-S07` §10 `S07-D10` |
 | 核实 | **掩码位数口径无误（复核怀疑不成立）**：`MaskTokenKey`（`model/token.go:64-75`）在 `len>8` 时返回 4 + 10 + 4 = **18 位**；加 `sk-` 前缀（`api-keys-cells.tsx:58`）共 **21 字符**；密钥列宽实测 `size: 208`（`api-keys-columns.tsx:155`）。`UDS5-S30` U-5.11 表述**与代码一致**，已新增 `S30-D14` 记录「若有人主张 11 位，该主张不成立、不得据此改文档」。同时 U-5.10 补入 `MaskedValueTrigger`（`web/src/components/masked-value-display.tsx:30-42`）为首选复用源 | `UDS5-S30` U-5.10 / U-5.11 / `S30-D14` |
 | 修正 | **`text-fg-primary` 死类的事实细节校正**（独立复核发现）：使用点精确分布为**基础类 8 处 + `hover:` 变体 4 处**（原记「6 + 5」有误）；且 Tailwind v4 由同一 `--color-*` 变量派生静态与 hover 两种变体，故**补 `--color-fg-primary: var(--fg-primary);` 一行可同时救活全部 12 处**，重建后须验证产物出现 `.text-fg-primary` 与 `.hover\:text-fg-primary` 两条规则 | `UDS5-S03` `S03-D11` |
-| 登记 | **门禁脚本输出路径逃逸缺口**（独立复核发现）：`web/scripts/generate-design-showcase.mjs:53-56` 的 `path.resolve(WEB_ROOT, args[outIdx + 1])` 遇**绝对路径**即返回该路径本身，`--out /tmp/x.html` **不受 `WEB_ROOT` 约束**；`web/scripts/axe-audit.mjs:38-41` 更直接用 `args[i + 1]` 原值直用（连 `path.resolve` 都不做）。两处写入前均无路径白名单断言，可覆盖仓内任意文件。新增 §9.1 登记修复方向（showcase 限 `REPO_ROOT/docs/design-system/`；axe 限 `os.tmpdir()`）；本轮**不改代码** | `UDS5-S26` §9.1 |
+| 登记 | **门禁脚本输出路径逃逸缺口**（独立复核发现）：`web/scripts/generate-design-showcase.mjs:53-56` 的 `path.resolve(WEB_ROOT, args[outIdx + 1])` 遇**绝对路径**即返回该路径本身，`--out /tmp/x.html` **不受 `WEB_ROOT` 约束**；`web/scripts/axe-audit.mjs:38-41` 更直接用 `args[i + 1]` 原值直用（连 `path.resolve` 都不做）。两处写入前均无路径白名单断言，可覆盖仓内任意文件。新增 §9.1 登记修复方向（showcase 限 `REPO_ROOT/docs/design-system/`；axe 限 `os.tmpdir()`）；本轮**不改代码** | `UDS5-S24` §9.1 |
 | 修正 | **强验证 scope 行号修正**：独立复核实测 `service/security_verification.go` 的 scope 常量块为 `:26-54`（含 `:53` `admin.user.2fa.disable` 与 `:54` `admin.user.binding.clear`），原记 `:26-52` 漏两条——已在 4 处引用（`S01` §4A.4 两处 / `S29` §7 / `S30` §5）统一改为 `:26-54` | `UDS5-S01` §4A.4；`UDS5-S29` §7；`UDS5-S30` §5 |
 | 修正 | **组织域成员权限 / 额度写操作缺强验证与审计留痕（真实代码缺陷，teammate 独立复核发现）**：`controller/organization.go` **全文**无 `requireAdminUserProof` / `CriticalRateLimit` / `VerificationScope` 任一调用；`UpdateOrganizationMember`（`router/api-router.go:230`，`orgAdminRoute.PUT /:id/members/:uid`）可**同时**写 `sub_quota_limit`（`:554`）与 `org_role`（`:560`），既无 step-up 强验证也无审计记录——对照同文件 `AddOrganizationMembers`（`:181`）走 `recordManageAuditFor(c, 0, "organization.member_add", ...)`（`:276`），**成员新增有审计而成员变更无**；`RemoveOrganizationMember`（`:603`，`router/api-router.go:231`）同理。按 §4A.2，角色提升属 `RISK-P0`、子额度上限变更属 `RISK-P1`（配置类写操作），仓库实现未达该级。与 `S01-D6` / `S30-D13`（平台超管 `add_quota` 分支）为**不同代码路径**，非重复登记。新增 `S31-D14` 登记；本轮**不改代码** | `UDS5-S31` §5.1 `OB-5.4` / §6.2 `OB-6.3` / §10 `S31-D14` |
 | 补全 | **`UDS5-S30` §4 用户身份展示补风险等级列**（teammate 复核驱动）：§4 原 8 条（`U-4.1`–`U-4.8`）为纯展示只读规则，按 §4A.3 判据一律归 `RISK-P2`，逐条补入「风险等级」列；同时 `U-5.9`–`U-5.13` 的编号在表中显式化，消除 §5 与 §5.1 的编号重叠 | `UDS5-S30` §4 / §5 |
@@ -168,7 +168,7 @@
 | 修正 | **`UDS5-S30` 验证状态词自相矛盾**：§12「最终状态」原写 `FULLY_IMPLEMENTED`，与同节「用户组件域相关全部验证项均为 `NOT_VERIFIED` / `NOT_EXECUTED`」矛盾——已改为「最终状态**低于** `FULLY_IMPLEMENTED_AND_VERIFIED`」，并明确唯一例外是 `design:5:check` 注册表**结构**一致性检查（只读、不替代功能 / 视觉 / 平台验收结论） | `UDS5-S30` §12 |
 | 修正 | **`MaskedValueTrigger` 实际渲染 12px 而非 13px（真实代码缺陷，teammate 复核发现 + team-lead 独立实测确认）**：`MaskedValueTrigger`（`web/src/components/masked-value-display.tsx:30-42`）以 `<Button size='sm'>` 渲染并叠加 `font-mono text-mono`，但 `Button` 的 `sm` 档自带 `text-xs`（`web/src/components/ui/button.tsx` size 档 `sm`），而**自定义 `text-mono` 不被 tailwind-merge 识别为字号类**——实测 `twMerge('text-xs text-mono')` 返回 `'text-xs text-mono'`（两者并存未合并），最终由**CSS 源码顺序**决定：`web/dist/static/css/index.51e0d1c6a1.css` 中 `.text-mono` 偏移 107303、`.text-xs` 偏移 108148（**更靠后**，同在 `@layer utilities` 同层同特异性）→ **`text-xs`（12px）胜出**，`--text-mono`（13px）被静默覆盖。对照 `web/src/components/ui/input.tsx:65-69` 的既有正确做法（字号档与字形族拆开指定，只用 tailwind-merge 认可的字号类）。`UDS5-S30` U-5.10 / U-5.11 已按实测口径改写（U-5.11 给出 14px / 13px / 实际 12px 三档估算，208px 列宽下限结论不变）；新增 `S30-D15` 登记；本轮**不改代码** | `UDS5-S30` U-5.10 / U-5.11 / `S30-D15` |
 | 修正 | **`text-fg-primary` 使用点分布口径校正**：CHANGELOG 原写「`about-viewer.tsx` 6 处、`features/docs/native/` 5 处等」，但 `about-viewer.tsx` 实为 **7 处**（含 1 处 `hover:` 变体）。精确分布为**基础类 8 处**（`about-viewer.tsx` 190/217/243/287/295/316 共 6 处 + `page-nav.tsx:58` + `content-card.tsx:34`）+ **`hover:` 变体 4 处**（`about-viewer.tsx:91` + `docs-toc.tsx:77` + `docs-shell.tsx:71,104`）= **12 处**。`UDS5-S03` `S03-D11` 的 12 条行号引用经逐条核对**全部命中**，无需修改 | `UDS5-S03` `S03-D11`；`DESIGN-SYSTEM-CHANGELOG.md` §6.1 |
-| 修正 | **`UDS5-S30` 差异编号去重**：删除与 `S30-D07` 语义重复的占位条目（原 `S30-D13`），后续条目顺次前移，编号恢复连续无重复（`S30-D01`..`S30-D14`） | `UDS5-S30` §9 |
+| 修正 | **`UDS5-S30` 差异编号去重**：删除与 `S30-D07` 语义重复的占位条目（原 `S30-D13`），后续条目顺次前移，编号恢复连续无重复（`S30-D01`..`S30-D15`，D15 为后续 `MaskedValueTrigger` 缺陷登记） | `UDS5-S30` §9 |
 | 修正 | **`UDS5-S15` §15 表格字符错乱**：`appearance` 禁令表的「禁止项 / 原因 / 替代」三列存在历史乱码（`cl-*` 行、`color-mix()` 行、`hover:bg-X/NN` 行、`text-[15px]` 行），已按 `UDS5-S21` / `UDS5-S14` 原文恢复 | `UDS5-S15` §15 |
 | 待办 | **z-index 封闭 Token 未落地**：`S07-D3` 的五步落地路径（声明点 → 30 处 `z-50` 拆分 → 守卫白名单 → 任意值拦截 → 回填基线）本轮**未执行**（未改 `web/src` 运行时代码） | `UDS5-S07` §6.4 |
 | 待办 | **视觉回归视口矩阵**从 2 档扩到 8 档（`S12-D8`）—— 属基线维护成本决策，未执行 | `UDS5-S12` §4.3 |
@@ -184,16 +184,16 @@
 
 | 类型 | 动作 | 落点 |
 |---|---|---|
-| 核对 | **新增 4 个官方来源**（首轮 9 → 合计 13）：`Customizing Clerk` overview、`Email and SMS templates`、`Bring your own CSS`、`2025-07-08 CSS variables support` changelog；补出首轮未纳入的 **N1–N7 七个官方维度**（Theme editor / Custom menu items 三组件 / Email & SMS 模板治理 / Build your own UI headless primitives / simple theme 稳定类边界 / CSS 变量驱动动态主题 / localization 键机制） | `UDS5-S21` §2.4 |
+| 核对 | **新增 4 个官方核对入口**（首轮 9 个官方来源 → 合计 13 个核对入口；其中 2 个为首轮已收录来源的细分页面，按唯一 URL 去重为 11，口径见 `UDS5-S21` §2.4）：`Customizing Clerk` overview、`Email and SMS templates`、`Bring your own CSS`、`2025-07-08 CSS variables support` changelog；补出首轮未纳入的 **N1–N7 七个官方维度**（Theme editor / Custom menu items 三组件 / Email & SMS 模板治理 / Build your own UI headless primitives / simple theme 稳定类边界 / CSS 变量驱动动态主题 / localization 键机制） | `UDS5-S21` §2.4 |
 | 补全 | `UDS5-S21` 由 14 项扩到 **18 项**逐项参考规范：新增 §4.15（Theme editor）、§4.16（Email/SMS templates）、§4.17（Build your own UI）、§4.18（CSS 变量动态主题）；N2 / N5 / N7 分别并入 §4.9 / §4.4 + §4.11 / §4.8；新增 **§10 差异与例外登记 `S21-D01`…`S21-D12`** | `UDS5-S21` §4 / §10 |
 | 安全引入 | 落地首轮 §8 三项「未建立」校验器中的**两项**：新增 `web/scripts/check-clerk-boundary.mjs`（C1 依赖零引入 / C2 运行时零引用 / C3 品牌值零照搬 / C4 能力归属一致性），接入 `bun run design:clerk:check`；纯静态只读、默认 `generated: false` | `web/scripts/check-clerk-boundary.mjs`、`web/package.json` |
 | 测试 | 按「先写回归测试」约定先落 `web/src/design-system/__tests__/clerk-boundary.test.ts`（8 用例）：脚本未创建时**红色 8/8 失败**，实现后**绿色 8/8 通过**；覆盖依赖注入、`ClerkProvider` 注入、`cl-*` 稳定类、`#6c47ff` 品牌色、`--clerk-*` 变量、能力清单删减、`__tests__` 自身排除 | `web/src/design-system/__tests__/clerk-boundary.test.ts` |
-| 实测 | `node scripts/check-clerk-boundary.mjs` → `verdict: PASS` / `errors: 0` / `checksPassed: 4`，扫描 **84** 个依赖、**1,287** 个生产源文件、**11** 类能力；`bun run design:5:check` → `verdict: PASS` / `errors: 0` / `standards: 37` | `UDS5-S21` §8 / §9 |
-| 修正 | `DESIGN-SYSTEM-AUTOMATION-STANDARD.md` §8「真实脚本清单」原**漏登** `check-design-system-5.0.mjs`，本轮补回，并登记新守卫（**未接 CI**） | `UDS5-S26` §8 |
+| 实测 | `node scripts/check-clerk-boundary.mjs` → `verdict: PASS` / `errors: 0` / `checksPassed: 5`，扫描 **84** 个依赖、**1,287** 个生产源文件、**11** 类能力；`bun run design:5:check` → `verdict: PASS` / `errors: 0` / `standards: 37` | `UDS5-S21` §8 / §9 |
+| 修正 | `DESIGN-SYSTEM-AUTOMATION-STANDARD.md` §8「真实脚本清单」原**漏登** `check-design-system-5.0.mjs`，本轮补回，并登记新守卫（**未接 CI**） | `UDS5-S24` §8 |
 | 废弃 | **N6 CSS 变量驱动动态主题**判 `REJECT_REGRESSION`：Uter 已有静态两层 Token + 三维 `data-theme-*` 正交，引入 `color-mix()` / 相对颜色语法运行时派生会绕过 T1–T17 | `UDS5-S21` `S21-D06` |
 | 废弃 | Clerk Dashboard 模板系统 / webhook 契约、headless 原语包、`cl-*` 稳定类、`appearance.elements`、Experimental `localization` prop 作契约 —— 全部 `Reject`，零依赖引入 | `UDS5-S21` §3 / §10 |
-| 待办 | 第三项未建立校验器「业务红线零改动」**未自动化**，仍靠提交范围 + §3 P3 人工把关（`S21-D10`）；交互主题预览、导航 ↔ 注册 ID、Light/Dark 成对校验扩展、邮件预览/回滚/跨环境复制均 `NOT_STARTED`（`S21-D01` / `D02` / `D07` / `D08`） | `UDS5-S21` §10 |
-| 待办 | `design:clerk:check` **尚未接入 CI**；接入需单独授权 | `UDS5-S26` §8 |
+| 待办 | 第三项未建立校验器「业务红线零改动」**已自动化**（本轮新增 C5 双约束 + 2 例回归测试，`S21-D10` 已闭合，见 `§6.4 节点八`）；交互主题预览、导航 ↔ 注册 ID、Light/Dark 成对校验扩展、邮件预览/回滚/跨环境复制仍 `NOT_STARTED`（`S21-D01` / `S21-D08` / `S21-D07` / `S21-D03`） | `UDS5-S21` §10 |
+| 待办 | `design:clerk:check` **已接入 CI**（前端 job 新增步骤，见 `§6.4 节点八` / `UDS5-S24` §8） | `UDS5-S24` §8 |
 
 ---
 
@@ -201,7 +201,7 @@
 
 | 类别 | 条目 | 证据来源 |
 |---|---|---|
-| 新增 | 5.0 规范体系 `UDS5-S01`..`UDS5-S28`（28 份） | §9 D2、头部 |
+| 新增 | 5.0 规范体系 `UDS5-S01`..`UDS5-S32`（32 份分册 = 28 基础 + 4 业务域） | §9 D2、头部 |
 | 新增 | 业务域分册 `UDS5-S29`..`UDS5-S32`（4 份：认证 / 用户与 API Key / 组织与账单 / 触达与本地化） | §6.1 节点五 |
 | 新增 | 两份审计事实源（`UDS5-AUDIT-01` / `UDS5-AUDIT-02`） | 头部 |
 | 新增 | 冲突决策 D1–D8、五层架构、双向关联、8 状态、废弃治理机制 | §9、`UDS5-S21`..`UDS5-S28` |
@@ -213,7 +213,7 @@
 | 待办 | registry 版本升级（含 `:45` 同变更）、纯别名根治、测试文件归位、展示中心补齐、三平台 `NOT_VERIFIED`、未执行验证项 | §11.3、§11.4、§14 |
 | 待办 | z-index 封闭 Token 落地、视觉回归 8 视口扩展、高对比维度、状态映射共享表、领域词汇表、Token 反向索引、前端订单 `failed` 态补齐 | §6.1 节点五 |
 | 待办 | **`text-fg-primary` 死类修复**（`theme.css` 补 `--color-fg-primary` 一行 + 重建；影响 12 处使用点）、**管理员额度调整补强验证**（`manageUserQuota` 挂 `requireAdminUserProof` + 临界限流）、**组织域成员权限 / 额度写操作补强验证与审计**（`UpdateOrganizationMember` / `RemoveOrganizationMember` 挂 `requireAdminUserProof` + 临界限流 + 审计补齐）、**`MaskedValueTrigger` 字号覆盖修复**（拆开字号档与 `font-mono` 字形族，参照 `input.tsx:65-69`）、**风险分级落到代码**（`RISK-P0/P1/P2` 元数据） | §6.1 节点五（`S03-D11` / `S01-D6` / `S30-D13` / `S31-D14` / `S30-D15` / `S01-D3`） |
-| 待办 | **Clerk 上游复对比后续**：`design:clerk:check` 接入 CI、业务红线零改动专用拦截、交互主题预览、导航 ↔ 注册 ID 双向关联、Light/Dark 成对校验扩展、邮件模板预览/回滚/跨环境复制 | §6.2 节点六（`UDS5-S21` §10） |
+| 待办 | **Clerk 上游复对比后续**：`design:clerk:check` 接入 CI、**业务红线零改动专用拦截（C5）** 均已完成（见 `§6.4 节点八`）；交互主题预览、导航 ↔ 注册 ID 双向关联、Light/Dark 成对校验扩展、邮件模板预览/回滚/跨环境复制仍 `NOT_STARTED` | §6.2 节点六（`UDS5-S21` §10） |
 
 ---
 
@@ -227,7 +227,7 @@
 | §3.1 | 3.0 自身未闭合项（73 项、E24、E28、P1–P3、字体轴、PageHeader、构建缺陷、组件证据） | §3、§5、§6、§7 |
 | §4.1 | Token 数量与分层（14 CSS / 1,518 行 / 245 唯一变量 / 52 同名键） | §5、§6 |
 | §4.4 | Token 门禁实测（违规 0 / 17 PASS / 31 PASS / baseline 0 条） | §5、§7 |
-| §5 | 组件体系审计（65 组件 / registry 缺 8 类字段 / 3 处同名 EmptyState） | §5、§6 |
+| §5 | 组件体系审计（65 组件 / registry 缺 11 项字段 / 3 处同名 EmptyState） | §5、§6 |
 | §5.1 | 展示中心真实能力（24 区 / 静态并排 / Props 0 / 注册 ID 0 / 22 锚点漏 2 区 / 2 个过时注释） | §6 |
 | §6 | 页面与业务模块审计（73 路由 / 30 feature / 22 页基线） | §6、§7 |
 | §6.1 | 业务模块 → 路由映射（退款 / 订单无独立页面） | §7 |
@@ -287,7 +287,7 @@
 | registry 版本一致性 | `components:registry:check`（已接 CI） | `designSystem` 与 `:45` 同变更校验（S03） | 未执行 `NOT_VERIFIED` |
 | 五类动作计数 | 无 | 按节点统计新增 / 继承 / 合并 / 废弃 / 待办条数 | 未建立 `NOT_VERIFIED` |
 
-> 本轮未运行任何验证命令；本文所有数字均复述 `UDS5-AUDIT-01` 章节事实，不代表 5.0 已完成变更或验证。
+> 本文各节点**仅执行节点五 / 六登记的只读门禁**（`design:5:check`、`design:clerk:check` 与守卫回归测试）；`lint:design:strict` / `verify:contrast` / `components:registry:*` / 全量单测 / 构建 / 视觉回归 / 平台验收均未运行。基线数字复述 `UDS5-AUDIT-01` 章节事实，不代表 5.0 已完成变更或验证。
 
 ---
 
@@ -306,3 +306,39 @@
 | Android / iOS / HarmonyOS | `NOT_VERIFIED` | 无实现（决策 D4） |
 
 **总体验证状态：`NOT_VERIFIED`**。本文不得被解读为 `FULLY_IMPLEMENTED_AND_VERIFIED`；版本演进的最终状态以 `UDS5-S25`（验收规范）与最终验收报告为准。
+
+
+---
+
+## 6.3 节点七：2026-11-14 · 全局一致性收口与 5.0 全量 Showcase
+
+> 用户指令：「检查 UTER DESIGN SYSTEM 5.0 是否还有前后矛盾的地方，有的话进行修复，统一；生成一份 showcase，覆盖 5.0 里面所有组件和元素；测试通过后，全部改动提交 GitHub」。裁决原则与唯一计数真源已固化在 `UDS5-S01` §26「全局计数与口径裁决表」。
+
+| 类型 | 动作 | 落点 |
+|---|---|---|
+| 统一 | 分册 32（28+4）/ 目录 35 `.md` / 注册 37 条 / 组件 65 / 路由 73 / feature 30 / 守卫测试 12 / Token CSS 14 / 并发 WIP 211 等**全局计数**全站收敛 | `UDS5-S01` §26；FINAL §2.1 / §3 C1 / §5.7；AUDIT-01 §10 / §12 |
+| 修复 | 治理层：注册表「不存在」误述改为「已建立 ACTIVE 37 条」；`status` 三枚举改四值并定义 `PENDING`；S23 状态机 `ARCHIVED` 退出注册表；验收八标签与 UAP 八态显式映射 | `UDS5-S28` §1.1 / §5 / §8 / §10；`UDS5-S23` §6.1.2；`UDS5-S25` §1.1 |
+| 修复 | 自动化层：头部「未新增 / 未运行任何 Validator」改为部分实现；§9 补登 `design:5:check`（第 12 项已接）与 `design:clerk:check`（未接）；§13 32 项改 31 项检查 + 8 类 Validator；§14 V4 改 `IMPLEMENTED_NOT_VERIFIED` | `UDS5-S24` |
+| 修复 | 基础层：E28 深色三值统一 7.93/7.41/5.10、浅色 to 3.96 判达标；`--text-xs` 12/18；控件高度两档；圆角 8 派生档 + full；焦点环 2px 已裁决；`§28` 全部加 3.0 历史前缀；`simple-large` 归字号轴；Dialog/Sheet 时长逐组件登记；`test:visual` 改已接 CI | `UDS5-S02`–`S13` |
+| 修复 | 组件层：八态 / 6 态现状 / 五态过程分层登记；registry 11 项字段；L 类不重复计 `Image`；S14 补齐 8 项算术；S20 通知 6 类 / S22 业务 17 模块写回注册表 scope；S22 dependencies 补 S21 / 文档补 S16 | `UDS5-S14`–`S23`；注册表 |
+| 修复 | 业务域：Clerk 13 核对入口（去重 11）/ 18 项对照 / 30 项决策；N1–N7 = 7 维度 9 判定；S21 错引编号 D05→D01 / D06→D03 / D09→D12；S26→S24 三处；红线唯一清单补 `ReserveOrgQuota`；S31「达 PASS」改 `PARTIALLY_VERIFIED`；`66 实现`改 65+1；裸写 `D-0x` / 业务风险 P0 收敛 | `UDS5-S21` / `S29`–`S32`；AUDIT-02；CHANGELOG §6.1 |
+| 修复 | 差异编号范围 S30→D15 / S31→D14；四册悬空裸写 ID 全部补全；审计报告头部元数据改 `5.0.0` / `ACTIVE` 并补生效日期与验证状态；守卫 10 保留为「审计时点快照」 | 四册 §9/§10；两份审计报告 |
+| 新增 | `SHOWCASE-5.0.html`（113 KB 单文件）：覆盖 32 分册 / 37 注册条目 / **65 组件** / **20 类基础元素与模式**；Light-Dark、密度、Button 6 variant × 9 size × 8 state 可交互；真实 DOM、零外部依赖、`file://` 可打开 | `UDS5-S23` §11；注册表 `UDS5-R01` S23/S24 条目 |
+| 新增 | `web/scripts/generate-design-showcase-5.0.mjs`（由注册表 + 运行时 Token 快照生成，唯一可写 Showcase 的脚本）与 `web/package.json` 的 `design:showcase:5:generate` / `design:showcase:5:check` | `UDS5-S24` §8 / §12 |
+| 测试 | 先落 `design-showcase-5.test.ts`（**红色 8/8 失败 → 绿色 8/8 通过**），再落 `check-design-showcase-5.0.mjs` 静态只读校验（S1–S9）；实测 `verdict: PASS` / `errors: 0` / `checksPassed: 9` / `specIds: 37` / `componentIds: 65` / `elements: 20` / `generated: false` | `web/src/design-system/__tests__/`、`web/scripts/`、`web/package.json` |
+| 边界 | 零业务 / 资金 / 认证 / 授权代码改动；`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` 零改动；并发 WIP 全部隔离，不进暂存区 | 本节 / 提交清单 |
+
+---
+
+## 6.4 节点八：2026-11-15 · Clerk 边界守卫 C5（业务红线零改动）自动化与 CI 接入
+
+> 用户指令：「design:clerk:check 接 CI；第三项「业务红线零改动」完成自动化；存量 7 个失败测试另开任务清理」。本节点落地 C5 自动化守卫与 CI 接入，零业务 / 资金 / 认证 / 授权逻辑改动。
+
+| 类型 | 动作 | 落点 |
+|---|---|---|
+| 自动化 | `web/scripts/check-clerk-boundary.mjs` 由 C1–C4 四项扩到 **C1–C5 五项**：新增 **C5 业务红线零改动**，含「文档一致性 + 源码耦合防护」双约束——① S21 §3 P3 行必须显式登记零改动符号清单（`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota`），防止红线被静默删除；② 扫描 `web/src` 生产源文件，零后端业务函数名（`EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota`）。`org_role` / `sub_quota_limit` 为前端合法 API 字段名，仅由文档一致性守住登记 | `web/scripts/check-clerk-boundary.mjs`；`UDS5-S21` §3 / §8 |
+| 测试 | `web/src/design-system/__tests__/clerk-boundary.test.ts` 由 8 例扩到 **11 例**：新增 3 例覆盖 C5（P3 符号登记删减、前端越界耦合 `EnforceOrgQuota`、基线）；红色 11/11 失败 → 绿色 11/11 通过。关键修复：测试原靠 `process.cwd()` 定位脚本与文档，vitest worker cwd 不可靠导致 ENOENT 全挂；改为按测试文件位置解析 `WEB_ROOT`，彻底脱离 cwd 依赖（CI 亦受益） | `web/src/design-system/__tests__/clerk-boundary.test.ts` |
+| CI | `.github/workflows/ci.yml` 前端 job 在 `design:5:check` 之后新增 **`Design system 5.0 Clerk boundary`** 步骤，执行 `bun run design:clerk:check` | `.github/workflows/ci.yml`；`UDS5-S24` §8 |
+| 实测 | `node scripts/check-clerk-boundary.mjs` → `verdict: PASS` / `errors: 0` / `checksPassed: 5`，扫描 **84** 依赖 / **1,287** 源文件 / **11** 能力 / **1,288** 业务红线项 | `UDS5-S21` §8 / §9 |
+| 登记 | `UDS5-S21` §8 / §9 / §10（`S21-D10` 三项闭合、`S21-D12` 记 `AUTOMATED_BY_C5`）；`UDS5-S24` §8 / §13（`design:clerk:check` 由「未接 CI」改为「已接 CI」） | `UDS5-S21`、`UDS5-S24` |
+| 边界 | 零业务 / 资金 / 认证 / 授权代码改动；`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` 零改动；并发 WIP 全部隔离，不进暂存区 | 本节 / 提交清单 |

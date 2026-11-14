@@ -19,7 +19,8 @@ For commercial licensing, please contact support@uter.ai
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { afterAll, describe, expect, it } from 'vitest'
 
@@ -31,7 +32,9 @@ import { afterAll, describe, expect, it } from 'vitest'
  * 写成官方能力。这里用临时沙箱注入违例，逐项验证守卫确实会拒绝。
  */
 
-const WEB_ROOT = process.cwd()
+// 按测试文件位置解析 web 根，避免依赖 process.cwd()（vitest worker cwd 不可靠）。
+const TEST_DIR = dirname(fileURLToPath(import.meta.url))
+const WEB_ROOT = resolve(TEST_DIR, '..', '..', '..')
 const SCRIPT = join(WEB_ROOT, 'scripts/check-clerk-boundary.mjs')
 const DOCS_DIR = join(
   WEB_ROOT,
@@ -163,6 +166,38 @@ describe('check-clerk-boundary.mjs', () => {
     const result = run(args)
     expect(result.exit).toBe(1)
     expect(result.stdout).toContain('C4')
+  })
+
+  it('C5 业务红线：拒绝 S21 §3 P3 符号登记被删减', () => {
+    const args = makeSandbox({
+      docs: [
+        '# fake S21',
+        '## 3. 禁止事项',
+        '| # | 禁止项 | 5.0 约束 |',
+        '|---|---|---|',
+        '| P3 | 替换 Uter 认证逻辑 | 部分零改动 |',
+        '## 4. 参考',
+      ].join('\n'),
+    })
+    const result = run(args)
+    expect(result.exit).toBe(1)
+    expect(result.stdout).toContain('C5')
+  })
+
+  it('C5 业务红线：拒绝前端越界耦合后端业务函数 EnforceOrgQuota', () => {
+    const args = makeSandbox({
+      source: 'export const x = EnforceOrgQuota\n',
+    })
+    const result = run(args)
+    expect(result.exit).toBe(1)
+    expect(result.stdout).toContain('C5')
+  })
+
+  it('C5 业务红线：当前仓库基线通过（P3 已登记 + 前端无后端函数耦合）', () => {
+    const result = run(['--json'])
+    expect(result.exit).toBe(0)
+    expect(result.stdout).toContain('"id": "C5"')
+    expect(result.stdout).toContain('"passed": true')
   })
 
   it('排除 __tests__ 与 *.test.* 自身，守卫不自命中', () => {

@@ -1,6 +1,6 @@
 # 认证组件规范（Authentication Component Standard）
 
-> UTER Design System 5.0 · 分册 S29。本规范定义「认证相关界面从字段到状态到安全边界的完整约束」。**核心口径：认证域严格限视觉**——Uter 自建认证（Go 后端 + Casbin + `(auth)/` 9 路由）零改动，5.0 只统一视觉密度、信息架构、状态完整性与字段级错误表达；**不引入 Clerk SDK**（仓库红线 P2），仅借鉴其分步流程与字段级错误的信息架构理念。**5.0 为当前唯一正式体系，3.0 保留为历史**，本文引用 3.0 §x 仅用于溯源。除标明已核实的真源代码位置外，未宣称任何测试通过或平台验收。
+> UTER Design System 5.0 · 分册 S29。本规范定义「认证相关界面从字段到状态到安全边界的完整约束」。**核心口径：认证域严格限视觉**——Uter 自建认证（Go 后端 + Casbin + `(auth)/` 9 路由）零改动，5.0 只统一视觉密度、信息架构、状态完整性与字段级错误表达；**不引入 Clerk SDK**（`UDS5-S21` §3 禁止项 P2），仅借鉴其分步流程与字段级错误的信息架构理念。**5.0 为当前唯一正式体系，3.0 保留为历史**，本文引用 3.0 §x 仅用于溯源。除标明已核实的真源代码位置外，未宣称任何测试通过或平台验收。
 
 | 字段 | 值 |
 |---|---|
@@ -156,7 +156,7 @@
 > - **`RISK-P1`**（触及发码链路 / 账户存在性）：SEC-4、SEC-8
 > - **`RISK-P2`**（展示与治理约束）：SEC-6、SEC-7、SEC-11、SEC-12、SEC-13
 >
-> **边界说明**：API Key 明文取回（scope `token.key.read`）虽同属强验证机制，但**归 `UDS5-S30` §5**（`RISK-P0`），本分册不重复定义；本分册 step-up 相关 scope 清单以 `service/security_verification.go:26-54` 为真源（`auth.login` / `account.password.set` / `account.password.change` / `account.delete` / `admin.user.*` / `2fa.*` / `passkey.*` / `access_token.*` / `account.binding.*` 等）。裸写 `P1` / `P2` 在本分册一律指 `UDS5-S01` §4A.1 定义的**待办优先级**（如 `UDS5-S21` §3 P2「不引入 Clerk SDK」），**非**业务风险等级。
+> **边界说明**：API Key 明文取回（scope `token.key.read`）虽同属强验证机制，但**归 `UDS5-S30` §5**（`RISK-P0`），本分册不重复定义；本分册 step-up 相关 scope 清单以 `service/security_verification.go:26-54` 为真源（`auth.login` / `account.password.set` / `account.password.change` / `account.delete` / `admin.user.*` / `2fa.*` / `passkey.*` / `access_token.*` / `account.binding.*` 等）。裸写 `P1` / `P2` 在本分册一律指 `UDS5-S01` §4A.1 定义的**待办优先级**（如 `UDS5-S21` §3 P2「不引入 Clerk SDK」），**非**业务风险等级；`UDS5-S21` §3 的 P1–P5 是**禁止项编号**，引用时必须带章节前缀，不与待办优先级混用。
 
 | # | 风险等级 | 规则 | 依据 / 真值位置 |
 |---|---|---|---|
@@ -180,7 +180,7 @@
 
 | # | 禁止项 | 说明 |
 |---|---|---|
-| F-1 | 引入 Clerk SDK / `ClerkProvider` / `@clerk/ui` / `@clerk/elements` / `@clerk/localizations` | 仓库红线 P2；`UDS5-S21` §3 P2 |
+| F-1 | 引入 Clerk SDK / `ClerkProvider` / `@clerk/ui` / `@clerk/elements` / `@clerk/localizations` | `UDS5-S21` §3 禁止项 P2 |
 | F-2 | 引入或虚构短信验证 / 短信登录 / 短信 provider | 仓库无短信网关；无实现不得写成已实现 |
 | F-3 | 修改后端认证逻辑、API 契约、验证码存储与校验、限流档位数值 | 业务红线 R2 / R3 |
 | F-4 | 新增或删除 `(auth)/` 路由、擅自增加注册字段或认证方式 | A-7；由服务端开关与产品决策决定 |

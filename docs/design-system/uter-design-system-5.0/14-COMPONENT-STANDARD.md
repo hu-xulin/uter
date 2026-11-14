@@ -34,7 +34,7 @@
 | 门禁结果 | `components:registry:strict` **EXIT=1**（阻断） | §5、§3.1 |
 | 原生分类（11 类） | `input 17 / overlay 9 / navigation 8 / layout 7 / data-display 7 / feedback 6 / form 5 / disclosure 2 / action 2 / utility 1 / content 1` | §5 |
 | 注册表字段 | 顶层仅 `id,name,file,category,status,contract`；`contract` 内 `states,accessibility,responsive,tokens,evidence` | §5、schema |
-| 缺失字段（相对 5.0） | `layer / source / implementation_path / specification_path / test_path / story_path / variants / states(顶层) / deprecated / replacement` 全部缺失 | §5 |
+| 缺失字段（相对 5.0） | `layer / source / implementation_path / specification_path / test_path / story_path / variants / states(顶层) / accessibility(顶层) / deprecated / replacement` **11 项**全部缺失 | §5 |
 | 业务封装 | 7 目录 + 7 顶层 `.tsx`；`data-table/` 24 条公开导出 | §5 |
 | README | 全仓仅 `web/src/components/data-table/README.md` 1 份 | §5 |
 | 组件展示 | `docs/design-system/showcase.html`（2,188 行 / 24 区），真实 DOM 但**非 React 实例**；无 Props、无 `UTER-CMP` 注册 ID | §5.1 |
@@ -125,7 +125,7 @@
 | `sm`（紧凑） | 32px | 36px |
 | `xl`（宽松） | 40px | 44px |
 
-**仓库的第三档是「胶囊专用档」**：`--ds-chip-height: 1.3125rem`（21px，`spacing.css:57`）——21px 不是 4px 栅格整数倍，由 `text-xs`(12/16) + 上下各 2.5px 光学补正得出，**禁止并入 `--ds-control-height-*`**（S02 §5.1）。
+**仓库的第三档是「胶囊专用档」**：`--ds-chip-height: 1.3125rem`（21px，`spacing.css:57`）——21px 不是 4px 栅格整数倍，21px 直接由 `--ds-chip-height: 1.3125rem` 定义（运行时 `spacing.css:57`），不以行高算式推导；**禁止并入 `--ds-control-height-*`**（S02 §5.1）。
 
 ### 3.2.3 其他基础组件尺寸档
 
@@ -240,7 +240,7 @@
 
 | 清单名称数 | Uter 真实实现文件 | 由 variant 或 composition 覆盖的名称 | 缺失且需补齐 | 缺失但无需独立实现 | 决定 |
 |---|---|---|---|---|---|
-| 约 8 | `ui/` 下 L 类 = 2（§5.2），且**无 Image / Video / Audio 组件** | `Avatar` / `Icon` / `QRCode`（`qrcode.react`） | **`Image`（I 类已列，Media 侧不重复登记）** | `Video` / `Audio` / `Carousel` / `Gallery` / `FilePreview`（当前业务无对应场景，列为观察项，不新建） | **不新建**；`Lightbox` 归 G 类补齐；Clerk 官方未提供 Image/Lightbox |
+| 约 8 | `ui/` 下 L 类 = 2（§5.2），且**无 Image / Video / Audio 组件** | `Avatar` / `Icon` / `QRCode`（`qrcode.react`） | **`Image`（I 类已列，Media 侧不重复登记；本类不产生补齐提案）** | `Video` / `Audio` / `Carousel` / `Gallery` / `FilePreview`（当前业务无对应场景，列为观察项，不新建） | **不新建**；`Lightbox` 归 G 类补齐；Clerk 官方未提供 Image/Lightbox |
 
 ### M. Charts
 
@@ -259,7 +259,7 @@
 | 决定 | 类别 | 数量 |
 |---|---|---|
 | 保留单一实现 / 聚合，不新增 | A / B / C / D / H(合并后) / K / M / N | 8 类 |
-| 补齐新组件 | E / F / G / I / J / L(观察) | 见 §5.2 的 8 项 |
+| 补齐新组件 | E / F / G / I / J（L 类为观察项，`Image` 归 I 类、不重复登记） | 见 §5.2 的 8 项 |
 | 由 variant 或 composition 覆盖、无需独立实现 | 全部 14 类中的多数名称 | ≈ 140 个名称 |
 
 ---
@@ -390,7 +390,7 @@
 | 业务封装 | `web/src/components/`（`empty-state` / `loading-state` / `error-state` / `dialog` / `confirm-dialog` / `copy-button` / `data-table/`） | **只读**；合并决定见 §5.3，落地属后续变更 |
 | DataTable 封装 | `web/src/components/data-table/`（24 导出，`core/ layout/ toolbar/ static/ hooks/`） | **只读** |
 | 组件展示 | `docs/design-system/showcase.html` | **只读**；扩展属 `D3=Adapt` 后续项 |
-| 设计系统守卫测试 | `web/src/design-system/__tests__/`（10 个） | **只读** |
+| 设计系统守卫测试 | `web/src/design-system/__tests__/`（12 个） | **只读** |
 | 规范输出 | `docs/design-system/uter-design-system-5.0/14-COMPONENT-STANDARD.md` | **本文件（新建）** |
 
 > 未列出的脚本、路径、测试结果一律不在本规范中出现；`check-component-registry.mjs` 的引用来自审计 §5 / §11.3，仅作为「未来变更需同步」的约束提示，不宣称已执行。

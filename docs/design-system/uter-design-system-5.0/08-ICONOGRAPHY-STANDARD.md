@@ -23,7 +23,7 @@
 | I-3 | 尺寸封闭 | 尺寸只用 5 档（§4），用 `size-*` 类表达，禁止任意值与 lucide `size={N}` 数值属性。 |
 | I-4 | 颜色跟随 | 图标色跟随父级文字色（`currentColor`），不写死颜色；状态色走语义 Token。 |
 | I-5 | 语义可达 | 图标按钮必须有可访问名称；纯装饰图标必须 `aria-hidden`。 |
-| I-6 | 品牌基线不动 | 3.0 §2.2 图标契约与 11 个守卫测试属既有基线（BASELINE-AUDIT §12），5.0 继承。 |
+| I-6 | 品牌基线不动 | 3.0 §2.2 图标契约与 12 个守卫测试属既有基线（BASELINE-AUDIT §12），5.0 继承。 |
 | I-7 | 例外可枚举 | 第三方品牌图标、运行时动态图标只能走登记的例外文件，不得散落。 |
 
 ---
@@ -51,7 +51,7 @@
 
 ## 3. 图标只允许 Lucide（守卫登记）
 
-守卫文件 `web/src/design-system/__tests__/spec-guards.test.ts`，是 `web/src/design-system/__tests__/` 下 11 个守卫测试之一：
+守卫文件 `web/src/design-system/__tests__/spec-guards.test.ts`，是 `web/src/design-system/__tests__/` 下 12 个守卫测试之一：
 
 | 项 | 内容 |
 |---|---|
@@ -238,7 +238,7 @@
 | `verify:contrast`（`verify-contrast.mjs`） | 对比度 | 非文本图形对象 3:1 校验（S13 引用） |
 | `test:axe`（`axe-audit.mjs`） | 无障碍 | 图标按钮可访问名称 / `aria-hidden` 校验 |
 | `visual-regression.mjs` / `test:visual` | 视觉 | 图标尺寸/对齐变更需复核 22 页 × 2 视口基线 |
-| `spec-guards.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 11 个守卫之一，强制 `lucide-react` 单一来源与几何契约 |
+| `spec-guards.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 12 个守卫之一，强制 `lucide-react` 单一来源与几何契约 |
 
 > 说明：`spec-guards.test.ts` 为守卫测试文件；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 

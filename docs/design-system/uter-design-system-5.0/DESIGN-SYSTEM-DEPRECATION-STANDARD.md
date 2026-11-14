@@ -8,7 +8,7 @@
 | 上级规范 | `UDS5-S01` |
 | 生效日期 | `2026-11-14` |
 | 适用范围 | UTER Design System 5.0 全部规范文档、Token、组件、例外与待办条目的废弃判定、登记、迁移、自动注册检查与退出条件治理 |
-| 验证状态 | `NOT_VERIFIED`（本轮仅撰写治理标准，未创建注册表、未执行废弃或验证） |
+| 验证状态 | `NOT_VERIFIED`（本轮仅撰写治理标准；注册表已由 5.0 建立并 ACTIVE，本文未执行任何废弃或状态变更） |
 
 ---
 
@@ -19,16 +19,16 @@
 | 治理对象 | 5.0 规范分册（含 `UDS5-S28` 自身）、组件条目、Token / 例外 / 待办登记（E24 / E28 / P1–P3 / 字体轴 / PageHeader 等）、展示与注册产物 |
 | 治理动作 | 废弃判定 → 登记 → 迁移 → 自动注册检查 → 退出条件核验 → 状态变更 |
 | 强制约束 | **禁止失效规范继续作为正式标准**、**禁止草稿（DRAFT）当正式规范**、**禁止失效 / 草稿条目被验收清单或迁移指南当作有效依据** |
-| 注册表 | `DESIGN-STANDARD-REGISTRY.yaml`：5.0 待建立的规范注册真源，用于机器可校验的 `status` 管理 |
+| 注册表 | `DESIGN-STANDARD-REGISTRY.yaml`：**已建立、ACTIVE、37 条注册条目**，是 5.0 唯一正式规范注册真源，用于机器可校验的 `status` 管理（validator：`web/scripts/check-design-system-5.0.mjs`） |
 
-### 1.1 注册表存在性如实声明（防虚构）
+### 1.1 注册表存在性如实声明（2026-11-14 口径统一后）
 
 | 项 | 事实 |
 |---|---|
-| 当前状态 | `DESIGN-STANDARD-REGISTRY.yaml` **当前在仓库中不存在**（全仓只读检索无命中），属 5.0 待建产物 |
-| 本轮动作 | 本文**只定义其 schema、`status` 取值与校验规则，不创建该文件、不宣称其已存在** |
-| 关联既有真源 | `web/src/design-system/component-registry.json`（65 条 / 2,094 行，`registryVersion 1.0.0`）是当前唯一真实存在的组件注册表；`web/src/design-system/source/brand.tokens.json` 存在 `status: DRAFT` / `decision: AUTO_BLOCKED` |
-| 依据 | `UDS5-AUDIT-01` §5、§11.4 第 5 条；本轮 Glob 只读检索 |
+| 当前状态 | `DESIGN-STANDARD-REGISTRY.yaml` **已在仓库中建立**：`UDS5-R01`、`status: ACTIVE`、`effective_date: 2026-11-14`、**37 条注册条目**（35 份 `.md` + 2 份注册表 `.yaml`） |
+| 本文动作 | 本文定义其 schema、`status` 取值与校验规则；**注册表由 5.0 体系建立，本文不创建、不重复创建** |
+| 关联既有真源 | `web/src/design-system/component-registry.json`（65 条 / 2,094 行，`registryVersion 1.0.0`）仍是组件注册唯一真源；`web/src/design-system/source/brand.tokens.json` 存在 `status: DRAFT` / `decision: AUTO_BLOCKED` |
+| 依据 | 注册表 `:1-9`、`:21-501`；`UDS5-S26` CHANGELOG 节点五/六实测 `standards: 37` / `registeredDocIds: 37`；`bun run design:5:check` |
 
 ---
 
@@ -69,11 +69,11 @@
 |---|---|---|---|---|---|---|
 | `DEP-5.0-XXX` | `5.0.0` | `<可复核理由>` | `<UDS5-Sxx / 路径 / NONE>` | `<日期 / UNSCHEDULED>` | `<角色>` | `<脚本 + 结果 / NOT_VERIFIED>` |
 
-### 3.3 YAML 投影格式（供 `DESIGN-STANDARD-REGISTRY.yaml`，待建）
+### 3.3 YAML 投影格式（供 `DESIGN-STANDARD-REGISTRY.yaml`，已建立）
 
 ```
 - id: DEP-5.0-XXX
-  status: DEPRECATED          # 仅 ACTIVE | DEPRECATED | DRAFT
+  status: DEPRECATED          # 仅 ACTIVE | DEPRECATED | PENDING | DRAFT
   effectiveVersion: 5.0.0
   reason: <原因>
   replacement: <替代>
@@ -128,14 +128,15 @@ DRAFT ──(证据齐备 + 审批)──→ ACTIVE ──(D1–D6 全满足 + �
 | `ACTIVE` | 现行有效规范 | **是** | 必须存在且非空、含必备章节、文档 ID 唯一 |
 | `DEPRECATED` | 已废弃、仅作历史留痕 | **否** | 必须有 7 字段登记与有效 `替代`；失效后不得被验收 / 迁移指南当作有效依据 |
 | `DRAFT` | 草稿 / 未定案 | **否** | **DRAFT 不得当正式规范**；不得被引用为验收依据、不得勾选通过、不得作为迁移目标 |
+| `PENDING` | 已登记待补齐（证据未齐） | **否** | 不得作为正式规范 / 验收依据；证据齐备后转 `ACTIVE` |
 
-> `status` **只允许** `ACTIVE` / `DEPRECATED` / `DRAFT` 三个枚举值；出现其他值（如 `OBSOLETE` / `REMOVED` / `null`）一律校验失败。
+> `status` **只允许** `ACTIVE` / `DEPRECATED` / `PENDING` / `DRAFT` **四个枚举值**（与注册表 `status_values` 一致）；`PENDING` = 已登记但证据未齐，不得作为正式规范 / 验收依据；出现其他值（如 `OBSOLETE` / `REMOVED` / `null` / `ARCHIVED`）一律校验失败。
 
 ### 5.2 自动检查规则
 
 | 规则 | 检查内容 | 失败输出格式 | 修复建议 |
 |---|---|---|---|
-| `R1` status 枚举合法 | 每条记录 `status ∈ {ACTIVE, DEPRECATED, DRAFT}` | `[UDS5-S28-R1][BLOCK] registry:line — 非法 status`；`actual=OBSOLETE`，`expected=三枚举之一` | 修正为合法枚举 |
+| `R1` status 枚举合法 | 每条记录 `status ∈ {ACTIVE, DEPRECATED, PENDING, DRAFT}` | `[UDS5-S28-R1][BLOCK] registry:line — 非法 status`；`actual=OBSOLETE`，`expected=四枚举之一` | 修正为合法枚举 |
 | `R2` DRAFT 不得当正式规范 | 验收清单 / 迁移指南 / 组件注册不得引用 `status: DRAFT` 条目 | `[UDS5-S28-R2][BLOCK] file:line — 引用 DRAFT 规范`；`actual=引用 DRAFT`，`expected=仅引用 ACTIVE` | 移除引用或先完成 `DRAFT → ACTIVE` 评审 |
 | `R3` 失效规范不得作为正式标准 | `status: DEPRECATED` 条目不得出现在「有效依据 / 验收方法 / 改造要求」中 | `[UDS5-S28-R3][BLOCK] file:line — 引用已废弃规范`；`actual=引用 DEPRECATED`，`expected=引用其 replacement` | 改指向 `替代` 字段 |
 | `R4` ACTIVE 文档有效 | `ACTIVE` 条目对应文档存在、非空、≥100 行、4 个必备章节齐全 | `[UDS5-S28-R4][BLOCK] file:line — ACTIVE 文档无效`；`actual=0 行 / 缺章节`，`expected=有效` | 补齐文档（`UDS5-S24` S05） |
@@ -167,10 +168,10 @@ DRAFT ──(证据齐备 + 审批)──→ ACTIVE ──(D1–D6 全满足 + �
 | `P2` | `:4106`、`:4063`：图表 text/axis/label/grid 独立 Token 未定义 | Pending | 定义图表四通道独立 Token，纳入颜色 / 数据展示规范与注册表，并与 `chart-typography.ts`（T4 TS 镜像）一致 | Token 定义 + 注册表 + 17 条 showcase 校验扩展 | 同上，保持 Pending 至证据齐备 |
 | `P3` | `:4107`、`:4064`：装饰层 `--ds-decor-*` 未纳入 `colors.decoration` | Pending | `--ds-decor-*` 全部纳入 `colors.decoration` 并完成分层归属校验 | Token 定义 + `check-design-tokens.mjs --strict` | 同上，保持 Pending 至证据齐备 |
 | 字体轴 | `:2625-2628`、`:3340`：`data-theme-font`（system/sans/serif）未落地，代码锁 Inter + Noto Sans SC | Pending | 二选一并登记：① 落地三维字体轴并经 `@theme` / `tokens.test.ts` 校验；② 经评审正式登记「不实现，锁 Inter + Noto Sans SC」决议并写入变更日志 | 实现 diff + 测试，或评审决议 + `UDS5-S26` 条目 | 未登记决议前保持 Pending；不得静默按「已实现」处理 |
-| PageHeader | `:3339`：§13.1 定义的 PageHeader **尚无独立组件**，页面按 §3+§6 组合 | Pending / 补齐候选 | 二选一并登记：① 补齐独立 PageHeader 组件、登记 `UTER-CMP-*` ID 与 8 类字段；② 经评审正式登记「由 §3+§6 组合替代，不建独立组件」决议 | 组件 + 注册证据，或评审决议 + `UDS5-S26` 条目 | 未登记决议前保持 Pending |
+| PageHeader | `:3339`：§13.1 定义的 PageHeader **尚无独立组件**，页面按 §3+§6 组合 | Pending / 补齐候选 | 二选一并登记：① 补齐独立 PageHeader 组件、登记 `UTER-CMP-*` ID 与 11 项字段；② 经评审正式登记「由 §3+§6 组合替代，不建独立组件」决议 | 组件 + 注册证据，或评审决议 + `UDS5-S26` 条目 | 未登记决议前保持 Pending |
 | `brand.tokens.json` | `status: DRAFT` / `decision: AUTO_BLOCKED`（`:11.4` 第 5 条） | DRAFT | **仅在 `verify-contrast.mjs` + 视觉回归证据链齐备后**方可由 `DRAFT` 变更为 `ACTIVE`；`AUTO_BLOCKED` 同步解除 | 对比度 + 视觉回归证据链 + 评审记录 | **DRAFT 不得当正式规范**（B4 / R2）；保持 DRAFT 直至证据齐备 |
 
-> 上述 8 类条目在 5.0 中一律保持 `ACTIVE`（Pending 登记）或 `DRAFT`（brand.tokens.json），**本轮不执行废弃、不勾选通过、不改变状态**（`UDS5-AUDIT-01` §11.4、§14 结论 B/C）。
+> 上述 8 类条目在 5.0 中一律保持 `ACTIVE`（「Pending」为中文描述词，指证据未齐的登记状态；注册表 `status` 仍写 `ACTIVE`，或按四枚举登记为 `PENDING`）或 `DRAFT`（brand.tokens.json），**本轮不执行废弃、不勾选通过、不改变状态**（`UDS5-AUDIT-01` §11.4、§14 结论 B/C）。
 
 ---
 
@@ -193,7 +194,7 @@ DRAFT ──(证据齐备 + 审批)──→ ACTIVE ──(D1–D6 全满足 + �
 
 | 类别 | 真实路径 | 本文关联 | 本轮状态 |
 |---|---|---|---|
-| 规范注册真源（待建） | `DESIGN-STANDARD-REGISTRY.yaml` | §1.1 / §3.3 / §5 | **当前不存在**，本轮未创建，仅定义 schema |
+| 规范注册真源 | `DESIGN-STANDARD-REGISTRY.yaml` | §1.1 / §3.3 / §5 | **已建立、ACTIVE、37 条**；本文仅定义 schema 与校验规则 |
 | 组件注册真源 | `web/src/design-system/component-registry.json`（65 条 / 2,094 行，`registryVersion 1.0.0`） | §1.1 / §3.3 / §4 | 存在，未改造 |
 | 注册校验 | `web/scripts/check-component-registry.mjs`（`:45` 硬编码 `designSystem`） | §6.1 关联（`UDS5-S27`） | 存在，未改造 |
 | DRAFT 资产 | `web/src/design-system/source/brand.tokens.json`（`status: DRAFT` / `decision: AUTO_BLOCKED`） | §5.3 B4 / §6 | 存在，未改造 |
@@ -202,9 +203,9 @@ DRAFT ──(证据齐备 + 审批)──→ ACTIVE ──(D1–D6 全满足 + �
 | Token 门禁 | `web/scripts/check-design-tokens.mjs`、`generate-design-tokens.mjs` | §6 P1–P3 | 存在，未改造 |
 | 展示校验 | `web/scripts/sync-design-showcase.mjs`（17 条） | §6 P2 | 存在，未改造 |
 | 变更日志 / 验收台账 | `UDS5-S26`、`UDS5-S25` 分册 | §4 M7 / §7 | 撰写中 |
-| 规范分册 | `docs/design-system/uter-design-system-5.0/*.md`（`UDS5-S01`..`UDS5-S28`） | §5 R4 | 撰写中 |
+| 规范分册 | `docs/design-system/uter-design-system-5.0/*.md`（`UDS5-S01`..`UDS5-S32`） | §5 R4 | 撰写中 |
 
-> 本文为治理标准，**不创建 `DESIGN-STANDARD-REGISTRY.yaml`、不新增 / 修改任何代码或配置、不执行任何废弃动作**；§6 退出条件为规划项，本轮状态 `NOT_STARTED` / `NOT_VERIFIED`。
+> 本文为治理标准，**不重复创建已存在的 `DESIGN-STANDARD-REGISTRY.yaml`、不新增 / 修改任何代码或配置、不执行任何废弃动作**；§6 退出条件为规划项，本轮状态 `NOT_STARTED` / `NOT_VERIFIED`。
 
 ---
 
@@ -212,15 +213,15 @@ DRAFT ──(证据齐备 + 审批)──→ ACTIVE ──(D1–D6 全满足 + �
 
 | 验证项 | 现有实现 | 5.0 拟补充 | 当前结果 |
 |---|---|---|---|
-| `status` 枚举合法（R1） | 无（注册表待建） | `DESIGN-STANDARD-REGISTRY.yaml` 枚举校验器 | 未建立 `NOT_VERIFIED` |
+| `status` 枚举合法（R1） | 注册表 `status_values` 四值 + `design:5:check` | 完整枚举校验器（含 `PENDING` 语义） | 部分建立 `NOT_VERIFIED` |
 | DRAFT / DEPRECATED 引用拦截（R2 / R3） | 无 | 验收清单 / 迁移指南 / 组件注册的引用扫描 | 未建立 `NOT_VERIFIED` |
 | ACTIVE 文档有效（R4） | 无 | 复用 `UDS5-S24` S05（存在、非空、≥100 行、必备章节） | 未建立 `NOT_VERIFIED` |
 | 废弃登记 7 字段完整（R5） | 无 | 登记表字段 + `替代` + `证据` 校验 | 未建立 `NOT_VERIFIED` |
-| 编号唯一 / 路径有效（R6 / R7） | 无 | 复用 `UDS5-S24` S01 / S04 / S08 | 未建立 `NOT_VERIFIED` |
+| 编号唯一 / 路径有效（R6 / R7） | `design:5:check`（ID 唯一 / 文档路径有效） | 复用 `UDS5-S24` S01 / S04 / S08 | 部分建立 `NOT_VERIFIED` |
 | 退出条件证据链 | `verify-contrast.mjs` 31 PASS、`check-design-tokens.mjs --strict` 违规 0（审计只读实测） | §6 逐条退出条件的可执行证据核对 | 未执行 `NOT_VERIFIED` |
 | 组件废弃仍用检查 | `components:registry:check`（65/65/0）、`--strict` EXIT=1（未接 CI） | `deprecated / replacement` 字段补齐后 C08 校验 | `NOT_VERIFIED` |
 
-> 本轮未运行任何验证命令；「现有实现」列复述自 `UDS5-AUDIT-01` §4.4 / §5 / §7 只读实测结论。CI 已接 / 未接清单见 `UDS5-S24` §9（`components:registry:strict` / `test:axe` / `test:business:e2e` / `test:visual:e2e` / `format:check` 刻意未接）。
+> 本轮（本分册撰写）未运行验证命令；§9「现有实现」列复述自 `UDS5-AUDIT-01` §4.4 / §5 / §7 只读实测结论，以及 `design:5:check` 的实测输出。CI 已接 / 未接清单见 `UDS5-S24` §9（`components:registry:strict` / `test:axe` / `test:business:e2e` / `test:visual:e2e` / `format:check` 刻意未接）。
 
 ---
 
@@ -228,12 +229,12 @@ DRAFT ──(证据齐备 + 审批)──→ ACTIVE ──(D1–D6 全满足 + �
 
 | 项 | 状态 | 说明 |
 |---|---|---|
-| 废弃判定 D1–D6 / 7 字段登记格式 / 迁移机制 / status 三枚举 | `IMPLEMENTED` | §2 / §3 / §4 / §5 已定义 |
-| `DESIGN-STANDARD-REGISTRY.yaml` 不存在的事实声明 | `IMPLEMENTED` | §1.1 如实登记，未虚构 |
+| 废弃判定 D1–D6 / 7 字段登记格式 / 迁移机制 / status 四枚举 | `IMPLEMENTED` | §2 / §3 / §4 / §5 已定义 |
+| `DESIGN-STANDARD-REGISTRY.yaml` 已建立的事实声明 | `IMPLEMENTED` | §1.1 按注册表 `:1-9` 如实登记，未虚构 |
 | 禁止失效规范 / 草稿当正式规范（B1 / B2 / B4 / R2 / R3） | `IMPLEMENTED` | §5.2 / §5.3 已定义 |
 | 8 类条目退出条件（E24 / E28 / P1–P3 / 字体轴 / PageHeader / brand.tokens.json） | `IMPLEMENTED_NOT_VERIFIED` | §6 已逐条给出，未执行核验 |
-| `DESIGN-STANDARD-REGISTRY.yaml` 创建 | `NOT_STARTED` | 待建产物 |
-| 自动注册检查 R1–R7 落地 | `NOT_STARTED` | Validator 未建立 |
+| `DESIGN-STANDARD-REGISTRY.yaml` 创建 | `IMPLEMENTED` | 已由 5.0 体系建立并 ACTIVE（37 条） |
+| 自动注册检查 R1–R7 落地 | `PARTIALLY_VERIFIED` | `design:5:check` 已覆盖 ID 唯一 / 路径有效 / 文档 ACTIVE 等结构项；R2 / R3 / R5 的引用扫描与废弃登记仍未建立 |
 | 全部现存条目的废弃 / 状态变更 | `NOT_STARTED` | 本轮不执行（`UDS5-AUDIT-01` §11.4） |
 | E24 修复 / E28 例外复核 / P1–P3 落地 / 字体轴 / PageHeader | `NOT_STARTED` | 保持 Pending |
 | 全量构建 / 视觉双轨 / `test:axe` / `test:business:e2e` / 原生验收 | `NOT_EXECUTED` / `NOT_VERIFIED` | `UDS5-AUDIT-01` §14 |

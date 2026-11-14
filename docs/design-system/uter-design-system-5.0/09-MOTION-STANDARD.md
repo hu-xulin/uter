@@ -193,7 +193,7 @@
 | S09-D3 | 内容入场 / 循环动画的 keyframes 未纳入 `ds-motion-*` utility，按设计留在 `styles/index.css` | 已核实（motion.css:28-29） |
 | S09-D4 | Reduce Motion 在全部 65 个 `ui/` 组件上的逐项降级覆盖 | `NOT_VERIFIED` |
 | S09-D5 | 业务域蓝图《Iconography and Motion Standard》§5 动效时长 **6 档**（80 / 120 / 180 / 240 / 320 / 400ms）↔ 仓库 **14 个 duration Token**（100 / 200 / 250 / 300 / 350 / 500 / 600ms + 1.8s / 1.5s / 1s / 0.8s / 20s / 3.2s） | 已登记（**保留仓库真值**；蓝图 6 档**不是**仓库的子集，两套编号体系不同，不得混用） |
-| S09-D6 | 蓝图 §5「Modal 默认 200ms；Drawer 默认 280ms」——仓库 Dialog / Sheet 走 `duration-100`（100ms，见 `ui/dialog.tsx`、`ui/sheet.tsx`），**与蓝图建议值不同** | 已登记（**保留仓库真值**；抽屉的 280ms 在仓库对应档位待核，见 `S09-D7`） |
+| S09-D6 | 蓝图 §5「Modal 默认 200ms；Drawer 默认 280ms」——仓库 Dialog 背板走 `duration-100`（100ms，`ui/dialog.tsx:51`）、Sheet 面板走 `ds-motion-base`（200ms，`ui/sheet.tsx:81`）、巨型菜单视口走 `ds-motion-slow`（350ms，`ui/navigation-menu.tsx:132`），三者不同且均与蓝图建议值不同 | 已登记（**保留仓库真值**；抽屉的 280ms 在仓库对应档位待核，见 `S09-D7`） |
 | S09-D7 | 蓝图 §5 的 `motion.instant 80ms` / `motion.fast 120ms` / `motion.normal 180ms` / `motion.medium 240ms` / `motion.slow 320ms` / `motion.slower 400ms` 与仓库 14 档**无一一对应关系**；蓝图未提供「28ms 对应哪一档」的映射 | 已登记（**不虚构映射**；如需跨体系换算须先在仓库侧建立映射表） |
 | S09-D8 | 蓝图 §7 要求响应 `prefers-reduced-motion` **与原生平台减少动态效果设置**；仓库仅实现 CSS 媒体查询，**原生平台无实现** | 已登记（与 S12 §7 三平台 `NOT_VERIFIED` 一致） |
 
@@ -222,7 +222,7 @@
 | `web/src/design-system/tokens/elevation.css:65-105` | 14 个 duration Token + 3 档 easing 声明 |
 | `web/src/design-system/tokens/elevation.css:121-124` | `@theme --default-transition-duration` / `--default-transition-timing-function` |
 | `web/src/styles/index.css:20,167-180,272,281-535` | `@import 'tw-animate-css'`、skeleton-shimmer / appear / landing-* keyframes、`prefers-reduced-motion` 降级 |
-| `web/src/design-system/__tests__/elevation-motion.test.ts` | 11 个守卫之一，守时长/缓动集合与 Dark 阴影覆盖 |
+| `web/src/design-system/__tests__/elevation-motion.test.ts` | 12 个守卫之一，守时长/缓动集合与 Dark 阴影覆盖 |
 | `web/src/components/ui/spinner.tsx` / `skeleton.tsx` / `progress.tsx` | Loading / Skeleton 落地 |
 | `web/src/components/loading-state.tsx` | 加载状态封装 |
 | `web/scripts/check-design-tokens.mjs` | T1–T17 静态门禁（T11） |
@@ -239,7 +239,7 @@
 | `sync-design-showcase.mjs` | 展示一致 | `--check` 17 条校验含 Motion 区（showcase 第 15 区）快照 |
 | `visual-regression.mjs` / `test:visual` | 视觉 | 动画首帧/末帧与 22 页 × 2 视口基线复核 |
 | `test:axe`（`axe-audit.mjs`） | 无障碍 | Reduced Motion / 状态可辨认（S13 引用） |
-| `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 11 个守卫之一 |
+| `elevation-motion.test.ts` | 守卫测试 | `web/src/design-system/__tests__/` 12 个守卫之一 |
 
 > 说明：`elevation-motion.test.ts` 为守卫测试文件；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 

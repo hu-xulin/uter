@@ -47,7 +47,7 @@
 | 项 | 内容 |
 |---|---|
 | 可执行判定 | 所有交互控件可 `Tab` / `Shift+Tab` 到达并可 `Enter` / `Space` 激活；下拉 / 弹窗 / Tabs 支持方向键；无键盘陷阱。 |
-| 现有证据 | 3.0 §15.4「键盘可操作」；`accessibility.test.ts`（10 守卫之一）；`test:axe` 2 个 spec（`web/e2e/axe/`） |
+| 现有证据 | 3.0 §15.4「键盘可操作」；`accessibility.test.ts`（12 守卫之一）；`test:axe` 2 个 spec（`web/e2e/axe/`） |
 | 验证状态 | `NOT_VERIFIED`（`test:axe` 刻意不接 CI，BASELINE-AUDIT §7；本轮 `NOT_EXECUTED`） |
 
 ### 3.2 Focus Management（焦点管理）
@@ -106,7 +106,7 @@
 |---|---|
 | 大号文字定义 | 至少 24px 常规字重，或约 18.67px 粗体（3.0 §15.2:2211） |
 | 计算要求 | 必须考虑实际背景、Alpha 透明度、颜色叠加、Hover / Active / Disabled、Light / Dark、最终渲染颜色；**不能仅比较两个 Token 的 HEX 字符串就认定通过**（3.0 §15.2:2215-2224） |
-| 现有证据 | `verify-contrast.mjs`（`verify:contrast`）：BASELINE-AUDIT §4.4 记录曾 **31 PASS / 0 FAIL**（含 E28 渐变锚定与负例拒绝）；`status-badge-contrast.test.ts`（10 守卫之一）；`elevation-motion.test.ts` |
+| 现有证据 | `verify-contrast.mjs`（`verify:contrast`）：BASELINE-AUDIT §4.4 记录曾 **31 PASS / 0 FAIL**（含 E28 渐变锚定与负例拒绝）；`status-badge-contrast.test.ts`（12 守卫之一）；`elevation-motion.test.ts` |
 | 待修缺陷 | **E24 两处对比度不达标，见 §5** |
 | 验证状态 | `NOT_VERIFIED`（审计曾 31 PASS 属历史快照，本轮未执行，不继承为通过） |
 
@@ -115,7 +115,7 @@
 | 项 | 内容 |
 |---|---|
 | 可执行判定 | 支持浏览器字号放大与 `data-theme-scale` 密度档（S10）；放大后不裁切、不重叠、不丢失内容；全站可见文本下限 12px（T16）；H5 输入 ≥16px 防缩放（S12）。 |
-| 现有证据 | `tokens/typography.css`（`@theme --text-*` 阶梯，D1 禁止删除）、`tokens/spacing.css`（`[data-theme-scale]` 三档）、`control-typography.test.ts`（10 守卫之一）、`check-design-tokens.mjs` T16 |
+| 现有证据 | `tokens/typography.css`（`@theme --text-*` 阶梯，D1 禁止删除）、`tokens/spacing.css`（`[data-theme-scale]` 三档）、`control-typography.test.ts`（12 守卫之一）、`check-design-tokens.mjs` T16 |
 | 验证状态 | `NOT_VERIFIED` |
 
 ### 3.9 Reduced Motion（减少动效）
@@ -216,7 +216,7 @@
 
 ### 4.1 11 个设计系统守卫测试
 
-`web/src/design-system/__tests__/`（**实测 11 个**，2026-11-14 复核；BASELINE-AUDIT §12 记 10 个，第 11 个 `design-system-5-governance.test.ts` 为 5.0 建立时新增、未被计入审计基线，差异登记 `S13-D13`）：
+`web/src/design-system/__tests__/`（**现行实测 12 个**，2026-11-14 复核；`BASELINE-AUDIT` §12 的 10 个为审计时点快照，第 11 个 `design-system-5-governance.test.ts` 为 5.0 建立时新增、第 12 个 `clerk-boundary.test.ts` 为 Clerk 边界守卫回归测试，均未被计入审计基线，差异登记 `S13-D13`）：
 
 | # | 文件 | 主要关联 |
 |---:|---|---|
@@ -290,9 +290,9 @@
 | 处置 | 内容 |
 |---|---|
 | 5.0 声明 | 采用 2px `ring-2`，与运行时真源、3.0 §15.1、原生元素兜底及组件层完全一致，**不存在规范—代码漂移** |
-| 不执行代码变更 | 本轮不改 `semantic.css`、不改组件、不改 §28 Manifest；因为代码本身已是正确的 2px，无需变更 |
+| 不执行代码变更 | 本轮不改 `semantic.css`、不改组件、不改 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT）；因为代码本身已是正确的 2px，无需变更 |
 | 记忆同步 | 已同步更正 `MEMORY.md` 中过时的「1px 勿回 2px」条目 |
-| 若未来要改为 1px | 须按 3.0 §27.3 / §28.2 先改 §28 Manifest，再同步 `semantic.css`、组件层、守卫、`showcase.html` 快照**五者同提交**，并说明 1px 在 36px 控件上的辨识度如何满足 WCAG 2.2 AA 2.4.11 / 1.4.11 |
+| 若未来要改为 1px | 须按 3.0 §27.3 / §28.2（历史）与 5.0 `UDS5-S01` §19 变更流程先改声明（3.0 §28.5 TOKEN-MANIFEST 仅作追溯），再同步 `semantic.css`、组件层、守卫、`showcase.html` 快照**五者同提交**，并说明 1px 在 36px 控件上的辨识度如何满足 WCAG 2.2 AA 2.4.11 / 1.4.11 |
 | 验证状态 | `NOT_VERIFIED`（本轮未执行焦点环的浏览器级守卫复核，不得勾选通过） |
 
 ---
@@ -326,7 +326,7 @@
 | S13-D10 | live region 是否存在同一结果被多处重复播报（行内错误 + 全局 toast / sonner）未核实 | `NOT_VERIFIED`（见 §3.15） |
 | S13-D11 | 平台无障碍语义（iOS / Android / HarmonyOS）与更高优先级法规从高规则未纳入逐平台验收 | `NOT_EXECUTED`（见 §3.16；平台验收 BASELINE-AUDIT §8） |
 | S13-D12 | 「自动化扫描通过 ≠ 完整无障碍验收」的口径已写入 §3.17，但既有报告若曾以 `test:axe` 单独作为通过依据，需按 §3.17 重新表述 | `NOT_VERIFIED`（待复核历史报告表述） |
-| S13-D13 | `BASELINE-AUDIT` §12 与本分册原 §4.1 均记「设计系统守卫测试 10 个」，**实测 11 个**——第 11 个 `design-system-5-governance.test.ts` 为 5.0 建立时新增、未被计入审计基线 | 已修正本分册 §4.1 与 §5 三处表述为 11 个；**审计报告 `BASELINE-AUDIT` §12 未改**（历史基线快照保持原样），故本条保留登记 |
+| S13-D13 | `BASELINE-AUDIT` §12 记「设计系统守卫测试 10 个」（审计时点快照），**现行实测 12 个**——新增 `design-system-5-governance.test.ts` 与 `clerk-boundary.test.ts` | 全站现行表述统一为 **12 个**；两份审计报告保留 10 个原值并显式标注「审计时点快照」，故本条保留登记 |
 
 ---
 
@@ -385,9 +385,9 @@
 | `test:visual` / `test:visual:e2e` | 焦点/命中区视觉 | 22 页 × 2 视口基线（E2E 轨不接 CI） |
 | `sync-design-showcase.mjs`（`design:showcase:check`） | 展示一致 | `--check` 17 条校验含 Focus 区快照 |
 | `visual-regression.mjs` | 视觉 | 焦点环 / 状态可辨认的视觉复核 |
-| `accessibility.test.ts` 等 11 个守卫 | 单元测试 | `web/src/design-system/__tests__/`（非门禁脚本） |
+| `accessibility.test.ts` 等 12 个守卫 | 单元测试 | `web/src/design-system/__tests__/`（非门禁脚本） |
 
-> 说明：11 个守卫为测试文件（实测，见 §4.1）；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
+> 说明：12 个守卫为测试文件（实测，见 §4.1）；门禁脚本以上表所列 `.mjs` 与 npm 脚本为限。
 
 ---
 
@@ -397,7 +397,7 @@
 |---|---|---|
 | WCAG 2.2 AA 目标逐条闭合 | `NOT_VERIFIED` | §3 全部 12 条均为目标态，未逐项复核 |
 | `verify-contrast.mjs` 31 条 | `NOT_VERIFIED` | 审计曾 31 PASS / 0 FAIL，本轮未执行，不继承为通过 |
-| 11 个守卫测试 | `NOT_VERIFIED` | 文件存在，本轮未运行 |
+| 12 个守卫测试 | `NOT_VERIFIED` | 文件存在，本轮未运行 |
 | `test:axe`（2 spec） | `NOT_EXECUTED` | 刻意不接 CI（BASELINE-AUDIT §7），本轮未执行 |
 | `test:visual` / `test:visual:e2e` | `NOT_EXECUTED` | BASELINE-AUDIT §14 明确未执行 |
 | E24 两处对比度 | `NOT_VERIFIED` | **P1 待修，不得勾选通过**（§5） |

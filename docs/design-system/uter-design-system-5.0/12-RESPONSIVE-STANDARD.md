@@ -301,7 +301,7 @@ PC Web 具体约束（3.0 §16.2）：
 | `web/src/features/wallet/lib/payment.ts:224` | HarmonyOS UA 正则字面量（非平台实现） |
 | `web/src/styles/theme.css:277` | `--app-header-height: 3rem`（Sticky Header） |
 | `web/src/design-system/tokens/spacing.css` | 密度 / Gutter 相关间距 |
-| `web/src/design-system/__tests__/` | 11 个守卫测试（断点相关守卫） |
+| `web/src/design-system/__tests__/` | 12 个守卫测试（断点相关守卫） |
 | `web/e2e/visual/` | 22 页 × 2 视口（1440×900 / 390×844）共 44 张 PNG |
 | `web/playwright` 配置 `web/e2e/visual/playwright.config.ts` | 注释明确「刻意不接 CI」 |
 | `electron/` | 桌面封装（补充，不属五平台） |

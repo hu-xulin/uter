@@ -28,6 +28,9 @@ For commercial licensing, please contact support@uter.ai
  *   C3 品牌值零照搬    —— 不得出现 #6c47ff 或 --clerk-* 变量声明
  *   C4 能力归属一致性  —— S21 §2.2 的 11 类通用能力必须逐条标注「官方否」，
  *                         防止后续把 Uter 自有能力误写成 Clerk 官方能力
+ *   C5 业务红线零改动  —— S21 §3 P3 行必须显式登记零改动符号清单且前端不得
+ *                         耦合后端业务函数（EnforceOrgQuota / ReserveOrgQuota /
+ *                         IncrOrgUsedQuota），防止认证 / 资金 / 授权逻辑被改写
  *
  * 纯静态只读：默认模式不写任何文件；退出码 0 = PASS，1 = FAIL。
  * `--root` / `--docs` 仅供回归测试注入沙箱使用，不改变默认扫描目标。
@@ -90,6 +93,32 @@ const UTER_OWNED_CAPABILITIES = [
   'Z-index',
   'WCAG 2.2 AA',
   'HarmonyOS',
+]
+
+/**
+ * C5：业务红线零改动（`UDS5-S21` §3 P3）。
+ * 两项静态约束：
+ *  (a) 文档一致性——S21 §3 的 P3 行必须存在且显式登记零改动符号清单
+ *      （org_role / sub_quota_limit / EnforceOrgQuota / ReserveOrgQuota /
+ *       IncrOrgUsedQuota），防止该红线被静默删除或弱化；
+ *  (b) 源码耦合防护——web/ 生产源码不得出现后端业务函数名
+ *      （EnforceOrgQuota / ReserveOrgQuota / IncrOrgUsedQuota），
+ *      它们是 Go 后端配额 / 权限逻辑函数，前端出现即表示越界耦合，
+ *      违反「认证 / 资金 / 授权逻辑零改动」。
+ * 注意：`org_role` 与 `sub_quota_limit` 是前端合法使用的 API 字段名，
+ *      不从源码侧禁止，仅由文档一致性 (a) 守住登记。
+ */
+const BUSINESS_REDLINE_DOC_SYMBOLS = [
+  'org_role',
+  'sub_quota_limit',
+  'EnforceOrgQuota',
+  'ReserveOrgQuota',
+  'IncrOrgUsedQuota',
+]
+const BUSINESS_REDLINE_SOURCE_SYMBOLS = [
+  'EnforceOrgQuota',
+  'ReserveOrgQuota',
+  'IncrOrgUsedQuota',
 ]
 
 function parseArgs(argv) {
@@ -242,6 +271,76 @@ function checkCapabilityAttribution(docsDir, errors) {
   return { scanned: UTER_OWNED_CAPABILITIES.length }
 }
 
+/**
+ * C5：业务红线零改动（`UDS5-S21` §3 P3）。
+ *  (a) 文档一致性：S21 §3 的 P3 行必须存在且登记全部零改动符号，防止红线被静默删除；
+ *  (b) 源码耦合防护：web/ 生产源码（排除 __tests__）不得出现后端业务函数名，
+ *      这些 Go 函数名若出现于前端，即表示越界耦合后端配额 / 权限逻辑。
+ */
+function checkBusinessRedline(root, docsDir, errors) {
+  // (a) 文档一致性
+  const s21 = join(docsDir, 'CLERK-DESIGN-REFERENCE-STANDARD.md')
+  let docScanned = 0
+  if (!existsSync(s21)) {
+    errors.push({
+      code: 'C5',
+      file: 'CLERK-DESIGN-REFERENCE-STANDARD.md',
+      detail: '文件不存在，业务红线登记无法校验',
+    })
+  } else {
+    const text = readText(s21)
+    const secStart = text.indexOf('## 3.')
+    const secEnd = text.indexOf('\n## 4.', secStart)
+    const section =
+      secStart >= 0
+        ? text.slice(secStart, secEnd > secStart ? secEnd : text.length)
+        : text
+    const p3 = section
+      .split('\n')
+      .find((line) => /^\|\s*P3\s*\|/.test(line.trim()))
+    if (!p3) {
+      errors.push({
+        code: 'C5',
+        file: 'CLERK-DESIGN-REFERENCE-STANDARD.md §3',
+        detail: '缺少 P3 行（业务红线零改动登记）',
+      })
+    } else {
+      docScanned = 1
+      for (const symbol of BUSINESS_REDLINE_DOC_SYMBOLS) {
+        if (!p3.includes(symbol)) {
+          errors.push({
+            code: 'C5',
+            file: 'CLERK-DESIGN-REFERENCE-STANDARD.md §3 P3',
+            detail: `业务红线零改动符号「${symbol}」未在 P3 行登记`,
+          })
+        }
+      }
+    }
+  }
+
+  // (b) 源码耦合防护
+  const srcDir = join(root, 'src')
+  const files = walk(srcDir, root)
+  const sourcePattern = new RegExp(
+    `\\b(?:${BUSINESS_REDLINE_SOURCE_SYMBOLS.join('|')})\\b`
+  )
+  for (const { abs, rel } of files) {
+    const lines = readText(abs).split('\n')
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index]
+      sourcePattern.lastIndex = 0
+      if (!sourcePattern.test(line)) continue
+      errors.push({
+        code: 'C5',
+        file: `${rel}:${index + 1}`,
+        detail: '前端越界耦合后端业务函数（违反业务红线零改动）',
+      })
+    }
+  }
+
+  return { scanned: docScanned + files.length }
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2))
   const errors = []
@@ -249,6 +348,7 @@ function main() {
   const deps = checkDependencies(options.root, errors)
   const source = checkSource(options.root, errors)
   const docs = checkCapabilityAttribution(options.docs, errors)
+  const redline = checkBusinessRedline(options.root, options.docs, errors)
 
   const checks = [
     { id: 'C1', name: '依赖零引入', passed: !errors.some((e) => e.code === 'C1') },
@@ -267,6 +367,11 @@ function main() {
       name: '能力归属一致性',
       passed: !errors.some((e) => e.code === 'C4'),
     },
+    {
+      id: 'C5',
+      name: '业务红线零改动',
+      passed: !errors.some((e) => e.code === 'C5'),
+    },
   ]
 
   const verdict = errors.length === 0 ? 'PASS' : 'FAIL'
@@ -283,6 +388,7 @@ function main() {
       dependencies: deps.scanned,
       sourceFiles: source.scanned,
       capabilities: docs.scanned,
+      businessRedline: redline.scanned,
     },
     errors: errors.length,
     violations: errors,
@@ -296,7 +402,7 @@ function main() {
       )
     }
     console.log(
-      `  scanned: ${deps.scanned} deps / ${source.scanned} source files / ${docs.scanned} capabilities`
+      `  scanned: ${deps.scanned} deps / ${source.scanned} source files / ${docs.scanned} capabilities / ${redline.scanned} business-redline`
     )
     for (const error of errors.slice(0, 20)) {
       console.log(`  VIOLATION [${error.code}] ${error.file} — ${error.detail}`)

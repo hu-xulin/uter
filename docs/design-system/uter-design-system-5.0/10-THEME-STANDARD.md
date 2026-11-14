@@ -97,7 +97,7 @@
 
 | 维度 | 属性 | 控制内容 | 写入位置 | 取值 / 影响 |
 |---|---|---|---|---|
-| 调色板 | `data-theme-preset` | 覆盖 `theme.css` 定义的基础调色板 | `theme-customization-provider.tsx:120` | underground / rose-garden / lake-view / sunset-glow / forest-whisper / ocean-breeze 等；`tokens/typography.css:159` 另有 `simple-large` 大字预设 |
+| 调色板 | `data-theme-preset` | 覆盖 `theme.css` 定义的基础调色板 | `theme-customization-provider.tsx:120` | underground / rose-garden / lake-view / sunset-glow / forest-whisper / ocean-breeze 等。**`simple-large` 不属本维度**：它是 `tokens/typography.css:144-158` 的字号轴放大档，`theme-presets.css:465-467` 明确将其从调色板覆盖中排除（与 `UDS5-S04` / `UDS5-S05` 一致） |
 | 圆角 | `data-theme-radius` | 改 `--radius` 基准，整体缩放 8 档（S06 §11） | `theme-customization-provider.tsx:131` | `theme-presets.css:674-686` 列 0 / 0.3 / 0.5 / 0.75 / 1rem 等基准档 |
 | 密度 / 字号 | `data-theme-scale` | 改 `--spacing` 与 `--ds-*` 控件尺寸（S05） | `theme-customization-provider.tsx:138` | `tokens/spacing.css:30,69,87` 的 `[data-theme-scale='sm'/'lg'/'xl']` 三档；`typography.css:65` 注明只改 spacing 与控件尺寸 |
 
@@ -156,7 +156,7 @@
 | 项 | 规定 |
 |---|---|
 | 预设 | `theme-presets.css` 的 7+ 套预设 + `simple-large` 大字预设；预设只应列差异键（当前重抄整组，为合并候选）。 |
-| 新增流程 | 新增预设须同时补 Light / `.dark` 成对块、`data-theme-*` 属性契约与 showcase 快照，并按 §28.2 先改声明再改实现，不得「先改实现、后补门禁」。 |
+| 新增流程 | 新增预设须同时补 Light / `.dark` 成对块、`data-theme-*` 属性契约与 showcase 快照，并按 3.0 §28.2（历史 Spec SSOT 流程）与 5.0 `UDS5-S01` §19 变更流程先改声明再改实现，不得「先改实现、后补门禁」。 |
 | 品牌资产 | 品牌渐变与 logo 不随自定义主题漂移（§8）。 |
 
 ---
@@ -171,7 +171,7 @@
 | 单一消费出口 | `@utility ds-text-gradient-brand`（`foundations/typography.css`）；组件手写 `from-… via-… to-…` 由 T7 拦下。 |
 | 深浅同值 | **禁止 `:root.dark` 覆盖**：深浅主题共用同一组停靠站，深色主题靠更暗背景自然获得更高对比度。 |
 | 不接 chart | 不接 `chart-*`（会随主题预设漂移，绿色预设下渐变变绿），这是对外传播资产。 |
-| 例外性质 | 属**刻意例外**，已在 §26.2 登记为 B 类 **E28**（验收口径例外，不进 `ALLOWLIST`）；浅色 from 2.54:1 / via 2.72:1 / to 3.96:1 未达大文本 3:1，理由与退出条件见 `UDS5-S13`。 |
+| 例外性质 | 属**刻意例外**，已在 §26.2 登记为 B 类 **E28**（验收口径例外，不进 `ALLOWLIST`）；浅色 from 2.54:1 / via 2.72:1 未达大文本 3:1，to 3.96:1 达标，理由与退出条件见 `UDS5-S13`。 |
 | 禁止 | 禁止通过压深停靠站「修」对比度（会直接改变品牌观感）；禁止用「禁用态豁免」解释残留。 |
 
 ---
@@ -251,7 +251,7 @@
 | 事实 | 两组色值**不一致**；`brand.tokens.json` 仍为 `status: DRAFT` / `decision: AUTO_BLOCKED`，状态未解除（与 S10-D5 同源，BASELINE-AUDIT §11.4 第 5 条）。 |
 | 决策 | **Adapt**（不 Reject、不照抄、不改值）：按 `AGENTS.md`「Design System Enforcement」——文档与实现冲突时，**设计值来自代码（`tokens/`、`theme.css`），规则与边界来自规范**，故**运行时以 `generated/brand.css` 为准**。 |
 | 规范层 | 保留 T-5 的用户基线声明不动（品牌基线必须保留）；本差异仅作登记，不构成「基线已一致」或「色值已验收」的结论。 |
-| 变更边界 | **本轮绝不改任何色值**：不改 `brand.tokens.json`、不改 `generated/brand.css`、不改组件、不改 §28 Manifest、不扩 `ALLOWLIST`；色值统一须待 `DRAFT` 解除 + 对比度/视觉证据链齐备后另立变更。 |
+| 变更边界 | **本轮绝不改任何色值**：不改 `brand.tokens.json`、不改 `generated/brand.css`、不改组件、不改 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT）、不扩 `ALLOWLIST`；色值统一须待 `DRAFT` 解除 + 对比度/视觉证据链齐备后另立变更。 |
 | 关联 | `generated/brand.css` 为 DTCG 生成（Light 8 + Dark 8，见 §2 / §3），其 Dark 覆盖与 `elevation.css` 的 2 档阴影覆盖同属 design-system 内部 Dark 覆盖，均按「设计值来自代码」处理。 |
 | 状态 | `NOT_VERIFIED`（未执行色值一致性复核，不得勾选通过，不得宣称品牌基线已验收）。 |
 

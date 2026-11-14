@@ -311,9 +311,9 @@ Tailwind CSS **4.3.3** 中，`@theme { --text-sm: ...; --text-sm--line-height: .
 | `web/scripts/sync-design-showcase.mjs --check`（`bun run design:showcase:check`） | 17 条 Manifest 一致性校验（含字号阶梯） | 已接入 `:411` |
 | `web/scripts/generate-design-tokens.mjs --check`（`bun run design:tokens:check`） | DTCG 真源与生成 CSS 同步 | 已接入 `:406` |
 | `web/scripts/verify-contrast.mjs`（`bun run verify:contrast`） | 对比度（字排相关色） | 已接入 `:414` |
-| `web/src/design-system/__tests__/`（`bunx vitest run src/design-system/__tests__`） | 11 个守卫测试，含 `tokens.test.ts` 兜底值断言 | 随 `bun run test` |
+| `web/src/design-system/__tests__/`（`bunx vitest run src/design-system/__tests__`） | 12 个守卫测试，含 `tokens.test.ts` 兜底值断言 | 随 `bun run test` |
 | `bun run typecheck` / `lint` / `test` / `build:check` | 前端基础门禁 | 已接入 |
-| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 双视口像素基线 | 本地专用 |
+| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 双视口像素基线 | 已接入 ci.yml :423（E2E 双轨刻意不接 CI） |
 | `web/e2e/axe/playwright.config.ts` | 无障碍 E2E | **刻意不接 CI** |
 | `web/design-tokens.baseline.json` | 基线只减不增（0 条） | `--strict` 使用 |
 
@@ -330,4 +330,4 @@ Tailwind CSS **4.3.3** 中，`@theme { --text-sm: ...; --text-sm--line-height: .
 | `--ds-font-*` 语义别名 | 规范层设计完成，代码落地与校验 `NOT_VERIFIED` |
 | §4.3 的 h1 / h2 差异 | `Adapt` 登记完成，统一与验证 `NOT_VERIFIED` |
 
-**未验证 / 未执行清单**：`lint:design:strict` 全量复跑、17 条 showcase 校验复跑、`tokens.test.ts` 等 11 个守卫测试执行、`--ds-font-*` 别名落地与「L1 声明 ↔ L3 消费」机器可校验映射表、§4.3 h1 `28/36` / h2 `22/30` 与运行时 `30/38` / `24/32` 的统一及回归测试、`simple-large` 放大档视觉复核、H5 输入 ≥16px 在 390×844 视口的实测、焦点环 `2px`（已裁决）在 Link / Form Text 等场景与原生兜底的同步及回归测试验证、`test:visual` / `test:visual:e2e` 双轨视觉回归、`test:axe`、全量构建（`build:check` / `scripts/verify-all.sh`）、`data-theme-font` 字体轴落地（Pending）、65 组件八态逐项证据、Android / iOS / HarmonyOS 平台验收。
+**未验证 / 未执行清单**：`lint:design:strict` 全量复跑、17 条 showcase 校验复跑、`tokens.test.ts` 等 12 个守卫测试执行、`--ds-font-*` 别名落地与「L1 声明 ↔ L3 消费」机器可校验映射表、§4.3 h1 `28/36` / h2 `22/30` 与运行时 `30/38` / `24/32` 的统一及回归测试、`simple-large` 放大档视觉复核、H5 输入 ≥16px 在 390×844 视口的实测、焦点环 `2px`（已裁决）在 Link / Form Text 等场景与原生兜底的同步及回归测试验证、`test:visual` / `test:visual:e2e` 双轨视觉回归、`test:axe`、全量构建（`build:check` / `scripts/verify-all.sh`）、`data-theme-font` 字体轴落地（Pending）、65 组件八态逐项证据、Android / iOS / HarmonyOS 平台验收。

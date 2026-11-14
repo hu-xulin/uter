@@ -200,7 +200,7 @@
 | `RISK-P1` 批量操作是否**全部**有撤销 / 恢复路径 | **未逐处核实** | `NOT_VERIFIED`（登记 `S01-D2`） |
 | 风险等级是否在代码中显式标注 | **未实现**——仓库无 `RISK-P0/P1/P2` 标记或元数据字段；本节目前只是**规范侧分级**，UI 无法按等级自动增强交互 | `NOT_IMPLEMENTED`（登记 `S01-D3`） |
 | 认证域逐条风险归属 | `UDS5-S29` §7 已按条目分三组标注（`RISK-P0` / `RISK-P1` / `RISK-P2`），见该分册 §7 归属表 | 已覆盖 ✓（`UDS5-S29` §7） |
-| API Key 域逐条风险归属 | `UDS5-S30` §5 已按条目分三组标注（`RISK-P0` 明文取回 / 撤销，`RISK-P2` 展示类），见该分册 §5 归属表 | 已覆盖 ✓（`UDS5-S30` §5） |
+| API Key 域逐条风险归属 | `UDS5-S30` §5 已按条目分**三组**标注（`RISK-P0` 明文取回 / 撤销、`RISK-P1` U-5.13 权限提示、`RISK-P2` 展示类），见该分册 §5 归属表 | 已覆盖 ✓（`UDS5-S30` §5） |
 
 ---
 
@@ -211,7 +211,7 @@
 | C1 | 只借鉴「分层定制」理念 | `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.23：Themes → variables → BYO CSS → 自建 UI 四层 | 建立 §6 五层架构；禁止引入 `appearance` 式全局覆写 |
 | C2 | 不引入 Clerk 运行时 | Elements 已随 Clerk Core 3（2026-03-03）弃用，推荐 redesigned hooks；`localization` 仍为 Experimental | 不引入 Clerk SDK / `@clerk/ui` / `@clerk/elements` / Storybook |
 | C3 | 不把 Clerk 不具备的能力写成官方能力 | 官方未提供 Data Table / Charts / DatePicker / FileUpload / Toast 通用规范 / Drawer / Empty State 等 11 类能力 | 这类组件全部由 Uter 自有规范定义 |
-| C4 | 严格限视觉 | `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.17–2.19：认证 / 用户 / 组织管理仅参考信息架构与视觉密度 | 不替换 Uter 自建认证、`(auth)/` 9 路由、Casbin 权限、`org_role` / `sub_quota_limit` / `EnforceOrgQuota` |
+| C4 | 严格限视觉 | `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.17–2.19：认证 / 用户 / 组织管理仅参考信息架构与视觉密度 | 不替换 Uter 自建认证、`(auth)/` 9 路由、Casbin 权限、`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` |
 | C5 | 不照搬品牌与数值 | 官方 Variables 文档已公布 24 个主题变量与默认值（`borderRadius 0.375rem`、`spacing 1rem`、`fontSize 0.8125rem`=13px、`fontWeight {400,500,600,700}`、`colorPrimary` 示例值 `#6c47ff`），但默认 `fontFamily` 为 `inherit`、未公布品牌字体族（Geist/Suisse/Inter 由 Clerk 自有 CSS 注入）与完整色阶 hex；Uter 不采用其 13px 基准（详见 `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.4 / §2.5） | 保留 14/22 正文基线；只采纳「按钮字体可独立配置」理念到 `--ds-font-*` |
 | C6 | 状态必须显式定义 | 官方示例同时写 hover / focus / active 三态 | 组件补齐 default/hover/focus/pressed/disabled/loading/error/success 八态 |
 | C7 | 组件扩展走稳定契约 | `cl-*` 稳定类与内部类分界 | 扩展只走 variant / slot / composition，禁止依赖内部类 |
@@ -317,7 +317,7 @@
 | 注册真源 | `web/src/design-system/component-registry.json`，`registryVersion 1.0.0` |
 | 双向一致性 | 由 `scripts/check-component-registry.mjs` 校验 `registered` / `discovered` / `errors` |
 | 证据现状 | 65 条注册：`VERIFIED 0` / `PARTIAL 9` / `NOT_VERIFIED 56` / `EXCEPTION 0`；`warnings=65`；`--strict` EXIT=1（审计时点记录，非本轮结果） |
-| 缺失字段（相对上级 PART 3.4） | `layer` / `source` / `implementation_path` / `specification_path` / `test_path` / `story_path` / `variants` / 顶层 `states` / 顶层 `accessibility` / `deprecated` / `replacement` 全部缺失，须由生成式 YAML 投影合并，JSON 仍为唯一真源 |
+| 缺失字段（相对上级 PART 3.4） | `layer` / `source` / `implementation_path` / `specification_path` / `test_path` / `story_path` / `variants` / 顶层 `states` / 顶层 `accessibility` / `deprecated` / `replacement` 全部缺失，须由生成式 YAML 投影合并，JSON 仍为唯一真源；YAML 顶层 `tokens` 为 JSON `contract.tokens` 的投影别名，YAML 顶层 `states` 为 `contract.states` 的原样投影（现状 1–4 态，八态为目标，见 `UDS5-S14` §6） |
 | 计数差异 | `ui/*.tsx` 与 65 条注册的差异来自平铺测试 `dropdown-menu.test.tsx`；schema `file` 正则不含点号且脚本显式排除测试文件，**不是漏注册，禁止补注册** |
 | 版本字段 | `component-registry.json` 的 `designSystem` 为 `3.0`，升级为 `5.0` 必须与 `check-component-registry.mjs:45` 的硬编码校验在**同一变更内**完成，否则门禁失败 |
 | 展示关联 | 扩展既有 `docs/design-system/showcase.html`（24 区、真实 DOM、数据驱动），补 Props / 注册 ID / 组件级 a11y / 状态切换面板；不引入 Storybook（D3） |
@@ -366,7 +366,7 @@
 | `web/scripts/sync-design-showcase.mjs --check`（`design:showcase:check`） | 17 条 Manifest 一致性校验 | 已接入 `:411` |
 | `web/scripts/verify-contrast.mjs`（`verify:contrast`） | 对比度与 E28 渐变锚定 | 已接入 `:414` |
 | `web/scripts/check-component-registry.mjs`（`components:registry:check`） | 组件注册双向一致性 | 已接入 `:427`；`--strict` 未接入 |
-| `web/scripts/visual-regression.mjs`（`test:visual`） | showcase 像素基线（本地专用） | `test:visual` 已接入 `:422`；E2E 双轨刻意不接 CI |
+| `web/scripts/visual-regression.mjs`（`test:visual`） | showcase 像素基线（已接入 ci.yml :423） | `test:visual` 已接入 CI（ci.yml :422 步骤 / :423 run 行）；E2E 双轨刻意不接 CI |
 | `web/scripts/add-showcase-anchors.mjs`、`generate-design-showcase.mjs` | 展示页锚点与生成 | 辅助脚本 |
 | `bun run typecheck` / `test` / `lint` / `copyright:check` / `build:check` | 前端基础门禁 | 已接入 `:387`–`:438` |
 | `web/e2e/{axe,business,visual}/playwright.config.ts` | 三条 E2E 轨 | **刻意不接 CI**（像素基线依赖本机字体渲染与 GPU 合成、需完整服务栈），只能开发机手动执行 |
@@ -436,7 +436,7 @@
 | S01-D2 | 蓝图 §8 `RISK-P1` 要求「撤销 / 恢复策略（如业务允许）」；仓库**未逐处核实**批量操作是否具备撤销路径 | `NOT_VERIFIED`（见 §4A.4） |
 | S01-D3 | 蓝图 §8 风险分级**未在代码中显式标注**——仓库无 `RISK-P0/P1/P2` 元数据或标记，UI 无法按等级自动增强交互强度 | `NOT_IMPLEMENTED`（见 §4A.4） |
 | S01-D4 | 蓝图 §7 组件分层为**六层**（Foundations / Primitives / Composite / Domain / Patterns / Templates）；仓库 §6 为**五层**（L1–L5），Domain 层由 `UDS5-S29`..`S32` 四份业务域分册承接 | **Adapt**（见 §4A.3） |
-| S01-D5 | 蓝图 §8 使用 `P0` / `P1` / `P2` 表示业务风险，与仓库 `BASELINE-AUDIT` §3.1 的 `P1`–`P3` **待办优先级同符号不同义** | **Adapt**（已做 `RISK-` 前缀命名空间隔离，见 §4A.1） |
+| S01-D5 | 蓝图 §8 使用 `P0` / `P1` / `P2` 表示业务风险，与仓库 `BASELINE-AUDIT` §3.1 的 `P1`–`P3` **待办优先级同符号不同义** | **Adapt**（已做 `RISK-` 前缀命名空间隔离，见 §4A.1；`BASELINE-AUDIT` §10 等历史快照的裸写 P* 按本节裁决表标注时点，不代表现行口径） |
 | S01-D6 | **`RISK-P0` 强验证存在代码不对称**：`controller/user.go:1367` 的 `delete` 分支挂 `requireAdminUserProof(c, service.VerificationScopeAdminUserDelete, ...)`，而同函数 `add_quota` 分支（`:1336-1338` → `controller/user_quota.go:13` `manageUserQuota`）**未挂任何强验证**。按 §4A.2，管理员调整他人额度属「余额变更」= `RISK-P0`，但仓库实现未达该级 | **真实代码缺陷**。修复须挂 `requireAdminUserProof` + `CriticalRateLimit` 并走 `UDS5-S01` §19 变更流程；本轮**不改代码**，登记待办 |
 | S01-D7 | 蓝图 §8 的 `RISK-P0` / `RISK-P1` / `RISK-P2` **未在代码中标注**（`S01-D3`），本轮已按条目落到规范文本（`S29` §7 / `S30` §5 / §7），但「规范分级 → UI 自动增强交互」的链路**仍不存在** | `NOT_IMPLEMENTED`（`S01-D3` 的延续，不重复登记） |
 
@@ -467,7 +467,7 @@
 | 组件层 | `web/src/components/ui/`、`web/src/design-system/components/typography/heading.tsx`、`text.tsx`、`index.ts`、`web/src/design-system/component-registry.json` |
 | 模式层 | `web/src/components/data-table/`、顶层 `dialog` / `confirm-dialog` / `copy-button` / `empty-state` / `loading-state` / `error-state` |
 | 应用层 | `web/src/routes/`、`web/src/features/`、`web/src/components/layout/`、`electron/` |
-| 测试 | `web/src/design-system/__tests__/`（11 个守卫测试）、`web/e2e/{axe,business,visual}/` |
+| 测试 | `web/src/design-system/__tests__/`（12 个守卫测试）、`web/e2e/{axe,business,visual}/` |
 | 视觉标本 | `docs/design-system/showcase.html`、`showcase.tokens.js` |
 
 ## 自动化验证
@@ -479,7 +479,7 @@
 | `web/scripts/sync-design-showcase.mjs`（`bun run design:showcase:check`） | 17 条 Manifest 校验 |
 | `web/scripts/verify-contrast.mjs`（`bun run verify:contrast`） | 对比度与 E28 |
 | `web/scripts/check-component-registry.mjs`（`bun run components:registry:check`） | 组件注册一致性 |
-| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 像素基线（本地专用） |
+| `web/scripts/visual-regression.mjs`（`bun run test:visual`） | showcase 像素基线（已接入 ci.yml :423） |
 | `web/scripts/add-showcase-anchors.mjs`、`generate-design-showcase.mjs` | 展示页锚点与生成 |
 | `bun run typecheck` / `lint` / `test` / `copyright:check` / `build:check` | 前端基础门禁 |
 | `web/e2e/axe/playwright.config.ts`、`web/e2e/business/playwright.config.ts`、`web/e2e/visual/playwright.config.ts` | 三条 E2E 轨（刻意不接 CI） |
@@ -527,3 +527,42 @@
 2. **本轮最终状态必须低于 `FULLY_IMPLEMENTED_AND_VERIFIED`**；按 PART 13「只要有一项未通过就不能宣布」报告实际状态。
 3. 逐条未通过项在最终验收报告中列明，不得省略、不得四舍五入、不得用 `PASS` / `FULLY_VERIFIED` 掩盖。
 4. 该结论不因规范文本撰写完成而改变——文档存在本身不证明能力可用（`AGENTS.md` §7 与 UAP §7）。
+
+
+---
+
+## 26. 全局计数与口径裁决表（2026-11-14 统一，唯一裁决入口）
+
+> 本节为 5.0 全部分册的**计数与口径单一真源**。凡分册、审计报告、验收报告、注册表与本表冲突，一律以本表为准；历史快照保留原值但必须显式标注时点，不得静默覆盖。裁决原则：**设计值以运行时代码 / 磁盘事实为准，规则与边界以规范为准**。
+
+| 项 | 唯一现行值 | 历史 / 子集口径 | 裁决依据 |
+|---|---|---|---|
+| 分册数 | **32 份**（`UDS5-S01`–`UDS5-S32` = 28 基础 + 4 业务域） | 28 = 仅基础分册 S01–S28 | 注册表 S29–S32 已 ACTIVE |
+| 目录 `.md` 总数 | **35 份**（33 根目录 + 2 `audit/`） | — | `find` 实测 |
+| 注册条目 | **37 条**（35 `.md` + 2 `.yaml` 注册表） | 33 / 36 为过时中间值 | `design:5:check` 实测 `standards: 37` / `registeredDocIds: 37` |
+| 已注册组件 | **65 个** | `ui/*.tsx` 66 文件 = 65 实现 + 1 平铺测试 | `components:registry:check` 65/65/0 |
+| 守卫测试 | **12 个**（`web/src/design-system/__tests__/*.test.ts`） | 审计快照 10 / 5.0 首轮 11 | 磁盘实测；`S13-D13` 登记差异 |
+| 路由源码 / feature 目录 | **73 / 30** | 80 为无口径漂移值 | `find` 实测；`BASELINE-AUDIT` §6 逐项可加总 |
+| Token CSS | **14 个**（8 `tokens/` + 6 `foundations/`） | `design:5:check` 的 `tokenFiles: 8` 仅计 `tokens/` | `find` 实测 |
+| 圆角 | **8 个 calc 命名派生档 + `rounded-full` 特殊档 = 9 种合法写法** | 「圆角七档」为 3.0 早期滞后称谓 | `theme.css:254-276` + T10 |
+| 焦点环 | **2px `ring-2`**（已裁决，无漂移） | 旧「1px 勿回 2px」记忆作废 | `semantic.css:123`；装饰性 `ring-1` 1px 保留 |
+| `--text-xs` 行高 | **12/18** | 12/16 为 v1.2 前旧推导 | `typography.css:70` |
+| 控件高度 | **`--ds-control-height-{sm,md}` 两档**（32/36/40、36/40/44） | 「24/32/44 三档」误记 | `spacing.css:34-35,73-74,91-92` |
+| E28 深色对比度 | **7.93 / 7.41 / 5.10:1** | 7.02 / 6.56 / 4.51 为旧记录值 | `UDS5-S13` §6 逐值成对锚定 |
+| E28 浅色达标 | from 2.54 / via 2.72 **未达 3:1**，to 3.96 **达标** | 「三档全部未达」为算术错误 | 13 §3.7 阈值 3:1 |
+| Clerk 来源 / 对照 / 决策 | **13 个核对入口（唯一 URL 去重 11）/ 18 项对照 / 30 项决策** | AUDIT-02 首轮 = 9 来源 / 23 小节 24 判定（历史快照） | `UDS5-S21` §2.4 / §5；CHANGELOG 节点六 |
+| N1–N7 处置 | **7 维度 / 9 判定**（6 `Adapt` + 3 `Reject`，N4 / N7 双记） | 「6 Adapt + 1 Reject」为未区分双记的旧口径 | `UDS5-S21` §2.4 处置列 |
+| 组件八态 | **8 态**（default/hover/focus/pressed/disabled/loading/error/success） | 五态 = 交互过程（S17）；6 态 = 展示中心现状（缺 error/success） | `UDS5-S14` §6 / `UDS5-S17` |
+| registry 缺失字段 | **11 项**（含顶层 `accessibility`） | 「8 类」为分组旧称 | `UDS5-S01` §6 / `UDS5-S23` §3.12 |
+| 通知组件 | **6 类**（含 2 类规范保留位） | 5 类漏 `System Notification` | `UDS5-S20` §3 |
+| 业务模块 | **17 个** | 15 项为无独立路由子集 | `UDS5-S22` §3 |
+| 业务红线唯一清单 | `org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` **零改动** | 3 项 / 4 项枚举为不完整子集 | 本节 §5 C4 |
+| 并发 WIP | **211 项**（51 `M` + 160 `??`，152 项在 `.uap/`） | 391 为未核对构成数 | `BASELINE-AUDIT` §1 带分解实测 |
+| 状态枚举 | **4 值** `ACTIVE` / `DEPRECATED` / `PENDING` / `DRAFT` | `ARCHIVED` 为蓝图历史态，不进注册表 | 注册表 `status_values` |
+| 状态机 | UAP 八态（能力判级）；验收八标签（验收记录），交集 4 态 | 「全局唯一口径」措辞已废止 | `AGENTS.md` §7 / `UDS5-S25` §1.1 |
+| `test:visual` | **已接入 CI**（`ci.yml` :422 步骤 / :423 run 行） | 「本地专用」为旧称；E2E 双轨仍刻意不接 CI | `ci.yml:423` |
+| `design:5:check` | **已接入 CI**（`ci.yml:434`） | §9 清单漏登已补齐 | `ci.yml:434` |
+| RISK 命名空间 | 业务风险一律 `RISK-P0/P1/P2`；裸写 `P1–P3` = 待办优先级；S21 P1–P5 = 禁止项编号；S23 Phase 0–4 = 改造阶段 | 历史审计文本裸写 P* 已改写并加注 | §4A.1 / 本节 |
+| 5.0 Showcase | `SHOWCASE-5.0.html`（规范全量验收视图）+ 既有 `showcase.html`（3.0 Token 中心） | D3 禁止的是第二套**组件实例**展示系统 | `UDS5-S23` §11 |
+| YAML 投影字段 | `COMPONENT-REGISTRY.yaml` 的 `design_system: UTER Design System 5.0` 指**投影所属规范集**（由 `check-design-system-5.0.mjs:129` 生成），与真源 `component-registry.json:4` 的 `designSystem: "UTER Design System 3.0"` 是不同对象，不得据此判定「版本已统一」；顶层 `tokens` = `contract.tokens` 投影别名，顶层 `states` = `contract.states` 原样投影（现状 1–4 态，目标八态） | 二者均不改写数据，仅登记映射 | `UDS5-S14` §3 / `UDS5-S23` §4 A5 |
+| Showcase 校验 | `design:showcase:5:check`（纯静态只读）+ `design-showcase-5.test.ts` 回归测试；`SHOWCASE-5.0.html` 覆盖 37 注册条目 / 65 组件 / 18 类元素 | 与本表全部计数联动 | `UDS5-S23` §11 |

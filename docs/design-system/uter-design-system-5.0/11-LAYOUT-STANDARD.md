@@ -171,7 +171,7 @@
 | 场景 | 最大宽度 | 真源 / 表达 |
 |---|---:|---|
 | 后台内容区（仪表盘 / 设置 / 日志 / 定价管理） | **1280px** | `max-width: 1280px; margin-inline: auto;`（3.0 §16.2:2283-2285） |
-| 营销页（首页 / 定价展示 / 关于页） | **1800px** | `--ds-content-max-wide` / `max-w-container-wide`，唯一声明在 §28 `meta.contentMaxWide`（3.0 §16.2:2289-2293），原 E19 编号已注销 |
+| 营销页（首页 / 定价展示 / 关于页） | **1800px** | `--ds-content-max-wide` / `max-w-container-wide`，唯一运行时声明在 `web/src/design-system/tokens/spacing.css:65-66`；3.0 §28 `meta.contentMaxWide`（历史 Spec SSOT，3.0 §16.2:2289-2293）仅作追溯，原 E19 编号已注销 |
 | 三栏文档外壳 | 1440px（总宽，正文 `max-w-3xl`） | 3.0 §16.2:2295 |
 
 > 判据：**这个页面是「用户在里面干活」还是「用户在里面被说服」？** 前者 1280px，后者按 1800px 登记值（3.0 §16.2:2297）。营销页被压进 1280px 会在 1440/1920 屏留下大片空白，反而更差。
