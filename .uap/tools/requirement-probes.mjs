@@ -301,7 +301,7 @@ const PROBES = {
     }, { detail: `release check exit=${r.exit_code} (expected 1), deploy_decision=DENY present=${deny}` });
   },
   'runtime.uap-tests': async () => {
-    const r = sh('node', ['--test', '--test-concurrency=1', ...fs.readdirSync(path.join(UAP, 'tests'))
+    const r = sh('node', ['--test', '--test-reporter=tap', '--test-concurrency=1', ...fs.readdirSync(path.join(UAP, 'tests'))
       .filter((f) => f.endsWith('.test.mjs')).map((f) => `.uap/tests/${f}`)], { timeout: 300000 });
     const m = /# fail (\d+)/.exec(r.stdout);
     const p = /# pass (\d+)/.exec(r.stdout);

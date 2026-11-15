@@ -23,13 +23,13 @@ For commercial licensing, please contact support@uter.ai
  * Source version: 1.0.0 (DRAFT)
  * Generator: scripts/generate-design-tokens.mjs
  * Generator version: 1.1.0
- * Spec: docs/design-system/UTER-DESIGN-SYSTEM-3.0.md
+ * Spec: docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md
  */
 :root {
   --uter-brand-primary: #5B5EE6;
   --uter-brand-primary-foreground: #FFFFFF;
-  --uter-brand-hover: #4F52D1;
-  --uter-brand-active: #4A4DC5;
+  --uter-brand-hover: #494CC7;
+  --uter-brand-active: #3F42B0;
   --uter-brand-soft: #F0F0FF;
   --uter-brand-soft-foreground: #5558D8;
   --uter-brand-border: #D9DAFF;
@@ -37,10 +37,10 @@ For commercial licensing, please contact support@uter.ai
 }
 
 .dark {
-  --uter-brand-primary: #A1A3F7;
+  --uter-brand-primary: #8B8DF5;
   --uter-brand-primary-foreground: #020617;
-  --uter-brand-hover: #B1B3FF;
-  --uter-brand-active: #9294F7;
+  --uter-brand-hover: #A1A3F7;
+  --uter-brand-active: #B7B8FA;
   --uter-brand-soft: #25264A;
   --uter-brand-soft-foreground: #B1B3FF;
   --uter-brand-border: #45466F;

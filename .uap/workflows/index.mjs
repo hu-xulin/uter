@@ -85,7 +85,7 @@ export async function stepExecutor({ task, step }) {
     if (!files.length) {
       out.status = 'BLOCKED'; out.summary = 'no UAP test files found'; out.outputs = { test_files: 0 };
     } else {
-      const r = await runCommand({ command: 'node', args: ['--test', ...files.map((f) => path.relative(ROOT, f))], timeoutMs: 180000 });
+      const r = await runCommand({ command: 'node', args: ['--test', '--test-reporter=tap', ...files.map((f) => path.relative(ROOT, f))], timeoutMs: 180000 });
       out.outputs = { test_files: files.length, exit_code: r.exit_code, duration_ms: r.duration_ms, tail: r.stdout.slice(-800) };
       out.commands.push(r.command);
       if (r.exit_code !== 0) { out.status = 'BLOCKED'; out.summary = `UAP tests exited ${r.exit_code}`; }

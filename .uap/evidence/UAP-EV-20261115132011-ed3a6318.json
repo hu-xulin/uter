@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115132011-ed3a6318",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T13:20:11.786Z",
+  "started_at": "2026-11-15T13:20:11.786Z",
+  "finished_at": "2026-11-15T13:20:11.786Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115131510-7d730ada",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "ba99cd22857cc5685f6646e42e1e977a167776487e414cc958f70ba41870f651",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115131510-7d730ada",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "ba99cd22857cc5685f6646e42e1e977a167776487e414cc958f70ba41870f651",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.observability_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.observability_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "delivery.observability_integrity 实检: structured_logs=PASS(动态 import event-system 并调用 health().ok===true: health().ok=true; 导出 publish()=true); traceability=PASS(runCommand 真实返回含 6/6 个可追溯字段(command/cwd/started_at/duration_ms/exit_code/timed_out); exit_code=0); secret_redaction=PASS(子进程复跑 redact(): password 被 REDACTED=true; exit_code=0; policy-engine 源码用 redact()=true; policy redact_secrets=true=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9242 个 | 动态 import event-system 调用 health() + runCommand 真实返回可追溯字段 + node 子进程复跑 redact(); 全程本地只读/模拟",
+  "content_hash": "58c92156cde934a17b80c788a8fc410e86633269a7fec2b09424c8426e47f4d1"
+}

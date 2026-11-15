@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115112241-fa2a9696",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T11:22:41.739Z",
+  "started_at": "2026-11-15T11:22:41.739Z",
+  "finished_at": "2026-11-15T11:22:41.739Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115111818-7f2ed528",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "b09f7ab0e714ddb30d4dbaf4bb09ff789d22197ba9ba32833b186742f214262c",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115111818-7f2ed528",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "b09f7ab0e714ddb30d4dbaf4bb09ff789d22197ba9ba32833b186742f214262c",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.dependency_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.dependency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=PASS(BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9005 个 | 真实读取 go.sum/go.mod/web/package.json/BASELINE + 配置明文密钥正则扫描; 未安装/删除任何依赖",
+  "content_hash": "fb85d895a6594bf42e702a0c340526452ac7859cf7732517570aaa7de2ce390f"
+}

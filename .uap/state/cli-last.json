@@ -1,23 +1,23 @@
 {
-  "status": "FAIL",
-  "exit_code": 1,
-  "summary": "final acceptance: FAILED, consistency FAILED (4)",
+  "status": "BLOCKED",
+  "exit_code": 2,
+  "summary": "final acceptance: NOT_ACCEPTED, consistency PASS — necessary verifications remain BLOCKED/unverified",
   "data": {
     "mode": "full-closure",
     "prepare_status": "FAILED",
-    "verify_status": "FAILED",
+    "verify_status": "NOT_ACCEPTED",
     "manifest_entries": 15,
     "manifest_missing": [],
-    "gate_status": "FAILED",
-    "overall_status": "FAILED",
+    "gate_status": "NOT_ACCEPTED",
+    "overall_status": "NOT_ACCEPTED",
     "claim_allowed": false,
     "counts": {
-      "gate_groups": 6,
-      "gate_groups_pass": 4,
-      "gate_groups_fail": 2,
+      "gate_groups": 7,
+      "gate_groups_pass": 7,
+      "gate_groups_fail": 0,
       "necessary_blocked": 2,
-      "necessary_unverified": 477,
-      "problems": 16
+      "necessary_unverified": 415,
+      "problems": 1
     },
     "blocked_items": [
       {
@@ -27,43 +27,23 @@
       },
       {
         "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
-        "reason": "477 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
+        "reason": "415 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
         "impact": "full requirement closure not achieved"
       }
     ],
     "problems": [
-      "e2e: 1 FAIL scenario(s)",
-      "visual: status=FAIL exit=1 diffs=28",
-      "evidence: code changed AFTER report generation: fingerprint now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
-      "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 manifest=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: VISUAL-REGRESSION.json: worktree_fingerprint mismatch with manifest",
-      "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch",
-      "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch",
-      "evidence: VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 expected=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: VISUAL-REGRESSION.json: worktree_fingerprint mismatch",
-      "477 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+      "415 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
     ],
     "status_consistency": {
-      "ok": false,
-      "checks_passed": 15,
-      "checks_total": 19,
-      "problems": [
-        "all_final_reports_bound_to_same_batch: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a; E2E-RESULTS.json: worktree_fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 expected=UAP-EXEC-20261115061321-6a98eb1a; VISUAL-REGRESSION.json: worktree_fingerprint mismatch",
-        "code_unchanged_since_batch_start: now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
-        "capability_cards_have_real_counts_and_bindings: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b; E2E-RESULTS.json: fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b; ACCESSIBILITY-RESULTS.json: fingerprint mismatch; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5; VISUAL-REGRESSION.json: fingerprint mismatch",
-        "evidence_manifest_hashes_and_bindings: code changed AFTER report generation: fingerprint now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a; E2E-RESULTS.json: worktree_fingerprint mismatch with manifest; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 manifest=UAP-EXEC-20261115061321-6a98eb1a; VISUAL-REGRESSION.json: worktree_fingerprint mismatch with manifest"
-      ]
+      "ok": true,
+      "checks_passed": 21,
+      "checks_total": 21,
+      "problems": []
     },
     "evidence_manifest_path": ".uap/reports/EVIDENCE-MANIFEST.json"
   },
   "command": "accept",
-  "duration_ms": 5516,
-  "generated_at": "2026-11-15T06:22:09.613Z",
-  "evidence_ref": "UAP-EV-20261115062209-cebeb5d7"
+  "duration_ms": 10617,
+  "generated_at": "2026-11-15T14:04:29.469Z",
+  "evidence_ref": "UAP-EV-20261115140429-58d825a8"
 }

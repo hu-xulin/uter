@@ -18,10 +18,19 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
+import { resolveUds6ChartPalette } from '@/design-system/tokens/brand-colors'
+import {
+  UDS7_CHART_PALETTE_DARK,
+  UDS7_CHART_PALETTE_LIGHT,
+} from '@/design-system/tokens/generated/uds7-chart-palette'
 import type { QuotaDataItem } from '@/features/dashboard/types'
 import type { TimeGranularity } from '@/lib/time'
 
-import { processChartData, processUserChartData } from '../charts'
+import {
+  getDashboardChartColors,
+  processChartData,
+  processUserChartData,
+} from '../charts'
 
 const cases: Array<{
   granularity: TimeGranularity
@@ -151,6 +160,34 @@ describe.each(cases)('dashboard $granularity chart chronology', (scenario) => {
           key === 'spec_model_line' ? row.Count : row.rawQuota / 500000
         )
       ).toEqual([0, 0, 0, 0, 0, 0, 8])
+    }
+  })
+})
+
+describe('UDS 7.0 chart palette', () => {
+  test('series colors are the 12-token palette, distinct and cycled beyond 12', () => {
+    const twelve = getDashboardChartColors(12)
+    expect(twelve).toHaveLength(12)
+    expect(new Set(twelve).size).toBe(12)
+    expect(twelve).toEqual([...UDS7_CHART_PALETTE_LIGHT])
+
+    const fourteen = getDashboardChartColors(14)
+    expect(fourteen).toHaveLength(14)
+    expect(fourteen[12]).toBe(twelve[0])
+    expect(fourteen[13]).toBe(twelve[1])
+  })
+
+  test('falls back to the generated mirror when CSS variables are unavailable', () => {
+    // 测试环境没有注入 bridge CSS：必须回退到生成的 TS 镜像而不是空串。
+    expect(resolveUds6ChartPalette()).toEqual([...UDS7_CHART_PALETTE_LIGHT])
+  })
+
+  test('selects the dark mirror when the document is in dark mode', () => {
+    document.documentElement.classList.add('dark')
+    try {
+      expect(resolveUds6ChartPalette()).toEqual([...UDS7_CHART_PALETTE_DARK])
+    } finally {
+      document.documentElement.classList.remove('dark')
     }
   })
 })

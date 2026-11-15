@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "registry_id": "UDS7-R-EXCEPTIONS",
+  "version": "7.0.0",
+  "generated_at": "2026-11-15T23:49:37.438Z",
+  "policy": "禁止用例外掩盖普通正文对比度缺陷；每条必须含失效条件",
+  "items": [
+    {
+      "id": "EX-001",
+      "scope": "WCAG 1.4.3 disabled controls",
+      "token": "--ds-color-text-disabled",
+      "reason": "WCAG 明确豁免禁用控件",
+      "review_condition": "控件恢复可用时立即失效",
+      "status": "ALLOWED"
+    },
+    {
+      "id": "EX-002",
+      "scope": "PAGE-REGISTRY ROUTE_NOT_FOUND 模板",
+      "reason": "文档列出但仓库无独立路由，禁止伪造页面",
+      "review_condition": "对应路由被真实创建时",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-003",
+      "scope": "Android / iOS / HarmonyOS 未实现",
+      "reason": "仓库无原生工程或跨平台框架源码",
+      "review_condition": "原生工程入库时",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-004",
+      "scope": "RTL 未支持",
+      "reason": "本版只覆盖 zh-CN / en LTR",
+      "review_condition": "新增 RTL locale 时",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-005",
+      "scope": "规范—实现双轨",
+      "reason": "7.0 规范值已冻结且视觉基线已冻结（2026-11-15），但 web/src 运行时仍为 3.0 值；迁移按 Phase 6 分期执行",
+      "review_condition": "Phase 6 全站迁移完成",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-006",
+      "scope": "web/src/components/ai-elements/shimmer.tsx 手写渐变",
+      "reason": "7.0 之前的重复渐变实现，已在本轮真实收敛",
+      "action": "MIGRATE_TO_SINGLE_EXIT",
+      "status": "RESOLVED",
+      "resolved_by": "把渐变定义移入 web/src/design-system/foundations/typography.css 的受控出口 @utility ds-text-shimmer；shimmer.tsx 只保留 className 与 --ds7-shimmer-spread 变量，色值沿用 --color-background / --color-muted-foreground，视觉零变化",
+      "resolved_at": "2026-11-15T23:49:37.438Z",
+      "evidence": "check-uds7-remediation.mjs::C-G03 + GRADIENT-TYPOGRAPHY-AUDIT.md"
+    }
+  ],
+  "registered_gradient_files": [
+    "web/src/design-system/foundations/typography.css",
+    "docs/design-system/runtime/foundations.css"
+  ],
+  "registered_gradient_note": "第一项为 web/src 现行唯一 owner（含 ds-text-gradient-brand 与 ds-text-shimmer 两个受控出口）；第二项为 7.0 runtime 派生产物，不在 web/src 扫描范围。EX-006 的 shimmer.tsx 已真实收敛并从登记中移除；未登记的手写渐变一律判 FAIL。",
+  "resolved_exceptions": [
+    "EX-006"
+  ]
+}

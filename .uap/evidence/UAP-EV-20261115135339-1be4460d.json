@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115135339-1be4460d",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T13:53:39.697Z",
+  "started_at": "2026-11-15T13:53:39.697Z",
+  "finished_at": "2026-11-15T13:53:39.697Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.engineering_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.engineering_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.engineering_integrity 实检: review_engine=PASS(动态 import .uap/engines/code-review/index.mjs 并调用 health(): health().ok=true); test_engine=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true); repair_engine=PASS(动态 import .uap/engines/auto-repair/index.mjs 并调用 health(): health().ok=true); gates=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9351 个 | 4 个引擎均动态 import 且 health().ok===true",
+  "content_hash": "80061f36a203730381a5c6204a29d33f3ef3048e7dd8b3f9d3f0ab81fb203e8f"
+}

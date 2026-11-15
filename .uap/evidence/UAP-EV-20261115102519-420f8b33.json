@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115102519-420f8b33",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T10:25:19.418Z",
+  "started_at": "2026-11-15T10:25:19.418Z",
+  "finished_at": "2026-11-15T10:25:19.418Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115102054-a7104fe0",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "90093c3da0698fabe68b17fa89d1e2eb59e6e297123a023e42bf2f9027d96ba3",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115102054-a7104fe0",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "90093c3da0698fabe68b17fa89d1e2eb59e6e297123a023e42bf2f9027d96ba3",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.api_database_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.api_database_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.api_database_integrity 实检: api_contracts=PASS(router/*.go=26 个; api-router.go=true; 插件契约 v1.schema.json=true; 规范含 API/契约/幂等=true); schema_integrity=PASS(model/*.go=208 个; go.mod/common/json.go 存在=true; 规范含 数据库/字段/约束=true); migration_safety=PASS(model/migration_dialector.go=true; common/quota_math.go=true; 规范含 迁移/幂等/三方言/备份/回滚=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 8818 个 | 基于真实 Go 代码目录(router 26 / model 193 个 .go)+插件契约+三方言迁移文件做静态核对; 不连接任何数据库",
+  "content_hash": "d36e1348ee16a9f8c0300a691548faabff6bb5aa57db6c07569319b99a7cd845"
+}

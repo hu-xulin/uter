@@ -1,8 +1,8 @@
 # UAP 1.0 — 规范索引
 
-<!-- UAP-STATUS-BLOCK {"computed_by":"uap.final-acceptance-gate","execution_id":"UAP-EXEC-20261115061321-6a98eb1a","git_head":"012c08eaf6127261f4ba434bf277489261ef6dd5","overall_status":"FAILED","claim_allowed":false,"requirements_total":538,"requirements_verified":61,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-15T06:22:05.943Z"} -->
+<!-- UAP-STATUS-BLOCK {"computed_by":"uap.final-acceptance-gate","execution_id":"UAP-EXEC-20261115135024-6a46ff96","git_head":"3f4eb0d7afd640471368c49bfa71d8383eb7740b","overall_status":"NOT_ACCEPTED","claim_allowed":false,"requirements_total":538,"requirements_verified":123,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-15T14:04:23.468Z"} -->
 
-- 生成时间：2026-11-15T06:22:03.533Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
+- 生成时间：2026-11-15T14:04:18.283Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
 - 规范总数：**32**
 - 注册表完整性：**PASS**（37/37 项检查，0 条阻断发现）
 
@@ -11,17 +11,17 @@
 | 字段 | 值 |
 | --- | --- |
 | 计算函数 | `runtime.status-engine/computeFinalStatus` |
-| execution_id | `UAP-EXEC-20261115061321-6a98eb1a` |
-| git_head | `012c08eaf6127261f4ba434bf277489261ef6dd5` |
+| execution_id | `UAP-EXEC-20261115135024-6a46ff96` |
+| git_head | `3f4eb0d7afd640471368c49bfa71d8383eb7740b` |
 | **overall_status** | **PARTIALLY_VERIFIED** |
 | claim_allowed | false |
-| 适用要求 / 已验证 | 538 / 61 |
+| 适用要求 / 已验证 | 538 / 123 |
 | 规范已验证 / 总数 | 0 / 32 |
-| 能力缺口 | real_code_repair, independent_regression, recovery, e2e, financial_integrity |
+| 能力缺口 | recovery, e2e, financial_integrity |
 
 > 状态口径由状态机给出：`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
 > 规范文件头的 `ACTIVE` 只表示「规范已建成」，不表示「已验证」；`IMPLEMENTED_NOT_VERIFIED` 不得自动改成 PASS。
-> 判定原因：`6 requirement(s) blocked`；`477/538 applicable requirements lack current valid evidence`；`477 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
+> 判定原因：`415/538 applicable requirements lack current valid evidence`；`415 requirement(s) have no evidence record`
 
 ## 统一章节要求
 
@@ -33,10 +33,10 @@
 
 | 编号 | 名称 | 文件 | 关键级别 | 验证状态 | 头部声明 | 执行器 | 验证器 | 依赖 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| UAP-00-001 | UAP 核心架构规范 | [`.uap/core/UAP-00-001-CORE-ARCHITECTURE.md`](../.uap/core/UAP-00-001-CORE-ARCHITECTURE.md) (14081B) | P0 | IMPLEMENTED_NOT_VERIFIED (3/18) | ACTIVE | `core.architecture` | `core.architecture_integrity` | — |
-| UAP-00-002 | 自主执行规范 | [`.uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md`](../.uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md) (13945B) | P0 | IMPLEMENTED_NOT_VERIFIED (3/20) | ACTIVE | `core.autonomous_execution` | `core.execution_integrity` | UAP-00-001 |
-| UAP-00-003 | 自主工程安全边界规范 | [`.uap/core/UAP-00-003-SECURITY-BOUNDARY.md`](../.uap/core/UAP-00-003-SECURITY-BOUNDARY.md) (14710B) | P0 | IMPLEMENTED_NOT_VERIFIED (9/19) | ACTIVE | `security.policy` | `security.permission_boundary` | UAP-00-001 |
-| UAP-00-004 | 证据与状态管理规范 | [`.uap/core/UAP-00-004-EVIDENCE-AND-STATE.md`](../.uap/core/UAP-00-004-EVIDENCE-AND-STATE.md) (13648B) | P0 | IMPLEMENTED_NOT_VERIFIED (11/19) | ACTIVE | `core.evidence` | `core.evidence_integrity` | UAP-00-001 |
+| UAP-00-001 | UAP 核心架构规范 | [`.uap/core/UAP-00-001-CORE-ARCHITECTURE.md`](../.uap/core/UAP-00-001-CORE-ARCHITECTURE.md) (14081B) | P0 | IMPLEMENTED_NOT_VERIFIED (6/18) | ACTIVE | `core.architecture` | `core.architecture_integrity` | — |
+| UAP-00-002 | 自主执行规范 | [`.uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md`](../.uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md) (13945B) | P0 | IMPLEMENTED_NOT_VERIFIED (13/20) | ACTIVE | `core.autonomous_execution` | `core.execution_integrity` | UAP-00-001 |
+| UAP-00-003 | 自主工程安全边界规范 | [`.uap/core/UAP-00-003-SECURITY-BOUNDARY.md`](../.uap/core/UAP-00-003-SECURITY-BOUNDARY.md) (14710B) | P0 | IMPLEMENTED_NOT_VERIFIED (14/19) | ACTIVE | `security.policy` | `security.permission_boundary` | UAP-00-001 |
+| UAP-00-004 | 证据与状态管理规范 | [`.uap/core/UAP-00-004-EVIDENCE-AND-STATE.md`](../.uap/core/UAP-00-004-EVIDENCE-AND-STATE.md) (13648B) | P0 | IMPLEMENTED_NOT_VERIFIED (17/19) | ACTIVE | `core.evidence` | `core.evidence_integrity` | UAP-00-001 |
 
 ### product
 
@@ -44,7 +44,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | UAP-01-001 | 产品需求工程规范 | [`.uap/product/UAP-01-001-PRODUCT-REQUIREMENTS.md`](../.uap/product/UAP-01-001-PRODUCT-REQUIREMENTS.md) (13987B) | P1 | IMPLEMENTED_NOT_VERIFIED (0/15) | IMPLEMENTED_NOT_VERIFIED | `product.requirements` | `product.requirement_traceability` | UAP-00-001 |
 | UAP-01-002 | PRD 与原型双向同步规范 | [`.uap/product/UAP-01-002-PRD-PROTOTYPE-SYNC.md`](../.uap/product/UAP-01-002-PRD-PROTOTYPE-SYNC.md) (13372B) | P1 | IMPLEMENTED_NOT_VERIFIED (0/17) | IMPLEMENTED_NOT_VERIFIED | `product.prototype_sync` | `product.prototype_consistency` | UAP-01-001 |
-| UAP-01-003 | 业务规则工程规范 | [`.uap/product/UAP-01-003-BUSINESS-RULES.md`](../.uap/product/UAP-01-003-BUSINESS-RULES.md) (14153B) | P0 | IMPLEMENTED_NOT_VERIFIED (2/16) | ACTIVE | `product.business_rules` | `product.business_rule_integrity` | UAP-01-001 |
+| UAP-01-003 | 业务规则工程规范 | [`.uap/product/UAP-01-003-BUSINESS-RULES.md`](../.uap/product/UAP-01-003-BUSINESS-RULES.md) (14153B) | P0 | IMPLEMENTED_NOT_VERIFIED (3/16) | ACTIVE | `product.business_rules` | `product.business_rule_integrity` | UAP-01-001 |
 
 ### architecture
 
@@ -58,10 +58,10 @@
 
 | 编号 | 名称 | 文件 | 关键级别 | 验证状态 | 头部声明 | 执行器 | 验证器 | 依赖 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| UAP-03-001 | Agent 架构规范 | [`.uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md`](../.uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md) (13383B) | P0 | IMPLEMENTED_NOT_VERIFIED (0/14) | IMPLEMENTED_NOT_VERIFIED | `agents.registry` | `agents.registry_integrity` | UAP-00-001, UAP-00-003 |
-| UAP-03-002 | Agent 执行规范 | [`.uap/agents/UAP-03-002-AGENT-EXECUTION.md`](../.uap/agents/UAP-03-002-AGENT-EXECUTION.md) (12897B) | P0 | IMPLEMENTED_NOT_VERIFIED (1/16) | IMPLEMENTED_NOT_VERIFIED | `agents.execution` | `agents.execution_integrity` | UAP-03-001 |
-| UAP-03-003 | Agent 协作规范 | [`.uap/agents/UAP-03-003-AGENT-COLLABORATION.md`](../.uap/agents/UAP-03-003-AGENT-COLLABORATION.md) (13217B) | P1 | IMPLEMENTED_NOT_VERIFIED (1/16) | IMPLEMENTED_NOT_VERIFIED | `agents.collaboration` | `agents.collaboration_integrity` | UAP-03-001, UAP-03-002 |
-| UAP-03-004 | Agent 恢复规范 | [`.uap/agents/UAP-03-004-AGENT-RECOVERY.md`](../.uap/agents/UAP-03-004-AGENT-RECOVERY.md) (13102B) | P0 | IMPLEMENTED_NOT_VERIFIED (3/16) | IMPLEMENTED_NOT_VERIFIED | `agents.recovery` | `agents.recovery_integrity` | UAP-03-002 |
+| UAP-03-001 | Agent 架构规范 | [`.uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md`](../.uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md) (13383B) | P0 | IMPLEMENTED_NOT_VERIFIED (4/14) | IMPLEMENTED_NOT_VERIFIED | `agents.registry` | `agents.registry_integrity` | UAP-00-001, UAP-00-003 |
+| UAP-03-002 | Agent 执行规范 | [`.uap/agents/UAP-03-002-AGENT-EXECUTION.md`](../.uap/agents/UAP-03-002-AGENT-EXECUTION.md) (12897B) | P0 | IMPLEMENTED_NOT_VERIFIED (3/16) | IMPLEMENTED_NOT_VERIFIED | `agents.execution` | `agents.execution_integrity` | UAP-03-001 |
+| UAP-03-003 | Agent 协作规范 | [`.uap/agents/UAP-03-003-AGENT-COLLABORATION.md`](../.uap/agents/UAP-03-003-AGENT-COLLABORATION.md) (13217B) | P1 | IMPLEMENTED_NOT_VERIFIED (6/16) | IMPLEMENTED_NOT_VERIFIED | `agents.collaboration` | `agents.collaboration_integrity` | UAP-03-001, UAP-03-002 |
+| UAP-03-004 | Agent 恢复规范 | [`.uap/agents/UAP-03-004-AGENT-RECOVERY.md`](../.uap/agents/UAP-03-004-AGENT-RECOVERY.md) (13102B) | P0 | IMPLEMENTED_NOT_VERIFIED (12/16) | IMPLEMENTED_NOT_VERIFIED | `agents.recovery` | `agents.recovery_integrity` | UAP-03-002 |
 
 ### development
 
@@ -75,9 +75,9 @@
 
 | 编号 | 名称 | 文件 | 关键级别 | 验证状态 | 头部声明 | 执行器 | 验证器 | 依赖 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| UAP-05-001 | 质量工程总规范 | [`.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md`](../.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md) (16885B) | P0 | IMPLEMENTED_NOT_VERIFIED (1/16) | ACTIVE | `quality.engineering` | `quality.engineering_integrity` | UAP-04-002 |
-| UAP-05-002 | 自动化测试规范 | [`.uap/quality/UAP-05-002-AUTOMATED-TESTING.md`](../.uap/quality/UAP-05-002-AUTOMATED-TESTING.md) (16764B) | P0 | IMPLEMENTED_NOT_VERIFIED (4/18) | ACTIVE | `quality.testing` | `quality.test_integrity` | UAP-05-001 |
-| UAP-05-003 | 自动修复规范 | [`.uap/quality/UAP-05-003-AUTO-REPAIR.md`](../.uap/quality/UAP-05-003-AUTO-REPAIR.md) (17274B) | P0 | IMPLEMENTED_NOT_VERIFIED (0/18) | ACTIVE | `quality.auto_repair` | `quality.repair_integrity` | UAP-05-001, UAP-05-002 |
+| UAP-05-001 | 质量工程总规范 | [`.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md`](../.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md) (16885B) | P0 | IMPLEMENTED_NOT_VERIFIED (2/16) | ACTIVE | `quality.engineering` | `quality.engineering_integrity` | UAP-04-002 |
+| UAP-05-002 | 自动化测试规范 | [`.uap/quality/UAP-05-002-AUTOMATED-TESTING.md`](../.uap/quality/UAP-05-002-AUTOMATED-TESTING.md) (16764B) | P0 | IMPLEMENTED_NOT_VERIFIED (7/18) | ACTIVE | `quality.testing` | `quality.test_integrity` | UAP-05-001 |
+| UAP-05-003 | 自动修复规范 | [`.uap/quality/UAP-05-003-AUTO-REPAIR.md`](../.uap/quality/UAP-05-003-AUTO-REPAIR.md) (17274B) | P0 | IMPLEMENTED_NOT_VERIFIED (1/18) | ACTIVE | `quality.auto_repair` | `quality.repair_integrity` | UAP-05-001, UAP-05-002 |
 | UAP-05-004 | 质量门禁规范 | [`.uap/quality/UAP-05-004-QUALITY-GATES.md`](../.uap/quality/UAP-05-004-QUALITY-GATES.md) (18063B) | P0 | IMPLEMENTED_NOT_VERIFIED (1/16) | ACTIVE | `quality.gates` | `quality.gate_integrity` | UAP-05-001, UAP-05-002, UAP-05-003 |
 
 ### security
@@ -85,7 +85,7 @@
 | 编号 | 名称 | 文件 | 关键级别 | 验证状态 | 头部声明 | 执行器 | 验证器 | 依赖 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | UAP-06-001 | 应用安全规范 | [`.uap/security/UAP-06-001-APPLICATION-SECURITY.md`](../.uap/security/UAP-06-001-APPLICATION-SECURITY.md) (19715B) | P0 | IMPLEMENTED_NOT_VERIFIED (0/17) | ACTIVE | `security.application` | `security.application_integrity` | UAP-00-003 |
-| UAP-06-002 | 资金与数据完整性规范 | [`.uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md`](../.uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md) (25719B) | P0 | IMPLEMENTED_NOT_VERIFIED (12/25) | ACTIVE | `security.financial_integrity` | `security.financial_integrity_validator` | UAP-01-003, UAP-02-002, UAP-06-001 |
+| UAP-06-002 | 资金与数据完整性规范 | [`.uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md`](../.uap/security/UAP-06-002-FINANCIAL-AND-DATA-INTEGRITY.md) (25719B) | P0 | IMPLEMENTED_NOT_VERIFIED (14/25) | ACTIVE | `security.financial_integrity` | `security.financial_integrity_validator` | UAP-01-003, UAP-02-002, UAP-06-001 |
 | UAP-06-003 | 可靠性与恢复规范 | [`.uap/security/UAP-06-003-RELIABILITY-AND-RECOVERY.md`](../.uap/security/UAP-06-003-RELIABILITY-AND-RECOVERY.md) (20345B) | P0 | IMPLEMENTED_NOT_VERIFIED (0/16) | ACTIVE | `security.reliability` | `security.reliability_integrity` | UAP-00-004 |
 
 ### cross-platform
@@ -100,9 +100,9 @@
 
 | 编号 | 名称 | 文件 | 关键级别 | 验证状态 | 头部声明 | 执行器 | 验证器 | 依赖 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| UAP-08-001 | CI/CD 规范 | [`.uap/delivery/UAP-08-001-CI-CD.md`](../.uap/delivery/UAP-08-001-CI-CD.md) (21007B) | P0 | IMPLEMENTED_NOT_VERIFIED (1/16) | ACTIVE | `delivery.ci_cd` | `delivery.ci_integrity` | UAP-05-004 |
-| UAP-08-002 | 部署与回滚规范 | [`.uap/delivery/UAP-08-002-DEPLOYMENT-AND-ROLLBACK.md`](../.uap/delivery/UAP-08-002-DEPLOYMENT-AND-ROLLBACK.md) (23512B) | P0 | IMPLEMENTED_NOT_VERIFIED (1/16) | ACTIVE | `delivery.deployment` | `delivery.deployment_integrity` | UAP-08-001, UAP-06-003 |
-| UAP-08-003 | 可观测性规范 | [`.uap/delivery/UAP-08-003-OBSERVABILITY.md`](../.uap/delivery/UAP-08-003-OBSERVABILITY.md) (21691B) | P1 | IMPLEMENTED_NOT_VERIFIED (0/16) | ACTIVE | `delivery.observability` | `delivery.observability_integrity` | UAP-00-004 |
+| UAP-08-001 | CI/CD 规范 | [`.uap/delivery/UAP-08-001-CI-CD.md`](../.uap/delivery/UAP-08-001-CI-CD.md) (21007B) | P0 | IMPLEMENTED_NOT_VERIFIED (3/16) | ACTIVE | `delivery.ci_cd` | `delivery.ci_integrity` | UAP-05-004 |
+| UAP-08-002 | 部署与回滚规范 | [`.uap/delivery/UAP-08-002-DEPLOYMENT-AND-ROLLBACK.md`](../.uap/delivery/UAP-08-002-DEPLOYMENT-AND-ROLLBACK.md) (23512B) | P0 | IMPLEMENTED_NOT_VERIFIED (2/16) | ACTIVE | `delivery.deployment` | `delivery.deployment_integrity` | UAP-08-001, UAP-06-003 |
+| UAP-08-003 | 可观测性规范 | [`.uap/delivery/UAP-08-003-OBSERVABILITY.md`](../.uap/delivery/UAP-08-003-OBSERVABILITY.md) (21691B) | P1 | IMPLEMENTED_NOT_VERIFIED (7/16) | ACTIVE | `delivery.observability` | `delivery.observability_integrity` | UAP-00-004 |
 
 ### evolution
 

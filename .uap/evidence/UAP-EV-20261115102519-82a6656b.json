@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115102519-82a6656b",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T10:25:19.271Z",
+  "started_at": "2026-11-15T10:25:19.271Z",
+  "finished_at": "2026-11-15T10:25:19.271Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115102054-a7104fe0",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "90093c3da0698fabe68b17fa89d1e2eb59e6e297123a023e42bf2f9027d96ba3",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115102054-a7104fe0",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "90093c3da0698fabe68b17fa89d1e2eb59e6e297123a023e42bf2f9027d96ba3",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.business_rule_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.business_rule_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.business_rule_integrity 实检: rule_ids=PASS(BR- 唯一规则ID=165; requirement-registry business_rule_ids 行=124; 规范声明 BR- 前缀=true); conflict_detection=PASS(product-model.conflicts=0; change-registry conflicts:[]=true; 规范冲突检测语义=true); business_test_coverage=PASS(test_case_ids 行=124; TC- 唯一ID=124; 规范含正向/反向/边界/并发=true; web/src/features 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 8816 个 | 真实统计 BR- 规则/TC- 用例 ID + 冲突为空 + 业务测试覆盖维度; 资金规则仅模拟/静态验证",
+  "content_hash": "d5793dbea7f9d12fbf79e386f7afe3b0a00f954c5ab5af347b46c0bcf58edde1"
+}

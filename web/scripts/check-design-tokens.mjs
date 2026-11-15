@@ -113,12 +113,12 @@ const OVERLAY_ALLOWLIST = [
  *                              `*-soft` / 品牌色 / 状态色语义
  *
  * 需要新增例外时，必须同时满足：① 写明 `reason`；② 在
- * `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 登记编号与影响范围；③ 说明为什么
+ * `docs/design-system/35-DESIGN-GOVERNANCE-STANDARD.md` 登记编号与影响范围；③ 说明为什么
  * 无法用 Token 表达。没有理由的例外等于没有规范。
  */
 /**
  * 逐条登记的真例外。每条必须：① `reason` 写明为什么无法用 Token 表达；
- * ② 在 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 登记编号与影响范围。
+ * ② 在 `docs/design-system/35-DESIGN-GOVERNANCE-STANDARD.md` 登记编号与影响范围。
  */
 /**
  * 例外清单：**当前为空**（2026-10-30）。
@@ -179,6 +179,9 @@ const RAW_COLOR_OWNERS = [
   // 与上面的手写 Token 定义文件同为颜色落点，不是界面代码里的裸色值。
   // 该文件禁止手工编辑：改色值必须改 design-system/source/*.tokens.json 后重新生成。
   /^design-system\/tokens\/generated\/[a-z-]+\.css$/,
+  // UDS 6.0 生成的 TS Token 镜像（registry/build.mjs 产物，数值唯一来源是
+  // TOKEN-MANIFEST.json）：与生成的 CSS 同为颜色落点，禁止手工编辑。
+  /^design-system\/tokens\/generated\/[a-z0-9-]+\.ts$/,
   /^styles\/(theme|theme-presets|globals)\.css$/,
 ]
 

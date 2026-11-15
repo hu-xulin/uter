@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261115064311-5db5dd05",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T06:43:11.711Z",
+  "started_at": "2026-11-15T06:43:11.711Z",
+  "finished_at": "2026-11-15T06:43:11.711Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115062636-4c37c031",
+    "git_head": "b39a35a77c4ed4cbd9863579d2ee69a9e7f690f7",
+    "worktree_fingerprint": "754dd4acae3efd3f6cfcff3d00626b6d320ded68199eb3d9e2407030b027c94d",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115062636-4c37c031",
+  "git_head": "b39a35a77c4ed4cbd9863579d2ee69a9e7f690f7",
+  "worktree_fingerprint": "754dd4acae3efd3f6cfcff3d00626b6d320ded68199eb3d9e2407030b027c94d",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-visual (npx playwright test --config e2e/visual/playwright.config.ts)",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "visual: 19 pass / 10 fail / 0 blocked, 10 classified",
+  "content_hash": "77421b1c50bbb340be5964ea8f1e38c4375904b59b2488a22f1bda240ace92e8"
+}

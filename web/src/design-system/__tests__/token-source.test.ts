@@ -38,15 +38,15 @@ describe('structured brand token source', () => {
     expect(source.themes.light.brand.primary.$value).toBe('#5B5EE6')
     expect(metadata.provenance['themes.light.primary']).toBe('USER_CONFIRMED')
   })
-  it('preserves existing Dark palette provenance', () => {
-    expect(source.themes.dark.brand.primary.$value).toBe('#A1A3F7')
+  it('aligns Dark palette to UDS 7.0 interaction tokens', () => {
+    expect(source.themes.dark.brand.primary.$value).toBe('#8B8DF5')
     expect(metadata.provenance['themes.dark.primary']).toBe(
-      'EXISTING_3_0_IMPLEMENTATION'
+      'UDS7_INTERACTION_DEFAULT_DARK'
     )
   })
   it('has generated CSS for both themes', () => {
     expect(generated).toContain('--uter-brand-primary: #5B5EE6;')
-    expect(generated).toContain('--uter-brand-primary: #A1A3F7;')
+    expect(generated).toContain('--uter-brand-primary: #8B8DF5;')
   })
   it('does not claim human approval', () => {
     expect(metadata.changeApproval).toBe('NOT_VERIFIED')

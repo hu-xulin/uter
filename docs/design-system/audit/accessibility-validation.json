@@ -1,0 +1,628 @@
+{
+  "schema": "UDS7-ACCESSIBILITY-VALIDATION/1.0",
+  "generated_at": "2026-11-15T23:55:45.894Z",
+  "axe": {
+    "verdict": "PASS",
+    "cases": [
+      {
+        "theme": "light",
+        "viewport": "desktop",
+        "width": 1440,
+        "height": 900,
+        "violations": [],
+        "focus": {
+          "checked": 12,
+          "visible": 12,
+          "rows": [
+            {
+              "tag": "button",
+              "label": "切换 Light / Dark 主题",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "select",
+              "label": "响应式视口预览",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "打开 Token Inspector",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••Overview / 统计",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••全局功能",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••渐变新旧对比",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••语法高亮预览",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••真实产品页面",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••五层颜色架构",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••VS Code 四栏对照",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••Terminal / ANSI16",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••12 色图表 / 非颜色通道",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            }
+          ]
+        }
+      },
+      {
+        "theme": "dark",
+        "viewport": "desktop",
+        "width": 1440,
+        "height": 900,
+        "violations": [],
+        "focus": {
+          "checked": 12,
+          "visible": 12,
+          "rows": [
+            {
+              "tag": "button",
+              "label": "切换 Light / Dark 主题",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "select",
+              "label": "响应式视口预览",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "打开 Token Inspector",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••Overview / 统计",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••全局功能",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••渐变新旧对比",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••语法高亮预览",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••真实产品页面",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••五层颜色架构",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••VS Code 四栏对照",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••Terminal / ANSI16",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "a",
+              "label": "••12 色图表 / 非颜色通道",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            }
+          ]
+        }
+      },
+      {
+        "theme": "light",
+        "viewport": "mobile",
+        "width": 390,
+        "height": 844,
+        "violations": [],
+        "focus": {
+          "checked": 12,
+          "visible": 12,
+          "rows": [
+            {
+              "tag": "button",
+              "label": "切换 Light / Dark 主题",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "select",
+              "label": "响应式视口预览",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "打开 Token Inspector",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "input",
+              "label": "错误状态输入框示例",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "Small 32",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "Medium 36",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "Large 40",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            }
+          ]
+        }
+      },
+      {
+        "theme": "dark",
+        "viewport": "mobile",
+        "width": 390,
+        "height": 844,
+        "violations": [],
+        "focus": {
+          "checked": 12,
+          "visible": 12,
+          "rows": [
+            {
+              "tag": "button",
+              "label": "切换 Light / Dark 主题",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "select",
+              "label": "响应式视口预览",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "打开 Token Inspector",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "创建 API Key",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "input",
+              "label": "错误状态输入框示例",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "Small 32",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "Medium 36",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            },
+            {
+              "tag": "button",
+              "label": "Large 40",
+              "outlineWidth": "2px",
+              "outlineStyle": "solid",
+              "hasVisibleFocus": true
+            }
+          ]
+        }
+      }
+    ],
+    "violationsTotal": 0,
+    "violations": []
+  },
+  "wcagCoverage": {
+    "normalText": {
+      "threshold": 4.5,
+      "pass": true
+    },
+    "largeText": {
+      "threshold": 3,
+      "pass": true
+    },
+    "buttonSolid": {
+      "threshold": 4.5,
+      "pass": true
+    },
+    "placeholderDisabled": {
+      "declared": true,
+      "separatelyNoted": true
+    },
+    "borderFocus": {
+      "declared": true,
+      "ringWidthVar": "--ds-focus-ring-width"
+    },
+    "chartSeries": {
+      "nonColorChannels": {
+        "lineStyles": [
+          "solid",
+          "dashed",
+          "dotted",
+          "dash-dot"
+        ],
+        "pointMarkers": [
+          "circle",
+          "square",
+          "triangle",
+          "diamond",
+          "cross",
+          "star"
+        ],
+        "legendRequired": true,
+        "directLabelRequiredWhenSeriesGt": 6,
+        "cvdSimulation": [
+          "protanopia",
+          "deuteranopia",
+          "tritanopia"
+        ]
+      },
+      "cvdMeasurement": {
+        "light": {
+          "threshold": 10,
+          "normal": {
+            "minDeltaE00": 13.14,
+            "closestPair": [
+              2,
+              4
+            ],
+            "pairCount": 66
+          },
+          "simulations": {
+            "protanopia": {
+              "minDeltaE00": 10.54,
+              "closestPair": [
+                9,
+                10
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#4293FF",
+                "#0062FD",
+                "#99947E",
+                "#67645B",
+                "#847946",
+                "#746500",
+                "#5D79B2",
+                "#0048C5",
+                "#9A8700",
+                "#3A455F",
+                "#00377D",
+                "#403700"
+              ]
+            },
+            "deuteranopia": {
+              "minDeltaE00": 10.51,
+              "closestPair": [
+                3,
+                8
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#007FFD",
+                "#005DF4",
+                "#898782",
+                "#968A56",
+                "#79714E",
+                "#827415",
+                "#8C94AB",
+                "#0036BE",
+                "#A29012",
+                "#656359",
+                "#244378",
+                "#635700"
+              ]
+            },
+            "tritanopia": {
+              "minDeltaE00": 10.5,
+              "closestPair": [
+                5,
+                9
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#00A5B7",
+                "#586493",
+                "#00A196",
+                "#FF0043",
+                "#008276",
+                "#AC5252",
+                "#F84876",
+                "#005673",
+                "#B77C74",
+                "#BD0035",
+                "#752145",
+                "#AE0005"
+              ]
+            }
+          },
+          "minAcrossAllConditions": 10.5,
+          "pass": true
+        },
+        "dark": {
+          "threshold": 10,
+          "normal": {
+            "minDeltaE00": 15.09,
+            "closestPair": [
+              4,
+              11
+            ],
+            "pairCount": 66
+          },
+          "simulations": {
+            "protanopia": {
+              "minDeltaE00": 10.53,
+              "closestPair": [
+                0,
+                6
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#71A5FF",
+                "#0D7CEA",
+                "#9F9779",
+                "#727479",
+                "#D3BE51",
+                "#655800",
+                "#728BC3",
+                "#E2E2E4",
+                "#FFEF8F",
+                "#9D8A00",
+                "#FFE200",
+                "#D8CC9C"
+              ]
+            },
+            "deuteranopia": {
+              "minDeltaE00": 10.51,
+              "closestPair": [
+                0,
+                1
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#4E92FD",
+                "#0675E3",
+                "#8E8A7E",
+                "#A49A73",
+                "#C1B265",
+                "#8A7A00",
+                "#939EBD",
+                "#C7CFE6",
+                "#FFF49A",
+                "#AA970E",
+                "#F4DB35",
+                "#D2C8A2"
+              ]
+            },
+            "tritanopia": {
+              "minDeltaE00": 10.51,
+              "closestPair": [
+                3,
+                5
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#00B7C3",
+                "#54829C",
+                "#00A498",
+                "#FF0058",
+                "#00CCB7",
+                "#E2002E",
+                "#EE6E8D",
+                "#00F6EC",
+                "#FFE9DE",
+                "#D17873",
+                "#9AEBD1",
+                "#AED0C6"
+              ]
+            }
+          },
+          "minAcrossAllConditions": 10.51,
+          "pass": true
+        }
+      }
+    },
+    "codeHighlight": {
+      "threshold": 4.5,
+      "pass": true
+    },
+    "gradientText": {
+      "threshold": 4.5,
+      "pass": true
+    },
+    "forcedColors": {
+      "cssFallbackDeclared": true,
+      "playwrightVerified": true,
+      "evidence": "web/visual-regression/uds7/screenshots/forced-colors-showcase.png"
+    }
+  },
+  "verdict": "PASS",
+  "honestLimitations": [
+    "12 色图表仅靠颜色在 CVD 模拟下不可区分（实测最小 ΔE00 已登记），依赖线型 / 点型 / 图例 / 直接标注四通道补偿",
+    "需认证的页面（Dashboard / Billing / Orders / Refunds）未纳入未登录回归"
+  ]
+}

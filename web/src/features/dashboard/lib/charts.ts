@@ -16,11 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { dataScheme as vchartDefaultDataScheme } from '@visactor/vchart/esm/theme/color-scheme/builtin/default'
-
 import {
   CHART_OTHER_SERIES_COLOR,
-  CATEGORICAL_CHART_PALETTE,
+  resolveUds6ChartPalette,
 } from '@/design-system/tokens/brand-colors'
 import { CHART_FONT_SIZE } from '@/design-system/tokens/chart-typography'
 import { MAX_CHART_TREND_POINTS } from '@/features/dashboard/constants'
@@ -61,15 +59,15 @@ function monoLegend(extra: Record<string, unknown> = {}) {
   }
 }
 
+/**
+ * 图表系列色：UDS 7.0 的 12 色语义色板（--ds7-color-chart-1..12），
+ * 调用时按当前主题解析；超过 12 个系列时循环取色。
+ * 色板通过正常视觉 + 三类色觉缺陷模拟的 CIEDE2000 >= 10 校验。
+ */
 export function getDashboardChartColors(domainLength: number): string[] {
-  const scheme =
-    vchartDefaultDataScheme.find(
-      (item) => !item.maxDomainLength || domainLength <= item.maxDomainLength
-    ) ?? vchartDefaultDataScheme.at(-1)
-
-  return (scheme?.scheme ?? []).filter(
-    (color): color is string => typeof color === 'string'
-  )
+  const palette = resolveUds6ChartPalette()
+  const count = Math.max(1, domainLength)
+  return Array.from({ length: count }, (_, i) => palette[i % palette.length])
 }
 
 function renderQuotaCompat(rawQuota: number, digits = 4): string {
@@ -726,13 +724,6 @@ export function processChartData(
   }
 }
 
-/**
- * 多序列分类调色板。取自 `design-system/tokens/brand-colors` 的唯一定义 ——
- * 语义层只有 `chart-1…5` 五个槽位，一屏要区分十几个用户 / 模型时不够用，
- * 这类「彼此可辨、不带成败含义」的分类色集中登记在品牌色模块里。
- */
-const USER_COLORS = CATEGORICAL_CHART_PALETTE
-
 export function processUserChartData(
   data: QuotaDataItem[],
   timeGranularity: TimeGranularity = 'day',
@@ -744,6 +735,8 @@ export function processUserChartData(
   const tt: TFunction = t ?? ((x) => x)
   const { config } = getCurrencyDisplay()
   const quotaPerUnit = config.quotaPerUnit
+  // UDS 7.0 图表色板：调用时按当前主题解析，主题切换后重新取色。
+  const userColors = resolveUds6ChartPalette()
 
   const formatVal = (raw: number) => renderQuotaCompat(raw, 2)
 
@@ -761,7 +754,7 @@ export function processUserChartData(
         subtext: tt('No data available'),
       },
       legends: { visible: false },
-      color: { type: 'ordinal', range: USER_COLORS },
+      color: { type: 'ordinal', range: userColors },
       background: { fill: 'transparent' },
     },
     spec_user_trend: {
@@ -776,7 +769,7 @@ export function processUserChartData(
         subtext: tt('No data available'),
       },
       legends: monoLegend(),
-      color: { type: 'ordinal', range: USER_COLORS },
+      color: { type: 'ordinal', range: userColors },
       point: { visible: false },
       background: { fill: 'transparent' },
     },
@@ -804,7 +797,7 @@ export function processUserChartData(
 
   const userColorMap = topUsers.reduce<Record<string, string>>(
     (acc, user, i) => {
-      acc[user] = USER_COLORS[i % USER_COLORS.length]
+      acc[user] = userColors[i % userColors.length]
       return acc
     },
     {}

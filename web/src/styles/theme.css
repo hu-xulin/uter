@@ -172,7 +172,7 @@ For commercial licensing, please contact support@uter.ai
    * 规范把文字色叫 `text-primary` / `text-secondary` / …，但 Tailwind 的
    * `text-*` 前缀已经被「颜色」占用（`text-primary` 指的是品牌色文字），
    * 直接照抄会与品牌色撞车。因此统一用 `fg-` 前缀落地：
-   *   text-fg-secondary    二级文字 #334155：描述、辅助说明、次级信息
+   *   text-fg-secondary    二级文字 #475569（6.0 text-secondary Light）：描述、辅助说明、次级信息
    *   text-fg-tertiary     三级文字 #64748B：时间戳、元信息、次要标签
    *   text-fg-disabled     禁用文字 #94A3B8
    *   text-fg-link         链接 #5B5EE6
@@ -200,29 +200,30 @@ For commercial licensing, please contact support@uter.ai
    *
    * 但它们同样不该以 `text-purple-700` 这类调色板类名散落在组件里：
    * 那样深色模式要每个类各写一遍 `dark:`，换主题也完全不跟随。因此单列
-   * 一组语法 Token，深浅主题各给一次值，组件只写 `text-syntax-keyword`。 */
-  /* UDS 6.0：语法色统一走 VS Code Light+/Dark+ 官方主题派生的 --ds6-syntax-*。
-   * 保留 --syntax-* 旧变量作为 3.0 兼容层（不删除、不覆盖），但真实消费者
-   * （CodeMirror / classHighlighter / yace）全部改走同一套语义 Token。 */
-  --color-syntax-keyword: var(--ds6-syntax-keyword);
-  --color-syntax-string: var(--ds6-syntax-string);
-  --color-syntax-number: var(--ds6-syntax-number);
-  --color-syntax-function: var(--ds6-syntax-function);
-  --color-syntax-property: var(--ds6-syntax-property);
+   * 一组语法 Token，组件只写 `text-syntax-keyword`。
+   *
+   * UDS 7.0（2026-11-15 Phase 6 B3 + Phase 7 DP-003）：语法色统一走
+   * VS Code Light+/Dark+ 官方主题派生的 --ds7-syntax-*（20 Token）；
+   * 旧 3.0 五变量 --syntax-*（oklch）经依赖图确认零引用后已删除。 */
+  --color-syntax-keyword: var(--ds7-syntax-keyword);
+  --color-syntax-string: var(--ds7-syntax-string);
+  --color-syntax-number: var(--ds7-syntax-number);
+  --color-syntax-function: var(--ds7-syntax-function);
+  --color-syntax-property: var(--ds7-syntax-property);
   /* ── 首屏终端演示卡（term）───────────────────────────────────────────
    * 与上面的 `syntax-*` 是**两套**，不要合并、也不要互相改值：
    *   · `syntax-*` 服务通用代码查看语境（Shiki、JSON 查看器）；
    *   · `term-*` 服务首页那张 curl 演示卡，取色锚定上游 new-api 的渲染
    *     效果，必须跨主题预设恒定（规范 §17.5）。
    * 组件只写 `text-term-command` 这类语义类，不允许再出现调色板类名。 */
-  /* UDS 6.0 §4.6：终端必须有独立 Light / Dark 主题，禁止深浅共用纯黑背景。
-   * 背景与主要前景改走 6.0 Terminal Token；dim / accent 装饰色保留 3.0 兼容层。 */
-  --color-term-command: var(--ds6-color-terminal-command);
-  --color-term-flag: var(--ds6-color-terminal-flag);
-  --color-term-background: var(--ds6-color-terminal-background);
-  --color-term-property: var(--ds6-color-terminal-property);
-  --color-term-string: var(--ds6-color-terminal-string);
-  --color-term-number: var(--ds6-color-terminal-number);
+  /* UDS 7.0 §4.6：终端必须有独立 Light / Dark 主题，禁止深浅共用纯黑背景。
+   * 背景与主要前景改走 7.0 Terminal Token；dim / accent 装饰色保留 3.0 兼容层。 */
+  --color-term-command: var(--ds7-color-terminal-command);
+  --color-term-flag: var(--ds7-color-terminal-flag);
+  --color-term-background: var(--ds7-color-terminal-background);
+  --color-term-property: var(--ds7-color-terminal-property);
+  --color-term-string: var(--ds7-color-terminal-string);
+  --color-term-number: var(--ds7-color-terminal-number);
   --color-term-dim-1: var(--term-dim-1);
   --color-term-dim-2: var(--term-dim-2);
   --color-term-dim-3: var(--term-dim-3);
@@ -343,37 +344,43 @@ For commercial licensing, please contact support@uter.ai
    * 输出到 `:root`，`var(--text-sm)` 之类的写法仍然可用。
    *
    * 需要改字号，去改那一个文件，不要再在这里加一份。 */
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  /* UDS 7.0 surface-canvas（TOKEN-MANIFEST：Light #F8FAFC）：页面底为浅灰，
+   * 卡片/弹层保持纯白（surface-base #FFFFFF），与 clerk.com 一致的分层。
+   * 活引用 --ds7-*（uds-semantic-bridge.css 由 TOKEN-MANIFEST 派生），
+   * 不再硬编码副本，保证单一真源；6.0 视觉基线见 VISUAL-BASELINE.json。 */
+  --background: var(--ds7-color-surface-canvas);
+  --foreground: var(--ds7-color-text-primary);
+  --card: var(--ds7-color-surface-base);
+  --card-foreground: var(--ds7-color-text-primary);
+  --popover: var(--ds7-color-surface-raised);
+  --popover-foreground: var(--ds7-color-text-primary);
   --primary: var(--uter-brand-primary);
   --primary-foreground: var(--uter-brand-primary-foreground);
   --secondary: #f1f5f9;
   /* 次级按钮文字：规范 §1.1 是 #0F172A（近黑）。此前是 oklch(0.42 0.16 250)
    * 深蓝，次级按钮在灰底上呈现品牌蓝字，被误读成链接。 */
-  --secondary-foreground: #0f172a;
+  --secondary-foreground: var(--ds7-color-text-primary);
   --muted: #f1f5f9;
-  /* slate-500 #64748b 落在 --muted #f1f5f9 上仅 4.34:1，12px 徽章/标签文字
-   * 达不到 WCAG AA 4.5:1（axe color-contrast serious，2026-11-14 鉴权页实测）。
-   * 调深一档到 #5f6d80：muted 底 4.81:1、白底 5.27:1，两者均达标。 */
-  --muted-foreground: #5f6d80;
+  /* UDS 7.0 text-secondary（Light #475569）。原 #5f6d80 是 axe 整改的临时档；
+   * 6.0 值在 muted 底 #F1F5F9 上 5.4:1、白底 7.5:1，两底均达标。 */
+  --muted-foreground: var(--ds7-color-text-secondary);
   --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --destructive: #dc2626;
+  --accent-foreground: var(--ds7-color-text-primary);
+  /* UDS 7.0 status-danger-solid（#B91C1C，主题无关实底）：白底 5.9:1，
+   * 白字于实底 5.9:1，双出口均达标。原 #dc2626 白底仅 4.5:1 踩线。 */
+  --destructive: var(--ds7-color-status-danger-solid);
   --destructive-foreground: #f8fafc;
   /* green-700 #15803d：白底 5.02:1（green-600 #16a34a 仅 3.29:1，axe
    * color-contrast serious —— 13px 常规文本需 4.5:1）。见 3.0 规范。 */
-  --success: #15803d;
+  --success: var(--ds7-color-status-success);
   --success-foreground: #f8fafc;
-  --warning: oklch(0.681 0.162 75.834);
+  /* UDS 7.0 status-warning（Light #A54600）：白底 4.7:1（原 amber-600 oklch
+   * ≈#d97706 白底仅 3.1:1，13px 警示文字不达 AA）。 */
+  --warning: var(--ds7-color-status-warning);
   --warning-foreground: oklch(0.145 0 0);
-  /* 原 oklch(0.588 0.158 241.966) ≈ #0084d1，白底仅 4.02:1；
-   * `text-info` 用在 13px 可复制 ID 徽章上被 axe 判 serious。与 --success
-   * 同样按「文字出口必须满足 AA」收敛为 #0073b8（白底 5.07:1）。 */
-  --info: #0073b8;
+  /* UDS 7.0 status-info（Light #1D4ED8）：白底 6.3:1（原 #0073b8 5.07:1）。
+   * 与 6.0 text-link Light 同值。 */
+  --info: var(--ds7-color-status-info);
   --info-foreground: oklch(0.985 0 0);
   /* ── 柔和态取值（浅色主题）：底≈*-50、前景≈*-900 ─────────────────── */
   --success-soft: oklch(0.979 0.021 166);
@@ -386,29 +393,25 @@ For commercial licensing, please contact support@uter.ai
   --info-soft-foreground: oklch(0.379 0.146 265);
   --neutral: oklch(0.708 0 0);
   --neutral-foreground: oklch(0.145 0 0);
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1; /* 3.0 §2.6 强调边界 */
+  --border: var(--ds7-color-border-default);
+  --border-strong: var(--ds7-color-border-strong); /* 3.0 §2.6 强调边界 = 6.0 border-strong */
   --subtle: #fafbfc; /* 3.0 §2.5 极浅表面 */
   --input: #d1d5e5;
   --ring: var(--uter-brand-primary);
-  --chart-1: oklch(0.72 0.18 250);
-  --chart-2: oklch(0.65 0.15 200);
-  --chart-3: oklch(0.7 0.12 280);
-  --chart-4: oklch(0.68 0.19 325);
-  --chart-5: oklch(0.68 0.16 155);
-  --chart-6: oklch(0.7 0.15 30); /* 3.0 §2.8 第六系列色 */
+  /* UDS 7.0 chart-1..6（Light）：12 色图表体系前 6 系列，活引用 --ds7-*，
+   * 见 15-DATA-VISUALIZATION-STANDARD（CVD 由非颜色通道补偿）。 */
+  --chart-1: var(--ds7-color-chart-1);
+  --chart-2: var(--ds7-color-chart-2);
+  --chart-3: var(--ds7-color-chart-3);
+  --chart-4: var(--ds7-color-chart-4);
+  --chart-5: var(--ds7-color-chart-5);
+  --chart-6: var(--ds7-color-chart-6);
   /* ── 状态边框（3.0 §2.7：{status}-border 全套）─────────────────────
    * 用 color-mix 从状态色与背景派生，主题预设与深色模式自动跟随；
    * destructive 已有 --border-destructive-subtle，保持不动。 */
   --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
   --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
   --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
-  /* ── 语法高亮（浅色）：对应原调色板 -700/-800 档，保证正文对比度 ──── */
-  --syntax-keyword: oklch(0.496 0.265 301.9); /* purple-700 */
-  --syntax-string: oklch(0.448 0.119 151.3); /* green-800 */
-  --syntax-number: oklch(0.47 0.157 37.3); /* orange-800 */
-  --syntax-function: oklch(0.488 0.243 264.4); /* blue-700 */
-  --syntax-property: oklch(0.437 0.078 188.2); /* teal-800 */
   /* ── 首屏终端演示卡 · 语法角色（浅色）───────────────────────────────
    * 取值 = 上游 new-api 首屏代码卡的渲染值，再叠加 2026-10-30 拍板的
    * AA 补偿（emerald → emerald-700、amber → amber-700）。这里把**效果**
@@ -491,17 +494,19 @@ For commercial licensing, please contact support@uter.ai
   --ds-decor-mesh-opacity-cta: 0.2;
   --ds-decor-grid-size: 4rem;
   --ds-decor-grid-opacity: 0.08;
-  --overview-accent-1: oklch(0.72 0.18 250);
-  --overview-accent-2: oklch(0.65 0.15 200);
-  --overview-accent-3: oklch(0.7 0.12 280);
-  /* 左栏底色与定价页一致：白底（--background），由顶部 PublicPageGlow
-     紫光提供品牌色，不再用浅灰 #f8fafc，消除与内容区的灰缝。 */
-  --sidebar: #ffffff;
-  --sidebar-foreground: #334155;
-  --sidebar-primary: #6366f1;
+  /* 仪表盘概览强调色：跟随 7.0 chart 前 3 系列（与 --chart-N 同源）。 */
+  --overview-accent-1: var(--chart-1);
+  --overview-accent-2: var(--chart-2);
+  --overview-accent-3: var(--chart-3);
+  /* UDS 7.0 component-sidebar-surface（Light #F8FAFC）：与 canvas 同灰，
+   * 消除白侧栏与灰内容区之间的缝；文字用 text-primary（#0F172A）。 */
+  --sidebar: var(--ds7-color-surface-canvas);
+  --sidebar-foreground: var(--ds7-color-text-primary);
+  /* UDS 7.0 brand-solid（#5B5EE6 主题无关实底）：白字 4.98:1。 */
+  --sidebar-primary: var(--ds7-color-brand-solid);
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
+  --sidebar-accent-foreground: var(--ds7-color-text-primary);
   /* 左侧导航选中态专用前景色（规范 2.0 §17）。
    *
    * 取值为独立的可读前景色 #5558D8（on #F0F0FF = 4.93:1），满足 WCAG AA。
@@ -518,7 +523,7 @@ For commercial licensing, please contact support@uter.ai
    * 这里补一个通用档，供徽标 / 胶囊 / 轻强调块使用；导航仍用
    * `sidebar-active-foreground`，两者取值相同但语义分工不同。 */
   --primary-subtle-foreground: var(--uter-brand-soft-foreground);
-  --sidebar-border: #e2e8f0;
+  --sidebar-border: var(--ds7-color-border-default);
   --sidebar-ring: var(--uter-brand-primary);
   --skeleton-base: oklch(0.97 0 0);
   --skeleton-highlight: oklch(0.985 0 0);
@@ -558,16 +563,18 @@ For commercial licensing, please contact support@uter.ai
    *     视为字号阶梯声明，只允许出现在 typography.css。
    * 对应工具类前缀同为 `fg-`（`text-fg-secondary` 等），一级文字沿用
    * `text-foreground`。 */
-  --fg-primary: #0f172a;
-  --fg-secondary: #334155;
-  --fg-tertiary: #64748b;
-  --fg-disabled: #94a3b8;
-  --fg-inverse: #ffffff;
+  --fg-primary: var(--ds7-color-text-primary);
+  --fg-secondary: var(--ds7-color-text-secondary);
+  --fg-tertiary: var(--ds7-color-text-tertiary);
+  --fg-disabled: var(--ds7-color-text-disabled);
+  --fg-inverse: var(--ds7-color-text-inverse);
   --fg-link: var(--uter-brand-primary);
   --fg-placeholder: #64748b;
-  /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 品牌色阶）────────────────
-   * 2026-11-04 起采用用户确认的主色 #5B5EE6；Hover #4F52D1 / Active #4A4DC5，逐态对比度见
-   * scripts/verify-contrast.mjs 输出；不得以 Default 结果替代 Hover/Active）。
+  /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 品牌色阶 / UDS 7.0 对齐）──
+   * 主色 #5B5EE6（用户确认 + 6.0 brand-1 Light 同值）；Hover/Active 取
+   * 6.0 brand-solid-hover #494CC7 / brand-solid-active #3F42B0（白字
+   * 4.98:1 / 6.5:1），逐态对比度见 scripts/verify-contrast.mjs 输出；
+   * 不得以 Default 结果替代 Hover/Active。
    * brand-soft = --primary-subtle #F0F0FF、brand-border = #D9DAFF。 */
   --primary-strong: var(--uter-brand-primary);
   --hover-primary: var(--uter-brand-hover);
@@ -602,26 +609,36 @@ For commercial licensing, please contact support@uter.ai
   /* Native controls follow the theme; Dark Reader also reads this to detect
      the built-in dark theme. */
   color-scheme: dark;
-  /* OpenAI-like dark mode with a crisp charcoal canvas. */
-  --background: #020617;
-  --foreground: #f8fafc;
-  --card: #020617;
-  --card-foreground: #f8fafc;
-  --popover: #020617;
-  --popover-foreground: #f8fafc;
-  /* 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 Dark，2026-11-03 起唯一标准）：
-   * 基底 #A1A3F7 + 深色前景 #020617（深色模式主按钮不再用白字），
-   * hover #B1B3FF / active #9294F7。文字类出口：链接 --fg-link（#A1A3F7）、
-   * 品牌浅底文字 --primary-subtle-foreground（#B1B3FF，on #25264A）。
+  /* UDS 7.0 Dark surfaces（clerk.com 对齐）：
+   * canvas #0B1120 / base #111827 / raised #1B2436；文字 text-primary #F1F5F9。
+   * 原 OpenAI 式炭黑 #020617 全场景同色分层已由三层取代。
+   * 活引用 --ds7-*（bridge .dark 由 TOKEN-MANIFEST 派生），单一真源。 */
+  --background: var(--ds7-color-surface-canvas);
+  --foreground: var(--ds7-color-text-primary);
+  --card: var(--ds7-color-surface-base);
+  --card-foreground: var(--ds7-color-text-primary);
+  --popover: var(--ds7-color-surface-raised);
+  --popover-foreground: var(--ds7-color-text-primary);
+  /* ── 品牌动作梯（3.0 §2.2 Dark / UDS 7.0 对齐，2026-11-15 起）：
+   * 基底取 6.0 interaction-default Dark #8B8DF5（on #0B1120 ≥ 6:1），
+   * hover #A1A3F7 / active #B7B8FA = 6.0 interaction-hover/active Dark；
+   * 前景保持深色 #020617（3.0 §10.4：Dark 主按钮不默认白字）。
+   * 7.0 的 brand-solid 实底白字架构（#5B5EE6 + #FFFFFF）需 button.tsx
+   * 文字对逐点迁移，属正式切换批次；preset 兼容性亦要求保留品牌变量
+   * 可覆写的 --primary-foreground。该残差登记于 EXCEPTION-REGISTRY。
+   * 文字类出口：链接 --fg-link（#8B8DF5）、品牌浅底文字
+   * --primary-subtle-foreground（#B1B3FF，on #25264A）。
    * 逐态对比度以 scripts/verify-contrast.mjs 实算为准。 */
   --primary: var(--uter-brand-primary);
   --primary-foreground: var(--uter-brand-primary-foreground);
   --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
+  --secondary-foreground: var(--ds7-color-text-primary);
   --muted: #1e293b;
-  --muted-foreground: #94a3b8;
+  /* UDS 7.0 text-secondary（Dark #CBD5E1）：原 #94a3b8 在新 canvas 上 6.7:1，
+   * 6.0 值 9.9:1，次要文字更清晰。 */
+  --muted-foreground: var(--ds7-color-text-secondary);
   --accent: #1e293b;
-  --accent-foreground: #f8fafc;
+  --accent-foreground: var(--ds7-color-text-primary);
   --destructive: #7f1d1d;
   --destructive-foreground: #f8fafc;
   --success: #22c55e;
@@ -641,18 +658,20 @@ For commercial licensing, please contact support@uter.ai
   --info-soft-foreground: oklch(0.93 0.05 265);
   --neutral: oklch(0.76 0 0);
   --neutral-foreground: oklch(0.155 0 0);
-  --border: #334155;
-  --border-strong: #475569; /* 3.0 §2.6 强调边界 */
-  --subtle: #111c30; /* 3.0 §2.5 极浅表面 */
-  --input: #45465f;
-  /* 焦点环跟品牌（3.0 §15.1）：#A1A3F7 on 深底 ≥ 3:1 非文本线。 */
+  --border: var(--ds7-color-border-default);
+  --border-strong: var(--ds7-color-border-strong); /* UDS 7.0 border-strong（Dark） */
+  --subtle: #111c30; /* 3.0 §2.5 极浅表面（6.0 无对应档，保留并登记） */
+  --input: #45465f; /* CM-06 ISOLATE：保留 3.0 值（EXCEPTION-REGISTRY） */
+  /* 焦点环跟品牌（3.0 §15.1）：#8B8DF5 on 深底 ≥ 3:1 非文本线；
+   * 与 6.0 border-focus Dark 同值。 */
   --ring: var(--uter-brand-primary);
-  --chart-1: oklch(0.76 0.14 250);
-  --chart-2: oklch(0.76 0.13 200);
-  --chart-3: oklch(0.76 0.13 285);
-  --chart-4: oklch(0.75 0.16 325);
-  --chart-5: oklch(0.76 0.14 155);
-  --chart-6: oklch(0.75 0.13 30); /* 3.0 §2.8 第六系列色 */
+  /* UDS 7.0 chart-1..6（Dark）：活引用 --ds7-*。 */
+  --chart-1: var(--ds7-color-chart-1);
+  --chart-2: var(--ds7-color-chart-2);
+  --chart-3: var(--ds7-color-chart-3);
+  --chart-4: var(--ds7-color-chart-4);
+  --chart-5: var(--ds7-color-chart-5);
+  --chart-6: var(--ds7-color-chart-6);
   /* 审计 AUDIT-005：dark 配对补齐 —— 跟随 dark 图表色阶 */
   --overview-accent-1: var(--chart-1);
   --overview-accent-2: var(--chart-2);
@@ -664,12 +683,6 @@ For commercial licensing, please contact support@uter.ai
   --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
   --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
   --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
-  /* ── 语法高亮（深色）：对应原调色板 -300 档，深底上保持可读 ────────── */
-  --syntax-keyword: oklch(0.827 0.119 306.4); /* purple-300 */
-  --syntax-string: oklch(0.871 0.15 154.4); /* green-300 */
-  --syntax-number: oklch(0.837 0.128 66.3); /* orange-300 */
-  --syntax-function: oklch(0.809 0.105 251.8); /* blue-300 */
-  --syntax-property: oklch(0.855 0.138 181.1); /* teal-300 */
   /* ── 首屏终端演示卡 · 语法角色（深色）───────────────────────────────
    * 与浅色同一套语义、不同取色：深底上要亮一档才不闷。弱层级不需要重写，
    * `color-mix` 里的 `var(--foreground)` / `var(--card)` 在深色作用域下
@@ -717,19 +730,19 @@ For commercial licensing, please contact support@uter.ai
   /* 深色下装饰层只调透明度：深底上同样的光晕会更「晃」，压低一档。 */
   --ds-decor-mesh-opacity-hero: 0.12;
   --ds-decor-mesh-opacity-cta: 0.08;
-  --sidebar: #0f172a;
-  --sidebar-foreground: #f1f5f9;
-  --sidebar-primary: #6366f1;
+  --sidebar: var(--ds7-color-surface-canvas);
+  --sidebar-foreground: var(--ds7-color-text-primary);
+  --sidebar-primary: var(--ds7-color-brand-solid);
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1e293b;
-  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-accent-foreground: var(--ds7-color-text-primary);
   /* 深色主题的选中态前景色（3.0 §14.3）：#B1B3FF on #25264A =
    * 4.97:1，达 AA。动作梯（按钮填充）为实色基底 + 提亮 hover/active，
    * 但选中态文字是文字出口，不跟动作梯走 —— 与 --fg-link 同理。 */
   --sidebar-active-foreground: var(--uter-brand-soft-foreground);
   /* 品牌浅底通用前景色（深色档，3.0 §2.2 brand-soft-foreground）。 */
   --primary-subtle-foreground: var(--uter-brand-soft-foreground);
-  --sidebar-border: #1e293b;
+  --sidebar-border: var(--ds7-color-border-default);
   --sidebar-ring: var(--uter-brand-primary);
   --skeleton-base: oklch(0.335 0 0);
   --skeleton-highlight: oklch(0.44 0 0);
@@ -756,18 +769,19 @@ For commercial licensing, please contact support@uter.ai
     var(--background)
   );
 
-  /* ── 新规范 1.1 / 1.1.1 补充的色阶 ─────────────────────────────── */
-  --fg-primary: #f8fafc;
-  --fg-secondary: #cbd5e1;
-  --fg-tertiary: #94a3b8;
-  --fg-disabled: #64748b;
-  --fg-inverse: #0f172a;
+  /* ── 新规范 1.1 / 1.1.1 补充的色阶（活引用 7.0 文字层级）───────────── */
+  --fg-primary: var(--ds7-color-text-primary);
+  --fg-secondary: var(--ds7-color-text-secondary);
+  --fg-tertiary: var(--ds7-color-text-tertiary);
+  --fg-disabled: var(--ds7-color-text-disabled);
+  --fg-inverse: var(--ds7-color-text-inverse);
   --fg-link: var(--uter-brand-primary);
   --fg-placeholder: #94a3b8;
-  /* 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 Dark，2026-11-03 起唯一标准）：
-   * 基底 #A1A3F7（on #020617 ≥ 7:1），hover #B1B3FF / active #9294F7；
+  /* ── 品牌动作梯（3.0 §2.2 Dark / UDS 7.0 对齐，2026-11-15 起）：
+   * 基底 #8B8DF5（6.0 interaction-default Dark，on #0B1120 ≥ 6:1），
+   * hover #A1A3F7 / active #B7B8FA（6.0 interaction-hover/active Dark）；
    * 前景改深色 #020617（3.0 §10.4：Dark 主按钮不得默认白字）。
-   * 浅底 #25264A、brand-border #45466F；文字出口 --fg-link 同为 #A1A3F7。 */
+   * 浅底 #25264A、brand-border #45466F；文字出口 --fg-link 同为 #8B8DF5。 */
   --primary-strong: var(--uter-brand-primary);
   --hover-primary: var(--uter-brand-hover);
   --primary-active: var(--uter-brand-active);

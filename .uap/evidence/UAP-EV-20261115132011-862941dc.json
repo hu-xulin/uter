@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115132011-862941dc",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T13:20:11.973Z",
+  "started_at": "2026-11-15T13:20:11.973Z",
+  "finished_at": "2026-11-15T13:20:11.973Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115131510-7d730ada",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "ba99cd22857cc5685f6646e42e1e977a167776487e414cc958f70ba41870f651",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115131510-7d730ada",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "ba99cd22857cc5685f6646e42e1e977a167776487e414cc958f70ba41870f651",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate evolution.evolution_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"evolution.evolution_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "evolution.evolution_integrity 实检: change_impact=PASS(自算 UAP-00-001 下游依赖闭包=31 条; node 子进程独立复算=31 (一致=true); DAG 无环=true); regression=PASS(preserve_user_changes=true; BASELINE 已改跟踪文件=0; verify-all.sh/历史快照存在=true); rollback=PASS(ADR 含 Superseded(可废弃/回退)=true; change-registry 含 snapshots(基线快照)=true; git.policy 含 no_destructive_git=true; FAILED->QUEUED 回退路径=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9244 个 | 本地自算依赖影响闭包 + node 子进程独立复算比对 + 变更保护/回滚静态配置真实读取",
+  "content_hash": "acda04e17a47430d18991f6806fa1beb82841a4c03379c2bc820a2fb520497c8"
+}

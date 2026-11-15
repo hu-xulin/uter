@@ -1,0 +1,459 @@
+{
+  "schema_version": "1.0",
+  "registry_id": "UDS7-R-PAGES",
+  "version": "7.0.0",
+  "generated_at": "2026-11-15T23:49:37.438Z",
+  "scanned_route_files": 72,
+  "route_files": [
+    "web/src/routes/(auth)/forgot-password.tsx",
+    "web/src/routes/(auth)/oauth.wechat-web.tsx",
+    "web/src/routes/(auth)/otp.tsx",
+    "web/src/routes/(auth)/register.tsx",
+    "web/src/routes/(auth)/reset.tsx",
+    "web/src/routes/(auth)/route.tsx",
+    "web/src/routes/(auth)/sign-in.tsx",
+    "web/src/routes/(auth)/sign-up.tsx",
+    "web/src/routes/(auth)/user/reset.tsx",
+    "web/src/routes/(errors)/401.tsx",
+    "web/src/routes/(errors)/403.tsx",
+    "web/src/routes/(errors)/404.tsx",
+    "web/src/routes/(errors)/500.tsx",
+    "web/src/routes/(errors)/503.tsx",
+    "web/src/routes/__root.tsx",
+    "web/src/routes/__tests__/public-routes-render.test.tsx",
+    "web/src/routes/_authenticated/channels/index.tsx",
+    "web/src/routes/_authenticated/chat/$chatId.tsx",
+    "web/src/routes/_authenticated/chat2link.tsx",
+    "web/src/routes/_authenticated/dashboard/$section.tsx",
+    "web/src/routes/_authenticated/dashboard/index.tsx",
+    "web/src/routes/_authenticated/errors/$error.tsx",
+    "web/src/routes/_authenticated/keys/index.tsx",
+    "web/src/routes/_authenticated/models/$section.tsx",
+    "web/src/routes/_authenticated/models/index.tsx",
+    "web/src/routes/_authenticated/organization/index.tsx",
+    "web/src/routes/_authenticated/playground/index.tsx",
+    "web/src/routes/_authenticated/profile/index.tsx",
+    "web/src/routes/_authenticated/redemption-codes/index.tsx",
+    "web/src/routes/_authenticated/route.tsx",
+    "web/src/routes/_authenticated/security/index.tsx",
+    "web/src/routes/_authenticated/subscriptions/index.tsx",
+    "web/src/routes/_authenticated/system-info/index.tsx",
+    "web/src/routes/_authenticated/system-settings/auth/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/auth/index.tsx",
+    "web/src/routes/_authenticated/system-settings/billing/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/billing/index.tsx",
+    "web/src/routes/_authenticated/system-settings/content/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/content/index.tsx",
+    "web/src/routes/_authenticated/system-settings/index.tsx",
+    "web/src/routes/_authenticated/system-settings/models/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/models/index.tsx",
+    "web/src/routes/_authenticated/system-settings/operations/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/operations/index.tsx",
+    "web/src/routes/_authenticated/system-settings/request-policies/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/request-policies/index.tsx",
+    "web/src/routes/_authenticated/system-settings/route.tsx",
+    "web/src/routes/_authenticated/system-settings/security/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/security/index.tsx",
+    "web/src/routes/_authenticated/system-settings/site/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/site/index.tsx",
+    "web/src/routes/_authenticated/task-plugins/index.tsx",
+    "web/src/routes/_authenticated/usage-logs/$section.tsx",
+    "web/src/routes/_authenticated/usage-logs/audit.tsx",
+    "web/src/routes/_authenticated/usage-logs/index.tsx",
+    "web/src/routes/_authenticated/users/index.tsx",
+    "web/src/routes/_authenticated/wallet/index.tsx",
+    "web/src/routes/_public/about/$section.tsx",
+    "web/src/routes/_public/about/index.tsx",
+    "web/src/routes/_public/docs.tsx",
+    "web/src/routes/_public/docs/$.tsx",
+    "web/src/routes/_public/docs/index.tsx",
+    "web/src/routes/_public/index.tsx",
+    "web/src/routes/_public/pricing/$modelId/index.tsx",
+    "web/src/routes/_public/pricing/index.tsx",
+    "web/src/routes/_public/privacy-policy.tsx",
+    "web/src/routes/_public/rankings/index.tsx",
+    "web/src/routes/_public/recharge-agreement.tsx",
+    "web/src/routes/_public/route.tsx",
+    "web/src/routes/_public/user-agreement.tsx",
+    "web/src/routes/oauth/$provider.tsx",
+    "web/src/routes/setup/index.tsx"
+  ],
+  "policy": "登记真实路由；无独立路由的模板标 ROUTE_NOT_FOUND，不伪造页面",
+  "templates": [
+    {
+      "id": "UDS7-PAGE-DASHBOARD",
+      "name": "Dashboard",
+      "expected_route": "web/src/routes/_authenticated/dashboard/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-API-KEY-LIST",
+      "name": "API Key List",
+      "expected_route": "web/src/routes/_authenticated/keys/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-API-KEY-DETAIL",
+      "name": "API Key Detail",
+      "expected_route": "web/src/routes/_authenticated/keys/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-MODEL-LIST",
+      "name": "Model List",
+      "expected_route": "web/src/routes/_authenticated/models/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-MODEL-DETAIL",
+      "name": "Model Detail",
+      "expected_route": "web/src/routes/_authenticated/models/$section.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-CHANNEL-LIST",
+      "name": "Channel List",
+      "expected_route": "web/src/routes/_authenticated/channels/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-CHANNEL-DETAIL",
+      "name": "Channel Detail",
+      "expected_route": "web/src/routes/_authenticated/channels/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-API-DOCUMENTATION",
+      "name": "API Documentation",
+      "expected_route": "web/src/routes/_public/docs.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-USAGE-ANALYTICS",
+      "name": "Usage Analytics",
+      "expected_route": "web/src/routes/_authenticated/usage-logs/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-BILLING",
+      "name": "Billing",
+      "expected_route": "web/src/routes/_authenticated/wallet/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-RECHARGE",
+      "name": "Recharge",
+      "expected_route": "web/src/routes/_authenticated/wallet/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-ORDERS",
+      "name": "Orders",
+      "expected_route": "web/src/routes/_authenticated/subscriptions/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-REFUNDS",
+      "name": "Refunds",
+      "expected_route": "web/src/routes/_authenticated/wallet/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-ACCOUNT-SETTINGS",
+      "name": "Account Settings",
+      "expected_route": "web/src/routes/_authenticated/profile/index.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "UDS7-PAGE-AUTHENTICATION",
+      "name": "Authentication",
+      "expected_route": "web/src/routes/(auth)/sign-in.tsx",
+      "route_exists": true,
+      "status": "ROUTE_EXISTS",
+      "hosting": "dedicated route",
+      "design_status": "DESIGNED",
+      "migration_status": "PENDING_VISUAL_FREEZE",
+      "breakpoints": [
+        360,
+        480,
+        768,
+        1024,
+        1280,
+        1440,
+        1920
+      ],
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    }
+  ]
+}

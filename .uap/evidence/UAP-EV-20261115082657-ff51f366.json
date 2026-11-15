@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115082657-ff51f366",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T08:26:57.017Z",
+  "started_at": "2026-11-15T08:26:46.456Z",
+  "finished_at": "2026-11-15T08:26:57.017Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115082430-ca40a710",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "9b4251d3776ef8c9318711a93378fcb5734103476a58c72b157470d58dc979ce",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115082430-ca40a710",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "9b4251d3776ef8c9318711a93378fcb5734103476a58c72b157470d58dc979ce",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap doctor",
+  "exit_code": 0,
+  "duration_ms": 10561,
+  "inputs": "{\"argv\":[\"doctor\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "doctor: 10 components healthy, recovery probe passed",
+  "content_hash": "0db23d765b4d02bf78352c74983c948055a1d3a3a0634eda941bbedc3a5166ed"
+}

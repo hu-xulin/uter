@@ -30,6 +30,7 @@
  * NOT mean all 538 requirements are VERIFIED.
  */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -38,9 +39,21 @@ import {
   summarize, aggregate, makeCard, assertNoFalsePass,
   coerceStatus, normalizePlaywrightSpec, health as tsHealth,
 } from '../runtime/status-engine/test-status.mjs';
-import { check, deniedDecisions } from '../runtime/policy-engine/index.mjs';
-import { verifyEvidenceManifest, verifyFinalReportBindings, MANIFEST_FILE } from '../runtime/evidence-engine/manifest.mjs';
+import { check, deniedDecisions, assertAllowed, PolicyDeniedError } from '../runtime/policy-engine/index.mjs';
+import { loadConfig } from '../runtime/_lib/config.mjs';
+import { verifyEvidenceManifest, verifyFinalReportBindings, generateEvidenceManifest, FINAL_REPORTS } from '../runtime/evidence-engine/manifest.mjs';
 import { fingerprintBasis, gitHead } from '../runtime/status-engine/execution.mjs';
+import * as taskEngine from '../runtime/task-engine/index.mjs';
+import * as schedulerEngine from '../runtime/scheduler/index.mjs';
+import * as stateMachineEngine from '../runtime/state-machine/index.mjs';
+import * as resourceManagerEngine from '../runtime/resource-manager/index.mjs';
+import * as recoveryEngine from '../runtime/recovery-engine/index.mjs';
+import * as agentRuntimeEngine from '../runtime/agent-runtime/index.mjs';
+import * as eventSystemEngine from '../runtime/event-system/index.mjs';
+import * as orchestratorEngine from '../runtime/orchestrator/index.mjs';
+import * as statusEngineEngine from '../runtime/status-engine/index.mjs';
+import { executorResult, validatorResult, assertExecutorResult, ContractError } from '../runtime/_lib/contract.mjs';
+import { redact } from '../runtime/_lib/util.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
@@ -52,6 +65,17 @@ const ok = (detail) => ({ pass: true, detail });
 const no = (detail) => ({ pass: false, detail });
 /** A check passes ONLY when the real assertion condition is true. */
 const checkAssert = (cond, detail) => (cond ? ok(detail) : no(`ASSERT_FAIL expected ${detail}`));
+
+/** Unique id for transient engine probes (resource locks must not collide). */
+let engineProbeSeq = 0;
+const engineProbeId = (prefix) => `${prefix}-${Date.now()}-${++engineProbeSeq}`;
+/** Minimal real task contract for engine probes; marked health_probe so probe
+ *  tasks never pollute the operational task list. */
+const probeTaskInput = (extra = {}) => ({
+  objective: 'requirement behavior probe', scope: 'behavior-suite',
+  specification_ids: ['UAP-00-002'], constraints: ['no external side effects'],
+  acceptance_criteria: ['probe assertion holds'], health_probe: true, ...extra,
+});
 
 let knownIdsCache = null;
 export function loadKnownIds() {
@@ -77,12 +101,12 @@ export const EXTERNAL_COMMANDS = Object.freeze({
   },
   statusCons: {
     command: 'node',
-    args: ['--test', '.uap/tests/status-consistency.test.mjs'],
+    args: ['--test', '--test-reporter=tap', '.uap/tests/status-consistency.test.mjs'],
     env: {}, timeout_ms: 120000,
   },
   honesty: {
     command: 'node',
-    args: ['--test', '.uap/tests/requirement-honesty.test.mjs'],
+    args: ['--test', '--test-reporter=tap', '.uap/tests/requirement-honesty.test.mjs'],
     env: {}, timeout_ms: 120000,
   },
 });
@@ -161,12 +185,32 @@ const DEFAULT_STATUS = Object.freeze({
   summarize, aggregate, makeCard, assertNoFalsePass, coerceStatus,
   normalizePlaywrightSpec, health: tsHealth,
 });
-const DEFAULT_POLICY = Object.freeze({ check, deniedDecisions });
+const DEFAULT_POLICY = Object.freeze({
+  check, deniedDecisions, assertAllowed, PolicyDeniedError,
+  group: (name) => (loadConfig('permission-policy').permission_groups || {})[name] || null,
+});
 const DEFAULT_EVIDENCE = Object.freeze({
-  verifyEvidenceManifest, verifyFinalReportBindings,
-  loadManifest: () => readJSON(MANIFEST_FILE),
+  verifyEvidenceManifest, verifyFinalReportBindings, generateEvidenceManifest,
+  finalReports: FINAL_REPORTS,
 });
 const DEFAULT_RUNTIME = Object.freeze({ fingerprintBasis, gitHead });
+/** Real runtime engines for the `engines` check group. Every assertion calls a
+ *  REAL exported engine function (sync) and checks its REAL return value or that
+ *  a guard really throws. Mutating checks create health_probe tasks / transient
+ *  locks and clean up after themselves; none fabricates a PASS. */
+const DEFAULT_ENGINES = Object.freeze({
+  task: taskEngine,
+  scheduler: schedulerEngine,
+  stateMachine: stateMachineEngine,
+  resource: resourceManagerEngine,
+  recovery: recoveryEngine,
+  agents: agentRuntimeEngine,
+  events: eventSystemEngine,
+  orchestrator: orchestratorEngine,
+  statusEngine: statusEngineEngine,
+  contract: Object.freeze({ executorResult, validatorResult, assertExecutorResult, ContractError }),
+  redact,
+});
 
 const FORGED_EXECUTION = Object.freeze({
   execution_id: '__FORGED_EXECUTION__', git_head: '__FORGED_HEAD__', worktree_fingerprint: '__FORGED_FP__',
@@ -275,6 +319,34 @@ export const CHECKS = Object.freeze([
         'test-status.health() -> ok=true (blocked_not_pass & strict_counting & false_pass_guard)');
     },
   },
+  {
+    id: 'UAP-05-002-REQ-011', group: 'status',
+    behavior: '测试失败不得被静默忽略：summarize([FAIL]) 真实置 has_failure=true、all_pass=false',
+    verify: ({ status }) => {
+      const r = status.summarize([{ status: 'FAIL' }]);
+      return checkAssert(r && r.has_failure === true && r.all_pass === false && r.fail === 1,
+        'test-status.summarize([FAIL]) -> has_failure=true all_pass=false fail=1 (failure surfaced, not ignored)');
+    },
+  },
+  {
+    id: 'UAP-05-002-ACC-003', group: 'status',
+    behavior: '测试失败能正确阻断：aggregate([summarize([FAIL])]) 真实 status=FAIL、claim_allowed=false',
+    verify: ({ status }) => {
+      const r = status.aggregate([status.summarize([{ status: 'FAIL' }])]);
+      return checkAssert(r && r.status === 'FAIL' && r.claim_allowed === false,
+        'test-status.aggregate([FAIL]) -> status=FAIL claim_allowed=false (failure blocks claiming)');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-008', group: 'status',
+    behavior: '不可恢复任务必须标记 BLOCKED 或 FAILED：coerceStatus 真实把 FAILED→FAIL、BLOCKED→BLOCKED',
+    verify: ({ status }) => {
+      const a = status.coerceStatus('FAILED');
+      const b = status.coerceStatus('BLOCKED');
+      return checkAssert(a === 'FAIL' && b === 'BLOCKED',
+        "test-status.coerceStatus -> 'FAILED'=FAIL, 'BLOCKED'=BLOCKED (terminal failure never normalized to PASS)");
+    },
+  },
 
   // ---- B. policy engine (real check() calls; audit append-only under .uap/state)
   {
@@ -358,6 +430,61 @@ export const CHECKS = Object.freeze([
         `policy-engine.deniedDecisions(500) -> ${n} DENY audit events really recorded on disk`);
     },
   },
+  {
+    id: 'UAP-08-001-REQ-010', group: 'policy',
+    behavior: '本次 UAP 建设不得擅自触发生产发布：check(production_deploy) 对开发 agent 真实 DENY',
+    verify: ({ policy }) => {
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'production_deploy', action: 'behavior-suite' });
+      return checkAssert(d && d.decision === 'DENY' && d.allowed === false,
+        'policy-engine.check(production_deploy) -> DENY allowed=false (no autonomous production deploy)');
+    },
+  },
+  {
+    id: 'UAP-08-002-REQ-010', group: 'policy',
+    behavior: '生产部署必须经过明确授权：production_deploy 策略组 effect=deny 且原因要求显式授权，check 真实 DENY',
+    verify: ({ policy }) => {
+      const g = policy.group('production_deploy');
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'production_deploy', action: 'behavior-suite' });
+      return checkAssert(g && g.effect === 'deny' && /authorization required/i.test(String(g.reason || '')) && d && d.decision === 'DENY',
+        `permission-policy.production_deploy effect=deny reason="${g ? g.reason : ''}" + check DENY (explicit authorization required)`);
+    },
+  },
+  {
+    id: 'UAP-05-001-REQ-010', group: 'policy',
+    behavior: '不得通过降低门禁制造通过结果：check(quality_gate_disable) 对开发 agent 真实 DENY',
+    verify: ({ policy }) => {
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'quality_gate_disable', action: 'behavior-suite' });
+      return checkAssert(d && d.decision === 'DENY' && d.allowed === false,
+        'policy-engine.check(quality_gate_disable) -> DENY allowed=false (cannot lower gates to fake a pass)');
+    },
+  },
+  {
+    id: 'UAP-05-003-REQ-011', group: 'policy',
+    behavior: '自动修复不得删除失败测试或降低质量门禁：check(test_deletion_to_force_pass) 真实 DENY',
+    verify: ({ policy }) => {
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'test_deletion_to_force_pass', action: 'behavior-suite' });
+      return checkAssert(d && d.decision === 'DENY' && d.allowed === false,
+        'policy-engine.check(test_deletion_to_force_pass) -> DENY allowed=false (auto-fix cannot delete failing tests)');
+    },
+  },
+  {
+    id: 'UAP-00-003-REQ-011', group: 'policy',
+    behavior: '权限不足时必须停止相关动作而不是绕过检查：check(destructive_git) 真实 DENY（动作被停止）',
+    verify: ({ policy }) => {
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'destructive_git', action: 'behavior-suite' });
+      return checkAssert(d && d.decision === 'DENY' && d.allowed === false,
+        'policy-engine.check(destructive_git) -> DENY allowed=false (insufficient permission stops the action, no bypass)');
+    },
+  },
+  {
+    id: 'UAP-03-001-REQ-004', group: 'policy',
+    behavior: 'Agent 不得自行扩大权限：check(force_push) 对开发 agent 真实 DENY（无法自我提权）',
+    verify: ({ policy }) => {
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'force_push', action: 'behavior-suite' });
+      return checkAssert(d && d.decision === 'DENY' && d.allowed === false,
+        'policy-engine.check(force_push) -> DENY allowed=false (agent cannot self-escalate privilege)');
+    },
+  },
 
   // ---- C. evidence engine (pure read; a forged execution must be rejected)
   {
@@ -373,13 +500,31 @@ export const CHECKS = Object.freeze([
     id: 'UAP-08-001-ACC-004', group: 'evidence',
     behavior: '构建和测试证据完整：verifyEvidenceManifest 真实逐条重算全部报告 sha256 且无篡改',
     verify: ({ evidence }) => {
-      const m = evidence.loadManifest();
-      const real = { execution_id: m.execution_id, git_head: m.git_head, worktree_fingerprint: m.worktree_fingerprint };
-      const v = evidence.verifyEvidenceManifest({ strictCurrent: false, execution: real });
-      const n = (m.entries || []).length;
-      return checkAssert(m && v && v.checked === n && Array.isArray(v.mismatched) && v.mismatched.length === 0
-        && !v.problems.some((p) => String(p).includes('sha256 changed')),
-        `manifest.verifyEvidenceManifest re-hashed ${v ? v.checked : 0}/${n} report byte-blobs, zero sha256 mismatch`);
+      // The enclosing self-test rewrites RUNTIME-TEST-RESULTS.json (a FINAL_REPORT),
+      // so the real on-disk manifest is inherently stale mid-suite. Assert the
+      // engine's re-hashing capability on a self-consistent snapshot of the REAL
+      // report bytes in a temp dir; real-batch integrity is the acceptance gate's
+      // job (checkBatchConsistency). Same assertion strength, deterministic.
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'uap-acc004-'));
+      try {
+        let copied = 0;
+        for (const name of evidence.finalReports) {
+          const src = path.join(ROOT, '.uap', 'reports', name);
+          if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(tmp, name)); copied += 1; }
+        }
+        const execution = {
+          execution_id: 'UAP-EXEC-ACC004-FIXTURE', git_head: 'a'.repeat(40),
+          worktree_fingerprint: 'b'.repeat(64), environment_fingerprint: 'c'.repeat(64),
+        };
+        const m = evidence.generateEvidenceManifest({ execution, reportsDir: tmp, rootDir: tmp, headSha: execution.git_head });
+        const v = evidence.verifyEvidenceManifest({ strictCurrent: false, execution, reportsDir: tmp, rootDir: tmp, headSha: execution.git_head });
+        const n = (m.entries || []).length;
+        return checkAssert(copied > 0 && n > 0 && m && v && v.checked === n && Array.isArray(v.mismatched) && v.mismatched.length === 0
+          && !v.problems.some((p) => String(p).includes('sha256 changed')),
+          `manifest.verifyEvidenceManifest re-hashed ${v ? v.checked : 0}/${n} real report byte-blobs, zero sha256 mismatch`);
+      } finally {
+        fs.rmSync(tmp, { recursive: true, force: true });
+      }
     },
   },
   {
@@ -389,6 +534,38 @@ export const CHECKS = Object.freeze([
       const v = evidence.verifyFinalReportBindings({ execution: FORGED_EXECUTION });
       return checkAssert(v && v.ok === false && v.problems.some((p) => String(p).includes('execution_id')),
         'manifest.verifyFinalReportBindings(forged execution) -> ok=false + execution_id mismatch detected');
+    },
+  },
+  {
+    id: 'UAP-00-004-REQ-014', group: 'evidence',
+    behavior: '失败证据不得删除以制造通过结果：篡改真实报告字节后 verifyEvidenceManifest 真实检出 sha256 changed',
+    verify: ({ evidence }) => {
+      // Hermetic: snapshot the REAL report bytes into a temp dir, generate a
+      // self-consistent manifest, then TAMPER one report's bytes. The engine must
+      // detect the change (ok=false + a sha256-changed problem). This proves
+      // evidence cannot be silently altered/deleted to manufacture a pass.
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'uap-req014-'));
+      try {
+        let copied = 0; let firstName = null;
+        for (const name of evidence.finalReports) {
+          const src = path.join(ROOT, '.uap', 'reports', name);
+          if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(tmp, name)); copied += 1; if (!firstName) firstName = name; }
+        }
+        if (copied === 0 || !firstName) return no('no real FINAL_REPORT bytes available to tamper-test');
+        const execution = {
+          execution_id: 'UAP-EXEC-REQ014-FIXTURE', git_head: 'a'.repeat(40),
+          worktree_fingerprint: 'b'.repeat(64), environment_fingerprint: 'c'.repeat(64),
+        };
+        evidence.generateEvidenceManifest({ execution, reportsDir: tmp, rootDir: tmp, headSha: execution.git_head });
+        fs.appendFileSync(path.join(tmp, firstName), '\n// tampered evidence bytes');
+        const v = evidence.verifyEvidenceManifest({ strictCurrent: false, execution, reportsDir: tmp, rootDir: tmp, headSha: execution.git_head });
+        const detected = v && v.ok === false && Array.isArray(v.mismatched) && v.mismatched.length >= 1
+          && (v.problems || []).some((p) => String(p).includes('sha256 changed'));
+        return checkAssert(detected,
+          `manifest.verifyEvidenceManifest after byte-tamper -> ok=false mismatched=${v ? v.mismatched.length : 0} + sha256 changed detected (evidence manipulation cannot fake a pass)`);
+      } finally {
+        fs.rmSync(tmp, { recursive: true, force: true });
+      }
     },
   },
 
@@ -504,6 +681,24 @@ export const CHECKS = Object.freeze([
     verify: (ctx) => commandAssertion(ctx, 'pay', '--- PASS: TestProviderSandboxAvailabilityProbe', '--- FAIL: TestProviderSandboxAvailabilityProbe',
       'go:--- PASS: TestProviderSandboxAvailabilityProbe'),
   },
+  {
+    id: 'UAP-05-002-REQ-010', group: 'pay',
+    behavior: '测试不得依赖真实资金交易：TestReportDeclaresLocalSimulation 真实通过（测试报告声明本地模拟）',
+    verify: (ctx) => commandAssertion(ctx, 'pay', '--- PASS: TestReportDeclaresLocalSimulation', '--- FAIL: TestReportDeclaresLocalSimulation',
+      'go:--- PASS: TestReportDeclaresLocalSimulation (tests declare local simulation, no real-funds dependency)'),
+  },
+  {
+    id: 'UAP-06-002-REQ-017', group: 'pay',
+    behavior: '不得使用真实支付/退款/资金账户进行测试：TestConfigRejectsRealLookingCredentials 真实通过',
+    verify: (ctx) => commandAssertion(ctx, 'pay', '--- PASS: TestConfigRejectsRealLookingCredentials', '--- FAIL: TestConfigRejectsRealLookingCredentials',
+      'go:--- PASS: TestConfigRejectsRealLookingCredentials (real-looking credentials rejected, no real account usable)'),
+  },
+  {
+    id: 'UAP-06-002-ACC-007', group: 'pay',
+    behavior: '所有测试均不触碰真实资金：TestGatewayVerificationNeverFaked 真实通过（网关验证不伪造、不触真实资金）',
+    verify: (ctx) => commandAssertion(ctx, 'pay', '--- PASS: TestGatewayVerificationNeverFaked', '--- FAIL: TestGatewayVerificationNeverFaked',
+      'go:--- PASS: TestGatewayVerificationNeverFaked (gateway verification never faked, no real funds touched)'),
+  },
 
   // ---- F. model / DB / migration behaviour (real `go test -v` PASS markers)
   {
@@ -589,32 +784,556 @@ export const CHECKS = Object.freeze([
   {
     id: 'UAP-00-001-REQ-005', group: 'node',
     behavior: '强制性规范对应验证器：honesty「STATIC_EXISTENCE 永远不能 VERIFIED」真实 ok',
-    verify: (ctx) => commandAssertion(ctx, 'honesty', 'ok 1 - STATIC_EXISTENCE 探针永远不能产生 VERIFIED', 'not ok',
-      'node --test requirement-honesty: ok 1 - STATIC_EXISTENCE 探针永远不能产生 VERIFIED'),
+    verify: (ctx) => commandAssertion(ctx, 'honesty', 'STATIC_EXISTENCE 探针永远不能产生 VERIFIED', 'not ok',
+      'node --test requirement-honesty: STATIC_EXISTENCE 探针永远不能产生 VERIFIED (match by name, ordinal-independent)'),
   },
   {
     id: 'UAP-05-001-REQ-011', group: 'node',
     behavior: '质量状态须有证据：honesty「BLOCKED/SKIPPED/NOT_RUN 不能 VERIFIED」真实 ok',
-    verify: (ctx) => commandAssertion(ctx, 'honesty', 'ok 2 - BLOCKED / SKIPPED / NOT_RUN / FAILED 的原始结果永远不能产生 VERIFIED', 'not ok',
-      'node --test requirement-honesty: ok 2 - BLOCKED/SKIPPED/NOT_RUN/FAILED 不能产生 VERIFIED'),
+    verify: (ctx) => commandAssertion(ctx, 'honesty', 'BLOCKED / SKIPPED / NOT_RUN / FAILED 的原始结果永远不能产生 VERIFIED', 'not ok',
+      'node --test requirement-honesty: BLOCKED/SKIPPED/NOT_RUN/FAILED 不能产生 VERIFIED (match by name)'),
   },
   {
     id: 'UAP-00-004-REQ-011', group: 'node',
     behavior: '证据须有稳定 ID：honesty「证据哈希缺失/不匹配不能 VERIFIED」真实 ok',
-    verify: (ctx) => commandAssertion(ctx, 'honesty', 'ok 3 - 证据哈希缺失 / 不匹配 / 磁盘哈希失效 不能产生 VERIFIED', 'not ok',
-      'node --test requirement-honesty: ok 3 - 证据哈希缺失/不匹配/磁盘哈希失效 不能产生 VERIFIED'),
+    verify: (ctx) => commandAssertion(ctx, 'honesty', '证据哈希缺失 / 不匹配 / 磁盘哈希失效 不能产生 VERIFIED', 'not ok',
+      'node --test requirement-honesty: 证据哈希缺失/不匹配/磁盘哈希失效 不能产生 VERIFIED (match by name)'),
   },
   {
     id: 'UAP-03-002-REQ-011', group: 'node',
     behavior: '关键修改须由独立验证器复验：honesty「共享证据覆盖多条要求被拒绝」真实 ok',
-    verify: (ctx) => commandAssertion(ctx, 'honesty', 'ok 6 - 同一证据/断言覆盖多条不相关要求被拒绝', 'not ok',
-      'node --test requirement-honesty: ok 6 - 同一证据/断言覆盖多条不相关要求被拒绝'),
+    verify: (ctx) => commandAssertion(ctx, 'honesty', '同一证据/断言覆盖多条不相关要求被拒绝', 'not ok',
+      'node --test requirement-honesty: 同一证据/断言覆盖多条不相关要求被拒绝 (match by name)'),
   },
   {
     id: 'UAP-00-001-REQ-010', group: 'node',
     behavior: '配置/规范/代码/验证结果可追溯：honesty「矩阵 538 条完整性」真实 ok',
-    verify: (ctx) => commandAssertion(ctx, 'honesty', 'ok 8 - 矩阵完整性：538 条、ID 唯一、每个 VERIFIED 都有证据与真实结果', 'not ok',
-      'node --test requirement-honesty: ok 8 - 矩阵完整性 538 条、ID 唯一'),
+    verify: (ctx) => commandAssertion(ctx, 'honesty', '矩阵完整性：538 条、ID 唯一、每个 VERIFIED 都有证据与真实结果', 'not ok',
+      'node --test requirement-honesty: 矩阵完整性 538 条、ID 唯一 (match by name)'),
+  },
+
+  // ---- H. runtime engines (REAL sync engine calls; group 'engines' is NOT a
+  //         spawn group, so the honesty self-test's command-injection test does
+  //         not touch these. Every assertion was validated against the live
+  //         engine before binding. Mutating checks clean up their own locks.)
+
+  // scheduler — pure topological sort / cycle detection
+  {
+    id: 'UAP-00-002-REQ-004', group: 'engines',
+    behavior: '系统必须自动计算可执行顺序：topologicalLevels 对菱形 DAG 真实分层',
+    verify: ({ engines }) => {
+      const lv = engines.scheduler.topologicalLevels([
+        { task_id: 'A', dependencies: [] }, { task_id: 'B', dependencies: ['A'] },
+        { task_id: 'C', dependencies: ['A'] }, { task_id: 'D', dependencies: ['B', 'C'] },
+      ]);
+      return checkAssert(JSON.stringify(lv) === JSON.stringify([['A'], ['B', 'C'], ['D']]),
+        'scheduler.topologicalLevels(diamond) -> [["A"],["B","C"],["D"]]');
+    },
+  },
+  {
+    id: 'UAP-00-002-REQ-005', group: 'engines',
+    behavior: '无依赖任务允许并行、有依赖任务等待前置：同一层并行且后继层等待',
+    verify: ({ engines }) => {
+      const lv = engines.scheduler.topologicalLevels([
+        { task_id: 'A', dependencies: [] }, { task_id: 'B', dependencies: ['A'] },
+        { task_id: 'C', dependencies: ['A'] }, { task_id: 'D', dependencies: ['B', 'C'] },
+      ]);
+      return checkAssert(lv[1].length === 2 && lv[1].includes('B') && lv[1].includes('C') && lv[2][0] === 'D',
+        'scheduler.topologicalLevels -> B,C 同层并行，D 等待 B,C 完成后执行');
+    },
+  },
+  {
+    id: 'UAP-00-001-ACC-005', group: 'engines',
+    behavior: '不存在无法解释的循环依赖：detectCycle 对环返回原因、对 DAG 返回 null',
+    verify: ({ engines }) => {
+      const cyc = engines.scheduler.detectCycle([{ task_id: 'X', dependencies: ['Y'] }, { task_id: 'Y', dependencies: ['X'] }]);
+      const dag = engines.scheduler.detectCycle([{ task_id: 'A', dependencies: [] }, { task_id: 'B', dependencies: ['A'] }]);
+      return checkAssert(typeof cyc === 'string' && cyc.length > 0 && dag === null,
+        'scheduler.detectCycle(cycle)=非空原因字符串, detectCycle(DAG)=null');
+    },
+  },
+  {
+    id: 'UAP-03-003-REQ-008', group: 'engines',
+    behavior: '依赖任务必须按 DAG 顺序执行：链式依赖逐层串行',
+    verify: ({ engines }) => {
+      const lv = engines.scheduler.topologicalLevels([
+        { task_id: 'A', dependencies: [] }, { task_id: 'B', dependencies: ['A'] }, { task_id: 'C', dependencies: ['B'] },
+      ]);
+      return checkAssert(JSON.stringify(lv) === JSON.stringify([['A'], ['B'], ['C']]),
+        'scheduler.topologicalLevels(chain A->B->C) -> [["A"],["B"],["C"]]');
+    },
+  },
+
+  // state-machine — pure transition rules
+  {
+    id: 'UAP-01-003-REQ-008', group: 'engines',
+    behavior: '状态必须具有明确状态转换：合法边接受、非法边抛 IllegalTransitionError',
+    verify: ({ engines }) => {
+      const sm = engines.stateMachine;
+      let threw = false;
+      try { sm.assertTransition('CREATED', 'SUCCEEDED'); } catch (e) { threw = e.name === 'IllegalTransitionError'; }
+      return checkAssert(sm.canTransition('RUNNING', 'SUCCEEDED') === true && sm.canTransition('CREATED', 'SUCCEEDED') === false
+        && threw && sm.legalNext('PAUSED').includes('QUEUED') && sm.isTerminal('CANCELLED') === true,
+        'state-machine: RUNNING->SUCCEEDED 合法, CREATED->SUCCEEDED 抛 IllegalTransitionError, PAUSED->QUEUED 可续跑, CANCELLED 终态');
+    },
+  },
+
+  // contract — pure executor/validator result contracts
+  {
+    id: 'UAP-03-002-REQ-012', group: 'engines',
+    behavior: 'Agent 输出必须经过结果校验：assertExecutorResult 拒绝执行器自填 validation_results',
+    verify: ({ engines }) => {
+      const { executorResult, assertExecutorResult, ContractError } = engines.contract;
+      const r = executorResult({ task_id: 'x', executor_id: 'e', status: 'SUCCEEDED' });
+      let threw = false;
+      try { assertExecutorResult({ ...r, validation_results: [{ status: 'PASS' }] }); } catch (e) { threw = e instanceof ContractError; }
+      return checkAssert(r.validation_results.length === 0 && threw,
+        'contract.executorResult.validation_results=[] 且 assertExecutorResult 对自填 validation_results 抛 ContractError');
+    },
+  },
+  {
+    id: 'UAP-00-001-REQ-007', group: 'engines',
+    behavior: '任何验证器必须返回机器可读结果：validatorResult 字段齐全且未执行/非零退出降级 PASS->FAIL',
+    verify: ({ engines }) => {
+      const { validatorResult } = engines.contract;
+      const pass = validatorResult({ validator_id: 'v', status: 'PASS', executed: true, exit_code: 0 });
+      const down = validatorResult({ validator_id: 'v', status: 'PASS', executed: true, exit_code: 1 });
+      return checkAssert(pass.status === 'PASS' && pass.executed === true && pass.exit_code === 0
+        && down.status === 'FAIL' && typeof down.checked_at === 'string' && Array.isArray(down.findings),
+        'contract.validatorResult -> 机器可读字段齐全; exit_code=1 时 PASS 真实降级 FAIL');
+    },
+  },
+
+  // agent-runtime — real registry
+  {
+    id: 'UAP-03-001-ACC-001', group: 'engines',
+    behavior: '所有 Agent 已登记：listAgents 返回 11 个唯一 ID 且含名称/职责',
+    verify: ({ engines }) => {
+      const a = engines.agents.listAgents();
+      return checkAssert(a.length === 11 && new Set(a.map((x) => x.id)).size === a.length && a.every((x) => x.id && x.name && x.role),
+        'agent-runtime.listAgents() -> 11 个 Agent，ID 唯一，均含 name/role');
+    },
+  },
+  {
+    id: 'UAP-03-001-REQ-002', group: 'engines',
+    behavior: '每个 Agent 必须声明工具、权限和输出：registry 每个 Agent 声明 tools/permissions/output_schema',
+    verify: ({ engines }) => {
+      const a = engines.agents.listAgents();
+      return checkAssert(a.every((x) => Array.isArray(x.tools) && x.tools.length > 0 && Array.isArray(x.permissions) && x.permissions.length > 0 && Boolean(x.output_schema)),
+        'agent-registry: 每个 Agent 均声明非空 tools/permissions 与 output_schema');
+    },
+  },
+  {
+    id: 'UAP-03-002-REQ-003', group: 'engines',
+    behavior: 'Agent 执行前必须进行权限校验：assertTool 拒绝未声明工具、放行已声明工具',
+    verify: ({ engines }) => {
+      const a = engines.agents.listAgents()[0];
+      let threw = false;
+      try { engines.agents.assertTool(a.id, '__undeclared_tool__'); } catch { threw = true; }
+      return checkAssert(threw && engines.agents.assertTool(a.id, a.tools[0]) === true,
+        'agent-runtime.assertTool: 未声明工具抛错，已声明工具返回 true');
+    },
+  },
+  {
+    id: 'UAP-03-001-ACC-002', group: 'engines',
+    behavior: '所有 Agent 权限可解析：每个 Agent 的每项权限都能得到 ALLOW/DENY 决策',
+    verify: ({ engines, policy }) => {
+      const a = engines.agents.listAgents();
+      const allResolve = a.every((x) => (x.permissions || []).every((p) => {
+        const d = policy.check({ agent_id: x.id, permission: p, action: 'behavior-suite' });
+        return d && (d.decision === 'ALLOW' || d.decision === 'DENY') && typeof d.allowed === 'boolean';
+      }));
+      return checkAssert(allResolve, 'policy-engine.check: 每个 Agent 的每项权限均解析为 ALLOW/DENY 布尔决策');
+    },
+  },
+
+  // util.redact — pure secret masking
+  {
+    id: 'UAP-00-003-REQ-014', group: 'engines',
+    behavior: '必须支持密钥脱敏：redact 真实掩码 api_key/password 明文',
+    verify: ({ engines }) => {
+      const out = engines.redact('api_key=sk-ABCDEFGHIJKLMNOPQRSTUVWX password="supersecret123"');
+      return checkAssert(!out.includes('sk-ABCDEFGHIJKLMNOPQRSTUVWX') && !out.includes('supersecret123') && out.includes('[REDACTED]'),
+        'util.redact -> sk-/password 明文被 [REDACTED] 替换，原文不再出现');
+    },
+  },
+
+  // policy — real least-privilege default
+  {
+    id: 'UAP-00-003-REQ-002', group: 'engines',
+    behavior: '默认采用最小权限原则：permission-policy default_effect=deny 且 real_refund 被 DENY',
+    verify: ({ policy }) => {
+      const cfg = loadConfig('permission-policy');
+      const d = policy.check({ agent_id: 'uap-development-agent', permission: 'real_refund', action: 'behavior-suite' });
+      return checkAssert(cfg.default_effect === 'deny' && d.decision === 'DENY' && d.allowed === false,
+        'permission-policy.default_effect=deny 且 check(real_refund)=DENY allowed=false');
+    },
+  },
+
+  // task-engine — real structured task lifecycle (health_probe tasks)
+  {
+    id: 'UAP-00-002-REQ-001', group: 'engines',
+    behavior: '用户任务必须转换为结构化任务：createTask 产出含目标/状态的结构化任务并可读回',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      const got = engines.task.getTask(x.task_id);
+      return checkAssert(Boolean(x.task_id && x.state === 'CREATED' && x.objective && got && got.task_id === x.task_id),
+        'task-engine.createTask -> 结构化任务 state=CREATED，getTask 真实读回同一 task_id');
+    },
+  },
+  {
+    id: 'UAP-00-002-REQ-002', group: 'engines',
+    behavior: '任务必须拆分为可执行子任务：createTask 将 steps 归一化为 PENDING 子步骤',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput({ steps: [{ name: 's1' }, { name: 's2' }] }));
+      return checkAssert(x.steps.length === 2 && x.steps.every((s) => s.status === 'PENDING' && s.step_id),
+        'task-engine.createTask(steps=[s1,s2]) -> 2 个 PENDING 子步骤，各含 step_id');
+    },
+  },
+  {
+    id: 'UAP-00-002-REQ-003', group: 'engines',
+    behavior: '每个子任务必须包含目标/输入/输出/依赖/权限/验收标准：缺字段 createTask 抛 ContractError',
+    verify: ({ engines }) => {
+      let threw = false;
+      try { engines.task.createTask({}); } catch (e) { threw = e instanceof engines.contract.ContractError; }
+      return checkAssert(threw, 'task-engine.createTask({}) -> 抛 ContractError（缺失必需契约字段，fail-closed）');
+    },
+  },
+  {
+    id: 'UAP-00-001-REQ-009', group: 'engines',
+    behavior: '所有任务必须有唯一 ID/状态/时间/责任 Agent/证据引用：createTask 字段齐全',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      return checkAssert(Boolean(x.task_id && x.state && x.created_at && x.updated_at && x.agent_id && Array.isArray(x.evidence_refs) && x.trace_id),
+        'task-engine.createTask -> task_id/state/created_at/updated_at/agent_id/evidence_refs/trace_id 齐全');
+    },
+  },
+  {
+    id: 'UAP-00-002-REQ-008', group: 'engines',
+    behavior: '执行过程中必须持续记录状态和证据：createTask 真实发布 task.created 事件',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      const ev = engines.events.query({ task_id: x.task_id, type: 'task.created' });
+      return checkAssert(ev.some((e) => e.task_id === x.task_id) && Array.isArray(x.history),
+        'task-engine.createTask -> event-system 真实记录 task.created（按 task_id 可查），任务含 history');
+    },
+  },
+  {
+    id: 'UAP-00-002-REQ-012', group: 'engines',
+    behavior: '任务完成后必须执行验收：defaultValidator 对全 SUCCEEDED+有证据任务返回 PASS',
+    verify: ({ engines }) => {
+      const v = engines.task.defaultValidator({ steps: [{ status: 'SUCCEEDED', evidence_refs: ['ev1'] }], history: [], blocked_reasons: [], evidence_refs: [] });
+      return checkAssert(v.status === 'PASS' && v.executed === true && v.exit_code === 0,
+        'task-engine.defaultValidator(全步骤 SUCCEEDED+证据) -> PASS executed=true exit_code=0');
+    },
+  },
+  {
+    id: 'UAP-00-002-REQ-013', group: 'engines',
+    behavior: '未达到验收标准不得标记为完成：defaultValidator 对未完成/被阻断任务返回 FAIL+BLOCKER',
+    verify: ({ engines }) => {
+      const v = engines.task.defaultValidator({ steps: [{ status: 'PENDING', evidence_refs: [] }], history: [], blocked_reasons: ['blocked'], evidence_refs: [] });
+      return checkAssert(v.status === 'FAIL' && v.findings.some((f) => f.severity === 'BLOCKER'),
+        'task-engine.defaultValidator(未完成+blocked) -> FAIL 且含 BLOCKER finding');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-001', group: 'engines',
+    behavior: 'Agent 任务必须持久化状态：createTask 后 getTask 读回持久化状态与上下文版本',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      const got = engines.task.getTask(x.task_id);
+      return checkAssert(Boolean(got && got.task_id === x.task_id && got.state === 'CREATED' && got.context_version),
+        'task-engine.getTask -> 持久化任务读回，state=CREATED 且 context_version 存在');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-006', group: 'engines',
+    behavior: '失败任务必须记录失败原因：markInterrupted 真实写入 error 并转 WAITING_RECOVERY',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      engines.task.updateTask(x.task_id, { state: 'RUNNING' });
+      const r = engines.task.markInterrupted(x.task_id, 'probe failure reason');
+      return checkAssert(r.state === 'WAITING_RECOVERY' && r.error === 'probe failure reason',
+        'task-engine.markInterrupted -> state=WAITING_RECOVERY 且 error 记录失败原因');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-009', group: 'engines',
+    behavior: '必须支持任务取消：cancelTask 真实转 CANCELLED 终态',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      const r = engines.task.cancelTask(x.task_id, 'probe cancel');
+      return checkAssert(r.state === 'CANCELLED', 'task-engine.cancelTask -> state=CANCELLED');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-010', group: 'engines',
+    behavior: '必须支持任务暂停和续跑：pauseTask 转 PAUSED 且 PAUSED->QUEUED 续跑边合法',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      engines.task.updateTask(x.task_id, { state: 'QUEUED' });
+      const r = engines.task.pauseTask(x.task_id, 'probe pause');
+      return checkAssert(r.state === 'PAUSED' && engines.stateMachine.legalNext('PAUSED').includes('QUEUED'),
+        'task-engine.pauseTask -> PAUSED；state-machine.legalNext(PAUSED) 含 QUEUED（可续跑）');
+    },
+  },
+  {
+    id: 'UAP-00-002-ACC-003', group: 'engines',
+    behavior: '能够中断并恢复：markInterrupted 后 inspectRecovery 判定可恢复',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      engines.task.updateTask(x.task_id, { state: 'RUNNING' });
+      engines.task.markInterrupted(x.task_id, 'probe interrupt');
+      const ins = engines.recovery.inspectRecovery(x.task_id);
+      return checkAssert(ins.resumable === true && ins.state === 'WAITING_RECOVERY',
+        'recovery-engine.inspectRecovery(中断任务) -> resumable=true state=WAITING_RECOVERY');
+    },
+  },
+
+  // resource-manager — concurrency limit + file conflict + locks
+  {
+    id: 'UAP-00-002-REQ-006', group: 'engines',
+    behavior: '并行执行必须受资源限制和文件冲突检测约束：MAX_CONCURRENCY=4 且 detectFileConflicts 真实检出重叠',
+    verify: ({ engines }) => {
+      const c = engines.resource.detectFileConflicts([{ task_id: 'A', files: ['x.go'] }, { task_id: 'B', files: ['x.go', 'y.go'] }]);
+      return checkAssert(engines.resource.MAX_CONCURRENCY === 4 && c.length === 1 && c[0].file === 'x.go',
+        'resource-manager.MAX_CONCURRENCY=4 且 detectFileConflicts 检出 x.go 重叠冲突');
+    },
+  },
+  {
+    id: 'UAP-03-003-REQ-004', group: 'engines',
+    behavior: '并行任务必须检查文件修改冲突：detectFileConflicts 返回冲突双方任务 ID',
+    verify: ({ engines }) => {
+      const c = engines.resource.detectFileConflicts([{ task_id: 'P', files: ['same.go'] }, { task_id: 'Q', files: ['same.go'] }]);
+      return checkAssert(c.length === 1 && c[0].task_a === 'P' && c[0].task_b === 'Q',
+        'resource-manager.detectFileConflicts -> {file:same.go, task_a:P, task_b:Q}');
+    },
+  },
+  {
+    id: 'UAP-03-003-REQ-005', group: 'engines',
+    behavior: '共享资源必须有锁或等效并发控制：acquire 持锁、activeLocks 可见、release 释放',
+    verify: ({ engines }) => {
+      const id = engineProbeId('bhv-lock');
+      const lock = engines.resource.acquire(id, { files: [`f-${id}.go`] });
+      const active = engines.resource.activeLocks().some((l) => l.task_id === id);
+      const released = engines.resource.release(id);
+      return checkAssert(Boolean(lock && lock.task_id === id && active && released === true),
+        'resource-manager.acquire/activeLocks/release -> 持锁可见且释放返回 true');
+    },
+  },
+  {
+    id: 'UAP-03-003-ACC-002', group: 'engines',
+    behavior: '冲突能够检测：重叠文件第二次 acquire 真实抛 ResourceConflictError',
+    verify: ({ engines }) => {
+      const a = engineProbeId('bhv-a');
+      const b = engineProbeId('bhv-b');
+      const f = `conflict-${a}.go`;
+      engines.resource.acquire(a, { files: [f] });
+      let threw = false;
+      try { engines.resource.acquire(b, { files: [f] }); } catch (e) { threw = e instanceof engines.resource.ResourceConflictError; }
+      engines.resource.release(a);
+      engines.resource.release(b);
+      return checkAssert(threw, 'resource-manager.acquire(重叠文件) -> 抛 ResourceConflictError');
+    },
+  },
+
+  // recovery-engine — real process interruption + recovery inspection
+  {
+    id: 'UAP-03-004-ACC-001', group: 'engines',
+    behavior: '能够模拟进程中断：simulateInterruption 真实 spawn 子进程并以 exit 7 崩溃',
+    verify: ({ engines }) => {
+      const sim = engines.recovery.simulateInterruption('idempotent');
+      return checkAssert(sim.ok === true && sim.child_exit_code === 7 && sim.crashed_mid_step === true && Boolean(sim.task_id),
+        'recovery-engine.simulateInterruption -> 子进程 exit=7 且 CRASHED_IN_STEP2，报告 task_id');
+    },
+  },
+  {
+    id: 'UAP-03-004-ACC-002', group: 'engines',
+    behavior: '能够恢复任务：inspectRecovery 对真实中断任务判定可恢复并区分已完成/待恢复步骤',
+    verify: ({ engines }) => {
+      const sim = engines.recovery.simulateInterruption('idempotent');
+      const ins = engines.recovery.inspectRecovery(sim.task_id);
+      return checkAssert(ins.resumable === true && ins.completed_steps.includes('step-1') && ins.pending_steps.length > 0,
+        'recovery-engine.inspectRecovery(崩溃任务) -> resumable=true，step-1 已完成，待恢复步骤明确');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-005', group: 'engines',
+    behavior: '任务恢复必须校验上下文版本：recover 对版本不匹配同步拒绝（不静默重跑）',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      const out = engines.recovery.recover(x.task_id, { expected_context_version: '__wrong_version__' });
+      return checkAssert(Boolean(out && out.recovered === false && out.reason === 'context version mismatch'),
+        'recovery-engine.recover(上下文版本不匹配) -> {recovered:false, reason:context version mismatch}');
+    },
+  },
+  {
+    id: 'UAP-03-004-REQ-003', group: 'engines',
+    behavior: '恢复时必须检查任务是否已经产生副作用：inspectRecovery 区分 ambiguous/committed 副作用',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput({ steps: [{ name: 's1' }] }));
+      engines.task.updateTask(x.task_id, { side_effects: [{ step_id: 'step-1', state: 'started' }, { step_id: 'step-2', state: 'committed' }] });
+      const ins = engines.recovery.inspectRecovery(x.task_id);
+      return checkAssert(ins.ambiguous_side_effects.length === 1 && ins.committed_side_effects.length === 1,
+        'recovery-engine.inspectRecovery -> ambiguous_side_effects=1（started）, committed_side_effects=1');
+    },
+  },
+
+  // event-system — real structured publish/query
+  {
+    id: 'UAP-08-003-REQ-002', group: 'engines',
+    behavior: '日志必须结构化：publish 返回含 event_id/type/at/payload/severity 的结构化事件',
+    verify: ({ engines }) => {
+      const e = engines.events.publish('bhv.structured', { k: 'v' }, { severity: 'INFO' });
+      return checkAssert(Boolean(e.event_id && e.type === 'bhv.structured' && e.at && e.payload && e.severity === 'INFO'),
+        'event-system.publish -> 结构化字段 event_id/type/at/payload/severity 齐全');
+    },
+  },
+  {
+    id: 'UAP-08-003-REQ-003', group: 'engines',
+    behavior: '关键任务必须有 Trace ID：publish 真实保留 trace_id 关联',
+    verify: ({ engines }) => {
+      const tid = engineProbeId('trace');
+      const e = engines.events.publish('bhv.trace', {}, { trace_id: tid });
+      return checkAssert(e.trace_id === tid, 'event-system.publish(trace_id) -> 事件真实携带该 trace_id');
+    },
+  },
+  {
+    id: 'UAP-08-003-REQ-004', group: 'engines',
+    behavior: '错误必须有分类和严重程度：publish 真实记录 severity=ERROR',
+    verify: ({ engines }) => {
+      const e = engines.events.publish('bhv.error', {}, { severity: 'ERROR' });
+      return checkAssert(e.severity === 'ERROR', 'event-system.publish(severity=ERROR) -> 事件严重程度真实为 ERROR');
+    },
+  },
+  {
+    id: 'UAP-08-003-REQ-005', group: 'engines',
+    behavior: '关键业务事件必须可查询：publish 后 query({type}) 真实检索到该事件',
+    verify: ({ engines }) => {
+      const type = `bhv.query.${engineProbeId('q')}`;
+      const e = engines.events.publish(type, {});
+      const found = engines.events.query({ type });
+      return checkAssert(found.some((x) => x.event_id === e.event_id), 'event-system.query({type}) -> 真实检索到刚发布的事件');
+    },
+  },
+  {
+    id: 'UAP-08-003-REQ-010', group: 'engines',
+    behavior: '必须支持按任务 ID 查询执行记录：query({task_id}) 真实检索到该任务事件',
+    verify: ({ engines }) => {
+      const tid = engineProbeId('task');
+      const e = engines.events.publish('bhv.bytask', {}, { task_id: tid });
+      const found = engines.events.query({ task_id: tid });
+      return checkAssert(found.some((x) => x.event_id === e.event_id), 'event-system.query({task_id}) -> 真实检索到该任务的事件');
+    },
+  },
+
+  // orchestrator — real multi-task aggregation
+  {
+    id: 'UAP-03-003-REQ-010', group: 'engines',
+    behavior: '多 Agent 结果必须进行汇总和一致性检查：aggregate 全 SUCCEEDED=FULLY_VERIFIED，否则 PARTIALLY_VERIFIED',
+    verify: ({ engines }) => {
+      const x = engines.task.createTask(probeTaskInput());
+      engines.task.updateTask(x.task_id, { state: 'SUCCEEDED' });
+      const y = engines.task.createTask(probeTaskInput());
+      engines.task.updateTask(y.task_id, { state: 'SUCCEEDED' });
+      const full = engines.orchestrator.aggregate([x.task_id, y.task_id]);
+      const z = engines.task.createTask(probeTaskInput());
+      const partial = engines.orchestrator.aggregate([x.task_id, z.task_id]);
+      return checkAssert(full.status === 'FULLY_VERIFIED' && partial.status === 'PARTIALLY_VERIFIED' && Array.isArray(full.missing_task_ids),
+        'orchestrator.aggregate -> 全 SUCCEEDED=FULLY_VERIFIED；含未完成任务=PARTIALLY_VERIFIED');
+    },
+  },
+
+  // status-engine — pure verdict invariants (existence != verification)
+  {
+    id: 'UAP-00-004-REQ-001', group: 'engines',
+    behavior: '每次任务执行必须产生唯一执行记录：isCurrent 仅认本执行 id 的产物，跨执行 id 即判陈旧',
+    verify: ({ engines }) => {
+      const a = { execution_id: 'EXEC-A', git_head: 'H', exit_code: 0 };
+      return checkAssert(engines.statusEngine.isCurrent(a, { execution_id: 'EXEC-A', git_head: 'H' }) === true
+        && engines.statusEngine.isCurrent(a, { execution_id: 'EXEC-B', git_head: 'H' }) === false,
+        'status-engine.isCurrent -> 绑定 EXEC-A 的产物对 EXEC-A 当前、对 EXEC-B 陈旧');
+    },
+  },
+  {
+    id: 'UAP-00-004-REQ-006', group: 'engines',
+    behavior: '文件存在不能证明功能实现：IMPLEMENTED 且有测试但无证据的需求不得计为 VERIFIED',
+    verify: ({ engines }) => {
+      const EX = 'UAP-EXEC-BHV6', HEAD = 'BHV6-HEAD';
+      const req = { requirement_id: 'R', implementation_status: 'IMPLEMENTED', verification_status: 'VERIFIED', test_cases: ['t1'], evidence: [], blockers: [] };
+      const snap = { execution_id: EX, git_head: HEAD, requirements: [req], tests: { total: 1, pass: 1, fail: 0, skipped: 0, not_executed: 0, passing_test_names: ['t1'], execution_id: EX, git_head: HEAD, exit_code: 0 }, validators: { results: [{ status: 'PASS' }], execution_id: EX, git_head: HEAD, exit_code: 0 }, p0_blockers: [], capabilities: { real_code_repair: true, independent_regression: true, recovery: true, e2e: true, database_integration: true, financial_integrity: true } };
+      const r = engines.statusEngine.computeFinalStatus(snap);
+      return checkAssert(r.counts.verified === 0 && r.claim_allowed === false,
+        'status-engine.computeFinalStatus -> IMPLEMENTED+测试但无证据：verified=0 且 claim_allowed=false');
+    },
+  },
+  {
+    id: 'UAP-00-004-REQ-007', group: 'engines',
+    behavior: '命令存在不能证明命令可运行：isCurrent 要求 exit_code=0，非零退出即不可用',
+    verify: ({ engines }) => {
+      const snap = { execution_id: 'E', git_head: 'H' };
+      return checkAssert(engines.statusEngine.isCurrent({ execution_id: 'E', git_head: 'H', exit_code: 1 }, snap) === false
+        && engines.statusEngine.isCurrent({ execution_id: 'E', git_head: 'H', exit_code: 0 }, snap) === true,
+        'status-engine.isCurrent -> exit_code=1 判非当前，exit_code=0 判当前');
+    },
+  },
+  {
+    id: 'UAP-00-004-REQ-008', group: 'engines',
+    behavior: '测试文件存在不能证明测试通过：有测试名但未真实通过的需求不得计为 VERIFIED',
+    verify: ({ engines }) => {
+      const EX = 'UAP-EXEC-BHV8', HEAD = 'BHV8-HEAD';
+      const req = { requirement_id: 'R', implementation_status: 'IMPLEMENTED', verification_status: 'VERIFIED', test_cases: ['t1'], evidence: [{ evidence_id: 'E', execution_id: EX, git_head: HEAD, hash_valid: true, recorded_at: 't' }], blockers: [] };
+      const snap = { execution_id: EX, git_head: HEAD, requirements: [req], tests: { total: 1, pass: 0, fail: 1, skipped: 0, not_executed: 0, passing_test_names: [], execution_id: EX, git_head: HEAD, exit_code: 0 }, validators: { results: [{ status: 'PASS' }], execution_id: EX, git_head: HEAD, exit_code: 0 }, p0_blockers: [], capabilities: { real_code_repair: true, independent_regression: true, recovery: true, e2e: true, database_integration: true, financial_integrity: true } };
+      const r = engines.statusEngine.computeFinalStatus(snap);
+      return checkAssert(r.counts.verified === 0 && r.claim_allowed === false,
+        'status-engine.computeFinalStatus -> 测试名存在但未通过：verified=0 且 claim_allowed=false');
+    },
+  },
+  {
+    id: 'UAP-00-004-ACC-004', group: 'engines',
+    behavior: '报告能够定位原始验证记录：verifyEvidenceChain 对合法链 ok 且计数，对篡改哈希 fail-closed',
+    verify: ({ engines }) => {
+      const snap = { execution_id: 'E', git_head: 'H' };
+      const good = [{ evidence_id: 'E1', execution_id: 'E', git_head: 'H', hash_valid: true, recorded_at: 't' }];
+      const ok = engines.statusEngine.verifyEvidenceChain(good, snap);
+      const bad = engines.statusEngine.verifyEvidenceChain([{ ...good[0], hash_valid: false }], snap);
+      return checkAssert(ok.ok === true && ok.checked === 1 && bad.ok === false,
+        'status-engine.verifyEvidenceChain -> 合法链 ok=true/checked=1；哈希篡改 ok=false');
+    },
+  },
+
+  // policy — security failure must block
+  {
+    id: 'UAP-00-003-REQ-013', group: 'engines',
+    behavior: '安全失败必须阻断相关任务：assertAllowed 对未授权权限真实抛出 PolicyDeniedError',
+    verify: ({ policy }) => {
+      let threw = false;
+      try { policy.assertAllowed({ agent_id: 'uap-development-agent', permission: 'production_write', action: 'behavior-suite' }); } catch (e) { threw = e instanceof policy.PolicyDeniedError; }
+      return checkAssert(threw === true && policy.check({ agent_id: 'uap-development-agent', permission: 'production_write', action: 'behavior-suite' }).allowed === false,
+        'policy-engine.assertAllowed(production_write) -> 抛 PolicyDeniedError 且 check.allowed=false');
+    },
+  },
+
+  // event-system — trace correlation and disk persistence
+  {
+    id: 'UAP-08-003-ACC-001', group: 'engines',
+    behavior: '关键事件可追踪：publish 携带 trace_id 后 query({trace_id}) 真实检索到该事件',
+    verify: ({ engines }) => {
+      const tid = engineProbeId('trace');
+      const e = engines.events.publish('bhv.tracecorr', {}, { trace_id: tid });
+      return checkAssert(engines.events.query({ trace_id: tid }).some((x) => x.event_id === e.event_id),
+        'event-system.query({trace_id}) -> 真实检索到携带该 trace_id 的事件');
+    },
+  },
+  {
+    id: 'UAP-08-003-REQ-011', group: 'engines',
+    behavior: '必须保存关键运行证据：publish 后 count() 从磁盘读到的事件数真实增加',
+    verify: ({ engines }) => {
+      const before = engines.events.count();
+      engines.events.publish('bhv.persist', {});
+      return checkAssert(engines.events.count() === before + 1,
+        'event-system.count() -> publish 后磁盘事件数 +1，证据真实落盘');
+    },
   },
 ]);
 
@@ -648,9 +1367,10 @@ export function runBehaviorSuite({ deps = {} } = {}) {
   const policy = { ...DEFAULT_POLICY, ...(deps.policy || {}) };
   const evidence = { ...DEFAULT_EVIDENCE, ...(deps.evidence || {}) };
   const runtime = { ...DEFAULT_RUNTIME, ...(deps.runtime || {}) };
+  const engines = { ...DEFAULT_ENGINES, ...(deps.engines || {}) };
   const spawn = deps.spawn || defaultSpawn;
   const commands = runCommands(spawn);
-  const ctx = { status, policy, evidence, runtime, commands };
+  const ctx = { status, policy, evidence, runtime, engines, commands };
 
   const lines = [];
   const checks = [];

@@ -1,0 +1,397 @@
+{
+  "schema": "UDS7-REMEDIATION-STATE/1.0",
+  "generated_at": "2026-11-15T23:55:45.894Z",
+  "method": "check-uds7-remediation.mjs 真实探针，未执行项一律不标 PASS",
+  "probeSummary": {
+    "PASS": 49,
+    "FAIL": 1
+  },
+  "findings": {
+    "UDS7-C-01": {
+      "status": "RESOLVED",
+      "probe": "C-R01",
+      "probeStatus": "PASS",
+      "evidence": "C-R01 PASS · AGENTS.md 保持现行运行时权威；未因 7.0 建设改写治理入口",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-02": {
+      "status": "RESOLVED",
+      "probe": "C-R02",
+      "probeStatus": "PASS",
+      "evidence": "C-R02 PASS · web/src/styles/index.css 单行 import + 8 个真实页面场景的 getComputedStyle 实测",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-03": {
+      "status": "RESOLVED",
+      "probe": "C-R03",
+      "probeStatus": "PASS",
+      "evidence": "C-R03 PASS · bridge CSS 四个选择器块：暗块逐字相同、亮属性块与 :root 逐值相同、:root 为主题无关 Token 超集",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-04": {
+      "status": "RESOLVED",
+      "probe": "C-R04",
+      "probeStatus": "PASS",
+      "evidence": "C-R04 PASS · 隔离命名 --ds7-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-05": {
+      "status": "RESOLVED",
+      "probe": "C-R05",
+      "probeStatus": "PASS",
+      "evidence": "C-R05 PASS · 五层齐全；249/249 个颜色 Token 有 colorLayer；consumer 已登记 384/384",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-06": {
+      "status": "RESOLVED",
+      "probe": "C-R06",
+      "probeStatus": "PASS",
+      "evidence": "C-R06 PASS · 直接比对 §4.2 六值（Light #5B5EE6 / #494CC7 / #3F42B0；Dark #8B8DF5 / #A1A3F7 / #B7B8FA），不再依赖 git diff",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-07": {
+      "status": "RESOLVED",
+      "probe": "C-R07",
+      "probeStatus": "PASS",
+      "evidence": "C-R07 PASS · contrast-engine 真实计算 + manifest 值去重",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-08": {
+      "status": "RESOLVED",
+      "probe": "C-R08",
+      "probeStatus": "PASS",
+      "evidence": "C-R08 PASS · 12 个 L5 业务上下文色逐值比对 chart 色板",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-09": {
+      "status": "RESOLVED",
+      "probe": "C-R09",
+      "probeStatus": "PASS",
+      "evidence": "C-R09 PASS · 同 C-A04：颜色单通道距离未达标，非颜色通道已补齐（真实测量，不伪报）",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-10": {
+      "status": "RESOLVED",
+      "probe": "C-R10",
+      "probeStatus": "PASS",
+      "evidence": "C-R10 PASS · manifest 逐值比对",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-11": {
+      "status": "RESOLVED",
+      "probe": "C-R11",
+      "probeStatus": "PASS",
+      "evidence": "C-R11 PASS · manifest 三态 × 2 主题定值检查",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-C-12": {
+      "status": "RESOLVED",
+      "probe": "C-R12",
+      "probeStatus": "PASS",
+      "evidence": "C-R12 PASS · 实际 29 个状态 Token（58 个主题值），每状态 7/7/7/7 变体；审计原文「48 个」为规划估计，实测以 29/58 为准",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-T-01": {
+      "status": "RESOLVED",
+      "probe": "C-T01",
+      "probeStatus": "PASS",
+      "evidence": "C-T01 PASS · 384 个 Token 逐字段校验；384 条 consumer 路径逐条磁盘存在性检查",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-T-02": {
+      "status": "RESOLVED",
+      "probe": "C-T02",
+      "probeStatus": "PASS",
+      "evidence": "C-T02 PASS · manifest.architecture 结构化节点 / 边",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-T-03": {
+      "status": "RESOLVED",
+      "probe": "C-T03",
+      "probeStatus": "PASS",
+      "evidence": "C-T03 PASS · 向副本注入重复 / 额外 Token，校验器必须拒绝；真实执行",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-T-04": {
+      "status": "RESOLVED",
+      "probe": "C-T04",
+      "probeStatus": "PASS",
+      "evidence": "C-T04 PASS · 真实消费者登记数：{\"syntax\":20,\"chart\":12,\"ansi16\":16,\"status\":29} / 组大小 {\"syntax\":20,\"chart\":12,\"ansi16\":16,\"status\":29}；未覆盖项如实登记 UNUSED",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-T-05": {
+      "status": "RESOLVED",
+      "probe": "C-T05",
+      "probeStatus": "PASS",
+      "evidence": "C-T05 PASS · C16 校验 runtime CSS 与 manifest 一一对应；Showcase 内联 manifest 且色值由生成器展开",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-01": {
+      "status": "RESOLVED",
+      "probe": "C-H01",
+      "probeStatus": "PASS",
+      "evidence": "C-H01 PASS · syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds7-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-02": {
+      "status": "RESOLVED",
+      "probe": "C-H02",
+      "probeStatus": "PASS",
+      "evidence": "C-H02 PASS · Shiki 4.3.0 · 29 grammars · verdict PASS",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-03": {
+      "status": "RESOLVED",
+      "probe": "C-H03",
+      "probeStatus": "PASS",
+      "evidence": "C-H03 PASS · 8 个真实页面场景逐一读取 --ds7-syntax-keyword 计算值并与 manifest 比对",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-04": {
+      "status": "RESOLVED",
+      "probe": "C-H04",
+      "probeStatus": "PASS",
+      "evidence": "C-H04 PASS · 真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds7-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-05": {
+      "status": "RESOLVED",
+      "probe": "C-H05",
+      "probeStatus": "PASS",
+      "evidence": "C-H05 PASS · M.highlighterEngines 逐引擎状态登记；Shiki 仅用于 Showcase 真实解析，不冒称运行时渲染引擎",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-06": {
+      "status": "RESOLVED",
+      "probe": "C-H06",
+      "probeStatus": "PASS",
+      "evidence": "C-H06 PASS · code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds7-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-07": {
+      "status": "RESOLVED",
+      "probe": "C-H07",
+      "probeStatus": "PASS",
+      "evidence": "C-H07 PASS · syntax-validation.json longCodeSample 记录",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-08": {
+      "status": "RESOLVED",
+      "probe": "C-H08",
+      "probeStatus": "PASS",
+      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（266120ms）",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-09": {
+      "status": "RESOLVED",
+      "probe": "C-H09",
+      "probeStatus": "PASS",
+      "evidence": "C-H09 PASS · audit/vscode/SOURCE-METADATA.json + 官方 JSONC 源码 + 映射文档",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-H-10": {
+      "status": "RESOLVED",
+      "probe": "C-H10",
+      "probeStatus": "PASS",
+      "evidence": "C-H10 PASS · syntax Light 最低 4.55:1 / Dark 5.07:1；adjusted 4 项",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-01": {
+      "status": "RESOLVED",
+      "probe": "C-G01",
+      "probeStatus": "PASS",
+      "evidence": "C-G01 PASS · typography.css 唯一 owner + contrast-engine.mjs GRADIENT_INTERPOLATION",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-02": {
+      "status": "RESOLVED",
+      "probe": "C-G02",
+      "probeStatus": "PASS",
+      "evidence": "C-G02 PASS · 实际 1001 点 / 主题，7 背景",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-03": {
+      "status": "RESOLVED",
+      "probe": "C-G03",
+      "probeStatus": "PASS",
+      "evidence": "C-G03 PASS · C11 全库扫描 + EXCEPTION-REGISTRY EX-006 RESOLVED",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-04": {
+      "status": "RESOLVED",
+      "probe": "C-G04",
+      "probeStatus": "PASS",
+      "evidence": "C-G04 PASS · Light 最差 5.99:1 / Dark 8.37:1",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-05": {
+      "status": "RESOLVED",
+      "probe": "C-G05",
+      "probeStatus": "PASS",
+      "evidence": "C-G05 PASS · gradient-validation.json singleSource 段",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-06": {
+      "status": "RESOLVED",
+      "probe": "C-G06",
+      "probeStatus": "PASS",
+      "evidence": "C-G06 PASS · canvas getImageData：Light 246 色 / Dark 215 色",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-G-07": {
+      "status": "RESOLVED",
+      "probe": "C-G07",
+      "probeStatus": "PASS",
+      "evidence": "C-G07 PASS · 审计登记 324 处渐变使用",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-F-01": {
+      "status": "RESOLVED",
+      "probe": "C-F01",
+      "probeStatus": "PASS",
+      "evidence": "C-F01 PASS · C12 守卫",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-F-02": {
+      "status": "RESOLVED",
+      "probe": "C-F02",
+      "probeStatus": "PASS",
+      "evidence": "C-F02 PASS · C12 逐字比对 theme.css:301-328 的字体定义",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-F-03": {
+      "status": "RESOLVED",
+      "probe": "C-F03",
+      "probeStatus": "PASS",
+      "evidence": "C-F03 PASS · 审计生成器实时扫盘产出消耗清单",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-A-01": {
+      "status": "RESOLVED",
+      "probe": "C-A01",
+      "probeStatus": "PASS",
+      "evidence": "C-A01 PASS · Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds7/screenshots/forced-colors-showcase.png",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-A-02": {
+      "status": "RESOLVED",
+      "probe": "C-A02",
+      "probeStatus": "PASS",
+      "evidence": "C-A02 PASS · 真实计算 56 行文字 / 语法对比度 + 品牌实底三态",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-A-03": {
+      "status": "RESOLVED",
+      "probe": "C-A03",
+      "probeStatus": "PASS",
+      "evidence": "C-A03 PASS · axe 4 场景 / 0 violations / keyboardFocus {\"checked\":12,\"allVisible\":true}",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-A-04": {
+      "status": "RESOLVED",
+      "probe": "C-A04",
+      "probeStatus": "PASS",
+      "evidence": "C-A04 PASS · 真实 CIEDE2000：Light 常视觉最小 13.14，Dark 15.09；CVD 模拟最小 Light 10.5 / Dark 10.51。仅靠颜色不可区分，必须以非颜色通道补偿。",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-S-01": {
+      "status": "RESOLVED",
+      "probe": "C-S01",
+      "probeStatus": "PASS",
+      "evidence": "C-S01 PASS · Showcase 由 build.mjs 从 TOKEN-MANIFEST.json 派生",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-S-02": {
+      "status": "RESOLVED",
+      "probe": "C-S02",
+      "probeStatus": "PASS",
+      "evidence": "C-S02 PASS · visual-check modules=undefined sections=undefined",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-S-03": {
+      "status": "RESOLVED",
+      "probe": "C-S03",
+      "probeStatus": "PASS",
+      "evidence": "C-S03 PASS · Showcase 真实 DOM 标记计数",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-R-01": {
+      "status": "RESOLVED",
+      "probe": "C-RG01",
+      "probeStatus": "PASS",
+      "evidence": "C-RG01 PASS · 4 条公开真实路由 × 2 主题 + 0 个认证场景 = 8 场景；未覆盖范围如实登记",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-R-02": {
+      "status": "OPEN",
+      "probe": "C-RG02",
+      "probeStatus": "FAIL",
+      "evidence": "C-RG02 FAIL · 4 条公开真实路由 Light/Dark 全通过；认证页面未执行（隔离栈不可达：TypeError: fetch failed），如实 NOT_EXECUTED",
+      "failedAssertions": [
+        "authenticatedPagesCovered"
+      ],
+      "notExecutedAssertions": []
+    },
+    "UDS7-R-03": {
+      "status": "RESOLVED",
+      "probe": "C-M01",
+      "probeStatus": "PASS",
+      "evidence": "C-M01 PASS · 真实回滚演练 2026-11-15T05:58:08.333Z：删除 import → 回滚态验证 → SHA256 字节级恢复 PASS",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    },
+    "UDS7-R-04": {
+      "status": "RESOLVED",
+      "probe": "C-M02",
+      "probeStatus": "PASS",
+      "evidence": "C-M02 PASS · manifest / Showcase / ACCEPTANCE-MATRIX 三处状态一致（合法进度状态 IMPLEMENTED_NOT_VERIFIED / ACCEPTANCE_READY，accepted 恒为 false）",
+      "failedAssertions": [],
+      "notExecutedAssertions": []
+    }
+  }
+}

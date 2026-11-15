@@ -29,12 +29,14 @@ export function record(input = {}) {
       execution_id: e.execution_id,
       git_head: e.git_head,
       worktree_fingerprint: e.worktree_fingerprint,
+      environment_fingerprint: e.environment_fingerprint,
       binding_status: 'BOUND',
       binding_error: null,
     };
   } catch (error) {
     binding = {
       execution_id: null, git_head: null, worktree_fingerprint: null,
+      environment_fingerprint: null,
       binding_status: 'BINDING_FAILED', binding_error: error.message,
     };
   }
@@ -53,6 +55,7 @@ export function record(input = {}) {
     execution_id: binding.execution_id,
     git_head: binding.git_head,
     worktree_fingerprint: binding.worktree_fingerprint,
+    environment_fingerprint: binding.environment_fingerprint,
     modified_files: input.modified_files || [],
     environment: {
       platform: process.platform,
@@ -91,7 +94,7 @@ export function verify(evidence_id) {
   // record may be untampered yet unusable as evidence for the CURRENT run.
   const bindingValid = rec.execution?.binding_status === 'BOUND'
     && Boolean(rec.execution_id) && Boolean(rec.git_head)
-    && Boolean(rec.worktree_fingerprint);
+    && Boolean(rec.worktree_fingerprint) && Boolean(rec.environment_fingerprint);
   return {
     valid: hashValid,
     reason: hashValid ? 'hash_match' : 'hash_mismatch',

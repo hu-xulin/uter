@@ -3,21 +3,21 @@
     "com.uter.tokens": {
       "id": "UTER-BRAND-TOKEN-SOURCE",
       "version": "1.0.0",
-      "designSystem": "UTER Design System 3.0",
+      "designSystem": "UTER Design System 7.0",
       "status": "DRAFT",
       "sourceCommit": "77dab9bf56fff59d6bed0d11cb88fa0901253c4a",
       "provenance": {
         "themes.light.primary": "USER_CONFIRMED",
-        "themes.dark.primary": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.primary": "UDS7_INTERACTION_DEFAULT_DARK",
         "themes.light.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
-        "themes.light.hover": "EXISTING_3_0_IMPLEMENTATION",
-        "themes.light.active": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.light.hover": "UDS7_BRAND_SOLID_HOVER",
+        "themes.light.active": "UDS7_BRAND_SOLID_ACTIVE",
         "themes.light.soft": "EXISTING_3_0_IMPLEMENTATION",
         "themes.light.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.light.border": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
-        "themes.dark.hover": "EXISTING_3_0_IMPLEMENTATION",
-        "themes.dark.active": "EXISTING_3_0_IMPLEMENTATION",
+        "themes.dark.hover": "UDS7_INTERACTION_HOVER_DARK",
+        "themes.dark.active": "UDS7_INTERACTION_ACTIVE_DARK",
         "themes.dark.soft": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
@@ -52,12 +52,12 @@
           "$description": "Foreground on the filled Light primary control."
         },
         "hover": {
-          "$value": "#4F52D1",
-          "$description": "Hover state of the filled Light primary control."
+          "$value": "#494CC7",
+          "$description": "UDS 7.0 brand-solid-hover (Light)."
         },
         "active": {
-          "$value": "#4A4DC5",
-          "$description": "Active state of the filled Light primary control."
+          "$value": "#3F42B0",
+          "$description": "UDS 7.0 brand-solid-active (Light)."
         },
         "soft": {
           "$value": "#F0F0FF",
@@ -81,20 +81,20 @@
       "brand": {
         "$type": "color",
         "primary": {
-          "$value": "#A1A3F7",
-          "$description": "Existing Dark primary value migrated from UTER Design System 3.0."
+          "$value": "#8B8DF5",
+          "$description": "UDS 7.0 interaction-default / brand-1 (Dark) — links & fills."
         },
         "primaryForeground": {
           "$value": "#020617",
           "$description": "Foreground on the filled Dark primary control."
         },
         "hover": {
-          "$value": "#B1B3FF",
-          "$description": "Hover state of the filled Dark primary control."
+          "$value": "#A1A3F7",
+          "$description": "UDS 7.0 interaction-hover (Dark)."
         },
         "active": {
-          "$value": "#9294F7",
-          "$description": "Active state of the filled Dark primary control."
+          "$value": "#B7B8FA",
+          "$description": "UDS 7.0 interaction-active (Dark)."
         },
         "soft": {
           "$value": "#25264A",

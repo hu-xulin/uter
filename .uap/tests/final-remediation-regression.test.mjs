@@ -25,7 +25,8 @@ import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { classifyVisualDiff, MANDATED_CATEGORIES } from '../runtime/status-engine/visual-classifier.mjs';
 import { worktreeFingerprint } from '../runtime/status-engine/execution.mjs';
-import { FINAL_REPORTS } from '../runtime/evidence-engine/manifest.mjs';
+import { FINAL_REPORTS, generateEvidenceManifest, MAX_REPORT_AGE_MS } from '../runtime/evidence-engine/manifest.mjs';
+import { checkBatchConsistency } from '../tools/final-acceptance-gate.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const src = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -72,6 +73,42 @@ test('R4 8 类分类模型完整且每个结果都在合法集合内', () => {
     assert.ok(MANDATED_CATEGORIES.includes(c.category), `${msg.slice(0, 30)} -> ${c.category}`);
     assert.ok(c.evidence_basis.length > 0);
   }
+});
+
+test('R5 Playwright 通用 font-load 调用日志不得把真实像素差异洗成 FONT_RENDERING', () => {
+  // toHaveScreenshot 的 call-log 恒含 "waiting for fonts to load... fonts loaded"，
+  // 旧实现 /font/ 命中它导致 10/10 像素差异全被误判 FONT_RENDERING。
+  const withGenericFontLog = [
+    PIXEL_DIFF_FROM_AUTHED_SPEC,
+    '  waiting for fonts to load...',
+    '  fonts loaded',
+  ].join('\n');
+  const c = classifyVisualDiff({ title: 'home - desktop', ok: false }, withGenericFontLog);
+  assert.equal(c.category, 'REAL_UI_REGRESSION');
+  // 真正的字体证据（非通用等待日志）仍应判 FONT_RENDERING。
+  assert.equal(
+    classifyVisualDiff({ title: 'x' }, 'glyph fallback / 字体 ligature mismatch').category,
+    'FONT_RENDERING',
+  );
+});
+
+test('R6 Playwright 通用 "disabled all CSS animations" 调用日志不得把稳定像素差异洗成 ANIMATION', () => {
+  // animations:'disabled' 时 call-log 恒含 "disabled all CSS animations"（证明动画
+  // 已被禁用），旧实现 /animation/ 命中它导致 10/10 稳定像素差异全被误判 ANIMATION。
+  const withGenericAnimationLog = [
+    PIXEL_DIFF_FROM_AUTHED_SPEC,
+    '  - taking page screenshot',
+    '    - disabled all CSS animations',
+    '  - captured a stable screenshot',
+    '  - 9588 pixels (ratio 0.01 of all image pixels) are different.',
+  ].join('\n');
+  const c = classifyVisualDiff({ title: 'home - desktop', ok: false }, withGenericAnimationLog);
+  assert.equal(c.category, 'REAL_UI_REGRESSION');
+  // 真正的动画证据（非通用 disabled 日志）仍应判 ANIMATION。
+  assert.equal(
+    classifyVisualDiff({ title: 'x' }, 'CSS animation keyframe still running').category,
+    'ANIMATION',
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -283,4 +320,135 @@ test('R20 [静态守卫] 邮箱验证码登录按钮满足 WCAG 2.5.8 的 24x24 
   assert.ok(m, 'email-code toggle button not found');
   assert.match(m[0], /min-h-6/);
   assert.match(m[0], /items-center/);
+});
+
+// ---------------------------------------------------------------------------
+// 8. Directive §3.4 — single-batch consistency gate (REAL behaviour, hermetic)
+// ---------------------------------------------------------------------------
+
+const B_HEAD = 'a'.repeat(40);
+const B_ENV = 'e'.repeat(64);
+const B_FP = 'b'.repeat(64);
+const B_EXEC = {
+  execution_id: 'UAP-EXEC-BATCH-TEST-0001',
+  git_head: B_HEAD,
+  worktree_fingerprint: B_FP,
+  environment_fingerprint: B_ENV,
+  started_at: new Date(Date.now() - 1000).toISOString(),
+  status: 'RUNNING',
+};
+
+function bDir() { return fs.mkdtempSync(path.join(os.tmpdir(), 'uap-batch-consistency-')); }
+function bWrite(dir, name, obj) { fs.writeFileSync(path.join(dir, name), `${JSON.stringify(obj, null, 2)}\n`, 'utf8'); }
+function bRead(dir, name) { return JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8')); }
+function bValidReport() {
+  return {
+    schema_version: '1.0', status: 'PASS',
+    generated_at: new Date(Date.now() - 1000).toISOString(),
+    execution_id: B_EXEC.execution_id, git_head: B_EXEC.git_head,
+    worktree_fingerprint: B_EXEC.worktree_fingerprint,
+    environment_fingerprint: B_EXEC.environment_fingerprint,
+    commit_sha: B_HEAD,
+  };
+}
+function bWriteAllValid(dir) {
+  for (const name of FINAL_REPORTS) {
+    if (name.endsWith('.md')) fs.writeFileSync(path.join(dir, name), '# isolated batch test\n', 'utf8');
+    else bWrite(dir, name, bValidReport());
+  }
+}
+function bGenerate(dir) {
+  return generateEvidenceManifest({ execution: B_EXEC, reportsDir: dir, rootDir: dir, headSha: B_HEAD });
+}
+function bCheck(dir, extra = {}) {
+  return checkBatchConsistency({ reportsDir: dir, rootDir: dir, headSha: B_HEAD, execution: B_EXEC, ...extra });
+}
+/** Build a valid isolated batch, run fn(dir), always clean up. */
+function withBatch(fn) {
+  const dir = bDir();
+  try { bWriteAllValid(dir); bGenerate(dir); return fn(dir); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+}
+
+test('R21 合法单一批次：六项 single_*/integrity/freshness 全为 true 且门禁 PASS', () => {
+  withBatch((dir) => {
+    const r = bCheck(dir);
+    assert.equal(r.status, 'PASS', `合法批次必须通过：${r.problems.join(' | ')}`);
+    for (const k of ['single_execution_id', 'single_git_head', 'single_worktree_fingerprint', 'single_environment_fingerprint', 'evidence_integrity', 'evidence_freshness']) {
+      assert.equal(r.single[k], true, `${k} 必须为 true`);
+    }
+  });
+});
+
+test('R22 混合 execution_id（拼接多批次）→ single_execution_id=false 且 FAIL', () => {
+  withBatch((dir) => {
+    const r0 = bCheck(dir);
+    assert.equal(r0.single.single_execution_id, true);
+    const card = bRead(dir, 'E2E-RESULTS.json');
+    card.execution_id = 'UAP-EXEC-OTHER-BATCH';
+    bWrite(dir, 'E2E-RESULTS.json', card);
+    const r = bCheck(dir);
+    assert.equal(r.single.single_execution_id, false);
+    assert.equal(r.status, 'FAIL');
+    assert.ok(r.problems.some((p) => /mixed batch|execution_id/.test(p)), r.problems.join(' | '));
+  });
+});
+
+test('R23 某报告缺 environment_fingerprint（哈希仍一致）→ single_environment_fingerprint=false 且 FAIL', () => {
+  withBatch((dir) => {
+    const card = bRead(dir, 'PAYMENT-SANDBOX.json');
+    delete card.environment_fingerprint;
+    bWrite(dir, 'PAYMENT-SANDBOX.json', card);
+    bGenerate(dir); // 重算清单：字节哈希一致，精确命中「缺字段」而非哈希失配
+    const r = bCheck(dir);
+    assert.equal(r.single.single_environment_fingerprint, false);
+    assert.equal(r.single.evidence_integrity, true, '哈希一致时 integrity 仍 true，证明 single_* 捕获了哈希检查漏掉的缺字段');
+    assert.equal(r.status, 'FAIL');
+    assert.ok(r.problems.some((p) => /missing environment_fingerprint/.test(p)), r.problems.join(' | '));
+  });
+});
+
+test('R24 某报告 environment_fingerprint 与批次不符（工具链变化）→ single_environment_fingerprint=false 且 FAIL', () => {
+  withBatch((dir) => {
+    const card = bRead(dir, 'VISUAL-REGRESSION.json');
+    card.environment_fingerprint = 'f'.repeat(64);
+    bWrite(dir, 'VISUAL-REGRESSION.json', card);
+    bGenerate(dir);
+    const r = bCheck(dir);
+    assert.equal(r.single.single_environment_fingerprint, false);
+    assert.equal(r.status, 'FAIL');
+  });
+});
+
+test('R25 过期报告（generated_at 超过 24h）→ evidence_freshness=false 且 FAIL', () => {
+  withBatch((dir) => {
+    const card = bRead(dir, 'VALIDATION-RESULTS.json');
+    card.generated_at = new Date(Date.now() - MAX_REPORT_AGE_MS - 60_000).toISOString();
+    bWrite(dir, 'VALIDATION-RESULTS.json', card);
+    bGenerate(dir);
+    const r = bCheck(dir);
+    assert.equal(r.single.evidence_freshness, false);
+    assert.equal(r.status, 'FAIL');
+    assert.ok(r.problems.some((p) => /older than/.test(p)), r.problems.join(' | '));
+  });
+});
+
+test('R26 报告生成后代码变化（worktree 指纹漂移）→ evidence_freshness=false 且 FAIL', () => {
+  withBatch((dir) => {
+    const r = bCheck(dir, { fpNow: 'c'.repeat(64) });
+    assert.equal(r.single.evidence_freshness, false);
+    assert.equal(r.status, 'FAIL');
+    assert.ok(r.problems.some((p) => /worktree changed after generation/.test(p)), r.problems.join(' | '));
+  });
+});
+
+test('R27 [静态守卫] 门禁装配 single-batch 组并 surfaced 六项；独立一致性校验器复核环境绑定', () => {
+  const g = src('.uap/tools/final-acceptance-gate.mjs');
+  assert.match(g, /checkBatchConsistency\(\{ execution: e, phase: evidencePhase \}\)/);
+  assert.match(g, /batch_consistency: batchGroup\?\.single/);
+  assert.match(g, /single_environment_fingerprint/);
+  assert.match(g, /environment_fingerprint: e\.environment_fingerprint/);
+  const c = src('.uap/tools/verify-status-consistency.mjs');
+  assert.match(c, /single_batch_consistency_proven/);
+  assert.match(c, /environment_fingerprint_matches_current_run/);
+  assert.match(c, /gate\.environment_fingerprint === execution\.environment_fingerprint/);
 });

@@ -1,20 +1,20 @@
 {
   "validator_id": "phase2.requirement_independent_validator",
-  "generated_at": "2026-11-15T06:21:58.413Z",
-  "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
-  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
-  "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+  "generated_at": "2026-11-15T14:04:09.971Z",
+  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
   "ok": true,
   "checks": [
     {
       "name": "execution_identity_present",
       "ok": true,
-      "detail": "UAP-EXEC-20261115061321-6a98eb1a @ 012c08eaf6127261f4ba434bf277489261ef6dd5"
+      "detail": "UAP-EXEC-20261115135024-6a46ff96 @ 3f4eb0d7afd640471368c49bfa71d8383eb7740b"
     },
     {
       "name": "states_line_matches_matrix",
       "ok": true,
-      "detail": "derived={\"VERIFIED\":61,\"NOT_VERIFIED\":471,\"BLOCKED\":6,\"NOT_APPLICABLE\":0} emitted={\"VERIFIED\":61,\"NOT_VERIFIED\":471,\"BLOCKED\":6,\"NOT_APPLICABLE\":0}"
+      "detail": "derived={\"VERIFIED\":123,\"NOT_VERIFIED\":415,\"BLOCKED\":0,\"NOT_APPLICABLE\":0} emitted={\"VERIFIED\":123,\"NOT_VERIFIED\":415,\"BLOCKED\":0,\"NOT_APPLICABLE\":0}"
     },
     {
       "name": "all_538_requirements_present",
@@ -33,6 +33,26 @@
     },
     {
       "name": "verified_UAP-00-001-REQ-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-001-REQ-007_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-001-REQ-007_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-001-REQ-009_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-001-REQ-009_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -57,6 +77,86 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-00-001-ACC-005_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-001-ACC-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-001_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-001_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-003_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-003_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-004_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-005_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-006_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-006_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-008_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-008_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-00-002-REQ-011_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
@@ -67,12 +167,42 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-00-002-REQ-012_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-012_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-013_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-REQ-013_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-00-002-REQ-014_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
     },
     {
       "name": "verified_UAP-00-002-REQ-014_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-002-ACC-003_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-002-ACC-003_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -97,12 +227,32 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-00-003-REQ-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-00-003-REQ-004_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
     },
     {
       "name": "verified_UAP-00-003-REQ-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-005_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-005_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -133,6 +283,36 @@
     },
     {
       "name": "verified_UAP-00-003-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-011_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-011_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-013_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-013_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-014_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-003-REQ-014_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -177,6 +357,16 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-00-004-REQ-001_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-001_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-00-004-REQ-002_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
@@ -213,6 +403,36 @@
     },
     {
       "name": "verified_UAP-00-004-REQ-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-006_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-006_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-007_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-007_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-008_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-008_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -257,6 +477,16 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-00-004-REQ-014_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-004-REQ-014_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-00-004-ACC-001_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
@@ -277,12 +507,32 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-00-004-ACC-004_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-00-004-ACC-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-00-004-ACC-005_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
     },
     {
       "name": "verified_UAP-00-004-ACC-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-01-003-REQ-008_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-01-003-REQ-008_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -387,12 +637,102 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-03-001-REQ-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-001-REQ-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-001-REQ-004_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-001-REQ-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-001-ACC-001_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-001-ACC-001_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-001-ACC-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-001-ACC-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-002-REQ-003_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-002-REQ-003_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-03-002-REQ-011_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
     },
     {
       "name": "verified_UAP-03-002-REQ-011_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-002-REQ-012_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-002-REQ-012_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-004_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-005_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-008_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-008_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -407,12 +747,102 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-03-003-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-003-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-003-ACC-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-003-ACC-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-001_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-001_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-003_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-003_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-03-004-REQ-004_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
     },
     {
       "name": "verified_UAP-03-004-REQ-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-005_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-006_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-006_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-008_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-008_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-009_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-009_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-REQ-010_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -437,6 +867,36 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-03-004-ACC-001_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-ACC-001_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-03-004-ACC-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-03-004-ACC-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-05-001-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-05-001-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-05-001-REQ-011_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
@@ -453,6 +913,26 @@
     },
     {
       "name": "verified_UAP-05-002-REQ-007_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-05-002-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-05-002-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-05-002-REQ-011_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-05-002-REQ-011_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -483,6 +963,26 @@
     },
     {
       "name": "verified_UAP-05-002-REQ-014_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-05-002-ACC-003_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-05-002-ACC-003_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-05-003-REQ-011_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-05-003-REQ-011_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -617,12 +1117,52 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-06-002-REQ-017_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-06-002-REQ-017_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-06-002-ACC-007_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-06-002-ACC-007_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_UAP-08-001-REQ-006_has_evidence_refs",
       "ok": true,
       "detail": "1 refs"
     },
     {
       "name": "verified_UAP-08-001-REQ-006_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-001-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-001-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-001-ACC-004_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-001-ACC-004_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -637,14 +1177,94 @@
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
     {
+      "name": "verified_UAP-08-002-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-002-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-002_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-002_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-003_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-003_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-004_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-004_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-005_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-005_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-010_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-010_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-011_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-REQ-011_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
+      "name": "verified_UAP-08-003-ACC-001_has_evidence_refs",
+      "ok": true,
+      "detail": "1 refs"
+    },
+    {
+      "name": "verified_UAP-08-003-ACC-001_has_real_actual_result",
+      "ok": true,
+      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
+    },
+    {
       "name": "verified_evidence_all_hash_bound",
       "ok": true,
-      "detail": "61 valid evidence refs / 61 VERIFIED rows"
+      "detail": "123 valid evidence refs / 123 VERIFIED rows"
     },
     {
       "name": "no_blanket_pass",
       "ok": true,
-      "detail": "61 VERIFIED rows, 61 distinct assertion keys"
+      "detail": "123 VERIFIED rows, 123 distinct assertion keys"
     },
     {
       "name": "all_non_verified_have_reason",
@@ -654,12 +1274,12 @@
   ],
   "problems": [],
   "derived_states": {
-    "VERIFIED": 61,
-    "NOT_VERIFIED": 471,
-    "BLOCKED": 6,
+    "VERIFIED": 123,
+    "NOT_VERIFIED": 415,
+    "BLOCKED": 0,
     "NOT_APPLICABLE": 0
   },
-  "checked_evidence_refs": 61,
-  "verified_rows": 61,
+  "checked_evidence_refs": 123,
+  "verified_rows": 123,
   "integrity_rule": "re-derive 4-state counts + recompute every VERIFIED evidence sha256 from disk + re-check execution binding + distinct assertions; fail closed on any disagreement"
 }

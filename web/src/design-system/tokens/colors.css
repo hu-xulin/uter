@@ -109,16 +109,13 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-primary-subtle: var(--primary-subtle, var(--accent));
   --ds-color-primary-border: var(--primary-border, var(--border));
 
-  /* ── 品牌渐变（首屏标题 / CTA，规范 §17.5）──────────────────────────
-   * 三个停靠站逐值锚定上游 new-api 的 blue-400 / violet-400 / purple-500。
-   * 单一取值：**深浅主题共用，禁止 :root.dark 覆盖**，也不接 chart-*
-   * （chart-* 跟着主题预设漂移，而这是对外传播资产）。
-   * 浅色 from / via 未达大文本 3:1 是 §17.5 明文登记的有意例外，
-   * 不许为「修对比度」压深取值 —— 那等于改对外观感。
-   * 消费出口唯一：`@utility ds-text-gradient-brand`，组件里不得手写渐变。 */
-  --ds-color-brand-gradient-from: #60a5fa;
-  --ds-color-brand-gradient-via: #a78bfa;
-  --ds-color-brand-gradient-to: #a855f7;
+  /* ── 品牌渐变（首屏标题 / CTA）────────────────────────────────────
+   * UDS 7.0 迁移（2026-11-15，Phase 6 B2）：旧 §17.5 上游锚定三档
+   * #60a5fa / #a78bfa / #a855f7（浅色最差 2.54:1）已删除（DP-002 执行，
+   * 3.0 §26.2 E28 例外同步注销）。唯一出口 `@utility ds-text-gradient-brand`
+   * 现消费 TOKEN-MANIFEST 派生的 `--ds7-color-gradient-{light,dark}-*`
+   * （浅色最差 5.99:1 / 深色最差 8.37:1，1001 点 sRGB × 7 背景验证）。
+   * 组件里不得手写渐变。 */
 
   /* ── 描边 ──────────────────────────────────────────────────────────── */
   --ds-color-border: var(--border);
@@ -129,5 +126,5 @@ For commercial licensing, please contact support@uter.ai
      两者曾同时存在（一个零引用），见 `tokens/semantic.css`。 */
 }
 
-/* 品牌渐变没有 :root.dark 覆盖：规范 §17.5 要求深浅主题逐值一致。
-   深色主题靠更暗的背景自然获得更高对比度（7.02 / 6.56 / 4.51:1）。 */
+/* 品牌渐变已迁至 UDS 7.0：utility 按 `.dark` 前缀切换 light/dark 双三档
+   （--ds7-color-gradient-*，浅色最差 5.99:1 / 深色最差 8.37:1）。 */

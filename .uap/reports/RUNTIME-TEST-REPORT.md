@@ -1,6 +1,6 @@
 # Runtime Test Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T06:22:02.014Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T14:04:16.605Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 10 个核心组件健康
@@ -21,93 +21,92 @@
 
 ## UAP 自身测试
 
-命令：`node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs`
+命令：`node --test --test-reporter=tap --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs`
 
-真实退出码：**0**；耗时 148386ms；测试文件 15 个。
+真实退出码：**0**；耗时 100791ms；测试文件 16 个。
 
 ```
-
-    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS
+ - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS
       ---
-      duration_ms: 77.89483
+      duration_ms: 99.746889
       type: 'test'
       ...
     # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale
     ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale
       ---
-      duration_ms: 81.103603
+      duration_ms: 114.114448
       type: 'test'
       ...
     # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功
     ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功
       ---
-      duration_ms: 2466.798005
+      duration_ms: 2577.87724
       type: 'test'
       ...
     # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数
     ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数
       ---
-      duration_ms: 328.362015
+      duration_ms: 246.767505
       type: 'test'
       ...
     # Subtest: 状态块是可机读 JSON，字段与 verdict 一致
     ok 6 - 状态块是可机读 JSON，字段与 verdict 一致
       ---
-      duration_ms: 613.126867
+      duration_ms: 462.884178
       type: 'test'
       ...
     1..6
-ok 87 - 真实快照适配器
+ok 105 - 真实快照适配器
   ---
-  duration_ms: 3672.878331
+  duration_ms: 3618.320494
   type: 'suite'
   ...
 # Subtest: 证据链 fail-closed
     # Subtest: 缺少绑定字段或哈希未校验的证据一律失败
     ok 1 - 缺少绑定字段或哈希未校验的证据一律失败
       ---
-      duration_ms: 0.309809
+      duration_ms: 0.185293
       type: 'test'
       ...
     1..1
-ok 88 - 证据链 fail-closed
+ok 106 - 证据链 fail-closed
   ---
-  duration_ms: 0.53784
+  duration_ms: 0.294856
   type: 'suite'
   ...
 # Subtest: fixtures are excluded, real self-tests are kept
-ok 89 - fixtures are excluded, real self-tests are kept
+ok 107 - fixtures are excluded, real self-tests are kept
   ---
-  duration_ms: 3.830391
+  duration_ms: 2.579827
   type: 'test'
   ...
 # Subtest: the intentionally failing repair canaries are never collected
-ok 90 - the intentionally failing repair canaries are never collected
+ok 108 - the intentionally failing repair canaries are never collected
   ---
-  duration_ms: 0.508262
+  duration_ms: 0.349786
   type: 'test'
   ...
 # Subtest: discovery is fail-closed on non-test / malformed paths
-ok 91 - discovery is fail-closed on non-test / malformed paths
+ok 109 - discovery is fail-closed on non-test / malformed paths
   ---
-  duration_ms: 0.971518
+  duration_ms: 0.752841
   type: 'test'
   ...
 # Subtest: the CLI actually uses the shared collector (no re-introduced inline filter)
-ok 92 - the CLI actually uses the shared collector (no re-introduced inline filter)
+ok 110 - the CLI actually uses the shared collector (no re-introduced inline filter)
   ---
-  duration_ms: 1.130861
+  duration_ms: 0.686182
   type: 'test'
   ...
-1..92
-# tests 181
+1..110
+# tests 202
 # suites 31
-# pass 181
+# pass 202
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 148202.005547
+# duration_ms 100697.403585
 
 ```
 
@@ -116,6 +115,7 @@ ok 92 - the CLI actually uses the shared collector (no re-introduced inline filt
 | 文件 |
 | --- |
 | .uap/tests/execution-identity-race.test.mjs |
+| .uap/tests/execution-lifecycle.test.mjs |
 | .uap/tests/final-acceptance-negative.test.mjs |
 | .uap/tests/final-remediation-regression.test.mjs |
 | .uap/tests/fixtures/repair-e2e/full.test.mjs |

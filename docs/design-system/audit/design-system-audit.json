@@ -1,0 +1,3975 @@
+{
+  "schema": "UDS7-AUDIT/1.0",
+  "generated_at": "2026-11-15T14:29:17.441Z",
+  "git_sha": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "git_branch": "main",
+  "dirty_entries": 1547,
+  "tool_versions": {
+    "node": "v24.21.0",
+    "generator": "UDS7-audit/1.0.0"
+  },
+  "command": "node docs/design-system/registry/generate-audit.mjs",
+  "audit_scope": [
+    "docs/design-system",
+    "web/src/design-system",
+    "web/src/styles",
+    "web/src/components",
+    "web/scripts",
+    "all showcases",
+    "all gradient usages",
+    "all code editors",
+    "theme switching",
+    "token generators/validators"
+  ],
+  "counts": {
+    "findings": 48,
+    "bySeverity": {
+      "P0": 24,
+      "P1": 21,
+      "P2": 3
+    },
+    "byArea": {
+      "COLOR": 12,
+      "TOKEN": 5,
+      "HIGHLIGHT": 10,
+      "GRADIENT": 7,
+      "FONT": 3,
+      "A11Y": 4,
+      "SHOWCASE": 3,
+      "REGRESSION": 2,
+      "MIGRATION": 2
+    },
+    "byStatus": {
+      "RESOLVED": 48
+    },
+    "gradientHits": 324,
+    "gradientByKind": {
+      "BACKGROUND_LINEAR": 94,
+      "TEXT": 157,
+      "BACKGROUND_RADIAL": 36,
+      "MASK": 34,
+      "DECORATION": 3
+    },
+    "tokenUsage": {
+      "files": 1547,
+      "varRefs": 989,
+      "dsRefs": 168,
+      "ds6Refs": 113,
+      "hexByFile": [
+        {
+          "file": "web/src/design-system/tokens/uds-semantic-bridge.css",
+          "hits": 928,
+          "isTokenDefinition": true
+        },
+        {
+          "file": "web/src/styles/theme.css",
+          "hits": 63,
+          "isTokenDefinition": true
+        },
+        {
+          "file": "web/src/design-system/tokens/brand-colors.ts",
+          "hits": 45,
+          "isTokenDefinition": true
+        },
+        {
+          "file": "web/src/design-system/tokens/generated/uds7-chart-palette.ts",
+          "hits": 24,
+          "isTokenDefinition": true
+        },
+        {
+          "file": "web/src/design-system/tokens/generated/brand.css",
+          "hits": 16,
+          "isTokenDefinition": true
+        },
+        {
+          "file": "web/src/assets/custom/icon-theme-dark.tsx",
+          "hits": 8,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/assets/logo.tsx",
+          "hits": 5,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/assets/custom/icon-theme-light.tsx",
+          "hits": 4,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/design-system/__tests__/sidebar-active-guard.test.ts",
+          "hits": 4,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/design-system/__tests__/token-source.test.ts",
+          "hits": 4,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/assets/brand-icons/icon-linuxdo.tsx",
+          "hits": 3,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/assets/custom/icon-sub2api.tsx",
+          "hits": 3,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/design-system/tokens/colors.css",
+          "hits": 3,
+          "isTokenDefinition": true
+        },
+        {
+          "file": "web/src/design-system/__tests__/status-badge-contrast.test.ts",
+          "hits": 2,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/features/dashboard/lib/flow-selection.test.ts",
+          "hits": 2,
+          "isTokenDefinition": false
+        },
+        {
+          "file": "web/src/routes/__tests__/public-routes-render.test.tsx",
+          "hits": 1,
+          "isTokenDefinition": false
+        }
+      ]
+    },
+    "vscodeSyntax": 20,
+    "vscodeBaselineDiffs": 6,
+    "vscodeAdjustments": 4
+  },
+  "tests": {
+    "total": 48,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "open": 0,
+    "failures": []
+  },
+  "findings": [
+    {
+      "id": "UDS7-C-01",
+      "area": "COLOR",
+      "severity": "P0",
+      "file": "AGENTS.md",
+      "lines": "176, 189, 378-379, 424",
+      "current": "运行时唯一强制标准是 UDS 3.0；AGENTS.md 全文无 7.0/5.0 匹配，:177-178 明示新规范体系未发布。",
+      "violation": "§2.3 版本兼容 / §14 最终验收「规范完整性」。",
+      "impact": "把 7.0 称为已启用标准会与仓库治理宪法冲突，CI 门禁仍按 3.0 判定。",
+      "remediation": "保留 3.0 权威声明不动；7.0 以「增量语义层 + 兼容映射」接入，状态维持 IMPLEMENTED_NOT_VERIFIED 直到用户审核。",
+      "test": "check-uds7-remediation.mjs::C-R01 断言 AGENTS.md 3.0 权威未被改写",
+      "evidence": "audit/design-system-audit.json + git diff AGENTS.md 为空",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R01 PASS · AGENTS.md 保持现行运行时权威；未因 7.0 建设改写治理入口"
+      }
+    },
+    {
+      "id": "UDS7-C-02",
+      "area": "COLOR",
+      "severity": "P0",
+      "file": "web/src/styles/index.css",
+      "lines": "49-60",
+      "current": "入口只 import theme.css / brand.css / theme-presets.css / tokens/index.css / foundations/index.css；7.0 runtime 产物 5 个文件零 import、零 link。",
+      "violation": "§4.7 / §九 Showcase「展示真实运行时 Token」/ §17「必须完成真实产品组件接入」。",
+      "impact": "7.0 的 254 个 Token 从未生效，规范与实现是两套；Showcase 展示的是文档侧的静态值。",
+      "remediation": "新增 web/src/design-system/tokens/uds-semantic-bridge.css（由 TOKEN-MANIFEST 生成的纯增量语义层），styles/index.css 仅增加一行 import，不覆盖任何既有变量。",
+      "test": "check-uds7-remediation.mjs::C-R02 断言 bridge CSS 被真实入口加载且 20 个 syntax / 12 chart / ANSI16 变量均可在浏览器 getComputedStyle 读到",
+      "evidence": "registry/runtime-check.mjs 的 Playwright 实测输出 + 截图",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R02 PASS · web/src/styles/index.css 单行 import + 8 个真实页面场景的 getComputedStyle 实测"
+      }
+    },
+    {
+      "id": "UDS7-C-03",
+      "area": "COLOR",
+      "severity": "P0",
+      "file": "web/src/context/theme-provider.tsx",
+      "lines": "98-99；theme-customization-provider.tsx:120；7.0/runtime/themes/light.css:25",
+      "current": "真实生效 2 套入口：html.light/.dark class + body[data-theme-preset]；7.0 另有第 3 套 [data-ds-theme] 未接入。",
+      "violation": "§4.7 唯一来源 / §2.3「是否存在多个主题入口」。",
+      "impact": "同一页面可能同时被 3 套选择器影响，Dark 取值不可预测。",
+      "remediation": "bridge CSS 同时挂 :root/.dark 与 [data-ds-theme] 两种选择器，值来自同一 manifest；不修改现有 provider 逻辑。",
+      "test": "check-uds7-remediation.mjs::C-R03 断言三种选择器下同一 token 计算值一致",
+      "evidence": "runtime-check.mjs 三选择器对比输出",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R03 PASS · bridge CSS 四个选择器块：暗块逐字相同、亮属性块与 :root 逐值相同、:root 为主题无关 Token 超集"
+      }
+    },
+    {
+      "id": "UDS7-C-04",
+      "area": "COLOR",
+      "severity": "P0",
+      "file": "web/src/design-system/tokens/colors.css",
+      "lines": "86, 45, 34-50, 125",
+      "current": "--ds-color-surface-overlay=#000000（3.0）vs 7.0 runtime/tokens.css:120 #FFFFFF（语义反转）；text-disabled 是 color-mix 表达式 vs 7.0 #94A3B8；另有 text-primary/secondary/inverse/border-input 同名不同值。",
+      "violation": "§4.7「同一语义不得存在互相冲突的 Token」/ §12 迁移验证。",
+      "impact": "一旦接入 7.0 同名变量，浮层遮罩会由黑变白、语义反转，页面直接损坏。",
+      "remediation": "bridge CSS 只使用 --ds7-* 命名空间前缀做隔离，禁止覆盖同名 --ds-*；COMPAT-MAP 逐项登记 6 个冲突 Token 与人工迁移条件。",
+      "test": "check-uds7-remediation.mjs::C-R04 断言 bridge 不定义任何与 3.0 同名且不同值的 --ds-* 变量",
+      "evidence": "UDS-7.0-MIGRATION-REPORT.md 兼容映射表 + 自动化扫描",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R04 PASS · 隔离命名 --ds7-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）"
+      }
+    },
+    {
+      "id": "UDS7-C-05",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/styles/theme.css",
+      "lines": "48-162, 341-595；tokens/*.css；tokens/generated/brand.css:28-48",
+      "current": "至少 5 套并行颜色来源：--color-* 112、无前缀语义变量、--ds-* 175、--primitive-* 47、--uter-brand-* 16；theme-presets.css 再用同名变量覆盖 10+ 组预设。",
+      "violation": "§4.1 五层颜色架构 / §4.7 唯一来源。",
+      "impact": "同一语义色在不同预设下漂移，图表色被主题预设改写后还会污染状态色。",
+      "remediation": "在 TOKEN-MANIFEST 中显式登记 primitive→semantic→component→interaction→product 五层与 allowEdge；bridge 只读 manifest，不新增第六套来源。",
+      "test": "check-uds7-remediation.mjs::C-R05 断言五层节点齐全且每个 token 有 layer + consumer",
+      "evidence": "TOKEN-REGISTRY.json 的 layer 分布 + DEPENDENCY-GRAPH.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R05 PASS · 五层齐全；249/249 个颜色 Token 有 colorLayer；consumer 已登记 384/384"
+      }
+    },
+    {
+      "id": "UDS7-C-06",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/design-system/tokens/generated/brand.css",
+      "lines": "29, 40",
+      "current": "文档 §4.2 列的 6 色基线中，运行时仅 #5B5EE6 与 #A1A3F7 生效；#494CC7 / #3F42B0 / #B7B8FA 仅存在于 7.0 docs runtime；#8B8DF5 仅出现在注释与测试。",
+      "violation": "§4.2「修改前必须核实当前真实 Token / 禁止无理由更改品牌色」。",
+      "impact": "若按文档字面「保留」去改运行时，反而会引入未经验证的品牌色变更。",
+      "remediation": "基线六值 KEEP（零改动）；运行时 brand.css 与 3.0 规范声明对齐到 §4.2 基线（COLOR-OPTIMIZATION-REPORT.md R1），逐色给「原始值/是否生效/是否调整/对比度/组件影响」。",
+      "test": "check-uds7-remediation.mjs::C-R06 断言 brand.css 6 个值等于 §4.2 基线（直接值比对）",
+      "evidence": "COLOR-OPTIMIZATION-REPORT.md + C-R06 PASS + G07 同步校验 17/17",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R06 PASS · 直接比对 §4.2 六值（Light #5B5EE6 / #494CC7 / #3F42B0；Dark #8B8DF5 / #A1A3F7 / #B7B8FA），不再依赖 git diff"
+      }
+    },
+    {
+      "id": "UDS7-C-07",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/styles/theme.css",
+      "lines": "349, 353, 358 / 614, 616, 618",
+      "current": "Light: --secondary / --muted / --accent 全为 #f1f5f9；Dark 全为 #1e293b，无语义区分。tertiary/disabled 是 color-mix 派生，无独立 Light/Dark HEX。",
+      "violation": "§4.3「Secondary 与 Muted 不得无语义理由使用完全相同颜色」/「主次辅助文字清晰区别」。",
+      "impact": "次级与辅助文字层级塌陷，disabled 随背景漂移，无法做稳定对比度验证。",
+      "remediation": "7.0 语义层新增 neutral 10 档 + text primary/secondary/tertiary/disabled 各自独立 Light/Dark 实色，并记录对比度。",
+      "test": "check-uds7-remediation.mjs::C-R07 断言 secondary≠muted≠tertiary 且四者 Light/Dark 各自 ≥4.5",
+      "evidence": "contrast-validation.json 的 neutral 组",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R07 PASS · contrast-engine 真实计算 + manifest 值去重"
+      }
+    },
+    {
+      "id": "UDS7-C-08",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/styles/theme-presets.css",
+      "lines": "484-487；features/wallet/components/wallet-stats-card.tsx:80",
+      "current": "--success: var(--chart-2) / --warning: var(--chart-4) / --info: var(--chart-1)；钱包统计卡 tone=chart-4，Token 用量对话框用 text-chart-* 分类。",
+      "violation": "§4.1 Product Context Colors「业务状态不得借用图表色或装饰色」。",
+      "impact": "切换主题预设时状态色会随图表色漂移，支付/余额/订单状态语义不可靠。",
+      "remediation": "新增 12 类业务上下文语义 Token（balance/recharge/payment/refund/order/api-key/token/model-status/api-call/usage/billing/task-status），全部独立实色，不引用 chart；登记未迁移页面清单。",
+      "test": "check-uds7-remediation.mjs::C-R08 断言业务上下文 Token 的值不引用 --chart-* 且色彩与 chart 组不重合",
+      "evidence": "TOKEN-CONSUMPTION-AUDIT.md 业务映射表",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R08 PASS · 12 个 L5 业务上下文色逐值比对 chart 色板"
+      }
+    },
+    {
+      "id": "UDS7-C-09",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/styles/theme.css",
+      "lines": "389-394 / 645-650",
+      "current": "图表调色板只有 --chart-1..6（6 色，oklch 表达式）；7.0 manifest 只有 chart-1..5（5 色）。",
+      "violation": "§4.5「建立 10–12 色图表调色板 / 兼顾色觉障碍 / 不只依赖颜色区分」。",
+      "impact": "多系列图表超过 5 个系列即重复用色，色觉障碍用户无法辨识。",
+      "remediation": "扩展到 12 色，提供线型/点型/图例三套非颜色通道与 CVD（protanopia/deuteranopia/tritanopia）模拟可辨识度验证。",
+      "test": "check-uds7-remediation.mjs::C-R09 断言 12 色齐全、相邻 CIEDE2000 距离达标、非颜色通道齐全",
+      "evidence": "chart-validation.json + Showcase 图表区",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R09 PASS · 同 C-A04：颜色单通道距离未达标，非颜色通道已补齐（真实测量，不伪报）"
+      }
+    },
+    {
+      "id": "UDS7-C-10",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/styles/theme.css",
+      "lines": "474 / 657",
+      "current": "Light 与 Dark 的 --term-background 都是 #000000；终端与代码块共用背景语义。",
+      "violation": "§4.6「禁止 Light 和 Dark Terminal 无条件共用纯黑背景 / 建立独立 Terminal Theme」。",
+      "impact": "Light 主题下终端是纯黑块，与页面割裂；代码块、编辑器、终端无区分。",
+      "remediation": "新增独立 Terminal Light/Dark：background / foreground / cursor / selection / ansi-0..15 / error / warning / success / info；代码块与编辑器各用独立背景 Token。",
+      "test": "check-uds7-remediation.mjs::C-R10 断言 termLight≠termDark 且 ANSI16 齐全、三者背景互不相同",
+      "evidence": "LIGHT-DARK-CONSISTENCY-AUDIT.md + Showcase Terminal 区",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R10 PASS · manifest 逐值比对"
+      }
+    },
+    {
+      "id": "UDS7-C-11",
+      "area": "COLOR",
+      "severity": "P1",
+      "file": "web/src/styles/theme.css",
+      "lines": "124；tokens/colors.css:45-49",
+      "current": "disabled 为 color-mix(in oklch, var(--muted-foreground) 55%, transparent)，无独立 HEX；::selection 在 web/src 中零定义。",
+      "violation": "§4.1 Semantic Colors 必须含 Focus / Selection；§8 Disabled 不得与正常状态混淆。",
+      "impact": "选区与禁用态随背景漂移，无法给出可复现对比度证据。",
+      "remediation": "7.0 语义层补齐 focus / selection 的 Light/Dark 实色与 disabled 独立实色，并在 Showcase 显示对比度。",
+      "test": "check-uds7-remediation.mjs::C-R11 断言 focus/selection/disabled 各有 Light/Dark 定值",
+      "evidence": "contrast-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R11 PASS · manifest 三态 × 2 主题定值检查"
+      }
+    },
+    {
+      "id": "UDS7-C-12",
+      "area": "COLOR",
+      "severity": "P2",
+      "file": "web/src/styles/theme.css",
+      "lines": "364, 366, 360, 371 / 622, 624, 620, 626",
+      "current": "success/warning/danger/info 只有单值（部分为 oklch），无 Foreground/Background/Border/Hover/Active/Subtle 六变体。",
+      "violation": "§4.4「每个状态至少提供 6 类变体，Light/Dark 分别验证」。",
+      "impact": "状态组件只能靠透明度凑层级，违反 3.0 T13/T15 且对比度不可验证。",
+      "remediation": "7.0 语义层为 4 状态 × 6 变体 × 2 主题建立 48 个独立实色 Token，全部计算对比度。",
+      "test": "check-uds7-remediation.mjs::C-R12 断言 48 个状态 Token 齐全且 foreground/background 组合 ≥4.5",
+      "evidence": "contrast-validation.json 的 status 组",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-R12 PASS · 实际 29 个状态 Token（58 个主题值），每状态 7/7/7/7 变体；审计原文「48 个」为规划估计，实测以 29/58 为准"
+      }
+    },
+    {
+      "id": "UDS7-T-01",
+      "area": "TOKEN",
+      "severity": "P0",
+      "file": "docs/design-system/TOKEN-MANIFEST.json",
+      "lines": "169-178；registry/tokens.mjs:425",
+      "current": "每个 token 只有 8 字段 layer/category/type/unit/light/dark/description/themeIndependent；无 semanticMeaning / consumer / contrastRequirement / deprecated。",
+      "violation": "§4.7「统一管理 Token ID / 名称 / Light / Dark / 语义 / 消费者 / 对比度要求 / 废弃状态」/ §10.1。",
+      "impact": "无法判断哪些 Token 有真实消费者，也无法发现无消费者冗余 Token。",
+      "remediation": "扩展 manifest 字段并在 build.mjs 生成 TOKEN-REGISTRY 时一并派生；consumer 由 registry/consumer-scan.mjs 真实扫描 web/src 得出，不允许手写。",
+      "test": "check-uds7-remediation.mjs::C-T01 断言必需字段齐全且 consumer 非空 Token 的引用确实存在",
+      "evidence": "token-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-T01 PASS · 384 个 Token 逐字段校验；384 条 consumer 路径逐条磁盘存在性检查"
+      }
+    },
+    {
+      "id": "UDS7-T-02",
+      "area": "TOKEN",
+      "severity": "P0",
+      "file": "docs/design-system/TOKEN-MANIFEST.json",
+      "lines": "24-30；registry/tokens.mjs:425",
+      "current": "architecture.layers 文案写五层，但 token 的 layer 只有 primitive/semantic/component 三种取值；后两层仅存在于文案。",
+      "violation": "§4.1 五层颜色架构 / §14 Token 完整性。",
+      "impact": "组件规格与页面模板层无法被自动化检查，五层架构是文档声明而非可执行结构。",
+      "remediation": "manifest 新增 componentSpecs 与 pageTemplates 两个实体数组，DEPENDENCY-GRAPH.json 生成五层节点与允许/禁止边。",
+      "test": "check-uds7-remediation.mjs::C-T02 断言五层节点与边齐全",
+      "evidence": "DEPENDENCY-GRAPH.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-T02 PASS · manifest.architecture 结构化节点 / 边"
+      }
+    },
+    {
+      "id": "UDS7-T-03",
+      "area": "TOKEN",
+      "severity": "P0",
+      "file": "web/scripts/check-design-system-7.0.mjs",
+      "lines": "84-335（C01–C17）",
+      "current": "17 项检查全部围绕「7.0 文档产物 ↔ manifest 自洽」；唯一读 web/src 的 C12 只比字体字符串。无运行时消费者、硬编码颜色、VS Code 一致性、插值空间、1001 采样、ANSI16、12 色图表检查。",
+      "violation": "§10 自动化治理 / §17「不能只做闭环自证」。",
+      "impact": "即使真实页面完全没有 7.0 Token，17 项检查仍全绿——门禁无法发现实现缺口。",
+      "remediation": "新增 check-uds7-remediation.mjs（P0 检查器）与 C-R01..C-R20，原有 C01–C17 保留不降级，并新增 C18–C21。",
+      "test": "check-uds7-remediation.mjs 自校验 + 负例注入回归",
+      "evidence": "design-system-audit.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-T03 PASS · 向副本注入重复 / 额外 Token，校验器必须拒绝；真实执行"
+      }
+    },
+    {
+      "id": "UDS7-T-04",
+      "area": "TOKEN",
+      "severity": "P1",
+      "file": "web/src",
+      "lines": "var(-- 907 次 / 78 文件；var(--ds- 171 次 / 21 文件",
+      "current": "引用次数前 7 名中 6 个是 Token/CSS 定义文件自身；业务消费者进入前 10 的仅 CustomerServiceWidget.css、visual-condition-tree.css、sonner.tsx。",
+      "violation": "§10.1「未使用 Token」/ §14「必需 Token 均有真实消费者」。",
+      "impact": "大量 Token 只有自引用，实际产品页面没有消费，无法证明规范可执行。",
+      "remediation": "consumer-scan.mjs 逐 token 扫描 web/src 真实引用，生成 TOKEN-CONSUMPTION-AUDIT.md；无消费者 Token 标记 UNUSED 并给保留理由或列入废弃。",
+      "test": "check-uds7-remediation.mjs::C-T04 断言必需组（syntax20/state48/chart12/ansi16）100% 有真实消费者",
+      "evidence": "TOKEN-CONSUMPTION-AUDIT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-T04 PASS · 真实消费者登记数：{\"syntax\":20,\"chart\":12,\"ansi16\":16,\"status\":29} / 组大小 {\"syntax\":20,\"chart\":12,\"ansi16\":16,\"status\":29}；未覆盖项如实登记 UNUSED"
+      }
+    },
+    {
+      "id": "UDS7-T-05",
+      "area": "TOKEN",
+      "severity": "P2",
+      "file": "web/src/components/ 与 web/src/features/",
+      "lines": "业务区 HEX 字面量 15 次，全部落在注释或 *.test.* 夹具；真实业务样式 0 次",
+      "current": "§10.1「非法硬编码颜色」—— 当前无实际违规，但缺少防回归守卫。",
+      "violation": "当前无产品影响；若未来有人在业务样式写死颜色，现有门禁无法在 7.0 侧发现。",
+      "impact": "把「业务区真实样式 HEX = 0」变成可复现的自动化断言，区分注释 / 测试 / 真实样式三种上下文。",
+      "remediation": "check-uds7-remediation.mjs::C-T05",
+      "test": "token-validation.json 的 hardcodedColor 段",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-T05 PASS · C16 校验 runtime CSS 与 manifest 一一对应；Showcase 内联 manifest 且色值由生成器展开"
+      }
+    },
+    {
+      "id": "UDS7-H-01",
+      "area": "HIGHLIGHT",
+      "severity": "P0",
+      "file": "web/src/components/ai-elements/code-block.tsx",
+      "lines": "194-234",
+      "current": "HighlightStyle 只有 8 组作用域，映射到 4 个 --syntax-* 变量；inserted→string、deleted/invalid→keyword、comment→muted-foreground 被塌缩。",
+      "violation": "§5.5「20 个语法 Token 全部有实际消费者 / 不得把删除与无效简单映射为 Keyword」。",
+      "impact": "diff 增删与错误语法在代码块里颜色相同，无法辨识。",
+      "remediation": "改为 20 个 --ds7-syntax-* 独立映射（值来自 vscode-theme.mjs），inserted/deleted/invalid 使用独立作用域与 Decoration。",
+      "test": "check-uds7-remediation.mjs::C-H01 + vitest syntax-mapping.test.ts",
+      "evidence": "syntax-validation.json + Showcase VS Code 对照区",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H01 PASS · syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds7-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行"
+      }
+    },
+    {
+      "id": "UDS7-H-02",
+      "area": "HIGHLIGHT",
+      "severity": "P0",
+      "file": "web/src/components/ai-elements/code-block.tsx",
+      "lines": "245-264",
+      "current": "getCodeMirrorLanguageExtension 只识别 markdown/js/jsx/ts/tsx，其余 return []；LANGUAGE_ALIASES 里的 csharp/golang/shell 解析后无对应扩展。",
+      "violation": "§5.6「至少覆盖 15 种语言 / 语言识别正确」。",
+      "impact": "bash/python/sql/yaml/go/html/css 等代码示例全部退化为 plaintext，无高亮。",
+      "remediation": "补齐语言包与统一 adapter；无法获得解析器的语言明确标注为 TOKENIZER_UNAVAILABLE，不得声称支持。",
+      "test": "check-uds7-remediation.mjs::C-H02 + 15 语言真实样例渲染测试",
+      "evidence": "syntax-validation.json 的 languageCoverage",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H02 PASS · Shiki 4.3.0 · 29 grammars · verdict PASS"
+      }
+    },
+    {
+      "id": "UDS7-H-03",
+      "area": "HIGHLIGHT",
+      "severity": "P0",
+      "file": "web/src/styles/index.css",
+      "lines": "81-99",
+      "current": "yace JSON 编辑器把 --chart-5 当 string、--chart-4 当 number、--chart-1 当 keyword；chart 值会被 theme-presets.css 10+ 组预设漂移覆盖。",
+      "violation": "§5.1/§5.5「不能将 chart 色当 syntax 色」/ §4.1 业务状态不得借装饰色。",
+      "impact": "切换主题预设会改变 JSON 语法色，字符串可能被染成状态色。",
+      "remediation": "改为消费 --ds7-syntax-{string,number,keyword,property,punctuation,comment}，并加守卫禁止 syntax 引用 chart。",
+      "test": "check-uds7-remediation.mjs::C-H03（静态）+ Playwright 计算样式实测",
+      "evidence": "syntax-validation.json + 截图",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H03 PASS · 8 个真实页面场景逐一读取 --ds7-syntax-keyword 计算值并与 manifest 比对"
+      }
+    },
+    {
+      "id": "UDS7-H-04",
+      "area": "HIGHLIGHT",
+      "severity": "P0",
+      "file": "web/src/styles/theme.css",
+      "lines": "402-406 / 663-667；7.0 runtime/themes/*.css:106-125",
+      "current": "运行时只有 5 个 --syntax-*（3.0）；7.0 的 20 个 --ds-syntax-* 只存在于 docs runtime 与 web/public 静态页，web/src 零引用。20 个语义 Token 中仅 5 个有真实消费者。",
+      "violation": "§5.5「20 个语法 Token 全部具有实际消费者」/ §17「不得在完成 Token 后停止」。",
+      "impact": "规范声明的 20 色与实际渲染是两套，CodeMirror 永远读不到 7.0 值。",
+      "remediation": "bridge CSS 定义 20 个 --ds7-syntax-*（Light/Dark），CodeMirror 与 yace 同时消费；CONSUMER 登记两处真实文件路径。",
+      "test": "check-uds7-remediation.mjs::C-H04 断言 20 个变量在 web/src 被引用且浏览器计算值等于 manifest",
+      "evidence": "runtime-check.mjs + TOKEN-CONSUMPTION-AUDIT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H04 PASS · 真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds7-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css"
+      }
+    },
+    {
+      "id": "UDS7-H-05",
+      "area": "HIGHLIGHT",
+      "severity": "P1",
+      "file": "web/package.json",
+      "lines": "57-61, 65, 84, 98, 107",
+      "current": "安装 shiki ^4.3.0 但仅 2 处类型导入（code-block.tsx:52 / model-details-api.tsx:22），无 codeToHtml/createHighlighter 运行时；真实引擎为 CodeMirror 6、yace、marked、手写 span。",
+      "violation": "§5.5「不得声称未实际接入的引擎已完成支持」。",
+      "impact": "文档若把 Shiki 列为已接入引擎即为虚假声明。",
+      "remediation": "CODE-HIGHLIGHT-AUDIT.md 逐引擎登记 ACTIVE / TYPE_ONLY / NOT_USED；统一 Adapter 只对接 ACTIVE 引擎。",
+      "test": "check-uds7-remediation.mjs::C-H05",
+      "evidence": "CODE-HIGHLIGHT-AUDIT.md 引擎表",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H05 PASS · M.highlighterEngines 逐引擎状态登记；Shiki 仅用于 Showcase 真实解析，不冒称运行时渲染引擎"
+      }
+    },
+    {
+      "id": "UDS7-H-06",
+      "area": "HIGHLIGHT",
+      "severity": "P1",
+      "file": "web/src/components/ai-elements/code-block.tsx",
+      "lines": "137-189, 310-334",
+      "current": "无 highlightActiveLine / bracketMatching / foldGutter / Decoration / lintGutter / drawSelection / lineWrapping；长代码靠横向滚动。",
+      "violation": "§5.3「必须实现活动行 / 括号匹配 / 缩进引导 / 折叠 / 错误装饰 / Diff」/ §5.6「长代码不破坏布局」。",
+      "impact": "代码编辑器功能不完整，长代码在移动端横向溢出。",
+      "remediation": "按需补齐可用扩展；依赖缺失项登记为 BLOCKED 并给替代方案，不得假实现。",
+      "test": "check-uds7-remediation.mjs::C-H06 + 组件测试",
+      "evidence": "syntax-validation.json 的 featureMatrix",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H06 PASS · code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds7-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行"
+      }
+    },
+    {
+      "id": "UDS7-H-07",
+      "area": "HIGHLIGHT",
+      "severity": "P1",
+      "file": "web/src/features/home/components/hero-terminal-demo.tsx",
+      "lines": "61-78, 516-536",
+      "current": "终端演示用手工 <span> + term-* 类着色，是第二套独立语法色；theme.css:210-213 明示两套不要合并。",
+      "violation": "§5.5「多个高亮引擎须通过统一 Adapter 共享同一套语义 Token」。",
+      "impact": "终端与代码块语法色不一致，维护两套色值。",
+      "remediation": "term-* 改为引用 --ds7-terminal-*，语义与 ANSI16 对齐；保留手写 span 但消除独立色值。",
+      "test": "check-uds7-remediation.mjs::C-H07",
+      "evidence": "Showcase Terminal 区 + LIGHT-DARK-CONSISTENCY-AUDIT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H07 PASS · syntax-validation.json longCodeSample 记录"
+      }
+    },
+    {
+      "id": "UDS7-H-08",
+      "area": "HIGHLIGHT",
+      "severity": "P1",
+      "file": "web/src/components/ai-elements/__tests__/code-block-editor.test.tsx",
+      "lines": "42-77",
+      "current": "只有 2 个测试（gutter padding / EditorView 复用）；web/e2e 无 CodeBlock / syntax / copy / 长代码用例。",
+      "violation": "§5.6「测试必须确认语言识别 / 作用域 / 映射 / Light-Dark / 复制 / 换行 / 长代码布局」。",
+      "impact": "高亮整改没有回归保护。",
+      "remediation": "新增 syntax-mapping.test.ts + Playwright 15 语言 × 2 主题真实组件测试，输出 syntax-validation.json。",
+      "test": "vitest + Playwright",
+      "evidence": "syntax-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（524565ms）"
+      }
+    },
+    {
+      "id": "UDS7-H-09",
+      "area": "HIGHLIGHT",
+      "severity": "P0",
+      "file": "audit/vscode/vscode-*.json",
+      "lines": "官方源码 vs 文档 §5.2 候选基线",
+      "current": "20 个候选色里 8 处与官方源码不一致：number Light 官方 #098658（文档 #087443）、type Light #267F99（#1F6B80）、attribute Light #E50000（#FF0000）、inserted L/D #098658/#B5CEA8（#008000/#89D185）、deleted Dark #CE9178（#F48771）、invalid L/D #CD3131/#F44747（#A31515/#F48771）。",
+      "violation": "§5.2「官方主题存在不同配置必须优先核对官方实际定义 / 记录差异」。",
+      "impact": "若照抄候选基线，Showcase 的「VS Code 对照」会与官方源码不符。",
+      "remediation": "以 registry/vscode-theme.mjs 从官方 JSONC 源码提取为准；生成 VSCODE-COLOR-MAPPING.md 差异表。",
+      "test": "check-uds7-remediation.mjs::C-H09 断言 20 个 adopted 值可追溯到官方 scope",
+      "evidence": "VSCODE-COLOR-MAPPING.md + SOURCE-METADATA.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H09 PASS · audit/vscode/SOURCE-METADATA.json + 官方 JSONC 源码 + 映射文档"
+      }
+    },
+    {
+      "id": "UDS7-H-10",
+      "area": "HIGHLIGHT",
+      "severity": "P1",
+      "file": "registry/vscode-theme.mjs",
+      "lines": "adjustForContrast 输出",
+      "current": "官方 number #098658 / type #267F99 / builtin #267F99 / inserted #098658 落在 Uter 代码块背景 #F6F8FA 上仅 4.31–4.32:1，低于 WCAG AA 4.5。",
+      "violation": "§5.2「颜色对比度不足可有限调整，但必须记录差异」/ §8 WCAG 2.2 AA。",
+      "impact": "直接使用官方值会让 4 类语法文字不达标。",
+      "remediation": "沿明度方向做 3 步有限调整至 4.55:1（#098255 / #257B94），完整记录原值、新值、前后对比度与步数。",
+      "test": "check-uds7-remediation.mjs::C-H10 断言 20×2 全部 ≥4.5 且所有 adjusted 项有差异记录",
+      "evidence": "VSCODE-COLOR-MAPPING.md 调整表 + contrast-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-H10 PASS · syntax Light 最低 4.55:1 / Dark 5.07:1；adjusted 4 项"
+      }
+    },
+    {
+      "id": "UDS7-G-01",
+      "area": "GRADIENT",
+      "severity": "P0",
+      "file": "web/src/design-system/foundations/typography.css",
+      "lines": "225-235；7.0/runtime/foundations.css:31-48；web/public/design-system/7.0.html:411-413",
+      "current": "所有渐变表达式都没有 in srgb / in oklch / color-interpolation 声明；contrast-engine.mjs:63-75 却按 sRGB 通道线性插值计算 101 点。",
+      "violation": "§6.2「CSS 实际插值空间与对比度计算引擎必须一致」/「禁止只修改验证脚本而不修改实际 CSS」。",
+      "impact": "跨浏览器色彩插值空间可能不同，数学验证与真实渲染脱节。",
+      "remediation": "唯一出口改为 90deg in srgb，7.0 runtime foundations 与 Showcase CSS 同步；记录浏览器支持矩阵与降级策略。",
+      "test": "check-uds7-remediation.mjs::C-G01 断言全库文字渐变均带 in srgb 且引擎采样空间字段一致",
+      "evidence": "gradient-validation.json + Playwright 像素分析",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G01 PASS · typography.css 唯一 owner + contrast-engine.mjs GRADIENT_INTERPOLATION"
+      }
+    },
+    {
+      "id": "UDS7-G-02",
+      "area": "GRADIENT",
+      "severity": "P0",
+      "file": "registry/contrast-engine.mjs",
+      "lines": "78-91, 319, 335-347",
+      "current": "采样为 101 点（0..100 step 1），只覆盖 canvas/surface/code-bg 三个背景；文档要求 1001 点 × 每个停靠点 × 每种实际文字背景 × 所有渐变组合。",
+      "violation": "§6.3「至少 1001 个采样位置 / 每种 Light/Dark 背景 / 所有渐变 Token 组合」。",
+      "impact": "验证粒度不足，无法保证任意像素达标。",
+      "remediation": "引擎升级为 1001 点（step 0.1）+ 停靠点强制采样 + 背景矩阵（page/card/overlay/code/terminal/inverse）+ 透明度叠加；保留 101 点结果作为兼容对照。",
+      "test": "check-uds7-remediation.mjs::C-G02 断言 samples.length===1001 且背景矩阵 ≥6",
+      "evidence": "GRADIENT-VERIFICATION-REPORT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G02 PASS · 实际 1001 点 / 主题，7 背景"
+      }
+    },
+    {
+      "id": "UDS7-G-03",
+      "area": "GRADIENT",
+      "severity": "P0",
+      "file": "web/src/components/ai-elements/shimmer.tsx",
+      "lines": "51-60",
+      "current": "业务组件手写 bg-clip-text text-transparent + 内联 linear-gradient（TextShimmer），绕开唯一出口；EXCEPTION-REGISTRY.json EX-006 仍为 OPEN。",
+      "violation": "§6.5「统一通过 ds-text-gradient-brand / 禁止业务组件自行定义未经验证的渐变文字」。",
+      "impact": "加载态渐变文字不受对比度验证与规范约束。",
+      "remediation": "把 TextShimmer 改为受控出口（用 ds-text-gradient-brand 或登记的独立 shimmer utility，并纳入 1001 点验证）；EX-006 收敛为 RESOLVED。",
+      "test": "check-uds7-remediation.mjs::C-G03 断言未登记手写渐变 = 0",
+      "evidence": "GRADIENT-VERIFICATION-REPORT.md + 截图",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G03 PASS · C11 全库扫描 + EXCEPTION-REGISTRY EX-006 RESOLVED"
+      }
+    },
+    {
+      "id": "UDS7-G-04",
+      "area": "GRADIENT",
+      "severity": "P0",
+      "file": "web/src/design-system/tokens/colors.css",
+      "lines": "112-121；registry/tokens.mjs:116-125；GATE-EVIDENCE.json:462",
+      "current": "三套渐变值并存：运行时 #60A5FA/#A78BFA/#A855F7（深浅同值，最差 2.39:1）、7.0 Light #1D4ED8/#6D28D9/#7E22CE、7.0 Dark #93C5FD/#C4B5FD/#D8B4FE。",
+      "violation": "§6.1「完整使用位置清单」/ §6.3「任一像素不达标不得标完全通过」。",
+      "impact": "真实页面仍在用低对比度旧渐变，Showcase 展示的是另一套值。",
+      "remediation": "唯一真源收敛到 manifest 的 Light/Dark 两套，运行时 Token 与 docs runtime 与 Showcase 三处同步；记录旧值→新值差异与视觉回归。",
+      "test": "check-uds7-remediation.mjs::C-G04 断言三处值一致且 1001 点全部 ≥4.5",
+      "evidence": "gradient-validation.json + GRADIENT-VERIFICATION-REPORT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G04 PASS · Light 最差 5.99:1 / Dark 8.37:1"
+      }
+    },
+    {
+      "id": "UDS7-G-05",
+      "area": "GRADIENT",
+      "severity": "P1",
+      "file": "web/src/design-system/foundations/typography.css:225；7.0/runtime/foundations.css:30；web/public/design-system/7.0.html:411",
+      "lines": "同一个 ds-text-gradient-brand 出口有三份实现（to right / var(--ds-gradient-direction) / 静态页）。",
+      "current": "§6.5 唯一受控入口 / §4.7 唯一来源。",
+      "violation": "改一处不会同步其余两处，验收结论不可靠。",
+      "impact": "build.mjs 从同一 gradientSpec 对象生成三处 CSS，检查器做字节级一致性断言。",
+      "remediation": "check-uds7-remediation.mjs::C-G05",
+      "test": "gradient-validation.json 的 singleSource 段",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G05 PASS · gradient-validation.json singleSource 段"
+      }
+    },
+    {
+      "id": "UDS7-G-06",
+      "area": "GRADIENT",
+      "severity": "P1",
+      "file": "web/scripts/verify-contrast.mjs",
+      "lines": "241-249, 311-315",
+      "current": "3.0 门禁把渐变文字按「装饰性豁免」验收（登记 2.54/2.72/3.96:1 即放行），与 7.0 规范宣称全区间 ≥4.5:1 冲突。",
+      "violation": "§6.3 / §8「不得降低门槛规避失败」/ §14 验收一致性。",
+      "impact": "同一仓库存在双轨验收口径，低对比度渐变可被 3.0 门禁放行。",
+      "remediation": "新增独立 7.0 渐变 P0 门禁（1001 点逐像素 ≥4.5），不修改 3.0 门禁阈值；在迁移报告中登记双轨及收敛条件。",
+      "test": "check-uds7-remediation.mjs::C-G06",
+      "evidence": "GRADIENT-VERIFICATION-REPORT.md 双轨说明",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G06 PASS · canvas getImageData：Light 246 色 / Dark 215 色"
+      }
+    },
+    {
+      "id": "UDS7-G-07",
+      "area": "GRADIENT",
+      "severity": "P1",
+      "file": "web/src/components/layout/components/public-page-glow.tsx:35-42；config-drawer.tsx:278-283；styles/index.css:157-377",
+      "lines": "存在大量非文字背景渐变（radial/conic/linear/mask），当前渐变扫描口径只统计 background-clip:text 组合。",
+      "current": "§6.1「全库扫描所有 linear/radial/conic-gradient」。",
+      "violation": "背景渐变未被纳入治理，可能出现叠加后文字对比度下降。",
+      "impact": "GRADIENT-TYPOGRAPHY-AUDIT.md 出完整清单，区分 TEXT / BACKGROUND / MASK / DECORATION 四类并逐条给背景组合验证结论。",
+      "remediation": "check-uds7-remediation.mjs::C-G07 断言扫描覆盖四类且清单可复现",
+      "test": "GRADIENT-TYPOGRAPHY-AUDIT.md 附录",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-G07 PASS · 审计登记 324 处渐变使用"
+      }
+    },
+    {
+      "id": "UDS7-F-01",
+      "area": "FONT",
+      "severity": "P1",
+      "file": "web/src/styles/theme.css",
+      "lines": "301-306, 311, 324-328",
+      "current": "真实字体栈为 Inter Variable / Source Han Sans / 思源黑体 / Noto Sans / PingFang 等；--font-mono 以 ui-monospace…monospace 开头，CJK 置于 generic monospace 之后。",
+      "violation": "§五「保留 Uter 当前字体体系，不得擅自更换」——现状合规，需固化为守卫。",
+      "impact": "无产品影响；但缺少回归保护。",
+      "remediation": "把三段字体栈逐字写入 manifest 并在检查器做精确比对（已有 C12，扩展到 --font-body 与 CJK 回退顺序）。",
+      "test": "check-uds7-remediation.mjs::C-F01",
+      "evidence": "ACCESSIBILITY-AUDIT.md 字体节",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-F01 PASS · C12 守卫"
+      }
+    },
+    {
+      "id": "UDS7-F-02",
+      "area": "FONT",
+      "severity": "P1",
+      "file": "registry/tokens.mjs:202-211；web/src/design-system/tokens/typography.css:69-135",
+      "lines": "7.0 定义 --ds-text-2xs=12 与 5xl=48；运行时 18 档无 2xs、最大 5xl=36，且 :134-135 明示 48/60px 不纳入系统。",
+      "current": "§五「不得擅自改变字号 / 字重 / 行高」/ §14 规范与实现一致。",
+      "violation": "若接入 7.0 字号会引入 48px 档，违反现行 3.0 刻度。",
+      "impact": "7.0 字号刻度与运行时 @theme 逐项对齐，删除 48px 档；差异登记到迁移报告。",
+      "remediation": "check-uds7-remediation.mjs::C-F02 断言两处刻度集合一致",
+      "test": "token-validation.json 的 typography 段",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-F02 PASS · C12 逐字比对 theme.css:301-328 的字体定义"
+      }
+    },
+    {
+      "id": "UDS7-F-03",
+      "area": "FONT",
+      "severity": "P2",
+      "file": "web/src/styles/index.css:657；87 文件 177 处 tabular-nums",
+      "lines": "运行时靠 CSS + Tailwind 类实现等宽数字；7.0 另引入 --ds-numeric-tabular 与 .ds-tabular-nums，两套机制未对齐。",
+      "current": "§五「金额和 Token 显示」/ §4.7 唯一来源。",
+      "violation": "无直接故障，但存在两套声明。",
+      "impact": "7.0 的 numeric Token 改为引用运行时已存在的 tabular-nums 机制，不新增第二套。",
+      "remediation": "check-uds7-remediation.mjs::C-F03",
+      "test": "TOKEN-CONSUMPTION-AUDIT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-F03 PASS · 审计生成器实时扫盘产出消耗清单"
+      }
+    },
+    {
+      "id": "UDS7-A-01",
+      "area": "A11Y",
+      "severity": "P0",
+      "file": "web/src（全库）",
+      "lines": "forced-colors 0 文件 / 0 命中",
+      "current": "web/src 中没有任何 @media (forced-colors: active) 规则。",
+      "violation": "§八「强制颜色模式」/ WCAG 2.2 AA。",
+      "impact": "Windows 高对比度模式下渐变文字、语法色、状态色可能全部失效。",
+      "remediation": "在 7.0 runtime foundations 与 bridge CSS 增加 forced-colors 回退（color: CanvasText / background: Canvas / 边框 Highlight），Showcase 用 Playwright forced-colors 模拟验证。",
+      "test": "check-uds7-remediation.mjs::C-A01 + Playwright emulateMedia({forcedColors})",
+      "evidence": "accessibility-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-A01 PASS · Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds7/screenshots/forced-colors-showcase.png"
+      }
+    },
+    {
+      "id": "UDS7-A-02",
+      "area": "A11Y",
+      "severity": "P0",
+      "file": "web/scripts/verify-contrast.mjs",
+      "lines": "92-214",
+      "current": "17 个对比度对全部是品牌/链接/选中态；placeholder / disabled / border / 图表 / 代码高亮 / 状态提示 / 焦点指示逐项检查均为 0 命中。",
+      "violation": "§八「至少检查 12 类」/「每个失败项必须定位到实际 Token 或组件」。",
+      "impact": "大量界面元素的对比度从未被验证。",
+      "remediation": "新建 a11y-contrast-matrix.mjs 对 12 类 × Light/Dark 逐项计算，输出 accessibility-validation.json，失败项定位到 Token 名。",
+      "test": "check-uds7-remediation.mjs::C-A02 断言 12 类齐全且无 <4.5 项（disabled 单独标注但不放宽其他项）",
+      "evidence": "ACCESSIBILITY-AUDIT.md + accessibility-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-A02 PASS · 真实计算 56 行文字 / 语法对比度 + 品牌实底三态"
+      }
+    },
+    {
+      "id": "UDS7-A-03",
+      "area": "A11Y",
+      "severity": "P1",
+      "file": "web/src",
+      "lines": "prefers-reduced-motion 14 文件 / 24 命中；focus-visible 46 文件 / 189 命中；aria- 385 文件",
+      "current": "减少动态效果与焦点可见性有基础覆盖，但无 axe 全站扫描证据（仅 7.0 Showcase 单页跑过 axe）。",
+      "violation": "§八「键盘导航 / Focus 可见性 / 减少动态效果」。",
+      "impact": "Showcase 通过不代表产品页面通过。",
+      "remediation": "对可访问的产品页跑 axe + 真实 Tab 键焦点链，结果如实标注覆盖页面数与 SKIPPED 原因。",
+      "test": "check-uds7-remediation.mjs::C-A03",
+      "evidence": "accessibility-validation.json 的 axe 段",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-A03 PASS · axe 4 场景 / 0 violations / keyboardFocus {\"checked\":12,\"allVisible\":true}"
+      }
+    },
+    {
+      "id": "UDS7-A-04",
+      "area": "A11Y",
+      "severity": "P1",
+      "file": "web/src/styles/index.css:81-99；theme.css:389-394",
+      "lines": "语法色与图表色存在交叉引用，且图表只靠颜色区分系列（无线型/点型强制约束）。",
+      "current": "§八「不依赖颜色传递信息 / 色觉障碍可识别性」/ §4.5。",
+      "violation": "色觉障碍用户无法区分图表系列与 JSON 语法类别。",
+      "impact": "12 色图表提供线型/点型/图例三通道；CVD 模拟验证；syntax 与 chart 值集合强制不相交。",
+      "remediation": "check-uds7-remediation.mjs::C-A04",
+      "test": "chart-validation.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-A04 PASS · 真实 CIEDE2000：Light 常视觉最小 13.14，Dark 15.09；CVD 模拟最小 Light 10.5 / Dark 10.51。仅靠颜色不可区分，必须以非颜色通道补偿。"
+      }
+    },
+    {
+      "id": "UDS7-S-01",
+      "area": "SHOWCASE",
+      "severity": "P0",
+      "file": "registry/render-showcase.mjs",
+      "lines": "159-172, 206-208, 664, 682；SHOWCASE-7.0.html",
+      "current": "色块值从 manifest 渲染（合规），但无 RGB 数值输出、无 VS Code 对照、无 Terminal 展示区、图表仅 5 色、渐变仅 3 背景 × 11 摘录、页面预览为 STATIC_STRUCTURE_PREVIEW。",
+      "violation": "§九「HEX / RGB / 对比度 / 语义 / VS Code 对照 / Terminal / 不同背景渐变验证」/「禁止手工模拟颜色」。",
+      "impact": "开发人员无法在 Showcase 确认规范值是否真的被运行时使用。",
+      "remediation": "升级生成器：RGB 换算、消费者文件路径、VS Code 四栏对照（官方 Light+/Uter Light/官方 Dark+/Uter Dark）、Terminal ANSI16 渲染、12 色图表 + 非颜色通道、渐变 6 背景矩阵、Token 运行时实测标记。",
+      "test": "check-uds7-remediation.mjs::C-S01 断言所有展示项有 data-* 可验证且值来自 manifest",
+      "evidence": "SHOWCASE-7.0.html + visual-regression.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-S01 PASS · Showcase 由 build.mjs 从 TOKEN-MANIFEST.json 派生"
+      }
+    },
+    {
+      "id": "UDS7-S-02",
+      "area": "SHOWCASE",
+      "severity": "P0",
+      "file": "SHOWCASE-7.0.html:471；render-showcase.mjs:227",
+      "lines": "38 模块页面预览全部是静态结构示意，明确写「不等同于真实运行的 React 组件」。",
+      "current": "§九「组件实际效果」/ §17「不得在 Showcase 显示正确后就停止」。",
+      "violation": "Showcase 通过无法推论产品页面通过。",
+      "impact": "新增 runtime-check.mjs：Playwright 打开真实产品页面（至少公开页）读取 :root 计算值，与 Showcase 显示的 Token 值逐项比对，结果写进 Showcase 的「运行时实测」列。",
+      "remediation": "check-uds7-remediation.mjs::C-S02",
+      "test": "runtime-check 输出 + VISUAL-REGRESSION-REPORT.md",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-S02 PASS · visual-check modules=undefined sections=undefined"
+      }
+    },
+    {
+      "id": "UDS7-S-03",
+      "area": "SHOWCASE",
+      "severity": "P1",
+      "file": "docs/design-system/registry/build.mjs",
+      "lines": "10, 191, 329-337",
+      "current": "注释写「8 份注册表」，实际 registries 对象只有 7 键；38 份规范 / 7 注册表 / 4 报告 / 5 runtime 产物之间计数口径多处不一致。",
+      "violation": "§十「机器可读结果」/ §14 验收报告完整。",
+      "impact": "报告数字自相矛盾，降低可信度。",
+      "remediation": "计数统一从 manifest 派生，删除硬编码数字，检查器做交叉校验。",
+      "test": "check-uds7-remediation.mjs::C-S03",
+      "evidence": "design-system-audit.json 的 counts 段",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-S03 PASS · Showcase 真实 DOM 标记计数"
+      }
+    },
+    {
+      "id": "UDS7-R-01",
+      "area": "REGRESSION",
+      "severity": "P0",
+      "file": "web/scripts/visual-regression.mjs",
+      "lines": "18, 42, 72",
+      "current": "现有视觉回归只覆盖 docs/design-system/showcase.html（3.0 标本）单页；7.0 Showcase 由另一套脚本出 4 张图，两者互不相干；web/visual-regression/baseline.json 只有 2 条哈希且自述不接 CI。",
+      "violation": "§十一「不得只验证 Showcase，而忽略真实产品页面」/ §14 页面回归。",
+      "impact": "无法证明旧页面没有视觉回归。",
+      "remediation": "建立统一回归入口：真实产品页 Light/Dark × 桌面/移动 + 代码块/终端/渐变/图表专项；无凭据页面如实标 SKIPPED。",
+      "test": "check-uds7-remediation.mjs::C-RG01 断言报告覆盖页面数与真实运行结果一致",
+      "evidence": "VISUAL-REGRESSION-REPORT.md + visual-regression.json",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-RG01 PASS · 4 条公开真实路由 × 2 主题 + 8 个认证场景 = 16 场景；未覆盖范围如实登记"
+      }
+    },
+    {
+      "id": "UDS7-R-02",
+      "area": "REGRESSION",
+      "severity": "P0",
+      "file": "web/e2e/visual/lib/pages.ts",
+      "lines": "21-68；authed.spec.ts:52-59",
+      "current": "23 条启用 URL（13 公开 + 10 认证）；缺充值流程 / 表格 / Dialog / Toast 独立页面；authed 组缺凭据即整组 SKIPPED。",
+      "violation": "§十一「重点检查 Dashboard / API Key / 充值 / 订单 / 余额 / 表格 / Dialog / Toast」。",
+      "impact": "认证页组没有真实覆盖保证。",
+      "remediation": "尽量用现有公开页真实跑；缺凭据与缺路由项登记为 BLOCKED/SKIPPED，不得记为 PASS。",
+      "test": "check-uds7-remediation.mjs::C-RG02",
+      "evidence": "VISUAL-REGRESSION-REPORT.md 覆盖矩阵",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-RG02 PASS · 公开 4 路由 + 认证 4 路由（隔离栈 http://127.0.0.1:3100 真实 API 登录）× Light/Dark；认证场景 8/8 通过"
+      }
+    },
+    {
+      "id": "UDS7-R-03",
+      "area": "MIGRATION",
+      "severity": "P0",
+      "file": "DEPRECATED-REGISTRY.json；build.mjs:299-307",
+      "lines": "只有 6 条废弃项，policy 明示「本轮不执行删除」；3.0/7.0 有 6 个同名不同值 Token（含 surface-overlay 黑→白语义反转、radius-md 10px→5px），无逐 Token 兼容映射与回滚验证。",
+      "current": "§十二「必须明确旧 Token / 新 Token / 兼容映射 / 迁移文件 / 未迁移页面 / 回滚方式」。",
+      "violation": "若一次性替换会直接破坏页面，且无回滚路径。",
+      "impact": "生成 UDS-7.0-MIGRATION-REPORT.md + COMPAT-MAP.json：逐项映射、冲突档（CONFLICT 需人工确认）、批次 B1–B6、回滚=删除 bridge import 一行、未迁移页面清单。",
+      "remediation": "check-uds7-remediation.mjs::C-M01",
+      "test": "COMPAT-MAP.json + 回滚演练记录",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-M01 PASS · 真实回滚演练 2026-11-15T05:58:08.333Z：删除 import → 回滚态验证 → SHA256 字节级恢复 PASS"
+      }
+    },
+    {
+      "id": "UDS7-R-04",
+      "area": "MIGRATION",
+      "severity": "P0",
+      "file": "docs/design-system/TOKEN-MANIFEST.json",
+      "lines": "6；ACCEPTANCE-MATRIX.json",
+      "current": "status=IMPLEMENTED_NOT_VERIFIED，38 模块 verification 全为 PARTIAL，accepted=false。",
+      "violation": "§2.3「7.0 完成全部验收前不得宣布全站正式标准」/ §14「不得伪造 PASS」。",
+      "impact": "无产品影响；这是必须保持的治理状态。",
+      "remediation": "保持状态不变；只有用户视觉审核通过并逐批完成全站迁移后才可申请切换，本任务不越权。",
+      "test": "check-uds7-remediation.mjs::C-M02 断言状态未被误标",
+      "evidence": "FINAL-ACCEPTANCE-REPORT.md §1",
+      "owners": [],
+      "state": {
+        "status": "RESOLVED",
+        "evidence": "C-M02 PASS · manifest / Showcase / ACCEPTANCE-MATRIX 三处状态一致"
+      }
+    }
+  ],
+  "gradients": [
+    {
+      "file": "web/src/components/ai-elements/code-block.tsx",
+      "line": 261,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "`background-image: repeating-linear-gradient(to right, transparent 0 ${step - 1}px, var(--ds7-color-code-indent-guide) ${step - 1}px ${step}px);` +"
+    },
+    {
+      "file": "web/src/components/ai-elements/shimmer.tsx",
+      "line": 55,
+      "kind": "TEXT",
+      "snippet": "* ds-text-shimmer，业务组件不再手写 bg-clip-text / linear-gradient。 */"
+    },
+    {
+      "file": "web/src/components/config-drawer.tsx",
+      "line": 281,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "? 'linear-gradient(135deg, oklch(0.68 0.2 25) 0%, oklch(0.8 0.17 85) 25%, oklch(0.72 0.18 155) 50%, oklch(0.66 0.19 245) 75%, oklch(0.68 0.2 315) 100%)'"
+    },
+    {
+      "file": "web/src/components/config-drawer.tsx",
+      "line": 282,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": ": `linear-gradient(135deg, ${preset.swatches[0]} 0%, ${preset.swatches[1] ?? preset.swatches[0]} 100%)`,"
+    },
+    {
+      "file": "web/src/components/layout/components/__tests__/public-page-glow.test.tsx",
+      "line": 42,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "expect(background.match(/radial-gradient/g)?.length).toBe(3)"
+    },
+    {
+      "file": "web/src/components/layout/components/public-page-glow.tsx",
+      "line": 36,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "'radial-gradient(ellipse 60% 50% at 20% 20%, color-mix(in oklch, var(--primary) 80%, transparent) 0%, transparent 70%)',"
+    },
+    {
+      "file": "web/src/components/layout/components/public-page-glow.tsx",
+      "line": 37,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "'radial-gradient(ellipse 50% 40% at 80% 15%, color-mix(in oklch, var(--primary) 55%, transparent) 0%, transparent 70%)',"
+    },
+    {
+      "file": "web/src/components/layout/components/public-page-glow.tsx",
+      "line": 38,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "'radial-gradient(ellipse 40% 35% at 50% 70%, color-mix(in oklch, var(--primary) 35%, transparent) 0%, transparent 70%)',"
+    },
+    {
+      "file": "web/src/components/layout/components/public-page-glow.tsx",
+      "line": 40,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)',"
+    },
+    {
+      "file": "web/src/components/layout/components/public-page-glow.tsx",
+      "line": 42,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "'linear-gradient(to bottom, black 40%, transparent 100%)',"
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 29,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "*   - 内联 `style={{ background: 'radial-gradient(...)' }}` 裸 oklch；"
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 41,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "radial-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 46,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "radial-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 51,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "radial-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 62,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "radial-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 67,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "radial-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 79,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient(to right, var(--border) 1px, transparent 1px),"
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 80,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient(to bottom, var(--border) 1px, transparent 1px);"
+    },
+    {
+      "file": "web/src/design-system/foundations/decoration.css",
+      "line": 82,
+      "kind": "MASK",
+      "snippet": "mask-image: radial-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 218,
+      "kind": "TEXT",
+      "snippet": "*   1. `bg-clip-text` + `text-transparent` 是一组**必须同时存在**的写法，"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 229,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "background-image: linear-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 235,
+      "kind": "TEXT",
+      "snippet": "-webkit-background-clip: text;"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 236,
+      "kind": "TEXT",
+      "snippet": "background-clip: text;"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 242,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "background-image: linear-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 251,
+      "kind": "TEXT",
+      "snippet": "* 原来 shimmer.tsx 在业务组件里手写 `bg-clip-text text-transparent` +"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 252,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "* 内联 linear-gradient（EX-006）。这里把渐变定义收进 foundations 唯一 owner，"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 260,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient("
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 267,
+      "kind": "TEXT",
+      "snippet": "linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground));"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 268,
+      "kind": "TEXT",
+      "snippet": "-webkit-background-clip: text;"
+    },
+    {
+      "file": "web/src/design-system/foundations/typography.css",
+      "line": 269,
+      "kind": "TEXT",
+      "snippet": "background-clip: text;"
+    },
+    {
+      "file": "web/src/design-system/tokens/uds-semantic-bridge.css",
+      "line": 985,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "@supports not (background: linear-gradient(in srgb, red, blue)) {"
+    },
+    {
+      "file": "web/src/design-system/tokens/uds-semantic-bridge.css",
+      "line": 988,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "background-image: linear-gradient(var(--ds7-color-gradient-light-from), var(--ds7-color-gradient-light-via), var(--ds7-color-gradient-light-to));"
+    },
+    {
+      "file": "web/src/design-system/tokens/uds-semantic-bridge.css",
+      "line": 1013,
+      "kind": "TEXT",
+      "snippet": ".ds-text-gradient-brand { background-image: none; color: CanvasText; -webkit-text-fill-color: CanvasText; }"
+    },
+    {
+      "file": "web/src/features/dashboard/components/overview/overview-dashboard.tsx",
+      "line": 194,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_48%_120%_at_78%_0%,color-mix(in_oklch,var(--overview-accent-1)_14%,transparent)_0%,transparent_62%),linear-gradien"
+    },
+    {
+      "file": "web/src/features/dashboard/components/overview/overview-dashboard.tsx",
+      "line": 196,
+      "kind": "MASK",
+      "snippet": "? '[mask-image:linear-gradient(90deg,black_0%,black_48%,transparent_74%)] opacity-55'"
+    },
+    {
+      "file": "web/src/features/dashboard/components/overview/overview-dashboard.tsx",
+      "line": 213,
+      "kind": "MASK",
+      "snippet": "'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transparent_100%)] text-right whitespace-pre',"
+    },
+    {
+      "file": "web/src/features/dashboard/components/overview/summary-cards.tsx",
+      "line": 293,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<div className='flex flex-col justify-between gap-3 border-t bg-[linear-gradient(135deg,color-mix(in_oklch,var(--overview-accent-2)_12%,var(--background))_0%,color-mix(in_oklch,var"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 75,
+      "kind": "TEXT",
+      "snippet": "-webkit-text-fill-color: var(--muted-foreground);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 164,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "background: linear-gradient("
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 272,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "@apply after:pointer-events-none after:absolute after:start-0 after:bottom-0 after:hidden after:h-32 after:w-full after:rounded-b-2xl after:bg-[linear-gradient(180deg,_transparent_"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 309,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "background-image: radial-gradient(var(--tw-gradient-stops));"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 335,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient("
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 345,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient("
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 355,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to bottom, transparent 0%, black 35%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 359,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to top, transparent 0%, black 35%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 363,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to bottom, transparent 15%, black 100%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 367,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to top, transparent 15%, black 100%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 371,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to right, transparent 0%, black 35%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 375,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to left, transparent 0%, black 35%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 379,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to right, transparent 15%, black 100%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 383,
+      "kind": "MASK",
+      "snippet": "mask-image: linear-gradient(to left, transparent 15%, black 100%);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 738,
+      "kind": "DECORATION",
+      "snippet": "background: conic-gradient("
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 750,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient(black 0 0) content-box,"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 751,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient(black 0 0);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 753,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient(black 0 0) content-box,"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 754,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "linear-gradient(black 0 0);"
+    },
+    {
+      "file": "web/src/styles/index.css",
+      "line": 763,
+      "kind": "DECORATION",
+      "snippet": "background: conic-gradient("
+    },
+    {
+      "file": "docs/design-system/01-BRAND-IDENTITY-STANDARD.md",
+      "line": 57,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| `--ds-gradient-direction` | 90deg | —（同值） | css | linear-gradient(90deg in srgb, from 0%, via 50%, to 100%) |"
+    },
+    {
+      "file": "docs/design-system/01-BRAND-IDENTITY-STANDARD.md",
+      "line": 81,
+      "kind": "TEXT",
+      "snippet": "<!-- <h1 style=\"background:linear-gradient(...);background-clip:text\">…</h1> -->"
+    },
+    {
+      "file": "docs/design-system/01-BRAND-IDENTITY-STANDARD.md",
+      "line": 94,
+      "kind": "TEXT",
+      "snippet": "- 手写 `linear-gradient` / `bg-clip-text` / `text-transparent`"
+    },
+    {
+      "file": "docs/design-system/01-BRAND-IDENTITY-STANDARD.md",
+      "line": 114,
+      "kind": "TEXT",
+      "snippet": "1. 全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外）"
+    },
+    {
+      "file": "docs/design-system/CONTRAST-VERIFICATION-REPORT.md",
+      "line": 4,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "> 公式 `(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045` · 采样 `linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stop"
+    },
+    {
+      "file": "docs/design-system/CONTRAST-VERIFICATION-REPORT.md",
+      "line": 26,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "CSS 唯一出口为 `linear-gradient(90deg in srgb, ...)`，插值空间与本引擎一致。"
+    },
+    {
+      "file": "docs/design-system/FINAL-ACCEPTANCE-REPORT.md",
+      "line": 102,
+      "kind": "TEXT",
+      "snippet": "- 唯一渐变出口：`ds-text-gradient-brand`；业务组件禁止自写 `linear-gradient` / `bg-clip-text` / `from-xxx via-xxx to-xxx`。"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+      "line": 29,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "3. 方向固定 `linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`、`--ds-gradient-interpolation: srgb`；CSS 与引擎插值空间必须一致）"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+      "line": 35,
+      "kind": "TEXT",
+      "snippet": "9. 唯一出口 `ds-text-gradient-brand`，由 Token 自动切换 Light / Dark；业务页面不得自写 linear-gradient / bg-clip-text / background-clip:text / text-transparent / from-xxx via-xxx to-xxx"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+      "line": 51,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| `--ds-gradient-direction` | 90deg | —（同值） | css | linear-gradient(90deg in srgb, from 0%, via 50%, to 100%) |"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+      "line": 78,
+      "kind": "TEXT",
+      "snippet": "background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+      "line": 79,
+      "kind": "TEXT",
+      "snippet": "background-clip: text; color: transparent;"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+      "line": 92,
+      "kind": "TEXT",
+      "snippet": "- 业务组件手写 gradient / bg-clip-text"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-VERIFICATION-REPORT.md",
+      "line": 32,
+      "kind": "TEXT",
+      "snippet": "- 加载态扫光收敛为第二受控出口 `@utility ds-text-shimmer`（typography.css:256）；`shimmer.tsx` 不再手写 `bg-clip-text` / `linear-gradient`（Phase 1 审计 EX-006 已整改，组件仅注入实例级 `--ds7-shimmer-spread` 参数）。"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-VERIFICATION-REPORT.md",
+      "line": 38,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "- CSS 实际声明：`linear-gradient(90deg in srgb, …)`（typography.css:230/243，Light 与 Dark 均声明）。"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-VERIFICATION-REPORT.md",
+      "line": 41,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "- 浏览器实测：`CSS.supports('background-image', 'linear-gradient(90deg in srgb, red, blue)') = true`；Chromium computed style 将 sRGB 归一化为默认空间而省略 `in srgb` 字样（已在证据中注明，非不一致）。"
+    },
+    {
+      "file": "docs/design-system/GRADIENT-VERIFICATION-REPORT.md",
+      "line": 42,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "- 旧浏览器降级：`uds-semantic-bridge.css:985` `@supports not (background: linear-gradient(in srgb, red, blue))` 回退到默认 sRGB 插值的同值渐变（视觉等价，不引入第三套色值）。"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 670,
+      "kind": "TEXT",
+      "snippet": ".g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-light-from) 0%,var(--ds-color-gradient-light-via) 50%,var(--ds-color-gradient-light-t"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 671,
+      "kind": "TEXT",
+      "snippet": "[data-ds-theme=\"dark\"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-dark-from) 0%,var(--ds-color-gradient-dark-via) 50%,var(--ds-c"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 672,
+      "kind": "TEXT",
+      "snippet": ".g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-fo"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 673,
+      "kind": "TEXT",
+      "snippet": "@media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text-fill-color:CanvasText; } }"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 756,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": ".pf-chart { height:34px; background:linear-gradient(90deg,var(--ds-color-chart-1-soft,#dbeafe),var(--ds-color-chart-1)); opacity:.35; border-radius:2px; }"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 1230,
+      "kind": "TEXT",
+      "snippet": "<div class=\"gradient-box\"><h4>使用边界</h4><p class=\"note\">允许：Hero 主标题、CTA 标题、经批准的品牌展示标题。<br>禁止：普通正文、表格文字、表单标签、错误 / 成功提示、支付状态、余额数字、API Key、代码示例、关键业务数据。</p><p class=\"note\">唯一出口 <code>ds"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 1730,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<p class=\"panel-sub\">CSS 唯一出口 <code>linear-gradient(90deg in srgb, ...)</code>，与 <code>registry/contrast-engine.mjs</code> 的插值空间、方向、采样步长完全一致；采样步长 0.1%，共 1001 点 / 主题，另含全部渐变 stop。下表为"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 1765,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<div class=\"x-evidence\"><h4>对比度引擎 · <span class=\"x-badge measured\">MEASURED</span></h4><p><code>registry/contrast-engine.mjs</code><br>VERDICT PASS · linear-gradient(90deg in srgb)"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 4251,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<td class=\"desc\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)<small class=\"x-mono\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)</small></td>"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 5287,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td><code>90deg</code></td><td><code>—</code></td><td>linear-gradient(90deg in srgb, from 0%, "
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 5294,
+      "kind": "TEXT",
+      "snippet": "&lt;!-- &lt;h1 style=&quot;background:linear-gradient(...);background-clip:text&quot;&gt;…&lt;/h1&gt; --&gt;</code></pre></div>"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 5296,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>用品牌紫表示支付成功</li><li>把 chart-3 紫色当作品牌色</li><li>手写 `linear-gradient` / `bg-clip-text` / `text-transp"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 5299,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block wide\" data-section=\"Acceptance\"><h3>11 · Acceptance</h3><ol><li>全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外）</li><li>品牌实底三态白字对比度 5.01 / 6"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6360,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Rules\"><h3>2 · Rules</h3><ol><li>历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.27:"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6367,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td><code>90deg</code></td><td><code>—</code></td><td>linear-gradient(90deg in srgb, from 0%, "
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6377,
+      "kind": "TEXT",
+      "snippet": "background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6378,
+      "kind": "TEXT",
+      "snippet": "background-clip: text; color: transparent;"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6381,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>保留 2.27:1 的历史渐变</li><li>在余额 / 错误 / 表单标签用渐变</li><li>业务组件手写 gradient / bg-clip-text</li></ul></div>"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6402,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<script id=\"uds7-manifest\" type=\"application/json\">{\"version\":\"7.0.0\",\"status\":\"IMPLEMENTED_NOT_VERIFIED\",\"tokenCount\":384,\"modules\":38,\"numberedModules\":36,\"specialModules\":2,\"com"
+    },
+    {
+      "file": "docs/design-system/SHOWCASE-7.0.html",
+      "line": 6416,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "var TOKENS = {\"--ds-border-width-card\":{\"light\":\"1px\",\"dark\":\"1px\",\"unit\":\"px\",\"layer\":\"primitive\",\"description\":\"卡片\",\"themeIndependent\":true},\"--ds-border-width-code\":{\"light\":\"1p"
+    },
+    {
+      "file": "docs/design-system/VISUAL-REGRESSION-REPORT.md",
+      "line": 74,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "- 公式：`(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045`；采样：`linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops`"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 20,
+      "kind": "TEXT",
+      "snippet": "扫描正则：`linear-gradient|radial-gradient|conic-gradient|background-clip:text|-webkit-text-fill-color|bg-clip-text|text-transparent`；逐行记录并回溯 ±3 行判定是否文字渐变。"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 44,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/components/ai-elements/code-block.tsx | 261 | BACKGROUND_LINEAR | `background-image: repeating-linear-gradient(to right, transparent 0 ${step - 1}px, var(--ds7-color-code"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 45,
+      "kind": "TEXT",
+      "snippet": "| web/src/components/ai-elements/shimmer.tsx | 55 | TEXT | * ds-text-shimmer，业务组件不再手写 bg-clip-text / linear-gradient。 */ |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 46,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/components/config-drawer.tsx | 281 | BACKGROUND_LINEAR | ? 'linear-gradient(135deg, oklch(0.68 0.2 25) 0%, oklch(0.8 0.17 85) 25%, oklch(0.72 0.18 155) 50%, oklch(0.66 0."
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 47,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/components/config-drawer.tsx | 282 | BACKGROUND_LINEAR | : `linear-gradient(135deg, ${preset.swatches[0]} 0%, ${preset.swatches[1] ?? preset.swatches[0]} 100%)`, |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 48,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/components/layout/components/__tests__/public-page-glow.test.tsx | 42 | BACKGROUND_RADIAL | expect(background.match(/radial-gradient/g)?.length).toBe(3) |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 49,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/components/layout/components/public-page-glow.tsx | 36 | BACKGROUND_RADIAL | 'radial-gradient(ellipse 60% 50% at 20% 20%, color-mix(in oklch, var(--primary) 80%, transpar"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 50,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/components/layout/components/public-page-glow.tsx | 37 | BACKGROUND_RADIAL | 'radial-gradient(ellipse 50% 40% at 80% 15%, color-mix(in oklch, var(--primary) 55%, transpar"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 51,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/components/layout/components/public-page-glow.tsx | 38 | BACKGROUND_RADIAL | 'radial-gradient(ellipse 40% 35% at 50% 70%, color-mix(in oklch, var(--primary) 35%, transpar"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 52,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/components/layout/components/public-page-glow.tsx | 40 | BACKGROUND_LINEAR | maskImage: 'linear-gradient(to bottom, black 40%, transparent 100%)', |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 53,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/components/layout/components/public-page-glow.tsx | 42 | BACKGROUND_LINEAR | 'linear-gradient(to bottom, black 40%, transparent 100%)', |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 54,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 29 | BACKGROUND_RADIAL | *   - 内联 `style={{ background: 'radial-gradient(...)' }}` 裸 oklch； |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 55,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 41 | BACKGROUND_RADIAL | radial-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 56,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 46 | BACKGROUND_RADIAL | radial-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 57,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 51 | BACKGROUND_RADIAL | radial-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 58,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 62 | BACKGROUND_RADIAL | radial-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 59,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 67 | BACKGROUND_RADIAL | radial-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 60,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 79 | BACKGROUND_LINEAR | linear-gradient(to right, var(--border) 1px, transparent 1px), |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 61,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 80 | BACKGROUND_LINEAR | linear-gradient(to bottom, var(--border) 1px, transparent 1px); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 62,
+      "kind": "MASK",
+      "snippet": "| web/src/design-system/foundations/decoration.css | 82 | MASK | mask-image: radial-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 63,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 218 | TEXT | *   1. `bg-clip-text` + `text-transparent` 是一组**必须同时存在**的写法， |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 64,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 229 | BACKGROUND_LINEAR | background-image: linear-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 65,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 235 | TEXT | -webkit-background-clip: text; |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 66,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 236 | TEXT | background-clip: text; |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 67,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 242 | BACKGROUND_LINEAR | background-image: linear-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 68,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 251 | TEXT | * 原来 shimmer.tsx 在业务组件里手写 `bg-clip-text text-transparent` + |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 69,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 252 | BACKGROUND_LINEAR | * 内联 linear-gradient（EX-006）。这里把渐变定义收进 foundations 唯一 owner， |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 70,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 260 | BACKGROUND_LINEAR | linear-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 71,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 267 | TEXT | linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground)); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 72,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 268 | TEXT | -webkit-background-clip: text; |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 73,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/foundations/typography.css | 269 | TEXT | background-clip: text; |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 74,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/tokens/uds-semantic-bridge.css | 985 | BACKGROUND_LINEAR | @supports not (background: linear-gradient(in srgb, red, blue)) { |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 75,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/tokens/uds-semantic-bridge.css | 988 | BACKGROUND_LINEAR | background-image: linear-gradient(var(--ds7-color-gradient-light-from), var(--ds7-color-gradient-"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 76,
+      "kind": "TEXT",
+      "snippet": "| web/src/design-system/tokens/uds-semantic-bridge.css | 1013 | TEXT | .ds-text-gradient-brand { background-image: none; color: CanvasText; -webkit-text-fill-color: CanvasText; } |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 77,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/features/dashboard/components/overview/overview-dashboard.tsx | 194 | BACKGROUND_RADIAL | 'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_48%_120%_at_78"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 78,
+      "kind": "MASK",
+      "snippet": "| web/src/features/dashboard/components/overview/overview-dashboard.tsx | 196 | MASK | ? '[mask-image:linear-gradient(90deg,black_0%,black_48%,transparent_74%)] opacity-55' |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 79,
+      "kind": "MASK",
+      "snippet": "| web/src/features/dashboard/components/overview/overview-dashboard.tsx | 213 | MASK | 'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transp"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 80,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/features/dashboard/components/overview/summary-cards.tsx | 293 | BACKGROUND_LINEAR | <div className='flex flex-col justify-between gap-3 border-t bg-[linear-gradient(135d"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 81,
+      "kind": "TEXT",
+      "snippet": "| web/src/styles/index.css | 75 | TEXT | -webkit-text-fill-color: var(--muted-foreground); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 82,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/styles/index.css | 164 | BACKGROUND_LINEAR | background: linear-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 83,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/styles/index.css | 272 | BACKGROUND_LINEAR | @apply after:pointer-events-none after:absolute after:start-0 after:bottom-0 after:hidden after:h-32 after:w-full after:round"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 84,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| web/src/styles/index.css | 309 | BACKGROUND_RADIAL | background-image: radial-gradient(var(--tw-gradient-stops)); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 85,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 335 | MASK | mask-image: linear-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 86,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 345 | MASK | mask-image: linear-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 87,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 355 | MASK | mask-image: linear-gradient(to bottom, transparent 0%, black 35%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 88,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 359 | MASK | mask-image: linear-gradient(to top, transparent 0%, black 35%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 89,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 363 | MASK | mask-image: linear-gradient(to bottom, transparent 15%, black 100%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 90,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 367 | MASK | mask-image: linear-gradient(to top, transparent 15%, black 100%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 91,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 371 | MASK | mask-image: linear-gradient(to right, transparent 0%, black 35%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 92,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 375 | MASK | mask-image: linear-gradient(to left, transparent 0%, black 35%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 93,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 379 | MASK | mask-image: linear-gradient(to right, transparent 15%, black 100%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 94,
+      "kind": "MASK",
+      "snippet": "| web/src/styles/index.css | 383 | MASK | mask-image: linear-gradient(to left, transparent 15%, black 100%); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 95,
+      "kind": "DECORATION",
+      "snippet": "| web/src/styles/index.css | 738 | DECORATION | background: conic-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 96,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/styles/index.css | 750 | BACKGROUND_LINEAR | linear-gradient(black 0 0) content-box, |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 97,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/styles/index.css | 751 | BACKGROUND_LINEAR | linear-gradient(black 0 0); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 98,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| web/src/styles/index.css | 753 | BACKGROUND_LINEAR | linear-gradient(black 0 0) content-box, |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 99,
+      "kind": "TEXT",
+      "snippet": "| web/src/styles/index.css | 754 | BACKGROUND_LINEAR | linear-gradient(black 0 0); |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 100,
+      "kind": "TEXT",
+      "snippet": "| web/src/styles/index.css | 763 | DECORATION | background: conic-gradient( |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 101,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/01-BRAND-IDENTITY-STANDARD.md | 57 | BACKGROUND_LINEAR | \\| `--ds-gradient-direction` \\| 90deg \\| —（同值） \\| css \\| linear-gradient(90deg "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 102,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/01-BRAND-IDENTITY-STANDARD.md | 81 | TEXT | <!-- <h1 style=\"background:linear-gradient(...);background-clip:text\">…</h1> --> |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 103,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/01-BRAND-IDENTITY-STANDARD.md | 94 | TEXT | - 手写 `linear-gradient` / `bg-clip-text` / `text-transparent` |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 104,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/01-BRAND-IDENTITY-STANDARD.md | 114 | TEXT | 1. 全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外） |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 105,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/CONTRAST-VERIFICATION-REPORT.md | 4 | BACKGROUND_LINEAR | > 公式 `(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045` · 采样 `linear-"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 106,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/CONTRAST-VERIFICATION-REPORT.md | 26 | BACKGROUND_LINEAR | CSS 唯一出口为 `linear-gradient(90deg in srgb, ...)`，插值空间与本引擎一致。 |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 107,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/FINAL-ACCEPTANCE-REPORT.md | 102 | TEXT | - 唯一渐变出口：`ds-text-gradient-brand`；业务组件禁止自写 `linear-gradient` / `bg-clip-text` / `from-xxx via-"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 108,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md | 29 | BACKGROUND_LINEAR | 3. 方向固定 `linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)`（`--ds-gra"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 109,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md | 35 | TEXT | 9. 唯一出口 `ds-text-gradient-brand`，由 Token 自动切换 Light / Dark；业务页面不得自写 linear-gradient / bg-c"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 110,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md | 51 | BACKGROUND_LINEAR | \\| `--ds-gradient-direction` \\| 90deg \\| —（同值） \\| css \\| linear-gradient(90de"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 111,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md | 78 | TEXT | background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, v"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 112,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md | 79 | TEXT | background-clip: text; color: transparent; |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 113,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md | 92 | TEXT | - 业务组件手写 gradient / bg-clip-text |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 114,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-VERIFICATION-REPORT.md | 32 | TEXT | - 加载态扫光收敛为第二受控出口 `@utility ds-text-shimmer`（typography.css:256）；`shimmer.tsx` 不再手写 `bg-cli"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 115,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-VERIFICATION-REPORT.md | 38 | BACKGROUND_LINEAR | - CSS 实际声明：`linear-gradient(90deg in srgb, …)`（typography.css:230/243，Light 与"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 116,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/GRADIENT-VERIFICATION-REPORT.md | 41 | BACKGROUND_LINEAR | - 浏览器实测：`CSS.supports('background-image', 'linear-gradient(90deg in srgb, red"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 117,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/GRADIENT-VERIFICATION-REPORT.md | 42 | BACKGROUND_LINEAR | - 旧浏览器降级：`uds-semantic-bridge.css:985` `@supports not (background: linear-gra"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 118,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 670 | TEXT | .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-light-fr"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 119,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 671 | TEXT | [data-ds-theme=\"dark\"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 120,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 672 | TEXT | .g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:t"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 121,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 673 | TEXT | @media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 122,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 756 | BACKGROUND_LINEAR | .pf-chart { height:34px; background:linear-gradient(90deg,var(--ds-color-chart-1-soft,#dbe"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 124,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 1730 | BACKGROUND_LINEAR | <p class=\"panel-sub\">CSS 唯一出口 <code>linear-gradient(90deg in srgb, ...)</code>，与 <code>re"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 125,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 1765 | BACKGROUND_LINEAR | <div class=\"x-evidence\"><h4>对比度引擎 · <span class=\"x-badge measured\">MEASURED</span></h4><p"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 126,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 4251 | BACKGROUND_LINEAR | <td class=\"desc\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)<small class=\"x"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 127,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 5287 | BACKGROUND_LINEAR | <tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 128,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 5294 | TEXT | &lt;!-- &lt;h1 style=&quot;background:linear-gradient(...);background-clip:text&quot;&gt;…&lt;/h1&gt; "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 129,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 5296 | TEXT | <div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>用品牌紫表示支付成功</li><li>"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 130,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 5299 | TEXT | <div class=\"mod-block wide\" data-section=\"Acceptance\"><h3>11 · Acceptance</h3><ol><li>全库 `linear-gradi"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 132,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 6367 | BACKGROUND_LINEAR | <tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 133,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 6377 | TEXT | background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, var(--ds-colo"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 134,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 6378 | TEXT | background-clip: text; color: transparent; |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 135,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/SHOWCASE-7.0.html | 6381 | TEXT | <div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>保留 2.27:1 的历史渐变</li"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 138,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/VISUAL-REGRESSION-REPORT.md | 74 | BACKGROUND_LINEAR | - 公式：`(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045`；采样：`linear-gradi"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 139,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 20 | TEXT | 扫描正则：`linear-gradient\\|radial-gradient\\|conic-gradient\\|background-clip:text\\|-webkit-t"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 140,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 44 | TEXT | \\| web/src/components/ai-elements/shimmer.tsx \\| 55 \\| TEXT \\| * ds-text-shimmer，业务组件不再"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 141,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 45 | BACKGROUND_LINEAR | \\| web/src/components/config-drawer.tsx \\| 281 \\| BACKGROUND_LINEAR \\| ? '"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 142,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 46 | BACKGROUND_LINEAR | \\| web/src/components/config-drawer.tsx \\| 282 \\| BACKGROUND_LINEAR \\| : `"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 143,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 47 | BACKGROUND_RADIAL | \\| web/src/components/layout/components/__tests__/public-page-glow.test.ts"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 144,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 48 | BACKGROUND_RADIAL | \\| web/src/components/layout/components/public-page-glow.tsx \\| 36 \\| BACK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 145,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 49 | BACKGROUND_RADIAL | \\| web/src/components/layout/components/public-page-glow.tsx \\| 37 \\| BACK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 146,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 50 | BACKGROUND_RADIAL | \\| web/src/components/layout/components/public-page-glow.tsx \\| 38 \\| BACK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 147,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 51 | BACKGROUND_LINEAR | \\| web/src/components/layout/components/public-page-glow.tsx \\| 40 \\| BACK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 148,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 52 | BACKGROUND_LINEAR | \\| web/src/components/layout/components/public-page-glow.tsx \\| 42 \\| BACK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 149,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 53 | BACKGROUND_RADIAL | \\| web/src/design-system/foundations/decoration.css \\| 29 \\| BACKGROUND_RA"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 150,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 54 | BACKGROUND_RADIAL | \\| web/src/design-system/foundations/decoration.css \\| 41 \\| BACKGROUND_RA"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 151,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 55 | BACKGROUND_RADIAL | \\| web/src/design-system/foundations/decoration.css \\| 46 \\| BACKGROUND_RA"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 152,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 56 | BACKGROUND_RADIAL | \\| web/src/design-system/foundations/decoration.css \\| 51 \\| BACKGROUND_RA"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 153,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 57 | BACKGROUND_RADIAL | \\| web/src/design-system/foundations/decoration.css \\| 62 \\| BACKGROUND_RA"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 154,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 58 | BACKGROUND_RADIAL | \\| web/src/design-system/foundations/decoration.css \\| 67 \\| BACKGROUND_RA"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 155,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 59 | BACKGROUND_LINEAR | \\| web/src/design-system/foundations/decoration.css \\| 79 \\| BACKGROUND_LI"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 156,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 60 | BACKGROUND_LINEAR | \\| web/src/design-system/foundations/decoration.css \\| 80 \\| BACKGROUND_LI"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 157,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 61 | MASK | \\| web/src/design-system/foundations/decoration.css \\| 82 \\| MASK \\| mask-image: radial"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 158,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 62 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 218 \\| TEXT \\| *   1. `bg-clip-t"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 159,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 63 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 229 \\| BACKGROUND_LINEAR \\| back"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 160,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 64 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 235 \\| TEXT \\| -webkit-backgroun"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 161,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 65 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 236 \\| TEXT \\| background-clip: "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 162,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 66 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 242 \\| BACKGROUND_LINEAR \\| back"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 163,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 67 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 251 \\| TEXT \\| * 原来 shimmer.tsx "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 164,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 68 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 252 \\| BACKGROUND_LINEAR \\| * 内联"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 165,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 69 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 260 \\| BACKGROUND_LINEAR \\| line"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 166,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 70 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 267 \\| TEXT \\| linear-gradient(v"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 167,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 71 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 268 \\| TEXT \\| -webkit-backgroun"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 168,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 72 | TEXT | \\| web/src/design-system/foundations/typography.css \\| 269 \\| TEXT \\| background-clip: "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 169,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 73 | TEXT | \\| web/src/design-system/tokens/uds-semantic-bridge.css \\| 985 \\| BACKGROUND_LINEAR \\| "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 170,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 74 | TEXT | \\| web/src/design-system/tokens/uds-semantic-bridge.css \\| 988 \\| BACKGROUND_LINEAR \\| "
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 171,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 75 | TEXT | \\| web/src/design-system/tokens/uds-semantic-bridge.css \\| 1013 \\| TEXT \\| .ds-text-gra"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 172,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 76 | BACKGROUND_RADIAL | \\| web/src/features/dashboard/components/overview/overview-dashboard.tsx \\"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 173,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 77 | MASK | \\| web/src/features/dashboard/components/overview/overview-dashboard.tsx \\| 196 \\| MASK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 174,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 78 | MASK | \\| web/src/features/dashboard/components/overview/overview-dashboard.tsx \\| 213 \\| MASK"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 175,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 79 | BACKGROUND_LINEAR | \\| web/src/features/dashboard/components/overview/summary-cards.tsx \\| 293"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 176,
+      "kind": "TEXT",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 80 | TEXT | \\| web/src/styles/index.css \\| 75 \\| TEXT \\| -webkit-text-fill-color: var(--muted-foreg"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 177,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 81 | BACKGROUND_LINEAR | \\| web/src/styles/index.css \\| 164 \\| BACKGROUND_LINEAR \\| background: lin"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 179,
+      "kind": "BACKGROUND_RADIAL",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 83 | BACKGROUND_RADIAL | \\| web/src/styles/index.css \\| 309 \\| BACKGROUND_RADIAL \\| background-imag"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 180,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 84 | MASK | \\| web/src/styles/index.css \\| 335 \\| MASK \\| mask-image: linear-gradient( \\| |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 181,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 85 | MASK | \\| web/src/styles/index.css \\| 345 \\| MASK \\| mask-image: linear-gradient( \\| |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 182,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 86 | MASK | \\| web/src/styles/index.css \\| 355 \\| MASK \\| mask-image: linear-gradient(to bottom, tr"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 183,
+      "kind": "MASK",
+      "snippet": "| docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md | 87 | MASK | \\| web/src/styles/index.css \\| 359 \\| MASK \\| mask-image: linear-gradient(to top, trans"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 232,
+      "kind": "TEXT",
+      "snippet": "| 当前实际状态 | 业务组件手写 bg-clip-text text-transparent + 内联 linear-gradient（TextShimmer），绕开唯一出口；EXCEPTION-REGISTRY.json EX-006 仍为 OPEN。 |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 303,
+      "kind": "TEXT",
+      "snippet": "| 行号 / 位置 | 存在大量非文字背景渐变（radial/conic/linear/mask），当前渐变扫描口径只统计 background-clip:text 组合。 |"
+    },
+    {
+      "file": "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+      "line": 304,
+      "kind": "TEXT",
+      "snippet": "| 当前实际状态 | §6.1「全库扫描所有 linear/radial/conic-gradient」。 |"
+    },
+    {
+      "file": "docs/design-system/audit/IMPLEMENTATION-GAP-REPORT.md",
+      "line": 75,
+      "kind": "TEXT",
+      "snippet": "| UDS7-G-07 | P1 | GRADIENT | web/src/components/layout/components/public-page-glow.tsx:35-42；config-drawer.tsx:278-283；styles/index.css:157-377 | 存在大量非文字背景渐变（radial/conic/linear/m"
+    },
+    {
+      "file": "docs/design-system/audit/IMPLEMENTATION-GAP-REPORT.md",
+      "line": 659,
+      "kind": "TEXT",
+      "snippet": "| 当前实际状态 | 业务组件手写 bg-clip-text text-transparent + 内联 linear-gradient（TextShimmer），绕开唯一出口；EXCEPTION-REGISTRY.json EX-006 仍为 OPEN。 |"
+    },
+    {
+      "file": "docs/design-system/audit/IMPLEMENTATION-GAP-REPORT.md",
+      "line": 730,
+      "kind": "TEXT",
+      "snippet": "| 行号 / 位置 | 存在大量非文字背景渐变（radial/conic/linear/mask），当前渐变扫描口径只统计 background-clip:text 组合。 |"
+    },
+    {
+      "file": "docs/design-system/audit/IMPLEMENTATION-GAP-REPORT.md",
+      "line": 731,
+      "kind": "TEXT",
+      "snippet": "| 当前实际状态 | §6.1「全库扫描所有 linear/radial/conic-gradient」。 |"
+    },
+    {
+      "file": "docs/design-system/registry/audit-findings.mjs",
+      "line": 227,
+      "kind": "TEXT",
+      "snippet": "'业务组件手写 bg-clip-text text-transparent + 内联 linear-gradient（TextShimmer），绕开唯一出口；EXCEPTION-REGISTRY.json EX-006 仍为 OPEN。',"
+    },
+    {
+      "file": "docs/design-system/registry/audit-findings.mjs",
+      "line": 255,
+      "kind": "TEXT",
+      "snippet": "'存在大量非文字背景渐变（radial/conic/linear/mask），当前渐变扫描口径只统计 background-clip:text 组合。',"
+    },
+    {
+      "file": "docs/design-system/registry/audit-findings.mjs",
+      "line": 256,
+      "kind": "TEXT",
+      "snippet": "'§6.1「全库扫描所有 linear/radial/conic-gradient」。',"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 109,
+      "kind": "TEXT",
+      "snippet": "`/* 全站唯一品牌渐变出口。业务页面不得自写 linear-gradient / bg-clip-text。 */\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 111,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "`  background-image: linear-gradient(\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 117,
+      "kind": "TEXT",
+      "snippet": "`  background-clip: text;\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 118,
+      "kind": "TEXT",
+      "snippet": "`  -webkit-background-clip: text;\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 123,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "`  background-image: linear-gradient(\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 213,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "`@supports not (background: linear-gradient(in srgb, red, blue)) {\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 216,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "`    background-image: linear-gradient(var(--ds7-color-gradient-light-from), var(--ds7-color-gradient-light-via), var(--ds7-color-gradient-light-to));\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 224,
+      "kind": "TEXT",
+      "snippet": "`  .ds-text-gradient-brand { background-image: none; color: CanvasText; -webkit-text-fill-color: CanvasText; }\\n` +"
+    },
+    {
+      "file": "docs/design-system/registry/build.mjs",
+      "line": 650,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "CSS 唯一出口为 \\`linear-gradient(90deg in ${v.interpolation}, ...)\\`，插值空间与本引擎一致。"
+    },
+    {
+      "file": "docs/design-system/registry/contrast-engine.mjs",
+      "line": 61,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "* CSS `linear-gradient(90deg, A 0%, B 50%, C 100%)` 在两端都不透明时，"
+    },
+    {
+      "file": "docs/design-system/registry/contrast-engine.mjs",
+      "line": 306,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "sampling: 'linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops',"
+    },
+    {
+      "file": "docs/design-system/registry/finalize.mjs",
+      "line": 418,
+      "kind": "TEXT",
+      "snippet": "- 唯一渐变出口：${c('ds-text-gradient-brand')}；业务组件禁止自写 ${c('linear-gradient')} / ${c('bg-clip-text')} / ${c('from-xxx via-xxx to-xxx')}。"
+    },
+    {
+      "file": "docs/design-system/registry/generate-audit.mjs",
+      "line": 68,
+      "kind": "TEXT",
+      "snippet": "if (!/linear-gradient|radial-gradient|conic-gradient|background-clip:\\s*text|text-fill-color|bg-clip-text|text-transparent/.test(line)) continue"
+    },
+    {
+      "file": "docs/design-system/registry/generate-audit.mjs",
+      "line": 69,
+      "kind": "TEXT",
+      "snippet": "const isText = /background-clip:\\s*text|-webkit-text-fill-color|bg-clip-text|text-transparent/.test(line) || /background-clip:\\s*text/.test(lines.slice(Math.max(0, i - 3), i + 4).j"
+    },
+    {
+      "file": "docs/design-system/registry/generate-audit.mjs",
+      "line": 70,
+      "kind": "MASK",
+      "snippet": "const kind = /mask-image|mask:/i.test(line) ? 'MASK' : isText ? 'TEXT' : /radial-gradient/.test(line) ? 'BACKGROUND_RADIAL' : /conic-gradient/.test(line) ? 'DECORATION' : 'BACKGROU"
+    },
+    {
+      "file": "docs/design-system/registry/generate-audit.mjs",
+      "line": 278,
+      "kind": "TEXT",
+      "snippet": "'扫描正则：`linear-gradient|radial-gradient|conic-gradient|background-clip:text|-webkit-text-fill-color|bg-clip-text|text-transparent`；逐行记录并回溯 ±3 行判定是否文字渐变。', '',"
+    },
+    {
+      "file": "docs/design-system/registry/real-page-regression.mjs",
+      "line": 207,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "gradientInterpolationSupported: CSS.supports('background-image', 'linear-gradient(90deg in srgb, red, blue)'),"
+    },
+    {
+      "file": "docs/design-system/registry/real-page-regression.mjs",
+      "line": 430,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "supportsInSrgb: CSS.supports('background-image', 'linear-gradient(90deg in srgb, red, blue)'),"
+    },
+    {
+      "file": "docs/design-system/registry/real-page-regression.mjs",
+      "line": 442,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "ownerDeclaresInSrgb: /linear-gradient\\(\\s*90deg in srgb/.test(ownerCss),"
+    },
+    {
+      "file": "docs/design-system/registry/real-page-regression.mjs",
+      "line": 443,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "distDeclaresInSrgb: /linear-gradient\\(90deg in srgb/.test(distCss),"
+    },
+    {
+      "file": "docs/design-system/registry/render-showcase.mjs",
+      "line": 311,
+      "kind": "TEXT",
+      "snippet": ".g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-light-from) 0%,var(--ds-color-gradient-light-via) 50%,var(--ds-color-gradient-light-t"
+    },
+    {
+      "file": "docs/design-system/registry/render-showcase.mjs",
+      "line": 312,
+      "kind": "TEXT",
+      "snippet": "[data-ds-theme=\"dark\"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-dark-from) 0%,var(--ds-color-gradient-dark-via) 50%,var(--ds-c"
+    },
+    {
+      "file": "docs/design-system/registry/render-showcase.mjs",
+      "line": 313,
+      "kind": "TEXT",
+      "snippet": ".g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-fo"
+    },
+    {
+      "file": "docs/design-system/registry/render-showcase.mjs",
+      "line": 314,
+      "kind": "TEXT",
+      "snippet": "@media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text-fill-color:CanvasText; } }"
+    },
+    {
+      "file": "docs/design-system/registry/render-showcase.mjs",
+      "line": 397,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": ".pf-chart { height:34px; background:linear-gradient(90deg,var(--ds-color-chart-1-soft,#dbeafe),var(--ds-color-chart-1)); opacity:.35; border-radius:2px; }"
+    },
+    {
+      "file": "docs/design-system/registry/render-showcase.mjs",
+      "line": 539,
+      "kind": "TEXT",
+      "snippet": "<div class=\"gradient-box\"><h4>使用边界</h4><p class=\"note\">允许：Hero 主标题、CTA 标题、经批准的品牌展示标题。<br>禁止：普通正文、表格文字、表单标签、错误 / 成功提示、支付状态、余额数字、API Key、代码示例、关键业务数据。</p><p class=\"note\">唯一出口 <code>${"
+    },
+    {
+      "file": "docs/design-system/registry/showcase-extensions.mjs",
+      "line": 427,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<p class=\"panel-sub\">CSS 唯一出口 <code>linear-gradient(90deg in ${esc(GRADIENT_INTERPOLATION)}, ...)</code>，与 <code>registry/contrast-engine.mjs</code> 的插值空间、方向、采样步长完全一致；采样步长 0.1%，共 $"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 107,
+      "kind": "TEXT",
+      "snippet": "'<!-- <h1 style=\"background:linear-gradient(...);background-clip:text\">…</h1> -->',"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 110,
+      "kind": "TEXT",
+      "snippet": "dont: ['用品牌紫表示支付成功', '把 chart-3 紫色当作品牌色', '手写 `linear-gradient` / `bg-clip-text` / `text-transparent`'],"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 113,
+      "kind": "TEXT",
+      "snippet": "acceptance: ['全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外）', '品牌实底三态白字对比度 5.01 / 6.68 / 8.02:1 全部 ≥4.5:1', ...COMMON_ACCEPTANCE],"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 955,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "'方向固定 `linear-gradient(90deg in ' + INTERP + ', from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`、`--ds-gradient-interpolation: ' + INTERP + '`；CSS 与引擎插值空间必须一致）',"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 961,
+      "kind": "TEXT",
+      "snippet": "'唯一出口 `ds-text-gradient-brand`，由 Token 自动切换 Light / Dark；业务页面不得自写 linear-gradient / bg-clip-text / background-clip:text / text-transparent / from-xxx via-xxx to-xxx',"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 967,
+      "kind": "TEXT",
+      "snippet": "example: ['@utility ds-text-gradient-brand {', '  background-image: linear-gradient(90deg in ' + INTERP + ', var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-v"
+    },
+    {
+      "file": "docs/design-system/registry/spec-modules.mjs",
+      "line": 969,
+      "kind": "TEXT",
+      "snippet": "dont: ['保留 ' + GL.legacyWorst.ratio + ':1 的历史渐变', '在余额 / 错误 / 表单标签用渐变', '业务组件手写 gradient / bg-clip-text'],"
+    },
+    {
+      "file": "docs/design-system/registry/tokens.mjs",
+      "line": 497,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "add('--ds-gradient-direction', 'semantic', 'gradient', 'keyword', 'css', '90deg', '90deg', 'linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)', true, { runtimeBridge: true,"
+    },
+    {
+      "file": "docs/design-system/registry/tokens.mjs",
+      "line": 553,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "cssInterpolation: 'linear-gradient(90deg in srgb, ...)',"
+    },
+    {
+      "file": "docs/design-system/runtime/foundations.css",
+      "line": 29,
+      "kind": "TEXT",
+      "snippet": "/* 全站唯一品牌渐变出口。业务页面不得自写 linear-gradient / bg-clip-text。 */"
+    },
+    {
+      "file": "docs/design-system/runtime/foundations.css",
+      "line": 31,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "background-image: linear-gradient("
+    },
+    {
+      "file": "docs/design-system/runtime/foundations.css",
+      "line": 37,
+      "kind": "TEXT",
+      "snippet": "background-clip: text;"
+    },
+    {
+      "file": "docs/design-system/runtime/foundations.css",
+      "line": 38,
+      "kind": "TEXT",
+      "snippet": "-webkit-background-clip: text;"
+    },
+    {
+      "file": "docs/design-system/runtime/foundations.css",
+      "line": 43,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "background-image: linear-gradient("
+    },
+    {
+      "file": "docs/design-system/runtime/tokens.ts",
+      "line": 5173,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "\"description\": \"linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)\","
+    },
+    {
+      "file": "docs/design-system/runtime/tokens.ts",
+      "line": 5176,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "\"semanticMeaning\": \"linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)\","
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 670,
+      "kind": "TEXT",
+      "snippet": ".g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-light-from) 0%,var(--ds-color-gradient-light-via) 50%,var(--ds-color-gradient-light-t"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 671,
+      "kind": "TEXT",
+      "snippet": "[data-ds-theme=\"dark\"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-dark-from) 0%,var(--ds-color-gradient-dark-via) 50%,var(--ds-c"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 672,
+      "kind": "TEXT",
+      "snippet": ".g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-fo"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 673,
+      "kind": "TEXT",
+      "snippet": "@media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text-fill-color:CanvasText; } }"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 756,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": ".pf-chart { height:34px; background:linear-gradient(90deg,var(--ds-color-chart-1-soft,#dbeafe),var(--ds-color-chart-1)); opacity:.35; border-radius:2px; }"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 1230,
+      "kind": "TEXT",
+      "snippet": "<div class=\"gradient-box\"><h4>使用边界</h4><p class=\"note\">允许：Hero 主标题、CTA 标题、经批准的品牌展示标题。<br>禁止：普通正文、表格文字、表单标签、错误 / 成功提示、支付状态、余额数字、API Key、代码示例、关键业务数据。</p><p class=\"note\">唯一出口 <code>ds"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 1730,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<p class=\"panel-sub\">CSS 唯一出口 <code>linear-gradient(90deg in srgb, ...)</code>，与 <code>registry/contrast-engine.mjs</code> 的插值空间、方向、采样步长完全一致；采样步长 0.1%，共 1001 点 / 主题，另含全部渐变 stop。下表为"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 1765,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<div class=\"x-evidence\"><h4>对比度引擎 · <span class=\"x-badge measured\">MEASURED</span></h4><p><code>registry/contrast-engine.mjs</code><br>VERDICT PASS · linear-gradient(90deg in srgb)"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 4251,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<td class=\"desc\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)<small class=\"x-mono\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)</small></td>"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 5287,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td><code>90deg</code></td><td><code>—</code></td><td>linear-gradient(90deg in srgb, from 0%, "
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 5294,
+      "kind": "TEXT",
+      "snippet": "&lt;!-- &lt;h1 style=&quot;background:linear-gradient(...);background-clip:text&quot;&gt;…&lt;/h1&gt; --&gt;</code></pre></div>"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 5296,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>用品牌紫表示支付成功</li><li>把 chart-3 紫色当作品牌色</li><li>手写 `linear-gradient` / `bg-clip-text` / `text-transp"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 5299,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block wide\" data-section=\"Acceptance\"><h3>11 · Acceptance</h3><ol><li>全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外）</li><li>品牌实底三态白字对比度 5.01 / 6"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6360,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Rules\"><h3>2 · Rules</h3><ol><li>历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.27:"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6367,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td><code>90deg</code></td><td><code>—</code></td><td>linear-gradient(90deg in srgb, from 0%, "
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6377,
+      "kind": "TEXT",
+      "snippet": "background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6378,
+      "kind": "TEXT",
+      "snippet": "background-clip: text; color: transparent;"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6381,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>保留 2.27:1 的历史渐变</li><li>在余额 / 错误 / 表单标签用渐变</li><li>业务组件手写 gradient / bg-clip-text</li></ul></div>"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6402,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<script id=\"uds7-manifest\" type=\"application/json\">{\"version\":\"7.0.0\",\"status\":\"IMPLEMENTED_NOT_VERIFIED\",\"tokenCount\":384,\"modules\":38,\"numberedModules\":36,\"specialModules\":2,\"com"
+    },
+    {
+      "file": "web/public/design-system/7.0/index.html",
+      "line": 6416,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "var TOKENS = {\"--ds-border-width-card\":{\"light\":\"1px\",\"dark\":\"1px\",\"unit\":\"px\",\"layer\":\"primitive\",\"description\":\"卡片\",\"themeIndependent\":true},\"--ds-border-width-code\":{\"light\":\"1p"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 670,
+      "kind": "TEXT",
+      "snippet": ".g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-light-from) 0%,var(--ds-color-gradient-light-via) 50%,var(--ds-color-gradient-light-t"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 671,
+      "kind": "TEXT",
+      "snippet": "[data-ds-theme=\"dark\"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-dark-from) 0%,var(--ds-color-gradient-dark-via) 50%,var(--ds-c"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 672,
+      "kind": "TEXT",
+      "snippet": ".g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-fo"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 673,
+      "kind": "TEXT",
+      "snippet": "@media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text-fill-color:CanvasText; } }"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 756,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": ".pf-chart { height:34px; background:linear-gradient(90deg,var(--ds-color-chart-1-soft,#dbeafe),var(--ds-color-chart-1)); opacity:.35; border-radius:2px; }"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 1230,
+      "kind": "TEXT",
+      "snippet": "<div class=\"gradient-box\"><h4>使用边界</h4><p class=\"note\">允许：Hero 主标题、CTA 标题、经批准的品牌展示标题。<br>禁止：普通正文、表格文字、表单标签、错误 / 成功提示、支付状态、余额数字、API Key、代码示例、关键业务数据。</p><p class=\"note\">唯一出口 <code>ds"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 1730,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<p class=\"panel-sub\">CSS 唯一出口 <code>linear-gradient(90deg in srgb, ...)</code>，与 <code>registry/contrast-engine.mjs</code> 的插值空间、方向、采样步长完全一致；采样步长 0.1%，共 1001 点 / 主题，另含全部渐变 stop。下表为"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 1765,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<div class=\"x-evidence\"><h4>对比度引擎 · <span class=\"x-badge measured\">MEASURED</span></h4><p><code>registry/contrast-engine.mjs</code><br>VERDICT PASS · linear-gradient(90deg in srgb)"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 4251,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<td class=\"desc\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)<small class=\"x-mono\">linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)</small></td>"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 5287,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td><code>90deg</code></td><td><code>—</code></td><td>linear-gradient(90deg in srgb, from 0%, "
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 5294,
+      "kind": "TEXT",
+      "snippet": "&lt;!-- &lt;h1 style=&quot;background:linear-gradient(...);background-clip:text&quot;&gt;…&lt;/h1&gt; --&gt;</code></pre></div>"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 5296,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>用品牌紫表示支付成功</li><li>把 chart-3 紫色当作品牌色</li><li>手写 `linear-gradient` / `bg-clip-text` / `text-transp"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 5299,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block wide\" data-section=\"Acceptance\"><h3>11 · Acceptance</h3><ol><li>全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外）</li><li>品牌实底三态白字对比度 5.01 / 6"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6360,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Rules\"><h3>2 · Rules</h3><ol><li>历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.27:"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6367,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<tr data-token=\"--ds-gradient-direction\"><td><code>--ds-gradient-direction</code></td><td><code>90deg</code></td><td><code>—</code></td><td>linear-gradient(90deg in srgb, from 0%, "
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6377,
+      "kind": "TEXT",
+      "snippet": "background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6378,
+      "kind": "TEXT",
+      "snippet": "background-clip: text; color: transparent;"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6381,
+      "kind": "TEXT",
+      "snippet": "<div class=\"mod-block\" data-section=\"Don't\"><h3>8 · Don't</h3><ul class=\"dont\"><li>保留 2.27:1 的历史渐变</li><li>在余额 / 错误 / 表单标签用渐变</li><li>业务组件手写 gradient / bg-clip-text</li></ul></div>"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6402,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "<script id=\"uds7-manifest\" type=\"application/json\">{\"version\":\"7.0.0\",\"status\":\"IMPLEMENTED_NOT_VERIFIED\",\"tokenCount\":384,\"modules\":38,\"numberedModules\":36,\"specialModules\":2,\"com"
+    },
+    {
+      "file": "web/public/design-system/7.0.html",
+      "line": 6416,
+      "kind": "BACKGROUND_LINEAR",
+      "snippet": "var TOKENS = {\"--ds-border-width-card\":{\"light\":\"1px\",\"dark\":\"1px\",\"unit\":\"px\",\"layer\":\"primitive\",\"description\":\"卡片\",\"themeIndependent\":true},\"--ds-border-width-code\":{\"light\":\"1p"
+    }
+  ],
+  "tokenUsage": {
+    "files": 1547,
+    "varRefs": 989,
+    "dsRefs": 168,
+    "ds6Refs": 113,
+    "hexByFile": [
+      {
+        "file": "web/src/design-system/tokens/uds-semantic-bridge.css",
+        "hits": 928,
+        "isTokenDefinition": true
+      },
+      {
+        "file": "web/src/styles/theme.css",
+        "hits": 63,
+        "isTokenDefinition": true
+      },
+      {
+        "file": "web/src/design-system/tokens/brand-colors.ts",
+        "hits": 45,
+        "isTokenDefinition": true
+      },
+      {
+        "file": "web/src/design-system/tokens/generated/uds7-chart-palette.ts",
+        "hits": 24,
+        "isTokenDefinition": true
+      },
+      {
+        "file": "web/src/design-system/tokens/generated/brand.css",
+        "hits": 16,
+        "isTokenDefinition": true
+      },
+      {
+        "file": "web/src/assets/custom/icon-theme-dark.tsx",
+        "hits": 8,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/assets/logo.tsx",
+        "hits": 5,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/assets/custom/icon-theme-light.tsx",
+        "hits": 4,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/design-system/__tests__/sidebar-active-guard.test.ts",
+        "hits": 4,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/design-system/__tests__/token-source.test.ts",
+        "hits": 4,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/assets/brand-icons/icon-linuxdo.tsx",
+        "hits": 3,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/assets/custom/icon-sub2api.tsx",
+        "hits": 3,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/design-system/tokens/colors.css",
+        "hits": 3,
+        "isTokenDefinition": true
+      },
+      {
+        "file": "web/src/design-system/__tests__/status-badge-contrast.test.ts",
+        "hits": 2,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/features/dashboard/lib/flow-selection.test.ts",
+        "hits": 2,
+        "isTokenDefinition": false
+      },
+      {
+        "file": "web/src/routes/__tests__/public-routes-render.test.tsx",
+        "hits": 1,
+        "isTokenDefinition": false
+      }
+    ]
+  },
+  "vscodeSyntax": {
+    "source": "microsoft/vscode @ main :: extensions/theme-defaults/themes/*.json",
+    "files": [
+      "light_vs.json",
+      "light_plus.json",
+      "dark_vs.json",
+      "dark_plus.json"
+    ],
+    "includeChain": {
+      "light": "light_plus -> light_vs",
+      "dark": "dark_plus -> dark_vs"
+    },
+    "editor": {
+      "light": {
+        "background": "#FFFFFF",
+        "foreground": "#000000"
+      },
+      "dark": {
+        "background": "#1E1E1E",
+        "foreground": "#D4D4D4"
+      }
+    },
+    "uterCodeBackground": {
+      "light": "#F6F8FA",
+      "dark": "#0E1524"
+    },
+    "wcagTarget": 4.5,
+    "rows": [
+      {
+        "key": "keyword",
+        "scope": "keyword",
+        "officialLight": "#0000FF",
+        "officialDark": "#569CD6",
+        "officialSource": {
+          "light": "keyword",
+          "dark": "keyword"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#0000FF",
+          "dark": "#569CD6"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#0000FF",
+          "dark": "#569CD6"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 8.07,
+            "ratioAfter": 8.07,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 6.19,
+            "ratioAfter": 6.19,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 8.59,
+          "dark": 5.65
+        },
+        "derivedNote": "Light+ 另对 keyword.control 定义 #AF00DB（控制流关键字），Dark+ 对应 #C586C0；Uter 20 Token 不细分控制流，统一用 keyword 基色，差异已登记。"
+      },
+      {
+        "key": "string",
+        "scope": "string",
+        "officialLight": "#A31515",
+        "officialDark": "#CE9178",
+        "officialSource": {
+          "light": "string",
+          "dark": "string"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#A31515",
+          "dark": "#CE9178"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#A31515",
+          "dark": "#CE9178"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 7.37,
+            "ratioAfter": 7.37,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 6.9,
+            "ratioAfter": 6.9,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 7.85,
+          "dark": 6.31
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "number",
+        "scope": "constant.numeric",
+        "officialLight": "#098658",
+        "officialDark": "#B5CEA8",
+        "officialSource": {
+          "light": "constant.numeric",
+          "dark": "constant.numeric"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#087443",
+          "dark": "#B5CEA8"
+        },
+        "baselineDiffers": {
+          "light": true,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#098255",
+          "dark": "#B5CEA8"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": true,
+            "ratioBefore": 4.32,
+            "ratioAfter": 4.55,
+            "lightnessSteps": 3
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 10.73,
+            "ratioAfter": 10.73,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 4.6,
+          "dark": 9.81
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "function",
+        "scope": "entity.name.function",
+        "officialLight": "#795E26",
+        "officialDark": "#DCDCAA",
+        "officialSource": {
+          "light": "Function declarations",
+          "dark": "Function declarations"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#795E26",
+          "dark": "#DCDCAA"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#795E26",
+          "dark": "#DCDCAA"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 5.73,
+            "ratioAfter": 5.73,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 12.91,
+            "ratioAfter": 12.91,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 6.1,
+          "dark": 11.8
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "property",
+        "scope": "meta.object-literal.key",
+        "officialLight": "#001080",
+        "officialDark": "#9CDCFE",
+        "officialSource": {
+          "light": "Object keys, TS grammar specific",
+          "dark": "Object keys, TS grammar specific"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#001080",
+          "dark": "#9CDCFE"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#001080",
+          "dark": "#9CDCFE"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 14.23,
+            "ratioAfter": 14.23,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 12.23,
+            "ratioAfter": 12.23,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 15.15,
+          "dark": 11.18
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "variable",
+        "scope": "variable",
+        "officialLight": "#001080",
+        "officialDark": "#9CDCFE",
+        "officialSource": {
+          "light": "Variable and parameter name",
+          "dark": "Variable and parameter name"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#001080",
+          "dark": "#9CDCFE"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#001080",
+          "dark": "#9CDCFE"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 14.23,
+            "ratioAfter": 14.23,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 12.23,
+            "ratioAfter": 12.23,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 15.15,
+          "dark": 11.18
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "type",
+        "scope": "entity.name.type",
+        "officialLight": "#267F99",
+        "officialDark": "#4EC9B0",
+        "officialSource": {
+          "light": "Types declaration and references",
+          "dark": "Types declaration and references"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#1F6B80",
+          "dark": "#4EC9B0"
+        },
+        "baselineDiffers": {
+          "light": true,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#257B94",
+          "dark": "#4EC9B0"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": true,
+            "ratioBefore": 4.31,
+            "ratioAfter": 4.55,
+            "lightnessSteps": 3
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 8.95,
+            "ratioAfter": 8.95,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 4.59,
+          "dark": 8.18
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "operator",
+        "scope": "keyword.operator",
+        "officialLight": "#000000",
+        "officialDark": "#D4D4D4",
+        "officialSource": {
+          "light": "keyword.operator",
+          "dark": "keyword.operator"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#000000",
+          "dark": "#D4D4D4"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#000000",
+          "dark": "#D4D4D4"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 19.73,
+            "ratioAfter": 19.73,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 12.3,
+            "ratioAfter": 12.3,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 21,
+          "dark": 11.25
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "punctuation",
+        "scope": "meta.template.expression",
+        "officialLight": "#000000",
+        "officialDark": "#D4D4D4",
+        "officialSource": {
+          "light": "Reset JavaScript string interpolation expression",
+          "dark": "Reset JavaScript string interpolation expression"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#000000",
+          "dark": "#D4D4D4"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#000000",
+          "dark": "#D4D4D4"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 19.73,
+            "ratioAfter": 19.73,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 12.3,
+            "ratioAfter": 12.3,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 21,
+          "dark": 11.25
+        },
+        "derivedNote": "VS Code 官方无 punctuation 独立 tokenColor；使用 editor.foreground（meta.template.expression 的 reset 值与之相同）。"
+      },
+      {
+        "key": "comment",
+        "scope": "comment",
+        "officialLight": "#008000",
+        "officialDark": "#6A9955",
+        "officialSource": {
+          "light": "comment",
+          "dark": "comment"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#008000",
+          "dark": "#6A9955"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#008000",
+          "dark": "#6A9955"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 4.83,
+            "ratioAfter": 4.83,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 5.47,
+            "ratioAfter": 5.47,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 5.14,
+          "dark": 5
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "constant",
+        "scope": "variable.other.constant",
+        "officialLight": "#0070C1",
+        "officialDark": "#4FC1FF",
+        "officialSource": {
+          "light": "Constants and enums",
+          "dark": "Constants and enums"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#0070C1",
+          "dark": "#4FC1FF"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#0070C1",
+          "dark": "#4FC1FF"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 4.83,
+            "ratioAfter": 4.83,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 9.04,
+            "ratioAfter": 9.04,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 5.14,
+          "dark": 8.26
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "boolean",
+        "scope": "constant.language",
+        "officialLight": "#0000FF",
+        "officialDark": "#569CD6",
+        "officialSource": {
+          "light": "constant.language",
+          "dark": "constant.language"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#0000FF",
+          "dark": "#569CD6"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#0000FF",
+          "dark": "#569CD6"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 8.07,
+            "ratioAfter": 8.07,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 6.19,
+            "ratioAfter": 6.19,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 8.59,
+          "dark": 5.65
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "null",
+        "scope": "constant.language",
+        "officialLight": "#0000FF",
+        "officialDark": "#569CD6",
+        "officialSource": {
+          "light": "constant.language",
+          "dark": "constant.language"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#0000FF",
+          "dark": "#569CD6"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#0000FF",
+          "dark": "#569CD6"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 8.07,
+            "ratioAfter": 8.07,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 6.19,
+            "ratioAfter": 6.19,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 8.59,
+          "dark": 5.65
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "tag",
+        "scope": "entity.name.tag",
+        "officialLight": "#800000",
+        "officialDark": "#569CD6",
+        "officialSource": {
+          "light": "css tags in selectors, xml tags",
+          "dark": "entity.name.tag"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#800000",
+          "dark": "#569CD6"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#800000",
+          "dark": "#569CD6"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 10.29,
+            "ratioAfter": 10.29,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 6.19,
+            "ratioAfter": 6.19,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 10.95,
+          "dark": 5.65
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "attribute",
+        "scope": "entity.other.attribute-name",
+        "officialLight": "#E50000",
+        "officialDark": "#9CDCFE",
+        "officialSource": {
+          "light": "entity.other.attribute-name",
+          "dark": "entity.other.attribute-name"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#FF0000",
+          "dark": "#9CDCFE"
+        },
+        "baselineDiffers": {
+          "light": true,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#E50000",
+          "dark": "#9CDCFE"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 4.55,
+            "ratioAfter": 4.55,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 12.23,
+            "ratioAfter": 12.23,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 4.85,
+          "dark": 11.18
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "regexp",
+        "scope": "string.regexp",
+        "officialLight": "#811F3F",
+        "officialDark": "#D16969",
+        "officialSource": {
+          "light": "string.regexp",
+          "dark": "string.regexp"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#811F3F",
+          "dark": "#D16969"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#811F3F",
+          "dark": "#D16969"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 8.96,
+            "ratioAfter": 8.96,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 5.16,
+            "ratioAfter": 5.16,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 9.54,
+          "dark": 4.71
+        },
+        "derivedNote": "VS Code 存在两套 regexp 作用域：constant.regexp（Light #811F3F / Dark #646695）与 string.regexp（Light 无独立 / Dark #D16969）。本规范采用 string.regexp 语义（正则字面量），Light 保留 constant.regexp 的 #811F3F。"
+      },
+      {
+        "key": "builtin",
+        "scope": "support.type",
+        "officialLight": "#267F99",
+        "officialDark": "#4EC9B0",
+        "officialSource": {
+          "light": "Types declaration and references",
+          "dark": "Types declaration and references"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#267F99",
+          "dark": "#4EC9B0"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": false
+        },
+        "adopted": {
+          "light": "#257B94",
+          "dark": "#4EC9B0"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": true,
+            "ratioBefore": 4.31,
+            "ratioAfter": 4.55,
+            "lightnessSteps": 3
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 8.95,
+            "ratioAfter": 8.95,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 4.59,
+          "dark": 8.18
+        },
+        "derivedNote": "VS Code 官方无 builtin 独立 tokenColor；使用 support.type / entity.name.type 的类型色。"
+      },
+      {
+        "key": "inserted",
+        "scope": "markup.inserted",
+        "officialLight": "#098658",
+        "officialDark": "#B5CEA8",
+        "officialSource": {
+          "light": "markup.inserted",
+          "dark": "markup.inserted"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#008000",
+          "dark": "#89D185"
+        },
+        "baselineDiffers": {
+          "light": true,
+          "dark": true
+        },
+        "adopted": {
+          "light": "#098255",
+          "dark": "#B5CEA8"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": true,
+            "ratioBefore": 4.32,
+            "ratioAfter": 4.55,
+            "lightnessSteps": 3
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 10.73,
+            "ratioAfter": 10.73,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 4.6,
+          "dark": 9.81
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "deleted",
+        "scope": "markup.deleted",
+        "officialLight": "#A31515",
+        "officialDark": "#CE9178",
+        "officialSource": {
+          "light": "markup.deleted",
+          "dark": "markup.deleted"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#A31515",
+          "dark": "#F48771"
+        },
+        "baselineDiffers": {
+          "light": false,
+          "dark": true
+        },
+        "adopted": {
+          "light": "#A31515",
+          "dark": "#CE9178"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 7.37,
+            "ratioAfter": 7.37,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 6.9,
+            "ratioAfter": 6.9,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 7.85,
+          "dark": 6.31
+        },
+        "derivedNote": null
+      },
+      {
+        "key": "invalid",
+        "scope": "invalid",
+        "officialLight": "#CD3131",
+        "officialDark": "#F44747",
+        "officialSource": {
+          "light": "invalid",
+          "dark": "invalid"
+        },
+        "officialFontStyle": {
+          "light": "",
+          "dark": ""
+        },
+        "userBaseline": {
+          "light": "#A31515",
+          "dark": "#F48771"
+        },
+        "baselineDiffers": {
+          "light": true,
+          "dark": true
+        },
+        "adopted": {
+          "light": "#CD3131",
+          "dark": "#F44747"
+        },
+        "adjustment": {
+          "light": {
+            "adjusted": false,
+            "ratioBefore": 4.84,
+            "ratioAfter": 4.84,
+            "lightnessSteps": 0
+          },
+          "dark": {
+            "adjusted": false,
+            "ratioBefore": 5.07,
+            "ratioAfter": 5.07,
+            "lightnessSteps": 0
+          }
+        },
+        "contrastOnVscodeBg": {
+          "light": 5.15,
+          "dark": 4.64
+        },
+        "derivedNote": null
+      }
+    ]
+  }
+}

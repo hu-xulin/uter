@@ -125,7 +125,7 @@ describe('Phase 2 安全负向测试', () => {
     // which makes the inner test runner misbehave (zero tests / misparsed TAP).
     const nestedEnv = { ...process.env };
     delete nestedEnv.NODE_TEST_CONTEXT;
-    const r = spawnSync('node', ['--test', '--test-concurrency=1', '.uap/tests/real-code-repair-boundaries.test.mjs'], {
+    const r = spawnSync('node', ['--test', '--test-reporter=tap', '--test-concurrency=1', '.uap/tests/real-code-repair-boundaries.test.mjs'], {
       cwd: ROOT, encoding: 'utf8', timeout: 300000, env: nestedEnv,
     });
     const out = r.stdout ?? '';

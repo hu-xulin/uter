@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115074739-afc9cff4",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T07:47:39.107Z",
+  "started_at": "2026-11-15T07:47:39.033Z",
+  "finished_at": "2026-11-15T07:47:39.107Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115074717-55925ed4",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "0d22ac52a6697d3646ddb3dbbccca5bd4cc379d5cb3ba4031712e263178529c8",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115074717-55925ed4",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "0d22ac52a6697d3646ddb3dbbccca5bd4cc379d5cb3ba4031712e263178529c8",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap execution reconcile Phase 1 remediation: close interrupted/superseded RUNNING batches (STALE-RUNNING-EXECUTIONS)",
+  "exit_code": 0,
+  "duration_ms": 74,
+  "inputs": "{\"argv\":[\"execution\",\"reconcile\",\"Phase 1 remediation: close interrupted/superseded RUNNING batches (STALE-RUNNING-EXECUTIONS)\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "execution reconcile: closed 246 stale RUNNING batch(es)",
+  "content_hash": "faef0138d51248cff47ce3a2d68bd3531a296db769c408f46caf6c4f5a1df56b"
+}

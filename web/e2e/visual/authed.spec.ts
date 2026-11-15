@@ -28,7 +28,7 @@ import { BASE_URL, ISOLATED_TEST_STACK, VIEWPORTS } from './lib/target'
  */
 
 // 给「真正执行过 / 被显式标注」的用例统一补终态注解（见 lib/status.ts）。
-test.afterEach(async ({}, testInfo) => finalizeUapStatus(testInfo))
+test.afterEach(async (_fixtures, testInfo) => finalizeUapStatus(testInfo))
 
 function skipOrBlockOnAuthUnavailable(error: unknown): void {
   if (error instanceof VisualAuthUnavailableError && !ISOLATED_TEST_STACK) {

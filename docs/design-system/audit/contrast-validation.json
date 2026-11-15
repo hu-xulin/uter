@@ -1,0 +1,810 @@
+{
+  "schema": "UDS7-CONTRAST-VALIDATION/1.0",
+  "generated_at": "2026-11-15T23:55:45.894Z",
+  "engine": "registry/contrast-engine.mjs",
+  "formula": "(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045",
+  "sampling": "linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops",
+  "interpolation": "srgb",
+  "sampleCount": 1001,
+  "verdict": "PASS",
+  "thresholds": {
+    "normalText": 4.5,
+    "largeText": 3,
+    "nonText": 3
+  },
+  "backgrounds": {
+    "light": {
+      "canvas": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "raised": "#FFFFFF",
+      "sunken": "#F1F5F9",
+      "overlay": "#FFFFFF",
+      "hero-glow": "#EEF2FF",
+      "code-bg": "#F6F8FA"
+    },
+    "dark": {
+      "canvas": "#0B1120",
+      "surface": "#111827",
+      "raised": "#1B2436",
+      "sunken": "#080D18",
+      "overlay": "#1B2436",
+      "hero-glow": "#131C33",
+      "code-bg": "#0E1524"
+    }
+  },
+  "text": {
+    "light": {
+      "backgrounds": {
+        "canvas": "#F8FAFC",
+        "surface": "#FFFFFF"
+      },
+      "tokenCount": 8,
+      "passCount": 8,
+      "failCount": 0,
+      "rows": [
+        {
+          "name": "text-primary",
+          "original": "#0F172A",
+          "final": "#0F172A",
+          "adjusted": false,
+          "canvas": 17.06,
+          "surface": 17.85,
+          "pass": true
+        },
+        {
+          "name": "text-secondary",
+          "original": "#5B6779",
+          "final": "#5B6779",
+          "adjusted": false,
+          "canvas": 5.48,
+          "surface": 5.74,
+          "pass": true
+        },
+        {
+          "name": "text-muted",
+          "original": "#5B6779",
+          "final": "#5B6779",
+          "adjusted": false,
+          "canvas": 5.48,
+          "surface": 5.74,
+          "pass": true
+        },
+        {
+          "name": "status-success",
+          "original": "#15803D",
+          "final": "#15803D",
+          "adjusted": false,
+          "canvas": 4.79,
+          "surface": 5.02,
+          "pass": true
+        },
+        {
+          "name": "status-warning",
+          "original": "#A54600",
+          "final": "#A54600",
+          "adjusted": false,
+          "canvas": 5.77,
+          "surface": 6.04,
+          "pass": true
+        },
+        {
+          "name": "status-danger",
+          "original": "#B91C1C",
+          "final": "#B91C1C",
+          "adjusted": false,
+          "canvas": 6.18,
+          "surface": 6.47,
+          "pass": true
+        },
+        {
+          "name": "status-info",
+          "original": "#1D4ED8",
+          "final": "#1D4ED8",
+          "adjusted": false,
+          "canvas": 6.41,
+          "surface": 6.7,
+          "pass": true
+        },
+        {
+          "name": "code-foreground",
+          "original": "#0F172A",
+          "final": "#0F172A",
+          "adjusted": false,
+          "canvas": 17.06,
+          "surface": 17.85,
+          "pass": true
+        }
+      ]
+    },
+    "dark": {
+      "backgrounds": {
+        "canvas": "#0B1120",
+        "surface": "#111827"
+      },
+      "tokenCount": 8,
+      "passCount": 8,
+      "failCount": 0,
+      "rows": [
+        {
+          "name": "text-primary",
+          "original": "#F1F5F9",
+          "final": "#F1F5F9",
+          "adjusted": false,
+          "canvas": 17.19,
+          "surface": 16.19,
+          "pass": true
+        },
+        {
+          "name": "text-secondary",
+          "original": "#94A3B8",
+          "final": "#94A3B8",
+          "adjusted": false,
+          "canvas": 7.34,
+          "surface": 6.92,
+          "pass": true
+        },
+        {
+          "name": "text-muted",
+          "original": "#94A3B8",
+          "final": "#94A3B8",
+          "adjusted": false,
+          "canvas": 7.34,
+          "surface": 6.92,
+          "pass": true
+        },
+        {
+          "name": "status-success",
+          "original": "#6EE7B7",
+          "final": "#6EE7B7",
+          "adjusted": false,
+          "canvas": 12.35,
+          "surface": 11.64,
+          "pass": true
+        },
+        {
+          "name": "status-warning",
+          "original": "#FCD34D",
+          "final": "#FCD34D",
+          "adjusted": false,
+          "canvas": 13.06,
+          "surface": 12.3,
+          "pass": true
+        },
+        {
+          "name": "status-danger",
+          "original": "#FCA5A5",
+          "final": "#FCA5A5",
+          "adjusted": false,
+          "canvas": 9.92,
+          "surface": 9.35,
+          "pass": true
+        },
+        {
+          "name": "status-info",
+          "original": "#93C5FD",
+          "final": "#93C5FD",
+          "adjusted": false,
+          "canvas": 10.44,
+          "surface": 9.84,
+          "pass": true
+        },
+        {
+          "name": "code-foreground",
+          "original": "#E2E8F0",
+          "final": "#E2E8F0",
+          "adjusted": false,
+          "canvas": 15.27,
+          "surface": 14.39,
+          "pass": true
+        }
+      ]
+    }
+  },
+  "syntax": {
+    "light": {
+      "background": "#F6F8FA",
+      "tokenCount": 20,
+      "passCount": 20,
+      "failCount": 0,
+      "minRatio": 4.55,
+      "rows": [
+        {
+          "name": "syntax-keyword",
+          "vscodeOfficial": "#0000FF",
+          "vscodeScope": "keyword",
+          "original": "#0000FF",
+          "final": "#0000FF",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 8.07,
+          "pass": true
+        },
+        {
+          "name": "syntax-string",
+          "vscodeOfficial": "#A31515",
+          "vscodeScope": "string",
+          "original": "#A31515",
+          "final": "#A31515",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 7.37,
+          "pass": true
+        },
+        {
+          "name": "syntax-number",
+          "vscodeOfficial": "#098658",
+          "vscodeScope": "constant.numeric",
+          "original": "#098255",
+          "final": "#098255",
+          "adjusted": true,
+          "iterations": 0,
+          "ratio": 4.55,
+          "pass": true
+        },
+        {
+          "name": "syntax-function",
+          "vscodeOfficial": "#795E26",
+          "vscodeScope": "entity.name.function",
+          "original": "#795E26",
+          "final": "#795E26",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 5.73,
+          "pass": true
+        },
+        {
+          "name": "syntax-property",
+          "vscodeOfficial": "#001080",
+          "vscodeScope": "meta.object-literal.key",
+          "original": "#001080",
+          "final": "#001080",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 14.23,
+          "pass": true
+        },
+        {
+          "name": "syntax-variable",
+          "vscodeOfficial": "#001080",
+          "vscodeScope": "variable",
+          "original": "#001080",
+          "final": "#001080",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 14.23,
+          "pass": true
+        },
+        {
+          "name": "syntax-type",
+          "vscodeOfficial": "#267F99",
+          "vscodeScope": "entity.name.type",
+          "original": "#257B94",
+          "final": "#257B94",
+          "adjusted": true,
+          "iterations": 0,
+          "ratio": 4.55,
+          "pass": true
+        },
+        {
+          "name": "syntax-operator",
+          "vscodeOfficial": "#000000",
+          "vscodeScope": "keyword.operator",
+          "original": "#000000",
+          "final": "#000000",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 19.73,
+          "pass": true
+        },
+        {
+          "name": "syntax-punctuation",
+          "vscodeOfficial": "#000000",
+          "vscodeScope": "meta.template.expression",
+          "original": "#000000",
+          "final": "#000000",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 19.73,
+          "pass": true
+        },
+        {
+          "name": "syntax-comment",
+          "vscodeOfficial": "#008000",
+          "vscodeScope": "comment",
+          "original": "#008000",
+          "final": "#008000",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 4.83,
+          "pass": true
+        },
+        {
+          "name": "syntax-constant",
+          "vscodeOfficial": "#0070C1",
+          "vscodeScope": "variable.other.constant",
+          "original": "#0070C1",
+          "final": "#0070C1",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 4.83,
+          "pass": true
+        },
+        {
+          "name": "syntax-boolean",
+          "vscodeOfficial": "#0000FF",
+          "vscodeScope": "constant.language",
+          "original": "#0000FF",
+          "final": "#0000FF",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 8.07,
+          "pass": true
+        },
+        {
+          "name": "syntax-null",
+          "vscodeOfficial": "#0000FF",
+          "vscodeScope": "constant.language",
+          "original": "#0000FF",
+          "final": "#0000FF",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 8.07,
+          "pass": true
+        },
+        {
+          "name": "syntax-tag",
+          "vscodeOfficial": "#800000",
+          "vscodeScope": "entity.name.tag",
+          "original": "#800000",
+          "final": "#800000",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 10.29,
+          "pass": true
+        },
+        {
+          "name": "syntax-attribute",
+          "vscodeOfficial": "#E50000",
+          "vscodeScope": "entity.other.attribute-name",
+          "original": "#E50000",
+          "final": "#E50000",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 4.55,
+          "pass": true
+        },
+        {
+          "name": "syntax-regexp",
+          "vscodeOfficial": "#811F3F",
+          "vscodeScope": "string.regexp",
+          "original": "#811F3F",
+          "final": "#811F3F",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 8.96,
+          "pass": true
+        },
+        {
+          "name": "syntax-builtin",
+          "vscodeOfficial": "#267F99",
+          "vscodeScope": "support.type",
+          "original": "#257B94",
+          "final": "#257B94",
+          "adjusted": true,
+          "iterations": 0,
+          "ratio": 4.55,
+          "pass": true
+        },
+        {
+          "name": "syntax-inserted",
+          "vscodeOfficial": "#098658",
+          "vscodeScope": "markup.inserted",
+          "original": "#098255",
+          "final": "#098255",
+          "adjusted": true,
+          "iterations": 0,
+          "ratio": 4.55,
+          "pass": true
+        },
+        {
+          "name": "syntax-deleted",
+          "vscodeOfficial": "#A31515",
+          "vscodeScope": "markup.deleted",
+          "original": "#A31515",
+          "final": "#A31515",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 7.37,
+          "pass": true
+        },
+        {
+          "name": "syntax-invalid",
+          "vscodeOfficial": "#CD3131",
+          "vscodeScope": "invalid",
+          "original": "#CD3131",
+          "final": "#CD3131",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 4.84,
+          "pass": true
+        }
+      ]
+    },
+    "dark": {
+      "background": "#0E1524",
+      "tokenCount": 20,
+      "passCount": 20,
+      "failCount": 0,
+      "minRatio": 5.07,
+      "rows": [
+        {
+          "name": "syntax-keyword",
+          "vscodeOfficial": "#569CD6",
+          "vscodeScope": "keyword",
+          "original": "#569CD6",
+          "final": "#569CD6",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 6.19,
+          "pass": true
+        },
+        {
+          "name": "syntax-string",
+          "vscodeOfficial": "#CE9178",
+          "vscodeScope": "string",
+          "original": "#CE9178",
+          "final": "#CE9178",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 6.9,
+          "pass": true
+        },
+        {
+          "name": "syntax-number",
+          "vscodeOfficial": "#B5CEA8",
+          "vscodeScope": "constant.numeric",
+          "original": "#B5CEA8",
+          "final": "#B5CEA8",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 10.73,
+          "pass": true
+        },
+        {
+          "name": "syntax-function",
+          "vscodeOfficial": "#DCDCAA",
+          "vscodeScope": "entity.name.function",
+          "original": "#DCDCAA",
+          "final": "#DCDCAA",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 12.91,
+          "pass": true
+        },
+        {
+          "name": "syntax-property",
+          "vscodeOfficial": "#9CDCFE",
+          "vscodeScope": "meta.object-literal.key",
+          "original": "#9CDCFE",
+          "final": "#9CDCFE",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 12.23,
+          "pass": true
+        },
+        {
+          "name": "syntax-variable",
+          "vscodeOfficial": "#9CDCFE",
+          "vscodeScope": "variable",
+          "original": "#9CDCFE",
+          "final": "#9CDCFE",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 12.23,
+          "pass": true
+        },
+        {
+          "name": "syntax-type",
+          "vscodeOfficial": "#4EC9B0",
+          "vscodeScope": "entity.name.type",
+          "original": "#4EC9B0",
+          "final": "#4EC9B0",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 8.95,
+          "pass": true
+        },
+        {
+          "name": "syntax-operator",
+          "vscodeOfficial": "#D4D4D4",
+          "vscodeScope": "keyword.operator",
+          "original": "#D4D4D4",
+          "final": "#D4D4D4",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 12.3,
+          "pass": true
+        },
+        {
+          "name": "syntax-punctuation",
+          "vscodeOfficial": "#D4D4D4",
+          "vscodeScope": "meta.template.expression",
+          "original": "#D4D4D4",
+          "final": "#D4D4D4",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 12.3,
+          "pass": true
+        },
+        {
+          "name": "syntax-comment",
+          "vscodeOfficial": "#6A9955",
+          "vscodeScope": "comment",
+          "original": "#6A9955",
+          "final": "#6A9955",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 5.47,
+          "pass": true
+        },
+        {
+          "name": "syntax-constant",
+          "vscodeOfficial": "#4FC1FF",
+          "vscodeScope": "variable.other.constant",
+          "original": "#4FC1FF",
+          "final": "#4FC1FF",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 9.04,
+          "pass": true
+        },
+        {
+          "name": "syntax-boolean",
+          "vscodeOfficial": "#569CD6",
+          "vscodeScope": "constant.language",
+          "original": "#569CD6",
+          "final": "#569CD6",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 6.19,
+          "pass": true
+        },
+        {
+          "name": "syntax-null",
+          "vscodeOfficial": "#569CD6",
+          "vscodeScope": "constant.language",
+          "original": "#569CD6",
+          "final": "#569CD6",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 6.19,
+          "pass": true
+        },
+        {
+          "name": "syntax-tag",
+          "vscodeOfficial": "#569CD6",
+          "vscodeScope": "entity.name.tag",
+          "original": "#569CD6",
+          "final": "#569CD6",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 6.19,
+          "pass": true
+        },
+        {
+          "name": "syntax-attribute",
+          "vscodeOfficial": "#9CDCFE",
+          "vscodeScope": "entity.other.attribute-name",
+          "original": "#9CDCFE",
+          "final": "#9CDCFE",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 12.23,
+          "pass": true
+        },
+        {
+          "name": "syntax-regexp",
+          "vscodeOfficial": "#D16969",
+          "vscodeScope": "string.regexp",
+          "original": "#D16969",
+          "final": "#D16969",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 5.16,
+          "pass": true
+        },
+        {
+          "name": "syntax-builtin",
+          "vscodeOfficial": "#4EC9B0",
+          "vscodeScope": "support.type",
+          "original": "#4EC9B0",
+          "final": "#4EC9B0",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 8.95,
+          "pass": true
+        },
+        {
+          "name": "syntax-inserted",
+          "vscodeOfficial": "#B5CEA8",
+          "vscodeScope": "markup.inserted",
+          "original": "#B5CEA8",
+          "final": "#B5CEA8",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 10.73,
+          "pass": true
+        },
+        {
+          "name": "syntax-deleted",
+          "vscodeOfficial": "#CE9178",
+          "vscodeScope": "markup.deleted",
+          "original": "#CE9178",
+          "final": "#CE9178",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 6.9,
+          "pass": true
+        },
+        {
+          "name": "syntax-invalid",
+          "vscodeOfficial": "#F44747",
+          "vscodeScope": "invalid",
+          "original": "#F44747",
+          "final": "#F44747",
+          "adjusted": false,
+          "iterations": 0,
+          "ratio": 5.07,
+          "pass": true
+        }
+      ]
+    }
+  },
+  "brandSolid": {
+    "light": {
+      "tokenCount": 4,
+      "passCount": 4,
+      "failCount": 0,
+      "minRatio": 5.01,
+      "rows": [
+        {
+          "state": "default",
+          "background": "#5B5EE6",
+          "foreground": "#FFFFFF",
+          "ratio": 5.01,
+          "pass": true
+        },
+        {
+          "state": "hover",
+          "background": "#494CC7",
+          "foreground": "#FFFFFF",
+          "ratio": 6.68,
+          "pass": true
+        },
+        {
+          "state": "active",
+          "background": "#3F42B0",
+          "foreground": "#FFFFFF",
+          "ratio": 8.02,
+          "pass": true
+        },
+        {
+          "state": "danger",
+          "background": "#B91C1C",
+          "foreground": "#FFFFFF",
+          "ratio": 6.47,
+          "pass": true
+        }
+      ]
+    },
+    "dark": {
+      "tokenCount": 4,
+      "passCount": 4,
+      "failCount": 0,
+      "minRatio": 5.01,
+      "rows": [
+        {
+          "state": "default",
+          "background": "#5B5EE6",
+          "foreground": "#FFFFFF",
+          "ratio": 5.01,
+          "pass": true
+        },
+        {
+          "state": "hover",
+          "background": "#494CC7",
+          "foreground": "#FFFFFF",
+          "ratio": 6.68,
+          "pass": true
+        },
+        {
+          "state": "active",
+          "background": "#3F42B0",
+          "foreground": "#FFFFFF",
+          "ratio": 8.02,
+          "pass": true
+        },
+        {
+          "state": "danger",
+          "background": "#B91C1C",
+          "foreground": "#FFFFFF",
+          "ratio": 6.47,
+          "pass": true
+        }
+      ]
+    }
+  },
+  "code": {
+    "light": {
+      "background": "#F6F8FA",
+      "tokenCount": 2,
+      "passCount": 2,
+      "failCount": 0,
+      "rows": [
+        {
+          "name": "code-gutter",
+          "original": "#5B6779",
+          "final": "#5B6779",
+          "adjusted": false,
+          "ratio": 5.39,
+          "pass": true
+        },
+        {
+          "name": "code-foreground",
+          "original": "#0F172A",
+          "final": "#0F172A",
+          "adjusted": false,
+          "ratio": 16.77,
+          "pass": true
+        }
+      ]
+    },
+    "dark": {
+      "background": "#0E1524",
+      "tokenCount": 2,
+      "passCount": 2,
+      "failCount": 0,
+      "rows": [
+        {
+          "name": "code-gutter",
+          "original": "#94A3B8",
+          "final": "#94A3B8",
+          "adjusted": false,
+          "ratio": 7.11,
+          "pass": true
+        },
+        {
+          "name": "code-foreground",
+          "original": "#E2E8F0",
+          "final": "#E2E8F0",
+          "adjusted": false,
+          "ratio": 14.79,
+          "pass": true
+        }
+      ]
+    }
+  },
+  "summary": {
+    "syntaxLightMin": 4.55,
+    "syntaxDarkMin": 5.07,
+    "brandLightMin": 5.01,
+    "brandDarkMin": 5.01,
+    "gradientLightWorst": {
+      "at": 0,
+      "hex": "#1D4ED8",
+      "background": "hero-glow",
+      "ratio": 5.99,
+      "pass": true,
+      "threshold": 4.5
+    },
+    "gradientDarkWorst": {
+      "at": 45.400000000000375,
+      "hex": "#BFB6FD",
+      "background": "raised",
+      "ratio": 8.37,
+      "pass": true,
+      "threshold": 4.5
+    },
+    "allPass": true
+  }
+}

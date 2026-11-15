@@ -17,24 +17,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /**
- * 品牌标识色 · 多序列分类调色板（唯一来源）
+ * 品牌标识色 · 图表系列色运行时解析（唯一来源）
  *
  * 规范里所有颜色都必须走语义 Token（`--ds-color-*` / `chart-*` / `*-soft`），
- * 因为它们要跟着深浅模式与 5 套主题预设一起变。但有两类颜色**本质上不能语义化**：
+ * 因为它们要跟着深浅模式一起变。但有两类颜色**本质上不能语义化**：
  *
  *   1. 第三方品牌标识色 —— 支付宝的蓝、微信支付的绿、OpenAI 的青绿。
  *      这些是别人的商标配色，改成 `--primary` 就等于改人家的 logo，
  *      在任何主题下都必须保持原样。
- *   2. 多序列分类调色板 —— 一屏要同时区分十几个模型 / 用户时，需要一组
- *      彼此可辨、不带成败含义的颜色。语义层只有 `chart-1…5` 五个槽位，
- *      不够用；扩成 `chart-6…13` 又会让「分类色」变成第二个调色板。
+ *   2. 未知厂商兜底序列 —— 历史遗留的静态序列，仅用于排行榜里没有官方
+ *      品牌色的厂商，迁移状态见 UDS-7.0-MIGRATION-REPORT。
  *
- * 因此这两类颜色**集中声明在本文件**，组件一律从这里 import，
+ * 多系列分类色已由 UDS 7.0 的 `--ds7-color-chart-1..12` 语义层承担
+ * （12 色，正常视觉 + 三类色觉缺陷模拟下任意两色 CIEDE2000 >= 10）。
+ * VChart 画在 <canvas> 上读不到 CSS 变量，所以由本文件的
+ * `resolveUds6ChartPalette()` 在**调用时**解析；生成的 TS 镜像只做
+ * SSR / 单测兜底，不是第二套色值定义。
+ *
+ * 第三方品牌色集中声明在本文件，组件一律从这里 import，
  * 不得在业务代码里散写 hex。`scripts/check-design-tokens.mjs` 的 T8 规则
  * 把本文件识别为唯一所有者，其他文件出现裸 hex 即违规。
  *
  * 新增品牌色时：只加确实有官方视觉规范的那个品牌，并注明取值来源。
  */
+
+import {
+  UDS7_CHART_PALETTE_DARK,
+  UDS7_CHART_PALETTE_LIGHT,
+} from './generated/uds7-chart-palette'
 
 // ---------------------------------------------------------------------------
 // 第三方品牌标识色
@@ -112,58 +122,48 @@ export const OAUTH_BRAND_COLORS: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
-// 多序列分类调色板
+// UDS 7.0 图表系列色（12 色，调用时解析）
 // ---------------------------------------------------------------------------
 
 /**
- * 分类调色板：按顺序取色，用于「同一屏要区分 N 个并列实体」的图表
- * （用户消费排行、模型用量堆叠、未知厂商兜底）。
+ * 解析当前主题下的 12 个图表系列色。
  *
- * 排序刻意让相邻两色色相拉开 ≥ 60°，保证色弱用户也能分辨；
- * 深浅两档交替，避免整块图糊成一片。
+ * 必须在**调用时**读 CSS 变量，不能在模块顶层算好常量：模块求值时机
+ * 早于样式表注入，且主题切换后色值要跟着变（同 chartLegendItemStyle 的
+ * 约定）。探针挂在 <body> 下，让 html.dark 与 body[data-ds-theme] 两种
+ * 主题标记都能生效；7.0 系列色是实色 HEX，无需 canvas 归一化。
+ *
+ * SSR / 单测 / bridge 未加载时回退到生成的 TS 镜像（按 html 上的主题
+ * 标记选 Light / Dark），保证 canvas 永远有真实颜色可画。
  */
-export const CATEGORICAL_CHART_PALETTE = [
-  '#5B8FF9',
-  '#5AD8A6',
-  '#F6BD16',
-  '#E8684A',
-  '#6DC8EC',
-  '#9270CA',
-  '#FF9D4D',
-  '#269A99',
-  '#FF99C3',
-  '#5D7092',
-  '#0EA5E9',
-  '#22C55E',
-  '#A855F7',
-  '#F97316',
-  '#14B8A6',
-  '#EAB308',
-  '#EC4899',
-  '#84CC16',
-  '#6366F1',
-  '#10B981',
-  '#F43F5E',
-  '#0891B2',
-  '#94A3B8',
-] as const
+export function resolveUds6ChartPalette(): string[] {
+  const fallback =
+    typeof document !== 'undefined' &&
+    (document.documentElement.classList.contains('dark') ||
+      document.documentElement.getAttribute('data-ds-theme') === 'dark')
+      ? UDS7_CHART_PALETTE_DARK
+      : UDS7_CHART_PALETTE_LIGHT
 
-/**
- * 取第 `index` 个分类色；超出调色板长度时循环。
- *
- * 循环而不是返回灰：一屏超过 23 个并列实体时，重复一个远处色相
- * 比全部糊成灰更容易读。
- */
-export function categoricalColorAt(index: number): string {
-  const palette = CATEGORICAL_CHART_PALETTE
-  return palette[((index % palette.length) + palette.length) % palette.length]
+  if (typeof document === 'undefined') return [...fallback]
+
+  const probe = document.createElement('div')
+  probe.style.display = 'none'
+  document.body.appendChild(probe)
+  const style = getComputedStyle(probe)
+  const colors = Array.from({ length: 12 }, (_, i) =>
+    style.getPropertyValue(`--ds7-color-chart-${i + 1}`).trim()
+  )
+  probe.remove()
+
+  return colors.every((c) => c.length > 0) ? colors : [...fallback]
 }
 
 /**
- * 未知厂商的兜底色序列。
+ * 未知厂商的兜底色序列（历史静态序列，尚未迁移到 7.0 图表色）。
  *
- * 从分类调色板尾部开始取 —— 那一段是后来追加的、与厂商品牌色重复度最低，
- * 这样「有品牌色的厂商」和「未知厂商」在同一张饼图里不会撞色。
+ * 取值刻意与 VENDOR_BRAND_COLORS 的厂商色保持低重复度，这样
+ * 「有品牌色的厂商」和「未知厂商」在同一张饼图里不会撞色。
+ * 迁移状态登记在 UDS-7.0-MIGRATION-REPORT（B3 批次）。
  */
 export const VENDOR_FALLBACK_PALETTE = [
   '#0ea5e9',

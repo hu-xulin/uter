@@ -18,6 +18,7 @@ const MATRIX_FILE = path.join(ROOT, '.uap', 'reports', 'REQUIREMENT-TRACEABILITY
 import {
   classifyStrict, RequirementStatus, computeStatesFromMatrix,
   detectSharedEvidence, isValidBehaviorAssertion,
+  externalBlock, isProhibitionRequirement, loadRegistry,
 } from '../tools/requirement-verification.mjs';
 
 const EXEC = { execution_id: 'UAP-EXEC-HONESTY', git_head: 'a'.repeat(40), worktree_fingerprint: 'b'.repeat(64) };
@@ -105,6 +106,24 @@ describe('P2-06 诚实性负向测试', () => {
     assert.equal(c.status, RequirementStatus.NOT_VERIFIED);
   });
 
+  test('绑定到旧环境指纹的证据不能产生 VERIFIED（§3.3 环境变更失效）', () => {
+    const execEnv = { ...EXEC, environment_fingerprint: 'e'.repeat(64) };
+    // Matching environment fingerprint -> still a valid behaviour assertion.
+    assert.equal(isValidBehaviorAssertion(goodAssertion({ evidence_environment_fingerprint: 'e'.repeat(64) }), execEnv), true);
+    // Mismatched environment fingerprint -> evidence invalid/stale, never VERIFIED.
+    const stale = classifyStrict({
+      requirement: REQ,
+      behaviorAssertions: [goodAssertion({ evidence_environment_fingerprint: 'f'.repeat(64) })],
+      declaredProbeKinds: ['BEHAVIOR_EXECUTION'], execution: execEnv,
+    });
+    assert.equal(stale.status, RequirementStatus.NOT_VERIFIED);
+    assert.equal(stale.status_reason_code, 'EVIDENCE_INVALID_OR_STALE');
+    assert.equal(isValidBehaviorAssertion(goodAssertion({ evidence_environment_fingerprint: 'f'.repeat(64) }), execEnv), false);
+    // Legacy assertion without an environment fingerprint is tolerated (the
+    // manifest tolerates the same legacy schema); real records always carry it.
+    assert.equal(isValidBehaviorAssertion(goodAssertion(), execEnv), true);
+  });
+
   test('命令 exit 非 0 或断言未在真实输出中观测到 不能产生 VERIFIED', () => {
     const failed = classifyStrict({
       requirement: REQ, behaviorAssertions: [goodAssertion({ exit_code: 1 })],
@@ -181,5 +200,46 @@ describe('P2-06 诚实性负向测试', () => {
     for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'generated_at', 'status_model']) {
       assert.ok(matrix[field], `matrix missing binding field ${field}`);
     }
+  });
+
+  test('禁止性要求由本地强制行为验证，不被关键词误判为外部 BLOCKED（§8 语义收窄）', () => {
+    const registry = loadRegistry();
+    // Prohibitions that mention blocked keywords are NOT external-dependent:
+    // their behaviour is the LOCAL enforcement (policy DENY / simulation-only).
+    const prohibitions = [
+      '测试不得依赖真实资金交易。',
+      '不得使用真实支付、真实退款或真实资金账户进行测试。',
+      '所有测试均不触碰真实资金。',
+      '生产资金、生产数据库、生产密钥和不可逆生产发布默认禁止自动执行。',
+      '本次 UAP 建设不得擅自触发生产发布。',
+      '生产部署必须经过明确授权。',
+    ];
+    for (const text of prohibitions) {
+      assert.equal(isProhibitionRequirement({ requirement: text }), true, text);
+      assert.equal(externalBlock({ requirement: text }, registry), null, `prohibition wrongly blocked: ${text}`);
+    }
+    // A POSITIVE-capability requirement that genuinely needs the external service
+    // stays BLOCKED — the narrowing must not weaken real external blocks.
+    const positive = { requirement: '必须完成真实支付沙箱端到端验证。' };
+    assert.equal(isProhibitionRequirement(positive), false);
+    assert.ok(externalBlock(positive, registry)?.dependency, 'positive real-payment capability must stay BLOCKED');
+    assert.ok(externalBlock({ requirement: '必须支持真机验证的 H5 适配。' }, registry), 'positive H5-device capability must stay BLOCKED');
+    // With a genuine enforcement assertion a prohibition is VERIFIED, not BLOCKED.
+    const c = classifyStrict({
+      requirement: { requirement_id: 'UAP-05-002-REQ-010', requirement: '测试不得依赖真实资金交易。' },
+      behaviorAssertions: [goodAssertion()],
+      declaredProbeKinds: ['BEHAVIOR_EXECUTION'],
+      blockedRule: externalBlock({ requirement: '测试不得依赖真实资金交易。' }, registry),
+      execution: EXEC,
+    });
+    assert.equal(c.status, RequirementStatus.VERIFIED);
+    assert.equal(c.status_reason_code, 'REAL_BEHAVIOR_ASSERTION');
+    // Without an enforcement assertion it falls through to NOT_VERIFIED, never VERIFIED by fiat.
+    const noAssert = classifyStrict({
+      requirement: { requirement_id: 'UAP-05-002-REQ-010', requirement: '测试不得依赖真实资金交易。' },
+      behaviorAssertions: [], declaredProbeKinds: ['BEHAVIOR_EXECUTION'],
+      blockedRule: null, execution: EXEC,
+    });
+    assert.equal(noAssert.status, RequirementStatus.NOT_VERIFIED);
   });
 });

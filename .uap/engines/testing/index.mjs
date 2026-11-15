@@ -103,9 +103,9 @@ async function runSuite() {
   let args;
   let blockedReason = null;
   if (files.length > 0) {
-    args = ['--test', ...files.map((f) => relToRoot(f))];
+    args = ['--test', '--test-reporter=tap', ...files.map((f) => relToRoot(f))];
   } else {
-    args = ['--test', '.uap/tests/'];
+    args = ['--test', '--test-reporter=tap', '.uap/tests/'];
     blockedReason = dir_exists
       ? 'no *.test.mjs files in .uap/tests/ (empty directory)'
       : '.uap/tests/ directory missing';

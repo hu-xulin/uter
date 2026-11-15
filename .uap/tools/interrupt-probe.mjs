@@ -12,13 +12,20 @@
  */
 import fs from 'node:fs';
 import { createTask, registerStepHandler, runTask, listStepHandlers } from '../runtime/task-engine/index.mjs';
+import { release } from '../runtime/resource-manager/index.mjs';
 import { newId } from '../runtime/_lib/util.mjs';
 
 const mode = (process.argv.find((a) => a.startsWith('--mode=')) || '--mode=idempotent').split('=')[1];
 const nonIdempotent = mode === 'non-idempotent';
 
 registerStepHandler('probe.step1', async () => ({ status: 'SUCCEEDED', summary: 'step1 done', outputs: { side_effect: 'step1-committed' } }));
-registerStepHandler('probe.step2', async () => {
+registerStepHandler('probe.step2', async ({ task }) => {
+  // Release the resource lock before the deliberate hard crash. process.exit(7)
+  // bypasses runTask's finally-release, so without this the simulated dead
+  // process would leak a lock until TTL; rapid repeated probes would then hit
+  // MAX_CONCURRENCY. The crash still tests task-STATE recovery (persisted
+  // RUNNING task, unfinished steps); lock hygiene is the probe's own cleanup.
+  release(task.task_id);
   // Hard crash. Everything before this point was persisted to disk by the
   // task engine; nothing after this point exists.
   fs.writeSync(1, 'CRASHED_IN_STEP2\n');

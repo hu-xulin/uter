@@ -360,6 +360,21 @@ behavior_probes:
         forbid_output: []
         requirement_id: UAP-00-001-ACC-004
         behavior: 'Runtime 能启动并返回健康状态：状态引擎 health() 三项自检全绿'
+      - name: 'req.UAP-05-002-REQ-011'
+        required_output: ['REQ_ASSERT UAP-05-002-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-REQ-011
+        behavior: '测试失败不得被静默忽略：summarize([FAIL]) 真实置 has_failure=true、all_pass=false'
+      - name: 'req.UAP-05-002-ACC-003'
+        required_output: ['REQ_ASSERT UAP-05-002-ACC-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-ACC-003
+        behavior: '测试失败能正确阻断：aggregate([summarize([FAIL])]) 真实 status=FAIL、claim_allowed=false'
+      - name: 'req.UAP-03-004-REQ-008'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-008
+        behavior: '不可恢复任务必须标记 BLOCKED 或 FAILED：coerceStatus 真实把 FAILED→FAIL、BLOCKED→BLOCKED'
       - name: 'req.UAP-00-003-REQ-005'
         required_output: ['REQ_ASSERT UAP-00-003-REQ-005 PASS']
         forbid_output: []
@@ -405,6 +420,36 @@ behavior_probes:
         forbid_output: []
         requirement_id: UAP-00-003-REQ-010
         behavior: '所有敏感操作必须记录审计事件：deniedDecisions 真实读到 DENY 审计记录'
+      - name: 'req.UAP-08-001-REQ-010'
+        required_output: ['REQ_ASSERT UAP-08-001-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-001-REQ-010
+        behavior: '本次 UAP 建设不得擅自触发生产发布：check(production_deploy) 对开发 agent 真实 DENY'
+      - name: 'req.UAP-08-002-REQ-010'
+        required_output: ['REQ_ASSERT UAP-08-002-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-002-REQ-010
+        behavior: '生产部署必须经过明确授权：production_deploy 策略组 effect=deny 且原因要求显式授权，check 真实 DENY'
+      - name: 'req.UAP-05-001-REQ-010'
+        required_output: ['REQ_ASSERT UAP-05-001-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-001-REQ-010
+        behavior: '不得通过降低门禁制造通过结果：check(quality_gate_disable) 对开发 agent 真实 DENY'
+      - name: 'req.UAP-05-003-REQ-011'
+        required_output: ['REQ_ASSERT UAP-05-003-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-003-REQ-011
+        behavior: '自动修复不得删除失败测试或降低质量门禁：check(test_deletion_to_force_pass) 真实 DENY'
+      - name: 'req.UAP-00-003-REQ-011'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-011
+        behavior: '权限不足时必须停止相关动作而不是绕过检查：check(destructive_git) 真实 DENY（动作被停止）'
+      - name: 'req.UAP-03-001-REQ-004'
+        required_output: ['REQ_ASSERT UAP-03-001-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-001-REQ-004
+        behavior: 'Agent 不得自行扩大权限：check(force_push) 对开发 agent 真实 DENY（无法自我提权）'
       - name: 'req.UAP-00-004-REQ-013'
         required_output: ['REQ_ASSERT UAP-00-004-REQ-013 PASS']
         forbid_output: []
@@ -420,6 +465,11 @@ behavior_probes:
         forbid_output: []
         requirement_id: UAP-00-004-ACC-003
         behavior: '证据引用有效：verifyFinalReportBindings 真实拒绝与声明执行不一致的报告'
+      - name: 'req.UAP-00-004-REQ-014'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-014 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-014
+        behavior: '失败证据不得删除以制造通过结果：篡改真实报告字节后 verifyEvidenceManifest 真实检出 sha256 changed'
       - name: 'req.UAP-08-001-REQ-006'
         required_output: ['REQ_ASSERT UAP-08-001-REQ-006 PASS']
         forbid_output: []
@@ -505,6 +555,21 @@ behavior_probes:
         forbid_output: []
         requirement_id: UAP-06-002-REQ-013
         behavior: '通知延迟/重复/退款失败须有处理策略：TestProviderSandboxAvailabilityProbe 真实通过'
+      - name: 'req.UAP-05-002-REQ-010'
+        required_output: ['REQ_ASSERT UAP-05-002-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-REQ-010
+        behavior: '测试不得依赖真实资金交易：TestReportDeclaresLocalSimulation 真实通过（测试报告声明本地模拟）'
+      - name: 'req.UAP-06-002-REQ-017'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-017 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-017
+        behavior: '不得使用真实支付/退款/资金账户进行测试：TestConfigRejectsRealLookingCredentials 真实通过'
+      - name: 'req.UAP-06-002-ACC-007'
+        required_output: ['REQ_ASSERT UAP-06-002-ACC-007 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-ACC-007
+        behavior: '所有测试均不触碰真实资金：TestGatewayVerificationNeverFaked 真实通过（网关验证不伪造、不触真实资金）'
       - name: 'req.UAP-02-002-ACC-002'
         required_output: ['REQ_ASSERT UAP-02-002-ACC-002 PASS']
         forbid_output: []
@@ -595,6 +660,241 @@ behavior_probes:
         forbid_output: []
         requirement_id: UAP-00-001-REQ-010
         behavior: '配置/规范/代码/验证结果可追溯：honesty「矩阵 538 条完整性」真实 ok'
+      - name: 'req.UAP-00-002-REQ-004'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-004
+        behavior: '系统必须自动计算可执行顺序：topologicalLevels 对菱形 DAG 真实分层'
+      - name: 'req.UAP-00-002-REQ-005'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-005
+        behavior: '无依赖任务允许并行、有依赖任务等待前置：同一层并行且后继层等待'
+      - name: 'req.UAP-00-001-ACC-005'
+        required_output: ['REQ_ASSERT UAP-00-001-ACC-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-001-ACC-005
+        behavior: '不存在无法解释的循环依赖：detectCycle 对环返回原因、对 DAG 返回 null'
+      - name: 'req.UAP-03-003-REQ-008'
+        required_output: ['REQ_ASSERT UAP-03-003-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-003-REQ-008
+        behavior: '依赖任务必须按 DAG 顺序执行：链式依赖逐层串行'
+      - name: 'req.UAP-01-003-REQ-008'
+        required_output: ['REQ_ASSERT UAP-01-003-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-01-003-REQ-008
+        behavior: '状态必须具有明确状态转换：合法边接受、非法边抛 IllegalTransitionError'
+      - name: 'req.UAP-03-002-REQ-012'
+        required_output: ['REQ_ASSERT UAP-03-002-REQ-012 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-002-REQ-012
+        behavior: 'Agent 输出必须经过结果校验：assertExecutorResult 拒绝执行器自填 validation_results'
+      - name: 'req.UAP-00-001-REQ-007'
+        required_output: ['REQ_ASSERT UAP-00-001-REQ-007 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-001-REQ-007
+        behavior: '任何验证器必须返回机器可读结果：validatorResult 字段齐全且未执行/非零退出降级 PASS->FAIL'
+      - name: 'req.UAP-03-001-ACC-001'
+        required_output: ['REQ_ASSERT UAP-03-001-ACC-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-001-ACC-001
+        behavior: '所有 Agent 已登记：listAgents 返回 11 个唯一 ID 且含名称/职责'
+      - name: 'req.UAP-03-001-REQ-002'
+        required_output: ['REQ_ASSERT UAP-03-001-REQ-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-001-REQ-002
+        behavior: '每个 Agent 必须声明工具、权限和输出：registry 每个 Agent 声明 tools/permissions/output_schema'
+      - name: 'req.UAP-03-002-REQ-003'
+        required_output: ['REQ_ASSERT UAP-03-002-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-002-REQ-003
+        behavior: 'Agent 执行前必须进行权限校验：assertTool 拒绝未声明工具、放行已声明工具'
+      - name: 'req.UAP-03-001-ACC-002'
+        required_output: ['REQ_ASSERT UAP-03-001-ACC-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-001-ACC-002
+        behavior: '所有 Agent 权限可解析：每个 Agent 的每项权限都能得到 ALLOW/DENY 决策'
+      - name: 'req.UAP-00-003-REQ-014'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-014 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-014
+        behavior: '必须支持密钥脱敏：redact 真实掩码 api_key/password 明文'
+      - name: 'req.UAP-00-003-REQ-002'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-002
+        behavior: '默认采用最小权限原则：permission-policy default_effect=deny 且 real_refund 被 DENY'
+      - name: 'req.UAP-00-002-REQ-001'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-001
+        behavior: '用户任务必须转换为结构化任务：createTask 产出含目标/状态的结构化任务并可读回'
+      - name: 'req.UAP-00-002-REQ-002'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-002
+        behavior: '任务必须拆分为可执行子任务：createTask 将 steps 归一化为 PENDING 子步骤'
+      - name: 'req.UAP-00-002-REQ-003'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-003
+        behavior: '每个子任务必须包含目标/输入/输出/依赖/权限/验收标准：缺字段 createTask 抛 ContractError'
+      - name: 'req.UAP-00-001-REQ-009'
+        required_output: ['REQ_ASSERT UAP-00-001-REQ-009 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-001-REQ-009
+        behavior: '所有任务必须有唯一 ID/状态/时间/责任 Agent/证据引用：createTask 字段齐全'
+      - name: 'req.UAP-00-002-REQ-008'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-008
+        behavior: '执行过程中必须持续记录状态和证据：createTask 真实发布 task.created 事件'
+      - name: 'req.UAP-00-002-REQ-012'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-012 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-012
+        behavior: '任务完成后必须执行验收：defaultValidator 对全 SUCCEEDED+有证据任务返回 PASS'
+      - name: 'req.UAP-00-002-REQ-013'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-013 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-013
+        behavior: '未达到验收标准不得标记为完成：defaultValidator 对未完成/被阻断任务返回 FAIL+BLOCKER'
+      - name: 'req.UAP-03-004-REQ-001'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-001
+        behavior: 'Agent 任务必须持久化状态：createTask 后 getTask 读回持久化状态与上下文版本'
+      - name: 'req.UAP-03-004-REQ-006'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-006 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-006
+        behavior: '失败任务必须记录失败原因：markInterrupted 真实写入 error 并转 WAITING_RECOVERY'
+      - name: 'req.UAP-03-004-REQ-009'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-009 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-009
+        behavior: '必须支持任务取消：cancelTask 真实转 CANCELLED 终态'
+      - name: 'req.UAP-03-004-REQ-010'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-010
+        behavior: '必须支持任务暂停和续跑：pauseTask 转 PAUSED 且 PAUSED->QUEUED 续跑边合法'
+      - name: 'req.UAP-00-002-ACC-003'
+        required_output: ['REQ_ASSERT UAP-00-002-ACC-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-ACC-003
+        behavior: '能够中断并恢复：markInterrupted 后 inspectRecovery 判定可恢复'
+      - name: 'req.UAP-00-002-REQ-006'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-006 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-006
+        behavior: '并行执行必须受资源限制和文件冲突检测约束：MAX_CONCURRENCY=4 且 detectFileConflicts 真实检出重叠'
+      - name: 'req.UAP-03-003-REQ-004'
+        required_output: ['REQ_ASSERT UAP-03-003-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-003-REQ-004
+        behavior: '并行任务必须检查文件修改冲突：detectFileConflicts 返回冲突双方任务 ID'
+      - name: 'req.UAP-03-003-REQ-005'
+        required_output: ['REQ_ASSERT UAP-03-003-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-003-REQ-005
+        behavior: '共享资源必须有锁或等效并发控制：acquire 持锁、activeLocks 可见、release 释放'
+      - name: 'req.UAP-03-003-ACC-002'
+        required_output: ['REQ_ASSERT UAP-03-003-ACC-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-003-ACC-002
+        behavior: '冲突能够检测：重叠文件第二次 acquire 真实抛 ResourceConflictError'
+      - name: 'req.UAP-03-004-ACC-001'
+        required_output: ['REQ_ASSERT UAP-03-004-ACC-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-ACC-001
+        behavior: '能够模拟进程中断：simulateInterruption 真实 spawn 子进程并以 exit 7 崩溃'
+      - name: 'req.UAP-03-004-ACC-002'
+        required_output: ['REQ_ASSERT UAP-03-004-ACC-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-ACC-002
+        behavior: '能够恢复任务：inspectRecovery 对真实中断任务判定可恢复并区分已完成/待恢复步骤'
+      - name: 'req.UAP-03-004-REQ-005'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-005
+        behavior: '任务恢复必须校验上下文版本：recover 对版本不匹配同步拒绝（不静默重跑）'
+      - name: 'req.UAP-03-004-REQ-003'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-003
+        behavior: '恢复时必须检查任务是否已经产生副作用：inspectRecovery 区分 ambiguous/committed 副作用'
+      - name: 'req.UAP-08-003-REQ-002'
+        required_output: ['REQ_ASSERT UAP-08-003-REQ-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-REQ-002
+        behavior: '日志必须结构化：publish 返回含 event_id/type/at/payload/severity 的结构化事件'
+      - name: 'req.UAP-08-003-REQ-003'
+        required_output: ['REQ_ASSERT UAP-08-003-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-REQ-003
+        behavior: '关键任务必须有 Trace ID：publish 真实保留 trace_id 关联'
+      - name: 'req.UAP-08-003-REQ-004'
+        required_output: ['REQ_ASSERT UAP-08-003-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-REQ-004
+        behavior: '错误必须有分类和严重程度：publish 真实记录 severity=ERROR'
+      - name: 'req.UAP-08-003-REQ-005'
+        required_output: ['REQ_ASSERT UAP-08-003-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-REQ-005
+        behavior: '关键业务事件必须可查询：publish 后 query({type}) 真实检索到该事件'
+      - name: 'req.UAP-08-003-REQ-010'
+        required_output: ['REQ_ASSERT UAP-08-003-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-REQ-010
+        behavior: '必须支持按任务 ID 查询执行记录：query({task_id}) 真实检索到该任务事件'
+      - name: 'req.UAP-03-003-REQ-010'
+        required_output: ['REQ_ASSERT UAP-03-003-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-003-REQ-010
+        behavior: '多 Agent 结果必须进行汇总和一致性检查：aggregate 全 SUCCEEDED=FULLY_VERIFIED，否则 PARTIALLY_VERIFIED'
+      - name: 'req.UAP-00-004-REQ-001'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-001
+        behavior: '每次任务执行必须产生唯一执行记录：isCurrent 仅认本执行 id 的产物，跨执行 id 即判陈旧'
+      - name: 'req.UAP-00-004-REQ-006'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-006 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-006
+        behavior: '文件存在不能证明功能实现：IMPLEMENTED 且有测试但无证据的需求不得计为 VERIFIED'
+      - name: 'req.UAP-00-004-REQ-007'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-007 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-007
+        behavior: '命令存在不能证明命令可运行：isCurrent 要求 exit_code=0，非零退出即不可用'
+      - name: 'req.UAP-00-004-REQ-008'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-008
+        behavior: '测试文件存在不能证明测试通过：有测试名但未真实通过的需求不得计为 VERIFIED'
+      - name: 'req.UAP-00-004-ACC-004'
+        required_output: ['REQ_ASSERT UAP-00-004-ACC-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-ACC-004
+        behavior: '报告能够定位原始验证记录：verifyEvidenceChain 对合法链 ok 且计数，对篡改哈希 fail-closed'
+      - name: 'req.UAP-00-003-REQ-013'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-013 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-013
+        behavior: '安全失败必须阻断相关任务：assertAllowed 对未授权权限真实抛出 PolicyDeniedError'
+      - name: 'req.UAP-08-003-ACC-001'
+        required_output: ['REQ_ASSERT UAP-08-003-ACC-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-ACC-001
+        behavior: '关键事件可追踪：publish 携带 trace_id 后 query({trace_id}) 真实检索到该事件'
+      - name: 'req.UAP-08-003-REQ-011'
+        required_output: ['REQ_ASSERT UAP-08-003-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-003-REQ-011
+        behavior: '必须保存关键运行证据：publish 后 count() 从磁盘读到的事件数真实增加'
 # END GENERATED: bhv.requirement-behavior-suite
 
 external_dependency_probes: []

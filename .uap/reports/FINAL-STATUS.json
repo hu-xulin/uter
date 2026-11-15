@@ -2,15 +2,24 @@
   "schema_version": "2.0",
   "platform": "UAP",
   "version": "1.0.0",
-  "generated_at": "2026-11-15T06:22:05.943Z",
+  "generated_at": "2026-11-15T14:04:23.468Z",
   "generated_from": "uap accept (final acceptance gate, real command results)",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
-  "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
-  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
-  "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
-  "overall_status": "FAILED",
+  "commit_sha": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "batch_consistency": {
+    "single_execution_id": true,
+    "single_git_head": true,
+    "single_worktree_fingerprint": true,
+    "single_environment_fingerprint": true,
+    "evidence_integrity": true,
+    "evidence_freshness": true
+  },
+  "overall_status": "NOT_ACCEPTED",
   "claim_allowed": false,
   "status_model": "UAP-TEST-STATUS-1.0",
   "three_independent_results": {
@@ -18,7 +27,7 @@
       "status": "PARTIALLY_VERIFIED"
     },
     "uter_business_system": {
-      "status": "FAILED"
+      "status": "PARTIALLY_VERIFIED"
     },
     "real_payment_gateway": {
       "status": "BLOCKED",
@@ -31,26 +40,26 @@
       "status": "PARTIALLY_VERIFIED"
     },
     "uter_real_compliance": {
-      "status": "FAILED"
+      "status": "PARTIALLY_VERIFIED"
     }
   },
-  "uter_compliance": "FAILED",
-  "overall_system_status": "FAILED",
+  "uter_compliance": "PARTIALLY_VERIFIED",
+  "overall_system_status": "NOT_ACCEPTED",
   "fully_verified": false,
   "fully_operational_allowed": false,
   "counts": {
     "requirements_total": 538,
     "requirements": {
-      "VERIFIED": 61,
-      "NOT_VERIFIED": 471,
-      "BLOCKED": 6,
+      "VERIFIED": 123,
+      "NOT_VERIFIED": 415,
+      "BLOCKED": 0,
       "NOT_APPLICABLE": 0
     },
-    "gate_groups": 6,
-    "gate_groups_pass": 4,
-    "gate_groups_fail": 2,
+    "gate_groups": 7,
+    "gate_groups_pass": 7,
+    "gate_groups_fail": 0,
     "necessary_blocked": 2,
-    "necessary_unverified": 477,
+    "necessary_unverified": 415,
     "accessibility": {
       "passed": 14,
       "failed": 0,
@@ -59,11 +68,11 @@
     },
     "visual": {
       "total": 29,
-      "passed": 1,
-      "diffs": 28,
+      "passed": 29,
+      "diffs": 0,
       "baseline_updated": false,
-      "exit_code": 1,
-      "status": "FAIL"
+      "exit_code": 0,
+      "status": "PASS"
     }
   },
   "blocked_items": [
@@ -74,83 +83,41 @@
     },
     {
       "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
-      "reason": "477 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
+      "reason": "415 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
       "impact": "full requirement closure not achieved"
     }
   ],
   "problems": [
-    "e2e: 1 FAIL scenario(s)",
-    "visual: status=FAIL exit=1 diffs=28",
-    "evidence: code changed AFTER report generation: fingerprint now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
-    "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
-    "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest",
-    "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
-    "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch with manifest",
-    "evidence: VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 manifest=UAP-EXEC-20261115061321-6a98eb1a",
-    "evidence: VISUAL-REGRESSION.json: worktree_fingerprint mismatch with manifest",
-    "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
-    "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch",
-    "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
-    "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch",
-    "evidence: VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 expected=UAP-EXEC-20261115061321-6a98eb1a",
-    "evidence: VISUAL-REGRESSION.json: worktree_fingerprint mismatch",
-    "477 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+    "415 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
   ],
   "final_acceptance": {
     "claim_allowed": false,
-    "gate_status": "FAILED",
+    "gate_status": "NOT_ACCEPTED",
     "report": ".uap/reports/FINAL-ACCEPTANCE.json",
-    "evidence_manifest_hash": "449b10c33d031ce996209febdb0b875e1d5416b40a3bfe08b1f576a5b209b815",
+    "evidence_manifest_hash": "872c54f955738d39bf375b7ee66a4bc9f4ca5bc8cd1ad520ff3cbc6838c44fd2",
     "command": "node .uap/tools/final-acceptance-gate.mjs",
-    "uap_fully_operational": false
+    "uap_fully_operational": true
   },
   "status_engine": {
     "computed_by": "uap.final-acceptance-gate",
-    "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
-    "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
-    "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+    "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
     "counts": {
       "requirements_total": 538,
-      "verified": 61,
+      "verified": 123,
       "applicable": 538
     },
     "reasons": [
-      "e2e: 1 FAIL scenario(s)",
-      "visual: status=FAIL exit=1 diffs=28",
-      "evidence: code changed AFTER report generation: fingerprint now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
-      "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 manifest=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: VISUAL-REGRESSION.json: worktree_fingerprint mismatch with manifest",
-      "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch",
-      "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch",
-      "evidence: VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 expected=UAP-EXEC-20261115061321-6a98eb1a",
-      "evidence: VISUAL-REGRESSION.json: worktree_fingerprint mismatch",
-      "477 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+      "415 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
     ],
     "claim_allowed": false,
     "capabilities": {
-      "real_code_repair": false,
-      "independent_regression": false
+      "real_code_repair": true,
+      "independent_regression": true
     },
-    "p0_blockers": [
-      {
-        "id": "CAPABILITY-GAP-real_code_repair",
-        "category": "CAPABILITY_GAP",
-        "status": "OPEN",
-        "detail": "capability real_code_repair not proven by the UAP runtime self-tests"
-      },
-      {
-        "id": "CAPABILITY-GAP-independent_regression",
-        "category": "CAPABILITY_GAP",
-        "status": "OPEN",
-        "detail": "capability independent_regression not proven by the UAP runtime self-tests"
-      }
-    ]
+    "p0_blockers": []
   },
   "report_count": 18,
   "reports": [

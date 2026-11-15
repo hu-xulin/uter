@@ -98,6 +98,7 @@ function declaredBinding(file, data) {
     execution_id: data.execution_id ?? null,
     git_head: data.git_head ?? null,
     worktree_fingerprint: data.worktree_fingerprint ?? null,
+    environment_fingerprint: data.environment_fingerprint ?? null,
     generated_at: data.generated_at ?? null,
     status_model: data.status_model ?? null,
     status: data.status ?? null,
@@ -163,6 +164,7 @@ export function generateEvidenceManifest({ execution, extraFiles = [], reportsDi
     execution_id: e.execution_id,
     git_head: e.git_head,
     worktree_fingerprint: e.worktree_fingerprint,
+    environment_fingerprint: e.environment_fingerprint,
     fingerprint_basis: fingerprintBasis(),
     final_report_count: entries.length,
     missing_reports: missing,
@@ -171,7 +173,7 @@ export function generateEvidenceManifest({ execution, extraFiles = [], reportsDi
     // Excluded from the manifest itself (self-reference is impossible).
     manifest_scope: 'all FINAL_REPORTS except EVIDENCE-MANIFEST.json; FINAL-ACCEPTANCE.json pins manifest_integrity_hash',
   };
-  body.manifest_integrity_hash = hash(JSON.stringify({ entries: body.entries, execution_id: body.execution_id, git_head: body.git_head, worktree_fingerprint: body.worktree_fingerprint }));
+  body.manifest_integrity_hash = hash(JSON.stringify({ entries: body.entries, execution_id: body.execution_id, git_head: body.git_head, worktree_fingerprint: body.worktree_fingerprint, environment_fingerprint: body.environment_fingerprint }));
   writeJSON(manifestPathFor(dir), body);
   return body;
 }
@@ -187,6 +189,7 @@ export function verifyEvidenceManifest({ strictCurrent = true, execution, report
   const expectedSelf = hash(JSON.stringify({
     entries: manifest.entries, execution_id: manifest.execution_id,
     git_head: manifest.git_head, worktree_fingerprint: manifest.worktree_fingerprint,
+    environment_fingerprint: manifest.environment_fingerprint,
   }));
   if (expectedSelf !== manifest.manifest_integrity_hash) {
     problems.push('manifest_integrity_hash mismatch (manifest was edited by hand)');
@@ -197,6 +200,9 @@ export function verifyEvidenceManifest({ strictCurrent = true, execution, report
   if (manifest.git_head !== current.git_head) problems.push(`manifest git_head=${manifest.git_head} current=${current.git_head}`);
   if (manifest.worktree_fingerprint !== current.worktree_fingerprint) {
     problems.push(`manifest worktree_fingerprint=${manifest.worktree_fingerprint} current=${current.worktree_fingerprint}`);
+  }
+  if (manifest.environment_fingerprint !== current.environment_fingerprint) {
+    problems.push(`manifest environment_fingerprint=${manifest.environment_fingerprint} current=${current.environment_fingerprint}`);
   }
   const headNow = headSha ?? gitHead();
   if (headNow !== manifest.commit_sha) problems.push(`manifest commit_sha=${manifest.commit_sha} HEAD now=${headNow}`);
@@ -233,11 +239,19 @@ export function verifyEvidenceManifest({ strictCurrent = true, execution, report
     if (binding.worktree_fingerprint !== manifest.worktree_fingerprint) {
       problems.push(`${entry.name}: worktree_fingerprint mismatch with manifest`);
     }
+    // Environment pin: when a report declares an environment fingerprint it
+    // MUST agree with the batch. Absent = legacy schema (tolerated here; the
+    // final acceptance gate additionally requires presence for a new batch).
+    if (binding.environment_fingerprint != null
+        && binding.environment_fingerprint !== manifest.environment_fingerprint) {
+      problems.push(`${entry.name}: environment_fingerprint mismatch with manifest`);
+    }
   }
   return {
     ok: problems.length === 0, problems, checked,
     mismatched, execution_id: manifest.execution_id,
     git_head: manifest.git_head, worktree_fingerprint: manifest.worktree_fingerprint,
+    environment_fingerprint: manifest.environment_fingerprint,
     manifest_integrity_hash: manifest.manifest_integrity_hash,
     historical_count: (manifest.historical_reports || []).length,
     checked_at: nowISO(),
@@ -268,6 +282,11 @@ export function verifyFinalReportBindings({ execution, reportsDir, headSha } = {
     if (data?.execution_id !== e.execution_id) problems.push(`${name}: execution_id=${data?.execution_id} expected=${e.execution_id}`);
     if (data?.git_head !== e.git_head) problems.push(`${name}: git_head=${data?.git_head} expected=${e.git_head}`);
     if (data?.worktree_fingerprint !== e.worktree_fingerprint) problems.push(`${name}: worktree_fingerprint mismatch`);
+    if (data?.environment_fingerprint != null && data.environment_fingerprint !== e.environment_fingerprint) {
+      problems.push(`${name}: environment_fingerprint=${data.environment_fingerprint} expected=${e.environment_fingerprint}`);
+    } else if (data?.environment_fingerprint == null) {
+      warnings.push(`${name}: no environment_fingerprint field (legacy schema; not environment-pinned)`);
+    }
     // A2a: a declared commit_sha MUST equal the current HEAD. Missing
     // commit_sha is tolerated (old-schema compatibility) but recorded as a
     // warning so ok is not forced false purely for the absent field.

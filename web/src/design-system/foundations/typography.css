@@ -223,14 +223,14 @@ For commercial licensing, please contact support@uter.ai
  * 注意 `@utility`（不是 `@layer utilities`）：只有前者会被 Tailwind 的变体
  * 系统识别，`hover:ds-text-gradient-brand` 这类写法才生成选择器。 */
 @utility ds-text-gradient-brand {
-  /* UDS 6.0：渐变值来自 TOKEN-MANIFEST 派生的 --ds6-* 语义层（唯一真源）。
+  /* UDS 7.0：渐变值来自 TOKEN-MANIFEST 派生的 --ds7-* 语义层（唯一真源）。
    * `in srgb` 与 registry/contrast-engine.mjs 的 1001 点 sRGB 采样严格同源；
    * 旧浏览器降级见 uds-semantic-bridge.css 的 @supports not 块（视觉等价，不引入第三套值）。 */
   background-image: linear-gradient(
     90deg in srgb,
-    var(--ds6-color-gradient-light-from),
-    var(--ds6-color-gradient-light-via),
-    var(--ds6-color-gradient-light-to)
+    var(--ds7-color-gradient-light-from),
+    var(--ds7-color-gradient-light-via),
+    var(--ds7-color-gradient-light-to)
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -241,9 +241,9 @@ For commercial licensing, please contact support@uter.ai
 .dark .ds-text-gradient-brand {
   background-image: linear-gradient(
     90deg in srgb,
-    var(--ds6-color-gradient-dark-from),
-    var(--ds6-color-gradient-dark-via),
-    var(--ds6-color-gradient-dark-to)
+    var(--ds7-color-gradient-dark-from),
+    var(--ds7-color-gradient-dark-via),
+    var(--ds7-color-gradient-dark-to)
   );
 }
 
@@ -259,10 +259,10 @@ For commercial licensing, please contact support@uter.ai
   background-image:
     linear-gradient(
       90deg,
-      transparent calc(50% - var(--ds6-shimmer-spread)),
-      var(--color-background) calc(50% - var(--ds6-shimmer-spread)),
-      var(--color-background) calc(50% + var(--ds6-shimmer-spread)),
-      transparent calc(50% + var(--ds6-shimmer-spread))
+      transparent calc(50% - var(--ds7-shimmer-spread)),
+      var(--color-background) calc(50% - var(--ds7-shimmer-spread)),
+      var(--color-background) calc(50% + var(--ds7-shimmer-spread)),
+      transparent calc(50% + var(--ds7-shimmer-spread))
     ),
     linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground));
   -webkit-background-clip: text;

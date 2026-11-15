@@ -19,7 +19,15 @@ export interface VisualRoute extends OpenOptions {
  * `*.spec.ts-snapshots/` 下对应 PNG，否则基线目录会堆积孤儿文件。
  */
 export const PUBLIC_ROUTES: VisualRoute[] = [
-  { name: 'home', path: '/', ready: 'header' },
+  {
+    name: 'home',
+    path: '/',
+    ready: 'header',
+    // 首页统计数字是 IntersectionObserver 触发的 rAF count-up 动画，截图落在
+    // 哪一帧不确定（99/198/79 vs 99/199/80），属动态内容而非 UI 回归。mask 在
+    // 期望/实际两侧同区域覆盖，不改动基线、不放宽阈值。
+    mask: ['[data-visual-dynamic="home-stat-value"]'],
+  },
   { name: 'about', path: '/about', ready: 'main, [role="main"]' },
   { name: 'pricing', path: '/pricing', ready: 'main, [role="main"]' },
   { name: 'rankings', path: '/rankings', ready: 'main, [role="main"]' },

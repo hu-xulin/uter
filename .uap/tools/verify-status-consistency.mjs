@@ -24,7 +24,7 @@ import { execFileSync } from 'node:child_process';
 import { ROOT, FILES, UAP, REPORTS } from '../runtime/_lib/paths.mjs';
 import { readJSON, readText, exists, nowISO, writeJSON } from '../runtime/_lib/util.mjs';
 import { statusVerdict } from '../runtime/status-engine/snapshot.mjs';
-import { gitHead, worktreeFingerprint, currentExecution } from '../runtime/status-engine/execution.mjs';
+import { gitHead, worktreeFingerprint, currentExecution, environmentFingerprint } from '../runtime/status-engine/execution.mjs';
 import { verifyEvidenceManifest, verifyFinalReportBindings, FINAL_REPORTS } from '../runtime/evidence-engine/manifest.mjs';
 import { summarize, TEST_STATUS } from '../runtime/status-engine/test-status.mjs';
 
@@ -72,7 +72,8 @@ export function verifyStatusConsistency({ withCli = true } = {}) {
   const gate = readJSON(path.join(REPORTS, 'FINAL-ACCEPTANCE.json'), null);
   const gateIsCurrent = Boolean(gate && gate.execution_id === execution.execution_id
     && gate.git_head === execution.git_head
-    && gate.worktree_fingerprint === execution.worktree_fingerprint);
+    && gate.worktree_fingerprint === execution.worktree_fingerprint
+    && gate.environment_fingerprint === execution.environment_fingerprint);
   const finalCard = readJSON(FILES.finalStatus, null);
   const block = parseIndexBlock();
 
@@ -113,18 +114,31 @@ export function verifyStatusConsistency({ withCli = true } = {}) {
     `now=${fpNow} bound=${execution.worktree_fingerprint}`);
   add('git_head_matches_current_run', gitHead() === execution.git_head,
     `now=${gitHead()} bound=${execution.git_head}`);
+  // Directive §3.1/§3.3: a toolchain/OS change opens a new identity and must
+  // invalidate prior evidence. Independently recompute the environment pin.
+  const envNow = environmentFingerprint();
+  add('environment_fingerprint_matches_current_run', envNow === execution.environment_fingerprint,
+    `now=${envNow} bound=${execution.environment_fingerprint}`);
+  // Directive §3.4: the gate must have PROVEN single-batch consistency. Confirm
+  // its six verdicts independently rather than trusting the overall status.
+  const bc = gate?.batch_consistency || null;
+  const bcKeys = ['single_execution_id', 'single_git_head', 'single_worktree_fingerprint', 'single_environment_fingerprint', 'evidence_integrity', 'evidence_freshness'];
+  const bcOk = gateIsCurrent && bc != null && bcKeys.every((k) => bc[k] === true);
+  add('single_batch_consistency_proven', bcOk,
+    bc ? bcKeys.map((k) => `${k}=${bc[k]}`).join(' ') : 'gate has no batch_consistency verdict');
 
   // Every capability card must be bound AND its counts must be recomputable.
   const cardProblems = [];
   for (const name of CARDS) {
     const card = readJSON(path.join(REPORTS, name), null);
     if (!card) { cardProblems.push(`${name}: missing`); continue; }
-    for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'generated_at']) {
+    for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'environment_fingerprint', 'generated_at']) {
       if (!card[field]) cardProblems.push(`${name}: missing ${field}`);
     }
     if (card.execution_id !== execution.execution_id) cardProblems.push(`${name}: execution_id=${card.execution_id}`);
     if (card.git_head !== execution.git_head) cardProblems.push(`${name}: git_head=${card.git_head}`);
     if (card.worktree_fingerprint !== execution.worktree_fingerprint) cardProblems.push(`${name}: fingerprint mismatch`);
+    if (card.environment_fingerprint !== execution.environment_fingerprint) cardProblems.push(`${name}: environment_fingerprint mismatch`);
     if (card.status === 'PASS' && Number(card.exit_code ?? 1) !== 0 && name !== 'E2E-RESULTS.json') {
       cardProblems.push(`${name}: status=PASS but exit_code=${card.exit_code}`);
     }
@@ -170,6 +184,7 @@ export function verifyStatusConsistency({ withCli = true } = {}) {
     execution_id: execution.execution_id,
     git_head: execution.git_head,
     worktree_fingerprint: execution.worktree_fingerprint,
+    environment_fingerprint: execution.environment_fingerprint,
     recomputed_status: recomputed,
     report_status: reportOverall,
     index_status: block?.overall_status ?? null,

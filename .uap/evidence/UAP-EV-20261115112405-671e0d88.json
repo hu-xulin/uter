@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115112405-671e0d88",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T11:24:05.702Z",
+  "started_at": "2026-11-15T11:24:05.702Z",
+  "finished_at": "2026-11-15T11:24:05.702Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115111818-7f2ed528",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "b09f7ab0e714ddb30d4dbaf4bb09ff789d22197ba9ba32833b186742f214262c",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115111818-7f2ed528",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "b09f7ab0e714ddb30d4dbaf4bb09ff789d22197ba9ba32833b186742f214262c",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.consistency_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.consistency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "cross_platform.consistency_integrity 实检: feature_mapping=PASS(重复移动端源码树=无; web/src/features 实际 feature 目录数=30; 设计系统 SSOT(docs/design-system/UTER-DESIGN-SYSTEM-3.0.md) 声明 PC Web、H5、响应式共用统一字号 Token=true; AGENTS.md 绑定设计系统规范=true); api_consistency=PASS(web/src 下 API 客户端/请求封装文件=366; 后端 service/authz 存在=true; 无独立 H5 API 树=true; 前后端共用同一 API 层); business_consistency=PASS(product-model.json source_of_truth=true; i18n locales=14; web/H5 规范依赖同一基线=true ([\"UAP-01-001\"]); 依赖存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9015 个 | 源码/配置级一致性真实核对(单一 web/src 源码树/统一 API/共享 SSOT); 真机两端一致性未验证(见 h5_integrity BLOCKED); feature 目录计数=30",
+  "content_hash": "91b46b1700eb3f392456014e952259485ba8ecfc9355e1808165356f4b6a3a7a"
+}

@@ -30,6 +30,10 @@ REDIS_PORT=6380
 BACKEND_ORIGIN="http://localhost:${BACKEND_PORT}"
 TEST_FRONTEND_URL="${TEST_FRONTEND_URL:-http://localhost:${FRONTEND_PORT}}"
 export TEST_FRONTEND_URL
+# UDS 6.0 真实页面回归（real-page-regression.mjs）的认证场景静态服务器固定端口。
+# 浏览器从该 origin 发起的带凭证 POST 必须被隔离后端 CORS 放行，否则 403。
+HARNESS_PORT="${UDS7_HARNESS_PORT:-3102}"
+HARNESS_ORIGIN="http://127.0.0.1:${HARNESS_PORT}"
 
 LIVE_DB="${REPO_ROOT}/one-api.db"
 ISOLATED_DB="${ISOLATED_DIR}/one-api.db"
@@ -173,7 +177,6 @@ do_start() {
   guard_production
 
   mkdir -p "${ISOLATED_DIR}"
-  : > "${PIDFILE}"
 
   if any_alive; then
     echo "隔离栈已在运行（pidfile 中仍有存活进程），不重复启动。"
@@ -194,6 +197,11 @@ do_start() {
       exit 4
     fi
   done
+
+  # Reset the pidfile only here: the already-running and orphan checks above
+  # must read the PREVIOUS pidfile. Wiping it first made a live stack look like
+  # an orphan (empty pidfile + listening ports) and start fail with exit 4.
+  : > "${PIDFILE}"
 
   echo "=== [1/6] 复制生产库到隔离目录（cp，原件不动）==="
   # 先清掉上一次运行遗留的副本 WAL/SHM，避免陈旧 WAL 干扰副本恢复。
@@ -244,13 +252,21 @@ do_start() {
   fi
 
   echo "=== [4/6] 构建隔离 Go 二进制（需要 web/dist）==="
-  # main.go 有 //go:embed web/dist；缺目录时 go build 必失败。这里显式给出
-  # 可操作的错误，绝不创建一个假的 web/dist 来蒙混编译。
+  # main.go 有 //go:embed web/dist；缺目录时 go build 必失败。
+  # 若 web/dist 缺失，先执行「真实」前端构建重建产物（不是伪造的占位目录）；
+  # 仅在真实构建后仍缺失时才以 exit 3 失败。这样并行会话恰好在此时 rm -rf dist
+  # 也不会让隔离栈彻底起不来。
   if [ ! -f "${REPO_ROOT}/web/dist/index.html" ]; then
-    echo "错误：缺少 ${REPO_ROOT}/web/dist（//go:embed web/dist 需要它）。" >&2
-    echo "请先在真实前端构建产物就绪后再启动隔离栈，例如：" >&2
-    echo "  cd ${REPO_ROOT}/web && bun run build" >&2
-    echo "本脚本不会创建伪造的 web/dist，也不会改动任何生产配置。" >&2
+    echo "警告：${REPO_ROOT}/web/dist 缺失（//go:embed web/dist 需要它）。" >&2
+    echo "尝试执行真实前端构建重建产物（非伪造占位）：" >&2
+    echo "  cd ${REPO_ROOT}/web && bun run build:check" >&2
+    ( cd "${REPO_ROOT}/web" && bun run build:check ) || {
+      echo "错误：真实前端构建失败，${REPO_ROOT}/web/dist 仍缺失。" >&2
+      exit 3
+    }
+  fi
+  if [ ! -f "${REPO_ROOT}/web/dist/index.html" ]; then
+    echo "错误：构建后 ${REPO_ROOT}/web/dist 仍缺失，隔离栈无法启动。" >&2
     exit 3
   fi
   ( cd "${REPO_ROOT}" && GOWORK=off go build -o "${BINARY}" . )
@@ -274,6 +290,14 @@ do_start() {
   case ",${base_cors}," in
     *",${TEST_FRONTEND_URL},"*) isolated_cors="${base_cors}" ;;
     *) isolated_cors="${base_cors:+${base_cors},}${TEST_FRONTEND_URL}" ;;
+  esac
+  # UDS 6.0 真实页面回归的认证场景：harness 静态服务器（固定端口 HARNESS_PORT）
+  # 代理 API 到本隔离后端，浏览器 POST 携带 Origin: ${HARNESS_ORIGIN}。
+  # 与上面 TEST_FRONTEND_URL 同理，只在这个测试进程上追加精确 origin，
+  # 不删除任何既有放行来源，生产 :3000 的 CORS 配置完全不受影响。
+  case ",${isolated_cors}," in
+    *",${HARNESS_ORIGIN},"*) ;;
+    *) isolated_cors="${isolated_cors:+${isolated_cors},}${HARNESS_ORIGIN}" ;;
   esac
   echo "  CORS_ALLOWED_ORIGINS=${isolated_cors}"
   # 必须用 exec：普通 `( ...; cmd ) &` 记下的是 bash 子 shell 的 PID，
@@ -329,6 +353,9 @@ export UTER_TEST_STACK='isolated'
 # testAuthIsolated 判定）。只写 UTER_TEST_STACK 会让隔离性判定落回
 # 「靠 VISUAL_BASE_URL 猜测」，属于环境契约不一致；两个名字都写入。
 export UAP_TEST_STACK='isolated'
+# UDS 6.0 真实页面回归认证场景的固定端口 / origin（已加入本栈 CORS 白名单）。
+export UDS7_HARNESS_PORT='${HARNESS_PORT}'
+export UDS7_HARNESS_ORIGIN='${HARNESS_ORIGIN}'
 EOF
 
   echo ""

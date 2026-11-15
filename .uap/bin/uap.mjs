@@ -23,7 +23,7 @@ import { runValidator, runAll as runAllValidators, coverage as validatorCoverage
 import { listWorkflows, runWorkflow, runAll as runAllWorkflows, stepExecutor, health as workflowHealth } from '../workflows/index.mjs';
 import { normalizeSpecHeaders } from '../tools/normalize-spec-headers.mjs';
 import { statusVerdict } from '../runtime/status-engine/snapshot.mjs';
-import { currentExecution, startExecution, bindExecution, executionHistory, gitHead, worktreeFingerprint, health as executionHealth } from '../runtime/status-engine/execution.mjs';
+import { currentExecution, startExecution, bindExecution, executionHistory, gitHead, worktreeFingerprint, reconcileExecutions, completeExecution, cancelExecution, health as executionHealth } from '../runtime/status-engine/execution.mjs';
 import { verifyStatusConsistency } from '../tools/verify-status-consistency.mjs';
 import { filterSelfTestFiles } from '../runtime/_lib/test-collector.mjs';
 // Phase-2 remediation: one strict test-status model for EVERY capability card.
@@ -572,7 +572,11 @@ async function cmdTest({ flags, positional }) {
   // test still runs, every assertion still holds, and no gate is skipped.
   const r = await runCommand({
     command: 'node',
-    args: ['--test', '--test-concurrency=1', ...files.map((f) => relToRoot(f))],
+    // Force the TAP reporter: Node >=24 defaults to the spec reporter when
+    // stdout is piped, but every UAP parser below (and the testing engine's
+    // artifact contract) reads TAP `# tests/# pass/# fail` and `ok N` markers.
+    // Without this the counts come back null and a green run is misrecorded.
+    args: ['--test', '--test-reporter=tap', '--test-concurrency=1', ...files.map((f) => relToRoot(f))],
     // The full suite genuinely takes >5 minutes (phase2 security negatives
     // alone ~165s, repair-boundary probes ~90s, behaviour-honesty suite ~25s).
     // A 300s cap killed a fully green run at 300083ms with exit_code=null,
@@ -1207,6 +1211,7 @@ async function cmdBuild({ flags }) {
     // bound to no execution at all and read even when older than HEAD).
     execution_id: e.execution_id, git_head: e.git_head,
     worktree_fingerprint: e.worktree_fingerprint,
+    environment_fingerprint: e.environment_fingerprint,
     repository: repo.repository, branch: repo.branch, commit_sha: repo.commit_sha,
     status_model: 'UAP-TEST-STATUS-1.0',
     command: 'uap build (frontend build:check, go build, typecheck, go vet, design lint, artifact verification)',
@@ -1301,7 +1306,31 @@ async function cmdExecution({ positional }) {
       health: executionHealth(),
     });
   }
-  return usage(`unknown execution subcommand: ${sub}`, { available: ['show', 'state', 'start [reason]'] });
+  if (sub === 'reconcile') {
+    // Interrupt recovery: close orphaned RUNNING executions (never the current).
+    const r = reconcileExecutions({ reason: positional.slice(1).join(' ') || undefined });
+    const running = executionHistory().filter((e) => e.status === 'RUNNING');
+    return ok(`execution reconcile: closed ${r.closed.length} stale RUNNING batch(es)`, {
+      closed: r.closed, current_execution_id: r.current_execution_id,
+      still_running: running.map((e) => e.execution_id), ledger_entries: executionHistory().length,
+    });
+  }
+  if (sub === 'complete') {
+    const c = completeExecution('COMPLETED', positional.slice(1).join(' ') || 'acceptance-batch-finished');
+    return c ? ok(`execution completed: ${c.execution_id}`, { closure: c }) : blocked('execution complete: no current execution to close');
+  }
+  if (sub === 'cancel') {
+    const c = cancelExecution(positional.slice(1).join(' ') || 'cancelled-by-operator');
+    return c ? ok(`execution cancelled: ${c.execution_id}`, { closure: c }) : blocked('execution cancel: no current execution to close');
+  }
+  if (sub === 'history') {
+    const history = executionHistory();
+    return ok(`execution history: ${history.length} entries`, {
+      history, running: history.filter((e) => e.status === 'RUNNING').length,
+      closed: history.filter((e) => e.status !== 'RUNNING').length,
+    });
+  }
+  return usage(`unknown execution subcommand: ${sub}`, { available: ['show', 'state', 'start [reason]', 'reconcile [reason]', 'complete [reason]', 'cancel [reason]', 'history'] });
 }
 
 // --------------------------------------------------------- verify status ----
@@ -1864,7 +1893,7 @@ async function cmdVerifySecurity() {
   const negFile = path.join(testsDir, 'phase2-security-negative.test.mjs');
   if (fs.existsSync(negFile)) {
     const r = await runCommand({
-      command: 'node', args: ['--test', '--test-concurrency=1', relToRoot(negFile)], timeoutMs: 600000,
+      command: 'node', args: ['--test', '--test-reporter=tap', '--test-concurrency=1', relToRoot(negFile)], timeoutMs: 600000,
     });
     const names = [...r.stdout.matchAll(/^\s*ok \d+ - (.+)$/gm)].map((m) => m[1].trim());
     const fails = [...r.stdout.matchAll(/^\s*not ok \d+ - (.+)$/gm)].map((m) => m[1].trim());

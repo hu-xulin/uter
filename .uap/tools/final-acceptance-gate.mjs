@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { ROOT, REPORTS, FILES, relToRoot } from '../runtime/_lib/paths.mjs';
 import { nowISO, readJSON, writeJSON, hash } from '../runtime/_lib/util.mjs';
 import { currentExecution, gitHead, worktreeFingerprint } from '../runtime/status-engine/execution.mjs';
-import { verifyEvidenceManifest, verifyFinalReportBindings, MANIFEST_FILE, repositoryIdentity } from '../runtime/evidence-engine/manifest.mjs';
+import { verifyEvidenceManifest, verifyFinalReportBindings, MANIFEST_FILE, repositoryIdentity, FINAL_REPORTS, MAX_REPORT_AGE_MS } from '../runtime/evidence-engine/manifest.mjs';
 import { TEST_STATUS, summarize, assertNoFalsePass } from '../runtime/status-engine/test-status.mjs';
 
 export const component = 'uap.final-acceptance-gate';
@@ -284,6 +284,119 @@ function checkEvidence(phase = 'verify') {
   return { id: '6.6_evidence', status: problems.length ? TEST_STATUS.FAIL : TEST_STATUS.PASS, problems, details, manifest_hash: manifest.manifest_integrity_hash ?? null };
 }
 
+/**
+ * Directive §3.4 — single-batch consistency + evidence integrity/freshness.
+ *
+ * The final acceptance MUST prove every final report belongs to ONE
+ * (execution_id, git_head, worktree_fingerprint, environment_fingerprint)
+ * tuple, that the evidence hashes still recomputes, and that no report is
+ * stale or produced against a since-changed worktree/toolchain. This is
+ * computed from the REAL reports on disk — never from a declared status field.
+ * A mixed batch, a missing binding, a stale report or a toolchain change fails
+ * closed. The six booleans are surfaced verbatim on FINAL-ACCEPTANCE.json.
+ */
+export function checkBatchConsistency({ reportsDir, execution, phase = 'verify', rootDir, headSha, fpNow } = {}) {
+  const problems = [];
+  const dir = reportsDir || REPORTS;
+  const injected = Boolean(reportsDir);
+  const e = execution || currentExecution();
+  // During prepare the manifest is generated AFTER the gate outputs exist, so
+  // single-batch integrity is not yet computable. Report it honestly as pending
+  // (mirrors checkEvidence); the strict verify/confirm passes compute it fully.
+  if (phase === 'prepare' && !fs.existsSync(path.join(dir, 'EVIDENCE-MANIFEST.json'))) {
+    return {
+      id: '6.7_batch_consistency', status: TEST_STATUS.BLOCKED,
+      problems: ['batch: manifest generation pending (prepare phase); single-batch consistency verified in `uap accept --verify`'],
+      details: { pending: true },
+      single: { single_execution_id: null, single_git_head: null, single_worktree_fingerprint: null, single_environment_fingerprint: null, evidence_integrity: null, evidence_freshness: null },
+    };
+  }
+  const FIELDS = ['execution_id', 'git_head', 'worktree_fingerprint', 'environment_fingerprint'];
+  const observed = Object.fromEntries(FIELDS.map((f) => [f, new Set()]));
+  const missing = Object.fromEntries(FIELDS.map((f) => [f, 0]));
+  // The current execution identity is authoritative and always part of the batch.
+  for (const f of FIELDS) if (e[f] != null && e[f] !== '') observed[f].add(e[f]);
+
+  const perReport = [];
+  let jsonReports = 0;
+  const now = Date.now();
+  let stale = 0, future = 0, undated = 0;
+  for (const name of FINAL_REPORTS) {
+    const file = path.join(dir, name);
+    if (!fs.existsSync(file)) { problems.push(`batch: missing final report ${name}`); continue; }
+    if (!name.endsWith('.json')) continue;
+    jsonReports += 1;
+    const data = readJSON(file, null);
+    const row = { name, generated_at: data?.generated_at ?? null };
+    for (const f of FIELDS) {
+      const v = data?.[f] ?? null;
+      row[f] = v;
+      if (v != null && v !== '') observed[f].add(v);
+      else { missing[f] += 1; problems.push(`batch: ${name} missing ${f}`); }
+    }
+    const ts = Date.parse(row.generated_at);
+    if (row.generated_at == null || Number.isNaN(ts)) undated += 1;
+    else if (ts > now) future += 1;
+    else if (now - ts > MAX_REPORT_AGE_MS) stale += 1;
+    perReport.push(row);
+  }
+  const manifest = readJSON(path.join(dir, 'EVIDENCE-MANIFEST.json'), null);
+  if (manifest) {
+    for (const f of FIELDS) if (manifest[f] != null && manifest[f] !== '') observed[f].add(manifest[f]);
+  } else {
+    problems.push('batch: EVIDENCE-MANIFEST.json missing (cannot prove single-batch integrity)');
+  }
+
+  const single = {};
+  for (const f of FIELDS) {
+    single[`single_${f}`] = observed[f].size === 1 && missing[f] === 0;
+    if (observed[f].size > 1) {
+      problems.push(`batch: ${observed[f].size} distinct ${f} values across final reports (${[...observed[f]].join(', ')}) — mixed batch`);
+    }
+  }
+
+  // evidence_integrity: recompute every manifest hash + binding from disk.
+  // Injected (test) mode points the verifier at the temp dir and skips the real
+  // git fingerprint so the check is fully hermetic; production is unchanged.
+  const integrity = verifyEvidenceManifest({
+    strictCurrent: !injected, execution: e,
+    reportsDir: injected ? dir : undefined,
+    rootDir: injected ? (rootDir || dir) : undefined,
+    headSha: injected ? (headSha ?? e.git_head) : undefined,
+  });
+  const evidence_integrity = integrity.ok === true;
+  if (!evidence_integrity) problems.push(...integrity.problems.map((p) => `batch integrity: ${p}`));
+
+  // evidence_freshness: no stale/future/undated report AND the worktree has not
+  // changed since the batch was generated (a real source edit invalidates it).
+  const fpNowVal = fpNow !== undefined ? fpNow : (injected ? e.worktree_fingerprint : worktreeFingerprint());
+  const fingerprintFresh = fpNowVal != null && fpNowVal === e.worktree_fingerprint;
+  if (!fingerprintFresh) problems.push(`batch freshness: worktree changed after generation (now=${fpNowVal}, bound=${e.worktree_fingerprint})`);
+  if (stale) problems.push(`batch freshness: ${stale} report(s) older than ${MAX_REPORT_AGE_MS}ms`);
+  if (future) problems.push(`batch freshness: ${future} report(s) dated in the future`);
+  if (undated) problems.push(`batch freshness: ${undated} report(s) without a valid generated_at`);
+  const evidence_freshness = jsonReports > 0 && stale === 0 && future === 0 && undated === 0 && fingerprintFresh;
+
+  const checks = { ...single, evidence_integrity, evidence_freshness };
+  const allOk = Object.values(checks).every((v) => v === true);
+  return {
+    id: '6.7_batch_consistency',
+    status: allOk && problems.length === 0 ? TEST_STATUS.PASS : TEST_STATUS.FAIL,
+    problems,
+    details: {
+      ...checks,
+      json_reports: jsonReports,
+      observed: Object.fromEntries(FIELDS.map((f) => [f, [...observed[f]]])),
+      missing_per_field: missing,
+      stale_reports: stale, future_reports: future, undated_reports: undated,
+      fingerprint_now: fpNowVal, fingerprint_bound: e.worktree_fingerprint,
+      manifest_integrity_hash: integrity.manifest_integrity_hash ?? null,
+      per_report: perReport,
+    },
+    single: checks,
+  };
+}
+
 export function checkUapSelf(reportsDir = REPORTS, execution = null) {
   const problems = [], details = {};
   const e = execution || currentExecution();
@@ -320,7 +433,7 @@ export function checkUapSelf(reportsDir = REPORTS, execution = null) {
  */
 export function runFinalAcceptance({ write = false, execution, evidencePhase = 'verify' } = {}) {
   const e = execution || currentExecution();
-  const groups = [checkDb(), checkTestResults(), checkRequirements(), checkPayment(), checkEvidence(evidencePhase), checkUapSelf(REPORTS, e)];
+  const groups = [checkDb(), checkTestResults(), checkRequirements(), checkPayment(), checkEvidence(evidencePhase), checkBatchConsistency({ execution: e, phase: evidencePhase }), checkUapSelf(REPORTS, e)];
   const allProblems = groups.flatMap((g) => g.problems);
   const hardFailures = groups.filter((g) => g.status === TEST_STATUS.FAIL);
   const necessaryBlocked = groups.reduce((n, g) => n + (Number(g.necessary_blocked) || 0), 0);
@@ -334,6 +447,7 @@ export function runFinalAcceptance({ write = false, execution, evidencePhase = '
   const gateChecks = groups.map((g) => ({ id: g.id, status: g.status, problems: g.problems, details: g.details }));
   const paymentGroup = groups.find((g) => g.id === '6.5_payment');
   const evidenceGroup = groups.find((g) => g.id === '6.6_evidence');
+  const batchGroup = groups.find((g) => g.id === '6.7_batch_consistency');
 
   let overall_status;
   if (hardFailures.length) overall_status = 'FAILED';
@@ -354,11 +468,15 @@ export function runFinalAcceptance({ write = false, execution, evidencePhase = '
     execution_id: e.execution_id,
     git_head: e.git_head,
     worktree_fingerprint: e.worktree_fingerprint,
+    environment_fingerprint: e.environment_fingerprint,
     repository: repositoryIdentity().repository,
     branch: repositoryIdentity().branch,
     commit_sha: gitHead(),
     command: 'node .uap/tools/final-acceptance-gate.mjs',
     environment: { platform: process.platform, node: process.version, cwd: ROOT },
+    // Directive §3.4: the six single-batch / integrity / freshness verdicts are
+    // surfaced verbatim so an independent verifier can grep them directly.
+    batch_consistency: batchGroup?.single ?? null,
     status: overall_status,
     overall_status,
     claim_allowed: overall_status === 'FULLY_VERIFIED',
@@ -476,6 +594,8 @@ function writeFinalStatus(result, e) {
     execution_id: e.execution_id,
     git_head: e.git_head,
     worktree_fingerprint: e.worktree_fingerprint,
+    environment_fingerprint: e.environment_fingerprint,
+    batch_consistency: result.batch_consistency ?? null,
     overall_status: result.overall_status,
     claim_allowed: result.claim_allowed,
     status_model: 'UAP-TEST-STATUS-1.0',
@@ -520,6 +640,7 @@ function writeFinalStatus(result, e) {
       execution_id: e.execution_id,
       git_head: e.git_head,
       worktree_fingerprint: e.worktree_fingerprint,
+      environment_fingerprint: e.environment_fingerprint,
       counts: {
         requirements_total: req.total ?? 0,
         verified: req.counts?.VERIFIED ?? 0,

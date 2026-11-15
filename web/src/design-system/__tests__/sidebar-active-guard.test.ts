@@ -119,6 +119,6 @@ describe('sidebar active state', () => {
     // 2026-11-03 终裁「柔和渐进式 Hover」：浅 #5B5EE6 / 深 #8B8DF5。
     expect(theme).toContain('--primary: var(--uter-brand-primary)')
     expect(brandTokens.themes.light.brand.primary.$value).toBe('#5B5EE6')
-    expect(brandTokens.themes.dark.brand.primary.$value).toBe('#A1A3F7')
+    expect(brandTokens.themes.dark.brand.primary.$value).toBe('#8B8DF5')
   })
 })

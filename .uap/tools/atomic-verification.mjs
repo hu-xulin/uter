@@ -97,6 +97,7 @@ commands.push({
   phase: 'independent_regression',
   ...run('node', [
     '--test',
+    '--test-reporter=tap',
     '.uap/tests/independent-verification.test.mjs',
     '.uap/tests/independent-repair-review.test.mjs',
     '.uap/tests/real-code-repair-boundaries.test.mjs',

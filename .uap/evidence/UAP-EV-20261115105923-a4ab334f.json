@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115105923-a4ab334f",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T10:59:23.959Z",
+  "started_at": "2026-11-15T10:59:23.959Z",
+  "finished_at": "2026-11-15T10:59:23.959Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115105332-f54de501",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "dad67534f2e59cc10f767885a1fa08dbb6df9bd847f7438d57333c064b7a36fa",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115105332-f54de501",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "dad67534f2e59cc10f767885a1fa08dbb6df9bd847f7438d57333c064b7a36fa",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.execution_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.execution_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.execution_integrity 实检: task_execution=PASS(tasks.json: 1069 任务, SUCCEEDED=814, 含 evidence_refs 的 SUCCEEDED=814); dependency_order=PASS(复核 UAP-TASK-HEALTH-20261112104051-18ebd06c 的 3 次迁移, 非法迁移=0, 终态=SUCCEEDED); bounded_retry=PASS(execution.max_repair_attempts_per_root_cause=3; SUCCEEDED 任务 retry_count<=上限=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 8909 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复验 TASK_TRANSITIONS/executorResult: exit_code=0 terminal=true shape=true",
+  "content_hash": "deab5c913c2ada05d3fb2b47b6a286baf3bc710ba9f3145f9579cd080051c5b9"
+}

@@ -1,0 +1,64 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* UDS 7.0 foundations: single gradient exit, focus, reduced motion
+ * This file is generated — DO NOT EDIT.
+ * Source: docs/design-system/TOKEN-MANIFEST.json
+ * Regenerate: node docs/design-system/registry/build.mjs
+ */
+
+@import './tokens.css';
+@import './themes/light.css';
+@import './themes/dark.css';
+
+/* 全站唯一品牌渐变出口。业务页面不得自写 linear-gradient / bg-clip-text。 */
+.ds-text-gradient-brand {
+  background-image: linear-gradient(
+    var(--ds-gradient-direction) in srgb,
+    var(--ds-color-gradient-light-from) 0%,
+    var(--ds-color-gradient-light-via) 50%,
+    var(--ds-color-gradient-light-to) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-family: var(--ds-font-ui);
+}
+[data-ds-theme="dark"] .ds-text-gradient-brand {
+  background-image: linear-gradient(
+    var(--ds-gradient-direction) in srgb,
+    var(--ds-color-gradient-dark-from) 0%,
+    var(--ds-color-gradient-dark-via) 50%,
+    var(--ds-color-gradient-dark-to) 100%
+  );
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus, :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--ds-focus-ring-width) solid var(--ds-color-focus-ring);
+  outline-offset: var(--ds-focus-ring-offset);
+}
+
+.ds-tabular-nums { font-variant-numeric: var(--ds-numeric-tabular); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

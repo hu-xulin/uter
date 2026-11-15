@@ -1,0 +1,459 @@
+{
+  "schema": "UDS7-VISUAL-REGRESSION/1.0",
+  "generated_at": "2026-11-15T23:55:45.894Z",
+  "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis",
+  "backend": "http://127.0.0.1:3000",
+  "dist": "web/dist",
+  "verdict": "PASS",
+  "executed": true,
+  "realPageCount": 4,
+  "scenarioCount": 8,
+  "themeScenarios": [
+    "light",
+    "dark"
+  ],
+  "routes": [
+    "/",
+    "/login",
+    "/about",
+    "/docs"
+  ],
+  "checksApplied": [
+    "http200",
+    "hasHeading",
+    "renderedContent",
+    "bridgeLive",
+    "syntaxBridgeLive",
+    "terminalBridgeLive",
+    "legacyTokenIsolated",
+    "nonBlankPixels",
+    "noConsoleErrors"
+  ],
+  "authChecksApplied": [
+    "http200",
+    "authenticatedRender",
+    "renderedContent",
+    "bridgeLive",
+    "syntaxBridgeLive",
+    "terminalBridgeLive",
+    "legacyTokenIsolated",
+    "nonBlankPixels",
+    "noConsoleErrors"
+  ],
+  "authenticated": {
+    "executed": false,
+    "backend": "http://127.0.0.1:3100",
+    "routes": [
+      "/dashboard",
+      "/wallet",
+      "/keys",
+      "/usage-logs"
+    ],
+    "reason": "隔离栈不可达：TypeError: fetch failed"
+  },
+  "results": [
+    {
+      "route": "/",
+      "name": "Home / Landing",
+      "theme": "light",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "Uter intelligence platform unified API Gateway forVast Range of AI Models",
+        "bodyChars": 2390,
+        "buttons": 10,
+        "inputs": 0,
+        "tables": 0,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 957,
+        "meanLuminance": 237,
+        "luminanceStdDev": 33.87,
+        "nonWhitePixelRatio": 0.0675
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/home-light.png",
+      "screenshotSha256": "59874216794cff3d033ef6849093a63f7ca4bbe34c93f3b8f85400b527af431e",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/",
+      "name": "Home / Landing",
+      "theme": "dark",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "Uter intelligence platform unified API Gateway forVast Range of AI Models",
+        "bodyChars": 2390,
+        "buttons": 10,
+        "inputs": 0,
+        "tables": 0,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 970,
+        "meanLuminance": 30.85,
+        "luminanceStdDev": 36.19,
+        "nonWhitePixelRatio": 0.9894
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/home-dark.png",
+      "screenshotSha256": "7bb03f967eabfbd822b7c369398948292e15a6fd8f245d19d78115c38629e64f",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/login",
+      "name": "Authentication / Login",
+      "theme": "light",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "Sign in",
+        "bodyChars": 185,
+        "buttons": 4,
+        "inputs": 3,
+        "tables": 0,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 239,
+        "meanLuminance": 246.03,
+        "luminanceStdDev": 23.06,
+        "nonWhitePixelRatio": 0.0257
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/login-light.png",
+      "screenshotSha256": "9648a8d2b6311bcdb8d4ee970dfc919dba723205c3a81375940cfb9a8820d276",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/login",
+      "name": "Authentication / Login",
+      "theme": "dark",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "Sign in",
+        "bodyChars": 185,
+        "buttons": 4,
+        "inputs": 3,
+        "tables": 0,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 280,
+        "meanLuminance": 21.67,
+        "luminanceStdDev": 23.47,
+        "nonWhitePixelRatio": 0.9971
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/login-dark.png",
+      "screenshotSha256": "4bad67106f47ea5a8f36a22b40d2fda18268cdac0570b47c67875b2ec8d1ebcb",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/about",
+      "name": "About / Marketing",
+      "theme": "light",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "About Us",
+        "bodyChars": 1334,
+        "buttons": 5,
+        "inputs": 0,
+        "tables": 0,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 312,
+        "meanLuminance": 241.26,
+        "luminanceStdDev": 26.76,
+        "nonWhitePixelRatio": 0.0383
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/about-light.png",
+      "screenshotSha256": "540d9a39dd839bd5b13a7ed668003abefc8e24515b4d6737f837b6ba1a512780",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/about",
+      "name": "About / Marketing",
+      "theme": "dark",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "About Us",
+        "bodyChars": 1334,
+        "buttons": 5,
+        "inputs": 0,
+        "tables": 0,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 313,
+        "meanLuminance": 24.78,
+        "luminanceStdDev": 32.03,
+        "nonWhitePixelRatio": 0.9958
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/about-dark.png",
+      "screenshotSha256": "77b7f28156a17ec5e7582abf56f284764a75adf596937f40d66d7923f8e1d75b",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/docs",
+      "name": "Documentation / Code UI",
+      "theme": "light",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "Features Description",
+        "bodyChars": 2854,
+        "buttons": 10,
+        "inputs": 5,
+        "tables": 0,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 1465,
+        "meanLuminance": 236.37,
+        "luminanceStdDev": 39.89,
+        "nonWhitePixelRatio": 0.0679
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/docs-light.png",
+      "screenshotSha256": "97688e6c1f96d1718ac15720e1bd8d405bc89d0d855d6bc182cbd6fa5a7cf650",
+      "consoleErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/docs",
+      "name": "Documentation / Code UI",
+      "theme": "dark",
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "h1": "Features Description",
+        "bodyChars": 2854,
+        "buttons": 10,
+        "inputs": 5,
+        "tables": 0,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000",
+        "gradientInterpolationSupported": true
+      },
+      "checks": {
+        "http200": true,
+        "hasHeading": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 1458,
+        "meanLuminance": 30.44,
+        "luminanceStdDev": 45.76,
+        "nonWhitePixelRatio": 0.9706
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/docs-dark.png",
+      "screenshotSha256": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
+      "consoleErrors": [],
+      "pass": true
+    }
+  ],
+  "gradient": {
+    "computedBackgroundImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
+    "computedStyleNote": "Chromium 归一化：sRGB 为默认插值空间，computed style 省略 in srgb",
+    "browserSupportsInSrgb": true,
+    "ownerDeclaresInSrgb": true,
+    "distDeclaresInSrgb": true,
+    "light": {
+      "width": 491,
+      "height": 113,
+      "sampledPixels": 55483,
+      "distinctColors": 246,
+      "meanLuminance": 228.49,
+      "luminanceStdDev": 62.88,
+      "nonWhitePixelRatio": 0.1556,
+      "sha256": "d1dde16c4fd2dbd81c26d3575d2478e1d246cb469eb8ef0a2a773f43361aee2a"
+    },
+    "dark": {
+      "width": 491,
+      "height": 113,
+      "sampledPixels": 55483,
+      "distinctColors": 215,
+      "meanLuminance": 47.55,
+      "luminanceStdDev": 56.83,
+      "nonWhitePixelRatio": 1,
+      "sha256": "5437ffb7d3b3b496d78baa92430e3561593511ef96b3856be24f52f6d584345d"
+    },
+    "themePixelsDiffer": true,
+    "gradientIsPolychromatic": true,
+    "gradientVisible": true,
+    "pass": true
+  },
+  "forcedColors": {
+    "executed": true,
+    "pageTextTransparentCount": 0,
+    "pageTextSampled": 30,
+    "heroFoundOnRealPage": true,
+    "heroFallbackColor": "rgb(0, 0, 0)",
+    "heroFallbackTransparent": false,
+    "gradientFallbackFound": true,
+    "gradientFallbackColor": "rgb(0, 0, 0)",
+    "gradientFallbackTransparent": false,
+    "pass": true
+  },
+  "errors": [],
+  "scopeNote": "真实 SPA 路由回归；认证页面未执行（隔离栈不可达：TypeError: fetch failed），故不含 Dashboard / Billing / Orders / Refunds 等页面。该限制如实登记，不得视为已覆盖。",
+  "showcase": {
+    "verdict": "PASS",
+    "screenshots": "web/visual-regression/uds7/screenshots/"
+  },
+  "pixelMethod": "Playwright screenshot → browser canvas getImageData → distinct colors / luminance stddev / non-white ratio / SHA256 theme diff",
+  "combinedVerdict": "PASS"
+}

@@ -1,0 +1,1552 @@
+{
+  "schema_version": "1.0",
+  "report_id": "REMEDIATION-BASELINE",
+  "generated_at": "2026-11-15T06:54:33.780Z",
+  "generator": "qoder-autonomous-remediation phase0",
+  "repository": "hu-xulin/uter",
+  "branch": "main",
+  "git_head": "b39a35a77c4ed4cbd9863579d2ee69a9e7f690f7",
+  "git_status": {
+    "dirty": true,
+    "modified_count": 140,
+    "untracked_count": 119,
+    "deleted_count": 0,
+    "total": 259
+  },
+  "uncommitted_files": [
+    ".uap/SPECIFICATION-INDEX.md",
+    ".uap/reports/ACCESSIBILITY-RESULTS.json",
+    ".uap/reports/AGENT-COMPLIANCE-REPORT.md",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-BOUNDARY-TMP.md",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-CANARY-REPAIR.md",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-NEG-NO-DEFECT.md",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-NEG-WIP.md",
+    ".uap/reports/AUTO-REPAIR-REPORT.md",
+    ".uap/reports/BLOCKED-ITEMS.md",
+    ".uap/reports/BUILD-RESULTS.json",
+    ".uap/reports/CROSS-PLATFORM-REPORT.md",
+    ".uap/reports/DATABASE-INTEGRATION.json",
+    ".uap/reports/DATABASE-MIGRATIONS.json",
+    ".uap/reports/DEPLOY-DRY-RUN.json",
+    ".uap/reports/E2E-RESULTS.json",
+    ".uap/reports/EVIDENCE-INDEX.md",
+    ".uap/reports/EVIDENCE-MANIFEST.json",
+    ".uap/reports/EXECUTOR-COVERAGE-REPORT.md",
+    ".uap/reports/FINAL-ACCEPTANCE.json",
+    ".uap/reports/FINAL-STATUS.json",
+    ".uap/reports/FINANCIAL-INTEGRITY-REPORT.md",
+    ".uap/reports/H5-BROWSER-MATRIX.json",
+    ".uap/reports/H5-ENGINEERING-REPORT.md",
+    ".uap/reports/IMPLEMENTATION-REPORT.md",
+    ".uap/reports/PAYMENT-SANDBOX.json",
+    ".uap/reports/QUALITY-REPORT.md",
+    ".uap/reports/REQUIREMENT-COVERAGE-SUMMARY.md",
+    ".uap/reports/REQUIREMENT-INDEPENDENT-VALIDATION.json",
+    ".uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json",
+    ".uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json",
+    ".uap/reports/RUNTIME-TEST-REPORT.md",
+    ".uap/reports/RUNTIME-TEST-RESULTS.json",
+    ".uap/reports/SECURITY-AUDIT-REPORT.md",
+    ".uap/reports/SECURITY-VERIFICATION.json",
+    ".uap/reports/SPECIFICATION-COMPLIANCE-REPORT.md",
+    ".uap/reports/SPECIFICATION-REGISTRY-REPORT.md",
+    ".uap/reports/STATUS-CONSISTENCY.json",
+    ".uap/reports/TEST-RUNS.json",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/bash-_Users_lincolnhu_uter_scripts_phase2-test-stack.sh-start.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/bash-_Users_lincolnhu_uter_scripts_phase2-test-stack.sh-stop.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-accept.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-build.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-report---final.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-test---all.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-validate---all.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-database.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-e2e.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-payment.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-requirements.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-security.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-visual.log",
+    ".uap/reports/UAP-FINAL-REMEDIATION-RESULTS.json",
+    ".uap/reports/VALIDATION-RESULTS.json",
+    ".uap/reports/VALIDATOR-COVERAGE-REPORT.md",
+    ".uap/reports/VISUAL-REGRESSION.json",
+    ".uap/reports/WEB-ENGINEERING-REPORT.md",
+    ".uap/reports/WORKFLOW-VERIFICATION-REPORT.md",
+    ".uap/state/cli-last.json",
+    ".uap/state/current-execution.json",
+    ".uap/state/events.jsonl",
+    ".uap/state/executions.jsonl",
+    ".uap/state/policy-audit.jsonl",
+    ".uap/state/repair-tasks/UAP-BOUNDARY-TMP.result.json",
+    ".uap/state/repair-tasks/UAP-CANARY-REPAIR.result.json",
+    ".uap/state/repair-tasks/UAP-NEG-NO-DEFECT.result.json",
+    ".uap/state/repair-tasks/UAP-NEG-WIP.result.json",
+    ".uap/state/runtime-health.json",
+    ".uap/state/tasks.json",
+    ".uap/tools/final-remediation-run.mjs",
+    "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+    "docs/design-system/01-BRAND-IDENTITY-STANDARD.md",
+    "docs/design-system/02-DESIGN-PRINCIPLES-STANDARD.md",
+    "docs/design-system/03-COLOR-STANDARD.md",
+    "docs/design-system/04-TYPOGRAPHY-STANDARD.md",
+    "docs/design-system/05-SPACING-AND-SIZING-STANDARD.md",
+    "docs/design-system/06-LAYOUT-AND-GRID-STANDARD.md",
+    "docs/design-system/07-SHAPE-AND-RADIUS-STANDARD.md",
+    "docs/design-system/08-BORDER-AND-DIVIDER-STANDARD.md",
+    "docs/design-system/09-ELEVATION-AND-SHADOW-STANDARD.md",
+    "docs/design-system/10-ICONOGRAPHY-STANDARD.md",
+    "docs/design-system/11-MOTION-AND-ANIMATION-STANDARD.md",
+    "docs/design-system/12-RESPONSIVE-DESIGN-STANDARD.md",
+    "docs/design-system/13-ACCESSIBILITY-STANDARD.md",
+    "docs/design-system/14-CONTENT-AND-WRITING-STANDARD.md",
+    "docs/design-system/15-DATA-VISUALIZATION-STANDARD.md",
+    "docs/design-system/16-DENSITY-AND-INFORMATION-HIERARCHY-STANDARD.md",
+    "docs/design-system/17-NAVIGATION-STANDARD.md",
+    "docs/design-system/18-BUTTON-STANDARD.md",
+    "docs/design-system/19-FORM-AND-INPUT-STANDARD.md",
+    "docs/design-system/20-SELECTION-CONTROLS-STANDARD.md",
+    "docs/design-system/21-FEEDBACK-AND-STATUS-STANDARD.md",
+    "docs/design-system/22-OVERLAY-AND-FLOATING-STANDARD.md",
+    "docs/design-system/23-DATA-DISPLAY-STANDARD.md",
+    "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
+    "docs/design-system/25-AUTHENTICATION-STANDARD.md",
+    "docs/design-system/26-USER-AND-ORGANIZATION-STANDARD.md",
+    "docs/design-system/27-BILLING-AND-PAYMENTS-STANDARD.md",
+    "docs/design-system/28-API-AND-TOKEN-MANAGEMENT-STANDARD.md",
+    "docs/design-system/29-MODEL-AND-CHANNEL-MANAGEMENT-STANDARD.md",
+    "docs/design-system/30-DASHBOARD-STANDARD.md",
+    "docs/design-system/31-PAGE-TEMPLATES-STANDARD.md",
+    "docs/design-system/32-EMPTY-LOADING-AND-ERROR-STANDARD.md",
+    "docs/design-system/33-LOCALIZATION-STANDARD.md",
+    "docs/design-system/34-CROSS-PLATFORM-DESIGN-STANDARD.md",
+    "docs/design-system/35-DESIGN-GOVERNANCE-STANDARD.md",
+    "docs/design-system/ACCEPTANCE-MATRIX.json",
+    "docs/design-system/CODE-SYNTAX-HIGHLIGHTING-STANDARD.md",
+    "docs/design-system/COMPAT-MAP.json",
+    "docs/design-system/COMPONENT-REGISTRY.json",
+    "docs/design-system/CONTRAST-VERIFICATION-REPORT.md",
+    "docs/design-system/DEPENDENCY-GRAPH.json",
+    "docs/design-system/DEPRECATED-REGISTRY.json",
+    "docs/design-system/EXCEPTION-REGISTRY.json",
+    "docs/design-system/FINAL-ACCEPTANCE-REPORT.md",
+    "docs/design-system/GATE-EVIDENCE.json",
+    "docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md",
+    "docs/design-system/MIGRATION-REPORT.md",
+    "docs/design-system/PAGE-REGISTRY.json",
+    "docs/design-system/SHOWCASE-6.0.html",
+    "docs/design-system/TOKEN-REGISTRY.json",
+    "docs/design-system/VISUAL-REGRESSION-REPORT.md",
+    "docs/design-system/audit/accessibility-validation.json",
+    "docs/design-system/audit/contrast-validation.json",
+    "docs/design-system/audit/final-acceptance.json",
+    "docs/design-system/audit/gradient-validation.json",
+    "docs/design-system/audit/remediation-state.json",
+    "docs/design-system/audit/syntax-validation.json",
+    "docs/design-system/audit/token-validation.json",
+    "docs/design-system/audit/visual-regression.json",
+    "docs/design-system/registry/build.mjs",
+    "docs/design-system/registry/check-uds7-remediation.mjs",
+    "docs/design-system/registry/finalize.mjs",
+    "docs/design-system/registry/spec-modules.mjs",
+    "scripts/phase2-test-stack.sh",
+    "web/public/design-system/6.0.html",
+    "web/public/design-system/6.0/index.html",
+    "web/visual-regression/uds7/a11y-log.json",
+    "web/visual-regression/uds7/real-pages/home-dark.png",
+    "web/visual-regression/uds7/real-pages/home-light.png",
+    "web/visual-regression/uds7/run-log.json"
+  ],
+  "untracked_files": [
+    ".uap/evidence/UAP-EV-20261115062802-abe22aa7.json",
+    ".uap/evidence/UAP-EV-20261115062805-0d49acdd.json",
+    ".uap/evidence/UAP-EV-20261115062805-4163d401.json",
+    ".uap/evidence/UAP-EV-20261115062805-87bb339b.json",
+    ".uap/evidence/UAP-EV-20261115062805-88ac97ea.json",
+    ".uap/evidence/UAP-EV-20261115062805-aaf44bda.json",
+    ".uap/evidence/UAP-EV-20261115062805-cc97a2f7.json",
+    ".uap/evidence/UAP-EV-20261115062805-d5289a80.json",
+    ".uap/evidence/UAP-EV-20261115062921-c53fe854.json",
+    ".uap/evidence/UAP-EV-20261115062922-41961c5b.json",
+    ".uap/evidence/UAP-EV-20261115062922-66d888df.json",
+    ".uap/evidence/UAP-EV-20261115062922-86ac4966.json",
+    ".uap/evidence/UAP-EV-20261115062922-c1270b0c.json",
+    ".uap/evidence/UAP-EV-20261115062922-d9d74491.json",
+    ".uap/evidence/UAP-EV-20261115062923-04715581.json",
+    ".uap/evidence/UAP-EV-20261115062923-29a3dfba.json",
+    ".uap/evidence/UAP-EV-20261115062923-3a861956.json",
+    ".uap/evidence/UAP-EV-20261115062923-8b3bbd38.json",
+    ".uap/evidence/UAP-EV-20261115062923-996a748a.json",
+    ".uap/evidence/UAP-EV-20261115062923-aa586f52.json",
+    ".uap/evidence/UAP-EV-20261115062924-6b53b61d.json",
+    ".uap/evidence/UAP-EV-20261115062924-939aebbe.json",
+    ".uap/evidence/UAP-EV-20261115062924-9c32c743.json",
+    ".uap/evidence/UAP-EV-20261115062924-aaea1319.json",
+    ".uap/evidence/UAP-EV-20261115062924-cdd67c3e.json",
+    ".uap/evidence/UAP-EV-20261115062925-0542bcd4.json",
+    ".uap/evidence/UAP-EV-20261115062925-125352e9.json",
+    ".uap/evidence/UAP-EV-20261115062925-384d23eb.json",
+    ".uap/evidence/UAP-EV-20261115062925-4268d307.json",
+    ".uap/evidence/UAP-EV-20261115062925-7cf2e890.json",
+    ".uap/evidence/UAP-EV-20261115062925-9ff96486.json",
+    ".uap/evidence/UAP-EV-20261115062925-b78d6b01.json",
+    ".uap/evidence/UAP-EV-20261115062925-c16e9a08.json",
+    ".uap/evidence/UAP-EV-20261115062925-cd6f10c7.json",
+    ".uap/evidence/UAP-EV-20261115062925-ce0e9818.json",
+    ".uap/evidence/UAP-EV-20261115062925-d58f83d5.json",
+    ".uap/evidence/UAP-EV-20261115062925-e2bb484a.json",
+    ".uap/evidence/UAP-EV-20261115062925-fef51498.json",
+    ".uap/evidence/UAP-EV-20261115062926-3bd367dc.json",
+    ".uap/evidence/UAP-EV-20261115062926-4bcda246.json",
+    ".uap/evidence/UAP-EV-20261115062926-63025091.json",
+    ".uap/evidence/UAP-EV-20261115062926-7975783e.json",
+    ".uap/evidence/UAP-EV-20261115062926-7ea9d160.json",
+    ".uap/evidence/UAP-EV-20261115062926-b234c0a9.json",
+    ".uap/evidence/UAP-EV-20261115062926-e4956640.json",
+    ".uap/evidence/UAP-EV-20261115062932-dbc02ac6.json",
+    ".uap/evidence/UAP-EV-20261115062932-ea5d2b2d.json",
+    ".uap/evidence/UAP-EV-20261115063010-963fee8a.json",
+    ".uap/evidence/UAP-EV-20261115063010-a444f82a.json",
+    ".uap/evidence/UAP-EV-20261115063010-b65b8c9e.json",
+    ".uap/evidence/UAP-EV-20261115063012-26751de5.json",
+    ".uap/evidence/UAP-EV-20261115063012-3966fac0.json",
+    ".uap/evidence/UAP-EV-20261115063012-437a6771.json",
+    ".uap/evidence/UAP-EV-20261115063012-a1653722.json",
+    ".uap/evidence/UAP-EV-20261115063013-2639e0f9.json",
+    ".uap/evidence/UAP-EV-20261115063013-651b6a3c.json",
+    ".uap/evidence/UAP-EV-20261115063013-9f722546.json",
+    ".uap/evidence/UAP-EV-20261115063013-a6701562.json",
+    ".uap/evidence/UAP-EV-20261115063013-ac6db1e8.json",
+    ".uap/evidence/UAP-EV-20261115063013-ee2e3175.json",
+    ".uap/evidence/UAP-EV-20261115063013-f424d516.json",
+    ".uap/evidence/UAP-EV-20261115063014-13373c86.json",
+    ".uap/evidence/UAP-EV-20261115063014-df153a3a.json",
+    ".uap/evidence/UAP-EV-20261115063014-e21c1222.json",
+    ".uap/evidence/UAP-EV-20261115063014-ee187c7c.json",
+    ".uap/evidence/UAP-EV-20261115063015-1d9f58c0.json",
+    ".uap/evidence/UAP-EV-20261115063015-3caa6bb6.json",
+    ".uap/evidence/UAP-EV-20261115063015-49b2d1a5.json",
+    ".uap/evidence/UAP-EV-20261115063015-5f5acde2.json",
+    ".uap/evidence/UAP-EV-20261115063015-ca22a296.json",
+    ".uap/evidence/UAP-EV-20261115063015-ce74e733.json",
+    ".uap/evidence/UAP-EV-20261115063016-3181573c.json",
+    ".uap/evidence/UAP-EV-20261115063207-19efd3b2.json",
+    ".uap/evidence/UAP-EV-20261115063208-551bf4a2.json",
+    ".uap/evidence/UAP-EV-20261115063208-68e44b3d.json",
+    ".uap/evidence/UAP-EV-20261115063216-4506bdcc.json",
+    ".uap/evidence/UAP-EV-20261115063216-5ec01971.json",
+    ".uap/evidence/UAP-EV-20261115063216-640dcdb3.json",
+    ".uap/evidence/UAP-EV-20261115063216-ac51e139.json",
+    ".uap/evidence/UAP-EV-20261115063216-cccd36fd.json",
+    ".uap/evidence/UAP-EV-20261115063644-1c90a34b.json",
+    ".uap/evidence/UAP-EV-20261115063644-c5e812f5.json",
+    ".uap/evidence/UAP-EV-20261115064311-5db5dd05.json",
+    ".uap/evidence/UAP-EV-20261115064311-e3bf3f13.json",
+    ".uap/evidence/UAP-EV-20261115064340-30bcf578.json",
+    ".uap/evidence/UAP-EV-20261115064340-8ea02521.json",
+    ".uap/evidence/UAP-EV-20261115064349-54a9cf02.json",
+    ".uap/evidence/UAP-EV-20261115064349-e0cb1aed.json",
+    ".uap/evidence/UAP-EV-20261115064551-841722c5.json",
+    ".uap/evidence/UAP-EV-20261115064551-ff5f1ad1.json",
+    ".uap/evidence/UAP-EV-20261115064640-630cbb16.json",
+    ".uap/evidence/UAP-EV-20261115064640-8e73aed8.json",
+    ".uap/evidence/UAP-EV-20261115064640-d8482c9d.json",
+    ".uap/evidence/UAP-EV-20261115064640-fcc94e93.json",
+    ".uap/evidence/UAP-EV-20261115064654-55aef129.json",
+    ".uap/evidence/UAP-EV-20261115064718-08ae80a9.json",
+    ".uap/evidence/UAP-EV-20261115064718-815e2905.json",
+    ".uap/evidence/UAP-EV-TEST-20261115062925-00784111.json",
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794724084323-6c4c9a.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794724084323-6c4c9a/repair-canary.mjs",
+    "docs/design-system/VISUAL-BASELINE.json",
+    "docs/design-system/audit/baseline/screenshots/forced-colors-showcase.png",
+    "docs/design-system/audit/baseline/screenshots/gradient-hero-dark.png",
+    "docs/design-system/audit/baseline/screenshots/gradient-hero-light.png",
+    "docs/design-system/audit/baseline/screenshots/page-about-dark.png",
+    "docs/design-system/audit/baseline/screenshots/page-about-light.png",
+    "docs/design-system/audit/baseline/screenshots/page-docs-dark.png",
+    "docs/design-system/audit/baseline/screenshots/page-docs-light.png",
+    "docs/design-system/audit/baseline/screenshots/page-home-dark.png",
+    "docs/design-system/audit/baseline/screenshots/page-home-light.png",
+    "docs/design-system/audit/baseline/screenshots/page-login-dark.png",
+    "docs/design-system/audit/baseline/screenshots/page-login-light.png",
+    "docs/design-system/audit/baseline/screenshots/showcase-dark-desktop.png",
+    "docs/design-system/audit/baseline/screenshots/showcase-dark-mobile.png",
+    "docs/design-system/audit/baseline/screenshots/showcase-light-desktop.png",
+    "docs/design-system/audit/baseline/screenshots/showcase-light-mobile.png",
+    "docs/design-system/audit/visual-baseline-check.json",
+    "docs/design-system/registry/check-visual-baseline.mjs",
+    "docs/design-system/registry/freeze-baseline.mjs"
+  ],
+  "deleted_files": [],
+  "execution_id": "UAP-EXEC-20261115062636-4c37c031",
+  "timestamp": "2026-11-15T06:54:33.798Z",
+  "environment_fingerprint": "60c2976e5f6788e08d6d794f5e34f7d0da75b1220bbdcd87a135fc6a4c662370",
+  "environment": {
+    "node": "v24.21.0",
+    "go": "go1.27.4 darwin/amd64",
+    "bun": "1.4.2",
+    "os": "darwin 25.6.0",
+    "arch": "x64",
+    "platform": "darwin"
+  },
+  "current_acceptance_status": {
+    "overall": "FAILED",
+    "claim_allowed": false,
+    "execution_id": "UAP-EXEC-20261115062636-4c37c031",
+    "git_head": "b39a35a77c4ed4cbd9863579d2ee69a9e7f690f7"
+  },
+  "stale_running_executions": [
+    {
+      "execution_id": "UAP-EXEC-20261113011605-103a0c07",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T01:16:05.718Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113012201-18b3f150",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T01:22:01.286Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113012334-262c93f4",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T01:23:34.824Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113013504-1a5927b4",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T01:35:04.763Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113022122-e1e27663",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T02:21:22.687Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113022755-40424913",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T02:27:55.216Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113030342-f42cdfb4",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T03:03:42.608Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113033035-5159bf71",
+      "git_head": "7b98646915f75026e0e643f9f4b0a6a3ff3ab67c",
+      "started_at": "2026-11-13T03:30:35.415Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113043844-9dacbcd8",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T04:38:44.727Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113062924-1f019c74",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T06:29:24.527Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113062924-9ee872f1",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T06:29:24.564Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113071022-81db674d",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T07:10:22.399Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113071022-5db6cfb2",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T07:10:22.446Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113071555-34aa3623",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T07:15:55.394Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113071555-78dba683",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T07:15:55.450Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113071825-50ede860",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T07:18:25.723Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113071825-f4b0c0b2",
+      "git_head": "c80f19b55fa74b0e1f034707967e271d719328f7",
+      "started_at": "2026-11-13T07:18:25.782Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113090245-b58a9325",
+      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+      "started_at": "2026-11-13T09:02:45.745Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113090340-f934dd39",
+      "git_head": "a034a4f1a447d7c44cd6d74432be4e220b819c65",
+      "started_at": "2026-11-13T09:03:40.319Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113102910-ef468328",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:29:10.699Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113102910-e2a56e4d",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:29:10.993Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103118-96b1d34d",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:31:18.357Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103126-327300e7",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:31:26.684Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103145-a1ebf941",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:31:45.788Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103145-fc85b65b",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:31:45.825Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103202-02346fcd",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:32:02.188Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103611-0b71e0e5",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:36:11.074Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113103930-81e3de57",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:39:30.462Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113104100-e0ae711a",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:41:00.569Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113104413-4658c2f4",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:44:13.831Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113104501-b6927e3e",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:45:01.206Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113104501-231442e4",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:45:01.789Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113105218-122e42e5",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T10:52:18.170Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113110517-9cf10eda",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T11:05:17.360Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113110829-78fb9a01",
+      "git_head": "412f0a28b12f60aadec5cfd21bb25d5cd5975ecc",
+      "started_at": "2026-11-13T11:08:30.028Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113122116-87d83004",
+      "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+      "started_at": "2026-11-13T12:21:16.574Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113150247-f8ac4369",
+      "git_head": "9a72347877de8d97c1d029f8c59e0c91d0f17cc3",
+      "started_at": "2026-11-13T15:02:47.635Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113155424-dc3b117d",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T15:54:24.242Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113155520-f66ce3e7",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T15:55:20.922Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160201-fd40c2b4",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:02:01.244Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160204-95c4c95c",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:02:04.609Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160226-3b7f6a10",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:02:26.566Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160348-37688151",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:03:48.695Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160405-89ebc0bf",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:04:05.791Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160845-922f86bc",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:08:45.141Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113160926-f6e30d5f",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:09:26.267Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113162154-f31378a6",
+      "git_head": "b2dd920c24a16d0f8d0f69598305965cc0f1816c",
+      "started_at": "2026-11-13T16:21:55.002Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113165836-64e9dfbc",
+      "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+      "started_at": "2026-11-13T16:58:36.238Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113170506-bb203ea8",
+      "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+      "started_at": "2026-11-13T17:05:06.975Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113170538-86dca44d",
+      "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
+      "started_at": "2026-11-13T17:05:38.512Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113171008-bc4b73c5",
+      "git_head": "f728955561bdd297d03af7576354a363982d2186",
+      "started_at": "2026-11-13T17:10:08.738Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113171321-473427da",
+      "git_head": "f728955561bdd297d03af7576354a363982d2186",
+      "started_at": "2026-11-13T17:13:21.816Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113171355-b01f08c1",
+      "git_head": "f728955561bdd297d03af7576354a363982d2186",
+      "started_at": "2026-11-13T17:13:55.259Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113171715-5db227d7",
+      "git_head": "f728955561bdd297d03af7576354a363982d2186",
+      "started_at": "2026-11-13T17:17:15.624Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113171750-6afc5fa2",
+      "git_head": "f728955561bdd297d03af7576354a363982d2186",
+      "started_at": "2026-11-13T17:17:50.833Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261113175911-33051330",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-13T17:59:11.075Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114020504-a94fc789",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:05:04.945Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021107-a0afe4bd",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:11:07.841Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021738-932d599f",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:17:38.432Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021829-10897c13",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:18:29.612Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021829-ee381af9",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:18:30.526Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021830-79b281f9",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:18:31.336Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021831-d18e9fac",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:18:32.044Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021832-de493aef",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:18:32.664Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021832-df423854",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:18:33.388Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021918-a43dc805",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:18.682Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021919-803bb047",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:19.882Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021920-3c4e45b6",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:21.260Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021921-c9da2db1",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:21.934Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021922-c66e1960",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:22.808Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021923-132db162",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:23.922Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114021926-a331afa5",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:19:26.672Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114022021-0ef70b74",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:20:21.922Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114023250-750e8e75",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:32:51.120Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114023304-bed901e1",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:33:04.588Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114023416-1071f16b",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:34:16.945Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114023535-3191bc43",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:35:35.910Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114023849-4c690c14",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:38:50.320Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024340-b6ac661e",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:43:40.258Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024517-2cbec69d",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:45:18.094Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024647-2afbb0f4",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:46:47.700Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:46:50.179Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024723-9b967b8b",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:47:23.834Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024724-0a004a21",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:47:25.162Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024726-6ba01f4a",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:47:26.942Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024729-bed89a5f",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:47:29.494Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024749-0d25182b",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:47:50.301Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024820-c6360c14",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:48:20.369Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024954-85170a7d",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:49:54.861Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114024957-f1463e6d",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:49:58.110Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025020-e300eee4",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:50:20.884Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025041-8ff74c6d",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:50:42.515Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025055-911dc5a5",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:50:56.580Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025156-1dd14638",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:51:57.123Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025229-988869ff",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:52:30.434Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025542-07c59bb9",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:55:42.870Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114025713-c157fc0a",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T02:57:14.326Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114030026-fb4db1c4",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T03:00:26.865Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114030125-17aa1a33",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T03:01:26.191Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114030129-9683980b",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T03:01:30.184Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114030216-1006498c",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T03:02:17.115Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114030302-c2f0ffd6",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T03:03:03.203Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114050504-37d751d4",
+      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "started_at": "2026-11-14T05:05:04.241Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114104739-db178e50",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T10:47:39.595Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114150132-6af130ec",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:01:33.172Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114151135-667f714a",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:11:36.048Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114151300-2fb420da",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:13:00.515Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114151543-bf36e5b8",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:15:44.000Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114151555-63d66686",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:15:56.500Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114151807-8a2d3b94",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:18:07.487Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114152133-efbd26b6",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:21:34.324Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114152150-9a4349d4",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:21:51.191Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114152631-ce73a348",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:26:31.988Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114153332-54d70c10",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:33:32.684Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114153837-cdac78fa",
+      "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+      "started_at": "2026-11-14T15:38:37.824Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114154224-18e776f1",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T15:42:25.407Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114161155-ff5c18c5",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:11:56.283Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114161643-bc507f0b",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:16:44.595Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114161750-88080cb4",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:17:50.779Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114161753-38ee3ce4",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:17:54.553Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114164313-8e7e01a8",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:43:13.839Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114165656-9f05fa93",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:56:57.566Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114165837-0f68a597",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:58:37.868Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114165848-fc829ef3",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T16:58:49.064Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170241-1e6c612f",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:02:42.167Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170412-ceb4514f",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:04:13.021Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170423-bf08116e",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:04:23.663Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170810-aea75ac1",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:08:10.580Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170843-d5e23bea",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:08:44.295Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170901-23f198be",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:09:01.877Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114170913-97f205b6",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:09:14.013Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114171201-08b3ffb9",
+      "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+      "started_at": "2026-11-14T17:12:02.636Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114173438-803bff1d",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:34:39.517Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114173830-a8b5e239",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:38:31.401Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114174010-f8c3656d",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:40:11.700Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114174346-bff5a2b3",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:43:47.436Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114174704-a654b905",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:47:05.416Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114174827-5676444a",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:48:27.726Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114175537-fa2fd173",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:55:38.229Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114175825-78835bd9",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T17:58:26.171Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114180258-0721ff10",
+      "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+      "started_at": "2026-11-14T18:02:58.754Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114181212-fcb5a744",
+      "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+      "started_at": "2026-11-14T18:12:12.713Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114182110-85b53da8",
+      "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+      "started_at": "2026-11-14T18:21:10.900Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+      "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+      "started_at": "2026-11-14T18:23:01.612Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114182727-844cfe11",
+      "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+      "started_at": "2026-11-14T18:27:27.470Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114182823-eae60856",
+      "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+      "started_at": "2026-11-14T18:28:23.207Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114183229-e3108eec",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:32:29.624Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114183904-42563818",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:39:05.114Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114183926-cddefe0a",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:39:27.235Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184130-e9b14303",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:41:30.350Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184603-6eea6834",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:46:03.578Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184646-2507a853",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:46:46.285Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184758-d51a3f91",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:47:59.021Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184808-50f8c485",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:48:08.536Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184854-6ef9a13d",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:48:54.352Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114184902-bb361527",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:49:02.299Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114185835-198d361c",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T18:58:36.163Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261114190024-6e190131",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-14T19:00:24.678Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115011842-ae624a11",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:18:42.293Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115013207-eb84ca2a",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:32:08.100Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115013923-b637eb6b",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:39:24.379Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014049-5ad28b50",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:40:49.721Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014157-a19bc85a",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:41:57.749Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014308-dff329cf",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:43:08.713Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014620-8a218ef5",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:46:21.283Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014757-9711d92b",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:47:57.768Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014801-80651f40",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:48:02.448Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115014932-736a5e88",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:49:33.165Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115015109-69f1026d",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:51:10.074Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115015553-985a0245",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T01:55:54.394Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020035-66feb260",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:00:36.794Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020111-cf594718",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:01:12.351Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020149-b0954cea",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:01:50.521Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020331-980cefdd",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:03:32.070Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020407-c6638244",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:04:08.894Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020451-9dd677fc",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:04:52.392Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020505-d19cfbf4",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:05:06.542Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:06:47.456Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115020838-d7d6386c",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:08:39.446Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115021200-c4369778",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:12:01.615Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:15:16.356Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115021607-391e5e28",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:16:08.916Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115021942-8a1fe421",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:19:44.725Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115023334-8a2ba6f2",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:33:35.768Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115023341-1a6614ec",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:33:42.948Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115023530-028d1115",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:35:31.435Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115023707-eb05dffe",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:37:08.897Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115023848-a2ae036f",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:38:49.276Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115024307-4724c067",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:43:08.760Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115024429-b3b4f6d2",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:44:31.330Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115024444-1de5da8c",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:44:47.526Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115024917-7b80ef10",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "started_at": "2026-11-15T02:49:20.670Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032016-4320c884",
+      "git_head": "58ad9f607bba336d7a4824bac07ae7254726b507",
+      "started_at": "2026-11-15T03:20:16.535Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032102-f4a82e03",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:03.359Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032103-98f6872a",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:03.840Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032104-453e20fb",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:04.347Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032104-8629ef0a",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:04.979Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032105-463a308b",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:06.742Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032107-9db1b3ad",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:07.757Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032108-8f6f20d7",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:09.326Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032109-4f942bbd",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:09.852Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032110-4ac140ee",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:10.350Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115032126-f54b9cb8",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:21:26.416Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115033046-412cad2d",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:30:46.560Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115033551-70bd1647",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:35:51.931Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034125-5a5836bb",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:41:25.361Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034144-ba8e215a",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:41:44.076Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034144-01b62d34",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:41:44.490Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034145-254cf801",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:41:45.346Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034150-2a8e1868",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:41:50.216Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034151-63920434",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:41:51.919Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034410-dcb3c915",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:44:10.048Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115034545-e948e79c",
+      "git_head": "0f00e5d415151102e2e59ed892da73f60469d612",
+      "started_at": "2026-11-15T03:45:45.863Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115035030-7a8d7694",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T03:50:30.916Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115035049-44841fd5",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T03:50:49.780Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115035254-eadeca37",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T03:52:54.342Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115035422-9580fb0b",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T03:54:22.682Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115041614-752526c3",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:16:14.442Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115041628-4f5d3035",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:16:28.715Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115041632-0b3852d0",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:16:32.967Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115041816-b26c5456",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:18:16.830Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115041853-48ae5c64",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:18:53.188Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042004-d21c7c86",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:20:04.574Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042055-f38cd6c4",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:20:55.538Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042134-d9531a4f",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:21:34.533Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042138-0a53431f",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:21:38.942Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042140-5ecacf6d",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:21:40.168Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042141-d6b3ed92",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:21:41.035Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042305-cc8691f5",
+      "git_head": "02160baa3172d5b55fecb49858b824df33c6be1a",
+      "started_at": "2026-11-15T04:23:05.165Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115042431-b07928d5",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T04:24:31.112Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115044452-9e1b32f3",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T04:44:52.212Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115050437-4ed57e95",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:04:37.972Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115050547-f0dfb453",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:05:47.732Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115051930-ba79ac18",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:19:30.654Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115051944-d08d0095",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:19:44.563Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115052518-6ed06b74",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:25:18.484Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115054215-355c926b",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:42:15.181Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115054219-2706f596",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:42:19.131Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115054635-d839f796",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:46:35.107Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115054752-125e77e6",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T05:47:52.690Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+      "started_at": "2026-11-15T06:13:21.292Z"
+    },
+    {
+      "execution_id": "UAP-EXEC-20261115062636-4c37c031",
+      "git_head": "b39a35a77c4ed4cbd9863579d2ee69a9e7f690f7",
+      "started_at": "2026-11-15T06:26:36.797Z"
+    }
+  ],
+  "discovered_issues": [
+    {
+      "id": "VIS-CLASSIFIER-FONT",
+      "severity": "P0",
+      "summary": "visual-classifier.mjs 把含标准 Playwright 日志行 waiting for fonts to load 的所有像素 diff 误判为 FONT_RENDERING；10 个真实失败被错误归类"
+    },
+    {
+      "id": "VIS-DEVTOOLS-NOT-HIDDEN",
+      "severity": "P0",
+      "summary": "harness STABILIZE_CSS 的 .TanStackRouterDevtools/.tsqd-parent-container display:none 未生效，dev server 浮层仍出现在截图（home/pricing/rankings/sign-in/sign-up 等）"
+    },
+    {
+      "id": "VIS-DYNAMIC-COUNTERS",
+      "severity": "P1",
+      "summary": "首页统计数字来自 DB 实时数据（198→199、79→80），基线与当前不一致，属动态内容噪声"
+    },
+    {
+      "id": "E2E-BIZ01-BLOCKED",
+      "severity": "P0",
+      "summary": "biz_01 注册新用户被 [BLOCKED_BY_POLICY] 标记跳过；需在隔离栈建立可控注册 fixture，不破坏注册安全策略"
+    },
+    {
+      "id": "REQ-471-NOT-VERIFIED",
+      "severity": "P0",
+      "summary": "538 需求中 471 NOT_VERIFIED（主因 PROBE_SHARED_EVIDENCE：共享套件无独立行为断言），61 VERIFIED，6 BLOCKED"
+    },
+    {
+      "id": "STALE-RUNNING-EXECUTIONS",
+      "severity": "P1",
+      "summary": "executions.jsonl 有 3 个 RUNNING 状态执行批次未正常关闭（含中断的 06:26 批次），缺中断恢复/假运行状态清理"
+    },
+    {
+      "id": "ENV-FINGERPRINT-MISSING",
+      "severity": "P1",
+      "summary": "证据绑定缺 environment_fingerprint 字段，最终验收未校验 single_environment_fingerprint"
+    },
+    {
+      "id": "EXT-PROVIDER-SANDBOX",
+      "severity": "EXTERNAL",
+      "summary": "真实支付沙箱凭据缺失，gateway_verified=false，须保持 BLOCKED_EXTERNAL_DEPENDENCY"
+    }
+  ],
+  "protection_note": "工作区存在 182 个未提交修改（上一轮整改产物：.uap/reports、.uap/state、UDS 6.0 文档、orchestrator web/dist 预检）。本轮全程保护这些修改，不覆盖/删除/重置。"
+}

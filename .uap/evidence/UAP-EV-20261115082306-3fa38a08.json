@@ -1,0 +1,51 @@
+{
+  "evidence_id": "UAP-EV-20261115082306-3fa38a08",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794730985456-22bce1",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-15T08:23:06.756Z",
+  "started_at": "2026-11-15T08:23:06.668Z",
+  "finished_at": "2026-11-15T08:23:06.756Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115082306-9cba918c",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "3d98b1676f741c9b0ab247e278d1570f90ce1001652867023a5fd081b5c2ec4c",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115082306-9cba918c",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "3d98b1676f741c9b0ab247e278d1570f90ce1001652867023a5fd081b5c2ec4c",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node .uap/tests/fixtures/repair-canary.repro.mjs",
+  "exit_code": 0,
+  "duration_ms": 88,
+  "inputs": "{\"args\":[\".uap/tests/fixtures/repair-canary.repro.mjs\"],\"phase\":\"targeted_test_attempt_1\"}",
+  "stdout": "repair-canary repro PASS\n",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794730985456-22bce1.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794730985456-22bce1/repair-canary.mjs"
+  ],
+  "findings": [
+    "before=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+    "after=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1"
+  ],
+  "summary": "[targeted_test_attempt_1] SUCCEEDED",
+  "content_hash": "a5af034329b4643eb0e6eb504489d566c37c33d605a57915ab34998760203a60"
+}

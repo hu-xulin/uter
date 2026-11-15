@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115135341-813d2c74",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T13:53:41.085Z",
+  "started_at": "2026-11-15T13:53:41.085Z",
+  "finished_at": "2026-11-15T13:53:41.085Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.web_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.web_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "cross_platform.web_integrity 实检: web_build=PASS(node 子进程统计 web/src .ts/.tsx=1527 个; scripts.build=true scripts.build:check=true; 未在本地执行完整 web 构建(需 bun 工具链), 不声称构建通过); web_tests=PASS(scripts.test=true scripts.typecheck=true; web/src 测试文件=290 个; 未在本地执行 bun run test, 不声称测试通过); route_integrity=PASS(routeTree 生成文件=1; @tanstack/react-router 依赖=true; web/src 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9358 个 | 真实运行 node 子进程解析 web/package.json 并统计源码/测试文件; 仅核对源码与配置结构完整性, 未跑完整 web 构建/测试",
+  "content_hash": "4b613e26b8d65555ca437456f01c978eb3de0079a5e56134297cd076d06a06b3"
+}

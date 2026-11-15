@@ -113,7 +113,10 @@ export function Stats(_props: StatsProps) {
               key={s.label}
               className='flex flex-col items-center text-center'
             >
-              <span className='text-2xl font-semibold md:text-3xl'>
+              <span
+                className='text-2xl font-semibold md:text-3xl'
+                data-visual-dynamic='home-stat-value'
+              >
                 <Counter end={s.end} suffix={s.suffix} decimals={s.decimals} />
               </span>
               <span className='text-muted-foreground mt-1.5 text-sm'>

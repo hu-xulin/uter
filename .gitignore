@@ -69,6 +69,8 @@ __pycache__/
 
 # Compiled binary and local tooling caches (never commit)
 uter-bin*
+# TypeScript 增量编译缓存（tsgo -b 生成，build 会移走/重建，非源码）
+tsgo-cache/
 /Uter
 /Uter.exe
 node_modules/

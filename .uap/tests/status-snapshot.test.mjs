@@ -103,6 +103,76 @@ describe('执行身份绑定', () => {
     assert.notEqual(worktreeFingerprint(), withChangedContent, '探针清理必须被指纹感知');
   });
 
+  test('生成验证报告与构建缓存被排除，审计源文档仍被绑定', () => {
+    const basis = fingerprintBasis();
+    assert.ok(basis.excludes.some((p) => p.startsWith('tsgo-cache')),
+      'tsgo-cache 构建缓存必须被排除（build/self-test 每次重建）');
+    assert.ok(basis.excludes.includes('docs/design-system/audit/contrast-validation.json'),
+      '生成的审计 JSON 验证报告必须被排除（含墙钟时间戳，每次验证重写）');
+    assert.ok(!basis.excludes.some((p) => p.includes('/audit/') && p.endsWith('.md')),
+      '手写审计 .md 源文档不得被排除');
+    assert.ok(basis.excludes.includes('docs/design-system/03-COLOR-STANDARD.md'),
+      'UDS7 生成的规范文档必须被排除（build.mjs 每次再生）');
+    assert.ok(basis.excludes.some((p) => p.startsWith('web/public/docs-search')),
+      '前端构建生成的搜索索引必须被排除（build:check 每次再生，否则本批次自漂移）');
+    assert.ok(basis.excludes.includes('web/public/sitemap.xml'),
+      '前端构建生成的 sitemap 必须被排除');
+    assert.ok(!basis.excludes.includes('docs/design-system/VISUAL-BASELINE.json'),
+      '冻结视觉基线 VISUAL-BASELINE.json 是源真相，不得被排除');
+    assert.ok(!basis.excludes.some((p) => p.includes('/registry/') && p.endsWith('.mjs')),
+      '手写 registry/*.mjs 生成器源不得被排除');
+
+    const base = readStableFingerprint();
+
+    // tsgo-cache 内的构建缓存内容变化不得改变指纹（与 .uap/state 运行产物同理）。
+    const cacheDir = path.join(ROOT, 'tsgo-cache');
+    const cacheProbe = path.join(cacheDir, `zz-fp-probe-${process.pid}.tsbuildinfo`);
+    fs.mkdirSync(cacheDir, { recursive: true });
+    assertPairStable(() => {
+      fs.writeFileSync(cacheProbe, 'cache-A');
+      const cA = readStableFingerprint();
+      fs.writeFileSync(cacheProbe, 'cache-B');
+      const cB = readStableFingerprint();
+      return [cA, cB];
+    }, 'tsgo-cache 构建缓存不得使本批次证据失效');
+    fs.unlinkSync(cacheProbe);
+
+    // 审计目录下的手写源文档（.md）必须仍被绑定：排除只针对生成的 .json 报告。
+    const auditDir = path.join(ROOT, 'docs', 'design-system', 'design-system', 'audit');
+    const srcProbe = path.join(auditDir, `zz-fp-source-probe-${process.pid}.md`);
+    fs.writeFileSync(srcProbe, 'source-A');
+    const withSrc = worktreeFingerprint();
+    fs.writeFileSync(srcProbe, 'source-B');
+    const withSrcChanged = worktreeFingerprint();
+    fs.unlinkSync(srcProbe);
+    assert.notEqual(withSrc, base, '新增审计源文档必须改变指纹');
+    assert.notEqual(withSrcChanged, withSrc, '审计源文档内容变化必须改变指纹（源仍被绑定）');
+
+    // UDS7 代码生成产物（runtime/ 下的派生 CSS）内容变化不得改变指纹。
+    const runtimeDir = path.join(ROOT, 'docs', 'design-system', 'design-system', 'runtime');
+    const genProbe = path.join(runtimeDir, `zz-fp-gen-probe-${process.pid}.css`);
+    fs.mkdirSync(runtimeDir, { recursive: true });
+    assertPairStable(() => {
+      fs.writeFileSync(genProbe, 'gen-A');
+      const gA = readStableFingerprint();
+      fs.writeFileSync(genProbe, 'gen-B');
+      const gB = readStableFingerprint();
+      return [gA, gB];
+    }, 'UDS7 生成产物不得使本批次证据失效');
+    fs.unlinkSync(genProbe);
+
+    // registry/ 下的手写生成器源（.mjs）必须仍被绑定：排除只针对派生产物。
+    const registryDir = path.join(ROOT, 'docs', 'design-system', 'design-system', 'registry');
+    const regProbe = path.join(registryDir, `zz-fp-reg-probe-${process.pid}.mjs`);
+    fs.writeFileSync(regProbe, 'export const a = 1;');
+    const withReg = worktreeFingerprint();
+    fs.writeFileSync(regProbe, 'export const a = 2;');
+    const withRegChanged = worktreeFingerprint();
+    fs.unlinkSync(regProbe);
+    assert.notEqual(withReg, base, '新增 registry 源必须改变指纹');
+    assert.notEqual(withRegChanged, withReg, 'registry 源内容变化必须改变指纹（生成器源仍被绑定）');
+  });
+
   test('currentExecution 返回同一身份，且绑定字段不可被调用方伪造', () => {
     // 其他测试文件会在并行进程里真实制造/还原一个未提交的脏业务文件
     // （WIP 保护负向用例）。工作树指纹因此可能在本用例执行期间变化，而

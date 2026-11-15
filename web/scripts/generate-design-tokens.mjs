@@ -115,7 +115,7 @@ const output = [
   ' * Source version: ' + metadata.version + ' (' + metadata.status + ')',
   ' * Generator: scripts/generate-design-tokens.mjs',
   ' * Generator version: 1.1.0',
-  ' * Spec: docs/design-system/UTER-DESIGN-SYSTEM-3.0.md',
+  ' * Spec: docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
   ' */',
   ':root {',
   render('light'),

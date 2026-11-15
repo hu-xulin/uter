@@ -34,9 +34,16 @@ const STABILIZE_CSS = `
      截图都稳定多出 ~4000-7000 像素差异（实测 28/29 全红，ratio 0.01-0.02），
      属于环境噪声而非 UI 回归。用 display:none 整体移除（含其布局盒），
      而不是放进 mask —— mask 会在其 bounding box 上画洋红块，仍会 diff。
-     不放宽 maxDiffPixelRatio，产品 UI 仍逐像素比对。 */
-  .tsqd-parent-container, .TanStackRouterDevtools,
-  .TanStackRouterDevtoolsPanel { display: none !important; }
+     不放宽 maxDiffPixelRatio，产品 UI 仍逐像素比对。
+     选择器必须覆盖「面板宿主」与「portaled/兄弟开关按钮」两层：实测
+     ReactQuery 的沙滩球是 .tsqd-open-btn-container（在 .tsqd-parent-container
+     内但独立类名），Router 的徽标是 FOOTER.TanStackRouterDevtools 内的
+     goober 类 <button aria-label="Open/Close TanStack Router Devtools">。
+     只隐藏面板宿主会漏掉开关按钮。 */
+  .tsqd-parent-container, .tsqd-transitions-container, .tsqd-open-btn-container,
+  .tsqd-open-btn, .TanStackRouterDevtools, .TanStackRouterDevtoolsPanel,
+  button[aria-label="Open TanStack Router Devtools"],
+  button[aria-label="Close TanStack Router Devtools"] { display: none !important; }
 `
 
 export interface OpenOptions {

@@ -135,6 +135,6 @@ test('axe: 鉴权页批量扫描', async ({ page }) => {
 
   expect(
     blockingByRoute,
-    '鉴权页存在 critical/serious 可访问性违规：\n' + blockingByRoute.join('\n')
+    `鉴权页存在 critical/serious 可访问性违规：\n${blockingByRoute.join('\n')}`
   ).toEqual([])
 })

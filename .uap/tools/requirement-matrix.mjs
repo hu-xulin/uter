@@ -249,10 +249,12 @@ function assembleMatrix(requirements, specs, tests, overlay) {
     execution_id: execution?.execution_id || null,
     git_head: execution?.git_head || null,
     worktree_fingerprint: execution?.worktree_fingerprint || null,
+    environment_fingerprint: execution?.environment_fingerprint || null,
     execution: {
       id: execution?.execution_id || null,
       git_head: execution?.git_head || null,
       worktree_fingerprint: execution?.worktree_fingerprint || null,
+      environment_fingerprint: execution?.environment_fingerprint || null,
       binding_policy: 'VERIFIED requires a real BEHAVIOR_EXECUTION command bound to THIS execution with a distinct output assertion and hash-valid evidence',
     },
     totals: {

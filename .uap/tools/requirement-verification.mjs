@@ -97,8 +97,24 @@ export function coverageMap(matrix, registry) {
   return out;
 }
 
+/** A PROHIBITION requirement forbids an external action ("不得 / 禁止 / 不触碰 /
+ *  默认禁止 / 必须经过…授权"). Its behaviour is the LOCAL enforcement of that
+ *  prohibition (policy DENY, simulation-only payment), which is verifiable
+ *  without ever performing the external action. The external-dependency BLOCKED
+ *  bucket is only for requirements that POSITIVELY need the external capability
+ *  to verify (e.g. "必须完成真实支付沙箱端到端验证"). Keyword-matching a
+ *  prohibition into BLOCKED would hide a locally-provable guarantee, so such
+ *  requirements are exempt here and verified via their real enforcement
+ *  assertion instead. This is a semantic narrowing, not a weakening: a
+ *  prohibition with no enforcement assertion still falls through to
+ *  NOT_VERIFIED, never to VERIFIED by fiat. */
+export function isProhibitionRequirement(r) {
+  return /不得|禁止|不触碰|不能|不允许|默认禁止|必须经过[^。]*授权/.test(reqText(r));
+}
+
 /** Real external-dependency classification, restricted to declared rules. */
 export function externalBlock(r, registry) {
+  if (isProhibitionRequirement(r)) return null;
   for (const rule of registry.blocked_rules || []) {
     if ((rule.keywords || []).some((k) => reqText(r).includes(k))) return rule;
   }
@@ -133,7 +149,14 @@ export function isValidBehaviorAssertion(a, execution) {
     && Boolean(execution && execution.execution_id)
     && a.evidence_execution_id === execution.execution_id
     && a.evidence_git_head === execution.git_head
-    && a.evidence_worktree_fingerprint === execution.worktree_fingerprint;
+    && a.evidence_worktree_fingerprint === execution.worktree_fingerprint
+    // §3.3 environment pin: when both sides declare an environment fingerprint
+    // it MUST agree (an environment change invalidates the evidence). Absent =
+    // legacy fixture, tolerated here exactly as the manifest tolerates it; real
+    // evidence records always carry it (record() sets it, binding_valid needs it).
+    && (a.evidence_environment_fingerprint == null
+      || execution.environment_fingerprint == null
+      || a.evidence_environment_fingerprint === execution.environment_fingerprint);
 }
 
 /** Detect one shared evidence/command+assertion covering unrelated requirements. */
@@ -228,6 +251,7 @@ export function classifyStrict(ctx = {}) {
       evidence_hash: a.evidence_hash,
       evidence_hash_valid: a.evidence_hash_valid,
       evidence_binding_valid: a.evidence_binding_valid,
+      evidence_environment_fingerprint: a.evidence_environment_fingerprint ?? null,
       distinct: true,
     }));
     return {
@@ -274,7 +298,9 @@ export function classifyStrict(ctx = {}) {
       || !a.evidence_binding_valid || a.evidence_output_hash !== a.output_hash || !a.distinct
       || !execution || a.evidence_execution_id !== execution.execution_id
       || a.evidence_git_head !== execution.git_head
-      || a.evidence_worktree_fingerprint !== execution.worktree_fingerprint)) {
+      || a.evidence_worktree_fingerprint !== execution.worktree_fingerprint
+      || (a.evidence_environment_fingerprint != null && execution.environment_fingerprint != null
+        && a.evidence_environment_fingerprint !== execution.environment_fingerprint))) {
     return notVerified('EVIDENCE_INVALID_OR_STALE', '证据哈希缺失/不匹配/失效或未绑定当前执行，不能作为 VERIFIED 依据', requirement, declaredProbeKinds, behaviorAssertions);
   }
   return notVerified('BEHAVIOR_NOT_EXERCISED', '未对该要求执行到真实行为断言', requirement, declaredProbeKinds, behaviorAssertions);
@@ -366,6 +392,7 @@ function buildRow(r, cov, c, behaviorAssertions, execution, blockedRule, naRule)
     execution_id: a.evidence_execution_id,
     git_head: a.evidence_git_head,
     worktree_fingerprint: a.evidence_worktree_fingerprint,
+    environment_fingerprint: a.evidence_environment_fingerprint ?? null,
     hash_valid: a.evidence_hash_valid,
     recorded_at: now(),
     exit_code: a.exit_code,
@@ -390,6 +417,7 @@ function buildRow(r, cov, c, behaviorAssertions, execution, blockedRule, naRule)
     execution_id: execution?.execution_id || null,
     git_head: execution?.git_head || null,
     worktree_fingerprint: execution?.worktree_fingerprint || null,
+    environment_fingerprint: execution?.environment_fingerprint || null,
     // ---- traceability context ----
     specification_id: r.specification_id,
     section: r.section,
@@ -558,15 +586,17 @@ export async function verifyRequirements({ batches = null, dryRun = false, execu
       binding_valid: v.binding_valid,
       execution_id: rec?.execution_id || null, git_head: rec?.git_head || null,
       worktree_fingerprint: rec?.worktree_fingerprint || null,
+      environment_fingerprint: rec?.environment_fingerprint || null,
       requirement_ids: passedAssertions,
     };
   }
   const evList = Object.values(evidenceByRun).filter(Boolean);
   const execution = evList.length
-    ? { execution_id: evList[0].execution_id, git_head: evList[0].git_head, worktree_fingerprint: evList[0].worktree_fingerprint }
+    ? { execution_id: evList[0].execution_id, git_head: evList[0].git_head, worktree_fingerprint: evList[0].worktree_fingerprint, environment_fingerprint: evList[0].environment_fingerprint }
     : execution0;
   const executionConsistent = evList.every((e) => e.execution_id === execution.execution_id
-    && e.git_head === execution.git_head && e.worktree_fingerprint === execution.worktree_fingerprint);
+    && e.git_head === execution.git_head && e.worktree_fingerprint === execution.worktree_fingerprint
+    && e.environment_fingerprint === execution.environment_fingerprint);
   const execBindingUsable = executionConsistent && Boolean(execution?.execution_id && execution?.git_head);
 
   // Build per-requirement behaviour assertion bindings with distinct assertions.
@@ -591,6 +621,7 @@ export async function verifyRequirements({ batches = null, dryRun = false, execu
         evidence_execution_id: ev?.execution_id || null,
         evidence_git_head: ev?.git_head || null,
         evidence_worktree_fingerprint: ev?.worktree_fingerprint || null,
+        evidence_environment_fingerprint: ev?.environment_fingerprint || null,
         distinct: true,
       };
       if (!bindingsByReq.has(a.requirement_id)) bindingsByReq.set(a.requirement_id, []);
@@ -644,6 +675,7 @@ export async function verifyRequirements({ batches = null, dryRun = false, execu
     execution_id: execution?.execution_id || null,
     git_head: execution?.git_head || null,
     worktree_fingerprint: execution?.worktree_fingerprint || null,
+    environment_fingerprint: execution?.environment_fingerprint || null,
     execution_binding_usable: execBindingUsable,
     dry_run: dryRun,
     totals: {

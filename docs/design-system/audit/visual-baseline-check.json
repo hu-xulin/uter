@@ -1,0 +1,186 @@
+{
+  "schema": "UDS7-VISUAL-BASELINE-CHECK/1.0",
+  "generated_at": "2026-11-15T23:55:45.171Z",
+  "verdict": "PASS",
+  "executed": true,
+  "baselineVersion": "7.0.0",
+  "frozenAt": "2026-11-15T15:02:25.915Z",
+  "scenarioCount": 15,
+  "results": [
+    {
+      "id": "showcase-light-desktop",
+      "kind": "showcase",
+      "frozenSha256": "5a8728c61708e1fc5683c9412831207d8adc292e4ea9db0da2f8d367e5cb478b",
+      "currentSha256": "50e9cf9b4fe8890fc1c2ddbe15d75dbd7419669c5a98f9f8cd5769ca4b8e8cb9",
+      "byteIdentical": false,
+      "pixelDiff": {
+        "pixels": 1296000,
+        "diffPixels": 2399,
+        "diffRatio": 0.0018510802469135802,
+        "meanAbsDiff": 0.13043364197530863,
+        "dimensionMismatch": false
+      },
+      "threshold": 0.005,
+      "verdict": "PASS",
+      "reason": "字节不同；像素差 2399/1296000 (0.185%) ≤ 阈值 0.50%"
+    },
+    {
+      "id": "showcase-dark-desktop",
+      "kind": "showcase",
+      "frozenSha256": "a30e42ddc99da70a846808017955d7c846b04f1d711e61e0cb56772254875ee6",
+      "currentSha256": "2b76185aa0c78d7f62c1174e33e3c02acee7aa94bb9a9ab21d603bf00aa31470",
+      "byteIdentical": false,
+      "pixelDiff": {
+        "pixels": 1296000,
+        "diffPixels": 2404,
+        "diffRatio": 0.0018549382716049382,
+        "meanAbsDiff": 0.17914583333333334,
+        "dimensionMismatch": false
+      },
+      "threshold": 0.005,
+      "verdict": "PASS",
+      "reason": "字节不同；像素差 2404/1296000 (0.185%) ≤ 阈值 0.50%"
+    },
+    {
+      "id": "showcase-light-mobile",
+      "kind": "showcase",
+      "frozenSha256": "e501c5bd846aa82618b6938dc31f3cbb09655038d95beaca08bebb9cd90bacc1",
+      "currentSha256": "68dc88ccc70c09486a6208a993e5b4857f6d13704b7022985ce901b4fa79b79a",
+      "byteIdentical": false,
+      "pixelDiff": {
+        "pixels": 329160,
+        "diffPixels": 443,
+        "diffRatio": 0.001345850042532507,
+        "meanAbsDiff": 0.19192186170859157,
+        "dimensionMismatch": false
+      },
+      "threshold": 0.005,
+      "verdict": "PASS",
+      "reason": "字节不同；像素差 443/329160 (0.135%) ≤ 阈值 0.50%"
+    },
+    {
+      "id": "showcase-dark-mobile",
+      "kind": "showcase",
+      "frozenSha256": "9ab6d78e666ae916fc8fd7c5ef9da784f12512262f8d8af14835f8e9df02b433",
+      "currentSha256": "462d371f47d59b8fd8ff9615314f3036ad81622cb406e92684857246d07314a0",
+      "byteIdentical": false,
+      "pixelDiff": {
+        "pixels": 329160,
+        "diffPixels": 442,
+        "diffRatio": 0.0013428120063191152,
+        "meanAbsDiff": 0.21650261271114352,
+        "dimensionMismatch": false
+      },
+      "threshold": 0.005,
+      "verdict": "PASS",
+      "reason": "字节不同；像素差 442/329160 (0.134%) ≤ 阈值 0.50%"
+    },
+    {
+      "id": "page-home-light",
+      "kind": "real-page",
+      "frozenSha256": "77827d129377106f7f02a3af749327f4bf160d7f349660f126c89bd233ea885e",
+      "currentSha256": "59874216794cff3d033ef6849093a63f7ca4bbe34c93f3b8f85400b527af431e",
+      "byteIdentical": false,
+      "pixelDiff": {
+        "pixels": 1024000,
+        "diffPixels": 0,
+        "diffRatio": 0,
+        "meanAbsDiff": 0.0001533203125,
+        "dimensionMismatch": false
+      },
+      "threshold": 0.02,
+      "verdict": "PASS",
+      "reason": "字节不同；像素差 0/1024000 (0.000%) ≤ 阈值 2.00%"
+    },
+    {
+      "id": "page-home-dark",
+      "kind": "real-page",
+      "frozenSha256": "7bb03f967eabfbd822b7c369398948292e15a6fd8f245d19d78115c38629e64f",
+      "currentSha256": "7bb03f967eabfbd822b7c369398948292e15a6fd8f245d19d78115c38629e64f",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "page-login-light",
+      "kind": "real-page",
+      "frozenSha256": "9648a8d2b6311bcdb8d4ee970dfc919dba723205c3a81375940cfb9a8820d276",
+      "currentSha256": "9648a8d2b6311bcdb8d4ee970dfc919dba723205c3a81375940cfb9a8820d276",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "page-login-dark",
+      "kind": "real-page",
+      "frozenSha256": "4bad67106f47ea5a8f36a22b40d2fda18268cdac0570b47c67875b2ec8d1ebcb",
+      "currentSha256": "4bad67106f47ea5a8f36a22b40d2fda18268cdac0570b47c67875b2ec8d1ebcb",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "page-about-light",
+      "kind": "real-page",
+      "frozenSha256": "540d9a39dd839bd5b13a7ed668003abefc8e24515b4d6737f837b6ba1a512780",
+      "currentSha256": "540d9a39dd839bd5b13a7ed668003abefc8e24515b4d6737f837b6ba1a512780",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "page-about-dark",
+      "kind": "real-page",
+      "frozenSha256": "77b7f28156a17ec5e7582abf56f284764a75adf596937f40d66d7923f8e1d75b",
+      "currentSha256": "77b7f28156a17ec5e7582abf56f284764a75adf596937f40d66d7923f8e1d75b",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "page-docs-light",
+      "kind": "real-page",
+      "frozenSha256": "97688e6c1f96d1718ac15720e1bd8d405bc89d0d855d6bc182cbd6fa5a7cf650",
+      "currentSha256": "97688e6c1f96d1718ac15720e1bd8d405bc89d0d855d6bc182cbd6fa5a7cf650",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "page-docs-dark",
+      "kind": "real-page",
+      "frozenSha256": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
+      "currentSha256": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "gradient-hero-light",
+      "kind": "gradient",
+      "frozenSha256": "d1dde16c4fd2dbd81c26d3575d2478e1d246cb469eb8ef0a2a773f43361aee2a",
+      "currentSha256": "d1dde16c4fd2dbd81c26d3575d2478e1d246cb469eb8ef0a2a773f43361aee2a",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "gradient-hero-dark",
+      "kind": "gradient",
+      "frozenSha256": "5437ffb7d3b3b496d78baa92430e3561593511ef96b3856be24f52f6d584345d",
+      "currentSha256": "5437ffb7d3b3b496d78baa92430e3561593511ef96b3856be24f52f6d584345d",
+      "byteIdentical": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "forced-colors-showcase",
+      "kind": "forced-colors",
+      "frozenSha256": "6d5eb1013e6901e237aad89eb8c9770083301e4bd0c3a356b71dd590dc601ad7",
+      "currentSha256": "2471a0a5c930f0700185e42de1a575f1bfd9af08de413767e624d4640e99f92c",
+      "byteIdentical": false,
+      "pixelDiff": {
+        "pixels": 1296000,
+        "diffPixels": 959,
+        "diffRatio": 0.0007399691358024691,
+        "meanAbsDiff": 0.14290972222222223,
+        "dimensionMismatch": false
+      },
+      "threshold": 0.01,
+      "verdict": "PASS",
+      "reason": "字节不同；像素差 959/1296000 (0.074%) ≤ 阈值 1.00%"
+    }
+  ],
+  "summary": "15 场景：9 字节一致、6 阈值内、0 FAIL"
+}

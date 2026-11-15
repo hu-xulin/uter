@@ -18,8 +18,17 @@ export const MANDATED_CATEGORIES = Object.freeze([
 ]);
 
 export function classifyVisualDiff(s, message) {
-  const m = message || '';
+  const raw = message || '';
   const title = String(s?.title || '');
+  // Playwright's toHaveScreenshot call-log ALWAYS embeds generic progress lines
+  // that are NOT evidence of the corresponding category:
+  //   - "waiting for fonts to load... fonts loaded" is not font-rendering proof;
+  //   - "disabled all CSS animations/transitions" is proof animations were
+  //     DISABLED, not that animation caused the diff. With animations:'disabled'
+  //     every pixel diff carries this line, so matching /animation/ against it
+  //     mislabelled every stable pixel diff as ANIMATION.
+  // Strip these generic call-log lines before any keyword matching.
+  const m = raw.replace(/waiting for fonts to load[^\n]*|fonts loaded|document\.fonts\.ready|disabled all CSS animations|disabled all CSS transitions/gi, '');
   // A runner-level failure (no screenshot comparison happened) is distinct
   // from a pixel diff. Detect it first so it is not mislabelled as a UI diff.
   const runnerFailed = (s?.tests || []).some((t) => (t.results || [])

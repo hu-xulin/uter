@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-15T06:20:42.856Z",
-  "target": "http://localhost:3000",
+  "generated_at": "2026-11-15T13:55:03.292Z",
+  "target": "http://localhost:3100",
   "mode": "dry-run rehearsal (authorized by AUTH-DEPLOY-2026-11-12; local artifacts only)",
   "version": {
     "current": "v1.5.20",
@@ -29,7 +29,7 @@
     {
       "name": "health_check_live",
       "ok": true,
-      "detail": "GET /api/status -> 200; 目标=http://localhost:3000 (仅本地服务, 不触生产)"
+      "detail": "GET /api/status -> 200; 目标=http://localhost:3100 (仅本地服务, 不触生产)"
     },
     {
       "name": "rollback_restores_previous_release",
@@ -39,7 +39,7 @@
     {
       "name": "boundary_temp_only",
       "ok": true,
-      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-9qkTI3 (os.tmpdir), 仓库无演练产物"
+      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-MGFc0Z (os.tmpdir), 仓库无演练产物"
     }
   ],
   "verdict": {

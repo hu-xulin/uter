@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261115135338-ae61c24c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T13:53:38.030Z",
+  "started_at": "2026-11-15T13:53:38.030Z",
+  "finished_at": "2026-11-15T13:53:38.030Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+    "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+    "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
+  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
+  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.collaboration_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.collaboration_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.collaboration_integrity 实检: task_dependencies=PASS(agents 域 4 条规范自算 DAG cycles=0 missing_deps=0; registry 无环=true); conflict_detection=PASS(agent id 唯一=true; deny_undeclared_tools=true; 规范含 冲突/一致=true); result_consistency=PASS(动态 import state-machine 并调用 health().ok===true: health().ok=true; 11 agent 均有 output_schema=true; 规范含 结构化=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9346 个 | 自算协作依赖 DAG + 冲突规则 + 动态 import 调用 health() 证明模块可运行",
+  "content_hash": "b13adbce599ec51e5dabb1c754f79ff38b89094f7fb6a55f36685a5e2ac3402c"
+}

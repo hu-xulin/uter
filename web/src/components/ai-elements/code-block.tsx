@@ -22,13 +22,32 @@ For commercial licensing, please contact support@uter.ai
 import { css as cssLanguage } from '@codemirror/lang-css'
 import { html as htmlLanguage } from '@codemirror/lang-html'
 import { javascript } from '@codemirror/lang-javascript'
+import { json as jsonLanguage, jsonParseLinter } from '@codemirror/lang-json'
 import { markdown } from '@codemirror/lang-markdown'
-import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
-import { EditorState, type Extension } from '@codemirror/state'
+import { python } from '@codemirror/lang-python'
+import { sql } from '@codemirror/lang-sql'
+import { yaml } from '@codemirror/lang-yaml'
 import {
+  bracketMatching,
+  foldGutter,
+  HighlightStyle,
+  StreamLanguage,
+  syntaxHighlighting,
+} from '@codemirror/language'
+import { go } from '@codemirror/legacy-modes/mode/go'
+import { shell } from '@codemirror/legacy-modes/mode/shell'
+import { lintGutter, linter } from '@codemirror/lint'
+import { EditorState, type Extension, RangeSetBuilder } from '@codemirror/state'
+import {
+  Decoration,
+  type DecorationSet,
   EditorView,
+  highlightActiveLine,
+  highlightActiveLineGutter,
   lineNumbers,
   placeholder as placeholderExtension,
+  ViewPlugin,
+  type ViewUpdate,
 } from '@codemirror/view'
 import { tags as highlightTags } from '@lezer/highlight'
 import {
@@ -114,6 +133,8 @@ type CodeBlockFrameProps = Omit<HTMLAttributes<HTMLDivElement>, 'title'> & {
   endActions?: ReactNode
   showToolbar?: boolean
   title?: ReactNode
+  /** UDS 7.0 §5.4：代码块与编辑器使用两套独立背景 Token。 */
+  variant?: 'codeblock' | 'editor'
 }
 
 type CodeBlockContextType = {
@@ -136,19 +157,26 @@ const LANGUAGE_ALIASES: Record<string, BundledLanguage> = {
 }
 
 const LANGUAGE_PATTERN = /^[a-z0-9][a-z0-9+#._-]{0,31}$/i
+/* UDS 7.0 代码 chrome：全部色值走 --ds7-color-code-* 语义 Token
+ * （TOKEN-MANIFEST.json → uds-semantic-bridge.css），禁止写死 HEX。
+ * 背景由 CodeBlockFrame 的 variant 提供（codeblock / editor 两套独立背景），
+ * 编辑器内部保持 transparent，避免双层底色。 */
 const codeMirrorTheme = EditorView.theme({
   '&': {
     background: 'transparent',
-    color: 'var(--foreground)',
+    color: 'var(--ds7-color-code-foreground)',
     fontSize: '13px',
   },
   '.cm-content': {
-    caretColor: 'var(--foreground)',
+    caretColor: 'var(--ds7-color-code-cursor)',
     fontFamily: 'var(--font-mono)',
     lineHeight: '1.5rem',
     minHeight: 'var(--code-editor-min-height)',
     minWidth: 'max-content',
     padding: '1rem 1rem 1rem 0',
+  },
+  '.cm-cursor, .cm-dropCursor': {
+    borderLeftColor: 'var(--ds7-color-code-cursor)',
   },
   '.cm-editor': {
     background: 'transparent',
@@ -158,9 +186,9 @@ const codeMirrorTheme = EditorView.theme({
     outline: 'none',
   },
   '.cm-gutters': {
-    background: 'transparent',
+    background: 'var(--ds7-color-code-gutter-background)',
     borderRight: '0',
-    color: 'var(--muted-foreground)',
+    color: 'var(--ds7-color-code-gutter)',
     fontFamily: 'var(--font-mono)',
     fontSize: '13px',
     lineHeight: '1.5rem',
@@ -178,26 +206,118 @@ const codeMirrorTheme = EditorView.theme({
   '.cm-line': {
     padding: '0',
   },
+  '.cm-activeLine': {
+    background: 'var(--ds7-color-code-current-line)',
+    boxShadow: 'inset 2px 0 0 var(--ds7-color-code-active-line-border)',
+  },
+  '.cm-activeLineGutter': {
+    background: 'var(--ds7-color-code-current-line)',
+    color: 'var(--ds7-color-code-foreground)',
+  },
+  '.cm-matchingBracket': {
+    background: 'var(--ds7-color-code-bracket-match)',
+    outline: '1px solid var(--ds7-color-code-active-line-border)',
+  },
+  '.cm-foldGutter .cm-gutterElement': {
+    color: 'var(--ds7-color-code-fold-control)',
+  },
   '.cm-scroller': {
     fontFamily: 'var(--font-mono)',
     lineHeight: '1.5rem',
     minHeight: 'var(--code-editor-min-height)',
     overflow: 'auto',
+    scrollbarColor: 'var(--ds7-color-code-scrollbar) transparent',
   },
   '.cm-selectionBackground': {
-    background:
-      'color-mix(in oklch, var(--primary) 28%, transparent) !important',
+    background: 'var(--ds7-color-code-selection) !important',
+  },
+  /* JSON lint（@codemirror/lint 真实接入，plugin-sandbox 的 JSON 编辑器消费）：
+   * 错误 / 警告波浪线与诊断面板边条。 */
+  '.cm-lintRange-error': {
+    backgroundImage: 'none',
+    textDecoration: 'underline wavy var(--ds7-color-code-error-decoration)',
+    textDecorationSkipInk: 'none',
+  },
+  '.cm-lintRange-warning': {
+    backgroundImage: 'none',
+    textDecoration: 'underline wavy var(--ds7-color-code-warning-decoration)',
+    textDecorationSkipInk: 'none',
+  },
+  '.cm-diagnostic-error': {
+    borderLeft: '3px solid var(--ds7-color-code-error-decoration)',
+  },
+  '.cm-diagnostic-warning': {
+    borderLeft: '3px solid var(--ds7-color-code-warning-decoration)',
   },
 })
 
-/* UDS 6.0 — CodeMirror 统一语法 Adapter。
+/* 缩进参考线：CodeMirror 核心没有内置扩展，这里用行装饰 + 受限背景实现。
+ * 每条参考线落在一个 tabSize 边界上，只画到该行实际缩进宽度为止；
+ * 颜色走 --ds7-color-code-indent-guide，随主题切换。 */
+const indentGuideDecoration = (width: number, step: number) =>
+  Decoration.line({
+    attributes: {
+      style:
+        `background-image: repeating-linear-gradient(to right, transparent 0 ${step - 1}px, var(--ds7-color-code-indent-guide) ${step - 1}px ${step}px);` +
+        `background-size: ${width}px 100%;background-repeat: no-repeat;`,
+    },
+  })
+
+const indentGuides = ViewPlugin.fromClass(
+  class {
+    decorations: DecorationSet
+
+    constructor(view: EditorView) {
+      this.decorations = this.build(view)
+    }
+
+    update(update: ViewUpdate) {
+      if (update.docChanged || update.viewportChanged || update.geometryChanged) {
+        this.decorations = this.build(update.view)
+      }
+    }
+
+    build(view: EditorView): DecorationSet {
+      const builder = new RangeSetBuilder<Decoration>()
+      const tabSize = view.state.tabSize
+      const step = tabSize * view.defaultCharacterWidth
+      if (step <= 0) {
+        return builder.finish()
+      }
+      for (const { from, to } of view.visibleRanges) {
+        for (let pos = from; pos <= to; ) {
+          const line = view.state.doc.lineAt(pos)
+          let cols = 0
+          for (const ch of line.text) {
+            if (ch === ' ') {
+              cols += 1
+            } else if (ch === '\t') {
+              cols += tabSize - (cols % tabSize)
+            } else {
+              break
+            }
+          }
+          const width = Math.floor(cols / tabSize) * step
+          if (width >= step) {
+            builder.add(line.from, line.from, indentGuideDecoration(width, step))
+          }
+          pos = line.to + 1
+        }
+      }
+      return builder.finish()
+    }
+  },
+  { decorations: (plugin) => plugin.decorations }
+)
+
+/* UDS 7.0 — CodeMirror 统一语法 Adapter。
  *
  * 20 个语义 Token 与 VS Code Light+ / Dark+ 官方主题一一对应，实际色值由
- * TOKEN-MANIFEST.json 派生到 uds-semantic-bridge.css 的 `--ds6-syntax-*` 变量；
+ * TOKEN-MANIFEST.json 派生到 uds-semantic-bridge.css 的 `--ds7-syntax-*` 变量；
  * 本文件只负责把 Lezer tag 映射到语义名，绝不写死 HEX，也不把
  * inserted / deleted / invalid 塌缩成 keyword。
  *
- * 同一套 --ds6-syntax-* 也被 yace JSON 编辑器（styles/index.css）、
+ * 同一套 --ds7-syntax-* 也被 yace JSON 编辑器（styles/index.css）、
  * javascript-viewer.tsx 与 Showcase 的 Shiki Adapter 共享。 */
 export const SYNTAX_ADAPTER = [
   {
@@ -288,7 +408,7 @@ const codeMirrorHighlightStyle = syntaxHighlighting(
   HighlightStyle.define(
     SYNTAX_ADAPTER.map((entry) => ({
       tag: entry.tags as Parameters<typeof HighlightStyle.define>[0][number]['tag'],
-      color: `var(--ds6-syntax-${entry.token})`,
+      color: `var(--ds7-syntax-${entry.token})`,
       ...('fontStyle' in entry ? { fontStyle: entry.fontStyle } : {}),
       ...('fontWeight' in entry ? { fontWeight: entry.fontWeight } : {}),
     }))
@@ -336,9 +456,44 @@ function getCodeMirrorLanguageExtension(language: BundledLanguage | string) {
     return htmlLanguage()
   }
 
-  // Python / Go / Bash / SQL / YAML / JSON / JSONC 等语言没有安装对应的
-  // CodeMirror language 包，返回空扩展（纯文本），不虚报为已高亮。
-  // 它们的真实语法解析由 Showcase 的 Shiki Adapter 承担，并共享同一套 --ds6-syntax-*。
+  if (requestedLanguage === 'json') {
+    return jsonLanguage()
+  }
+
+  // JSONC 无独立 CodeMirror 语法包：用 JavaScript 解析器近似（注释 / 尾逗号
+  // 可解析），完整 JSONC 语法由 Showcase 的 Shiki Adapter 真实解析。
+  if (requestedLanguage === 'jsonc') {
+    return javascript()
+  }
+
+  if (requestedLanguage === 'python' || requestedLanguage === 'py') {
+    return python()
+  }
+
+  // Go / Bash 走官方 legacy-modes 的 StreamLanguage 适配（无 Lezer 语法包）。
+  if (requestedLanguage === 'go') {
+    return StreamLanguage.define(go)
+  }
+
+  if (
+    requestedLanguage === 'bash' ||
+    requestedLanguage === 'sh' ||
+    requestedLanguage === 'zsh'
+  ) {
+    return StreamLanguage.define(shell)
+  }
+
+  if (requestedLanguage === 'sql') {
+    return sql()
+  }
+
+  if (requestedLanguage === 'yaml' || requestedLanguage === 'yml') {
+    return yaml()
+  }
+
+  // 其余语言（Java / Rust / TOML / Dockerfile 等）没有安装对应的 CodeMirror
+  // 语言包，返回空扩展（纯文本），不虚报为已高亮。它们的真实语法解析由
+  // Showcase 的 Shiki Adapter 承担，并共享同一套 --ds7-syntax-*。
   return []
 }
 
@@ -393,6 +548,8 @@ function getCodeMirrorExtensions(options: {
     EditorState.tabSize.of(2),
     EditorState.readOnly.of(options.readOnly),
     EditorView.editable.of(!options.readOnly),
+    bracketMatching(),
+    indentGuides,
     EditorView.domEventHandlers({
       keydown(event) {
         options.onKeyDown(event)
@@ -407,6 +564,16 @@ function getCodeMirrorExtensions(options: {
 
   if (options.showLineNumbers) {
     extensions.unshift(lineNumbers())
+    extensions.push(foldGutter())
+  }
+
+  // 活动行高亮只用于可编辑场景；只读代码块不显示光标行底色。
+  if (!options.readOnly) {
+    extensions.push(highlightActiveLine(), highlightActiveLineGutter())
+    // JSON 编辑器（plugin-sandbox）真实消费 lint 错误 chrome。
+    if (getRequestedCodeLanguage(options.language) === 'json') {
+      extensions.push(linter(jsonParseLinter()), lintGutter())
+    }
   }
 
   return extensions
@@ -529,17 +696,21 @@ export const CodeBlockFrame = ({
   endActions,
   showToolbar = false,
   title,
+  variant = 'codeblock',
   ...props
 }: CodeBlockFrameProps) => (
   <div
     className={cn(
-      'group/code-block bg-muted/20 text-foreground my-3 w-full max-w-full overflow-hidden rounded-lg border',
+      'group/code-block text-foreground my-3 w-full max-w-full overflow-hidden rounded-lg border',
+      variant === 'editor'
+        ? 'bg-(--ds7-color-code-editor-background)'
+        : 'bg-(--ds7-color-code-codeblock-background)',
       className
     )}
     {...props}
   >
     {showToolbar && (
-      <div className='bg-muted/35 border-border/70 flex min-h-10 items-center gap-2 border-b px-2 py-1.5'>
+      <div className='bg-(--ds7-color-code-toolbar-background) border-border/70 flex min-h-10 items-center gap-2 border-b px-2 py-1.5'>
         <div className='min-w-0 flex-1'>
           <div className='text-muted-foreground text-mono truncate font-mono font-medium uppercase'>
             {title}
@@ -617,7 +788,7 @@ export const CodeBlock = ({
         bodyOverlay={
           <>
             {isCodeCollapsed && (
-              <div className='from-muted/20 to-background pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-b' />
+              <div className='from-transparent to-(--ds7-color-code-codeblock-background) pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-b' />
             )}
             {!showToolbar && children && (
               <div className='absolute top-2 right-2 flex items-center gap-1'>
@@ -714,6 +885,7 @@ export const CodeBlockEditor = ({
       endActions={actions}
       showToolbar
       title={title}
+      variant='editor'
       {...props}
     >
       <CodeMirrorCodeView

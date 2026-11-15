@@ -16,10 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { cleanup, render } from '@testing-library/react'
+import { cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, test } from 'vitest'
 
-import { CodeBlockEditor } from '../code-block'
+import { CodeBlock, CodeBlockEditor } from '../code-block'
 
 afterEach(() => {
   cleanup()
@@ -73,5 +73,77 @@ describe('CodeBlockEditor', () => {
     // characters pile up at the beginning (text appears right-to-left).
     expect(contentAfter).toBe(contentBefore)
     expect(contentAfter?.textContent).toContain('hi')
+  })
+})
+
+describe('CodeBlock language coverage (UDS 7.0 Phase 3)', () => {
+  const cases: Array<{ code: string; language: string }> = [
+    { language: 'json', code: '{"name": "uter", "count": 1}' },
+    { language: 'python', code: 'def hello():\n    return 42\n' },
+    { language: 'go', code: 'package main\n\nfunc main() {}\n' },
+    { language: 'bash', code: 'echo "hello"\n' },
+    { language: 'sql', code: 'SELECT id FROM users WHERE id = 1;\n' },
+    { language: 'yaml', code: 'name: uter\ncount: 1\n' },
+  ]
+
+  for (const { language, code } of cases) {
+    test(`highlights ${language} with real syntax tokens`, async () => {
+      const { getByRole } = render(
+        <CodeBlock code={code} language={language} showToolbar={false} />
+      )
+      const block = getByRole('textbox', { name: language })
+      // 纯文本没有高亮 span；出现带 class 的 span 证明语言解析器真实生效。
+      await waitFor(() => {
+        expect(block.querySelectorAll('.cm-content span[class]').length).toBeGreaterThan(0)
+      })
+    })
+  }
+
+  test('plaintext stays unhighlighted (negative control)', () => {
+    const { getByRole } = render(
+      <CodeBlock code='def hello():\n    return 42\n' language='plaintext' />
+    )
+    const block = getByRole('textbox', { name: 'plaintext' })
+    expect(block.querySelectorAll('.cm-content span[class]').length).toBe(0)
+  })
+})
+
+describe('Code chrome (UDS 7.0 §5.3 / §5.4)', () => {
+  test('code block and editor use separate background tokens', () => {
+    const { getByRole, rerender } = render(
+      <CodeBlock code='x' language='plaintext' />
+    )
+    expect(getByRole('textbox', { name: 'plaintext' }).closest('.group\\/code-block')?.className).toContain(
+      'bg-(--ds7-color-code-codeblock-background)'
+    )
+
+    rerender(
+      <CodeBlockEditor
+        ariaLabel='Edit'
+        autoFocus={false}
+        language='plaintext'
+        onChange={() => undefined}
+        value='x'
+      />
+    )
+    expect(getByRole('textbox', { name: 'Edit' }).closest('.group\\/code-block')?.className).toContain(
+      'bg-(--ds7-color-code-editor-background)'
+    )
+  })
+
+  test('active line highlight only applies to the editable editor', () => {
+    const { getByRole, rerender } = render(
+      <CodeBlockEditor
+        ariaLabel='Edit'
+        autoFocus={false}
+        language='javascript'
+        onChange={() => undefined}
+        value={'const a = 1\nconst b = 2\n'}
+      />
+    )
+    expect(getByRole('textbox', { name: 'Edit' }).querySelector('.cm-activeLine')).not.toBeNull()
+
+    rerender(<CodeBlock code={'const a = 1\n'} language='javascript' />)
+    expect(getByRole('textbox', { name: 'javascript' }).querySelector('.cm-activeLine')).toBeNull()
   })
 })

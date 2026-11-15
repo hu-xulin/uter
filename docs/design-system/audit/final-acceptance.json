@@ -1,0 +1,1157 @@
+{
+  "schema": "UDS7-FINAL-ACCEPTANCE/1.0",
+  "generated_at": "2026-11-15T23:55:45.894Z",
+  "verdict": "PARTIALLY_VERIFIED",
+  "allowedVerdicts": [
+    "FULLY_VERIFIED",
+    "PARTIALLY_VERIFIED",
+    "NOT_VERIFIED",
+    "FAILED"
+  ],
+  "reason": "7.0 视觉基线已冻结（2026-11-15 用户指令，VISUAL-BASELINE.json / G19 门禁），但 Phase 6 全站迁移 / Phase 7 旧实现清理 / Phase 8 全站视觉回归尚未执行，且另有探针如实登记 NOT_EXECUTED / 未覆盖页面，故 verdict 不允许 FULLY_VERIFIED。",
+  "forcedItems": {
+    "SPECIFICATION_COMPLETE": true,
+    "TOKEN_COMPLETE": true,
+    "IMPLEMENTATION_COMPLETE": true,
+    "COMPONENT_INTEGRATION_COMPLETE": true,
+    "CONTRAST_VERIFIED": true,
+    "VISUAL_REGRESSION_PASSED": true,
+    "ACCESSIBILITY_VERIFIED": true,
+    "BUILD_PASSED": true,
+    "TESTS_PASSED": true,
+    "FINAL_ACCEPTANCE_PASSED": false
+  },
+  "notAchieved": [
+    "FINAL_ACCEPTANCE_PASSED"
+  ],
+  "hardGates": {
+    "total": 7,
+    "passed": 7,
+    "allPassed": true
+  },
+  "probeSummary": {
+    "PASS": 49,
+    "FAIL": 1
+  },
+  "probes": {
+    "C-R01": {
+      "name": "C-R01",
+      "label": "AGENTS.md 的 3.0 权威声明未被改写",
+      "status": "PASS",
+      "assertions": {
+        "authorityDeclared": true,
+        "unchangedVsHead": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "AGENTS.md 保持现行运行时权威；未因 7.0 建设改写治理入口",
+      "metrics": {}
+    },
+    "C-R02": {
+      "name": "C-R02",
+      "label": "bridge 被真实入口加载，语法 / 图表 / ANSI16 在真实浏览器可读",
+      "status": "PASS",
+      "assertions": {
+        "entryImport": true,
+        "syntax20": true,
+        "chart12": true,
+        "ansi16": true,
+        "browserBrandLive": true,
+        "browserSyntaxLive": true,
+        "browserTerminalLive": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "web/src/styles/index.css 单行 import + 8 个真实页面场景的 getComputedStyle 实测",
+      "metrics": {
+        "realPageScenarios": 8
+      }
+    },
+    "C-R03": {
+      "name": "C-R03",
+      "label": ":root / .dark / [data-ds-theme] 三种选择器下同一 token 值一致",
+      "status": "PASS",
+      "assertions": {
+        "fourBlocksPresent": true,
+        "darkBlocksIdentical": true,
+        "threeThemedBlocksSameNames": true,
+        "themedCountMatchesManifest": true,
+        "rootIsSuperset": true,
+        "lightAttrValuesEqualRoot": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "bridge CSS 四个选择器块：暗块逐字相同、亮属性块与 :root 逐值相同、:root 为主题无关 Token 超集",
+      "metrics": {
+        "rootTokens": 251,
+        "themedTokens": 229,
+        "manifestThemed": 229
+      }
+    },
+    "C-R04": {
+      "name": "C-R04",
+      "label": "bridge 不定义与 3.0 同名且不同值的 --ds-* 变量",
+      "status": "PASS",
+      "assertions": {
+        "onlyDs6Prefix": true,
+        "legacyOverlayIsolated": true,
+        "rollbackIsOneLine": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "隔离命名 --ds7-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）",
+      "metrics": {}
+    },
+    "C-R05": {
+      "name": "C-R05",
+      "label": "五层颜色节点齐全，颜色 Token 全部登记 colorLayer",
+      "status": "PASS",
+      "assertions": {
+        "fiveLayers": true,
+        "flowComplete": true,
+        "allColorTokensHaveLayer": true,
+        "consumerDeclared": true,
+        "everyTokenHasConsumer": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "五层齐全；249/249 个颜色 Token 有 colorLayer；consumer 已登记 384/384",
+      "metrics": {
+        "colorTokens": 249,
+        "withLayer": 249,
+        "withConsumer": 384,
+        "total": 384
+      }
+    },
+    "C-R06": {
+      "name": "C-R06",
+      "label": "brand.css 6 个品牌值等于 §4.2 基线",
+      "status": "PASS",
+      "assertions": {
+        "exists": true,
+        "lightBaseline": true,
+        "darkBaseline": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "直接比对 §4.2 六值（Light #5B5EE6 / #494CC7 / #3F42B0；Dark #8B8DF5 / #A1A3F7 / #B7B8FA），不再依赖 git diff",
+      "metrics": {
+        "values": {
+          ":root": {
+            "--uter-brand-primary": "#5B5EE6",
+            "--uter-brand-hover": "#494CC7",
+            "--uter-brand-active": "#3F42B0"
+          },
+          ".dark": {
+            "--uter-brand-primary": "#8B8DF5",
+            "--uter-brand-hover": "#A1A3F7",
+            "--uter-brand-active": "#B7B8FA"
+          }
+        }
+      }
+    },
+    "C-R07": {
+      "name": "C-R07",
+      "label": "secondary / tertiary / muted 互不相同，四者 Light/Dark 均 ≥4.5:1",
+      "status": "PASS",
+      "assertions": {
+        "distinctLight": true,
+        "distinctDark": true,
+        "lightAllPass": true,
+        "darkAllPass": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "contrast-engine 真实计算 + manifest 值去重",
+      "metrics": {
+        "light": [
+          "#0F172A",
+          "#475569",
+          "#64748B",
+          "#5B6779"
+        ],
+        "dark": [
+          "#F1F5F9",
+          "#CBD5E1",
+          "#94A3B8",
+          "#A1B0C3"
+        ]
+      }
+    },
+    "C-R08": {
+      "name": "C-R08",
+      "label": "业务上下文色不引用 chart 色、不与 chart 组重合",
+      "status": "PASS",
+      "assertions": {
+        "twelveProductTokens": true,
+        "noChartVarRef": true,
+        "noValueCollisionWithChart": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "12 个 L5 业务上下文色逐值比对 chart 色板",
+      "metrics": {}
+    },
+    "C-A04": {
+      "name": "C-A04",
+      "label": "12 色图表 CVD 可辨识度与非颜色通道",
+      "status": "PASS",
+      "assertions": {
+        "twelveSeries": true,
+        "lineStyles": true,
+        "pointMarkers": true,
+        "legendAndDirectLabel": true,
+        "cvdTypesDeclared": true,
+        "colorOnlyDistinguishable": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "真实 CIEDE2000：Light 常视觉最小 13.14，Dark 15.09；CVD 模拟最小 Light 10.5 / Dark 10.51。仅靠颜色不可区分，必须以非颜色通道补偿。",
+      "metrics": {
+        "light": {
+          "threshold": 10,
+          "normal": {
+            "minDeltaE00": 13.14,
+            "closestPair": [
+              2,
+              4
+            ],
+            "pairCount": 66
+          },
+          "simulations": {
+            "protanopia": {
+              "minDeltaE00": 10.54,
+              "closestPair": [
+                9,
+                10
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#4293FF",
+                "#0062FD",
+                "#99947E",
+                "#67645B",
+                "#847946",
+                "#746500",
+                "#5D79B2",
+                "#0048C5",
+                "#9A8700",
+                "#3A455F",
+                "#00377D",
+                "#403700"
+              ]
+            },
+            "deuteranopia": {
+              "minDeltaE00": 10.51,
+              "closestPair": [
+                3,
+                8
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#007FFD",
+                "#005DF4",
+                "#898782",
+                "#968A56",
+                "#79714E",
+                "#827415",
+                "#8C94AB",
+                "#0036BE",
+                "#A29012",
+                "#656359",
+                "#244378",
+                "#635700"
+              ]
+            },
+            "tritanopia": {
+              "minDeltaE00": 10.5,
+              "closestPair": [
+                5,
+                9
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#00A5B7",
+                "#586493",
+                "#00A196",
+                "#FF0043",
+                "#008276",
+                "#AC5252",
+                "#F84876",
+                "#005673",
+                "#B77C74",
+                "#BD0035",
+                "#752145",
+                "#AE0005"
+              ]
+            }
+          },
+          "minAcrossAllConditions": 10.5,
+          "pass": true
+        },
+        "dark": {
+          "threshold": 10,
+          "normal": {
+            "minDeltaE00": 15.09,
+            "closestPair": [
+              4,
+              11
+            ],
+            "pairCount": 66
+          },
+          "simulations": {
+            "protanopia": {
+              "minDeltaE00": 10.53,
+              "closestPair": [
+                0,
+                6
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#71A5FF",
+                "#0D7CEA",
+                "#9F9779",
+                "#727479",
+                "#D3BE51",
+                "#655800",
+                "#728BC3",
+                "#E2E2E4",
+                "#FFEF8F",
+                "#9D8A00",
+                "#FFE200",
+                "#D8CC9C"
+              ]
+            },
+            "deuteranopia": {
+              "minDeltaE00": 10.51,
+              "closestPair": [
+                0,
+                1
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#4E92FD",
+                "#0675E3",
+                "#8E8A7E",
+                "#A49A73",
+                "#C1B265",
+                "#8A7A00",
+                "#939EBD",
+                "#C7CFE6",
+                "#FFF49A",
+                "#AA970E",
+                "#F4DB35",
+                "#D2C8A2"
+              ]
+            },
+            "tritanopia": {
+              "minDeltaE00": 10.51,
+              "closestPair": [
+                3,
+                5
+              ],
+              "pairCount": 66,
+              "simulatedColors": [
+                "#00B7C3",
+                "#54829C",
+                "#00A498",
+                "#FF0058",
+                "#00CCB7",
+                "#E2002E",
+                "#EE6E8D",
+                "#00F6EC",
+                "#FFE9DE",
+                "#D17873",
+                "#9AEBD1",
+                "#AED0C6"
+              ]
+            }
+          },
+          "minAcrossAllConditions": 10.51,
+          "pass": true
+        },
+        "policy": {
+          "seriesCount": 12,
+          "nonColorChannels": {
+            "lineStyles": [
+              "solid",
+              "dashed",
+              "dotted",
+              "dash-dot"
+            ],
+            "pointMarkers": [
+              "circle",
+              "square",
+              "triangle",
+              "diamond",
+              "cross",
+              "star"
+            ],
+            "legendRequired": true,
+            "directLabelRequiredWhenSeriesGt": 6,
+            "cvdSimulation": [
+              "protanopia",
+              "deuteranopia",
+              "tritanopia"
+            ]
+          },
+          "rule": "series > 6 时必须直接标注；线型 / 点型 / 图例三通道必须可用"
+        }
+      }
+    },
+    "C-R09": {
+      "name": "C-R09",
+      "label": "12 色齐全、CIEDE2000 距离达标、非颜色通道齐全",
+      "status": "PASS",
+      "assertions": {
+        "twelveSeries": true,
+        "cvdDistancePass": true,
+        "nonColorChannels": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "同 C-A04：颜色单通道距离未达标，非颜色通道已补齐（真实测量，不伪报）",
+      "metrics": {
+        "minDeltaE00Light": 10.5,
+        "minDeltaE00Dark": 10.51
+      }
+    },
+    "C-R10": {
+      "name": "C-R10",
+      "label": "Terminal Light/Dark 独立，ANSI16 齐全，三者背景互不相同",
+      "status": "PASS",
+      "assertions": {
+        "lightDarkDistinct": true,
+        "ansi16": true,
+        "differsFromCodeBg": true,
+        "differsFromVscodeBg": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "manifest 逐值比对",
+      "metrics": {
+        "termBgL": "#F1F5F9",
+        "termBgD": "#0A101E",
+        "vscodeLight": "#FFFFFF",
+        "vscodeDark": "#1E1E1E"
+      }
+    },
+    "C-R11": {
+      "name": "C-R11",
+      "label": "focus / selection / disabled 有 Light / Dark 定值",
+      "status": "PASS",
+      "assertions": {
+        "focus": true,
+        "selection": true,
+        "disabled": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "manifest 三态 × 2 主题定值检查",
+      "metrics": {}
+    },
+    "C-R12": {
+      "name": "C-R12",
+      "label": "状态色 ≥6 变体 / 状态，Light/Dark 齐全且组合对比度达标",
+      "status": "PASS",
+      "assertions": {
+        "atLeastSixVariantsPerState": true,
+        "allHaveLightDark": true,
+        "textOrStatusContrastPass": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "实际 29 个状态 Token（58 个主题值），每状态 7/7/7/7 变体；审计原文「48 个」为规划估计，实测以 29/58 为准",
+      "metrics": {
+        "statusTokenCount": 29,
+        "themeValues": 58,
+        "variantCoverage": [
+          7,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    "C-R13": {
+      "name": "C-R13",
+      "label": "每个 Token 的消费者登记真实有效（双向断言）",
+      "status": "PASS",
+      "assertions": {
+        "scanExecuted": true,
+        "noFalseDeclared": true,
+        "everyTokenVerified": true,
+        "noUndeclaredUsage": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "consumer-scan.mjs 现场扫描 web/src + Showcase 渲染链；虚假登记 / 零消费者 / 未登记真实引用均须为 0",
+      "metrics": {
+        "exit": 0,
+        "scannedAt": "2026-11-15T23:55:46.917Z",
+        "filesScanned": 1279,
+        "tokens": 384,
+        "declaredConsumers": 384,
+        "verifiedTokens": 384,
+        "falseDeclaredCount": 0,
+        "noVerifiedConsumerCount": 0,
+        "undeclaredUsageCount": 0
+      }
+    },
+    "C-R14": {
+      "name": "C-R14",
+      "label": "L1 基础色不被业务组件直接依赖（别名层豁免）",
+      "status": "PASS",
+      "assertions": {
+        "sixteenColorPrimitives": true,
+        "brandPrimitivesEqualBaseline": true,
+        "noBusinessComponentPrimitiveRefs": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "全量扫描 web/src（排除测试）的 var() 引用：L1 仅允许出现在 styles/ 与 design-system/ 别名层；brand-1/2/3 等于 §4.2 Light 基线",
+      "metrics": {
+        "l1Count": 16,
+        "totalRefs": 1,
+        "businessRefs": 0,
+        "aliasRefs": [
+          {
+            "file": "styles/theme.css",
+            "token": "--ds7-color-brand-solid",
+            "count": 2,
+            "foundation": true
+          }
+        ]
+      }
+    },
+    "C-T01": {
+      "name": "C-T01",
+      "label": "必需字段齐全，consumer 非空 Token 的引用文件真实存在",
+      "status": "PASS",
+      "assertions": {
+        "noMissingFields": true,
+        "allRequiredPresent": true,
+        "consumerPathsExist": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "384 个 Token 逐字段校验；384 条 consumer 路径逐条磁盘存在性检查",
+      "metrics": {
+        "missingFields": 0,
+        "consumerChecked": 384,
+        "consumerMissing": 0
+      }
+    },
+    "C-T02": {
+      "name": "C-T02",
+      "label": "五层节点与边齐全",
+      "status": "PASS",
+      "assertions": {
+        "fiveLayers": true,
+        "flow": true,
+        "componentSpecs": true,
+        "productContexts": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "manifest.architecture 结构化节点 / 边",
+      "metrics": {}
+    },
+    "C-T03": {
+      "name": "C-T03",
+      "label": "自校验 + 负例注入回归",
+      "status": "PASS",
+      "assertions": {
+        "positiveCase": true,
+        "negativeInjectionRejected": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "向副本注入重复 / 额外 Token，校验器必须拒绝；真实执行",
+      "metrics": {}
+    },
+    "C-T04": {
+      "name": "C-T04",
+      "label": "syntax20 / chart12 / ansi16 / status 组真实消费者覆盖",
+      "status": "PASS",
+      "assertions": {
+        "syntax20": true,
+        "chart12": true,
+        "ansi16": true,
+        "everyGroupTokenHasConsumer": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "真实消费者登记数：{\"syntax\":20,\"chart\":12,\"ansi16\":16,\"status\":29} / 组大小 {\"syntax\":20,\"chart\":12,\"ansi16\":16,\"status\":29}；未覆盖项如实登记 UNUSED",
+      "metrics": {
+        "groupCounts": {
+          "syntax": 20,
+          "chart": 12,
+          "ansi16": 16,
+          "status": 29
+        },
+        "groupConsumers": {
+          "syntax": 20,
+          "chart": 12,
+          "ansi16": 16,
+          "status": 29
+        }
+      }
+    },
+    "C-T05": {
+      "name": "C-T05",
+      "label": "无第二套硬编码色值（Token 外的裸色）",
+      "status": "PASS",
+      "assertions": {
+        "cssAllFromManifest": true,
+        "showcaseDrivenByManifest": true,
+        "noExtraTokenInV6": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "C16 校验 runtime CSS 与 manifest 一一对应；Showcase 内联 manifest 且色值由生成器展开",
+      "metrics": {
+        "runtimeHexOccurrences": 247,
+        "showcaseHexOccurrences": 3419
+      }
+    },
+    "C-F02": {
+      "name": "C-F02",
+      "label": "字体体系逐字保留（token-validation typography 段）",
+      "status": "PASS",
+      "assertions": {
+        "checkerC12": true,
+        "typographyUnchanged": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "C12 逐字比对 theme.css:301-328 的字体定义",
+      "metrics": {}
+    },
+    "C-F01": {
+      "name": "C-F01",
+      "label": "未引入新字体",
+      "status": "PASS",
+      "assertions": {
+        "checkerC12": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "C12 守卫",
+      "metrics": {}
+    },
+    "C-F03": {
+      "name": "C-F03",
+      "label": "TOKEN-CONSUMPTION-AUDIT.md 真实生成",
+      "status": "PASS",
+      "assertions": {
+        "reportExists": true,
+        "machineReportExists": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "审计生成器实时扫盘产出消耗清单",
+      "metrics": {}
+    },
+    "C-H01": {
+      "name": "C-H01",
+      "label": "20 个语义 Token 与官方 TextMate scope 一一对应",
+      "status": "PASS",
+      "assertions": {
+        "twentyRows": true,
+        "allHaveScope": true,
+        "allHaveRuntimeToken": true,
+        "dedicatedVitestMappingTest": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds7-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
+      "metrics": {}
+    },
+    "C-H02": {
+      "name": "C-H02",
+      "label": "15 种语言真实样例渲染解析",
+      "status": "PASS",
+      "assertions": {
+        "fifteenLanguages": true,
+        "allGrammarsLoaded": true,
+        "allCopyIntact": true,
+        "allNewlineIndentPreserved": true,
+        "allHaveTokens": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "Shiki 4.3.0 · 29 grammars · verdict PASS",
+      "metrics": {
+        "languages": [
+          "javascript",
+          "typescript",
+          "jsx",
+          "tsx",
+          "json",
+          "jsonc",
+          "html",
+          "css",
+          "scss",
+          "python",
+          "go",
+          "bash",
+          "sql",
+          "yaml",
+          "markdown"
+        ],
+        "notExercised": [
+          "invalid"
+        ]
+      }
+    },
+    "C-H03": {
+      "name": "C-H03",
+      "label": "Light/Dark 静态映射 + Playwright 计算样式实测",
+      "status": "PASS",
+      "assertions": {
+        "realPageSyntaxLive": true,
+        "scenarios": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "8 个真实页面场景逐一读取 --ds7-syntax-keyword 计算值并与 manifest 比对",
+      "metrics": {}
+    },
+    "C-H04": {
+      "name": "C-H04",
+      "label": "20 个 syntax 变量在 web/src 被真实引用且浏览器值等于 manifest",
+      "status": "PASS",
+      "assertions": {
+        "referencedInWebSrc": true,
+        "browserEqualsManifest": true,
+        "twentyTokensInBridge": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds7-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css",
+      "metrics": {
+        "referencedFiles": [
+          "web/src/components/ai-elements/code-block.tsx",
+          "web/src/design-system/__tests__/uds7-syntax-adapter.test.ts",
+          "web/src/design-system/tokens/uds-semantic-bridge.css",
+          "web/src/styles/index.css",
+          "web/src/styles/theme.css"
+        ]
+      }
+    },
+    "C-H05": {
+      "name": "C-H05",
+      "label": "引擎状态如实登记（ACTIVE / TYPE_ONLY / NOT_USED）",
+      "status": "PASS",
+      "assertions": {
+        "enginesRegistered": true,
+        "shikiNotClaimedAsRuntime": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "M.highlighterEngines 逐引擎状态登记；Shiki 仅用于 Showcase 真实解析，不冒称运行时渲染引擎",
+      "metrics": {}
+    },
+    "C-H06": {
+      "name": "C-H06",
+      "label": "统一 Adapter 覆盖 20 语义 Token，组件真实接线",
+      "status": "PASS",
+      "assertions": {
+        "adapter20": true,
+        "usesDs6Syntax": true,
+        "yaceMapped": true,
+        "dedicatedComponentTest": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds7-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
+      "metrics": {
+        "adapterEntries": 20
+      }
+    },
+    "C-H07": {
+      "name": "C-H07",
+      "label": "长代码不破坏布局",
+      "status": "PASS",
+      "assertions": {
+        "longSampleIntact": true,
+        "policyDeclared": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "syntax-validation.json longCodeSample 记录",
+      "metrics": {}
+    },
+    "C-H08": {
+      "name": "C-H08",
+      "label": "vitest + Playwright 组合回归",
+      "status": "PASS",
+      "assertions": {
+        "showcaseVisualPass": true,
+        "realPagePass": true,
+        "checkerPass": true,
+        "fullVitestExecutedThisRun": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（266120ms）",
+      "metrics": {}
+    },
+    "C-H09": {
+      "name": "C-H09",
+      "label": "20 个 adopted 值可追溯官方 scope",
+      "status": "PASS",
+      "assertions": {
+        "officialSourceFiles": true,
+        "sha256Recorded": true,
+        "mappingDocExists": true,
+        "twentyOfficialRows": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "audit/vscode/SOURCE-METADATA.json + 官方 JSONC 源码 + 映射文档",
+      "metrics": {}
+    },
+    "C-H10": {
+      "name": "C-H10",
+      "label": "20×2 语法色全部 ≥4.5，adjusted 项有差异记录",
+      "status": "PASS",
+      "assertions": {
+        "engineSyntaxPass": true,
+        "allTokenContrastPass": true,
+        "adjustedDocumented": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "syntax Light 最低 4.55:1 / Dark 5.07:1；adjusted 4 项",
+      "metrics": {}
+    },
+    "C-G01": {
+      "name": "C-G01",
+      "label": "全库文字渐变带 in srgb，引擎插值空间一致",
+      "status": "PASS",
+      "assertions": {
+        "ownerDeclaresInSrgb": true,
+        "engineInterpolation": true,
+        "checkerC11": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "typography.css 唯一 owner + contrast-engine.mjs GRADIENT_INTERPOLATION",
+      "metrics": {}
+    },
+    "C-G02": {
+      "name": "C-G02",
+      "label": "1001 点采样、7 背景矩阵",
+      "status": "PASS",
+      "assertions": {
+        "sampleCount1001": true,
+        "lightSamples": true,
+        "darkSamples": true,
+        "backgroundsAtLeast6": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "实际 1001 点 / 主题，7 背景",
+      "metrics": {}
+    },
+    "C-G03": {
+      "name": "C-G03",
+      "label": "未登记手写渐变 = 0",
+      "status": "PASS",
+      "assertions": {
+        "checkerC11": true,
+        "ex006Resolved": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "C11 全库扫描 + EXCEPTION-REGISTRY EX-006 RESOLVED",
+      "metrics": {}
+    },
+    "C-G04": {
+      "name": "C-G04",
+      "label": "三处渐变值一致，1001 点全部 ≥4.5",
+      "status": "PASS",
+      "assertions": {
+        "lightAllPass": true,
+        "darkAllPass": true,
+        "checkerC04": true,
+        "checkerC09": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "Light 最差 5.99:1 / Dark 8.37:1",
+      "metrics": {}
+    },
+    "C-G05": {
+      "name": "C-G05",
+      "label": "渐变单一数值真源",
+      "status": "PASS",
+      "assertions": {
+        "manifestIsSingleSource": true,
+        "generatedCssMatches": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "gradient-validation.json singleSource 段",
+      "metrics": {}
+    },
+    "C-G06": {
+      "name": "C-G06",
+      "label": "浏览器真实像素验证渐变渲染与插值",
+      "status": "PASS",
+      "assertions": {
+        "pixelPass": true,
+        "cssDeclaredInSrgb": true,
+        "polychromatic": true,
+        "themePixelsDiffer": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "canvas getImageData：Light 246 色 / Dark 215 色",
+      "metrics": {}
+    },
+    "C-G07": {
+      "name": "C-G07",
+      "label": "GRADIENT-TYPOGRAPHY-AUDIT.md 附录完整",
+      "status": "PASS",
+      "assertions": {
+        "reportExists": true,
+        "gradientHitsRecorded": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "审计登记 324 处渐变使用",
+      "metrics": {}
+    },
+    "C-A01": {
+      "name": "C-A01",
+      "label": "forced-colors 真实浏览器验证",
+      "status": "PASS",
+      "assertions": {
+        "forcedColorsPlaywright": true,
+        "cssFallbackDeclared": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds7/screenshots/forced-colors-showcase.png",
+      "metrics": {}
+    },
+    "C-A02": {
+      "name": "C-A02",
+      "label": "12 类对比度项无 <4.5（disabled 单独标注）",
+      "status": "PASS",
+      "assertions": {
+        "textPass": true,
+        "syntaxPass": true,
+        "brandPass": true,
+        "placeholderDisabledFocusDeclared": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "真实计算 56 行文字 / 语法对比度 + 品牌实底三态",
+      "metrics": {}
+    },
+    "C-A03": {
+      "name": "C-A03",
+      "label": "axe-core WCAG 2.2 A/AA + 键盘焦点",
+      "status": "PASS",
+      "assertions": {
+        "axePass": true,
+        "zeroViolations": true,
+        "focusVisible": true,
+        "fourCases": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "axe 4 场景 / 0 violations / keyboardFocus {\"checked\":12,\"allVisible\":true}",
+      "metrics": {}
+    },
+    "C-S01": {
+      "name": "C-S01",
+      "label": "所有展示项有 data-* 可验证且值来自 manifest",
+      "status": "PASS",
+      "assertions": {
+        "sixSections": true,
+        "inlineManifest": true,
+        "runtimeNames": true,
+        "measuredMarks": true,
+        "hexAndRgb": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "Showcase 由 build.mjs 从 TOKEN-MANIFEST.json 派生",
+      "metrics": {
+        "tokenCount": 384
+      }
+    },
+    "C-S02": {
+      "name": "C-S02",
+      "label": "Showcase 真实渲染 + VISUAL-REGRESSION-REPORT",
+      "status": "PASS",
+      "assertions": {
+        "visualCheckPass": true,
+        "reportExists": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "visual-check modules=undefined sections=undefined",
+      "metrics": {}
+    },
+    "C-S03": {
+      "name": "C-S03",
+      "label": "VS Code 四栏 / Terminal ANSI16 / 12 图表 / 7 背景矩阵",
+      "status": "PASS",
+      "assertions": {
+        "fourPanes": true,
+        "terminalPanes": true,
+        "chart12": true,
+        "gradient7": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "Showcase 真实 DOM 标记计数",
+      "metrics": {}
+    },
+    "C-RG01": {
+      "name": "C-RG01",
+      "label": "报告覆盖页面数与真实运行结果一致",
+      "status": "PASS",
+      "assertions": {
+        "realPageVerdict": true,
+        "countMatches": true,
+        "routesDeclared": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "4 条公开真实路由 × 2 主题 + 0 个认证场景 = 8 场景；未覆盖范围如实登记",
+      "metrics": {}
+    },
+    "C-RG02": {
+      "name": "C-RG02",
+      "label": "真实页面回归不只验证 Showcase",
+      "status": "FAIL",
+      "assertions": {
+        "realPagesExecuted": true,
+        "allScenariosPass": true,
+        "screenshotsExist": true,
+        "authenticatedPagesCovered": false
+      },
+      "failed": [
+        "authenticatedPagesCovered"
+      ],
+      "notExecuted": [],
+      "evidence": "4 条公开真实路由 Light/Dark 全通过；认证页面未执行（隔离栈不可达：TypeError: fetch failed），如实 NOT_EXECUTED",
+      "metrics": {
+        "uncovered": [
+          "Models",
+          "Playground",
+          "Profile",
+          "Subscriptions",
+          "Channels（管理员）",
+          "System Settings（管理员）"
+        ],
+        "authenticated": {
+          "executed": false,
+          "backend": "http://127.0.0.1:3100",
+          "routes": [
+            "/dashboard",
+            "/wallet",
+            "/keys",
+            "/usage-logs"
+          ],
+          "reason": "隔离栈不可达：TypeError: fetch failed"
+        }
+      }
+    },
+    "C-M01": {
+      "name": "C-M01",
+      "label": "COMPAT-MAP.json + 回滚方案",
+      "status": "PASS",
+      "assertions": {
+        "compatExists": true,
+        "conflictsListed": true,
+        "batchesListed": true,
+        "rollbackOneLine": true,
+        "deprecatedRegistry": true,
+        "rollbackDrillExecuted": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "真实回滚演练 2026-11-15T05:58:08.333Z：删除 import → 回滚态验证 → SHA256 字节级恢复 PASS",
+      "metrics": {
+        "rollbackDrill": [
+          {
+            "name": "记录演练前 SHA256",
+            "pass": true,
+            "detail": "index.css=da7b6a9bcef0… bridge=3ede88eba09e…"
+          },
+          {
+            "name": "定位 import 行",
+            "pass": true,
+            "detail": "@import '../design-system/tokens/uds-semantic-bridge.css';"
+          },
+          {
+            "name": "删除 import（回滚态）",
+            "pass": true,
+            "detail": "index.css 已不再引用 bridge → 7.0 语义层完全下线"
+          },
+          {
+            "name": "恢复 import（字节级一致）",
+            "pass": true,
+            "detail": "恢复后 SHA256=da7b6a9bcef0… MATCH"
+          },
+          {
+            "name": "bridge 未被触碰",
+            "pass": true,
+            "detail": "bridge 文件全程只读"
+          }
+        ]
+      }
+    },
+    "C-M02": {
+      "name": "C-M02",
+      "label": "状态未被误标 ACCEPTED / VERIFIED",
+      "status": "PASS",
+      "assertions": {
+        "manifestStatus": true,
+        "acceptedFalse": true,
+        "checkerC15": true,
+        "showcasePending": true
+      },
+      "failed": [],
+      "notExecuted": [],
+      "evidence": "manifest / Showcase / ACCEPTANCE-MATRIX 三处状态一致（合法进度状态 IMPLEMENTED_NOT_VERIFIED / ACCEPTANCE_READY，accepted 恒为 false）",
+      "metrics": {}
+    }
+  },
+  "findings": {
+    "total": 48,
+    "resolved": 47,
+    "partial": 0,
+    "open": 1
+  },
+  "checker": {
+    "verdict": "PASS",
+    "checksTotal": 22,
+    "checksPassed": 22,
+    "errors": 0
+  },
+  "statusDiscipline": {
+    "manifestStatus": "ACCEPTANCE_READY",
+    "accepted": false,
+    "pendingUserReview": true,
+    "phase6Executed": false,
+    "phase7Executed": false,
+    "phase8Executed": false
+  },
+  "honestLimitations": [
+    "Phase 6 全站真实页面迁移未执行（视觉基线已冻结，Phase 6 已解锁，待并发 WIP 收敛后启动）",
+    "Phase 7 旧 Token / 重复实现清理未执行（不得一次性删除旧 Token）",
+    "Phase 8 全站视觉回归未执行；本轮覆盖 4 条公开 + 4 条认证真实路由 × 2 主题（16/16 PASS，隔离栈真实 API 登录）+ Showcase，其余认证页 / 管理员页未覆盖",
+    "12 色图表在仅靠颜色 + CVD 模拟下最小 ΔE00 未达 10，依赖线型 / 点型 / 图例 / 直接标注四通道补偿",
+    "syntax `invalid` 未被 15 种真实 grammar 样例命中，仅由 Adapter 映射与色板覆盖，已如实登记",
+    "G19 冻结基线 4 个 Dark 公开页场景 FAIL：7.0 整改将 Dark 表面由炭黑 #020617 改为 clerk.com 对齐三层 #0B1120/#111827/#1B2436（theme.css 已登记），属预期设计变化；基线更新须用户明确授权，未授权前保持 FAIL 如实登记"
+  ]
+}
