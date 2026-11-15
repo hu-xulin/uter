@@ -45,7 +45,7 @@
 | `--ds-color-surface-canvas` | #F8FAFC | #0B1120 | color | 页面画布 |
 | `--ds-color-surface-base` | #FFFFFF | #111827 | color | 卡片 / 面板基础表面 |
 | `--ds-color-text-primary` | #0F172A | #F1F5F9 | color | 主文本 |
-| `--ds-color-text-secondary` | #5B6779 | #94A3B8 | color | 次级文本 |
+| `--ds-color-text-secondary` | #475569 | #CBD5E1 | color | 次级文本（与 muted / tertiary 明确区分） |
 | `--ds-color-border-default` | #E2E8F0 | #263349 | color | 默认边框 |
 | `--ds-color-status-success` | #15803D | #6EE7B7 | color | 成功 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
@@ -54,7 +54,7 @@
 | `--ds-color-focus-ring` | #5B5EE6 | #8B8DF5 | color | 焦点环颜色 |
 | `--ds-color-selection-background` | #C7D2FE | #3730A3 | color | 选区背景 |
 | `--ds-color-code-background` | #F6F8FA | #0E1524 | color | 编辑器背景 |
-| `--ds-color-terminal-background` | #000000 | #000000 | color | 终端背景 |
+| `--ds-color-terminal-background` | #F1F5F9 | #0A101E | color | 终端背景（Light / Dark 独立） |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 
@@ -120,7 +120,7 @@ Showcase 中 `#mod-03` 分区提供本模块的真实渲染：色块、字号、
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 

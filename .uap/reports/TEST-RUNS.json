@@ -31,6 +31,405 @@
         "UAP-EV-20261115022202-ec040aac"
       ],
       "recorded_at": "2026-11-15T02:22:00.341Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 117280,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 173,
+        "pass": 172,
+        "fail": 1
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261115035447-d223a444"
+      ],
+      "recorded_at": "2026-11-15T03:54:46.957Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 102486,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 175,
+        "pass": 175,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261115042826-84f1a7aa"
+      ],
+      "recorded_at": "2026-11-15T04:28:26.631Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 417647,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 181,
+        "pass": 181,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261115052623-4aa94d1b"
+      ],
+      "recorded_at": "2026-11-15T05:26:22.601Z"
+    },
+    {
+      "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 148386,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 181,
+        "pass": 181,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261115061913-bde7d5d2"
+      ],
+      "recorded_at": "2026-11-15T06:19:13.928Z"
     }
-  ]
+  ],
+  "schema_version": "1.0",
+  "generated_at": "2026-11-15T06:19:13.928Z",
+  "executor_ids": [
+    "quality.engineering",
+    "quality.testing",
+    "quality.gates"
+  ],
+  "node_version": "v22.22.2",
+  "environment": "local",
+  "summary": {
+    "total": 5,
+    "executed": 5,
+    "passed": 4,
+    "blocked": 0,
+    "failed": 1
+  },
+  "test_plan": {
+    "generated_at": "2026-11-15T06:19:14.053Z",
+    "layers": [
+      {
+        "layer": "unit.go",
+        "source": "*_test.go",
+        "discovered_test_files": 446,
+        "sample": [
+          "main_docs_test.go",
+          "common/api_type_task_plugin_test.go",
+          "common/audio_case_test.go",
+          "controller/access_token_audit_test.go",
+          "controller/admin_user_verification_test.go",
+          "service/admission_quota_test.go",
+          "service/alipay_query_test.go",
+          "model/accounting_tx_test.go",
+          "model/audit_log_test.go",
+          "relay/alpha_search_handler_test.go"
+        ],
+        "gate_command": "go test ./..."
+      },
+      {
+        "layer": "unit.web",
+        "source": "web/src/**/*.test.ts(x)",
+        "discovered_test_files": 290,
+        "sample": [
+          "web/src/__axe-experiment.test.ts",
+          "web/src/components/__tests__/command-menu.test.tsx",
+          "web/src/components/__tests__/datetime-picker-time.test.tsx",
+          "web/src/components/__tests__/html-content.test.tsx",
+          "web/src/components/__tests__/payment-icon-by-name.test.tsx",
+          "web/src/components/ai-elements/__tests__/code-block-editor.test.tsx",
+          "web/src/components/ai-elements/__tests__/response-fade-render.test.tsx",
+          "web/src/components/ai-elements/__tests__/response-fade.test.ts"
+        ],
+        "gate_command": "bun run test"
+      },
+      {
+        "layer": "uap.runtime",
+        "source": ".uap/tests/*.test.mjs",
+        "discovered_test_files": 19,
+        "gate_command": "node --test .uap/tests/*.test.mjs",
+        "status": "READY"
+      },
+      {
+        "layer": "e2e",
+        "source": "web/e2e",
+        "gate_command": "playwright test",
+        "status": "NOT_RUN_LOCAL_GATE"
+      },
+      {
+        "layer": "quality_gate",
+        "source": "scripts/verify-all.sh",
+        "gate_command": "./scripts/verify-all.sh",
+        "local_equivalent": "./scripts/verify-all.sh --quick"
+      }
+    ],
+    "ci_test_commands": [
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 109,
+        "command": "go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 113,
+        "command": "go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 117,
+        "command": "GOWORK=off go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 121,
+        "command": "GOWORK=off go vet ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 139,
+        "command": "make test"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 192,
+        "command": "go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 197,
+        "command": "go test -race -count=1 ./e2e/..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 201,
+        "command": "GOWORK=off go test -race -count=1 ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 205,
+        "command": "GOWORK=off go test -race -count=1 ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 209,
+        "command": "GOWORK=off go test -race -count=1 ./..."
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 354,
+        "command": "node --test desktop-secrets.test.js"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 390,
+        "command": "bun run test"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 414,
+        "command": "bun run verify:contrast"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "line": 423,
+        "command": "bun run test:visual"
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 87,
+        "command": "make test"
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 94,
+        "command": "go test ./..."
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 150,
+        "command": "node --test desktop-secrets.test.js"
+      },
+      {
+        "file": ".github/workflows/release-gate.yml",
+        "line": 179,
+        "command": "bun run test"
+      }
+    ],
+    "policy": "plan lists real discovered tests; nothing is marked PASS unless actually executed"
+  },
+  "gate_plan": {
+    "verify_all_exists": true,
+    "gates": [
+      {
+        "command": "bun run i18n:sync",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "./scripts/verify-all.sh",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "gofmt -l .",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "go vet ./...",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "make test",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run typecheck",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run lint",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run test",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run lint:design:strict",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run copyright:check",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run build:check",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run dev",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run build",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run i18n:",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bunx vitest run src/design-system/__tests__",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "tsgo -b --force",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run test:visual",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      },
+      {
+        "command": "bun run test:visual:e2e",
+        "source": "AGENTS.md",
+        "run_by_this_engine": false
+      }
+    ],
+    "note": "gates are defined by AGENTS.md / CI; this engine only records them, none is claimed as run or passed"
+  },
+  "policy": {
+    "never_mark_unrun_as_pass": true,
+    "blocked_not_pass": true
+  }
 }

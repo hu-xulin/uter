@@ -19,6 +19,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -150,7 +151,7 @@ test('R10 [静态守卫] 单一批次编排器使用规范顺序，并在 manife
     assert.ok(o.includes(`'${step}'`), `orchestrator missing step ${step}`);
   }
   assert.match(o, /STRICTLY READ-ONLY integrity verification/);
-  assert.match(o, /verifyEvidenceManifest\(\{ strictCurrent: true \}\)/);
+  assert.match(o, /verifyEvidenceManifest\(\{ strictCurrent: true, execution: batch \}\)/);
   assert.match(o, /overwrittenAfterManifest/);
   assert.match(o, /single_batch/);
   // The only write after the manifest is the orchestrator's own result file.
@@ -180,7 +181,7 @@ test('R13 [静态守卫] 批次锁只固定身份、不匹配即 fail-closed，�
   assert.match(e, /HEAD mismatch \(fail-closed\)/);
   // The lock must not remove the independent fingerprint verification.
   const o = src('.uap/tools/final-remediation-run.mjs');
-  assert.match(o, /verifyEvidenceManifest\(\{ strictCurrent: true \}\)/);
+  assert.match(o, /verifyEvidenceManifest\(\{ strictCurrent: true, execution: batch \}\)/);
   assert.match(o, /fingerprint_now: fpNow/);
   assert.match(o, /BATCH_ENV = \{ UAP_BATCH_LOCK_ID: batch\.execution_id \}/);
 });
@@ -190,4 +191,96 @@ test('R14 [静态守卫] 编排器用文件 fd 而非 pipe，避免隔离栈后�
   assert.match(o, /stdio: \['ignore', fd, fd\]/);
   assert.match(o, /fs\.openSync\(logPath, 'w'\)/);
   assert.doesNotMatch(o, /stdio: \['ignore', 'pipe', 'pipe'\]/);
+});
+
+// ---------------------------------------------------------------------------
+// 7. Second full batch: four real defects found by real verifier output
+// ---------------------------------------------------------------------------
+
+test('R15 最终只读完整性校验必须锁定冻结批次身份，不得在父进程重新 currentExecution()', () => {
+  const o = src('.uap/tools/final-remediation-run.mjs');
+  assert.match(o, /verifyEvidenceManifest\(\{ strictCurrent: true, execution: batch \}\)/);
+  assert.match(o, /verifyFinalReportBindings\(\{ execution: batch \}\)/);
+  // strictCurrent must stay on: a real concurrent source change still fails.
+  assert.match(o, /strictCurrent: true/);
+  assert.match(o, /frozen_fingerprint_match/);
+  assert.match(o, /drift\.length === 0/);
+});
+
+test('R16 [行为+静态] TEST-RUNS.json 只有一个 schema；health() 的 artifactOk 契约不得被 CLI 覆写抹掉', async () => {
+  const cli = src('.uap/bin/uap.mjs');
+  const engine = src('.uap/engines/testing/index.mjs');
+  // CLI must reconstruct the four fields artifactOk() really checks.
+  for (const key of ['summary: {', 'test_plan: testingPlan()', 'gate_plan: testingGatePlan()']) {
+    assert.ok(cli.includes(key), `CLI TEST-RUNS writer missing ${key}`);
+  }
+  assert.match(cli, /testingGatePlan/);
+  assert.match(engine, /^export function gatePlan\(\)/m);
+  assert.match(engine, /checks\.report_schema = artifactOk\(REPORT_FILE\)/);
+
+  const { plan, gatePlan, artifactOk } = await import('../engines/testing/index.mjs');
+  // Real behaviour: the engine's discovery functions return real, non-empty data.
+  assert.ok(plan().layers.length >= 3);
+  assert.equal(typeof gatePlan().verify_all_exists, 'boolean');
+
+  // Real behaviour of the exact contract health() applies. Use isolated temp
+  // files (the UAP self-test suite must never depend on .uap/reports disk state
+  // produced by a PREVIOUS run — that made the suite order-dependent).
+  const tmp = path.join(os.tmpdir(), `uap-artifact-ok-${process.pid}-${Date.now()}`);
+  fs.mkdirSync(tmp, { recursive: true });
+  const full = { runs: [{ status: 'PASSED_EXECUTED', exit_code: 0, tap: { tests: 20 } }],
+    summary: { total: 1 }, test_plan: { layers: [] }, gate_plan: { gates: [] } };
+  const write = (name, obj) => { const f = path.join(tmp, name); fs.writeFileSync(f, JSON.stringify(obj)); return f; };
+  assert.equal(artifactOk(write('full.json', full)), true);
+  assert.equal(artifactOk(write('no-plan.json', { runs: full.runs, summary: full.summary, gate_plan: {} })), false);
+  assert.equal(artifactOk(write('fake-pass.json', {
+    ...full, runs: [{ status: 'PASSED_EXECUTED', exit_code: 1, tap: { tests: 20 } }],
+  })), false);
+  assert.equal(artifactOk(write('no-tap.json', {
+    ...full, runs: [{ status: 'PASSED_EXECUTED', exit_code: 0 }],
+  })), false);
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
+test('R17 [静态守卫] 隔离栈必须把 :3101 加进 CORS_ALLOWED_ORIGINS，否则浏览器登录被 403', () => {
+  const sh = src('scripts/phase2-test-stack.sh');
+  assert.match(sh, /CORS_ALLOWED_ORIGINS="\$\{isolated_cors\}"/);
+  assert.match(sh, /grep -E '\^CORS_ALLOWED_ORIGINS='/);
+  assert.match(sh, /isolated_cors="\$\{base_cors:\+\$\{base_cors\},\}\$\{TEST_FRONTEND_URL\}"/);
+  // Do not overwrite production config: the original origins are preserved.
+  assert.match(sh, /base_cors=.*CORS_ALLOWED_ORIGINS/);
+});
+
+test('R18 [静态守卫] 业务 E2E 表单登录必须过法律同意闸门，biz_23 必须独占上下文做真实登录', () => {
+  const login = src('web/e2e/business/lib/login.ts');
+  assert.match(login, /getByRole\('checkbox'\)/);
+  assert.match(login, /#legal-consent/);
+  assert.match(login, /consent\.first\(\)\.click\(\)/);
+  const spec = src('web/e2e/business/specs/business.spec.ts');
+  const m = spec.match(/test\('biz_23[\s\S]*?\n\}\)/);
+  assert.ok(m, 'biz_23 test not found');
+  assert.match(m[0], /browser\.newContext\(\)/);
+  assert.match(m[0], /await loginViaUi\(page\)/);
+  assert.match(m[0], /toBeVisible\(\{ timeout: 20_000 \}\)/);
+  assert.match(m[0], /context\.close\(\)/);
+  assert.doesNotMatch(m[0], /async \(\{ authedApi, authedPage \}\)/);
+});
+
+test('R19 [静态守卫] 视觉基线必须移除开发态 devtools 浮层，且不放宽像素阈值', () => {
+  const h = src('web/e2e/visual/lib/harness.ts');
+  assert.match(h, /\.tsqd-parent-container/);
+  assert.match(h, /\.TanStackRouterDevtools/);
+  assert.match(h, /display: none !important/);
+  // Masking must remain on the product-volatile selector only.
+  assert.match(h, /const VOLATILE_SELECTOR = '\[data-visual-volatile\]'/);
+  const cfg = src('web/e2e/visual/playwright.config.ts');
+  assert.doesNotMatch(cfg, /maxDiffPixelRatio:\s*0\.[1-9]/);
+});
+
+test('R20 [静态守卫] 邮箱验证码登录按钮满足 WCAG 2.5.8 的 24x24 硬线', () => {
+  const f = src('web/src/features/auth/sign-in/components/user-auth-form.tsx');
+  const m = f.match(/<button[\s\S]{0,600}?Sign in with email code[\s\S]{0,120}?<\/button>/);
+  assert.ok(m, 'email-code toggle button not found');
+  assert.match(m[0], /min-h-6/);
+  assert.match(m[0], /items-center/);
 });

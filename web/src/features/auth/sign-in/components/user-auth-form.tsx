@@ -473,13 +473,19 @@ export function UserAuthForm({
             )}
 
             {emailCodeLoginEnabled && (
-              <button
-                type='button'
-                onClick={() => setLoginMode('email-code')}
-                className='text-muted-foreground hover:text-foreground w-full text-center text-sm font-medium transition-colors'
-              >
-                {t('Sign in with email code')}
-              </button>
+              <>
+                {/* WCAG 2.5.8 硬线：交互目标至少 24x24。原先只有 text-sm 的
+                    22px 行高、无内边距，真实浏览器矩阵在 15 个视口/路由组合里
+                    都测出 [Nx22]，导致 cross_platform.h5_integrity 的 touch=FAIL。
+                    这里补 min-h-6(24px) 并保持文字垂直居中，不改变视觉密度。 */}
+                <button
+                  type='button'
+                  onClick={() => setLoginMode('email-code')}
+                  className='text-muted-foreground hover:text-foreground inline-flex min-h-6 w-full items-center justify-center text-center text-sm font-medium transition-colors'
+                >
+                  {t('Sign in with email code')}
+                </button>
+              </>
             )}
           </>
         )}

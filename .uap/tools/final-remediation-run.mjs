@@ -250,8 +250,17 @@ async function main() {
   await record('final_acceptance', uap('final_acceptance', ['accept'], { timeoutMs: 900000 }));
 
   // ---- phase 5: STRICTLY READ-ONLY integrity verification ----------------
-  const manifest = verifyEvidenceManifest({ strictCurrent: true });
-  const bindings = verifyFinalReportBindings();
+  // Pass the FROZEN batch identity explicitly. Calling currentExecution()
+  // here (the default) runs in THIS parent process, which does not carry the
+  // UAP_BATCH_LOCK_ID that every child got via BATCH_ENV. With any concurrent
+  // worktree change it opens a NEW execution identity at the very moment we
+  // are trying to prove the batch was single — so the manifest and all 15
+  // reports are then compared against the wrong identity and integrity_ok
+  // goes false for a self-inflicted reason. `execution: batch` does NOT
+  // weaken anything: strictCurrent still recomputes worktreeFingerprint()
+  // independently and fails closed on real drift.
+  const manifest = verifyEvidenceManifest({ strictCurrent: true, execution: batch });
+  const bindings = verifyFinalReportBindings({ execution: batch });
   const manifestDisk = readJSON(MANIFEST_FILE, null);
   const acceptance = readJSON(path.join(REPORTS, 'FINAL-ACCEPTANCE.json'), null);
   const manifestTime = Date.parse(manifestDisk?.generated_at || '');

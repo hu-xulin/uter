@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 6.0 — 视觉回归与无障碍验证报告
 
-> 生成时间 2026-11-15T03:07:13.804Z · 由 `registry/finalize.mjs` 从真实运行日志派生
+> 生成时间 2026-11-15T06:10:27.583Z · 由 `registry/finalize.mjs` 从真实运行日志派生
 > **范围口径**：本报告只覆盖 6.0 Design Showcase 的自动化视觉 / 无障碍验证，**不等于** Phase 8 全站真实产品页面视觉回归。
 
 ## 1. 执行环境与真实命令
@@ -15,25 +15,25 @@
 | 无障碍日志 | `web/visual-regression/uds6/a11y-log.json` · verdict `PASS` |
 | 单元测试 | `bun run test` · EXIT=0 |
 | 构建校验 | `bun run build:check` · EXIT=0 |
-| 校对对象 | `docs/design-system/uter-design-system-6.0/SHOWCASE-6.0.html`（454570 字符） |
+| 校对对象 | `docs/design-system/uter-design-system-6.0/SHOWCASE-6.0.html`（887994 字符） |
 
 ## 2. 四个真实渲染场景
 
 | 主题 | 视口 | 分辨率 | 模块 | 小节 | Token 行 | 语言示例 | console error | 截图 |
 |---|---|---|---|---|---|---|---|---|
-| light | desktop | 1440×900 | 38 | 418 | 748 | 12 | 0 | web/visual-regression/uds6/screenshots/uds6-light-desktop.png |
-| dark | desktop | 1440×900 | 38 | 418 | 748 | 12 | 0 | web/visual-regression/uds6/screenshots/uds6-dark-desktop.png |
-| light | mobile | 390×844 | 38 | 418 | 748 | 12 | 0 | web/visual-regression/uds6/screenshots/uds6-light-mobile.png |
-| dark | mobile | 390×844 | 38 | 418 | 748 | 12 | 0 | web/visual-regression/uds6/screenshots/uds6-dark-mobile.png |
+| light | desktop | 1440×900 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds6/screenshots/uds6-light-desktop.png |
+| dark | desktop | 1440×900 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds6/screenshots/uds6-dark-desktop.png |
+| light | mobile | 390×844 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds6/screenshots/uds6-light-mobile.png |
+| dark | mobile | 390×844 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds6/screenshots/uds6-dark-mobile.png |
 
 - 视觉验证覆盖：模块数 38、小节数 418、语言数 12、Token 行 748、`prefers-reduced-motion` 规则存在、Light/Dark 计算样式必须不同。
 - consoleErrors 合计 **0**。
 - 截图清单（真实文件，非示意）：
 
-- `web/visual-regression/uds6/screenshots/uds6-dark-desktop.png` · 235318 bytes
-- `web/visual-regression/uds6/screenshots/uds6-dark-mobile.png` · 82627 bytes
-- `web/visual-regression/uds6/screenshots/uds6-light-desktop.png` · 232464 bytes
-- `web/visual-regression/uds6/screenshots/uds6-light-mobile.png` · 81909 bytes
+- `web/visual-regression/uds6/screenshots/uds6-dark-desktop.png` · 237428 bytes
+- `web/visual-regression/uds6/screenshots/uds6-dark-mobile.png` · 84441 bytes
+- `web/visual-regression/uds6/screenshots/uds6-light-desktop.png` · 234366 bytes
+- `web/visual-regression/uds6/screenshots/uds6-light-mobile.png` · 82932 bytes
 
 ## 3. Light / Dark 计算样式差异（真实 getComputedStyle）
 
@@ -63,20 +63,20 @@
 
 | 项目 | Light | Dark | 阈值 | 结果 |
 |---|---|---|---|---|
-| 品牌渐变 101 点最差 | 6.3:1 | 9.59:1 | ≥4.5 | PASS |
-| 历史渐变最差（对照） | 2.39:1 | 4.48:1 | ≥4.5 | FAIL（故注销 E28） |
-| 20 个 syntax Token 最低 | 5.15:1 | 7.11:1 | ≥4.5 | PASS |
+| 品牌渐变 1001 点 × 7 背景最差 | 5.99:1 | 8.37:1 | ≥4.5 | PASS |
+| 历史渐变最差（对照） | 2.27:1 | 3.92:1 | ≥4.5 | FAIL（故注销 E28） |
+| 20 个 syntax Token 最低 | 4.55:1 | 5.07:1 | ≥4.5 | PASS |
 | 品牌实底白字最低 | 5.01:1 | 5.01:1 | ≥4.5 | PASS |
 | 代码行号 | 5.39:1 | 7.11:1 | ≥4.5 | PASS |
 | 代码默认前景 | 16.77:1 | 14.79:1 | ≥4.5 | PASS |
 
-- 引擎 verdict：**PASS**。完整 101 点采样、20×2 syntax 表、8×2 文字/状态色表见 `CONTRAST-VERIFICATION-REPORT.md`。
-- 公式：`(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045`；采样：`linear-gradient 90deg, sRGB channel interpolation, 101 points (0..100 step 1)`。
+- 引擎 verdict：**PASS**。完整 1001 点 × 7 背景采样、20×2 syntax 表、8×2 文字/状态色表见 `CONTRAST-VERIFICATION-REPORT.md`。
+- 公式：`(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045`；采样：`linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops`。
 
 ## 6. 构建产物验证
 
-- `web/dist/design-system/6.0.html` · exists=true · 505221 bytes
-- `web/dist/design-system/6.0/index.html` · exists=true · 505221 bytes
+- `web/dist/design-system/6.0.html` · exists=true · 950862 bytes
+- `web/dist/design-system/6.0/index.html` · exists=true · 950862 bytes
 
 - 说明：`web/dist` 被 `web/.gitignore:11` 忽略，不进提交；此项只证明 `build:check` 后 6.0 页面确实进入产物。
 

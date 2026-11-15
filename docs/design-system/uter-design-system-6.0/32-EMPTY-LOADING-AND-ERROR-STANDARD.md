@@ -44,7 +44,7 @@ Empty / Skeleton / Spinner / Error / Retry / Offline / Permission Denied / Not F
 | `--ds-leading-h3` | 26px | —（同值） | px | 18px h3 |
 | `--ds-text-sm` | 14px | —（同值） | px | 正文默认 |
 | `--ds-leading-body` | 22px | —（同值） | px | 14px 正文 |
-| `--ds-color-text-secondary` | #5B6779 | #94A3B8 | color | 次级文本 |
+| `--ds-color-text-secondary` | #475569 | #CBD5E1 | color | 次级文本（与 muted / tertiary 明确区分） |
 | `--ds-color-surface-sunken` | #F1F5F9 | #080D18 | color | 下沉表面（代码块 / 井） |
 | `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
 | `--ds-text-xs` | 13px | —（同值） | px | 密集表格 / 代码 / 标签 |
@@ -110,7 +110,7 @@ Showcase 中 `#mod-32` 分区提供本模块的真实渲染：色块、字号、
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 

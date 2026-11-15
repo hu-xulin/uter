@@ -1,6 +1,6 @@
 # Quality Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T02:15:27.396Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T06:22:02.545Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 质量门禁
@@ -11,18 +11,18 @@
 
 | 项目 | 结果 |
 | --- | --- |
-| UAP 模块语法检查 | 128 个，失败 0 |
-| bun run build:check | exit 1 |
-| go build ./... | exit 1 |
-| bun run typecheck | exit 1 |
-| go vet ./... | exit 1 |
-| bun run lint:design:strict | exit 1 |
-| verify web/dist artifact (index.html + >3 files) | exit 1 |
+| UAP 模块语法检查 | 143 个，失败 0 |
+| bun run build:check | exit 0 |
+| go build ./... | exit 0 |
+| bun run typecheck | exit 0 |
+| go vet ./... | exit 0 |
+| bun run lint:design:strict | exit 0 |
+| verify web/dist artifact (index.html + >3 files) | exit 0 |
 
 
 ## 验证器结果
 
-29 PASS / 2 FAIL / 1 BLOCKED / undefined NOT_EXECUTED（共 32）
+32 PASS / 0 FAIL / 0 BLOCKED / undefined NOT_EXECUTED（共 32）
 
 ## 不得降低门禁
 

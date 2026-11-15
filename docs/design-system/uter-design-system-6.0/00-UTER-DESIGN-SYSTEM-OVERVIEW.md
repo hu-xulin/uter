@@ -10,7 +10,7 @@
 
 ## 1. Overview
 
-6.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。6.0 是完整重建，5.0 及更早版本仅用于历史识别、代码依赖与迁移风险分析。
+6.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。6.0 是完整重建且为唯一现行规范；5.0 及更早版本已删除，仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。
 
 本模块属于 6.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。6.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；6.0 数值冻结与全站迁移须在用户视觉审核通过后按 Phase 5 → Phase 6 顺序执行。
 
@@ -114,7 +114,7 @@ Showcase 中 `#mod-00` 分区提供本模块的真实渲染：色块、字号、
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 

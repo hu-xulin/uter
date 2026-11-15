@@ -41,15 +41,10 @@
     "design:tokens:generate": "node scripts/generate-design-tokens.mjs",
     "design:tokens:check": "node scripts/generate-design-tokens.mjs --check",
     "design:showcase:check": "node scripts/sync-design-showcase.mjs --check",
-    "design:showcase:5:generate": "node scripts/generate-design-showcase-5.0.mjs",
-    "design:showcase:5:check": "node scripts/check-design-showcase-5.0.mjs",
+    "design:6:check": "node scripts/check-design-system-6.0.mjs",
     "verify:contrast": "node scripts/verify-contrast.mjs",
     "components:registry:check": "node scripts/check-component-registry.mjs",
     "components:registry:strict": "node scripts/check-component-registry.mjs --strict",
-    "design:5:check": "node scripts/check-design-system-5.0.mjs",
-    "design:5:sync": "node scripts/check-design-system-5.0.mjs --generate",
-    "design:5:strict": "node scripts/check-design-system-5.0.mjs --strict",
-    "design:clerk:check": "node scripts/check-clerk-boundary.mjs",
     "test:business:e2e": "playwright test --config e2e/business/playwright.config.ts"
   },
   "dependencies": {

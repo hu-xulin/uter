@@ -1,0 +1,144 @@
+[UAP] PASS (exit 0) — database integration PASS: 80 real isolated-DB scenarios, FK proof verified
+{
+  "database": {
+    "status_model": "UAP-TEST-STATUS-1.0",
+    "status": "PASS",
+    "suite": "database_integration",
+    "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers|TestPhase2BusinessFunctions -count=1 -json",
+    "exit_code": 0,
+    "items": [
+      {
+        "id": "TestIsolatedDBMigrationIsIdempotentAcrossRestart",
+        "title": "TestIsolatedDBMigrationIsIdempotentAcrossRestart",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestIsolatedDBMigrationIsIdempotentAcrossRestart",
+          "--- PASS: TestIsolatedDBMigrationIsIdempotentAcrossRestart (0.02s)"
+        ]
+      },
+      {
+        "id": "TestIsolatedDBTransactionRollbackSurvivesCrashRecovery",
+        "title": "TestIsolatedDBTransactionRollbackSurvivesCrashRecovery",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestIsolatedDBTransactionRollbackSurvivesCrashRecovery",
+          "--- PASS: TestIsolatedDBTransactionRollbackSurvivesCrashRecovery (0.01s)"
+        ]
+      },
+      {
+        "id": "TestIsolatedDBConcurrentWritersRespectUniqueConstraint",
+        "title": "TestIsolatedDBConcurrentWritersRespectUniqueConstraint",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestIsolatedDBConcurrentWritersRespectUniqueConstraint",
+          "--- PASS: TestIsolatedDBConcurrentWritersRespectUniqueConstraint (0.10s)"
+        ]
+      },
+      {
+        "id": "TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements",
+        "title": "TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements",
+          "--- PASS: TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements (0.08s)"
+        ]
+      },
+      {
+        "id": "TestIsolatedDBDuplicateTradeNoIsRejected",
+        "title": "TestIsolatedDBDuplicateTradeNoIsRejected",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestIsolatedDBDuplicateTradeNoIsRejected",
+          "--- PASS: TestIsolatedDBDuplicateTradeNoIsRejected (0.03s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions",
+        "title": "TestPhase2BusinessFunctions",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions",
+          "--- PASS: TestPhase2BusinessFunctions (0.88s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions/record_topup_log_writes_row",
+        "title": "TestPhase2BusinessFunctions/record_topup_log_writes_row",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions/record_topup_log_writes_row",
+          "    phase2_business_functions_test.go:194: RecordTopupLog persisted one topup ledger row: id=1 request_id=2026111506205513458100026a4fa6bBiuwBWLr",
+          "--- PASS: TestPhase2BusinessFunctions/record_topup_log_writes_row (0.02s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only",
+        "title": "TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only",
+          "--- PASS: TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only (0.02s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions/record_topup_log_duplicate_delivery_gated",
+        "title": "TestPhase2BusinessFunctions/record_topup_log_duplicate_delivery_gated",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions/record_topup_log_duplicate_delivery_gated",
+          "--- PASS: TestPhase2BusinessFunctions/record_topup_log_duplicate_delivery_gated (0.02s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions/create_refund_intent_persists_pending",
+        "title": "TestPhase2BusinessFunctions/create_refund_intent_persists_pending",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions/create_refund_intent_persists_pending",
+          "--- PASS: TestPhase2BusinessFunctions/create_refund_intent_persists_pending (0.02s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot",
+        "title": "TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot",
+          "--- PASS: TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot (0.02s)"
+        ]
+      },
+      {
+        "id": "TestPhase2BusinessFunctions/execute_refund_intent_applies_once",
+        "title": "TestPhase2BusinessFunctions/execute_refund_intent_applies_once",
+        "status": "PASS",
+        "reason": null,
+        "runner_ok": true,
+        "output": [
+          "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_applies_once",
+          "[SYS] 2026/11/15 - 14:20:55 | failed to sync token quota cache after refund intent 1: redis client is nil",
+          "    phase2_business_functions_test.go:335: ExecuteRefundIntent: quota 100->130, token remain 50->70 used 20->0, status done",
+          "--- PASS: TestPhase2BusinessFunctions/execute_refund
+… (truncated; use --json for full output)
+evidence: UAP-EV-20261115062057-2d628b54

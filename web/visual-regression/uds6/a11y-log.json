@@ -2,7 +2,7 @@
   "checker": "a11y-check.mjs",
   "executed": true,
   "engine": "axe-core (WCAG 2.0/2.1/2.2 A+AA) + real keyboard Tab",
-  "started_at": "2026-11-15T02:59:12.935Z",
+  "started_at": "2026-11-15T06:11:32.868Z",
   "verdict": "PASS",
   "cases": [
     {
@@ -73,28 +73,28 @@
           },
           {
             "tag": "a",
-            "label": "00Design System Overview",
+            "label": "••五层颜色架构",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
           },
           {
             "tag": "a",
-            "label": "01Brand Identity Standard",
+            "label": "••VS Code 四栏对照",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
           },
           {
             "tag": "a",
-            "label": "02Design Principles Standard",
+            "label": "••Terminal / ANSI16",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
           },
           {
             "tag": "a",
-            "label": "03Color System Standard",
+            "label": "••12 色图表 / 非颜色通道",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
@@ -170,28 +170,28 @@
           },
           {
             "tag": "a",
-            "label": "00Design System Overview",
+            "label": "••五层颜色架构",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
           },
           {
             "tag": "a",
-            "label": "01Brand Identity Standard",
+            "label": "••VS Code 四栏对照",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
           },
           {
             "tag": "a",
-            "label": "02Design Principles Standard",
+            "label": "••Terminal / ANSI16",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true
           },
           {
             "tag": "a",
-            "label": "03Color System Standard",
+            "label": "••12 色图表 / 非颜色通道",
             "outlineWidth": "2px",
             "outlineStyle": "solid",
             "hasVisibleFocus": true

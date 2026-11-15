@@ -1,6 +1,6 @@
 # Executor Coverage Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T02:15:26.305Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T06:22:01.966Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 逐项映射（真实动态 import）
@@ -23,10 +23,10 @@
 | development.coding_standard | .uap/engines/development/index.mjs | YES | YES | execute,health | — |
 | development.code_review | .uap/engines/code-review/index.mjs | YES | YES | execute,health | — |
 | development.dependencies | .uap/engines/development/index.mjs | YES | YES | execute,health | — |
-| quality.engineering | .uap/engines/testing/index.mjs | YES | YES | execute,health,plan | — |
-| quality.testing | .uap/engines/testing/index.mjs | YES | YES | execute,health,plan | — |
+| quality.engineering | .uap/engines/testing/index.mjs | YES | YES | artifactOk,execute,gatePlan,health,plan | — |
+| quality.testing | .uap/engines/testing/index.mjs | YES | YES | artifactOk,execute,gatePlan,health,plan | — |
 | quality.auto_repair | .uap/engines/auto-repair/index.mjs | YES | YES | execute,health | — |
-| quality.gates | .uap/engines/testing/index.mjs | YES | YES | execute,health,plan | — |
+| quality.gates | .uap/engines/testing/index.mjs | YES | YES | artifactOk,execute,gatePlan,health,plan | — |
 | security.policy | .uap/runtime/policy-engine/index.mjs | YES | YES | PolicyDeniedError,assertAllowed,auditTrail,check,deniedDecisions,execute,health | — |
 | security.application | .uap/engines/security/index.mjs | YES | YES | execute,health | — |
 | security.financial_integrity | .uap/engines/security/index.mjs | YES | YES | execute,health | — |

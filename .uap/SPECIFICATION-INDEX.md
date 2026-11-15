@@ -1,8 +1,8 @@
 # UAP 1.0 — 规范索引
 
-<!-- UAP-STATUS-BLOCK {"computed_by":"uap.final-acceptance-gate","execution_id":"UAP-EXEC-20261115021515-907a3bf3","git_head":"ba502ba9739dcddcb989fa7780e85bf446593ec8","overall_status":"FAILED","claim_allowed":false,"requirements_total":538,"requirements_verified":61,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-15T02:15:41.657Z"} -->
+<!-- UAP-STATUS-BLOCK {"computed_by":"uap.final-acceptance-gate","execution_id":"UAP-EXEC-20261115061321-6a98eb1a","git_head":"012c08eaf6127261f4ba434bf277489261ef6dd5","overall_status":"FAILED","claim_allowed":false,"requirements_total":538,"requirements_verified":61,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-15T06:22:05.943Z"} -->
 
-- 生成时间：2026-11-15T02:15:29.240Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
+- 生成时间：2026-11-15T06:22:03.533Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
 - 规范总数：**32**
 - 注册表完整性：**PASS**（37/37 项检查，0 条阻断发现）
 
@@ -11,17 +11,17 @@
 | 字段 | 值 |
 | --- | --- |
 | 计算函数 | `runtime.status-engine/computeFinalStatus` |
-| execution_id | `UAP-EXEC-20261115021515-907a3bf3` |
-| git_head | `ba502ba9739dcddcb989fa7780e85bf446593ec8` |
-| **overall_status** | **IMPLEMENTED_NOT_VERIFIED** |
+| execution_id | `UAP-EXEC-20261115061321-6a98eb1a` |
+| git_head | `012c08eaf6127261f4ba434bf277489261ef6dd5` |
+| **overall_status** | **PARTIALLY_VERIFIED** |
 | claim_allowed | false |
-| 适用要求 / 已验证 | 538 / 0 |
+| 适用要求 / 已验证 | 538 / 61 |
 | 规范已验证 / 总数 | 0 / 32 |
-| 能力缺口 | real_code_repair, independent_regression, recovery, e2e, database_integration, financial_integrity |
+| 能力缺口 | real_code_repair, independent_regression, recovery, e2e, financial_integrity |
 
 > 状态口径由状态机给出：`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
 > 规范文件头的 `ACTIVE` 只表示「规范已建成」，不表示「已验证」；`IMPLEMENTED_NOT_VERIFIED` 不得自动改成 PASS。
-> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`2 test(s) failed`；`6 requirement(s) blocked`；`538/538 applicable requirements lack current valid evidence`；`477 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
+> 判定原因：`6 requirement(s) blocked`；`477/538 applicable requirements lack current valid evidence`；`477 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
 
 ## 统一章节要求
 

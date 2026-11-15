@@ -2,15 +2,15 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-DEPRECATED",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T02:40:39.916Z",
+  "generated_at": "2026-11-15T06:01:14.564Z",
   "policy": "先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；本轮不执行删除",
   "items": [
     {
       "id": "DP-001",
       "kind": "exception",
       "name": "E28 首屏渐变低对比度例外",
-      "old_value": "Light 2.39:1 / Dark 4.48:1",
-      "new_value": "Light 6.3:1 / Dark 9.59:1",
+      "old_value": "Light 2.27:1 / Dark 3.92:1",
+      "new_value": "Light 5.99:1 / Dark 8.37:1（1001 点 × 7 背景）",
       "reason": "6.0 渐变全区间 ≥4.5:1，例外失去依据",
       "action": "REVOKE_AFTER_MIGRATION",
       "source": "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md:3528"
@@ -49,11 +49,11 @@
       "id": "DP-005",
       "kind": "standard",
       "name": "UTER DESIGN SYSTEM 5.0 规范目录",
-      "old_value": "35 份 .md",
-      "new_value": "6.0 38 份",
-      "reason": "PART 0.2 旧版仅用于历史识别与迁移风险分析",
-      "action": "RETAIN_AS_HISTORY",
-      "source": "docs/design-system/uter-design-system-5.0/"
+      "old_value": "35 份 .md + 2 份 yaml + SHOWCASE-5.0.html",
+      "new_value": "已整体删除（2026-11-15 用户指令：5.0 全部文档与引用移除，6.0 为唯一现行规范）",
+      "reason": "5.0 已被 6.0 完全取代，保留会造成双规范并存与前后矛盾",
+      "action": "REMOVED",
+      "source": "git log（删除提交）"
     },
     {
       "id": "DP-006",

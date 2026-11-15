@@ -1,0 +1,420 @@
+{
+  "schema_version": "1.0",
+  "component": "uap.final-remediation.orchestrator",
+  "started_at": "2026-11-15T06:13:17.121Z",
+  "finished_at": "2026-11-15T06:22:11.569Z",
+  "duration_ms": 534427,
+  "mode": "FULL",
+  "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+  "batch_git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "batch_worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+  "preflight": {
+    "node": 0,
+    "git": 0,
+    "go": 2,
+    "bun": 0,
+    "redis-server": 0,
+    "sqlite3": 0,
+    "web_node_modules": true,
+    "web_package_json": true,
+    "head_at_freeze": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+    "branch": "main",
+    "uncommitted_at_freeze": 728,
+    "stack_frontend_http": null,
+    "stack_backend_http": null
+  },
+  "steps": [
+    {
+      "step": "build",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs build",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 201357,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-build.log",
+      "stdout_tail": "out_tail\": \"\",\n      \"stderr_tail\": \"$ tsgo -b\\n\"\n    },\n    {\n      \"command\": \"go vet ./...\",\n      \"label\": \"go vet ./...\",\n      \"exit_code\": 0,\n      \"status\": \"PASS\",\n      \"duration_ms\": 15934,\n      \"timed_out\": false,\n      \"stdout_tail\": \"\",\n      \"stderr_tail\": \"\"\n    },\n    {\n      \"command\": \"bun run lint:design:strict\",\n      \"label\": \"bun run lint:design:strict\",\n      \"exit_code\": 0,\n      \"status\": \"PASS\",\n      \"duration_ms\": 4328,\n      \"timed_out\": false,\n      \"stdout_tail\": \"design-tokens: 通过。扫描 1277 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。\\n\\n浮层投影（规范 §8 允许，不计入违规）：20 处\\nToken 定义处色值（颜色的落点，不计入违规）：669 处\\n\",\n      \"stderr_tail\": \"$ node scripts/check-design-tokens.mjs --strict\\n\"\n    },\n    {\n      \"command\": \"verify web/dist artifact (index.html + >3 files)\",\n      \"label\": \"artifact verification\",\n      \"exit_code\": 0,\n      \"status\": \"PASS\",\n      \"stdout_tail\": \"files=2872\",\n      \"duration_ms\": 0\n    }\n  ],\n  \"quality_gate\": null,\n  \"counts\": {\n    \"total\": 6,\n    \"PASS\": 6,\n    \"FAIL\": 0,\n    \"BLOCKED\": 0,\n    \"SKIPPED\": 0,\n    \"NOT_RUN\": 0,\n    \"NOT_APPLICABLE\": 0\n  },\n  \"total\": 6,\n  \"pass\": 6,\n  \"fail\": 0,\n  \"exit_code\": 0,\n  \"status\": \"PASS\",\n  \"artifact\": {\n    \"web_dist_exists\": true,\n    \"web_dist_index_exists\": true,\n    \"web_dist_file_count\": 2872,\n    \"artifact_real\": true,\n    \"frontend_built_this_run\": true\n  },\n  \"moved_artifacts\": [\n    {\n      \"artifact\": \"web/dist\",\n      \"moved_to\": \"/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794723227504\"\n    },\n    {\n      \"artifact\": \"tsgo-cache/tsconfig.app.tsbuildinfo\",\n      \"moved_to\": \"/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-tsgo-cache-tsconfig-app-tsbuildinfo-before-build-1794723227506\"\n    },\n    {\n      \"artifact\": \"tsgo-cache/tsconfig.node.tsbuildinfo\",\n      \"moved_to\": \"/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-tsgo-cache-tsconfig-node-tsbuildinfo-before-build-1794723227508\"\n    }\n  ]\n}\nevidence: UAP-EV-20261115061643-79574184\n"
+    },
+    {
+      "step": "evidence_manifest_preflight",
+      "command": "generateEvidenceManifest(execution=batch)",
+      "exit_code": 0,
+      "duration_ms": 0,
+      "timed_out": false,
+      "log": ".uap/reports/EVIDENCE-MANIFEST.json",
+      "stdout_tail": "entries=15 missing=[]"
+    },
+    {
+      "step": "uap_selftest",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs test --all",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 148854,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-test---all.log",
+      "stdout_tail": "不得自行宣称成功\\n    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\\n      ---\\n      duration_ms: 2466.798005\\n      type: 'test'\\n      ...\\n    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数\\n    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数\\n      ---\\n      duration_ms: 328.362015\\n      type: 'test'\\n      ...\\n    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致\\n    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致\\n      ---\\n      duration_ms: 613.126867\\n      type: 'test'\\n      ...\\n    1..6\\nok 87 - 真实快照适配器\\n  ---\\n  duration_ms: 3672.878331\\n  type: 'suite'\\n  ...\\n# Subtest: 证据链 fail-closed\\n    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败\\n    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败\\n      ---\\n      duration_ms: 0.309809\\n      type: 'test'\\n      ...\\n    1..1\\nok 88 - 证据链 fail-closed\\n  ---\\n  duration_ms: 0.53784\\n  type: 'suite'\\n  ...\\n# Subtest: fixtures are excluded, real self-tests are kept\\nok 89 - fixtures are excluded, real self-tests are kept\\n  ---\\n  duration_ms: 3.830391\\n  type: 'test'\\n  ...\\n# Subtest: the intentionally failing repair canaries are never collected\\nok 90 - the intentionally failing repair canaries are never collected\\n  ---\\n  duration_ms: 0.508262\\n  type: 'test'\\n  ...\\n# Subtest: discovery is fail-closed on non-test / malformed paths\\nok 91 - discovery is fail-closed on non-test / malformed paths\\n  ---\\n  duration_ms: 0.971518\\n  type: 'test'\\n  ...\\n# Subtest: the CLI actually uses the shared collector (no re-introduced inline filter)\\nok 92 - the CLI actually uses the shared collector (no re-introduced inline filter)\\n  ---\\n  duration_ms: 1.130861\\n  type: 'test'\\n  ...\\n1..92\\n# tests 181\\n# suites 31\\n# pass 181\\n# fail 0\\n# cancelled 0\\n# skipped 0\\n# todo 0\\n# duration_ms 148202.005547\\n\",\n  \"stderr_tail\": \"\",\n  \"execution_id\": \"UAP-EXEC-20261115061321-6a98eb1a\",\n  \"git_head\": \"012c08eaf6127261f4ba434bf277489261ef6dd5\",\n  \"worktree_fingerprint\": \"6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b\"\n}\nevidence: UAP-EV-20261115061914-b1fbb466\n"
+    },
+    {
+      "step": "isolated_stack_start",
+      "command": "bash /Users/lincolnhu/uter/scripts/phase2-test-stack.sh start",
+      "exit_code": 3,
+      "timed_out": false,
+      "duration_ms": 747,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/bash-_Users_lincolnhu_uter_scripts_phase2-test-stack.sh-start.log",
+      "stdout_tail": "=== [1/6] 复制生产库到隔离目录（cp，原件不动）===\n  cp /Users/lincolnhu/uter/one-api.db -> /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T//uter-phase2/one-api.db\n  cp /Users/lincolnhu/uter/one-api.db-wal -> /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T//uter-phase2/one-api.db-wal\n  cp /Users/lincolnhu/uter/one-api.db-shm -> /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T//uter-phase2/one-api.db-shm\n=== [2/6] 仅在【副本】上开启密码登录，注册保持关闭 ===\n  副本 PasswordLoginEnabled=true  RegisterEnabled=false\n=== [3/6] 独立 Redis :6380（已监听则复用，绝不碰 6379）===\n  :6380 已在监听，复用现有实例（不记录 PID，stop 不会杀它）。\n=== [4/6] 构建隔离 Go 二进制（需要 web/dist）===\n错误：缺少 /Users/lincolnhu/uter/web/dist（//go:embed web/dist 需要它）。\n请先在真实前端构建产物就绪后再启动隔离栈，例如：\n  cd /Users/lincolnhu/uter/web && bun run build\n本脚本不会创建伪造的 web/dist，也不会改动任何生产配置。\n"
+    },
+    {
+      "step": "validators",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs validate --all",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 87804,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-validate---all.log",
+      "stdout_tail": "[UAP] PASS (exit 0) — validate: 32/32 validators passed with real checks\n{\n  \"mode\": \"all\",\n  \"total\": 32,\n  \"pass\": 32,\n  \"fail\": 0,\n  \"blocked\": 0,\n  \"failures\": []\n}\nevidence: UAP-EV-20261115062043-bc58a387\n"
+    },
+    {
+      "step": "verify_database",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs verify-database",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 13238,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-database.log",
+      "stdout_tail": "\"reason\": null,\n        \"runner_ok\": true,\n        \"output\": [\n          \"=== RUN   TestPhase2BusinessFunctions/record_topup_log_duplicate_delivery_gated\",\n          \"--- PASS: TestPhase2BusinessFunctions/record_topup_log_duplicate_delivery_gated (0.02s)\"\n        ]\n      },\n      {\n        \"id\": \"TestPhase2BusinessFunctions/create_refund_intent_persists_pending\",\n        \"title\": \"TestPhase2BusinessFunctions/create_refund_intent_persists_pending\",\n        \"status\": \"PASS\",\n        \"reason\": null,\n        \"runner_ok\": true,\n        \"output\": [\n          \"=== RUN   TestPhase2BusinessFunctions/create_refund_intent_persists_pending\",\n          \"--- PASS: TestPhase2BusinessFunctions/create_refund_intent_persists_pending (0.02s)\"\n        ]\n      },\n      {\n        \"id\": \"TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot\",\n        \"title\": \"TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot\",\n        \"status\": \"PASS\",\n        \"reason\": null,\n        \"runner_ok\": true,\n        \"output\": [\n          \"=== RUN   TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot\",\n          \"--- PASS: TestPhase2BusinessFunctions/create_refund_intent_idempotent_snapshot (0.02s)\"\n        ]\n      },\n      {\n        \"id\": \"TestPhase2BusinessFunctions/execute_refund_intent_applies_once\",\n        \"title\": \"TestPhase2BusinessFunctions/execute_refund_intent_applies_once\",\n        \"status\": \"PASS\",\n        \"reason\": null,\n        \"runner_ok\": true,\n        \"output\": [\n          \"=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_applies_once\",\n          \"[SYS] 2026/11/15 - 14:20:55 | failed to sync token quota cache after refund intent 1: redis client is nil\",\n          \"    phase2_business_functions_test.go:335: ExecuteRefundIntent: quota 100->130, token remain 50->70 used 20->0, status done\",\n          \"--- PASS: TestPhase2BusinessFunctions/execute_refund\n… (truncated; use --json for full output)\nevidence: UAP-EV-20261115062057-2d628b54\n"
+    },
+    {
+      "step": "verify_payment",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs verify-payment",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 4323,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-payment.log",
+      "stdout_tail": "apshotMismatchRejected\",\n        \"--- PASS: TestAmountSnapshotMismatchRejected (0.04s)\"\n      ]\n    },\n    {\n      \"id\": \"TestConfigRejectsProductionGateway\",\n      \"title\": \"TestConfigRejectsProductionGateway\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true,\n      \"output\": [\n        \"=== RUN   TestConfigRejectsProductionGateway\",\n        \"--- PASS: TestConfigRejectsProductionGateway (0.00s)\"\n      ]\n    },\n    {\n      \"id\": \"TestConfigRejectsProviderSandboxWithoutCredentials\",\n      \"title\": \"TestConfigRejectsProviderSandboxWithoutCredentials\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true,\n      \"output\": [\n        \"=== RUN   TestConfigRejectsProviderSandboxWithoutCredentials\",\n        \"--- PASS: TestConfigRejectsProviderSandboxWithoutCredentials (0.00s)\"\n      ]\n    },\n    {\n      \"id\": \"TestReportDeclaresLocalSimulation\",\n      \"title\": \"TestReportDeclaresLocalSimulation\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true,\n      \"output\": [\n        \"=== RUN   TestReportDeclaresLocalSimulation\",\n        \"--- PASS: TestReportDeclaresLocalSimulation (0.35s)\"\n      ]\n    },\n    {\n      \"id\": \"TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes\",\n      \"title\": \"TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true,\n      \"output\": [\n        \"=== RUN   TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes\",\n        \"--- PASS: TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes (0.18s)\"\n      ]\n    },\n    {\n      \"id\": \"TestFaultInjections\",\n      \"title\": \"TestFaultInjections\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true,\n      \"output\": [\n        \"=== RUN   TestFaultInjections\",\n\n… (truncated; use --json for full output)\nevidence: UAP-EV-20261115062102-8f91e4be\n"
+    },
+    {
+      "step": "verify_security",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs verify-security",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 36896,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-security.log",
+      "stdout_tail": "n\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n15\",\n      \"title\": \"business negative: n15\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n16\",\n      \"title\": \"business negative: n16\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n17\",\n      \"title\": \"business negative: n17\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n18\",\n      \"title\": \"business negative: n18\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n19\",\n      \"title\": \"business negative: n19\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n01\",\n      \"title\": \"business negative: n01\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n02\",\n      \"title\": \"business negative: n02\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n03\",\n      \"title\": \"business negative: n03\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n04\",\n      \"title\": \"business negative: n04\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n05\",\n      \"title\": \"business negative: n05\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n06\",\n      \"title\": \"business negative: n06\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n    {\n      \"id\": \"business_neg_n07\",\n      \"title\": \"business negative: n07\",\n      \"status\": \"PASS\",\n      \"reason\": null,\n      \"runner_ok\": true\n    },\n   \n… (truncated; use --json for full output)\nevidence: UAP-EV-20261115062139-ffeb144a\n"
+    },
+    {
+      "step": "verify_requirements",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs verify-requirements",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 18613,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-verify-requirements.log",
+      "stdout_tail": "[UAP] PASS (exit 0) — requirement verification complete: 538 requirements with honest statuses\n{\n  \"generated_at\": \"2026-11-15T06:21:58.465Z\",\n  \"command\": \"node .uap/tools/requirement-verification.mjs\",\n  \"exit_code\": 0,\n  \"stdout_tail\": \"requirement verification: 538 requirements / 3 real behaviour suite runs / 62 distinct assertions observed\\nstates: {\\\"VERIFIED\\\":61,\\\"NOT_VERIFIED\\\":471,\\\"BLOCKED\\\":6,\\\"NOT_APPLICABLE\\\":0}\\nindependent validator: PASS\\n\",\n  \"stderr_tail\": \"\",\n  \"artefact\": \".uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json\",\n  \"execution_id\": \"UAP-EXEC-20261115061321-6a98eb1a\",\n  \"git_head\": \"012c08eaf6127261f4ba434bf277489261ef6dd5\",\n  \"worktree_fingerprint\": \"6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b\",\n  \"counts\": {\n    \"VERIFIED\": 61,\n    \"NOT_VERIFIED\": 471,\n    \"BLOCKED\": 6,\n    \"NOT_APPLICABLE\": 0\n  },\n  \"matrix_validation\": {\n    \"total\": 538,\n    \"invalid\": 0,\n    \"bogus_verified\": 0,\n    \"problems\": []\n  }\n}\nevidence: UAP-EV-20261115062158-9c48e505\n"
+    },
+    {
+      "step": "final_reports",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs report --final",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 4510,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-report---final.log",
+      "stdout_tail": "   \"registry_ok\": true,\n        \"registry_summary\": \"37/37 registry checks passed, 0 blocking findings\"\n      }\n    },\n    \"uap_runtime_capability\": {\n      \"status\": \"NOT_FULLY_VERIFIED\",\n      \"evidence\": {\n        \"health_check_passed\": true,\n        \"components_healthy\": 10,\n        \"components_total\": 10,\n        \"validators_pass\": 32,\n        \"validators_fail\": 0,\n        \"validators_total\": 32,\n        \"validators_blocked_restricted\": 0,\n        \"validators_blocked_undeclared\": 0,\n        \"uap_tests_exit_code\": 0,\n        \"tests_bound_to_current_execution\": true,\n        \"validators_bound_to_current_execution\": true,\n        \"verdict_detail\": \"Runtime 健康 10/10 组件健康; 32 个验证器 32 PASS / 0 FAIL; 0 项因环境或授权受限未能执行(已声明类别, 不计为能力失败); UAP 自测 exit=0; 卡片已绑定当前 execution_id/HEAD/worktree\"\n      }\n    },\n    \"uter_real_compliance\": {\n      \"status\": \"NOT_FULLY_VERIFIED\",\n      \"evidence\": {\n        \"audit_executed\": true,\n        \"defect_registry_built\": true,\n        \"financial_failed\": 0,\n        \"financial_blocked\": 0,\n        \"quality_gates_failed\": 0,\n        \"open_p0\": 0,\n        \"open_p1\": 2,\n        \"validators_pass\": 32,\n        \"validators_fail\": 0,\n        \"validators_total\": 32,\n        \"restricted_blocked_items\": [],\n        \"financial_simulated_only\": true,\n        \"validators_bound_to_current_execution\": true,\n        \"verdict_detail\": \"可执行检查: 验证器 32/32 PASS, 0 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=2; 资金验证 simulated_only=true; 当前执行绑定 validators=true tests=true; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。\"\n      }\n    }\n  },\n  \"blocking_findings\": 0,\n  \"blocked_items\": 6,\n  \"evidence\": {\n    \"total\": 8092,\n    \"hash_verified\": 8092\n  },\n  \"final_acceptance\": {\n    \"uap_fully_operational\": false,\n    \"uter_fully_compliant\": false,\n    \"both_satisfied\": false,\n    \"claim_allowed\": false,\n    \"restricted_blocked_items\": [],\n    \"claim_note\": \"规范完整性 / UAP 运行能力 / Uter 合规性三者分别取证, 不可互相替代; 受限未执行项一律记入 BLOCKED-ITEMS.md, 不计入通过\"\n  }\n}\nevidence: UAP-EV-20261115062203-3cad8a0f\n"
+    },
+    {
+      "step": "final_acceptance",
+      "command": "/Users/lincolnhu/.workbuddy-ai/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/.uap/bin/uap.mjs accept",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 5650,
+      "log": ".uap/reports/UAP-FINAL-REMEDIATION-LOGS/node-_Users_lincolnhu_uter_.uap_bin_uap.mjs-accept.log",
+      "stdout_tail": "o_same_batch: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a; E2E-RESULTS.json: worktree_fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 expected=UAP-EXEC-20261115061321-6a98eb1a; VISUAL-REGRESSION.json: worktree_fingerprint mismatch\",\n      \"code_unchanged_since_batch_start: now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b\",\n      \"capability_cards_have_real_counts_and_bindings: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b; E2E-RESULTS.json: fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b; ACCESSIBILITY-RESULTS.json: fingerprint mismatch; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5; VISUAL-REGRESSION.json: fingerprint mismatch\",\n      \"evidence_manifest_hashes_and_bindings: code changed AFTER report generation: fingerprint now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a; E2E-RESULTS.json: worktree_fingerprint mismatch with manifest; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 manifest=UAP-EXEC-20261115061321-6a98eb1a; VISUAL-REGRESSION.json: worktree_fingerprint mismatch with manifest\"\n    ]\n  },\n  \"evidence_manifest_path\": \".uap/reports/EVIDENCE-MANIFEST.json\"\n}\nevidence: UAP-EV-20261115062209-cebeb5d7\n"
+    }
+  ],
+  "step_count": 11,
+  "step_failed": 2,
+  "drift_events": [
+    {
+      "label": "validators",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    },
+    {
+      "label": "verify_database",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    },
+    {
+      "label": "verify_payment",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    },
+    {
+      "label": "verify_security",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    },
+    {
+      "label": "verify_requirements",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    },
+    {
+      "label": "final_reports",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    },
+    {
+      "label": "final_acceptance",
+      "current_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "batch_execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+      "fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+      "batch_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ip_drifted": false,
+      "fingerprint_drifted": true
+    }
+  ],
+  "integrity": {
+    "checked_at": "2026-11-15T06:22:10.768Z",
+    "manifest_ok": false,
+    "manifest_problems": [
+      "code changed AFTER report generation: fingerprint now=5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c bound=6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+      "ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
+      "ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b manifest=UAP-EXEC-20261115061321-6a98eb1a",
+      "E2E-RESULTS.json: worktree_fingerprint mismatch with manifest",
+      "VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 manifest=UAP-EXEC-20261115061321-6a98eb1a",
+      "VISUAL-REGRESSION.json: worktree_fingerprint mismatch with manifest"
+    ],
+    "manifest_checked": 15,
+    "manifest_integrity_hash": "706951c149a99445ae55abe4135834a9bf3d5683177a0ec624a17ee8bff3ec61",
+    "bindings_ok": false,
+    "bindings_problems": [
+      "E2E-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
+      "E2E-RESULTS.json: worktree_fingerprint mismatch",
+      "ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115054215-355c926b expected=UAP-EXEC-20261115061321-6a98eb1a",
+      "ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch",
+      "VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261115042431-b07928d5 expected=UAP-EXEC-20261115061321-6a98eb1a",
+      "VISUAL-REGRESSION.json: worktree_fingerprint mismatch"
+    ],
+    "acceptance_manifest_hash_match": false,
+    "single_batch": false,
+    "single_head": true,
+    "single_fingerprint": false,
+    "overwritten_after_manifest": [],
+    "frozen_fingerprint_now": "5fa1a2d08d25b381b1f4d9ea1915418e81608e408a014fe5d8a7b1869d48520c",
+    "frozen_fingerprint_match": false,
+    "report_bindings": [
+      {
+        "name": "PHASE-2-REMEDIATION-REPORT.md",
+        "exists": true,
+        "is_json": false,
+        "bytes": 7770,
+        "execution_id": null,
+        "git_head": null,
+        "worktree_fingerprint": null,
+        "status": null,
+        "mtime": "2026-11-14T05:19:03.166Z"
+      },
+      {
+        "name": "DATABASE-INTEGRATION.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 78062,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": "PASS",
+        "mtime": "2026-11-15T06:20:57.260Z"
+      },
+      {
+        "name": "DATABASE-MIGRATIONS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 3009,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": "PASS",
+        "mtime": "2026-11-15T06:20:57.260Z"
+      },
+      {
+        "name": "PAYMENT-SANDBOX.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 25625,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": "PASS",
+        "mtime": "2026-11-15T06:21:02.032Z"
+      },
+      {
+        "name": "E2E-RESULTS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 22263,
+        "execution_id": "UAP-EXEC-20261115054215-355c926b",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "bc8789ecfd9c82f0f97096eeebe48a4b911bf1f2ca99f7020d89da64ee3742ae",
+        "status": "FAIL",
+        "mtime": "2026-11-15T05:42:18.040Z"
+      },
+      {
+        "name": "ACCESSIBILITY-RESULTS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 5613,
+        "execution_id": "UAP-EXEC-20261115054215-355c926b",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "bc8789ecfd9c82f0f97096eeebe48a4b911bf1f2ca99f7020d89da64ee3742ae",
+        "status": "PASS",
+        "mtime": "2026-11-15T05:42:18.041Z"
+      },
+      {
+        "name": "VISUAL-REGRESSION.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 39201,
+        "execution_id": "UAP-EXEC-20261115042431-b07928d5",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "3a7b262e866f02854c9b40cf7026ca5ea836aa125c04f1c361bd6a65e1782b0d",
+        "status": "FAIL",
+        "mtime": "2026-11-15T04:42:38.620Z"
+      },
+      {
+        "name": "SECURITY-VERIFICATION.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 21619,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": "PASS",
+        "mtime": "2026-11-15T06:21:39.310Z"
+      },
+      {
+        "name": "REQUIREMENT-TRACEABILITY-MATRIX.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 1702529,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": null,
+        "mtime": "2026-11-15T06:21:58.454Z"
+      },
+      {
+        "name": "REQUIREMENT-VERIFICATION-RESULTS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 1742444,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": null,
+        "mtime": "2026-11-15T06:21:58.424Z"
+      },
+      {
+        "name": "RUNTIME-TEST-RESULTS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 5759,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": null,
+        "mtime": "2026-11-15T06:19:13.963Z"
+      },
+      {
+        "name": "VALIDATION-RESULTS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 10946039,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": null,
+        "mtime": "2026-11-15T06:20:43.472Z"
+      },
+      {
+        "name": "BUILD-RESULTS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 4959,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": "PASS",
+        "mtime": "2026-11-15T06:16:43.228Z"
+      },
+      {
+        "name": "FINAL-ACCEPTANCE.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 18205,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": "FAILED",
+        "mtime": "2026-11-15T06:22:05.901Z"
+      },
+      {
+        "name": "FINAL-STATUS.json",
+        "exists": true,
+        "is_json": true,
+        "bytes": 8368,
+        "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+        "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+        "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+        "status": null,
+        "mtime": "2026-11-15T06:22:05.944Z"
+      }
+    ],
+    "integrity_ok": false
+  },
+  "final_acceptance": {
+    "status": "FAILED",
+    "overall_status": "FAILED",
+    "claim_allowed": false,
+    "counts": {
+      "gate_groups": 6,
+      "gate_groups_pass": 4,
+      "gate_groups_fail": 2,
+      "necessary_blocked": 2,
+      "necessary_unverified": 477,
+      "problems": 16
+    },
+    "blocked_items": [
+      {
+        "id": "EXT-PROVIDER-SANDBOX",
+        "reason": "{\"id\":\"EXT-PROVIDER-SANDBOX\",\"reason\":\"no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox\",\"missing_conditions\":[\"provider sandbox AppID / merchant id\",\"provider sandbox private key / API key (never read from production config)\",\"verified sandbox endpoint reachability\",\"explicit user authorisation for sandbox calls\"],\"unblock_condition\":\"user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment\"}",
+        "impact": "real payment gateway verification cannot be claimed; FULLY_VERIFIED is not allowed"
+      },
+      {
+        "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
+        "reason": "477 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
+        "impact": "full requirement closure not achieved"
+      }
+    ]
+  },
+  "orchestration_status": "FAILED",
+  "note": "A consistent evidence batch is NOT an acceptance PASS. The gate verdict is copied verbatim from FINAL-ACCEPTANCE.json."
+}

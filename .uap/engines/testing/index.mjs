@@ -83,7 +83,7 @@ export function plan() {
   };
 }
 
-function gatePlan() {
+export function gatePlan() {
   const verify = exists(rootPath('scripts/verify-all.sh'));
   const agents = exists(rootPath('AGENTS.md')) ? readText(rootPath('AGENTS.md')) : '';
   // AGENTS.md mixes inline code and ``` fenced blocks, so match the known gate
@@ -145,7 +145,7 @@ async function runSuite() {
   }];
 }
 
-function artifactOk(file) {
+export function artifactOk(file) {
   if (!exists(file)) return true;
   let j;
   try { j = readJSON(file); } catch { return false; }

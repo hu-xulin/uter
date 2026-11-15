@@ -181,6 +181,20 @@ do_start() {
     return 0
   fi
 
+  # 端口被「不在 pidfile 里的」进程占用时，下面新起的后端/前端会因端口占用
+  # 立即退出（rsbuild 还带 --strict-port），但 wait_for_port 会被那个旧进程
+  # 骗过并立刻返回成功 —— 于是脚本打印「已就绪」，实际却没有任何一个新进程
+  # 在跑。实测过：编排器 isolated_stack_start exit=0 / frontend=null，随后
+  # 所有浏览器验证都打在上一轮的孤儿栈上。这里 fail-closed，拒绝静默复用。
+  for p in "${BACKEND_PORT}" "${FRONTEND_PORT}"; do
+    if port_listening "${p}"; then
+      echo "错误：端口 ${p} 已被占用，但 pidfile 中没有存活的本栈进程（疑似上次遗留的孤儿栈）。" >&2
+      echo "请先执行 '$0 stop' 或清理该端口上的隔离栈进程，再重试。" >&2
+      lsof -nP -iTCP:"${p}" -sTCP:LISTEN >&2 || true
+      exit 4
+    fi
+  done
+
   echo "=== [1/6] 复制生产库到隔离目录（cp，原件不动）==="
   # 先清掉上一次运行遗留的副本 WAL/SHM，避免陈旧 WAL 干扰副本恢复。
   rm -f "${ISOLATED_DIR}/one-api.db-wal" "${ISOLATED_DIR}/one-api.db-shm"
@@ -244,12 +258,36 @@ do_start() {
 
   echo "=== [5/6] 启动隔离后端 :${BACKEND_PORT} ==="
   # 进程 CWD 必须是仓库根（读取 .env 的 SESSION_SECRET）。
-  # 三个环境变量只作用于这个测试进程，生产 :3000 进程完全不受影响。
+  # 以下环境变量只作用于这个测试进程，生产 :3000 进程完全不受影响。
+  #
+  # CORS_ALLOWED_ORIGINS 必须补上隔离前端的 origin：middleware/cors.go 的
+  # AllowOriginFunc 只放行 .env 里配置的精确 origin，仓库 .env 默认只写了
+  # http://localhost:3001。浏览器从 :3101 提交登录表单会带 Origin:
+  # http://localhost:3101，被 CORS 中间件以 403 空 body 直接拒绝（实测：
+  # 带该 Origin 的 POST /api/user/login 403，不带 Origin 或带 :3001 均 200）。
+  # 结果就是 biz_23 的表单登录兜底永远失败、dashboard 永远停在 sign-in。
+  # 这里在原值基础上追加隔离 origin，不删除任何既有放行来源。
+  local base_cors="${CORS_ALLOWED_ORIGINS:-}"
+  if [ -z "${base_cors}" ] && [ -f "${REPO_ROOT}/.env" ]; then
+    base_cors="$(grep -E '^CORS_ALLOWED_ORIGINS=' "${REPO_ROOT}/.env" | head -1 | cut -d= -f2- || true)"
+  fi
+  case ",${base_cors}," in
+    *",${TEST_FRONTEND_URL},"*) isolated_cors="${base_cors}" ;;
+    *) isolated_cors="${base_cors:+${base_cors},}${TEST_FRONTEND_URL}" ;;
+  esac
+  echo "  CORS_ALLOWED_ORIGINS=${isolated_cors}"
+  # 必须用 exec：普通 `( ...; cmd ) &` 记下的是 bash 子 shell 的 PID，
+  # 真正监听端口的是它的子进程。do_stop 的 safe_kill 会按命令行特征
+  # （*uter-e2e-bin*）复核，bash 子 shell 不匹配 → 直接 skip，孤儿栈永远
+  # 清不掉，下一次 start 的 wait_for_port 又被旧进程骗过（假成功）。
+  # exec 让 $! 就是二进制进程本身，PID 与命令行特征一致。
   (
     cd "${REPO_ROOT}"
-    PORT="${BACKEND_PORT}" \
-    SQLITE_PATH="${ISOLATED_DB}" \
-    REDIS_CONN_STRING="redis://127.0.0.1:${REDIS_PORT}/0" \
+    exec env \
+      PORT="${BACKEND_PORT}" \
+      SQLITE_PATH="${ISOLATED_DB}" \
+      REDIS_CONN_STRING="redis://127.0.0.1:${REDIS_PORT}/0" \
+      CORS_ALLOWED_ORIGINS="${isolated_cors}" \
       "${BINARY}" > "${BACKEND_LOG}" 2>&1
   ) &
   local backend_pid=$!
@@ -263,7 +301,7 @@ do_start() {
   fi
   (
     cd "${REPO_ROOT}/web"
-    VITE_REACT_APP_SERVER_URL="${BACKEND_ORIGIN}" \
+    exec env VITE_REACT_APP_SERVER_URL="${BACKEND_ORIGIN}" \
       ./node_modules/.bin/rsbuild dev --port "${FRONTEND_PORT}" --strict-port \
       > "${FRONTEND_LOG}" 2>&1
   ) &

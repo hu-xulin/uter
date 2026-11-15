@@ -1,0 +1,184 @@
+[UAP] PASS (exit 0) — payment: LOCAL_SIMULATION PASS (30 real tests); real-provider sandbox remains BLOCKED_EXTERNAL_DEPENDENCY
+{
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "status": "PASS",
+  "suite": "payment_sandbox",
+  "command": "go test ./service/paymentsandbox/ -run Test -count=1 -json",
+  "exit_code": 0,
+  "items": [
+    {
+      "id": "TestSignatureVerificationAcceptsValid",
+      "title": "TestSignatureVerificationAcceptsValid",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestSignatureVerificationAcceptsValid",
+        "--- PASS: TestSignatureVerificationAcceptsValid (0.10s)"
+      ]
+    },
+    {
+      "id": "TestSignatureVerificationRejectsTampered",
+      "title": "TestSignatureVerificationRejectsTampered",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestSignatureVerificationRejectsTampered",
+        "--- PASS: TestSignatureVerificationRejectsTampered (0.12s)"
+      ]
+    },
+    {
+      "id": "TestSignatureVerificationRejectsTampered/changed_provider_amount",
+      "title": "TestSignatureVerificationRejectsTampered/changed_provider_amount",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestSignatureVerificationRejectsTampered/changed_provider_amount",
+        "--- PASS: TestSignatureVerificationRejectsTampered/changed_provider_amount (0.00s)"
+      ]
+    },
+    {
+      "id": "TestSignatureVerificationRejectsTampered/changed_trade_no",
+      "title": "TestSignatureVerificationRejectsTampered/changed_trade_no",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestSignatureVerificationRejectsTampered/changed_trade_no",
+        "--- PASS: TestSignatureVerificationRejectsTampered/changed_trade_no (0.00s)"
+      ]
+    },
+    {
+      "id": "TestSignatureVerificationRejectsTampered/missing_signature",
+      "title": "TestSignatureVerificationRejectsTampered/missing_signature",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestSignatureVerificationRejectsTampered/missing_signature",
+        "--- PASS: TestSignatureVerificationRejectsTampered/missing_signature (0.00s)"
+      ]
+    },
+    {
+      "id": "TestSignatureVerificationRejectsTampered/garbage_signature",
+      "title": "TestSignatureVerificationRejectsTampered/garbage_signature",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestSignatureVerificationRejectsTampered/garbage_signature",
+        "--- PASS: TestSignatureVerificationRejectsTampered/garbage_signature (0.00s)"
+      ]
+    },
+    {
+      "id": "TestNotificationHandling",
+      "title": "TestNotificationHandling",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestNotificationHandling",
+        "--- PASS: TestNotificationHandling (0.02s)"
+      ]
+    },
+    {
+      "id": "TestDuplicateNotificationIsIdempotent",
+      "title": "TestDuplicateNotificationIsIdempotent",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestDuplicateNotificationIsIdempotent",
+        "--- PASS: TestDuplicateNotificationIsIdempotent (0.12s)"
+      ]
+    },
+    {
+      "id": "TestOrderQueryFourState",
+      "title": "TestOrderQueryFourState",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestOrderQueryFourState",
+        "--- PASS: TestOrderQueryFourState (0.14s)"
+      ]
+    },
+    {
+      "id": "TestRefundStatusIdempotent",
+      "title": "TestRefundStatusIdempotent",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestRefundStatusIdempotent",
+        "--- PASS: TestRefundStatusIdempotent (0.05s)"
+      ]
+    },
+    {
+      "id": "TestAmountSnapshotMismatchRejected",
+      "title": "TestAmountSnapshotMismatchRejected",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestAmountSnapshotMismatchRejected",
+        "--- PASS: TestAmountSnapshotMismatchRejected (0.04s)"
+      ]
+    },
+    {
+      "id": "TestConfigRejectsProductionGateway",
+      "title": "TestConfigRejectsProductionGateway",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestConfigRejectsProductionGateway",
+        "--- PASS: TestConfigRejectsProductionGateway (0.00s)"
+      ]
+    },
+    {
+      "id": "TestConfigRejectsProviderSandboxWithoutCredentials",
+      "title": "TestConfigRejectsProviderSandboxWithoutCredentials",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestConfigRejectsProviderSandboxWithoutCredentials",
+        "--- PASS: TestConfigRejectsProviderSandboxWithoutCredentials (0.00s)"
+      ]
+    },
+    {
+      "id": "TestReportDeclaresLocalSimulation",
+      "title": "TestReportDeclaresLocalSimulation",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestReportDeclaresLocalSimulation",
+        "--- PASS: TestReportDeclaresLocalSimulation (0.35s)"
+      ]
+    },
+    {
+      "id": "TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes",
+      "title": "TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes",
+        "--- PASS: TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes (0.18s)"
+      ]
+    },
+    {
+      "id": "TestFaultInjections",
+      "title": "TestFaultInjections",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true,
+      "output": [
+        "=== RUN   TestFaultInjections",
+
+… (truncated; use --json for full output)
+evidence: UAP-EV-20261115062102-8f91e4be

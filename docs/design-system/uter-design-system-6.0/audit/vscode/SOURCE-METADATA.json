@@ -1,0 +1,34 @@
+{
+  "source_repository": "https://github.com/microsoft/vscode",
+  "source_path": "extensions/theme-defaults/themes/",
+  "retrieved_at": "2026-11-15T03:57:45.311Z",
+  "method": "curl -fsSL https://raw.githubusercontent.com/microsoft/vscode/main/extensions/theme-defaults/themes/<name>.json",
+  "note": "VS Code 官方 JSONC 原文，未修改；解析由 registry/vscode-theme.mjs::stripJsonc 完成。",
+  "files": [
+    {
+      "file": "vscode-light_vs.json",
+      "bytes": 9636,
+      "sha256": "ce562a2ebec8c9a91021afb9ba7c9e8bcf4176df634fec8b77c748b42e3ce748"
+    },
+    {
+      "file": "vscode-light_plus.json",
+      "bytes": 4783,
+      "sha256": "26fbb053bec8ce2b65706d5fcb993da8c19174cfdbf35a49b465236b5ed26203"
+    },
+    {
+      "file": "vscode-dark_vs.json",
+      "bytes": 8580,
+      "sha256": "9fc2c16761400632eac6166ff7bb0435c5190a94bffa51ec1ef19b2ce78576b2"
+    },
+    {
+      "file": "vscode-dark_plus.json",
+      "bytes": 4700,
+      "sha256": "409f33088a5cfd6589384900ef80627787c568d367c25b12f31bc7940936e573"
+    },
+    {
+      "file": "vscode-theme-package.json",
+      "bytes": 2178,
+      "sha256": "82d76f47ceb7f064ae80b4200bd10d9e144223ab736da5b18b0d1cbd682e2aff"
+    }
+  ]
+}

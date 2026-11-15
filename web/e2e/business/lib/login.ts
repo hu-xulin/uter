@@ -83,6 +83,17 @@ export async function loginViaApi(request: APIRequestContext): Promise<LoginResu
 export async function loginViaUi(page: Page): Promise<void> {
   const { username, password } = readBusinessCredentials()
   await page.goto('/sign-in', { waitUntil: 'domcontentloaded' })
+
+  // 站点启用用户协议/隐私政策后，SignInForm 的 onSubmit 会先校验法律同意勾选，
+  // 未勾选直接 toast 并 return，根本不发起 /api/user/login。原生 input 被
+  // Base UI 的 Checkbox 以 clip-path 隐藏在视口外（-1,-1），check() 会报
+  // "Element is outside of the viewport"；真实用户点的是可见的
+  // span[role="checkbox"]。这里走真实可点击元素，不做 DOM 直接改属性。
+  const consent = page.getByRole('checkbox')
+  if ((await consent.count()) > 0 && !(await page.locator('#legal-consent').isChecked())) {
+    await consent.first().click()
+  }
+
   await page.locator('form input').first().fill(username)
   await page.locator('form input[type="password"]').fill(password)
   await page.locator('form button[type="submit"]').click()

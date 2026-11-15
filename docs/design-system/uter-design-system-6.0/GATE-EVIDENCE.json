@@ -1,19 +1,19 @@
 {
   "evidence_id": "UDS6-GATE-EVIDENCE",
-  "generated_at": "2026-11-15T03:07:13.804Z",
+  "generated_at": "2026-11-15T06:10:27.583Z",
   "quick_mode": false,
-  "reports_only": true,
+  "reports_only": false,
   "repository": {
     "branch": "main",
-    "dirty_entries": 226
+    "dirty_entries": 753
   },
   "governance": {
     "branch": "main",
-    "head": "58ad9f607 UAP Phase 2: regenerate verification evidence; self-test 161/161 green",
-    "headSha": "58ad9f607bba336d7a4824bac07ae7254726b507",
-    "headFilesChanged": 1233,
-    "ds6TrackedInHead": 61,
-    "ds6WorkingTreeChanges": 29,
+    "head": "012c08eaf fix(uap): 单一批次验收的两个真实阻塞根因（批次分裂与隔离栈挂起）",
+    "headSha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+    "headFilesChanged": 3,
+    "ds6TrackedInHead": 65,
+    "ds6WorkingTreeChanges": 76,
     "note": "本任务未执行任何 commit / push / merge；如需提交须逐次单独授权，并在提交前一刻复查暂存区。"
   },
   "gates": [
@@ -23,7 +23,7 @@
       "command": "bun run typecheck",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 6272,
+      "durationMs": 22025,
       "outputLines": 2,
       "tail": "$ tsgo -b",
       "attribution": null
@@ -34,42 +34,9 @@
       "command": "bun run lint:design:strict",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 2119,
+      "durationMs": 3268,
       "outputLines": 6,
-      "tail": "design-tokens: 通过。扫描 1276 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。\n\n浮层投影（规范 §8 允许，不计入违规）：20 处\nToken 定义处色值（颜色的落点，不计入违规）：184 处\n$ node scripts/check-design-tokens.mjs --strict",
-      "attribution": null
-    },
-    {
-      "id": "G03",
-      "label": "5.0 规范一致性",
-      "command": "bun run design:5:check",
-      "cwd": "web",
-      "exit": 0,
-      "durationMs": 2548,
-      "outputLines": 52,
-      "tail": "      \"PARTIAL\": 9,\n      \"NOT_VERIFIED\": 56,\n      \"EXCEPTION\": 0\n    }\n  },\n  \"tokenFiles\": 8,\n  \"uniqueTokenVariables\": 245,\n  \"crossFileTokenDuplicates\": 0,\n  \"unusedTokenCandidates\": 102,\n  \"gaps\": 74,\n  \"errors\": 0\n}\n$ node scripts/check-design-system-5.0.mjs",
-      "attribution": null
-    },
-    {
-      "id": "G04",
-      "label": "Clerk 边界守卫",
-      "command": "bun run design:clerk:check",
-      "cwd": "web",
-      "exit": 0,
-      "durationMs": 521,
-      "outputLines": 54,
-      "tail": "      \"passed\": true\n    }\n  ],\n  \"scanned\": {\n    \"dependencies\": 84,\n    \"sourceFiles\": 1287,\n    \"capabilities\": 11,\n    \"businessRedline\": 1288\n  },\n  \"errors\": 0,\n  \"violations\": []\n}\n$ node scripts/check-clerk-boundary.mjs",
-      "attribution": null
-    },
-    {
-      "id": "G05",
-      "label": "5.0 Showcase 校验",
-      "command": "bun run design:showcase:5:check",
-      "cwd": "web",
-      "exit": 0,
-      "durationMs": 259,
-      "outputLines": 25,
-      "tail": "  \"colorTokens\": 280,\n  \"externalColors\": 9,\n  \"typeSteps\": 18,\n  \"componentSamples\": 65,\n  \"normativeKeys\": 27,\n  \"generated\": false,\n  \"sources\": {\n    \"html\": \"/Users/lincolnhu/uter/docs/design-system/uter-design-system-5.0/SHOWCASE-5.0.html\",\n    \"specRegistry\": \"/Users/lincolnhu/uter/docs/design-system/uter-design-system-5.0/DESIGN-STANDARD-REGISTRY.yaml\",\n    \"componentRegistry\": \"/Users/lincolnhu/uter/docs/design-system/uter-design-system-5.0/COMPONENT-REGISTRY.yaml\"\n  }\n}\n$ node scripts/check-design-showcase-5.0.mjs",
+      "tail": "design-tokens: 通过。扫描 1277 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。\n\n浮层投影（规范 §8 允许，不计入违规）：20 处\nToken 定义处色值（颜色的落点，不计入违规）：669 处\n$ node scripts/check-design-tokens.mjs --strict",
       "attribution": null
     },
     {
@@ -78,7 +45,7 @@
       "command": "bun run design:tokens:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 94,
+      "durationMs": 153,
       "outputLines": 3,
       "tail": "Design token source and generated CSS are in sync.\n$ node scripts/generate-design-tokens.mjs --check",
       "attribution": null
@@ -89,7 +56,7 @@
       "command": "bun run design:showcase:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 135,
+      "durationMs": 200,
       "outputLines": 24,
       "tail": "[PASS] 投影表 §7.1 — 13 项取值行齐全\n[PASS] 投影表 §6.2 / §10.2 / §11.1 / §14.2 — 语义别名 + 按钮 / 控件 / 导航尺寸取值行齐全\n[PASS] 声明内部一致性（meta ↔ a11y ↔ sections ↔ pending） — 24 区 / 3 Pending / 5 语义别名全部自洽\n[PASS] showcase.html 解析 §28 Manifest — 运行时解析，非硬编码副本\n[PASS] showcase.html 无 Token 副本 — 仅保留刻意偏离所有刻度的降级占位\n[PASS] 展示区域数量 — §28 sections = 24（期望 24）\n[PASS] 区域 ↔ 渲染器一一对应 — 24 个区域均有渲染器\n[PASS] 声明字段 ↔ 展示覆盖度 — 14 组主要字段均有展示\n[PASS] showcase.html 内联快照 — 单文件离线生效；与 §28 逐值一致\n[PASS] 离线快照与 §28 声明一致 — 同值（兼容回退文件）\n\n汇总：17 PASS / 0 FAIL / 0 SKIP\n$ node scripts/sync-design-showcase.mjs --check",
       "attribution": null
@@ -100,7 +67,7 @@
       "command": "bun run verify:contrast",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 239,
+      "durationMs": 411,
       "outputLines": 35,
       "tail": "PASS GRADIENT_TOKEN_DECLARATION: single registered gradient utility and one light-theme stop triple (§17.5)\nPASS GRADIENT_SINGLE_VALUE_ACROSS_THEMES: :root.dark override=ABSENT (§17.5 forbids a second dark triple)\nPASS GRADIENT_CONTRAST_REGISTERED_IN_SPEC: §17.5 measured values=2.54:1 / 2.72:1 / 3.96:1 registered=true\nPASS GRADIENT_LIGHT_FROM: #60a5fa = upstream anchor #60a5fa; contrast on #FFFFFF = 2.54:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_LIGHT_VIA: #a78bfa = upstream anchor #a78bfa; contrast on #FFFFFF = 2.72:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_LIGHT_TO: #a855f7 = upstream anchor #a855f7; contrast on #FFFFFF = 3.96:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_DARK_FROM: #60a5fa = upstream anchor #60a5fa; contrast on #0F172A = 7.02:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_DARK_VIA: #a78bfa = upstream anchor #a78bfa; contrast on #0F172A = 6.56:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_DARK_TO: #a855f7 = upstream anchor #a855f7; contrast on #0F172A = 4.51:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_TEXT_SINGLE_OWNER: gradient text declarations=design-system/foundations/typography.css\n\nAutomated contrast/gradient audit: PASS; checks=31; failed=0\n$ node scripts/verify-contrast.mjs",
       "attribution": null
@@ -111,9 +78,9 @@
       "command": "bun run copyright:check",
       "cwd": "web",
       "exit": 1,
-      "durationMs": 410,
+      "durationMs": 598,
       "outputLines": 7,
-      "tail": "copyright: checked 1574, added 2, updated 0, skipped generated 6, skipped third-party 1566\n$ node scripts/add-copyright.mjs --check\ncopyright: headers need to be updated in:\n- scripts/rehype-tasklist-labels.mjs\n- src/__axe-experiment.test.ts\nerror: script \"copyright:check\" exited with code 1",
+      "tail": "copyright: checked 1569, added 2, updated 0, skipped generated 7, skipped third-party 1560\n$ node scripts/add-copyright.mjs --check\ncopyright: headers need to be updated in:\n- scripts/rehype-tasklist-labels.mjs\n- src/__axe-experiment.test.ts\nerror: script \"copyright:check\" exited with code 1",
       "attribution": {
         "policy": "不掩盖失败；按 AGENTS.md 并发 WIP 保护规则不覆盖用户未提交修改",
         "files": [
@@ -144,52 +111,12 @@
       "command": "bun run lint",
       "cwd": "web",
       "exit": 1,
-      "durationMs": 1706,
-      "outputLines": 772,
-      "tail": "  ! unicorn(prefer-number-properties): Use `Number.parseInt` instead of the global `parseInt`\n    ,-[scripts/verify-contrast.mjs:39:15]\n 38 |   const [r, g, b] = [0, 2, 4].map((i) => {\n 39 |     const v = parseInt(c.slice(i, i + 2), 16) / 255\n    :               ^^^^^^^^\n 40 |     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4\n    `----\n  help: Replace it with `Number.parseInt`\n\nFound 78 warnings and 3 errors.\nFinished in 860ms on 1502 files with 186 rules using 16 threads.\n$ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .\nerror: script \"lint\" exited with code 1",
+      "durationMs": 2492,
+      "outputLines": 799,
+      "tail": "  ! eslint(prefer-template): Unexpected string concatenation.\n     ,-[e2e/axe/authed.spec.ts:138:5]\n 137 |     blockingByRoute,\n 138 |     '鉴权页存在 critical/serious 可访问性违规：\\n' + blockingByRoute.join('\\n')\n     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 139 |   ).toEqual([])\n     `----\n  help: Use template literals instead of string concatenation.\n\nFound 81 warnings and 3 errors.\nFinished in 1.3s on 1496 files with 186 rules using 16 threads.\n$ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .\nerror: script \"lint\" exited with code 1",
       "attribution": {
         "policy": "不掩盖失败；按 AGENTS.md 并发 WIP 保护规则不覆盖用户未提交修改",
         "files": [
-          {
-            "file": "e2e/axe/authed.spec.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "e2e/axe/lib/service-gate.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "e2e/axe/public.spec.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "e2e/business/lib/service-gate.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "e2e/business/specs/business.spec.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
           {
             "file": "e2e/visual/auth.setup.spec.ts",
             "gitStatus": "CLEAN",
@@ -207,242 +134,10 @@
             "touches6Artifacts": false
           },
           {
-            "file": "e2e/visual/lib/service-gate.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "e2e/visual/lib/target.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
             "file": "e2e/visual/public.spec.ts",
             "gitStatus": "CLEAN",
             "classification": "HEAD_BASELINE",
             "headContainsEmptyPattern": true,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/add-showcase-anchors.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/audit-settings-input-hints.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/check-component-registry.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/check-design-tokens.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/gen-lobe-icon-variants.cjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/generate-design-showcase.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/generate-design-tokens.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/sync-design-showcase.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/verify-contrast.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "scripts/visual-regression.mjs",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/__axe-experiment.test.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/components/ai-elements/prompt-input.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/components/turnstile.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/design-system/__tests__/semantic-colors.test.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/dashboard/components/overview/__tests__/setup-guide.test.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/dashboard/lib/stats.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/dashboard/lib/text.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/profile/__tests__/settings.test.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/rankings/index.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/system-settings/general/channel-affinity/constants.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/system-settings/integrations/amount-discount-visual-editor.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/system-settings/integrations/amount-options-visual-editor.tsx",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/system-settings/integrations/utils.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/system-settings/models/utils.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/features/system-settings/utils/json-parser.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/hooks/use-system-config.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
-            "headExists": true,
-            "touches6Artifacts": false
-          },
-          {
-            "file": "src/lib/admin-permissions.ts",
-            "gitStatus": "CLEAN",
-            "classification": "HEAD_BASELINE",
-            "headContainsEmptyPattern": false,
             "headExists": true,
             "touches6Artifacts": false
           }
@@ -457,9 +152,9 @@
       "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/visual-check.mjs",
       "cwd": ".",
       "exit": 0,
-      "durationMs": 3659,
+      "durationMs": 5443,
       "outputLines": 36,
-      "tail": "    },\n    {\n      \"key\": \"newGradientImage\",\n      \"light\": \"linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)\",\n      \"dark\": \"linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)\",\n      \"changed\": true\n    }\n  ],\n  \"modules\": 38,\n  \"sections\": 418,\n  \"languages\": 12,\n  \"tokenRows\": 748\n}",
+      "tail": "    },\n    {\n      \"key\": \"newGradientImage\",\n      \"light\": \"linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)\",\n      \"dark\": \"linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)\",\n      \"changed\": true\n    }\n  ],\n  \"modules\": 38,\n  \"sections\": 418,\n  \"languages\": 18,\n  \"tokenRows\": 878\n}",
       "attribution": null
     },
     {
@@ -468,7 +163,7 @@
       "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/a11y-check.mjs",
       "cwd": ".",
       "exit": 0,
-      "durationMs": 17282,
+      "durationMs": 30404,
       "outputLines": 9,
       "tail": "{\n  \"verdict\": \"PASS\",\n  \"cases\": 4,\n  \"violationsTotal\": 0,\n  \"blocking\": 0,\n  \"focusOk\": true,\n  \"violations\": []\n}",
       "attribution": null
@@ -479,8 +174,8 @@
       "command": "bun run test",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 326468,
-      "outputLines": 15891,
+      "durationMs": 438803,
+      "outputLines": 15980,
       "tail": "\n\u001b[90mstderr\u001b[2m | src/routes/__tests__/root-setup-status.test.ts\u001b[2m > \u001b[22m\u001b[2mroot beforeLoad setup status check\u001b[2m > \u001b[22m\u001b[2mthrottles retries when the request keeps failing\n\u001b[22m\u001b[39m[root.beforeLoad] setup status check failed Error: network down\n    at \u001b[90m/Users/lincolnhu/uter/web/\u001b[39msrc/routes/__tests__/root-setup-status.test.ts:182:38\n\u001b[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)\u001b[39m\n    at \u001b[90mfile:///Users/lincolnhu/uter/web/\u001b[39mnode_modules/\u001b[4mvitest\u001b[24m/dist/chunks/run.BPv-BBRv.js:2801:20\n\n\u001b[90mstderr\u001b[2m | src/features/playground/hooks/__tests__/use-stream-request-completion.test.ts\u001b[2m > \u001b[22m\u001b[2min-stream error payloads\u001b[2m > \u001b[22m\u001b[2mreports the HTTP status when the error body is not JSON\n\u001b[22m\u001b[39mSSE Error: { data: \u001b[32m'<html>bad gateway</html>'\u001b[39m, readyState: \u001b[33m1\u001b[39m, responseCode: \u001b[33m502\u001b[39m }\n\n\u001b[90mstderr\u001b[2m | src/features/playground/hooks/__tests__/use-stream-request-completion.test.ts\u001b[2m > \u001b[22m\u001b[2min-stream error payloads\u001b[2m > \u001b[22m\u001b[2mfalls back to the response code when the body is empty\n\u001b[22m\u001b[39mSSE Error: { data: \u001b[90mundefined\u001b[39m, readyState: \u001b[33m1\u001b[39m, responseCode: \u001b[33m502\u001b[39m }",
       "attribution": null
     },
@@ -490,9 +185,42 @@
       "command": "bun run build:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 56069,
+      "durationMs": 26810,
       "outputLines": 2505,
-      "tail": "\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\nWarning: Route file \"/Users/lincolnhu/uter/web/src/routes/__tests__/public-routes-render.test.tsx\" does not export a Route. This file will not be included in the route tree.\n\nIf this file is not intended to be a route, you can exclude it using one of these options:\n  1. Rename the file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-public-routes-render.test.tsx\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined",
+      "tail": "\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\nWarning: Route file \"/Users/lincolnhu/uter/web/src/routes/__tests__/root-setup-status.test.ts\" does not export a Route. This file will not be included in the route tree.\n\nIf this file is not intended to be a route, you can exclude it using one of these options:\n  1. Rename the file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-root-setup-status.test.ts\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined",
+      "attribution": null
+    },
+    {
+      "id": "G17",
+      "label": "6.0 真实页面回归（本地 SPA + 像素验证）",
+      "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/real-page-regression.mjs",
+      "cwd": ".",
+      "exit": 0,
+      "durationMs": 20090,
+      "outputLines": 3,
+      "tail": "[UDS6-REGRESSION] static server http://127.0.0.1:62817 → dist; API proxy → http://127.0.0.1:3000\n[UDS6-REGRESSION] verdict PASS scenarios 8 errors 0",
+      "attribution": null
+    },
+    {
+      "id": "G16",
+      "label": "6.0 自动化检查器（C01-C22）",
+      "command": "bun run design:6:check",
+      "cwd": "web",
+      "exit": 0,
+      "durationMs": 505,
+      "outputLines": 26,
+      "tail": "PASS C13 chart 色不得作为 syntax 色，代码/终端色系不互引 — 14 color groups isolated\nPASS C14 Showcase 单文件覆盖 38 模块 / 全 Token / ≥10 语言 / 零外链 — 38 modules, 18 languages, 887994 chars, 6 extension sections\nPASS C15 状态未被误标 VERIFIED / ACCEPTED — 38 modules: IMPLEMENTED / PARTIAL, ACCEPTED=false\nPASS C16 v6 产物不出现 manifest 之外的 --ds-* 定义 — 384 declared = manifest 384\nPASS C17 交付报告齐全 — MIGRATION-REPORT.md, CONTRAST-VERIFICATION-REPORT.md, VISUAL-REGRESSION-REPORT.md, FINAL-ACCEPTANCE-REPORT.md\nPASS C18 8 份机器可读验证报告齐全且 verdict 真实 — 8 reports, final=PARTIALLY_VERIFIED, checker=22/22\nPASS C19 语法 Adapter 15 语言 / 20 Token 真实解析并如实登记未覆盖项 — 15 languages, 29 grammars, 19/20 covered\nPASS C20 48 项审计发现整改状态由真实探针决定 — 48 findings: 43 resolved / 1 partial / 4 open\nPASS C21 真实页面回归 + 渐变像素验证 + axe 零违规 — 8 real-page scenarios, gradient pixels PASS, axe 0 violations\nPASS C22 Clerk 外部参考边界：依赖零引入 / 运行时零引用 / 品牌值零照搬 — deps clean, 1546 src files scanned, 0 Clerk references\n\nVERDICT PASS · 22/22 checks · 0 errors\n$ node scripts/check-design-system-6.0.mjs",
+      "attribution": null
+    },
+    {
+      "id": "G18",
+      "label": "6.0 整改验证器（48 项探针 + 机器可读报告）",
+      "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-uds6-remediation.mjs",
+      "cwd": ".",
+      "exit": 0,
+      "durationMs": 793,
+      "outputLines": 6,
+      "tail": "[UDS6-REMEDIATION] probes 48 {\"PASS\":43,\"FAIL\":4,\"PARTIAL\":1}\n[UDS6-REMEDIATION] checker PASS 22/22\n[UDS6-REMEDIATION] findings RESOLVED/PARTIAL/OPEN 43 1 4\n[UDS6-REMEDIATION] FINAL VERDICT PARTIALLY_VERIFIED\n[UDS6-REMEDIATION] notAchieved BUILD_PASSED, FINAL_ACCEPTANCE_PASSED",
       "attribution": null
     }
   ],
@@ -506,7 +234,7 @@
         "code": "C01",
         "label": "TOKEN-MANIFEST 结构与 Token 唯一性",
         "status": "PASS",
-        "detail": "254 tokens, 3 layers"
+        "detail": "384 tokens, 3 layers"
       },
       {
         "code": "C02",
@@ -518,43 +246,43 @@
         "code": "C03",
         "label": "规范正文禁止 TBD / TODO / 待定 / 模糊数值",
         "status": "PASS",
-        "detail": "42 md scanned, 0 placeholder"
+        "detail": "50 md scanned, 0 placeholder"
       },
       {
         "code": "C04",
         "label": "tokens.css 与 manifest Light 值逐项一致",
         "status": "PASS",
-        "detail": "254 declarations matched"
+        "detail": "384 declarations matched"
       },
       {
         "code": "C05",
         "label": "light.css / dark.css 覆盖全部主题相关 Token",
         "status": "PASS",
-        "detail": "100 themed tokens × 2"
+        "detail": "229 themed tokens × 2"
       },
       {
         "code": "C06",
         "label": "tokens.ts 与 manifest 一致且无第二套数值",
         "status": "PASS",
-        "detail": "254 TS token entries"
+        "detail": "384 TS token entries"
       },
       {
         "code": "C07",
         "label": "Light / Dark 使用同名 Token，无主题特例缺失",
         "status": "PASS",
-        "detail": "100 themed, 154 theme-independent"
+        "detail": "229 themed, 155 theme-independent"
       },
       {
         "code": "C08",
-        "label": "7 份注册表存在且计数与真源一致",
+        "label": "8 份注册表存在且计数与真源一致",
         "status": "PASS",
-        "detail": "7 registries, 65 components, 72 routes, 38 modules"
+        "detail": "8 registries, 65 components, 72 routes, 38 modules"
       },
       {
         "code": "C09",
         "label": "contrast-engine 真实计算 VERDICT=PASS",
         "status": "PASS",
-        "detail": "202 gradient samples + 40 syntax + 16 text + 6 brand-solid, all >=4.5:1"
+        "detail": "2002 gradient samples (1001 x 2 themes) + 40 syntax + 16 text + 6 brand-solid, all >=4.5:1"
       },
       {
         "code": "C10",
@@ -564,9 +292,9 @@
       },
       {
         "code": "C11",
-        "label": "全库品牌渐变单一出口，重复实现必须已登记",
+        "label": "全库渐变文字单一 owner，重复实现必须已真实收敛",
         "status": "PASS",
-        "detail": "1547 files scanned, 3 registered (1 OPEN migration), 0 unregistered offenders"
+        "detail": "1546 files scanned, owner=web/src/design-system/foundations/typography.css, 1 resolved exceptions, 0 offenders"
       },
       {
         "code": "C12",
@@ -584,7 +312,7 @@
         "code": "C14",
         "label": "Showcase 单文件覆盖 38 模块 / 全 Token / ≥10 语言 / 零外链",
         "status": "PASS",
-        "detail": "38 modules, 12 languages, 454570 chars"
+        "detail": "38 modules, 18 languages, 887994 chars, 6 extension sections"
       },
       {
         "code": "C15",
@@ -596,26 +324,56 @@
         "code": "C16",
         "label": "v6 产物不出现 manifest 之外的 --ds-* 定义",
         "status": "PASS",
-        "detail": "254 declared = manifest 254"
+        "detail": "384 declared = manifest 384"
       },
       {
         "code": "C17",
         "label": "交付报告齐全",
         "status": "PASS",
         "detail": "MIGRATION-REPORT.md, CONTRAST-VERIFICATION-REPORT.md, VISUAL-REGRESSION-REPORT.md, FINAL-ACCEPTANCE-REPORT.md"
+      },
+      {
+        "code": "C18",
+        "label": "8 份机器可读验证报告齐全且 verdict 真实",
+        "status": "PASS",
+        "detail": "8 reports, final=PARTIALLY_VERIFIED, checker=22/22"
+      },
+      {
+        "code": "C19",
+        "label": "语法 Adapter 15 语言 / 20 Token 真实解析并如实登记未覆盖项",
+        "status": "PASS",
+        "detail": "15 languages, 29 grammars, 19/20 covered"
+      },
+      {
+        "code": "C20",
+        "label": "48 项审计发现整改状态由真实探针决定",
+        "status": "PASS",
+        "detail": "48 findings: 43 resolved / 1 partial / 4 open"
+      },
+      {
+        "code": "C21",
+        "label": "真实页面回归 + 渐变像素验证 + axe 零违规",
+        "status": "PASS",
+        "detail": "8 real-page scenarios, gradient pixels PASS, axe 0 violations"
+      },
+      {
+        "code": "C22",
+        "label": "Clerk 外部参考边界：依赖零引入 / 运行时零引用 / 品牌值零照搬",
+        "status": "PASS",
+        "detail": "deps clean, 1546 src files scanned, 0 Clerk references"
       }
     ],
-    "tokens": 254,
+    "tokens": 384,
     "modules": 38,
     "parseError": null
   },
   "verification": {
     "engine": "contrast-engine.mjs",
     "verdict": "PASS",
-    "gradientLightWorst": 6.3,
-    "gradientDarkWorst": 9.59,
-    "syntaxLightMin": 5.15,
-    "syntaxDarkMin": 7.11,
+    "gradientLightWorst": 5.99,
+    "gradientDarkWorst": 8.37,
+    "syntaxLightMin": 4.55,
+    "syntaxDarkMin": 5.07,
     "brandSolidLightMin": 5.01,
     "codeLightGutter": 5.39,
     "codeDarkGutter": 7.11
@@ -627,19 +385,19 @@
     "screenshots": [
       {
         "file": "web/visual-regression/uds6/screenshots/uds6-dark-desktop.png",
-        "bytes": 235318
+        "bytes": 237428
       },
       {
         "file": "web/visual-regression/uds6/screenshots/uds6-dark-mobile.png",
-        "bytes": 82627
+        "bytes": 84441
       },
       {
         "file": "web/visual-regression/uds6/screenshots/uds6-light-desktop.png",
-        "bytes": 232464
+        "bytes": 234366
       },
       {
         "file": "web/visual-regression/uds6/screenshots/uds6-light-mobile.png",
-        "bytes": 81909
+        "bytes": 82932
       }
     ]
   },
@@ -652,17 +410,17 @@
     {
       "path": "web/dist/design-system/6.0.html",
       "exists": true,
-      "bytes": 505221
+      "bytes": 950862
     },
     {
       "path": "web/dist/design-system/6.0/index.html",
       "exists": true,
-      "bytes": 505221
+      "bytes": 950862
     }
   ],
   "manifest": {
     "version": "6.0.0",
-    "tokenCount": 254,
+    "tokenCount": 384,
     "status": "IMPLEMENTED_NOT_VERIFIED"
   },
   "overall_status": "IMPLEMENTED_NOT_VERIFIED",

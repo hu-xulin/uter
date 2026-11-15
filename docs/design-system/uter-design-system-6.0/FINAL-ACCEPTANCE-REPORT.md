@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 6.0 — 最终验收报告（PART 12）
 
-> 生成时间 2026-11-15T03:07:13.804Z · 由 `registry/finalize.mjs` 从 `GATE-EVIDENCE.json` 的真实命令结果派生
+> 生成时间 2026-11-15T06:10:27.583Z · 由 `registry/finalize.mjs` 从 `GATE-EVIDENCE.json` 的真实命令结果派生
 > **状态纪律**：`IMPLEMENTED` ≠ `VERIFIED` ≠ `ACCEPTANCE_READY` ≠ `ACCEPTED`。用户审核前一律不得标 `ACCEPTED`。
 
 ## 1. 总体结论
@@ -8,7 +8,7 @@
 | 项目 | 结论 |
 |---|---|
 | 规范体系 | 36 个正式模块 + 2 个专项规范（`01-S / 24-S`），全部由 `TOKEN-MANIFEST.json` 派生 |
-| 唯一数值真源 | `TOKEN-MANIFEST.json` · version 6.0.0 · **254 tokens** · status `IMPLEMENTED_NOT_VERIFIED` |
+| 唯一数值真源 | `TOKEN-MANIFEST.json` · version 6.0.0 · **384 tokens** · status `IMPLEMENTED_NOT_VERIFIED` |
 | 实现状态 | 38/38 模块 `IMPLEMENTED` |
 | 验证状态 | 0/38 模块 `VERIFIED`（0 表示尚无模块完成全链路验证） |
 | 总体状态 | **`IMPLEMENTED_NOT_VERIFIED` / `PENDING_USER_REVIEW`** |
@@ -26,7 +26,7 @@
 | 注册表 | 7 | `TOKEN / COMPONENT / PAGE / DEPENDENCY-GRAPH / ACCEPTANCE-MATRIX / DEPRECATED / EXCEPTION` |
 | 唯一真源 | 1 | `TOKEN-MANIFEST.json` |
 | 运行时派生产物 | 5 | `runtime/tokens.css`、`runtime/themes/light.css`、`runtime/themes/dark.css`、`runtime/foundations.css`、`runtime/tokens.ts` |
-| Showcase | 1 源 + 2 入口 | `SHOWCASE-6.0.html`（454570 字符）、`web/public/design-system/6.0.html`、`web/public/design-system/6.0/index.html` |
+| Showcase | 1 源 + 2 入口 | `SHOWCASE-6.0.html`（887994 字符）、`web/public/design-system/6.0.html`、`web/public/design-system/6.0/index.html` |
 | 自动化 | 4 脚本 | `web/scripts/check-design-system-6.0.mjs`、`registry/contrast-engine.mjs`、`registry/visual-check.mjs`、`registry/a11y-check.mjs` |
 | 构建链 | 3 脚本 | `registry/tokens.mjs`、`registry/spec-modules.mjs`、`registry/build.mjs`、`registry/render-showcase.mjs`、`registry/finalize.mjs` |
 | 报告 | 4 | `MIGRATION-REPORT.md`、`CONTRAST-VERIFICATION-REPORT.md`、`VISUAL-REGRESSION-REPORT.md`、本报告 |
@@ -92,10 +92,10 @@
 
 | 项目 | 实测 | 依据 |
 |---|---|---|
-| 渐变 Light 三档 | `#1D4ED8 → #6D28D9 → #7E22CE`，最差 6.3:1 | `contrast-engine.mjs` 101 点采样 |
-| 渐变 Dark 三档 | `#93C5FD → #C4B5FD → #D8B4FE`，最差 9.59:1 | 同上 |
-| 历史渐变 | Light 2.39:1 / Dark 4.48:1 | 不达 4.5:1，E28 例外失效 |
-| 语法 Token | 20 × 2，最低 5.15:1 / 7.11:1 | 真实代码背景上逐值计算 |
+| 渐变 Light 三档 | `#1D4ED8 → #6D28D9 → #7E22CE`，最差 5.99:1 | `contrast-engine.mjs` 1001 点 in srgb 采样 |
+| 渐变 Dark 三档 | `#93C5FD → #C4B5FD → #D8B4FE`，最差 8.37:1 | 同上 |
+| 历史渐变 | Light 2.27:1 / Dark 3.92:1 | 不达 4.5:1，E28 例外失效 |
+| 语法 Token | 20 × 2，最低 4.55:1 / 5.07:1 | 真实代码背景上逐值计算 |
 | 品牌实底白字 | 最低 5.01:1 / 5.01:1 | 三态 + 危险实底 |
 | 引擎结论 | **PASS** | `CONTRAST-VERIFICATION-REPORT.md` |
 
@@ -118,7 +118,7 @@
 
 | 项目 | 实测 | 依据 |
 |---|---|---|
-| 单文件自包含 | 454570 字符，零外链、0 个 `<img>` | C14 |
+| 单文件自包含 | 887994 字符，零外链、0 个 `<img>` | C14 |
 | 模块 / 小节 | 38 / 418 | Playwright |
 | Token 行 / 语言 | 748 / 12 | Playwright |
 | Playwright 4 场景 | PASS · consoleErrors=0 | `run-log.json` |
@@ -149,22 +149,22 @@
 
 | ID | 门禁 | 命令 | 退出码 | 耗时 | 备注 |
 |---|---|---|---|---|---|
-| G01 | TypeScript 类型检查 | `bun run typecheck` | **0** | 6272ms | PASS |
-| G02 | 设计 Token 严格门禁 | `bun run lint:design:strict` | **0** | 2119ms | PASS |
-| G03 | 5.0 规范一致性 | `bun run design:5:check` | **0** | 2548ms | PASS |
-| G04 | Clerk 边界守卫 | `bun run design:clerk:check` | **0** | 521ms | PASS |
-| G05 | 5.0 Showcase 校验 | `bun run design:showcase:5:check` | **0** | 259ms | PASS |
-| G06 | 设计 Token 生成一致性 | `bun run design:tokens:check` | **0** | 94ms | PASS |
-| G07 | 3.0 Showcase 同步校验 | `bun run design:showcase:check` | **0** | 135ms | PASS |
-| G08 | 现行对比度门禁 | `bun run verify:contrast` | **0** | 239ms | PASS |
-| G09 | 版权头检查 | `bun run copyright:check` | 1 | 410ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
-| G10 | 全量 oxlint | `bun run lint` | 1 | 1706ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
-| G12 | 6.0 Showcase 视觉回归（Playwright） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/visual-check.mjs` | **0** | 3659ms | PASS |
-| G13 | 6.0 无障碍（axe-core + 真实 Tab） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/a11y-check.mjs` | **0** | 17282ms | PASS |
-| G14 | 全量单元测试（vitest） | `bun run test` | **0** | 326468ms | PASS |
-| G15 | 构建校验（tsgo + rsbuild） | `bun run build:check` | **0** | 56069ms | PASS |
+| G01 | TypeScript 类型检查 | `bun run typecheck` | **0** | 22025ms | PASS |
+| G02 | 设计 Token 严格门禁 | `bun run lint:design:strict` | **0** | 3268ms | PASS |
+| G06 | 设计 Token 生成一致性 | `bun run design:tokens:check` | **0** | 153ms | PASS |
+| G07 | 3.0 Showcase 同步校验 | `bun run design:showcase:check` | **0** | 200ms | PASS |
+| G08 | 现行对比度门禁 | `bun run verify:contrast` | **0** | 411ms | PASS |
+| G09 | 版权头检查 | `bun run copyright:check` | 1 | 598ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
+| G10 | 全量 oxlint | `bun run lint` | 1 | 2492ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
+| G12 | 6.0 Showcase 视觉回归（Playwright） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/visual-check.mjs` | **0** | 5443ms | PASS |
+| G13 | 6.0 无障碍（axe-core + 真实 Tab） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/a11y-check.mjs` | **0** | 30404ms | PASS |
+| G14 | 全量单元测试（vitest） | `bun run test` | **0** | 438803ms | PASS |
+| G15 | 构建校验（tsgo + rsbuild） | `bun run build:check` | **0** | 26810ms | PASS |
+| G17 | 6.0 真实页面回归（本地 SPA + 像素验证） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/real-page-regression.mjs` | **0** | 20090ms | PASS |
+| G16 | 6.0 自动化检查器（C01-C22） | `bun run design:6:check` | **0** | 505ms | PASS |
+| G18 | 6.0 整改验证器（48 项探针 + 机器可读报告） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-uds6-remediation.mjs` | **0** | 793ms | PASS |
 
-- 6.0 检查器 `check-design-system-6.0.mjs` 的 C01–C17 最终结果见 `GATE-EVIDENCE.json` 的 `checker` 字段（报告写盘后复跑）。
+- 6.0 检查器 `check-design-system-6.0.mjs` 的 C01–C21 最终结果见 `GATE-EVIDENCE.json` 的 `checker` 字段（报告写盘后复跑）。
 - 全量单元测试：`bun run test` EXIT=0；构建校验：`bun run build:check` EXIT=0。
 
 ### 9.1 非零退出项归属（不掩盖、不擅自修改）
@@ -182,7 +182,7 @@
 归属判定：诊断涉及 2 个文件，其中 0 个文件在 HEAD 中已含 `async ({}, testInfo)` 空对象绑定（证明 lint error 已进入仓库基线而非本轮引入）；属于本轮 6.0 产物的文件数 = 0。
 
 ```
-copyright: checked 1574, added 2, updated 0, skipped generated 6, skipped third-party 1566
+copyright: checked 1569, added 2, updated 0, skipped generated 7, skipped third-party 1560
 $ node scripts/add-copyright.mjs --check
 copyright: headers need to be updated in:
 - scripts/rehype-tasklist-labels.mjs
@@ -194,61 +194,27 @@ error: script "copyright:check" exited with code 1
 
 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项但不擅自修改
 
-  - `e2e/axe/authed.spec.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `e2e/axe/lib/service-gate.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `e2e/axe/public.spec.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `e2e/business/lib/service-gate.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `e2e/business/specs/business.spec.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
   - `e2e/visual/auth.setup.spec.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=true
   - `e2e/visual/authed.spec.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=true
-  - `e2e/visual/lib/service-gate.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `e2e/visual/lib/target.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
   - `e2e/visual/public.spec.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=true
-  - `scripts/add-showcase-anchors.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/audit-settings-input-hints.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/check-component-registry.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/check-design-tokens.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/gen-lobe-icon-variants.cjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/generate-design-showcase.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/generate-design-tokens.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/sync-design-showcase.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/verify-contrast.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `scripts/visual-regression.mjs` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/__axe-experiment.test.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/components/ai-elements/prompt-input.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/components/turnstile.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/design-system/__tests__/semantic-colors.test.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/dashboard/components/overview/__tests__/setup-guide.test.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/dashboard/lib/stats.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/dashboard/lib/text.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/profile/__tests__/settings.test.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/rankings/index.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/system-settings/general/channel-affinity/constants.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/system-settings/integrations/amount-discount-visual-editor.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/system-settings/integrations/amount-options-visual-editor.tsx` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/system-settings/integrations/utils.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/system-settings/models/utils.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/features/system-settings/utils/json-parser.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/hooks/use-system-config.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
-  - `src/lib/admin-permissions.ts` · HEAD_BASELINE · gitStatus=`CLEAN` · headExists=true · headHasEmptyPattern=false
 
 输出尾部（真实）：
 
 
-归属判定：诊断涉及 37 个文件，其中 0 个文件在 HEAD 中已含 `async ({}, testInfo)` 空对象绑定（证明 lint error 已进入仓库基线而非本轮引入）；属于本轮 6.0 产物的文件数 = 0。
+归属判定：诊断涉及 3 个文件，其中 0 个文件在 HEAD 中已含 `async ({}, testInfo)` 空对象绑定（证明 lint error 已进入仓库基线而非本轮引入）；属于本轮 6.0 产物的文件数 = 0。
 
 ```
-  ! unicorn(prefer-number-properties): Use `Number.parseInt` instead of the global `parseInt`
-    ,-[scripts/verify-contrast.mjs:39:15]
- 38 |   const [r, g, b] = [0, 2, 4].map((i) => {
- 39 |     const v = parseInt(c.slice(i, i + 2), 16) / 255
-    :               ^^^^^^^^
- 40 |     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
-    `----
-  help: Replace it with `Number.parseInt`
+  ! eslint(prefer-template): Unexpected string concatenation.
+     ,-[e2e/axe/authed.spec.ts:138:5]
+ 137 |     blockingByRoute,
+ 138 |     '鉴权页存在 critical/serious 可访问性违规：\n' + blockingByRoute.join('\n')
+     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 139 |   ).toEqual([])
+     `----
+  help: Use template literals instead of string concatenation.
 
-Found 78 warnings and 3 errors.
-Finished in 860ms on 1502 files with 186 rules using 16 threads.
+Found 81 warnings and 3 errors.
+Finished in 1.3s on 1496 files with 186 rules using 16 threads.
 $ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .
 error: script "lint" exited with code 1
 ```
@@ -265,7 +231,7 @@ error: script "lint" exited with code 1
 | EX-003 | Android / iOS / HarmonyOS 未实现 | OPEN | 原生工程入库时 |
 | EX-004 | RTL 未支持 | OPEN | 新增 RTL locale 时 |
 | EX-005 | 规范—实现双轨 | OPEN | Phase 6 全站迁移完成 |
-| EX-006 | web/src/components/ai-elements/shimmer.tsx 手写渐变 | OPEN | Phase 7 旧版清理完成后注销 |
+| EX-006 | web/src/components/ai-elements/shimmer.tsx 手写渐变 | RESOLVED | — |
 
 - `DEPRECATED-REGISTRY.json` 登记了 E28、旧渐变三档、5 个旧 syntax Token、JSON 编辑器 chart 色滥用等待清理项。**Phase 7 清理本轮未执行**；禁止在基线冻结前删除现行 `web/src` 实现。
 
@@ -273,14 +239,14 @@ error: script "lint" exited with code 1
 
 1. 打开 `/design-system/6.0` 或 `SHOWCASE-6.0.html`，逐模块审核 38 个规范分区。
 2. 切换 Light / Dark，重点看品牌渐变文字、代码块、Primary / Destructive 按钮在 Dark 下的可读性。
-3. 用 Token Inspector 核对 254 个 Token，确认字号 / 间距 / 圆角档位符合预期。
+3. 用 Token Inspector 核对 384 个 Token，确认字号 / 间距 / 圆角档位符合预期。
 4. 确认 12 种语言语法高亮示例与 20 个 syntax Token 的语义分工。
 5. 确认新旧渐变对比是否可以接受，从而决定 E28 是否注销。
 6. 明确回复是否**冻结 6.0.0 视觉基线**；只有冻结后才授权 Phase 6。
 
 ### 10.3 最终结论
 
-- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C17 自动检查 / Showcase 范围视觉与无障碍 / 现行工程门禁未破坏。
+- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C21 自动检查 / Showcase 范围视觉与无障碍 / 现行工程门禁未破坏。
 - **已完成但未验证**：`runtime/` 产物尚未接入真实页面；5 个高亮引擎 Adapter 尚未接线；真实页面上的渐变与 syntax 观感未验证。
 - **未完成**：Phase 5 用户审核、Phase 6 全站迁移、Phase 7 清理、Phase 8 全站视觉回归。
 - **总体状态**：`IMPLEMENTED_NOT_VERIFIED` → `PENDING_USER_REVIEW`。**不是** `ACCEPTANCE_READY`，**不是** `ACCEPTED`。
@@ -291,15 +257,15 @@ error: script "lint" exited with code 1
 | 项目 | 实测值 |
 |---|---|
 | 分支 | `main` |
-| HEAD | `58ad9f607 UAP Phase 2: regenerate verification evidence; self-test 161/161 green` |
-| HEAD 提交文件数 | 1233 |
-| 6.0 目录已被 HEAD 跟踪的文件数 | 61 |
-| 6.0 目录当前工作区改动项 | 29 |
+| HEAD | `012c08eaf fix(uap): 单一批次验收的两个真实阻塞根因（批次分裂与隔离栈挂起）` |
+| HEAD 提交文件数 | 3 |
+| 6.0 目录已被 HEAD 跟踪的文件数 | 65 |
+| 6.0 目录当前工作区改动项 | 76 |
 | 本任务 Git 动作 | 无 commit / push / merge / rebase |
 
-- 观察到 HEAD 提交（`58ad9f607 UAP Phase 2: regenerate verification evidence; self-test 161/161 green`）覆盖 1233 个文件并包含 6.0 目录的 61 个产物。**本任务未执行任何 Git 写操作，该提交不是本任务产生的**；且它发生在视觉审核与验收完成之前，即未收敛产物已被纳入版本库。入库 ≠ `VERIFIED` ≠ `ACCEPTED`，不改变本报告 §1 的状态判定。
+- 观察到 HEAD 提交（`012c08eaf fix(uap): 单一批次验收的两个真实阻塞根因（批次分裂与隔离栈挂起）`）覆盖 3 个文件并包含 6.0 目录的 65 个产物。**本任务未执行任何 Git 写操作，该提交不是本任务产生的**；且它发生在视觉审核与验收完成之前，即未收敛产物已被纳入版本库。入库 ≠ `VERIFIED` ≠ `ACCEPTED`，不改变本报告 §1 的状态判定。
 - 由此带来一个真实后果：`lint` 的 3 个 `no-empty-pattern` error 与 `copyright:check` 的 2 个缺头文件目前都已是 **HEAD 基线内容**（`git status` 显示 CLEAN），而不是本轮未提交 WIP；详见 §9.1。按 `AGENTS.md` 变更保护纪律，本轮仍不擅自修改。
-- 当前工作区仍有 29 项 6.0 改动（本轮重建产物），**尚未提交**。按 `AGENTS.md` 单分支工作模式与「提交/推送逐次单独授权」纪律，本任务不代为提交。
+- 当前工作区仍有 76 项 6.0 改动（本轮重建产物），**尚未提交**。按 `AGENTS.md` 单分支工作模式与「提交/推送逐次单独授权」纪律，本任务不代为提交。
 - 并发 WIP 保护已生效：`lint` 与 `copyright:check` 的失败项已定位到并发修改或 HEAD 基线，未覆盖任何用户未提交修改（见 §9.1）。
 
 ---

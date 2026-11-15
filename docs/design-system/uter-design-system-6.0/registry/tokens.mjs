@@ -11,7 +11,12 @@
  * 全部数值为确定值；禁止 TBD / TODO / 待定 / 按需调整。
  */
 
-import { runVerification } from './contrast-engine.mjs'
+import { runVerification, GRADIENT_INTERPOLATION, GRADIENT_SAMPLE_COUNT } from './contrast-engine.mjs'
+import { VSCODE_SYNTAX } from './vscode-theme.mjs'
+import {
+  EXTRA_COLOR_GROUPS, COMPONENT_SPECS, PRODUCT_CONTEXTS,
+  COLOR_LAYERS, CHART_NON_COLOR_CHANNELS,
+} from './color-architecture.mjs'
 
 export const VERSION = '6.0.0'
 export const STATUS = 'IMPLEMENTED_NOT_VERIFIED'
@@ -59,7 +64,7 @@ const COLOR_GROUPS = [
       ['raised', '#FFFFFF', '#1B2436', '浮起表面（弹层 / 下拉）'],
       ['sunken', '#F1F5F9', '#080D18', '下沉表面（代码块 / 井）'],
       ['code', '#F6F8FA', '#0E1524', '代码编辑器背景（对比度实测基准）'],
-      ['terminal', '#000000', '#000000', '终端预览背景'],
+      ['terminal', '#F1F5F9', '#0A101E', '终端预览背景（Light / Dark 独立，禁止共用纯黑）'],
       ['overlay', '#FFFFFF', '#1B2436', '浮层容器背景'],
     ],
   },
@@ -67,8 +72,9 @@ const COLOR_GROUPS = [
     layer: 'semantic', prefix: 'text', description: 'Text Colors —— 全部在 canvas / surface 两种背景上实测 ≥4.5:1',
     items: [
       ['primary', '#0F172A', '#F1F5F9', '主文本'],
-      ['secondary', '#5B6779', '#94A3B8', '次级文本'],
-      ['muted', '#5B6779', '#94A3B8', '弱化文本'],
+      ['secondary', '#475569', '#CBD5E1', '次级文本（与 muted / tertiary 明确区分）'],
+      ['tertiary', '#64748B', '#94A3B8', '辅助文本（独立 HEX，不再由 color-mix 派生）'],
+      ['muted', '#5B6779', '#A1B0C3', '弱化文本（与 secondary / tertiary 明确区分）'],
       ['disabled', '#94A3B8', '#64748B', '禁用文本（WCAG 1.4.3 禁用控件例外，已登记）'],
       ['link', '#1D4ED8', '#93C5FD', '链接'],
       ['on-brand', '#FFFFFF', '#FFFFFF', '品牌实底按钮前景（实测 5.01:1）'],
@@ -113,7 +119,7 @@ const COLOR_GROUPS = [
     ],
   },
   {
-    layer: 'semantic', prefix: 'gradient', description: 'Gradient Colors —— 101 点采样实测，全区间 ≥4.5:1',
+    layer: 'semantic', prefix: 'gradient', description: 'Gradient Colors —— ' + GRADIENT_SAMPLE_COUNT + ' 点采样 × 7 背景实测，全区间 ≥4.5:1，插值空间 ' + GRADIENT_INTERPOLATION,
     items: [
       ['light-from', '#1D4ED8', null, 'Light 起点 0%'],
       ['light-via', '#6D28D9', null, 'Light 中点 50%'],
@@ -167,16 +173,16 @@ const COLOR_GROUPS = [
   {
     layer: 'semantic', prefix: 'terminal', description: 'Terminal Colors —— 终端预览专用，不与 Syntax 互引',
     items: [
-      ['background', '#000000', '#000000', '终端背景'],
-      ['foreground', '#E2E8F0', '#E2E8F0', '终端前景'],
-      ['prompt', '#34D399', '#34D399', '提示符'],
-      ['command', '#047857', '#6EE7B7', '命令'],
-      ['flag', '#2563EB', '#93C5FD', '参数'],
+      ['background', '#F1F5F9', '#0A101E', '终端背景（Light / Dark 独立）'],
+      ['foreground', '#0F172A', '#E2E8F0', '终端前景'],
+      ['prompt', '#047857', '#34D399', '提示符'],
+      ['command', '#0F766E', '#6EE7B7', '命令'],
+      ['flag', '#1D4ED8', '#93C5FD', '参数'],
       ['property', '#0369A1', '#7DD3FC', '属性'],
       ['string', '#B45309', '#FCD34D', '字符串'],
-      ['number', '#7C3AED', '#C4B5FD', '数字'],
-      ['online', '#10B981', '#34D399', '在线指示'],
-      ['dot', 'rgba(226, 232, 240, 0.15)', 'rgba(226, 232, 240, 0.15)', '窗口点'],
+      ['number', '#6D28D9', '#C4B5FD', '数字'],
+      ['online', '#047857', '#34D399', '在线指示'],
+      ['dot', 'rgba(15, 23, 42, 0.15)', 'rgba(226, 232, 240, 0.15)', '窗口点'],
     ],
   },
 ]
@@ -419,34 +425,73 @@ export function buildManifest() {
   if (v.verdict !== 'PASS') throw new Error(`对比度引擎未通过，禁止冻结 6.0 数值: ${v.verdict}`)
 
   const tokens = {}
-  const add = (name, layer, category, type, unit, light, dark, description, themeIndependent = false) => {
+  const add = (name, layer, category, type, unit, light, dark, description, themeIndependent = false, meta = {}) => {
     if (tokens[name]) throw new Error(`Token 重复定义: ${name}`)
-    tokens[name] = { layer, category, type, unit, light, dark, description, themeIndependent }
-  }
-
-  for (const g of COLOR_GROUPS) {
-    for (const [short, light, dark, description] of g.items) {
-      add(`--ds-color-${g.prefix}-${short}`, g.layer, g.prefix, 'color', 'color', light, dark ?? light, description, dark === null)
+    tokens[name] = {
+      layer, category, type, unit, light, dark, description, themeIndependent,
+      // 运行时隔离名：3.0 已有同名 --ds-* 且取值冲突（见 LIGHT-DARK-CONSISTENCY-AUDIT）。
+      // 所有真实组件只消费 --ds6-*，由 build.mjs 从本字段派生 bridge CSS。
+      runtimeName: '--ds6-' + name.slice(5),
+      semanticMeaning: meta.semanticMeaning ?? description,
+      consumer: meta.consumer ?? null,
+      consumerNote: meta.consumerNote ?? null,
+      contrastRequirement: meta.contrastRequirement ?? null,
+      deprecated: meta.deprecated ?? false,
+      colorLayer: meta.colorLayer ?? null,
+      runtimeBridge: meta.runtimeBridge ?? (type === 'color'),
+      vscodeSource: meta.vscodeSource ?? null,
     }
   }
 
-  // 20 个 Syntax Token —— 值来自引擎冻结结果（Light / Dark 各一份）
-  const syntaxNames = Object.keys(v.frozen['syntax-light'])
-  for (const name of syntaxNames) {
-    add(
-      `--ds-${name}`, 'semantic', 'syntax', 'color', 'color',
-      v.frozen['syntax-light'][name], v.frozen['syntax-dark'][name],
-      `语法高亮语义 ${name.replace('syntax-', '')}（真实代码背景实测 ≥4.5:1）`
-    )
+  const ALL_COLOR_GROUPS = [
+    ...COLOR_GROUPS.map((g) => ({
+      ...g,
+      colorLayer: g.layer === 'primitive' ? 'primitive' : 'semantic',
+      contrastRequirement: '>= 4.5:1 on canvas / surface / raised / sunken / overlay / code-bg',
+    })),
+    ...EXTRA_COLOR_GROUPS,
+  ]
+
+  for (const g of ALL_COLOR_GROUPS) {
+    for (const item of g.items) {
+      const [short, light, dark, description, semantic, consumer] = item
+      add(`--ds-color-${g.prefix}-${short}`, g.layer, g.prefix, 'color', 'color', light, dark ?? light, description, dark === null, {
+        semanticMeaning: semantic ?? description,
+        consumer: consumer ?? null,
+        consumerNote: g.consumerNote ?? null,
+        contrastRequirement: g.contrastRequirement ?? null,
+        colorLayer: g.colorLayer,
+        runtimeBridge: true,
+      })
+    }
   }
 
-  // 渐变方向 / 单一出口
-  add('--ds-gradient-direction', 'semantic', 'gradient', 'keyword', 'css', '90deg', '90deg', 'linear-gradient(90deg, from 0%, via 50%, to 100%)', true)
-  add('--ds-gradient-utility', 'semantic', 'gradient', 'keyword', 'identifier', 'ds-text-gradient-brand', 'ds-text-gradient-brand', '全站唯一渐变出口', true)
+  // 20 个 Syntax Token —— 唯一来源是 VS Code 官方 Light+ / Dark+ 主题源码，
+  // 经有限 WCAG 调整后的 adopted 值；禁止另写一套色值。
+  for (const r of VSCODE_SYNTAX.rows) {
+    add(`--ds-syntax-${r.key}`, 'semantic', 'syntax', 'color', 'color', r.adopted.light, r.adopted.dark,
+      `语法高亮 ${r.key}（官方 ${r.officialLight} / ${r.officialDark}）`, false, {
+        semanticMeaning: 'VS Code TextMate scope: ' + r.scope,
+        consumer: 'web/src/components/ai-elements/code-block.tsx; web/src/styles/index.css (yace); web/src/features/task-plugins/components/javascript-viewer.tsx',
+        contrastRequirement: '>= 4.5:1 on code-bg Light / Dark',
+        colorLayer: 'semantic',
+        vscodeSource: {
+          scope: r.scope, officialLight: r.officialLight, officialDark: r.officialDark,
+          adoptedLight: r.adopted.light, adoptedDark: r.adopted.dark, adjustment: r.adjustment,
+        },
+      })
+  }
 
+  // 渐变方向 / 插值空间 / 单一出口
+  add('--ds-gradient-direction', 'semantic', 'gradient', 'keyword', 'css', '90deg', '90deg', 'linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)', true, { runtimeBridge: true, colorLayer: 'semantic' })
+  add('--ds-gradient-interpolation', 'semantic', 'gradient', 'keyword', 'css', GRADIENT_INTERPOLATION, GRADIENT_INTERPOLATION, 'CSS 渐变插值颜色空间；必须与 contrast-engine.mjs 一致', true, { runtimeBridge: true, colorLayer: 'semantic' })
+  add('--ds-gradient-utility', 'semantic', 'gradient', 'keyword', 'identifier', 'ds-text-gradient-brand', 'ds-text-gradient-brand', '全站唯一渐变出口', true, { runtimeBridge: false })
+
+  // 标量 Token（字号 / 间距 / 圆角 / 动效等）不注入 web/src 运行时：
+  // 现行 3.0 已有一套权威刻度，注入会形成第二套并改变页面字号。差异登记在 COMPAT-MAP。
   for (const g of SCALAR_GROUPS) {
     for (const [name, value, unit, description] of g.items) {
-      add(name, g.layer, g.category, g.type, unit, value, value, description, true)
+      add(name, g.layer, g.category, g.type, unit, value, value, description, true, { runtimeBridge: false, consumer: null })
     }
   }
 
@@ -468,6 +513,12 @@ export function buildManifest() {
       layers: ['Primitive Tokens', 'Semantic Tokens', 'Component Tokens', 'Component Specifications', 'Page Templates'],
       flow: 'Primitive → Semantic → Component → UI Component → Product Page',
       rule: '业务页面不得直接引用未经登记的 Primitive 色值',
+      // §4.1 五层颜色架构：每个颜色 Token 的 colorLayer 都可被检查器验证。
+      colorLayers: COLOR_LAYERS,
+      colorLayerFlow: 'L1 Primitive → L2 Semantic → L3 Component → L4 Interaction → L5 Product Context',
+      componentSpecs: COMPONENT_SPECS,
+      productContexts: PRODUCT_CONTEXTS,
+      pageTemplates: ['Dashboard', 'Models', 'API Keys', 'Wallet / Recharge', 'Orders', 'Usage Logs', 'Settings', 'Docs', 'Auth', 'Pricing'],
     },
     naming: { prefix: '--ds-', rule: '语义 Token 必须可读、可追踪；同名 Token 只允许定义一次' },
     themes: {
@@ -477,7 +528,11 @@ export function buildManifest() {
     contrast: {
       thresholds: { normalText: 4.5, largeText: 3.0, nonText: 3.0 },
       engine: 'registry/contrast-engine.mjs',
-      sampling: '101 points per theme on canvas / surface / code-bg',
+      sampling: '1001 points (0..100 step 0.1) + all stops, on 7 real text backgrounds per theme',
+      sampleCount: GRADIENT_SAMPLE_COUNT,
+      gradientInterpolation: GRADIENT_INTERPOLATION,
+      cssInterpolation: 'linear-gradient(90deg in srgb, ...)',
+      backgroundMatrix: v.backgrounds,
       verdict: v.verdict,
       gradient: {
         light: { minRatio: v.gradient.light.minRatio, passes45: v.gradient.light.passesNormalText45 },
@@ -506,6 +561,35 @@ export function buildManifest() {
       { name: 'Marked', version: '^18.0.5', adapter: 'code fence → shared renderer', renderer: 'components/ui/markdown.tsx' },
       { name: 'Shiki', version: '^4.3.0', adapter: 'language type only; colors must map to --ds-syntax-*', renderer: 'code-block.tsx' },
     ],
+    // §5.1 VS Code 官方主题对照：20 个语法 Token 的权威来源与差异登记。
+    vscodeTheme: {
+      source: VSCODE_SYNTAX.source,
+      files: VSCODE_SYNTAX.files,
+      includeChain: VSCODE_SYNTAX.includeChain,
+      editor: VSCODE_SYNTAX.editor,
+      uterCodeBackground: VSCODE_SYNTAX.uterCodeBackground,
+      wcagTarget: VSCODE_SYNTAX.wcagTarget,
+      mapping: VSCODE_SYNTAX.rows,
+      baselineDifferenceCount: VSCODE_SYNTAX.rows.reduce((a, r) => a + (r.baselineDiffers.light ? 1 : 0) + (r.baselineDiffers.dark ? 1 : 0), 0),
+      adjustedCount: VSCODE_SYNTAX.rows.filter((r) => r.adjustment.light.adjusted || r.adjustment.dark.adjusted).length,
+      evidence: 'audit/vscode/SOURCE-METADATA.json',
+    },
+    // §4.5 / §八 图表不得只靠颜色区分数据。
+    chartPolicy: {
+      seriesCount: 12,
+      nonColorChannels: CHART_NON_COLOR_CHANNELS,
+      rule: 'series > 6 时必须直接标注；线型 / 点型 / 图例三通道必须可用',
+    },
+    // §2.3 / §十二 运行时接入边界：bridge 只注入颜色语义层，不覆盖 3.0 同名变量。
+    runtimeBridge: {
+      canonicalPrefix: '--ds-',
+      runtimePrefix: '--ds6-',
+      isolationReason: 'web/src/design-system/tokens/colors.css 已定义同名 --ds-* 且取值冲突（surface-overlay 语义反转）',
+      injectedFile: 'web/src/design-system/tokens/uds-semantic-bridge.css',
+      entryImport: 'web/src/styles/index.css',
+      rollback: '删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚',
+      excludeScalarTokens: true,
+    },
     fontPolicy: {
       uiStackVerifiedAgainst: 'web/src/styles/theme.css:301-306',
       monoStackVerifiedAgainst: 'web/src/styles/theme.css:324-328',

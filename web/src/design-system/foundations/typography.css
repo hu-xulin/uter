@@ -223,12 +223,48 @@ For commercial licensing, please contact support@uter.ai
  * 注意 `@utility`（不是 `@layer utilities`）：只有前者会被 Tailwind 的变体
  * 系统识别，`hover:ds-text-gradient-brand` 这类写法才生成选择器。 */
 @utility ds-text-gradient-brand {
+  /* UDS 6.0：渐变值来自 TOKEN-MANIFEST 派生的 --ds6-* 语义层（唯一真源）。
+   * `in srgb` 与 registry/contrast-engine.mjs 的 1001 点 sRGB 采样严格同源；
+   * 旧浏览器降级见 uds-semantic-bridge.css 的 @supports not 块（视觉等价，不引入第三套值）。 */
   background-image: linear-gradient(
-    to right,
-    var(--ds-color-brand-gradient-from),
-    var(--ds-color-brand-gradient-via),
-    var(--ds-color-brand-gradient-to)
+    90deg in srgb,
+    var(--ds6-color-gradient-light-from),
+    var(--ds6-color-gradient-light-via),
+    var(--ds6-color-gradient-light-to)
   );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Light / Dark 使用各自经过 1001 点验证的渐变，不再共用低对比度旧值。 */
+.dark .ds-text-gradient-brand {
+  background-image: linear-gradient(
+    90deg in srgb,
+    var(--ds6-color-gradient-dark-from),
+    var(--ds6-color-gradient-dark-via),
+    var(--ds6-color-gradient-dark-to)
+  );
+}
+
+/* ── 受控渐变文字出口 #2：加载态扫光 ──────────────────────────────────────
+ * 原来 shimmer.tsx 在业务组件里手写 `bg-clip-text text-transparent` +
+ * 内联 linear-gradient（EX-006）。这里把渐变定义收进 foundations 唯一 owner，
+ * 色值沿用现有 --color-background / --color-muted-foreground，视觉零变化。
+ * 底层文字色 --color-muted-foreground 已通过对比度验证；扫光层是动画装饰，
+ * 不承载文字信息，不依赖颜色传递状态。 */
+@utility ds-text-shimmer {
+  background-size: 250% 100%, auto;
+  background-repeat: no-repeat, padding-box;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent calc(50% - var(--ds6-shimmer-spread)),
+      var(--color-background) calc(50% - var(--ds6-shimmer-spread)),
+      var(--color-background) calc(50% + var(--ds6-shimmer-spread)),
+      transparent calc(50% + var(--ds6-shimmer-spread))
+    ),
+    linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

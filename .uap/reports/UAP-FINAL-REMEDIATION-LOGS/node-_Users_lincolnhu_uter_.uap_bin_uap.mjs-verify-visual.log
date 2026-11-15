@@ -1,0 +1,255 @@
+[UAP] FAIL (exit 1) — visual regression FAILED: exit=1 pass=1 fail=28 diffs=28 unclassified=0
+{
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "status": "FAIL",
+  "suite": "visual_regression",
+  "command": "npx playwright test --config e2e/visual/playwright.config.ts",
+  "exit_code": 1,
+  "items": [
+    {
+      "id": "visual_0_登录链路冒烟：凭据可登录",
+      "title": "登录链路冒烟：凭据可登录",
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_1_鉴权页面基线 - desktop",
+      "title": "鉴权页面基线 - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_2_鉴权页面基线 - mobile",
+      "title": "鉴权页面基线 - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_3_home - desktop",
+      "title": "home - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_4_home - mobile",
+      "title": "home - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_5_about - desktop",
+      "title": "about - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_6_about - mobile",
+      "title": "about - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_7_pricing - desktop",
+      "title": "pricing - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_8_pricing - mobile",
+      "title": "pricing - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_9_rankings - desktop",
+      "title": "rankings - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_10_rankings - mobile",
+      "title": "rankings - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_11_docs - desktop",
+      "title": "docs - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_12_docs - mobile",
+      "title": "docs - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_13_sign-in - desktop",
+      "title": "sign-in - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_14_sign-in - mobile",
+      "title": "sign-in - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_15_sign-up - desktop",
+      "title": "sign-up - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_16_sign-up - mobile",
+      "title": "sign-up - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_17_forgot-password - desktop",
+      "title": "forgot-password - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_18_forgot-password - mobile",
+      "title": "forgot-password - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_19_error-404 - desktop",
+      "title": "error-404 - desktop",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
+      "runner_ok": false,
+      "runner_statuses": [
+        "failed"
+      ],
+      "evidence_ref": null
+    },
+    {
+      "id": "visual_20_error-404 - mobile",
+      "title": "error-404 - mobile",
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
+… (truncated; use --json for full output)
+evidence: UAP-EV-20261115044238-b54d3a37

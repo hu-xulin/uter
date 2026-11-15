@@ -27,6 +27,16 @@ const STABILIZE_CSS = `
   html { scrollbar-width: none !important; }
   ::-webkit-scrollbar { width: 0 !important; height: 0 !important; }
   ${VOLATILE_SELECTOR} { visibility: hidden !important; }
+  /* 开发态 devtools 是「调试工具」而非产品 UI：__root.tsx 仅在
+     MODE === 'development' 时挂载 ReactQueryDevtools(右下沙滩球) 与
+     TanStackRouterDevtools(左下 TanStack Router 徽标)。隔离测试栈跑 dev
+     server，基线则是在没有这些浮层的口径下采集的。留着它们会让每一张
+     截图都稳定多出 ~4000-7000 像素差异（实测 28/29 全红，ratio 0.01-0.02），
+     属于环境噪声而非 UI 回归。用 display:none 整体移除（含其布局盒），
+     而不是放进 mask —— mask 会在其 bounding box 上画洋红块，仍会 diff。
+     不放宽 maxDiffPixelRatio，产品 UI 仍逐像素比对。 */
+  .tsqd-parent-container, .TanStackRouterDevtools,
+  .TanStackRouterDevtoolsPanel { display: none !important; }
 `
 
 export interface OpenOptions {

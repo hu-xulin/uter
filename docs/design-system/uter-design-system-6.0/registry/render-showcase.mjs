@@ -8,6 +8,10 @@
  */
 
 import { runVerification } from './contrast-engine.mjs'
+import {
+  EXTENSION_CSS, EXTENSION_NAV, renderExtensions, scopedSyntaxVars,
+  colorCell, measuredTokenSet,
+} from './showcase-extensions.mjs'
 
 const esc = (s) =>
   String(s)
@@ -154,17 +158,26 @@ const LANG_SAMPLES = [
 
 const SYNTAX_CLASS = (sem) => `syn syn-${sem}`
 
-export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceComponents, registries }) {
+export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceComponents, registries, syntaxData }) {
   const v = runVerification()
   const names = Object.keys(T).sort()
+  const measured = measuredTokenSet(v)
+  const extensionNav = EXTENSION_NAV.map(([href, label]) => `<a class="nav-item" href="${esc(href)}"><span class="nav-num">••</span><span>${esc(label)}</span></a>`).join('\n')
+  const extensionSections = renderExtensions({ M, T, v, syntaxData })
+  const extensionCss = `${EXTENSION_CSS}\n${scopedSyntaxVars(T)}`
   const tokenRows = names.map((n) => {
     const t = T[n]
-    return `<tr data-token="${esc(n)}" data-token-layer="${t.layer}">
-      <td><code>${esc(n)}</code></td>
-      <td>${t.layer === 'primitive' ? '<span class="tag tag-prim">P</span>' : t.layer === 'semantic' ? '<span class="tag tag-sem">S</span>' : '<span class="tag tag-cmp">C</span>'} ${esc(t.category)}</td>
-      <td><code>${esc(cssVal(t, 'light'))}</code>${/^#|rgb|oklch/.test(String(cssVal(t, 'light'))) ? `<span class="chip" style="background:${esc(cssVal(t, 'light'))}"></span>` : ''}</td>
-      <td><code>${t.themeIndependent ? '—' : esc(cssVal(t, 'dark'))}</code>${!t.themeIndependent && /^#|rgb|oklch/.test(String(cssVal(t, 'dark'))) ? `<span class="chip" style="background:${esc(cssVal(t, 'dark'))}"></span>` : ''}</td>
-      <td>${esc(t.unit)}</td><td class="desc">${esc(t.description)}</td></tr>`
+    const isMeasured = measured.has(n)
+    const layerTag = t.layer === 'primitive' ? '<span class="tag tag-prim">P</span>' : t.layer === 'semantic' ? '<span class="tag tag-sem">S</span>' : '<span class="tag tag-cmp">C</span>'
+    return `<tr data-token="${esc(n)}" data-token-layer="${esc(t.layer)}" data-runtime-name="${esc(t.runtimeName ?? '')}" data-runtime-measured="${isMeasured ? 'MEASURED' : 'DECLARED'}">
+      <td><code>${esc(n)}</code><small class="x-mono">${esc(t.runtimeName ?? '—')}</small></td>
+      <td>${layerTag} ${esc(t.category)}<small class="x-mono">${esc(t.colorLayer ?? '—')}</small></td>
+      <td>${colorCell(cssVal(t, 'light'))}</td>
+      <td>${colorCell(t.themeIndependent ? '—' : cssVal(t, 'dark'))}</td>
+      <td>${esc(t.unit)}</td>
+      <td class="desc">${esc(t.description)}<small class="x-mono">${esc(t.semanticMeaning ?? '')}</small></td>
+      <td class="desc">${esc(t.consumer ?? '未登记')}</td>
+      <td><span class="x-badge ${isMeasured ? 'measured' : 'declared'}">${isMeasured ? 'MEASURED' : 'DECLARED'}</span><small class="x-mono">${esc(t.contrastRequirement ?? '—')}</small></td></tr>`
   }).join('\n')
 
   // 生成 CSS 变量（页面自身使用，全部来自 manifest）
@@ -298,6 +311,7 @@ section.panel > h2 { font-size:var(--ds-text-2xl); line-height:1.4; margin-botto
 .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-light-from) 0%,var(--ds-color-gradient-light-via) 50%,var(--ds-color-gradient-light-to) 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-font-ui); }
 [data-ds-theme="dark"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-dark-from) 0%,var(--ds-color-gradient-dark-via) 50%,var(--ds-color-gradient-dark-to) 100%); }
 .g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-font-ui); }
+@media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text-fill-color:CanvasText; } }
 .g-hero { font-size:var(--ds-text-5xl); line-height:var(--ds-leading-display); font-weight:var(--ds-weight-semibold); }
 .g-cta { font-size:var(--ds-text-3xl); line-height:var(--ds-leading-h2); font-weight:var(--ds-weight-semibold); }
 .g-body { font-size:var(--ds-text-base); line-height:var(--ds-leading-long); font-weight:var(--ds-weight-medium); }
@@ -433,6 +447,7 @@ td.desc { color:var(--page-muted); }
 [data-viewport="tablet"] .main { margin-left:var(--ds-layout-sidebar-collapsed); padding-inline:var(--ds-space-4); }
 [data-viewport="tablet"] .nav-item span:not(.nav-num):not(.nav-badge) { display:none; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
+${extensionCss}
 </style>
 </head>
 <body data-viewport="desktop">
@@ -451,6 +466,7 @@ td.desc { color:var(--page-muted); }
   <a class="nav-item" href="#gradient"><span class="nav-num">••</span><span>渐变新旧对比</span></a>
   <a class="nav-item" href="#syntax"><span class="nav-num">••</span><span>语法高亮预览</span></a>
   <a class="nav-item" href="#pages"><span class="nav-num">••</span><span>真实产品页面</span></a>
+${extensionNav}
   <h4>36 个正式规范模块 + 2 专项</h4>
 ${moduleNav}
 </aside>
@@ -465,7 +481,7 @@ ${moduleNav}
       <div class="stat"><b>${sourceComponents.length}</b><span>已登记组件</span></div>
       <div class="stat"><b>${routeFiles.length}</b><span>真实路由文件</span></div>
       <div class="stat"><b>20×2</b><span>Syntax Token 色值</span></div>
-      <div class="stat"><b>101×2</b><span>渐变采样点</span></div>
+      <div class="stat"><b>${v.sampleCount}×2</b><span>渐变采样点</span></div>
       <div class="stat"><b>${v.verdict}</b><span>对比度引擎判定</span></div>
     </div>
     <div class="banner"><strong>口径说明：</strong>本页所有数值来自 <code>TOKEN-MANIFEST.json</code> 单一真源；6.0 规范值已冻结并通过对比度实算，但 <code>web/src</code> 运行时仍为 3.0 / 5.0 实现现状。规范—实现差异登记为「待迁移」，全站迁移须在用户视觉审核与基线冻结后执行（Phase 5 → Phase 6）。页面预览为结构示意，不等同于真实运行的 React 组件。</div>
@@ -507,7 +523,7 @@ ${moduleNav}
 
   <section class="panel" id="gradient">
     <h2>Gradient Typography · 新旧对比（专项 01-S）</h2>
-    <p class="panel-sub">历史渐变 Light 最差 ${v.gradient.light.legacyWorst.ratio}:1 / Dark ${v.gradient.dark.legacyWorst.ratio}:1，不满足 4.5:1；6.0 新渐变 Light 最差 <strong>${v.gradient.light.finalWorst.ratio}:1</strong> / Dark <strong>${v.gradient.dark.finalWorst.ratio}:1</strong>（101 点采样），E28 例外注销。</p>
+    <p class="panel-sub">历史渐变 Light 最差 ${v.gradient.light.legacyWorst.ratio}:1 / Dark ${v.gradient.dark.legacyWorst.ratio}:1，不满足 4.5:1；6.0 新渐变 Light 最差 <strong>${v.gradient.light.finalWorst.ratio}:1</strong> / Dark <strong>${v.gradient.dark.finalWorst.ratio}:1</strong>（${v.sampleCount} 点采样 · ${esc(v.interpolation)} 插值），E28 例外注销。7 种真实背景的最差值见「渐变 7 背景矩阵」。</p>
     <div class="grid2">
       <div>
         <div class="gradient-box"><h4>当前实现（历史基线 · #60A5FA → #A78BFA → #A855F7）</h4><div class="g-old g-hero">Uter · AI Token 中转站</div><div class="g-old g-cta">Build with confidence</div><div class="g-old g-body">为开发者而生的专业技术服务平台</div></div>
@@ -523,14 +539,14 @@ ${moduleNav}
         <div class="gradient-box"><h4>使用边界</h4><p class="note">允许：Hero 主标题、CTA 标题、经批准的品牌展示标题。<br>禁止：普通正文、表格文字、表单标签、错误 / 成功提示、支付状态、余额数字、API Key、代码示例、关键业务数据。</p><p class="note">唯一出口 <code>${esc(T['--ds-gradient-utility'].light)}</code>；业务页面不得自写 <code>linear-gradient</code> / <code>bg-clip-text</code> / <code>text-transparent</code>。</p></div>
       </div>
     </div>
-    <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">渐变插值采样对比度（每 10% 摘录，完整 101 点见 CONTRAST-VERIFICATION-REPORT.md）</h3>
+    <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">渐变插值采样对比度（每 10% 摘录，完整 ${v.sampleCount} 点见 CONTRAST-VERIFICATION-REPORT.md 与渐变 7 背景矩阵）</h3>
     <div class="table-wrap" tabindex="0" role="region" aria-label="可滚动数据表"><table><thead><tr><th>位置</th><th>Light 色</th><th>canvas</th><th>surface</th><th>code-bg</th><th>Dark 色</th><th>canvas</th><th>surface</th><th>code-bg</th></tr></thead><tbody>${gradientSampleTable}</tbody></table></div>
     <p class="note">阈值：普通文字 ≥4.5:1、大号文字 ≥3:1。本方案按更严格的 4.5:1 冻结，无字号例外。方向 <code>${esc(cssVal(T['--ds-gradient-direction'], 'light'))}</code> · 字体 <code>var(--ds-font-ui)</code>（不得改变字体 / 字重 / 字号 / 行高）。</p>
   </section>
 
   <section class="panel" id="syntax">
     <h2>Syntax Highlighting Preview（专项 24-S）</h2>
-    <p class="panel-sub">20 个语义 Token × Light / Dark，全部在真实代码背景上实测：Light 最低 ${v.syntax.light.minRatio}:1、Dark 最低 ${v.syntax.dark.minRatio}:1。${LANG_SAMPLES.length} 种语言真实代码示例，统一走 <code>--ds-syntax-*</code>。</p>
+    <p class="panel-sub">20 个语义 Token × Light / Dark，全部在真实代码背景上实测：Light 最低 ${v.syntax.light.minRatio}:1、Dark 最低 ${v.syntax.dark.minRatio}:1。${LANG_SAMPLES.length} 种静态语言示例统一走 <code>--ds-syntax-*</code>；<a href="#vscode">VS Code 四栏对照</a> 使用 Shiki 真实 TextMate grammar 解析的 15 种语言，<a href="#terminal">Terminal / ANSI16</a> 使用独立终端色系。</p>
     <h3 style="font-size:var(--ds-text-sm);margin-bottom:8px">全部语法色板</h3>
     <div class="syn-grid">${syntaxSwatches}</div>
     <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">语言示例（${LANG_SAMPLES.length} 种 · 行号 / 选区 / 语言标签 / 复制）</h3>
@@ -547,10 +563,12 @@ ${moduleNav}
     <p class="note">状态 <code>STATIC_STRUCTURE_PREVIEW</code> · 不宣称 VERIFIED。真实产品内页面入口：<code>/design-system/6.0/index.html</code>（由 <code>web/public/</code> 托管，构建时复制进 <code>dist/</code>）。</p>
   </section>
 
+${extensionSections}
+
   <section class="panel" id="tokens">
     <h2>完整 Token 清单（${M.tokenCount} 个 · 零遗漏）</h2>
-    <p class="panel-sub">P = Primitive / S = Semantic / C = Component。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="完整 Token 清单（可滚动）" style="max-height:640px;overflow:auto"><table class="token-table"><thead><tr><th>Token</th><th>层 / 类别</th><th>Light</th><th>Dark</th><th>单位</th><th>说明</th></tr></thead><tbody>${tokenRows}</tbody></table></div>
+    <p class="panel-sub">P = Primitive / S = Semantic / C = Component。每行同时给出 <strong>HEX + RGB</strong>、运行时 Token 名（<code>--ds6-*</code>）、真实消费者、对比度要求与 <code>MEASURED / DECLARED</code> 实测标记。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
+    <div class="table-wrap x-scroll" tabindex="0" role="region" aria-label="完整 Token 清单（可滚动）" style="max-height:640px;overflow:auto"><table class="token-table"><thead><tr><th>Token / Runtime</th><th>层 / 类别 / 颜色层</th><th>Light HEX+RGB</th><th>Dark HEX+RGB</th><th>单位</th><th>语义说明</th><th>真实消费者</th><th>实测标记 / 对比度要求</th></tr></thead><tbody>${tokenRows}</tbody></table></div>
   </section>
 
   <h2 style="font-size:var(--ds-text-3xl);margin:var(--ds-space-10) 0 var(--ds-space-2)">36 个规范模块 + 2 个专项规范</h2>

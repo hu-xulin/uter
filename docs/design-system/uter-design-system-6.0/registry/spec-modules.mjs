@@ -7,7 +7,20 @@
  * 因此规范文档不可能与 CSS / TS / Showcase 数值漂移。
  *
  * 禁止 TBD / TODO / 待定 / 按需调整 / 参考行业标准 / 由开发人员自行决定。
+ *
+ * 渐变相关数值一律由 contrast-engine.mjs 真实计算后展开，禁止手写第二套数字。
  */
+
+import { runVerification, GRADIENT_INTERPOLATION, GRADIENT_SAMPLE_COUNT, BACKGROUNDS } from './contrast-engine.mjs'
+
+const V = runVerification()
+const GL = V.gradient.light
+const GD = V.gradient.dark
+const BG_COUNT = Object.keys(BACKGROUNDS.light).length
+const BG_KEYS = Object.keys(BACKGROUNDS.light).join(' / ')
+const SAMPLES = String(GRADIENT_SAMPLE_COUNT)
+const INTERP = GRADIENT_INTERPOLATION
+const AT = (x) => Number(x.toFixed(1)) + '%'
 
 /** 10 条设计原则（PART 02），每个模块必须声明其归属。 */
 export const PRINCIPLES = [
@@ -37,7 +50,7 @@ export const MODULES = [
   M({
     id: '00', file: '00-UTER-DESIGN-SYSTEM-OVERVIEW.md', name: 'Design System Overview',
     specId: 'UDS6-S00', principle: ['Consistency', 'Predictability', 'Accessibility'],
-    summary: '6.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。6.0 是完整重建，5.0 及更早版本仅用于历史识别、代码依赖与迁移风险分析。',
+    summary: '6.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。6.0 是完整重建且为唯一现行规范；5.0 及更早版本已删除，仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。',
     rules: [
       '五层架构固定为 Primitive Tokens → Semantic Tokens → Component Tokens → Component Specifications → Page Templates；业务页面不得直接引用未经登记的 Primitive 色值',
       '唯一数据源为 TOKEN-MANIFEST.json；CSS、TypeScript、Showcase、规范文档、自动化检查全部从它派生，禁止多处重复定义同一 Token',
@@ -80,7 +93,7 @@ export const MODULES = [
       'Dark 版本：字标 `--ds-color-text-primary` #F1F5F9，图形标 `--ds-color-brand-1` #8B8DF5',
       '品牌主色 `#5B5EE6`（Light）/ `#8B8DF5`（Dark）；品牌实底按钮使用 `--ds-color-brand-solid`（Light / Dark 同值 `#5B5EE6`，**不得用 Dark 浅化档做按钮底**），前景 `#FFFFFF` 实测 5.01:1；Hover / Active 走 `--ds-color-brand-solid-hover/active`',
       '辅助品牌色 `#494CC7` / `#3F42B0`（Light 深档），`#A1A3F7` / `#B7B8FA`（Dark 浅档）',
-      '品牌渐变：仅允许 `--ds-gradient-utility` = `ds-text-gradient-brand` 单一出口；Light `#1D4ED8 → #6D28D9 → #7E22CE`，Dark `#93C5FD → #C4B5FD → #D8B4FE`，方向 90deg',
+      '品牌渐变：仅允许 `--ds-gradient-utility` = `ds-text-gradient-brand` 单一出口；Light `#1D4ED8 → #6D28D9 → #7E22CE`，Dark `#93C5FD → #C4B5FD → #D8B4FE`，方向 90deg in ' + INTERP + '（CSS 插值空间与对比度引擎一致）',
       '品牌字体：只允许 `var(--ds-font-ui)`；禁止引入 Geist / Roboto / 其它新字体',
       '使用边界：品牌色不得代替 success / warning / danger / info 状态色，不得代替 chart-1..5，不得代替 syntax-*；不得在金额、余额、API Key、错误信息上使用渐变',
       '禁止引入第三方品牌标识、「Secured by Clerk」类文案或未经授权视觉资产',
@@ -95,7 +108,7 @@ export const MODULES = [
     ],
     do: ['Hero / CTA / 经批准的品牌展示标题使用 `ds-text-gradient-brand`', 'Logo 保持 12px 安全空间', '品牌实底按钮始终用 #5B5EE6 + 白字'],
     dont: ['用品牌紫表示支付成功', '把 chart-3 紫色当作品牌色', '手写 `linear-gradient` / `bg-clip-text` / `text-transparent`'],
-    a11y: ['渐变文字全区间 ≥4.5:1（101 点采样：Light 6.3:1 / Dark 9.59:1）', '历史渐变 Light 2.39:1 不达标，E28 例外在 6.0 注销'],
+    a11y: ['渐变文字全区间 ≥4.5:1（' + SAMPLES + ' 点采样 × ' + BG_COUNT + ' 背景：Light ' + GL.finalWorst.ratio + ':1 / Dark ' + GD.finalWorst.ratio + ':1）', '历史渐变 Light ' + GL.legacyWorst.ratio + ':1 / Dark ' + GD.legacyWorst.ratio + ':1 不达标，E28 例外在 6.0 注销'],
     responsive: ['≤480px：Hero 使用 `--ds-text-4xl` 36px/44px，字标宽度不小于 96px', '≥1440px：Hero 使用 `--ds-text-5xl` 48px/56px'],
     acceptance: ['全库 `linear-gradient` + `background-clip:text` 手写组合命中数 = 0（唯一出口除外）', '品牌实底三态白字对比度 5.01 / 6.68 / 8.02:1 全部 ≥4.5:1', ...COMMON_ACCEPTANCE],
   }),
@@ -118,7 +131,7 @@ export const MODULES = [
     ],
     tokens: ['--ds-text-sm', '--ds-leading-body', '--ds-text-2xs', '--ds-control-touch', '--ds-numeric-tabular'],
     states: ['default', 'hover', 'focus', 'active', 'disabled', 'loading', 'error', 'success'],
-    example: ['/* 原则冲突示例：品牌渐变 vs 4.5:1 → Accessibility 优先 */', '.hero-title { background-image: var(--ds-gradient-6); } /* 已实测 6.3:1 */'],
+    example: ['/* 原则冲突示例：品牌渐变 vs 4.5:1 → Accessibility 优先 */', '.hero-title { background-image: var(--ds-gradient-6); } /* 已实测 Light ' + GL.finalWorst.ratio + ':1 / Dark ' + GD.finalWorst.ratio + ':1 */'],
     do: ['在规范与 PR 中标注对应原则', '按裁决顺序解决冲突'],
     dont: ['以「品牌观感」为由保留低对比度正文', '为视觉一致牺牲资金数据可读性'],
     a11y: ['Accessibility 为最高裁决原则', '禁止用 EXCEPTION-REGISTRY 掩盖普通正文对比度缺陷'],
@@ -937,10 +950,10 @@ export const MODULES = [
     specId: 'UDS6-S01-S', parent: '01', principle: ['Clarity', 'Accessibility', 'Consistency'],
     summary: '渐变文字专项：保留蓝紫方向但重新设计色值；Light / Dark 全区间 ≥4.5:1；全站唯一出口；作为 01-S 登记在 36 模块体系内。',
     rules: [
-      '历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.39:1、Dark 最差 4.48:1，E28 例外在 6.0 注销',
+      '历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 ' + GL.legacyWorst.ratio + ':1、Dark 最差 ' + GD.legacyWorst.ratio + ':1，E28 例外在 6.0 注销',
       '6.0 Light：from #1D4ED8 / via #6D28D9 / to #7E22CE；Dark：from #93C5FD / via #C4B5FD / to #D8B4FE',
-      '方向固定 `linear-gradient(90deg, from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`）',
-      '对比度实测：在 canvas / surface / code-bg 三种背景上按 1% 步长共 101 点采样；Light 最差 6.3:1（code-bg @0%）、Dark 最差 9.59:1（surface @36%），全部 ≥4.5:1',
+      '方向固定 `linear-gradient(90deg in ' + INTERP + ', from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`、`--ds-gradient-interpolation: ' + INTERP + '`；CSS 与引擎插值空间必须一致）',
+      '对比度实测：在 ' + BG_KEYS + ' 共 ' + BG_COUNT + ' 种真实文字背景上按 0.1% 步长共 ' + SAMPLES + ' 点采样（含全部渐变 stop）；Light 最差 ' + GL.finalWorst.ratio + ':1（' + GL.finalWorst.background + ' @' + AT(GL.finalWorst.at) + '）、Dark 最差 ' + GD.finalWorst.ratio + ':1（' + GD.finalWorst.background + ' @' + AT(GD.finalWorst.at) + '），全部 ≥4.5:1',
       '阈值：普通文字 ≥4.5:1、大号文字 ≥3:1；本方案按更严格的 4.5:1 冻结，因此无字号例外',
       '渐变所有停靠点与插值区间都必须测试；不得只测起点 / 中点 / 终点',
       '字体必须使用 `var(--ds-font-ui)`；渐变只改变文字颜色，不得改变字体 / 字重 / 字号 / 行高',
@@ -951,12 +964,12 @@ export const MODULES = [
     ],
     tokens: ['--ds-color-gradient-light-from', '--ds-color-gradient-light-via', '--ds-color-gradient-light-to', '--ds-color-gradient-dark-from', '--ds-color-gradient-dark-via', '--ds-color-gradient-dark-to', '--ds-gradient-direction', '--ds-gradient-utility', '--ds-font-ui', '--ds-text-4xl', '--ds-text-5xl', '--ds-leading-h1', '--ds-leading-display'],
     states: ['default', 'hover'],
-    example: ['@utility ds-text-gradient-brand {', '  background-image: linear-gradient(90deg, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);', '  background-clip: text; color: transparent;', '}'],
-    do: ['只经 `ds-text-gradient-brand`', '101 点采样后再冻结'],
-    dont: ['保留 2.39:1 的历史渐变', '在余额 / 错误 / 表单标签用渐变', '业务组件手写 gradient / bg-clip-text'],
+    example: ['@utility ds-text-gradient-brand {', '  background-image: linear-gradient(90deg in ' + INTERP + ', var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);', '  background-clip: text; color: transparent;', '}'],
+    do: ['只经 `ds-text-gradient-brand`', SAMPLES + ' 点采样 × ' + BG_COUNT + ' 背景后再冻结'],
+    dont: ['保留 ' + GL.legacyWorst.ratio + ':1 的历史渐变', '在余额 / 错误 / 表单标签用渐变', '业务组件手写 gradient / bg-clip-text'],
     a11y: ['全区间 ≥4.5:1', 'E28 例外注销', '不满足阈值不得标 VERIFIED'],
     responsive: ['≤480px Hero 36px/44px；≥1440px Hero 48px/56px，渐变色值不变'],
-    acceptance: ['contrast-engine.mjs 101 点采样 PASS', '全库手写渐变命中 = 0（唯一出口除外）', ...COMMON_ACCEPTANCE],
+    acceptance: ['contrast-engine.mjs ' + SAMPLES + ' 点采样 × ' + BG_COUNT + ' 背景 PASS', '全库手写渐变命中 = 0（唯一出口除外）', ...COMMON_ACCEPTANCE],
   }),
 ]
 

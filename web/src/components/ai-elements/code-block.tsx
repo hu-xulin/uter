@@ -19,6 +19,8 @@ For commercial licensing, please contact support@uter.ai
 /* eslint-disable react-refresh/only-export-components */
 'use client'
 
+import { css as cssLanguage } from '@codemirror/lang-css'
+import { html as htmlLanguage } from '@codemirror/lang-html'
 import { javascript } from '@codemirror/lang-javascript'
 import { markdown } from '@codemirror/lang-markdown'
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
@@ -188,49 +190,109 @@ const codeMirrorTheme = EditorView.theme({
   },
 })
 
-/* CodeMirror 的语法高亮配色走 `--syntax-*` Token，不再写死 One Dark 的
- * 十六进制值：编辑器背景跟随 `--background`，深色模式下 One Dark 的
- * `#98c379`（绿）在深底上偏灰，写死就没法跟着主题走。 */
+/* UDS 6.0 — CodeMirror 统一语法 Adapter。
+ *
+ * 20 个语义 Token 与 VS Code Light+ / Dark+ 官方主题一一对应，实际色值由
+ * TOKEN-MANIFEST.json 派生到 uds-semantic-bridge.css 的 `--ds6-syntax-*` 变量；
+ * 本文件只负责把 Lezer tag 映射到语义名，绝不写死 HEX，也不把
+ * inserted / deleted / invalid 塌缩成 keyword。
+ *
+ * 同一套 --ds6-syntax-* 也被 yace JSON 编辑器（styles/index.css）、
+ * javascript-viewer.tsx 与 Showcase 的 Shiki Adapter 共享。 */
+export const SYNTAX_ADAPTER = [
+  {
+    token: 'keyword',
+    tags: [highlightTags.keyword, highlightTags.controlKeyword, highlightTags.definitionKeyword, highlightTags.moduleKeyword, highlightTags.operatorKeyword, highlightTags.modifier],
+  },
+  {
+    token: 'string',
+    tags: [highlightTags.string, highlightTags.special(highlightTags.string), highlightTags.character, highlightTags.monospace],
+  },
+  {
+    token: 'number',
+    tags: [highlightTags.number, highlightTags.integer, highlightTags.float, highlightTags.unit],
+  },
+  {
+    token: 'function',
+    tags: [highlightTags.function(highlightTags.variableName), highlightTags.heading],
+    fontWeight: '600',
+  },
+  {
+    token: 'property',
+    tags: [highlightTags.propertyName, highlightTags.labelName],
+  },
+  {
+    token: 'variable',
+    tags: [highlightTags.variableName, highlightTags.self, highlightTags.local(highlightTags.variableName), highlightTags.strong, highlightTags.emphasis],
+  },
+  {
+    token: 'type',
+    tags: [highlightTags.typeName, highlightTags.className, highlightTags.namespace, highlightTags.standard(highlightTags.typeName)],
+  },
+  {
+    token: 'operator',
+    tags: [highlightTags.operator],
+  },
+  {
+    token: 'punctuation',
+    tags: [highlightTags.punctuation, highlightTags.separator, highlightTags.bracket, highlightTags.paren, highlightTags.brace, highlightTags.squareBracket, highlightTags.angleBracket, highlightTags.contentSeparator, highlightTags.list],
+  },
+  {
+    token: 'comment',
+    tags: [highlightTags.comment, highlightTags.lineComment, highlightTags.blockComment, highlightTags.docComment, highlightTags.quote, highlightTags.meta, highlightTags.processingInstruction],
+    fontStyle: 'italic',
+  },
+  {
+    token: 'constant',
+    tags: [highlightTags.constant(highlightTags.variableName), highlightTags.literal, highlightTags.color, highlightTags.link, highlightTags.url],
+  },
+  {
+    token: 'boolean',
+    tags: [highlightTags.bool],
+  },
+  {
+    token: 'null',
+    tags: [highlightTags.null],
+  },
+  {
+    token: 'tag',
+    tags: [highlightTags.tagName],
+  },
+  {
+    token: 'attribute',
+    tags: [highlightTags.attributeName],
+  },
+  {
+    token: 'regexp',
+    tags: [highlightTags.regexp, highlightTags.escape],
+  },
+  {
+    token: 'builtin',
+    tags: [highlightTags.standard(highlightTags.variableName), highlightTags.special(highlightTags.variableName), highlightTags.atom, highlightTags.content],
+  },
+  {
+    token: 'inserted',
+    tags: [highlightTags.inserted, highlightTags.changed],
+  },
+  {
+    token: 'deleted',
+    tags: [highlightTags.deleted],
+  },
+  {
+    token: 'invalid',
+    tags: [highlightTags.invalid],
+  },
+] as const
+
 const codeMirrorHighlightStyle = syntaxHighlighting(
-  HighlightStyle.define([
-    {
-      tag: highlightTags.heading,
-      color: 'var(--syntax-keyword)',
-      fontWeight: '600',
-    },
-    {
-      tag: [highlightTags.strong, highlightTags.emphasis],
-      color: 'var(--syntax-number)',
-    },
-    {
-      tag: [highlightTags.link, highlightTags.url],
-      color: 'var(--syntax-function)',
-    },
-    {
-      tag: [highlightTags.monospace, highlightTags.contentSeparator],
-      color: 'var(--syntax-string)',
-    },
-    {
-      tag: [highlightTags.keyword, highlightTags.processingInstruction],
-      color: 'var(--syntax-keyword)',
-    },
-    {
-      tag: [highlightTags.atom, highlightTags.bool, highlightTags.number],
-      color: 'var(--syntax-number)',
-    },
-    {
-      tag: [highlightTags.string, highlightTags.inserted],
-      color: 'var(--syntax-string)',
-    },
-    {
-      tag: [highlightTags.deleted, highlightTags.invalid],
-      color: 'var(--syntax-keyword)',
-    },
-    {
-      tag: [highlightTags.meta, highlightTags.comment],
-      color: 'var(--muted-foreground)',
-    },
-  ])
+  HighlightStyle.define(
+    SYNTAX_ADAPTER.map((entry) => ({
+      tag: entry.tags as Parameters<typeof HighlightStyle.define>[0][number]['tag'],
+      color: `var(--ds6-syntax-${entry.token})`,
+      ...('fontStyle' in entry ? { fontStyle: entry.fontStyle } : {}),
+      ...('fontWeight' in entry ? { fontWeight: entry.fontWeight } : {}),
+    }))
+  )
 )
 
 function getRequestedCodeLanguage(language?: string) {
@@ -260,6 +322,23 @@ function getCodeMirrorLanguageExtension(language: BundledLanguage | string) {
     return javascript({ jsx: requestedLanguage === 'tsx', typescript: true })
   }
 
+  if (requestedLanguage === 'css') {
+    return cssLanguage()
+  }
+
+  // SCSS 无独立 CodeMirror 语言包：此处用 CSS 解析器近似（变量 / 嵌套不保证）。
+  // 完整 SCSS 语法由 Showcase 的 Shiki Adapter 真实解析，不代表 CodeMirror 已支持。
+  if (requestedLanguage === 'scss') {
+    return cssLanguage()
+  }
+
+  if (requestedLanguage === 'html' || requestedLanguage === 'xml') {
+    return htmlLanguage()
+  }
+
+  // Python / Go / Bash / SQL / YAML / JSON / JSONC 等语言没有安装对应的
+  // CodeMirror language 包，返回空扩展（纯文本），不虚报为已高亮。
+  // 它们的真实语法解析由 Showcase 的 Shiki Adapter 承担，并共享同一套 --ds6-syntax-*。
   return []
 }
 

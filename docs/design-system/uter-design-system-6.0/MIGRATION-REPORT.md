@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 6.0 — 现状清单与迁移报告（Phase 1 / Phase 6 清单）
 
-> 生成时间 2026-11-15T02:40:39.916Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
+> 生成时间 2026-11-15T06:01:14.564Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
 > 本报告只记录真实扫描结果，不覆盖任何并发未提交修改。
 
 ## 1. Phase 1 仓库审计（真实命令输出）
@@ -9,12 +9,12 @@
 |---|---|---|
 | 分支 | `main` | `git branch --show-current` |
 | 全仓脏区 | 998 项 | `git status --short \| wc -l` |
-| 5.0 目录脏区 | 20 份（含上一轮未提交的规范改动） | `git status --short -- docs/design-system/uter-design-system-5.0/` |
+| 5.0 目录删除前脏区 | 20 份（Phase 1 审计时点，含上一轮未提交的规范改动） | `git log` |
 | 现行设计权威 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（197,053 bytes） | `AGENTS.md` Design System Enforcement |
 | 3.0 视觉标本 | `docs/design-system/showcase.html` | 同上 |
-| 5.0 目录 | 35 份 .md + 2 份 yaml + SHOWCASE-5.0.html | `ls` |
+| 5.0 目录 | 已整体删除（2026-11-15 用户指令），删除前状态：35 份 .md + 2 份 yaml + SHOWCASE-5.0.html | `git log --diff-filter=D -- 'docs/design-system/uter-design-system-5.0/*'` |
 | 路由文件 | 72 个 `.tsx`（目录内共 74 个文件） | `find web/src/routes` |
-| CSS 文件 | 19 份 | `find web/src -name '*.css'` |
+| CSS 文件 | 20 份 | `find web/src -name '*.css'` |
 | UI 组件 | 69 个 `web/src/components/ui/` | `ls \| wc -l` |
 | Feature 目录 | 31 个 | `find web/src/features -maxdepth 1 -type d` |
 | TSX 文件 | 951 个 | `find web/src -name '*.tsx' \| wc -l` |
@@ -33,12 +33,15 @@
 
 | 项目 | 真实值 |
 |---|---|
-| 唯一出口 | `@utility ds-text-gradient-brand`（`web/src/design-system/foundations/typography.css:225`） |
-| 色值 | `--ds-color-brand-gradient-from/via/to` = `#60a5fa / #a78bfa / #a855f7`（`tokens/colors.css:119-121`） |
-| 消费点 | `features/home/components/sections/hero.tsx:157`、`cta.tsx:58` |
-| 对比度 | Light 最差 2.39:1 / Dark 最差 4.48:1 → 不达 4.5:1 |
-| 例外 | 3.0 `E28`（`UTER-DESIGN-SYSTEM-3.0.md:3528`） |
-| 手写渐变扫描 | 全库 `bg-clip-text` / `background-clip:text` / `text-transparent` 命中 2 个文件：`components/ai-elements/shimmer.tsx`、`foundations/typography.css`（后者即唯一出口） |
+| 唯一出口 | `@utility ds-text-gradient-brand`（`web/src/design-system/foundations/typography.css`） |
+| 历史色值（3.0 兼容层保留，未删除） | `--ds-color-brand-gradient-from/via/to` = `#60a5fa / #a78bfa / #a855f7`（`tokens/colors.css:119-121`） |
+| 6.0 运行时色值 | `--ds6-color-gradient-{light,dark}-{from,via,to}` 由 `uds-semantic-bridge.css` 注入，隔离命名不覆盖 3.0 |
+| 消费点 | `features/home/components/sections/hero.tsx`、`cta.tsx` |
+| 历史渐变对比度 | Light 最差 2.27:1 / Dark 最差 3.92:1 → 不达 4.5:1 |
+| 6.0 渐变对比度 | Light 最差 5.99:1 / Dark 最差 8.37:1（1001 点 × 7 背景）→ 全区间 ≥4.5:1 |
+| 插值空间 | CSS 与引擎均为 `90deg in srgb`（旧版无显式声明，已整改） |
+| 例外 | 3.0 `E28` 失去依据；6.0 `EXCEPTION-REGISTRY.json` 中 EX-006 已 RESOLVED |
+| 手写渐变扫描 | `shimmer.tsx` 已改为受控出口 `ds-text-shimmer`；C11 严格校验唯一 owner `foundations/typography.css`，其余业务文件命中数 = 0 |
 
 ## 4. 语法高亮与代码 UI 现状
 

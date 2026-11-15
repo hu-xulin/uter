@@ -1,0 +1,222 @@
+{
+  "schema_version": "1.0",
+  "registry_id": "UDS6-COMPAT-MAP",
+  "version": "6.0.0",
+  "generated_at": "2026-11-15T06:01:14.564Z",
+  "policy": "ISOLATE_THEN_MIGRATE",
+  "isolation": {
+    "canonicalPrefix": "--ds-",
+    "runtimePrefix": "--ds6-",
+    "isolationReason": "web/src/design-system/tokens/colors.css 已定义同名 --ds-* 且取值冲突（surface-overlay 语义反转）",
+    "injectedFile": "web/src/design-system/tokens/uds-semantic-bridge.css",
+    "entryImport": "web/src/styles/index.css",
+    "rollback": "删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚",
+    "excludeScalarTokens": true
+  },
+  "rollback": "删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚",
+  "conflicts": [
+    {
+      "id": "CM-01",
+      "token": "--ds-radius-md",
+      "v3": "10px (3.0.md:1100)",
+      "v6": "5px (TOKEN-MANIFEST)",
+      "severity": "HIGH",
+      "action": "ISOLATE",
+      "reason": "直接覆盖会改变所有卡片与按钮圆角"
+    },
+    {
+      "id": "CM-02",
+      "token": "--ds-color-surface-overlay",
+      "v3": "#000000 (colors.css:86)",
+      "v6": "#FFFFFF / #1B2436",
+      "severity": "CRITICAL",
+      "action": "ISOLATE",
+      "reason": "语义反转：遮罩由黑变白会破坏所有模态框"
+    },
+    {
+      "id": "CM-03",
+      "token": "--ds-color-text-primary",
+      "v3": "var(--foreground) (colors.css:34)",
+      "v6": "#0F172A / #F1F5F9",
+      "severity": "MEDIUM",
+      "action": "ISOLATE",
+      "reason": "变量引用改为实色会失去主题联动"
+    },
+    {
+      "id": "CM-04",
+      "token": "--ds-color-text-secondary",
+      "v3": "var(--muted-foreground) (colors.css:35)",
+      "v6": "#475569 / #CBD5E1",
+      "severity": "MEDIUM",
+      "action": "ISOLATE",
+      "reason": "同上"
+    },
+    {
+      "id": "CM-05",
+      "token": "--ds-color-text-inverse",
+      "v3": "var(--primary-foreground) (colors.css:50)",
+      "v6": "#FFFFFF / #0F172A",
+      "severity": "MEDIUM",
+      "action": "ISOLATE",
+      "reason": "同上"
+    },
+    {
+      "id": "CM-06",
+      "token": "--ds-color-border-input",
+      "v3": "var(--input) (colors.css:125)",
+      "v6": "#CBD5E1 / #3B4A63",
+      "severity": "MEDIUM",
+      "action": "ISOLATE",
+      "reason": "同上"
+    }
+  ],
+  "typographyConflicts": [
+    {
+      "id": "CM-T01",
+      "token": "--ds-text-2xs",
+      "v3": "NOT_IN_RUNTIME",
+      "v6": "12px",
+      "action": "RESERVED_ONLY",
+      "reason": "运行时最小档为 xs=12px；6.0 的 2xs 仅供 Showcase，不得被 web/src 消费"
+    },
+    {
+      "id": "CM-T02",
+      "token": "--ds-text-5xl",
+      "v3": "NOT_IN_RUNTIME",
+      "v6": "48px",
+      "action": "RESERVED_ONLY",
+      "reason": "typography.css:134-135 明示 48/60px 不纳入系统"
+    },
+    {
+      "id": "CM-T03",
+      "token": "--ds-numeric-tabular",
+      "v3": "tabular-nums (styles/index.css:657)",
+      "v6": "tabular-nums",
+      "action": "ALIAS_ONLY",
+      "reason": "同一机制，不得新建第二套声明"
+    }
+  ],
+  "migrationBatches": [
+    {
+      "id": "B1",
+      "scope": "代码高亮 / JSON 编辑器 / Terminal",
+      "status": "IN_PROGRESS",
+      "files": [
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/styles/index.css",
+        "web/src/features/home/components/hero-terminal-demo.tsx"
+      ]
+    },
+    {
+      "id": "B2",
+      "scope": "渐变文字单一出口与插值空间",
+      "status": "IN_PROGRESS",
+      "files": [
+        "web/src/design-system/foundations/typography.css",
+        "web/src/components/ai-elements/shimmer.tsx"
+      ]
+    },
+    {
+      "id": "B3",
+      "scope": "状态色 / 图表色去 chart 依赖",
+      "status": "PENDING_USER_REVIEW",
+      "files": [
+        "web/src/styles/theme-presets.css",
+        "web/src/features/wallet/components/wallet-stats-card.tsx"
+      ]
+    },
+    {
+      "id": "B4",
+      "scope": "Payment / Auth / Wallet 高风险页面",
+      "status": "BLOCKED",
+      "reason": "须用户逐批单独授权且通过视觉审核"
+    },
+    {
+      "id": "B5",
+      "scope": "其余 72 个路由页面",
+      "status": "BLOCKED",
+      "reason": "全站迁移须 Phase 5 审核通过"
+    },
+    {
+      "id": "B6",
+      "scope": "删除 3.0 兼容层",
+      "status": "PROHIBITED",
+      "reason": "文档 §2.3 明令在 6.0 完成全部验收前不得删除"
+    }
+  ],
+  "unmigratedPages": [
+    "web/src/routes/(auth)/forgot-password.tsx",
+    "web/src/routes/(auth)/oauth.wechat-web.tsx",
+    "web/src/routes/(auth)/otp.tsx",
+    "web/src/routes/(auth)/register.tsx",
+    "web/src/routes/(auth)/reset.tsx",
+    "web/src/routes/(auth)/route.tsx",
+    "web/src/routes/(auth)/sign-in.tsx",
+    "web/src/routes/(auth)/sign-up.tsx",
+    "web/src/routes/(auth)/user/reset.tsx",
+    "web/src/routes/(errors)/401.tsx",
+    "web/src/routes/(errors)/403.tsx",
+    "web/src/routes/(errors)/404.tsx",
+    "web/src/routes/(errors)/500.tsx",
+    "web/src/routes/(errors)/503.tsx",
+    "web/src/routes/__root.tsx",
+    "web/src/routes/__tests__/public-routes-render.test.tsx",
+    "web/src/routes/_authenticated/channels/index.tsx",
+    "web/src/routes/_authenticated/chat/$chatId.tsx",
+    "web/src/routes/_authenticated/chat2link.tsx",
+    "web/src/routes/_authenticated/dashboard/$section.tsx",
+    "web/src/routes/_authenticated/dashboard/index.tsx",
+    "web/src/routes/_authenticated/errors/$error.tsx",
+    "web/src/routes/_authenticated/keys/index.tsx",
+    "web/src/routes/_authenticated/models/$section.tsx",
+    "web/src/routes/_authenticated/models/index.tsx",
+    "web/src/routes/_authenticated/organization/index.tsx",
+    "web/src/routes/_authenticated/playground/index.tsx",
+    "web/src/routes/_authenticated/profile/index.tsx",
+    "web/src/routes/_authenticated/redemption-codes/index.tsx",
+    "web/src/routes/_authenticated/route.tsx",
+    "web/src/routes/_authenticated/security/index.tsx",
+    "web/src/routes/_authenticated/subscriptions/index.tsx",
+    "web/src/routes/_authenticated/system-info/index.tsx",
+    "web/src/routes/_authenticated/system-settings/auth/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/auth/index.tsx",
+    "web/src/routes/_authenticated/system-settings/billing/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/billing/index.tsx",
+    "web/src/routes/_authenticated/system-settings/content/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/content/index.tsx",
+    "web/src/routes/_authenticated/system-settings/index.tsx",
+    "web/src/routes/_authenticated/system-settings/models/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/models/index.tsx",
+    "web/src/routes/_authenticated/system-settings/operations/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/operations/index.tsx",
+    "web/src/routes/_authenticated/system-settings/request-policies/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/request-policies/index.tsx",
+    "web/src/routes/_authenticated/system-settings/route.tsx",
+    "web/src/routes/_authenticated/system-settings/security/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/security/index.tsx",
+    "web/src/routes/_authenticated/system-settings/site/$section.tsx",
+    "web/src/routes/_authenticated/system-settings/site/index.tsx",
+    "web/src/routes/_authenticated/task-plugins/index.tsx",
+    "web/src/routes/_authenticated/usage-logs/$section.tsx",
+    "web/src/routes/_authenticated/usage-logs/audit.tsx",
+    "web/src/routes/_authenticated/usage-logs/index.tsx",
+    "web/src/routes/_authenticated/users/index.tsx",
+    "web/src/routes/_authenticated/wallet/index.tsx",
+    "web/src/routes/_public/about/$section.tsx",
+    "web/src/routes/_public/about/index.tsx",
+    "web/src/routes/_public/docs.tsx",
+    "web/src/routes/_public/docs/$.tsx",
+    "web/src/routes/_public/docs/index.tsx",
+    "web/src/routes/_public/index.tsx",
+    "web/src/routes/_public/pricing/$modelId/index.tsx",
+    "web/src/routes/_public/pricing/index.tsx",
+    "web/src/routes/_public/privacy-policy.tsx",
+    "web/src/routes/_public/rankings/index.tsx",
+    "web/src/routes/_public/recharge-agreement.tsx",
+    "web/src/routes/_public/route.tsx",
+    "web/src/routes/_public/user-agreement.tsx",
+    "web/src/routes/oauth/$provider.tsx",
+    "web/src/routes/setup/index.tsx"
+  ],
+  "switchCondition": "所有实际页面完成迁移 → 全站视觉回归无 P0/P1 → 用户明确授权 → 方可申请正式切换 6.0"
+}

@@ -51,14 +51,14 @@
 | `--ds-color-code-current-line` | #EAF0FF | #16203A | color | 当前行高亮 |
 | `--ds-color-code-selection` | #C7D2FE | #33417A | color | 编辑器选区 |
 | `--ds-color-code-cursor` | #5B5EE6 | #A1A3F7 | color | 光标 |
-| `--ds-syntax-keyword` | #7C3AED | #C4B5FD | color | 语法高亮语义 keyword（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-string` | #047857 | #6EE7B7 | color | 语法高亮语义 string（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-number` | #A54600 | #FCD34D | color | 语法高亮语义 number（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-property` | #0369A1 | #7DD3FC | color | 语法高亮语义 property（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-comment` | #5B6779 | #94A3B8 | color | 语法高亮语义 comment（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-inserted` | #047857 | #6EE7B7 | color | 语法高亮语义 inserted（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-deleted` | #B91C1C | #FCA5A5 | color | 语法高亮语义 deleted（真实代码背景实测 ≥4.5:1） |
-| `--ds-syntax-invalid` | #B91C1C | #FCA5A5 | color | 语法高亮语义 invalid（真实代码背景实测 ≥4.5:1） |
+| `--ds-syntax-keyword` | #0000FF | #569CD6 | color | 语法高亮 keyword（官方 #0000FF / #569CD6） |
+| `--ds-syntax-string` | #A31515 | #CE9178 | color | 语法高亮 string（官方 #A31515 / #CE9178） |
+| `--ds-syntax-number` | #098255 | #B5CEA8 | color | 语法高亮 number（官方 #098658 / #B5CEA8） |
+| `--ds-syntax-property` | #001080 | #9CDCFE | color | 语法高亮 property（官方 #001080 / #9CDCFE） |
+| `--ds-syntax-comment` | #008000 | #6A9955 | color | 语法高亮 comment（官方 #008000 / #6A9955） |
+| `--ds-syntax-inserted` | #098255 | #B5CEA8 | color | 语法高亮 inserted（官方 #098658 / #B5CEA8） |
+| `--ds-syntax-deleted` | #A31515 | #CE9178 | color | 语法高亮 deleted（官方 #A31515 / #CE9178） |
+| `--ds-syntax-invalid` | #CD3131 | #F44747 | color | 语法高亮 invalid（官方 #CD3131 / #F44747） |
 | `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 8px |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
@@ -126,7 +126,7 @@ const style = HighlightStyle.define([
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 

@@ -1,0 +1,5345 @@
+{
+  "schema": "UDS6-SYNTAX-VALIDATION/1.0",
+  "generated_at": "2026-11-15T06:01:15.546Z",
+  "engine": {
+    "name": "shiki",
+    "version": "4.3.0",
+    "method": "createHighlighter + codeToTokens(includeExplanation=scopeName)"
+  },
+  "vscodeSource": "microsoft/vscode @ main :: extensions/theme-defaults/themes/*.json",
+  "languageRequirement": 15,
+  "languagesRequested": 15,
+  "coverageSamples": 1,
+  "grammarsLoaded": 29,
+  "languages": [
+    {
+      "id": "javascript",
+      "label": "JavaScript",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "const price = 1299.5\nconst config = { model: \"gpt-4o\", fallback: null }\nfunction total(qty) {\n  return price * qty // 计算总价\n}\nconsole.log(total(3))\n",
+      "lineCount": 7,
+      "tokenCount": 37,
+      "syntaxKeysUsed": [
+        "comment",
+        "constant",
+        "function",
+        "keyword",
+        "null",
+        "number",
+        "operator",
+        "punctuation",
+        "string",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "const",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "storage.type.js"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js"
+            ]
+          },
+          {
+            "text": "price",
+            "syntax": "constant",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.var-single-variable.expr.js",
+              "meta.definition.variable.js",
+              "variable.other.constant.js"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.var-single-variable.expr.js"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "keyword.operator.assignment.js"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js"
+            ]
+          },
+          {
+            "text": "1299.5",
+            "syntax": "number",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "constant.numeric.decimal.js"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "const",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "storage.type.js"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js"
+            ]
+          },
+          {
+            "text": "config",
+            "syntax": "constant",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.var-single-variable.expr.js",
+              "meta.definition.variable.js",
+              "variable.other.constant.js"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.var-single-variable.expr.js"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "keyword.operator.assignment.js"
+            ]
+          },
+          {
+            "text": " { model: ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js"
+            ]
+          },
+          {
+            "text": "\"gpt-4o\"",
+            "syntax": "string",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.objectliteral.js",
+              "meta.object.member.js",
+              "string.quoted.double.js",
+              "punctuation.definition.string.begin.js"
+            ]
+          },
+          {
+            "text": ", fallback: ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.objectliteral.js",
+              "punctuation.separator.comma.js"
+            ]
+          },
+          {
+            "text": "null",
+            "syntax": "null",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.objectliteral.js",
+              "meta.object.member.js",
+              "constant.language.null.js"
+            ]
+          },
+          {
+            "text": " }",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.var.expr.js",
+              "meta.objectliteral.js",
+              "meta.object.member.js"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "function",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "storage.type.function.js"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.function.js"
+            ]
+          },
+          {
+            "text": "total",
+            "syntax": "function",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.definition.function.js",
+              "entity.name.function.js"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.parameters.js",
+              "punctuation.definition.parameters.begin.js"
+            ]
+          },
+          {
+            "text": "qty",
+            "syntax": "variable",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.parameters.js",
+              "variable.parameter.js"
+            ]
+          },
+          {
+            "text": ") {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.parameters.js",
+              "punctuation.definition.parameters.end.js"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js"
+            ]
+          },
+          {
+            "text": "return",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js",
+              "keyword.control.flow.js"
+            ]
+          },
+          {
+            "text": " price ",
+            "syntax": "variable",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js"
+            ]
+          },
+          {
+            "text": "*",
+            "syntax": "operator",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js",
+              "keyword.operator.arithmetic.js"
+            ]
+          },
+          {
+            "text": " qty ",
+            "syntax": "variable",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js"
+            ]
+          },
+          {
+            "text": "// 计算总价",
+            "syntax": "comment",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js",
+              "comment.line.double-slash.js",
+              "punctuation.definition.comment.js"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.function.js",
+              "meta.block.js",
+              "punctuation.definition.block.js"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "console.",
+            "syntax": "function",
+            "scopes": [
+              "source.js",
+              "meta.function-call.js",
+              "variable.other.object.js"
+            ]
+          },
+          {
+            "text": "log",
+            "syntax": "function",
+            "scopes": [
+              "source.js",
+              "meta.function-call.js",
+              "entity.name.function.js"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.brace.round.js"
+            ]
+          },
+          {
+            "text": "total",
+            "syntax": "function",
+            "scopes": [
+              "source.js",
+              "meta.function-call.js",
+              "entity.name.function.js"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.brace.round.js"
+            ]
+          },
+          {
+            "text": "3",
+            "syntax": "number",
+            "scopes": [
+              "source.js",
+              "constant.numeric.decimal.js"
+            ]
+          },
+          {
+            "text": "))",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js",
+              "meta.brace.round.js"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "typescript",
+      "label": "TypeScript",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "interface Order { id: string; qty: number }\nexport function sum(o: Order): number {\n  const tax: number = 0.06\n  return o.qty * (1 + tax)\n}\n",
+      "lineCount": 6,
+      "tokenCount": 50,
+      "syntaxKeysUsed": [
+        "constant",
+        "function",
+        "keyword",
+        "number",
+        "operator",
+        "punctuation",
+        "type",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "interface",
+            "syntax": "keyword",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "storage.type.interface.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts"
+            ]
+          },
+          {
+            "text": "Order",
+            "syntax": "type",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "entity.name.type.interface.ts"
+            ]
+          },
+          {
+            "text": " { ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts"
+            ]
+          },
+          {
+            "text": "id",
+            "syntax": "variable",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.definition.property.ts",
+              "variable.object.property.ts"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts",
+              "keyword.operator.type.annotation.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts"
+            ]
+          },
+          {
+            "text": "string",
+            "syntax": "type",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts",
+              "support.type.primitive.ts"
+            ]
+          },
+          {
+            "text": "; ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "punctuation.terminator.statement.ts"
+            ]
+          },
+          {
+            "text": "qty",
+            "syntax": "variable",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.definition.property.ts",
+              "variable.object.property.ts"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts",
+              "keyword.operator.type.annotation.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts"
+            ]
+          },
+          {
+            "text": "number",
+            "syntax": "type",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts",
+              "support.type.primitive.ts"
+            ]
+          },
+          {
+            "text": " }",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.interface.ts",
+              "meta.field.declaration.ts",
+              "meta.type.annotation.ts"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "export",
+            "syntax": "keyword",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "keyword.control.export.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts"
+            ]
+          },
+          {
+            "text": "function",
+            "syntax": "keyword",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "storage.type.function.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts"
+            ]
+          },
+          {
+            "text": "sum",
+            "syntax": "function",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.definition.function.ts",
+              "entity.name.function.ts"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.parameters.ts",
+              "punctuation.definition.parameters.begin.ts"
+            ]
+          },
+          {
+            "text": "o",
+            "syntax": "variable",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.parameters.ts",
+              "variable.parameter.ts"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.parameters.ts",
+              "meta.type.annotation.ts",
+              "keyword.operator.type.annotation.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.parameters.ts",
+              "meta.type.annotation.ts"
+            ]
+          },
+          {
+            "text": "Order",
+            "syntax": "type",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.parameters.ts",
+              "meta.type.annotation.ts",
+              "entity.name.type.ts"
+            ]
+          },
+          {
+            "text": ")",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.parameters.ts",
+              "punctuation.definition.parameters.end.ts"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.return.type.ts",
+              "keyword.operator.type.annotation.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.return.type.ts"
+            ]
+          },
+          {
+            "text": "number",
+            "syntax": "type",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.return.type.ts",
+              "support.type.primitive.ts"
+            ]
+          },
+          {
+            "text": " {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.return.type.ts"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts"
+            ]
+          },
+          {
+            "text": "const",
+            "syntax": "keyword",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "storage.type.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts"
+            ]
+          },
+          {
+            "text": "tax",
+            "syntax": "constant",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "meta.var-single-variable.expr.ts",
+              "meta.definition.variable.ts",
+              "variable.other.constant.ts"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "meta.var-single-variable.expr.ts",
+              "meta.type.annotation.ts",
+              "keyword.operator.type.annotation.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "meta.var-single-variable.expr.ts",
+              "meta.type.annotation.ts"
+            ]
+          },
+          {
+            "text": "number",
+            "syntax": "type",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "meta.var-single-variable.expr.ts",
+              "meta.type.annotation.ts",
+              "support.type.primitive.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "meta.var-single-variable.expr.ts",
+              "meta.type.annotation.ts"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "keyword.operator.assignment.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts"
+            ]
+          },
+          {
+            "text": "0.06",
+            "syntax": "number",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "meta.var.expr.ts",
+              "constant.numeric.decimal.ts"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts"
+            ]
+          },
+          {
+            "text": "return",
+            "syntax": "keyword",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "keyword.control.flow.ts"
+            ]
+          },
+          {
+            "text": " o.qty ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts"
+            ]
+          },
+          {
+            "text": "*",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "keyword.operator.arithmetic.ts"
+            ]
+          },
+          {
+            "text": " (",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts"
+            ]
+          },
+          {
+            "text": "1",
+            "syntax": "number",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "constant.numeric.decimal.ts"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts"
+            ]
+          },
+          {
+            "text": "+",
+            "syntax": "operator",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "keyword.operator.arithmetic.ts"
+            ]
+          },
+          {
+            "text": " tax)",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.ts",
+              "meta.function.ts",
+              "meta.block.ts",
+              "punctuation.definition.block.ts"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "jsx",
+      "label": "JSX",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "export function Badge({ label }) {\n  return <span className=\"badge\">{label}</span>\n}\n",
+      "lineCount": 4,
+      "tokenCount": 20,
+      "syntaxKeysUsed": [
+        "attribute",
+        "function",
+        "keyword",
+        "operator",
+        "punctuation",
+        "string",
+        "tag",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "export",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "keyword.control.export.js.jsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx"
+            ]
+          },
+          {
+            "text": "function",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "storage.type.function.js.jsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx"
+            ]
+          },
+          {
+            "text": "Badge",
+            "syntax": "function",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.definition.function.js.jsx",
+              "entity.name.function.js.jsx"
+            ]
+          },
+          {
+            "text": "({ ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.parameters.js.jsx",
+              "punctuation.definition.parameters.begin.js.jsx"
+            ]
+          },
+          {
+            "text": "label",
+            "syntax": "variable",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.parameters.js.jsx",
+              "meta.parameter.object-binding-pattern.js.jsx",
+              "variable.parameter.js.jsx"
+            ]
+          },
+          {
+            "text": " }) {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.parameters.js.jsx",
+              "meta.parameter.object-binding-pattern.js.jsx"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx"
+            ]
+          },
+          {
+            "text": "return",
+            "syntax": "keyword",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "keyword.control.flow.js.jsx"
+            ]
+          },
+          {
+            "text": " <",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx"
+            ]
+          },
+          {
+            "text": "span",
+            "syntax": "tag",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "entity.name.tag.js.jsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "meta.tag.attributes.js.jsx"
+            ]
+          },
+          {
+            "text": "className",
+            "syntax": "attribute",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "meta.tag.attributes.js.jsx",
+              "entity.other.attribute-name.js.jsx"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "meta.tag.attributes.js.jsx",
+              "keyword.operator.assignment.js.jsx"
+            ]
+          },
+          {
+            "text": "\"badge\"",
+            "syntax": "string",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "meta.tag.attributes.js.jsx",
+              "string.quoted.double.js.jsx",
+              "punctuation.definition.string.begin.js.jsx"
+            ]
+          },
+          {
+            "text": ">{label}</",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "punctuation.definition.tag.end.js.jsx"
+            ]
+          },
+          {
+            "text": "span",
+            "syntax": "tag",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "entity.name.tag.js.jsx"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "meta.tag.js.jsx",
+              "punctuation.definition.tag.end.js.jsx"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.js.jsx",
+              "meta.function.js.jsx",
+              "meta.block.js.jsx",
+              "punctuation.definition.block.js.jsx"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "tsx",
+      "label": "TSX",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "type Props = { title: string; count?: number }\nexport const Card = ({ title, count = 0 }: Props) => (\n  <div id=\"card\"><h2>{title}</h2><b>{count}</b></div>\n)\n",
+      "lineCount": 5,
+      "tokenCount": 56,
+      "syntaxKeysUsed": [
+        "attribute",
+        "constant",
+        "keyword",
+        "number",
+        "operator",
+        "punctuation",
+        "string",
+        "tag",
+        "type",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "type",
+            "syntax": "keyword",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "storage.type.type.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx"
+            ]
+          },
+          {
+            "text": "Props",
+            "syntax": "type",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "entity.name.type.alias.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "keyword.operator.assignment.tsx"
+            ]
+          },
+          {
+            "text": " { ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx"
+            ]
+          },
+          {
+            "text": "title",
+            "syntax": "variable",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.definition.property.tsx",
+              "variable.object.property.tsx"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.type.annotation.tsx",
+              "keyword.operator.type.annotation.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.type.annotation.tsx"
+            ]
+          },
+          {
+            "text": "string",
+            "syntax": "type",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.type.annotation.tsx",
+              "support.type.primitive.tsx"
+            ]
+          },
+          {
+            "text": "; ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "punctuation.terminator.statement.tsx"
+            ]
+          },
+          {
+            "text": "count",
+            "syntax": "variable",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.definition.property.tsx",
+              "variable.object.property.tsx"
+            ]
+          },
+          {
+            "text": "?:",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "keyword.operator.optional.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.type.annotation.tsx"
+            ]
+          },
+          {
+            "text": "number",
+            "syntax": "type",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.type.annotation.tsx",
+              "support.type.primitive.tsx"
+            ]
+          },
+          {
+            "text": " }",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.type.declaration.tsx",
+              "meta.object.type.tsx",
+              "meta.field.declaration.tsx",
+              "meta.type.annotation.tsx"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "export",
+            "syntax": "keyword",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "keyword.control.export.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx"
+            ]
+          },
+          {
+            "text": "const",
+            "syntax": "keyword",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "storage.type.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx"
+            ]
+          },
+          {
+            "text": "Card",
+            "syntax": "constant",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.var-single-variable.expr.tsx",
+              "meta.definition.variable.tsx",
+              "variable.other.constant.tsx",
+              "entity.name.function.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.var-single-variable.expr.tsx"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "keyword.operator.assignment.tsx"
+            ]
+          },
+          {
+            "text": " ({ ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx"
+            ]
+          },
+          {
+            "text": "title",
+            "syntax": "variable",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx",
+              "variable.parameter.tsx"
+            ]
+          },
+          {
+            "text": ", ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx",
+              "punctuation.separator.comma.tsx"
+            ]
+          },
+          {
+            "text": "count",
+            "syntax": "variable",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx",
+              "variable.parameter.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx",
+              "keyword.operator.assignment.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx"
+            ]
+          },
+          {
+            "text": "0",
+            "syntax": "number",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx",
+              "constant.numeric.decimal.tsx"
+            ]
+          },
+          {
+            "text": " }",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.parameter.object-binding-pattern.tsx"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.type.annotation.tsx",
+              "keyword.operator.type.annotation.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.type.annotation.tsx"
+            ]
+          },
+          {
+            "text": "Props",
+            "syntax": "type",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "meta.type.annotation.tsx",
+              "entity.name.type.tsx"
+            ]
+          },
+          {
+            "text": ") ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.parameters.tsx",
+              "punctuation.definition.parameters.end.tsx"
+            ]
+          },
+          {
+            "text": "=>",
+            "syntax": "keyword",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "storage.type.function.arrow.tsx"
+            ]
+          },
+          {
+            "text": " (",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  <",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx"
+            ]
+          },
+          {
+            "text": "div",
+            "syntax": "tag",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "entity.name.tag.tsx"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.tag.attributes.tsx"
+            ]
+          },
+          {
+            "text": "id",
+            "syntax": "attribute",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.tag.attributes.tsx",
+              "entity.other.attribute-name.tsx"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.tag.attributes.tsx",
+              "keyword.operator.assignment.tsx"
+            ]
+          },
+          {
+            "text": "\"card\"",
+            "syntax": "string",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.tag.attributes.tsx",
+              "string.quoted.double.tsx",
+              "punctuation.definition.string.begin.tsx"
+            ]
+          },
+          {
+            "text": "><",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "punctuation.definition.tag.end.tsx"
+            ]
+          },
+          {
+            "text": "h2",
+            "syntax": "tag",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "entity.name.tag.tsx"
+            ]
+          },
+          {
+            "text": ">{title}</",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "punctuation.definition.tag.end.tsx"
+            ]
+          },
+          {
+            "text": "h2",
+            "syntax": "tag",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "entity.name.tag.tsx"
+            ]
+          },
+          {
+            "text": "><",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "punctuation.definition.tag.end.tsx"
+            ]
+          },
+          {
+            "text": "b",
+            "syntax": "tag",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "entity.name.tag.tsx"
+            ]
+          },
+          {
+            "text": ">{count}</",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "punctuation.definition.tag.end.tsx"
+            ]
+          },
+          {
+            "text": "b",
+            "syntax": "tag",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "entity.name.tag.tsx"
+            ]
+          },
+          {
+            "text": "></",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "meta.jsx.children.tsx",
+              "meta.tag.without-attributes.tsx",
+              "punctuation.definition.tag.end.tsx"
+            ]
+          },
+          {
+            "text": "div",
+            "syntax": "tag",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "entity.name.tag.tsx"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.tag.tsx",
+              "punctuation.definition.tag.end.tsx"
+            ]
+          }
+        ],
+        [
+          {
+            "text": ")",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.tsx",
+              "meta.var.expr.tsx",
+              "meta.arrow.tsx",
+              "meta.brace.round.tsx"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "json",
+      "label": "JSON",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "{\n  \"model\": \"gpt-4o\",\n  \"temperature\": 0.7,\n  \"stream\": true,\n  \"fallback\": null,\n  \"max_tokens\": 1024\n}\n",
+      "lineCount": 8,
+      "tokenCount": 26,
+      "syntaxKeysUsed": [
+        "boolean",
+        "null",
+        "number",
+        "property",
+        "punctuation",
+        "string"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "{",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "punctuation.definition.dictionary.begin.json"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json"
+            ]
+          },
+          {
+            "text": "\"model\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "string.json",
+              "support.type.property-name.json",
+              "punctuation.support.type.property-name.begin.json"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.key-value.json"
+            ]
+          },
+          {
+            "text": "\"gpt-4o\"",
+            "syntax": "string",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "string.quoted.double.json",
+              "punctuation.definition.string.begin.json"
+            ]
+          },
+          {
+            "text": ",",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.pair.json"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json"
+            ]
+          },
+          {
+            "text": "\"temperature\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "string.json",
+              "support.type.property-name.json",
+              "punctuation.support.type.property-name.begin.json"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.key-value.json"
+            ]
+          },
+          {
+            "text": "0.7",
+            "syntax": "number",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "constant.numeric.json"
+            ]
+          },
+          {
+            "text": ",",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.pair.json"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json"
+            ]
+          },
+          {
+            "text": "\"stream\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "string.json",
+              "support.type.property-name.json",
+              "punctuation.support.type.property-name.begin.json"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.key-value.json"
+            ]
+          },
+          {
+            "text": "true",
+            "syntax": "boolean",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "constant.language.json"
+            ]
+          },
+          {
+            "text": ",",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.pair.json"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json"
+            ]
+          },
+          {
+            "text": "\"fallback\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "string.json",
+              "support.type.property-name.json",
+              "punctuation.support.type.property-name.begin.json"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.key-value.json"
+            ]
+          },
+          {
+            "text": "null",
+            "syntax": "null",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "constant.language.json"
+            ]
+          },
+          {
+            "text": ",",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.pair.json"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json"
+            ]
+          },
+          {
+            "text": "\"max_tokens\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "string.json",
+              "support.type.property-name.json",
+              "punctuation.support.type.property-name.begin.json"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "punctuation.separator.dictionary.key-value.json"
+            ]
+          },
+          {
+            "text": "1024",
+            "syntax": "number",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "meta.structure.dictionary.value.json",
+              "constant.numeric.json"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json",
+              "meta.structure.dictionary.json",
+              "punctuation.definition.dictionary.end.json"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "jsonc",
+      "label": "JSONC",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "{\n  // 允许注释与尾逗号\n  \"endpoint\": \"https://api.uter.ai/v1\",\n  \"retries\": 3,\n}\n",
+      "lineCount": 6,
+      "tokenCount": 14,
+      "syntaxKeysUsed": [
+        "comment",
+        "number",
+        "property",
+        "punctuation",
+        "string"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "{",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "punctuation.definition.dictionary.begin.json.comments"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments"
+            ]
+          },
+          {
+            "text": "// 允许注释与尾逗号",
+            "syntax": "comment",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "comment.line.double-slash.js",
+              "punctuation.definition.comment.json.comments"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments"
+            ]
+          },
+          {
+            "text": "\"endpoint\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "string.json.comments",
+              "support.type.property-name.json.comments",
+              "punctuation.support.type.property-name.begin.json.comments"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "meta.structure.dictionary.value.json.comments",
+              "punctuation.separator.dictionary.key-value.json.comments"
+            ]
+          },
+          {
+            "text": "\"https://api.uter.ai/v1\"",
+            "syntax": "string",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "meta.structure.dictionary.value.json.comments",
+              "string.quoted.double.json.comments",
+              "punctuation.definition.string.begin.json.comments"
+            ]
+          },
+          {
+            "text": ",",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "meta.structure.dictionary.value.json.comments",
+              "punctuation.separator.dictionary.pair.json.comments"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments"
+            ]
+          },
+          {
+            "text": "\"retries\"",
+            "syntax": "property",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "string.json.comments",
+              "support.type.property-name.json.comments",
+              "punctuation.support.type.property-name.begin.json.comments"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "meta.structure.dictionary.value.json.comments",
+              "punctuation.separator.dictionary.key-value.json.comments"
+            ]
+          },
+          {
+            "text": "3",
+            "syntax": "number",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "meta.structure.dictionary.value.json.comments",
+              "constant.numeric.json.comments"
+            ]
+          },
+          {
+            "text": ",",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "meta.structure.dictionary.value.json.comments",
+              "punctuation.separator.dictionary.pair.json.comments"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.json.comments",
+              "meta.structure.dictionary.json.comments",
+              "punctuation.definition.dictionary.end.json.comments"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "html",
+      "label": "HTML",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "<!doctype html>\n<html lang=\"zh-CN\">\n  <body class=\"page\">\n    <h1 id=\"title\">Uter</h1>\n  </body>\n</html>\n",
+      "lineCount": 7,
+      "tokenCount": 34,
+      "syntaxKeysUsed": [
+        "attribute",
+        "punctuation",
+        "string",
+        "tag"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "<!",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.metadata.doctype.html",
+              "punctuation.definition.tag.begin.html"
+            ]
+          },
+          {
+            "text": "doctype",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.metadata.doctype.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.metadata.doctype.html"
+            ]
+          },
+          {
+            "text": "html",
+            "syntax": "attribute",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.metadata.doctype.html",
+              "entity.other.attribute-name.html"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.metadata.doctype.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "<",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html",
+              "punctuation.definition.tag.begin.html"
+            ]
+          },
+          {
+            "text": "html",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html"
+            ]
+          },
+          {
+            "text": "lang",
+            "syntax": "attribute",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html",
+              "meta.attribute.lang.html",
+              "entity.other.attribute-name.html"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html",
+              "meta.attribute.lang.html",
+              "punctuation.separator.key-value.html"
+            ]
+          },
+          {
+            "text": "\"zh-CN\"",
+            "syntax": "string",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html",
+              "meta.attribute.lang.html",
+              "string.quoted.double.html",
+              "punctuation.definition.string.begin.html"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.start.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  <",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic"
+            ]
+          },
+          {
+            "text": "body",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.start.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.start.html"
+            ]
+          },
+          {
+            "text": "class",
+            "syntax": "attribute",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.start.html",
+              "meta.attribute.class.html",
+              "entity.other.attribute-name.html"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.start.html",
+              "meta.attribute.class.html",
+              "punctuation.separator.key-value.html"
+            ]
+          },
+          {
+            "text": "\"page\"",
+            "syntax": "string",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.start.html",
+              "meta.attribute.class.html",
+              "string.quoted.double.html",
+              "punctuation.definition.string.begin.html"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.start.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    <",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic"
+            ]
+          },
+          {
+            "text": "h1",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.start.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.start.html"
+            ]
+          },
+          {
+            "text": "id",
+            "syntax": "attribute",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.start.html",
+              "meta.attribute.id.html",
+              "entity.other.attribute-name.html"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.start.html",
+              "meta.attribute.id.html",
+              "punctuation.separator.key-value.html"
+            ]
+          },
+          {
+            "text": "\"title\"",
+            "syntax": "string",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.start.html",
+              "meta.attribute.id.html",
+              "string.quoted.double.html",
+              "punctuation.definition.string.begin.html"
+            ]
+          },
+          {
+            "text": ">Uter</",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.start.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          },
+          {
+            "text": "h1",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.end.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.h1.end.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  </",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic"
+            ]
+          },
+          {
+            "text": "body",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.end.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.body.end.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "</",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.end.html",
+              "punctuation.definition.tag.begin.html"
+            ]
+          },
+          {
+            "text": "html",
+            "syntax": "tag",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.end.html",
+              "entity.name.tag.html"
+            ]
+          },
+          {
+            "text": ">",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.basic",
+              "meta.tag.structure.html.end.html",
+              "punctuation.definition.tag.end.html"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "css",
+      "label": "CSS",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "/* 品牌变量与卡片 */\n:root { --brand: #5B5EE6; }\n.card {\n  margin: 12px;\n  border: 1px solid var(--brand);\n}\n",
+      "lineCount": 7,
+      "tokenCount": 28,
+      "syntaxKeysUsed": [
+        "attribute",
+        "builtin",
+        "comment",
+        "function",
+        "number",
+        "property",
+        "punctuation",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "/* 品牌变量与卡片 */",
+            "syntax": "comment",
+            "scopes": [
+              "source.css",
+              "comment.block.css",
+              "punctuation.definition.comment.begin.css"
+            ]
+          }
+        ],
+        [
+          {
+            "text": ":root",
+            "syntax": "attribute",
+            "scopes": [
+              "source.css",
+              "meta.selector.css",
+              "entity.other.attribute-name.pseudo-class.css",
+              "punctuation.definition.entity.css"
+            ]
+          },
+          {
+            "text": " { ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css"
+            ]
+          },
+          {
+            "text": "--brand",
+            "syntax": "variable",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "variable.css"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "punctuation.separator.key-value.css"
+            ]
+          },
+          {
+            "text": "#5B5EE6",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "constant.other.color.rgb-value.hex.css",
+              "punctuation.definition.constant.css"
+            ]
+          },
+          {
+            "text": "; }",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "punctuation.terminator.rule.css"
+            ]
+          }
+        ],
+        [
+          {
+            "text": ".card",
+            "syntax": "attribute",
+            "scopes": [
+              "source.css",
+              "meta.selector.css",
+              "entity.other.attribute-name.class.css",
+              "punctuation.definition.entity.css"
+            ]
+          },
+          {
+            "text": " {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css"
+            ]
+          },
+          {
+            "text": "margin",
+            "syntax": "property",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-name.css",
+              "support.type.property-name.css"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "punctuation.separator.key-value.css"
+            ]
+          },
+          {
+            "text": "12",
+            "syntax": "number",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "constant.numeric.css"
+            ]
+          },
+          {
+            "text": "px",
+            "syntax": "number",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "constant.numeric.css",
+              "keyword.other.unit.px.css"
+            ]
+          },
+          {
+            "text": ";",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "punctuation.terminator.rule.css"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css"
+            ]
+          },
+          {
+            "text": "border",
+            "syntax": "property",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-name.css",
+              "support.type.property-name.css"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "punctuation.separator.key-value.css"
+            ]
+          },
+          {
+            "text": "1",
+            "syntax": "number",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "constant.numeric.css"
+            ]
+          },
+          {
+            "text": "px",
+            "syntax": "number",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "constant.numeric.css",
+              "keyword.other.unit.px.css"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css"
+            ]
+          },
+          {
+            "text": "solid",
+            "syntax": "builtin",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "support.constant.property-value.css"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css"
+            ]
+          },
+          {
+            "text": "var",
+            "syntax": "function",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "meta.function.variable.css",
+              "support.function.misc.css"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "meta.function.variable.css",
+              "punctuation.section.function.begin.bracket.round.css"
+            ]
+          },
+          {
+            "text": "--brand",
+            "syntax": "variable",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "meta.function.variable.css",
+              "variable.argument.css"
+            ]
+          },
+          {
+            "text": ");",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "meta.property-value.css",
+              "meta.function.variable.css",
+              "punctuation.section.function.end.bracket.round.css"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css",
+              "meta.property-list.css",
+              "punctuation.section.property-list.end.bracket.curly.css"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "scss",
+      "label": "SCSS",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "$brand: #5B5EE6;\n.card {\n  margin: 12px;\n  &:hover { color: darken($brand, 10%); }\n}\n",
+      "lineCount": 6,
+      "tokenCount": 26,
+      "syntaxKeysUsed": [
+        "attribute",
+        "function",
+        "number",
+        "property",
+        "punctuation",
+        "tag",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "$brand",
+            "syntax": "variable",
+            "scopes": [
+              "source.css.scss",
+              "meta.definition.variable.scss",
+              "variable.scss"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "variable",
+            "scopes": [
+              "source.css.scss",
+              "meta.definition.variable.scss",
+              "punctuation.separator.key-value.scss"
+            ]
+          },
+          {
+            "text": "#5B5EE6",
+            "syntax": "variable",
+            "scopes": [
+              "source.css.scss",
+              "meta.definition.variable.scss",
+              "constant.other.color.rgb-value.hex.css",
+              "punctuation.definition.constant.css"
+            ]
+          },
+          {
+            "text": ";",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "punctuation.terminator.rule.scss"
+            ]
+          }
+        ],
+        [
+          {
+            "text": ".card",
+            "syntax": "attribute",
+            "scopes": [
+              "source.css.scss",
+              "entity.other.attribute-name.class.css",
+              "punctuation.definition.entity.css"
+            ]
+          },
+          {
+            "text": " {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss"
+            ]
+          },
+          {
+            "text": "margin",
+            "syntax": "property",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-name.scss",
+              "support.type.property-name.css"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "punctuation.separator.key-value.scss"
+            ]
+          },
+          {
+            "text": "12",
+            "syntax": "number",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "constant.numeric.css"
+            ]
+          },
+          {
+            "text": "px",
+            "syntax": "number",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "constant.numeric.css",
+              "keyword.other.unit.px.css"
+            ]
+          },
+          {
+            "text": ";",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "punctuation.terminator.rule.scss"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss"
+            ]
+          },
+          {
+            "text": "&",
+            "syntax": "tag",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "entity.name.tag.reference.scss"
+            ]
+          },
+          {
+            "text": ":hover",
+            "syntax": "attribute",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "entity.other.attribute-name.pseudo-class.css",
+              "punctuation.definition.entity.css"
+            ]
+          },
+          {
+            "text": " { ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss"
+            ]
+          },
+          {
+            "text": "color",
+            "syntax": "property",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-name.scss",
+              "support.type.property-name.css"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "punctuation.separator.key-value.scss"
+            ]
+          },
+          {
+            "text": "darken",
+            "syntax": "function",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "support.function.misc.scss"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "punctuation.section.function.scss"
+            ]
+          },
+          {
+            "text": "$brand",
+            "syntax": "variable",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "variable.scss"
+            ]
+          },
+          {
+            "text": ", ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "punctuation.separator.delimiter.scss"
+            ]
+          },
+          {
+            "text": "10",
+            "syntax": "number",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "constant.numeric.css"
+            ]
+          },
+          {
+            "text": "%",
+            "syntax": "number",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "constant.numeric.css",
+              "keyword.other.unit.percentage.css"
+            ]
+          },
+          {
+            "text": "); }",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "meta.property-list.scss",
+              "meta.property-value.scss",
+              "punctuation.section.function.scss"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.css.scss",
+              "meta.property-list.scss",
+              "punctuation.section.property-list.end.bracket.curly.scss"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "python",
+      "label": "Python",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "import os\n\ndef usage(tokens: int) -> float:\n    \"\"\"计算用量\"\"\"\n    return tokens * 0.002  # 单价\n\nprint(usage(1500))\n",
+      "lineCount": 8,
+      "tokenCount": 24,
+      "syntaxKeysUsed": [
+        "comment",
+        "function",
+        "keyword",
+        "number",
+        "operator",
+        "punctuation",
+        "string",
+        "type",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "import",
+            "syntax": "keyword",
+            "scopes": [
+              "source.python",
+              "keyword.control.import.python"
+            ]
+          },
+          {
+            "text": " os",
+            "syntax": "variable",
+            "scopes": [
+              "source.python"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "def",
+            "syntax": "keyword",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "storage.type.function.python"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python",
+              "meta.function.python"
+            ]
+          },
+          {
+            "text": "usage",
+            "syntax": "function",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "entity.name.function.python"
+            ]
+          },
+          {
+            "text": "(tokens: ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "meta.function.parameters.python",
+              "punctuation.definition.parameters.begin.python"
+            ]
+          },
+          {
+            "text": "int",
+            "syntax": "type",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "meta.function.parameters.python",
+              "support.type.python"
+            ]
+          },
+          {
+            "text": ") -> ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "meta.function.parameters.python",
+              "punctuation.definition.parameters.end.python"
+            ]
+          },
+          {
+            "text": "float",
+            "syntax": "type",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "support.type.python"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python",
+              "meta.function.python",
+              "punctuation.section.function.begin.python"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python"
+            ]
+          },
+          {
+            "text": "\"\"\"计算用量\"\"\"",
+            "syntax": "string",
+            "scopes": [
+              "source.python",
+              "string.quoted.docstring.multi.python",
+              "punctuation.definition.string.begin.python"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python"
+            ]
+          },
+          {
+            "text": "return",
+            "syntax": "keyword",
+            "scopes": [
+              "source.python",
+              "keyword.control.flow.python"
+            ]
+          },
+          {
+            "text": " tokens ",
+            "syntax": "variable",
+            "scopes": [
+              "source.python"
+            ]
+          },
+          {
+            "text": "*",
+            "syntax": "operator",
+            "scopes": [
+              "source.python",
+              "keyword.operator.arithmetic.python"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python"
+            ]
+          },
+          {
+            "text": "0.002",
+            "syntax": "number",
+            "scopes": [
+              "source.python",
+              "constant.numeric.float.python"
+            ]
+          },
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.python"
+            ]
+          },
+          {
+            "text": "# 单价",
+            "syntax": "comment",
+            "scopes": [
+              "source.python",
+              "comment.line.number-sign.python",
+              "punctuation.definition.comment.python"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "print",
+            "syntax": "function",
+            "scopes": [
+              "source.python",
+              "meta.function-call.python",
+              "support.function.builtin.python"
+            ]
+          },
+          {
+            "text": "(usage(",
+            "syntax": "function",
+            "scopes": [
+              "source.python",
+              "meta.function-call.python",
+              "punctuation.definition.arguments.begin.python"
+            ]
+          },
+          {
+            "text": "1500",
+            "syntax": "number",
+            "scopes": [
+              "source.python",
+              "meta.function-call.python",
+              "meta.function-call.arguments.python",
+              "meta.function-call.python",
+              "meta.function-call.arguments.python",
+              "constant.numeric.dec.python"
+            ]
+          },
+          {
+            "text": "))",
+            "syntax": "function",
+            "scopes": [
+              "source.python",
+              "meta.function-call.python",
+              "meta.function-call.arguments.python",
+              "meta.function-call.python",
+              "punctuation.definition.arguments.end.python"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "go",
+      "label": "Go",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "package main\n\nimport \"fmt\"\n\ntype Usage struct {\n    Tokens int\n    Cost   float64\n}\n\nfunc main() {\n    fmt.Println(Usage{Tokens: 1500, Cost: 3.0})\n}\n",
+      "lineCount": 13,
+      "tokenCount": 33,
+      "syntaxKeysUsed": [
+        "function",
+        "keyword",
+        "number",
+        "punctuation",
+        "string",
+        "type",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "package",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "keyword.package.go"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "main",
+            "syntax": "type",
+            "scopes": [
+              "source.go",
+              "entity.name.type.package.go"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "import",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "keyword.control.import.go"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "\"",
+            "syntax": "string",
+            "scopes": [
+              "source.go",
+              "string.quoted.double.go",
+              "punctuation.definition.string.begin.go"
+            ]
+          },
+          {
+            "text": "fmt",
+            "syntax": "string",
+            "scopes": [
+              "source.go",
+              "string.quoted.double.go",
+              "entity.name.import.go"
+            ]
+          },
+          {
+            "text": "\"",
+            "syntax": "string",
+            "scopes": [
+              "source.go",
+              "string.quoted.double.go",
+              "punctuation.definition.string.end.go"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "type",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "keyword.type.go"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "Usage",
+            "syntax": "type",
+            "scopes": [
+              "source.go",
+              "entity.name.type.go"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "struct",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "keyword.struct.go"
+            ]
+          },
+          {
+            "text": " {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    Tokens ",
+            "syntax": "variable",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "int",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "storage.type.numeric.go"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    Cost   ",
+            "syntax": "variable",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "float64",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "storage.type.numeric.go"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.definition.end.bracket.curly.go"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "func",
+            "syntax": "keyword",
+            "scopes": [
+              "source.go",
+              "keyword.function.go"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "main",
+            "syntax": "function",
+            "scopes": [
+              "source.go",
+              "entity.name.function.go"
+            ]
+          },
+          {
+            "text": "() {",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.definition.begin.bracket.round.go"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    fmt.",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go"
+            ]
+          },
+          {
+            "text": "Println",
+            "syntax": "function",
+            "scopes": [
+              "source.go",
+              "entity.name.function.support.go"
+            ]
+          },
+          {
+            "text": "(",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.definition.begin.bracket.round.go"
+            ]
+          },
+          {
+            "text": "Usage",
+            "syntax": "type",
+            "scopes": [
+              "source.go",
+              "entity.name.type.go"
+            ]
+          },
+          {
+            "text": "{Tokens: ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.definition.begin.bracket.curly.go"
+            ]
+          },
+          {
+            "text": "1500",
+            "syntax": "number",
+            "scopes": [
+              "source.go",
+              "constant.numeric.decimal.go"
+            ]
+          },
+          {
+            "text": ", Cost: ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.other.comma.go"
+            ]
+          },
+          {
+            "text": "3.0",
+            "syntax": "number",
+            "scopes": [
+              "source.go",
+              "constant.numeric.decimal.go"
+            ]
+          },
+          {
+            "text": "})",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.definition.end.bracket.curly.go"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "}",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.go",
+              "punctuation.definition.end.bracket.curly.go"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "bash",
+      "label": "Bash",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "#!/usr/bin/env bash\nset -euo pipefail\nAPI_KEY=\"sk-uter-demo\"\ncurl -sS -H \"Authorization: Bearer ${API_KEY}\" \\\n  https://api.uter.ai/v1/models\n",
+      "lineCount": 6,
+      "tokenCount": 22,
+      "syntaxKeysUsed": [
+        "comment",
+        "function",
+        "operator",
+        "punctuation",
+        "regexp",
+        "string",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "#!/usr/bin/env bash",
+            "syntax": "comment",
+            "scopes": [
+              "source.shell",
+              "comment.line.number-sign.shell",
+              "meta.shebang.shell",
+              "punctuation.definition.comment.shebang.shell"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "set",
+            "syntax": "function",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.statement.command.name.shell",
+              "entity.name.function.call.shell",
+              "entity.name.command.shell",
+              "support.function.builtin.shell"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell"
+            ]
+          },
+          {
+            "text": "-euo",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "string.unquoted.argument.shell",
+              "constant.other.option.dash.shell"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell"
+            ]
+          },
+          {
+            "text": "pipefail",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell",
+              "string.unquoted.argument.shell"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "API_KEY",
+            "syntax": "variable",
+            "scopes": [
+              "source.shell",
+              "meta.expression.assignment.shell",
+              "variable.other.assignment.shell"
+            ]
+          },
+          {
+            "text": "=",
+            "syntax": "operator",
+            "scopes": [
+              "source.shell",
+              "meta.expression.assignment.shell",
+              "keyword.operator.assignment.shell"
+            ]
+          },
+          {
+            "text": "\"sk-uter-demo\"",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.expression.assignment.shell",
+              "string.quoted.double.shell",
+              "punctuation.definition.string.begin.shell"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "curl",
+            "syntax": "function",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.statement.command.name.shell",
+              "entity.name.function.call.shell",
+              "entity.name.command.shell"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell"
+            ]
+          },
+          {
+            "text": "-sS",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "string.unquoted.argument.shell",
+              "constant.other.option.dash.shell"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell"
+            ]
+          },
+          {
+            "text": "-H",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "string.unquoted.argument.shell",
+              "constant.other.option.dash.shell"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell"
+            ]
+          },
+          {
+            "text": "\"Authorization: Bearer ${",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell",
+              "string.quoted.double.shell",
+              "punctuation.definition.string.begin.shell"
+            ]
+          },
+          {
+            "text": "API_KEY",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell",
+              "string.quoted.double.shell",
+              "meta.parameter-expansion",
+              "variable.other.normal.shell"
+            ]
+          },
+          {
+            "text": "}\"",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell",
+              "string.quoted.double.shell",
+              "punctuation.section.bracket.curly.variable.end.shell",
+              "punctuation.definition.variable.shell"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell"
+            ]
+          },
+          {
+            "text": "\\",
+            "syntax": "regexp",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell",
+              "constant.character.escape.line-continuation.shell"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell"
+            ]
+          },
+          {
+            "text": "https://api.uter.ai/v1/models",
+            "syntax": "string",
+            "scopes": [
+              "source.shell",
+              "meta.statement.shell",
+              "meta.statement.command.shell",
+              "meta.argument.shell",
+              "string.unquoted.argument.shell"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "sql",
+      "label": "SQL",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "SELECT model, SUM(tokens) AS total\nFROM usage_logs\nWHERE created_at >= '2026-01-01'\nGROUP BY model\nORDER BY total DESC;\n",
+      "lineCount": 6,
+      "tokenCount": 19,
+      "syntaxKeysUsed": [
+        "function",
+        "keyword",
+        "operator",
+        "punctuation",
+        "string",
+        "variable"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "SELECT",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.DML.sql"
+            ]
+          },
+          {
+            "text": " model, ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.sql"
+            ]
+          },
+          {
+            "text": "SUM",
+            "syntax": "function",
+            "scopes": [
+              "source.sql",
+              "support.function.aggregate.sql"
+            ]
+          },
+          {
+            "text": "(tokens) ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.sql"
+            ]
+          },
+          {
+            "text": "AS",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.alias.sql"
+            ]
+          },
+          {
+            "text": " total",
+            "syntax": "variable",
+            "scopes": [
+              "source.sql"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "FROM",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.DML.sql"
+            ]
+          },
+          {
+            "text": " usage_logs",
+            "syntax": "variable",
+            "scopes": [
+              "source.sql"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "WHERE",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.DML.sql"
+            ]
+          },
+          {
+            "text": " created_at ",
+            "syntax": "variable",
+            "scopes": [
+              "source.sql"
+            ]
+          },
+          {
+            "text": ">=",
+            "syntax": "operator",
+            "scopes": [
+              "source.sql",
+              "keyword.operator.comparison.sql"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.sql"
+            ]
+          },
+          {
+            "text": "'2026-01-01'",
+            "syntax": "string",
+            "scopes": [
+              "source.sql",
+              "string.quoted.single.sql",
+              "punctuation.definition.string.begin.sql"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "GROUP BY",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.DML.sql"
+            ]
+          },
+          {
+            "text": " model",
+            "syntax": "variable",
+            "scopes": [
+              "source.sql"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "ORDER BY",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.DML.sql"
+            ]
+          },
+          {
+            "text": " total ",
+            "syntax": "variable",
+            "scopes": [
+              "source.sql"
+            ]
+          },
+          {
+            "text": "DESC",
+            "syntax": "keyword",
+            "scopes": [
+              "source.sql",
+              "keyword.other.order.sql"
+            ]
+          },
+          {
+            "text": ";",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.sql"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "yaml",
+      "label": "YAML",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "version: \"6.0\"\nmodels:\n  - name: gpt-4o\n    enabled: true\n    max_tokens: 1024\nlimits:\n  rpm: 60\n",
+      "lineCount": 8,
+      "tokenCount": 23,
+      "syntaxKeysUsed": [
+        "boolean",
+        "number",
+        "punctuation",
+        "string"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "version",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          },
+          {
+            "text": "\"6.0\"",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.quoted.double.yaml",
+              "punctuation.definition.string.begin.yaml"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "models",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  - ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml"
+            ]
+          },
+          {
+            "text": "name",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          },
+          {
+            "text": "gpt-4o",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml"
+            ]
+          },
+          {
+            "text": "enabled",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          },
+          {
+            "text": "true",
+            "syntax": "boolean",
+            "scopes": [
+              "source.yaml",
+              "constant.language.boolean.yaml"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "    ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml"
+            ]
+          },
+          {
+            "text": "max_tokens",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          },
+          {
+            "text": "1024",
+            "syntax": "number",
+            "scopes": [
+              "source.yaml",
+              "constant.numeric.integer.yaml"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "limits",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ":",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml"
+            ]
+          },
+          {
+            "text": "rpm",
+            "syntax": "string",
+            "scopes": [
+              "source.yaml",
+              "string.unquoted.plain.out.yaml",
+              "entity.name.tag.yaml"
+            ]
+          },
+          {
+            "text": ": ",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.yaml",
+              "punctuation.separator.key-value.mapping.yaml"
+            ]
+          },
+          {
+            "text": "60",
+            "syntax": "number",
+            "scopes": [
+              "source.yaml",
+              "constant.numeric.integer.yaml"
+            ]
+          }
+        ],
+        []
+      ]
+    },
+    {
+      "id": "markdown",
+      "label": "Markdown",
+      "grammarLoaded": true,
+      "coverageSample": false,
+      "code": "# Uter 6.0\n\n- **语法高亮** 使用 VS Code 官方主题\n- `code` 与 [链接](https://uter.ai)\n\n> 20 个语义 Token\n",
+      "lineCount": 7,
+      "tokenCount": 14,
+      "syntaxKeysUsed": [
+        "punctuation",
+        "string"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "# Uter 6.0",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.heading.markdown",
+              "heading.1.markdown",
+              "punctuation.definition.heading.markdown"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "-",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "punctuation.definition.list.begin.markdown"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown"
+            ]
+          },
+          {
+            "text": "**语法高亮**",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown",
+              "markup.bold.markdown",
+              "punctuation.definition.bold.markdown"
+            ]
+          },
+          {
+            "text": " 使用 VS Code 官方主题",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "-",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "punctuation.definition.list.begin.markdown"
+            ]
+          },
+          {
+            "text": " ",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown"
+            ]
+          },
+          {
+            "text": "`code`",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown",
+              "markup.inline.raw.string.markdown",
+              "punctuation.definition.raw.markdown"
+            ]
+          },
+          {
+            "text": " 与 [",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown"
+            ]
+          },
+          {
+            "text": "链接",
+            "syntax": "string",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown",
+              "meta.link.inline.markdown",
+              "string.other.link.title.markdown"
+            ]
+          },
+          {
+            "text": "](",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown",
+              "meta.link.inline.markdown",
+              "punctuation.definition.link.title.end.markdown"
+            ]
+          },
+          {
+            "text": "https://uter.ai",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown",
+              "meta.link.inline.markdown",
+              "markup.underline.link.markdown"
+            ]
+          },
+          {
+            "text": ")",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.list.unnumbered.markdown",
+              "meta.paragraph.markdown",
+              "meta.link.inline.markdown",
+              "punctuation.definition.metadata.markdown"
+            ]
+          }
+        ],
+        [],
+        [
+          {
+            "text": "> 20 个语义 Token",
+            "syntax": "punctuation",
+            "scopes": [
+              "text.html.markdown",
+              "markup.quote.markdown",
+              "punctuation.definition.quote.begin.markdown"
+            ]
+          }
+        ],
+        []
+      ]
+    }
+  ],
+  "coverageLanguages": [
+    {
+      "id": "diff",
+      "label": "Diff（语义覆盖补样）",
+      "grammarLoaded": true,
+      "coverageSample": true,
+      "code": "diff --git a/token.ts b/token.ts\n@@ -1,3 +1,3 @@\n- const removed = null\n+ const added = true\n  const kept = 42\n",
+      "lineCount": 6,
+      "tokenCount": 5,
+      "syntaxKeysUsed": [
+        "deleted",
+        "inserted",
+        "punctuation"
+      ],
+      "unmappedScopes": [],
+      "copyIntact": true,
+      "newlineIndentPreserved": true,
+      "rows": [
+        [
+          {
+            "text": "diff --git a/token.ts b/token.ts",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.diff",
+              "meta.diff.header.git"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "@@ -1,3 +1,3 @@",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.diff",
+              "meta.diff.range.unified",
+              "punctuation.definition.range.diff"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "- const removed = null",
+            "syntax": "deleted",
+            "scopes": [
+              "source.diff",
+              "markup.deleted.diff",
+              "punctuation.definition.deleted.diff"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "+ const added = true",
+            "syntax": "inserted",
+            "scopes": [
+              "source.diff",
+              "markup.inserted.diff",
+              "punctuation.definition.inserted.diff"
+            ]
+          }
+        ],
+        [
+          {
+            "text": "  const kept = 42",
+            "syntax": "punctuation",
+            "scopes": [
+              "source.diff"
+            ]
+          }
+        ],
+        []
+      ]
+    }
+  ],
+  "longCodeSample": {
+    "chars": 358,
+    "containerPolicy": "overflow-x:auto + white-space:pre",
+    "intact": true
+  },
+  "syntaxTokenCount": 20,
+  "syntaxKeysUsedInRealSamples": [
+    "attribute",
+    "boolean",
+    "builtin",
+    "comment",
+    "constant",
+    "deleted",
+    "function",
+    "inserted",
+    "keyword",
+    "null",
+    "number",
+    "operator",
+    "property",
+    "punctuation",
+    "regexp",
+    "string",
+    "tag",
+    "type",
+    "variable"
+  ],
+  "syntaxKeysNotExercisedBySamples": [
+    "invalid"
+  ],
+  "tokenRows": [
+    {
+      "key": "keyword",
+      "scope": "keyword",
+      "vscodeLight": "#0000FF",
+      "vscodeDark": "#569CD6",
+      "uterLight": "#0000FF",
+      "uterDark": "#569CD6",
+      "runtimeToken": "--ds6-syntax-keyword",
+      "manifestToken": "--ds-syntax-keyword",
+      "contrastOnUterBg": {
+        "light": 8.07,
+        "dark": 6.19
+      },
+      "contrastOnVscodeBg": {
+        "light": 8.59,
+        "dark": 5.65
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 8.07,
+          "ratioAfter": 8.07,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 6.19,
+          "ratioAfter": 6.19,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "string",
+      "scope": "string",
+      "vscodeLight": "#A31515",
+      "vscodeDark": "#CE9178",
+      "uterLight": "#A31515",
+      "uterDark": "#CE9178",
+      "runtimeToken": "--ds6-syntax-string",
+      "manifestToken": "--ds-syntax-string",
+      "contrastOnUterBg": {
+        "light": 7.37,
+        "dark": 6.9
+      },
+      "contrastOnVscodeBg": {
+        "light": 7.85,
+        "dark": 6.31
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 7.37,
+          "ratioAfter": 7.37,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 6.9,
+          "ratioAfter": 6.9,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "number",
+      "scope": "constant.numeric",
+      "vscodeLight": "#098658",
+      "vscodeDark": "#B5CEA8",
+      "uterLight": "#098255",
+      "uterDark": "#B5CEA8",
+      "runtimeToken": "--ds6-syntax-number",
+      "manifestToken": "--ds-syntax-number",
+      "contrastOnUterBg": {
+        "light": 4.55,
+        "dark": 10.73
+      },
+      "contrastOnVscodeBg": {
+        "light": 4.6,
+        "dark": 9.81
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": true,
+          "ratioBefore": 4.32,
+          "ratioAfter": 4.55,
+          "lightnessSteps": 3
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 10.73,
+          "ratioAfter": 10.73,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "function",
+      "scope": "entity.name.function",
+      "vscodeLight": "#795E26",
+      "vscodeDark": "#DCDCAA",
+      "uterLight": "#795E26",
+      "uterDark": "#DCDCAA",
+      "runtimeToken": "--ds6-syntax-function",
+      "manifestToken": "--ds-syntax-function",
+      "contrastOnUterBg": {
+        "light": 5.73,
+        "dark": 12.91
+      },
+      "contrastOnVscodeBg": {
+        "light": 6.1,
+        "dark": 11.8
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 5.73,
+          "ratioAfter": 5.73,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 12.91,
+          "ratioAfter": 12.91,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "property",
+      "scope": "meta.object-literal.key",
+      "vscodeLight": "#001080",
+      "vscodeDark": "#9CDCFE",
+      "uterLight": "#001080",
+      "uterDark": "#9CDCFE",
+      "runtimeToken": "--ds6-syntax-property",
+      "manifestToken": "--ds-syntax-property",
+      "contrastOnUterBg": {
+        "light": 14.23,
+        "dark": 12.23
+      },
+      "contrastOnVscodeBg": {
+        "light": 15.15,
+        "dark": 11.18
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 14.23,
+          "ratioAfter": 14.23,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 12.23,
+          "ratioAfter": 12.23,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "variable",
+      "scope": "variable",
+      "vscodeLight": "#001080",
+      "vscodeDark": "#9CDCFE",
+      "uterLight": "#001080",
+      "uterDark": "#9CDCFE",
+      "runtimeToken": "--ds6-syntax-variable",
+      "manifestToken": "--ds-syntax-variable",
+      "contrastOnUterBg": {
+        "light": 14.23,
+        "dark": 12.23
+      },
+      "contrastOnVscodeBg": {
+        "light": 15.15,
+        "dark": 11.18
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 14.23,
+          "ratioAfter": 14.23,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 12.23,
+          "ratioAfter": 12.23,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "type",
+      "scope": "entity.name.type",
+      "vscodeLight": "#267F99",
+      "vscodeDark": "#4EC9B0",
+      "uterLight": "#257B94",
+      "uterDark": "#4EC9B0",
+      "runtimeToken": "--ds6-syntax-type",
+      "manifestToken": "--ds-syntax-type",
+      "contrastOnUterBg": {
+        "light": 4.55,
+        "dark": 8.95
+      },
+      "contrastOnVscodeBg": {
+        "light": 4.59,
+        "dark": 8.18
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": true,
+          "ratioBefore": 4.31,
+          "ratioAfter": 4.55,
+          "lightnessSteps": 3
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 8.95,
+          "ratioAfter": 8.95,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "operator",
+      "scope": "keyword.operator",
+      "vscodeLight": "#000000",
+      "vscodeDark": "#D4D4D4",
+      "uterLight": "#000000",
+      "uterDark": "#D4D4D4",
+      "runtimeToken": "--ds6-syntax-operator",
+      "manifestToken": "--ds-syntax-operator",
+      "contrastOnUterBg": {
+        "light": 19.73,
+        "dark": 12.3
+      },
+      "contrastOnVscodeBg": {
+        "light": 21,
+        "dark": 11.25
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 19.73,
+          "ratioAfter": 19.73,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 12.3,
+          "ratioAfter": 12.3,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "punctuation",
+      "scope": "meta.template.expression",
+      "vscodeLight": "#000000",
+      "vscodeDark": "#D4D4D4",
+      "uterLight": "#000000",
+      "uterDark": "#D4D4D4",
+      "runtimeToken": "--ds6-syntax-punctuation",
+      "manifestToken": "--ds-syntax-punctuation",
+      "contrastOnUterBg": {
+        "light": 19.73,
+        "dark": 12.3
+      },
+      "contrastOnVscodeBg": {
+        "light": 21,
+        "dark": 11.25
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 19.73,
+          "ratioAfter": 19.73,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 12.3,
+          "ratioAfter": 12.3,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "comment",
+      "scope": "comment",
+      "vscodeLight": "#008000",
+      "vscodeDark": "#6A9955",
+      "uterLight": "#008000",
+      "uterDark": "#6A9955",
+      "runtimeToken": "--ds6-syntax-comment",
+      "manifestToken": "--ds-syntax-comment",
+      "contrastOnUterBg": {
+        "light": 4.83,
+        "dark": 5.47
+      },
+      "contrastOnVscodeBg": {
+        "light": 5.14,
+        "dark": 5
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 4.83,
+          "ratioAfter": 4.83,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 5.47,
+          "ratioAfter": 5.47,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "constant",
+      "scope": "variable.other.constant",
+      "vscodeLight": "#0070C1",
+      "vscodeDark": "#4FC1FF",
+      "uterLight": "#0070C1",
+      "uterDark": "#4FC1FF",
+      "runtimeToken": "--ds6-syntax-constant",
+      "manifestToken": "--ds-syntax-constant",
+      "contrastOnUterBg": {
+        "light": 4.83,
+        "dark": 9.04
+      },
+      "contrastOnVscodeBg": {
+        "light": 5.14,
+        "dark": 8.26
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 4.83,
+          "ratioAfter": 4.83,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 9.04,
+          "ratioAfter": 9.04,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "boolean",
+      "scope": "constant.language",
+      "vscodeLight": "#0000FF",
+      "vscodeDark": "#569CD6",
+      "uterLight": "#0000FF",
+      "uterDark": "#569CD6",
+      "runtimeToken": "--ds6-syntax-boolean",
+      "manifestToken": "--ds-syntax-boolean",
+      "contrastOnUterBg": {
+        "light": 8.07,
+        "dark": 6.19
+      },
+      "contrastOnVscodeBg": {
+        "light": 8.59,
+        "dark": 5.65
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 8.07,
+          "ratioAfter": 8.07,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 6.19,
+          "ratioAfter": 6.19,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "null",
+      "scope": "constant.language",
+      "vscodeLight": "#0000FF",
+      "vscodeDark": "#569CD6",
+      "uterLight": "#0000FF",
+      "uterDark": "#569CD6",
+      "runtimeToken": "--ds6-syntax-null",
+      "manifestToken": "--ds-syntax-null",
+      "contrastOnUterBg": {
+        "light": 8.07,
+        "dark": 6.19
+      },
+      "contrastOnVscodeBg": {
+        "light": 8.59,
+        "dark": 5.65
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 8.07,
+          "ratioAfter": 8.07,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 6.19,
+          "ratioAfter": 6.19,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "tag",
+      "scope": "entity.name.tag",
+      "vscodeLight": "#800000",
+      "vscodeDark": "#569CD6",
+      "uterLight": "#800000",
+      "uterDark": "#569CD6",
+      "runtimeToken": "--ds6-syntax-tag",
+      "manifestToken": "--ds-syntax-tag",
+      "contrastOnUterBg": {
+        "light": 10.29,
+        "dark": 6.19
+      },
+      "contrastOnVscodeBg": {
+        "light": 10.95,
+        "dark": 5.65
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 10.29,
+          "ratioAfter": 10.29,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 6.19,
+          "ratioAfter": 6.19,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "attribute",
+      "scope": "entity.other.attribute-name",
+      "vscodeLight": "#E50000",
+      "vscodeDark": "#9CDCFE",
+      "uterLight": "#E50000",
+      "uterDark": "#9CDCFE",
+      "runtimeToken": "--ds6-syntax-attribute",
+      "manifestToken": "--ds-syntax-attribute",
+      "contrastOnUterBg": {
+        "light": 4.55,
+        "dark": 12.23
+      },
+      "contrastOnVscodeBg": {
+        "light": 4.85,
+        "dark": 11.18
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 4.55,
+          "ratioAfter": 4.55,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 12.23,
+          "ratioAfter": 12.23,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "regexp",
+      "scope": "string.regexp",
+      "vscodeLight": "#811F3F",
+      "vscodeDark": "#D16969",
+      "uterLight": "#811F3F",
+      "uterDark": "#D16969",
+      "runtimeToken": "--ds6-syntax-regexp",
+      "manifestToken": "--ds-syntax-regexp",
+      "contrastOnUterBg": {
+        "light": 8.96,
+        "dark": 5.16
+      },
+      "contrastOnVscodeBg": {
+        "light": 9.54,
+        "dark": 4.71
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 8.96,
+          "ratioAfter": 8.96,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 5.16,
+          "ratioAfter": 5.16,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "builtin",
+      "scope": "support.type",
+      "vscodeLight": "#267F99",
+      "vscodeDark": "#4EC9B0",
+      "uterLight": "#257B94",
+      "uterDark": "#4EC9B0",
+      "runtimeToken": "--ds6-syntax-builtin",
+      "manifestToken": "--ds-syntax-builtin",
+      "contrastOnUterBg": {
+        "light": 4.55,
+        "dark": 8.95
+      },
+      "contrastOnVscodeBg": {
+        "light": 4.59,
+        "dark": 8.18
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": true,
+          "ratioBefore": 4.31,
+          "ratioAfter": 4.55,
+          "lightnessSteps": 3
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 8.95,
+          "ratioAfter": 8.95,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "inserted",
+      "scope": "markup.inserted",
+      "vscodeLight": "#098658",
+      "vscodeDark": "#B5CEA8",
+      "uterLight": "#098255",
+      "uterDark": "#B5CEA8",
+      "runtimeToken": "--ds6-syntax-inserted",
+      "manifestToken": "--ds-syntax-inserted",
+      "contrastOnUterBg": {
+        "light": 4.55,
+        "dark": 10.73
+      },
+      "contrastOnVscodeBg": {
+        "light": 4.6,
+        "dark": 9.81
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": true,
+          "ratioBefore": 4.32,
+          "ratioAfter": 4.55,
+          "lightnessSteps": 3
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 10.73,
+          "ratioAfter": 10.73,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "deleted",
+      "scope": "markup.deleted",
+      "vscodeLight": "#A31515",
+      "vscodeDark": "#CE9178",
+      "uterLight": "#A31515",
+      "uterDark": "#CE9178",
+      "runtimeToken": "--ds6-syntax-deleted",
+      "manifestToken": "--ds-syntax-deleted",
+      "contrastOnUterBg": {
+        "light": 7.37,
+        "dark": 6.9
+      },
+      "contrastOnVscodeBg": {
+        "light": 7.85,
+        "dark": 6.31
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 7.37,
+          "ratioAfter": 7.37,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 6.9,
+          "ratioAfter": 6.9,
+          "lightnessSteps": 0
+        }
+      }
+    },
+    {
+      "key": "invalid",
+      "scope": "invalid",
+      "vscodeLight": "#CD3131",
+      "vscodeDark": "#F44747",
+      "uterLight": "#CD3131",
+      "uterDark": "#F44747",
+      "runtimeToken": "--ds6-syntax-invalid",
+      "manifestToken": "--ds-syntax-invalid",
+      "contrastOnUterBg": {
+        "light": 4.84,
+        "dark": 5.07
+      },
+      "contrastOnVscodeBg": {
+        "light": 5.15,
+        "dark": 4.64
+      },
+      "adjusted": {
+        "light": {
+          "adjusted": false,
+          "ratioBefore": 4.84,
+          "ratioAfter": 4.84,
+          "lightnessSteps": 0
+        },
+        "dark": {
+          "adjusted": false,
+          "ratioBefore": 5.07,
+          "ratioAfter": 5.07,
+          "lightnessSteps": 0
+        }
+      }
+    }
+  ],
+  "verdict": "PASS",
+  "checks": {
+    "allGrammarsLoaded": true,
+    "allCopyIntact": true,
+    "allNewlineIndentPreserved": true,
+    "allHaveTokens": true,
+    "allSyntaxContrastPass": true,
+    "syntaxKeysCoveredBySamples": 19
+  }
+}

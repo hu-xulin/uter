@@ -203,7 +203,7 @@
   "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
-  "target": "http://localhost:3100",
+  "target": "http://localhost:3101",
   "passed": 14,
   "failed": 0,
   "critical": 0,
@@ -214,10 +214,10 @@
     "mechanism": "isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass",
     "production_auth_policy_modified": false
   },
-  "generated_at": "2026-11-15T02:12:02.371Z",
+  "generated_at": "2026-11-15T05:42:16.175Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "commit_sha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -225,8 +225,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261115021200-c4369778",
-  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
-  "worktree_fingerprint": "7fe27a000f41ebd9bb4d3dd4d45b163c68ebbb087ab61e719ac331b862e76de9",
-  "evidence_ref": "UAP-EV-20261115021203-3e20aff0"
+  "execution_id": "UAP-EXEC-20261115054215-355c926b",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "bc8789ecfd9c82f0f97096eeebe48a4b911bf1f2ca99f7020d89da64ee3742ae",
+  "evidence_ref": "UAP-EV-20261115054216-4394b95b"
 }

@@ -37,6 +37,13 @@ import {
 import { runFinalAcceptance } from '../tools/final-acceptance-gate.mjs';
 // Pure, independently testable visual-diff classifier (final remediation).
 import { classifyVisualDiff, MANDATED_CATEGORIES } from '../runtime/status-engine/visual-classifier.mjs';
+// One TEST-RUNS.json, one schema. `quality.engineering_integrity` calls
+// engines/testing.health(), whose artifactOk() requires runs/summary/
+// test_plan/gate_plan. The CLI `test --all` used to append only `runs`, so
+// the file silently lost the engine's schema and health().ok became false.
+// Reconstruct those fields from the engine's REAL plan/gatePlan outputs
+// instead of relaxing health() or inventing values.
+import { plan as testingPlan, gatePlan as testingGatePlan, executors as testingExecutors } from '../engines/testing/index.mjs';
 
 export const component = 'uap.cli';
 export const version = '1.0.0';
@@ -612,7 +619,32 @@ async function cmdTest({ flags, positional }) {
   const prev = readJSON(testRunsPath, null);
   const prevRuns = Array.isArray(prev?.runs) ? prev.runs : (Array.isArray(prev) ? prev : []);
   const prevMeta = (prev && typeof prev === 'object' && !Array.isArray(prev)) ? prev : {};
-  writeJSON(testRunsPath, { ...prevMeta, runs: [...prevRuns, runRecord] });
+  const allRuns = [...prevRuns, runRecord];
+  // Keep the ONE documented TEST-RUNS.json schema. `artifactOk()` in
+  // engines/testing checks runs + summary + test_plan + gate_plan, and insists
+  // every PASS run has exit_code 0 with a real TAP count. Writing only `runs`
+  // here used to wipe the other three fields and made `health().ok=false`
+  // (-> quality.engineering_integrity FAIL). Everything below is computed
+  // from the real run list and the engine's real discovery functions.
+  writeJSON(testRunsPath, {
+    ...prevMeta,
+    schema_version: '1.0',
+    generated_at: data.generated_at,
+    executor_ids: testingExecutors,
+    node_version: process.version,
+    environment: 'local',
+    runs: allRuns,
+    summary: {
+      total: allRuns.length,
+      executed: allRuns.filter((x) => typeof x.exit_code === 'number').length,
+      passed: allRuns.filter((x) => x.status === 'PASSED_EXECUTED').length,
+      blocked: allRuns.filter((x) => x.status === 'BLOCKED').length,
+      failed: allRuns.filter((x) => x.status === 'FAILED_EXECUTED' || x.status === 'FAILED').length,
+    },
+    test_plan: testingPlan(),
+    gate_plan: testingGatePlan(),
+    policy: { never_mark_unrun_as_pass: true, blocked_not_pass: true },
+  });
   if (r.exit_code !== 0) return fail(`test: node --test exited ${r.exit_code} (${files.length} files)`, data);
   return ok(`test: ${files.length} test files passed, exit_code=0`, data);
 }

@@ -13,6 +13,8 @@
  *   node contrast-engine.mjs              输出人类可读摘要
  */
 
+import { VSCODE_SYNTAX } from './vscode-theme.mjs'
+
 // ─── 基础色函数 ────────────────────────────────────────────────────────────────
 
 function parseHex(hex) {
@@ -176,18 +178,40 @@ function optimizeStop(hex, backgrounds, threshold, mode, stepSize = 0.005, maxIt
 
 // ─── 6.0 冻结输入 ──────────────────────────────────────────────────────────────
 
+/**
+ * §6.3 实际文字背景矩阵：渐变文字可能出现的所有真实容器底色。
+ * 旧版只有 canvas / surface / code-bg 三种，不足以覆盖浮层、下沉表面与 Hero 光晕。
+ * 所有值来自 TOKEN-MANIFEST 的 surface 组（同一真源），不是新造的一套颜色。
+ */
 export const BACKGROUNDS = {
   light: {
     canvas: '#F8FAFC',
     surface: '#FFFFFF',
+    raised: '#FFFFFF',
+    sunken: '#F1F5F9',
+    overlay: '#FFFFFF',
+    'hero-glow': '#EEF2FF',
     'code-bg': '#F6F8FA',
   },
   dark: {
     canvas: '#0B1120',
     surface: '#111827',
+    raised: '#1B2436',
+    sunken: '#080D18',
+    overlay: '#1B2436',
+    'hero-glow': '#131C33',
     'code-bg': '#0E1524',
   },
 }
+
+/**
+ * §6.2 CSS 与引擎必须声明同一插值空间。
+ * 生成器把 GRADIENT_INTERPOLATION 同时写进 CSS（`90deg in srgb`）与 Showcase，
+ * 引擎按 sRGB 通道线性插值，二者一致；检查器 C-G01 做三方断言。
+ */
+export const GRADIENT_INTERPOLATION = 'srgb'
+export const GRADIENT_SAMPLE_STEP = 0.1
+export const GRADIENT_SAMPLE_COUNT = 1001
 
 /** 文档 PART 3.3 的建议基线（初始，不代表已批准）。 */
 export const GRADIENT_BASELINE = {
@@ -217,52 +241,15 @@ export const GRADIENT_LEGACY = {
   ],
 }
 
-/** 6.0 语法色候选：以文档给出的 5 个旧 oklch 为迁移参考，重新评估后给 HEX 定值。 */
+/**
+ * §5.1/§5.2：6.0 语法色唯一来源是 VS Code 官方 Light+ / Dark+ 主题源码，
+ * 由 registry/vscode-theme.mjs 从 audit/vscode/*.json 提取，并已为 Uter 代码块
+ * 背景做有限的 WCAG AA 调整（调整明细见 VSCODE-COLOR-MAPPING.md §4）。
+ * 本引擎只验证达标，不再二次优化，避免产生与官方对照表不一致的第三套值。
+ */
 export const SYNTAX_CANDIDATES = {
-  light: {
-    'syntax-keyword': '#7C3AED',
-    'syntax-string': '#047857',
-    'syntax-number': '#A54600',
-    'syntax-function': '#1D4ED8',
-    'syntax-property': '#0369A1',
-    'syntax-variable': '#0F172A',
-    'syntax-type': '#0369A1',
-    'syntax-operator': '#475569',
-    'syntax-punctuation': '#475569',
-    'syntax-comment': '#5B6779',
-    'syntax-constant': '#A54600',
-    'syntax-boolean': '#7C3AED',
-    'syntax-null': '#7C3AED',
-    'syntax-tag': '#1D4ED8',
-    'syntax-attribute': '#047857',
-    'syntax-regexp': '#A54600',
-    'syntax-builtin': '#1D4ED8',
-    'syntax-inserted': '#047857',
-    'syntax-deleted': '#B91C1C',
-    'syntax-invalid': '#B91C1C',
-  },
-  dark: {
-    'syntax-keyword': '#C4B5FD',
-    'syntax-string': '#6EE7B7',
-    'syntax-number': '#FCD34D',
-    'syntax-function': '#93C5FD',
-    'syntax-property': '#7DD3FC',
-    'syntax-variable': '#E2E8F0',
-    'syntax-type': '#7DD3FC',
-    'syntax-operator': '#CBD5E1',
-    'syntax-punctuation': '#CBD5E1',
-    'syntax-comment': '#94A3B8',
-    'syntax-constant': '#FCD34D',
-    'syntax-boolean': '#C4B5FD',
-    'syntax-null': '#C4B5FD',
-    'syntax-tag': '#93C5FD',
-    'syntax-attribute': '#6EE7B7',
-    'syntax-regexp': '#FCD34D',
-    'syntax-builtin': '#93C5FD',
-    'syntax-inserted': '#6EE7B7',
-    'syntax-deleted': '#FCA5A5',
-    'syntax-invalid': '#FCA5A5',
-  },
+  light: Object.fromEntries(VSCODE_SYNTAX.rows.map((r) => ['syntax-' + r.key, r.adopted.light])),
+  dark: Object.fromEntries(VSCODE_SYNTAX.rows.map((r) => ['syntax-' + r.key, r.adopted.dark])),
 }
 
 /** 正文 / 状态 / 图表等基础文字在两种表面上的达标检查。 */
@@ -316,7 +303,11 @@ export function runVerification() {
     engine: 'contrast-engine.mjs',
     wcag: '2.2 AA',
     formula: '(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045',
-    sampling: 'linear-gradient 90deg, sRGB channel interpolation, 101 points (0..100 step 1)',
+    sampling: 'linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops',
+    interpolation: GRADIENT_INTERPOLATION,
+    sampleStep: GRADIENT_SAMPLE_STEP,
+    sampleCount: GRADIENT_SAMPLE_COUNT,
+    syntaxSource: VSCODE_SYNTAX.source,
     thresholds: { normalText: 4.5, largeText: 3.0, nonText: 3.0 },
     backgrounds: BACKGROUNDS,
     gradient: {},
@@ -332,7 +323,7 @@ export function runVerification() {
     const bgs = BACKGROUNDS[theme]
     const mode = theme === 'light' ? 'darken' : 'lighten'
     const baseline = GRADIENT_BASELINE[theme]
-    const beforeSamples = sampleGradient(baseline, bgs, 1)
+    const beforeSamples = sampleGradient(baseline, bgs, GRADIENT_SAMPLE_STEP)
     const beforeWorst = worstOf(beforeSamples, bgs, 4.5)
 
     // 逐停靠点优化：停靠点自身的对比度是整条渐变的必要条件（插值单调区间内）。
@@ -341,9 +332,9 @@ export function runVerification() {
       optimization: optimizeStop(s.hex, bgs, 4.5, mode),
     }))
     const finalStops = stops.map((s) => ({ at: s.at, hex: s.optimization.final, name: s.name }))
-    const afterSamples = sampleGradient(finalStops, bgs, 1)
+    const afterSamples = sampleGradient(finalStops, bgs, GRADIENT_SAMPLE_STEP)
     const afterWorst = worstOf(afterSamples, bgs, 4.5)
-    const legacySamples = sampleGradient(GRADIENT_LEGACY[theme], bgs, 1)
+    const legacySamples = sampleGradient(GRADIENT_LEGACY[theme], bgs, GRADIENT_SAMPLE_STEP)
     const legacyWorst = worstOf(legacySamples, bgs, 4.5)
 
     result.gradient[theme] = {
@@ -367,18 +358,27 @@ export function runVerification() {
     )
   }
 
-  // 2) 语法色：在真实代码背景上逐一验证 ≥4.5:1，不达标按同算法优化。
+  // 2) 语法色：值来自 VS Code 官方主题源码（已由 vscode-theme.mjs 做有限 WCAG 调整）。
+  //    本引擎只做达标验证，不再二次优化，避免产生与官方对照表不一致的第三套值。
   for (const theme of ['light', 'dark']) {
     const bg = BACKGROUNDS[theme]['code-bg']
-    const bgs = { 'code-bg': bg }
-    const mode = theme === 'light' ? 'darken' : 'lighten'
     const rows = []
     const frozen = {}
     for (const [name, hex] of Object.entries(SYNTAX_CANDIDATES[theme])) {
-      const opt = optimizeStop(hex, bgs, 4.5, mode)
-      const ratio = round2(contrastRatio(opt.final, bg))
-      rows.push({ name, original: hex, final: opt.final, adjusted: opt.adjusted, iterations: opt.iterations, ratio, pass: ratio >= 4.5 })
-      frozen[name] = opt.final
+      const ratio = round2(contrastRatio(hex, bg))
+      const official = VSCODE_SYNTAX.rows.find((r) => r.key === name.replace('syntax-', ''))
+      rows.push({
+        name,
+        vscodeOfficial: theme === 'light' ? official.officialLight : official.officialDark,
+        vscodeScope: official.scope,
+        original: hex,
+        final: hex,
+        adjusted: official.adjustment[theme].adjusted,
+        iterations: 0,
+        ratio,
+        pass: ratio >= 4.5,
+      })
+      frozen[name] = hex
     }
     result.syntax[theme] = {
       background: bg,

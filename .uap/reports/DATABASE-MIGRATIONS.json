@@ -102,10 +102,10 @@
   "upgrade": "PASS",
   "rollback": "PASS",
   "generated_by": "real go test -json markers from model/schema_migrations_test.go",
-  "generated_at": "2026-11-15T02:07:24.012Z",
+  "generated_at": "2026-11-15T06:20:57.235Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "commit_sha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -113,8 +113,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
-  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
-  "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
-  "evidence_ref": "UAP-EV-20261115020724-82c356cd"
+  "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+  "evidence_ref": "UAP-EV-20261115062057-abcb60bd"
 }

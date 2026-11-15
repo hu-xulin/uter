@@ -1,0 +1,25 @@
+[UAP] PASS (exit 0) — requirement verification complete: 538 requirements with honest statuses
+{
+  "generated_at": "2026-11-15T06:21:58.465Z",
+  "command": "node .uap/tools/requirement-verification.mjs",
+  "exit_code": 0,
+  "stdout_tail": "requirement verification: 538 requirements / 3 real behaviour suite runs / 62 distinct assertions observed\nstates: {\"VERIFIED\":61,\"NOT_VERIFIED\":471,\"BLOCKED\":6,\"NOT_APPLICABLE\":0}\nindependent validator: PASS\n",
+  "stderr_tail": "",
+  "artefact": ".uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json",
+  "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+  "counts": {
+    "VERIFIED": 61,
+    "NOT_VERIFIED": 471,
+    "BLOCKED": 6,
+    "NOT_APPLICABLE": 0
+  },
+  "matrix_validation": {
+    "total": 538,
+    "invalid": 0,
+    "bogus_verified": 0,
+    "problems": []
+  }
+}
+evidence: UAP-EV-20261115062158-9c48e505

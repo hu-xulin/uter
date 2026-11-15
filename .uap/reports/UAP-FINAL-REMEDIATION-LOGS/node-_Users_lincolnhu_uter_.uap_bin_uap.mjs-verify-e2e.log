@@ -1,0 +1,244 @@
+[UAP] FAIL (exit 1) — e2e FAILED: business e2e exit=1; PASS=36 FAIL=1 BLOCKED=1 SKIPPED=0
+{
+  "e2e": {
+    "status_model": "UAP-TEST-STATUS-1.0",
+    "status": "FAIL",
+    "suite": "e2e",
+    "command": "npx playwright test --config e2e/axe/playwright.config.ts + playwright business",
+    "exit_code": 1,
+    "items": [
+      {
+        "id": "axe_0_axe: 鉴权页批量扫描",
+        "title": "axe: 鉴权页批量扫描",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_1_axe: 公开页 /",
+        "title": "axe: 公开页 /",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_2_axe: 公开页 /about",
+        "title": "axe: 公开页 /about",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_3_axe: 公开页 /pricing",
+        "title": "axe: 公开页 /pricing",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_4_axe: 公开页 /rankings",
+        "title": "axe: 公开页 /rankings",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_5_axe: 公开页 /docs",
+        "title": "axe: 公开页 /docs",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_6_axe: 公开页 /sign-in",
+        "title": "axe: 公开页 /sign-in",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_7_axe: 公开页 /sign-up",
+        "title": "axe: 公开页 /sign-up",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_8_axe: 公开页 /forgot-password",
+        "title": "axe: 公开页 /forgot-password",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_9_axe: 公开页 /404",
+        "title": "axe: 公开页 /404",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_10_axe: 公开页 /500",
+        "title": "axe: 公开页 /500",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_11_axe: 公开页 /privacy-policy",
+        "title": "axe: 公开页 /privacy-policy",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_12_axe: 公开页 /user-agreement",
+        "title": "axe: 公开页 /user-agreement",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "axe_13_axe: 公开页 /recharge-agreement",
+        "title": "axe: 公开页 /recharge-agreement",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "axe"
+      },
+      {
+        "id": "biz_0_biz_01 注册新用户 [BLOCKED_BY_POLICY]",
+        "title": "biz_01 注册新用户 [BLOCKED_BY_POLICY]",
+        "status": "BLOCKED",
+        "reason": "policy marker in spec title: execution prohibited",
+        "source": "title",
+        "runner_ok": true,
+        "runner_statuses": [
+          "skipped"
+        ],
+        "evidence_ref": null,
+        "suite": "business"
+      },
+      {
+        "id": "biz_1_biz_02 密码登录成功（真实凭据）",
+        "title": "biz_02 密码登录成功（真实凭据）",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "business"
+      },
+      {
+        "id": "biz_2_biz_03 错误密码登录被拒绝",
+        "title": "biz_03 错误密码登录被拒绝",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "business"
+      },
+      {
+        "id": "biz_3_biz_04 未登录调用受保护 API 被 401 拒绝",
+        "title": "biz_04 未登录调用受保护 API 被 401 拒绝",
+        "status": "PASS",
+        "reason": null,
+        "source": "runner",
+        "runner_ok": true,
+        "runner_statuses": [
+          "passed"
+        ],
+        "evidence_ref": null,
+        "suite": "business
+… (truncated; use --json for full output)
+evidence: UAP-EV-20261115043643-0c3390c8

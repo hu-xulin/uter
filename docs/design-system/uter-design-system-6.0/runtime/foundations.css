@@ -29,7 +29,7 @@ For commercial licensing, please contact support@uter.ai
 /* 全站唯一品牌渐变出口。业务页面不得自写 linear-gradient / bg-clip-text。 */
 .ds-text-gradient-brand {
   background-image: linear-gradient(
-    var(--ds-gradient-direction),
+    var(--ds-gradient-direction) in srgb,
     var(--ds-color-gradient-light-from) 0%,
     var(--ds-color-gradient-light-via) 50%,
     var(--ds-color-gradient-light-to) 100%
@@ -41,7 +41,7 @@ For commercial licensing, please contact support@uter.ai
 }
 [data-ds-theme="dark"] .ds-text-gradient-brand {
   background-image: linear-gradient(
-    var(--ds-gradient-direction),
+    var(--ds-gradient-direction) in srgb,
     var(--ds-color-gradient-dark-from) 0%,
     var(--ds-color-gradient-dark-via) 50%,
     var(--ds-color-gradient-dark-to) 100%

@@ -171,8 +171,8 @@ check('C07', 'Light / Dark 使用同名 Token，无主题特例缺失', () => {
 })
 
 /* C08 注册表一致性 --------------------------------------------------------- */
-check('C08', '7 份注册表存在且计数与真源一致', () => {
-  const expected = ['TOKEN-REGISTRY.json', 'COMPONENT-REGISTRY.json', 'PAGE-REGISTRY.json', 'DEPENDENCY-GRAPH.json', 'ACCEPTANCE-MATRIX.json', 'DEPRECATED-REGISTRY.json', 'EXCEPTION-REGISTRY.json']
+check('C08', '8 份注册表存在且计数与真源一致', () => {
+  const expected = ['TOKEN-REGISTRY.json', 'COMPONENT-REGISTRY.json', 'PAGE-REGISTRY.json', 'DEPENDENCY-GRAPH.json', 'ACCEPTANCE-MATRIX.json', 'DEPRECATED-REGISTRY.json', 'EXCEPTION-REGISTRY.json', 'COMPAT-MAP.json']
   for (const f of expected) assert(existsSync(join(DS, f)), 'C08', `缺失 ${f}`)
   const tr = JSON.parse(read(join(DS, 'TOKEN-REGISTRY.json')))
   assert(tr.total === names.length, 'C08', `TOKEN-REGISTRY.total=${tr.total} != ${names.length}`)
@@ -184,7 +184,7 @@ check('C08', '7 份注册表存在且计数与真源一致', () => {
   const am = JSON.parse(read(join(DS, 'ACCEPTANCE-MATRIX.json')))
   assert(am.modules.length === 38, 'C08', `ACCEPTANCE-MATRIX modules=${am.modules.length} != 38`)
   assert(pr.scanned_route_files >= 60, 'C08', '真实路由扫描数量异常')
-  return `7 registries, ${cr.total} components, ${pr.scanned_route_files} routes, ${am.modules.length} modules`
+  return `${expected.length} registries, ${cr.total} components, ${pr.scanned_route_files} routes, ${am.modules.length} modules`
 })
 
 /* C09 对比度真实计算 ------------------------------------------------------- */
@@ -192,8 +192,10 @@ const { runVerification } = await import(ENGINE)
 const verification = runVerification()
 check('C09', 'contrast-engine 真实计算 VERDICT=PASS', () => {
   assert(verification.verdict === 'PASS', 'C09', `verdict=${verification.verdict}`)
-  assert(verification.gradient.light.samples.length === 101, 'C09', 'Light 采样不是 101 点')
-  assert(verification.gradient.dark.samples.length === 101, 'C09', 'Dark 采样不是 101 点')
+  assert(verification.gradient.light.samples.length === 1001, 'C09', 'Light 采样不是 1001 点')
+  assert(verification.gradient.dark.samples.length === 1001, 'C09', 'Dark 采样不是 1001 点')
+  assert(verification.interpolation === 'srgb', 'C09', '引擎插值空间不是 srgb')
+  assert(Object.keys(verification.backgrounds.light).length >= 6, 'C09', 'Light 实际文字背景矩阵不足 6 种')
   assert(verification.gradient.light.passesNormalText45, 'C09', 'Light 渐变未达 4.5:1')
   assert(verification.gradient.dark.passesNormalText45, 'C09', 'Dark 渐变未达 4.5:1')
   assert(verification.syntax.light.tokenCount === 20 && verification.syntax.dark.tokenCount === 20, 'C09', 'syntax 不是 20×2')
@@ -201,7 +203,7 @@ check('C09', 'contrast-engine 真实计算 VERDICT=PASS', () => {
   assert(verification.text.light.failCount === 0 && verification.text.dark.failCount === 0, 'C09', 'text 存在不达标色值')
   assert(verification.brandSolid.light.failCount === 0 && verification.brandSolid.dark.failCount === 0, 'C09', '品牌实底白字不达标')
   assert(verification.gradient.light.legacyWorst.ratio < 4.5, 'C09', '历史渐变被误判为达标，E28 注销依据不成立')
-  return `202 gradient samples + 40 syntax + 16 text + 6 brand-solid, all >=4.5:1`
+  return `2002 gradient samples (1001 x 2 themes) + 40 syntax + 16 text + 6 brand-solid, all >=4.5:1`
 })
 
 /* C10 20 个 Syntax Token --------------------------------------------------- */
@@ -219,30 +221,44 @@ check('C10', '20 个 Syntax Token 在 manifest 中有 Light/Dark 定值', () => 
 })
 
 /* C11 单一渐变出口 --------------------------------------------------------- */
-check('C11', '全库品牌渐变单一出口，重复实现必须已登记', () => {
+check('C11', '全库渐变文字单一 owner，重复实现必须已真实收敛', () => {
   const ex = JSON.parse(read(join(DS, 'EXCEPTION-REGISTRY.json')))
-  const registered = new Set(ex.registered_gradient_files ?? [])
-  const openIds = new Set(ex.items.filter((i) => i.action === 'MIGRATE_TO_SINGLE_EXIT').map((i) => i.id))
-  assert(openIds.size >= 1, 'C11', 'EXCEPTION-REGISTRY 未登记 shimmer 待迁移项，禁止静默豁免')
+  const owner = 'web/src/design-system/foundations/typography.css'
+  // 整改后规则更严格：迁移项不允许长期挂 OPEN，必须 RESOLVED 且带证据。
   for (const i of ex.items.filter((x) => x.action === 'MIGRATE_TO_SINGLE_EXIT')) {
-    assert(i.status === 'OPEN', 'C11', `${i.id} 被标记为永久豁免，禁止`)
+    assert(i.status === 'RESOLVED', 'C11', `${i.id} 仍未收敛（禁止静默豁免）`)
+    assert(i.resolved_by && i.evidence, 'C11', `${i.id} 缺整改证据`)
   }
   const files = walk(join(WEB, 'src'), (p) => /\.(css|tsx?|ts)$/.test(p))
   const offenders = []
+  const gradientFiles = []
   for (const p of files) {
     const r = rel(p)
-    if (registered.has(r)) continue
     const text = read(p)
     const hasClip = /background-clip:\s*text|-webkit-background-clip:\s*text|bg-clip-text/.test(text)
     const hasGradient = /linear-gradient\s*\(/.test(text)
-    if (hasClip && hasGradient) offenders.push(r)
+    if (hasClip && hasGradient) {
+      gradientFiles.push(r)
+      if (r !== owner) offenders.push(r)
+    }
   }
-  assert(offenders.length === 0, 'C11', `未登记手写渐变: ${offenders.join(', ')}`)
+  assert(offenders.length === 0, 'C11', `唯一 owner 之外出现手写渐变: ${offenders.join(', ')}`)
+  assert(gradientFiles.length === 1, 'C11', `渐变 owner 文件数=${gradientFiles.length} != 1`)
+  // 登记表不得残留已不含渐变的文件（防止「已整改却仍登记为例外」）。
+  const stale = (ex.registered_gradient_files ?? []).filter(
+    (f) => f.startsWith('web/src/') && !gradientFiles.includes(f)
+  )
+  assert(stale.length === 0, 'C11', `登记过期: ${stale.join(', ')}`)
+  const ownerCss = read(join(WEB, 'src', 'design-system', 'foundations', 'typography.css'))
+  assert(ownerCss.includes('@utility ds-text-gradient-brand'), 'C11', '运行时品牌渐变出口缺失')
+  assert(ownerCss.includes('@utility ds-text-shimmer'), 'C11', '运行时受控扫光出口缺失')
+  assert(/90deg in srgb/.test(ownerCss), 'C11', '运行时 CSS 未声明 sRGB 插值空间')
   const v6css = read(join(RUNTIME, 'foundations.css'))
-  assert(v6css.includes('.ds-text-gradient-brand'), 'C11', '6.0 唯一渐变出口缺失')
+  assert(v6css.includes('.ds-text-gradient-brand'), 'C11', '6.0 派生产物渐变出口缺失')
+  assert(/in srgb/.test(v6css), 'C11', '6.0 派生产物未声明 sRGB 插值空间')
   assert(v6css.includes('--ds-color-gradient-light-from') && v6css.includes('--ds-color-gradient-dark-from'), 'C11', '6.0 渐变未从 Token 派生')
   assert(T['--ds-gradient-utility'].light === 'ds-text-gradient-brand', 'C11', '渐变出口 Token 值不一致')
-  return `${files.length} files scanned, ${registered.size} registered (1 OPEN migration), 0 unregistered offenders`
+  return `${files.length} files scanned, owner=${owner}, ${ex.resolved_exceptions?.length ?? 0} resolved exceptions, 0 offenders`
 })
 
 /* C12 字体栈逐字保留 ------------------------------------------------------- */
@@ -295,10 +311,114 @@ check('C14', 'Showcase 单文件覆盖 38 模块 / 全 Token / ≥10 语言 / �
   assert(h.includes('prefers-reduced-motion'), 'C14', '缺 reduced-motion 规则')
   assert(h.includes('Token Inspector') && h.includes('Color Contrast Checker'), 'C14', '缺全局工具')
   assert(h.includes('g-old') && h.includes('g-new'), 'C14', '缺渐变新旧对比')
+  /* P0 整改新增的六个扩展区块，缺一即判失败，防止后续生成时静默退化。 */
+  for (const id of ['architecture', 'vscode', 'terminal', 'charts', 'gradient-matrix', 'runtime-evidence']) {
+    assert(h.includes(`id="${id}"`), 'C14', `缺扩展区块 #${id}`)
+  }
+  for (const pane of ['vscode-light', 'uter-light', 'vscode-dark', 'uter-dark']) {
+    assert(h.includes(`data-pane="${pane}"`), 'C14', `缺 VS Code 四栏 ${pane}`)
+  }
+  assert(count(/data-terminal-theme="/g) === 2, 'C14', 'Terminal Light/Dark 面板不是 2 个')
+  assert(count(/data-chart-series="/g) === 12, 'C14', '12 色图表展示不足')
+  assert(count(/data-gradient-background="/g) === 7, 'C14', '渐变 7 背景矩阵缺失')
+  assert(count(/data-runtime-name="--ds6-/g) >= names.length, 'C14', '运行时 Token 名 / 真实消费者列缺失')
+  assert(count(/data-runtime-measured="MEASURED"/g) > 0, 'C14', '缺运行时实测标记')
+  assert(h.includes('rgb('), 'C14', '缺 HEX + RGB 双数值')
+  assert(!/101 点|101×2/.test(h), 'C14', '残留 101 点采样旧口径')
+  assert(h.includes('1001'), 'C14', '缺 1001 点采样口径')
   const pub = join(WEB, 'public', 'design-system', '6.0', 'index.html')
   assert(existsSync(pub), 'C14', '产品内 /design-system/6.0/ 页面缺失')
   assert(read(pub) === h, 'C14', '产品内页面与 Showcase 不一致')
-  return `${count(/data-module-id="/g)} modules, ${count(/data-language="/g)} languages, ${h.length} chars`
+  return `${count(/data-module-id="/g)} modules, ${count(/data-language="/g)} languages, ${h.length} chars, 6 extension sections`
+})
+
+/* C18 机器可读验证报告 ----------------------------------------------------- */
+check('C18', '8 份机器可读验证报告齐全且 verdict 真实', () => {
+  const required = [
+    'design-system-audit.json', 'token-validation.json', 'contrast-validation.json',
+    'gradient-validation.json', 'syntax-validation.json', 'accessibility-validation.json',
+    'visual-regression.json', 'final-acceptance.json',
+  ]
+  const missing = required.filter((f) => !existsSync(join(DS, 'audit', f)))
+  assert(missing.length === 0, 'C18', `报告缺失: ${missing.join(', ')}`)
+  for (const f of required) {
+    let o
+    try { o = JSON.parse(read(join(DS, 'audit', f))) } catch { assert(false, 'C18', `${f} 不是合法 JSON`) }
+    assert(typeof o === 'object' && o !== null, 'C18', `${f} 内容为空`)
+  }
+  const fa = JSON.parse(read(join(DS, 'audit', 'final-acceptance.json')))
+  assert(['FULLY_VERIFIED', 'PARTIALLY_VERIFIED', 'NOT_VERIFIED', 'FAILED'].includes(fa.verdict), 'C18', `非法最终结论 ${fa.verdict}`)
+  assert(fa.verdict !== 'FULLY_VERIFIED' || fa.statusDiscipline?.accepted === true, 'C18', '用户审核前不得声明 FULLY_VERIFIED')
+  assert(fa.statusDiscipline?.accepted === false, 'C18', 'ACCEPTED 必须为 false')
+  assert(fa.checker?.verdict === 'PASS', 'C18', '最终验收引用的检查器结果不是 PASS')
+  return `8 reports, final=${fa.verdict}, checker=${fa.checker?.checksPassed}/${fa.checker?.checksTotal}`
+})
+
+/* C19 语法真实解析 --------------------------------------------------------- */
+check('C19', '语法 Adapter 15 语言 / 20 Token 真实解析并如实登记未覆盖项', () => {
+  const s = JSON.parse(read(join(DS, 'audit', 'syntax-validation.json')))
+  assert(s.verdict === 'PASS', 'C19', `syntax verdict=${s.verdict}`)
+  assert(s.languagesRequested === 15 && s.languages.length === 15, 'C19', '语言数不是 15')
+  assert(s.syntaxTokenCount === 20 && s.tokenRows.length === 20, 'C19', '语义 Token 不是 20')
+  assert(s.checks.allGrammarsLoaded === true, 'C19', '有 grammar 未真实加载')
+  assert(s.checks.allCopyIntact === true, 'C19', '复制完整性失败')
+  assert(s.checks.allNewlineIndentPreserved === true, 'C19', '换行 / 缩进被破坏')
+  assert(Array.isArray(s.syntaxKeysNotExercisedBySamples), 'C19', '未覆盖语义类别未如实登记')
+  assert(s.syntaxKeysUsedInRealSamples.length + s.syntaxKeysNotExercisedBySamples.length === 20, 'C19', '覆盖统计不自洽')
+  return `${s.languages.length} languages, ${s.grammarsLoaded} grammars, ${s.syntaxKeysUsedInRealSamples.length}/20 covered`
+})
+
+/* C20 整改状态与状态纪律 --------------------------------------------------- */
+check('C20', '48 项审计发现整改状态由真实探针决定', () => {
+  const r = JSON.parse(read(join(DS, 'audit', 'remediation-state.json')))
+  const ids = Object.keys(r.findings ?? {})
+  assert(ids.length === 48, 'C20', `整改项 ${ids.length} != 48`)
+  assert(ids.every((id) => /^UDS6-[CTHGFASR]-?\d+|^UDS6-R-\d+/.test(id)), 'C20', '存在非法问题 ID')
+  const fa = JSON.parse(read(join(DS, 'audit', 'final-acceptance.json')))
+  assert(fa.probeSummary && Object.values(fa.probeSummary).reduce((a, b) => a + b, 0) >= 48, 'C20', '探针数不足')
+  assert(fa.statusDiscipline.phase6Executed === false, 'C20', 'Phase 6 不得在审核前执行')
+  assert(fa.statusDiscipline.phase7Executed === false, 'C20', 'Phase 7 不得在审核前执行')
+  assert(fa.statusDiscipline.phase8Executed === false, 'C20', 'Phase 8 不得在审核前执行')
+  const counts = { RESOLVED: 0, PARTIAL: 0, OPEN: 0 }
+  for (const f of Object.values(r.findings)) counts[f.status] = (counts[f.status] ?? 0) + 1
+  return `48 findings: ${counts.RESOLVED} resolved / ${counts.PARTIAL} partial / ${counts.OPEN} open`
+})
+
+/* C21 真实页面回归 --------------------------------------------------------- */
+check('C21', '真实页面回归 + 渐变像素验证 + axe 零违规', () => {
+  const v = JSON.parse(read(join(DS, 'audit', 'visual-regression.json')))
+  assert(v.executed === true, 'C21', '视觉回归未真实执行')
+  assert(v.verdict === 'PASS', 'C21', `真实页面回归 verdict=${v.verdict}`)
+  assert(v.results.length >= 8 && v.results.every((r) => r.pass === true), 'C21', '真实页面场景未全部通过')
+  assert(v.results.every((r) => r.checks.bridgeLive && r.checks.syntaxBridgeLive), 'C21', '--ds6-* 桥接在真实页面未生效')
+  assert(v.gradient?.pass === true, 'C21', '渐变浏览器像素验证失败')
+  assert(v.gradient?.ownerDeclaresInSrgb === true && v.gradient?.distDeclaresInSrgb === true, 'C21', 'CSS 未声明 in srgb')
+  const a = JSON.parse(read(join(WEB, 'visual-regression', 'uds6', 'a11y-log.json')))
+  assert(a.verdict === 'PASS' && a.violationsTotal === 0, 'C21', `axe ${a.violationsTotal} violations`)
+  return `${v.results.length} real-page scenarios, gradient pixels PASS, axe 0 violations`
+})
+
+/* C22 Clerk 边界（原 5.0 Clerk 守卫职责并入 6.0）--------------------------- */
+check('C22', 'Clerk 外部参考边界：依赖零引入 / 运行时零引用 / 品牌值零照搬', () => {
+  const pkg = JSON.parse(read(join(WEB, 'package.json')))
+  const depFields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']
+  const badDeps = []
+  for (const f of depFields) {
+    for (const name of Object.keys(pkg[f] ?? {})) {
+      if (/@clerk\//.test(name) || /^clerk(-|$)/.test(name)) badDeps.push(`${f}:${name}`)
+    }
+  }
+  assert(badDeps.length === 0, 'C22', `package.json 出现 Clerk 依赖: ${badDeps.join(', ')}`)
+  const srcFiles = walk(join(WEB, 'src'), (p) => /\.(ts|tsx|css|js|jsx)$/.test(p))
+  const offenders = []
+  for (const p of srcFiles) {
+    const s = read(p)
+    if (/\bClerkProvider\b/.test(s) || /from\s+['"]@clerk\//.test(s)) offenders.push(`${p.replace(WEB + '/', '')}: Clerk 运行时引用`)
+    else if (/--clerk-[a-z-]+\s*:/.test(s)) offenders.push(`${p.replace(WEB + '/', '')}: --clerk-* 变量声明`)
+    else if (/#6c47ff/i.test(s)) offenders.push(`${p.replace(WEB + '/', '')}: Clerk 品牌值 #6c47ff`)
+  }
+  assert(offenders.length === 0, 'C22', `运行时边界违规: ${offenders.slice(0, 5).join(' | ')}`)
+  return `deps clean, ${srcFiles.length} src files scanned, 0 Clerk references`
 })
 
 /* C15 状态未被误标 --------------------------------------------------------- */
@@ -345,7 +465,8 @@ const out = {
   checksPassed: passed,
   errors: errors.length,
   errorList: errors,
-  checks: checks.map((c) => ({ code: c.code, label: c.label, status: failedCodes.has(c.code) ? 'FAIL' : c.status, detail: c.detail })),
+  checks: checks.map((c) => ({ code: c.code, label: c.label, status: failedCodes.has(c.code) ? 'FAIL' : c.status, detail: c.detail }))
+    .sort((a, b) => a.code.localeCompare(b.code)),
   tokens: names.length,
   modules: 38,
   generated: false,

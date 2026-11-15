@@ -1,0 +1,256 @@
+[UAP] PASS (exit 0) — security verification PASS: 48 real negative checks + clean secret scan
+{
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "status": "PASS",
+  "suite": "security_verification",
+  "command": "node --test .uap/tests/phase2-security-negative.test.mjs + go test ./controller/ -run TestPhase2SecurityNegative + gitleaks detect",
+  "exit_code": 0,
+  "items": [
+    {
+      "id": "neg_N1 没有有效证据的 requirement 不能产生 VERIFIED",
+      "title": "N1 没有有效证据的 requirement 不能产生 VERIFIED",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N2 哈希不一致 / 绑定不一致的证据不能产生 VERIFIED",
+      "title": "N2 哈希不一致 / 绑定不一致的证据不能产生 VERIFIED",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N3 独立验证失败时引擎不得输出 PASS",
+      "title": "N3 独立验证失败时引擎不得输出 PASS",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N4 沙箱配置误指向生产网关必须被拒绝执行",
+      "title": "N4 沙箱配置误指向生产网关必须被拒绝执行",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N5 未授权生产操作必须被权限策略拒绝（fail-closed）",
+      "title": "N5 未授权生产操作必须被权限策略拒绝（fail-closed）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N6 重复任务不能造成重复资金副作用（真实隔离库故障注入）",
+      "title": "N6 重复任务不能造成重复资金副作用（真实隔离库故障注入）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N7 用户 WIP 不能被自动修复覆盖（既有边界测试真实通过）",
+      "title": "N7 用户 WIP 不能被自动修复覆盖（既有边界测试真实通过）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_N8 Go handler 层 19 类业务安全负向测试必须全部真实 PASS（TestPhase2SecurityNegative）",
+      "title": "N8 Go handler 层 19 类业务安全负向测试必须全部真实 PASS（TestPhase2SecurityNegative）",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "neg_Phase 2 安全负向测试",
+      "title": "Phase 2 安全负向测试",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n01",
+      "title": "business negative: n01",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n02",
+      "title": "business negative: n02",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n03",
+      "title": "business negative: n03",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n04",
+      "title": "business negative: n04",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n05",
+      "title": "business negative: n05",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n06",
+      "title": "business negative: n06",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n07",
+      "title": "business negative: n07",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n08",
+      "title": "business negative: n08",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n09",
+      "title": "business negative: n09",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n10",
+      "title": "business negative: n10",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n11",
+      "title": "business negative: n11",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n12",
+      "title": "business negative: n12",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n13",
+      "title": "business negative: n13",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n14",
+      "title": "business negative: n14",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n15",
+      "title": "business negative: n15",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n16",
+      "title": "business negative: n16",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n17",
+      "title": "business negative: n17",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n18",
+      "title": "business negative: n18",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n19",
+      "title": "business negative: n19",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n01",
+      "title": "business negative: n01",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n02",
+      "title": "business negative: n02",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n03",
+      "title": "business negative: n03",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n04",
+      "title": "business negative: n04",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n05",
+      "title": "business negative: n05",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n06",
+      "title": "business negative: n06",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+    {
+      "id": "business_neg_n07",
+      "title": "business negative: n07",
+      "status": "PASS",
+      "reason": null,
+      "runner_ok": true
+    },
+   
+… (truncated; use --json for full output)
+evidence: UAP-EV-20261115062139-ffeb144a

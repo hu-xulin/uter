@@ -1,0 +1,13 @@
+=== [1/6] 复制生产库到隔离目录（cp，原件不动）===
+  cp /Users/lincolnhu/uter/one-api.db -> /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T//uter-phase2/one-api.db
+  cp /Users/lincolnhu/uter/one-api.db-wal -> /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T//uter-phase2/one-api.db-wal
+  cp /Users/lincolnhu/uter/one-api.db-shm -> /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T//uter-phase2/one-api.db-shm
+=== [2/6] 仅在【副本】上开启密码登录，注册保持关闭 ===
+  副本 PasswordLoginEnabled=true  RegisterEnabled=false
+=== [3/6] 独立 Redis :6380（已监听则复用，绝不碰 6379）===
+  :6380 已在监听，复用现有实例（不记录 PID，stop 不会杀它）。
+=== [4/6] 构建隔离 Go 二进制（需要 web/dist）===
+错误：缺少 /Users/lincolnhu/uter/web/dist（//go:embed web/dist 需要它）。
+请先在真实前端构建产物就绪后再启动隔离栈，例如：
+  cd /Users/lincolnhu/uter/web && bun run build
+本脚本不会创建伪造的 web/dist，也不会改动任何生产配置。

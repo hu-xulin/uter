@@ -291,19 +291,26 @@ test('biz_22 普通用户访问管理 API 被 403 拒绝', async ({ authedApi })
   expect(res.status()).toBe(403)
 })
 
-test('biz_23 浏览器真实登录（表单）后 dashboard 渲染', async ({ authedApi, authedPage }) => {
-  const page = authedPage
-  // 真实 UI 链路：若注入 cookie 未直接生效则走表单登录兜底（填表 → 提交 → 等跳转）。
-  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
-  if (page.url().includes('sign-in')) {
+test('biz_23 浏览器真实登录（表单）后 dashboard 渲染', async ({ authedApi, browser }) => {
+  // 用例标题要求的是「浏览器真实登录（表单）」。原先复用 worker 级 authedPage
+  // 只注入了 API 登录的 cookie：前端的 access_token 在响应体而不是 cookie 里，
+  // 所以该页面其实从未真正登录，只是先撞上 /_authenticated 的客户端重定向再
+  // 尝试表单兜底。完整套件里 worker 会话被前面用例轮换过、dev server 又可能
+  // 正在 HMR 重建，页面会停在空白 shell，连 form 都等不到。
+  // 改为本用例独占一个浏览器上下文，无条件走真实表单登录，链路最确定。
+  const context = await browser.newContext()
+  try {
+    const page = await context.newPage()
     await loginViaUi(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
+    // 主内容真实渲染（不是空白/错误页）：断言本身不放宽。
+    await expect(page.locator('main, [role="main"]').first()).toBeVisible({ timeout: 20_000 })
+    // 网络层复核：worker 会话（Bearer）读自身信息成功。
+    const res = await authedApi.get('/api/user/self')
+    const body = (await res.json()) as UterResponse<{ username?: string }>
+    expect(body.success).toBe(true)
+    expect(body.data?.username).toBe(readBusinessCredentials().username)
+  } finally {
+    await context.close()
   }
-  // 主内容真实渲染（不是空白/错误页）。
-  await expect(page.locator('main, [role="main"]').first()).toBeVisible({ timeout: 20_000 })
-  // 网络层复核：worker 会话（Bearer）读自身信息成功。
-  const res = await authedApi.get('/api/user/self')
-  const body = (await res.json()) as UterResponse<{ username?: string }>
-  expect(body.success).toBe(true)
-  expect(body.data?.username).toBe(readBusinessCredentials().username)
 })

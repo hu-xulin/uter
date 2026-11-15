@@ -44,343 +44,343 @@
     {
       "id": "visual_3_home - desktop",
       "title": "home - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_4_home - mobile",
       "title": "home - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_5_about - desktop",
       "title": "about - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_6_about - mobile",
       "title": "about - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_7_pricing - desktop",
       "title": "pricing - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_8_pricing - mobile",
       "title": "pricing - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_9_rankings - desktop",
       "title": "rankings - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_10_rankings - mobile",
       "title": "rankings - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_11_docs - desktop",
       "title": "docs - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_12_docs - mobile",
       "title": "docs - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_13_sign-in - desktop",
       "title": "sign-in - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_14_sign-in - mobile",
       "title": "sign-in - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_15_sign-up - desktop",
       "title": "sign-up - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_16_sign-up - mobile",
       "title": "sign-up - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_17_forgot-password - desktop",
       "title": "forgot-password - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_18_forgot-password - mobile",
       "title": "forgot-password - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_19_error-404 - desktop",
       "title": "error-404 - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_20_error-404 - mobile",
       "title": "error-404 - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_21_error-500 - desktop",
       "title": "error-500 - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_22_error-500 - mobile",
       "title": "error-500 - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_23_privacy-policy - desktop",
       "title": "privacy-policy - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_24_privacy-policy - mobile",
       "title": "privacy-policy - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_25_user-agreement - desktop",
       "title": "user-agreement - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_26_user-agreement - mobile",
       "title": "user-agreement - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_27_recharge-agreement - desktop",
       "title": "recharge-agreement - desktop",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_28_recharge-agreement - mobile",
       "title": "recharge-agreement - mobile",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "用例执行异常：failed",
       "source": "annotation",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null
     }
   ],
   "counts": {
-    "PASS": 27,
-    "FAIL": 2,
+    "PASS": 1,
+    "FAIL": 28,
     "SKIPPED": 0,
     "BLOCKED": 0,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 29,
-  "pass": 27,
-  "fail": 2,
+  "pass": 1,
+  "fail": 28,
   "blocked": 0,
   "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
   "total_specs": 29,
-  "passed": 27,
-  "total_diffs": 2,
-  "classified": 2,
+  "passed": 1,
+  "total_diffs": 28,
+  "classified": 28,
   "unclassified": 0,
   "classification_categories": {
     "REAL_UI_REGRESSION": 0,
     "TEST_ENVIRONMENT": 0,
-    "FONT_RENDERING": 0,
+    "FONT_RENDERING": 28,
     "ANIMATION": 0,
     "DYNAMIC_CONTENT": 0,
-    "AUTHENTICATION": 2,
+    "AUTHENTICATION": 0,
     "BASELINE_MISMATCH": 0,
     "OTHER": 0
   },
@@ -407,55 +407,55 @@
     },
     {
       "id": "visual_3_home - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_5_about - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_7_pricing - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_9_rankings - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_11_docs - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_13_sign-in - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_15_sign-up - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_17_forgot-password - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_19_error-404 - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_21_error-500 - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_23_privacy-policy - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_25_user-agreement - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_27_recharge-agreement - desktop",
-      "status": "PASS"
+      "status": "FAIL"
     }
   ],
   "mobile_evidence": [
@@ -465,55 +465,55 @@
     },
     {
       "id": "visual_4_home - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_6_about - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_8_pricing - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_10_rankings - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_12_docs - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_14_sign-in - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_16_sign-up - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_18_forgot-password - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_20_error-404 - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_22_error-500 - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_24_privacy-policy - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_26_user-agreement - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     },
     {
       "id": "visual_28_recharge-agreement - mobile",
-      "status": "PASS"
+      "status": "FAIL"
     }
   ],
   "legacy_items": [
@@ -528,225 +528,225 @@
     {
       "title": "鉴权页面基线 - desktop",
       "ok": false,
-      "category": "AUTHENTICATION",
-      "evidence_basis": "message/title carries authentication or redirect evidence",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  9127 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: keys-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(keys-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - ",
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4468 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: dashboard-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22",
       "has_evidence": true
     },
     {
       "title": "鉴权页面基线 - mobile",
       "ok": false,
-      "category": "AUTHENTICATION",
-      "evidence_basis": "message/title carries authentication or redirect evidence",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  1451 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: keys-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(keys-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 14",
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4159 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: dashboard-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
       "has_evidence": true
     },
     {
       "title": "home - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  7316 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: home-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(home-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - ",
       "has_evidence": true
     },
     {
       "title": "home - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  5892 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: home-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(home-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 58",
       "has_evidence": true
     },
     {
       "title": "about - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: about-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  ",
       "has_evidence": true
     },
     {
       "title": "about - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4301 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: about-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - ",
       "has_evidence": true
     },
     {
       "title": "pricing - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: pricing-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
       "title": "pricing - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: pricing-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
       "has_evidence": true
     },
     {
       "title": "rankings - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: rankings-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
       "has_evidence": true
     },
     {
       "title": "rankings - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: rankings-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
       "title": "docs - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3327 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: docs-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(docs-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - ",
       "has_evidence": true
     },
     {
       "title": "docs - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  2995 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: docs-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(docs-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 29",
       "has_evidence": true
     },
     {
       "title": "sign-in - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: sign-in-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
       "title": "sign-in - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: sign-in-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
       "has_evidence": true
     },
     {
       "title": "sign-up - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  5936 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: sign-up-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-up-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
       "title": "sign-up - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4364 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: sign-up-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-up-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
       "has_evidence": true
     },
     {
       "title": "forgot-password - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4952 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: forgot-password-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - font",
       "has_evidence": true
     },
     {
       "title": "forgot-password - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4375 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: forgot-password-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts ",
       "has_evidence": true
     },
     {
       "title": "error-404 - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4367 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-404-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22",
       "has_evidence": true
     },
     {
       "title": "error-404 - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4367 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: error-404-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
       "has_evidence": true
     },
     {
       "title": "error-500 - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4392 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-500-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-500-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22",
       "has_evidence": true
     },
     {
       "title": "error-500 - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4392 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: error-500-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-500-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
       "has_evidence": true
     },
     {
       "title": "privacy-policy - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: privacy-policy-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts ",
       "has_evidence": true
     },
     {
       "title": "privacy-policy - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4191 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: privacy-policy-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts lo",
       "has_evidence": true
     },
     {
       "title": "user-agreement - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: user-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(user-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts ",
       "has_evidence": true
     },
     {
       "title": "user-agreement - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4351 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: user-agreement-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(user-agreement-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts lo",
       "has_evidence": true
     },
     {
       "title": "recharge-agreement - desktop",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4353 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: recharge-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(recharge-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  ",
       "has_evidence": true
     },
     {
       "title": "recharge-agreement - mobile",
-      "ok": true,
-      "category": "PASS",
-      "evidence_basis": "screenshot comparison passed",
-      "message_excerpt": "REPORTER_STATUS test: passed",
+      "ok": false,
+      "category": "FONT_RENDERING",
+      "evidence_basis": "message carries font/glyph rendering evidence",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  4350 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: recharge-agreement-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(recharge-agreement-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - ",
       "has_evidence": true
     }
   ],
@@ -757,13 +757,13 @@
     "accounts_created": 0,
     "production_build_modified": false
   },
-  "stdout_tail": "线---mobile-chromium/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    ../../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-visual-e2e-69707-1794708740695/authed-鉴权页面基线---mobile-chromium/trace.zip\n    Usage:\n\n        npx playwright show-trace ../../../../var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-visual-e2e-69707-1794708740695/authed-鉴权页面基线---mobile-chromium/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  2 failed\n    [chromium] › e2e/visual/authed.spec.ts:51:3 › 鉴权页面基线 - desktop ─────────────────────────────────\n    [chromium] › e2e/visual/authed.spec.ts:51:3 › 鉴权页面基线 - mobile ──────────────────────────────────\n  27 passed (3.1m)\n",
+  "stdout_tail": "l/public.spec.ts:26:5 › error-500 - desktop ──────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-500 - mobile ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - desktop ─────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - mobile ──────────────────────\n  1 passed (5.8m)\n",
   "stderr_tail": "",
   "json_parsed": true,
-  "generated_at": "2026-11-15T02:15:13.333Z",
+  "generated_at": "2026-11-15T04:42:38.574Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "commit_sha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -771,8 +771,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
-  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
-  "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
-  "evidence_ref": "UAP-EV-20261115021517-df97f3d8"
+  "execution_id": "UAP-EXEC-20261115042431-b07928d5",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "3a7b262e866f02854c9b40cf7026ca5ea836aa125c04f1c361bd6a65e1782b0d",
+  "evidence_ref": "UAP-EV-20261115044238-93fb5140"
 }

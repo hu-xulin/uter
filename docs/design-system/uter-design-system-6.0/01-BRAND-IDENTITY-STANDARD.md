@@ -31,7 +31,7 @@ Uter 是面向开发者、企业与 API 使用者的 AI Token 中转站。品牌
 5. Dark 版本：字标 `--ds-color-text-primary` #F1F5F9，图形标 `--ds-color-brand-1` #8B8DF5
 6. 品牌主色 `#5B5EE6`（Light）/ `#8B8DF5`（Dark）；品牌实底按钮使用 `--ds-color-brand-solid`（Light / Dark 同值 `#5B5EE6`，**不得用 Dark 浅化档做按钮底**），前景 `#FFFFFF` 实测 5.01:1；Hover / Active 走 `--ds-color-brand-solid-hover/active`
 7. 辅助品牌色 `#494CC7` / `#3F42B0`（Light 深档），`#A1A3F7` / `#B7B8FA`（Dark 浅档）
-8. 品牌渐变：仅允许 `--ds-gradient-utility` = `ds-text-gradient-brand` 单一出口；Light `#1D4ED8 → #6D28D9 → #7E22CE`，Dark `#93C5FD → #C4B5FD → #D8B4FE`，方向 90deg
+8. 品牌渐变：仅允许 `--ds-gradient-utility` = `ds-text-gradient-brand` 单一出口；Light `#1D4ED8 → #6D28D9 → #7E22CE`，Dark `#93C5FD → #C4B5FD → #D8B4FE`，方向 90deg in srgb（CSS 插值空间与对比度引擎一致）
 9. 品牌字体：只允许 `var(--ds-font-ui)`；禁止引入 Geist / Roboto / 其它新字体
 10. 使用边界：品牌色不得代替 success / warning / danger / info 状态色，不得代替 chart-1..5，不得代替 syntax-*；不得在金额、余额、API Key、错误信息上使用渐变
 11. 禁止引入第三方品牌标识、「Secured by Clerk」类文案或未经授权视觉资产
@@ -54,7 +54,7 @@ Uter 是面向开发者、企业与 API 使用者的 AI Token 中转站。品牌
 | `--ds-color-gradient-dark-from` | #93C5FD | —（同值） | color | Dark 起点 0% |
 | `--ds-color-gradient-dark-via` | #C4B5FD | —（同值） | color | Dark 中点 50% |
 | `--ds-color-gradient-dark-to` | #D8B4FE | —（同值） | color | Dark 终点 100% |
-| `--ds-gradient-direction` | 90deg | —（同值） | css | linear-gradient(90deg, from 0%, via 50%, to 100%) |
+| `--ds-gradient-direction` | 90deg | —（同值） | css | linear-gradient(90deg in srgb, from 0%, via 50%, to 100%) |
 | `--ds-gradient-utility` | ds-text-gradient-brand | —（同值） | identifier | 全站唯一渐变出口 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
@@ -95,8 +95,8 @@ Showcase 中 `#mod-01` 分区提供本模块的真实渲染：色块、字号、
 
 ## 9. Accessibility
 
-- 渐变文字全区间 ≥4.5:1（101 点采样：Light 6.3:1 / Dark 9.59:1）
-- 历史渐变 Light 2.39:1 不达标，E28 例外在 6.0 注销
+- 渐变文字全区间 ≥4.5:1（1001 点采样 × 7 背景：Light 5.99:1 / Dark 8.37:1）
+- 历史渐变 Light 2.27:1 / Dark 3.92:1 不达标，E28 例外在 6.0 注销
 
 - 全系统阈值：普通文字 ≥4.5:1、大号文字 ≥3:1、非文本 ≥3:1（WCAG 2.2 AA）
 - 例外只允许 WCAG 明确豁免项，并登记在 [`EXCEPTION-REGISTRY.json`](./EXCEPTION-REGISTRY.json)
@@ -122,7 +122,7 @@ Showcase 中 `#mod-01` 分区提供本模块的真实渲染：色块、字号、
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 

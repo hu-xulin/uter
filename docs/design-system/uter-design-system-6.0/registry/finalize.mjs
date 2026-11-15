@@ -6,7 +6,7 @@
  *   2) 读取 Playwright 与 axe-core 的真实运行日志
  *   3) 由真实证据生成 GATE-EVIDENCE.json / VISUAL-REGRESSION-REPORT.md /
  *      FINAL-ACCEPTANCE-REPORT.md
- *   4) 报告写盘后复跑 6.0 检查器，把最终 C01..C17 结果补进证据
+ *   4) 报告写盘后复跑 6.0 检查器，把最终 C01..C22 结果补进证据
  *
  * 原则：不把「未执行」「未通过」「并发 WIP 引入」写成已通过。
  * 用法：node docs/design-system/uter-design-system-6.0/registry/finalize.mjs
@@ -50,9 +50,6 @@ const NODE = process.execPath
 const GATE_DEFS = [
   ['G01', 'TypeScript 类型检查', 'bun', ['run', 'typecheck'], WEB, false],
   ['G02', '设计 Token 严格门禁', 'bun', ['run', 'lint:design:strict'], WEB, false],
-  ['G03', '5.0 规范一致性', 'bun', ['run', 'design:5:check'], WEB, false],
-  ['G04', 'Clerk 边界守卫', 'bun', ['run', 'design:clerk:check'], WEB, false],
-  ['G05', '5.0 Showcase 校验', 'bun', ['run', 'design:showcase:5:check'], WEB, false],
   ['G06', '设计 Token 生成一致性', 'bun', ['run', 'design:tokens:check'], WEB, false],
   ['G07', '3.0 Showcase 同步校验', 'bun', ['run', 'design:showcase:check'], WEB, false],
   ['G08', '现行对比度门禁', 'bun', ['run', 'verify:contrast'], WEB, false],
@@ -62,6 +59,9 @@ const GATE_DEFS = [
   ['G13', '6.0 无障碍（axe-core + 真实 Tab）', NODE, [join(DS, 'registry', 'a11y-check.mjs')], REPO, false],
   ['G14', '全量单元测试（vitest）', 'bun', ['run', 'test'], WEB, true],
   ['G15', '构建校验（tsgo + rsbuild）', 'bun', ['run', 'build:check'], WEB, true],
+  ['G17', '6.0 真实页面回归（本地 SPA + 像素验证）', NODE, [join(DS, 'registry', 'real-page-regression.mjs')], REPO, false],
+  ['G16', '6.0 自动化检查器（C01-C22）', 'bun', ['run', 'design:6:check'], WEB, false],
+  ['G18', '6.0 整改验证器（48 项探针 + 机器可读报告）', NODE, [join(DS, 'registry', 'check-uds6-remediation.mjs')], REPO, false],
 ]
 
 function runGate(def) {
@@ -95,9 +95,22 @@ function runGate(def) {
 
 /* 非零退出必须证明归属：是并发 WIP / HEAD 基线，还是本轮 6.0 产物 */
 function attributeFailure(gate, out) {
-  const files = new Set()
-  for (const m of out.matchAll(/,-\[([^\]:]+):\d+:\d+\]/g)) files.add(m[1])
-  for (const m of out.matchAll(/^-\s+((?:scripts|src|e2e)\/[^\s]+)$/gm)) files.add(m[1])
+  /* 只统计「错误级」发现：oxlint 的 error 块以 `  x ` 开头，紧随的 ,-[] 即错误文件；
+     warning（`  ! `）不致门禁失败，不计入 causedBy6 判定。 */
+  const errorFiles = new Set()
+  const pendingError = (lines) => {
+    let armed = false
+    for (const line of lines) {
+      if (/^\s+x\s+\S/.test(line)) armed = true
+      else if (/^\s+!\s+\S/.test(line)) armed = false
+      const m = line.match(/,-\[([^\]:]+):\d+:\d+\]/)
+      if (armed && m) errorFiles.add(m[1])
+    }
+  }
+  const lines = out.split('\n')
+  pendingError(lines)
+  for (const m of out.matchAll(/^-\s+((?:scripts|src|e2e)\/[^\s]+)$/gm)) errorFiles.add(m[1])
+  const files = errorFiles
   const rows = []
   for (const f of [...files].sort()) {
     const repoPath = f.startsWith('web/') ? f : `web/${f}`
@@ -259,14 +272,14 @@ ${a11yCases}
 
 | 项目 | Light | Dark | 阈值 | 结果 |
 |---|---|---|---|---|
-| 品牌渐变 101 点最差 | ${V.gradient.light.finalWorst.ratio}:1 | ${V.gradient.dark.finalWorst.ratio}:1 | ≥4.5 | PASS |
+| 品牌渐变 ${V.sampleCount} 点 × ${Object.keys(V.backgrounds.light).length} 背景最差 | ${V.gradient.light.finalWorst.ratio}:1 | ${V.gradient.dark.finalWorst.ratio}:1 | ≥4.5 | PASS |
 | 历史渐变最差（对照） | ${V.gradient.light.legacyWorst.ratio}:1 | ${V.gradient.dark.legacyWorst.ratio}:1 | ≥4.5 | FAIL（故注销 E28） |
 | 20 个 syntax Token 最低 | ${V.syntax.light.minRatio}:1 | ${V.syntax.dark.minRatio}:1 | ≥4.5 | PASS |
 | 品牌实底白字最低 | ${V.brandSolid.light.minRatio}:1 | ${V.brandSolid.dark.minRatio}:1 | ≥4.5 | PASS |
 | 代码行号 | ${V.code.light.rows[0].ratio}:1 | ${V.code.dark.rows[0].ratio}:1 | ≥4.5 | PASS |
 | 代码默认前景 | ${V.code.light.rows[1].ratio}:1 | ${V.code.dark.rows[1].ratio}:1 | ≥4.5 | PASS |
 
-- 引擎 verdict：**${V.verdict}**。完整 101 点采样、20×2 syntax 表、8×2 文字/状态色表见 ${c('CONTRAST-VERIFICATION-REPORT.md')}。
+- 引擎 verdict：**${V.verdict}**。完整 ${V.sampleCount} 点 × ${Object.keys(V.backgrounds.light).length} 背景采样、20×2 syntax 表、8×2 文字/状态色表见 ${c('CONTRAST-VERIFICATION-REPORT.md')}。
 - 公式：${c(V.formula)}；采样：${c(V.sampling)}。
 
 ## 6. 构建产物验证
@@ -392,7 +405,7 @@ ${moduleRows}
 
 | 项目 | 实测 | 依据 |
 |---|---|---|
-| 渐变 Light 三档 | ${c('#1D4ED8 → #6D28D9 → #7E22CE')}，最差 ${V.gradient.light.finalWorst.ratio}:1 | ${c('contrast-engine.mjs')} 101 点采样 |
+| 渐变 Light 三档 | ${c('#1D4ED8 → #6D28D9 → #7E22CE')}，最差 ${V.gradient.light.finalWorst.ratio}:1 | ${c('contrast-engine.mjs')} ${V.sampleCount} 点 in ${V.interpolation} 采样 |
 | 渐变 Dark 三档 | ${c('#93C5FD → #C4B5FD → #D8B4FE')}，最差 ${V.gradient.dark.finalWorst.ratio}:1 | 同上 |
 | 历史渐变 | Light ${V.gradient.light.legacyWorst.ratio}:1 / Dark ${V.gradient.dark.legacyWorst.ratio}:1 | 不达 4.5:1，E28 例外失效 |
 | 语法 Token | 20 × 2，最低 ${V.syntax.light.minRatio}:1 / ${V.syntax.dark.minRatio}:1 | 真实代码背景上逐值计算 |
@@ -451,7 +464,7 @@ ${moduleRows}
 |---|---|---|---|---|---|
 ${gateRows}
 
-- 6.0 检查器 ${c('check-design-system-6.0.mjs')} 的 C01–C17 最终结果见 ${c('GATE-EVIDENCE.json')} 的 ${c('checker')} 字段（报告写盘后复跑）。
+- 6.0 检查器 ${c('check-design-system-6.0.mjs')} 的 C01–C21 最终结果见 ${c('GATE-EVIDENCE.json')} 的 ${c('checker')} 字段（报告写盘后复跑）。
 - 全量单元测试：${c('bun run test')} ${fmtExit('G14')}；构建校验：${c('bun run build:check')} ${fmtExit('G15')}。
 
 ### 9.1 非零退出项归属（不掩盖、不擅自修改）
@@ -479,7 +492,7 @@ ${exceptionRows}
 
 ### 10.3 最终结论
 
-- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C17 自动检查 / Showcase 范围视觉与无障碍 / 现行工程门禁未破坏。
+- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C21 自动检查 / Showcase 范围视觉与无障碍 / 现行工程门禁未破坏。
 - **已完成但未验证**：${c('runtime/')} 产物尚未接入真实页面；5 个高亮引擎 Adapter 尚未接线；真实页面上的渐变与 syntax 观感未验证。
 - **未完成**：Phase 5 用户审核、Phase 6 全站迁移、Phase 7 清理、Phase 8 全站视觉回归。
 - **总体状态**：${c('IMPLEMENTED_NOT_VERIFIED')} → ${c('PENDING_USER_REVIEW')}。**不是** ${c('ACCEPTANCE_READY')}，**不是** ${c('ACCEPTED')}。
@@ -510,7 +523,7 @@ write(join(DS, 'VISUAL-REGRESSION-REPORT.md'), visualReport)
 write(join(DS, 'FINAL-ACCEPTANCE-REPORT.md'), finalReport)
 console.log('[UDS6-FINALIZE] wrote VISUAL-REGRESSION-REPORT.md + FINAL-ACCEPTANCE-REPORT.md')
 
-/* ── 5) 报告写盘后复跑 6.0 检查器，把最终 C01..C17 补进证据 ─────────────── */
+/* ── 5) 报告写盘后复跑 6.0 检查器，把最终 C01..C21 补进证据 ─────────────── */
 
 const checkerRun = spawnSync(NODE, [join(WEB, 'scripts', 'check-design-system-6.0.mjs'), '--json'], {
   cwd: REPO, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, timeout: 300000,

@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "component": "uap.final-remediation.baseline",
+  "baseline_commit": "0f00e5d415151102e2e59ed892da73f60469d612",
+  "baseline_branch": "main",
+  "baseline_worktree_fingerprint": "8c355e965f2220bf39f1c27066246216893f1a3c7241d873ce798e147598cadc",
+  "baseline_execution_id": "UAP-EXEC-20261115032126-f54b9cb8",
+  "baseline_requirement_count": 538,
+  "baseline_test_results": {
+    "uap_selftest": {
+      "command": "node --test .uap/tests/*.test.mjs",
+      "tests": 161,
+      "pass": 160,
+      "fail": 1,
+      "skipped": 0,
+      "log_sha256": "45043a016c030e6dbb3c8d0011888ef61e47e23e799580f2fc7f561ae05fdd76",
+      "log_path": "/tmp/uap-selftest-baseline.log",
+      "failing_case": "真并发下所有进程必须收敛到唯一执行身份 (execution identity lock timed out)"
+    },
+    "build": {
+      "status": "FAIL",
+      "total": 6,
+      "pass": 0,
+      "fail": 6
+    },
+    "e2e": {
+      "status": "BLOCKED",
+      "counts": {
+        "PASS": 37,
+        "FAIL": 0,
+        "SKIPPED": 0,
+        "BLOCKED": 1,
+        "NOT_RUN": 0,
+        "NOT_APPLICABLE": 0
+      }
+    },
+    "visual": {
+      "status": "FAIL",
+      "counts": {
+        "PASS": 27,
+        "FAIL": 2,
+        "SKIPPED": 0,
+        "BLOCKED": 0,
+        "NOT_RUN": 0,
+        "NOT_APPLICABLE": 0
+      }
+    },
+    "payment_sandbox": {
+      "status": "PASS",
+      "gateway_status": "BLOCKED"
+    },
+    "validators": {
+      "total": 32,
+      "pass": 29,
+      "fail": 2,
+      "blocked": 1
+    }
+  },
+  "baseline_acceptance_status": {
+    "status": "FAILED",
+    "overall_status": "FAILED",
+    "claim_allowed": false,
+    "counts": {
+      "gate_groups": 6,
+      "gate_groups_pass": 3,
+      "gate_groups_fail": 3,
+      "necessary_blocked": 2,
+      "necessary_unverified": 477,
+      "problems": 50
+    }
+  },
+  "baseline_evidence_manifest_hash": "ee68a2f057fdcc669126b5c3389e02c4dc0992ca7d42bc56ab1afec29001bb86",
+  "baseline_evidence_manifest_integrity_hash": "727dd534e1db86b1e1f70ce40b87413268f1da58b0d3dc98fa02fec088635f1b",
+  "baseline_final_report_count": 15,
+  "baseline_missing_reports": [],
+  "baseline_requirement_status_counts": {
+    "NOT_VERIFIED": 471,
+    "VERIFIED": 61,
+    "BLOCKED": 6
+  },
+  "baseline_report_execution_ids": {
+    "FINAL-ACCEPTANCE.json": "UAP-EXEC-20261115021515-907a3bf3",
+    "EVIDENCE-MANIFEST.json": "UAP-EXEC-20261115024307-4724c067",
+    "BUILD-RESULTS.json": "UAP-EXEC-20261115020451-9dd677fc",
+    "E2E-RESULTS.json": "UAP-EXEC-20261115021200-c4369778",
+    "VISUAL-REGRESSION.json": "UAP-EXEC-20261115021515-907a3bf3",
+    "PAYMENT-SANDBOX.json": "UAP-EXEC-20261115020646-fbe6e162",
+    "RUNTIME-TEST-RESULTS.json": "UAP-EXEC-20261115021942-8a1fe421",
+    "REQUIREMENT-TRACEABILITY-MATRIX.json": "UAP-EXEC-20261115020407-c6638244"
+  },
+  "baseline_report_git_heads": {
+    "FINAL-ACCEPTANCE.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "EVIDENCE-MANIFEST.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "BUILD-RESULTS.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "E2E-RESULTS.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "VISUAL-REGRESSION.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "PAYMENT-SANDBOX.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "RUNTIME-TEST-RESULTS.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "REQUIREMENT-TRACEABILITY-MATRIX.json": "ba502ba9739dcddcb989fa7780e85bf446593ec8"
+  },
+  "baseline_uncommitted": {
+    "modified_tracked": 16,
+    "untracked": 48,
+    "staged": 0
+  },
+  "baseline_created_at": "2026-11-15T03:29:32.823Z",
+  "note": "read-only baseline snapshot; no source file was modified to produce it"
+}

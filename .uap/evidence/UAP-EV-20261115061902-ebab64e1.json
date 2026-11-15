@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261115061902-ebab64e1",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-TEST-20261115061902-d2765213",
+  "trace_id": "UAP-TRACE-20261115061902-aba5dbe4",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T06:19:02.422Z",
+  "started_at": "2026-11-15T06:19:02.422Z",
+  "finished_at": "2026-11-15T06:19:02.422Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+    "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+    "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:__uap_test_always_fail__",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-1\",\"attempts\":3}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "step_failed",
+      "message": "always broken"
+    }
+  ],
+  "summary": "__uap_test_always_fail__ failed: always broken",
+  "content_hash": "40fcaa98bf88a2694e576c4511c26a2465f9e3fd13744f3ddf117ca2096fdd3e"
+}

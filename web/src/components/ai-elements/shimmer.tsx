@@ -47,17 +47,13 @@ const ShimmerComponent = ({
   return (
     <MotionP
       animate={{ backgroundPosition: '0% center' }}
-      className={cn(
-        'relative inline-block bg-[length:250%_100%,auto] bg-clip-text text-transparent',
-        '[background-repeat:no-repeat,padding-box] [--bg:linear-gradient(90deg,#0000_calc(50%-var(--spread)),var(--color-background),#0000_calc(50%+var(--spread)))]',
-        className
-      )}
+      className={cn('relative inline-block ds-text-shimmer', className)}
       initial={{ backgroundPosition: '100% center' }}
       style={
         {
-          '--spread': `${dynamicSpread}px`,
-          backgroundImage:
-            'var(--bg), linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground))',
+          /* UDS 6.0：渐变定义已收敛到 foundations/typography.css 的受控出口
+           * ds-text-shimmer，业务组件不再手写 bg-clip-text / linear-gradient。 */
+          '--ds6-shimmer-spread': `${dynamicSpread}px`,
         } as CSSProperties
       }
       transition={{

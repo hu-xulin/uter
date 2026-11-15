@@ -1,9 +1,9 @@
 {
   "status_model": "UAP-TEST-STATUS-1.0",
-  "status": "BLOCKED",
+  "status": "FAIL",
   "suite": "e2e",
   "command": "npx playwright test --config e2e/axe/playwright.config.ts + playwright business",
-  "exit_code": 0,
+  "exit_code": 1,
   "items": [
     {
       "id": "axe_0_axe: 鉴权页批量扫描",
@@ -489,45 +489,47 @@
     {
       "id": "biz_23_biz_23 浏览器真实登录（表单）后 dashboard 渲染",
       "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.\n\n  300 |   // 必须等到「主内容出现」或「登录表单出现」二者之一，再据实判断是否需要登录，\n  301 |   // 否则会把「尚未跳转」误判成「已登录」，随后 20s 内 main 永远不出现。\n> 302 |   await page.waitForFunction(\n      |              ^\n  303 |     () =>\n  304 |       Boolean(\n  305 |         document.queryS",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "business"
     }
   ],
   "counts": {
-    "PASS": 37,
-    "FAIL": 0,
+    "PASS": 36,
+    "FAIL": 1,
     "SKIPPED": 0,
     "BLOCKED": 1,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 38,
-  "pass": 37,
-  "fail": 0,
+  "pass": 36,
+  "fail": 1,
   "blocked": 1,
   "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
-  "problems": [],
+  "problems": [
+    "business e2e exit=1"
+  ],
   "browser_runs": [
     {
       "suite": "axe",
-      "target": "http://localhost:3100",
+      "target": "http://localhost:3101",
       "exit_code": 0,
       "passed": 14,
       "failed": 0,
       "skipped": 0,
       "blocked": 0,
       "stats": {
-        "startTime": "2026-11-15T02:08:46.096Z",
-        "duration": 184596.18399999998,
+        "startTime": "2026-11-15T05:31:20.638Z",
+        "duration": 587662.4909999999,
         "expected": 14,
         "skipped": 0,
         "unexpected": 0,
@@ -622,18 +624,18 @@
     },
     {
       "suite": "business",
-      "target": "http://localhost:3100",
-      "exit_code": 0,
-      "passed": 23,
-      "failed": 0,
+      "target": "http://localhost:3101",
+      "exit_code": 1,
+      "passed": 22,
+      "failed": 1,
       "skipped": 0,
       "blocked": 1,
       "stats": {
-        "startTime": "2026-11-15T02:11:54.601Z",
-        "duration": 4732.9490000000005,
-        "expected": 23,
+        "startTime": "2026-11-15T05:41:19.504Z",
+        "duration": 51888.596000000005,
+        "expected": 22,
         "skipped": 1,
-        "unexpected": 0,
+        "unexpected": 1,
         "flaky": 0
       },
       "scenarios": [
@@ -777,21 +779,21 @@
         },
         {
           "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
-          "status": "PASS",
-          "ok": true,
-          "reason": null
+          "status": "FAIL",
+          "ok": false,
+          "reason": "TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.\n\n  300 |   // 必须等到「主内容出现」或「登录表单出现」二者之一，再据实判断是否需要登录，\n  301 |   // 否则会把「尚未跳转」误判成「已登录」，随后 20s 内 main 永远不出现。\n> 302 |   await page.waitForFunction(\n      |              ^\n  303 |     () =>\n  304 |       Boolean(\n  305 |         document.queryS"
         }
       ],
       "stderr_tail": ""
     }
   ],
   "business_scenarios_collected": 24,
-  "business_expected": 23,
+  "business_expected": 22,
   "zero_scenario_failure": false,
   "axe": {
     "command": "npx playwright test --config e2e/axe/playwright.config.ts",
     "exit_code": 0,
-    "target": "http://localhost:3100",
+    "target": "http://localhost:3101",
     "passed": 14,
     "failed": 0,
     "skipped": 0,
@@ -805,10 +807,10 @@
     "production_auth_policy_modified": false
   },
   "skipped_note": "0 skipped / 1 blocked — never counted as PASS",
-  "generated_at": "2026-11-15T02:11:59.467Z",
+  "generated_at": "2026-11-15T05:42:12.310Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "commit_sha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -816,8 +818,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261115021200-c4369778",
-  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
-  "worktree_fingerprint": "7fe27a000f41ebd9bb4d3dd4d45b163c68ebbb087ab61e719ac331b862e76de9",
-  "evidence_ref": "UAP-EV-20261115021203-3e20aff0"
+  "execution_id": "UAP-EXEC-20261115054215-355c926b",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "bc8789ecfd9c82f0f97096eeebe48a4b911bf1f2ca99f7020d89da64ee3742ae",
+  "evidence_ref": "UAP-EV-20261115054216-4394b95b"
 }

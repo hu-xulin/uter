@@ -67,7 +67,7 @@ Showcase 中 `#mod-02` 分区提供本模块的真实渲染：色块、字号、
 
 ```tsx
 /* 原则冲突示例：品牌渐变 vs 4.5:1 → Accessibility 优先 */
-.hero-title { background-image: var(--ds-gradient-6); } /* 已实测 6.3:1 */
+.hero-title { background-image: var(--ds-gradient-6); } /* 已实测 Light 5.99:1 / Dark 8.37:1 */
 ```
 
 ## 7. Do
@@ -107,7 +107,7 @@ Showcase 中 `#mod-02` 分区提供本模块的真实渲染：色块、字号、
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 

@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-EXCEPTIONS",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T02:40:39.916Z",
+  "generated_at": "2026-11-15T06:01:14.564Z",
   "policy": "禁止用例外掩盖普通正文对比度缺陷；每条必须含失效条件",
   "items": [
     {
@@ -44,16 +44,20 @@
     {
       "id": "EX-006",
       "scope": "web/src/components/ai-elements/shimmer.tsx 手写渐变",
-      "reason": "真实扫描发现该既有文件同时含 background-clip:text 与 linear-gradient，属 6.0 之前的重复渐变实现；本轮不修改并发 WIP，Phase 7 清理时统一收敛到 ds-text-gradient-brand",
-      "review_condition": "Phase 7 旧版清理完成后注销",
-      "status": "OPEN",
-      "action": "MIGRATE_TO_SINGLE_EXIT"
+      "reason": "6.0 之前的重复渐变实现，已在本轮真实收敛",
+      "action": "MIGRATE_TO_SINGLE_EXIT",
+      "status": "RESOLVED",
+      "resolved_by": "把渐变定义移入 web/src/design-system/foundations/typography.css 的受控出口 @utility ds-text-shimmer；shimmer.tsx 只保留 className 与 --ds6-shimmer-spread 变量，色值沿用 --color-background / --color-muted-foreground，视觉零变化",
+      "resolved_at": "2026-11-15T06:01:14.564Z",
+      "evidence": "check-uds6-remediation.mjs::C-G03 + GRADIENT-TYPOGRAPHY-AUDIT.md"
     }
   ],
   "registered_gradient_files": [
     "web/src/design-system/foundations/typography.css",
-    "docs/design-system/uter-design-system-6.0/runtime/foundations.css",
-    "web/src/components/ai-elements/shimmer.tsx"
+    "docs/design-system/uter-design-system-6.0/runtime/foundations.css"
   ],
-  "registered_gradient_note": "第一项为 3.0 现行唯一出口，第二项为 6.0 runtime 产物（Phase 6 接入目标，不在 web/src 现行运行时），第三项为 EX-006 登记在案的待迁移实现；后两项都不是永久豁免。"
+  "registered_gradient_note": "第一项为 web/src 现行唯一 owner（含 ds-text-gradient-brand 与 ds-text-shimmer 两个受控出口）；第二项为 6.0 runtime 派生产物，不在 web/src 扫描范围。EX-006 的 shimmer.tsx 已真实收敛并从登记中移除；未登记的手写渐变一律判 FAIL。",
+  "resolved_exceptions": [
+    "EX-006"
+  ]
 }

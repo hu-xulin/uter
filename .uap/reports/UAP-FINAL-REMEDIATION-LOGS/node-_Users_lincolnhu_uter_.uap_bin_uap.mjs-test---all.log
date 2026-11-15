@@ -1,0 +1,32 @@
+[UAP] PASS (exit 0) — test: 15 test files passed, exit_code=0
+{
+  "generated_at": "2026-11-15T06:19:13.928Z",
+  "mode": "all",
+  "test_files": [
+    ".uap/tests/execution-identity-race.test.mjs",
+    ".uap/tests/final-acceptance-negative.test.mjs",
+    ".uap/tests/final-remediation-regression.test.mjs",
+    ".uap/tests/independent-repair-review.test.mjs",
+    ".uap/tests/independent-verification.test.mjs",
+    ".uap/tests/phase2-requirement-verification.test.mjs",
+    ".uap/tests/phase2-security-negative.test.mjs",
+    ".uap/tests/real-code-repair-boundaries.test.mjs",
+    ".uap/tests/real-repair-e2e.test.mjs",
+    ".uap/tests/requirement-behavior-suite.test.mjs",
+    ".uap/tests/requirement-honesty.test.mjs",
+    ".uap/tests/runtime.test.mjs",
+    ".uap/tests/status-consistency.test.mjs",
+    ".uap/tests/status-snapshot.test.mjs",
+    ".uap/tests/test-collector.test.mjs"
+  ],
+  "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_ms": 148386,
+  "stdout_tail": "EAD/哈希/篡改任一项不合格即失败\n    ok 6 - 证据链校验：ID/HEAD/哈希/篡改任一项不合格即失败\n      ---\n      duration_ms: 0.306098\n      type: 'test'\n      ...\n    1..6\nok 85 - 状态引擎附加不变量\n  ---\n  duration_ms: 2.16525\n  type: 'suite'\n  ...\n# Subtest: 执行身份绑定\n    # Subtest: git HEAD 来自真实仓库且是 40 位 sha\n    ok 1 - git HEAD 来自真实仓库且是 40 位 sha\n      ---\n      duration_ms: 13.634256\n      type: 'test'\n      ...\n    # Subtest: worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n    ok 2 - worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n      ---\n      duration_ms: 5757.475326\n      type: 'test'\n      ...\n    # Subtest: currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n    ok 3 - currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n      ---\n      duration_ms: 58.041079\n      type: 'test'\n      ...\n    1..3\nok 86 - 执行身份绑定\n  ---\n  duration_ms: 5830.77873\n  type: 'suite'\n  ...\n# Subtest: 真实快照适配器\n    # Subtest: 从真实追踪矩阵构造 538 条要求与 32 份规范\n    ok 1 - 从真实追踪矩阵构造 538 条要求与 32 份规范\n      ---\n      duration_ms: 104.689574\n      type: 'test'\n      ...\n    # Subtest: stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n      ---\n      duration_ms: 77.89483\n      type: 'test'\n      ...\n    # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n    ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n      ---\n      duration_ms: 81.103603\n      type: 'test'\n      ...\n    # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n      ---\n      duration_ms: 2466.798005\n      type: 'test'\n      ...\n    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n      ---\n      duration_ms: 328.362015\n      type: 'test'\n      ...\n    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致\n    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致\n      ---\n      duration_ms: 613.126867\n      type: 'test'\n      ...\n    1..6\nok 87 - 真实快照适配器\n  ---\n  duration_ms: 3672.878331\n  type: 'suite'\n  ...\n# Subtest: 证据链 fail-closed\n    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败\n    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败\n      ---\n      duration_ms: 0.309809\n      type: 'test'\n      ...\n    1..1\nok 88 - 证据链 fail-closed\n  ---\n  duration_ms: 0.53784\n  type: 'suite'\n  ...\n# Subtest: fixtures are excluded, real self-tests are kept\nok 89 - fixtures are excluded, real self-tests are kept\n  ---\n  duration_ms: 3.830391\n  type: 'test'\n  ...\n# Subtest: the intentionally failing repair canaries are never collected\nok 90 - the intentionally failing repair canaries are never collected\n  ---\n  duration_ms: 0.508262\n  type: 'test'\n  ...\n# Subtest: discovery is fail-closed on non-test / malformed paths\nok 91 - discovery is fail-closed on non-test / malformed paths\n  ---\n  duration_ms: 0.971518\n  type: 'test'\n  ...\n# Subtest: the CLI actually uses the shared collector (no re-introduced inline filter)\nok 92 - the CLI actually uses the shared collector (no re-introduced inline filter)\n  ---\n  duration_ms: 1.130861\n  type: 'test'\n  ...\n1..92\n# tests 181\n# suites 31\n# pass 181\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 148202.005547\n",
+  "stderr_tail": "",
+  "execution_id": "UAP-EXEC-20261115061321-6a98eb1a",
+  "git_head": "012c08eaf6127261f4ba434bf277489261ef6dd5",
+  "worktree_fingerprint": "6e74c888051eaa0319cc2fe2a36a5324611f2581a19602426cb3955129b3297b"
+}
+evidence: UAP-EV-20261115061914-b1fbb466

@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-DEPENDENCIES",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T02:40:39.916Z",
+  "generated_at": "2026-11-15T06:01:14.564Z",
   "layers": [
     "Primitive Tokens",
     "Semantic Tokens",
@@ -18,11 +18,11 @@
     },
     {
       "id": "semantic",
-      "count": 106
+      "count": 172
     },
     {
       "id": "component",
-      "count": 35
+      "count": 99
     },
     {
       "id": "ui-components",
@@ -88,6 +88,7 @@
       "web/src/design-system/tokens/semantic.css",
       "web/src/design-system/tokens/spacing.css",
       "web/src/design-system/tokens/typography.css",
+      "web/src/design-system/tokens/uds-semantic-bridge.css",
       "web/src/features/customer-service/CustomerServiceWidget.css",
       "web/src/features/system-settings/models/visual-condition-tree.css",
       "web/src/styles/index.css",

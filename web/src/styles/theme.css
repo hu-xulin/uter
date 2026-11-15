@@ -201,23 +201,28 @@ For commercial licensing, please contact support@uter.ai
    * 但它们同样不该以 `text-purple-700` 这类调色板类名散落在组件里：
    * 那样深色模式要每个类各写一遍 `dark:`，换主题也完全不跟随。因此单列
    * 一组语法 Token，深浅主题各给一次值，组件只写 `text-syntax-keyword`。 */
-  --color-syntax-keyword: var(--syntax-keyword);
-  --color-syntax-string: var(--syntax-string);
-  --color-syntax-number: var(--syntax-number);
-  --color-syntax-function: var(--syntax-function);
-  --color-syntax-property: var(--syntax-property);
+  /* UDS 6.0：语法色统一走 VS Code Light+/Dark+ 官方主题派生的 --ds6-syntax-*。
+   * 保留 --syntax-* 旧变量作为 3.0 兼容层（不删除、不覆盖），但真实消费者
+   * （CodeMirror / classHighlighter / yace）全部改走同一套语义 Token。 */
+  --color-syntax-keyword: var(--ds6-syntax-keyword);
+  --color-syntax-string: var(--ds6-syntax-string);
+  --color-syntax-number: var(--ds6-syntax-number);
+  --color-syntax-function: var(--ds6-syntax-function);
+  --color-syntax-property: var(--ds6-syntax-property);
   /* ── 首屏终端演示卡（term）───────────────────────────────────────────
    * 与上面的 `syntax-*` 是**两套**，不要合并、也不要互相改值：
    *   · `syntax-*` 服务通用代码查看语境（Shiki、JSON 查看器）；
    *   · `term-*` 服务首页那张 curl 演示卡，取色锚定上游 new-api 的渲染
    *     效果，必须跨主题预设恒定（规范 §17.5）。
    * 组件只写 `text-term-command` 这类语义类，不允许再出现调色板类名。 */
-  --color-term-command: var(--term-command);
-  --color-term-flag: var(--term-flag);
-  --color-term-background: var(--term-background);
-  --color-term-property: var(--term-property);
-  --color-term-string: var(--term-string);
-  --color-term-number: var(--term-number);
+  /* UDS 6.0 §4.6：终端必须有独立 Light / Dark 主题，禁止深浅共用纯黑背景。
+   * 背景与主要前景改走 6.0 Terminal Token；dim / accent 装饰色保留 3.0 兼容层。 */
+  --color-term-command: var(--ds6-color-terminal-command);
+  --color-term-flag: var(--ds6-color-terminal-flag);
+  --color-term-background: var(--ds6-color-terminal-background);
+  --color-term-property: var(--ds6-color-terminal-property);
+  --color-term-string: var(--ds6-color-terminal-string);
+  --color-term-number: var(--ds6-color-terminal-number);
   --color-term-dim-1: var(--term-dim-1);
   --color-term-dim-2: var(--term-dim-2);
   --color-term-dim-3: var(--term-dim-3);

@@ -24,10 +24,10 @@
 
 ## 2. Rules
 
-1. 历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.39:1、Dark 最差 4.48:1，E28 例外在 6.0 注销
+1. 历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.27:1、Dark 最差 3.92:1，E28 例外在 6.0 注销
 2. 6.0 Light：from #1D4ED8 / via #6D28D9 / to #7E22CE；Dark：from #93C5FD / via #C4B5FD / to #D8B4FE
-3. 方向固定 `linear-gradient(90deg, from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`）
-4. 对比度实测：在 canvas / surface / code-bg 三种背景上按 1% 步长共 101 点采样；Light 最差 6.3:1（code-bg @0%）、Dark 最差 9.59:1（surface @36%），全部 ≥4.5:1
+3. 方向固定 `linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`、`--ds-gradient-interpolation: srgb`；CSS 与引擎插值空间必须一致）
+4. 对比度实测：在 canvas / surface / raised / sunken / overlay / hero-glow / code-bg 共 7 种真实文字背景上按 0.1% 步长共 1001 点采样（含全部渐变 stop）；Light 最差 5.99:1（hero-glow @0%）、Dark 最差 8.37:1（raised @45.4%），全部 ≥4.5:1
 5. 阈值：普通文字 ≥4.5:1、大号文字 ≥3:1；本方案按更严格的 4.5:1 冻结，因此无字号例外
 6. 渐变所有停靠点与插值区间都必须测试；不得只测起点 / 中点 / 终点
 7. 字体必须使用 `var(--ds-font-ui)`；渐变只改变文字颜色，不得改变字体 / 字重 / 字号 / 行高
@@ -48,7 +48,7 @@
 | `--ds-color-gradient-dark-from` | #93C5FD | —（同值） | color | Dark 起点 0% |
 | `--ds-color-gradient-dark-via` | #C4B5FD | —（同值） | color | Dark 中点 50% |
 | `--ds-color-gradient-dark-to` | #D8B4FE | —（同值） | color | Dark 终点 100% |
-| `--ds-gradient-direction` | 90deg | —（同值） | css | linear-gradient(90deg, from 0%, via 50%, to 100%) |
+| `--ds-gradient-direction` | 90deg | —（同值） | css | linear-gradient(90deg in srgb, from 0%, via 50%, to 100%) |
 | `--ds-gradient-utility` | ds-text-gradient-brand | —（同值） | identifier | 全站唯一渐变出口 |
 | `--ds-font-ui` | 'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' | —（同值） | stack | UI 字体栈（中英文 + Emoji 回退） |
 | `--ds-text-4xl` | 36px | —（同值） | px | 页面主标题 |
@@ -75,7 +75,7 @@ Showcase 中 `#mod-01-S` 分区提供本模块的真实渲染：色块、字号�
 
 ```tsx
 @utility ds-text-gradient-brand {
-  background-image: linear-gradient(90deg, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);
+  background-image: linear-gradient(90deg in srgb, var(--ds-color-gradient-light-from) 0%, var(--ds-color-gradient-light-via) 50%, var(--ds-color-gradient-light-to) 100%);
   background-clip: text; color: transparent;
 }
 ```
@@ -83,11 +83,11 @@ Showcase 中 `#mod-01-S` 分区提供本模块的真实渲染：色块、字号�
 ## 7. Do
 
 - 只经 `ds-text-gradient-brand`
-- 101 点采样后再冻结
+- 1001 点采样 × 7 背景后再冻结
 
 ## 8. Don't
 
-- 保留 2.39:1 的历史渐变
+- 保留 2.27:1 的历史渐变
 - 在余额 / 错误 / 表单标签用渐变
 - 业务组件手写 gradient / bg-clip-text
 
@@ -109,7 +109,7 @@ Showcase 中 `#mod-01-S` 分区提供本模块的真实渲染：色块、字号�
 
 ## 11. Acceptance
 
-1. contrast-engine.mjs 101 点采样 PASS
+1. contrast-engine.mjs 1001 点采样 × 7 背景 PASS
 2. 全库手写渐变命中 = 0（唯一出口除外）
 3. 本模块引用的每个 Token 必须能在 TOKEN-MANIFEST.json 中解析，且 CSS / TS / Showcase 三处数值一致
 4. check-design-system-6.0.mjs 对应检查项 EXIT=0
@@ -120,7 +120,7 @@ Showcase 中 `#mod-01-S` 分区提供本模块的真实渲染：色块、字号�
 |---|---|---|
 | Token 一致性 | `node web/scripts/check-design-system-6.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
-| 数值冻结 | 101 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
+| 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
 | 产品迁移 | Phase 6 | `NOT_STARTED`（须先视觉冻结） |
 
