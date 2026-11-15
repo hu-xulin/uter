@@ -1,10 +1,10 @@
 {
   "schema": "UDS6-REMEDIATION-STATE/1.0",
-  "generated_at": "2026-11-15T06:19:39.183Z",
+  "generated_at": "2026-11-15T07:04:37.184Z",
   "method": "check-uds6-remediation.mjs 真实探针，未执行项一律不标 PASS",
   "probeSummary": {
-    "PASS": 43,
-    "FAIL": 4,
+    "PASS": 40,
+    "FAIL": 7,
     "PARTIAL": 1
   },
   "findings": {
@@ -151,11 +151,13 @@
       "notExecutedAssertions": []
     },
     "UDS6-H-01": {
-      "status": "RESOLVED",
+      "status": "OPEN",
       "probe": "C-H01",
-      "probeStatus": "PASS",
-      "evidence": "C-H01 PASS · syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds6-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
-      "failedAssertions": [],
+      "probeStatus": "FAIL",
+      "evidence": "C-H01 FAIL · syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds6-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=1）真实执行",
+      "failedAssertions": [
+        "dedicatedVitestMappingTest"
+      ],
       "notExecutedAssertions": []
     },
     "UDS6-H-02": {
@@ -191,11 +193,13 @@
       "notExecutedAssertions": []
     },
     "UDS6-H-06": {
-      "status": "RESOLVED",
+      "status": "OPEN",
       "probe": "C-H06",
-      "probeStatus": "PASS",
-      "evidence": "C-H06 PASS · code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds6-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
-      "failedAssertions": [],
+      "probeStatus": "FAIL",
+      "evidence": "C-H06 FAIL · code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds6-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
+      "failedAssertions": [
+        "dedicatedComponentTest"
+      ],
       "notExecutedAssertions": []
     },
     "UDS6-H-07": {
@@ -207,11 +211,13 @@
       "notExecutedAssertions": []
     },
     "UDS6-H-08": {
-      "status": "RESOLVED",
+      "status": "OPEN",
       "probe": "C-H08",
-      "probeStatus": "PASS",
-      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 6.0 checker 真实运行；全量 vitest G14 EXIT=0（260502ms）",
-      "failedAssertions": [],
+      "probeStatus": "FAIL",
+      "evidence": "C-H08 FAIL · Showcase visual-check / real-page-regression / 6.0 checker 真实运行；全量 vitest G14 EXIT=1（480090ms）",
+      "failedAssertions": [
+        "fullVitestExecutedThisRun"
+      ],
       "notExecutedAssertions": []
     },
     "UDS6-H-09": {

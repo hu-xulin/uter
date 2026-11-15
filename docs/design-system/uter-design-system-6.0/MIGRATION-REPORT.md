@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 6.0 — 现状清单与迁移报告（Phase 1 / Phase 6 清单）
 
-> 生成时间 2026-11-15T06:01:14.564Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
+> 生成时间 2026-11-15T06:39:50.693Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
 > 本报告只记录真实扫描结果，不覆盖任何并发未提交修改。
 
 ## 1. Phase 1 仓库审计（真实命令输出）
@@ -59,15 +59,15 @@
 | 批次 | 范围 | 风险 | 前置条件 |
 |---|---|---|---|
 | B1 | 6.0 Token 产物生成（已完成，位于 `docs/design-system/uter-design-system-6.0/runtime/`，与 TOKEN-MANIFEST.json 一致；**未接入 `web/src` 现行运行时**） | 低 | — |
-| B2 | 渐变唯一出口换值 + 注销 E28 | 中 | 用户视觉审核通过 |
-| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 中 | 用户视觉审核通过 + 逐引擎真实渲染验证 |
-| B4 | 72 个路由 / 951 个 TSX 的 Token 与组件迁移 | 高 | 视觉基线冻结 + 并发 WIP 收敛 |
+| B2 | 渐变唯一出口换值 + 注销 E28 | 中 | 视觉基线已冻结（2026-11-15） |
+| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 中 | 视觉基线已冻结（2026-11-15）+ 逐引擎真实渲染验证 |
+| B4 | 72 个路由 / 951 个 TSX 的 Token 与组件迁移 | 高 | 并发 WIP 收敛（视觉基线已冻结） |
 | B5 | 支付 / 账单 / 认证页面视觉迁移 | **极高** | 业务专项测试 + 独立审查（不得由执行代理代做） |
 | B6 | 旧 Token / 重复实现清理 | 高 | DEPENDENCY-GRAPH 零引用证明 |
 
 ### 5.1 本轮不执行 Phase 6 的依据
 
-1. 文档 PART 9 明确 **Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration**；PART 4.5 规定「用户尚未审核时，不得将视觉方案标记为 ACCEPTED」。
+1. 文档 PART 9 明确 **Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration**；前两步已完成（用户 2026-11-15 指令冻结基线，见 `VISUAL-BASELINE.json`）；PART 4.5 规定「用户尚未审核时，不得将视觉方案标记为 ACCEPTED」，该纪律继续约束 `ACCEPTED` 状态判定。
 2. 文档 PART 11 规定 `IMPLEMENTED` ≠ `VERIFIED` ≠ `ACCEPTANCE_READY` ≠ `ACCEPTED`，最终目标止于 `ACCEPTANCE_READY`。
 3. `AGENTS.md` / `.uap/config/permission-policy.yaml` 要求 `preserve_uncommitted_changes: true`；当前 998 项并发脏区覆盖 `web/src/styles/theme.css` 等核心文件，全站迁移必然覆盖用户未提交修改。
 4. `AGENTS.md` 将支付 / 余额 / 计费列为高风险，要求专项测试与独立审查；文档 PART 6.3 / PART 10.16 明确禁止修改支付配置与业务逻辑。

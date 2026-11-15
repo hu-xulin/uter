@@ -60,6 +60,7 @@ const GATE_DEFS = [
   ['G14', '全量单元测试（vitest）', 'bun', ['run', 'test'], WEB, true],
   ['G15', '构建校验（tsgo + rsbuild）', 'bun', ['run', 'build:check'], WEB, true],
   ['G17', '6.0 真实页面回归（本地 SPA + 像素验证）', NODE, [join(DS, 'registry', 'real-page-regression.mjs')], REPO, false],
+  ['G19', '6.0 视觉基线校验（冻结基线 vs 当前渲染）', NODE, [join(DS, 'registry', 'check-visual-baseline.mjs')], REPO, false],
   ['G16', '6.0 自动化检查器（C01-C22）', 'bun', ['run', 'design:6:check'], WEB, false],
   ['G18', '6.0 整改验证器（48 项探针 + 机器可读报告）', NODE, [join(DS, 'registry', 'check-uds6-remediation.mjs')], REPO, false],
 ]
@@ -161,6 +162,8 @@ if (REPORTS_ONLY) {
 const M = jread(join(DS, 'TOKEN-MANIFEST.json'))
 const AM = jread(join(DS, 'ACCEPTANCE-MATRIX.json'))
 const EX = jread(join(DS, 'EXCEPTION-REGISTRY.json'))
+const baseline = existsSync(join(DS, 'VISUAL-BASELINE.json')) ? jread(join(DS, 'VISUAL-BASELINE.json')) : null
+const baselineCheck = existsSync(join(DS, 'audit', 'visual-baseline-check.json')) ? jread(join(DS, 'audit', 'visual-baseline-check.json')) : null
 const V = runVerification()
 const visualLog = jread(join(VR, 'run-log.json'))
 const a11yLog = jread(join(VR, 'a11y-log.json'))
@@ -365,7 +368,7 @@ const finalReport = `# UTER DESIGN SYSTEM 6.0 — 最终验收报告（PART 12�
 | 目标状态 | 文档要求 ${c('FULLY_IMPLEMENTED / FULLY_VERIFIED / ACCEPTANCE_READY')}；**本轮未达成**，原因见 §8 |
 | 是否被接受 | **否** · ${c('accepted: false')} |
 
-**一句话结论**：6.0 的规范、Token、注册表、Showcase、自动化检查器与可核验证据已经完整落地并通过 Showcase 范围内的自动化验证；但 Phase 5 用户视觉审核、Phase 6 全站真实页面迁移、Phase 7 旧实现清理、Phase 8 全站视觉回归均**未执行**，因此不得宣称 ${c('FULLY_VERIFIED')} 或 ${c('ACCEPTANCE_READY')}，更不得宣称 ${c('ACCEPTED')}。
+**一句话结论**：6.0 的规范、Token、注册表、Showcase、自动化检查器与可核验证据已经完整落地并通过 Showcase 范围内的自动化验证；**6.0.0 视觉基线已冻结**（2026-11-15 用户指令，详见 §10.2）；Phase 6 全站真实页面迁移、Phase 7 旧实现清理、Phase 8 全站视觉回归均**未执行**，因此不得宣称 ${c('FULLY_VERIFIED')} 或 ${c('ACCEPTANCE_READY')}，更不得宣称 ${c('ACCEPTED')}。
 
 ## 2. 交付物清单
 
@@ -445,15 +448,15 @@ ${moduleRows}
 | 批次 | 范围 | 状态 | 前置条件 |
 |---|---|---|---|
 | B1 | 6.0 Token 产物生成（${c('docs/.../runtime/')}，未接入 ${c('web/src')}） | **已完成** | — |
-| B2 | 渐变唯一出口换值 + 注销 E28 | 未执行 | Phase 5 用户审核通过 |
-| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 未执行 | 审核通过 + 逐引擎真实渲染 |
-| B4 | 72 个路由 / 951 个 TSX Token 与组件迁移 | 未执行 | 视觉基线冻结 + 并发 WIP 收敛 |
+| B2 | 渐变唯一出口换值 + 注销 E28 | 未执行 | 视觉基线已冻结（2026-11-15） |
+| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 未执行 | 视觉基线已冻结 + 逐引擎真实渲染 |
+| B4 | 72 个路由 / 951 个 TSX Token 与组件迁移 | 未执行 | 并发 WIP 收敛（视觉基线已冻结） |
 | B5 | 支付 / 账单 / 认证页面视觉迁移 | 未执行 | 业务专项测试 + 独立审查 |
 | B6 | 旧 Token / 重复实现清理 | 未执行 | 依赖图零引用证明 |
 
 未执行依据（真实约束，非推迟借口）：
 
-1. 文档 PART 9 的强制顺序：${c('Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration')}。
+1. 文档 PART 9 的强制顺序：${c('Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration')}。前两步已完成：用户于 2026-11-15 明确指令冻结基线，Phase 5 已收口（§10.2）。
 2. 文档 PART 4.5 / PART 11：用户尚未审核时不得标 ${c('ACCEPTED')}，${c('IMPLEMENTED')} ≠ ${c('VERIFIED')}。
 3. ${c('AGENTS.md')} / ${c('.uap/config/permission-policy.yaml')} 要求 ${c('preserve_uncommitted_changes: true')}；审计时全仓 **998 项脏区**，覆盖 ${c('web/src/styles/theme.css')} 等核心文件，全站迁移必然覆盖用户未提交修改。
 4. 支付 / 余额 / 计费属高风险，需专项测试 + 独立审查（不得由执行代理代做）；文档 PART 6.3 / 10.16 明确禁止修改支付配置与业务逻辑。
@@ -481,22 +484,28 @@ ${exceptionRows}
 
 - ${c('DEPRECATED-REGISTRY.json')} 登记了 E28、旧渐变三档、5 个旧 syntax Token、JSON 编辑器 chart 色滥用等待清理项。**Phase 7 清理本轮未执行**；禁止在基线冻结前删除现行 ${c('web/src')} 实现。
 
-### 10.2 人工审核清单（Phase 5，必须由用户完成）
+### 10.2 视觉基线冻结记录（Phase 5，已完成）
 
-1. 打开 ${c('/design-system/6.0')} 或 ${c('SHOWCASE-6.0.html')}，逐模块审核 38 个规范分区。
-2. 切换 Light / Dark，重点看品牌渐变文字、代码块、Primary / Destructive 按钮在 Dark 下的可读性。
-3. 用 Token Inspector 核对 ${M.tokenCount} 个 Token，确认字号 / 间距 / 圆角档位符合预期。
-4. 确认 12 种语言语法高亮示例与 20 个 syntax Token 的语义分工。
-5. 确认新旧渐变对比是否可以接受，从而决定 E28 是否注销。
-6. 明确回复是否**冻结 6.0.0 视觉基线**；只有冻结后才授权 Phase 6。
+${baseline ? `| 项目 | 实测值 |
+|---|---|
+| 基线版本 | ${c(baseline.version)} |
+| 状态 | ${c(baseline.status)} |
+| 冻结时间 | ${c(baseline.frozen_at)} |
+| 冻结授权 | ${c(baseline.frozen_by)} |
+| 基线文件 | ${c('VISUAL-BASELINE.json')} |
+| 冻结场景数 | ${baseline.scenarioCount}（Showcase 4 + 真实页面 8 + 渐变 hero 2 + forced-colors 1） |
+| 冻结副本 | ${c('audit/baseline/screenshots/*.png')}（逐场景 SHA256 已登记） |
+| 校验门禁 | G19 ${c('registry/check-visual-baseline.mjs')} · ${fmtExit('G19')}（${baselineCheck?.verdict ?? 'NOT_RUN'}） |
+| 更新策略 | ${c('updateRequiresUserAuthorization: true')}；Phase 6 迁移完成后重冻结并归档旧基线 |` : '**基线尚未冻结**：`VISUAL-BASELINE.json` 缺失，Phase 5 未收口。'}
 
 ### 10.3 最终结论
 
-- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C21 自动检查 / Showcase 范围视觉与无障碍 / 现行工程门禁未破坏。
-- **已完成但未验证**：${c('runtime/')} 产物尚未接入真实页面；5 个高亮引擎 Adapter 尚未接线；真实页面上的渐变与 syntax 观感未验证。
-- **未完成**：Phase 5 用户审核、Phase 6 全站迁移、Phase 7 清理、Phase 8 全站视觉回归。
+- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C22 自动检查 / Showcase 范围视觉与无障碍 / 真实页面回归与基线校验（G17/G19）/ 现行工程门禁未破坏。
+- **已完成但未验证**：${c('runtime/')} 产物尚未接入真实页面；5 个高亮引擎 Adapter 尚未接线。
+- **已完成**：Phase 5 视觉基线冻结（2026-11-15 用户指令）。
+- **未完成**：Phase 6 全站迁移、Phase 7 清理、Phase 8 全站视觉回归。
 - **总体状态**：${c('IMPLEMENTED_NOT_VERIFIED')} → ${c('PENDING_USER_REVIEW')}。**不是** ${c('ACCEPTANCE_READY')}，**不是** ${c('ACCEPTED')}。
-- **下一步**：用户按 §10.2 完成审核并明确授权后，依次执行 Phase 5 冻结 → Phase 6 B2–B6 → Phase 7 清理 → Phase 8 全站视觉回归，再重跑本报告。
+- **下一步**：视觉基线已冻结，Phase 6 已解锁；依次执行 Phase 6 B2–B6 → Phase 7 清理 → Phase 8 全站视觉回归，再重跑本报告并申请用户验收。
 
 ### 10.4 治理观察（真实 git 命令输出）
 

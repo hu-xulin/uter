@@ -353,6 +353,14 @@ const acceptanceMatrix = {
     ACCEPTANCE_READY: '已达到用户审核条件', ACCEPTED: '已获得用户明确接受',
   },
   overall_status: M.status,
+  baseline_freeze: {
+    status: 'FROZEN',
+    version: '6.0.0',
+    authorized_by: '用户指令「冻结 6.0.0 视觉基线」（2026-11-15）；Phase 5 收口，冻结后授权 Phase 6',
+    baseline_file: 'VISUAL-BASELINE.json',
+    verification_gate: 'G19 registry/check-visual-baseline.mjs',
+    note: '逐场景 SHA256 与冻结副本见 VISUAL-BASELINE.json 与 audit/baseline/screenshots/；更新基线须用户明确授权',
+  },
   modules: MODULES.map((m) => ({
     id: m.id, specId: m.specId, file: m.file, name: m.name,
     parent: m.parent ?? null,
@@ -360,7 +368,7 @@ const acceptanceMatrix = {
     verification: 'PARTIAL',
     evidence: ['check-design-system-6.0.mjs', 'CONTRAST-VERIFICATION-REPORT.md'],
     checks: m.acceptance.length,
-    outstanding: ['真实产品页面迁移（Phase 6）', '视觉基线冻结（Phase 5）', '全站视觉回归（Phase 8）'],
+    outstanding: ['真实产品页面迁移（Phase 6）', '全站视觉回归（Phase 8）'],
   })),
   componentStatesRequired: M.states.base,
   a11ySuites: ['axe-core', 'WCAG Contrast', 'Keyboard Navigation', 'Focus Visibility', 'Screen Reader', 'Reduced Motion'],
@@ -389,7 +397,7 @@ const exceptionRegistry = {
     { id: 'EX-002', scope: 'PAGE-REGISTRY ROUTE_NOT_FOUND 模板', reason: '文档列出但仓库无独立路由，禁止伪造页面', review_condition: '对应路由被真实创建时', status: 'OPEN' },
     { id: 'EX-003', scope: 'Android / iOS / HarmonyOS 未实现', reason: '仓库无原生工程或跨平台框架源码', review_condition: '原生工程入库时', status: 'OPEN' },
     { id: 'EX-004', scope: 'RTL 未支持', reason: '本版只覆盖 zh-CN / en LTR', review_condition: '新增 RTL locale 时', status: 'OPEN' },
-    { id: 'EX-005', scope: '规范—实现双轨', reason: '6.0 规范值已冻结但 web/src 运行时仍为 3.0/5.0 值；迁移须在视觉基线冻结后', review_condition: 'Phase 6 全站迁移完成', status: 'OPEN' },
+    { id: 'EX-005', scope: '规范—实现双轨', reason: '6.0 规范值已冻结且视觉基线已冻结（2026-11-15），但 web/src 运行时仍为 3.0 值；迁移按 Phase 6 分期执行', review_condition: 'Phase 6 全站迁移完成', status: 'OPEN' },
     { id: 'EX-006', scope: 'web/src/components/ai-elements/shimmer.tsx 手写渐变', reason: '6.0 之前的重复渐变实现，已在本轮真实收敛', action: 'MIGRATE_TO_SINGLE_EXIT', status: 'RESOLVED', resolved_by: '把渐变定义移入 web/src/design-system/foundations/typography.css 的受控出口 @utility ds-text-shimmer；shimmer.tsx 只保留 className 与 --ds6-shimmer-spread 变量，色值沿用 --color-background / --color-muted-foreground，视觉零变化', resolved_at: stamp, evidence: 'check-uds6-remediation.mjs::C-G03 + GRADIENT-TYPOGRAPHY-AUDIT.md' },
   ],
   registered_gradient_files: [
@@ -424,7 +432,7 @@ const compatMap = {
     { id: 'B2', scope: '渐变文字单一出口与插值空间', status: 'IN_PROGRESS', files: ['web/src/design-system/foundations/typography.css', 'web/src/components/ai-elements/shimmer.tsx'] },
     { id: 'B3', scope: '状态色 / 图表色去 chart 依赖', status: 'PENDING_USER_REVIEW', files: ['web/src/styles/theme-presets.css', 'web/src/features/wallet/components/wallet-stats-card.tsx'] },
     { id: 'B4', scope: 'Payment / Auth / Wallet 高风险页面', status: 'BLOCKED', reason: '须用户逐批单独授权且通过视觉审核' },
-    { id: 'B5', scope: '其余 ' + routeFiles.length + ' 个路由页面', status: 'BLOCKED', reason: '全站迁移须 Phase 5 审核通过' },
+    { id: 'B5', scope: '其余 ' + routeFiles.length + ' 个路由页面', status: 'BLOCKED', reason: '视觉基线已冻结（2026-11-15）；全站迁移按 Phase 6 分期执行，须并发 WIP 收敛后启动' },
     { id: 'B6', scope: '删除 3.0 兼容层', status: 'PROHIBITED', reason: '文档 §2.3 明令在 6.0 完成全部验收前不得删除' },
   ],
   unmigratedPages: routeFiles.map((p) => rel(p)),
@@ -475,7 +483,7 @@ const renderModule = (m) => {
 
 ${m.summary}
 
-本模块属于 6.0 五层架构 \`${M.architecture.flow}\`。6.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；6.0 数值冻结与全站迁移须在用户视觉审核通过后按 Phase 5 → Phase 6 顺序执行。
+本模块属于 6.0 五层架构 \`${M.architecture.flow}\`。6.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；6.0 视觉基线已于 2026-11-15 经用户授权冻结（\`VISUAL-BASELINE.json\`），全站迁移按 Phase 6 分期执行。
 
 | 属性 | 值 |
 |---|---|
@@ -768,15 +776,15 @@ const migrationReport = `# UTER DESIGN SYSTEM 6.0 — 现状清单与迁移报�
 | 批次 | 范围 | 风险 | 前置条件 |
 |---|---|---|---|
 | B1 | 6.0 Token 产物生成（已完成，位于 \`docs/design-system/uter-design-system-6.0/runtime/\`，与 TOKEN-MANIFEST.json 一致；**未接入 \`web/src\` 现行运行时**） | 低 | — |
-| B2 | 渐变唯一出口换值 + 注销 E28 | 中 | 用户视觉审核通过 |
-| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 中 | 用户视觉审核通过 + 逐引擎真实渲染验证 |
-| B4 | ${routeFiles.length} 个路由 / 951 个 TSX 的 Token 与组件迁移 | 高 | 视觉基线冻结 + 并发 WIP 收敛 |
+| B2 | 渐变唯一出口换值 + 注销 E28 | 中 | 视觉基线已冻结（2026-11-15） |
+| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 中 | 视觉基线已冻结（2026-11-15）+ 逐引擎真实渲染验证 |
+| B4 | ${routeFiles.length} 个路由 / 951 个 TSX 的 Token 与组件迁移 | 高 | 并发 WIP 收敛（视觉基线已冻结） |
 | B5 | 支付 / 账单 / 认证页面视觉迁移 | **极高** | 业务专项测试 + 独立审查（不得由执行代理代做） |
 | B6 | 旧 Token / 重复实现清理 | 高 | DEPENDENCY-GRAPH 零引用证明 |
 
 ### 5.1 本轮不执行 Phase 6 的依据
 
-1. 文档 PART 9 明确 **Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration**；PART 4.5 规定「用户尚未审核时，不得将视觉方案标记为 ACCEPTED」。
+1. 文档 PART 9 明确 **Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration**；前两步已完成（用户 2026-11-15 指令冻结基线，见 \`VISUAL-BASELINE.json\`）；PART 4.5 规定「用户尚未审核时，不得将视觉方案标记为 ACCEPTED」，该纪律继续约束 \`ACCEPTED\` 状态判定。
 2. 文档 PART 11 规定 \`IMPLEMENTED\` ≠ \`VERIFIED\` ≠ \`ACCEPTANCE_READY\` ≠ \`ACCEPTED\`，最终目标止于 \`ACCEPTANCE_READY\`。
 3. \`AGENTS.md\` / \`.uap/config/permission-policy.yaml\` 要求 \`preserve_uncommitted_changes: true\`；当前 998 项并发脏区覆盖 \`web/src/styles/theme.css\` 等核心文件，全站迁移必然覆盖用户未提交修改。
 4. \`AGENTS.md\` 将支付 / 余额 / 计费列为高风险，要求专项测试与独立审查；文档 PART 6.3 / PART 10.16 明确禁止修改支付配置与业务逻辑。

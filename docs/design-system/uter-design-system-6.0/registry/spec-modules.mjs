@@ -61,7 +61,7 @@ export const MODULES = [
       '例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷',
       '废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验',
       '状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED',
-      '当前生效状态：6.0 规范体系 IMPLEMENTED_NOT_VERIFIED；3.0 仍是现行运行时强制标准，6.0 迁移须在视觉基线冻结后分期执行',
+      '当前生效状态：6.0 规范体系 IMPLEMENTED_NOT_VERIFIED；6.0 视觉基线已于 2026-11-15 经用户授权冻结（VISUAL-BASELINE.json）；3.0 仍是现行运行时强制标准，全站迁移按 Phase 6 分期执行',
     ],
     tokens: ['--ds-space-1', '--ds-layout-max-width', '--ds-focus-ring-width'],
     states: ['default', 'hover', 'focus', 'active', 'disabled', 'loading', 'error', 'success'],

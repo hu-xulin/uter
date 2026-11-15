@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 6.0 — 视觉回归与无障碍验证报告
 
-> 生成时间 2026-11-15T06:10:27.583Z · 由 `registry/finalize.mjs` 从真实运行日志派生
+> 生成时间 2026-11-15T06:55:01.651Z · 由 `registry/finalize.mjs` 从真实运行日志派生
 > **范围口径**：本报告只覆盖 6.0 Design Showcase 的自动化视觉 / 无障碍验证，**不等于** Phase 8 全站真实产品页面视觉回归。
 
 ## 1. 执行环境与真实命令
@@ -15,7 +15,7 @@
 | 无障碍日志 | `web/visual-regression/uds6/a11y-log.json` · verdict `PASS` |
 | 单元测试 | `bun run test` · EXIT=0 |
 | 构建校验 | `bun run build:check` · EXIT=0 |
-| 校对对象 | `docs/design-system/uter-design-system-6.0/SHOWCASE-6.0.html`（887994 字符） |
+| 校对对象 | `docs/design-system/uter-design-system-6.0/SHOWCASE-6.0.html`（888045 字符） |
 
 ## 2. 四个真实渲染场景
 
@@ -75,8 +75,8 @@
 
 ## 6. 构建产物验证
 
-- `web/dist/design-system/6.0.html` · exists=true · 950862 bytes
-- `web/dist/design-system/6.0/index.html` · exists=true · 950862 bytes
+- `web/dist/design-system/6.0.html` · exists=true · 950933 bytes
+- `web/dist/design-system/6.0/index.html` · exists=true · 950933 bytes
 
 - 说明：`web/dist` 被 `web/.gitignore:11` 忽略，不进提交；此项只证明 `build:check` 后 6.0 页面确实进入产物。
 

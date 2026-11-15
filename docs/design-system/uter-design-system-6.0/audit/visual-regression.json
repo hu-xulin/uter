@@ -1,6 +1,6 @@
 {
   "schema": "UDS6-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-15T06:19:39.183Z",
+  "generated_at": "2026-11-15T07:04:37.184Z",
   "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis",
   "backend": "http://127.0.0.1:3000",
   "dist": "web/dist",
@@ -64,13 +64,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 928,
+        "distinctColors": 929,
         "meanLuminance": 240.45,
         "luminanceStdDev": 33.42,
         "nonWhitePixelRatio": 0.0553
       },
       "screenshot": "web/visual-regression/uds6/real-pages/home-light.png",
-      "screenshotSha256": "b7a915a3fcca46bb766d0ccdd65e5d64101e92eb72d69abb88269e5eaaaf320c",
+      "screenshotSha256": "5bc87715be91ed86e0cbb7d13cd3d7b87fa8a2bf41d7ade85c3bb796a0400200",
       "consoleErrors": [],
       "pass": true
     },
@@ -108,13 +108,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 957,
+        "distinctColors": 958,
         "meanLuminance": 19.95,
         "luminanceStdDev": 37.3,
         "nonWhitePixelRatio": 0.9893
       },
       "screenshot": "web/visual-regression/uds6/real-pages/home-dark.png",
-      "screenshotSha256": "6b97dcbf3cbaa7a5a4b264edab5514c015dbee50a6328fc56de2ba5b84aedd1f",
+      "screenshotSha256": "68163360f951d442161524782f07195d73671b7997ea7730ff64fb25f049f2f3",
       "consoleErrors": [],
       "pass": true
     },

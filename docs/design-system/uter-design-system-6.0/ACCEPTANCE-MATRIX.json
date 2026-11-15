@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-ACCEPTANCE",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T06:01:14.564Z",
+  "generated_at": "2026-11-15T06:39:50.693Z",
   "status_definitions": {
     "IMPLEMENTED": "已完成实现",
     "VERIFIED": "已通过真实自动化与必要的视觉验证",
@@ -10,6 +10,14 @@
     "ACCEPTED": "已获得用户明确接受"
   },
   "overall_status": "IMPLEMENTED_NOT_VERIFIED",
+  "baseline_freeze": {
+    "status": "FROZEN",
+    "version": "6.0.0",
+    "authorized_by": "用户指令「冻结 6.0.0 视觉基线」（2026-11-15）；Phase 5 收口，冻结后授权 Phase 6",
+    "baseline_file": "VISUAL-BASELINE.json",
+    "verification_gate": "G19 registry/check-visual-baseline.mjs",
+    "note": "逐场景 SHA256 与冻结副本见 VISUAL-BASELINE.json 与 audit/baseline/screenshots/；更新基线须用户明确授权"
+  },
   "modules": [
     {
       "id": "00",
@@ -26,7 +34,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -45,7 +52,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -64,7 +70,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -83,7 +88,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -102,7 +106,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -121,7 +124,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -140,7 +142,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -159,7 +160,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -178,7 +178,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -197,7 +196,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -216,7 +214,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -235,7 +232,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -254,7 +250,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -273,7 +268,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -292,7 +286,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -311,7 +304,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -330,7 +322,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -349,7 +340,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -368,7 +358,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -387,7 +376,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -406,7 +394,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -425,7 +412,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -444,7 +430,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -463,7 +448,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -482,7 +466,6 @@
       "checks": 7,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -501,7 +484,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -520,7 +502,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -539,7 +520,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -558,7 +538,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -577,7 +556,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -596,7 +574,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -615,7 +592,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -634,7 +610,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -653,7 +628,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -672,7 +646,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -691,7 +664,6 @@
       "checks": 5,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -710,7 +682,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     },
@@ -729,7 +700,6 @@
       "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
-        "视觉基线冻结（Phase 5）",
         "全站视觉回归（Phase 8）"
       ]
     }

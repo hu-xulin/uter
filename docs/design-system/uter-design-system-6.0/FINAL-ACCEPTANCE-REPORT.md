@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 6.0 — 最终验收报告（PART 12）
 
-> 生成时间 2026-11-15T06:10:27.583Z · 由 `registry/finalize.mjs` 从 `GATE-EVIDENCE.json` 的真实命令结果派生
+> 生成时间 2026-11-15T06:55:01.651Z · 由 `registry/finalize.mjs` 从 `GATE-EVIDENCE.json` 的真实命令结果派生
 > **状态纪律**：`IMPLEMENTED` ≠ `VERIFIED` ≠ `ACCEPTANCE_READY` ≠ `ACCEPTED`。用户审核前一律不得标 `ACCEPTED`。
 
 ## 1. 总体结论
@@ -15,7 +15,7 @@
 | 目标状态 | 文档要求 `FULLY_IMPLEMENTED / FULLY_VERIFIED / ACCEPTANCE_READY`；**本轮未达成**，原因见 §8 |
 | 是否被接受 | **否** · `accepted: false` |
 
-**一句话结论**：6.0 的规范、Token、注册表、Showcase、自动化检查器与可核验证据已经完整落地并通过 Showcase 范围内的自动化验证；但 Phase 5 用户视觉审核、Phase 6 全站真实页面迁移、Phase 7 旧实现清理、Phase 8 全站视觉回归均**未执行**，因此不得宣称 `FULLY_VERIFIED` 或 `ACCEPTANCE_READY`，更不得宣称 `ACCEPTED`。
+**一句话结论**：6.0 的规范、Token、注册表、Showcase、自动化检查器与可核验证据已经完整落地并通过 Showcase 范围内的自动化验证；**6.0.0 视觉基线已冻结**（2026-11-15 用户指令，详见 §10.2）；Phase 6 全站真实页面迁移、Phase 7 旧实现清理、Phase 8 全站视觉回归均**未执行**，因此不得宣称 `FULLY_VERIFIED` 或 `ACCEPTANCE_READY`，更不得宣称 `ACCEPTED`。
 
 ## 2. 交付物清单
 
@@ -26,7 +26,7 @@
 | 注册表 | 7 | `TOKEN / COMPONENT / PAGE / DEPENDENCY-GRAPH / ACCEPTANCE-MATRIX / DEPRECATED / EXCEPTION` |
 | 唯一真源 | 1 | `TOKEN-MANIFEST.json` |
 | 运行时派生产物 | 5 | `runtime/tokens.css`、`runtime/themes/light.css`、`runtime/themes/dark.css`、`runtime/foundations.css`、`runtime/tokens.ts` |
-| Showcase | 1 源 + 2 入口 | `SHOWCASE-6.0.html`（887994 字符）、`web/public/design-system/6.0.html`、`web/public/design-system/6.0/index.html` |
+| Showcase | 1 源 + 2 入口 | `SHOWCASE-6.0.html`（888045 字符）、`web/public/design-system/6.0.html`、`web/public/design-system/6.0/index.html` |
 | 自动化 | 4 脚本 | `web/scripts/check-design-system-6.0.mjs`、`registry/contrast-engine.mjs`、`registry/visual-check.mjs`、`registry/a11y-check.mjs` |
 | 构建链 | 3 脚本 | `registry/tokens.mjs`、`registry/spec-modules.mjs`、`registry/build.mjs`、`registry/render-showcase.mjs`、`registry/finalize.mjs` |
 | 报告 | 4 | `MIGRATION-REPORT.md`、`CONTRAST-VERIFICATION-REPORT.md`、`VISUAL-REGRESSION-REPORT.md`、本报告 |
@@ -36,44 +36,44 @@
 
 | ID | Spec ID | 文件 | 实现 | 验证 | 检查项 | 未完成项 |
 |---|---|---|---|---|---|---|
-| 00 | UDS6-S00 | `00-UTER-DESIGN-SYSTEM-OVERVIEW.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 01 | UDS6-S01 | `01-BRAND-IDENTITY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 02 | UDS6-S02 | `02-DESIGN-PRINCIPLES-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 03 | UDS6-S03 | `03-COLOR-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 04 | UDS6-S04 | `04-TYPOGRAPHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 05 | UDS6-S05 | `05-SPACING-AND-SIZING-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 06 | UDS6-S06 | `06-LAYOUT-AND-GRID-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 07 | UDS6-S07 | `07-SHAPE-AND-RADIUS-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 08 | UDS6-S08 | `08-BORDER-AND-DIVIDER-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 09 | UDS6-S09 | `09-ELEVATION-AND-SHADOW-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 10 | UDS6-S10 | `10-ICONOGRAPHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 11 | UDS6-S11 | `11-MOTION-AND-ANIMATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 12 | UDS6-S12 | `12-RESPONSIVE-DESIGN-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 13 | UDS6-S13 | `13-ACCESSIBILITY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 14 | UDS6-S14 | `14-CONTENT-AND-WRITING-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 15 | UDS6-S15 | `15-DATA-VISUALIZATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 16 | UDS6-S16 | `16-DENSITY-AND-INFORMATION-HIERARCHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 17 | UDS6-S17 | `17-NAVIGATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 18 | UDS6-S18 | `18-BUTTON-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 19 | UDS6-S19 | `19-FORM-AND-INPUT-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 20 | UDS6-S20 | `20-SELECTION-CONTROLS-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 21 | UDS6-S21 | `21-FEEDBACK-AND-STATUS-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 22 | UDS6-S22 | `22-OVERLAY-AND-FLOATING-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 23 | UDS6-S23 | `23-DATA-DISPLAY-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 24 | UDS6-S24 | `24-CODE-AND-DEVELOPER-UI-STANDARD.md` | IMPLEMENTED | PARTIAL | 7 | 3 |
-| 24-S | UDS6-S24-S | `CODE-SYNTAX-HIGHLIGHTING-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 25 | UDS6-S25 | `25-AUTHENTICATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 26 | UDS6-S26 | `26-USER-AND-ORGANIZATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 27 | UDS6-S27 | `27-BILLING-AND-PAYMENTS-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 28 | UDS6-S28 | `28-API-AND-TOKEN-MANAGEMENT-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 29 | UDS6-S29 | `29-MODEL-AND-CHANNEL-MANAGEMENT-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 30 | UDS6-S30 | `30-DASHBOARD-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 31 | UDS6-S31 | `31-PAGE-TEMPLATES-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 32 | UDS6-S32 | `32-EMPTY-LOADING-AND-ERROR-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 33 | UDS6-S33 | `33-LOCALIZATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 34 | UDS6-S34 | `34-CROSS-PLATFORM-DESIGN-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 3 |
-| 35 | UDS6-S35 | `35-DESIGN-GOVERNANCE-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
-| 01-S | UDS6-S01-S | `GRADIENT-TYPOGRAPHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 3 |
+| 00 | UDS6-S00 | `00-UTER-DESIGN-SYSTEM-OVERVIEW.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 01 | UDS6-S01 | `01-BRAND-IDENTITY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 02 | UDS6-S02 | `02-DESIGN-PRINCIPLES-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 03 | UDS6-S03 | `03-COLOR-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 04 | UDS6-S04 | `04-TYPOGRAPHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 05 | UDS6-S05 | `05-SPACING-AND-SIZING-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 06 | UDS6-S06 | `06-LAYOUT-AND-GRID-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 07 | UDS6-S07 | `07-SHAPE-AND-RADIUS-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 08 | UDS6-S08 | `08-BORDER-AND-DIVIDER-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 09 | UDS6-S09 | `09-ELEVATION-AND-SHADOW-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 10 | UDS6-S10 | `10-ICONOGRAPHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 11 | UDS6-S11 | `11-MOTION-AND-ANIMATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 12 | UDS6-S12 | `12-RESPONSIVE-DESIGN-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 13 | UDS6-S13 | `13-ACCESSIBILITY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 14 | UDS6-S14 | `14-CONTENT-AND-WRITING-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 15 | UDS6-S15 | `15-DATA-VISUALIZATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 16 | UDS6-S16 | `16-DENSITY-AND-INFORMATION-HIERARCHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 17 | UDS6-S17 | `17-NAVIGATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 18 | UDS6-S18 | `18-BUTTON-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 19 | UDS6-S19 | `19-FORM-AND-INPUT-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 20 | UDS6-S20 | `20-SELECTION-CONTROLS-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 21 | UDS6-S21 | `21-FEEDBACK-AND-STATUS-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 22 | UDS6-S22 | `22-OVERLAY-AND-FLOATING-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 23 | UDS6-S23 | `23-DATA-DISPLAY-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 24 | UDS6-S24 | `24-CODE-AND-DEVELOPER-UI-STANDARD.md` | IMPLEMENTED | PARTIAL | 7 | 2 |
+| 24-S | UDS6-S24-S | `CODE-SYNTAX-HIGHLIGHTING-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 25 | UDS6-S25 | `25-AUTHENTICATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 26 | UDS6-S26 | `26-USER-AND-ORGANIZATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 27 | UDS6-S27 | `27-BILLING-AND-PAYMENTS-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 28 | UDS6-S28 | `28-API-AND-TOKEN-MANAGEMENT-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 29 | UDS6-S29 | `29-MODEL-AND-CHANNEL-MANAGEMENT-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 30 | UDS6-S30 | `30-DASHBOARD-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 31 | UDS6-S31 | `31-PAGE-TEMPLATES-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 32 | UDS6-S32 | `32-EMPTY-LOADING-AND-ERROR-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 33 | UDS6-S33 | `33-LOCALIZATION-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 34 | UDS6-S34 | `34-CROSS-PLATFORM-DESIGN-STANDARD.md` | IMPLEMENTED | PARTIAL | 5 | 2 |
+| 35 | UDS6-S35 | `35-DESIGN-GOVERNANCE-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
+| 01-S | UDS6-S01-S | `GRADIENT-TYPOGRAPHY-STANDARD.md` | IMPLEMENTED | PARTIAL | 6 | 2 |
 
 - 每份规范含 11 个小节：Overview / Rules / Tokens / Visual Preview / Interactive Preview / Usage / Do / Don't / Accessibility / Responsive / Acceptance（Showcase 实测 418 个 `data-section` = 38×11）。
 - 专项规范登记在 01 / 24 号模块之下，不形成第二套设计系统。
@@ -118,7 +118,7 @@
 
 | 项目 | 实测 | 依据 |
 |---|---|---|
-| 单文件自包含 | 887994 字符，零外链、0 个 `<img>` | C14 |
+| 单文件自包含 | 888045 字符，零外链、0 个 `<img>` | C14 |
 | 模块 / 小节 | 38 / 418 | Playwright |
 | Token 行 / 语言 | 748 / 12 | Playwright |
 | Playwright 4 场景 | PASS · consoleErrors=0 | `run-log.json` |
@@ -132,15 +132,15 @@
 | 批次 | 范围 | 状态 | 前置条件 |
 |---|---|---|---|
 | B1 | 6.0 Token 产物生成（`docs/.../runtime/`，未接入 `web/src`） | **已完成** | — |
-| B2 | 渐变唯一出口换值 + 注销 E28 | 未执行 | Phase 5 用户审核通过 |
-| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 未执行 | 审核通过 + 逐引擎真实渲染 |
-| B4 | 72 个路由 / 951 个 TSX Token 与组件迁移 | 未执行 | 视觉基线冻结 + 并发 WIP 收敛 |
+| B2 | 渐变唯一出口换值 + 注销 E28 | 未执行 | 视觉基线已冻结（2026-11-15） |
+| B3 | syntax 20 Token 接入 5 个引擎 Adapter | 未执行 | 视觉基线已冻结 + 逐引擎真实渲染 |
+| B4 | 72 个路由 / 951 个 TSX Token 与组件迁移 | 未执行 | 并发 WIP 收敛（视觉基线已冻结） |
 | B5 | 支付 / 账单 / 认证页面视觉迁移 | 未执行 | 业务专项测试 + 独立审查 |
 | B6 | 旧 Token / 重复实现清理 | 未执行 | 依赖图零引用证明 |
 
 未执行依据（真实约束，非推迟借口）：
 
-1. 文档 PART 9 的强制顺序：`Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration`。
+1. 文档 PART 9 的强制顺序：`Phase 5 Visual Review → 用户确认 → 冻结 6.0.0 视觉基线 → Phase 6 Product Migration`。前两步已完成：用户于 2026-11-15 明确指令冻结基线，Phase 5 已收口（§10.2）。
 2. 文档 PART 4.5 / PART 11：用户尚未审核时不得标 `ACCEPTED`，`IMPLEMENTED` ≠ `VERIFIED`。
 3. `AGENTS.md` / `.uap/config/permission-policy.yaml` 要求 `preserve_uncommitted_changes: true`；审计时全仓 **998 项脏区**，覆盖 `web/src/styles/theme.css` 等核心文件，全站迁移必然覆盖用户未提交修改。
 4. 支付 / 余额 / 计费属高风险，需专项测试 + 独立审查（不得由执行代理代做）；文档 PART 6.3 / 10.16 明确禁止修改支付配置与业务逻辑。
@@ -149,20 +149,21 @@
 
 | ID | 门禁 | 命令 | 退出码 | 耗时 | 备注 |
 |---|---|---|---|---|---|
-| G01 | TypeScript 类型检查 | `bun run typecheck` | **0** | 22025ms | PASS |
-| G02 | 设计 Token 严格门禁 | `bun run lint:design:strict` | **0** | 3268ms | PASS |
-| G06 | 设计 Token 生成一致性 | `bun run design:tokens:check` | **0** | 153ms | PASS |
-| G07 | 3.0 Showcase 同步校验 | `bun run design:showcase:check` | **0** | 200ms | PASS |
-| G08 | 现行对比度门禁 | `bun run verify:contrast` | **0** | 411ms | PASS |
-| G09 | 版权头检查 | `bun run copyright:check` | 1 | 598ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
-| G10 | 全量 oxlint | `bun run lint` | 1 | 2492ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
-| G12 | 6.0 Showcase 视觉回归（Playwright） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/visual-check.mjs` | **0** | 5443ms | PASS |
-| G13 | 6.0 无障碍（axe-core + 真实 Tab） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/a11y-check.mjs` | **0** | 30404ms | PASS |
-| G14 | 全量单元测试（vitest） | `bun run test` | **0** | 438803ms | PASS |
-| G15 | 构建校验（tsgo + rsbuild） | `bun run build:check` | **0** | 26810ms | PASS |
-| G17 | 6.0 真实页面回归（本地 SPA + 像素验证） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/real-page-regression.mjs` | **0** | 20090ms | PASS |
-| G16 | 6.0 自动化检查器（C01-C22） | `bun run design:6:check` | **0** | 505ms | PASS |
-| G18 | 6.0 整改验证器（48 项探针 + 机器可读报告） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-uds6-remediation.mjs` | **0** | 793ms | PASS |
+| G01 | TypeScript 类型检查 | `bun run typecheck` | **0** | 8587ms | PASS |
+| G02 | 设计 Token 严格门禁 | `bun run lint:design:strict` | **0** | 2377ms | PASS |
+| G06 | 设计 Token 生成一致性 | `bun run design:tokens:check` | **0** | 119ms | PASS |
+| G07 | 3.0 Showcase 同步校验 | `bun run design:showcase:check` | **0** | 174ms | PASS |
+| G08 | 现行对比度门禁 | `bun run verify:contrast` | **0** | 323ms | PASS |
+| G09 | 版权头检查 | `bun run copyright:check` | 1 | 396ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
+| G10 | 全量 oxlint | `bun run lint` | 1 | 1995ms | 失败项均非本轮 6.0 产物引入；属 HEAD 既有或并发 WIP，登记为阻塞项 |
+| G12 | 6.0 Showcase 视觉回归（Playwright） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/visual-check.mjs` | **0** | 5155ms | PASS |
+| G13 | 6.0 无障碍（axe-core + 真实 Tab） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/a11y-check.mjs` | **0** | 33966ms | PASS |
+| G14 | 全量单元测试（vitest） | `bun run test` | **0** | 451182ms | PASS |
+| G15 | 构建校验（tsgo + rsbuild） | `bun run build:check` | **0** | 44443ms | PASS |
+| G17 | 6.0 真实页面回归（本地 SPA + 像素验证） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/real-page-regression.mjs` | **0** | 23529ms | PASS |
+| G19 | 6.0 视觉基线校验（冻结基线 vs 当前渲染） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-visual-baseline.mjs` | **0** | 1714ms | PASS |
+| G16 | 6.0 自动化检查器（C01-C22） | `bun run design:6:check` | **0** | 1178ms | PASS |
+| G18 | 6.0 整改验证器（48 项探针 + 机器可读报告） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-uds6-remediation.mjs` | **0** | 1309ms | PASS |
 
 - 6.0 检查器 `check-design-system-6.0.mjs` 的 C01–C21 最终结果见 `GATE-EVIDENCE.json` 的 `checker` 字段（报告写盘后复跑）。
 - 全量单元测试：`bun run test` EXIT=0；构建校验：`bun run build:check` EXIT=0。
@@ -204,17 +205,17 @@ error: script "copyright:check" exited with code 1
 归属判定：诊断涉及 3 个文件，其中 0 个文件在 HEAD 中已含 `async ({}, testInfo)` 空对象绑定（证明 lint error 已进入仓库基线而非本轮引入）；属于本轮 6.0 产物的文件数 = 0。
 
 ```
-  ! eslint(prefer-template): Unexpected string concatenation.
-     ,-[e2e/axe/authed.spec.ts:138:5]
- 137 |     blockingByRoute,
- 138 |     '鉴权页存在 critical/serious 可访问性违规：\n' + blockingByRoute.join('\n')
-     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 139 |   ).toEqual([])
-     `----
-  help: Use template literals instead of string concatenation.
+  ! unicorn(prefer-number-properties): Use `Number.parseInt` instead of the global `parseInt`
+    ,-[scripts/verify-contrast.mjs:39:15]
+ 38 |   const [r, g, b] = [0, 2, 4].map((i) => {
+ 39 |     const v = parseInt(c.slice(i, i + 2), 16) / 255
+    :               ^^^^^^^^
+ 40 |     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+    `----
+  help: Replace it with `Number.parseInt`
 
 Found 81 warnings and 3 errors.
-Finished in 1.3s on 1496 files with 186 rules using 16 threads.
+Finished in 1.0s on 1496 files with 186 rules using 16 threads.
 $ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .
 error: script "lint" exited with code 1
 ```
@@ -235,37 +236,43 @@ error: script "lint" exited with code 1
 
 - `DEPRECATED-REGISTRY.json` 登记了 E28、旧渐变三档、5 个旧 syntax Token、JSON 编辑器 chart 色滥用等待清理项。**Phase 7 清理本轮未执行**；禁止在基线冻结前删除现行 `web/src` 实现。
 
-### 10.2 人工审核清单（Phase 5，必须由用户完成）
+### 10.2 视觉基线冻结记录（Phase 5，已完成）
 
-1. 打开 `/design-system/6.0` 或 `SHOWCASE-6.0.html`，逐模块审核 38 个规范分区。
-2. 切换 Light / Dark，重点看品牌渐变文字、代码块、Primary / Destructive 按钮在 Dark 下的可读性。
-3. 用 Token Inspector 核对 384 个 Token，确认字号 / 间距 / 圆角档位符合预期。
-4. 确认 12 种语言语法高亮示例与 20 个 syntax Token 的语义分工。
-5. 确认新旧渐变对比是否可以接受，从而决定 E28 是否注销。
-6. 明确回复是否**冻结 6.0.0 视觉基线**；只有冻结后才授权 Phase 6。
+| 项目 | 实测值 |
+|---|---|
+| 基线版本 | `6.0.0` |
+| 状态 | `FROZEN` |
+| 冻结时间 | `2026-11-15T06:40:53.810Z` |
+| 冻结授权 | `用户指令「冻结 6.0.0 视觉基线」（2026-11-15）；Phase 5 收口动作，冻结后授权 Phase 6` |
+| 基线文件 | `VISUAL-BASELINE.json` |
+| 冻结场景数 | 15（Showcase 4 + 真实页面 8 + 渐变 hero 2 + forced-colors 1） |
+| 冻结副本 | `audit/baseline/screenshots/*.png`（逐场景 SHA256 已登记） |
+| 校验门禁 | G19 `registry/check-visual-baseline.mjs` · EXIT=0（PASS） |
+| 更新策略 | `updateRequiresUserAuthorization: true`；Phase 6 迁移完成后重冻结并归档旧基线 |
 
 ### 10.3 最终结论
 
-- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C21 自动检查 / Showcase 范围视觉与无障碍 / 现行工程门禁未破坏。
-- **已完成但未验证**：`runtime/` 产物尚未接入真实页面；5 个高亮引擎 Adapter 尚未接线；真实页面上的渐变与 syntax 观感未验证。
-- **未完成**：Phase 5 用户审核、Phase 6 全站迁移、Phase 7 清理、Phase 8 全站视觉回归。
+- **已完成且已验证**：规范体系 / Token 唯一真源 / 7 注册表 / Showcase / 对比度引擎 / C01–C22 自动检查 / Showcase 范围视觉与无障碍 / 真实页面回归与基线校验（G17/G19）/ 现行工程门禁未破坏。
+- **已完成但未验证**：`runtime/` 产物尚未接入真实页面；5 个高亮引擎 Adapter 尚未接线。
+- **已完成**：Phase 5 视觉基线冻结（2026-11-15 用户指令）。
+- **未完成**：Phase 6 全站迁移、Phase 7 清理、Phase 8 全站视觉回归。
 - **总体状态**：`IMPLEMENTED_NOT_VERIFIED` → `PENDING_USER_REVIEW`。**不是** `ACCEPTANCE_READY`，**不是** `ACCEPTED`。
-- **下一步**：用户按 §10.2 完成审核并明确授权后，依次执行 Phase 5 冻结 → Phase 6 B2–B6 → Phase 7 清理 → Phase 8 全站视觉回归，再重跑本报告。
+- **下一步**：视觉基线已冻结，Phase 6 已解锁；依次执行 Phase 6 B2–B6 → Phase 7 清理 → Phase 8 全站视觉回归，再重跑本报告并申请用户验收。
 
 ### 10.4 治理观察（真实 git 命令输出）
 
 | 项目 | 实测值 |
 |---|---|
 | 分支 | `main` |
-| HEAD | `012c08eaf fix(uap): 单一批次验收的两个真实阻塞根因（批次分裂与隔离栈挂起）` |
-| HEAD 提交文件数 | 3 |
-| 6.0 目录已被 HEAD 跟踪的文件数 | 65 |
-| 6.0 目录当前工作区改动项 | 76 |
+| HEAD | `b39a35a77 docs(design-system): 删除 UDS 5.0 全部文档与引用并完成 6.0 全量验证收口` |
+| HEAD 提交文件数 | 824 |
+| 6.0 目录已被 HEAD 跟踪的文件数 | 100 |
+| 6.0 目录当前工作区改动项 | 69 |
 | 本任务 Git 动作 | 无 commit / push / merge / rebase |
 
-- 观察到 HEAD 提交（`012c08eaf fix(uap): 单一批次验收的两个真实阻塞根因（批次分裂与隔离栈挂起）`）覆盖 3 个文件并包含 6.0 目录的 65 个产物。**本任务未执行任何 Git 写操作，该提交不是本任务产生的**；且它发生在视觉审核与验收完成之前，即未收敛产物已被纳入版本库。入库 ≠ `VERIFIED` ≠ `ACCEPTED`，不改变本报告 §1 的状态判定。
+- 观察到 HEAD 提交（`b39a35a77 docs(design-system): 删除 UDS 5.0 全部文档与引用并完成 6.0 全量验证收口`）覆盖 824 个文件并包含 6.0 目录的 100 个产物。**本任务未执行任何 Git 写操作，该提交不是本任务产生的**；且它发生在视觉审核与验收完成之前，即未收敛产物已被纳入版本库。入库 ≠ `VERIFIED` ≠ `ACCEPTED`，不改变本报告 §1 的状态判定。
 - 由此带来一个真实后果：`lint` 的 3 个 `no-empty-pattern` error 与 `copyright:check` 的 2 个缺头文件目前都已是 **HEAD 基线内容**（`git status` 显示 CLEAN），而不是本轮未提交 WIP；详见 §9.1。按 `AGENTS.md` 变更保护纪律，本轮仍不擅自修改。
-- 当前工作区仍有 76 项 6.0 改动（本轮重建产物），**尚未提交**。按 `AGENTS.md` 单分支工作模式与「提交/推送逐次单独授权」纪律，本任务不代为提交。
+- 当前工作区仍有 69 项 6.0 改动（本轮重建产物），**尚未提交**。按 `AGENTS.md` 单分支工作模式与「提交/推送逐次单独授权」纪律，本任务不代为提交。
 - 并发 WIP 保护已生效：`lint` 与 `copyright:check` 的失败项已定位到并发修改或 HEAD 基线，未覆盖任何用户未提交修改（见 §9.1）。
 
 ---

@@ -12,7 +12,7 @@
 
 6.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。6.0 是完整重建且为唯一现行规范；5.0 及更早版本已删除，仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。
 
-本模块属于 6.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。6.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；6.0 数值冻结与全站迁移须在用户视觉审核通过后按 Phase 5 → Phase 6 顺序执行。
+本模块属于 6.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。6.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；6.0 视觉基线已于 2026-11-15 经用户授权冻结（`VISUAL-BASELINE.json`），全站迁移按 Phase 6 分期执行。
 
 | 属性 | 值 |
 |---|---|
@@ -33,7 +33,7 @@
 7. 例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷
 8. 废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验
 9. 状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED
-10. 当前生效状态：6.0 规范体系 IMPLEMENTED_NOT_VERIFIED；3.0 仍是现行运行时强制标准，6.0 迁移须在视觉基线冻结后分期执行
+10. 当前生效状态：6.0 规范体系 IMPLEMENTED_NOT_VERIFIED；6.0 视觉基线已于 2026-11-15 经用户授权冻结（VISUAL-BASELINE.json）；3.0 仍是现行运行时强制标准，全站迁移按 Phase 6 分期执行
 
 ## 3. Tokens
 

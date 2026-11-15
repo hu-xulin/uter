@@ -632,7 +632,7 @@ jwrite(join(AUDIT, 'final-acceptance.json'), {
   schema: 'UDS6-FINAL-ACCEPTANCE/1.0', generated_at: stamp,
   verdict,
   allowedVerdicts: ['FULLY_VERIFIED', 'PARTIALLY_VERIFIED', 'NOT_VERIFIED', 'FAILED'],
-  reason: 'Phase 5 用户视觉审核尚未通过，按治理纪律不得执行 Phase 6 全站迁移 / Phase 7 旧实现清理 / Phase 8 全站视觉回归；另有探针如实登记 NOT_EXECUTED / 未覆盖页面。',
+  reason: '6.0 视觉基线已冻结（2026-11-15 用户指令，VISUAL-BASELINE.json / G19 门禁），但 Phase 6 全站迁移 / Phase 7 旧实现清理 / Phase 8 全站视觉回归尚未执行，且另有探针如实登记 NOT_EXECUTED / 未覆盖页面，故 verdict 不允许 FULLY_VERIFIED。',
   forcedItems: forced,
   notAchieved,
   hardGates: { total: hardGates.length, passed: hardGates.filter(Boolean).length, allPassed: hardGates.every(Boolean) },
@@ -647,7 +647,7 @@ jwrite(join(AUDIT, 'final-acceptance.json'), {
   checker: { verdict: CHECKER.verdict, checksTotal: CHECKER.checksTotal, checksPassed: CHECKER.checksPassed, errors: CHECKER.errors },
   statusDiscipline: { manifestStatus: M.status, accepted: false, pendingUserReview: true, phase6Executed: false, phase7Executed: false, phase8Executed: false },
   honestLimitations: [
-    'Phase 6 全站真实页面迁移未执行（须用户视觉审核与基线冻结后）',
+    'Phase 6 全站真实页面迁移未执行（视觉基线已冻结，Phase 6 已解锁，待并发 WIP 收敛后启动）',
     'Phase 7 旧 Token / 重复实现清理未执行（不得一次性删除旧 Token）',
     'Phase 8 全站视觉回归未执行；本轮覆盖 4 条公开真实路由 × 2 主题 + Showcase，需认证页面未覆盖',
     '12 色图表在仅靠颜色 + CVD 模拟下最小 ΔE00 未达 10，依赖线型 / 点型 / 图例 / 直接标注四通道补偿',

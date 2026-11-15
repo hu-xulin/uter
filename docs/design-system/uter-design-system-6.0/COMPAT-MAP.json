@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-COMPAT-MAP",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T06:01:14.564Z",
+  "generated_at": "2026-11-15T06:39:50.693Z",
   "policy": "ISOLATE_THEN_MIGRATE",
   "isolation": {
     "canonicalPrefix": "--ds-",
@@ -135,7 +135,7 @@
       "id": "B5",
       "scope": "其余 72 个路由页面",
       "status": "BLOCKED",
-      "reason": "全站迁移须 Phase 5 审核通过"
+      "reason": "视觉基线已冻结（2026-11-15）；全站迁移按 Phase 6 分期执行，须并发 WIP 收敛后启动"
     },
     {
       "id": "B6",

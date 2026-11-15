@@ -1,19 +1,19 @@
 {
   "evidence_id": "UDS6-GATE-EVIDENCE",
-  "generated_at": "2026-11-15T06:10:27.583Z",
+  "generated_at": "2026-11-15T06:55:01.651Z",
   "quick_mode": false,
   "reports_only": false,
   "repository": {
     "branch": "main",
-    "dirty_entries": 753
+    "dirty_entries": 246
   },
   "governance": {
     "branch": "main",
-    "head": "012c08eaf fix(uap): 单一批次验收的两个真实阻塞根因（批次分裂与隔离栈挂起）",
-    "headSha": "012c08eaf6127261f4ba434bf277489261ef6dd5",
-    "headFilesChanged": 3,
-    "ds6TrackedInHead": 65,
-    "ds6WorkingTreeChanges": 76,
+    "head": "b39a35a77 docs(design-system): 删除 UDS 5.0 全部文档与引用并完成 6.0 全量验证收口",
+    "headSha": "b39a35a77c4ed4cbd9863579d2ee69a9e7f690f7",
+    "headFilesChanged": 824,
+    "ds6TrackedInHead": 100,
+    "ds6WorkingTreeChanges": 69,
     "note": "本任务未执行任何 commit / push / merge；如需提交须逐次单独授权，并在提交前一刻复查暂存区。"
   },
   "gates": [
@@ -23,7 +23,7 @@
       "command": "bun run typecheck",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 22025,
+      "durationMs": 8587,
       "outputLines": 2,
       "tail": "$ tsgo -b",
       "attribution": null
@@ -34,7 +34,7 @@
       "command": "bun run lint:design:strict",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 3268,
+      "durationMs": 2377,
       "outputLines": 6,
       "tail": "design-tokens: 通过。扫描 1277 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。\n\n浮层投影（规范 §8 允许，不计入违规）：20 处\nToken 定义处色值（颜色的落点，不计入违规）：669 处\n$ node scripts/check-design-tokens.mjs --strict",
       "attribution": null
@@ -45,7 +45,7 @@
       "command": "bun run design:tokens:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 153,
+      "durationMs": 119,
       "outputLines": 3,
       "tail": "Design token source and generated CSS are in sync.\n$ node scripts/generate-design-tokens.mjs --check",
       "attribution": null
@@ -56,7 +56,7 @@
       "command": "bun run design:showcase:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 200,
+      "durationMs": 174,
       "outputLines": 24,
       "tail": "[PASS] 投影表 §7.1 — 13 项取值行齐全\n[PASS] 投影表 §6.2 / §10.2 / §11.1 / §14.2 — 语义别名 + 按钮 / 控件 / 导航尺寸取值行齐全\n[PASS] 声明内部一致性（meta ↔ a11y ↔ sections ↔ pending） — 24 区 / 3 Pending / 5 语义别名全部自洽\n[PASS] showcase.html 解析 §28 Manifest — 运行时解析，非硬编码副本\n[PASS] showcase.html 无 Token 副本 — 仅保留刻意偏离所有刻度的降级占位\n[PASS] 展示区域数量 — §28 sections = 24（期望 24）\n[PASS] 区域 ↔ 渲染器一一对应 — 24 个区域均有渲染器\n[PASS] 声明字段 ↔ 展示覆盖度 — 14 组主要字段均有展示\n[PASS] showcase.html 内联快照 — 单文件离线生效；与 §28 逐值一致\n[PASS] 离线快照与 §28 声明一致 — 同值（兼容回退文件）\n\n汇总：17 PASS / 0 FAIL / 0 SKIP\n$ node scripts/sync-design-showcase.mjs --check",
       "attribution": null
@@ -67,7 +67,7 @@
       "command": "bun run verify:contrast",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 411,
+      "durationMs": 323,
       "outputLines": 35,
       "tail": "PASS GRADIENT_TOKEN_DECLARATION: single registered gradient utility and one light-theme stop triple (§17.5)\nPASS GRADIENT_SINGLE_VALUE_ACROSS_THEMES: :root.dark override=ABSENT (§17.5 forbids a second dark triple)\nPASS GRADIENT_CONTRAST_REGISTERED_IN_SPEC: §17.5 measured values=2.54:1 / 2.72:1 / 3.96:1 registered=true\nPASS GRADIENT_LIGHT_FROM: #60a5fa = upstream anchor #60a5fa; contrast on #FFFFFF = 2.54:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_LIGHT_VIA: #a78bfa = upstream anchor #a78bfa; contrast on #FFFFFF = 2.72:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_LIGHT_TO: #a855f7 = upstream anchor #a855f7; contrast on #FFFFFF = 3.96:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_DARK_FROM: #60a5fa = upstream anchor #60a5fa; contrast on #0F172A = 7.02:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_DARK_VIA: #a78bfa = upstream anchor #a78bfa; contrast on #0F172A = 6.56:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_DARK_TO: #a855f7 = upstream anchor #a855f7; contrast on #0F172A = 4.51:1; §17.5 registered decorative-title exemption\nPASS GRADIENT_TEXT_SINGLE_OWNER: gradient text declarations=design-system/foundations/typography.css\n\nAutomated contrast/gradient audit: PASS; checks=31; failed=0\n$ node scripts/verify-contrast.mjs",
       "attribution": null
@@ -78,7 +78,7 @@
       "command": "bun run copyright:check",
       "cwd": "web",
       "exit": 1,
-      "durationMs": 598,
+      "durationMs": 396,
       "outputLines": 7,
       "tail": "copyright: checked 1569, added 2, updated 0, skipped generated 7, skipped third-party 1560\n$ node scripts/add-copyright.mjs --check\ncopyright: headers need to be updated in:\n- scripts/rehype-tasklist-labels.mjs\n- src/__axe-experiment.test.ts\nerror: script \"copyright:check\" exited with code 1",
       "attribution": {
@@ -111,9 +111,9 @@
       "command": "bun run lint",
       "cwd": "web",
       "exit": 1,
-      "durationMs": 2492,
+      "durationMs": 1995,
       "outputLines": 799,
-      "tail": "  ! eslint(prefer-template): Unexpected string concatenation.\n     ,-[e2e/axe/authed.spec.ts:138:5]\n 137 |     blockingByRoute,\n 138 |     '鉴权页存在 critical/serious 可访问性违规：\\n' + blockingByRoute.join('\\n')\n     :     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n 139 |   ).toEqual([])\n     `----\n  help: Use template literals instead of string concatenation.\n\nFound 81 warnings and 3 errors.\nFinished in 1.3s on 1496 files with 186 rules using 16 threads.\n$ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .\nerror: script \"lint\" exited with code 1",
+      "tail": "  ! unicorn(prefer-number-properties): Use `Number.parseInt` instead of the global `parseInt`\n    ,-[scripts/verify-contrast.mjs:39:15]\n 38 |   const [r, g, b] = [0, 2, 4].map((i) => {\n 39 |     const v = parseInt(c.slice(i, i + 2), 16) / 255\n    :               ^^^^^^^^\n 40 |     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4\n    `----\n  help: Replace it with `Number.parseInt`\n\nFound 81 warnings and 3 errors.\nFinished in 1.0s on 1496 files with 186 rules using 16 threads.\n$ node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .\nerror: script \"lint\" exited with code 1",
       "attribution": {
         "policy": "不掩盖失败；按 AGENTS.md 并发 WIP 保护规则不覆盖用户未提交修改",
         "files": [
@@ -152,7 +152,7 @@
       "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/visual-check.mjs",
       "cwd": ".",
       "exit": 0,
-      "durationMs": 5443,
+      "durationMs": 5155,
       "outputLines": 36,
       "tail": "    },\n    {\n      \"key\": \"newGradientImage\",\n      \"light\": \"linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)\",\n      \"dark\": \"linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)\",\n      \"changed\": true\n    }\n  ],\n  \"modules\": 38,\n  \"sections\": 418,\n  \"languages\": 18,\n  \"tokenRows\": 878\n}",
       "attribution": null
@@ -163,7 +163,7 @@
       "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/a11y-check.mjs",
       "cwd": ".",
       "exit": 0,
-      "durationMs": 30404,
+      "durationMs": 33966,
       "outputLines": 9,
       "tail": "{\n  \"verdict\": \"PASS\",\n  \"cases\": 4,\n  \"violationsTotal\": 0,\n  \"blocking\": 0,\n  \"focusOk\": true,\n  \"violations\": []\n}",
       "attribution": null
@@ -174,8 +174,8 @@
       "command": "bun run test",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 438803,
-      "outputLines": 15980,
+      "durationMs": 451182,
+      "outputLines": 15994,
       "tail": "\n\u001b[90mstderr\u001b[2m | src/routes/__tests__/root-setup-status.test.ts\u001b[2m > \u001b[22m\u001b[2mroot beforeLoad setup status check\u001b[2m > \u001b[22m\u001b[2mthrottles retries when the request keeps failing\n\u001b[22m\u001b[39m[root.beforeLoad] setup status check failed Error: network down\n    at \u001b[90m/Users/lincolnhu/uter/web/\u001b[39msrc/routes/__tests__/root-setup-status.test.ts:182:38\n\u001b[90m    at processTicksAndRejections (node:internal/process/task_queues:103:5)\u001b[39m\n    at \u001b[90mfile:///Users/lincolnhu/uter/web/\u001b[39mnode_modules/\u001b[4mvitest\u001b[24m/dist/chunks/run.BPv-BBRv.js:2801:20\n\n\u001b[90mstderr\u001b[2m | src/features/playground/hooks/__tests__/use-stream-request-completion.test.ts\u001b[2m > \u001b[22m\u001b[2min-stream error payloads\u001b[2m > \u001b[22m\u001b[2mreports the HTTP status when the error body is not JSON\n\u001b[22m\u001b[39mSSE Error: { data: \u001b[32m'<html>bad gateway</html>'\u001b[39m, readyState: \u001b[33m1\u001b[39m, responseCode: \u001b[33m502\u001b[39m }\n\n\u001b[90mstderr\u001b[2m | src/features/playground/hooks/__tests__/use-stream-request-completion.test.ts\u001b[2m > \u001b[22m\u001b[2min-stream error payloads\u001b[2m > \u001b[22m\u001b[2mfalls back to the response code when the body is empty\n\u001b[22m\u001b[39mSSE Error: { data: \u001b[90mundefined\u001b[39m, readyState: \u001b[33m1\u001b[39m, responseCode: \u001b[33m502\u001b[39m }",
       "attribution": null
     },
@@ -185,7 +185,7 @@
       "command": "bun run build:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 26810,
+      "durationMs": 44443,
       "outputLines": 2505,
       "tail": "\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\nWarning: Route file \"/Users/lincolnhu/uter/web/src/routes/__tests__/root-setup-status.test.ts\" does not export a Route. This file will not be included in the route tree.\n\nIf this file is not intended to be a route, you can exclude it using one of these options:\n  1. Rename the file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-root-setup-status.test.ts\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined",
       "attribution": null
@@ -196,9 +196,20 @@
       "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/real-page-regression.mjs",
       "cwd": ".",
       "exit": 0,
-      "durationMs": 20090,
+      "durationMs": 23529,
       "outputLines": 3,
-      "tail": "[UDS6-REGRESSION] static server http://127.0.0.1:62817 → dist; API proxy → http://127.0.0.1:3000\n[UDS6-REGRESSION] verdict PASS scenarios 8 errors 0",
+      "tail": "[UDS6-REGRESSION] static server http://127.0.0.1:53126 → dist; API proxy → http://127.0.0.1:3000\n[UDS6-REGRESSION] verdict PASS scenarios 8 errors 0",
+      "attribution": null
+    },
+    {
+      "id": "G19",
+      "label": "6.0 视觉基线校验（冻结基线 vs 当前渲染）",
+      "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-visual-baseline.mjs",
+      "cwd": ".",
+      "exit": 0,
+      "durationMs": 1714,
+      "outputLines": 2,
+      "tail": "[UDS6-BASELINE-CHECK] PASS 15 场景：13 字节一致、2 阈值内、0 FAIL",
       "attribution": null
     },
     {
@@ -207,9 +218,9 @@
       "command": "bun run design:6:check",
       "cwd": "web",
       "exit": 0,
-      "durationMs": 505,
+      "durationMs": 1178,
       "outputLines": 26,
-      "tail": "PASS C13 chart 色不得作为 syntax 色，代码/终端色系不互引 — 14 color groups isolated\nPASS C14 Showcase 单文件覆盖 38 模块 / 全 Token / ≥10 语言 / 零外链 — 38 modules, 18 languages, 887994 chars, 6 extension sections\nPASS C15 状态未被误标 VERIFIED / ACCEPTED — 38 modules: IMPLEMENTED / PARTIAL, ACCEPTED=false\nPASS C16 v6 产物不出现 manifest 之外的 --ds-* 定义 — 384 declared = manifest 384\nPASS C17 交付报告齐全 — MIGRATION-REPORT.md, CONTRAST-VERIFICATION-REPORT.md, VISUAL-REGRESSION-REPORT.md, FINAL-ACCEPTANCE-REPORT.md\nPASS C18 8 份机器可读验证报告齐全且 verdict 真实 — 8 reports, final=PARTIALLY_VERIFIED, checker=22/22\nPASS C19 语法 Adapter 15 语言 / 20 Token 真实解析并如实登记未覆盖项 — 15 languages, 29 grammars, 19/20 covered\nPASS C20 48 项审计发现整改状态由真实探针决定 — 48 findings: 43 resolved / 1 partial / 4 open\nPASS C21 真实页面回归 + 渐变像素验证 + axe 零违规 — 8 real-page scenarios, gradient pixels PASS, axe 0 violations\nPASS C22 Clerk 外部参考边界：依赖零引入 / 运行时零引用 / 品牌值零照搬 — deps clean, 1546 src files scanned, 0 Clerk references\n\nVERDICT PASS · 22/22 checks · 0 errors\n$ node scripts/check-design-system-6.0.mjs",
+      "tail": "PASS C13 chart 色不得作为 syntax 色，代码/终端色系不互引 — 14 color groups isolated\nPASS C14 Showcase 单文件覆盖 38 模块 / 全 Token / ≥10 语言 / 零外链 — 38 modules, 18 languages, 888045 chars, 6 extension sections\nPASS C15 状态未被误标 VERIFIED / ACCEPTED — 38 modules: IMPLEMENTED / PARTIAL, ACCEPTED=false\nPASS C16 v6 产物不出现 manifest 之外的 --ds-* 定义 — 384 declared = manifest 384\nPASS C17 交付报告齐全 — MIGRATION-REPORT.md, CONTRAST-VERIFICATION-REPORT.md, VISUAL-REGRESSION-REPORT.md, FINAL-ACCEPTANCE-REPORT.md\nPASS C18 8 份机器可读验证报告齐全且 verdict 真实 — 8 reports, final=PARTIALLY_VERIFIED, checker=22/22\nPASS C19 语法 Adapter 15 语言 / 20 Token 真实解析并如实登记未覆盖项 — 15 languages, 29 grammars, 19/20 covered\nPASS C20 48 项审计发现整改状态由真实探针决定 — 48 findings: 43 resolved / 1 partial / 4 open\nPASS C21 真实页面回归 + 渐变像素验证 + axe 零违规 — 8 real-page scenarios, gradient pixels PASS, axe 0 violations\nPASS C22 Clerk 外部参考边界：依赖零引入 / 运行时零引用 / 品牌值零照搬 — deps clean, 1546 src files scanned, 0 Clerk references\n\nVERDICT PASS · 22/22 checks · 0 errors\n$ node scripts/check-design-system-6.0.mjs",
       "attribution": null
     },
     {
@@ -218,9 +229,9 @@
       "command": "/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/uter-design-system-6.0/registry/check-uds6-remediation.mjs",
       "cwd": ".",
       "exit": 0,
-      "durationMs": 793,
+      "durationMs": 1309,
       "outputLines": 6,
-      "tail": "[UDS6-REMEDIATION] probes 48 {\"PASS\":43,\"FAIL\":4,\"PARTIAL\":1}\n[UDS6-REMEDIATION] checker PASS 22/22\n[UDS6-REMEDIATION] findings RESOLVED/PARTIAL/OPEN 43 1 4\n[UDS6-REMEDIATION] FINAL VERDICT PARTIALLY_VERIFIED\n[UDS6-REMEDIATION] notAchieved BUILD_PASSED, FINAL_ACCEPTANCE_PASSED",
+      "tail": "[UDS6-REMEDIATION] probes 48 {\"PASS\":40,\"FAIL\":7,\"PARTIAL\":1}\n[UDS6-REMEDIATION] checker PASS 22/22\n[UDS6-REMEDIATION] findings RESOLVED/PARTIAL/OPEN 40 1 7\n[UDS6-REMEDIATION] FINAL VERDICT PARTIALLY_VERIFIED\n[UDS6-REMEDIATION] notAchieved TESTS_PASSED, FINAL_ACCEPTANCE_PASSED",
       "attribution": null
     }
   ],
@@ -312,7 +323,7 @@
         "code": "C14",
         "label": "Showcase 单文件覆盖 38 模块 / 全 Token / ≥10 语言 / 零外链",
         "status": "PASS",
-        "detail": "38 modules, 18 languages, 887994 chars, 6 extension sections"
+        "detail": "38 modules, 18 languages, 888045 chars, 6 extension sections"
       },
       {
         "code": "C15",
@@ -348,7 +359,7 @@
         "code": "C20",
         "label": "48 项审计发现整改状态由真实探针决定",
         "status": "PASS",
-        "detail": "48 findings: 43 resolved / 1 partial / 4 open"
+        "detail": "48 findings: 40 resolved / 1 partial / 7 open"
       },
       {
         "code": "C21",
@@ -410,12 +421,12 @@
     {
       "path": "web/dist/design-system/6.0.html",
       "exists": true,
-      "bytes": 950862
+      "bytes": 950933
     },
     {
       "path": "web/dist/design-system/6.0/index.html",
       "exists": true,
-      "bytes": 950862
+      "bytes": 950933
     }
   ],
   "manifest": {
