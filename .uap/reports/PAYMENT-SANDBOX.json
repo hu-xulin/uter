@@ -13,7 +13,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestSignatureVerificationAcceptsValid",
-        "--- PASS: TestSignatureVerificationAcceptsValid (0.20s)"
+        "--- PASS: TestSignatureVerificationAcceptsValid (0.10s)"
       ]
     },
     {
@@ -24,7 +24,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestSignatureVerificationRejectsTampered",
-        "--- PASS: TestSignatureVerificationRejectsTampered (0.39s)"
+        "--- PASS: TestSignatureVerificationRejectsTampered (0.07s)"
       ]
     },
     {
@@ -79,7 +79,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestNotificationHandling",
-        "--- PASS: TestNotificationHandling (0.13s)"
+        "--- PASS: TestNotificationHandling (0.06s)"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestDuplicateNotificationIsIdempotent",
-        "--- PASS: TestDuplicateNotificationIsIdempotent (0.18s)"
+        "--- PASS: TestDuplicateNotificationIsIdempotent (0.11s)"
       ]
     },
     {
@@ -101,7 +101,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestOrderQueryFourState",
-        "--- PASS: TestOrderQueryFourState (0.28s)"
+        "--- PASS: TestOrderQueryFourState (0.05s)"
       ]
     },
     {
@@ -112,7 +112,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestRefundStatusIdempotent",
-        "--- PASS: TestRefundStatusIdempotent (0.35s)"
+        "--- PASS: TestRefundStatusIdempotent (0.15s)"
       ]
     },
     {
@@ -123,7 +123,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestAmountSnapshotMismatchRejected",
-        "--- PASS: TestAmountSnapshotMismatchRejected (0.14s)"
+        "--- PASS: TestAmountSnapshotMismatchRejected (0.07s)"
       ]
     },
     {
@@ -156,7 +156,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestReportDeclaresLocalSimulation",
-        "--- PASS: TestReportDeclaresLocalSimulation (0.37s)"
+        "--- PASS: TestReportDeclaresLocalSimulation (0.22s)"
       ]
     },
     {
@@ -167,7 +167,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes",
-        "--- PASS: TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes (0.29s)"
+        "--- PASS: TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes (0.07s)"
       ]
     },
     {
@@ -178,7 +178,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestFaultInjections",
-        "--- PASS: TestFaultInjections (0.75s)"
+        "--- PASS: TestFaultInjections (0.66s)"
       ]
     },
     {
@@ -189,7 +189,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestFaultInjections/a_payment_success_but_db_commit_fails_no_credit",
-        "--- PASS: TestFaultInjections/a_payment_success_but_db_commit_fails_no_credit (0.29s)"
+        "--- PASS: TestFaultInjections/a_payment_success_but_db_commit_fails_no_credit (0.10s)"
       ]
     },
     {
@@ -200,7 +200,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestFaultInjections/b_db_commit_ok_but_response_lost_retry_no_double_credit",
-        "--- PASS: TestFaultInjections/b_db_commit_ok_but_response_lost_retry_no_double_credit (0.10s)"
+        "--- PASS: TestFaultInjections/b_db_commit_ok_but_response_lost_retry_no_double_credit (0.03s)"
       ]
     },
     {
@@ -211,7 +211,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestFaultInjections/c_concurrent_same_order_exactly_one_credit",
-        "--- PASS: TestFaultInjections/c_concurrent_same_order_exactly_one_credit (0.23s)"
+        "--- PASS: TestFaultInjections/c_concurrent_same_order_exactly_one_credit (0.18s)"
       ]
     },
     {
@@ -222,7 +222,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestFaultInjections/d_retry_causes_no_duplicate_ledger_entry",
-        "--- PASS: TestFaultInjections/d_retry_causes_no_duplicate_ledger_entry (0.12s)"
+        "--- PASS: TestFaultInjections/d_retry_causes_no_duplicate_ledger_entry (0.34s)"
       ]
     },
     {
@@ -233,7 +233,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestConfigRejectsRealLookingCredentials",
-        "--- PASS: TestConfigRejectsRealLookingCredentials (0.22s)"
+        "--- PASS: TestConfigRejectsRealLookingCredentials (0.08s)"
       ]
     },
     {
@@ -246,7 +246,7 @@
         "=== RUN   TestProviderSandboxAvailabilityProbe",
         "    adapter_test.go:900: PAYMENT_SANDBOX_PROBE BLOCKED missing_conditions(names_only)=[WECHAT_SANDBOX_APP_ID WECHAT_SANDBOX_MCH_ID WECHAT_SANDBOX_PRIVATE_KEY WECHAT_SANDBOX_API_V3_KEY WECHAT_SANDBOX_SERIAL_NO WECHAT_SANDBOX_ENDPOINT ALIPAY_SANDBOX_APP_ID ALIPAY_SANDBOX_PRIVATE_KEY ALIPAY_SANDBOX_PUBLIC_KEY ALIPAY_SANDBOX_GATEWAY STRIPE_SANDBOX_SECRET_KEY CREEM_SANDBOX_API_KEY WAFFO_SANDBOX_API_KEY PAYMENT_SANDBOX_AUTHORIZED_BY_USER SANDBOX_ENDPOINT_REACHABLE EXPLICIT_USER_AUTHORIZATION]",
         "PAYMENT_SANDBOX_PROBE BLOCKED gateway_verified=false mode=LOCAL_SIMULATION network_calls=0 missing_condition_count=16",
-        "--- PASS: TestProviderSandboxAvailabilityProbe (0.08s)"
+        "--- PASS: TestProviderSandboxAvailabilityProbe (0.14s)"
       ]
     },
     {
@@ -258,7 +258,7 @@
       "output": [
         "=== RUN   TestGatewayVerificationNeverFaked",
         "GATEWAY_VERIFICATION_NEVER_FAKED PASS gateway_verified=false evidence_gate_fail_closed=true",
-        "--- PASS: TestGatewayVerificationNeverFaked (0.07s)"
+        "--- PASS: TestGatewayVerificationNeverFaked (0.11s)"
       ]
     },
     {
@@ -269,7 +269,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestNonSuccessNotificationDoesNotCredit",
-        "--- PASS: TestNonSuccessNotificationDoesNotCredit (0.19s)"
+        "--- PASS: TestNonSuccessNotificationDoesNotCredit (0.17s)"
       ]
     },
     {
@@ -280,7 +280,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestClosedOrderRejectsSuccessNotification",
-        "--- PASS: TestClosedOrderRejectsSuccessNotification (0.07s)"
+        "--- PASS: TestClosedOrderRejectsSuccessNotification (0.19s)"
       ]
     },
     {
@@ -291,7 +291,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestCrossGatewaySignatureRejected",
-        "--- PASS: TestCrossGatewaySignatureRejected (0.11s)"
+        "--- PASS: TestCrossGatewaySignatureRejected (0.20s)"
       ]
     },
     {
@@ -302,7 +302,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestMalformedPayloadRejected",
-        "--- PASS: TestMalformedPayloadRejected (0.26s)"
+        "--- PASS: TestMalformedPayloadRejected (0.05s)"
       ]
     },
     {
@@ -313,7 +313,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestUnknownOrderNotificationRejected",
-        "--- PASS: TestUnknownOrderNotificationRejected (0.22s)"
+        "--- PASS: TestUnknownOrderNotificationRejected (0.15s)"
       ]
     },
     {
@@ -324,7 +324,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestAmountSnapshotMismatchOnFileBackedStore",
-        "--- PASS: TestAmountSnapshotMismatchOnFileBackedStore (0.04s)"
+        "--- PASS: TestAmountSnapshotMismatchOnFileBackedStore (0.03s)"
       ]
     },
     {
@@ -335,7 +335,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestReportGatewayVerifiedFalseOnFileBackedStore",
-        "--- PASS: TestReportGatewayVerifiedFalseOnFileBackedStore (0.04s)"
+        "--- PASS: TestReportGatewayVerifiedFalseOnFileBackedStore (0.06s)"
       ]
     }
   ],
@@ -360,7 +360,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestSignatureVerificationAcceptsValid",
-        "--- PASS: TestSignatureVerificationAcceptsValid (0.20s)"
+        "--- PASS: TestSignatureVerificationAcceptsValid (0.10s)"
       ]
     },
     {
@@ -368,7 +368,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestSignatureVerificationRejectsTampered",
-        "--- PASS: TestSignatureVerificationRejectsTampered (0.39s)"
+        "--- PASS: TestSignatureVerificationRejectsTampered (0.07s)"
       ]
     },
     {
@@ -408,7 +408,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestNotificationHandling",
-        "--- PASS: TestNotificationHandling (0.13s)"
+        "--- PASS: TestNotificationHandling (0.06s)"
       ]
     },
     {
@@ -416,7 +416,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestDuplicateNotificationIsIdempotent",
-        "--- PASS: TestDuplicateNotificationIsIdempotent (0.18s)"
+        "--- PASS: TestDuplicateNotificationIsIdempotent (0.11s)"
       ]
     },
     {
@@ -424,7 +424,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestOrderQueryFourState",
-        "--- PASS: TestOrderQueryFourState (0.28s)"
+        "--- PASS: TestOrderQueryFourState (0.05s)"
       ]
     },
     {
@@ -432,7 +432,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestRefundStatusIdempotent",
-        "--- PASS: TestRefundStatusIdempotent (0.35s)"
+        "--- PASS: TestRefundStatusIdempotent (0.15s)"
       ]
     },
     {
@@ -440,7 +440,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestAmountSnapshotMismatchRejected",
-        "--- PASS: TestAmountSnapshotMismatchRejected (0.14s)"
+        "--- PASS: TestAmountSnapshotMismatchRejected (0.07s)"
       ]
     },
     {
@@ -464,7 +464,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestReportDeclaresLocalSimulation",
-        "--- PASS: TestReportDeclaresLocalSimulation (0.37s)"
+        "--- PASS: TestReportDeclaresLocalSimulation (0.22s)"
       ]
     },
     {
@@ -472,7 +472,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes",
-        "--- PASS: TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes (0.29s)"
+        "--- PASS: TestReportDeclaresLocalSimulation/file_backed_store_disclosed_still_no_production_writes (0.07s)"
       ]
     },
     {
@@ -480,7 +480,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestFaultInjections",
-        "--- PASS: TestFaultInjections (0.75s)"
+        "--- PASS: TestFaultInjections (0.66s)"
       ]
     },
     {
@@ -488,7 +488,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestFaultInjections/a_payment_success_but_db_commit_fails_no_credit",
-        "--- PASS: TestFaultInjections/a_payment_success_but_db_commit_fails_no_credit (0.29s)"
+        "--- PASS: TestFaultInjections/a_payment_success_but_db_commit_fails_no_credit (0.10s)"
       ]
     },
     {
@@ -496,7 +496,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestFaultInjections/b_db_commit_ok_but_response_lost_retry_no_double_credit",
-        "--- PASS: TestFaultInjections/b_db_commit_ok_but_response_lost_retry_no_double_credit (0.10s)"
+        "--- PASS: TestFaultInjections/b_db_commit_ok_but_response_lost_retry_no_double_credit (0.03s)"
       ]
     },
     {
@@ -504,7 +504,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestFaultInjections/c_concurrent_same_order_exactly_one_credit",
-        "--- PASS: TestFaultInjections/c_concurrent_same_order_exactly_one_credit (0.23s)"
+        "--- PASS: TestFaultInjections/c_concurrent_same_order_exactly_one_credit (0.18s)"
       ]
     },
     {
@@ -512,7 +512,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestFaultInjections/d_retry_causes_no_duplicate_ledger_entry",
-        "--- PASS: TestFaultInjections/d_retry_causes_no_duplicate_ledger_entry (0.12s)"
+        "--- PASS: TestFaultInjections/d_retry_causes_no_duplicate_ledger_entry (0.34s)"
       ]
     },
     {
@@ -520,7 +520,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestConfigRejectsRealLookingCredentials",
-        "--- PASS: TestConfigRejectsRealLookingCredentials (0.22s)"
+        "--- PASS: TestConfigRejectsRealLookingCredentials (0.08s)"
       ]
     },
     {
@@ -530,7 +530,7 @@
         "=== RUN   TestProviderSandboxAvailabilityProbe",
         "    adapter_test.go:900: PAYMENT_SANDBOX_PROBE BLOCKED missing_conditions(names_only)=[WECHAT_SANDBOX_APP_ID WECHAT_SANDBOX_MCH_ID WECHAT_SANDBOX_PRIVATE_KEY WECHAT_SANDBOX_API_V3_KEY WECHAT_SANDBOX_SERIAL_NO WECHAT_SANDBOX_ENDPOINT ALIPAY_SANDBOX_APP_ID ALIPAY_SANDBOX_PRIVATE_KEY ALIPAY_SANDBOX_PUBLIC_KEY ALIPAY_SANDBOX_GATEWAY STRIPE_SANDBOX_SECRET_KEY CREEM_SANDBOX_API_KEY WAFFO_SANDBOX_API_KEY PAYMENT_SANDBOX_AUTHORIZED_BY_USER SANDBOX_ENDPOINT_REACHABLE EXPLICIT_USER_AUTHORIZATION]",
         "PAYMENT_SANDBOX_PROBE BLOCKED gateway_verified=false mode=LOCAL_SIMULATION network_calls=0 missing_condition_count=16",
-        "--- PASS: TestProviderSandboxAvailabilityProbe (0.08s)"
+        "--- PASS: TestProviderSandboxAvailabilityProbe (0.14s)"
       ]
     },
     {
@@ -539,7 +539,7 @@
       "output": [
         "=== RUN   TestGatewayVerificationNeverFaked",
         "GATEWAY_VERIFICATION_NEVER_FAKED PASS gateway_verified=false evidence_gate_fail_closed=true",
-        "--- PASS: TestGatewayVerificationNeverFaked (0.07s)"
+        "--- PASS: TestGatewayVerificationNeverFaked (0.11s)"
       ]
     },
     {
@@ -547,7 +547,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestNonSuccessNotificationDoesNotCredit",
-        "--- PASS: TestNonSuccessNotificationDoesNotCredit (0.19s)"
+        "--- PASS: TestNonSuccessNotificationDoesNotCredit (0.17s)"
       ]
     },
     {
@@ -555,7 +555,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestClosedOrderRejectsSuccessNotification",
-        "--- PASS: TestClosedOrderRejectsSuccessNotification (0.07s)"
+        "--- PASS: TestClosedOrderRejectsSuccessNotification (0.19s)"
       ]
     },
     {
@@ -563,7 +563,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestCrossGatewaySignatureRejected",
-        "--- PASS: TestCrossGatewaySignatureRejected (0.11s)"
+        "--- PASS: TestCrossGatewaySignatureRejected (0.20s)"
       ]
     },
     {
@@ -571,7 +571,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestMalformedPayloadRejected",
-        "--- PASS: TestMalformedPayloadRejected (0.26s)"
+        "--- PASS: TestMalformedPayloadRejected (0.05s)"
       ]
     },
     {
@@ -579,7 +579,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestUnknownOrderNotificationRejected",
-        "--- PASS: TestUnknownOrderNotificationRejected (0.22s)"
+        "--- PASS: TestUnknownOrderNotificationRejected (0.15s)"
       ]
     },
     {
@@ -587,7 +587,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestAmountSnapshotMismatchOnFileBackedStore",
-        "--- PASS: TestAmountSnapshotMismatchOnFileBackedStore (0.04s)"
+        "--- PASS: TestAmountSnapshotMismatchOnFileBackedStore (0.03s)"
       ]
     },
     {
@@ -595,7 +595,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestReportGatewayVerifiedFalseOnFileBackedStore",
-        "--- PASS: TestReportGatewayVerifiedFalseOnFileBackedStore (0.04s)"
+        "--- PASS: TestReportGatewayVerifiedFalseOnFileBackedStore (0.06s)"
       ]
     }
   ],
@@ -744,10 +744,10 @@
       "result": "pass"
     }
   ],
-  "generated_at": "2026-11-14T02:47:23.323Z",
+  "generated_at": "2026-11-15T02:07:32.186Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -755,8 +755,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261114024723-9b967b8b",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "963e526a45657d42764effa89c5d40cd5813b4b3d06dea077bfab4ab2cb7df09",
-  "evidence_ref": "UAP-EV-20261114024724-287e0465"
+  "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+  "evidence_ref": "UAP-EV-20261115020733-c1e05e7e"
 }

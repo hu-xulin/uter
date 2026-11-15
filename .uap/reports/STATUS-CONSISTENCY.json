@@ -2,14 +2,14 @@
   "component": "uap.verify-status-consistency",
   "version": "2.0.0",
   "ok": false,
-  "checked_at": "2026-11-14T05:19:30.607Z",
-  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "checked_at": "2026-11-15T02:16:00.332Z",
+  "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
   "recomputed_status": "FAILED",
   "report_status": "FAILED",
-  "index_status": "IMPLEMENTED_NOT_VERIFIED",
-  "verified_requirements": 6,
+  "index_status": "FAILED",
+  "verified_requirements": 61,
   "applicable_requirements": 538,
   "capability_gaps": [
     "real_code_repair",
@@ -20,45 +20,56 @@
     "financial_integrity"
   ],
   "reasons": [
-    "accessibility: status=BLOCKED passed=13 failed=0",
-    "visual: status=FAIL exit=1 diffs=29",
-    "visual: 26 unclassified diff(s)",
-    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
+    "visual: status=FAIL exit=1 diffs=2",
+    "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 manifest=UAP-EXEC-20261115021515-907a3bf3",
+    "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: BUILD-RESULTS.json: execution_id=UAP-EXEC-20261115020451-9dd677fc manifest=UAP-EXEC-20261115021515-907a3bf3",
+    "evidence: BUILD-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
-    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
-    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 manifest=UAP-EXEC-20261115021515-907a3bf3",
+    "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch with manifest",
+    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
-    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261115020407-c6638244 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
-    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261115020407-c6638244 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
-    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
-    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
-    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
-    "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
-    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
-    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
-    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
-    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 expected=UAP-EXEC-20261115021515-907a3bf3",
+    "evidence: E2E-RESULTS.json: worktree_fingerprint mismatch",
+    "evidence: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 expected=UAP-EXEC-20261115021515-907a3bf3",
+    "evidence: ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch",
+    "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
-    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261115020407-c6638244 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch",
-    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261115020407-c6638244 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch",
-    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4",
+    "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch",
-    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4",
-    "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+    "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3",
     "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
-    "uap: 3 build/typecheck command(s) failed",
-    "532 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
+    "evidence: BUILD-RESULTS.json: execution_id=UAP-EXEC-20261115020451-9dd677fc expected=UAP-EXEC-20261115021515-907a3bf3",
+    "evidence: BUILD-RESULTS.json: worktree_fingerprint mismatch",
+    "uap: self-test exit_code=1",
+    "uap: validator fail=2 blocked=1",
+    "uap: 6 build/typecheck command(s) failed",
+    "uap: BUILD-RESULTS.json not bound to current execution (declared=UAP-EXEC-20261115020451-9dd677fc, current=UAP-EXEC-20261115021515-907a3bf3)",
+    "477 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
   ],
   "checks": [
     {
@@ -79,7 +90,7 @@
     {
       "name": "final_acceptance_bound_to_current_execution",
       "status": "PASS",
-      "detail": "gate=UAP-EXEC-20261114050504-37d751d4/d83e81f3ed69182c612b3c1dc8dec165caa0fccd/a8935cbb8850 current=UAP-EXEC-20261114050504-37d751d4/d83e81f3ed69182c612b3c1dc8dec165caa0fccd/a8935cbb8850"
+      "detail": "gate=UAP-EXEC-20261115021515-907a3bf3/ba502ba9739dcddcb989fa7780e85bf446593ec8/866c509d3e4c current=UAP-EXEC-20261115021515-907a3bf3/ba502ba9739dcddcb989fa7780e85bf446593ec8/866c509d3e4c"
     },
     {
       "name": "report_matches_recomputed_verdict",
@@ -88,8 +99,8 @@
     },
     {
       "name": "index_overall_matches_report",
-      "status": "FAIL",
-      "detail": "index=IMPLEMENTED_NOT_VERIFIED report=FAILED"
+      "status": "PASS",
+      "detail": "index=FAILED report=FAILED"
     },
     {
       "name": "claim_allowed_matches_engine",
@@ -104,32 +115,32 @@
     {
       "name": "all_final_reports_bound_to_same_batch",
       "status": "FAIL",
-      "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch"
+      "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 expected=UAP-EXEC-20261115021515-907a3bf3; E2E-RESULTS.json: worktree_fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 expected=UAP-EXEC-20261115021515-907a3bf3; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c expected=UAP-EXEC-20261115021515-907a3bf3; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261115020407-c6638244 expected=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261115020407-c6638244 expected=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40 expected=UAP-EXEC-20261115021515-907a3bf3; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; VALIDATION-RESULTS.json: worktree_fingerprint mismatch; BUILD-RESULTS.json: execution_id=UAP-EXEC-20261115020451-9dd677fc expected=UAP-EXEC-20261115021515-907a3bf3; BUILD-RESULTS.json: worktree_fingerprint mismatch"
     },
     {
       "name": "worktree_fingerprint_is_not_empty_hash",
       "status": "PASS",
-      "detail": "fingerprint=a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a"
+      "detail": "fingerprint=866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230"
     },
     {
       "name": "code_unchanged_since_batch_start",
       "status": "PASS",
-      "detail": "now=a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a bound=a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a"
+      "detail": "now=866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230 bound=866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230"
     },
     {
       "name": "git_head_matches_current_run",
       "status": "PASS",
-      "detail": "now=d83e81f3ed69182c612b3c1dc8dec165caa0fccd bound=d83e81f3ed69182c612b3c1dc8dec165caa0fccd"
+      "detail": "now=ba502ba9739dcddcb989fa7780e85bf446593ec8 bound=ba502ba9739dcddcb989fa7780e85bf446593ec8"
     },
     {
       "name": "capability_cards_have_real_counts_and_bindings",
       "status": "FAIL",
-      "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b; PAYMENT-SANDBOX.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870; VALIDATION-RESULTS.json: fingerprint mismatch"
+      "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162; PAYMENT-SANDBOX.json: fingerprint mismatch; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778; E2E-RESULTS.json: fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778; ACCESSIBILITY-RESULTS.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162; VALIDATION-RESULTS.json: fingerprint mismatch"
     },
     {
       "name": "evidence_manifest_hashes_and_bindings",
       "status": "FAIL",
-      "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest"
+      "detail": "ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 manifest=UAP-EXEC-20261115021515-907a3bf3; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest; BUILD-RESULTS.json: execution_id=UAP-EXEC-20261115020451-9dd677fc manifest=UAP-EXEC-20261115021515-907a3bf3; BUILD-RESULTS.json: worktree_fingerprint mismatch with manifest; DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 manifest=UAP-EXEC-20261115021515-907a3bf3; E2E-RESULTS.json: worktree_fingerprint mismatch with manifest; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261115020407-c6638244 manifest=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261115020407-c6638244 manifest=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40 manifest=UAP-EXEC-20261115021515-907a3bf3; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c manifest=UAP-EXEC-20261115021515-907a3bf3; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest"
     },
     {
       "name": "no_stale_pass_promoted",
@@ -148,23 +159,21 @@
     },
     {
       "name": "cli_overall_matches_report",
-      "status": "FAIL",
-      "detail": "cli=IMPLEMENTED_NOT_VERIFIED report=FAILED"
+      "status": "PASS",
+      "detail": "cli=FAILED report=FAILED"
     },
     {
       "name": "cli_execution_matches_report",
       "status": "PASS",
-      "detail": "cli=UAP-EXEC-20261114050504-37d751d4 current=UAP-EXEC-20261114050504-37d751d4"
+      "detail": "cli=UAP-EXEC-20261115021515-907a3bf3 current=UAP-EXEC-20261115021515-907a3bf3"
     }
   ],
   "problems": [
-    "index_overall_matches_report: index=IMPLEMENTED_NOT_VERIFIED report=FAILED",
-    "all_final_reports_bound_to_same_batch: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
-    "capability_cards_have_real_counts_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b; PAYMENT-SANDBOX.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870; VALIDATION-RESULTS.json: fingerprint mismatch",
-    "evidence_manifest_hashes_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
-    "cli_overall_matches_report: cli=IMPLEMENTED_NOT_VERIFIED report=FAILED"
+    "all_final_reports_bound_to_same_batch: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 expected=UAP-EXEC-20261115021515-907a3bf3; E2E-RESULTS.json: worktree_fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 expected=UAP-EXEC-20261115021515-907a3bf3; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c expected=UAP-EXEC-20261115021515-907a3bf3; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261115020407-c6638244 expected=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261115020407-c6638244 expected=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40 expected=UAP-EXEC-20261115021515-907a3bf3; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 expected=UAP-EXEC-20261115021515-907a3bf3; VALIDATION-RESULTS.json: worktree_fingerprint mismatch; BUILD-RESULTS.json: execution_id=UAP-EXEC-20261115020451-9dd677fc expected=UAP-EXEC-20261115021515-907a3bf3; BUILD-RESULTS.json: worktree_fingerprint mismatch",
+    "capability_cards_have_real_counts_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162; PAYMENT-SANDBOX.json: fingerprint mismatch; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778; E2E-RESULTS.json: fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778; ACCESSIBILITY-RESULTS.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162; VALIDATION-RESULTS.json: fingerprint mismatch",
+    "evidence_manifest_hashes_and_bindings: ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 manifest=UAP-EXEC-20261115021515-907a3bf3; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch with manifest; BUILD-RESULTS.json: execution_id=UAP-EXEC-20261115020451-9dd677fc manifest=UAP-EXEC-20261115021515-907a3bf3; BUILD-RESULTS.json: worktree_fingerprint mismatch with manifest; DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest; E2E-RESULTS.json: execution_id=UAP-EXEC-20261115021200-c4369778 manifest=UAP-EXEC-20261115021515-907a3bf3; E2E-RESULTS.json: worktree_fingerprint mismatch with manifest; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261115020407-c6638244 manifest=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261115020407-c6638244 manifest=UAP-EXEC-20261115021515-907a3bf3; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261115014801-80651f40 manifest=UAP-EXEC-20261115021515-907a3bf3; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261115020838-d7d6386c manifest=UAP-EXEC-20261115021515-907a3bf3; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261115020646-fbe6e162 manifest=UAP-EXEC-20261115021515-907a3bf3; VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest"
   ],
   "gate_is_current": true,
   "generated_by": "uap accept",
-  "manifest_entries_hashed": 14
+  "manifest_entries_hashed": 15
 }

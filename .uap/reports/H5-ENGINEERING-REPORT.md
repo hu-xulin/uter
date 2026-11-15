@@ -1,6 +1,6 @@
 # H5 Engineering Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T11:24:10.256Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T02:15:27.443Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## H5 独立构建探测
@@ -13,4 +13,4 @@ package.json 中 H5/mobile 相关脚本：无；独立 H5 目录：无。
 
 ## 真实数据
 
-Web typecheck 退出码：0。
+Web typecheck 退出码：1。

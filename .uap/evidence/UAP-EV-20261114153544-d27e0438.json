@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114153544-d27e0438",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T15:35:44.697Z",
+  "started_at": "2026-11-14T15:35:44.697Z",
+  "finished_at": "2026-11-14T15:35:44.697Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114153332-54d70c10",
+    "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+    "worktree_fingerprint": "a241d048c781a943481b9972695acad0703627f262858ec22e0d2e34780dd171",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114153332-54d70c10",
+  "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+  "worktree_fingerprint": "a241d048c781a943481b9972695acad0703627f262858ec22e0d2e34780dd171",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-payment (go test ./service/paymentsandbox/ -run Test -count=1 -json)",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "payment: LOCAL_SIMULATION 30 pass / 0 fail; gateway=BLOCKED",
+  "content_hash": "86fd18f55eed2cefc34cc631861766d5cb23a4481f433e6f3aaa8ec91085319c"
+}

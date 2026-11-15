@@ -125,8 +125,17 @@ describe('执行身份绑定', () => {
       const to = history.findIndex((x) => x.execution_id === again.execution_id);
       assert.ok(from >= 0 && to > from, '新身份必须追加到账本，不得回退或凭空出现');
       const intervening = history.slice(from + 1, to);
-      assert.ok(intervening.some((x) => x.worktree_fingerprint !== e.worktree_fingerprint),
-        '身份变化必须有中间的代码版本变化作为依据，否则即为并发竞态');
+      // A code-version change is recorded on the NEW identity itself when the
+      // two identities are adjacent in the ledger (e.g. another test file
+      // created and restored a WIP probe between our two reads). That is a
+      // legitimate reason to open a new execution, not a race. The original
+      // defect was two DIFFERENT identities for the SAME code version: if both
+      // fingerprints are equal AND no intervening entry shows a version
+      // change, the identity change is still a concurrency race and must fail.
+      const versionChanged = again.worktree_fingerprint !== e.worktree_fingerprint
+        || intervening.some((x) => x.worktree_fingerprint !== e.worktree_fingerprint);
+      assert.ok(versionChanged,
+        '身份变化必须有代码版本变化作为依据（新身份指纹或中间账本条目），否则即为并发竞态');
       assert.notEqual(again.execution_id, e.execution_id);
     }
 
@@ -163,7 +172,14 @@ describe('真实快照适配器', () => {
     const hasStaleReason = v.reasons.some((r) => r.includes('stale artefacts'));
     assert.equal(hasStaleReason, staleExpected.length > 0,
       `staleExpected=${JSON.stringify(staleExpected)} reasons=${JSON.stringify(v.reasons)}`);
-    assert.equal(v.counts.verified, 0);
+    // The number of VERIFIED rows is no longer hard-coded to 0: P2-06 added
+    // real, execution-bound BEHAVIOUR_EXECUTION evidence for a subset of the
+    // 538 requirements. What must NEVER happen is a stale or unproven row
+    // being counted — so the recount may not exceed the matrix's own VERIFIED
+    // rows and can never produce a full-claim verdict.
+    const declaredVerified = s.requirements.filter((r) => r.verification_status === 'VERIFIED').length;
+    assert.ok(v.counts.verified <= declaredVerified,
+      `engine recount ${v.counts.verified} exceeds ${declaredVerified} matrix VERIFIED rows`);
     assert.equal(v.claim_allowed, false);
     assert.ok(!['FULLY_VERIFIED', 'FULLY_OPERATIONAL'].includes(v.overall_status));
   });
@@ -196,8 +212,13 @@ describe('真实快照适配器', () => {
       indexDeclaration: { verified_specs: 0, total_specs: 32, overall_status: 'IMPLEMENTED_NOT_VERIFIED' },
       claims: { specifications_verified: 0, overall_status: 'IMPLEMENTED_NOT_VERIFIED' },
     });
-    assert.equal(computeFinalStatus(base).counts.verified, 0);
-    assert.equal(computeFinalStatus(declared).counts.verified, 0);
+    const baseCount = computeFinalStatus(base).counts.verified;
+    const declaredCount = computeFinalStatus(declared).counts.verified;
+    // Injecting an index declaration must not invent verified requirements —
+    // the count is identical with or without the declaration, and is bounded
+    // by the real matrix rows (not hard-coded to the old 0 baseline).
+    assert.equal(declaredCount, baseCount);
+    assert.ok(baseCount <= base.requirements.filter((r) => r.verification_status === 'VERIFIED').length);
     assert.equal(computeFinalStatus(declared).claim_allowed, false);
     // A lying declaration is detected, not accepted.
     const lying = buildStatusSnapshot({

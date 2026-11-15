@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114182504-c688d046",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:25:04.190Z",
+  "started_at": "2026-11-14T18:25:04.190Z",
+  "finished_at": "2026-11-14T18:25:04.190Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+    "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+    "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+  "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+  "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.architecture_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.architecture_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.architecture_integrity 实检: module_presence=PASS(32/32 规范文件 >=2000B 且含 11 sections 与自身 ID); dependency_integrity=PASS(自算依赖图 cycles=0 missing_deps=0; registry.unique_ids=true,registry.dependencies_exist=true,registry.dependencies_acyclic=true); interface_integrity=PASS(动态 import 11 个 runtime 模块, 11 个导出 component+health()) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 6768 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复跑 registryIntegrity: exit_code=0 timed_out=false spawn_error=none 37/37 checks",
+  "content_hash": "f29ea26c76f6349b773b1f94035cbb9937ddfb02d139982d5b4729bc90183766"
+}

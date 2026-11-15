@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114182507-7d339884",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:25:07.698Z",
+  "started_at": "2026-11-14T18:25:07.698Z",
+  "finished_at": "2026-11-14T18:25:07.698Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+    "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+    "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+  "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+  "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.prototype_consistency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.prototype_consistency\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.prototype_consistency 实检: prd_mapping=PASS(docs/product/prd/*.md=56; product-model 每个 feature 含 prd 字段=true; 规范映射语义=true); prototype_mapping=PASS(原型 .md=56 .html=56; prototype-registry 含 PP-/PROTO- ID=true; product-model 每个 feature 含 prototype=true); change_detection=PASS(change-registry conflicts:[]=true CHG-=true; product-model conflicts=0 snapshots=1; history/v1.json 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 6768 个 | 真实统计 PRD/原型投影文件(各 56) + change-registry 冲突为空 + 历史快照",
+  "content_hash": "1204aea56f09f0b673a1926f68385ac21b37a2a3445fd0b55278b2f1619e8329"
+}

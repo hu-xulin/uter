@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114190619-6dbaa87d",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T19:06:19.755Z",
+  "started_at": "2026-11-14T19:06:19.755Z",
+  "finished_at": "2026-11-14T19:06:19.755Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114190024-6e190131",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "5e9d19f51e77fdf2d378deaa53a050c6bb23b998ab4657cf5d1e10c23c6758af",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114190024-6e190131",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "5e9d19f51e77fdf2d378deaa53a050c6bb23b998ab4657cf5d1e10c23c6758af",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-security (business negative tests + gitleaks)",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security: PASS=48 FAIL=0 business_categories=38 gitleaks_clean=true",
+  "content_hash": "3dfadddd5656b1af9af978a8aa70cf90504e0bb520f4b204b2427ae8bb5f90f0"
+}

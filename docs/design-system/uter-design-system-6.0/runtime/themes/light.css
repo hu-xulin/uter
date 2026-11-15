@@ -1,0 +1,126 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* UDS 6.0 Light theme
+ * This file is generated — DO NOT EDIT.
+ * Source: docs/design-system/uter-design-system-6.0/TOKEN-MANIFEST.json
+ * Regenerate: node docs/design-system/uter-design-system-6.0/registry/build.mjs
+ */
+
+:root, [data-ds-theme="light"] {
+  --ds-color-border-card: #E2E8F0;
+  --ds-color-border-code: #E2E8F0;
+  --ds-color-border-danger: #B91C1C;
+  --ds-color-border-default: #E2E8F0;
+  --ds-color-border-dialog: #E2E8F0;
+  --ds-color-border-divider: #E2E8F0;
+  --ds-color-border-focus: #5B5EE6;
+  --ds-color-border-input: #CBD5E1;
+  --ds-color-border-strong: #CBD5E1;
+  --ds-color-border-table: #E2E8F0;
+  --ds-color-brand-1: #5B5EE6;
+  --ds-color-brand-2: #494CC7;
+  --ds-color-brand-3: #3F42B0;
+  --ds-color-chart-1: #2563EB;
+  --ds-color-chart-2: #0891B2;
+  --ds-color-chart-3: #9333EA;
+  --ds-color-chart-4: #EA580C;
+  --ds-color-chart-5: #059669;
+  --ds-color-code-background: #F6F8FA;
+  --ds-color-code-current-line: #EAF0FF;
+  --ds-color-code-cursor: #5B5EE6;
+  --ds-color-code-fold: #64748B;
+  --ds-color-code-foreground: #0F172A;
+  --ds-color-code-gutter: #94A3B8;
+  --ds-color-code-gutter-background: #F1F5F9;
+  --ds-color-code-language-badge: #E2E8F0;
+  --ds-color-code-line-added: #DCFCE7;
+  --ds-color-code-line-deleted: #FEE2E2;
+  --ds-color-code-line-error: #FEE2E2;
+  --ds-color-code-scrollbar: #CBD5E1;
+  --ds-color-code-selection: #C7D2FE;
+  --ds-color-focus-ring: #5B5EE6;
+  --ds-color-focus-ring-offset: #FFFFFF;
+  --ds-color-overlay-dropdown: #FFFFFF;
+  --ds-color-overlay-scrim: rgba(15, 23, 42, 0.50);
+  --ds-color-overlay-tooltip: #0F172A;
+  --ds-color-overlay-tooltip-fg: #F8FAFC;
+  --ds-color-selection-background: #C7D2FE;
+  --ds-color-selection-foreground: #0F172A;
+  --ds-color-status-danger: #B91C1C;
+  --ds-color-status-danger-border: #FCA5A5;
+  --ds-color-status-danger-on: #450A0A;
+  --ds-color-status-danger-soft: #FEE2E2;
+  --ds-color-status-info: #1D4ED8;
+  --ds-color-status-info-border: #93C5FD;
+  --ds-color-status-info-on: #172554;
+  --ds-color-status-info-soft: #DBEAFE;
+  --ds-color-status-success: #15803D;
+  --ds-color-status-success-border: #86EFAC;
+  --ds-color-status-success-on: #052E16;
+  --ds-color-status-success-soft: #DCFCE7;
+  --ds-color-status-warning: #A54600;
+  --ds-color-status-warning-border: #FCD34D;
+  --ds-color-status-warning-on: #451A03;
+  --ds-color-status-warning-soft: #FEF3C7;
+  --ds-color-surface-base: #FFFFFF;
+  --ds-color-surface-canvas: #F8FAFC;
+  --ds-color-surface-code: #F6F8FA;
+  --ds-color-surface-overlay: #FFFFFF;
+  --ds-color-surface-raised: #FFFFFF;
+  --ds-color-surface-sunken: #F1F5F9;
+  --ds-color-surface-terminal: #000000;
+  --ds-color-terminal-background: #000000;
+  --ds-color-terminal-command: #047857;
+  --ds-color-terminal-dot: rgba(226, 232, 240, 0.15);
+  --ds-color-terminal-flag: #2563EB;
+  --ds-color-terminal-foreground: #E2E8F0;
+  --ds-color-terminal-number: #7C3AED;
+  --ds-color-terminal-online: #10B981;
+  --ds-color-terminal-prompt: #34D399;
+  --ds-color-terminal-property: #0369A1;
+  --ds-color-terminal-string: #B45309;
+  --ds-color-text-disabled: #94A3B8;
+  --ds-color-text-inverse: #FFFFFF;
+  --ds-color-text-link: #1D4ED8;
+  --ds-color-text-muted: #5B6779;
+  --ds-color-text-on-brand: #FFFFFF;
+  --ds-color-text-on-dark: #F8FAFC;
+  --ds-color-text-primary: #0F172A;
+  --ds-color-text-secondary: #5B6779;
+  --ds-syntax-attribute: #047857;
+  --ds-syntax-boolean: #7C3AED;
+  --ds-syntax-builtin: #1D4ED8;
+  --ds-syntax-comment: #5B6779;
+  --ds-syntax-constant: #A54600;
+  --ds-syntax-deleted: #B91C1C;
+  --ds-syntax-function: #1D4ED8;
+  --ds-syntax-inserted: #047857;
+  --ds-syntax-invalid: #B91C1C;
+  --ds-syntax-keyword: #7C3AED;
+  --ds-syntax-null: #7C3AED;
+  --ds-syntax-number: #A54600;
+  --ds-syntax-operator: #475569;
+  --ds-syntax-property: #0369A1;
+  --ds-syntax-punctuation: #475569;
+  --ds-syntax-regexp: #A54600;
+  --ds-syntax-string: #047857;
+  --ds-syntax-tag: #1D4ED8;
+  --ds-syntax-type: #0369A1;
+  --ds-syntax-variable: #0F172A;
+}

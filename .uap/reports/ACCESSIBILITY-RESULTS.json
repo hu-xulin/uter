@@ -1,6 +1,6 @@
 {
   "status_model": "UAP-TEST-STATUS-1.0",
-  "status": "BLOCKED",
+  "status": "PASS",
   "suite": "accessibility",
   "command": "npx playwright test --config e2e/axe/playwright.config.ts",
   "exit_code": 0,
@@ -8,12 +8,12 @@
     {
       "id": "axe_0_axe: 鉴权页批量扫描",
       "title": "axe: 鉴权页批量扫描",
-      "status": "SKIPPED",
-      "reason": "runner reported status=skipped",
+      "status": "PASS",
+      "reason": null,
       "source": "runner",
       "runner_ok": true,
       "runner_statuses": [
-        "skipped"
+        "passed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -189,22 +189,22 @@
     }
   ],
   "counts": {
-    "PASS": 13,
+    "PASS": 14,
     "FAIL": 0,
-    "SKIPPED": 1,
+    "SKIPPED": 0,
     "BLOCKED": 0,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 14,
-  "pass": 13,
+  "pass": 14,
   "fail": 0,
   "blocked": 0,
-  "skipped": 1,
+  "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
-  "target": "http://localhost:3101",
-  "passed": 13,
+  "target": "http://localhost:3100",
+  "passed": 14,
   "failed": 0,
   "critical": 0,
   "serious": 0,
@@ -214,10 +214,10 @@
     "mechanism": "isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass",
     "production_auth_policy_modified": false
   },
-  "generated_at": "2026-11-14T05:05:04.667Z",
+  "generated_at": "2026-11-15T02:12:02.371Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -225,8 +225,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-  "evidence_ref": "UAP-EV-20261114050504-c4e40486"
+  "execution_id": "UAP-EXEC-20261115021200-c4369778",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "7fe27a000f41ebd9bb4d3dd4d45b163c68ebbb087ab61e719ac331b862e76de9",
+  "evidence_ref": "UAP-EV-20261115021203-3e20aff0"
 }

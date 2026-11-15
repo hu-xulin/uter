@@ -351,7 +351,10 @@ For commercial licensing, please contact support@uter.ai
    * 深蓝，次级按钮在灰底上呈现品牌蓝字，被误读成链接。 */
   --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  /* slate-500 #64748b 落在 --muted #f1f5f9 上仅 4.34:1，12px 徽章/标签文字
+   * 达不到 WCAG AA 4.5:1（axe color-contrast serious，2026-11-14 鉴权页实测）。
+   * 调深一档到 #5f6d80：muted 底 4.81:1、白底 5.27:1，两者均达标。 */
+  --muted-foreground: #5f6d80;
   --accent: #f1f5f9;
   --accent-foreground: #0f172a;
   --destructive: #dc2626;
@@ -362,7 +365,10 @@ For commercial licensing, please contact support@uter.ai
   --success-foreground: #f8fafc;
   --warning: oklch(0.681 0.162 75.834);
   --warning-foreground: oklch(0.145 0 0);
-  --info: oklch(0.588 0.158 241.966);
+  /* 原 oklch(0.588 0.158 241.966) ≈ #0084d1，白底仅 4.02:1；
+   * `text-info` 用在 13px 可复制 ID 徽章上被 axe 判 serious。与 --success
+   * 同样按「文字出口必须满足 AA」收敛为 #0073b8（白底 5.07:1）。 */
+  --info: #0073b8;
   --info-foreground: oklch(0.985 0 0);
   /* ── 柔和态取值（浅色主题）：底≈*-50、前景≈*-900 ─────────────────── */
   --success-soft: oklch(0.979 0.021 166);

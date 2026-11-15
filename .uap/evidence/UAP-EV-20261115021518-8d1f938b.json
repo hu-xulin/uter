@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261115021518-8d1f938b",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T02:15:18.345Z",
+  "started_at": "2026-11-15T02:12:05.490Z",
+  "finished_at": "2026-11-15T02:15:18.345Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json verify-visual",
+  "exit_code": 1,
+  "duration_ms": 192855,
+  "inputs": "{\"argv\":[\"--json\",\"verify-visual\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "visual regression FAILED: exit=1 pass=27 fail=2 diffs=2 unclassified=0"
+    }
+  ],
+  "summary": "visual regression FAILED: exit=1 pass=27 fail=2 diffs=2 unclassified=0",
+  "content_hash": "bac3e92ec285f25af88be4dd88169d12ff9e0ce62b990af6241b7d7437729261"
+}

@@ -1,36 +1,107 @@
 {
-  "generated_at": "2026-11-13T17:07:59.732Z",
-  "uap_modules_checked": 87,
+  "generated_at": "2026-11-15T02:04:53.102Z",
+  "execution_id": "UAP-EXEC-20261115020451-9dd677fc",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "3b1d36e681c92bfeb9d46fc3ef870c06b21f5baa00254a2e69c8a449c81576a3",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "command": "uap build (frontend build:check, go build, typecheck, go vet, design lint, artifact verification)",
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "go": "go1.27.x",
+    "cwd": "/Users/lincolnhu/uter"
+  },
+  "uap_modules_checked": 128,
   "syntax_failures": [],
   "commands": [
     {
       "command": "bun run build:check",
+      "label": "bun run build:check (frontend production build)",
       "exit_code": 1,
-      "duration_ms": 8657,
+      "status": "FAIL",
+      "duration_ms": 2550,
+      "timed_out": false,
+      "stdout_tail": "docs-search: zh -> 80 pages\ndocs-search: zh-TW -> 80 pages\ndocs-search: en -> 80 pages\ndocs-search: fr -> 80 pages\ndocs-search: ja -> 80 pages\ndocs-search: ru -> 80 pages\ndocs-search: vi -> 80 pages\ndocs-search: 560 pages across 7 locales\ndocs-sitemap: 564 URLs -> public/sitemap.xml\nsrc/design-system/v6/tokens.ts(2561,2): error TS1434: Unexpected keyword or identifier.\n",
       "stderr_tail": "$ node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && tsgo -b && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/\nerror: script \"build:check\" exited with code 1\n"
     },
     {
       "command": "go build ./...",
+      "label": "go build ./...",
       "exit_code": 1,
-      "duration_ms": 5556,
+      "status": "FAIL",
+      "duration_ms": 8038,
+      "timed_out": false,
+      "stdout_tail": "",
       "stderr_tail": "main.go:51:12: pattern web/dist: no matching files found\n"
     },
     {
       "command": "bun run typecheck",
+      "label": "bun run typecheck",
       "exit_code": 1,
-      "duration_ms": 5529,
+      "status": "FAIL",
+      "duration_ms": 1745,
+      "timed_out": false,
+      "stdout_tail": "src/design-system/v6/tokens.ts(2561,2): error TS1434: Unexpected keyword or identifier.\n",
       "stderr_tail": "$ tsgo -b\nerror: script \"typecheck\" exited with code 1\n"
+    },
+    {
+      "command": "go vet ./...",
+      "label": "go vet ./...",
+      "exit_code": 1,
+      "status": "FAIL",
+      "duration_ms": 5104,
+      "timed_out": false,
+      "stdout_tail": "",
+      "stderr_tail": "main.go:51:12: pattern web/dist: no matching files found\n"
+    },
+    {
+      "command": "bun run lint:design:strict",
+      "label": "bun run lint:design:strict",
+      "exit_code": 1,
+      "status": "FAIL",
+      "duration_ms": 2616,
+      "timed_out": false,
+      "stdout_tail": "xt> / <Heading>；\n行高由字号自带（不要写 leading-*）；颜色走语义 Token（text-foreground / bg-success-soft /\nchart-N / syntax-*）；第三方商标色与多序列分类色从 design-system/tokens/brand-colors 取；\n动效用 ds-motion-* 工具类或 var(--ds-motion-*)，不要写 duration-N / ease-[cubic-bezier(…)]。\n字距由字号 Token 自带，不要写 tracking-*（移除即可）。\n不要用透明度凑层级/悬停/浅底：text-foreground/NN 改 text-fg-secondary（或 tertiary）；\nhover:bg-primary/NN 改 hover:bg-primary-hover；bg-warning/NN 改 bg-warning-soft；\nbg-primary/NN、bg-destructive/NN 改对应的 -subtle。\n确实无法接入 Token 的场景，在 scripts/check-design-tokens.mjs 的 ALLOWLIST 登记并写明理由。\n\n浮层投影（规范 §8 允许，不计入违规）：20 处\nToken 定义处色值（颜色的落点，不计入违规）：184 处\n",
+      "stderr_tail": "$ node scripts/check-design-tokens.mjs --strict\nerror: script \"lint:design:strict\" exited with code 1\n"
+    },
+    {
+      "command": "verify web/dist artifact (index.html + >3 files)",
+      "label": "artifact verification",
+      "exit_code": 1,
+      "status": "FAIL",
+      "stderr_tail": "index=false files=0",
+      "duration_ms": 0
     }
   ],
   "quality_gate": null,
+  "counts": {
+    "total": 6,
+    "PASS": 0,
+    "FAIL": 6,
+    "BLOCKED": 0,
+    "SKIPPED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "total": 6,
+  "pass": 0,
+  "fail": 6,
+  "exit_code": 1,
+  "status": "FAIL",
+  "artifact": {
+    "web_dist_exists": false,
+    "web_dist_index_exists": false,
+    "web_dist_file_count": 0,
+    "artifact_real": false,
+    "frontend_built_this_run": true
+  },
   "moved_artifacts": [
     {
       "artifact": "web/dist",
-      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794589659988"
-    },
-    {
-      "artifact": ".quality/.state/head-tree",
-      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter--quality--state-head-tree-before-build-1794589659988"
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794708270400"
     }
   ]
 }

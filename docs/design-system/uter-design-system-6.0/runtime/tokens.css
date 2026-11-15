@@ -1,0 +1,278 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* UDS 6.0 Token declarations (Light defaults)
+ * This file is generated — DO NOT EDIT.
+ * Source: docs/design-system/uter-design-system-6.0/TOKEN-MANIFEST.json
+ * Regenerate: node docs/design-system/uter-design-system-6.0/registry/build.mjs
+ */
+
+:root {
+  --ds-border-width-card: 1px;
+  --ds-border-width-code: 1px;
+  --ds-border-width-default: 1px;
+  --ds-border-width-dialog: 1px;
+  --ds-border-width-divider: 1px;
+  --ds-border-width-focus: 2px;
+  --ds-border-width-input: 1px;
+  --ds-border-width-strong: 1px;
+  --ds-border-width-table: 1px;
+  --ds-bp-2xl: 1440px;
+  --ds-bp-lg: 1024px;
+  --ds-bp-md: 768px;
+  --ds-bp-sm: 480px;
+  --ds-bp-wide: 1920px;
+  --ds-bp-xl: 1280px;
+  --ds-bp-xs: 360px;
+  --ds-color-border-card: #E2E8F0;
+  --ds-color-border-code: #E2E8F0;
+  --ds-color-border-danger: #B91C1C;
+  --ds-color-border-default: #E2E8F0;
+  --ds-color-border-dialog: #E2E8F0;
+  --ds-color-border-divider: #E2E8F0;
+  --ds-color-border-focus: #5B5EE6;
+  --ds-color-border-input: #CBD5E1;
+  --ds-color-border-strong: #CBD5E1;
+  --ds-color-border-table: #E2E8F0;
+  --ds-color-brand-1: #5B5EE6;
+  --ds-color-brand-2: #494CC7;
+  --ds-color-brand-3: #3F42B0;
+  --ds-color-chart-1: #2563EB;
+  --ds-color-chart-2: #0891B2;
+  --ds-color-chart-3: #9333EA;
+  --ds-color-chart-4: #EA580C;
+  --ds-color-chart-5: #059669;
+  --ds-color-code-background: #F6F8FA;
+  --ds-color-code-current-line: #EAF0FF;
+  --ds-color-code-cursor: #5B5EE6;
+  --ds-color-code-fold: #64748B;
+  --ds-color-code-foreground: #0F172A;
+  --ds-color-code-gutter: #94A3B8;
+  --ds-color-code-gutter-background: #F1F5F9;
+  --ds-color-code-language-badge: #E2E8F0;
+  --ds-color-code-line-added: #DCFCE7;
+  --ds-color-code-line-deleted: #FEE2E2;
+  --ds-color-code-line-error: #FEE2E2;
+  --ds-color-code-scrollbar: #CBD5E1;
+  --ds-color-code-selection: #C7D2FE;
+  --ds-color-focus-ring: #5B5EE6;
+  --ds-color-focus-ring-offset: #FFFFFF;
+  --ds-color-gradient-dark-from: #93C5FD;
+  --ds-color-gradient-dark-to: #D8B4FE;
+  --ds-color-gradient-dark-via: #C4B5FD;
+  --ds-color-gradient-light-from: #1D4ED8;
+  --ds-color-gradient-light-to: #7E22CE;
+  --ds-color-gradient-light-via: #6D28D9;
+  --ds-color-neutral-100: #F1F5F9;
+  --ds-color-neutral-200: #E2E8F0;
+  --ds-color-neutral-300: #CBD5E1;
+  --ds-color-neutral-400: #94A3B8;
+  --ds-color-neutral-50: #F8FAFC;
+  --ds-color-neutral-500: #64748B;
+  --ds-color-neutral-600: #475569;
+  --ds-color-neutral-700: #334155;
+  --ds-color-neutral-800: #1E293B;
+  --ds-color-neutral-900: #0F172A;
+  --ds-color-overlay-dropdown: #FFFFFF;
+  --ds-color-overlay-scrim: rgba(15, 23, 42, 0.50);
+  --ds-color-overlay-tooltip: #0F172A;
+  --ds-color-overlay-tooltip-fg: #F8FAFC;
+  --ds-color-selection-background: #C7D2FE;
+  --ds-color-selection-foreground: #0F172A;
+  --ds-color-status-danger: #B91C1C;
+  --ds-color-status-danger-border: #FCA5A5;
+  --ds-color-status-danger-on: #450A0A;
+  --ds-color-status-danger-soft: #FEE2E2;
+  --ds-color-status-info: #1D4ED8;
+  --ds-color-status-info-border: #93C5FD;
+  --ds-color-status-info-on: #172554;
+  --ds-color-status-info-soft: #DBEAFE;
+  --ds-color-status-success: #15803D;
+  --ds-color-status-success-border: #86EFAC;
+  --ds-color-status-success-on: #052E16;
+  --ds-color-status-success-soft: #DCFCE7;
+  --ds-color-status-warning: #A54600;
+  --ds-color-status-warning-border: #FCD34D;
+  --ds-color-status-warning-on: #451A03;
+  --ds-color-status-warning-soft: #FEF3C7;
+  --ds-color-surface-base: #FFFFFF;
+  --ds-color-surface-canvas: #F8FAFC;
+  --ds-color-surface-code: #F6F8FA;
+  --ds-color-surface-overlay: #FFFFFF;
+  --ds-color-surface-raised: #FFFFFF;
+  --ds-color-surface-sunken: #F1F5F9;
+  --ds-color-surface-terminal: #000000;
+  --ds-color-terminal-background: #000000;
+  --ds-color-terminal-command: #047857;
+  --ds-color-terminal-dot: rgba(226, 232, 240, 0.15);
+  --ds-color-terminal-flag: #2563EB;
+  --ds-color-terminal-foreground: #E2E8F0;
+  --ds-color-terminal-number: #7C3AED;
+  --ds-color-terminal-online: #10B981;
+  --ds-color-terminal-prompt: #34D399;
+  --ds-color-terminal-property: #0369A1;
+  --ds-color-terminal-string: #B45309;
+  --ds-color-text-disabled: #94A3B8;
+  --ds-color-text-inverse: #FFFFFF;
+  --ds-color-text-link: #1D4ED8;
+  --ds-color-text-muted: #5B6779;
+  --ds-color-text-on-brand: #FFFFFF;
+  --ds-color-text-on-dark: #F8FAFC;
+  --ds-color-text-primary: #0F172A;
+  --ds-color-text-secondary: #5B6779;
+  --ds-control-h5-input-font-size: 16px;
+  --ds-control-lg: 40px;
+  --ds-control-md: 36px;
+  --ds-control-sm: 32px;
+  --ds-control-touch: 44px;
+  --ds-density-comfortable-cell-y: 14px;
+  --ds-density-comfortable-row: 52px;
+  --ds-density-compact-cell-y: 6px;
+  --ds-density-compact-row: 36px;
+  --ds-density-default-cell-y: 10px;
+  --ds-density-default-row: 44px;
+  --ds-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ds-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ds-easing-linear: linear;
+  --ds-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ds-elevation-0: none;
+  --ds-elevation-1: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ds-elevation-2: 0 2px 8px rgba(15, 23, 42, 0.10);
+  --ds-elevation-3: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --ds-elevation-4: 0 16px 48px rgba(15, 23, 42, 0.16);
+  --ds-elevation-dialog: 0 24px 64px rgba(2, 6, 16, 0.32);
+  --ds-elevation-drawer: -8px 0 32px rgba(2, 6, 16, 0.24);
+  --ds-elevation-dropdown: 0 8px 24px rgba(15, 23, 42, 0.14);
+  --ds-elevation-overlay: 0 12px 32px rgba(2, 6, 16, 0.28);
+  --ds-focus-ring-offset: 2px;
+  --ds-focus-ring-width: 2px;
+  --ds-font-body: var(--ds-font-ui);
+  --ds-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --ds-font-ui: 'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --ds-gradient-direction: 90deg;
+  --ds-gradient-utility: ds-text-gradient-brand;
+  --ds-icon-2xs: 12px;
+  --ds-icon-lg: 32px;
+  --ds-icon-md: 24px;
+  --ds-icon-sm: 20px;
+  --ds-icon-stroke: 2px;
+  --ds-icon-stroke-small: 1.75px;
+  --ds-icon-xs: 16px;
+  --ds-layout-columns-desktop: 12;
+  --ds-layout-columns-mobile: 4;
+  --ds-layout-columns-tablet: 8;
+  --ds-layout-drawer-width: 400px;
+  --ds-layout-gutter-desktop: 24px;
+  --ds-layout-gutter-mobile: 12px;
+  --ds-layout-gutter-tablet: 16px;
+  --ds-layout-header-height: 64px;
+  --ds-layout-max-width: 1440px;
+  --ds-layout-modal-width: 560px;
+  --ds-layout-sidebar-collapsed: 64px;
+  --ds-layout-sidebar-width: 240px;
+  --ds-leading-base: 24px;
+  --ds-leading-body: 22px;
+  --ds-leading-button: 20px;
+  --ds-leading-caption: 18px;
+  --ds-leading-code: 20px;
+  --ds-leading-display: 56px;
+  --ds-leading-h1: 44px;
+  --ds-leading-h2: 38px;
+  --ds-leading-h3: 26px;
+  --ds-leading-long: 26px;
+  --ds-leading-table: 20px;
+  --ds-motion-fast: 100ms;
+  --ds-motion-instant: 0ms;
+  --ds-motion-moderate: 200ms;
+  --ds-motion-normal: 150ms;
+  --ds-motion-slow: 250ms;
+  --ds-motion-slower: 300ms;
+  --ds-numeric-tabular: tabular-nums;
+  --ds-radius-2xl: 16px;
+  --ds-radius-3xl: 20px;
+  --ds-radius-badge: var(--ds-radius-full);
+  --ds-radius-button: var(--ds-radius-md);
+  --ds-radius-card: var(--ds-radius-lg);
+  --ds-radius-code: var(--ds-radius-lg);
+  --ds-radius-dialog: var(--ds-radius-xl);
+  --ds-radius-full: 9999px;
+  --ds-radius-input: var(--ds-radius-md);
+  --ds-radius-lg: 8px;
+  --ds-radius-md: 5px;
+  --ds-radius-none: 0px;
+  --ds-radius-sm: 3px;
+  --ds-radius-table: var(--ds-radius-lg);
+  --ds-radius-xl: 12px;
+  --ds-space-0: 0px;
+  --ds-space-1: 4px;
+  --ds-space-10: 40px;
+  --ds-space-12: 48px;
+  --ds-space-16: 64px;
+  --ds-space-2: 8px;
+  --ds-space-20: 80px;
+  --ds-space-24: 96px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-syntax-attribute: #047857;
+  --ds-syntax-boolean: #7C3AED;
+  --ds-syntax-builtin: #1D4ED8;
+  --ds-syntax-comment: #5B6779;
+  --ds-syntax-constant: #A54600;
+  --ds-syntax-deleted: #B91C1C;
+  --ds-syntax-function: #1D4ED8;
+  --ds-syntax-inserted: #047857;
+  --ds-syntax-invalid: #B91C1C;
+  --ds-syntax-keyword: #7C3AED;
+  --ds-syntax-null: #7C3AED;
+  --ds-syntax-number: #A54600;
+  --ds-syntax-operator: #475569;
+  --ds-syntax-property: #0369A1;
+  --ds-syntax-punctuation: #475569;
+  --ds-syntax-regexp: #A54600;
+  --ds-syntax-string: #047857;
+  --ds-syntax-tag: #1D4ED8;
+  --ds-syntax-type: #0369A1;
+  --ds-syntax-variable: #0F172A;
+  --ds-text-2xl: 24px;
+  --ds-text-2xs: 12px;
+  --ds-text-3xl: 30px;
+  --ds-text-4xl: 36px;
+  --ds-text-5xl: 48px;
+  --ds-text-base: 16px;
+  --ds-text-lg: 18px;
+  --ds-text-sm: 14px;
+  --ds-text-xl: 20px;
+  --ds-text-xs: 13px;
+  --ds-weight-bold: 700;
+  --ds-weight-medium: 500;
+  --ds-weight-regular: 400;
+  --ds-weight-semibold: 600;
+  --ds-z-base: 0;
+  --ds-z-dropdown: 1200;
+  --ds-z-modal: 1400;
+  --ds-z-overlay: 1300;
+  --ds-z-popover: 1500;
+  --ds-z-sticky: 1100;
+  --ds-z-toast: 1600;
+  --ds-z-tooltip: 1700;
+}
+
+/* Dark overrides are loaded from ./themes/dark.css */

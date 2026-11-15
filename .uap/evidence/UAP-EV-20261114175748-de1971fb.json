@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114175748-de1971fb",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T17:57:48.631Z",
+  "started_at": "2026-11-14T17:57:30.074Z",
+  "finished_at": "2026-11-14T17:57:48.631Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114175537-fa2fd173",
+    "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+    "worktree_fingerprint": "4213bfbb29840800fe303c897a09fc7a8a4e5c53275d82ddd73dd8380e1e5604",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114175537-fa2fd173",
+  "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+  "worktree_fingerprint": "4213bfbb29840800fe303c897a09fc7a8a4e5c53275d82ddd73dd8380e1e5604",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json report --final",
+  "exit_code": 0,
+  "duration_ms": 18557,
+  "inputs": "{\"argv\":[\"--json\",\"report\",\"--final\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "report: 18 deliverables written from real run data",
+  "content_hash": "c664049f751c47db158a6cd6c8c615e9d9f8bea88904e4bb583eec94bdfb7c61"
+}

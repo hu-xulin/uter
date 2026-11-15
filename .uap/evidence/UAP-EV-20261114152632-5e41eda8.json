@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261114152632-5e41eda8",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T15:26:32.690Z",
+  "started_at": "2026-11-14T15:21:30.744Z",
+  "finished_at": "2026-11-14T15:26:32.690Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114152631-ce73a348",
+    "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+    "worktree_fingerprint": "ab8d624ce60c3ce3c36c4c6451db4232273d27415410b97994a800dfafd660f9",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114152631-ce73a348",
+  "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+  "worktree_fingerprint": "ab8d624ce60c3ce3c36c4c6451db4232273d27415410b97994a800dfafd660f9",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json test --all",
+  "exit_code": 1,
+  "duration_ms": 301946,
+  "inputs": "{\"argv\":[\"--json\",\"test\",\"--all\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "test: node --test exited null (14 files)"
+    }
+  ],
+  "summary": "test: node --test exited null (14 files)",
+  "content_hash": "e05c0761c6926895dbfe539b5bbf0651effa7c7c0758b5e0b30a8d19cf1bc0d1"
+}

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114184623-a8d0b42d",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:46:23.523Z",
+  "started_at": "2026-11-14T18:46:20.438Z",
+  "finished_at": "2026-11-14T18:46:23.523Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114184603-6eea6834",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "4c6a985a7ab3e5a36ce0d71c6a0f04ee8fb366578f58273b9dc6769b53816145",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114184603-6eea6834",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "4c6a985a7ab3e5a36ce0d71c6a0f04ee8fb366578f58273b9dc6769b53816145",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json verify-capabilities",
+  "exit_code": 0,
+  "duration_ms": 3085,
+  "inputs": "{\"argv\":[\"--json\",\"verify-capabilities\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "capability cards PASS: real code repair + independent regression both proven by separate processes",
+  "content_hash": "0566da357e1597ed7a85f253ec5eefef36824bc3ae83435aabfce169228cc86f"
+}

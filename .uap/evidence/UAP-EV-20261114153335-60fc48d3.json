@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114153335-60fc48d3",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T15:33:35.411Z",
+  "started_at": "2026-11-14T15:28:04.105Z",
+  "finished_at": "2026-11-14T15:33:35.411Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114153332-54d70c10",
+    "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+    "worktree_fingerprint": "a241d048c781a943481b9972695acad0703627f262858ec22e0d2e34780dd171",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114153332-54d70c10",
+  "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+  "worktree_fingerprint": "a241d048c781a943481b9972695acad0703627f262858ec22e0d2e34780dd171",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json build",
+  "exit_code": 0,
+  "duration_ms": 331306,
+  "inputs": "{\"argv\":[\"--json\",\"build\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "build: 115 UAP modules syntax-clean, 6/6 real commands exit 0, web/dist real",
+  "content_hash": "506ffcd7ef04b4594145be591d8d0948347583a6d4fd0ba455d631691d3676ee"
+}

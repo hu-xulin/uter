@@ -16,16 +16,20 @@
 
 ## 品牌基线（引用 `UDS5-S01` §4.2，本规范遵守不偏离）
 
-| 类别 | 5.0 规范基线值 |
-|---|---|
-| Primary Light | `#5B5EE6` / Hover `#494CC7` / Active `#3F42B0` |
-| Primary Dark | `#8B8DF5` / Hover `#A1A3F7` / Active `#B7B8FA` |
-| 字体 | `Inter Variable` + `Noto Sans SC Variable` |
-| 正文 / Caption / 长文本 / 最小字号 | `14/22` / `12/18` / `16/26` / `12px` |
-| 间距 / 边框 / 焦点环 | `4pt` / `1px` / `2px`（`ring-2`，已裁决） |
-| 层级手段 | 优先表面色差而非重阴影 |
+| 类别 | **5.0 唯一规范值** | 组别 |
+|---|---|---|
+| 品牌主色 | `#6c47ff` | `G1` |
+| Light Hover / Active | `#4F52D1` / `#4A4DC5` | `G2` |
+| Dark Primary / Hover / Active | `#A1A3F7` / `#B1B3FF` / `#9294F7` | `G2` |
+| 字体族变量 / 实际字体文件 | `inherit` / `Inter Variable` + `Noto Sans SC Variable` | `G1` / `G2` |
+| 基准字号 | `0.8125rem` (13px) | `G1` |
+| 字号刻度 / 最小字号 | 18 档 `@theme --text-*`（正文 14/22、caption 12/18、长文本 16/26）/ `12px` | `G2` |
+| 间距基准 / 刻度 | `1rem` (16px) / 4pt 网格 | `G1` / `G2` |
+| 圆角基准 / 刻度 | `0.375rem` (6px) / 8 档 calc 派生 | `G1` / `G2` |
+| 边框 / 焦点环 | `1px` / `2px` `ring-2` | `G2` |
+| 层级手段 | 优先表面色差而非重阴影 | `G2` |
 
-> 焦点环口径**已由 team-lead 裁决**：5.0 采用 `2px` / `ring-2`（运行时真值 `tokens/semantic.css:120-123`，与 3.0 §15.1 一致）。作废的是「把 `1px` / `ring-1` 当作**焦点环宽度**」这一过时记忆，`1px` 不再是焦点环可选基线；**装饰性 `ring-1` 描边 1px 与 `1px` 边框均为真实有效值**（不承载焦点语义，3.0 §15.1 分类，07 分册按 1px 登记），须原样保留、不得改成 2px，也不得把「1px」无差别替换。依据 `AGENTS.md`「设计值来自代码」及用户 PART 0 原则 A 未规定焦点环宽度；运行时代码本身已是 `2px`，本轮不改任何代码值。详见 `UDS5-S01` §4.2.1。验证状态 `NOT_VERIFIED`（未执行浏览器级守卫复核）。
+> **唯一规范值入口**：`UDS5-S01` §4.2 基线表（`G1` 取 clerk.com 上游值、`G2` 取运行时实现现状），本分册不另立第二套值。本轮只改规范文本、不改 `web/src`；焦点环唯一值 `2px` / `ring-2`，装饰性 `ring-1` 描边 1px 与 `1px` 边框为独立有效值。运行时代码与 `G1` 的差异按 §19 登记为待迁移。验证状态 `NOT_VERIFIED`。
 
 ---
 
@@ -127,7 +131,7 @@
 | Electron | 复用同一 `web/dist`，不另立间距体系 | `NOT_VERIFIED` |
 | Android / iOS / HarmonyOS | **无真实实现**（全仓 `*.kt/*.swift/*.java/*.m/*.mm` = 0），一律 `NOT_VERIFIED`，不得伪造 PASS | `NOT_VERIFIED` |
 
-密度档与响应式的关系：`[data-theme-scale]` 是用户可切换的密度 / 无障碍维度，**不是**断点；断点由媒体查询 / Tailwind `sm:` `md:` `lg:` 等承担。二者不得互相替代。Clerk 官方明确「原生应用使用独立 `ClerkTheme` 主题系统」且未公布断点数值，5.0 不照搬该结论（`CLERK-DESIGN-REFERENCE-ANALYSIS` §2.20）。
+密度档与响应式的关系：`[data-theme-scale]` 是用户可切换的密度 / 无障碍维度，**不是**断点；断点由媒体查询 / Tailwind `sm:` `md:` `lg:` 等承担。二者不得互相替代。clerk.com 官方明确「原生应用使用独立 `ClerkTheme` 主题系统」且未公布断点数值；按上游优先原则该结论登记为**原生平台口径**，Uter 无原生应用，Android / iOS / HarmonyOS 一律 `NOT_VERIFIED`（`CLERK-DESIGN-REFERENCE-ANALYSIS` §2.20）。间距基准唯一规范值为 `1rem`(16px)（`UDS5-S01` §4.2 `G1`），4pt 网格为 `G2` 刻度。
 
 ---
 

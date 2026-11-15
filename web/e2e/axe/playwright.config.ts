@@ -16,6 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import os from 'node:os'
+import path from 'node:path'
+
 import { defineConfig } from '@playwright/test'
 
 import { BASE_URL } from './lib/target'
@@ -34,10 +37,22 @@ import { BASE_URL } from './lib/target'
  * 所在目录解析，所以一律用相对字符串。
  */
 
+/**
+ * 每轮使用唯一 outputDir（os.tmpdir() 下带 pid + 时间戳）。
+ * Playwright 启动会清空 outputDir；固定目录累积 279 个 trace 后，一次清空
+ * 触发宿主批量删除保护 SAFE_DELETE_BULK_GUARD_ERROR，runner 在收集用例前
+ * 就崩掉（与 business / visual 两轨同款根因）。一次性空目录让清空成为
+ * no-op；机读报告仍固定写 `.axe-e2e/report.json`，主流程读取路径不变。
+ */
+const uniqueOutputDir = path.join(
+  os.tmpdir(),
+  `uter-axe-e2e-${process.pid}-${Date.now()}`
+)
+
 export default defineConfig({
   testDir: '.',
-  // 产物落在 gitignore 的 .axe-e2e/ 下，不污染 web/ 工作区。
-  outputDir: '../../.axe-e2e/results',
+  // 产物落在唯一临时目录，不污染 web/ 工作区，也不触发批量删除保护。
+  outputDir: uniqueOutputDir,
   globalSetup: './lib/service-gate.ts',
   // 扫描对服务端限流敏感（鉴权轨只登录 1 次），不做并行。
   fullyParallel: false,

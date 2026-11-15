@@ -1,0 +1,47 @@
+{
+  "evidence_id": "UAP-EV-20261115014937-7f4ec9a4",
+  "kind": "real_code_repair_result",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794707370607-5ed626",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-15T01:49:37.579Z",
+  "started_at": "2026-11-15T01:49:37.579Z",
+  "finished_at": "2026-11-15T01:49:37.579Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115014932-736a5e88",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "ce880d7687561b3926f5b87d9c72bea5b111e7947c12101326d87410e25f3130",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115014932-736a5e88",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "ce880d7687561b3926f5b87d9c72bea5b111e7947c12101326d87410e25f3130",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": null,
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"attempts\":1,\"target_file\":\".uap/tests/fixtures/repair-canary.mjs\",\"classification\":{\"level\":\"AUTO_ALLOW\",\"reason\":\"普通业务代码，在任务授权范围内自动允许\",\"auto_allow\":true}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794707370607-5ed626.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794707370607-5ed626/repair-canary.mjs",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-CANARY-REPAIR.md"
+  ],
+  "findings": [],
+  "summary": "真实业务代码修复闭环 SUCCEEDED",
+  "content_hash": "7a6dd91ba8339b8f83f1a63565067d5ec7c54d89f3213230dfe5d8c50e771970"
+}

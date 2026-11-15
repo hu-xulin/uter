@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114182508-df7ad244",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:25:08.636Z",
+  "started_at": "2026-11-14T18:25:08.636Z",
+  "finished_at": "2026-11-14T18:25:08.636Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+    "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+    "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+  "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+  "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.registry_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.registry_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.registry_integrity 实检: agent_ids=PASS(agents=11 唯一ID=11; 每个含 role/output_schema=true; registry agent_unique/count=true/true); implementation_exists=PASS(真实实现文件缺失=0/11; registry.agent_implementation=true); permission_mapping=PASS(未在 permission-policy 声明的权限=0; registry.agent_permissions=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 6768 个 | 逐个 exists() 检查 agent.implementation 真实文件; 缺失如实计为 FAIL, 不以\"已登记\"替代\"实现存在\"",
+  "content_hash": "913140ae3c64dcbf02a8b3164d462257cf767633b9ed21f5907801c785261477"
+}

@@ -1,50 +1,17 @@
 {
-  "generated_at": "2026-11-13T17:07:27.437Z",
-  "target": "http://localhost:3000",
-  "mode": "dry-run rehearsal (authorized by AUTH-DEPLOY-2026-11-12; local artifacts only)",
-  "version": {
-    "current": "v1.5.20",
-    "next_computed": "v1.5.21"
-  },
-  "artifacts": {
-    "dist_files": 2870,
-    "binary_sha256": "e0abba2b45709539979b859790cfc7ffe0b732d254d6b36d42a2c0f135c85c40"
-  },
+  "generated_at": "2026-11-15T02:06:51.180Z",
+  "blocked": true,
+  "reason": "preflight: real release artifacts incomplete",
   "steps": [
     {
       "name": "preflight_artifacts",
-      "ok": true,
-      "detail": "VERSION=v1.5.20; web/dist 清单=2870 个文件; release 二进制 sha256=e0abba2b45709539…"
-    },
-    {
-      "name": "version_advance_computed",
-      "ok": true,
-      "detail": "current=v1.5.20 -> next=v1.5.21 (仅计算, 不回写仓库 VERSION)"
-    },
-    {
-      "name": "publish_manifest_integrity",
-      "ok": true,
-      "detail": "发布槽复制 web/dist(2870 文件) 与构建清单逐文件 sha256 比对: 完全一致"
-    },
-    {
-      "name": "health_check_live",
-      "ok": true,
-      "detail": "GET /api/status -> 200; 目标=http://localhost:3000 (仅本地服务, 不触生产)"
-    },
-    {
-      "name": "rollback_restores_previous_release",
-      "ok": true,
-      "detail": "注入新版本标记 -> 回滚恢复上一槽位 -> 逐文件 sha256 == 原构建且标记被清除: true"
-    },
-    {
-      "name": "boundary_temp_only",
-      "ok": true,
-      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-VqRDPq (os.tmpdir), 仓库无演练产物"
+      "ok": false,
+      "detail": "VERSION=v1.5.20; web/dist 清单=MISSING; release 二进制 sha256=e0abba2b45709539…"
     }
   ],
   "verdict": {
-    "deployment_plan": "PASS",
-    "rollback_plan": "PASS",
-    "health_check": "PASS"
+    "deployment_plan": "FAIL",
+    "rollback_plan": "FAIL",
+    "health_check": "FAIL"
   }
 }

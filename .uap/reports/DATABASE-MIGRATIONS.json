@@ -2,7 +2,7 @@
   "status_model": "UAP-TEST-STATUS-1.0",
   "status": "PASS",
   "suite": "database_migrations",
-  "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers -count=1 -json",
+  "command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers|TestPhase2BusinessFunctions -count=1 -json",
   "exit_code": 0,
   "items": [
     {
@@ -102,10 +102,10 @@
   "upgrade": "PASS",
   "rollback": "PASS",
   "generated_by": "real go test -json markers from model/schema_migrations_test.go",
-  "generated_at": "2026-11-14T02:46:48.983Z",
+  "generated_at": "2026-11-15T02:07:24.012Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -113,8 +113,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
-  "evidence_ref": "UAP-EV-20261114024651-c5bda657"
+  "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+  "evidence_ref": "UAP-EV-20261115020724-82c356cd"
 }

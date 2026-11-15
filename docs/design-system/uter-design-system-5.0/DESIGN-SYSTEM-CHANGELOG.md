@@ -354,3 +354,47 @@
 | lint | `bun run lint` 实测 **3 个 error**（非 13），全部为 `eslint(no-empty-pattern)` 空对象绑定 `{}`，集中在 `web/e2e/visual/*.spec.ts`；**非新增文件引入**（新增的 `clerk-boundary` / `design-showcase-5.0` 脚本与测试零 lint error）。改为 `async (_, testInfo)`（`no-unused-vars` 的 `argsIgnorePattern: ^_` 放行），`bun run lint` → **exit 0 / 0 error / 78 warning**（warning 存量未动） | `web/e2e/visual/{auth.setup,authed,public}.spec.ts` |
 | 门禁 | 复跑通过：`bun run lint` exit 0、`node scripts/verify-contrast.mjs` PASS（31/0）、`design:showcase:5:check` exit 0、`design:5:check` errors 0、`design:clerk:check` errors 0 | 本节 |
 | 隔离 | 仅暂存 8 个意图文件；`.uap/**`、`web/e2e/axe/**`、`web/e2e/business/**`、`web/src/__axe-experiment.test.ts`、`web/src/styles/theme.css`、`model/phase2_business_functions_test.go` 等 540+ 并发 WIP 全部排除，不进暂存区 | 提交清单 |
+
+---
+
+## 6.6 节点十：2026-11-15 · Color System 语义化颜色体系补充（`UDS5-S03`）
+
+> 用户指令：提供《Uter Design System — Color System 优化方案》，要求「根据文档要求对 UTER Design System 5.0 的颜色规范进行补充完善」。本节点**只补写规范文本**，零运行时代码改动。
+
+| 类型 | 动作 | 落点 |
+|---|---|---|
+| 新增 | §9 来源与决策口径：明确本次方案与 §7《业务域蓝图 Color Standard》为**不同来源**，§7 逐值判定不覆盖；按 `UDS5-S01` §19 采用 `Adopt` / `Adapt` / `Reject` 框架，方案色值一律记为「建议基线（未落地）」 | `UDS5-S03` §9 |
+| 新增 | §10 Primitive 色板：Brand **9 档**（50–800，逐档白底对比度与「低于 3:1 禁作文字 / 必要图形」约束）+ Slate **11 档**（50–950）；登记方案「补齐 50–900」与表格实际只到 800 的内部不一致、900 标「待定义」不臆造；全仓核实 `web/src` 无 `--slate-*` 变量 | `UDS5-S03` §10 / `S03-D12` / `S03-D13` |
+| 新增 | §11 双主题语义映射：方案 11 项 Light / Dark 建议基线 + 运行时逐项对照；发现 canvas **Dark `#020617` 与运行时一致**、Light 文字层级存在 `--fg-*` / `--muted-foreground` 双轨、`--muted-foreground #5F6D80` 与 `--info #0073B8` 与 §7 审计快照存在时点差 | `UDS5-S03` §11 / `S03-D14`–`D16` / `D19` |
+| 新增 | §12 状态色四层结构（仓库**已覆盖**）+ **Reject 色值替换**的实算证据（方案 Success `#16A34A` 3.30:1 vs 运行时 `#15803D` + `#F8FAFC` 4.79:1，直接采纳会回退 2026-11-14 的 axe 对比度修复）+ **19 项**业务状态语义映射与四条强制约束 | `UDS5-S03` §12 / `S03-D17` / `S03-D18` |
+| 新增 | §13 交互色：Default / Hover / Active 双主题表 + focus-ring / selection / overlay / disabled 出口对照；方案 focus-ring `#A5B4FC` 白底 **1.99:1 < 3:1** 故 Reject；澄清 `S03-D6` 的「偏移量未声明」指未声明为独立语义 Token（3.0 §28.5 Manifest 有 `focusRingOffset: 0`） | `UDS5-S03` §13 / `S03-D20` / `S03-D21` |
+| 新增 | §14 图表色：方案 5 色 hex 板 vs 运行时 **6 色 `oklch()` 板** → Reject 替换、Adopt 独立管理原则；新增 6 档固定系列顺序与 8 项图表统一规则；明确 `UDS5-S19` P2「图表独立 Token」仍 Pending | `UDS5-S03` §14 / `S03-D22` |
+| 新增 | §15 L1–L4 颜色架构 **Adapt** 映射到 `UDS5-S01` §6 治理五层 / §6.3 运行时三层，不另立体系；新增组件颜色出口表；Dashboard「`+12.8%`」涨跌配色登记待裁决（运营指标不套用金融行情红涨绿跌） | `UDS5-S03` §15 / `S03-D23` / `S03-D25` |
+| 新增 | §16 七条建议规范逐条落点、七条颜色变更执行约束、`S03-D12`–`D26` 统一差异台账、7 条只读门禁证据与五条证据边界 | `UDS5-S03` §16 |
+| 实测 | 7 条只读门禁全部 `EXIT=0`：`design:5:check`（PASS / errors 0 / 37 条 / 35 份 .md）、`design:showcase:5:check`（9/9）、`design:tokens:check`（in sync）、`design:showcase:check`（17 PASS / 0 FAIL）、`verify:contrast`（31 checks / 0 failed）、`lint:design:strict`（1276 文件通过）、`design:clerk:check`（errors 0 / C5 passed） | `UDS5-S03` §16.4 |
+| 边界 | 仅改 `UDS5-S03` 与 `UDS5-S26` 两份规范文本；零 `web/src` / `.uap` / CI / `package.json` / 色值改动；**未改注册表**（避免 `SHOWCASE-5.0.html` 生成物产生 scope 漂移）；未暂存 / 提交 / 推送 / 建分支；并发 WIP 全部隔离 | 本节 / `UDS5-S03` §9 |
+| 状态 | 补充内容全部 `NOT_VERIFIED`；上述门禁为结构 / 静态类，**不证明颜色能力已落地**；E24 / P1–P3 / 双轨视觉回归 / 平台验收均未执行 | `UDS5-S03` 文末验证状态 |
+
+---
+
+## 6.7 节点十一：2026-11-15 · 上游 clerk.com 对齐 / 差异合并 / 全量 Showcase
+
+> 用户指令：「1、UTER-DESIGN-SYSTEM-5.0中所有跟上游clerk.com不一致的地方，均已clerk.com为准；2、UTER-DESIGN-SYSTEM-5.0中合并差异，只保留唯一规范值；3、将UTER-DESIGN-SYSTEM-5.0中所有元素和组件生成一份showcase，不要遗漏任何字体、颜色、组件」。
+> 效力确认（上级选择）：第 1 条按「**规范基线也对齐 Clerk 数值**」执行——**只改规范文本、不改 `web/src` 运行时代码**；第 3 条按「**单文件全量可视化**」交付，扩展既有 `SHOWCASE-5.0.html`，不另建文件、不引入 Storybook / Clerk SDK。
+
+| 类型 | 动作 | 落点 |
+|---|---|---|
+| 裁决 | §0.2 效力层级上移：clerk.com 官方已公布设计值 → 第 3 层（最高规范依据）；5.0 分册第 4 层；运行时代码降为第 5 层「实现现状」。冲突裁决改为「上游优先 + 唯一规范值 + 规范与实现分离」；新增 `D9`（上级裁决，红线废止）、`S01-D8`（差异合并）、`S01-D9`（规范—实现待迁移） | `UDS5-S01` §0.2 / §4.1 B1 / §5 C5 / §19.2 / §21 / §26 |
+| 裁决 | §4.2 建立**唯一规范值基线表**：`G1` = clerk.com 已公布值（主色 `#6c47ff`、字号 `0.8125rem`、圆角 `0.375rem`、间距 `1rem`、字重、字体族、扁平单层 24 键 `--clerk-*`、`color-mix()` 派生、6 套预置主题、4 层定制）；`G2` = 上游未公布 → 运行时实现现状为唯一值。任一设计属性在 5.0 只保留一个规范值 | `UDS5-S01` §4.2（唯一入口） |
+| 上游 | `UDS5-S21` 由「Clerk 外部设计参考」升格为「5.0 规范值的上游权威」；F3 / §2.3 / §2.4 N6 / §3 P1 / §4.1 / §4.4 / §4.18 / §5 / §8 C3 / §10 全篇改写，新增 `S21-D13`。**§2.2 的 11 类「官方未提供」能力表与 §3 P3 业务红线行原样保留**（C4/C5 门禁依赖） | `UDS5-S21` |
+| 合并 | 删除全部第二套设计值表：`UDS5-S03` §7–§16 整段重写（§9 上游对齐 / §10 Primitive / §11 双主题 / §12 状态色 / §13 交互色 / §14 图表色 / §15 层级出口 / §16 治理证据）；`UDS5-S04` §4 / §7、`UDS5-S10` §10.1、`UDS5-S12` §2.1/§2.2、`FINAL-ACCEPTANCE-REPORT.md` §5.4 双值对照列全部替换为唯一值表 | `UDS5-S03` / `S04` / `S10` / `S12` / 验收报告 |
+| 合并 | 19 份分册头部「品牌基线不动 / 不倒退 / 仅为外部参考 / 13px 不采用 / 两层体系不倒退」等旧红线统一改为「上游对齐·唯一值」；旧结论一律显式标注「废止 / 裁决 / 历史口径」。差异编号 `E24` / `E28` / `NOT_VERIFIED` / `NOT_IMPLEMENTED` 与缺陷 / 待办状态**原样保留**（属状态不是设计值） | `UDS5-S01`…`S12` / `S15` / `S21` / `S24` / `S32` / 认证组件规范 |
+| 边界 | 规范—实现冲突统一登记为「待迁移」，按 §19 分期；本轮 `web/src` 运行时代码值零改动。迁移完成前 `verify-contrast.mjs` / T1–T17 / `check-clerk-boundary.mjs` C3 仍按现行代码值执行（过渡期实现双轨，不是两套规范值） | `UDS5-S01` §4.2 / §19 |
+| Showcase | `generate-design-showcase-5.0.mjs` 新增**运行时 Token 全量只读解析**：递归扫描 `web/src/**/*.css` 19 份 → 剥离注释 → 花括号配对定位 44 类选择器作用域 → 收集 1,137 条声明 / **504 个唯一变量**，每个变量的**每一个取值**逐项列出（1,137 行），颜色 / 阴影 / 渐变类 280 个按取值渲染真实色块（共 1,063 个 chip）；`var()` 递归展开，9 个 Tailwind v4 内置色板引用从已安装的 `tailwindcss/theme.css` 取兜底值单独成组展示（`data-external-color`），不混入 Uter Token 清单 | `SHOWCASE-5.0.html` / `web/scripts/generate-design-showcase-5.0.mjs` |
+| Showcase | 字体零遗漏：`@theme --text-*` **18 档 × 全部取值**（含 `simple-large` 放大档）= 36 行真实字号 / 行高渲染；4 档字重、6 个字体族变量、4 条 G1/G2 基准、3 档密度各自真实渲染。组件零遗漏：**65/65** 个注册组件逐一配置专门 `data-component-sample` DOM 样本（专门样本命中率 65/65，无分类兜底） | 同上 |
+| Showcase | 顶部新增「唯一规范值基线表」分区（G1 14 项 + G2 13 项 = 27 项，`data-normative-brand="#6c47ff"`），页面 chrome 品牌色由旧 `#5B5EE6` 改为 G1/G2；新增「口径说明」横幅，明确下方全部内容为实现现状快照、差异待迁移，避免把实现值误读为第二套规范值 | 同上 |
+| 门禁 | `check-design-showcase-5.0.mjs` 由 9 项扩为 **13 项**：S9 旧「禁止 `#6c47ff`」废止，改为「G1 唯一规范主色必须出现 + 禁 Clerk SDK」；新增 S10 变量零遗漏、S11 字体零遗漏（字号档集合与 Token 清单比对）、S12 组件样本逐一覆盖、S13 唯一规范值基线表。`design-showcase-5.test.ts` 由 7 例扩为 **12 例**（新增 4 例退化注入） | `web/scripts/check-design-showcase-5.0.mjs` / `web/src/design-system/__tests__/design-showcase-5.test.ts` |
+| 实测 | `design:5:check` PASS / errors 0 / 37 条 / 245 变量；`design:showcase:5:check` **13/13 PASS**（504 变量 / 1,137 取值 / 9 外部色 / 18 字号档 / 65 样本 / 27 基线项）；`design:tokens:check` in sync；`design:showcase:check` 17 PASS / 0 FAIL；`verify:contrast` 31 checks / 0 failed；`lint:design:strict` 1,276 文件通过；`design:clerk:check` errors 0 / C5 PASS；`typecheck` exit 0；`vitest design-showcase-5` **12/12 PASS**；无头 Chromium 实渲染 0 console error / 1,063 色块 / `scrollHeight 57,660px` | 本节 / 各门禁输出 |
+| 门禁 | `copyright:check` 与全量 `lint` 仍 FAIL，**均非本轮引入**：前者 2 个文件为 `scripts/rehype-tasklist-labels.mjs`（HEAD 即缺头）与并发 WIP `src/__axe-experiment.test.ts`；后者 3 个 `eslint(no-empty-pattern)` 全部位于并发 WIP `web/e2e/visual/{auth.setup,authed,public}.spec.ts`（HEAD 版本本已是 `async (_, testInfo)`，WIP 改回 `{}`）。本次 3 个改动文件单独 `oxlint` → **0 error / 0 warning**；排除这 3 个 WIP 文件后全量 `oxlint` → **0 error / 78 warning**。按治理要求**不修改并发 WIP** | 门禁输出 / 本节 |
+| 边界 | 零运行时色值 / 业务代码 / CI / `package.json` / 注册表改动；未改 `DESIGN-STANDARD-REGISTRY.yaml` 与 `COMPONENT-REGISTRY.yaml`（避免生成物漂移）；未暂存 / 提交 / 推送 / 建分支；655 项并发脏区全部隔离 | 本节 |
+| 状态 | 节点十登记的「建议基线（未落地）」双值口径，其**并列对照结构**已被节点十一差异合并取代；节点十作为历史轮次记录保留。规范内容仍 `NOT_VERIFIED`，门禁为结构 / 静态类，不证明颜色能力已落地；运行时 G1 迁移、E24 / 双轨视觉回归 / 平台验收均未执行 | `UDS5-S03` / `UDS5-S01` §19 |

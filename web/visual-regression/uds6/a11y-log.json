@@ -1,0 +1,628 @@
+{
+  "checker": "a11y-check.mjs",
+  "executed": true,
+  "engine": "axe-core (WCAG 2.0/2.1/2.2 A+AA) + real keyboard Tab",
+  "started_at": "2026-11-15T02:28:19.979Z",
+  "verdict": "FAIL",
+  "cases": [
+    {
+      "theme": "light",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "violations": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "nodes": 10,
+          "targets": [
+            "div[aria-label=\"Dashboard 页面结构预览\"]",
+            "div[aria-label=\"API Keys 页面结构预览\"]",
+            "div[aria-label=\"Models 页面结构预览\"]"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 65,
+          "targets": [
+            "#code-JavaScript > code > .ln:nth-child(1)",
+            "#code-JavaScript > code > .ln:nth-child(6)",
+            "#code-JavaScript > code > .ln:nth-child(13)"
+          ]
+        },
+        {
+          "id": "label",
+          "impact": "critical",
+          "help": "Form elements must have labels",
+          "nodes": 5,
+          "targets": [
+            "input[value=\"名称不能为空\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp-error.inp[value=\"错误状态\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp[value=\"禁用\"]"
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": 36,
+          "targets": [
+            "#mod-00 > .module-head > div > .module-meta > a",
+            "#mod-01 > .module-head > div > .module-meta > a",
+            "#mod-02 > .module-head > div > .module-meta > a"
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": 3,
+          "targets": [
+            "#tokens > .table-wrap",
+            "#mod-08 > .mod-grid > .wide.mod-block[data-section=\"Usage\"] > pre",
+            "#mod-01-S > .mod-grid > .wide.mod-block[data-section=\"Usage\"] > pre"
+          ]
+        }
+      ],
+      "focus": {
+        "checked": 12,
+        "visible": 0,
+        "rows": [
+          {
+            "tag": "button",
+            "label": "切换 Light / Dark 主题",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "select",
+            "label": "响应式视口预览",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "button",
+            "label": "打开 Token Inspector",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••Overview / 统计",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••全局功能",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••渐变新旧对比",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••语法高亮预览",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••真实产品页面",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "00Design System Overview",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "01Brand Identity Standard",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "02Design Principles Standard",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "03Color System Standard",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          }
+        ]
+      }
+    },
+    {
+      "theme": "dark",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "violations": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "nodes": 10,
+          "targets": [
+            "div[aria-label=\"Dashboard 页面结构预览\"]",
+            "div[aria-label=\"API Keys 页面结构预览\"]",
+            "div[aria-label=\"Models 页面结构预览\"]"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 111,
+          "targets": [
+            ".state-cell:nth-child(1) > .btn-primary.btn",
+            ".state-cell:nth-child(2) > .btn-primary.btn",
+            ".state-cell:nth-child(3) > .btn-primary.btn"
+          ]
+        },
+        {
+          "id": "label",
+          "impact": "critical",
+          "help": "Form elements must have labels",
+          "nodes": 5,
+          "targets": [
+            "input[value=\"名称不能为空\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp-error.inp[value=\"错误状态\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp[value=\"禁用\"]"
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": 36,
+          "targets": [
+            "#mod-00 > .module-head > div > .module-meta > a",
+            "#mod-01 > .module-head > div > .module-meta > a",
+            "#mod-02 > .module-head > div > .module-meta > a"
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": 3,
+          "targets": [
+            "#tokens > .table-wrap",
+            "#mod-08 > .mod-grid > .wide.mod-block[data-section=\"Usage\"] > pre",
+            "#mod-01-S > .mod-grid > .wide.mod-block[data-section=\"Usage\"] > pre"
+          ]
+        }
+      ],
+      "focus": {
+        "checked": 12,
+        "visible": 0,
+        "rows": [
+          {
+            "tag": "button",
+            "label": "切换 Light / Dark 主题",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "select",
+            "label": "响应式视口预览",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "button",
+            "label": "打开 Token Inspector",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••Overview / 统计",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••全局功能",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••渐变新旧对比",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••语法高亮预览",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••真实产品页面",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "00Design System Overview",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "01Brand Identity Standard",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "02Design Principles Standard",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "03Color System Standard",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          }
+        ]
+      }
+    },
+    {
+      "theme": "light",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "violations": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "nodes": 10,
+          "targets": [
+            "div[aria-label=\"Dashboard 页面结构预览\"]",
+            "div[aria-label=\"API Keys 页面结构预览\"]",
+            "div[aria-label=\"Models 页面结构预览\"]"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 65,
+          "targets": [
+            "#code-JavaScript > code > .ln:nth-child(1)",
+            "#code-JavaScript > code > .ln:nth-child(6)",
+            "#code-JavaScript > code > .ln:nth-child(13)"
+          ]
+        },
+        {
+          "id": "label",
+          "impact": "critical",
+          "help": "Form elements must have labels",
+          "nodes": 5,
+          "targets": [
+            "input[value=\"名称不能为空\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp-error.inp[value=\"错误状态\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp[value=\"禁用\"]"
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": 36,
+          "targets": [
+            "#mod-00 > .module-head > div > .module-meta > a",
+            "#mod-01 > .module-head > div > .module-meta > a",
+            "#mod-02 > .module-head > div > .module-meta > a"
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": 52,
+          "targets": [
+            "#gradient > .table-wrap",
+            "#code-JavaScript",
+            "#code-Python"
+          ]
+        }
+      ],
+      "focus": {
+        "checked": 12,
+        "visible": 0,
+        "rows": [
+          {
+            "tag": "button",
+            "label": "切换 Light / Dark 主题",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "select",
+            "label": "响应式视口预览",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "button",
+            "label": "打开 Token Inspector",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••Overview / 统计",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••全局功能",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••渐变新旧对比",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••语法高亮预览",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••真实产品页面",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "00Design System Overview",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "01Brand Identity Standard",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "02Design Principles Standard",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "03Color System Standard",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          }
+        ]
+      }
+    },
+    {
+      "theme": "dark",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "violations": [
+        {
+          "id": "aria-prohibited-attr",
+          "impact": "serious",
+          "help": "Elements must only use permitted ARIA attributes",
+          "nodes": 10,
+          "targets": [
+            "div[aria-label=\"Dashboard 页面结构预览\"]",
+            "div[aria-label=\"API Keys 页面结构预览\"]",
+            "div[aria-label=\"Models 页面结构预览\"]"
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": 111,
+          "targets": [
+            ".state-cell:nth-child(1) > .btn-primary.btn",
+            ".state-cell:nth-child(2) > .btn-primary.btn",
+            ".state-cell:nth-child(3) > .btn-primary.btn"
+          ]
+        },
+        {
+          "id": "label",
+          "impact": "critical",
+          "help": "Form elements must have labels",
+          "nodes": 5,
+          "targets": [
+            "input[value=\"名称不能为空\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp-error.inp[value=\"错误状态\"]",
+            "#mod-19 > .mod-grid > .mod-block[data-section=\"Visual Preview\"] > div > .inp[value=\"禁用\"]"
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "impact": "serious",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": 36,
+          "targets": [
+            "#mod-00 > .module-head > div > .module-meta > a",
+            "#mod-01 > .module-head > div > .module-meta > a",
+            "#mod-02 > .module-head > div > .module-meta > a"
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "help": "Scrollable region must have keyboard access",
+          "nodes": 52,
+          "targets": [
+            "#gradient > .table-wrap",
+            "#code-JavaScript",
+            "#code-Python"
+          ]
+        }
+      ],
+      "focus": {
+        "checked": 12,
+        "visible": 0,
+        "rows": [
+          {
+            "tag": "button",
+            "label": "切换 Light / Dark 主题",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "select",
+            "label": "响应式视口预览",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "button",
+            "label": "打开 Token Inspector",
+            "outlineWidth": "1px",
+            "outlineStyle": "auto",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••Overview / 统计",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••全局功能",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••渐变新旧对比",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••语法高亮预览",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "••真实产品页面",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "00Design System Overview",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "01Brand Identity Standard",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "02Design Principles Standard",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          },
+          {
+            "tag": "a",
+            "label": "03Color System Standard",
+            "outlineWidth": "3px",
+            "outlineStyle": "none",
+            "hasVisibleFocus": false
+          }
+        ]
+      }
+    }
+  ],
+  "violationsTotal": 20,
+  "blockingViolations": 20,
+  "keyboardFocus": {
+    "checked": 12,
+    "allVisible": false
+  },
+  "limitation": "覆盖 6.0 Showcase 单文件；真实产品页面的 axe / 屏幕阅读器 / 键盘路径需完整服务栈，状态 BLOCKED，未执行。"
+}

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114154234-151ae1a8",
+  "kind": "health_probe",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T15:42:34.091Z",
+  "started_at": "2026-11-14T15:42:34.091Z",
+  "finished_at": "2026-11-14T15:42:34.091Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114154224-18e776f1",
+    "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+    "worktree_fingerprint": "3ae248051ff8874acd002ff26ee8a94a41938e43324230fe18e0a6ef394e9dd2",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114154224-18e776f1",
+  "git_head": "9f49c0e9908a2f163253238318d248323880e47c",
+  "worktree_fingerprint": "3ae248051ff8874acd002ff26ee8a94a41938e43324230fe18e0a6ef394e9dd2",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "evidence-engine.health()",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"secret\":\"EXAMPLE_ONLY_NOT_A_REAL_KEY\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "immutability probe",
+  "content_hash": "0d2bd16fcd43bcf3a0d03d6a3fd8a56592f2582bffaceb1e1d31bec239a3da04"
+}

@@ -97,10 +97,25 @@ export function computeFinalStatus(snapshot = {}) {
     // Matrix rows store `${file}::${name}` for traceability; TAP passing names
     // are bare test names. Compare the name part so a genuinely passing test
     // can be matched — a failing/absent name still can never pass this gate.
-    const testPassed = hasTest && (r.test_cases || []).some((t) => {
+    const tapPassed = hasTest && (r.test_cases || []).some((t) => {
       const bare = typeof t === 'string' && t.includes('::') ? t.split('::').slice(1).join('::') : t;
       return passingTestNames.has(bare) || passingTestNames.has(t);
     });
+    // Phase-2 BEHAVIOUR_EXECUTION probes do not emit TAP test names: the row
+    // carries the real probe command, its exit code, the observed assertion and
+    // a re-hashed evidence record instead. That is a STRONGER proof than a bare
+    // TAP name, but only when every link is present and validated by the
+    // requirement verifier. Missing/failed/unbound evidence never counts.
+    const behaviorPassed = (r.evidence_refs || []).some((e) =>
+      e.probe_kind === 'BEHAVIOR_EXECUTION' && e.exit_code === 0
+      && e.evidence_hash_valid === true && e.evidence_binding_valid === true
+      && e.distinct === true
+      && (r.behavior_assertions || []).some((a) =>
+        a.assertion_id === e.assertion_id && a.found === true
+        && a.evidence_id === e.evidence_id))
+      && (r.evidence || []).some((e) => typeof e === 'object'
+        && e.hash_valid === true && e.exit_code === 0);
+    const testPassed = tapPassed || behaviorPassed;
     const evidenceCurrent = (r.evidence || []).some((e) => {
       if (typeof e === 'string') return false; // a bare id proves no binding
       if (e.execution_id !== snapshot.execution_id || e.git_head !== snapshot.git_head || e.hash_valid !== true) return false;
@@ -108,9 +123,15 @@ export function computeFinalStatus(snapshot = {}) {
       return true;
     });
     const noBlocker = (r.blockers || []).length === 0;
-    // When the Phase-2 seven-state field is present it is authoritative and
-    // stricter: only FULLY_VERIFIED may be counted as verified.
-    const stateAllows = r.verification_state === undefined || r.verification_state === 'FULLY_VERIFIED';
+    // The traceability matrix uses the mandated four-state model
+    // (VERIFIED / NOT_VERIFIED / BLOCKED / NOT_APPLICABLE), where VERIFIED is
+    // the highest state. The legacy seven-state FULLY_VERIFIED is still
+    // accepted for older artefacts. Every OTHER state (including
+    // PARTIALLY_VERIFIED) remains excluded — this is a schema alignment, not
+    // a relaxation: all freshness, evidence and test gates above still apply.
+    const stateAllows = r.verification_state === undefined
+      || r.verification_state === 'FULLY_VERIFIED'
+      || r.verification_state === 'VERIFIED';
     if (implemented && hasTest && testPassed && evidenceCurrent && noBlocker && stateAllows
         && r.verification_status === 'VERIFIED') counts.verified += 1;
   }

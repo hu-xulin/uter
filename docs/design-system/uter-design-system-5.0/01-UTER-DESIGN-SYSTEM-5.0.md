@@ -33,13 +33,15 @@
 |---|---|---|
 | 1 | `AGENTS.md`（仓库级约定）、`web/AGENTS.md`（前端约定） | 工程纪律、安全、数据库、认证、资金红线、测试与构建门禁 |
 | 2 | `.uap/` 治理规范与 `permission-policy.yaml` | 任务契约、权限、证据状态机；`branch_creation` / `branch_switch` / `force_push` / `destructive_git` 均为 `deny` |
-| 3 | **本总纲 `UDS5-S01` 及 5.0 下级规范** | 设计规则、边界、Token 语义、组件契约、验收口径 |
-| 4 | 运行时代码（`web/src/design-system/tokens/`、`web/src/styles/theme.css`） | 设计**数值真值** |
-| 5 | 历史版本 `UTER-DESIGN-SYSTEM-3.0.md` | 仅作历史追溯与差异比对，不产生现行约束 |
+| 3 | **上游 clerk.com 官方已公布的设计值** | 2026-11-15 裁决：5.0 规范值的最高依据。凡 5.0 与 clerk.com 已公布值不一致，一律以 clerk.com 为准（见 §4.3 G1 组） |
+| 4 | **本总纲 `UDS5-S01` 及 5.0 下级规范** | 设计规则、边界、Token 语义、组件契约、验收口径；clerk.com 未公布项由本层给出唯一规范值（见 §4.3 G2 组） |
+| 5 | 运行时代码（`web/src/design-system/tokens/`、`web/src/styles/theme.css`） | **实现现状**，不再是规范数值的裁定来源；规范与实现不一致时以规范为准，实现按 §19 分期迁移 |
+| 6 | 历史版本 `UTER-DESIGN-SYSTEM-3.0.md` | 仅作历史追溯与差异比对，不产生现行约束 |
 
-冲突裁决原则（`AGENTS.md` §8「Where rules differ, the stricter rule wins」与 §「Design System Enforcement」）：
+冲突裁决原则（`AGENTS.md` §8「Where rules differ, the stricter rule wins」、§「Design System Enforcement」与 2026-11-15 上级裁决）：
 
-- **数值以代码为准，规则与边界以规范为准**：文档与实现冲突时不得静默二选一；设计数值取自 `tokens/` 与 `theme.css`，规则与边界取自 5.0 规范。
+- **上游优先、唯一规范值**：clerk.com 已公布的设计值为唯一规范值；其未公布的设计元素，唯一规范值取 5.0 基线表（§4.3 G2 组，来自运行时实现现状）。任何条款、分册、差异台账中出现的第二套设计值（优化方案建议值、业务域蓝图建议值、3.0 历史值、审计时点快照）**一律不再是规范值**，仅可作历史记录保留，不得与唯一规范值并列。
+- **规范与实现分离**：`AGENTS.md` 的「设计数值来自代码」仍约束运行时工程纪律，但 2026-11-15 裁决把规范值的裁定权上移到 clerk.com 上游；本轮**只改规范文本、不改 `web/src`**，由此产生的规范—实现差异统一登记为「待迁移」，按 §19 变更流程分期推进，不得静默抹平，也不得反过来把实现值写成规范基线。
 - **下级规范一律遵循本总纲**：`UDS5-S02` 及之后所有下级规范、组件契约、页面模板、例外台账，若与本总纲冲突，以本总纲为准；下级规范只能细化，不得放宽或另立版本口径。
 - **UAP 状态机**：只用 `NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`；文档、文件或报告本身不证明能力可用，禁止伪造 `PASS` 或 `FULLY_OPERATIONAL`。
 
@@ -98,52 +100,57 @@
 
 | # | 原则 | 判定 |
 |---|---|---|
-| B1 | 品牌自主 | 保留 Uter 靛紫品牌与「优特智能」品牌名；不采用 Clerk 紫色、徽标或「Secured by Clerk」文案 |
+| B1 | 上游对齐 | **2026-11-15 裁决（原「品牌自主 / 不采用 Clerk 紫色」红线废止）**：5.0 与上游 clerk.com 已公布设计值不一致时一律以 clerk.com 为准；品牌主色采用 clerk.com `colorPrimary` 官方值 `#6c47ff`。徽标、「Secured by Clerk」文案与 Clerk SDK / 主题包仍不引入（见 `UDS5-S21` §3 P2） |
 | B2 | 克制专业 | 信任感优先于装饰；层级靠表面色差与 1px 描边建立，不靠重阴影 |
-| B3 | 密度优先 | 网关控制台信息密度远高于身份类组件，字号与间距以 14/22 + 4pt 为基准 |
+| B3 | 密度优先 | 网关控制台信息密度高于身份类组件；基准字号按上游 `0.8125rem`(13px)，字号刻度与最小 12px 下限按 §4.3 G2 |
 | B4 | 单一强调色 | 品牌主色只承担主操作与选中态，不铺满大面积表面 |
 | B5 | 深浅成对 | Light/Dark 成对定义；品牌渐变深浅同值，不随 `.dark` 覆盖 |
 
-### 4.2 品牌基线（5.0 规范口径，必须保留）
+### 4.2 唯一规范值基线表（2026-11-15 上游对齐裁决，全 5.0 唯一取值入口）
 
-| 类别 | 规范基线值 |
-|---|---|
-| Primary Light | `#5B5EE6` / Hover `#494CC7` / Active `#3F42B0` |
-| Primary Dark | `#8B8DF5` / Hover `#A1A3F7` / Active `#B7B8FA` |
-| 字体 | `Inter Variable` + `Noto Sans SC Variable`（`@fontsource-variable/inter` / `@fontsource-variable/noto-sans-sc`）；Noto Sans SC 与 Source Han Sans 为同一字体家族双发行版，规范文本不得虚称引入了 Source Han Sans 字体文件 |
-| 正文 | `14/22`（即 `14 / 22`） |
-| Caption / Small | `12/18`（即 `12 / 18`） |
-| 长文本 | `16/26`（即 `16 / 26`） |
-| 最小字号 | `12px`（全站可见文本下限） |
-| 间距 | `4pt` 基础单位 |
-| 描边 | `1px` 边框 |
-| 焦点环 | `2px` / `ring-2`（team-lead 已裁决采用运行时真值；「1px 焦点环」为已作废的过时记忆；装饰性 `ring-1` 描边 1px 与 `1px` 边框原样保留，见 §4.2.1） |
-| 层级手段 | 优先表面色差，而非重阴影 |
-
-> **差异登记（Adapt，`NOT_VERIFIED`）**：上述基线为规范层口径，来自 `BASELINE-AUDIT` §11.1 与上级指令。对仓库内已存在文件的只读核实发现若干运行时取值与基线不完全一致，已按 §9「指令原文与仓库事实冲突 → Adapt」登记，**本轮不擅自改写代码、不宣称二者一致**。其中焦点环一项已由 team-lead 裁决定案（见 §4.2.1），其余项仍待解：
+> **效力**：本表是 5.0 全体系**唯一**的规范值入口。所有下级分册、组件契约、页面模板、例外台账中出现的第二套设计值一律不再是规范值。`audit/` 两份报告为历史快照，其数值仅作追溯，不得与本表并列成第二套口径。
 >
-> | 项 | 5.0 规范口径 | 运行时文件记录值 | 处置 |
-> |---|---|---|---|
-> | 焦点环宽度 | **已裁决采用 `2px` / `ring-2`**；「`1px` / `ring-1` 作为焦点环宽度」为**已作废的过时记忆** | `web/src/design-system/tokens/semantic.css:120-123` 为 `--ds-focus-ring-width: 2px`（注释记录 2026-11-13 变更）；3.0 §15.1 亦为恒 `2px` / `ring-2` | **已裁决**：按 `AGENTS.md`「设计值来自代码」采用 `2px`；运行时代码本身已是 2px，**本轮不改任何代码值**；装饰性 `ring-1` 描边 1px 与 `1px` 边框为真实有效值、原样保留（07 分册按 1px 登记），不得改成 2px；验证状态 `NOT_VERIFIED`（未执行浏览器级守卫复核） |
-> | h1 / h2 字号 | 用户基线 h1 `28/600/36`、h2 `22/600/30` | `@theme` 运行真值 h1 `--text-4xl` `30/38`、h2 `--text-3xl` `24/32`（h3 `18/26`、display `36/44` 一致） | **Adapt** / `NOT_VERIFIED`；数值以代码为准，**不得改代码值**，与品牌三态色值差异同样处理；若统一须走 §19 变更流程并补回归测试，详见 `04-TYPOGRAPHY-STANDARD.md` §4.3 |
-> | Light hover / active | `#494CC7` / `#3F42B0` | `source/brand.tokens.json` 与 `tokens/generated/brand.css` 为 `#4F52D1` / `#4A4DC5` | 仍待解，`NOT_VERIFIED`；`brand.tokens.json` 为 `status: DRAFT` / `decision: AUTO_BLOCKED`，**值 / 状态变更未获授权**（差异登记已获 team-lead 授权并在 `10-THEME-STANDARD.md` §10.1 / `S10-D7` 落地）；**不得改代码值** |
-> | Dark primary / hover / active | `#8B8DF5` / `#A1A3F7` / `#B7B8FA` | `tokens/generated/brand.css` 的 `.dark` 为 `#A1A3F7` / `#B1B3FF` / `#9294F7` | 仍待解，`NOT_VERIFIED`；同上，值 / 状态变更未获授权；**不得改代码值** |
->
-> 除焦点环已按裁决采用运行时真值 `2px` 外，其余差异不得被静默抹平，也不得反过来把运行时值写成本规范基线；**所有差异项一律不得改代码值**。品牌基线六色值（Light `#5B5EE6` / `#494CC7` / `#3F42B0`、Dark `#8B8DF5` / `#A1A3F7` / `#B7B8FA`）本身保持原样不改。品牌色值差异已由 team-lead 授权在 `10-THEME-STANDARD.md` §10.1 / `S10-D7` 同步登记（Adapt + `NOT_VERIFIED`），其态位对应按 DTCG 键名读取、**语义等价未逐一独立核实**，不得宣称逐值一一对应已验证。详见 `03-COLOR-STANDARD.md` §差异登记与 `04-TYPOGRAPHY-STANDARD.md` §4.3。
+> **分组**：`G1` = clerk.com 官方已公布 → 取 clerk.com 值（用户 2026-11-15 指令「不一致处以 clerk.com 为准」）；`G2` = clerk.com 未公布 → 取运行时实现现状为唯一规范值。**任一项在 5.0 中只存在一个值。**
 
-### 4.2.1 焦点环裁决（已定案，验证状态 `NOT_VERIFIED`）
+| 组 | 属性 | **5.0 唯一规范值** | 依据 |
+|---|---|---|---|
+| G1 | 品牌主色 `colorPrimary` | `#6c47ff` | clerk.com `appearance.variables` 官方示例值（原 Uter `#5B5EE6` 基线废止） |
+| G1 | 基准字号 `fontSize` | `0.8125rem`（13px） | clerk.com 官方默认值 |
+| G1 | 圆角 `borderRadius` | `0.375rem`（6px） | clerk.com 官方默认值 |
+| G1 | 间距 `spacing` | `1rem`（16px） | clerk.com 官方默认值 |
+| G1 | 字重 `fontWeight` | `{normal:400, medium:500, semibold:600, bold:700}` | clerk.com 官方默认值 |
+| G1 | 字体族 `fontFamily` / `fontFamilyButtons` | `inherit` | clerk.com 官方默认值（变量契约） |
+| G1 | 字体族 `fontFamilyMono` | 系统 mono 栈 | clerk.com 官方默认值 |
+| G1 | 主题变量结构 | 扁平单层 **24 键** `--clerk-*` 语义键（18 颜色 + 6 非颜色） | clerk.com `variables` 文档；原「Primitive→Semantic 两层 / 245 变量」不再是 5.0 规范口径 |
+| G1 | 6 个弃用键 | `colorText→colorForeground` / `colorTextOnPrimaryBackground→colorPrimaryForeground` / `colorTextSecondary→colorMutedForeground` / `spacingUnit→spacing` / `colorInputText→colorInputForeground` / `colorInputBackground→colorInput`（2025-07-15） | clerk.com 官方弃用清单 |
+| G1 | 主题切换 | `color-scheme: light dark` / `.dark` / `[data-theme='…']` / `prefers-color-scheme` | clerk.com 官方 |
+| G1 | 预置主题 | 6 套：`default` / `simple` / `shadcn` / `dark` / `shadesOfPurple` / `neobrutalism`；数组叠加后定义者优先 | clerk.com 官方 |
+| G1 | 运行时色阶派生 | `color-mix()` + 相对颜色语法；浏览器下限 Chrome 111+ / FF 113+ / Safari 16.2+（mix）、Chrome 119+ / FF 120+ / Safari 16.4+（相对色） | clerk.com 官方 |
+| G1 | 定制分层 | 4 层：Themes → `appearance.variables` → BYO CSS（`cl-*` 稳定类）→ Build your own UI | clerk.com 官方 |
+| G1 | 时效性事实 | Clerk Elements 已弃用（Core 3 / 2026-03-03）；`localization` prop 为 Experimental | clerk.com 官方 |
+| G2 | Hover / Active（Light） | `#4F52D1` / `#4A4DC5` | clerk.com 未公布 → 运行时 `brand.tokens.json` / `generated/brand.css` |
+| G2 | Dark primary / hover / active | `#A1A3F7` / `#B1B3FF` / `#9294F7` | 同上 |
+| G2 | 实际字体文件 | `Inter Variable` + `Noto Sans SC Variable`（`@fontsource-variable/inter` / `@fontsource-variable/noto-sans-sc`） | clerk.com 未公布品牌字体族；不虚称引入 Source Han Sans 文件 |
+| G2 | 字号刻度 | `@theme --text-*` 18 档：h1 `30/38`、h2 `24/32`、h3 `18/26`、display `36/44`、正文 `14/22`、caption `12/18`、长文本 `16/26` | 运行时 `tokens/typography.css` |
+| G2 | 最小可见字号 | `12px` | clerk.com 未规定下限；与 13px 基准不冲突（基准为默认、12px 为下限） |
+| G2 | 间距刻度 | `4pt` 网格：4 / 8 / 12 / 16 / 24 / 32 / 40 / 48 | 运行时 `tokens/spacing.css` |
+| G2 | 圆角刻度 | 8 档 `calc(var(--radius)*N)`：6 / 8 / 10 / 12 / 14 / 16 / 18 / 20 px + `full` | 运行时 `styles/theme.css` |
+| G2 | 描边 / 焦点环 | 边框 `1px`；焦点环 `2px` / `ring-2` / `--ds-focus-ring-width: 2px` | 运行时 `tokens/semantic.css`；装饰性 `ring-1` 描边 1px 独立保留，不承载焦点语义 |
+| G2 | 颜色语义 / 状态 / 图表 / 双主题映射 | 17 类 `--ds-color-*`、状态四层、图表 6 色 `oklch()`、Light/Dark Surface·Text·Border 映射 | clerk.com 未公布完整色阶 hex 与图表色板；详见 `UDS5-S03` §3 / §12 / §14 |
+| G2 | 组件 / 元素 / 模板 / 断点 / 动效 / 层级 | 65 组件、20 元素、12 页面模板、5 档断点（640/768/1024/1280/1536）、6 档动效、6 档 elevation | clerk.com 官方未提供这些通用能力，全部由 Uter 自有规范定义 |
+| G2 | 无障碍目标 | WCAG 2.2 AA：正文 ≥4.5:1、大字与必要图形 ≥3:1；31 条 `verify-contrast.mjs` 断言 | clerk.com 未公布条款级对照与数值表 |
 
-| 口径来源 | 取值 | 5.0 判定 |
-|---|---|---|
-| 用户 PART 0 原则 A | 只规定「边框 1px」，**未规定焦点环宽度** | 不构成 `1px` 焦点环的依据 |
-| 过时长期记忆（旧 `MEMORY.md`） | 「`1px` / `ring-1` 勿回 2px」作为**焦点环宽度** | **已作废**，不再作为焦点环可选基线；但**装饰性 `ring-1` 描边 1px 是真实有效值**，不承载焦点语义（3.0 §15.1 分类，07 分册按 1px 登记），须原样保留、不得改成 2px；`1px` 边框（PART 0 原则 A）亦保留，不得把全文「1px」无差别替换 |
-| 运行时真值 | `tokens/semantic.css:120-123` 的 `--ds-focus-ring-width: 2px`（2026-11-13 代码变更） | **5.0 采用**；运行时代码本身已是 2px，本轮不改任何代码值 |
-| 历史版本 3.0 §15.1 | 恒 `2px` / `ring-2` | 与运行时一致，佐证裁决 |
-| **5.0 裁决结论** | `2px` / `ring-2` / `--ds-focus-ring-width: 2px` | **统一采用**；装饰性描边仍为 1px |
+**规范—实现差异（唯一有意保留项，登记为待迁移）**：本轮按上级指令**只改规范文本、不改 `web/src`**。运行时代码中仍为 `#5B5EE6` 主色、`14/22` 正文、`--radius: 0.625rem`、两层 245 变量；这些值与 `G1` 冲突，属**实现待迁移**，须按 §19 变更流程分期推进（先写回归测试、补对比度与视觉回归证据、再改代码），不得静默抹平，也不得反过来把实现值写成规范基线。迁移完成前，运行时守卫（`T1`–`T17`、`verify-contrast.mjs`、`check-clerk-boundary.mjs` C3）仍按现行代码值执行，属**过渡期双轨**，不是两套规范值。
 
-裁决依据：`AGENTS.md` §「Design System Enforcement」——「文档与实现冲突时，设计数值来自代码（`tokens/`、`theme.css`），规则与边界来自规范」。原生元素兜底与组件层 `focus-visible:ring-2` 同读 `--ds-focus-ring-width`，全站仍只有一档（`UDS5-S02` §5.6）。
+**被废止的历史口径**（仅作追溯，不再是规范值）：品牌基线六色 `#5B5EE6` / `#494CC7` / `#3F42B0` / `#8B8DF5` / `#A1A3F7` / `#B7B8FA`；`14/22 + 4pt` 作为「基准」；`1px` 焦点环；「Primitive→Semantic 两层为 5.0 强制架构」；「不采用任何 Clerk 色值 / 13px 基准」。对应旧裁决 `D1`–`D8` 中与本表冲突者以本表为准。
 
-> 状态说明：口径**已裁决定案**；运行时代码本身已是 `2px`，**本轮不改任何代码值，只改规范登记**。但本轮**未执行浏览器级守卫复核**（回归测试、组件层与原生兜底同步、视觉 / 无障碍验收均未跑），故 `验证状态` 仍为 `NOT_VERIFIED`，不得据裁决宣称已验证。装饰性 `ring-1` 描边 1px 与 `1px` 边框均为真实有效值，原样保留。原任务书「品牌基线（必须保留）…焦点环 1px」一条以本裁决为准，**仅作历史记录保留，不再作为现行基线**。
+### 4.2.1 焦点环唯一值
+
+**5.0 唯一规范值：`2px` / `ring-2` / `--ds-focus-ring-width: 2px`**（§4.2 G2）。原生元素兜底与组件层 `focus-visible:ring-2` 同读该变量，全站只此一档（`UDS5-S02` §5.6）。
+
+- 装饰性 `ring-1` 描边 `1px` 与 `1px` 边框是**独立有效值**，不承载焦点语义，原样保留；不得把全文「1px」无差别替换为 2px。
+- 「`1px` / `ring-1` 作为焦点环宽度」为已作废的过时记忆，**不再是任何可选基线**；本表不再并列该历史值。
+- 验证状态 `NOT_VERIFIED`：本轮未执行浏览器级守卫复核（回归测试、组件层与原生兜底同步、视觉 / 无障碍验收均未跑），不得据裁决宣称已验证。
 
 ---
 
@@ -208,11 +215,11 @@
 
 | # | 原则 | 依据 | 5.0 落地 |
 |---|---|---|---|
-| C1 | 只借鉴「分层定制」理念 | `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.23：Themes → variables → BYO CSS → 自建 UI 四层 | 建立 §6 五层架构；禁止引入 `appearance` 式全局覆写 |
-| C2 | 不引入 Clerk 运行时 | Elements 已随 Clerk Core 3（2026-03-03）弃用，推荐 redesigned hooks；`localization` 仍为 Experimental | 不引入 Clerk SDK / `@clerk/ui` / `@clerk/elements` / Storybook |
-| C3 | 不把 Clerk 不具备的能力写成官方能力 | 官方未提供 Data Table / Charts / DatePicker / FileUpload / Toast 通用规范 / Drawer / Empty State 等 11 类能力 | 这类组件全部由 Uter 自有规范定义 |
+| C1 | **上游架构为准**（原「只借鉴理念」废止） | `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.23：Themes → `appearance.variables` → BYO CSS（`cl-*` 稳定类）→ Build your own UI 四层 | 四层定制架构与扁平单层 24 键变量结构列为 §4.2 `G1` 唯一规范口径；`appearance` 式全局覆写在运行时迁移前仍由 T1–T17 约束（过渡期待办，见 §4.2） |
+| C2 | 不引入 Clerk 运行时 | Elements 已随 Clerk Core 3（2026-03-03）弃用，推荐 redesigned hooks；`localization` 仍为 Experimental | 本轮不改 `web/src`，不引入 Clerk SDK / `@clerk/ui` / `@clerk/elements` / Storybook；规范对齐与运行时依赖引入是两件事 |
+| C3 | 不把 Clerk 不具备的能力写成官方能力 | 官方未提供 Data Table / Charts / DatePicker / FileUpload / Toast 通用规范 / Drawer / Empty State 等 11 类能力 | 这类组件全部由 Uter 自有规范定义（§4.2 `G2`） |
 | C4 | 严格限视觉 | `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.17–2.19：认证 / 用户 / 组织管理仅参考信息架构与视觉密度 | 不替换 Uter 自建认证、`(auth)/` 9 路由、Casbin 权限、`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` |
-| C5 | 不照搬品牌与数值 | 官方 Variables 文档已公布 24 个主题变量与默认值（`borderRadius 0.375rem`、`spacing 1rem`、`fontSize 0.8125rem`=13px、`fontWeight {400,500,600,700}`、`colorPrimary` 示例值 `#6c47ff`），但默认 `fontFamily` 为 `inherit`、未公布品牌字体族（Geist/Suisse/Inter 由 Clerk 自有 CSS 注入）与完整色阶 hex；Uter 不采用其 13px 基准（详见 `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.4 / §2.5） | 保留 14/22 正文基线；只采纳「按钮字体可独立配置」理念到 `--ds-font-*` |
+| C5 | **品牌与数值以上游为准**（原「不照搬品牌与数值」红线废止） | 官方 `variables` 文档公布 24 键与默认值（`borderRadius 0.375rem`、`spacing 1rem`、`fontSize 0.8125rem`=13px、`fontWeight {400,500,600,700}`、`colorPrimary #6c47ff`、`fontFamily inherit`），未公布品牌字体族与完整色阶 hex | 主色 `#6c47ff`、13px 基准、6px 圆角、16px 间距、24 键扁平变量结构按 §4.2 `G1` 取为唯一规范值；未公布项按 `G2`；运行时迁移按 §19 分期，本轮不改代码 |
 | C6 | 状态必须显式定义 | 官方示例同时写 hover / focus / active 三态 | 组件补齐 default/hover/focus/pressed/disabled/loading/error/success 八态 |
 | C7 | 组件扩展走稳定契约 | `cl-*` 稳定类与内部类分界 | 扩展只走 variant / slot / composition，禁止依赖内部类 |
 
@@ -411,6 +418,7 @@
 | D6 | 建议 `tokens/*.ts`；实际真源为 CSS + `@theme` + Manifest 三层 | **Adapt**：以实际工程架构为准，不新建第二套值 Token |
 | D7 | 「规范/代码/组件/页面/测试必须一致」；3.0 未闭合、65 组件 0 VERIFIED、73 路由仅 22 页有视觉基线 | **Adapt + 分期**：建差距台账，不批量重写 UI |
 | D8 | 「研究 Clerk Authentication/User/Organization UI」但不得改认证逻辑 | **Adopt（严格边界）**：仅参考视觉与信息架构 |
+| D9 | 用户 2026-11-15 指令「5.0 中所有与上游 clerk.com 不一致的地方以 clerk.com 为准；合并差异只保留唯一规范值」↔ 5.0 首轮「Clerk 仅为参考、不照搬品牌与数值、两层 Token 不倒退」红线 | **Adopt（上级裁决，红线废止）**：§0.2 效力层级上移 clerk.com、§4.2 建 `G1`/`G2` 唯一规范值基线表、§4.1 B1 / §5 C5 改写；`D5` / `D6` / `D8` 中与本裁决冲突处以 `D9` 为准。仅改规范文本，运行时代码差异登记为「待迁移」，按 §19 分期推进 |
 
 ## 20. 关键决策 D1（必须遵守）
 
@@ -439,6 +447,8 @@
 | S01-D5 | 蓝图 §8 使用 `P0` / `P1` / `P2` 表示业务风险，与仓库 `BASELINE-AUDIT` §3.1 的 `P1`–`P3` **待办优先级同符号不同义** | **Adapt**（已做 `RISK-` 前缀命名空间隔离，见 §4A.1；`BASELINE-AUDIT` §10 等历史快照的裸写 P* 按本节裁决表标注时点，不代表现行口径） |
 | S01-D6 | **`RISK-P0` 强验证存在代码不对称**：`controller/user.go:1367` 的 `delete` 分支挂 `requireAdminUserProof(c, service.VerificationScopeAdminUserDelete, ...)`，而同函数 `add_quota` 分支（`:1336-1338` → `controller/user_quota.go:13` `manageUserQuota`）**未挂任何强验证**。按 §4A.2，管理员调整他人额度属「余额变更」= `RISK-P0`，但仓库实现未达该级 | **真实代码缺陷**。修复须挂 `requireAdminUserProof` + `CriticalRateLimit` 并走 `UDS5-S01` §19 变更流程；本轮**不改代码**，登记待办 |
 | S01-D7 | 蓝图 §8 的 `RISK-P0` / `RISK-P1` / `RISK-P2` **未在代码中标注**（`S01-D3`），本轮已按条目落到规范文本（`S29` §7 / `S30` §5 / §7），但「规范分级 → UI 自动增强交互」的链路**仍不存在** | `NOT_IMPLEMENTED`（`S01-D3` 的延续，不重复登记） |
+| S01-D8 | **全 5.0 差异合并裁决（2026-11-15）**：各分册「差异与例外登记」章节中的第二套设计值（优化方案建议基线、业务域蓝图建议值、3.0 历史值、审计时点快照）一律不再是规范值 | **唯一规范值入口 = §4.2 基线表**（`G1` 取 clerk.com、`G2` 取运行时实现现状）。差异编号仅保留「实现状态 / 待办 / 缺陷」语义，不再承载第二个规范值；`E24` 两处对比度缺陷、`E28` 渐变有意例外、`NOT_VERIFIED` / `NOT_IMPLEMENTED` 状态**原样保留**（属状态而非设计值） |
+| S01-D9 | **规范—实现待迁移**：`G1` 的 `#6c47ff` / 13px / 6px / 16px / 24 键结构与 `web/src` 现行值冲突；本轮按上级指令只改规范文本 | `NOT_IMPLEMENTED`（过渡期双轨）。迁移须走 §19：先写回归测试 → 补对比度与视觉回归证据 → 再改代码；迁移完成前运行时守卫仍按现行代码值执行，不得据本表宣称代码已对齐 |
 
 ---
 
@@ -453,7 +463,7 @@
 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | **历史版本**，全文保留；仅作追溯与差异比对，不产生现行约束、不作 5.0 验收依据 |
 | `docs/design-system/showcase.html` | 视觉标本与 Manifest 派生产物；是展示层，不是规范真源 |
 | `audit/BASELINE-AUDIT.md` / `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` | 本轮规范撰写的**唯一事实源**；其结论与未闭合项被本总纲继承 |
-| Clerk 官方文档 | 仅参考分层定制理念与信息架构；不引入运行时依赖、不照搬品牌 |
+| Clerk 官方文档 | **上游权威**：已公布设计值一律以 clerk.com 为准（`UDS5-S01` §4.2 `G1`）；本轮不引入运行时依赖、不引入徽标与品牌背书文案 |
 
 ## 代码实施位置
 
@@ -533,10 +543,12 @@
 
 ## 26. 全局计数与口径裁决表（2026-11-14 统一，唯一裁决入口）
 
-> 本节为 5.0 全部分册的**计数与口径单一真源**。凡分册、审计报告、验收报告、注册表与本表冲突，一律以本表为准；历史快照保留原值但必须显式标注时点，不得静默覆盖。裁决原则：**设计值以运行时代码 / 磁盘事实为准，规则与边界以规范为准**。
+> 本节为 5.0 全部分册的**计数与口径单一真源**。凡分册、审计报告、验收报告、注册表与本表冲突，一律以本表为准；历史快照保留原值但必须显式标注时点，不得静默覆盖。裁决原则（2026-11-15 修订）：**规范设计值以 §4.2 唯一规范值基线表为准（`G1` 取 clerk.com 上游、`G2` 取运行时实现现状）；计数与磁盘事实以只读实测为准；规则与边界以规范为准**。本节各行的「唯一现行值」均为计数或状态口径，不另立第二套设计值。
 
 | 项 | 唯一现行值 | 历史 / 子集口径 | 裁决依据 |
 |---|---|---|---|
+| **唯一规范值入口** | **§4.2 基线表**：`G1` 14 项取 clerk.com 官方值、`G2` 11 类取运行时实现现状；任一属性在全 5.0 只有一个值 | 各分册「差异与例外登记」中的建议基线 / 蓝图值 / 3.0 历史值 / 审计快照均为历史记录，不是规范值 | 2026-11-15 上级裁决 `D9` / `S01-D8` |
+| **上游效力** | clerk.com 官方已公布值 > 5.0 分册 > 运行时实现现状（实现按 §19 迁移） | 首轮「Clerk 仅为参考、不照搬品牌与数值」红线已废止 | §0.2 效力层级 / §4.1 B1 / §5 C5 |
 | 分册数 | **32 份**（`UDS5-S01`–`UDS5-S32` = 28 基础 + 4 业务域） | 28 = 仅基础分册 S01–S28 | 注册表 S29–S32 已 ACTIVE |
 | 目录 `.md` 总数 | **35 份**（33 根目录 + 2 `audit/`） | — | `find` 实测 |
 | 注册条目 | **37 条**（35 `.md` + 2 `.yaml` 注册表） | 33 / 36 为过时中间值 | `design:5:check` 实测 `standards: 37` / `registeredDocIds: 37` |
@@ -551,7 +563,7 @@
 | E28 深色对比度 | **7.02 / 6.56 / 4.51:1**（运行时 `verify-contrast.mjs` 真值，深色背景 `#0F172A`） | 7.93 / 7.41 / 5.10 为第二轮误按 `#020617` 对齐的旧值，已回正 | `UDS5-S13` §6 逐值成对锚定 |
 | E28 浅色达标 | from 2.54 / via 2.72 **未达 3:1**，to 3.96 **达标** | 「三档全部未达」为算术错误 | 13 §3.7 阈值 3:1 |
 | Clerk 来源 / 对照 / 决策 | **13 个核对入口（唯一 URL 去重 11）/ 18 项对照 / 30 项决策** | AUDIT-02 首轮 = 9 来源 / 23 小节 24 判定（历史快照） | `UDS5-S21` §2.4 / §5；CHANGELOG 节点六 |
-| N1–N7 处置 | **7 维度 / 9 判定**（6 `Adapt` + 3 `Reject`，N4 / N7 双记） | 「6 Adapt + 1 Reject」为未区分双记的旧口径 | `UDS5-S21` §2.4 处置列 |
+| N1–N7 处置 | **7 维度 / 9 判定**（6 `Adapt` + 1 `Adopt`(N6 上游对齐) + 2 `Reject`，N4 / N7 双记） | 「6 Adapt + 3 Reject」为 2026-11-14 首轮口径；N6 已按上游裁决由 `Reject` 改 `Adopt` | `UDS5-S21` §2.4 / §5；`S21-D13` |
 | 组件八态 | **8 态**（default/hover/focus/pressed/disabled/loading/error/success） | 五态 = 交互过程（S17）；6 态 = 展示中心现状（缺 error/success） | `UDS5-S14` §6 / `UDS5-S17` |
 | registry 缺失字段 | **11 项**（含顶层 `accessibility`） | 「8 类」为分组旧称 | `UDS5-S01` §6 / `UDS5-S23` §3.12 |
 | 通知组件 | **6 类**（含 2 类规范保留位） | 5 类漏 `System Notification` | `UDS5-S20` §3 |

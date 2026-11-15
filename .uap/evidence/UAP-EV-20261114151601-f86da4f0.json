@@ -1,0 +1,49 @@
+{
+  "evidence_id": "UAP-EV-20261114151601-f86da4f0",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794669353302-fcb1c8",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-14T15:16:01.178Z",
+  "started_at": "2026-11-14T15:16:01.129Z",
+  "finished_at": "2026-11-14T15:16:01.178Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114151555-63d66686",
+    "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+    "worktree_fingerprint": "22e5cbc7ed30fafe3ae0dce3add493b60ca795be4b3882a4926dba4ed8172129",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114151555-63d66686",
+  "git_head": "2c502041723061cbbc5a12096c4e621d4d935a5a",
+  "worktree_fingerprint": "22e5cbc7ed30fafe3ae0dce3add493b60ca795be4b3882a4926dba4ed8172129",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "git diff --check -- .uap/tests/fixtures/repair-canary.mjs",
+  "exit_code": 0,
+  "duration_ms": 49,
+  "inputs": "{\"args\":[\"diff\",\"--check\",\"--\",\".uap/tests/fixtures/repair-canary.mjs\"],\"phase\":\"regression_attempt_1\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794669353302-fcb1c8.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794669353302-fcb1c8/repair-canary.mjs"
+  ],
+  "findings": [
+    "before=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+    "after=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1"
+  ],
+  "summary": "[regression_attempt_1] SUCCEEDED",
+  "content_hash": "24e9b92e7c7ad654910f872b2ae58be34ade17d37f39ffa3826f38022c2af31b"
+}

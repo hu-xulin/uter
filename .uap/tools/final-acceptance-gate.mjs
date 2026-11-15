@@ -24,11 +24,11 @@ export const version = '1.0.0';
 
 const ACCEPTANCE_FILE = path.join(REPORTS, 'FINAL-ACCEPTANCE.json');
 
-function report(name) { return readJSON(path.join(REPORTS, name), null); }
+function report(name, dir = REPORTS) { return readJSON(path.join(dir, name), null); }
 
 /** Recompute a card's counts from its raw items. Never trust card.counts. */
-function strictCard(name) {
-  const card = report(name);
+export function strictCard(name, dir = REPORTS) {
+  const card = report(name, dir);
   const problems = [];
   if (!card) return { name, status: TEST_STATUS.NOT_RUN, problems: [`${name}: missing`], counts: null, card: null };
   let recomputed = null;
@@ -54,6 +54,11 @@ function strictCard(name) {
     recomputed = summarize(Object.entries(card.counts).flatMap(([k, n]) => Array.from({ length: Number(n) || 0 }, (_, i) => ({ status: k, title: `${name}_${k}_${i}`, reason: `${name} aggregate` }))));
   } else {
     problems.push(`${name}: no items and no counts — no execution evidence`);
+  }
+  // Zero executed test items can never be a PASS. An empty E2E scenario set
+  // (scenarios=[] / expected=0) that still claims status=PASS is a false pass.
+  if (card.status === 'PASS' && recomputed && recomputed.total === 0) {
+    problems.push(`${name}: status=PASS but zero executed test items (empty scenarios / expected=0)`);
   }
   if (card.exit_code !== undefined && card.exit_code !== null && Number(card.exit_code) !== 0 && card.status === 'PASS') {
     problems.push(`${name}: exit_code=${card.exit_code} but status=PASS`);
@@ -279,19 +284,32 @@ function checkEvidence(phase = 'verify') {
   return { id: '6.6_evidence', status: problems.length ? TEST_STATUS.FAIL : TEST_STATUS.PASS, problems, details, manifest_hash: manifest.manifest_integrity_hash ?? null };
 }
 
-function checkUapSelf() {
+export function checkUapSelf(reportsDir = REPORTS, execution = null) {
   const problems = [], details = {};
-  const t = report('RUNTIME-TEST-RESULTS.json') || {};
+  const e = execution || currentExecution();
+  const headNow = e.git_head;
+  const t = report('RUNTIME-TEST-RESULTS.json', reportsDir) || {};
   details.uap_tests = { exit_code: t.exit_code ?? null, status: t.status ?? null };
   if (Number(t.exit_code ?? 1) !== 0) problems.push(`uap: self-test exit_code=${t.exit_code}`);
-  const v = report('VALIDATION-RESULTS.json') || {};
+  const v = report('VALIDATION-RESULTS.json', reportsDir) || {};
   details.validators = { total: v.total ?? null, pass: v.pass ?? null, fail: v.fail ?? null, blocked: v.blocked ?? null, exit_code: v.exit_code ?? null };
   if (Number(v.fail ?? 1) !== 0 || Number(v.blocked ?? 1) !== 0) problems.push(`uap: validator fail=${v.fail} blocked=${v.blocked}`);
-  const b = report('BUILD-RESULTS.json') || {};
+  const b = report('BUILD-RESULTS.json', reportsDir) || {};
   const failedBuilds = (b.commands || []).filter((c) => Number(c.exit_code) !== 0);
   details.build = { commands: (b.commands || []).length, failed: failedBuilds.length };
   if (failedBuilds.length) problems.push(`uap: ${failedBuilds.length} build/typecheck command(s) failed`);
   if (b.quality_gate && b.quality_gate.failed > 0) problems.push(`uap: quality gate failed=${b.quality_gate.failed}`);
+  // BUILD-RESULTS must be FRESH evidence of THIS batch. A stale build report
+  // (the exact audit defect: old BUILD-RESULTS still trusted by checkUapSelf)
+  // must never be silently accepted just because its exit_code looks usable.
+  const bHead = b.git_head ?? b.commit_sha ?? null;
+  details.build.binding = { git_head: bHead, execution_id: b.execution_id ?? null };
+  if (!bHead || bHead !== headNow) {
+    problems.push(`uap: BUILD-RESULTS.json not bound to current HEAD (declared=${bHead}, HEAD=${headNow})`);
+  }
+  if (!b.execution_id || b.execution_id !== e.execution_id) {
+    problems.push(`uap: BUILD-RESULTS.json not bound to current execution (declared=${b.execution_id}, current=${e.execution_id})`);
+  }
   return { id: 'uap_self', status: problems.length ? TEST_STATUS.FAIL : TEST_STATUS.PASS, problems, details };
 }
 
@@ -302,7 +320,7 @@ function checkUapSelf() {
  */
 export function runFinalAcceptance({ write = false, execution, evidencePhase = 'verify' } = {}) {
   const e = execution || currentExecution();
-  const groups = [checkDb(), checkTestResults(), checkRequirements(), checkPayment(), checkEvidence(evidencePhase), checkUapSelf()];
+  const groups = [checkDb(), checkTestResults(), checkRequirements(), checkPayment(), checkEvidence(evidencePhase), checkUapSelf(REPORTS, e)];
   const allProblems = groups.flatMap((g) => g.problems);
   const hardFailures = groups.filter((g) => g.status === TEST_STATUS.FAIL);
   const necessaryBlocked = groups.reduce((n, g) => n + (Number(g.necessary_blocked) || 0), 0);
@@ -381,20 +399,47 @@ export function runFinalAcceptance({ write = false, execution, evidencePhase = '
   return result;
 }
 
+/**
+ * `verified_by` must identify an INDEPENDENT verifier, never the gate itself.
+ * Accepted forms (fail-closed otherwise):
+ *   - object { independent: true }  OR  { verifier: "<independent string>" }
+ *   - string containing an independence signal (independent/独立/external/
+ *     third-party/replay/regression/separate/隔离/verifier/validator/e2e) that
+ *     is NOT self-referential (final-acceptance-gate / self / 自签).
+ */
+function looksIndependent(vb) {
+  if (!vb) return false;
+  if (typeof vb === 'object') {
+    if (vb.independent === true) return true;
+    return typeof vb.verifier === 'string' ? looksIndependent(vb.verifier) : false;
+  }
+  if (typeof vb !== 'string') return false;
+  if (/final[-_ ]?acceptance[-_ ]?gate|\bself\b|self[-_ ]?(signed|test|report)|自签/i.test(vb)) return false;
+  return /independent|独立|external|third.?party|replay|regression|separate|隔离|verifier|validator|e2e/i.test(vb);
+}
+
+/**
+ * A capability is proven ONLY by a dedicated, independently-verified result
+ * card bound to the CURRENT HEAD. Equating capabilities with "self-tests exit
+ * 0" was dishonest; fail closed whenever the card is missing, not PASS, from
+ * another version, or not attributed to an independent verifier.
+ */
+function capabilityProven(fileName, headNow) {
+  const card = readJSON(path.join(REPORTS, fileName), null);
+  if (!card || card.status !== 'PASS') return false;
+  if (!card.git_head || card.git_head !== headNow) return false;
+  return looksIndependent(card.verified_by);
+}
+
 function writeFinalStatus(result, e) {
   const repo = repositoryIdentity();
   const req = result.checks.find((c) => c.id === '6.4_requirements')?.details || {};
   const tests = result.checks.find((c) => c.id === '6.2_6.3_tests')?.details || {};
   const payment = result.checks.find((c) => c.id === '6.5_payment')?.details || {};
-  const uapSelf = result.checks.find((c) => c.id === 'uap_self');
-  const uapSelfPass = uapSelf?.status === TEST_STATUS.PASS;
-  // Honest capability ledger: each capability is proven by the UAP runtime
-  // self-test suite (which includes the real-code-repair boundary tests and
-  // the independent-regression replay test). If the self-tests fail, the
-  // capability is NOT proven and the final verdict is FAILED anyway.
+  const headNow = gitHead();
   const capabilities = {
-    real_code_repair: uapSelfPass,
-    independent_regression: uapSelfPass,
+    real_code_repair: capabilityProven('UAP-REAL-CODE-REPAIR-RESULTS.json', headNow),
+    independent_regression: capabilityProven('UAP-INDEPENDENT-REGRESSION-RESULTS.json', headNow),
   };
   const missingCaps = Object.entries(capabilities).filter(([, v]) => v !== true).map(([k]) => k);
   // The canonical 18 prescribed reports (same list report-generator.mjs writes
@@ -496,7 +541,37 @@ function writeFinalStatus(result, e) {
     final_acceptance_note: result.note,
   };
   writeJSON(FILES.finalStatus, status);
+  syncIndexStatusBlock(status);
   return status;
+}
+
+/**
+ * The machine-readable block in SPECIFICATION-INDEX.md must describe the SAME
+ * authoritative verdict as FINAL-STATUS.json / the CLI. `report --final` writes
+ * it from the legacy state machine BEFORE this gate exists, so once the gate
+ * has produced a real verdict we rebind only that generated block (never the
+ * normative index content). Writing it is not a code change — see the
+ * generated-index exclusion in status-engine/execution.mjs.
+ */
+function syncIndexStatusBlock(status) {
+  if (!fs.existsSync(FILES.index)) return false;
+  const RE = /<!--\s*UAP-STATUS-BLOCK\s+\{[\s\S]*?\}\s*-->/;
+  const text = fs.readFileSync(FILES.index, 'utf8');
+  const payload = {
+    computed_by: component,
+    execution_id: status.execution_id,
+    git_head: status.git_head,
+    overall_status: status.overall_status,
+    claim_allowed: status.claim_allowed,
+    requirements_total: status.status_engine.counts.requirements_total,
+    requirements_verified: status.status_engine.counts.verified,
+    specifications_verified: status.specifications.verified,
+    specifications_total: status.specifications.total,
+    generated_at: status.generated_at,
+  };
+  const block = `<!-- UAP-STATUS-BLOCK ${JSON.stringify(payload)} -->`;
+  fs.writeFileSync(FILES.index, RE.test(text) ? text.replace(RE, block) : `${block}\n${text}`, 'utf8');
+  return true;
 }
 
 const invokedDirectly = process.argv[1]

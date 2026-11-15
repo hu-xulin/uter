@@ -1,0 +1,298 @@
+{
+  "schema_version": "1.0",
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "generated_at": "2026-11-15T02:07:00.937Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+  "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+  "command": "node .uap/tools/phase2-capability-cards.mjs",
+  "exit_code": 0,
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true,
+    "sandbox": "os.tmpdir() dedicated repair sandbox (no tracked file modified)"
+  },
+  "test_environment": "isolated; no production DB / auth / payment touched",
+  "component": "uap.real-code-repair-e2e",
+  "status": "PASS",
+  "verified_by": "independent-regression-e2e.mjs (separate process, independent verifier; re-runs tests and re-checks hashes/diff/behaviour)",
+  "counts": {
+    "total": 12,
+    "pass": 12,
+    "fail": 0,
+    "PASS": 12,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIPPED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "checks": [
+    {
+      "name": "repair_process_exit_0",
+      "status": "PASS",
+      "pass": true,
+      "detail": "exit=0 timed_out=false"
+    },
+    {
+      "name": "repair_status_succeeded",
+      "status": "PASS",
+      "pass": true,
+      "detail": "status=SUCCEEDED"
+    },
+    {
+      "name": "before_test_really_failed",
+      "status": "PASS",
+      "pass": true,
+      "detail": "before exit_code=1 (a real red baseline is mandatory)"
+    },
+    {
+      "name": "real_source_changed",
+      "status": "PASS",
+      "pass": true,
+      "detail": "before=be397302bb73f543fe9569baa367aa7765ade2dacfff68f465d0801f5c4cd7ce after=9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3"
+    },
+    {
+      "name": "diff_changes_return_expression",
+      "status": "PASS",
+      "pass": true,
+      "detail": "diff_bytes=195 has_return_line=true"
+    },
+    {
+      "name": "tests_not_tampered",
+      "status": "PASS",
+      "pass": true,
+      "detail": "locked test hashes=4"
+    },
+    {
+      "name": "original_test_red_to_green",
+      "status": "PASS",
+      "pass": true,
+      "detail": "after green command present=true"
+    },
+    {
+      "name": "independent_process_exit_0",
+      "status": "PASS",
+      "pass": true,
+      "detail": "exit=0 timed_out=false"
+    },
+    {
+      "name": "independent_verdict_pass",
+      "status": "PASS",
+      "pass": true,
+      "detail": "verdict=PASS failures=[]"
+    },
+    {
+      "name": "independent_checks_all_pass",
+      "status": "PASS",
+      "pass": true,
+      "detail": "19/19 independent checks passed"
+    },
+    {
+      "name": "behavior_really_changed",
+      "status": "PASS",
+      "pass": true,
+      "detail": "behavioral checks=1, json=[{\"export\":\"add\",\"args\":[2,3],\"expected\":5,\"observed\":5,\"pass\":true}]"
+    },
+    {
+      "name": "verifier_isolated_from_repair_side",
+      "status": "PASS",
+      "pass": true,
+      "detail": "{\"code_only_checked\":true,\"no_repair_import\":true,\"no_repair_status_read\":true,\"no_repair_result_read\":true,\"only_node_builtin_imports\":true,\"imports\":[\"node:fs\",\"node:path\",\"node:crypto\",\"node:child_process\",\"node:url\"],\"separate_process\":true,\"source_sha256\":\"0bb67a7c5a3ae87e4f52d48035d22e58f1ddf5833860a6829cd2106e276edd88\"}"
+    }
+  ],
+  "failures": [],
+  "repair": {
+    "task_id": "UAP-E2E-REPAIR-50b29e0a",
+    "status": "SUCCEEDED",
+    "before_failing_exit_code": 1,
+    "after_passing": {
+      "original_test": {
+        "command": "node",
+        "args": [
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/original.test.mjs"
+        ],
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2",
+        "exit_code": 0,
+        "timed_out": false,
+        "signal": null,
+        "duration_ms": 113,
+        "stdout": "E2E_OK original.test.mjs\n",
+        "stderr": ""
+      },
+      "regression_test": {
+        "command": "node",
+        "args": [
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/regression.test.mjs"
+        ],
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2",
+        "exit_code": 0,
+        "timed_out": false,
+        "signal": null,
+        "duration_ms": 112,
+        "stdout": "E2E_OK regression.test.mjs\n",
+        "stderr": ""
+      },
+      "module_test": {
+        "command": "node",
+        "args": [
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/module.test.mjs"
+        ],
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2",
+        "exit_code": 0,
+        "timed_out": false,
+        "signal": null,
+        "duration_ms": 112,
+        "stdout": "E2E_OK module.test.mjs\n",
+        "stderr": ""
+      },
+      "full_test": {
+        "command": "node",
+        "args": [
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/full.test.mjs"
+        ],
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2",
+        "exit_code": 0,
+        "timed_out": false,
+        "signal": null,
+        "duration_ms": 113,
+        "stdout": "E2E_OK full.test.mjs (5 add cases + mul)\n",
+        "stderr": ""
+      }
+    },
+    "source_diff": "--- a/src/calc.mjs\n+++ b/src/calc.mjs\n@@ -8,7 +8,7 @@\n  * 「失败测试输出诊断 + 本文件源码扫描 + 候选变换试跑」推导得出。\n  */\n export function add(a, b) {\n-  return a * b;\n+  return a + b;\n }\n \n export function mul(a, b) {\n",
+    "hashes": {
+      "before_source": "be397302bb73f543fe9569baa367aa7765ade2dacfff68f465d0801f5c4cd7ce",
+      "after_source": "9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3",
+      "test_files": {
+        "tests/original.test.mjs": "9c60856c70e00bc01f1d2f4041a171d4fdb7031a9b0a10327e787d70d57f8a9f",
+        "tests/regression.test.mjs": "d1e3f75cf09d5fdff39d10e72300f5498076cfb02b959a9d84ce227fcc7b0353",
+        "tests/module.test.mjs": "c621cc331e45bbdede61047f7ff16951aced09bc7b3233c6b5b6df02cfc08ee2",
+        "tests/full.test.mjs": "91c7e605f324615b09cbd840f316500d50e2205119e4f64af1517775b7ac5e90"
+      },
+      "source_diff_sha256": "27ab0f982c3ec98e5f333ae54228db5ec3d645d915b31d3d4d013ad6f2f2bcba"
+    },
+    "attempts": 1,
+    "bounded_by": 3,
+    "rollback": false,
+    "commands": [
+      {
+        "phase": "before_failing",
+        "exit_code": 1,
+        "timed_out": false
+      },
+      {
+        "phase": "candidate_attempt_1",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "phase": "after_original",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "phase": "after_regression",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "phase": "after_module",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "phase": "after_full",
+        "exit_code": 0,
+        "timed_out": false
+      }
+    ],
+    "test_file_sha256_before": {
+      "tests/original.test.mjs": "9c60856c70e00bc01f1d2f4041a171d4fdb7031a9b0a10327e787d70d57f8a9f",
+      "tests/regression.test.mjs": "d1e3f75cf09d5fdff39d10e72300f5498076cfb02b959a9d84ce227fcc7b0353",
+      "tests/module.test.mjs": "c621cc331e45bbdede61047f7ff16951aced09bc7b3233c6b5b6df02cfc08ee2",
+      "tests/full.test.mjs": "91c7e605f324615b09cbd840f316500d50e2205119e4f64af1517775b7ac5e90"
+    },
+    "test_file_sha256_after": {
+      "tests/original.test.mjs": "9c60856c70e00bc01f1d2f4041a171d4fdb7031a9b0a10327e787d70d57f8a9f",
+      "tests/regression.test.mjs": "d1e3f75cf09d5fdff39d10e72300f5498076cfb02b959a9d84ce227fcc7b0353",
+      "tests/module.test.mjs": "c621cc331e45bbdede61047f7ff16951aced09bc7b3233c6b5b6df02cfc08ee2",
+      "tests/full.test.mjs": "91c7e605f324615b09cbd840f316500d50e2205119e4f64af1517775b7ac5e90"
+    },
+    "source_changed": true,
+    "tests_untampered": true
+  },
+  "independent_regression": {
+    "verdict": "PASS",
+    "checks_total": 19,
+    "checks_passed": 19,
+    "behavioral_checks": [
+      {
+        "export": "add",
+        "args": [
+          2,
+          3
+        ],
+        "expected": 5,
+        "observed": 5,
+        "pass": true
+      }
+    ],
+    "independent_commands": [
+      {
+        "name": "original_test_independent_rerun",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "name": "regression_test_independent_rerun",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "name": "module_test_independent_rerun",
+        "exit_code": 0,
+        "timed_out": false
+      },
+      {
+        "name": "full_test_independent_rerun",
+        "exit_code": 0,
+        "timed_out": false
+      }
+    ]
+  },
+  "verifier_isolation": {
+    "code_only_checked": true,
+    "no_repair_import": true,
+    "no_repair_status_read": true,
+    "no_repair_result_read": true,
+    "only_node_builtin_imports": true,
+    "imports": [
+      "node:fs",
+      "node:path",
+      "node:crypto",
+      "node:child_process",
+      "node:url"
+    ],
+    "separate_process": true,
+    "source_sha256": "0bb67a7c5a3ae87e4f52d48035d22e58f1ddf5833860a6829cd2106e276edd88"
+  },
+  "provenance": {
+    "repair_command": "node .uap/tools/real-repair-e2e.mjs",
+    "repair_exit_code": 0,
+    "independent_command": "node .uap/tools/independent-regression-e2e.mjs /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2 60000",
+    "independent_exit_code": 0,
+    "independent_verdict": "PASS",
+    "evidence_ref": "UAP-EV-20261115020659-5b65602c",
+    "evidence_hash": "19ed72e9879a6fee2c794705bbf2abf4acd0c1c4b14ffd7702c2ce1a95076097",
+    "evidence_hash_valid": true,
+    "evidence_binding_valid": true,
+    "sandbox_dir": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2",
+    "generated_by": "real command results (never hand-edited status)"
+  }
+}

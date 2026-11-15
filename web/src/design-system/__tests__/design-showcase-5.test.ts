@@ -81,13 +81,16 @@ afterAll(() => {
 })
 
 describe('check-design-showcase-5.0.mjs', () => {
-  it('当前仓库基线通过：37 条注册条目 / 65 个组件 / 18+ 类元素全覆盖', () => {
+  it('当前仓库基线通过：37 条注册条目 / 65 个组件 / 20 类元素 / 全量 Token 与字体', () => {
     const result = run(['--json'])
     expect(result.exit).toBe(0)
     expect(result.stdout).toContain('"verdict": "PASS"')
     expect(result.stdout).toContain('"errors": 0')
+    expect(result.stdout).toContain('"checksPassed": 13')
     expect(result.stdout).toContain('"specIds": 37')
     expect(result.stdout).toContain('"componentIds": 65')
+    expect(result.stdout).toContain('"componentSamples": 65')
+    expect(result.stdout).toContain('"typeSteps": 18')
     expect(result.stdout).toContain('"generated": false')
   })
 
@@ -144,5 +147,45 @@ describe('check-design-showcase-5.0.mjs', () => {
       html.replace('"specIds": 37', '"specIds": 999')
     )
     expect(failWith(file)).toContain('manifest')
+  })
+
+  it('拒绝运行时 CSS 变量遗漏（S10 零遗漏）', () => {
+    const file = tampered((html) =>
+      html.replace(
+        /<article class="token-item" data-token-name="--background"[\s\S]*?<\/article>/,
+        ''
+      )
+    )
+    expect(failWith(file)).toContain('S10')
+  })
+
+  it('拒绝 @theme 字号档被改名 / 遗漏（S11 字体零遗漏）', () => {
+    const file = tampered((html) =>
+      html.replaceAll(
+        'data-type-step="--text-xs"',
+        'data-type-step="--text-xs-GONE"'
+      )
+    )
+    expect(failWith(file)).toContain('S11')
+  })
+
+  it('拒绝组件缺少真实视觉样本（S12 逐一 DOM 样本）', () => {
+    const file = tampered((html) =>
+      html.replace(
+        'data-component-sample="UTER-CMP-ACCORDION"',
+        'data-component-sample="UTER-CMP-ACCORDION-GONE"'
+      )
+    )
+    expect(failWith(file)).toContain('S12')
+  })
+
+  it('拒绝丢失 G1 上游唯一规范主色（S9 上游对齐）', () => {
+    const file = tampered((html) =>
+      html.replace(
+        'data-normative-brand="#6c47ff"',
+        'data-normative-brand="#5B5EE6"'
+      )
+    )
+    expect(failWith(file)).toContain('S9')
   })
 })

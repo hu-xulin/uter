@@ -1,6 +1,6 @@
 # Workflow Verification Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T11:24:09.896Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T02:15:26.383Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 7 个注册工作流
@@ -81,8 +81,22 @@
 | uap-quality-gate | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113111514-3a06f53e |
 | uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261113111531-4286d335 |
 | uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113111532-283162f8 |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261113151538-4955dc11 |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261113151614-9d8cf59d |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261113151617-8741d2fd |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261113151620-a3e0dea6 |
+| uap-quality-gate | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113151622-2f85e354 |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261113151641-a104f800 |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113151643-9fb33032 |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261113152327-feb0fc34 |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261113152400-7acd912c |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261113152402-cf7ba4c8 |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261113152405-4e4dca13 |
+| uap-quality-gate | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113152407-6d210002 |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261113152426-96573fcc |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113152428-75d1c464 |
 
 
 ## 汇总
 
-注册 7；已运行 61；成功 55。
+注册 7；已运行 75；成功 67。

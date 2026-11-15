@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0",
   "component": "runtime.evidence-engine.manifest",
-  "generated_at": "2026-11-14T05:19:24.235Z",
+  "generated_at": "2026-11-15T02:43:10.666Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "execution_id": "UAP-EXEC-20261115024307-4724c067",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "b3c71c58d86e3038894a32ca201d0e37dbfdc7d3498ad8abaf161293129862a6",
   "fingerprint_basis": {
     "algorithm": "sha256(sorted( head + status-lines + sha256(git diff --binary) + sha256(git diff --cached --binary) + sha256(untracked file bytes base64) ))",
     "excludes": [
@@ -16,38 +16,70 @@
       ".uap/evidence/",
       ".uap/state",
       ".uap/reports",
-      ".uap/evidence"
+      ".uap/evidence",
+      ".uap/SPECIFICATION-INDEX.md"
     ],
     "includes_untracked_files": true,
     "includes_file_content": true,
     "note": "runtime artefacts (.uap/state, .uap/reports, .uap/evidence) are excluded; all other worktree content is bound"
   },
-  "final_report_count": 14,
+  "final_report_count": 15,
   "missing_reports": [],
   "entries": [
     {
       "path": ".uap/reports/ACCESSIBILITY-RESULTS.json",
       "name": "ACCESSIBILITY-RESULTS.json",
-      "bytes": 5648,
-      "sha256": "d784ebab7baed40b35ffe4956280e880d7f2d5e1a90a77bd805f4e8d0edc5a29",
+      "bytes": 5613,
+      "sha256": "5f5bd77a5de4ea081ab2da4adf9b4abdf9a0ea7eb756c0b016624d1b992db743",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-        "generated_at": "2026-11-14T05:05:04.667Z",
+        "execution_id": "UAP-EXEC-20261115021200-c4369778",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "7fe27a000f41ebd9bb4d3dd4d45b163c68ebbb087ab61e719ac331b862e76de9",
+        "generated_at": "2026-11-15T02:12:02.371Z",
         "status_model": "UAP-TEST-STATUS-1.0",
-        "status": "BLOCKED",
+        "status": "PASS",
         "counts": {
-          "PASS": 13,
+          "PASS": 14,
           "FAIL": 0,
-          "SKIPPED": 1,
+          "SKIPPED": 0,
           "BLOCKED": 0,
           "NOT_RUN": 0,
           "NOT_APPLICABLE": 0
         },
         "test_command": "npx playwright test --config e2e/axe/playwright.config.ts",
         "environment": {
-          "target": "http://localhost:3101"
+          "target": "http://localhost:3100"
+        }
+      },
+      "is_json": true
+    },
+    {
+      "path": ".uap/reports/BUILD-RESULTS.json",
+      "name": "BUILD-RESULTS.json",
+      "bytes": 4709,
+      "sha256": "0e36de4cf7cc75ed517d4abb934b6ebaf84aaeb8faf1b6f7fb6cff6d9414ba02",
+      "binding": {
+        "execution_id": "UAP-EXEC-20261115020451-9dd677fc",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "3b1d36e681c92bfeb9d46fc3ef870c06b21f5baa00254a2e69c8a449c81576a3",
+        "generated_at": "2026-11-15T02:04:53.102Z",
+        "status_model": "UAP-TEST-STATUS-1.0",
+        "status": "FAIL",
+        "counts": {
+          "total": 6,
+          "PASS": 0,
+          "FAIL": 6,
+          "BLOCKED": 0,
+          "SKIPPED": 0,
+          "NOT_RUN": 0,
+          "NOT_APPLICABLE": 0
+        },
+        "test_command": "uap build (frontend build:check, go build, typecheck, go vet, design lint, artifact verification)",
+        "environment": {
+          "platform": "darwin",
+          "node": "v22.22.2",
+          "go": "go1.27.x",
+          "cwd": "/Users/lincolnhu/uter"
         }
       },
       "is_json": true
@@ -55,24 +87,24 @@
     {
       "path": ".uap/reports/DATABASE-INTEGRATION.json",
       "name": "DATABASE-INTEGRATION.json",
-      "bytes": 39342,
-      "sha256": "ce6e2e4a042cc6990985846ce0d016df41892afa3ba4e93d787aa60ae810995c",
+      "bytes": 78062,
+      "sha256": "1f222d803a3eff431cb7b0dd54dea6819b3e03bc97f483b0e56fb5deee6494d7",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114024647-2afbb0f4",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "4fb7bd5cb470ca6968e736e4576ebdeea90ed627869d1937878c6c6105f25497",
-        "generated_at": "2026-11-14T02:46:46.894Z",
+        "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+        "generated_at": "2026-11-15T02:07:22.895Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": "PASS",
         "counts": {
-          "PASS": 47,
+          "PASS": 80,
           "FAIL": 0,
           "SKIPPED": 0,
           "BLOCKED": 0,
           "NOT_RUN": 0,
           "NOT_APPLICABLE": 0
         },
-        "test_command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers -count=1 -json",
+        "test_command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers|TestPhase2BusinessFunctions -count=1 -json",
         "environment": null
       },
       "is_json": true
@@ -80,13 +112,13 @@
     {
       "path": ".uap/reports/DATABASE-MIGRATIONS.json",
       "name": "DATABASE-MIGRATIONS.json",
-      "bytes": 2981,
-      "sha256": "03ffcbb6d31f67fd2481aa19bd50a64d6fd2f1637c1f87ad1a860479f3369db3",
+      "bytes": 3009,
+      "sha256": "fba073c17157b610e8e05c667bc2f46f56708ae882f24ec9519e46fed7cf098b",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114024649-cfe85d8b",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "13aba5f8732870d7a8e35bc9cdee56e83df57a5f5908ffddefd17aee324c25e9",
-        "generated_at": "2026-11-14T02:46:48.983Z",
+        "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+        "generated_at": "2026-11-15T02:07:24.012Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": "PASS",
         "counts": {
@@ -97,7 +129,7 @@
           "NOT_RUN": 0,
           "NOT_APPLICABLE": 0
         },
-        "test_command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers -count=1 -json",
+        "test_command": "go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers|TestPhase2BusinessFunctions -count=1 -json",
         "environment": null
       },
       "is_json": true
@@ -105,20 +137,20 @@
     {
       "path": ".uap/reports/E2E-RESULTS.json",
       "name": "E2E-RESULTS.json",
-      "bytes": 8817,
-      "sha256": "382b1d18453624b21e5e427a95fce96d40003b9d18722601759709a164215f55",
+      "bytes": 21364,
+      "sha256": "eb1aacf4864a24c9b57cd77cded2fd79b441efdadfe5aa2bd8bd01b377281861",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-        "generated_at": "2026-11-14T05:05:03.713Z",
+        "execution_id": "UAP-EXEC-20261115021200-c4369778",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "7fe27a000f41ebd9bb4d3dd4d45b163c68ebbb087ab61e719ac331b862e76de9",
+        "generated_at": "2026-11-15T02:11:59.467Z",
         "status_model": "UAP-TEST-STATUS-1.0",
-        "status": "FAIL",
+        "status": "BLOCKED",
         "counts": {
-          "PASS": 13,
+          "PASS": 37,
           "FAIL": 0,
-          "SKIPPED": 1,
-          "BLOCKED": 0,
+          "SKIPPED": 0,
+          "BLOCKED": 1,
           "NOT_RUN": 0,
           "NOT_APPLICABLE": 0
         },
@@ -130,13 +162,13 @@
     {
       "path": ".uap/reports/FINAL-ACCEPTANCE.json",
       "name": "FINAL-ACCEPTANCE.json",
-      "bytes": 25253,
-      "sha256": "7575754067f5ffd66e4a5aafebace2978301bf973a5b03d2d051e4894c6d42f8",
+      "bytes": 28494,
+      "sha256": "655ad8f376097fc49ef694619132dadb12c117e723f6d342d2f31f00d455b5b7",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-        "generated_at": "2026-11-14T05:19:23.701Z",
+        "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
+        "generated_at": "2026-11-15T02:15:41.453Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": "FAILED",
         "counts": null,
@@ -152,13 +184,13 @@
     {
       "path": ".uap/reports/FINAL-STATUS.json",
       "name": "FINAL-STATUS.json",
-      "bytes": 13245,
-      "sha256": "97db406a460f2538d2626c1de6e21103f4eed46592cb22671b82d8c70121254c",
+      "bytes": 14927,
+      "sha256": "23a7fdf09b1c26083e06731f7515b64b88226f35fd63615fb2f26493d19a4fdf",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-        "generated_at": "2026-11-14T05:19:23.853Z",
+        "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
+        "generated_at": "2026-11-15T02:15:41.657Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": null,
         "counts": null,
@@ -171,12 +203,12 @@
       "path": ".uap/reports/PAYMENT-SANDBOX.json",
       "name": "PAYMENT-SANDBOX.json",
       "bytes": 25625,
-      "sha256": "4e5fdd24344e54b9d4accd0f869e78b47682aa30f9cfb2440ee387a1a4ef5662",
+      "sha256": "05bb2392f6cbd237d38dfe0427a3d2e3412ef24f6d2ef533ff4e69147e6c3a61",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114024723-9b967b8b",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "963e526a45657d42764effa89c5d40cd5813b4b3d06dea077bfab4ab2cb7df09",
-        "generated_at": "2026-11-14T02:47:23.323Z",
+        "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+        "generated_at": "2026-11-15T02:07:32.186Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": "PASS",
         "counts": {
@@ -203,13 +235,13 @@
     {
       "path": ".uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json",
       "name": "REQUIREMENT-TRACEABILITY-MATRIX.json",
-      "bytes": 1608848,
-      "sha256": "742b14d0e4437faab8561c3a44272f8dcb2d6a86657eb15e72c36f11ba137b33",
+      "bytes": 1702529,
+      "sha256": "da369fccddda6eaf6394d242a2c6c7f0265e518dea9f7bae186eee35158d57c0",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114024749-0d25182b",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "50331c1b2ae5024f3634685462789bce47d8beef5c4092efd42387492d522478",
-        "generated_at": "2026-11-14T02:47:51.987Z",
+        "execution_id": "UAP-EXEC-20261115020407-c6638244",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "ad9f93fbb96d613ce53336fc534919b10699dd6875e6ff5c49c47fa29ed19fae",
+        "generated_at": "2026-11-15T02:04:12.680Z",
         "status_model": "RequirementStatus = VERIFIED | NOT_VERIFIED | BLOCKED | NOT_APPLICABLE",
         "status": null,
         "counts": null,
@@ -221,13 +253,13 @@
     {
       "path": ".uap/reports/REQUIREMENT-VERIFICATION-RESULTS.json",
       "name": "REQUIREMENT-VERIFICATION-RESULTS.json",
-      "bytes": 1599374,
-      "sha256": "53d057dd79baa3c5a8d81326f594d558c80e155057e498b4e52a5e75b234f56a",
+      "bytes": 1742445,
+      "sha256": "7f3b2d53cef8c2a7866d3a0224ee4b0f4bdb6f3382a6b01d5085726f9c4e4762",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114024749-0d25182b",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "50331c1b2ae5024f3634685462789bce47d8beef5c4092efd42387492d522478",
-        "generated_at": "2026-11-14T02:47:51.682Z",
+        "execution_id": "UAP-EXEC-20261115020407-c6638244",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "ad9f93fbb96d613ce53336fc534919b10699dd6875e6ff5c49c47fa29ed19fae",
+        "generated_at": "2026-11-15T02:04:11.678Z",
         "status_model": "RequirementStatus = VERIFIED | NOT_VERIFIED | BLOCKED | NOT_APPLICABLE",
         "status": null,
         "counts": null,
@@ -239,17 +271,17 @@
     {
       "path": ".uap/reports/RUNTIME-TEST-RESULTS.json",
       "name": "RUNTIME-TEST-RESULTS.json",
-      "bytes": 5548,
-      "sha256": "b5e87261043c30f2b4b0faf6e3498620b736ea57258eb0bf7aff662403bc778b",
+      "bytes": 5642,
+      "sha256": "e0962587c9cc00ea7221e2816b0c39512be3010ab3ef2e1128908060e083b2cd",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114030129-9683980b",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "43a6f17b57256ef51ed9b3e8db058052b37cc4eba0f8f5726840b006e25bf914",
-        "generated_at": "2026-11-14T03:01:52.145Z",
+        "execution_id": "UAP-EXEC-20261115021942-8a1fe421",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
+        "generated_at": "2026-11-15T02:22:00.341Z",
         "status_model": null,
         "status": null,
         "counts": null,
-        "test_command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs",
+        "test_command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
         "environment": null
       },
       "is_json": true
@@ -258,12 +290,12 @@
       "path": ".uap/reports/SECURITY-VERIFICATION.json",
       "name": "SECURITY-VERIFICATION.json",
       "bytes": 21619,
-      "sha256": "6f4f74f8b3a769a101fdd45fc7d9d055fa26cd3f21d70eeed872a2383f56875c",
+      "sha256": "94525a0bfb0402f9962e2d1386fe5c159712cd82b58202729c2c7ae10954b4d7",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114025542-07c59bb9",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "f6af070a894451bbf2110ce4379459fa43b300fd75cd705709fac6f4a9482354",
-        "generated_at": "2026-11-14T02:55:41.435Z",
+        "execution_id": "UAP-EXEC-20261115020838-d7d6386c",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "af62f736be352af0ef053fb58724c6ae246619369f07b5bb134286133b936af6",
+        "generated_at": "2026-11-15T02:08:37.368Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": "PASS",
         "counts": {
@@ -282,13 +314,13 @@
     {
       "path": ".uap/reports/VALIDATION-RESULTS.json",
       "name": "VALIDATION-RESULTS.json",
-      "bytes": 8071004,
-      "sha256": "1e43f711b1d0a7bbb4176009ed34d138d319b7fdf0824754793ba5d4bdf1fc37",
+      "bytes": 9938291,
+      "sha256": "454e557a51c53de87f217be717b0a27565ca7b6c3f5e2f3019d2d7de2540a2a1",
       "binding": {
-        "execution_id": "UAP-EXEC-20261113170538-86dca44d",
-        "git_head": "80b38608348398b9282d8b9e5e82532de7fc8870",
-        "worktree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "generated_at": "2026-11-13T17:07:28.022Z",
+        "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+        "generated_at": "2026-11-15T02:06:55.251Z",
         "status_model": null,
         "status": null,
         "counts": null,
@@ -300,18 +332,18 @@
     {
       "path": ".uap/reports/VISUAL-REGRESSION.json",
       "name": "VISUAL-REGRESSION.json",
-      "bytes": 34382,
-      "sha256": "e1bb0a882858df7cc399d3c2c89976c8d9be1ead57530c563d8f6949bce0f5ff",
+      "bytes": 22094,
+      "sha256": "16d9029c691bdc16c289a1693746d4eaa8ae58aa2d0c415f004c5cc8766ea8d5",
       "binding": {
-        "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-        "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-        "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-        "generated_at": "2026-11-14T05:11:27.140Z",
+        "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+        "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+        "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230",
+        "generated_at": "2026-11-15T02:15:13.333Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": "FAIL",
         "counts": {
-          "PASS": 0,
-          "FAIL": 29,
+          "PASS": 27,
+          "FAIL": 2,
           "SKIPPED": 0,
           "BLOCKED": 0,
           "NOT_RUN": 0,
@@ -332,12 +364,6 @@
     },
     {
       "name": "AUTO-REPAIR.json",
-      "execution_id": null,
-      "git_head": null,
-      "classification": "HISTORICAL"
-    },
-    {
-      "name": "BUILD-RESULTS.json",
       "execution_id": null,
       "git_head": null,
       "classification": "HISTORICAL"
@@ -440,8 +466,8 @@
     },
     {
       "name": "REQUIREMENT-INDEPENDENT-VALIDATION.json",
-      "execution_id": "UAP-EXEC-20261114024749-0d25182b",
-      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "execution_id": "UAP-EXEC-20261115020407-c6638244",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
       "classification": "HISTORICAL"
     },
     {
@@ -458,8 +484,8 @@
     },
     {
       "name": "STATUS-CONSISTENCY.json",
-      "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-      "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+      "execution_id": "UAP-EXEC-20261115021515-907a3bf3",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
       "classification": "HISTORICAL"
     },
     {
@@ -467,8 +493,20 @@
       "execution_id": null,
       "git_head": null,
       "classification": "HISTORICAL"
+    },
+    {
+      "name": "UAP-INDEPENDENT-REGRESSION-RESULTS.json",
+      "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "classification": "HISTORICAL"
+    },
+    {
+      "name": "UAP-REAL-CODE-REPAIR-RESULTS.json",
+      "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+      "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+      "classification": "HISTORICAL"
     }
   ],
   "manifest_scope": "all FINAL_REPORTS except EVIDENCE-MANIFEST.json; FINAL-ACCEPTANCE.json pins manifest_integrity_hash",
-  "manifest_integrity_hash": "6aff21137fec0b388f4c9af7cdc50e054b66f7a6623aa8ba70072a4abf55ecb9"
+  "manifest_integrity_hash": "727dd534e1db86b1e1f70ce40b87413268f1da58b0d3dc98fa02fec088635f1b"
 }

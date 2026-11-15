@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261115014828-a58e874d",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261115014821-9b220de0",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T01:48:28.339Z",
+  "started_at": "2026-11-15T01:48:28.339Z",
+  "finished_at": "2026-11-15T01:48:28.339Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115014801-80651f40",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "1e98d57152a93c247a5f6be64e6b2ade5306c9086ae4d6b4cf9fea395534d4b2",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115014801-80651f40",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "1e98d57152a93c247a5f6be64e6b2ade5306c9086ae4d6b4cf9fea395534d4b2",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:test_concurrency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-5\",\"name\":\"test_concurrency\",\"idempotent\":true,\"handler\":\"test_concurrency\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "test_concurrency: read real artifacts (financial=19 checks, repair=null)",
+  "content_hash": "7e5cd9cfd1969d34f2dcfa3317f883ae15a3f3d628894a7e26c0c44702b92cc6"
+}

@@ -1,0 +1,49 @@
+{
+  "evidence_id": "UAP-EV-20261115013923-72746add",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794706762334-c86d5a",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-15T01:39:23.168Z",
+  "started_at": "2026-11-15T01:39:23.087Z",
+  "finished_at": "2026-11-15T01:39:23.168Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115013923-b637eb6b",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "e72898253cdb62b8d65873046a76762ddc7a4ac6be19efa22942e6d0234686ea",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115013923-b637eb6b",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "e72898253cdb62b8d65873046a76762ddc7a4ac6be19efa22942e6d0234686ea",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node .uap/tests/fixtures/repair-canary.repro.mjs",
+  "exit_code": 1,
+  "duration_ms": 81,
+  "inputs": "{\"args\":[\".uap/tests/fixtures/repair-canary.repro.mjs\"],\"phase\":\"reproduction_before\"}",
+  "stdout": "",
+  "stderr": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: add() 必须返回两数之和\n\n6 !== 5\n\n    at file:///Users/lincolnhu/uter/.uap/tests/fixtures/repair-canary.repro.mjs:8:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 6,\n  expected: 5,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v22.22.2\n",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794706762334-c86d5a.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794706762334-c86d5a/repair-canary.mjs"
+  ],
+  "findings": [
+    "before=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+    "after=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1"
+  ],
+  "summary": "[reproduction_before] SUCCEEDED",
+  "content_hash": "e0321a214c711b6ac9c508056fc81e4e350f5719491595953322110b12ea8c6e"
+}

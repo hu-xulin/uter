@@ -774,7 +774,7 @@
     ]
   },
   "gitleaks": {
-    "command": "gitleaks detect --no-git --source .uap/reports --no-banner --exit-code 1 --report-format json --report-path /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-gitleaks-21300.json",
+    "command": "gitleaks detect --no-git --source .uap/reports --no-banner --exit-code 1 --report-format json --report-path /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-gitleaks-66881.json",
     "exit_code": 0,
     "clean": true,
     "findings": 0
@@ -783,10 +783,10 @@
     "default_effect": "deny",
     "production_denies_verified": true
   },
-  "generated_at": "2026-11-14T02:55:41.435Z",
+  "generated_at": "2026-11-15T02:08:37.368Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -794,8 +794,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261114025542-07c59bb9",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "f6af070a894451bbf2110ce4379459fa43b300fd75cd705709fac6f4a9482354",
-  "evidence_ref": "UAP-EV-20261114025544-1181e81e"
+  "execution_id": "UAP-EXEC-20261115020838-d7d6386c",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "af62f736be352af0ef053fb58724c6ae246619369f07b5bb134286133b936af6",
+  "evidence_ref": "UAP-EV-20261115020840-508f2e38"
 }

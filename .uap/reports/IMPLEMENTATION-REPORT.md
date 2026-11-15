@@ -1,6 +1,6 @@
 # UAP 1.0 Implementation Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-13T11:24:09.863Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T02:15:26.301Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 结论（三项独立验收，不可互相替代）
@@ -8,8 +8,8 @@
 | 验收项 | 结论 | 证据摘要 |
 | --- | --- | --- |
 | 规范完整性 | COMPLETE | 32/32 规范完整，registry_ok=true |
-| UAP 实际运行能力 | NOT_FULLY_VERIFIED | 组件 10/10，验证器 32/32，测试退出码 0 |
-| Uter 真实合规性 | NOT_FULLY_VERIFIED | audit=true，资金失败=0，未处理 P0=0，P1=0 |
+| UAP 实际运行能力 | NOT_FULLY_VERIFIED | 组件 10/10，验证器 29/32，测试退出码 1 |
+| Uter 真实合规性 | NOT_FULLY_VERIFIED | audit=true，资金失败=0，未处理 P0=0，P1=2 |
 
 > 只有前两项各自成立，第三项才可能被认定。文档存在不等于 Runtime 可运行；Runtime 可运行不等于 Uter 已合规。
 
@@ -70,7 +70,7 @@
 | Phase 4 | 全项目扫描 | AUDIT-REPORT.json 已生成 |
 | Phase 5 | 统一整改 | undefined 次修复尝试 |
 | Phase 6 | 业务/资金专项 | 19 项检查（simulated_only=true） |
-| Phase 7 | 全量复验 | 32/32 验证器 PASS |
+| Phase 7 | 全量复验 | 29/32 验证器 PASS |
 | Phase 8 | 最终交付 | 18 份交付物由本次运行生成 |
 
 
@@ -80,4 +80,4 @@
 
 ## 未解决项
 
-共 4 条，详见 [BLOCKED-ITEMS.md](BLOCKED-ITEMS.md)。
+共 9 条，详见 [BLOCKED-ITEMS.md](BLOCKED-ITEMS.md)。

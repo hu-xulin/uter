@@ -300,4 +300,301 @@ behavior_probes:
 # real provider sandbox credentials / physical H5 devices / production
 # authorisation. Requirements needing them are classified BLOCKED by
 # blocked_rules above, never VERIFIED by a substitute static probe.
+# BEGIN GENERATED: bhv.requirement-behavior-suite (do not edit by hand)
+# Source of truth: .uap/tools/requirement-behavior-suite.mjs buildProbeAssertions()
+# Each required_output is a DISTINCT line that the suite emits ONLY after a real
+# execution + assertion. A missing line means that requirement stays NOT_VERIFIED.
+  - id: bhv.requirement-behavior-suite
+    probe_kind: BEHAVIOR_EXECUTION
+    command: node
+    args: [.uap/tools/requirement-behavior-suite.mjs]
+    timeout_ms: 900000
+    assertions:
+      - name: 'req.UAP-05-002-REQ-013'
+        required_output: ['REQ_ASSERT UAP-05-002-REQ-013 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-REQ-013
+        behavior: '覆盖率按实际结果报告：BLOCKED 不计为 PASS，runner_ok=true 的假通过被识别'
+      - name: 'req.UAP-05-002-REQ-014'
+        required_output: ['REQ_ASSERT UAP-05-002-REQ-014 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-REQ-014
+        behavior: '不能只用数字代替测试有效性：严格区分 PASS/SKIPPED/FAIL 计数'
+      - name: 'req.UAP-00-004-REQ-003'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-003
+        behavior: '状态模型区分未验证：0 个测试不能判为 all_pass'
+      - name: 'req.UAP-05-004-ACC-004'
+        required_output: ['REQ_ASSERT UAP-05-004-ACC-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-004-ACC-004
+        behavior: '不存在未登记的隐式跳过：聚合含 SKIPPED 时不允许 claim'
+      - name: 'req.UAP-00-004-ACC-005'
+        required_output: ['REQ_ASSERT UAP-00-004-ACC-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-ACC-005
+        behavior: '状态转换受规则约束：0 次执行的聚合为 NOT_RUN，不允许 claim'
+      - name: 'req.UAP-05-002-REQ-012'
+        required_output: ['REQ_ASSERT UAP-05-002-REQ-012 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-REQ-012
+        behavior: '测试结果记录退出码：exit_code=1 的卡片即使 items 全 PASS 也为 FAIL'
+      - name: 'req.UAP-03-004-REQ-012'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-012 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-012
+        behavior: '不得隐藏失败历史：assertNoFalsePass 对假 PASS 卡真实抛 UAP_FALSE_PASS'
+      - name: 'req.UAP-00-004-REQ-002'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-002
+        behavior: '每个执行器/验证器必须有明确状态：coerceStatus 归一化且未知值 fail-closed'
+      - name: 'req.UAP-00-002-ACC-004'
+        required_output: ['REQ_ASSERT UAP-00-002-ACC-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-ACC-004
+        behavior: '能够识别权限阻断：Playwright ok=true 的 [BLOCKED_BY_POLICY] spec 不被当 PASS'
+      - name: 'req.UAP-00-001-ACC-004'
+        required_output: ['REQ_ASSERT UAP-00-001-ACC-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-001-ACC-004
+        behavior: 'Runtime 能启动并返回健康状态：状态引擎 health() 三项自检全绿'
+      - name: 'req.UAP-00-003-REQ-005'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-005
+        behavior: '生产不可逆发布默认禁止自动执行：check(production_deploy) 被 DENY'
+      - name: 'req.UAP-00-003-REQ-004'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-004
+        behavior: '高风险操作执行前策略判断：check(real_payment) 被 DENY'
+      - name: 'req.UAP-00-003-REQ-007'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-007 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-007
+        behavior: '禁止密钥/Token 外泄：check(secret_export) 被 DENY'
+      - name: 'req.UAP-00-002-REQ-014'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-014 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-014
+        behavior: '自动执行不得突破权限策略：check(branch_creation) 被 DENY'
+      - name: 'req.UAP-00-003-REQ-006'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-006 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-006
+        behavior: '模拟与生产环境明确隔离：check(production_write) 被 DENY'
+      - name: 'req.UAP-00-003-REQ-001'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-001
+        behavior: '所有 Agent 必须使用明确身份和权限：未注册 agent 被 DENY'
+      - name: 'req.UAP-00-003-ACC-002'
+        required_output: ['REQ_ASSERT UAP-00-003-ACC-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-ACC-002
+        behavior: '越权操作测试被拒绝：本地命令白名单外的命令被 DENY'
+      - name: 'req.UAP-00-003-ACC-001'
+        required_output: ['REQ_ASSERT UAP-00-003-ACC-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-ACC-001
+        behavior: '权限策略能被 Runtime 加载：合法声明权限被 ALLOW（策略非全拒绝）'
+      - name: 'req.UAP-00-003-REQ-010'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-010
+        behavior: '所有敏感操作必须记录审计事件：deniedDecisions 真实读到 DENY 审计记录'
+      - name: 'req.UAP-00-004-REQ-013'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-013 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-013
+        behavior: '历史证据不得被新结果静默覆盖：verifyEvidenceManifest 真实拒绝伪造 execution 绑定'
+      - name: 'req.UAP-08-001-ACC-004'
+        required_output: ['REQ_ASSERT UAP-08-001-ACC-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-001-ACC-004
+        behavior: '构建和测试证据完整：verifyEvidenceManifest 真实逐条重算全部报告 sha256 且无篡改'
+      - name: 'req.UAP-00-004-ACC-003'
+        required_output: ['REQ_ASSERT UAP-00-004-ACC-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-ACC-003
+        behavior: '证据引用有效：verifyFinalReportBindings 真实拒绝与声明执行不一致的报告'
+      - name: 'req.UAP-08-001-REQ-006'
+        required_output: ['REQ_ASSERT UAP-08-001-REQ-006 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-001-REQ-006
+        behavior: '依赖缓存不得错误复用过期产物：fingerprintBasis 真实绑定 untracked 内容与文件字节'
+      - name: 'req.UAP-08-002-REQ-009'
+        required_output: ['REQ_ASSERT UAP-08-002-REQ-009 PASS']
+        forbid_output: []
+        requirement_id: UAP-08-002-REQ-009
+        behavior: '必须记录部署版本：gitHead() 真实解析出 40 位 commit SHA'
+      - name: 'req.UAP-06-002-REQ-016'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-016 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-016
+        behavior: '测试必须使用模拟支付渠道：TestConfigRejectsProductionGateway 真实通过'
+      - name: 'req.UAP-00-003-ACC-005'
+        required_output: ['REQ_ASSERT UAP-00-003-ACC-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-ACC-005
+        behavior: '模拟与生产配置隔离：TestConfigRejectsProviderSandboxWithoutCredentials 真实通过'
+      - name: 'req.UAP-00-003-ACC-003'
+        required_output: ['REQ_ASSERT UAP-00-003-ACC-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-ACC-003
+        behavior: '密钥扫描能发现测试用秘密：TestConfigRejectsRealLookingCredentials 真实通过'
+      - name: 'req.UAP-05-002-REQ-007'
+        required_output: ['REQ_ASSERT UAP-05-002-REQ-007 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-002-REQ-007
+        behavior: '必须覆盖关键并发和幂等场景：TestFaultInjections 真实通过'
+      - name: 'req.UAP-00-004-REQ-004'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-004
+        behavior: 'FULLY_VERIFIED 必须有完整验证证据：TestGatewayVerificationNeverFaked 真实通过'
+      - name: 'req.UAP-06-002-REQ-010'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-010
+        behavior: '余额变更须有可追溯业务来源：TestNonSuccessNotificationDoesNotCredit 真实通过'
+      - name: 'req.UAP-01-003-REQ-009'
+        required_output: ['REQ_ASSERT UAP-01-003-REQ-009 PASS']
+        forbid_output: []
+        requirement_id: UAP-01-003-REQ-009
+        behavior: '状态转换禁止非法跳转：TestClosedOrderRejectsSuccessNotification 真实通过'
+      - name: 'req.UAP-02-002-REQ-002'
+        required_output: ['REQ_ASSERT UAP-02-002-REQ-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-REQ-002
+        behavior: 'API 必须进行输入验证：TestCrossGatewaySignatureRejected 真实通过'
+      - name: 'req.UAP-01-003-REQ-011'
+        required_output: ['REQ_ASSERT UAP-01-003-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-01-003-REQ-011
+        behavior: '后端必须执行关键业务约束：TestMalformedPayloadRejected 真实通过'
+      - name: 'req.UAP-06-002-REQ-012'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-012 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-012
+        behavior: '必须设计异常恢复与重复通知处理：TestUnknownOrderNotificationRejected 真实通过'
+      - name: 'req.UAP-02-002-REQ-005'
+        required_output: ['REQ_ASSERT UAP-02-002-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-REQ-005
+        behavior: '金额字段采用精确计算类型：TestAmountSnapshotMismatchOnFileBackedStore 真实通过'
+      - name: 'req.UAP-00-004-REQ-005'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-005
+        behavior: 'FULLY_OPERATIONAL 须有端到端运行证据：TestReportGatewayVerifiedFalseOnFileBackedStore 真实通过'
+      - name: 'req.UAP-02-002-REQ-003'
+        required_output: ['REQ_ASSERT UAP-02-002-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-REQ-003
+        behavior: 'API 必须考虑兼容性与幂等性：TestNotificationHandling 真实通过'
+      - name: 'req.UAP-00-004-REQ-010'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-010
+        behavior: '报告必须能追溯到原始证据：TestReportDeclaresLocalSimulation 真实通过'
+      - name: 'req.UAP-06-002-REQ-013'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-013 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-013
+        behavior: '通知延迟/重复/退款失败须有处理策略：TestProviderSandboxAvailabilityProbe 真实通过'
+      - name: 'req.UAP-02-002-ACC-002'
+        required_output: ['REQ_ASSERT UAP-02-002-ACC-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-ACC-002
+        behavior: '数据模型与迁移一致：TestPhase2FKOrphanOrderRejected 真实通过'
+      - name: 'req.UAP-06-002-REQ-008'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-008
+        behavior: '退款须关联原订单和原支付记录：TestPhase2FKRefundAgainstMissingOrderRejected 真实通过'
+      - name: 'req.UAP-00-004-REQ-012'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-012 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-012
+        behavior: '执行状态可恢复：TestPhase2FKPersistenceAcrossRestart 真实通过'
+      - name: 'req.UAP-02-002-REQ-009'
+        required_output: ['REQ_ASSERT UAP-02-002-REQ-009 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-REQ-009
+        behavior: '数据库访问遵循事务边界：TestPhase2FKAllPoolConnectionsEnforceFK 真实通过'
+      - name: 'req.UAP-06-002-REQ-011'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-011
+        behavior: '关键操作考虑事务边界和失败补偿：TestPhase2FKBusinessWritePathProtected 真实通过'
+      - name: 'req.UAP-02-002-REQ-008'
+        required_output: ['REQ_ASSERT UAP-02-002-REQ-008 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-REQ-008
+        behavior: '破坏性迁移须有备份和回滚方案：TestSchemaMigrationFailureRollsBackDDL 真实通过'
+      - name: 'req.UAP-06-002-REQ-015'
+        required_output: ['REQ_ASSERT UAP-06-002-REQ-015 PASS']
+        forbid_output: []
+        requirement_id: UAP-06-002-REQ-015
+        behavior: '数据迁移不得破坏历史订单/资金流水：TestSchemaMigrationBusinessRowsSurviveUpgradeRollback 真实通过'
+      - name: 'req.UAP-02-002-REQ-006'
+        required_output: ['REQ_ASSERT UAP-02-002-REQ-006 PASS']
+        forbid_output: []
+        requirement_id: UAP-02-002-REQ-006
+        behavior: '数据库迁移可追踪可验证：TestSchemaMigrationVerifyDetectsTampering 真实通过'
+      - name: 'req.UAP-00-002-REQ-011'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-011
+        behavior: '同一任务恢复不得重复产生非幂等副作用：TestPhase2DBIntegration/db_11_idempotency 真实通过'
+      - name: 'req.UAP-03-003-REQ-009'
+        required_output: ['REQ_ASSERT UAP-03-003-REQ-009 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-003-REQ-009
+        behavior: '重复任务必须识别并去重：TestPhase2DBIntegration/db_12_duplicate_request 真实通过'
+      - name: 'req.UAP-03-004-REQ-004'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-004
+        behavior: '非幂等操作不得直接重复执行：TestSchemaMigrationUpIsIdempotent 真实通过'
+      - name: 'req.UAP-03-004-REQ-011'
+        required_output: ['REQ_ASSERT UAP-03-004-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-004-REQ-011
+        behavior: '恢复后须做状态一致性检查：status-consistency 状态一致性场景真实 ok'
+      - name: 'req.UAP-00-004-ACC-001'
+        required_output: ['REQ_ASSERT UAP-00-004-ACC-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-ACC-001
+        behavior: '状态持久化真实可用：status-consistency 状态引擎附加不变量真实 ok'
+      - name: 'req.UAP-00-001-REQ-005'
+        required_output: ['REQ_ASSERT UAP-00-001-REQ-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-001-REQ-005
+        behavior: '强制性规范对应验证器：honesty「STATIC_EXISTENCE 永远不能 VERIFIED」真实 ok'
+      - name: 'req.UAP-05-001-REQ-011'
+        required_output: ['REQ_ASSERT UAP-05-001-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-05-001-REQ-011
+        behavior: '质量状态须有证据：honesty「BLOCKED/SKIPPED/NOT_RUN 不能 VERIFIED」真实 ok'
+      - name: 'req.UAP-00-004-REQ-011'
+        required_output: ['REQ_ASSERT UAP-00-004-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-REQ-011
+        behavior: '证据须有稳定 ID：honesty「证据哈希缺失/不匹配不能 VERIFIED」真实 ok'
+      - name: 'req.UAP-03-002-REQ-011'
+        required_output: ['REQ_ASSERT UAP-03-002-REQ-011 PASS']
+        forbid_output: []
+        requirement_id: UAP-03-002-REQ-011
+        behavior: '关键修改须由独立验证器复验：honesty「共享证据覆盖多条要求被拒绝」真实 ok'
+      - name: 'req.UAP-00-001-REQ-010'
+        required_output: ['REQ_ASSERT UAP-00-001-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-001-REQ-010
+        behavior: '配置/规范/代码/验证结果可追溯：honesty「矩阵 538 条完整性」真实 ok'
+# END GENERATED: bhv.requirement-behavior-suite
+
 external_dependency_probes: []

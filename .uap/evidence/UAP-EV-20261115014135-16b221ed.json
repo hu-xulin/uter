@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261115014135-16b221ed",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T01:41:35.614Z",
+  "started_at": "2026-11-15T01:39:19.728Z",
+  "finished_at": "2026-11-15T01:41:35.614Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115014049-5ad28b50",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "8431f96eaa65e96037938a954f134a6b337b282442748ec8dd28ed51a50c7aee",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115014049-5ad28b50",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "8431f96eaa65e96037938a954f134a6b337b282442748ec8dd28ed51a50c7aee",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+  "exit_code": 1,
+  "duration_ms": 135886,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/execution-identity-race.test.mjs\",\".uap/tests/final-acceptance-negative.test.mjs\",\".uap/tests/independent-repair-review.test.mjs\",\".uap/tests/independent-verification.test.mjs\",\".uap/tests/phase2-requirement-verification.test.mjs\",\".uap/tests/phase2-security-negative.test.mjs\",\".uap/tests/real-code-repair-boundaries.test.mjs\",\".uap/tests/real-repair-e2e.test.mjs\",\".uap/tests/requirement-behavior-suite.test.mjs\",\".uap/tests/requirement-honesty.test.mjs\",\".uap/tests/runtime.test.mjs\",\".uap/tests/status-consistency.test.mjs\",\".uap/tests/status-snapshot.test.mjs\",\".uap/tests/test-collector.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 14 files -> exit 1, tap pass=159 fail=2",
+  "content_hash": "efe9584fc090624e949302adf60ac22c1edf057593f16fa879cd1ab5a8c02e4c"
+}

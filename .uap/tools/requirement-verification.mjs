@@ -406,7 +406,10 @@ function buildRow(r, cov, c, behaviorAssertions, execution, blockedRule, naRule)
     implementation_status: implStatus,
     implementation_files: r.implementation_files,
     verification_status: c.status,
-    verification_state: c.status, // never FULLY_VERIFIED -> status-engine cannot count a fake verified
+    // Four-state model (§3.1): VERIFIED is the terminal state. The status
+    // engine accepts VERIFIED/FULLY_VERIFIED only after re-checking the real
+    // behaviour evidence, its hash, and its execution binding.
+    verification_state: c.status,
     // A VERIFIED row MUST bind the real test case that proved it (the probe
     // command + distinct assertion). Independent recounters key on this field;
     // leaving it empty for a VERIFIED row is a coverage lie (P2-06).

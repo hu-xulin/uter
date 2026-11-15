@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261114184917-abe6fd71",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:49:17.981Z",
+  "started_at": "2026-11-14T18:49:07.410Z",
+  "finished_at": "2026-11-14T18:49:17.981Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114184902-bb361527",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "5e9d19f51e77fdf2d378deaa53a050c6bb23b998ab4657cf5d1e10c23c6758af",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114184902-bb361527",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "5e9d19f51e77fdf2d378deaa53a050c6bb23b998ab4657cf5d1e10c23c6758af",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json accept",
+  "exit_code": 1,
+  "duration_ms": 10571,
+  "inputs": "{\"argv\":[\"--json\",\"accept\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "final acceptance: FAILED, consistency FAILED (3)"
+    }
+  ],
+  "summary": "final acceptance: FAILED, consistency FAILED (3)",
+  "content_hash": "a2c2b349d7523617cbad8eff1695381b3fb67d9d4435a0b1c76b4af585e10b9a"
+}

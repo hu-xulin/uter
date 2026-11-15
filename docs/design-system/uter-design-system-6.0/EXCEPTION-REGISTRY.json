@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "registry_id": "UDS6-R-EXCEPTIONS",
+  "version": "6.0.0",
+  "generated_at": "2026-11-15T02:27:20.184Z",
+  "policy": "禁止用例外掩盖普通正文对比度缺陷；每条必须含失效条件",
+  "items": [
+    {
+      "id": "EX-001",
+      "scope": "WCAG 1.4.3 disabled controls",
+      "token": "--ds-color-text-disabled",
+      "reason": "WCAG 明确豁免禁用控件",
+      "review_condition": "控件恢复可用时立即失效",
+      "status": "ALLOWED"
+    },
+    {
+      "id": "EX-002",
+      "scope": "PAGE-REGISTRY ROUTE_NOT_FOUND 模板",
+      "reason": "文档列出但仓库无独立路由，禁止伪造页面",
+      "review_condition": "对应路由被真实创建时",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-003",
+      "scope": "Android / iOS / HarmonyOS 未实现",
+      "reason": "仓库无原生工程或跨平台框架源码",
+      "review_condition": "原生工程入库时",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-004",
+      "scope": "RTL 未支持",
+      "reason": "本版只覆盖 zh-CN / en LTR",
+      "review_condition": "新增 RTL locale 时",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-005",
+      "scope": "规范—实现双轨",
+      "reason": "6.0 规范值已冻结但 web/src 运行时仍为 3.0/5.0 值；迁移须在视觉基线冻结后",
+      "review_condition": "Phase 6 全站迁移完成",
+      "status": "OPEN"
+    },
+    {
+      "id": "EX-006",
+      "scope": "web/src/components/ai-elements/shimmer.tsx 手写渐变",
+      "reason": "真实扫描发现该既有文件同时含 background-clip:text 与 linear-gradient，属 6.0 之前的重复渐变实现；本轮不修改并发 WIP，Phase 7 清理时统一收敛到 ds-text-gradient-brand",
+      "review_condition": "Phase 7 旧版清理完成后注销",
+      "status": "OPEN",
+      "action": "MIGRATE_TO_SINGLE_EXIT"
+    }
+  ],
+  "registered_gradient_files": [
+    "web/src/design-system/foundations/typography.css",
+    "docs/design-system/uter-design-system-6.0/runtime/foundations.css",
+    "web/src/components/ai-elements/shimmer.tsx"
+  ],
+  "registered_gradient_note": "第一项为 3.0 现行唯一出口，第二项为 6.0 runtime 产物（Phase 6 接入目标，不在 web/src 现行运行时），第三项为 EX-006 登记在案的待迁移实现；后两项都不是永久豁免。"
+}

@@ -1,0 +1,59 @@
+{
+  "evidence_id": "UAP-EV-20261115020517-86d70be3",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T02:05:17.103Z",
+  "started_at": "2026-11-15T02:05:17.103Z",
+  "finished_at": "2026-11-15T02:05:17.103Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115020505-d19cfbf4",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "b865d615101e7d991ba2cec5229bfafd9e71a5d041e1561a8c87c3c054f70c68",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115020505-d19cfbf4",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "b865d615101e7d991ba2cec5229bfafd9e71a5d041e1561a8c87c3c054f70c68",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.test_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.test_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.test_execution",
+      "message": "test_execution: 缺少 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "check.failure_propagation",
+      "message": "failure_propagation: 缺少 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "check.evidence",
+      "message": "evidence: 缺少 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "test_report_missing",
+      "message": "缺少报告 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json, 无法校验测试执行记录 -> BLOCKED"
+    }
+  ],
+  "summary": "quality.test_integrity 实检: test_execution=FAIL(缺少 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json); failure_propagation=FAIL(缺少 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json); evidence=FAIL(缺少 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 7315 个 | 报告 /Users/lincolnhu/uter/.uap/reports/TEST-RUNS.json 不存在, 未自行创建 -> BLOCKED; 绝不因\"未发现失败\"而判 PASS",
+  "content_hash": "aae6677cc2464828cbe41da320e5f4252948bc0273b29a6b89e687f0354582ed"
+}

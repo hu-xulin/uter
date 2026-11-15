@@ -169,7 +169,7 @@
 | M-2 | 邮件品牌名为**固定**「Uter.ai 优特智能」，**不做本地化**（与 Web 端 `localizedBrandName()` 的 `优特智能`/`優特智能`/`Uter.ai` 三态不同） | `common/email_template.go:9`；`web/src/lib/brand.ts:36-44` |
 | M-3 | 邮件字体栈独立：`brandEmailFont`（Roboto → Helvetica Neue → Arial → PingFang SC → Hiragino Sans GB → Microsoft YaHei → sans-serif）。**不适用** `UDS5-S04` 的 Inter + Noto Sans SC，也不引用 `--ds-font-*` | `common/email_template.go:26`；`UDS5-S04` §2 |
 | M-4 | 邮件最小字号 `12px`（页脚），满足 `UDS5-S04` 的 12px 可见文本下限；字号阶梯为邮件自有集合（26 / 14 / 12 / 40），与 `--text-*` 阶梯无映射关系 | `common/email_template.go:63-91` |
-| M-5 | 邮件色值为硬编码，**不是** `--ds-*` 语义色：链接 `#1a73e8` ≠ 品牌主色 `#5B5EE6`（Light）/ `#8B8DF5`（Dark）。品牌 Token 变更**不会**传导到邮件 | `common/email_template.go:63-92`；`UDS5-S01` §4.2 |
+| M-5 | 邮件色值为硬编码，**不是** `--ds-*` 语义色：链接 `#1a73e8` ≠ 品牌主色 `#6c47ff`（`UDS5-S01` §4.2 `G1`）。品牌 Token 变更**不会**传导到邮件 | `common/email_template.go:63-92`；`UDS5-S01` §4.2 |
 | M-6 | Logo 必须 base64 内嵌（不依赖远程图片），`width=64 height=64`，`alt="Uter.ai"`；换站点 logo 时必须同步 `brandEmailLogoBase64`（有字节级测试守住） | `common/email_template.go:51, 80`；`common/email_template_test.go:79-91` |
 | M-7 | 客户端兼容：全部样式内联；`ensureLinkNoUnderline` 强制去链接下划线；模板**不含** `@media` / `prefers-color-scheme` / `mso-` 条件注释（命中数 0），即**无暗色模式适配、无 Outlook 条件分支** | `common/email_template.go:34-46, 75-93` |
 | M-8 | 重要信息不得仅靠背景图呈现：Logo 为装饰性识别，正文与验证码均为**文本**，图片关闭不影响可读 | `common/email_template.go:60-72` |
@@ -302,7 +302,7 @@
 |---|---|---|
 | **S32-D01** | **邮件预览文本未实现**：蓝图要求邮件含「预览文本」，仓库 `BuildBrandEmailHTML` 无预映像文本 / 隐藏摘要块，客户端将回退显示正文首段 | `NOT_IMPLEMENTED` / `NOT_VERIFIED` |
 | **S32-D02** | **邮件纯文本版本未实现**：蓝图要求「HTML 邮件必须提供纯文本版本」，仓库 SMTP 侧只发 `Content-Type: text/html`（无 `multipart/alternative` / `text/plain`），Resend payload 只有 `html` 字段（无 `text`） | `NOT_IMPLEMENTED` / `NOT_VERIFIED` |
-| **S32-D03** | **邮件品牌色非品牌 Token**：邮件链接色 `#1a73e8`、标题 `#202124` 等为硬编码，**不是** `UDS5-S01` §4.2 的品牌主色 `#5B5EE6`（Light）/ `#8B8DF5`（Dark）；邮件与 Web 品牌色**不同源**。规范按真值写「邮件自有色板」，不改代码值 | `REGISTERED` / `NOT_VERIFIED` |
+| **S32-D03** | **邮件品牌色非品牌 Token**：邮件链接色 `#1a73e8`、标题 `#202124` 等为硬编码，**不是** `UDS5-S01` §4.2 的唯一规范主色 `#6c47ff`（`G1`）；邮件与 Web 品牌色**不同源**。规范按真值写「邮件自有色板」，不改代码值 | `REGISTERED` / `NOT_VERIFIED` |
 | **S32-D04** | **邮件字体栈独立于 Web**：邮件用 `brandEmailFont`（Roboto 起），Web 端用 Inter + Noto Sans SC（`UDS5-S04`）。**邮件不受 Web 端 Token 约束**，Web 字体/字号变更不传导到邮件 | `ADOPT_REPO_TRUTH` |
 | **S32-D05** | **后端邮件文案只支持 3 种语言**：`i18n.Init()` 只加载 `zh-CN` / `zh-TW` / `en` 三份 yaml，`SupportedLanguages()` 只返回这 3 项；实测 `fr`/`ru`/`ja`/`vi` 请求回落英文原文。磁盘上 `fr/ja/ru/vi.yaml` 各缺 15 个 `email.*` 键（`email.binding.*` 6、`email.security_notice.*` 3、`email.security_event.*` 6）。**前端 7 locale 全量生效**，前后端口径不一致 | `REGISTERED` / `NOT_VERIFIED` |
 | **S32-D06** | **验证码形态三套**：登录 / step-up 为 `GenerateNumericCode(6)`（纯数字）；注册邮箱验证为 `GenerateVerificationCode(6)`（十六进制，含 a–f）；密码重置 token 为 `GenerateVerificationCode(0)`（32 位 hex）。蓝图只写「验证码」。规范按真值分三类登记 | `ADOPT_REPO_TRUTH` / `NOT_VERIFIED` |

@@ -52,7 +52,7 @@
 | `variant` 取值 | 小写语义词，稳定不复用他义 | `default / outline / secondary / ghost / destructive / link` | `primary`（与 `default` 双轨）、`type1` |
 | `size` 取值 | 有序档位名，禁止数值档 | `default / sm / lg / icon-xs / inline / wrap` | `size-3` / `xs`（已删，`ui/button.tsx:64-66`） |
 | `data-slot` | 组件根与子槽统一 `data-slot='<name>'`，供 `cva()` 选择器与测试定位 | `data-slot='button'`、`data-slot='button-spinner'` | 无槽位、随意 `data-id` |
-| CSS 变量 | 语义层 `--ds-*`，禁止裸色值（T8 唯一所有者 `brand-colors.ts`） | `--ds-button-height-md` | `#5B5EE6` 写进组件 |
+| CSS 变量 | 语义层 `--ds-*`，禁止裸色值（T8 唯一所有者 `brand-colors.ts`） | `--ds-button-height-md` | 任意 `#hex` 裸色值写进组件 |
 | 布尔属性 | `is*` / `has*` 仅用于状态形容；动作开关用原形 | `disabled` / `loading` / `defaultOpen` | `isDisabled` / `showLoading` |
 
 **唯一性规则**：同一 `category` 下不得出现同义不同名的属性（如 `value` 与 `selectedValue` 并存）。命名冲突以 §5 的「统一属性词典」为准。

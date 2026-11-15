@@ -1,0 +1,42 @@
+{
+  "evidence_id": "UAP-EV-20261114183258-5275589b",
+  "kind": "requirement_behavior_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-02-002"
+  ],
+  "requirement_ids": [
+    "UAP-02-002-REQ-004"
+  ],
+  "recorded_at": "2026-11-14T18:32:58.170Z",
+  "started_at": "2026-11-14T18:32:58.170Z",
+  "finished_at": "2026-11-14T18:32:58.170Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114183229-e3108eec",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "c037f6a4e8bfc931842ca845b43c10f10dd8940b000bdd58e6aea9bb9aa1fa32",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114183229-e3108eec",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "c037f6a4e8bfc931842ca845b43c10f10dd8940b000bdd58e6aea9bb9aa1fa32",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "go test ./model/ -count=1 -v -run TestPhase2DBIntegration/db_09_foreign_key",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"assertions\":[{\"name\":\"db_09_foreign_key_enforced\",\"required_output\":[\"FK enforced\",\"orphan rejected\"],\"found\":true}]}",
+  "stdout": "=== RUN   TestPhase2DBIntegration\n=== RUN   TestPhase2DBIntegration/db_09_foreign_key\n    phase2_db_integration_test.go:436: observed PRAGMA foreign_keys=1, top_ups FK relations=1\n    phase2_db_integration_test.go:462: FK enforced (foreign_keys=1, relations=1): legal order accepted, orphan rejected\n--- PASS: TestPhase2DBIntegration (0.03s)\n    --- PASS: TestPhase2DBIntegration/db_09_foreign_key (0.03s)\nPASS\nok  \tgithub.com/uter-ai/uter/model\t1.561s\n",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "behaviour run bhv.model-foreign-key: 1/1 distinct assertions observed in real stdout",
+  "content_hash": "16ee0db7094d4613f1ba058df36459daadcfda2a592e2db6e6f156afcc2bd73a"
+}

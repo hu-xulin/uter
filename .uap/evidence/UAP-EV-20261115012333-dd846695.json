@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261115012333-dd846695",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T01:23:33.995Z",
+  "started_at": "2026-11-15T01:23:31.187Z",
+  "finished_at": "2026-11-15T01:23:33.995Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115011842-ae624a11",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": null,
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115011842-ae624a11",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": null,
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --json verify-capabilities",
+  "exit_code": 1,
+  "duration_ms": 2808,
+  "inputs": "{\"argv\":[\"--json\",\"verify-capabilities\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "capability cards FAILED: real_code_repair: worktree fingerprint not bound to this run; independent_regression: worktree fingerprint not bound to this run"
+    }
+  ],
+  "summary": "capability cards FAILED: real_code_repair: worktree fingerprint not bound to this run; independent_regression: worktree fingerprint not bound to this run",
+  "content_hash": "5a6c3fdfa7d046b6a4832692ff173401bbe30e2cd89aa0f2b4f2513119aaa7b3"
+}

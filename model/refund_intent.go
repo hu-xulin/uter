@@ -160,6 +160,23 @@ func ExecuteRefundIntent(id int) error {
 		return fmt.Errorf("refund intent %d is invalid: %w", id, err)
 	}
 	err := DB.Transaction(func(tx *gorm.DB) error {
+		// 0) 幂等门必须在任何账本腿之前：用条件 UPDATE 抢占 pending 状态，
+		//    抢到的唯一执行者才继续动账。旧实现把这道 CAS 放在事务末尾，
+		//    并发执行者会各自拿一份过期的 used_quota 快照重放「令牌回退」腿，
+		//    第二个执行者因此在条件 UPDATE 上得到 0 行、报
+		//    "token used quota is insufficient for refund"，把本该静默幂等的
+		//    重复执行变成了错误（2026-11-15 真实并发用例捕获）。
+		//    抢不到的执行者返回 errRefundIntentAlreadyDone，事务整体回滚，
+		//    由调用方按「已被其他实例完成」处理为 nil。
+		claim := tx.Model(&RefundIntent{}).
+			Where("id = ? AND status = ?", id, RefundIntentPending).
+			Updates(map[string]any{"status": RefundIntentDone, "update_time": common.GetTimestamp()})
+		if claim.Error != nil {
+			return claim.Error
+		}
+		if claim.RowsAffected == 0 {
+			return errRefundIntentAlreadyDone
+		}
 		// 1) 订阅原始预扣、补充预扣、令牌回退和意图完成标记共用一个事务。
 		// 任意账本腿失败都会整体回滚，避免订阅已退而 Token 仍未退的半笔退款。
 		if intent.FundingSource == RefundSourceSubscription && intent.SubRequestId != "" {
@@ -195,16 +212,8 @@ func ExecuteRefundIntent(id int) error {
 				return fmt.Errorf("refund token %d quota %d: %w", intent.TokenId, intent.TokenConsumed, err)
 			}
 		}
-		// 5) 完成标记是本事务的幂等门：抢不到（已被并发执行）就整体回滚。
-		res := tx.Model(&RefundIntent{}).
-			Where("id = ? AND status = ?", id, RefundIntentPending).
-			Updates(map[string]any{"status": RefundIntentDone, "update_time": common.GetTimestamp()})
-		if res.Error != nil {
-			return res.Error
-		}
-		if res.RowsAffected == 0 {
-			return errRefundIntentAlreadyDone
-		}
+		// 完成标记已在事务开头由条件 UPDATE 抢占；此处只需让所有账本腿
+		// 与它一起提交（任意一腿失败都会随事务把状态一并回滚）。
 		return nil
 	})
 	if errors.Is(err, errRefundIntentAlreadyDone) {

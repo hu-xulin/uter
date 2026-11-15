@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261115020516-d40e6925",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T02:05:16.284Z",
+  "started_at": "2026-11-15T02:05:16.284Z",
+  "finished_at": "2026-11-15T02:05:16.284Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115020505-d19cfbf4",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "b865d615101e7d991ba2cec5229bfafd9e71a5d041e1561a8c87c3c054f70c68",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115020505-d19cfbf4",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "b865d615101e7d991ba2cec5229bfafd9e71a5d041e1561a8c87c3c054f70c68",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.engineering_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.engineering_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.engineering_integrity 实检: review_engine=PASS(动态 import .uap/engines/code-review/index.mjs 并调用 health(): health().ok=true); test_engine=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true); repair_engine=PASS(动态 import .uap/engines/auto-repair/index.mjs 并调用 health(): health().ok=true); gates=PASS(动态 import .uap/engines/testing/index.mjs 并调用 health(): health().ok=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 7315 个 | 4 个引擎均动态 import 且 health().ok===true",
+  "content_hash": "0bfde7959f2729728dc057a3486ae92f571bf19ce7f586b3e0063ea5e7a57c3d"
+}

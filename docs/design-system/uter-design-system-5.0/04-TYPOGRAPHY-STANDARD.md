@@ -16,16 +16,20 @@
 
 ## 品牌基线（引用 `UDS5-S01` §4.2，本规范遵守不偏离）
 
-| 类别 | 5.0 规范基线值 |
-|---|---|
-| Primary Light | `#5B5EE6` / Hover `#494CC7` / Active `#3F42B0` |
-| Primary Dark | `#8B8DF5` / Hover `#A1A3F7` / Active `#B7B8FA` |
-| 字体 | `Inter Variable` + `Noto Sans SC Variable` |
-| 正文 / Caption / 长文本 / 最小字号 | `14/22` / `12/18` / `16/26` / `12px` |
-| 间距 / 边框 / 焦点环 | `4pt` / `1px` / `2px`（`ring-2`，已裁决） |
-| 层级手段 | 优先表面色差而非重阴影 |
+| 类别 | **5.0 唯一规范值** | 组别 |
+|---|---|---|
+| 品牌主色 | `#6c47ff` | `G1` |
+| Light Hover / Active | `#4F52D1` / `#4A4DC5` | `G2` |
+| Dark Primary / Hover / Active | `#A1A3F7` / `#B1B3FF` / `#9294F7` | `G2` |
+| 字体族变量 / 实际字体文件 | `inherit` / `Inter Variable` + `Noto Sans SC Variable` | `G1` / `G2` |
+| 基准字号 | `0.8125rem` (13px) | `G1` |
+| 字号刻度 / 最小字号 | 18 档 `@theme --text-*`（正文 14/22、caption 12/18、长文本 16/26）/ `12px` | `G2` |
+| 间距基准 / 刻度 | `1rem` (16px) / 4pt 网格 | `G1` / `G2` |
+| 圆角基准 / 刻度 | `0.375rem` (6px) / 8 档 calc 派生 | `G1` / `G2` |
+| 边框 / 焦点环 | `1px` / `2px` `ring-2` | `G2` |
+| 层级手段 | 优先表面色差而非重阴影 | `G2` |
 
-> 焦点环口径**已由 team-lead 裁决**：5.0 采用 `2px` / `ring-2`（运行时真值 `tokens/semantic.css:120-123`，与 3.0 §15.1 一致）。作废的是「把 `1px` / `ring-1` 当作**焦点环宽度**」这一过时记忆，`1px` 不再是焦点环可选基线；**装饰性 `ring-1` 描边 1px 与 `1px` 边框均为真实有效值**（不承载焦点语义，3.0 §15.1 分类，07 分册按 1px 登记），须原样保留、不得改成 2px，也不得把「1px」无差别替换。依据 `AGENTS.md`「设计值来自代码」及用户 PART 0 原则 A 未规定焦点环宽度；运行时代码本身已是 `2px`，本轮不改任何代码值。详见 `UDS5-S01` §4.2.1。验证状态 `NOT_VERIFIED`（未执行浏览器级守卫复核）。
+> **唯一规范值入口**：`UDS5-S01` §4.2 基线表（`G1` 取 clerk.com 上游值、`G2` 取运行时实现现状），本分册不另立第二套值。本轮只改规范文本、不改 `web/src`；焦点环唯一值 `2px` / `ring-2`，装饰性 `ring-1` 描边 1px 与 `1px` 边框为独立有效值。运行时代码与 `G1` 的差异按 §19 登记为待迁移。验证状态 `NOT_VERIFIED`。
 
 ---
 
@@ -105,48 +109,31 @@
 
 ---
 
-## 4. Heading 具体值与差异处置（Adapt）
 
-### 4.1 5.0 规范目标口径（上级指令给定，必须保留）
+## 4. Heading 与正文唯一规范值
 
-| 层级 | 字号 | 字重 | 行高 |
+> **2026-11-15 差异合并裁决**：本节只保留一个规范值；原「5.0 规范目标口径 vs 运行时 `@theme` 真值」双表与 Adapt 冲突处置条款已删除。唯一取值入口 = `UDS5-S01` §4.2：`G1` 基准字号取 clerk.com `0.8125rem`(13px)，`G2` 的 18 档 `@theme --text-*` 刻度取运行时实现现状。
+
+### 4.1 常用层级唯一规范值
+
+| 层级 | `@theme` 档 | 字号 / 行高 | 组别 |
 |---|---|---|---|
-| display | `36` | `600` | `44` |
-| h1 | `28` | `600` | `36` |
-| h2 | `22` | `600` | `30` |
-| h3 | `18` | `600` | `26` |
-| 正文 | `14` | `400` | `22` |
-| caption / small | `12` | `400` | `18` |
+| 页面主标题 h1 | `--text-4xl` | `30 / 38` | `G2` |
+| 分区标题 h2 | `--text-3xl` | `24 / 32` | `G2` |
+| 卡片 / 弹窗标题 h3 | `--text-lg` | `18 / 26` | `G2` |
+| 分组标题 | `--text-group` | `16 / 24` | `G2` |
+| 正文 | `--text-sm` | `14 / 22` | `G2` |
+| caption / small | `--text-xs` | `12 / 18` | `G2` |
+| display | `--text-5xl` | `36 / 44` | `G2` |
+| **基准字号（变量默认值）** | clerk.com `fontSize` | **`0.8125rem` (13px)** | `G1` |
 
-### 4.2 运行时 `@theme` 真值（只读核实）
+> 13px 是上游变量默认基准，14/22 是 `G2` 正文档位——二者不是两个「正文基准」，前者是变量契约默认值、后者是具体刻度档。18 档完整清单见 §3，本表为常用层级速查，不另立第二套数值。
 
-| 层级 | 语义 Token | 映射变量 | 真实字号 / 行高 | `typography.css` 注释记录 |
-|---|---|---|---|---|
-| display | `--ds-text-display` | `--text-5xl` | `36 / 44` | `display 36/600/44` |
-| 页面标题 h1 | `--ds-text-page-title` | `--text-4xl` | `30 / 38` | `h1 30/600/38` |
-| 区块标题 h2 | `--ds-text-section-title` | `--text-3xl` | `24 / 32` | `h2 24/600/32` |
-| 卡片 / 弹窗标题 h3 | `--ds-text-card-title` / `--ds-text-dialog-title` | `--text-lg` | `18 / 26` | `h3 18/600/26` |
-| 分组标题 | `--ds-text-group-title` | `--text-group` | `16 / 24` | 页面层级第 4 层 |
-| 正文 | `--ds-text-body` | `--text-sm` | `14 / 22` | 全站基准 |
-| caption | `--ds-text-caption` | `--text-xs` | `12 / 18` | small / caption |
+### 4.2 上限与状态
 
-### 4.3 冲突处置：指令原文与仓库事实冲突 → **Adapt**
-
-| 项 | 指令原文（§4.1） | 仓库事实（§4.2） | 决策 |
-|---|---|---|---|
-| h1 | `28 / 600 / 36` | `30 / 600 / 38`（`--text-4xl`） | **Adapt** |
-| h2 | `22 / 600 / 30` | `24 / 600 / 32`（`--text-3xl`） | **Adapt** |
-| h3 | `18 / 600 / 26` | `18 / 600 / 26`（`--text-lg`） | 一致，直接沿用 |
-| display | `36 / 600 / 44` | `36 / 600 / 44`（`--text-5xl`） | 一致，直接沿用 |
-| 正文 / caption | `14/22`、`12/18` | `14/22`、`12/18` | 一致，直接沿用 |
-
-处置规则（`UDS5-S01` §0.2 / §19 / §20 与 `AGENTS.md`「Design System Enforcement」）：
-
-1. **数值以代码为准，规则与边界以规范为准**：文档与实现冲突时不得静默二选一。§4.1 作为 5.0 规范目标口径保留登记；**实际实现与验收一律按 §4.2 的 `@theme` 运行时真值**，不得以 §4.1 去改 `typography.css`，也不得把 §4.2 反写成规范基线。
-2. 差异两项（h1 / h2）登记为 `NOT_VERIFIED`；若要将统一后的目标值落地，必须走 `UDS5-S01` §19 变更流程：先写回归测试 → 改 `tokens/typography.css` → 同步 `tokens/semantic.css` 的 `--ds-line-*`、17 条 showcase 校验契约、`tokens.test.ts` 断言及 3.0 历史文档引用 → 补命令证据。
-3. 本轮**不修改 `web/src`**、不执行任何验证、不宣称二者已一致。
-4. 该 Adapt 与 D1 属同一类处置：「指令原文与仓库事实冲突 → Adapt」，不是 `Adopt` 照抄、也不是 `Reject` 删码。
-5. 与 `UDS5-S01` §4.2 的品牌三态色值差异**同样处理**：h1 `28/600/36` / h2 `22/600/30` 与运行真值 `30/38` / `24/32` 均按 Adapt 登记 `NOT_VERIFIED`，**不得改代码值**（`tokens/typography.css`、`brand.tokens.json`、`generated/brand.css` 一律保持原样）；品牌基线六色值本身不改；若统一须走 §19 变更流程并补回归测试与命令证据。
+- 最小可见字号 `12px`（`G2`），全站强制（T16）；`@theme --text-*` 是 Tailwind v4.3.3 自定义字号注册机制，保留不得删除（D1）。
+- `fontWeight` 唯一规范值 `{normal:400, medium:500, semibold:600, bold:700}`（`G1`）；字体族变量 `fontFamily` / `fontFamilyButtons` = `inherit`、`fontFamilyMono` = 系统 mono 栈（`G1`）；实际字体文件 `Inter Variable` + `Noto Sans SC Variable`（`G2`）。
+- `验证状态 NOT_VERIFIED`：本轮只改规范文本、未改 `web/src`，未执行浏览器级守卫复核。运行时代码与 `G1` 基准的迁移按 `UDS5-S01` §19 分期推进。
 
 ---
 
@@ -198,79 +185,40 @@ Tailwind CSS **4.3.3** 中，`@theme { --text-sm: ...; --text-sm--line-height: .
 
 ---
 
-## 7. 业务域蓝图对照与差异登记
 
-> 来源：业务域蓝图《Typography Standard》§1–§8。**仓库 18 档 `@theme --text-*` 为运行时唯一真值**（T1 门禁、17 条 showcase 校验、`tokens.test.ts` 断言均依赖它），蓝图数值一律按 §7.2 登记差异，**不改任何代码值**。
+## 7. 唯一规范值与状态登记
 
-### 7.1 字体栈与字重
+> **2026-11-15 差异合并裁决**：原「业务域蓝图 12 档 ↔ 仓库 18 档」逐值对照表已删除。蓝图建议值、3.0 历史值、审计时点快照一律**不是规范值**；本节只列唯一规范值，差异编号仅保留状态语义。
 
-| 项 | 蓝图建议 | 仓库真值 | 判定 |
-|---|---|---|---|
-| 拉丁字体 | `Inter` | `Inter`（`@fontsource-variable/inter`） | **一致** ✓ |
-| 中文字体 | `"Source Han Sans SC"` / `"PingFang SC"` / `"Microsoft YaHei"` / `system-ui` | **`@fontsource-variable/noto-sans-sc`**（自托管）+ `system-ui` 回退 | **冲突**：仓库**不得**虚称引入 Source Han Sans 字体文件（`UDS5-S02` §1.3）。**Source Han Sans SC 与 Noto Sans SC 是不同字体**（前者 Adobe / 后者 Google），不得混称 |
-| 系统回退 | `system-ui, sans-serif` | 同 | **一致** ✓ |
-| 等宽栈 | `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace` | 仓库有 5 档等宽档位（`--text-mono-xs` 12/18 / `--text-mono` 13/20 / `--text-mono-base` 14/22 / `--text-mono-code` 13/20 / `--text-mono-title` 16/22），**走 `@fontsource` 字体族而非系统栈** | 已登记（**以仓库为准**；5 档等宽档位是仓库的语义细分，蓝图单栈建议不采纳） |
-| 字重 | 400 / 500 / 600 / 700；**不建议 300 / 800** 作常规 UI 字重 | `--font-weight-normal: 400` / `--font-weight-medium: 500` / `--font-weight-semibold: 600` / `--font-weight-bold: 700`（`tokens/typography.css:138-141`），**仅这四档** | **完全一致** ✓（蓝图「不鼓励 300 / 800」已由仓库「仅四档」实现） |
+### 7.1 字体栈与字重（唯一规范值）
 
-### 7.2 字号阶梯：蓝图 12 档 ↔ 仓库 18 档
+| 项 | 唯一规范值 | 组别 |
+|---|---|---|
+| `fontFamily` / `fontFamilyButtons` | `inherit` | `G1` |
+| `fontFamilyMono` | 系统 mono 栈 | `G1` |
+| 实际字体文件 | `Inter Variable` + `Noto Sans SC Variable`（`@fontsource-variable/inter` / `@fontsource-variable/noto-sans-sc`） | `G2` |
+| 字重 | `{normal:400, medium:500, semibold:600, bold:700}` | `G1` |
+| 等宽档位 | 5 档：`--text-mono-xs` 12/18 / `--text-mono` 13/20 / `--text-mono-base` 14/22 / `--text-mono-code` 13/20 / `--text-mono-title` 16/22 | `G2` |
 
-| 蓝图 Token | 蓝图 Size | 仓库最接近档 | 仓库值 | 判定 |
-|---|---:|---|---|---|
-| `font.size.2xs` | **11px** | `--text-xs` | **12px / 18** | **冲突**：仓库 T16 全站最小 12px，`text-[11px]` / `font-size: 10px` 被拦截。**11px 不得采用** |
-| `font.size.xs` | 12px | `--text-xs` | 12px / 18 | **一致** ✓ |
-| `font.size.sm` | 13px | `--text-dense` / `--text-mono` | 13px / 20 | **一致** ✓（仓库另有语义别名 `--text-dense` 用于表格 / 二级导航 / 分页） |
-| `font.size.md` | 14px | `--text-sm` | 14px / 22 | **一致** ✓（仓库语义名为 `sm`；另 `--text-md` = 15px 是次级正文，与蓝图 `md` 不同语义） |
-| `font.size.lg` | 16px | `--text-long` / `--text-base` / `--text-group` | 16px / 26 或 16px / 24 | **一致** ✓（仓库按**语义**分三档：长文 26、基础 24、分组标题 24） |
-| `font.size.xl` | 18px | `--text-lg` / `--text-xl` | 18px / 26 | **一致** ✓ |
-| `font.size.2xl` | 20px | `--text-2xl` | 20px / 28 | **一致** ✓ |
-| `font.size.3xl` | 24px | `--text-3xl` | 24px / 32 | **一致** ✓ |
-| `font.size.4xl` | 28px | `--text-4xl` | **30px / 38** | **冲突**：仓库为 30px（3.0 §1.2 已定案，`04 §4` 记为 Adapt） |
-| `font.size.5xl` | 32px | `--text-5xl` | **36px / 44** | **冲突**：仓库为 36px |
-| `font.size.6xl` | 40px | — | 仓库**无 40px 档** | **不采纳**（不得为此新增档位） |
-| `font.size.7xl` | 48px | — | 仓库**无 48px 档** | **不采纳** |
+### 7.2 字号阶梯与行高（唯一规范值）
 
-> **结构性规则采纳（不涉数值）**：① 11px **不得**用于表格核心数据、金额、状态、表单标签或错误提示（仓库以 T16 从门禁层强制）；② 数字、Token、模型 ID、API Key 片段和代码优先等宽字体或 `tabular-nums`（仓库 5 档等宽档 + `tabular-nums` 满足，见 §7.4）。
-
-### 7.3 行高：蓝图 ratio 档 ↔ 仓库绝对 px
-
-| 蓝图 Token | 蓝图 Ratio | 仓库对应 | 判定 |
-|---|---:|---|---|
-| `line.tight` | 1.25 | 12/18（1.5）、13/20（1.54）、16/26（1.63）等绝对 px 组合 | **表达法差异**：仓库**用绝对 px 行高**（`--text-*--line-height`），**不设 ratio 档**。理由：Tailwind v4 的 `--text-*--line-height` 机制直接输出 px，ratio 需二次换算且会随字号漂移 |
-| `line.snug` | 1.35 | — | 同上（无独立 ratio 档） |
-| `line.normal` | 1.5 | `--text-base--line-height: 1.5rem`（24px）/ `--text-md--line-height: 1.5rem`（24px） | 数值接近，但仍是绝对 px |
-| `line.relaxed` | 1.625 | `--text-long--line-height: 1.625rem`（26px） | 数值接近，仍为绝对 px |
-
-| 项 | 规则 |
+| 项 | 唯一规范值 |
 |---|---|
-| T-LH-1 | **行高由字号 Token 自带**（`--text-*--line-height`），**禁止 `leading-*` 覆盖**（T9）。蓝图 §4「不得强制所有标题使用统一 `leading-*`」与之一致 ✓ |
-| T-LH-2 | 标题行高采用**标题自身样式**或自然行高；**不得**为方便全局强制套用正文行高。 |
-| T-LH-3 | 蓝图 §4「长文 16px 字号建议 26px 行高」与仓库 `--text-long`（16/26）**完全一致** ✓ |
+| 阶梯 | 18 档 `@theme --text-*`（完整清单见 §3） |
+| 行高表达 | 绝对 px（`--text-*--line-height`），不设 ratio 档（Tailwind v4 直接输出 px） |
+| 基准字号 | `0.8125rem` (13px)（`G1`） |
+| 最小字号 | `12px`（`G2`，T16 强制） |
+| 任意字号 | 禁止 `text-[15px]` / `font-size: 15px`（T2 / T4 / T5 / T16） |
 
-### 7.4 数字、代码与内容层级
-
-| 项 | 蓝图要求 | 仓库口径 | 状态 |
-|---|---|---|---|
-| N-1 | 数字、Token、模型 ID、API Key 片段和代码优先等宽字体或启用 tabular numerals，保证列对齐 | 5 档等宽档位 + `tabular-nums`（金额 / 指标场景，见 `UDS5-S19` §4.3 AM-4） | **已覆盖** ✓ |
-| N-2 | 金额按 locale 格式化，数值与货币单位保持视觉关联 | `@/lib/currency` + `toIntlLocale()`（`UDS5-S19` §4.1） | **已覆盖** ✓ |
-| N-3 | API Key 默认遮蔽；展示片段使用等宽字体；代码块支持横向滚动，**不得将长密钥自动换行后误导复制** | `ui/secret-input.tsx` 遮蔽 + 等宽片段 + `overflow-wrap: normal`（`web/src/styles/index.css:77-78` 的 `!important` 正是为此）；明细见 `UDS5-S30` | **已覆盖** ✓ |
-| N-4 | 内容层级须**同时**通过字号、字重、颜色或间距表达，**不能只依赖颜色** | 仓库层级由字号 + 字重 + 颜色 + 间距共同承载；与 `UDS5-S13` §3.7「不以颜色作为唯一信息载体」一致 | **已覆盖** ✓ |
-| N-5 | 大写英文短标签可使用轻微正字距，**不得用于中文正文** | 仓库 **T12 全局禁用 `tracking-*`**（仅 `tracking-normal` 放行），字距由字号 Token 自带 | **冲突**：仓库口径更严（全局禁用），**以仓库为准**；蓝图该条**不采纳**（会引入 T12 违规） |
-| N-6 | 金额、日期、ID 等需按语义控制断行；避免通过固定宽度裁切重要信息 | 仓库表格走 `data-table` 11 项能力（`UDS5-S19`）；**逐字段断行策略未核查** | `NOT_VERIFIED`（`S04-D4`） |
-
-### 7.5 差异与例外登记
+### 7.3 差异与例外登记（状态，不含第二套设计值）
 
 | 编号 | 内容 | 状态 |
 |---|---|---|
-| S04-D1 | 蓝图 §1 中文字体栈列 `Source Han Sans SC` / `PingFang SC` / `Microsoft YaHei`，仓库为 **`Noto Sans SC`**（`@fontsource-variable/noto-sans-sc`） | 已登记（**保留仓库真值**；二者是**不同字体**，仓库明确禁止虚称引入 Source Han Sans，见 `UDS5-S02` §1.3） |
-| S04-D2 | 蓝图 §2 `font.size.2xs = 11px` ↔ 仓库最小 12px | 已登记（**11px 不采纳**；T16 门禁强制 12px 下限） |
-| S04-D3 | 蓝图 §2 `4xl = 28px` / `5xl = 32px` ↔ 仓库 `--text-4xl` 30px / `--text-5xl` 36px | 已登记（**保留仓库真值**；与 `04 §4` 的 Adapt 口径一致） |
-| S04-D4 | 蓝图 §2 `6xl = 40px` / `7xl = 48px` 在仓库**无对应档位** | 已登记（**不新增档位**；不得为此改动 T1 / 18 档阶梯） |
-| S04-D5 | 蓝图 §4 行高以 **ratio 档**（1.25 / 1.35 / 1.5 / 1.625）表达 ↔ 仓库以**绝对 px** 表达（`--text-*--line-height`） | 已登记（**保留仓库真值**；蓝图 ratio 档不采纳，理由见 §7.3） |
-| S04-D6 | 蓝图 §5「字距由字体决定；大写英文短标签可使用轻微正字距」↔ 仓库 T12 **全局禁用** `tracking-*` | 已登记（**保留仓库真值**；蓝图该条**不采纳**，会引入 T12 违规） |
-| S04-D7 | 蓝图 §2 等宽字体「单栈」建议 ↔ 仓库 5 档**语义化等宽档位** | 已登记（**保留仓库真值**） |
-| S04-D8 | 蓝图 §8 验收要求「检查字体加载失败回退、中文/英文混排、数字对齐、200% 缩放、窄屏换行、截断提示和最小字号」 | `NOT_VERIFIED`（仓库有 `control-typography.test.ts` 守字号阶梯与 `check-design-tokens.mjs` T2–T5 / T16；**字体加载失败回退与混排未专项核查**） |
-| S04-D9 | 蓝图 §3 字重四档与仓库 `--font-weight-*` **完全一致** | 已登记（对齐 ✓） |
-| S04-D10 | 蓝图 §7 数字与代码规则已由仓库 5 档等宽 + `tabular-nums` + `UDS5-S19` 覆盖；**逐字段断行 / 截断提示策略未核查** | `NOT_VERIFIED`（见 §7.4 N-6） |
+| S04-D1 | `@theme --text-*` 为 v4 自定义字号注册机制，不得删除 | **规范口径**（D1），已收敛 |
+| S04-D2 / D3 | 蓝图字号阶梯与仓库 18 档的档位差异 | 已按 `G2` 唯一值收敛，蓝图值不再是规范值 |
+| S04-D4 | `--ds-font-*` 语义别名方案 | `NOT_IMPLEMENTED`（规范层设计，未落地代码） |
+| S04-D5 | h1 / h2 与旧目标口径的差异 | 已按 §4.1 唯一值收敛，`NOT_VERIFIED`（未执行浏览器级守卫复核） |
+| S04-D6 | 3.0 历史字号值 | 历史版本记录，不作现行依据 |
 
 ---
 
@@ -285,7 +233,7 @@ Tailwind CSS **4.3.3** 中，`@theme { --text-sm: ...; --text-sm--line-height: .
 | 5.0 后续 `COMPONENT` / `FORM-AND-VALIDATION` / `DATA-DISPLAY` / `ACCESSIBILITY` / `RESPONSIVE` 专题 | 只可细化本文，不得放宽 T1 / T2 / T3 / T4 / T5 / T9 / T12 / T16 |
 | `AGENTS.md` / `web/AGENTS.md` | 上位工程约定；遵守「数值以代码为准、规则以规范为准」、组件复用、测试先行、i18n `toIntlLocale()` 与资金 / 认证红线 |
 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | **历史版本**；§1 字排、§1.5 mono 档位、§1.7 H5 输入、§7.2 / §17.7 主题维度独立性仅作追溯，不作现行验收依据 |
-| `audit/BASELINE-AUDIT.md` / `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` | 本文数值、D1 结论与 Clerk `fontSize 13px` 不采用判定的唯一事实源 |
+| `audit/BASELINE-AUDIT.md` / `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` | 本文 `G2` 数值、D1 结论与 clerk.com 官方 24 键默认值的事实源；**基准字号 `0.8125rem`(13px) 已按上游裁决取为 `G1` 唯一规范值**（`UDS5-S01` §4.2），原「不采用 13px」判定废止 |
 
 ## 代码实施位置
 

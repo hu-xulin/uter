@@ -30,7 +30,14 @@ For commercial licensing, please contact support@uter.ai
  *   S6 可交互     —— theme / density / variant / size / state 五个切换控件齐备
  *   S7 计数自洽   —— 内联 manifest 的计数必须与真实 DOM 一致
  *   S8 无障碍     —— lang / aria-label / prefers-reduced-motion 齐备
- *   S9 品牌边界   —— 不出现 Clerk 品牌值或依赖（与 UDS5-S21 C1–C3 一致）
+ *   S9 上游对齐   —— G1 唯一规范主色 #6c47ff 必须出现，且不得引入 Clerk SDK
+ *   S10 变量零遗漏 —— data-token-name / data-token-value 全量且与 manifest 自洽
+ *   S11 字体零遗漏 —— @theme 字号档 / 字体族 / 字重逐一真实渲染
+ *   S12 组件零遗漏 —— 每个组件的 data-component-id 都配一个真实视觉样本
+ *   S13 唯一规范值 —— G1 / G2 基线表齐备且不与 manifest 漂移
+ *
+ * 2026-11-15 裁决：5.0 规范值以上游 clerk.com 为准，旧 S9「禁止 #6c47ff」已废止；
+ * C3 运行时源码边界仍由 check-clerk-boundary.mjs 单独守护（本页是派生展示物）。
  *
  * 用法（任意 cwd）：
  *   node scripts/check-design-showcase-5.0.mjs [--json]
@@ -180,8 +187,21 @@ if (!manifestMatch) {
       {fail('S7', `manifest.componentIds=${manifest.componentIds} 与 DOM ${componentIds.length} 不一致`)}
     if (manifest.elements !== elementIds.length)
       {fail('S7', `manifest.elements=${manifest.elements} 与 DOM ${elementIds.length} 不一致`)}
+    if (manifest.normativeBrand !== '#6c47ff')
+      {fail('S7', `manifest.normativeBrand=${manifest.normativeBrand} 与 G1 唯一规范主色 #6c47ff 不一致`)}
   }
 }
+
+const tokenNames = [...new Set(collect('data-token-name'))]
+const tokenValueRows = collect('data-token-value')
+const typeStepNames = [...new Set(collect('data-type-step'))]
+const typeStepRows = collect('data-type-step')
+const fontTokens = [...new Set(collect('data-font-token'))]
+const fontWeights = [...new Set(collect('data-font-weight'))]
+const componentSamples = [...new Set(collect('data-component-sample'))]
+const externalColors = [...new Set(collect('data-external-color'))]
+const normativeKeys = [...new Set(collect('data-normative-key'))]
+const normativeBrand = [...new Set(collect('data-normative-brand'))]
 
 // S8 无障碍基线
 if (!/<html[^>]*\blang="[^"]+"/i.test(html)) fail('S8', '缺少 html lang 属性')
@@ -190,12 +210,60 @@ if (ariaCount < 5) fail('S8', `aria-label 仅 ${ariaCount} 处，要求 >= 5`)
 if (!/prefers-reduced-motion/.test(html))
   {fail('S8', '缺少 prefers-reduced-motion 降级规则')}
 
-// S9 品牌边界（与 UDS5-S21 §3 P1 / P2 一致）
-if (/#6c47ff/i.test(html)) fail('S9', '出现 Clerk 品牌色 #6c47ff')
-if (/@clerk\//i.test(html)) fail('S9', '出现 Clerk 依赖标识')
+// S9 上游对齐：G1 唯一规范主色必须出现；仍不得引入 Clerk SDK / 运行时依赖
+if (!/#6c47ff/i.test(html)) fail('S9', '缺少 G1 唯一规范主色 #6c47ff（UDS5-S01 §4.2）')
+if (!normativeBrand.includes('#6c47ff'))
+  {fail('S9', '缺少 data-normative-brand="#6c47ff" 唯一规范主色标记')}
+if (/@clerk\//i.test(html)) fail('S9', '出现 Clerk 依赖标识（规范对齐 ≠ 引入 SDK）')
+
+// S10 变量零遗漏：所有 CSS 变量的每一个取值都在 DOM 中逐项列出
+if (tokenNames.length === 0) fail('S10', '未渲染任何运行时 CSS 变量')
+if (manifest && manifest.tokenNames !== tokenNames.length)
+  {fail('S10', `变量数 ${tokenNames.length} != manifest.tokenNames ${manifest.tokenNames}`)}
+if (manifest && manifest.colorTokens + manifest.otherTokens !== tokenNames.length)
+  {fail('S10', '颜色类 + 其它变量数不等于变量总数')}
+if (manifest && manifest.tokenValues !== tokenValueRows.length)
+  {fail('S10', `取值行数 ${tokenValueRows.length} != manifest.tokenValues ${manifest.tokenValues}`)}
+if (manifest && manifest.externalColors !== externalColors.length)
+  {fail('S10', `外部依赖色值 ${externalColors.length} != manifest.externalColors ${manifest.externalColors}`)}
+
+// S11 字体零遗漏：@theme 字号档 / 字体族 / 字重逐一真实渲染
+if (typeStepNames.length < 18) fail('S11', `@theme 字号档仅 ${typeStepNames.length} 档，要求 >= 18`)
+if (manifest && manifest.typeSteps !== typeStepNames.length)
+  {fail('S11', `字号档 ${typeStepNames.length} != manifest.typeSteps ${manifest.typeSteps}`)}
+const registeredSteps = tokenNames.filter(
+  (n) => n.startsWith('--text-') && !n.includes('--line-height')
+)
+const missingTypeSteps = registeredSteps.filter((n) => !typeStepNames.includes(n))
+const extraTypeSteps = typeStepNames.filter((n) => !registeredSteps.includes(n))
+if (missingTypeSteps.length > 0)
+  {fail('S11', `字号档未在字体分区真实渲染: ${missingTypeSteps.join(', ')}`)}
+if (extraTypeSteps.length > 0)
+  {fail('S11', `出现未注册的字号档: ${extraTypeSteps.join(', ')}`)}
+if (typeStepRows.length < typeStepNames.length)
+  {fail('S11', '字号档渲染行数少于档位数（放大档取值遗漏）')}
+if (manifest && manifest.fontFamilies !== fontTokens.length)
+  {fail('S11', `字体族 ${fontTokens.length} != manifest.fontFamilies ${manifest.fontFamilies}`)}
+if (manifest && manifest.fontWeights !== fontWeights.length)
+  {fail('S11', `字重 ${fontWeights.length} != manifest.fontWeights ${manifest.fontWeights}`)}
+
+// S12 组件零遗漏：ID 集合与视觉样本集合必须完全一致
+const missingSamples = componentIds.filter((id) => !componentSamples.includes(id))
+const unknownSamples = componentSamples.filter((id) => !componentIds.includes(id))
+if (missingSamples.length > 0)
+  {fail('S12', `缺少组件视觉样本: ${missingSamples.join(', ')}`)}
+if (unknownSamples.length > 0)
+  {fail('S12', `出现未注册的组件视觉样本: ${unknownSamples.join(', ')}`)}
+if (manifest && manifest.componentSamples !== componentSamples.length)
+  {fail('S12', `样本数 ${componentSamples.length} != manifest.componentSamples ${manifest.componentSamples}`)}
+
+// S13 唯一规范值基线表（G1 / G2）
+if (manifest && normativeKeys.length !== manifest.normativeG1 + manifest.normativeG2)
+  {fail('S13', `基线表条目 ${normativeKeys.length} != G1+G2 ${manifest.normativeG1 + manifest.normativeG2}`)}
+if (normativeKeys.length < 20) fail('S13', '唯一规范值基线表条目不足 20 项')
 
 const verdict = errors.length === 0 ? 'PASS' : 'FAIL'
-const checksPassed = 9 - new Set(errors.map((e) => e.match(/\[(S\d)\]/)?.[1])).size
+const checksPassed = 13 - new Set(errors.map((e) => e.match(/\[(S\d+)\]/)?.[1])).size
 process.stdout.write(
   `${JSON.stringify(
     {
@@ -207,6 +275,13 @@ process.stdout.write(
       componentIds: componentIds.length,
       elements: elementIds.length,
       controls: controlIds.length,
+      tokenNames: tokenNames.length,
+      tokenValues: tokenValueRows.length,
+      colorTokens: manifest?.colorTokens ?? null,
+      externalColors: externalColors.length,
+      typeSteps: typeStepNames.length,
+      componentSamples: componentSamples.length,
+      normativeKeys: normativeKeys.length,
       generated: false,
       sources: {
         html: HTML_PATH,

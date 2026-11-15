@@ -7,10 +7,13 @@
 | 状态 | `ACTIVE` |
 | 上级规范 | `UDS5-S01` |
 | 生效日期 | `2026-11-14` |
-| 适用范围 | 全部颜色语义 Token、品牌 DTCG 真源与生成链、Light/Dark 成对定义、图表与渐变色、业务组件的颜色引用方式 |
+| 最近修订 | `2026-11-15`（上游对齐 + 差异合并：按 `UDS5-S01` §4.2 唯一规范值基线表收敛 §2 / §7–§16，删除全部第二套建议值；版本仍为 `5.0.0`，见 `UDS5-S26` 节点十一） |
+| 适用范围 | 全部颜色语义 Token、品牌 DTCG 真源与生成链、Light/Dark 成对定义、图表与渐变色、业务组件的颜色引用方式；Primitive 色板、业务状态映射、交互状态色、数据可视化系列顺序与组件颜色出口 |
 | 验证状态 | `NOT_VERIFIED` |
 
-> **状态声明**：本文定义颜色语义与引用规则，**不声明任何测试已通过、任何组件已 `FULLY_VERIFIED`、任何平台已验收**。本轮未执行验证命令，`验证状态` 为 `NOT_VERIFIED`。事实依据为 `audit/BASELINE-AUDIT.md`、`audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` 与对仓库内已存在文件的只读核实。**下级规范一律遵循 `UDS5-S01` 总纲**。
+> **状态声明**：本文定义颜色语义与引用规则，**不声明任何测试已通过、任何组件已 `FULLY_VERIFIED`、任何平台已验收**。2026-11-15 执行的 7 条命令均为**只读结构 / 静态门禁**（见 §16.4），不构成颜色实现、对比度实测、视觉回归或平台验收证据，`验证状态` 仍为 `NOT_VERIFIED`。事实依据为 `audit/BASELINE-AUDIT.md`、`audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` 与对仓库内已存在文件的只读核实。
+>
+> **唯一规范值口径（2026-11-15 裁决）**：本文任一颜色属性**只存在一个规范值**，统一取 `UDS5-S01` §4.2 基线表——`G1`（clerk.com 已公布）取上游值、`G2`（上游未公布）取运行时实现现状。《Color System 优化方案》建议值、《业务域蓝图 Color Standard》建议值、3.0 历史值、审计时点快照**一律不再是规范值**，本文已删除全部并列的第二套色值表；`E24` / `E28` / `NOT_VERIFIED` 等状态与待办原样保留（状态不是设计值）。**本轮只改规范文本、不改 `web/src`**，规范—实现差异按 `UDS5-S01` §19 登记为待迁移。
 
 ---
 
@@ -38,31 +41,26 @@
 
 ---
 
-## 2. 品牌基线（5.0 规范口径，必须保留）
+## 2. 品牌主色（唯一规范值）
 
-| 状态 | Primary | Hover | Active |
+| 属性 | **5.0 唯一规范值** | 组别 | 依据 |
 |---|---|---|---|
-| Light | `#5B5EE6` | `#494CC7` | `#3F42B0` |
-| Dark | `#8B8DF5` | `#A1A3F7` | `#B7B8FA` |
+| 品牌主色 `colorPrimary` | **`#6c47ff`** | `G1` | clerk.com `appearance.variables` 官方示例值（2026-11-15 上级裁决，以 clerk.com 为准） |
+| Light Hover / Active | `#4F52D1` / `#4A4DC5` | `G2` | 上游未公布态位值 → 运行时 DTCG 实现现状 |
+| Dark Primary / Hover / Active | `#A1A3F7` / `#B1B3FF` / `#9294F7` | `G2` | 同上 |
 
-配套基线：字体 `Inter Variable` + `Noto Sans SC Variable`；正文 `14/22`、caption `12/18`、长文本 `16/26`、最小 `12px`；`4pt` 间距；`1px` 边框；焦点环 `2px` / `ring-2`（已裁决）；**优先表面色差而非重阴影**。
+> 唯一取值入口为 `UDS5-S01` §4.2 基线表。原「5.0 规范基线六色」与「《优化方案》9 档色阶中的 brand-500」等历史口径**均不再是规范值**，本文不再并列。
 
-> 焦点环口径**已由 team-lead 裁决**：5.0 采用 `2px` / `ring-2`（运行时真值 `tokens/semantic.css:120-123`，与 3.0 §15.1 一致）。作废的是「把 `1px` / `ring-1` 当作**焦点环宽度**」这一过时记忆，`1px` 不再是焦点环可选基线；**装饰性 `ring-1` 描边 1px 与 `1px` 边框均为真实有效值**（不承载焦点语义，3.0 §15.1 分类，07 分册按 1px 登记），须原样保留、不得改成 2px，也不得把「1px」无差别替换。依据 `AGENTS.md`「设计值来自代码」及用户 PART 0 原则 A 未规定焦点环宽度；运行时代码本身已是 `2px`，本轮不改任何代码值。详见 `UDS5-S01` §4.2.1。验证状态 `NOT_VERIFIED`（未执行浏览器级守卫复核）。
+配套唯一基线（`UDS5-S01` §4.2）：基准字号 `0.8125rem`(13px)、圆角 `0.375rem`(6px)、间距 `1rem`(16px)、字重 400/500/600/700、字体族变量 `inherit`；`G2` 项为字号刻度 18 档、最小 `12px`、间距 4pt 网格、圆角 8 档派生、`1px` 边框、焦点环 `2px` / `ring-2`、优先表面色差而非重阴影。
 
-### 2.1 差异登记（Adapt，`NOT_VERIFIED`）
+### 2.1 实现现状与迁移状态（不是第二套规范值）
 
-| 项 | 规范基线 | 仓库文件记录值 | 处置 |
-|---|---|---|---|
-| Light hover | `#494CC7` | `source/brand.tokens.json` / `generated/brand.css` 为 `#4F52D1` | 登记差异，统一前须走 `UDS5-S01` §19 变更流程并补证据 |
-| Light active | `#3F42B0` | 同上为 `#4A4DC5` | 同上 |
-| Dark primary | `#8B8DF5` | `generated/brand.css` `.dark` 为 `#A1A3F7` | 同上 |
-| Dark hover | `#A1A3F7` | 同上为 `#B1B3FF` | 同上 |
-| Dark active | `#B7B8FA` | 同上为 `#9294F7` | 同上 |
-| 文件状态 | — | `brand.tokens.json` 为 `status: DRAFT` / `decision: AUTO_BLOCKED` / `changeApproval: NOT_VERIFIED`，`designSystem` 仍写 `3.0` | 不得擅自变更状态；不得据生成物反改规范基线 |
+本轮按上级指令**只改规范文本、不改 `web/src`**。运行时代码中仍为旧品牌色、旧正文基准与旧圆角值，与 `G1` 冲突，统一登记为**待迁移**（`UDS5-S01` §4.2 / `S01-D9`）：须走 §19 变更流程，先写回归测试、补对比度与视觉回归证据，再改 `source/brand.tokens.json` → `generated/brand.css` → `theme.css` 生成链。
 
-**处理口径**：这是「指令原文与仓库事实冲突 → **Adapt**」的又一处实例。规范层保留 5.0 基线值；运行时真值以代码为准；差异项一律 `NOT_VERIFIED`，本轮不改写 `web/src`、不宣称二者一致、不把差异静默抹平。`brand.tokens.json` 的 `decision: AUTO_BLOCKED` 明确「自动阻断，等待当前 CI 证据，不是人工审批队列」。
-
-> 交叉引用与边界：该差异已在 `10-THEME-STANDARD.md` §10.1 / `S10-D7` 按 **Adapt + `NOT_VERIFIED`** 同步登记（team-lead 已授权**差异登记**，但**色值 / `DRAFT` 状态变更仍未授权**）。上表的态位对应按 `web/src/design-system/source/brand.tokens.json` 的 DTCG 键名（`primary` / `hover` / `active` 等）读取；**用户基线标签到 DTCG 键名的语义等价未逐一独立核实**，故不得宣称「逐值一一对应已验证」。运行时以 `web/src/design-system/tokens/generated/brand.css` 为准，本轮不改任何色值。
+- `brand.tokens.json` 仍为 `status: DRAFT` / `decision: AUTO_BLOCKED` / `changeApproval: NOT_VERIFIED`；状态与值变更**未获授权**，不得擅自改。
+- 迁移完成前 `verify-contrast.mjs` / T1–T17 仍按现行代码值执行；这是**过渡期实现双轨**，不是两套规范值。
+- 焦点环唯一值 `2px` / `ring-2`（`UDS5-S01` §4.2.1）；装饰性 `ring-1` 描边 1px 与 `1px` 边框为独立有效值，原样保留。
+- `验证状态 NOT_VERIFIED`：未执行浏览器级守卫复核与代码迁移。
 
 ---
 
@@ -118,7 +116,7 @@
 - T15 只管 ≤20% 浅底；`/70`、`/90` 属有意的半透明实心填充，不判违规。
 - `T8` 在 Token 定义处的色值（审计时点记录 183 处）与浮层投影（20 处）不计违规。
 - 禁止用 `text-white` 手写白字，统一 `--ds-color-text-on-emphasis`。
-- 禁止 `color-mix()` 之外的运行时派生来凑层级；Uter 静态声明、无浏览器下限依赖，不倒退到 Clerk 式扁平单层 24 键 + `color-mix()` 运行时派生体系（D5 / `CLERK-DESIGN-REFERENCE-ANALYSIS` §2.5）。
+- **2026-11-15 上游对齐**：规范层变量结构口径为 `UDS5-S01` §4.2 `G1` 的扁平单层 24 键 + `color-mix()` / 相对颜色语法派生；运行时静态两层体系为过渡期实现现状，按 §19 待迁移。迁移前 T7 / T8 / T13 / T14 / T15 与 T1–T17 静态门禁仍按现行代码执行，不得据规范宣称代码已对齐。
 
 ---
 
@@ -154,88 +152,389 @@
 
 ---
 
-## 7. 中性色与语义状态色基线对照（业务域蓝图建议 vs 运行时真值）
+## 7. 中性色与状态色唯一规范值（`UDS5-S01` §4.2 `G2`）
 
-> 来源：业务域蓝图《Color Standard》§3 中性色建议基线 / §4 语义状态色基线。
-> **裁决原则（AGENTS.md「设计值来自代码，规则来自规范」）**：蓝图标「建议基线」，仓库运行时为真值。**本节不改动任何运行时色值**，只做逐项对照与差异登记。
+> clerk.com 未公布完整色阶 hex、状态色四层具体值与双主题表面映射，按 `G2` 取运行时实现现状为**唯一规范值**。下表为 2026-11-15 对 `web/src/styles/theme.css` `:root` / `.dark` 的只读提取真值。《业务域蓝图 Color Standard》建议值、《Color System 优化方案》建议值、3.0 历史值与审计时点快照**一律不是规范值**，原有逐值对照表已按差异合并裁决删除（见 §9）。
 
-### 7.1 中性色八项对照（逐值）
+### 7.1 表面、文字与边框（10 项）
 
-| 蓝图 Token | 蓝图 Light | 蓝图 Dark | 仓库对应变量 | 仓库 Light | 仓库 Dark | 判定 |
-|---|---|---|---|---|---|---|
-| `color.bg.canvas` | `#F8FAFC` | `#0B1220` | `--background` | `#ffffff` | `#020617` | **冲突**：蓝图浅色为浅灰底、仓库为纯白；蓝图深色为靛蓝黑、仓库为 slate-950 近黑 |
-| `color.bg.surface` | `#FFFFFF` | `#111827` | `--card` | `#ffffff` | `#020617` | Light 一致；**Dark 冲突**（仓库 Dark 卡片与画布同值，无独立抬升面） |
-| `color.bg.surface-raised` | `#FFFFFF` | `#1F2937` | `--popover` | `#ffffff` | `#020617` | Light 一致；**Dark 冲突**（同上，仓库无独立抬升面） |
-| `color.fg.default` | `#0F172A` | `#F8FAFC` | `--foreground` | `#0f172a` | `#f8fafc` | **完全一致** ✓ |
-| `color.fg.muted` | `#64748B` | `#A8B3C4` | `--muted-foreground` | `#64748b` | `#94a3b8` | Light 一致 ✓；**Dark 冲突**（仓库 `#94a3b8` 浅于蓝图 `#A8B3C4`） |
-| `color.fg.subtle` | `#94A3B8` | `#8491A5` | `--ds-color-text-tertiary` | `color-mix(in oklch, var(--muted-foreground) 88%, var(--background))` | 同式（跟随 `.dark` 变量） | **不可一一映射**：仓库三级文字为**运行时派生**，蓝图建议为固定 hex。仓库口径更灵活且随主题预设跟随，**不采纳蓝图的固定值** |
-| `color.border.default` | `#E2E8F0` | `#334155` | `--border` | `#e2e8f0` | `#334155` | **完全一致** ✓ |
-| `color.border.strong` | `#CBD5E1` | `#475569` | `--border-strong` | `#cbd5e1` | `#475569` | **完全一致** ✓ |
-
-**结论**：中性色 8 项中 **3 项完全一致**（fg.default / border.default / border.strong），**4 项冲突**（bg.canvas 全档、bg.surface / bg.surface-raised / fg.muted 的 Dark 侧），**1 项不可映射**（fg.subtle）。冲突项一律**保留仓库真值**，理由：
-
-1. `bg.canvas` 冲突会整体改变全站底色观感与既有视觉回归基线（22 页 × 2 视口），属**产品外观变更**，不在「补全规范」授权范围内。
-2. Dark 下 `card` / `popover` 与 `background` 同为 `#020617`，意味着 **Dark 主题缺少「抬升面」**——这是**已知的真实设计缺口**，登记为 `S03-D4` 治理候选（须由设计侧决定是否引入独立抬升面），本轮不擅自改值。
-3. `fg.subtle` 的固定 hex 写法会破坏仓库「三级文字随主题预设派生」的既有机制（§3.1「主题预设」条），**明确不采纳**。
-
-### 7.2 语义状态色四项对照
-
-| 蓝图 Token | 蓝图 Light | 蓝图 Dark | 仓库对应变量 | 仓库 Light | 仓库 Dark | 判定 |
-|---|---|---|---|---|---|---|
-| `color.success` | `#15803D` | `#4ADE80` | `--success` | `#15803d` | `#22c55e` | Light 一致 ✓；**Dark 冲突**（仓库 green-500，蓝图 green-400） |
-| `color.warning` | `#B45309` | `#FBBF24` | `--warning` | `oklch(0.681 0.162 75.834)` | `oklch(0.769 0.188 70.08)` | **表示法差异**（hex ↔ oklch），实色接近但不等值，登记待实测换算 |
-| `color.danger` | `#B91C1C` | `#F87171` | `--destructive` | `#dc2626` | `#7f1d1d` | **冲突**：仓库 Light red-600 / Dark red-900，蓝图 Light red-700 / Dark red-400。仓库 Dark 用**深红**而非亮红，属「深色下状态色不用亮色」的设计取向 |
-| `color.info` | `#0369A1` | `#38BDF8` | `--info` | `oklch(0.588 0.158 241.966)` | `oklch(0.613 0.14 239.919)` | **表示法差异**（hex ↔ oklch），登记待实测换算 |
-
-**处理口径**：
-
-- 仓库状态色全部走 `oklch()` 或 hex 混用，且 `--warning-soft` / `--success-soft` / `--info-soft` / `--destructive-soft` 四套柔和态已在运行时齐备（`theme.css:365-374` Light、`:620-628` Dark）；蓝图 §4 末尾要求「语义色的背景、边框和前景应分别提供 `*-subtle`、`*-border`、`*-foreground` Token」——**仓库已满足该结构要求**（`--{status}-soft` / `--{status}-border` / `--{status}-soft-foreground`），**该条为「已覆盖」而非缺口**。
-- 蓝图未提「状态色不得用品牌主色替代」，仓库 §3 第 9–12 类已把 success / warning / destructive / info 拆为独立四族，符合。
-- 蓝图未给状态色的**文字对比度门槛**，仓库已有更严的实测基线（`theme.css:359-361` 注释记录 `#15803d` 白底 5.02:1 的选值依据）。**以仓库为准**。
-
-### 7.3 表单与交互颜色的九项出口核对
-
-蓝图 §5 要求定义：input background / input foreground / placeholder / input border / hover border / focus ring / disabled foreground / disabled background / selected background。
-
-| 蓝图要求项 | 仓库出口 | 状态 |
-|---|---|---|
-| input background | `--ds-color-surface-muted`（`var(--muted)` `#f1f5f9` / `#1e293b`） | 已有 |
-| input foreground | `--ds-color-text-primary`（`var(--foreground)`） | 已有 |
-| placeholder | `--fg-placeholder`（`#64748b`）+ `--color-fg-placeholder`（`theme.css:187`） | 已有 |
-| input border | `--ds-stroke-color-input`（`var(--input)` `#d1d5e5` / `#45465f`）+ `--ds-color-border-input` | 已有 |
-| hover border | 无独立 Token（复用 `--ds-color-border-input` / `border-input`） | **未单列**：仓库以 `hover:border-*` 语义类表达，未提供专用 `--ds-*-input-hover` Token；登记为 `S03-D5`（非阻断） |
-| focus ring | `--ds-focus-ring-width: 2px` + `--ds-focus-ring-color: var(--ring)`（`semantic.css:123-124`） | 已有；蓝图额外要求「**外偏移 2px**」，**仓库未声明偏移量**（无 `ring-offset` / `--ds-ring-offset`），登记为 `S03-D6` |
-| disabled foreground | `--ds-color-text-disabled` | 已有 |
-| disabled background | `--muted`（组件层 `disabled:bg-muted`，如 `ui/button.tsx:52`） | 已有 |
-| selected background | `--accent`（`var(--accent)` `#f1f5f9` / `#1e293b`）+ `--ds-color-surface-accent` | 已有 |
-
-### 7.4 前景色前缀口径（蓝图 §9 与仓库实际）
-
-| 项 | 蓝图建议 | 仓库实际 | 判定 |
+| 语义 | 运行时变量 | Light | Dark |
 |---|---|---|---|
-| 自定义前景色前缀 | `--fg-*` | `theme.css:550-556` 确有 `--fg-primary` / `--fg-secondary` / `--fg-tertiary` / `--fg-disabled` / `--fg-inverse` / `--fg-link` / `--fg-placeholder` 七项；但 `--color-fg-*` 暴露（`theme.css:183-188`）**只定义了 6 项，缺 `--color-fg-primary`** | **不一致** ✗ —— 见 `S03-D11` |
-| `--text-*` 命名空间 | 「不得占用作为自定义颜色 Token」 | 仓库 `typography.css` 把 `--text-*` 用作**字号注册机制**（Tailwind v4.3.3 的 `@theme --text-*`），**不是**颜色 Token | **表述前提不同**：Tailwind v4 中 `--text-*` 同时是字号注册入口；仓库从未用它定义颜色。蓝图的禁令意图（颜色不得占用 `--text-*`）**在仓库已自然满足**——仓库颜色前缀是 `--ds-color-*` / `--color-*` / `--fg-*` |
-| Tailwind 保留命名空间 | 「Tailwind v4 项目遵守其保留命名空间」 | 仓库 `theme.css` 注释明确记录「文字色用 `--fg-*` 前缀，**不能**叫 `--text-*`」，见 `theme.css:543` | **一致** ✓ |
+| canvas 页面底色 | `--background` | `#ffffff` | `#020617` |
+| surface 卡片 | `--card` | `#ffffff` | `#020617` |
+| surface-raised 浮层 | `--popover` | `#ffffff` | `#020617` |
+| surface-secondary 次级容器 | `--muted` | `#f1f5f9` | `#1e293b` |
+| fg-primary 主文字 | `--foreground` | `#0f172a` | `#f8fafc` |
+| fg-secondary 次级文字 | `--muted-foreground` | `#5f6d80` | `#94a3b8` |
+| fg-tertiary 辅助文字 | `--ds-color-text-tertiary` | `color-mix(in oklch, var(--muted-foreground) 88%, var(--background))` | 同式（跟随 `.dark` 变量） |
+| fg-disabled 禁用文字 | `--ds-color-text-disabled` | `color-mix(in oklch, var(--muted-foreground) 55%, transparent)` | 同式 |
+| border 标准边框 | `--border` | `#e2e8f0` | `#334155` |
+| border-strong 强调边框 | `--border-strong` | `#cbd5e1` | `#475569` |
+
+> **时点说明**：`--muted-foreground` Light 当前为 `#5f6d80`、`--info` Light 当前为 `#0073b8`，均为 2026-11-14 axe 对比度收敛后的运行时真值；历史审计快照记录的旧值不再作为规范值，也不再并列登记。
+>
+> **已登记缺口（状态，非设计值）**：Dark 下 `--card` / `--popover` / `--background` 同为 `#020617`，无独立抬升面，层级靠 1px 边框与 Dark 投影表达，登记为 `S03-D2` 治理候选，本轮不改值。
+
+### 7.2 状态色（4 项）
+
+| 状态 | 运行时变量 | Light | Dark |
+|---|---|---|---|
+| Success | `--success` | `#15803d` | `#22c55e` |
+| Warning | `--warning` | `oklch(0.681 0.162 75.834)` | `oklch(0.769 0.188 70.08)` |
+| Danger | `--destructive` | `#dc2626` | `#7f1d1d` |
+| Info | `--info` | `#0073b8` | `oklch(0.613 0.14 239.919)` |
+
+> `oklch()` 值多数超出 sRGB 色域、浏览器需 gamut mapping，**不得宣称与任何 hex 值等值**；精确验收以 `verify-contrast.mjs` 运行时实测为准。状态色四层结构见 §12.1。
+
+### 7.3 表单与交互颜色九项出口
+
+| 要求项 | 运行时出口 | 状态 |
+|---|---|---|
+| input background | `--ds-color-surface-muted`（`var(--muted)`） | 已有 |
+| input foreground | `--ds-color-text-primary`（`var(--foreground)`） | 已有 |
+| placeholder | `--fg-placeholder` + `--color-fg-placeholder` | 已有 |
+| input border | `--ds-stroke-color-input`（`var(--input)`）+ `--ds-color-border-input` | 已有 |
+| hover border | 复用 `--ds-color-border-input` / `hover:border-*` 语义类 | `S03-D5`（非阻断，未单列 Token） |
+| focus ring | `--ds-focus-ring-width: 2px` + `--ds-focus-ring-color: var(--ring)` | 已有；`S03-D6` 外偏移量待裁决 |
+| disabled foreground | `--ds-color-text-disabled` | 已有 |
+| disabled background | `--muted`（组件层 `disabled:bg-muted`） | 已有 |
+| selected background | `--accent` + `--ds-color-surface-accent` | 已有 |
+
+### 7.4 前景色前缀唯一口径
+
+| 项 | 唯一口径 |
+|---|---|
+| 文字色前缀 | `--fg-*` / `--color-fg-*` / `--ds-color-text-*`；**禁止**用 `--text-*` 定义颜色 |
+| `--text-*` | Tailwind v4.3.3 的 `@theme` 自定义**字号注册机制**，不是颜色命名空间；T1 门禁守护，保留不得删除 |
+| 已知缺陷 | `text-fg-primary` 为死类（`--color-fg-primary` 未注册，构建产物中该规则计数 0，全仓 12 处使用被静默丢弃）。修复只需在 `theme.css:183` 前补 `--color-fg-primary: var(--fg-primary);` 并重建，登记 `S03-D11`，本轮不改代码 |
 
 ---
 
-## 8. 差异与例外登记
+## 8. 状态与例外登记（不含第二套设计值）
+
+> 差异合并裁决（`UDS5-S01` §4.2 / `S01-D8`）：以下编号只承载**缺陷、状态与待办**，不再承载任何第二个设计值；历史建议值已从本文全部表格删除。
 
 | 编号 | 内容 | 状态 |
 |---|---|---|
-| S03-D1 | 蓝图 `color.bg.canvas` `#F8FAFC`/`#0B1220` ↔ 仓库 `--background` `#ffffff`/`#020617` | 已登记（**保留仓库真值**；改动属外观变更，需单独授权） |
-| S03-D2 | 蓝图 Dark `bg.surface` / `bg.surface-raised` `#111827`/`#1F2937` ↔ 仓库 `--card` / `--popover` Dark 均为 `#020617` | **治理候选**：Dark 缺独立抬升面，待设计侧裁决 |
-| S03-D3 | 蓝图 `fg.muted` Dark `#A8B3C4` ↔ 仓库 `#94a3b8` | 已登记（保留仓库真值） |
-| S03-D4 | 蓝图 `fg.subtle` 固定 hex ↔ 仓库 `color-mix()` 运行时派生 | **明确不采纳**（仓库口径可随主题预设跟随） |
-| S03-D5 | 蓝图要求 hover border 独立 Token，仓库复用 `border-input` + `hover:border-*` 语义类 | `NOT_VERIFIED`（非阻断，未单列 Token） |
-| S03-D6 | 蓝图要求焦点环「2px + 外偏移 2px」，仓库仅声明宽度 2px，**无偏移量** | `NOT_VERIFIED`（偏移量待设计侧裁决；不得擅自加 `ring-offset`） |
-| S03-D7 | 蓝图 `color.danger` Dark `#F87171` ↔ 仓库 `--destructive` Dark `#7f1d1d` | 已登记（保留仓库真值；属「深色不用亮状态色」取向） |
-| S03-D8 | 蓝图 `color.success` Dark `#4ADE80` ↔ 仓库 `#22c55e` | 已登记（保留仓库真值） |
-| S03-D9 | 蓝图 `color.warning` / `color.info` 为 hex，仓库为 `oklch()` | `NOT_VERIFIED`（实色接近，未做精确换算；不虚构等值声明） |
-| S03-D10 | 蓝图 §3 品牌 `on-primary` Dark `#17182A` ↔ 仓库 `--primary-foreground`（`--uter-brand-primary-foreground`） | `NOT_VERIFIED`（品牌前景值随 DTCG 生成，见 §2.1 差异登记） |
-| S03-D11 | **`text-fg-primary` 为死类**：`theme.css:550`（Light）与 `:749`（Dark）均声明 `--fg-primary`，但 `theme.css:183-188` 的 `--color-fg-*` 映射**只含 6 项**（`secondary` / `tertiary` / `disabled` / `link` / `placeholder` / `inverse`），**缺 `--color-fg-primary`**。Tailwind v4 中未注册的 `--color-*` 不生成对应工具类——实测构建产物 `dist/static/css/index.51e0d1c6a1.css` 中 `.text-fg-primary` 计数为 **0**（对照 `.text-fg-secondary{color:var(--fg-secondary)}` 正常生成）。全仓 `web/src` 有 **12 处**使用 `text-fg-primary`（精确分布：**基础类 8 处**——`features/about/about-viewer.tsx:190,217,243,287,295,316` 与 `features/docs/native/page-nav.tsx:58`、`features/docs/native/content-card.tsx:34`；**`hover:` 变体 4 处**——`about-viewer.tsx:91`、`features/docs/native/docs-toc.tsx:77`、`docs-shell.tsx:71,104`），这些点的颜色声明**被静默丢弃**、回落到继承色。**修复只需一行**：在 `theme.css:183` 前补 `--color-fg-primary: var(--fg-primary);`——Tailwind v4 由同一 `--color-*` 变量派生静态与 `hover:` 两种变体，**该行可同时救活全部 12 处**；重建后须验证产物中出现 `.text-fg-primary` 与 `.hover\:text-fg-primary` 两条规则。本轮**不改代码**，登记待办 | **真实代码缺陷**（非规范问题）。修复需在 `theme.css` 补 `--color-fg-primary: var(--fg-primary);` 一行并重建；本轮**不改代码**，登记待办 |
+| S03-D1 / D2 / D3 | canvas 与 surface 的 Dark 抬升面缺口、`fg.muted` 层级 | `S03-D2` 治理候选；其余已按 `G2` 唯一值收敛 |
+| S03-D4 | 三级文字采用 `color-mix()` 运行时派生，随主题预设跟随 | **规范口径**（`G2`），固定 hex 写法不再考虑 |
+| S03-D5 | hover border 无独立 Token | `NOT_VERIFIED`（非阻断） |
+| S03-D6 | 焦点环外偏移量未声明为独立语义 Token | `NOT_VERIFIED`（待设计侧裁决，不得擅自加 `ring-offset`） |
+| S03-D7 / D8 | 深色状态色取向（深红 / green-500） | 已按 `G2` 唯一值收敛 |
+| S03-D9 / D18 | `oklch()` 与 hex 表示法差异、超 sRGB 色域 | 不虚构等值声明；精确验收以运行时实测为准 |
+| S03-D10 | 品牌前景值随 DTCG 生成 | `NOT_VERIFIED` |
+| S03-D11 | `text-fg-primary` 死类（12 处使用） | **真实代码缺陷**，修复待办，见 §7.4 |
+| S03-D12 | 品牌色阶仅 9 档（50–800），方案文本声称「50–900」但未提供 900 | 按 9 档登记，900 **待定义**，不臆造色值 |
+| S03-D13 | `web/src` 不存在 `--slate-*` 变量；3.0 §17.2 仅为结构示意 | §10.2 为规范层首次显式成表，不得宣称运行时已落地 |
+| S03-D14–D16 | 双主题映射 / Light 文字层级双轨 | 已按 §7.1 / §11 唯一值收敛，不再并列 |
+| S03-D17 / D17-b | 状态色对比度：`--success` + `--success-foreground` 字面配对 2.18:1 不达 AA | **待核候选**：组件是否真实使用该配对未逐处核实，**不判已确认缺陷、不擅自修**，须走 §19 专项复核 |
+| S03-D19 | 3.0 §28.5 TOKEN-MANIFEST 与运行时已分叉 | 3.0 全文保留为历史版本，不作现行依据 |
+| S03-D20 | 焦点环色值 | 按 `G2` 唯一值 `--ring` 收敛；低于 3:1 的建议色已删除 |
+| S03-D21 | 规范层缺口：selection-bg / selection-fg、border-subtle、surface-tertiary、disabled-border、hover border、Secondary / Ghost / Text Link 三态、面积填充 Token | `NOT_IMPLEMENTED`，落地须走 §1.1 三步路径 |
+| S03-D22 | 图表板 | 按 `G2` 运行时 6 色 `oklch()` 收敛为唯一值 |
+| S03-D23 | 方案 L1–L4 颜色架构 | **Adapt** 映射，不另立体系（§15.1） |
+| S03-D24 | 三级文字对比度、Disabled 透明度派生与「Disabled 不应仅靠透明度」的张力 | 待设计侧裁决，`NOT_VERIFIED` |
+| S03-D25 | Dashboard「`+12.8%`」运营指标配色适用范围 | 沿用语义 Token + 文字 / 箭头图标，不引入涨跌专用语义 |
+| S03-D26 | 自动验证缺口：「主题成对完整性」与「未定义颜色引用」未见专门校验器 | `NOT_IMPLEMENTED`，登记为 `UDS5-S24` 候选，不虚构脚本 |
 
 ---
+
+## 9. 上游对齐与差异合并裁决（2026-11-15）
+
+> 上级指令：① 5.0 中所有与上游 clerk.com 不一致的地方以 clerk.com 为准；② 合并差异只保留唯一规范值；③ 生成全量 Showcase。本节为 `UDS5-S03` 的落实记录。
+
+| 项 | 唯一口径 |
+|---|---|
+| 唯一规范值入口 | `UDS5-S01` §4.2 基线表：`G1` 取 clerk.com 官方已公布值、`G2` 取运行时实现现状 |
+| 本文主色 | `#6c47ff`（`G1`），见 §2；运行时迁移按 §19 待办 |
+| 双值处置 | 删除 §2.1 / §7 / §10–§14 中全部第二套建议值表格与逐值对照列；任一属性在本文只出现一个规范值 |
+| 保留内容 | Primitive 色板、双主题映射、状态四层结构、19 项业务状态映射、交互规范、图表系列顺序与统一规则、组件颜色出口、L1–L4 阅读视图、治理约束与门禁证据 |
+| 状态保留 | `E24` 两处对比度缺陷、`E28` 渐变有意例外、`NOT_VERIFIED` / `NOT_IMPLEMENTED` / `PENDING` 全部原样保留（状态不是设计值） |
+| 本轮动作 | 只改规范文本；零 `web/src` / `.uap` / CI / `package.json` / 运行时色值改动；不建分支、不暂存、不提交 |
+| 已废止口径 | 「品牌基线六色必须保留」「方案建议值 vs 运行时真值并列登记」「以运行时真值为规范基线」「Clerk 色值一律 Reject」 |
+
+> **对比度数据来源**：§10 / §16 标注「实算」的数值按 WCAG 2.x 相对亮度公式对**纯 HEX 值**计算（临时脚本不入仓库）。`oklch()` 值的 hex 换算仅作近似参考，**不得据此宣称逐值等值**；精确验收以 `verify-contrast.mjs` 为准，本轮未对新增色值执行该验收。
+
+---
+
+## 10. Primitive 原始色板（唯一规范值）
+
+> clerk.com 未公布完整色阶 hex，按 `G2` 由 5.0 规范层显式成表。组件**不得直接引用** Primitive 色板（`UDS5-S01` §6.3、T7 / T8），只能引用 `--ds-color-*`。
+
+### 10.1 品牌色阶（9 档）
+
+| 档 | 唯一规范值 | 用途 | 白底对比度（实算） | 使用约束 |
+|---|---|---|---|---|
+| brand-50 | `#F0F0FF` | 极浅品牌背景 | 1.13:1 | 仅背景 / 选中底，禁作文字 |
+| brand-100 | `#E0E1FF` | 浅色选中背景 | 1.28:1 | 仅背景 |
+| brand-200 | `#C7C8FF` | 浅色装饰、图形 | 1.60:1 | 仅非必要装饰 |
+| brand-300 | `#A1A3F7` | 深色主题强调 | 2.31:1 | 仅装饰 / 图形 |
+| brand-400 | `#8B8DF5` | 深色主题主品牌色 | 2.91:1 | 仅装饰 / 图形 |
+| brand-500 | `#5B5EE6` | 色阶中阶（**非 5.0 主色**，主色见 §2） | 5.01:1 | 可作文字 / 链接 / 实心底 |
+| brand-600 | `#494CC7` | 色阶深阶 | 6.68:1 | 文字 / 实心底均可 |
+| brand-700 | `#3F42B0` | 色阶深阶 | 8.02:1 | 同上 |
+| brand-800 | `#30338E` | 深色强调 | 10.55:1 | 同上 |
+
+1. `brand-50`–`brand-400` 白底对比度 1.13–2.91:1，全部低于 WCAG 大文字 / 非文本 3:1 门槛，**不得用作文字色、必要图形或组件识别边界**。
+2. `brand-500` 白底 5.01:1；`brand-600`–`800` 均 ≥ 4.5:1。
+3. 色阶登记不等于获得组件使用权；落地须走 §1.1 三步路径并登记用途与对比度配对。
+4. 900 档**未提供**，标「待定义」，不臆造色值（`S03-D12`）。
+
+> **主色与色阶的关系**：§2 的 `#6c47ff` 是 `G1` 唯一主色；本表 9 档是 `G2` 显式色板（上游未公布色阶）。二者不是「两个主色」——色阶是可供派生的原始色板，`colorPrimary` 是唯一语义主色出口。
+
+### 10.2 中性 Slate 色阶（11 档）
+
+| 档 | 唯一规范值 | 语义 | 运行时对应出口 |
+|---|---|---|---|
+| Slate 50 | `#F8FAFC` | canvas Light / 极浅表面 | `--subtle` Light（近似） |
+| Slate 100 | `#F1F5F9` | surface-secondary | `--muted` / `--secondary` / `--accent` Light |
+| Slate 200 | `#E2E8F0` | surface-tertiary / border | `--border` Light |
+| Slate 300 | `#CBD5E1` | fg-disabled / border-strong | `--border-strong` Light |
+| Slate 400 | `#94A3B8` | fg-tertiary | `--fg-disabled` Light；Dark 侧的多项 `--fg-*` / `--muted-foreground` |
+| Slate 500 | `#64748B` | fg-secondary | `--fg-tertiary` / `--fg-placeholder` Light |
+| Slate 600 | `#475569` | border-strong Dark | `--border-strong` Dark |
+| Slate 700 | `#334155` | border Dark | `--border` Dark、`--fg-secondary` Light |
+| Slate 800 | `#1E293B` | surface-secondary Dark | `--muted` / `--secondary` / `--accent` Dark |
+| Slate 900 | `#0F172A` | surface Dark / fg-primary Light | `--foreground` / `--fg-primary` Light；E28 深色渐变实测背景（§6） |
+| Slate 950 | `#020617` | canvas Dark | `--background` / `--card` / `--popover` Dark |
+
+> Slate 50–950 是运行时实际在用的色值集合，本表收敛为可复用 Primitive 色板。全仓只读检索确认 `web/src` **不存在任何 `--slate-*` 变量**，故本表是规范层首次显式成表，不得宣称运行时已落地（`S03-D13`）。
+
+---
+
+## 11. Light / Dark 双主题语义映射（唯一规范值）
+
+| Token | Light | Dark | 用途 |
+|---|---|---|---|
+| canvas | `#ffffff` | `#020617` | 页面底色（`--background`） |
+| surface | `#ffffff` | `#020617` | 卡片、面板（`--card`） |
+| surface-secondary | `#f1f5f9` | `#1e293b` | 次级容器（`--muted`） |
+| surface-tertiary | `#e2e8f0` | `#334155` | 第三级表面（无专用表面 Token，同值者为 `--border`） |
+| fg-primary | `#0f172a` | `#f8fafc` | 主文字（`--foreground`） |
+| fg-secondary | `#5f6d80` | `#94a3b8` | 次级文字（`--muted-foreground`） |
+| fg-tertiary | `color-mix()` 派生 | `color-mix()` 派生 | 辅助文字（随主题预设跟随） |
+| fg-disabled | `color-mix()` 派生 | `color-mix()` 派生 | 禁用文字 |
+| border | `#e2e8f0` | `#334155` | 标准边框 |
+| border-strong | `#cbd5e1` | `#475569` | 强调边框 |
+| border-subtle | — | — | `NOT_IMPLEMENTED`（`S03-D21`），落地须走 §1.1 |
+
+**「Dark 不是 Light 的简单反转」原则（Adopt）**：`:root`（`theme.css:341+`）与 `.dark`（`theme.css:596+`）各自独立声明，`generated/brand.css` 亦 Light / Dark 各 8 色。深浅主题必须有独立的表面、文字与边框层级；Dark 缺独立抬升面为 `S03-D2` 治理候选，本轮不裁决、不改值。
+
+**文字层级可读性约束**：正文与必要图形按 WCAG 2.2 AA（`UDS5-S13` §3.7）验收；§16.2 要求每个语义色成对定义并记录前景 / 背景配对实算结果。
+
+---
+
+## 12. 语义状态色与业务状态映射
+
+### 12.1 四层结构（唯一规范出口）
+
+| 方案层 | 运行时唯一出口 | 状态 |
+|---|---|---|
+| `*-solid` | `--success` / `--warning` / `--destructive` / `--info`（Light + Dark 各 4，见 §7.2） | 已有 |
+| `*-bg` | `--{status}-soft`（4 族 × 2 主题 = 8 个 `--ds-color-{status}-soft` 映射） | 已有 |
+| `*-border` | `--success-border` / `--warning-border` / `--info-border`（`color-mix` 派生）；危险态由 `--border-destructive-subtle` 承担 | 已有 |
+| `*-fg` | `--{status}-foreground`（实心底上的文字）+ `--{status}-soft-foreground`（soft 底上的文字） | 已有，比四层结构更细 |
+
+### 12.2 Uter 业务状态语义映射（19 项，只做语义映射）
+
+| 业务状态 | 颜色语义 | 仓库 Token 出口 |
+|---|---|---|
+| API 请求成功 | Success | `--ds-color-text-success` / `--ds-color-success-soft` + `-soft-foreground` |
+| API 请求失败 | Danger | `--ds-color-text-danger` / `--ds-color-destructive-soft` + `-soft-foreground` |
+| API 请求处理中 | Info | `--ds-color-text-info` / `--ds-color-info-soft` + `-soft-foreground` |
+| API 请求超时 | Warning | `--ds-color-text-warning` / `--ds-color-warning-soft` + `-soft-foreground` |
+| 模型渠道在线 | Success | 同上 Success 族 |
+| 模型渠道离线 | Danger | 同上 Danger 族 |
+| 模型渠道降级 | Warning | 同上 Warning 族 |
+| 余额充足 | Success | 同上 Success 族 |
+| 余额不足 | Warning | 同上 Warning 族 |
+| 余额耗尽 | Danger | 同上 Danger 族 |
+| 充值成功 | Success | 同上 Success 族 |
+| 退款处理中 | Warning | 同上 Warning 族 |
+| 退款完成 | Success | 同上 Success 族 |
+| 退款失败 | Danger | 同上 Danger 族 |
+| Token 使用中 | Brand | `--ds-color-primary-subtle` + `--uter-brand-soft-foreground` + `--ds-color-primary-border` |
+| Token 已禁用 | Neutral | `--ds-color-text-disabled` / `--ds-color-surface-muted` |
+| 任务排队中 | Info | 同上 Info 族 |
+| 任务执行中 | Brand | 同「Token 使用中」 |
+| 任务失败 | Danger | 同上 Danger 族 |
+
+`验证状态 NOT_VERIFIED`（逐页引用一致性未核查）。
+
+### 12.3 四条强制约束
+
+1. **颜色不得作为唯一信息载体**：余额、订单、渠道、退款、任务、API 状态必须同时具备文字或图标（WCAG 1.4.1）。
+2. **资金真实性**：余额、充值、退款状态不得在服务端确认前用 Success 色断言结果，遵守 `UDS5-S31` §9 `OB-9.1`..`OB-9.8`。
+3. **Brand 边界**：Brand 用于状态标识时只承担图标 / 描边 / 小面积标记，不得作为状态底大面积填充（B4）。
+4. **Neutral 语义**：「已禁用」走 `--ds-color-text-disabled`，不得与「次要但可用」的 `--ds-color-text-tertiary` 混用。
+
+---
+
+## 13. 交互状态颜色
+
+### 13.1 交互 Token 唯一出口
+
+| 交互态 | 唯一规范出口 | 状态 |
+|---|---|---|
+| Primary default | `--ds-color-action-primary-strong` / `--ds-color-action-primary-foreground` | 已有 |
+| Primary hover | `--ds-color-action-primary-hover`（`--hover-primary`） | 已有 |
+| Primary active | `--ds-color-action-primary-active`（`--primary-active`） | 已有 |
+| Destructive hover | `--ds-color-action-destructive-hover`（`--hover-destructive`） | 已有 |
+| Success hover | `--ds-color-action-success-hover`（`--hover-success`） | 已有 |
+| focus ring | `--ds-focus-ring-color: var(--ring)` + `--ds-focus-ring-width: 2px` | 已有；外偏移量 `S03-D6` 待裁决 |
+| selection-bg / selection-fg | — | `NOT_IMPLEMENTED`（`S03-D21`）；**必须成对定义**，不得只补背景 |
+| overlay | `--ds-color-surface-overlay: #000000`（恒黑、深浅同值）+ 调用方透明度修饰 | 已有 |
+| disabled-bg | `--muted` + 组件 `disabled:bg-muted` | 已有 |
+| disabled-border | `--border`（无独立 Token） | 部分覆盖（`S03-D21`） |
+| Secondary / Ghost / Text Link 三态 | 无独立三态 Token | `NOT_IMPLEMENTED`（`S03-D21`） |
+
+> 悬停 / 按下必须走专用 `*-hover` / `*-active` Token，禁止 `hover:bg-primary/90`（T14）。`verify-contrast.mjs` 的 `NEGATIVE_OLD_SELECTED_STATE` 已拒绝 `#5B5EE6` on `#F0F0FF` = 4.44:1 的旧选中态，选中色改动须重跑该守卫。
+
+### 13.2 交互规范五条
+
+| 规则 | 仓库落点 | 状态 |
+|---|---|---|
+| 所有可键盘访问元素须有明显 Focus Ring | `foundations/accessibility.css`、`--ds-focus-ring-width: 2px`、`:focus-visible` | 已有；逐组件覆盖 `NOT_VERIFIED` |
+| Hover 不应导致布局变化 | `*-hover` Token 只换色不换几何；`UDS5-S17` | 规则已覆盖，逐组件未核 |
+| Active 不应仅靠改变文字颜色表达 | `--ds-color-action-primary-active` 等专用 Token（T14） | 已有 |
+| Disabled 不应仅依赖降低透明度 | `--ds-color-text-disabled` + `disabled-bg` / `disabled-border` + `aria-disabled` | **部分**：文案禁用色为 `color-mix()` 透明度派生，与规则有张力 → `S03-D24` 待裁决 |
+| Selected 须有背景 / 边框 / 图标之一 | `--accent` / `--ds-color-surface-accent` / `--ds-color-primary-subtle` / `--ds-color-primary-border` | 已有 |
+
+---
+
+## 14. 数据可视化颜色
+
+### 14.1 六色唯一规范值（`G2`，运行时 `oklch()` 双主题）
+
+`theme.css:389-394`（Light）与 `:645-650`（Dark）；`--color-chart-1..6` 注册于 `theme.css:189-194`；`tokens/chart-typography.ts` 为 T4 TS 镜像。
+
+| Token | Light | Dark |
+|---|---|---|
+| `--chart-1` | `oklch(0.72 0.18 250)` | `oklch(0.76 0.14 250)` |
+| `--chart-2` | `oklch(0.65 0.15 200)` | `oklch(0.76 0.13 200)` |
+| `--chart-3` | `oklch(0.7 0.12 280)` | `oklch(0.76 0.13 285)` |
+| `--chart-4` | `oklch(0.68 0.19 325)` | `oklch(0.75 0.16 325)` |
+| `--chart-5` | `oklch(0.68 0.16 155)` | `oklch(0.76 0.14 155)` |
+| `--chart-6` | `oklch(0.7 0.15 30)` | `oklch(0.75 0.13 30)` |
+
+> 换算近似仅供阅读，多数超出 sRGB 色域，**不是运行时实测值**；不得宣称与任何 hex 值等值。
+
+### 14.2 固定数据系列顺序
+
+| 序 | 业务系列 | 仓库 Token |
+|---|---|---|
+| 1 | Token 使用量 | `--chart-1` |
+| 2 | 成功请求量 | `--chart-2` |
+| 3 | 成本与消费 | `--chart-3` |
+| 4 | 错误与异常趋势 | `--chart-4` |
+| 5 | 请求总量 / 辅助指标 | `--chart-5` |
+| 6 | 保留槽位（分类标识） | `--chart-6` |
+
+> `--chart-4` 只表示「第 4 系列」，**不得固定解释为错误色**；错误 / 成败仍走 `--success` / `--warning` / `--destructive` / `--info` 及其 `-soft` 变体。图表色独立于状态色，不得混用。
+
+### 14.3 图表统一规则
+
+| 元素 | 应引用 Token | 运行时状态 |
+|---|---|---|
+| 网格线 | `border-subtle` → 无独立 Token 时退用 `--ds-color-border` | 待落地（`S03-D21`） |
+| 坐标轴文字 | `fg-tertiary` → `--ds-color-text-tertiary` | 语义层已有 |
+| Tooltip 背景 | `surface` → `--ds-color-surface-popover` | 已有 |
+| Tooltip 边框 | `border` → `--ds-color-border` | 已有 |
+| Tooltip 标题 | `fg-primary` → `--ds-color-text-primary` | 已有 |
+| 数据点描边 | 对应 `--chart-N` | 已有 |
+| 面积图填充 | 系列色叠加 **12%–20%** 透明度 | 无独立 Token，`S03-D21` |
+| 图例 / 线型 / 点形标记 | 非颜色编码，必须同时提供 | 3.0 §2.8 已要求 |
+
+> `UDS5-S19` 的 P2「图表独立 Token 未定义」保持 **Pending**；本节只补齐语义映射与固定顺序，**代码落地仍为 Pending**，不得据本节勾选通过。
+
+---
+
+## 15. 颜色架构层级与组件颜色出口
+
+### 15.1 L1–L4 阅读视图（Adapt，不另立体系）
+
+| 方案层 | 5.0 对应 | 裁决 |
+|---|---|---|
+| L1 Primitive | `UDS5-S01` §6.3 运行时 L1 Primitive / 治理 L1 Foundation | **Adapt** |
+| L2 Brand / Neutral / Semantic / Chart | `UDS5-S01` §6.3 运行时 L2 Semantic + 治理 L1 | **Adapt** |
+| L3 Background / Foreground / Border / Interactive / DataViz | `--ds-color-*` / `--ds-stroke-*` / `--ds-focus-ring-*` | **Adapt** |
+| L4 Component Tokens | `UDS5-S14` 组件契约 + `UDS5-S01` 治理 L3–L5 | **Adapt**（仓库无独立组件色 Token 层，由组件 variant 表达） |
+
+> `UDS5-S01` §6 已定义治理五层、§6.3 已定义运行时 Token 三层；本表只作颜色系统内部阅读视图，不新建第二套 Token 体系。**注意**：按 2026-11-15 上游裁决，规范层的变量结构口径为 `G1` 扁平单层 24 键（§4.2），运行时三层为过渡期实现现状。
+
+### 15.2 组件颜色出口（10 行）
+
+| 组件 / 元素 | 状态 | 背景 | 文字 | 边框 / 描边 |
+|---|---|---|---|---|
+| Primary Button | default | `--ds-color-action-primary-strong` | `--ds-color-action-primary-foreground` | — |
+| Primary Button | hover / active | `--ds-color-action-primary-hover` / `--ds-color-action-primary-active` | 同 default | — |
+| Primary Button | focus | 不变 | 不变 | `--ds-focus-ring-color` / `--ds-focus-ring-width: 2px` |
+| Primary Button | disabled | `--muted` | `--ds-color-text-disabled` | `--ds-color-border` |
+| Status Badge | Success / Warning / Danger / Info | `--ds-color-{status}-soft` | `--ds-color-{status}-soft-foreground` | `--{status}-border` |
+| Status Badge | 进行中 / 执行中（Brand） | `--ds-color-primary-subtle` | `--uter-brand-soft-foreground` | `--ds-color-primary-border` |
+| Status Badge | 已禁用（Neutral） | `--ds-color-surface-muted` | `--ds-color-text-disabled` | `--ds-color-border` |
+| Dashboard Card | 表面 | `--ds-color-surface-card` | 指标 `--ds-color-text-primary`；标签 `--ds-color-text-secondary` | `--ds-color-border`，`--ds-stroke-width: 1px` |
+| 输入框 | default / hover / focus / error / disabled | 见 §7.3 九项出口 | 见 §7.3 | 见 §7.3 |
+| 数据表格 | 行 / 表头 / 选中 / 悬浮 | `--ds-color-surface-card` / `--muted` / `--accent` | `--ds-color-text-primary` / `-secondary` | `--ds-color-border` |
+
+> Dashboard「`+12.8%`」是 Token 消耗量运营指标，不是金融行情涨跌；沿用语义 Token 并强制配合文字与箭头图标，不引入涨跌专用语义（`S03-D25`）。
+
+---
+
+## 16. 治理规则、自动验证与证据
+
+### 16.1 七条规范逐条落点
+
+| # | 规范 | 5.0 落点 | 判定 |
+|---|---|---|---|
+| 1 | 对比度 WCAG 2.2 AA（正文 4.5:1 / 大字 3:1 / 边界与必要图形 3:1） | `UDS5-S13` §3.7；E24 两处 3.76:1 / 3.30:1 保持 P1 待修 | 已覆盖，**不得勾选通过** |
+| 2 | 禁止直接使用原始色值 | T7 / T8 / T13 / T14 / T15 + §1.1 三步路径 + `brand-colors.ts` 唯一裸色值所有者 | 已覆盖 |
+| 3 | Light / Dark 独立映射、组件不判断主题 | `:root` + `.dark` 独立声明；`UDS5-S10` ST-3 禁止组件写 `.dark` 分支 | 已覆盖（逐组件 `NOT_VERIFIED`） |
+| 4 | 图表独立管理 | 3.0 §2.8 / 本文 §3 第 15 类 / §14 | 已覆盖 + 系列顺序与统一规则 |
+| 5 | 状态一致性 | 本文 §12.2 的 19 项业务状态映射 | 规范层；逐页一致性 `NOT_VERIFIED` |
+| 6 | 颜色不作为唯一信息载体 | 3.0 §2.7 / §2.8、本文 §12.3 / §14.3 | 已覆盖 + 重申 |
+| 7 | 颜色变更必须自动验证（对比度 / Token 引用 / 主题完整性 / 未定义颜色） | `verify-contrast.mjs`、`generate-design-tokens.mjs --check`、`lint:design:strict`、`sync-design-showcase.mjs --check`；「主题成对完整性」与「未定义颜色引用」未见专门校验器 | **部分覆盖**，缺口 `S03-D26`，不虚构脚本 |
+
+### 16.2 颜色变更的七条执行约束
+
+1. 任何色值变更先走 `UDS5-S01` §19，且必须按 §1.1 三步路径落地。
+2. 每个语义色必须 Light / Dark **成对**定义；单侧新增视为违规。
+3. 新增色必须登记用途、对比度要求，以及至少一组前景 / 背景配对的实算结果。
+4. 组件层禁止 `#hex` / `rgb()` / `oklch()` / Tailwind 调色板类（T7 / T8）。
+5. 状态色与图表色不得互借；图表系列不得借用 Success / Warning / Danger 作常规序列色。
+6. 品牌渐变 E28 三停靠站深浅同值、禁止 `.dark` 覆盖，唯一出口 `@utility ds-text-gradient-brand`。
+7. 变更后必须复跑 §16.4 门禁清单并保留命令与退出码证据；未跑不得勾选通过。
+
+### 16.3 唯一规范值与差异合并的验收断言
+
+| 断言 | 判定方式 |
+|---|---|
+| 任一颜色属性在 §2 / §7 / §10–§14 中只出现一个规范值 | 全文不得存在任何第二套建议值的表头、对照列或「规范基线 vs 运行时值」双列结构；每个属性只有一个值 |
+| `G1` 主色唯一 | §2 只出现 `#6c47ff` 作为主色；§10.1 色阶表是 `G2` 原始色板，不定义第二主色 |
+| `E24` / `E28` / 状态标签保留 | §5 / §6 / §8 / §16.1 原样保留，未被当作设计值删除 |
+| 规范—实现差异登记为待迁移 | §2.1 / §9 / `UDS5-S01` §4.2 一致，未宣称代码已对齐 |
+
+### 16.4 本轮实际执行的命令与证据（2026-11-15）
+
+> 全部命令在 `/Users/lincolnhu/uter/web` 下执行，均为**只读 / 静态门禁**；执行前后运行时文件零改动。
+
+| 命令 | 退出码 | 关键输出 |
+|---|---|---|
+| `bun run design:5:check` | **0** | `verdict: PASS` / `standards 37` / `registeredDocIds 37` / `scannedMarkdown 35` / `errors 0` |
+| `bun run design:showcase:5:check` | **0** | `errors 0` / `specIds 37` / `componentIds 65` / 全量 Token / 字体 / 组件样本覆盖断言 |
+| `bun run design:tokens:check` | **0** | `Design token source and generated CSS are in sync.` |
+| `bun run design:showcase:check` | **0** | `17 PASS / 0 FAIL / 0 SKIP` |
+| `bun run verify:contrast` | **0** | `PASS; checks=31; failed=0` |
+| `bun run lint:design:strict` | **0** | `通过。扫描 1276 个文件` |
+| `bun run design:clerk:check` | **0** | `errors 0` / C4 能力清单 / C5 业务红线通过 |
+
+**证据边界（不得省略）**：
+
+1. 上述验证的是**注册表结构、DTCG 同步、静态扫描、既有对比度守卫与红线守卫**；**不验证**本轮上游对齐后的规范值已在运行时落地，也不验证新增色板、业务状态映射、图表系列顺序与交互规则已实现。§9–§16 全部 `NOT_VERIFIED`。
+2. 规范基线主色 `#6c47ff` 与运行时代码值冲突，属**上级授权的待迁移项**；迁移前 `verify-contrast.mjs` / T1–T17 仍按现行代码值执行，不得据本规范宣称代码已对齐。
+3. 临时换算脚本 `/tmp/uter-*.mjs` **不入仓库**，输出仅作规范登记依据，不是门禁证据。
+4. **未执行**：`scripts/verify-all.sh` 全量门禁、`bun run typecheck` / `test` / `lint` / `build:check`、双轨视觉回归、`test:axe`、E24 两处对比度复测、新增色值的专项对比度验收、65 组件颜色引用逐项证据、Android / iOS / HarmonyOS 平台验收、运行时代码迁移。
+5. 本轮**未执行任何 git 暂存 / 提交 / 推送 / 建分支操作**；工作区并发 WIP（含 `web/src/styles/theme.css`）全部隔离。
 
 ## 与其他规范的关系
 
@@ -279,16 +578,19 @@
 | `web/design-tokens.baseline.json` | 基线只减不增（0 条） | `--strict` 使用 |
 | `bun run typecheck` / `lint` / `test` / `build:check` | 前端基础门禁 | 已接入 |
 
-**本轮未执行上述任何命令**。
+> **历史轮次说明**：首轮撰写（2026-11-14）未执行上述任何命令；2026-11-15 补充轮与上游对齐 / 差异合并轮均只执行只读 / 静态门禁，范围、退出码与证据边界见 §16.4，**不构成颜色实现、对比度实测或视觉验收**。本轮按上级裁决把规范基线对齐 clerk.com 并合并全部双值，运行时代码零改动。
 
 ## 验证状态
 
 | 项 | 状态 |
 |---|---|
-| 文档 ID / 版本 / 状态 | `UDS5-S03` / `5.0.0` / `ACTIVE` |
-| 本轮实际动作 | 仅撰写规范文本；未修改 `web/src`、`.uap`、CI、`package.json`；未执行 git 操作 |
-| 本轮执行的验证命令 | **无** |
+| 文档 ID / 版本 / 状态 | `UDS5-S03` / `5.0.0` / `ACTIVE`（2026-11-15 上游对齐 + 差异合并：删除全部第二套建议值，版本不变） |
+| 本轮实际动作 | 改写 `UDS5-S01` / `UDS5-S02`–`S12` / `UDS5-S15` / `UDS5-S21` / `UDS5-S24` / `UDS5-S32` / `FINAL-ACCEPTANCE-REPORT` / `UDS5-S26` 等规范文本与 Showcase 生成链；**未修改 `web/src` 运行时代码**、`.uap`、CI 业务配置、`package.json` 依赖；未执行 git 操作 |
+| 本轮执行的验证命令 | 7 条只读 / 静态门禁，全部 `EXIT=0`（见 §16.4）；**均为结构类检查，不构成颜色实现验收** |
 | 验证状态 | **`NOT_VERIFIED`** |
 | 17 类语义 Token | 规范层已建立；实际组件引用逐项核验 `NOT_VERIFIED` |
+| 上游对齐与差异合并（§9） | 规范层唯一值已建立（`UDS5-S01` §4.2 `G1`/`G2`）；主色 `#6c47ff` 与运行时代码的迁移、Primitive 色板落地、业务状态映射逐页一致性、图表规则落地、交互 Token 缺口补齐全部 `NOT_VERIFIED` / `NOT_IMPLEMENTED` |
 
-**未验证 / 未执行清单**：E24 两处对比度修复（3.76:1 / 3.30:1）及其复测、焦点环 `2px`（已裁决）在组件层与原生兜底的同步及回归测试验证、`verify-contrast.mjs` 复跑、`lint:design:strict` 全量扫描复跑、`design:tokens:check` 与 `design:showcase:check` 复跑、`test:axe`、双轨视觉回归、全量构建、`brand.tokens.json` 的 `status: DRAFT` / `decision: AUTO_BLOCKED` 解封证据链、§2.1 五处色值差异的统一、Terminal ANSI 0–15 全色板落地（P1）、图表 text / axis / label / grid 独立 Token（P2）、`--ds-decor-*` 纳入 `colors.decoration`（P3）、3 个纯别名压缩消失根因定位、65 组件颜色引用逐项证据、Android / iOS / HarmonyOS 平台验收。
+**未验证 / 未执行清单**：E24 两处对比度修复（3.76:1 / 3.30:1）及其复测、焦点环 `2px`（已裁决）在组件层与原生兜底的同步及回归测试验证、`test:axe`、双轨视觉回归、全量构建、`brand.tokens.json` 的 `status: DRAFT` / `decision: AUTO_BLOCKED` 解封证据链、`G1` 主色与运行时代码的迁移（按 §19）、Terminal ANSI 0–15 全色板落地（P1）、图表 text / axis / label / grid 独立 Token（P2）、`--ds-decor-*` 纳入 `colors.decoration`（P3）、3 个纯别名压缩消失根因定位、65 组件颜色引用逐项证据、Android / iOS / HarmonyOS 平台验收。`verify-contrast.mjs` / `lint:design:strict` / `design:tokens:check` / `design:showcase:check` 已复跑且 `EXIT=0`（§16.4），但**仅覆盖既有守卫，不含本轮新增色值的专项验收**。
+
+**本轮新增未验证项**：`G1` 主色 / 13px 基准 / 6px 圆角 / 16px 间距 / 24 键变量结构在 `web/src` 的迁移与专项对比度、视觉回归验收（按 `UDS5-S01` §19）；§10 Primitive 色板（Brand 9 档 / Slate 11 档）落地与逐档对比度专项验收、§11 双主题映射逐项落地、§12.2 的 19 项业务状态映射逐页引用一致性、`S03-D17-b` Dark Success 实心配对核实、§13 交互 Token 缺口（`S03-D21`）补齐、§14.2 / §14.3 固定系列顺序与图表统一规则落地（`UDS5-S19` P2 仍 Pending）、§15.2 组件颜色出口逐组件核验、`S03-D26` 两项自动校验器落地、全量 `scripts/verify-all.sh` 与 `bun run typecheck` / `test` / `lint` / `build:check`。

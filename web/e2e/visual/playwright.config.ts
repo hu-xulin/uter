@@ -1,3 +1,6 @@
+import os from 'node:os'
+import path from 'node:path'
+
 import { defineConfig } from '@playwright/test'
 
 import { BASE_URL } from './lib/target'
@@ -20,10 +23,24 @@ import { BASE_URL } from './lib/target'
  * 并让整轮 fail —— 不允许把「服务没起」报成通过。
  */
 
+/**
+ * 每轮使用唯一的 outputDir（os.tmpdir() 下带 pid + 时间戳）。
+ *
+ * 根因（2026-11-14 实测）：Playwright runner 启动时会清空 outputDir。固定目录
+ * `../../.visual-e2e/results` 累积了 1220 个 trace/截图文件，一次清空触发宿主
+ * 批量删除保护（SAFE_DELETE_BULK_CONFIRM_REQUIRED），runner 在收集用例阶段就
+ * 异常退出 —— 29 项全部变成「用例执行异常：failed」。与 business 轨同款缺陷。
+ * 一次性空目录让清空动作成为 no-op；机读报告仍固定写 `.visual-e2e/report.json`。
+ */
+const uniqueOutputDir = path.join(
+  os.tmpdir(),
+  `uter-visual-e2e-${process.pid}-${Date.now()}`
+)
+
 export default defineConfig({
   testDir: '.',
-  // 产物一律落在 gitignore 的 .visual-e2e/ 下，不污染 web/ 工作区。
-  outputDir: '../../.visual-e2e/results',
+  // 产物落在唯一临时目录，不污染 web/ 工作区，也不触发批量删除保护。
+  outputDir: uniqueOutputDir,
   snapshotDir: '.',
   globalSetup: './lib/service-gate.ts',
   // 截图比对对并行不友好：多 worker 争抢 GPU 会引入合成抖动。

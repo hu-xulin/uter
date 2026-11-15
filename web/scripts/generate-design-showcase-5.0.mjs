@@ -31,7 +31,7 @@ For commercial licensing, please contact support@uter.ai
  * 用法：node scripts/generate-design-showcase-5.0.mjs
  * 校验：node scripts/check-design-showcase-5.0.mjs
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from 'yaml'
@@ -57,53 +57,456 @@ const esc = (value) =>
     .replaceAll('"', '&quot;')
 
 const relDoc = (p) => (p ? `./${String(p).split('/').pop()}` : '#')
+const swatch = (label, value, text = '') =>
+  `<div class="swatch"><span class="swatch-chip" style="background:${value}"></span><code>${esc(label)}</code><span class="swatch-val">${esc(text || value)}</span></div>`
+
+// ---------------------------------------------------------------------------
+// 运行时 Token 全量解析（零遗漏：web/src/**/*.css 中每一个 --变量 声明）
+// 只读解析：剥离注释 → 花括号配对定位选择器作用域 → 逐条收集 `--name: value;`
+// 本页展示的是「实现现状快照」，不是第二份规范真源；唯一规范值见顶部基线表。
+// ---------------------------------------------------------------------------
+const walkCss = (dir, out = []) => {
+  for (const ent of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, ent.name)
+    if (ent.isDirectory()) walkCss(p, out)
+    else if (ent.isFile() && ent.name.endsWith('.css')) out.push(p)
+  }
+  return out
+}
+const TOKEN_FILES = walkCss(join(REPO_ROOT, 'web/src')).sort()
+const DECL_RE = /^\s*(--[a-zA-Z0-9_-]+)\s*:\s*([\s\S]+?)\s*$/
+const occurrences = new Map()
+for (const abs of TOKEN_FILES) {
+  const rel = abs.slice(REPO_ROOT.length + 1)
+  const text = readFileSync(abs, 'utf8').replaceAll(/\/\*[\s\S]*?\*\//g, '')
+  let buf = ''
+  const stack = []
+  const pushDecl = () => {
+    const m = buf.match(DECL_RE)
+    if (m) {
+      const name = m[1]
+      const value = m[2].trim().replaceAll(/\s+/g, ' ')
+      if (!occurrences.has(name)) occurrences.set(name, [])
+      occurrences.get(name).push({ value, file: rel, scope: stack.join(' > ') })
+    }
+    buf = ''
+  }
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i]
+    if (ch === '{') { stack.push(buf.trim()); buf = ''; continue }
+    if (ch === '}') { stack.pop(); buf = ''; continue }
+    if (ch === ';') { pushDecl(); continue }
+    buf += ch
+  }
+}
+
+const isDarkScope = (s) => /\.dark\b/.test(s)
+const scopeTag = (s) => {
+  if (s === ':root') return 'LIGHT'
+  if (isDarkScope(s)) return 'DARK'
+  if (s.startsWith('@theme')) return 'THEME'
+  if (/data-theme-preset/.test(s)) return 'PRESET'
+  if (/data-theme-radius/.test(s)) return 'RADIUS'
+  return 'OTHER'
+}
+const allTokens = [...occurrences.entries()]
+  .map(([name, occ]) => {
+    const light = occ.find((o) => o.scope === ':root') ?? occ.find((o) => !isDarkScope(o.scope)) ?? occ[0]
+    const dark = occ.find((o) => isDarkScope(o.scope))
+    const seen = new Set()
+    const values = occ.filter((o) => {
+      const key = `${o.value}|${o.scope}`
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+    return {
+      name,
+      light: light.value,
+      dark: dark?.value ?? null,
+      values,
+      count: occ.length,
+      files: new Set(occ.map((o) => o.file)).size,
+    }
+  })
+  .sort((a, b) => a.name.localeCompare(b.name))
+const declCount = [...occurrences.values()].reduce((n, list) => n + list.length, 0)
+const scopeCount = new Set([...occurrences.values()].flat().map((o) => o.scope)).size
+
+// 仓库 CSS 引用了 Tailwind v4 内置色板（--color-*）等外部变量；从已安装的
+// tailwindcss/theme.css 读取官方默认值作为「仅用于解析预览」的兜底，不把它们
+// 混进 Uter 自己的 Token 清单，也不写回任何运行时代码。
+const FALLBACK_PATH = join(REPO_ROOT, 'web/node_modules/tailwindcss/theme.css')
+const fallbackMap = new Map()
+if (existsSync(FALLBACK_PATH)) {
+  const css = readFileSync(FALLBACK_PATH, 'utf8').replaceAll(/\/\*[\s\S]*?\*\//g, '')
+  for (const m of css.matchAll(/(--[a-zA-Z0-9_-]+)\s*:\s*([^;]+);/g))
+    {fallbackMap.set(m[1], m[2].trim().replaceAll(/\s+/g, ' '))}
+}
+const missingRefs = new Set()
+for (const list of occurrences.values())
+  {for (const o of list)
+    {for (const m of o.value.matchAll(/var\(\s*(--[a-zA-Z0-9_-]+)/g))
+      {if (!occurrences.has(m[1])) missingRefs.add(m[1])}}}
+const externalColors = [...missingRefs]
+  .filter((n) => fallbackMap.has(n))
+  .sort()
+  .map((n) => ({ name: n, value: fallbackMap.get(n) }))
+const lightMap = new Map(allTokens.map((t) => [t.name, t.light]))
+const darkMap = new Map(allTokens.map((t) => [t.name, t.dark ?? t.light]))
+for (const [name, value] of fallbackMap) {
+  if (!lightMap.has(name)) lightMap.set(name, value)
+  if (!darkMap.has(name)) darkMap.set(name, value)
+}
+const VAR_RE = /var\(\s*(--[a-zA-Z0-9_-]+)\s*(?:,\s*([^()]*))?\)/g
+const resolveValue = (value, map, depth = 0) => {
+  if (depth > 6 || !value.includes('var(')) return value
+  return value.replace(VAR_RE, (whole, name, fallback) => {
+    const next = map.get(name)
+    if (next !== undefined) return resolveValue(next, map, depth + 1)
+    return fallback ? fallback.trim() : whole
+  })
+}
+const BG_START = /^(?:#|rgba?\(|hsla?\(|oklch\(|oklab\(|color-mix\(|linear-gradient\(|radial-gradient\(|transparent\b|currentcolor\b|white\b|black\b)/i
+const SHADOW_START = /^(?:inset\s+)?[-\d.]+\s/i
+const chipStyle = (raw, map) => {
+  const v = resolveValue(raw, map).trim()
+  if (BG_START.test(v)) return `background:${esc(v)}`
+  if (SHADOW_START.test(v) && /(rgba?\(|hsla?\(|oklch\(|#[0-9a-f]{3,8})/i.test(v))
+    {return `box-shadow:${esc(v)}`}
+  return ''
+}
+const isColorToken = (t) =>
+  t.values.some((o) => chipStyle(o.value, isDarkScope(o.scope) ? darkMap : lightMap) !== '')
+const colorTokens = allTokens.filter(isColorToken)
+const otherTokens = allTokens.filter((t) => !isColorToken(t))
+const textSteps = allTokens.filter(
+  (t) => t.name.startsWith('--text-') && !t.name.includes('--line-height')
+)
+const weightTokens = allTokens.filter((t) => t.name.startsWith('--font-weight-'))
+const fontFamilies = allTokens.filter(
+  (t) => t.name.startsWith('--font-') && !t.name.startsWith('--font-weight-')
+)
+const clip = (s, n) => (s.length > n ? `${s.slice(0, n)}…` : s)
+
+// 每个变量：所有取值逐一列出，颜色类取值逐一给出真实色块 / 阴影预览。
+const tokenItem = (t) => {
+  const chips = t.values
+    .map((o) => {
+      const map = isDarkScope(o.scope) ? darkMap : lightMap
+      const style = chipStyle(o.value, map)
+      if (!style) return ''
+      const resolved = resolveValue(o.value, map).trim()
+      return `<span class="token-chip" style="${style}" title="${esc(`${scopeTag(o.scope)} · ${resolved} · ${o.file}`)}" aria-label="${esc(`${t.name} ${scopeTag(o.scope)} 预览 ${clip(resolved, 60)}`)}"></span>`
+    })
+    .filter(Boolean)
+    .join('')
+  const rows = t.values
+    .map(
+      (o) => `<div class="tv-row" data-token-value="${esc(t.name)}"><span class="tv-tag tv-${scopeTag(o.scope).toLowerCase()}">${scopeTag(o.scope)}</span><code>${esc(o.value)}</code><span class="tv-src">${esc(o.file.split('/').pop())} · ${esc(clip(o.scope.replaceAll(/\s+/g, ' '), 72))}</span></div>`
+    )
+    .join('')
+  return `<article class="token-item" data-token-name="${esc(t.name)}" data-token-kind="${isColorToken(t) ? 'color' : 'other'}" aria-label="运行时变量 ${esc(t.name)}">
+      <header class="token-head"><code>${esc(t.name)}</code><span class="token-meta">${t.count} 处 / ${t.files} 文件 / ${t.values.length} 值</span></header>
+      <div class="token-chips">${chips || '<span class="token-chip token-chip-empty" aria-hidden="true"></span>'}</div>
+      <div class="token-values">${rows}</div>
+    </article>`
+}
+
+const fullColorBody = `<div class="token-legend">只读扫描 <strong>${TOKEN_FILES.length}</strong> 份 CSS，得到 <strong>${declCount}</strong> 条声明 / <strong>${allTokens.length}</strong> 个唯一变量 / <strong>${scopeCount}</strong> 类选择器作用域。下方<strong>逐项列出全部 ${allTokens.length} 个变量及其每一个取值</strong>；其中 <strong>${colorTokens.length}</strong> 个颜色 / 阴影 / 渐变类变量按取值逐一渲染真实预览，<code>oklch()</code> / <code>color-mix()</code> 由浏览器按当前色域计算，不宣称与任何 hex 等值。</div>
+    <h3 class="token-sub">一 · 颜色 / 阴影 / 渐变变量（${colorTokens.length} 个 · ${colorTokens.reduce((n, t) => n + t.values.length, 0)} 个取值）</h3>
+    <div class="token-grid">${colorTokens.map(tokenItem).join('')}</div>
+    <h3 class="token-sub">二 · 其它变量（${otherTokens.length} 个 · 字号 / 行高 / 字体族 / 字重 / 间距 / 圆角 / 动效 / 层级 / 控件尺寸）</h3>
+    <div class="token-grid">${otherTokens.map(tokenItem).join('')}</div>
+    <h3 class="token-sub">三 · 外部依赖色值：Tailwind v4 内置色板（${externalColors.length} 个 · 非 Uter 规范 Token）</h3>
+    <div class="token-grid">${externalColors
+      .map(
+        (x) => `<article class="token-item" data-external-color="${esc(x.name)}" aria-label="外部依赖色值 ${esc(x.name)}"><header class="token-head"><code>${esc(x.name)}</code><span class="token-meta">tailwindcss/theme.css</span></header><div class="token-chips"><span class="token-chip" style="background:${esc(x.value)}"></span></div><div class="token-values"><div class="tv-row"><span class="tv-tag tv-other">EXTERNAL</span><code>${esc(x.value)}</code><span class="tv-src">tailwindcss/theme.css</span></div></div></article>`
+      )
+      .join('')}</div>
+    <p class="note">这是 <code>web/src</code> 的<strong>实现现状快照</strong>（含 <code>tokens/generated/brand.css</code> 的旧 Uter 靛紫与 11 组主题预设覆盖）；仓库 CSS 还引用了 <strong>${missingRefs.size}</strong> 个未在仓库内声明的变量，其中 ${externalColors.length} 个是 Tailwind v4 内置色板（取自已安装的 <code>tailwindcss/theme.css</code>，仅用于解析色块预览，不是 Uter Token），其余为运行时计算值。5.0 的<strong>唯一规范值</strong>只在上文「唯一规范值基线表」；规范与实现的差异统一登记为「待迁移」，本轮不修改任何运行时代码。</p>`
+
+const typeRow = (t) => {
+  const lhOcc = occurrences.get(`${t.name}--line-height`) ?? []
+  return t.values
+    .map((o) => {
+      const map = isDarkScope(o.scope) ? darkMap : lightMap
+      const lh = (lhOcc.find((x) => x.scope === o.scope) ?? lhOcc[0])?.value ?? 'normal'
+      const size = resolveValue(o.value, map).trim()
+      const line = resolveValue(lh, map).trim()
+      const tag = scopeTag(o.scope)
+      return `<div class="type-row" data-type-step="${esc(t.name)}" data-type-scope="${tag.toLowerCase()}">
+        <code>${esc(t.name)}</code>
+        <span class="type-sample" style="font-size:${esc(size)};line-height:${esc(line)}">${esc(size)} / ${esc(line)} · Uter 优特智能 0123</span>
+        <span class="tv-tag tv-${tag.toLowerCase()}">${tag}</span>
+      </div>`
+    })
+    .join('')
+}
+const fullTypographyBody = `<div class="token-legend"><code>@theme --text-*</code> 全量 <strong>${textSteps.length}</strong> 档，<strong>每一档的每一个取值</strong>都用运行时真实字号 / 行高渲染（含 <code>simple-large</code> 放大档）；另列全部字重、字体族与密度档。</div>
+    <div class="type-stack">${textSteps.map(typeRow).join('')}</div>
+    <h3 class="token-sub">字重（${weightTokens.length} 档 · G1 上游 400 / 500 / 600 / 700）</h3>
+    <div class="demo-row">${weightTokens
+      .map((t) => {
+        const w = resolveValue(t.light, lightMap).trim()
+        return `<span class="weight-demo" data-font-weight="${esc(w)}" style="font-weight:${esc(w)}">${esc(t.name.replace('--font-weight-', ''))} · ${esc(w)} · 优特智能 Uter</span>`
+      })
+      .join('')}</div>
+    <h3 class="token-sub">字体族（${fontFamilies.length} 个变量 · 真实 font-family 渲染）</h3>
+    <div class="type-stack">${fontFamilies
+      .map((t) => {
+        const f = resolveValue(t.light, lightMap).trim()
+        return `<div class="type-row" data-font-token="${esc(t.name)}"><code>${esc(t.name)}</code><span class="type-sample" style="font-family:${esc(f)}">优特智能 Uter · 0123456789 · API Key</span><span class="tv-tag tv-theme">LIVE</span></div>`
+      })
+      .join('')}</div>
+    <h3 class="token-sub">G1 上游基准与 G2 密度档</h3>
+    <div class="type-stack">
+      <div class="type-row" data-font-baseline="g1-fontSize"><code>fontSize</code><span class="type-sample" style="font-size:0.8125rem">0.8125rem (13px) · clerk.com 上游 G1 唯一规范基准</span><span class="tv-tag tv-light">G1</span></div>
+      <div class="type-row" data-font-baseline="g1-fontFamily"><code>fontFamily</code><span class="type-sample" style="font-family:inherit">inherit · clerk.com 上游 G1</span><span class="tv-tag tv-light">G1</span></div>
+      <div class="type-row" data-font-baseline="g1-fontFamilyButtons"><code>fontFamilyButtons</code><span class="type-sample" style="font-family:inherit">inherit · clerk.com 上游 G1</span><span class="tv-tag tv-light">G1</span></div>
+      <div class="type-row" data-font-baseline="g2-min"><code>最小字号</code><span class="type-sample" style="font-size:12px">12px · 全站可见文本下限（T16，G2）</span><span class="tv-tag tv-preset">G2</span></div>
+    </div>
+    <div class="demo-row" style="margin-top:12px">${['compact', 'default', 'comfortable']
+      .map((d) => `<span class="chip" data-density-step="${d}">${d}</span>`)
+      .join('')}</div>
+    <p class="note">基准字号 <code>0.8125rem</code>(13px) 是 <code>G1</code> 唯一规范值；<code>--text-*</code> ${textSteps.length} 档刻度与最小 12px 属 <code>G2</code>，是<strong>刻度</strong>而非第二个正文基准。<code>@theme --text-*</code> 是 Tailwind v4.3.3 自定义字号注册机制，保留不得删除。</p>`
+
+// ---------------------------------------------------------------------------
+// 唯一规范值基线表（UDS5-S01 §4.2 · 2026-11-15 上游对齐裁决）
+// G1 = clerk.com 官方已公布值；G2 = 上游未公布 → 取运行时实现现状为唯一值。
+// ---------------------------------------------------------------------------
+const NORMATIVE_G1 = [
+  ['品牌主色 colorPrimary', '#6c47ff', 'clerk.com appearance.variables 官方示例值'],
+  ['基准字号 fontSize', '0.8125rem (13px)', 'clerk.com 官方默认值'],
+  ['圆角 borderRadius', '0.375rem (6px)', 'clerk.com 官方默认值'],
+  ['间距 spacing', '1rem (16px)', 'clerk.com 官方默认值'],
+  ['字重 fontWeight', '400 / 500 / 600 / 700', 'clerk.com 官方默认值'],
+  ['字体族 fontFamily', 'inherit', 'clerk.com 官方默认值'],
+  ['按钮字体 fontFamilyButtons', 'inherit', 'clerk.com 官方默认值'],
+  ['等宽字体 fontFamilyMono', '系统 mono 栈', 'clerk.com 官方默认值'],
+  ['变量结构', '扁平单层 24 键 --clerk-*', 'clerk.com variables 文档'],
+  ['主题切换', 'color-scheme / .dark / [data-theme] / prefers-color-scheme', 'clerk.com 官方'],
+  ['预置主题', 'default / simple / shadcn / dark / shadesOfPurple / neobrutalism', 'clerk.com 官方'],
+  ['色阶派生', 'color-mix() + 相对颜色语法', 'clerk.com 官方'],
+  ['定制分层', 'Themes → variables → BYO CSS → Build your own UI', 'clerk.com 官方'],
+  ['时效性事实', 'Elements 已弃用（Core 3）；localization 为 Experimental', 'clerk.com 官方'],
+]
+const NORMATIVE_G2 = [
+  ['Light Hover', '#4F52D1', '上游未公布 → 运行时 DTCG 唯一值'],
+  ['Light Active', '#4A4DC5', '上游未公布 → 运行时 DTCG 唯一值'],
+  ['Dark Primary', '#A1A3F7', '上游未公布 → 运行时 DTCG 唯一值'],
+  ['Dark Hover', '#B1B3FF', '上游未公布 → 运行时 DTCG 唯一值'],
+  ['Dark Active', '#9294F7', '上游未公布 → 运行时 DTCG 唯一值'],
+  ['字号刻度', `${textSteps.length} 档 @theme --text-*`, '上游未公布完整刻度 → 运行时刻度'],
+  ['最小可见字号', '12px', 'T16 强制'],
+  ['间距刻度', '4pt 网格 4/8/12/16/24/32/40/48', 'tokens/spacing.css'],
+  ['圆角刻度', '6/8/10/12/14/16/18/20 px + full', 'styles/theme.css'],
+  ['边框 / 焦点环', '1px / 2px ring-2', 'tokens/semantic.css'],
+  ['状态色 / 图表色', `${colorTokens.length} 个颜色类变量`, '上游未公布完整色阶'],
+  ['组件 / 元素 / 模板 / 断点', `${components.length} 组件 / ${20} 元素 / 12 模板 / 5 断点`, 'Clerk 官方未提供'],
+  ['无障碍目标', 'WCAG 2.2 AA 4.5:1 / 3:1', 'Clerk 官方未提供数值表'],
+]
+const normativeSection = `<section class="normative" id="normative" data-normative-brand="#6c47ff" aria-label="唯一规范值基线表">
+      <h2 class="section-title">零 · 唯一规范值基线表 · 上游 clerk.com 对齐（2026-11-15 裁决）</h2>
+      <p class="note">全 5.0 任一设计属性<strong>只有一个规范值</strong>：<code>G1</code> 取 clerk.com 官方已公布值，<code>G2</code>（上游未公布）取运行时实现现状。所有历史建议值 / 蓝图值 / 3.0 值已合并删除，唯一入口为 <code>01-UTER-DESIGN-SYSTEM-5.0.md</code> §4.2。本轮只改规范文本、不改 <code>web/src</code>；运行时代码与 G1 的差异登记为「待迁移」。</p>
+      <h3 class="token-sub">G1 · clerk.com 上游已公布（${NORMATIVE_G1.length} 项）</h3>
+      <div class="normative-grid">${NORMATIVE_G1.map(
+        ([k, v, src]) => `<div class="norm-card" data-normative-key="${esc(k)}"><code>${esc(k)}</code><strong>${esc(v)}</strong><span>${esc(src)}</span></div>`
+      ).join('')}</div>
+      <h3 class="token-sub">G2 · 上游未公布 → 唯一规范值（${NORMATIVE_G2.length} 项）</h3>
+      <div class="normative-grid">${NORMATIVE_G2.map(
+        ([k, v, src]) => `<div class="norm-card" data-normative-key="${esc(k)}"><code>${esc(k)}</code><strong>${esc(v)}</strong><span>${esc(src)}</span></div>`
+      ).join('')}</div>
+      <div class="demo-row" style="margin-top:14px">
+        ${swatch('G1 colorPrimary', '#6c47ff')}
+        ${swatch('G2 Light Hover', '#4F52D1')}
+        ${swatch('G2 Dark Primary', '#A1A3F7')}
+      </div>
+    </section>`
+
+// ---------------------------------------------------------------------------
+// 65 个组件逐一真实视觉样本（专门样本优先，未命中者按分类给默认样本）
+// ---------------------------------------------------------------------------
+const SAMPLE_OVERRIDES = {
+  Button: '<button type="button" class="btn btn-primary">创建 API Key</button><button type="button" class="btn btn-ghost">取消</button>',
+  ButtonGroup: '<span class="btn-group"><button type="button" class="btn btn-primary">日</button><button type="button" class="btn btn-ghost">周</button><button type="button" class="btn btn-ghost">月</button></span>',
+  Input: '<input type="text" placeholder="name@example.com" aria-label="Input 样本" />',
+  Textarea: '<textarea rows="2" placeholder="请输入描述" aria-label="Textarea 样本"></textarea>',
+  SecretInput: '<input type="password" value="sk-uter-********" aria-label="SecretInput 样本" /><button type="button" class="btn btn-ghost">显示</button>',
+  SecretTextarea: '<textarea rows="2" aria-label="SecretTextarea 样本">-----BEGIN KEY-----</textarea>',
+  SecretFileInput: '<label class="sample-label">上传密钥文件<input type="file" aria-label="SecretFileInput 样本" /></label>',
+  InputOtp: '<input class="otp" inputmode="numeric" maxlength="6" value="123456" aria-label="InputOtp 样本" />',
+  InputGroup: '<span class="input-group"><span>https://</span><input value="api.uter.ai" aria-label="InputGroup 样本" /></span>',
+  Checkbox: '<label class="sample-check"><input type="checkbox" checked aria-label="Checkbox 样本" /> 启用模型降级</label>',
+  Switch: '<label class="sample-check"><input type="checkbox" role="switch" checked aria-label="Switch 样本" /> 自动重试</label>',
+  RadioGroup: '<label class="sample-check"><input type="radio" name="sg-radio" checked /> 按量计费</label><label class="sample-check"><input type="radio" name="sg-radio" /> 包月</label>',
+  Toggle: '<button type="button" class="btn btn-primary" aria-pressed="true">已固定</button>',
+  ToggleGroup: '<span class="btn-group"><button type="button" class="btn btn-primary">左</button><button type="button" class="btn btn-ghost">中</button><button type="button" class="btn btn-ghost">右</button></span>',
+  Slider: '<input type="range" min="0" max="100" value="64" aria-label="Slider 样本" />',
+  NativeSelect: '<select aria-label="NativeSelect 样本"><option>默认渠道</option><option>备用渠道</option></select>',
+  Select: '<select aria-label="Select 样本"><option>gpt-4o</option><option>claude-3.5</option></select>',
+  Combobox: '<input list="sg-models" placeholder="搜索模型…" aria-label="Combobox 样本" /><datalist id="sg-models"><option value="gpt-4o"></option><option value="claude-3.5"></option></datalist>',
+  ComboboxInput: '<input placeholder="输入以搜索…" aria-label="ComboboxInput 样本" />',
+  Calendar: '<div class="mini-cal"><span>一 二 三 四 五 六 日</span><span>1 2 <b>3</b> 4 5 6 7</span><span>8 9 10 11 12 13 14</span></div>',
+  Badge: '<span class="badge badge-ok">运行正常</span><span class="badge badge-warn">余额不足</span><span class="badge badge-bad">请求失败</span>',
+  DiscountBadge: '<span class="badge badge-warn">-20%</span>',
+  IconBadge: '<span class="icon-badge" aria-label="IconBadge 样本">✦</span>',
+  Avatar: '<span class="avatar" aria-label="Avatar 样本">U</span><span class="avatar avatar-alt">AI</span>',
+  Kbd: '<kbd class="kbd">⌘ K</kbd><kbd class="kbd">Esc</kbd>',
+  Table: '<table class="demo-table"><thead><tr><th>模型</th><th class="num">用量</th></tr></thead><tbody><tr><td>gpt-4o</td><td class="num">1,280,000</td></tr><tr><td>claude-3.5</td><td class="num">860,240</td></tr></tbody></table>',
+  Chart: '<div class="mini-chart" aria-label="Chart 样本"><i style="height:38%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:84%"></i><i style="height:70%"></i><i style="height:96%"></i></div>',
+  Alert: '<div class="notif notif-alert" role="alert">校验失败 · 请检查 API Key</div>',
+  AlertDialog: '<div class="mini-dialog"><strong>确认删除？</strong><span>此操作不可撤销</span><span class="btn-group"><button type="button" class="btn btn-primary">确认</button><button type="button" class="btn btn-ghost">取消</button></span></div>',
+  Dialog: '<div class="mini-dialog"><strong>创建 API Key</strong><input placeholder="名称" aria-label="Dialog 输入样本" /><button type="button" class="btn btn-primary">保存</button></div>',
+  Drawer: '<div class="mini-drawer"><strong>筛选</strong><span>渠道 / 模型 / 状态</span></div>',
+  Sheet: '<div class="mini-drawer"><strong>详情面板</strong><span>右侧滑出内容</span></div>',
+  Popover: '<div class="mini-pop"><strong>Token 用量</strong><span>本月 12,845,920</span></div>',
+  HoverCard: '<div class="mini-pop"><strong>渠道在线</strong><span>成功率 99.8%</span></div>',
+  Tooltip: '<span class="mini-tip">▾ 悬停提示：余额充足</span>',
+  DropdownMenu: '<div class="mini-menu"><span>编辑</span><span>复制</span><span>删除</span></div>',
+  ContextMenu: '<div class="mini-menu"><span>查看</span><span>重命名</span><span>移除</span></div>',
+  Progress: '<progress value="64" max="100" aria-label="Progress 样本"></progress><span class="sample-cap">64%</span>',
+  Spinner: '<span class="spinner" aria-label="Spinner 样本"></span><span class="sample-cap">加载中…</span>',
+  Skeleton: '<span class="skeleton" aria-label="Skeleton 样本"></span>',
+  Empty: '<div class="mini-empty">暂无数据 · 创建第一个 API Key</div>',
+  Sonner: '<div class="notif notif-toast" role="status">已保存 · 操作成功</div>',
+  Accordion: '<details class="mini-acc" open><summary>什么是 Token 中转？</summary><span>面向开发者与企业的模型 API 基础设施。</span></details>',
+  Collapsible: '<details class="mini-acc"><summary>展开高级选项</summary><span>超时 / 重试 / 回退策略</span></details>',
+  Card: '<div class="mini-card"><strong>今日 Token 消耗</strong><b>12,845,920</b><span>+12.8% 较昨日</span></div>',
+  TitledCard: '<div class="mini-card"><strong>渠道健康度</strong><span>在线 18 / 20 · 降级 2</span></div>',
+  Separator: '<hr class="sep" />',
+  AspectRatio: '<span class="mini-ratio" aria-label="AspectRatio 样本">16 : 9</span>',
+  ScrollArea: '<div class="mini-scroll" tabindex="0">滚动区域<br />第二行<br />第三行<br />第四行</div>',
+  Resizable: '<div class="mini-resize"><span>左面板</span><span>⋮</span><span>右面板</span></div>',
+  Item: '<div class="mini-item"><span class="avatar">U</span><span>uter-workspace</span><span class="badge badge-ok">ACTIVE</span></div>',
+  Tabs: '<div class="mini-tabs"><span class="on">概览</span><span>用量</span><span>日志</span></div>',
+  Breadcrumb: '<nav class="mini-crumb">控制台 / 模型 / 渠道详情</nav>',
+  Pagination: '<div class="mini-tabs"><span>‹</span><span class="on">1</span><span>2</span><span>3</span><span>›</span></div>',
+  NavigationMenu: '<nav class="mini-tabs"><span class="on">产品</span><span>定价</span><span>文档</span></nav>',
+  Menubar: '<div class="mini-tabs"><span>文件</span><span>编辑</span><span>视图</span></div>',
+  Sidebar: '<div class="mini-side"><span>▣ 仪表盘</span><span>▤ 模型</span><span>◇ 渠道</span></div>',
+  Command: '<div class="mini-menu"><span>⌘ 搜索命令…</span><span>创建 API Key</span><span>查看余额</span></div>',
+  Carousel: '<div class="mini-carousel"><span>‹</span><span>幻灯片 1 / 3</span><span>›</span></div>',
+  Field: '<label class="sample-label">模型名称<input value="gpt-4o" aria-label="Field 样本" /></label><span class="field-error">字段级错误就近展示</span>',
+  Form: '<form class="form-demo" onsubmit="return false"><label>邮箱</label><input type="email" placeholder="name@example.com" aria-label="Form 样本" /><button type="submit" class="btn btn-primary">提交</button></form>',
+  Label: '<label class="sample-label">API Key 名称</label>',
+  FormLabelTier: '<label class="sample-label">一级字段标签 <span aria-hidden="true">*</span></label>',
+  Markdown: '<div class="mini-md"><strong>标题</strong><p>正文段落与 <code>行内代码</code> 示例。</p></div>',
+  Direction: '<span class="chip" dir="ltr">ltr →</span><span class="chip" dir="rtl">← rtl</span>',
+}
+const SAMPLE_BY_CATEGORY = {
+  action: '<button type="button" class="btn btn-primary">主操作</button><button type="button" class="btn btn-ghost">次操作</button>',
+  input: '<input type="text" placeholder="输入…" aria-label="分类输入样本" />',
+  overlay: '<div class="mini-pop"><strong>浮层</strong><span>内容区域</span></div>',
+  feedback: '<div class="notif notif-toast" role="status">状态反馈</div>',
+  layout: '<div class="mini-card"><strong>容器</strong><span>表面 + 1px 边框</span></div>',
+  'data-display': '<table class="demo-table"><thead><tr><th>列 A</th><th>列 B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>',
+  navigation: '<div class="mini-tabs"><span class="on">项一</span><span>项二</span><span>项三</span></div>',
+  disclosure: '<details class="mini-acc" open><summary>展开项</summary><span>内容</span></details>',
+  form: '<label class="sample-label">字段<input placeholder="值" aria-label="分类表单样本" /></label>',
+  utility: '<span class="chip">工具类</span>',
+  content: '<p class="sample-cap">富文本内容示例</p>',
+}
+const componentSample = (c) => {
+  const markup = SAMPLE_OVERRIDES[c.name] ?? SAMPLE_BY_CATEGORY[c.category] ?? '<span class="sample-cap">视觉样本</span>'
+  return `<div class="cmp-sample" data-component-sample="${esc(c.id)}" aria-label="组件 ${esc(c.name)} 真实视觉样本">${markup}</div>`
+}
+const sampleOverrideCount = components.filter((c) => SAMPLE_OVERRIDES[c.name] !== undefined).length
+
+const extraCss = `
+/* 全量 Token / 字体 / 组件样本样式（由生成器内联，零外部资源） */
+.element-banner { background: var(--brand-soft); border: 1px solid var(--brand); border-radius: 8px; padding: 12px 14px; margin: 0 0 18px; font-size: var(--fs-caption); line-height: 1.8; color: var(--fg); }
+.token-legend { font-size: var(--fs-caption); color: var(--fg-muted); margin: 0 0 12px; line-height: 1.8; }
+.token-sub { font-size: var(--fs-body); font-weight: 600; color: var(--fg); margin: 24px 0 10px; }
+.token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; }
+.token-item { border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; background: var(--surface); min-width: 0; }
+.token-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; justify-content: space-between; }
+.token-head code { font-size: 11px; word-break: break-all; background: none; padding: 0; color: var(--fg); font-weight: 600; }
+.token-meta { font-size: 10px; color: var(--fg-muted); white-space: nowrap; }
+.token-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+.token-chip { width: 20px; height: 20px; border-radius: 4px; border: 1px solid var(--border); display: inline-block; flex: none; background-color: var(--surface-2); }
+.token-chip-empty { background: repeating-linear-gradient(45deg, var(--surface-2), var(--surface-2) 4px, var(--surface) 4px, var(--surface) 8px); }
+.token-values { display: grid; gap: 2px; }
+.tv-row { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 2px 6px; align-items: baseline; }
+.tv-row code { font-size: 10px; background: none; padding: 0; word-break: break-all; color: var(--fg); }
+.tv-src { grid-column: 2; font-size: 10px; color: var(--fg-muted); word-break: break-all; }
+.tv-tag { font-size: 9px; font-weight: 600; border-radius: 3px; padding: 1px 4px; text-align: center; background: var(--surface-2); color: var(--fg-muted); }
+.tv-light { background: var(--brand-soft); color: var(--brand-deep); }
+.tv-dark { background: var(--fg); color: var(--surface); }
+.tv-theme { background: var(--success-soft); color: var(--success); }
+.tv-preset { background: var(--warning-soft); color: var(--warning); }
+.tv-radius { background: var(--info); color: #fff; }
+.type-stack { display: flex; flex-direction: column; gap: 6px; }
+.type-row { grid-template-columns: 150px minmax(0, 1fr) 64px; align-items: center; gap: 10px; }
+.type-sample { min-width: 0; overflow-wrap: anywhere; }
+.weight-demo { border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-size: var(--fs-body); }
+.normative { border: 1px solid var(--brand); border-radius: var(--radius); padding: var(--pad); margin: 20px 0 8px; background: var(--surface); }
+.normative h2.section-title { margin-top: 0; }
+.normative-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.norm-card { border: 1px solid var(--border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+.norm-card code { background: none; padding: 0; font-size: 11px; color: var(--fg-muted); }
+.norm-card strong { font-size: var(--fs-body); color: var(--brand-deep); word-break: break-word; }
+.norm-card span { font-size: 11px; color: var(--fg-muted); }
+.btn-ghost { background: var(--surface-2); color: var(--fg); border-color: var(--border); }
+.btn-group { display: inline-flex; gap: 4px; }
+.cmp-sample { margin-top: 10px; padding: 10px; border: 1px dashed var(--border); border-radius: 8px; background: var(--surface-2); min-height: 52px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: var(--fs-caption); }
+.cmp-sample input, .cmp-sample select, .cmp-sample textarea { max-width: 210px; font-size: var(--fs-caption); padding: 4px 8px; }
+.cmp-sample .demo-table { font-size: 11px; }
+.cmp-sample .otp { letter-spacing: .35em; width: 110px; }
+.sample-label { display: inline-flex; flex-direction: column; gap: 4px; font-size: 11px; }
+.sample-check { display: inline-flex; gap: 6px; align-items: center; font-size: 11px; }
+.sample-cap { font-size: 11px; color: var(--fg-muted); }
+.badge-bad { background: #fee2e2; color: #b91c1c; }
+.icon-badge, .avatar { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 999px; background: var(--brand-soft); color: var(--brand-deep); font-size: 12px; font-weight: 600; }
+.avatar-alt { background: var(--success-soft); color: var(--success); }
+.kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 2px 6px; font: 400 11px ui-monospace, monospace; background: var(--surface); }
+.mini-chart { display: inline-flex; align-items: flex-end; gap: 4px; height: 54px; }
+.mini-chart i { display: block; width: 14px; background: var(--brand); border-radius: 3px 3px 0 0; }
+.mini-dialog, .mini-pop, .mini-drawer, .mini-menu, .mini-card, .mini-acc, .mini-empty, .mini-md { border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: var(--surface); display: flex; flex-direction: column; gap: 6px; font-size: 11px; min-width: 150px; }
+.mini-dialog strong, .mini-pop strong, .mini-card strong { color: var(--fg); }
+.mini-drawer { border-left: 3px solid var(--brand); }
+.mini-menu span, .mini-tabs span, .mini-side span { padding: 3px 8px; border-radius: 5px; }
+.mini-menu span:first-child, .mini-tabs .on { background: var(--brand-soft); color: var(--brand-deep); }
+.mini-tip { background: var(--fg); color: var(--surface); border-radius: 5px; padding: 5px 9px; font-size: 11px; }
+.mini-card b { font-size: var(--fs-h3); font-variant-numeric: tabular-nums; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--brand); border-radius: 999px; animation: spin 800ms linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.skeleton { display: inline-block; width: 130px; height: 14px; border-radius: 4px; background: linear-gradient(90deg, var(--surface-2), var(--border), var(--surface-2)); }
+.sep { width: 100%; border: 0; border-top: 1px solid var(--border); }
+.mini-ratio { border: 1px solid var(--border); border-radius: 6px; padding: 16px 26px; }
+.mini-scroll { max-height: 56px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 6px; font-size: 11px; }
+.mini-resize { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.mini-resize span { padding: 8px 12px; border-right: 1px solid var(--border); }
+.mini-item { display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 11px; }
+.mini-tabs, .mini-side, .mini-crumb, .mini-carousel { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; }
+.mini-side { flex-direction: column; align-items: stretch; border: 1px solid var(--border); border-radius: 8px; padding: 6px; }
+.mini-crumb { color: var(--fg-muted); }
+.mini-cal { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: 8px; padding: 8px; font: 400 11px ui-monospace, monospace; }
+.mini-cal b { background: var(--brand); color: #fff; border-radius: 3px; padding: 0 3px; }
+.input-group { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; font-size: 11px; }
+.input-group span { background: var(--surface); padding: 5px 8px; }
+.input-group input { border: 0; border-radius: 0; }
+.cmp-sample .form-demo { display: grid; gap: 6px; max-width: 220px; }
+.cmp-sample .form-demo label { font-size: 11px; }
+.cmp-sample .form-demo input { min-height: 30px; }
+`
+
 
 // ---------------------------------------------------------------------------
 // 基础元素 / 模式分区（20 类，每类都是真实 DOM，不使用截图）
 // ---------------------------------------------------------------------------
-const swatch = (label, value, text = '') =>
-  `<div class="swatch"><span class="swatch-chip" style="background:${value}"></span><code>${esc(label)}</code><span class="swatch-val">${esc(text || value)}</span></div>`
-
 const ELEMENTS = [
   {
     id: 'color',
     title: '色彩 Color',
     spec: 'UDS5-S03',
-    body: `<div class="grid-swatches">
-      ${swatch('brand-1', '#5B5EE6', '靛紫主色')}
-      ${swatch('brand-2', '#494CC7')}
-      ${swatch('brand-3', '#3F42B0')}
-      ${swatch('brand-dark-1', '#8B8DF5')}
-      ${swatch('brand-dark-2', '#A1A3F7')}
-      ${swatch('brand-dark-3', '#B7B8FA')}
-      ${swatch('canvas', '#F8FAFC')}
-      ${swatch('surface', '#FFFFFF')}
-      ${swatch('fg-primary', '#0F172A')}
-      ${swatch('fg-secondary', '#64748B')}
-      ${swatch('border', '#E2E8F0')}
-      ${swatch('success', '#16A34A')}
-      ${swatch('warning', '#D97706')}
-      ${swatch('danger', '#DC2626')}
-      ${swatch('info', '#2563EB')}
-      ${swatch('chart-1..5', 'linear-gradient(90deg,#5B5EE6,#818CF8,#38BDF8,#34D399,#FBBF24)', '图表 5 色')}
-    </div>
-    <p class="note">语义色一律走 <code>-soft</code> / <code>-subtle</code> / <code>-hover</code> 派生，禁止 <code>bg-X/NN</code> 任意透明度；首屏演示色走 <code>term-*</code>、通用代码走 <code>syntax-*</code>，两套不互引。<code>text-fg-primary</code> 死类与 E24 / E28 例外均已登记差异。</p>`,
+    body: fullColorBody,
   },
   {
     id: 'typography',
     title: '字号与排版 Typography',
     spec: 'UDS5-S04',
-    body: `<div class="type-stack">
-      <div class="type-row"><code>display</code><span class="t-display">36 / 600 / 44</span></div>
-      <div class="type-row"><code>h1</code><span class="t-h1">28 / 600 / 36</span></div>
-      <div class="type-row"><code>h2</code><span class="t-h2">22 / 600 / 30</span></div>
-      <div class="type-row"><code>h3</code><span class="t-h3">18 / 600 / 26</span></div>
-      <div class="type-row"><code>body</code><span class="t-body">14 / 22 正文</span></div>
-      <div class="type-row"><code>caption</code><span class="t-caption">12 / 18 最小字号</span></div>
-      <div class="type-row"><code>dense</code><span class="t-dense">13px 走 text-dense</span></div>
-      <div class="type-row"><code>mono</code><span class="t-mono">13px 走 text-mono</span></div>
-    </div>
-    <p class="note">全站可见文本下限 <strong>12px</strong>（T16）；<code>text-uk-*</code> 禁用；<code>@theme --text-*</code> 是 Tailwind v4.3.3 自定义字号注册机制，保留不得删除。运行时 h1/h2 为 30/38 与 24/32，规范目标值差异已登记 <code>Adapt / NOT_VERIFIED</code>。</p>`,
+    body: fullTypographyBody,
   },
   {
     id: 'spacing',
@@ -137,7 +540,7 @@ const ELEMENTS = [
           `<div class="radius-item"><span class="radius-box" style="border-radius:${px}px"></span><code>${name} · ${px === 9999 ? 'full' : `${px  }px`}</code></div>`
       )
       .join('')}</div>
-    <p class="note"><code>--radius: 0.625rem</code>(10px) × 系数 0.6/0.8/1/1.2/1.4/1.6/1.8/2 = 8 个 calc 命名派生档；<code>rounded-full</code> 为 T10 额外放行的特殊档，合计 9 种合法写法。「圆角七档」是 3.0 早期滞后称谓。</p>`,
+    <p class="note"><code>--radius: 0.625rem</code>(10px) × 系数 0.6/0.8/1/1.2/1.4/1.6/1.8/2 = 8 个 calc 命名派生档；<code>rounded-full</code> 为 T10 额外放行的特殊档，合计 9 种合法写法。「圆角七档」是 3.0 早期滞后称谓。以上为运行时实现现状；G1 唯一规范圆角为 <code>0.375rem</code>(6px)，差异登记为待迁移。</p>`,
   },
   {
     id: 'elevation',
@@ -367,7 +770,7 @@ const ELEMENTS = [
       <div class="layer"><code>L2 Runtime SSOT</code><span>web/src/design-system/tokens/*.css（8）+ foundations/*.css（6）+ styles/theme.css</span></div>
       <div class="layer"><code>L3 Derived</code><span>docs/design-system/showcase.html（3.0，17 条校验）+ 本页 SHOWCASE-5.0.html</span></div>
     </div>
-    <p class="note">245 个唯一变量 / 14 个 CSS / 0 跨文件重复；<code>design:5:check</code> 的 <code>tokenFiles: 8</code> 仅计 <code>tokens/</code> 目录。派生快照禁止手工编辑，漂移即 FAIL。</p>`,
+    <p class="note">运行时只读扫描 <strong>${TOKEN_FILES.length}</strong> 份 CSS / <strong>${declCount}</strong> 条声明 / <strong>${allTokens.length}</strong> 个唯一变量 / <strong>${scopeCount}</strong> 类选择器作用域（<code>:root</code>、<code>.dark</code>、11 组预设、<code>@theme</code>）。本页是<strong>实现现状快照</strong>，唯一规范值见顶部基线表；派生快照禁止手工编辑，漂移即 FAIL。</p>`,
   },
 ]
 
@@ -417,6 +820,7 @@ const componentSections = [...groups.entries()]
             <code class="cmp-id">${esc(c.id)}</code>
             <h4>${esc(c.name)}</h4>
             <p class="cmp-path">${esc(c.implementation_path ?? '')}</p>
+            ${componentSample(c)}
             <div class="cmp-foot"><span>${esc(c.status ?? 'ACTIVE')}</span><span>states ${(c.states ?? []).length}</span><span>${esc(layerOf('component'))}</span></div>
           </article>`
         )
@@ -447,15 +851,31 @@ const manifest = JSON.stringify(
     designSystem: 'UTER Design System 5.0',
     version: specRegistry.version ?? '5.0.0',
     effectiveDate: specRegistry.effective_date ?? '2026-11-14',
+    normativeBrand: '#6c47ff',
     specIds: standards.length,
     componentIds: components.length,
     elements: ELEMENTS.length,
     controls: 5,
     standards: standards.length,
+    tokenNames: allTokens.length,
+    colorTokens: colorTokens.length,
+    otherTokens: otherTokens.length,
+    tokenDeclarations: declCount,
+    tokenFiles: TOKEN_FILES.length,
+    tokenScopes: scopeCount,
+    tokenValues: allTokens.reduce((n, t) => n + t.values.length, 0),
+    externalColors: externalColors.length,
+    typeSteps: textSteps.length,
+    fontFamilies: fontFamilies.length,
+    fontWeights: weightTokens.length,
+    componentSamples: components.length,
+    dedicatedSamples: sampleOverrideCount,
+    normativeG1: NORMATIVE_G1.length,
+    normativeG2: NORMATIVE_G2.length,
     generatedFrom: [
       'DESIGN-STANDARD-REGISTRY.yaml',
       'COMPONENT-REGISTRY.yaml',
-      'web/src/design-system/tokens/*.css',
+      'web/src/**/*.css（运行时 Token 全量只读解析）',
     ],
   },
   null,
@@ -472,8 +892,8 @@ const html = `<!DOCTYPE html>
 <style>
 :root {
   --bg: #f8fafc; --surface: #ffffff; --surface-2: #f1f5f9; --fg: #0f172a;
-  --fg-muted: #64748b; --border: #e2e8f0; --brand: #5b5ee6; --brand-strong: #494cc7;
-  --brand-deep: #3f42b0; --brand-soft: #eef0ff; --success: #16a34a; --warning: #d97706;
+  --fg-muted: #64748b; --border: #e2e8f0; --brand: #6c47ff; --brand-strong: #4f52d1;
+  --brand-deep: #4a4dc5; --brand-soft: #f1edff; --success: #16a34a; --warning: #d97706;
   --danger: #dc2626; --info: #2563eb; --success-soft: #dcfce7; --warning-soft: #fef3c7;
   --radius: 10px; --focus: 2px;
   --fs-display: 36px; --fs-h1: 28px; --fs-h2: 22px; --fs-h3: 18px;
@@ -485,8 +905,8 @@ const html = `<!DOCTYPE html>
 }
 html[data-theme="dark"] {
   --bg: #0b1120; --surface: #131c31; --surface-2: #1b2740; --fg: #e2e8f0;
-  --fg-muted: #94a3b8; --border: #26324a; --brand: #8b8df5; --brand-strong: #a1a3f7;
-  --brand-deep: #b7b8fa; --brand-soft: #20264a; --success: #4ade80; --warning: #fbbf24;
+  --fg-muted: #94a3b8; --border: #26324a; --brand: #a1a3f7; --brand-strong: #b1b3ff;
+  --brand-deep: #c7c8ff; --brand-soft: #25264a; --success: #4ade80; --warning: #fbbf24;
   --danger: #f87171; --info: #60a5fa; --success-soft: #143524; --warning-soft: #3a2c0d;
   --shadow-1: 0 1px 2px rgba(0,0,0,.4); --shadow-2: 0 2px 6px rgba(0,0,0,.45);
   --shadow-3: 0 6px 16px rgba(0,0,0,.5); --shadow-4: 0 12px 28px rgba(0,0,0,.55);
@@ -645,6 +1065,7 @@ h2.section-title { font-size: var(--fs-h2); font-weight: 600; line-height: 1.36;
 footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); font-size: var(--fs-caption); color: var(--fg-muted); }
 @media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; max-height: 260px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; } }
+${extraCss}
 </style>
 </head>
 <body>
@@ -652,6 +1073,8 @@ footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border
   <nav class="sidebar" aria-label="Showcase 分区导航">
     <h2>UTER Design System 5.0</h2>
     <p class="note">全量 Showcase · 规范验收视图 · 真实 DOM 渲染</p>
+    <h2>规范基线</h2>
+    <a href="#normative" aria-label="跳转到唯一规范值基线表">唯一规范值基线表（G1 / G2）</a>
     <h2>基础元素（${ELEMENTS.length}）</h2>
     ${navElements}
     <h2>交互实验室</h2>
@@ -681,14 +1104,20 @@ footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border
 
     <section class="stats" aria-label="覆盖统计">
       <div class="stat"><strong>${standards.length}</strong><span>注册规范条目</span></div>
-      <div class="stat"><strong>32</strong><span>分册（28 基础 + 4 业务域）</span></div>
-      <div class="stat"><strong>${components.length}</strong><span>已注册组件</span></div>
+      <div class="stat"><strong>${new Set(standards.map((s) => s.document)).size}</strong><span>规范分册文档</span></div>
+      <div class="stat"><strong>${components.length}</strong><span>已注册组件 · 逐一视觉样本</span></div>
       <div class="stat"><strong>${ELEMENTS.length}</strong><span>基础元素 / 模式分区</span></div>
-      <div class="stat"><strong>12</strong><span>守卫测试</span></div>
-      <div class="stat"><strong>14</strong><span>Token CSS（8+6）</span></div>
+      <div class="stat"><strong>${allTokens.length}</strong><span>运行时 CSS 变量（零遗漏）</span></div>
+      <div class="stat"><strong>${colorTokens.length}</strong><span>颜色 / 阴影 / 渐变变量</span></div>
+      <div class="stat"><strong>${textSteps.length}</strong><span>@theme 字号档</span></div>
+      <div class="stat"><strong>${TOKEN_FILES.length}</strong><span>扫描的 CSS 文件</span></div>
+      <div class="stat"><strong>${declCount}</strong><span>CSS 变量声明总数</span></div>
     </section>
 
+    ${normativeSection}
+
     <h2 class="section-title" id="elements">一 · 基础元素与模式（${ELEMENTS.length} 类）</h2>
+    <p class="element-banner"><strong>口径说明</strong>：本页「基础元素 / 运行时变量 / 组件样本」全部是 <code>web/src</code> 的<strong>实现现状快照</strong>；5.0 的<strong>唯一规范值</strong>只在上文「唯一规范值基线表」（G1 取 clerk.com 官方已公布值，G2 取运行时实现现状）给出。二者不一致处已登记为「待迁移」，本轮不修改任何运行时代码。运行时色块含旧 Uter 靛紫与 11 组主题预设覆盖，均为实现现状，不是第二套规范值。</p>
     ${elementSections}
 
     <h2 class="section-title" id="lab">二 · 交互实验室：Button 6 variant × 9 size × 8 state</h2>
@@ -777,6 +1206,17 @@ process.stdout.write(
       componentIds: components.length,
       elements: ELEMENTS.length,
       componentGroups: groups.size,
+      tokenNames: allTokens.length,
+      colorTokens: colorTokens.length,
+      otherTokens: otherTokens.length,
+      tokenDeclarations: declCount,
+      tokenFiles: TOKEN_FILES.length,
+      tokenScopes: scopeCount,
+      externalColors: externalColors.length,
+      typeSteps: textSteps.length,
+      fontFamilies: fontFamilies.length,
+      componentSamples: components.length,
+      dedicatedSamples: sampleOverrideCount,
     },
     null,
     2

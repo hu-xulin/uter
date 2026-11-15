@@ -1,0 +1,49 @@
+{
+  "evidence_id": "UAP-EV-20261115020651-c860571b",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-15T02:06:51.211Z",
+  "started_at": "2026-11-15T02:06:51.211Z",
+  "finished_at": "2026-11-15T02:06:51.211Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.deployment_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.deployment_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.deployment_plan",
+      "message": "deployment_plan: 授权在案(AUTH-DEPLOY-2026-11-12)但演练工具故障(exit=1, stderr=) — fail-closed FAIL"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "deploy_rehearsal_tool_failure",
+      "message": "发布演练工具执行失败, 无法取证"
+    }
+  ],
+  "summary": "delivery.deployment_integrity 实检: deployment_plan=FAIL(授权在案(AUTH-DEPLOY-2026-11-12)但演练工具故障(exit=1, stderr=) — fail-closed FAIL) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 7315 个 | FAIL: 授权有效但演练未能执行, 按能力失败处理(不归为环境受限)",
+  "content_hash": "2cffff4ccc4263cf27f9130d58bd50f05ccb1432156892c323a3c0cc10387fe1"
+}

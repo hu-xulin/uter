@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114184809-4508bc47",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:48:09.483Z",
+  "started_at": "2026-11-14T18:48:09.483Z",
+  "finished_at": "2026-11-14T18:48:09.483Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114184808-50f8c485",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "cf8dac5a72b748bdf3e6c7623633a785808a2fe6d6686dfde09f2771034b46cf",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114184808-50f8c485",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "cf8dac5a72b748bdf3e6c7623633a785808a2fe6d6686dfde09f2771034b46cf",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-e2e (playwright axe + business)",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "e2e: FAIL; PASS=0 FAIL=1 BLOCKED=0 SKIPPED=0",
+  "content_hash": "cd9a3399c80f6416b5a7b60d199c98a13284b44d1151ac99247e3ad5aeaad268"
+}

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114182513-efc235b1",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T18:25:13.363Z",
+  "started_at": "2026-11-14T18:25:13.363Z",
+  "finished_at": "2026-11-14T18:25:13.363Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+    "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+    "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114182301-a2c27253",
+  "git_head": "f15ccc2d9f8cba80e11c7e7643c5b130c4029707",
+  "worktree_fingerprint": "00497a59f6c7163bb9076d1fb0a497094e58221d205b67c51e04638f5975265a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.web_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.web_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "cross_platform.web_integrity 实检: web_build=PASS(node 子进程统计 web/src .ts/.tsx=1528 个; scripts.build=true scripts.build:check=true; 未在本地执行完整 web 构建(需 bun 工具链), 不声称构建通过); web_tests=PASS(scripts.test=true scripts.typecheck=true; web/src 测试文件=292 个; 未在本地执行 bun run test, 不声称测试通过); route_integrity=PASS(routeTree 生成文件=1; @tanstack/react-router 依赖=true; web/src 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 6768 个 | 真实运行 node 子进程解析 web/package.json 并统计源码/测试文件; 仅核对源码与配置结构完整性, 未跑完整 web 构建/测试",
+  "content_hash": "cab9ac4c34e390b32800c14492f878aa5cf977f9281ad5a75fc1f10061d2c33c"
+}

@@ -22,16 +22,20 @@
 
 ## 品牌基线（引用 `UDS5-S01` §4.2，本规范遵守不偏离）
 
-| 类别 | 5.0 规范基线值 |
-|---|---|
-| Primary Light | `#5B5EE6` / Hover `#494CC7` / Active `#3F42B0` |
-| Primary Dark | `#8B8DF5` / Hover `#A1A3F7` / Active `#B7B8FA` |
-| 字体 | `Inter Variable` + `Noto Sans SC Variable` |
-| 正文 / Caption / 长文本 / 最小字号 | `14/22` / `12/18` / `16/26` / `12px` |
-| 间距 / 边框 / 焦点环 | `4pt` / `1px` / `2px`（`ring-2`，已裁决） |
-| 层级手段 | 优先表面色差而非重阴影 |
+| 类别 | **5.0 唯一规范值** | 组别 |
+|---|---|---|
+| 品牌主色 | `#6c47ff` | `G1` |
+| Light Hover / Active | `#4F52D1` / `#4A4DC5` | `G2` |
+| Dark Primary / Hover / Active | `#A1A3F7` / `#B1B3FF` / `#9294F7` | `G2` |
+| 字体族变量 / 实际字体文件 | `inherit` / `Inter Variable` + `Noto Sans SC Variable` | `G1` / `G2` |
+| 基准字号 | `0.8125rem` (13px) | `G1` |
+| 字号刻度 / 最小字号 | 18 档 `@theme --text-*`（正文 14/22、caption 12/18、长文本 16/26）/ `12px` | `G2` |
+| 间距基准 / 刻度 | `1rem` (16px) / 4pt 网格 | `G1` / `G2` |
+| 圆角基准 / 刻度 | `0.375rem` (6px) / 8 档 calc 派生 | `G1` / `G2` |
+| 边框 / 焦点环 | `1px` / `2px` `ring-2` | `G2` |
+| 层级手段 | 优先表面色差而非重阴影 | `G2` |
 
-> 与运行时代码的差异登记见 `UDS5-S01` §4.2 与 `UDS5-S03` §2.1，统一前一律 `NOT_VERIFIED`。焦点环口径**已由 team-lead 裁决**：5.0 采用 `2px` / `ring-2`（运行时真值 `tokens/semantic.css:120-123`，与 3.0 §15.1 一致）。作废的是「把 `1px` / `ring-1` 当作**焦点环宽度**」这一过时记忆，`1px` 不再是焦点环可选基线；**装饰性 `ring-1` 描边 1px 与 `1px` 边框均为真实有效值**（不承载焦点语义，3.0 §15.1 分类，07 分册按 1px 登记），须原样保留、不得改成 2px，也不得把「1px」无差别替换。依据 `AGENTS.md`「设计值来自代码」及用户 PART 0 原则 A 未规定焦点环宽度；运行时代码本身已是 `2px`，本轮不改任何代码值。详见 `UDS5-S01` §4.2.1。验证状态 `NOT_VERIFIED`（未执行浏览器级守卫复核）。
+> **唯一规范值入口**：`UDS5-S01` §4.2 基线表（`G1` 取 clerk.com 上游值、`G2` 取运行时实现现状），本分册不另立第二套值。本轮只改规范文本、不改 `web/src`；焦点环唯一值 `2px` / `ring-2`，装饰性 `ring-1` 描边 1px 与 `1px` 边框为独立有效值。运行时代码与 `G1` 的差异按 §19 登记为待迁移。验证状态 `NOT_VERIFIED`。
 
 ---
 
@@ -39,7 +43,7 @@
 
 | # | 可执行判定 | 门禁映射 | 真实落点 |
 |---|---|---|---|
-| 1.1 | Primary Light 必须取 `#5B5EE6`，Hover `#494CC7`，Active `#3F42B0`；Primary Dark `#8B8DF5` / `#A1A3F7` / `#B7B8FA`（5.0 规范基线口径） | T8（裸色值只允许出现在 Token 所有者文件） | `source/brand.tokens.json`、`tokens/generated/brand.css` |
+| 1.1 | 品牌主色唯一规范值 `#6c47ff`（`G1`）；Hover `#4F52D1` / Active `#4A4DC5`、Dark `#A1A3F7` / `#B1B3FF` / `#9294F7`（`G2`）。组件禁止裸色值，须走语义 Token（T8） | T8（裸色值只允许出现在 Token 所有者文件） | `UDS5-S01` §4.2；`source/brand.tokens.json`、`tokens/generated/brand.css`（实现现状，待迁移） |
 | 1.2 | 业务组件出现 `#hex` / `rgba()` / `rgb()` 即判违规；唯一裸色值所有者为 `tokens/brand-colors.ts` | T8 | `tokens/brand-colors.ts` |
 | 1.3 | 品牌字体必须走 `@fontsource-variable/inter` + `@fontsource-variable/noto-sans-sc`，不得虚称引入 Source Han Sans 字体文件 | T1 / T2 / T5（字体变量与字号声明受控） | `web/package.json`、`tokens/typography.css` |
 | 1.4 | 正文 `14/22`、caption `12/18`、长文本 `16/26`、最小 `12px`；任何可见文本低于 12px 判违规 | T16 | `tokens/typography.css`、`tokens/semantic.css` |
@@ -124,7 +128,7 @@
 | BI-4 | **小尺寸**：使用**专用简化图形**；**不得**把完整横版 Logo 强行缩小到不可辨识。 | |
 | BI-5 | **深浅背景**必须使用**对应的批准版本**，不得对同一资产做运行时染色 / 反色。 | 与 S10 主题规范一致（`.dark` 只翻转语义 Token，不改品牌资产本体） |
 | BI-6 | **禁止伪造标识**：不得伪造合作伙伴标识、认证徽章、支付渠道背书或安全认证。 | 硬红线 |
-| BI-7 | **禁止第三方品牌混淆**：不得使用 Clerk Logo，或让用户误以为 Uter 是 Clerk 官方产品；引用第三方服务时**必须明确服务提供方**。 | 与 `UDS5-S01` P2（不引入 Clerk SDK / 不照搬 Clerk 品牌）一致 |
+| BI-7 | **禁止第三方品牌混淆**：不得使用 Clerk Logo，或让用户误以为 Uter 是 Clerk 官方产品；引用第三方服务时**必须明确服务提供方**。 | 与 `UDS5-S01` §5 C2 / `UDS5-S21` §3 P2（不引入 Clerk SDK / 不引入徽标与品牌背书文案）一致；**规范设计值以上游为准**见 `UDS5-S01` §4.2 |
 | BI-8 | **品牌资产登记**：品牌资产须有来源、版本、格式、尺寸和授权信息；Logo 在浅 / 深背景、1x / 2x / 3x 和窄屏下均须清晰。 | 登记为 `S02-D3`（资产台账未核实） |
 
 ### 5.2 品牌命名规则

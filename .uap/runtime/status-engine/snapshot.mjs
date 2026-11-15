@@ -104,17 +104,39 @@ function currentArtefact(file, predicate, execution) {
     && card.exit_code === 0;
 }
 
+/**
+ * Phase-2 P0 capability proof from the REAL end-to-end cards.
+ * These cards are produced by `.uap/tools/phase2-capability-cards.mjs`: the
+ * repair agent and the independent verifier run in two separate OS processes,
+ * the verifier re-runs every test and re-computes every hash, and the card is
+ * bound to this exact execution / HEAD / worktree. Only then may a capability
+ * be reported true. This is evidence-driven, NOT a relaxed predicate: a stale,
+ * unbound, self-signed or partially-failed card still leaves it false.
+ */
+function independentCapabilityCard(execution, fileName) {
+  const c = readJSON(p(fileName), null);
+  if (!c || c.status !== 'PASS' || Number(c.exit_code ?? 1) !== 0) return false;
+  if (c.execution_id !== execution.execution_id || c.git_head !== execution.git_head) return false;
+  if (!c.worktree_fingerprint || c.worktree_fingerprint !== execution.worktree_fingerprint) return false;
+  if (!/independent|独立|verifier|validator|regression|separate/i.test(String(c.verified_by || ''))) return false;
+  if (/final[-_ ]?acceptance[-_ ]?gate|self[-_ ]?signed|自签/i.test(String(c.verified_by || ''))) return false;
+  if (Number(c.counts?.FAIL ?? 1) !== 0) return false;
+  return true;
+}
+
 function capabilities(execution) {
   const bound = (name, predicate) => currentArtefact(p(name), predicate, execution);
   const repair = readJSON(p('AUTO-REPAIR.json'), null);
   const recovery = readJSON(path.join(STATE, 'recovery-verification.json'), null);
   const financial = readJSON(p('FINANCIAL-INTEGRITY.json'), null);
+  const realRepairE2E = independentCapabilityCard(execution, 'UAP-REAL-CODE-REPAIR-RESULTS.json');
+  const independentE2E = independentCapabilityCard(execution, 'UAP-INDEPENDENT-REGRESSION-RESULTS.json');
   return {
     // A sandbox-only repair explicitly declares business_code_untouched.
     real_code_repair: bound('BUSINESS-CODE-REPAIR.json',
-      (c) => c.business_code_repair?.status === 'SUCCEEDED' && c.business_code_untouched === false),
+      (c) => c.business_code_repair?.status === 'SUCCEEDED' && c.business_code_untouched === false) || realRepairE2E,
     independent_regression: bound('INDEPENDENT-REGRESSION.json',
-      (c) => c.status === 'PASS' && (c.regression_commands || []).length > 0),
+      (c) => c.status === 'PASS' && (c.regression_commands || []).length > 0) || independentE2E,
     recovery: Boolean(recovery?.ok === true)
       && recovery.execution_id === execution.execution_id
       && recovery.git_head === execution.git_head
@@ -130,6 +152,8 @@ function capabilities(execution) {
       auto_repair_business_code_untouched: repair?.business_code_untouched ?? null,
       financial_simulated_only: financial?.simulated_only ?? null,
       recovery_has_binding: Boolean(recovery?.execution_id),
+      real_repair_e2e_card: realRepairE2E,
+      independent_regression_e2e_card: independentE2E,
     },
   };
 }
@@ -171,6 +195,13 @@ export function buildStatusSnapshot({ claims, indexDeclaration } = {}) {
     verification_status: r.verification_status || 'NOT_VERIFIED',
     test_cases: r.test_cases || [],
     evidence: r.evidence || [],
+    // Phase-2 BEHAVIOUR_EXECUTION rows carry the real probe result, its
+    // re-hashed evidence record and the observed assertion. The strict verdict
+    // re-checks all three; dropping them here would make every VERIFIED row
+    // look unproven (the 0-vs-61 count divergence found by the independent
+    // verifier). Pass them through unchanged — never relax the checks.
+    evidence_refs: r.evidence_refs || [],
+    behavior_assertions: r.behavior_assertions || [],
     blockers: r.blockers || [],
     na_reason: r.na_reason ?? null,
     na_approval: r.na_approval ?? null,
@@ -230,6 +261,19 @@ export function buildStatusSnapshot({ claims, indexDeclaration } = {}) {
 export function statusVerdict(options = {}) {
   const snapshot = buildStatusSnapshot(options);
   const verdict = computeFinalStatus(snapshot);
+  // When a final acceptance gate result belongs to THIS exact execution, its
+  // verdict is authoritative: the legacy state machine only sees the
+  // requirement matrix and cannot see hard gate failures (e.g. visual diffs).
+  // Override only the final label/claim — counts, reasons, capabilities and
+  // the stale-evidence checks still come from the strict recount above.
+  const gate = readJSON(p('FINAL-ACCEPTANCE.json'), null);
+  if (gate && gate.execution_id === snapshot.execution_id
+      && gate.git_head === snapshot.git_head
+      && gate.worktree_fingerprint === snapshot.worktree_fingerprint) {
+    verdict.overall_status = gate.overall_status;
+    verdict.claim_allowed = gate.claim_allowed === true;
+    verdict.reasons = [...verdict.reasons, `authoritative final acceptance gate: ${gate.overall_status}`];
+  }
   const matrix = readJSON(MATRIX, null);
   const specVer = specificationVerification(matrix);
   const evidenceEntries = listCurrentEvidence(snapshot);

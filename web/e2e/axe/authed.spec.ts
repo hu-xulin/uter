@@ -45,6 +45,14 @@ const BLOCKING_IMPACTS = new Set(['critical', 'serious'])
 const routes = enabledRoutes(AUTHENTICATED_ROUTES)
 
 test('axe: 鉴权页批量扫描', async ({ page }) => {
+  // 单个「长用例」串行扫描 9 个启用鉴权路由：每次都要真实导航、等待 SPA
+  // 守卫、等字体就绪、再跑一次完整 axe 分析。项目级 120s 超时是给单页
+  // 用例定的，实测 9 页真实扫描会超过它（2026-11-14 验收：120000ms
+  // timeout，13 个公开页用例全绿而本用例被硬杀）。给本用例单独放宽到
+  // 10 分钟，只是让真实扫描跑完；不跳过任何路由、不关闭任何 axe 规则、
+  // 不降低 critical/serious 的阻断口径。
+  test.setTimeout(600_000)
+
   // 凭据已配置但产品侧禁用了密码登录（如站点仅开放 OAuth）时，
   // 无法建立会话属于「没测」而不是「违规」：显式 skip 并写明原因，
   // 与「缺凭据跳过」同一口径，绝不允许退化成假通过。
@@ -110,7 +118,16 @@ test('axe: 鉴权页批量扫描', async ({ page }) => {
         `${route.path} ${v.impact}/${v.id} "${v.help}" -> ` +
           v.nodes
             .slice(0, 5)
-            .map((n) => n.target.join(' '))
+            .map((n) => {
+              // Keep the ACTUAL measured colours in the failure message so a
+              // contrast regression can be fixed against real numbers instead
+              // of guessed CSS. axe exposes them on the rule's `any[0].data`.
+              const data = (n.any?.[0] as { data?: Record<string, unknown> } | undefined)?.data
+              const measured = data
+                ? ` [fg=${data.fgColor ?? '?'} bg=${data.bgColor ?? '?'} ratio=${data.contrastRatio ?? '?'} expected=${data.expectedContrastRatio ?? '?'}]`
+                : ''
+              return `${n.target.join(' ')}${measured}`
+            })
             .join('; ')
       )
     }

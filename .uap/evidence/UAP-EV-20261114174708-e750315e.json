@@ -1,0 +1,42 @@
+{
+  "evidence_id": "UAP-EV-20261114174708-e750315e",
+  "kind": "requirement_behavior_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-02-002"
+  ],
+  "requirement_ids": [
+    "UAP-02-002-REQ-004"
+  ],
+  "recorded_at": "2026-11-14T17:47:08.173Z",
+  "started_at": "2026-11-14T17:47:08.173Z",
+  "finished_at": "2026-11-14T17:47:08.173Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114174704-a654b905",
+    "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+    "worktree_fingerprint": "cf18bef1de4f6c8d80a536a5a56e0196678cf73a8eb2aef81114e0d7c6ec53c6",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114174704-a654b905",
+  "git_head": "cd72e527e22625bbf85a1deb17d061d0fbb1896e",
+  "worktree_fingerprint": "cf18bef1de4f6c8d80a536a5a56e0196678cf73a8eb2aef81114e0d7c6ec53c6",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "go test ./model/ -count=1 -v -run TestPhase2DBIntegration/db_09_foreign_key",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"assertions\":[{\"name\":\"db_09_foreign_key_enforced\",\"required_output\":[\"FK enforced\",\"orphan rejected\"],\"found\":true}]}",
+  "stdout": "=== RUN   TestPhase2DBIntegration\n=== RUN   TestPhase2DBIntegration/db_09_foreign_key\n    phase2_db_integration_test.go:436: observed PRAGMA foreign_keys=1, top_ups FK relations=1\n    phase2_db_integration_test.go:462: FK enforced (foreign_keys=1, relations=1): legal order accepted, orphan rejected\n--- PASS: TestPhase2DBIntegration (0.38s)\n    --- PASS: TestPhase2DBIntegration/db_09_foreign_key (0.38s)\nPASS\nok  \tgithub.com/uter-ai/uter/model\t10.524s\n",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "behaviour run bhv.model-foreign-key: 1/1 distinct assertions observed in real stdout",
+  "content_hash": "8037b882eb22b4097e472e83a778dbc9ac2350968f790c6c7c10b55a31a712db"
+}

@@ -1,0 +1,38 @@
+{
+  "evidence_id": "UAP-EV-20261114190447-277d6429",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-14T19:04:47.421Z",
+  "started_at": "2026-11-14T19:04:47.421Z",
+  "finished_at": "2026-11-14T19:04:47.421Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261114190024-6e190131",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "5e9d19f51e77fdf2d378deaa53a050c6bb23b998ab4657cf5d1e10c23c6758af",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261114190024-6e190131",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "5e9d19f51e77fdf2d378deaa53a050c6bb23b998ab4657cf5d1e10c23c6758af",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.deployment_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.deployment_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "delivery.deployment_integrity 实检: deployment_plan=PASS(真实演练: preflight(2870 文件清单+二进制 sha256) + 版本推进 v1.5.20→v1.5.21(仅计算) + 发布槽逐文件 sha256 一致=true; verdict.deployment_plan=PASS); rollback_plan=PASS(真实回滚演练: 注入新版本标记→恢复上一槽位→逐文件 sha256==原构建且标记清除=true; 静态语义(ADR Superseded/Deprecated, change-registry snapshots, no_destructive_git)=true; verdict.rollback_plan=PASS); health_check=PASS(对运行中发布实例真实探活: GET /api/status -> 200; 目标=http://localhost:3000 (仅本地服务, 不触生产); verdict.health_check=PASS) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 6968 个 | 授权在案 AUTH-DEPLOY-2026-11-12(用户 用户（2026-11-12 会话内明确指令：delivery.deploymen…, 有效期至 2027-11-12T00:00:00+08:00); 已执行真实发布演练(产物清单/版本推进/回滚恢复/健康探针, 全程本地只读+临时目录写入); policy 对 Agent 生产写入保持 DENY=true(纵深防御); 线上生产流水线执行超出本地环境与授权边界, 如实记录、不声明\"生产已验证\"",
+  "content_hash": "a990ec7fd6da125bca26ec86c71a29cc8a5f92a7aa4cb97c41f26531bd446be1"
+}

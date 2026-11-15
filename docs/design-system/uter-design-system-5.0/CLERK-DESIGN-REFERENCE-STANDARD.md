@@ -7,17 +7,18 @@
 | 状态 | `ACTIVE` |
 | 上级规范 | `UDS5-S01` |
 | 生效日期 | `2026-11-14` |
-| 适用范围 | UTER Design System 5.0 全体规范、PC Web / H5 前端视觉与组件设计、认证 / 账户 / 组织相关页面的信息架构参考；不适用于后端认证、资金、授权逻辑 |
-| 验证状态 | `NOT_VERIFIED`（规范文本为参考与治理类；本轮唯一代码侧落地是纯静态只读守卫 `check-clerk-boundary.mjs` + 回归测试，`design:clerk:check` 已实测，见 §8；不代表功能 / 视觉 / 平台验收） |
+| 适用范围 | UTER Design System 5.0 全体规范的**上游权威来源**、PC Web / H5 前端视觉与组件设计、认证 / 账户 / 组织相关页面的信息架构；不适用于后端认证、资金、授权逻辑 |
+| 验证状态 | `NOT_VERIFIED`（规范文本为上游对照与治理类；本轮唯一代码侧落地是纯静态只读守卫 `check-clerk-boundary.mjs` + 回归测试，`design:clerk:check` 已实测，见 §8；不代表功能 / 视觉 / 平台验收） |
+| 效力变更 | **2026-11-15 上级裁决**：本文件由「外部参考」升格为 5.0 规范值的**上游权威**；见 §1 / §3 P1 / §10 `S21-D13` |
 
 ---
 
 ## 1. 文档定位与效力
 
-1. **Clerk 仅为外部设计参考**。本文记录 Clerk 官方设计体系中可被 Uter 借鉴的「理念、信息架构、状态完整性」经验，用于改进 Uter 自有设计系统的组织方式与组件规范；Clerk **不是** Uter 5.0 的规范来源、不是依赖、不是运行时组件、也不是验收基准。
-2. Uter 5.0 的唯一权威规范是 `UDS5-S01` 及其下 `UDS5-S02`..`UDS5-S32` 共 32 份分册（28 基础 + 4 业务域）；任何与本文冲突之处，以 Uter 自有规范为准。
+1. **clerk.com 是 5.0 规范值的上游权威**（2026-11-15 上级裁决，原「仅为外部设计参考」定位废止）。凡 5.0 与 clerk.com 官方已公布设计值不一致之处，**一律以 clerk.com 为准**；唯一规范值基线表见 `UDS5-S01` §4.2（`G1` 组）。clerk.com 未公布的设计元素由 5.0 自有规范给出唯一值（`G2` 组，详见 `UDS5-S01` §4.2）。
+2. Uter 5.0 的规范体系是 `UDS5-S01` 及其下 `UDS5-S02`..`UDS5-S32` 共 32 份分册（28 基础 + 4 业务域）；**分册内容不得与 clerk.com 上游值冲突**。运行时代码（`web/src`）在迁移完成前仍是实现现状，按 `UDS5-S01` §19 分期对齐，不得反过来把实现值写成规范基线。
 3. 本文事实依据为 `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md`（`UDS5-AUDIT-02`，首轮 9 个官方文档来源逐页核实）与 §2.4 本轮补充核对的 4 个官方核对入口（合计 13 个入口；按唯一 URL 去重为 11）与 `audit/BASELINE-AUDIT.md`（`UDS5-AUDIT-01`）；**不使用截图、旧教程、第三方解读作为事实来源**。
-4. 本文只描述「借鉴什么、禁止什么、落到哪里」，不声明任何 Uter 代码已实现；所有 `代码实施位置` 与 `测试证据` 均标注当前状态，未执行项一律 `NOT_VERIFIED`。
+4. 本文只描述「上游给出什么、5.0 取什么、落到哪里」，不声明任何 Uter 代码已实现或已对齐；所有 `代码实施位置` 与 `测试证据` 均标注当前状态，未执行项一律 `NOT_VERIFIED`。**本轮只改规范文本、不改 `web/src`**。
 
 ---
 
@@ -29,7 +30,7 @@
 |---|---|---|---|
 | F1 | **Clerk Elements 已弃用**：随 **Clerk Core 3（2026-03-03）** 发布，官方页标题为「Clerk Elements, Deprecated」，推荐改用 redesigned hooks（stateful objects / step methods / structured field-level errors），历史上仅支持 Next.js App Router + Core 2 | `UDS5-AUDIT-02` §1 来源 7、§5 结论 3 | 5.0 **不得**把 Elements 当作现行 API 引入、不得描述为可依赖的定制路径；只借鉴其「分层定制 / 组合」理念（见 §4.3） |
 | F2 | **localization prop 为 Experimental**：官方明确「may change or be removed without notice」；`@clerk/localizations` 约 50 个 BCP 47 语言，Account Portal 不受其影响 | `UDS5-AUDIT-02` §1 来源 8 | 5.0 **不得**把该机制作为稳定 i18n 契约引用；Uter 沿用自有 i18next 7 locale 体系（见 §4.8） |
-| F3 | **Clerk 变量是扁平单层 24 键 `--clerk-*`**，**非** primitive/semantic 两层；默认 `borderRadius 0.375rem`、`fontSize 0.8125rem`、`spacing 1rem`；用 `color-mix()` 与相对颜色语法运行时派生色阶；2025-07-15 起 6 个键弃用；`colorPrimary` 以 `#6c47ff` 为官方示例值、默认 `fontFamily=inherit`（品牌字体非变量契约）；完整 24 键与弃用清单见 §2.3 | `UDS5-AUDIT-02` §1 来源 4、§5 结论 2 | 5.0 **不得**倒退为扁平单层；保留 Uter 的 Primitive → Semantic 两层、245 个唯一变量与静态门禁（见 §4.1） |
+| F3 | **Clerk 变量是扁平单层 24 键 `--clerk-*`**，**非** primitive/semantic 两层；默认 `borderRadius 0.375rem`、`fontSize 0.8125rem`、`spacing 1rem`；用 `color-mix()` 与相对颜色语法运行时派生色阶；2025-07-15 起 6 个键弃用；`colorPrimary` 以 `#6c47ff` 为官方示例值、默认 `fontFamily=inherit`（品牌字体非变量契约）；完整 24 键与弃用清单见 §2.3 | `UDS5-AUDIT-02` §1 来源 4、§5 结论 2 | **以上游为准（2026-11-15 裁决）**：扁平单层 24 键结构与 `color-mix()` 运行时派生列为 `UDS5-S01` §4.2 `G1` 唯一规范口径；运行时两层 / 245 变量登记为「待迁移」，按 §19 分期推进。原「不得倒退为扁平单层」结论废止 |
 | F4 | **Clerk 官方不提供通用表格 / 图表 / 日期 / 上传 / 通知能力**：Data Table、Charts、DatePicker/Calendar、FileUpload/Dropzone、Image/Lightbox、Toast/Banner 通用规范、Drawer/Sheet、CommandMenu、Stepper、Timeline/Tree/Transfer、Skeleton/EmptyState 通用规范、Z-index/Elevation 分层、WCAG 2.2 AA 条款级对照、HarmonyOS 支持均未提供 | `UDS5-AUDIT-02` §1.1（来源 9 组件目录 + 来源 2 四层定制说明）、§5 结论 4 | 这些能力**必须全部由 Uter 自有规范定义**，不得写成「Clerk 的表格/图表/日期/上传/通知设计是……」（见 §4.10、§4.11） |
 
 ### 2.2 Clerk 官方「未提供」能力清单（严禁虚构为 Clerk 能力）
@@ -85,10 +86,10 @@
 
 **浏览器兼容（官方明示）**：主题系统依赖 `color-mix()`（Chrome 111+ / FF 113+ / Safari 16.2+）与相对颜色语法（Chrome 119+ / FF 120+ / Safari 16.4+），故官方建议传直接色值而非 CSS 变量以兼容旧浏览器。
 
-**对 5.0 的约束（澄清）**：
-- Clerk **确实公布了**变量默认值与 24 键结构，但**未公布品牌字体族**（默认 `fontFamily=inherit`，Geist 等由 Clerk 自有 CSS 注入，不构成可移植变量）与**完整默认色阶 hex**（文档示例用 `#0000ff` 占位，真实品牌紫为 `#6c47ff`）。
-- 故「Uter 不采用 13px 基准、不引入 `color-mix()` 运行时派生」的结论**不变**（见 §4.1 / §4.4）；此前「Clerk 未公布 Token」表述已在 §2.1 / §2.2 与审计 §1 来源 1 / §2.1 据实纠正。
-- 品牌色 `#6c47ff` 仅作**对照参考**，Uter 品牌靛紫 `#5B5EE6` 保持不变（禁止照搬，见 §3 P1）。
+**对 5.0 的约束（2026-11-15 上游对齐裁决）**：
+- Clerk **确实公布了**变量默认值与 24 键结构；**未公布品牌字体族**（默认 `fontFamily=inherit`，Geist 等由 Clerk 自有 CSS 注入，不构成可移植变量）与**完整默认色阶 hex**（文档示例用 `#0000ff` 占位，真实品牌紫为 `#6c47ff`）。未公布项由 `UDS5-S01` §4.2 `G2` 给出唯一规范值。
+- 原「Uter 不采用 13px 基准、不引入 `color-mix()` 运行时派生」结论**废止**：13px 基准与 `color-mix()` 派生已列为 `G1` 唯一规范值（§4.1 / §4.4 同步改写）；此前「Clerk 未公布 Token」表述已在 §2.1 / §2.2 与审计 §1 来源 1 / §2.1 据实纠正。
+- 品牌色 **`#6c47ff` 为 5.0 唯一规范主色**（`G1`），原 Uter 靛紫 `#5B5EE6` 降为实现现状、按 §19 待迁移；「禁止照搬」红线废止（见 §3 P1）。徽标 / 「Secured by Clerk」文案 / Clerk SDK 仍不引入（P2）。
 
 ### 2.4 本轮补充核对的官方维度（2026-11-14，新增 4 个官方核对入口 / 7 个维度）
 
@@ -101,7 +102,7 @@
 | N3 | **Email and SMS templates**：Dashboard 模板编辑器，含 Edit / Preview / Reset / Revert / Copy to another instance；邮件 WYSIWYG 工具栏 + HTML 模式；每模板可关 `Delivered by Clerk` 改由 `emails.created` / `sms.created` webhook 自送 | `clerk.com/docs/authentication/configuration/email-options` | `Adapt`（仅治理理念） | §4.16；Uter 邮件模板真源为 `common/email_template.go`（硬编码 HTML）、**无预览 / 回滚 / 多环境复制 / 短信网关**，逐项登记 `NOT_IMPLEMENTED`；**不引入 Clerk 模板系统** |
 | N4 | **Build your own UI**：low-level primitives 包装「与预置组件相同的 API 端点」，允许完全自建 UI；官方仍推荐优先用预置组件 | `clerk.com/docs/components/customization/overview` → Customization layers | `Adapt`（理念）/ `Reject`（依赖） | §4.17；Uter 走 `props + cva() + 语义 Token` 自有组件层，不引入 headless 原语包 |
 | N5 | **simple theme 定位**：移除高级样式、作为 Bring-your-own-CSS 的干净起点；`cl-*` 锁图标之前的类可依赖，之后为内部类 | `clerk.com/docs/.../appearance-prop/bring-your-own-css` | `Adapt`（理念） | §4.4 / §4.11 补入「干净起点 + 稳定类边界」；Uter 预设重构方向为「单一 `:root` 基础层 + 预设只列差异键」 |
-| N6 | **CSS 变量驱动动态主题**（2025-07-08）：`appearance.variables` 支持 `var(--ds-color-brand-primary)` 等既有设计系统变量；`prefers-color-scheme` / `[data-theme='…']` 驱动主题自动切换，无需换主题或改 JS 配置；依赖 `color-mix()` 与相对颜色语法 | `clerk.com/changelog/2025-07-08-css-variables-support` | `Reject`（倒退风险） | §4.18；Uter 已有 `data-theme-preset` / `data-theme-radius` / `data-theme-scale` **三维正交** + 静态两层 Token，**不得**引入运行时 `color-mix()` 派生（见 §4.1 / F3） |
+| N6 | **CSS 变量驱动动态主题**（2025-07-08）：`appearance.variables` 支持 `var(--ds-color-brand-primary)` 等既有设计系统变量；`prefers-color-scheme` / `[data-theme='…']` 驱动主题自动切换，无需换主题或改 JS 配置；依赖 `color-mix()` 与相对颜色语法 | `clerk.com/changelog/2025-07-08-css-variables-support` | **Adopt**（2026-11-15 上游对齐裁决；原 `Reject` 废止） | §4.18；`prefers-color-scheme` / `[data-theme]` 切换与 `color-mix()` 派生列为 `UDS5-S01` §4.2 `G1` 唯一规范口径；运行时静态两层 / 三维 `data-theme-*` 登记为「待迁移」，按 §19 分期推进，本轮不改代码 |
 | N7 | **Localization prop 的键机制**：从英文 localization 文件查键（如 `formButtonPrimary`），支持嵌套键 `signUp.start.subtitle` 与 `{{applicationName}}` 插值；prop 仍为 Experimental（F2） | `clerk.com/docs/customization/localization` | `Reject`（作依赖）/ `Adapt`（理念） | §4.8 补入；与 Uter「英文原文作 key + 7 份 locale + `static-keys.ts` 登记」铁律同构，**不得**把 Experimental 机制当稳定契约 |
 
 > **时效性补充**：N3 的模板编辑器是 **Clerk Dashboard 产品能力**，不是可移植的前端组件规范；N6 的 CSS 变量支持是 2025-07-08 的增量能力，不改变 F3「扁平单层 24 键」的结构判定。二者均**不得**被写成 Uter 已具备或应当引入的依赖。
@@ -112,8 +113,8 @@
 
 | # | 禁止项 | 5.0 约束 |
 |---|---|---|
-| P1 | 照搬 Clerk 品牌样式 | 不采用任何 Clerk 色值、字体、徽标、「Secured by Clerk」文案；Uter 品牌色（`#5B5EE6` 系列）、Inter + Noto Sans SC、优特智能品牌名保持不变 |
-| P2 | 引入 Clerk SDK / 运行时依赖 | 不引入 `ClerkProvider`、`@clerk/ui`、`@clerk/elements`、`@clerk/localizations`、Clerk 主题包；不新增任何 Clerk 依赖 |
+| P1 | **上游品牌对齐**（原「禁止照搬 Clerk 品牌样式」红线废止，2026-11-15 裁决） | 5.0 唯一规范主色取 clerk.com `colorPrimary` `#6c47ff`，基准字号 `0.8125rem`、圆角 `0.375rem`、间距 `1rem`、字重与 24 键变量结构一并以上游为准（`UDS5-S01` §4.2 `G1`）；**仍不引入**徽标与「Secured by Clerk」文案。运行时迁移按 §19 分期，本轮不改 `web/src` |
+| P2 | 引入 Clerk SDK / 运行时依赖 | 本轮为**规范层对齐**，不引入 `ClerkProvider`、`@clerk/ui`、`@clerk/elements`、`@clerk/localizations`、Clerk 主题包；不新增任何 Clerk 依赖（规范对齐 ≠ 运行时依赖引入，二者不得混为一谈） |
 | P3 | 替换 Uter 认证 / 用户 / 组织 / 权限逻辑 | 认证（Go 后端 + Casbin）、`(auth)/` 9 路由、邮箱验证码 / step-up / WebAuthn / TOTP / 微信网页授权 / 登录 429 限流、`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `ReserveOrgQuota` / `IncrOrgUsedQuota` **零改动**（唯一清单见 `UDS5-S01` §5 C4） |
 | P4 | 把 Clerk 不具备的能力写成官方能力 | 逐类按 §2.2 标注 `Reject`，`Reference` 直接写「Clerk 官方未提供该能力（已核实）」 |
 | P5 | 依据旧教程 / 截图研究 | 全部事实以 `UDS5-AUDIT-02` 的 9 个首轮官方来源 + §2.4 的 4 个本轮核对入口（合计 13 个入口）为准，并主动记录 F1 / F2 两项时效性事实 |
@@ -133,7 +134,7 @@
 | Clerk 原始设计特点 | `variables` prop 为**扁平单层 24 个变量**（`borderRadius / colorBackground / colorPrimary / fontSize / fontWeight / spacing` 等），全部映射为 `--clerk-*` kebab-case CSS 变量；18 个颜色变量用 `color-mix()` 与相对颜色语法运行时派生悬停 / 边框 / 下拉色阶；默认 `fontSize 0.8125rem`（13px）、`spacing 1rem`、`borderRadius 0.375rem`；2025-07-15 起 6 个键弃用；`colorPrimary` 以 `#6c47ff` 作为官方示例值（品牌紫，OBSERVED）；**默认 `fontFamily` 为 `inherit`，品牌字体 Geist 等由 Clerk 自有 CSS 注入、非变量契约**；完整 24 键、弃用清单与浏览器兼容性见 §2.3 |
 | Uter 当前设计情况 | 已是 **Primitive → Semantic 两层**：14 个 CSS / 1,518 行 / 319 处定义 / 245 个唯一变量名；`tokens/primitives.css`(47)、`typography.css`(76)、`spacing.css`(45)、`generated/brand.css`(16)、`semantic.css`(63)、`colors.css`(45)、`elevation.css`(27)；`@theme --text-*` 为 v4.3.3 自定义字号注册机制；DTCG 品牌真源 `source/brand.tokens.json`；T1–T17 严格门禁 |
 | Uter 需要改进的地方 | 约 93 个零静态引用变量为候选清理上限（非死代码结论）；`theme-presets.css` 对每套预设重抄 52 个同名键；`showcase.tokens.js` 与内联快照双产物并存；需补「Token 元数据注册表 + 校验器」而非重建第二套 TS 值 Token |
-| 5.0 最终规范 | **保留两层静态体系，禁止倒退为扁平单层**；不采用 13px 基准（Uter 正文 14/22、最小 12px、长文本 16/26 为红线）；仅借鉴「运行时派生须有单一出口」补进颜色规范；`--text-*` 保留，另立 `--ds-font-*` 语义别名用于文档与跨端映射（决策 D1 / D6） |
+| 5.0 最终规范 | **以上游为准（2026-11-15 裁决）**：扁平单层 24 键 `--clerk-*` 语义键与 `color-mix()` 运行时派生为 `UDS5-S01` §4.2 `G1` 唯一规范口径；基准字号取 `0.8125rem`(13px)。`@theme --text-*` 18 档刻度与最小 12px 下限属 `G2`（clerk 未公布完整刻度），保留为唯一规范值；`--ds-font-*` 语义别名保留。运行时两层 / 245 变量 / T1–T17 静态门禁为过渡期实现现状，按 §19 待迁移（决策 `D9`） |
 | 代码实施位置 | `web/src/design-system/tokens/*.css`、`web/src/styles/theme.css`、`web/src/styles/theme-presets.css`、`web/scripts/check-design-tokens.mjs`、`web/scripts/generate-design-tokens.mjs`；本轮仅撰写规范，未执行代码改造 |
 | 测试证据 | 既有：`check-design-tokens.mjs --strict` 违规 0 / EXIT=0、`generate-design-tokens.mjs --check` EXIT=0、`sync-design-showcase.mjs --check` 17 PASS / 0 FAIL；5.0 新增校验器 `NOT_VERIFIED` |
 
@@ -166,7 +167,7 @@
 | Clerk 原始设计特点 | 6 套预置主题（default / simple / shadcn / dark / shadesOfPurple / neobrutalism，`@clerk/ui/themes`）；`theme` 可传数组叠加「后定义者优先」；`variables` 与 `theme` 可组合；default 同时支持 light/dark（`color-scheme` / `.dark` / `[data-theme]` / `prefers-color-scheme`）；`shadcn` 主题兼容 Tailwind v4 |
 | Uter 当前设计情况 | 已有 7+ 套 `theme-presets.css` 预设、`.dark` 变体、`data-theme-preset` / `data-theme-radius` / `data-theme-scale` **三维正交独立**；品牌渐变按深浅同值为刻意例外（E28）；Light/Dark 全局由 `theme.css:19` `@custom-variant dark` 与 `:590 .dark` 驱动 |
 | Uter 需要改进的地方 | 预设对每套重抄整组 52 个同名键（合并候选）；缺 Light/Dark 变量成对校验器；品牌渐变的深浅同值例外需持续登记边界 |
-| 5.0 最终规范 | 采纳「主题继承 + 局部覆盖」理念，补 Light/Dark 变量成对校验器；**不引入 `@clerk/ui` 主题包**（`Adopt` 理念 / `Reject` 包）；预设重构为「单一 `:root` 基础层 + 预设只列差异键」；品牌渐变深浅同值保留为登记例外。**N5 补充**：官方 `simple` theme 的定位是「移除高级样式、作为 Bring-your-own-CSS 的干净起点」，与上述「基础层 + 差异键」方向同构，仅借鉴其分层边界意识，不引入该主题包；`cl-*` 锁图标之前为稳定类、之后为内部类，对应 Uter「variant / slot / composition 为唯一扩展路径」 |
+| 5.0 最终规范 | **以上游为准**：6 套预置主题（`default` / `simple` / `shadcn` / `dark` / `shadesOfPurple` / `neobrutalism`）、`theme` 数组叠加「后定义者优先」、`variables` 与 `theme` 组合、`color-scheme` / `.dark` / `[data-theme]` / `prefers-color-scheme` 切换，列为 `UDS5-S01` §4.2 `G1` 唯一规范口径；本轮只改规范文本，**不引入 `@clerk/ui` 主题包到运行时**（P2）。Light/Dark 变量成对校验器与品牌渐变深浅同值例外属 `G2`，保留。**N5 补充**：官方 `simple` theme 作 BYO CSS 干净起点、`cl-*` 锁图标前为稳定类，与 Uter「公开 props = 稳定契约、内部 DOM/类名不可依赖」对应；运行时迁移按 §19 分期 |
 | 代码实施位置 | `web/src/styles/theme.css`、`web/src/styles/theme-presets.css`、`web/src/design-system/tokens/generated/brand.css`、`web/scripts/verify-contrast.mjs`；本轮未执行代码改造 |
 | 测试证据 | 既有：`verify-contrast.mjs` 31 PASS / 0 FAIL（含 E28 渐变锚定与负例拒绝）；Light/Dark 成对校验器 `NOT_VERIFIED` |
 
@@ -320,7 +321,7 @@
 | Clerk 原始设计特点 | 2025-07-08 起 `appearance.variables` 允许直接传 CSS 自定义属性（如 `var(--ds-color-brand-primary)`），可对接既有设计系统；`prefers-color-scheme` 媒体查询与 `[data-theme='…']` 数据属性可驱动主题自动切换，无需换主题或改 JS 配置；该能力依赖 `color-mix()` 与相对颜色语法（Chrome 119+ / Safari 16.4+ / FF 128+） |
 | Uter 当前设计情况 | 已有 **Primitive → Semantic 两层静态 Token**（245 个唯一变量）、`data-theme-preset` / `data-theme-radius` / `data-theme-scale` **三维正交独立**、`.dark` 变体与 `@custom-variant dark`（`theme.css:19` / `:590`）；`theme-presets.css` 7+ 套预设；Light/Dark 品牌渐变深浅同值为登记例外（E28） |
 | Uter 需要改进的地方 | 预设对每套重抄 52 个同名键（合并候选）；Light/Dark 变量成对校验器仅覆盖 `generated/brand.css`（`UDS5-S10` `S10-D4` 仍标 `NOT_VERIFIED`） |
-| 5.0 最终规范 | **Uter 现状强于 Clerk 方案，不得倒退**：保留静态两层 Token 与三维 `data-theme-*`；**禁止**引入 `color-mix()` / 相对颜色语法做运行时色阶派生（会绕过 T1–T17 静态门禁）；预设重构方向「单一 `:root` 基础层 + 预设只列差异键」保持；Light/Dark 成对校验器扩展登记为 `S21-D07`（`NOT_STARTED`） |
+| 5.0 最终规范 | **以上游为准（原「Uter 现状强于 Clerk、不得倒退」结论废止）**：`appearance.variables` 支持 CSS 自定义属性、`prefers-color-scheme` / `[data-theme]` 自动切换、`color-mix()` / 相对颜色语法派生，全部列为 `UDS5-S01` §4.2 `G1` 唯一规范口径。运行时静态两层 Token / 三维 `data-theme-*` / T1–T17 静态门禁为过渡期实现现状，按 §19 分期迁移；迁移前不得据本裁决宣称代码已对齐。Light/Dark 成对校验器扩展仍登记为 `S21-D07`（`NOT_STARTED`） |
 | 代码实施位置 | `web/src/styles/theme.css`、`web/src/styles/theme-presets.css`、`web/src/design-system/tokens/*.css`、`web/scripts/check-design-system-5.0.mjs`（只读）；本轮未执行代码改造 |
 | 测试证据 | 既有：`check-design-tokens.mjs --strict` 违规 0 / EXIT=0（审计只读结论）；`bun run design:5:check` 本轮实测 `tokenFiles: 8` / `uniqueTokenVariables: 245` / `crossFileTokenDuplicates: 0`（2026-11-14，见 CHANGELOG）；成对校验器扩展 `NOT_STARTED` |
 
@@ -330,12 +331,12 @@
 
 | 判定 | 本文涉及项 | 计数口径 |
 |---|---|---|
-| `Adopt`（仅理念 / 原则） | 主题继承理念、按钮状态齐备原则、卡片表面色差优先 | 与审计一致，不含引入主题包 |
-| `Adapt`（含严格限视觉） | Design Tokens、Appearance、Authentication / User / Organization、表单、导航、反馈、组合、状态、a11y、响应式、Elements 理念；**本轮新增** N1 Theme editor 理念、N2 Custom menu items、N3 Email/SMS templates 治理理念、N4 Build your own UI、N5 simple theme 分层边界、N7 localization 键机制 | 主体处置；本轮新增 6 项均为理念 / 信息架构，不含运行时引入 |
-| `Reject` | Clerk Elements 弃用 API、Clerk SDK / 主题包、通用表格 / 图表 / 日期 / 上传 / 通知 / 空态能力归为 Clerk；**本轮新增 3 条判定**：N4 依赖侧（headless 原语包）、N6（CSS 变量动态主题 / `color-mix()` 运行时派生）、N7 作契约侧（Experimental localization prop）；`cl-*` 稳定类机制、`appearance.elements`、Clerk 模板系统为 N5 / N3 的附属结论，不另计维度 | 与 §2.2、§3 一致 |
-| 明确「官方未提供」 | 11 类通用能力（§2.2） | 与 `UDS5-AUDIT-02` §1.1 / §5 结论 4 一致 |
+| `Adopt`（上游对齐 / 理念） | **2026-11-15 新增** N6 CSS 变量驱动动态主题（`color-mix()` / `prefers-color-scheme` / `[data-theme]`）列为 `G1` 唯一规范口径；另含主题继承理念、按钮状态齐备原则、卡片表面色差优先 | N6 是**规范层对齐**，不等于运行时依赖引入；本轮不改 `web/src` |
+| `Adapt`（含严格限视觉） | Design Tokens、Appearance、Authentication / User / Organization、表单、导航、反馈、组合、状态、a11y、响应式、Elements 理念；N1 Theme editor 理念、N2 Custom menu items、N3 Email/SMS templates 治理理念、N4 Build your own UI、N5 simple theme 分层边界、N7 localization 键机制 | 主体处置；6 项均为理念 / 信息架构，不含运行时引入 |
+| `Reject` | Clerk Elements 弃用 API、Clerk SDK / 主题包运行时引入、通用表格 / 图表 / 日期 / 上传 / 通知 / 空态能力归为 Clerk；N4 依赖侧（headless 原语包）、N7 作契约侧（Experimental localization prop）；`cl-*` 稳定类机制、`appearance.elements`、Clerk 模板系统为 N5 / N3 的附属结论，不另计维度 | 与 §2.2、§3 P2 一致；**N6 原 `Reject` 已按上游裁决改 `Adopt`** |
+| 明确「官方未提供」 | 11 类通用能力（§2.2） | 与 `UDS5-AUDIT-02` §1.1 / §5 结论 4 一致；这些能力由 `UDS5-S01` §4.2 `G2` 定义 |
 
-> 本文未新增任何 `Adopt` 到「引入 Clerk 运行时」的方向；所有运行时依赖相关判定均为 `Reject` 或「不引入」。本轮补充的 7 个官方维度（N1–N7）共 **9 条处置判定**：6 条 `Adapt`（N1/N2/N3/N4/N5/N7）+ 3 条 `Reject`（N4 依赖侧 / N6 / N7 作契约侧），其中 N4 / N7 为双记；零依赖引入；详见 §10 `S21-D01`…`S21-D12`。
+> 本文未新增任何「引入 Clerk 运行时依赖」的方向；本轮为**规范层上游对齐**，运行时迁移按 `UDS5-S01` §19 分期。7 个官方维度（N1–N7）共 **9 条处置判定**：6 条 `Adapt`（N1/N2/N3/N4/N5/N7）+ 1 条 `Adopt`（N6，2026-11-15 上游对齐）+ 2 条 `Reject`（N4 依赖侧 / N7 作契约侧），其中 N4 / N7 为双记；零依赖引入；详见 §10 `S21-D01`…`S21-D13`。
 
 ---
 
@@ -343,11 +344,11 @@
 
 | 规范 ID | 关系 | 说明 |
 |---|---|---|
-| `UDS5-S01` | 上级 | 本文服从总纲的规范效力、ID 体系与验证状态口径 |
+| `UDS5-S01` | 上级 / 唯一规范值入口 | 本文服从总纲的规范效力、ID 体系与验证状态口径；**§4.2「唯一规范值基线表」是 `G1`（clerk.com 已公布值）/ `G2`（未公布项）的唯一取值入口**，本文 §2.3 / §3 P1 / §4 各结论以该表为准 |
 | `UDS5-AUDIT-01` | 事实依据 | `audit/BASELINE-AUDIT.md` 提供 Uter 当前设计情况、Token / 组件 / 页面 / CI / 平台全部基线数字与决策 D1–D8 |
 | `UDS5-AUDIT-02` | 事实依据 | `audit/CLERK-DESIGN-REFERENCE-ANALYSIS.md` 提供首轮 9 个官方来源、23 个小节 / 24 条判定（历史快照）、F1–F4 时效性事实与禁止事项复核；本轮另补 4 个官方来源（§2.4） |
 | `UDS5-S03`（颜色规范） | 被引用 | §4.1 的「派生单一出口」、`--ds-font-*` 别名落地 |
-| `UDS5-S04`（字体规范） | 被引用 | §4.1 / §4.2 的 `@theme --text-*` 保留与 13px 基准拒绝（决策 D1） |
+| `UDS5-S04`（字体规范） | 被引用 | §4.1 / §4.2 的 `@theme --text-*` 18 档刻度保留（`G2`）；`0.8125rem`(13px) 已按上游裁决取为 `G1` 唯一基准字号（原「13px 基准拒绝」结论废止） |
 | `UDS5-S10`（主题规范） | 被引用 | §4.4 主题继承、Light/Dark 成对校验 |
 | `UDS5-S13`（无障碍规范） | 被引用 | §4.13 E24 / E28 登记与 WCAG 2.2 AA 目标 |
 | `UDS5-S12`（响应式规范） | 被引用 | §4.14 五档断点与原生平台 `NOT_VERIFIED` |
@@ -388,7 +389,7 @@
 |---|---|---|---|
 | **Clerk 依赖零引入（C1）** | `bun run design:clerk:check` → `web/scripts/check-clerk-boundary.mjs` | **本轮已落地** | `PASS`：扫描 `package.json` 四组依赖共 **84** 项，零 Clerk 包 |
 | **Clerk 运行时零引用（C2）** | 同上 | **本轮已落地** | `PASS`：扫描 `web/src` **1,287** 个生产源文件，零 `ClerkProvider` / `@clerk/*` / `cl-*` 稳定类 / 品牌背书文案；排除 `__tests__` 与 `*.test.*` 避免自命中 |
-| **品牌值零照搬（C3）** | 同上 | **本轮已落地** | `PASS`：零 `#6c47ff`、零 `--clerk-*` 变量声明；Uter 品牌靛紫 `#5B5EE6` 不变 |
+| **运行时源码边界（C3）** | 同上 | **本轮已落地，语义已按 2026-11-15 裁决更新** | `PASS`：扫描范围为 `web/src` 生产源码，零 `#6c47ff`、零 `--clerk-*` 变量声明。**注意**：规范基线主色已按上游改为 `#6c47ff`（`UDS5-S01` §4.2 `G1`），但本轮**只改规范文本、不改运行时**；C3 现守「代码迁移完成前不得由前端自行引入上游值」，不再是「规范不得采用上游值」。迁移须走 §19 并同步调整该守卫，属 `S21-D13` 待办 |
 | **通用组件能力归属性（C4）** | 同上 | **本轮已落地** | `PASS`：校验本文 §2.2 的 **11** 类能力逐条标注「官方是否提供 = 否」，防止把 Uter 自有能力误写成 Clerk 能力 |
 | 守卫自身回归测试 | `bun run test -- src/design-system/__tests__/clerk-boundary.test.ts` | **本轮已落地** | 红色阶段 **11/11 失败**（脚本未创建）→ 绿色阶段 **11/11 通过**；覆盖依赖注入、源码注入、品牌色注入、能力清单删减、业务红线符号登记删减、前端越界耦合、自身排除 7 类负例 |
 | Token 两层体系未倒退 | `check-design-tokens.mjs --strict` | 既有（本轮未复跑） | 审计只读结论：违规 0 / EXIT=0；`bun run design:5:check` 本轮实测 `tokenFiles: 8` / `uniqueTokenVariables: 245` / `crossFileTokenDuplicates: 0` |
@@ -435,6 +436,7 @@
 | S21-D10 | **节点六之前登记的三项「未建立」校验器**（见本文件 §8 与 CHANGELOG §6.2）：Clerk 依赖零引入、通用组件能力归属性、业务红线零改动 | **三项本轮全部闭合**：前两项由 C1–C4 守卫 + 11/11 回归测试覆盖；**第三项「业务红线零改动」本轮落地为 C5 自动化**（`check-clerk-boundary.mjs` 新增文档一致性 + 前端越界耦合双约束 + 2 例 C5 回归测试），不再依赖人工提交范围把关，非虚构 |
 | S21-D11 | **守卫脚本产物边界**：`check-clerk-boundary.mjs` 支持 `--root` / `--docs` 仅供回归测试注入沙箱，默认模式不写任何文件 | `VERIFIED`：默认模式 `generated: false`，扫描 84 依赖 / 1,287 源文件 / 11 能力，`errors: 0`；测试沙箱位于 `os.tmpdir()`，`afterAll` 清理 |
 | S21-D12 | **业务红线零改动**：本轮新增 / 修改文件不含 `web/src` 运行时代码（守卫测试位于 `__tests__`）、不含 Go 后端、不含认证 / 资金 / 授权逻辑；并由 C5 自动化守卫（`check-clerk-boundary.mjs`）持续兜底 | `VERIFIED_BY_SCOPE` + `AUTOMATED_BY_C5`：改动清单见 CHANGELOG §6.1；`org_role` / `sub_quota_limit` / `EnforceOrgQuota` / `IncrOrgUsedQuota` 零改动 |
+| S21-D13 | **上游对齐裁决（2026-11-15）**：用户指令「5.0 中所有与 clerk.com 不一致处以 clerk.com 为准；合并差异只保留唯一规范值」↔ 本文首轮「Clerk 仅为参考 / P1 禁止照搬 / 两层 Token 不倒退」 | **ADOPT_UPSTREAM（红线废止）**：§1 定位升格为上游权威、§2.1 F3 / §2.3 / §2.4 N6 / §3 P1 / §4.1 / §4.4 / §4.18 / §5 / §8 C3 全部改写；唯一规范值入口 = `UDS5-S01` §4.2。§2.2 的 11 类「官方未提供」能力表与 §3 P3 业务红线行**原样保留**（C4 / C5 门禁依赖）。运行时代码本轮零改动，差异登记为「待迁移」按 §19 分期 |
 
 > 本节编号采用 `S21-Dxx` 两位数形式，与 5.0 新分册体例一致；`UDS5-S21` 首轮无差异表，本节为本轮新增，历史审计报告 `UDS5-AUDIT-02` 保持原样作历史快照。
 

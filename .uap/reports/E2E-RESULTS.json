@@ -1,19 +1,19 @@
 {
   "status_model": "UAP-TEST-STATUS-1.0",
-  "status": "FAIL",
+  "status": "BLOCKED",
   "suite": "e2e",
   "command": "npx playwright test --config e2e/axe/playwright.config.ts + playwright business",
-  "exit_code": 1,
+  "exit_code": 0,
   "items": [
     {
       "id": "axe_0_axe: 鉴权页批量扫描",
       "title": "axe: 鉴权页批量扫描",
-      "status": "SKIPPED",
-      "reason": "runner reported status=skipped",
+      "status": "PASS",
+      "reason": null,
       "source": "runner",
       "runner_ok": true,
       "runner_statuses": [
-        "skipped"
+        "passed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -186,49 +186,359 @@
       ],
       "evidence_ref": null,
       "suite": "axe"
+    },
+    {
+      "id": "biz_0_biz_01 注册新用户 [BLOCKED_BY_POLICY]",
+      "title": "biz_01 注册新用户 [BLOCKED_BY_POLICY]",
+      "status": "BLOCKED",
+      "reason": "policy marker in spec title: execution prohibited",
+      "source": "title",
+      "runner_ok": true,
+      "runner_statuses": [
+        "skipped"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_1_biz_02 密码登录成功（真实凭据）",
+      "title": "biz_02 密码登录成功（真实凭据）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_2_biz_03 错误密码登录被拒绝",
+      "title": "biz_03 错误密码登录被拒绝",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_3_biz_04 未登录调用受保护 API 被 401 拒绝",
+      "title": "biz_04 未登录调用受保护 API 被 401 拒绝",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_4_biz_05 未登录访问受保护页面跳转登录页",
+      "title": "biz_05 未登录访问受保护页面跳转登录页",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_5_biz_06 已登录读取个人信息 /api/user/self",
+      "title": "biz_06 已登录读取个人信息 /api/user/self",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_6_biz_07 会话刷新成功且 access token 轮换",
+      "title": "biz_07 会话刷新成功且 access token 轮换",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_7_biz_08 登出后受保护 API 失效",
+      "title": "biz_08 登出后受保护 API 失效",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_8_biz_09 站点状态 /api/status（公开）",
+      "title": "biz_09 站点状态 /api/status（公开）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_9_biz_10 公告接口 /api/notice（公开）",
+      "title": "biz_10 公告接口 /api/notice（公开）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_10_biz_11 定价接口 /api/pricing（登录态）",
+      "title": "biz_11 定价接口 /api/pricing（登录态）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_11_biz_12 排行榜 /api/rankings（登录态）",
+      "title": "biz_12 排行榜 /api/rankings（登录态）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_12_biz_13 密钥列表 /api/token/（登录态）",
+      "title": "biz_13 密钥列表 /api/token/（登录态）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_13_biz_14 创建密钥 POST /api/token/",
+      "title": "biz_14 创建密钥 POST /api/token/",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_14_biz_15 更新密钥改名并回读验证",
+      "title": "biz_15 更新密钥改名并回读验证",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_15_biz_16 删除密钥后列表不再包含",
+      "title": "biz_16 删除密钥后列表不再包含",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_16_biz_17 用户可用模型 /api/user/models",
+      "title": "biz_17 用户可用模型 /api/user/models",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_17_biz_18 用户分组 /api/user/self/groups",
+      "title": "biz_18 用户分组 /api/user/self/groups",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_18_biz_19 用户日志 /api/log/self（登录态）",
+      "title": "biz_19 用户日志 /api/log/self（登录态）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_19_biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
+      "title": "biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_20_biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
+      "title": "biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_21_biz_24 用户用量统计 /api/log/self/stat",
+      "title": "biz_24 用户用量统计 /api/log/self/stat",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_22_biz_22 普通用户访问管理 API 被 403 拒绝",
+      "title": "biz_22 普通用户访问管理 API 被 403 拒绝",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
+    },
+    {
+      "id": "biz_23_biz_23 浏览器真实登录（表单）后 dashboard 渲染",
+      "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
+      "status": "PASS",
+      "reason": null,
+      "source": "runner",
+      "runner_ok": true,
+      "runner_statuses": [
+        "passed"
+      ],
+      "evidence_ref": null,
+      "suite": "business"
     }
   ],
   "counts": {
-    "PASS": 13,
+    "PASS": 37,
     "FAIL": 0,
-    "SKIPPED": 1,
-    "BLOCKED": 0,
+    "SKIPPED": 0,
+    "BLOCKED": 1,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
-  "total": 14,
-  "pass": 13,
+  "total": 38,
+  "pass": 37,
   "fail": 0,
-  "blocked": 0,
-  "skipped": 1,
+  "blocked": 1,
+  "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
-  "problems": [
-    "business e2e exit=1"
-  ],
+  "problems": [],
   "browser_runs": [
     {
       "suite": "axe",
-      "target": "http://localhost:3101",
+      "target": "http://localhost:3100",
       "exit_code": 0,
-      "passed": 13,
+      "passed": 14,
       "failed": 0,
-      "skipped": 1,
+      "skipped": 0,
       "blocked": 0,
       "stats": {
-        "startTime": "2026-11-14T05:02:36.628Z",
-        "duration": 144458.16,
-        "expected": 13,
-        "skipped": 1,
+        "startTime": "2026-11-15T02:08:46.096Z",
+        "duration": 184596.18399999998,
+        "expected": 14,
+        "skipped": 0,
         "unexpected": 0,
         "flaky": 0
       },
       "scenarios": [
         {
           "title": "axe: 鉴权页批量扫描",
-          "status": "SKIPPED",
-          "ok": false,
-          "reason": "runner reported status=skipped"
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
           "title": "axe: 公开页 /",
@@ -313,30 +623,178 @@
     {
       "suite": "business",
       "target": "http://localhost:3100",
-      "exit_code": 1,
-      "passed": 0,
+      "exit_code": 0,
+      "passed": 23,
       "failed": 0,
       "skipped": 0,
-      "blocked": 0,
+      "blocked": 1,
       "stats": {
-        "startTime": "2026-11-14T05:05:03.523Z",
-        "duration": 94.09400000000005,
-        "expected": 0,
-        "skipped": 0,
+        "startTime": "2026-11-15T02:11:54.601Z",
+        "duration": 4732.9490000000005,
+        "expected": 23,
+        "skipped": 1,
         "unexpected": 0,
         "flaky": 0
       },
-      "scenarios": [],
+      "scenarios": [
+        {
+          "title": "biz_01 注册新用户 [BLOCKED_BY_POLICY]",
+          "status": "BLOCKED",
+          "ok": false,
+          "reason": "policy marker in spec title: execution prohibited"
+        },
+        {
+          "title": "biz_02 密码登录成功（真实凭据）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_03 错误密码登录被拒绝",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_04 未登录调用受保护 API 被 401 拒绝",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_05 未登录访问受保护页面跳转登录页",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_06 已登录读取个人信息 /api/user/self",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_07 会话刷新成功且 access token 轮换",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_08 登出后受保护 API 失效",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_09 站点状态 /api/status（公开）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_10 公告接口 /api/notice（公开）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_11 定价接口 /api/pricing（登录态）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_12 排行榜 /api/rankings（登录态）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_13 密钥列表 /api/token/（登录态）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_14 创建密钥 POST /api/token/",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_15 更新密钥改名并回读验证",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_16 删除密钥后列表不再包含",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_17 用户可用模型 /api/user/models",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_18 用户分组 /api/user/self/groups",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_19 用户日志 /api/log/self（登录态）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_24 用户用量统计 /api/log/self/stat",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_22 普通用户访问管理 API 被 403 拒绝",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        },
+        {
+          "title": "biz_23 浏览器真实登录（表单）后 dashboard 渲染",
+          "status": "PASS",
+          "ok": true,
+          "reason": null
+        }
+      ],
       "stderr_tail": ""
     }
   ],
+  "business_scenarios_collected": 24,
+  "business_expected": 23,
+  "zero_scenario_failure": false,
   "axe": {
     "command": "npx playwright test --config e2e/axe/playwright.config.ts",
     "exit_code": 0,
-    "target": "http://localhost:3101",
-    "passed": 13,
+    "target": "http://localhost:3100",
+    "passed": 14,
     "failed": 0,
-    "skipped": 1,
+    "skipped": 0,
     "blocked": 0,
     "critical_violations": [],
     "serious_violations": 0
@@ -346,11 +804,11 @@
     "mechanism": "isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass",
     "production_auth_policy_modified": false
   },
-  "skipped_note": "1 skipped / 0 blocked — never counted as PASS",
-  "generated_at": "2026-11-14T05:05:03.713Z",
+  "skipped_note": "0 skipped / 1 blocked — never counted as PASS",
+  "generated_at": "2026-11-15T02:11:59.467Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -358,8 +816,8 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261114050504-37d751d4",
-  "git_head": "d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-  "worktree_fingerprint": "a8935cbb885049bdb623ff014322d03a95ec3560bdaffcb4bc25c1befc32914a",
-  "evidence_ref": "UAP-EV-20261114050504-c4e40486"
+  "execution_id": "UAP-EXEC-20261115021200-c4369778",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "worktree_fingerprint": "7fe27a000f41ebd9bb4d3dd4d45b163c68ebbb087ab61e719ac331b862e76de9",
+  "evidence_ref": "UAP-EV-20261115021203-3e20aff0"
 }

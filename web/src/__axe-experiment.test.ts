@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs'
 
-import axe from 'axe-core'
 import { describe, expect, it } from 'vitest'
 
 // 实验：验证 axe label-content-name-mismatch 对 aria-hidden 内容的处理

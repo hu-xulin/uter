@@ -22,7 +22,7 @@
 | T-2 | 继承 + 局部覆盖 | 基础 `:root` 声明 → 主题预设覆盖差异键 → 组件级局部覆盖；越往下作用域越小。 |
 | T-3 | 切换不改状态机 | **主题切换只改外观变量，绝不改变组件状态与交互逻辑**（认证/授权/资金/表单状态一律不动）。 |
 | T-4 | 成对成对 | Light / Dark 变量成对声明；新增一个语义变量必须同步声明 `.dark` 值。 |
-| T-5 | 品牌基线不动 | 品牌色（Light `#5B5EE6` / `#494CC7` / `#3F42B0`；Dark `#8B8DF5` / `#A1A3F7` / `#B7B8FA`）、Inter + Noto Sans SC 保持不变（规范层保留的用户基线声明；与运行时 DTCG 真值的 **Adapt 差异见 §10.1 / S10-D7**，本轮不改任何色值）。 |
+| T-5 | **上游基线为准**（原「品牌基线不动」废止） | 唯一规范主色 `#6c47ff`（`UDS5-S01` §4.2 `G1`）；Hover / Active / Dark 三态与字体属 `G2`，见 §10.1。本轮只改规范文本、不改运行时色值，实现差异按 §19 待迁移 |
 | T-6 | 刻意例外登记 | 品牌渐变**深浅同值**是刻意例外，禁止 `.dark` 覆盖（§6）。 |
 | T-7 | 不引入新依赖 | 不引入 `@clerk/ui`、`@clerk/elements`、Clerk SDK、Storybook（BASELINE-AUDIT §13 第 3 条）。 |
 | T-8 | 单一出口 | 组件只消费语义 Token，运行时派生/切换有单一出口（`theme-color.ts` 的 MutationObserver）。 |
@@ -137,7 +137,7 @@
 
 | 项 | 规定 |
 |---|---|
-| 两层分离 | Primitive → Semantic 已分离（BASELINE-AUDIT §4.1、§11.1 第 4 条），5.0 保留，不倒退到 Clerk 式扁平单层 24 键。 |
+| 变量结构 | **上游对齐**：规范层口径为 `UDS5-S01` §4.2 `G1` 的扁平单层 24 键 `--clerk-*` 语义键 + `color-mix()` 派生；运行时 Primitive → Semantic 两层为过渡期实现现状，按 §19 待迁移（原「不倒退」结论废止）。 |
 | 消费 | 组件只消费 `--ds-*` 语义变量；裸色值由 `brand-colors.ts` 唯一持有（T8）。 |
 | 对比度 | 语义色成对值须满足 WCAG，E24 两处待修（S13）。 |
 | 透明度 | 禁止用透明度凑层级 / 悬停 / 浅底（T13–T15）。 |
@@ -229,7 +229,7 @@
 | S10-D4 | Light/Dark 变量成对校验器 | 5.0 目标，落地 `NOT_VERIFIED` |
 | S10-D5 | `brand.tokens.json` 仍为 `status: DRAFT` / `decision: AUTO_BLOCKED` | 待证据链齐备后变更（BASELINE-AUDIT §11.4 第 5 条），`NOT_VERIFIED` |
 | S10-D6 | 字体轴 `data-theme-font`（system/sans/serif）未落地，代码锁 Inter + Noto Sans SC | 保留 Pending（BASELINE-AUDIT §3.1），`NOT_VERIFIED` |
-| S10-D7 | 品牌基线六色与运行时 DTCG 值不一致；`brand.tokens.json` 仍 `DRAFT` / `AUTO_BLOCKED` | **Adapt**（详见 §10.1），`NOT_VERIFIED` |
+| S10-D7 | 品牌色已按上游合并为唯一规范值；运行时仍为旧值 | **唯一规范值见 §10.1**；实现差异登记为「待迁移」，`NOT_VERIFIED`；`brand.tokens.json` 仍 `DRAFT` / `AUTO_BLOCKED`，状态变更未获授权 |
 | S10-D8 | 蓝图 §3 要求响应系统强制对比（`forced-colors: active`）；仓库**未实现**（0 命中） | **治理候选**（见 §8.1 HC-1） |
 | S10-D9 | 蓝图 §3 要求高对比增强选项；仓库无 `data-theme-contrast` 维度 | **治理候选**（见 §8.1 HC-2） |
 | S10-D10 | 蓝图 §4「组件不得出现主题分支」；仓库组件层未见 `.dark` 分支，但**未逐组件全量核查** | `NOT_VERIFIED`（见 §9.1 ST-3） |
@@ -237,23 +237,27 @@
 | S10-D12 | 蓝图 §7 要求所有核心组件均有 Light / Dark 覆盖；逐组件覆盖完整性**未核查** | `NOT_VERIFIED`（见 §9.1 ST-6） |
 | S10-D13 | 蓝图 §6 禁止用全局 `!important` 规避组件 API；仓库 `styles/index.css` 有 12 处 `!important` 命中（其中 1 处为注释文本，实际生效 11 处），经核查**均属基础重置与 Reduce Motion 降级**，组件层 `ui/` 为 0 处 | 已登记（**不判违规**；见 §9.1 ST-2） |
 
-### 10.1 S10-D7 · 品牌基线六色与运行时 DTCG 值差异（Adapt，2026-11-14 登记）
 
-> 口径与 `01 §4.2`、`03 §2.1`、BASELINE-AUDIT §9 **D7**（Adapt + 分期）一致；本条为差异登记，**不是**「基线已一致」的结论。
+### 10.1 品牌色唯一规范值（`S10-D7` 已合并）
 
-| 来源 | 色值 | 依据 |
-|---|---|---|
-| 用户基线（规范层保留） | Light `#5B5EE6` / `#494CC7` / `#3F42B0`；Dark `#8B8DF5` / `#A1A3F7` / `#B7B8FA`（六色） | 用户指令品牌基线、BASELINE-AUDIT §11.1 第 1 条 |
-| 运行时 DTCG 真值 | `#4F52D1` / `#4A4DC5` / `#A1A3F7` / `#B1B3FF` / `#9294F7`（Hover / Active / Dark 三态实际值，5 个；**具体态位映射未逐一核实**） | `web/src/design-system/source/brand.tokens.json`、`web/src/design-system/tokens/generated/brand.css` |
+> **2026-11-15 差异合并裁决**：原「用户基线六色 ↔ 运行时 DTCG 五值」双表已删除。唯一取值入口 = `UDS5-S01` §4.2 基线表；本表与 `UDS5-S03` §2 逐值一致。
 
-| 项 | 处置 |
+| 属性 | **唯一规范值** | 组别 | 依据 |
+|---|---|---|---|
+| 品牌主色 `colorPrimary` | **`#6c47ff`** | `G1` | clerk.com `appearance.variables` 官方示例值 |
+| Light Hover / Active | `#4F52D1` / `#4A4DC5` | `G2` | 上游未公布态位值 → 运行时 DTCG 实现现状 |
+| Dark Primary / Hover / Active | `#A1A3F7` / `#B1B3FF` / `#9294F7` | `G2` | 同上 |
+| 主题变量结构 | 扁平单层 24 键 `--clerk-*` | `G1` | clerk.com 官方 |
+| 主题切换 | `color-scheme` / `.dark` / `[data-theme]` / `prefers-color-scheme` | `G1` | clerk.com 官方 |
+| 预置主题 | 6 套（default / simple / shadcn / dark / shadesOfPurple / neobrutalism） | `G1` | clerk.com 官方 |
+
+| 项 | 状态 |
 |---|---|
-| 事实 | 两组色值**不一致**；`brand.tokens.json` 仍为 `status: DRAFT` / `decision: AUTO_BLOCKED`，状态未解除（与 S10-D5 同源，BASELINE-AUDIT §11.4 第 5 条）。 |
-| 决策 | **Adapt**（不 Reject、不照抄、不改值）：按 `AGENTS.md`「Design System Enforcement」——文档与实现冲突时，**设计值来自代码（`tokens/`、`theme.css`），规则与边界来自规范**，故**运行时以 `generated/brand.css` 为准**。 |
-| 规范层 | 保留 T-5 的用户基线声明不动（品牌基线必须保留）；本差异仅作登记，不构成「基线已一致」或「色值已验收」的结论。 |
-| 变更边界 | **本轮绝不改任何色值**：不改 `brand.tokens.json`、不改 `generated/brand.css`、不改组件、不改 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT）、不扩 `ALLOWLIST`；色值统一须待 `DRAFT` 解除 + 对比度/视觉证据链齐备后另立变更。 |
-| 关联 | `generated/brand.css` 为 DTCG 生成（Light 8 + Dark 8，见 §2 / §3），其 Dark 覆盖与 `elevation.css` 的 2 档阴影覆盖同属 design-system 内部 Dark 覆盖，均按「设计值来自代码」处理。 |
-| 状态 | `NOT_VERIFIED`（未执行色值一致性复核，不得勾选通过，不得宣称品牌基线已验收）。 |
+| 规范—实现差异 | 运行时代码仍为旧主色与旧变量结构，登记为**待迁移**（`UDS5-S01` §4.2 / `S01-D9`），按 §19 分期推进；本轮不改代码 |
+| `brand.tokens.json` | 仍为 `status: DRAFT` / `decision: AUTO_BLOCKED` / `changeApproval: NOT_VERIFIED`；状态与值变更**未获授权** |
+| 变更边界 | 不改 `brand.tokens.json`、不改 `generated/brand.css`、不改组件、不改 3.0 §28.5 TOKEN-MANIFEST（历史 Spec SSOT）、不扩 `ALLOWLIST`；统一须待 `DRAFT` 解除 + 对比度 / 视觉证据链齐备后另立变更 |
+| 态位映射 | `G2` 三态值按 DTCG 键名读取，**语义等价未逐一独立核实**，不得宣称逐值一一对应已验证 |
+| 验证状态 | `NOT_VERIFIED`（未执行色值一致性复核与代码迁移，不得勾选通过） |
 
 ---
 

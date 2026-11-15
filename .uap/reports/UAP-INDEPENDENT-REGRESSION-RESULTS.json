@@ -1,0 +1,299 @@
+{
+  "schema_version": "1.0",
+  "status_model": "UAP-TEST-STATUS-1.0",
+  "generated_at": "2026-11-15T02:07:00.937Z",
+  "repository": "git@github-huxulin:hu-xulin/uter.git",
+  "branch": "main",
+  "commit_sha": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+  "execution_id": "UAP-EXEC-20261115020646-fbe6e162",
+  "worktree_fingerprint": "cab8c5fb8f50b1a2f8ad25b1da2fc421e0f860cdde0adfe8fbafeb3a3eee818a",
+  "command": "node .uap/tools/phase2-capability-cards.mjs",
+  "exit_code": 0,
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "isolated": true,
+    "sandbox": "os.tmpdir() dedicated repair sandbox (no tracked file modified)"
+  },
+  "test_environment": "isolated; no production DB / auth / payment touched",
+  "component": "uap.independent-regression-e2e",
+  "status": "PASS",
+  "verified_by": "independent-regression-e2e.mjs (independent verifier, separate process; does not read repair-side verdicts)",
+  "counts": {
+    "total": 31,
+    "pass": 31,
+    "fail": 0,
+    "PASS": 31,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "SKIPPED": 0,
+    "NOT_RUN": 0,
+    "NOT_APPLICABLE": 0
+  },
+  "verdict": "PASS",
+  "independent_checks": [
+    {
+      "name": "task_present_and_parsed",
+      "pass": true,
+      "detail": "parsed TASK.json"
+    },
+    {
+      "name": "acceptance_conditions_present",
+      "pass": true,
+      "detail": "source=src/calc.mjs tests=4 behavioral=1"
+    },
+    {
+      "name": "sandbox_files_present",
+      "pass": true,
+      "detail": "source_present=true tests_present=4/4"
+    },
+    {
+      "name": "before_evidence_present",
+      "pass": true,
+      "detail": "exit=1 timed_out=false has_assert_output=true"
+    },
+    {
+      "name": "before_source_hash_consistent",
+      "pass": true,
+      "detail": "recomputed=be397302bb73f543fe9569baa367aa7765ade2dacfff68f465d0801f5c4cd7ce recorded=be397302bb73f543fe9569baa367aa7765ade2dacfff68f465d0801f5c4cd7ce"
+    },
+    {
+      "name": "before_test_hashes_match_task",
+      "pass": true,
+      "detail": "match=true"
+    },
+    {
+      "name": "before_failure_reproduced",
+      "pass": true,
+      "detail": "independent rerun of before-source → exit=1 (期望非 0，证明修复前缺陷真实存在)"
+    },
+    {
+      "name": "after_evidence_present",
+      "pass": true,
+      "detail": "hashes/diff/source/commands 齐全"
+    },
+    {
+      "name": "after_source_hash_consistent",
+      "pass": true,
+      "detail": "disk=9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3 recorded=9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3 evidence_text=9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3"
+    },
+    {
+      "name": "source_diff_nonempty_and_changes_behavior",
+      "pass": true,
+      "detail": "diff_len=195 has_return_change=true before=be397302bb73f543fe9569baa367aa7765ade2dacfff68f465d0801f5c4cd7ce after=9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3"
+    },
+    {
+      "name": "diff_hash_consistent",
+      "pass": true,
+      "detail": "recomputed=27ab0f982c3ec98e5f333ae54228db5ec3d645d915b31d3d4d013ad6f2f2bcba recorded=27ab0f982c3ec98e5f333ae54228db5ec3d645d915b31d3d4d013ad6f2f2bcba"
+    },
+    {
+      "name": "test_files_untampered",
+      "pass": true,
+      "detail": "all 4 test files match TASK-locked sha256（未改测试预期/未放宽断言）"
+    },
+    {
+      "name": "after_test_hashes_consistent",
+      "pass": true,
+      "detail": "cross-check=true"
+    },
+    {
+      "name": "behavioral_check_add",
+      "pass": true,
+      "detail": "add(2,3)=5 expected=5 pass=true"
+    },
+    {
+      "name": "original_test_independent_rerun",
+      "pass": true,
+      "detail": "exit=0 timed_out=false E2E_OK=true cmd=node tests/original.test.mjs"
+    },
+    {
+      "name": "regression_test_independent_rerun",
+      "pass": true,
+      "detail": "exit=0 timed_out=false E2E_OK=true cmd=node tests/regression.test.mjs"
+    },
+    {
+      "name": "module_test_independent_rerun",
+      "pass": true,
+      "detail": "exit=0 timed_out=false E2E_OK=true cmd=node tests/module.test.mjs"
+    },
+    {
+      "name": "full_test_independent_rerun",
+      "pass": true,
+      "detail": "exit=0 timed_out=false E2E_OK=true cmd=node tests/full.test.mjs"
+    },
+    {
+      "name": "command_exit_codes_consistent",
+      "pass": true,
+      "detail": "after_original:recorded=0 observed=0; after_regression:recorded=0 observed=0; after_module:recorded=0 observed=0; after_full:recorded=0 observed=0"
+    }
+  ],
+  "independent_commands": [
+    {
+      "name": "original_test_independent_rerun",
+      "command": "node",
+      "args": [
+        "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/original.test.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": "E2E_OK original.test.mjs\n",
+      "stderr": ""
+    },
+    {
+      "name": "regression_test_independent_rerun",
+      "command": "node",
+      "args": [
+        "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/regression.test.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": "E2E_OK regression.test.mjs\n",
+      "stderr": ""
+    },
+    {
+      "name": "module_test_independent_rerun",
+      "command": "node",
+      "args": [
+        "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/module.test.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": "E2E_OK module.test.mjs\n",
+      "stderr": ""
+    },
+    {
+      "name": "full_test_independent_rerun",
+      "command": "node",
+      "args": [
+        "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2/tests/full.test.mjs"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": "E2E_OK full.test.mjs (5 add cases + mul)\n",
+      "stderr": ""
+    }
+  ],
+  "behavioral_checks": [
+    {
+      "export": "add",
+      "args": [
+        2,
+        3
+      ],
+      "expected": 5,
+      "observed": 5,
+      "pass": true
+    }
+  ],
+  "before_failure_reproduced": true,
+  "after_tests_rerun_independently": true,
+  "test_files_untampered": true,
+  "diff_changes_behavior": true,
+  "generator_checks": [
+    {
+      "name": "repair_process_exit_0",
+      "status": "PASS",
+      "pass": true,
+      "detail": "exit=0 timed_out=false"
+    },
+    {
+      "name": "repair_status_succeeded",
+      "status": "PASS",
+      "pass": true,
+      "detail": "status=SUCCEEDED"
+    },
+    {
+      "name": "before_test_really_failed",
+      "status": "PASS",
+      "pass": true,
+      "detail": "before exit_code=1 (a real red baseline is mandatory)"
+    },
+    {
+      "name": "real_source_changed",
+      "status": "PASS",
+      "pass": true,
+      "detail": "before=be397302bb73f543fe9569baa367aa7765ade2dacfff68f465d0801f5c4cd7ce after=9c102851a49873ecd4136a03cc3ccf435387502e2fae9dd6a5f126d02188b2e3"
+    },
+    {
+      "name": "diff_changes_return_expression",
+      "status": "PASS",
+      "pass": true,
+      "detail": "diff_bytes=195 has_return_line=true"
+    },
+    {
+      "name": "tests_not_tampered",
+      "status": "PASS",
+      "pass": true,
+      "detail": "locked test hashes=4"
+    },
+    {
+      "name": "original_test_red_to_green",
+      "status": "PASS",
+      "pass": true,
+      "detail": "after green command present=true"
+    },
+    {
+      "name": "independent_process_exit_0",
+      "status": "PASS",
+      "pass": true,
+      "detail": "exit=0 timed_out=false"
+    },
+    {
+      "name": "independent_verdict_pass",
+      "status": "PASS",
+      "pass": true,
+      "detail": "verdict=PASS failures=[]"
+    },
+    {
+      "name": "independent_checks_all_pass",
+      "status": "PASS",
+      "pass": true,
+      "detail": "19/19 independent checks passed"
+    },
+    {
+      "name": "behavior_really_changed",
+      "status": "PASS",
+      "pass": true,
+      "detail": "behavioral checks=1, json=[{\"export\":\"add\",\"args\":[2,3],\"expected\":5,\"observed\":5,\"pass\":true}]"
+    },
+    {
+      "name": "verifier_isolated_from_repair_side",
+      "status": "PASS",
+      "pass": true,
+      "detail": "{\"code_only_checked\":true,\"no_repair_import\":true,\"no_repair_status_read\":true,\"no_repair_result_read\":true,\"only_node_builtin_imports\":true,\"imports\":[\"node:fs\",\"node:path\",\"node:crypto\",\"node:child_process\",\"node:url\"],\"separate_process\":true,\"source_sha256\":\"0bb67a7c5a3ae87e4f52d48035d22e58f1ddf5833860a6829cd2106e276edd88\"}"
+    }
+  ],
+  "failures": [],
+  "verifier_isolation": {
+    "code_only_checked": true,
+    "no_repair_import": true,
+    "no_repair_status_read": true,
+    "no_repair_result_read": true,
+    "only_node_builtin_imports": true,
+    "imports": [
+      "node:fs",
+      "node:path",
+      "node:crypto",
+      "node:child_process",
+      "node:url"
+    ],
+    "separate_process": true,
+    "source_sha256": "0bb67a7c5a3ae87e4f52d48035d22e58f1ddf5833860a6829cd2106e276edd88"
+  },
+  "provenance": {
+    "repair_command": "node .uap/tools/real-repair-e2e.mjs",
+    "repair_exit_code": 0,
+    "independent_command": "node .uap/tools/independent-regression-e2e.mjs /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2 60000",
+    "independent_exit_code": 0,
+    "independent_verdict": "PASS",
+    "evidence_ref": "UAP-EV-20261115020659-5b65602c",
+    "evidence_hash": "19ed72e9879a6fee2c794705bbf2abf4acd0c1c4b14ffd7702c2ce1a95076097",
+    "evidence_hash_valid": true,
+    "evidence_binding_valid": true,
+    "sandbox_dir": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-e97qq2",
+    "generated_by": "real command results (never hand-edited status)"
+  }
+}

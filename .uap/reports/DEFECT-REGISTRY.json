@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generated_at": "2026-11-13T11:17:06.003Z",
+  "generated_at": "2026-11-15T02:06:56.372Z",
   "defects": [
     {
       "id": "UAP-DEFECT-0001",
@@ -70,6 +70,71 @@
       "evidence_refs": [],
       "resolution": "root cause no longer reproduces: quality.engineering_integrity PASS on the fresh validation run",
       "closed_at": "2026-11-12T15:23:45.895Z"
+    },
+    {
+      "id": "UAP-DEFECT-0004",
+      "dedupe_key": "validator_quality.test_integrity|",
+      "title": "quality.test_integrity: FAIL",
+      "severity": "P1",
+      "domain": "quality",
+      "root_cause": "quality.test_integrity 实检: test_execution=FAIL(TEST-RUNS.json 41 条; 每条含 command 字符串=true; exit_code 均为数值=false); failure_propagation=PASS(非零 exit_code 记录=16 条; 被伪装为 PASS 的=0 条; 非零 exit_code 均如实保留=true); evidence=PASS(含证据引用(evidence_refs/evidence_id/evidence)的记录=40/41) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 6768 个 | 逐条校验 command + 数值型 exit_code + 失败不被吞 + 证据引用",
+      "affected_files": [],
+      "affected_features": [
+        "UAP validation"
+      ],
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "executor_id": "core.autonomous_execution",
+      "validator_id": "quality.test_integrity",
+      "repair_strategy": "requires source-level change; evaluate safely before applying",
+      "repair_attempts": 0,
+      "status": "VERIFIED",
+      "evidence_refs": [],
+      "resolution": "root cause no longer reproduces: quality.test_integrity PASS on the fresh validation run",
+      "closed_at": "2026-11-15T01:23:30.759Z"
+    },
+    {
+      "id": "UAP-DEFECT-0005",
+      "dedupe_key": "validator_cross_platform.h5_integrity|",
+      "title": "cross_platform.h5_integrity: FAIL",
+      "severity": "P1",
+      "domain": "quality",
+      "root_cause": "cross_platform.h5_integrity 实检: h5_build=PASS(真实浏览器矩阵 verdict.h5_build=PASS (25 行(5 视口 x 5 路由), 全部真实渲染=true)); viewport=PASS(真实浏览器矩阵 verdict.viewport=PASS (meta viewport + 横向溢出 0: 0 行溢出)); touch=FAIL(真实浏览器矩阵 verdict.touch=FAIL (真实触屏 tap 派发 + WCAG 2.5.8 24x24 硬线违规 <24=12 个(含等效命中区/豁免判定); 44x44 推荐以下=164 个如实记录(设计系统 §15.3 非强制))); mobile_tests=PASS(真实浏览器矩阵 verdict.mobile_tests=PASS (matrix_rows=25, rendered=25, 控制台/页面错误行=0)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 7068 个 | 真实 Playwright Chromium 矩阵(5 视口 x 5 路由), 产物 .uap/reports/H5-BROWSER-MATRIX.json 存在=true; verdict={\"h5_build\":\"PASS\",\"viewport\":\"PASS\",\"touch\":\"FAIL\",\"mobile_tests\":\"PASS\"}",
+      "affected_files": [],
+      "affected_features": [
+        "UAP validation"
+      ],
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "executor_id": "core.autonomous_execution",
+      "validator_id": "cross_platform.h5_integrity",
+      "repair_strategy": "requires source-level change; evaluate safely before applying",
+      "repair_attempts": 0,
+      "status": "OPEN",
+      "evidence_refs": []
+    },
+    {
+      "id": "UAP-DEFECT-0006",
+      "dedupe_key": "validator_delivery.deployment_integrity|",
+      "title": "delivery.deployment_integrity: FAIL",
+      "severity": "P1",
+      "domain": "quality",
+      "root_cause": "delivery.deployment_integrity 实检: deployment_plan=FAIL(授权在案(AUTH-DEPLOY-2026-11-12)但演练工具故障(exit=1, stderr=) — fail-closed FAIL) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 7315 个 | FAIL: 授权有效但演练未能执行, 按能力失败处理(不归为环境受限)",
+      "affected_files": [],
+      "affected_features": [
+        "UAP validation"
+      ],
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "executor_id": "core.autonomous_execution",
+      "validator_id": "delivery.deployment_integrity",
+      "repair_strategy": "requires source-level change; evaluate safely before applying",
+      "repair_attempts": 0,
+      "status": "OPEN",
+      "evidence_refs": []
     }
   ],
   "registry_snapshot": {
