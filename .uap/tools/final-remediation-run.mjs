@@ -31,7 +31,8 @@ import { ROOT, REPORTS, STATE, relToRoot } from '../runtime/_lib/paths.mjs';
 import { nowISO, readJSON, writeJSON } from '../runtime/_lib/util.mjs';
 import { startExecution, gitHead, worktreeFingerprint } from '../runtime/status-engine/execution.mjs';
 import {
-  verifyEvidenceManifest, verifyFinalReportBindings, MANIFEST_FILE, FINAL_REPORTS,
+  verifyEvidenceManifest, verifyFinalReportBindings, generateEvidenceManifest,
+  MANIFEST_FILE, FINAL_REPORTS,
 } from '../runtime/evidence-engine/manifest.mjs';
 
 const UAP_CLI = path.join(ROOT, '.uap', 'bin', 'uap.mjs');
@@ -55,45 +56,62 @@ const STACK_ENV = {
 
 fs.mkdirSync(LOG_DIR, { recursive: true });
 
+/**
+ * Use a real FILE descriptor for stdio instead of pipes.
+ *
+ * scripts/phase2-test-stack.sh starts the backend/frontend with `( ... ) &`.
+ * Those daemonised children inherit the parent's stdout/stderr. With pipes,
+ * the write end stays open after the shell itself exits, so Node's `close`
+ * event never fires and the orchestrator hangs forever (observed: 18+ minutes
+ * stuck right after isolated_stack_start). With an fd there is no pipe to
+ * keep open, so `close` fires when the launched process exits.
+ */
 function runProcess(command, argv, { env = {}, timeoutMs = 900000, cwd = ROOT } = {}) {
   return new Promise((resolve) => {
     const started = Date.now();
     const name = `${path.basename(command)}-${argv.join('-')}`.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 110);
     const logPath = path.join(LOG_DIR, `${name}.log`);
-    const stream = fs.createWriteStream(logPath);
-    let tail = '';
-    let timedOut = false;
-    let child;
-    try {
-      child = spawn(command, argv, {
-        cwd, env: { ...process.env, ...env }, stdio: ['ignore', 'pipe', 'pipe'],
-      });
-    } catch (error) {
-      stream.end();
+    let fd;
+    try { fd = fs.openSync(logPath, 'w'); } catch (error) {
       return resolve({ command: `${command} ${argv.join(' ')}`, exit_code: 1, timed_out: false,
         duration_ms: Date.now() - started, log: relToRoot(logPath), stdout_tail: String(error.message), spawn_error: true });
     }
-    const onData = (chunk) => {
-      stream.write(chunk);
-      tail = (tail + chunk.toString()).slice(-4000);
-    };
-    child.stdout.on('data', onData);
-    child.stderr.on('data', onData);
+    let timedOut = false;
+    let spawnError = null;
+    let child;
+    try {
+      child = spawn(command, argv, {
+        cwd, env: { ...process.env, ...env }, stdio: ['ignore', fd, fd],
+      });
+    } catch (error) {
+      fs.closeSync(fd);
+      return resolve({ command: `${command} ${argv.join(' ')}`, exit_code: 1, timed_out: false,
+        duration_ms: Date.now() - started, log: relToRoot(logPath), stdout_tail: String(error.message), spawn_error: true });
+    }
     const timer = setTimeout(() => { timedOut = true; child.kill('SIGTERM'); }, timeoutMs);
-    child.on('error', (error) => { tail += `\nSPAWN_ERROR ${error.message}`; });
+    child.on('error', (error) => { spawnError = error.message; });
     child.on('close', (code) => {
       clearTimeout(timer);
-      stream.end();
+      fs.closeSync(fd);
+      let tail = '';
+      try { tail = fs.readFileSync(logPath, 'utf8').slice(-2000); } catch { /* log unavailable */ }
+      if (spawnError) tail += `\nSPAWN_ERROR ${spawnError}`;
       resolve({
         command: `${command} ${argv.join(' ')}`, exit_code: code, timed_out: timedOut,
-        duration_ms: Date.now() - started, log: relToRoot(logPath), stdout_tail: tail.slice(-2000),
+        duration_ms: Date.now() - started, log: relToRoot(logPath), stdout_tail: tail,
       });
     });
   });
 }
 
+// Assigned once in main() after startExecution(); every UAP sub-process in
+// this batch inherits it so all 15 final reports share ONE execution_id.
+let BATCH_ENV = {};
+
 async function uap(step, argv, opts = {}) {
-  const r = await runProcess(process.execPath, [UAP_CLI, ...argv], opts);
+  const r = await runProcess(process.execPath, [UAP_CLI, ...argv], {
+    ...opts, env: { ...BATCH_ENV, ...(opts.env || {}) },
+  });
   return { step, ...r };
 }
 
@@ -158,6 +176,7 @@ async function main() {
 
   // ---- phase 1: freeze code, open ONE batch ------------------------------
   const batch = startExecution('uap-final-remediation single-batch acceptance');
+  BATCH_ENV = { UAP_BATCH_LOCK_ID: batch.execution_id };
   const record = async (step, promise) => {
     const r = await promise;
     steps.push(r);
@@ -169,6 +188,30 @@ async function main() {
 
   // ---- phase 2: real build + self-tests (no source edits after this) -----
   await record('build', uap('build', ['build'], { timeoutMs: 1800000 }));
+  // The behaviour suite's evidence probe (UAP-08-001-ACC-004) really re-hashes
+  // the 15 report byte-blobs listed in the manifest on disk. A stale manifest
+  // from a previous batch makes that probe fail honestly. Snapshot the CURRENT
+  // bytes against THIS batch before running the self-tests. This is a real
+  // manifest of real files — not a hand-edited status — and the final manifest
+  // is regenerated by `uap accept` after every verifier has finished.
+  let preflightManifest;
+  try {
+    preflightManifest = generateEvidenceManifest({ execution: batch });
+    steps.push({
+      step: 'evidence_manifest_preflight', command: 'generateEvidenceManifest(execution=batch)',
+      exit_code: (preflightManifest.missing_reports || []).length ? 1 : 0,
+      duration_ms: 0, timed_out: false,
+      log: relToRoot(MANIFEST_FILE),
+      stdout_tail: `entries=${preflightManifest.entries.length} missing=${JSON.stringify(preflightManifest.missing_reports)}`,
+    });
+    console.log(`[OK] evidence_manifest_preflight entries=${preflightManifest.entries.length}`);
+  } catch (error) {
+    steps.push({
+      step: 'evidence_manifest_preflight', command: 'generateEvidenceManifest(execution=batch)',
+      exit_code: 1, duration_ms: 0, timed_out: false, log: relToRoot(MANIFEST_FILE),
+      stdout_tail: String(error.message),
+    });
+  }
   await record('uap_selftest', uap('uap_selftest', ['test', '--all'], { timeoutMs: 1200000 }));
 
   // ---- phase 3: isolated stack + verifiers ------------------------------

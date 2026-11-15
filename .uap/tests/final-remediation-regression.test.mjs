@@ -172,3 +172,22 @@ test('R12 worktree_fingerprint 必须是真实的 64 位内容哈希，不得为
   // SHA256("") — the historical defect where a clean tree hashed nothing.
   assert.notEqual(fp, 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
 });
+
+test('R13 [静态守卫] 批次锁只固定身份、不匹配即 fail-closed，且独立指纹校验仍在', () => {
+  const e = src('.uap/runtime/status-engine/execution.mjs');
+  assert.match(e, /UAP_BATCH_LOCK_ID/);
+  assert.match(e, /does not match current identity \(fail-closed\)/);
+  assert.match(e, /HEAD mismatch \(fail-closed\)/);
+  // The lock must not remove the independent fingerprint verification.
+  const o = src('.uap/tools/final-remediation-run.mjs');
+  assert.match(o, /verifyEvidenceManifest\(\{ strictCurrent: true \}\)/);
+  assert.match(o, /fingerprint_now: fpNow/);
+  assert.match(o, /BATCH_ENV = \{ UAP_BATCH_LOCK_ID: batch\.execution_id \}/);
+});
+
+test('R14 [静态守卫] 编排器用文件 fd 而非 pipe，避免隔离栈后台进程挂住 close 事件', () => {
+  const o = src('.uap/tools/final-remediation-run.mjs');
+  assert.match(o, /stdio: \['ignore', fd, fd\]/);
+  assert.match(o, /fs\.openSync\(logPath, 'w'\)/);
+  assert.doesNotMatch(o, /stdio: \['ignore', 'pipe', 'pipe'\]/);
+});

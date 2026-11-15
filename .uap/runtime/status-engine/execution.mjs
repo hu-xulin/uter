@@ -241,7 +241,36 @@ export function startExecution(reason = 'manual') {
  * acquiring it: a concurrent worker may have already opened the identity we
  * need, in which case we adopt it instead of opening a duplicate.
  */
+/**
+ * Optional single-batch lock, set ONLY by the final-remediation orchestrator
+ * for the duration of one acceptance batch.
+ *
+ * Problem it solves: several negative tests (WIP protection / real repair E2E)
+ * append a marker to a TRACKED file and restore it in a finally block. The
+ * repair engine calls currentExecution() inside that window, observes a
+ * changed worktreeFingerprint and opens a NEW execution identity. The batch
+ * then splits permanently even though the source ends up byte-identical, and
+ * 15 final reports end up bound to different execution_ids.
+ *
+ * The lock does NOT weaken any check: it only pins WHICH identity is returned.
+ * worktreeFingerprint() is still recomputed independently by the orchestrator
+ * after every step and by verifyEvidenceManifest({strictCurrent:true}); a real
+ * source change still fails closed. A mismatched lock is a hard error, never
+ * a silent fallback.
+ */
+const BATCH_LOCK_ID = process.env.UAP_BATCH_LOCK_ID || null;
+
 export function currentExecution() {
+  if (BATCH_LOCK_ID) {
+    const locked = readJSON(CURRENT, null);
+    if (!locked || locked.execution_id !== BATCH_LOCK_ID) {
+      throw new Error(`execution batch lock ${BATCH_LOCK_ID} does not match current identity (fail-closed)`);
+    }
+    if (locked.git_head !== gitHead()) {
+      throw new Error(`execution batch lock ${BATCH_LOCK_ID} HEAD mismatch (fail-closed)`);
+    }
+    return locked;
+  }
   const head = gitHead();
   const fp = worktreeFingerprint();
   const cur = readJSON(CURRENT, null);
