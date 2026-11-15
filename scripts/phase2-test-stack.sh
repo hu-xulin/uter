@@ -287,6 +287,10 @@ export VISUAL_BASE_URL='${TEST_FRONTEND_URL}'
 export BUSINESS_BASE_URL='${TEST_FRONTEND_URL}'
 export AXE_BASE_URL='${TEST_FRONTEND_URL}'
 export UTER_TEST_STACK='isolated'
+# UAP 运行器读取的是 UAP_TEST_STACK（见 .uap/bin/uap.mjs 的
+# testAuthIsolated 判定）。只写 UTER_TEST_STACK 会让隔离性判定落回
+# 「靠 VISUAL_BASE_URL 猜测」，属于环境契约不一致；两个名字都写入。
+export UAP_TEST_STACK='isolated'
 EOF
 
   echo ""

@@ -35,6 +35,8 @@ import {
   generateEvidenceManifest, verifyEvidenceManifest, repositoryIdentity,
 } from '../runtime/evidence-engine/manifest.mjs';
 import { runFinalAcceptance } from '../tools/final-acceptance-gate.mjs';
+// Pure, independently testable visual-diff classifier (final remediation).
+import { classifyVisualDiff, MANDATED_CATEGORIES } from '../runtime/status-engine/visual-classifier.mjs';
 
 export const component = 'uap.cli';
 export const version = '1.0.0';
@@ -1079,6 +1081,20 @@ async function cmdBuild({ flags }) {
     { path: path.join(ROOT, 'web', 'dist'), label: 'web/dist' },
     { path: path.join(ROOT, '.quality', '.state', 'head-tree'), label: '.quality/.state/head-tree' },
   ];
+  // tsgo -b keeps incremental state in web/node_modules/.tmp/*.tsbuildinfo.
+  // A stale tsbuildinfo can keep reporting diagnostics for a source file that
+  // no longer exists (the "src/design-system/v6/tokens.ts(2561,2) TS1434"
+  // phantom), which made every build/typecheck command fail against a clean
+  // tree. Force a genuine clean rebuild by moving (never deleting) the
+  // incremental cache aside before running the frontend build. This does NOT
+  // relax any TypeScript check — it removes only stale derived state.
+  const tsgoCacheDir = path.join(ROOT, 'web', 'node_modules', '.tmp');
+  if (exists(tsgoCacheDir)) {
+    for (const f of fs.readdirSync(tsgoCacheDir)) {
+      if (!f.endsWith('.tsbuildinfo')) continue;
+      movableArtifacts.push({ path: path.join(tsgoCacheDir, f), label: `tsgo-cache/${f}` });
+    }
+  }
   const movedArtifacts = [];
   for (const a of movableArtifacts) {
     if (!exists(a.path)) continue;
@@ -1733,51 +1749,11 @@ async function cmdVerifyVisual() {
     // Include runner status lines so EVERY diff retains concrete evidence.
     return [...msgs, ...statuses.map((x) => `REPORTER_STATUS ${x}`)].filter(Boolean).join('\n');
   };
-  /**
-   * P2-05 / Phase-2 final remediation: evidence-driven 8-way classification.
-   * Every diff MUST receive one of the mandated categories. "OTHER" is a real
-   * category with the raw evidence attached, NOT a synonym for unclassified:
-   * it is only used when the runner produced a genuine error that matches no
-   * specific signature, and the evidence excerpt is retained for audit.
-   * We never bulk-label every diff as environment, and never rewrite baselines.
-   */
-  const classifyVisualDiff = (s, message) => {
-    const m = message || '';
-    const title = String(s.title || '');
-    // A runner-level failure (no screenshot comparison happened) is distinct
-    // from a pixel diff. Detect it first so it is not mislabelled as a UI diff.
-    const runnerFailed = (s.tests || []).some((t) => (t.results || []).some((r) => r.status === 'failed' || r.status === 'timedOut'))
-      || /用例执行异常|Execution exception|Test timeout|ECONNREFUSED|net::ERR|Target page.*closed/i.test(m);
-    if (/auth|login|credential|401|redirect|sign-in|session/i.test(m) || /auth|login|credential/i.test(title)) {
-      return { category: 'AUTHENTICATION', evidence_basis: 'message/title carries authentication or redirect evidence' };
-    }
-    if (/font|typeface|glyph|字体|ligature|fallback/i.test(m)) {
-      return { category: 'FONT_RENDERING', evidence_basis: 'message carries font/glyph rendering evidence' };
-    }
-    if (/animation|transition|keyframe|动画|carousel|blink/i.test(m)) {
-      return { category: 'ANIMATION', evidence_basis: 'message carries animation/transition evidence' };
-    }
-    if (/dynamic|timestamp|date|clock|random|live data|动态|a11y-date/i.test(m)) {
-      return { category: 'DYNAMIC_CONTENT', evidence_basis: 'message carries dynamic/time-varying content evidence' };
-    }
-    if (/ECONNREFUSED|net::ERR|Target page|browserType\.launch|service gate|SAFE_DELETE|expected 0|port 3\d{3}|not reachable/i.test(m)) {
-      return { category: 'TEST_ENVIRONMENT', evidence_basis: 'message carries service/browser/environment failure evidence' };
-    }
-    if (/baseline|missing snapshot|snapshot not found|no baseline|基线缺失/i.test(m)) {
-      return { category: 'BASELINE_MISMATCH', evidence_basis: 'message carries baseline/snapshot availability evidence' };
-    }
-    if (/Snapshot mismatch|toHaveScreenshot|diff ratio|pixel|different from snapshot|\d+ pixels/i.test(m)) {
-      // A pixel diff that is NOT explained by any of the above is a potential
-      // real UI regression; we require the actual diff evidence to be attached.
-      return { category: 'REAL_UI_REGRESSION', evidence_basis: 'message carries a real screenshot pixel-diff assertion' };
-    }
-    if (runnerFailed && /用例执行异常：failed|用例执行异常/i.test(String(s.reason || m))) {
-      // Genuine runner failure with no specific signature: still classified,
-      // with the raw evidence excerpt preserved (OTHER, never "unclassified").
-      return { category: 'OTHER', evidence_basis: 'runner-level failure, no specific signature; raw evidence retained' };
-    }
-    return { category: 'OTHER', evidence_basis: 'no specific signature; raw evidence retained for manual review' };
-  };
+  // Visual-diff classification is a pure function in
+  // runtime/status-engine/visual-classifier.mjs, imported at the top of this
+  // file. Extracting it lets the final-remediation regression suite exercise
+  // the REAL categorisation behaviour (including the pixel-diff-vs-auth fix)
+  // instead of relying on a source-text scan.
   const items = specs.map((s) => {
     const message = specErrors(s).slice(0, 2000);
     let category = 'PASS';
@@ -1795,7 +1771,6 @@ async function cmdVerifyVisual() {
     };
   });
   const diffs = items.filter((i) => !i.ok);
-  const MANDATED_CATEGORIES = ['REAL_UI_REGRESSION', 'TEST_ENVIRONMENT', 'FONT_RENDERING', 'ANIMATION', 'DYNAMIC_CONTENT', 'AUTHENTICATION', 'BASELINE_MISMATCH', 'OTHER'];
   const classified = diffs.filter((i) => MANDATED_CATEGORIES.includes(i.category) && i.has_evidence).length;
   const categoryCounts = Object.fromEntries(MANDATED_CATEGORIES.map((c) => [c, diffs.filter((i) => i.category === c).length]));
   const strictItems = specs.map((s, i) => ({ ...normalizePlaywrightSpec(s, i), id: `visual_${i}_${s.title}` }));
