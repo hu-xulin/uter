@@ -2,7 +2,7 @@
   "checker": "visual-check.mjs",
   "executed": true,
   "engine": "Playwright Chromium (headless)",
-  "started_at": "2026-11-15T02:09:52.561Z",
+  "started_at": "2026-11-15T02:58:55.666Z",
   "verdict": "PASS",
   "cases": [
     {
@@ -16,7 +16,7 @@
         "viewport": "desktop",
         "modules": 38,
         "sections": 418,
-        "tokenRows": 739,
+        "tokenRows": 748,
         "languages": 12,
         "syntaxSwatches": 36,
         "componentStates": 19,
@@ -29,7 +29,7 @@
         "bodyFg": "rgb(15, 23, 42)",
         "newGradientImage": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 88135,
+        "scrollHeight": 88394,
         "reducedMotionRule": true
       },
       "errors": []
@@ -45,7 +45,7 @@
         "viewport": "desktop",
         "modules": 38,
         "sections": 418,
-        "tokenRows": 739,
+        "tokenRows": 748,
         "languages": 12,
         "syntaxSwatches": 36,
         "componentStates": 19,
@@ -58,7 +58,7 @@
         "bodyFg": "rgb(241, 245, 249)",
         "newGradientImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 88135,
+        "scrollHeight": 88394,
         "reducedMotionRule": true
       },
       "errors": []
@@ -74,7 +74,7 @@
         "viewport": "mobile",
         "modules": 38,
         "sections": 418,
-        "tokenRows": 739,
+        "tokenRows": 748,
         "languages": 12,
         "syntaxSwatches": 36,
         "componentStates": 19,
@@ -87,7 +87,7 @@
         "bodyFg": "rgb(15, 23, 42)",
         "newGradientImage": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 156781,
+        "scrollHeight": 157716,
         "reducedMotionRule": true
       },
       "errors": []
@@ -103,7 +103,7 @@
         "viewport": "mobile",
         "modules": 38,
         "sections": 418,
-        "tokenRows": 739,
+        "tokenRows": 748,
         "languages": 12,
         "syntaxSwatches": 36,
         "componentStates": 19,
@@ -116,7 +116,7 @@
         "bodyFg": "rgb(241, 245, 249)",
         "newGradientImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 156781,
+        "scrollHeight": 157716,
         "reducedMotionRule": true
       },
       "errors": []

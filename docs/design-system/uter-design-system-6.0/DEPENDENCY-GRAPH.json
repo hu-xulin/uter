@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-DEPENDENCIES",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T02:27:20.184Z",
+  "generated_at": "2026-11-15T02:40:39.916Z",
   "layers": [
     "Primitive Tokens",
     "Semantic Tokens",
@@ -14,11 +14,11 @@
   "nodes": [
     {
       "id": "primitive",
-      "count": 110
+      "count": 113
     },
     {
       "id": "semantic",
-      "count": 105
+      "count": 106
     },
     {
       "id": "component",

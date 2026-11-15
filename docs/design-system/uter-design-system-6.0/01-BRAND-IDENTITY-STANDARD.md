@@ -29,7 +29,7 @@ Uter 是面向开发者、企业与 API 使用者的 AI Token 中转站。品牌
 3. Logo 安全空间：四周各 ≥ `--ds-space-3` (12px)，且不小于 Logo 高度的 25%
 4. Light 版本：字标 `--ds-color-text-primary` #0F172A，图形标 `--ds-color-brand-1` #5B5EE6
 5. Dark 版本：字标 `--ds-color-text-primary` #F1F5F9，图形标 `--ds-color-brand-1` #8B8DF5
-6. 品牌主色 `#5B5EE6`（Light）/ `#8B8DF5`（Dark）；品牌实底按钮 Light / Dark 统一 `#5B5EE6`，前景 `#FFFFFF` 实测 5.01:1
+6. 品牌主色 `#5B5EE6`（Light）/ `#8B8DF5`（Dark）；品牌实底按钮使用 `--ds-color-brand-solid`（Light / Dark 同值 `#5B5EE6`，**不得用 Dark 浅化档做按钮底**），前景 `#FFFFFF` 实测 5.01:1；Hover / Active 走 `--ds-color-brand-solid-hover/active`
 7. 辅助品牌色 `#494CC7` / `#3F42B0`（Light 深档），`#A1A3F7` / `#B7B8FA`（Dark 浅档）
 8. 品牌渐变：仅允许 `--ds-gradient-utility` = `ds-text-gradient-brand` 单一出口；Light `#1D4ED8 → #6D28D9 → #7E22CE`，Dark `#93C5FD → #C4B5FD → #D8B4FE`，方向 90deg
 9. 品牌字体：只允许 `var(--ds-font-ui)`；禁止引入 Geist / Roboto / 其它新字体
@@ -45,6 +45,9 @@ Uter 是面向开发者、企业与 API 使用者的 AI Token 中转站。品牌
 | `--ds-color-brand-1` | #5B5EE6 | #8B8DF5 | color | 品牌主色 / Dark 浅化档 |
 | `--ds-color-brand-2` | #494CC7 | #A1A3F7 | color | 品牌深一档 / Dark 浅化档 |
 | `--ds-color-brand-3` | #3F42B0 | #B7B8FA | color | 品牌深二档 / Dark 浅化档 |
+| `--ds-color-brand-solid` | #5B5EE6 | —（同值） | color | 品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底） |
+| `--ds-color-brand-solid-hover` | #494CC7 | —（同值） | color | 品牌实底 Hover（白字 6.68:1） |
+| `--ds-color-brand-solid-active` | #3F42B0 | —（同值） | color | 品牌实底 Active（白字 8.02:1） |
 | `--ds-color-gradient-light-from` | #1D4ED8 | —（同值） | color | Light 起点 0% |
 | `--ds-color-gradient-light-via` | #6D28D9 | —（同值） | color | Light 中点 50% |
 | `--ds-color-gradient-light-to` | #7E22CE | —（同值） | color | Light 终点 100% |

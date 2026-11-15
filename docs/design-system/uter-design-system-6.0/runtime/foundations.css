@@ -48,7 +48,7 @@ For commercial licensing, please contact support@uter.ai
   );
 }
 
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+:where(a, button, input, select, textarea, [tabindex]):focus, :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: var(--ds-focus-ring-width) solid var(--ds-color-focus-ring);
   outline-offset: var(--ds-focus-ring-offset);
 }

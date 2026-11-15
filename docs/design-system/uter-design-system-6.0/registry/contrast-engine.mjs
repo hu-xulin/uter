@@ -306,6 +306,7 @@ export const BRAND_SOLID = {
   onColor: '#FFFFFF',
   hover: '#494CC7',
   active: '#3F42B0',
+  danger: '#B91C1C',
 }
 
 // ─── 主计算 ────────────────────────────────────────────────────────────────────
@@ -423,6 +424,7 @@ export function runVerification() {
       default: BRAND_SOLID[theme],
       hover: BRAND_SOLID.hover,
       active: BRAND_SOLID.active,
+      danger: BRAND_SOLID.danger,
     }
     const rows = Object.entries(states).map(([state, bg]) => ({
       state,
@@ -475,10 +477,12 @@ export function runVerification() {
   return result
 }
 
-// CLI
-if (process.argv.includes('--json')) {
+// CLI：必须自身是主模块。检查器会 import 本文件，且检查器自身也可能带 --json，
+// 若只判断 argv 会让被导入时误输出一份 JSON，破坏机器可读输出。
+const IS_CLI = Boolean(process.argv[1] && process.argv[1].endsWith('contrast-engine.mjs'))
+if (IS_CLI && process.argv.includes('--json')) {
   process.stdout.write(JSON.stringify(runVerification(), null, 2) + '\n')
-} else if (process.argv[1] && process.argv[1].endsWith('contrast-engine.mjs')) {
+} else if (IS_CLI) {
   const r = runVerification()
   console.log('VERDICT', r.verdict)
   for (const t of ['light', 'dark']) {

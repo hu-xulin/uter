@@ -196,6 +196,36 @@
       "description": "品牌深二档 / Dark 浅化档",
       "themeIndependent": false
     },
+    "--ds-color-brand-solid": {
+      "layer": "primitive",
+      "category": "brand",
+      "type": "color",
+      "unit": "color",
+      "light": "#5B5EE6",
+      "dark": "#5B5EE6",
+      "description": "品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底）",
+      "themeIndependent": true
+    },
+    "--ds-color-brand-solid-hover": {
+      "layer": "primitive",
+      "category": "brand",
+      "type": "color",
+      "unit": "color",
+      "light": "#494CC7",
+      "dark": "#494CC7",
+      "description": "品牌实底 Hover（白字 6.68:1）",
+      "themeIndependent": true
+    },
+    "--ds-color-brand-solid-active": {
+      "layer": "primitive",
+      "category": "brand",
+      "type": "color",
+      "unit": "color",
+      "light": "#3F42B0",
+      "dark": "#3F42B0",
+      "description": "品牌实底 Active（白字 8.02:1）",
+      "themeIndependent": true
+    },
     "--ds-color-neutral-50": {
       "layer": "primitive",
       "category": "neutral",
@@ -636,6 +666,16 @@
       "description": "危险",
       "themeIndependent": false
     },
+    "--ds-color-status-danger-solid": {
+      "layer": "semantic",
+      "category": "status",
+      "type": "color",
+      "unit": "color",
+      "light": "#B91C1C",
+      "dark": "#B91C1C",
+      "description": "危险实底（Light/Dark 同值，白字 ≥4.5:1）",
+      "themeIndependent": true
+    },
     "--ds-color-status-danger-soft": {
       "layer": "semantic",
       "category": "status",
@@ -921,9 +961,9 @@
       "category": "code",
       "type": "color",
       "unit": "color",
-      "light": "#94A3B8",
-      "dark": "#64748B",
-      "description": "行号",
+      "light": "#5B6779",
+      "dark": "#94A3B8",
+      "description": "行号（真实代码背景实测 ≥4.5:1，axe color-contrast 通过）",
       "themeIndependent": false
     },
     "--ds-color-code-gutter-background": {
@@ -2667,5 +2707,5 @@
       "themeIndependent": true
     }
   },
-  "tokenCount": 250
+  "tokenCount": 254
 }

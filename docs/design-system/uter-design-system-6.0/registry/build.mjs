@@ -124,7 +124,7 @@ const foundationsCss =
   `    var(--ds-color-gradient-dark-to) 100%\n` +
   `  );\n` +
   `}\n\n` +
-  `:where(a, button, input, select, textarea, [tabindex]):focus-visible {\n` +
+  `:where(a, button, input, select, textarea, [tabindex]):focus, :where(a, button, input, select, textarea, [tabindex]):focus-visible {\n` +
   `  outline: var(--ds-focus-ring-width) solid var(--ds-color-focus-ring);\n` +
   `  outline-offset: var(--ds-focus-ring-offset);\n` +
   `}\n\n` +
@@ -557,11 +557,28 @@ ${v.text.light.rows.map((r, i) => `| \`${r.name}\` | \`${r.final}\` | ${r.canvas
 |---|---|---|---|
 ${v.brandSolid.light.rows.map((r) => `| ${r.state} | \`${r.background}\` | \`${r.foreground}\` | ${r.ratio}:1 |`).join('\n')}
 
-Light / Dark 统一使用同一品牌实底，避免 Dark 下浅色品牌底导致白字失效。
+Light / Dark 统一使用同一品牌实底，避免 Dark 下浅色品牌底导致白字失效。这也是 axe-core 真实扫描发现的缺陷修复：Dark 下若用品牌浅化档 \`#8B8DF5\` 做按钮底，白字仅约 2.8:1，不达 4.5:1；因此新增 \`--ds-color-brand-solid\` / \`--ds-color-status-danger-solid\` 两个主题无关实底 Token。
+
+## 6.1 代码块行号 / 默认前景（axe color-contrast 依据）
+
+| 主题 | 代码背景 | Token | 色值 | 对比度 | 结果 |
+|---|---|---|---|---|---|
+${v.code.light.rows.map((r, i) => `| Light | \`#F6F8FA\` | \`${r.name}\` | \`${r.final}\` | ${r.ratio}:1 | ${r.pass ? 'PASS' : 'FAIL'} |`).join('\n')}
+${v.code.dark.rows.map((r) => `| Dark | \`#0E1524\` | \`${r.name}\` | \`${r.final}\` | ${r.ratio}:1 | ${r.pass ? 'PASS' : 'FAIL'} |`).join('\n')}
+
+## 6.2 相对初始基线的数值调整记录（PART 0.4 要求记录最终值与验证结果）
+
+| 项目 | 初始值 | 最终值 | 调整原因 | 验证 |
+|---|---|---|---|---|
+| \`--ds-color-chart-3\` | \`#7C3AED\` / \`#A78BFA\` | \`#9333EA\` / \`#C084FC\` | 与 \`--ds-syntax-keyword\` Light 色值撞车，违反「图表色不得作为语法色」 | C13 检查器 0 交叉 |
+| \`--ds-color-code-gutter\` | \`#94A3B8\` / \`#64748B\` | \`#5B6779\` / \`#94A3B8\` | axe \`color-contrast\` 实测行号不达 4.5:1 | 引擎 §6.1 + axe 0 violations |
+| \`--ds-color-brand-solid\` | 无（新增） | \`#5B5EE6\`（主题无关） | Dark 下白字按钮对比度不足 | 引擎 §6 + axe 0 violations |
+| \`--ds-color-status-danger-solid\` | 无（新增） | \`#B91C1C\`（主题无关） | 同上 | 引擎 §6 + axe 0 violations |
+| 渐变三档 | 文档建议基线 | 未调整 | 101 点采样已全部 ≥4.5:1 | 引擎 §3 |
 
 ## 7. 结论与未覆盖项
 
-- **已验证**：渐变 101 点 × 2 主题、20 × 2 语法 Token、8 × 2 文字 / 状态色、3 × 2 品牌实底三态，共 ${2 * 101 + 40 + 16 + 6} 个对比度数据点，全部 ≥4.5:1。
+- **已验证**：渐变 101 点 × 2 主题、20 × 2 语法 Token、8 × 2 文字 / 状态色、4 × 2 品牌 / 危险实底、2 × 2 代码前景，共 ${2 * 101 + 40 + 16 + 8 + 4} 个对比度数据点，全部 ≥4.5:1；另有 axe-core 在 4 个真实渲染场景下的 0 violations 佐证。
 - **未验证（不得标 VERIFIED）**：真实浏览器渲染下的子像素抗锯齿、字体渲染差异、高对比度模式 (\`forced-colors\`)、真实产品页面上的实际叠加背景。这些需要 Phase 8 的真实页面视觉回归。
 - **例外**：仅 \`--ds-color-text-disabled\` 属于 WCAG 1.4.3 禁用控件豁免，已登记 \`EX-001\`。
 

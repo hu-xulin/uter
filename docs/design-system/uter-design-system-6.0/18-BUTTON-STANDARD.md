@@ -26,7 +26,7 @@
 
 1. 变体：Primary / Secondary / Outline / Ghost / Destructive / Link / Icon
 2. 尺寸：Small 32px、Medium 36px、Large 40px、Touch 44px；圆角统一 md 5px
-3. Primary 默认底 #5B5EE6 + 白字（5.01:1）；Hover #494CC7（6.68:1）；Active #3F42B0（8.02:1）
+3. Primary 默认底 `--ds-color-brand-solid` #5B5EE6 + 白字（5.01:1）；Hover `--ds-color-brand-solid-hover` #494CC7（6.68:1）；Active `--ds-color-brand-solid-active` #3F42B0（8.02:1）；三态 Light / Dark 同值
 4. Secondary：surface-sunken 底 + text-primary；Outline：1px border-input + transparent 底
 5. Ghost：透明底 + text-secondary，Hover surface-sunken；Destructive：#B91C1C 底 + 白字
 6. Link：text-link 色 + 下划线仅 Hover 出现；Icon：正方形，尺寸同 4 档，图标 16px
@@ -46,9 +46,11 @@
 | `--ds-control-lg` | 40px | —（同值） | px | Large 按钮 / 输入 |
 | `--ds-control-touch` | 44px | —（同值） | px | Touch 最小触控目标 / H5 |
 | `--ds-radius-button` | var(--ds-radius-md) | —（同值） | token-ref | Button = 5px |
-| `--ds-color-brand-1` | #5B5EE6 | #8B8DF5 | color | 品牌主色 / Dark 浅化档 |
+| `--ds-color-brand-solid` | #5B5EE6 | —（同值） | color | 品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底） |
+| `--ds-color-brand-solid-hover` | #494CC7 | —（同值） | color | 品牌实底 Hover（白字 6.68:1） |
+| `--ds-color-brand-solid-active` | #3F42B0 | —（同值） | color | 品牌实底 Active（白字 8.02:1） |
 | `--ds-color-text-on-brand` | #FFFFFF | #FFFFFF | color | 品牌实底按钮前景（实测 5.01:1） |
-| `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
+| `--ds-color-status-danger-solid` | #B91C1C | —（同值） | color | 危险实底（Light/Dark 同值，白字 ≥4.5:1） |
 | `--ds-focus-ring-width` | 2px | —（同值） | px | 焦点环宽度 |
 | `--ds-motion-fast` | 100ms | —（同值） | ms | Hover / Focus |
 | `--ds-text-2xs` | 12px | —（同值） | px | 最小可见文字（全站下限） |

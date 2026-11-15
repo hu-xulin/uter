@@ -70,23 +70,26 @@ for (const c of cases) {
     return r.violations.map((v) => ({ id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.length, targets: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }))
   })
 
-  // 真实键盘 Tab 焦点可见性
-  const focus = await page.evaluate(async () => {
-    const focusables = Array.from(document.querySelectorAll('a[href], button, select, input, [tabindex]:not([tabindex="-1"])')).slice(0, 12)
-    const rows = []
-    for (const el of focusables) {
-      el.focus()
+  // 真实键盘 Tab 焦点可见性（必须用真实 Tab 触发 :focus-visible，JS .focus() 不会触发）
+  await page.evaluate(() => { window.scrollTo(0, 0); document.body.focus() })
+  const rows = []
+  for (let i = 0; i < 12; i += 1) {
+    await page.keyboard.press('Tab')
+    const row = await page.evaluate(() => {
+      const el = document.activeElement
+      if (!el || el === document.body) return null
       const cs = getComputedStyle(el)
-      rows.push({
+      return {
         tag: el.tagName.toLowerCase(),
         label: (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 40),
         outlineWidth: cs.outlineWidth,
         outlineStyle: cs.outlineStyle,
         hasVisibleFocus: cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2,
-      })
-    }
-    return { checked: rows.length, visible: rows.filter((r) => r.hasVisibleFocus).length, rows }
-  })
+      }
+    })
+    if (row) rows.push(row)
+  }
+  const focus = { checked: rows.length, visible: rows.filter((r) => r.hasVisibleFocus).length, rows }
 
   results.push({ ...c, violations: axe, focus })
   await page.close()

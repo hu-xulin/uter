@@ -186,10 +186,10 @@ export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceCo
       <div class="mod-grid">
         <div class="mod-block" data-section="Overview"><h3>1 · Overview</h3><p>${esc(m.summary)}</p><p class="note">6.0 为完整重建；5.0 及更早版本只用于历史识别、代码依赖与迁移风险分析，不作为视觉设计依据。</p></div>
         <div class="mod-block" data-section="Rules"><h3>2 · Rules</h3><ol>${m.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></div>
-        <div class="mod-block wide" data-section="Tokens"><h3>3 · Tokens <small>${m.tokens.length} 项 · 来自 TOKEN-MANIFEST.json</small></h3><div class="table-wrap"><table class="token-table"><thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>说明</th></tr></thead><tbody>${tk}</tbody></table></div></div>
+        <div class="mod-block wide" data-section="Tokens"><h3>3 · Tokens <small>${m.tokens.length} 项 · 来自 TOKEN-MANIFEST.json</small></h3><div class="table-wrap" tabindex="0" role="region" aria-label="可滚动数据表"><table class="token-table"><thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>说明</th></tr></thead><tbody>${tk}</tbody></table></div></div>
         <div class="mod-block" data-section="Visual Preview"><h3>4 · Visual Preview</h3>${visualPreview(m.id)}</div>
         <div class="mod-block" data-section="Interactive Preview"><h3>5 · Interactive Preview</h3>${interactivePreview(m.id)}<p class="note">覆盖状态：${m.states.map((s) => `<code>${esc(s)}</code>`).join(' ')}</p></div>
-        <div class="mod-block wide" data-section="Usage"><h3>6 · Usage</h3><pre class="code"><code>${esc(m.example.join('\n'))}</code></pre></div>
+        <div class="mod-block wide" data-section="Usage"><h3>6 · Usage</h3><pre class="code" tabindex="0" role="region" aria-label="代码示例（可横向滚动）"><code>${esc(m.example.join('\n'))}</code></pre></div>
         <div class="mod-block" data-section="Do"><h3>7 · Do</h3><ul class="do">${m.do.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div>
         <div class="mod-block" data-section="Don't"><h3>8 · Don't</h3><ul class="dont">${m.dont.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></div>
         <div class="mod-block" data-section="Accessibility"><h3>9 · Accessibility</h3><ul>${m.a11y.map((a) => `<li>${esc(a)}</li>`).join('')}</ul><p class="note">阈值 4.5:1 / 3:1 / 3:1 · 例外见 EXCEPTION-REGISTRY.json</p></div>
@@ -201,7 +201,7 @@ export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceCo
 
   const syntaxSwatches = Object.keys(v.frozen['syntax-light']).map((n) => `<div class="syn-sw" data-token="${esc('--ds-' + n)}"><span class="syn-dot" style="background:var(--ds-${esc(n)})"></span><code>--ds-${esc(n)}</code><span class="syn-ratio">L ${v.syntax.light.rows.find((r) => r.name === n)?.ratio}:1 / D ${v.syntax.dark.rows.find((r) => r.name === n)?.ratio}:1</span></div>`).join('\n')
 
-  const langBlocks = LANG_SAMPLES.map((s) => `<div class="lang-block" data-language="${esc(s.lang)}"><div class="lang-head"><span class="lang-name">${esc(s.lang)}</span><span class="lang-file">${esc(s.file)}</span><button class="copy-btn" data-copy="code-${esc(s.lang.replace(/[^a-z0-9]/gi, '-'))}" aria-label="复制 ${esc(s.lang)} 示例">复制</button></div><pre class="code code-lines" id="code-${esc(s.lang.replace(/[^a-z0-9]/gi, '-'))}"><code>${s.rows.map((row, i) => `<span class="ln">${String(i + 1).padStart(2, '0')}</span>${row.map(([sem, text]) => `<span class="${SYNTAX_CLASS(sem)}">${esc(text)}</span>`).join('')}`).join('\n')}</code></pre></div>`).join('\n')
+  const langBlocks = LANG_SAMPLES.map((s) => `<div class="lang-block" data-language="${esc(s.lang)}"><div class="lang-head"><span class="lang-name">${esc(s.lang)}</span><span class="lang-file">${esc(s.file)}</span><button class="copy-btn" data-copy="code-${esc(s.lang.replace(/[^a-z0-9]/gi, '-'))}" aria-label="复制 ${esc(s.lang)} 示例">复制</button></div><pre class="code code-lines" tabindex="0" role="region" aria-label="语言代码示例（可横向滚动）" id="code-${esc(s.lang.replace(/[^a-z0-9]/gi, '-'))}"><code>${s.rows.map((row, i) => `<span class="ln">${String(i + 1).padStart(2, '0')}</span>${row.map(([sem, text]) => `<span class="${SYNTAX_CLASS(sem)}">${esc(text)}</span>`).join('')}`).join('\n')}</code></pre></div>`).join('\n')
 
   const gradientSampleTable = v.gradient.light.samples.filter((s) => s.at % 10 === 0).map((s, i) => {
     const d = v.gradient.dark.samples.filter((x) => x.at % 10 === 0)[i]
@@ -224,7 +224,7 @@ export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceCo
     ['Orders', '订单状态、订单号等宽、分页'],
     ['Refunds', '危险操作二次确认、金额与不可逆后果'],
     ['Account Settings', '二级导航、表单分组、权限矩阵'],
-  ].map(([name, desc]) => `<article class="page-card"><div class="page-frame" aria-label="${esc(name)} 页面结构预览"><div class="pf-head"><span class="pf-logo"></span><span class="pf-nav"></span><span class="pf-nav"></span><span class="pf-avatar"></span></div><div class="pf-body"><span class="pf-side"></span><div class="pf-main"><span class="pf-title"></span><div class="pf-cards"><i></i><i></i><i></i><i></i></div><span class="pf-chart"></span><span class="pf-table"></span></div></div></div><h4>${esc(name)}</h4><p>${esc(desc)}</p><span class="page-state">STATIC_STRUCTURE_PREVIEW</span></article>`).join('\n')
+  ].map(([name, desc]) => `<article class="page-card"><div class="page-frame" role="img" aria-label="${esc(name)} 页面结构预览"><div class="pf-head"><span class="pf-logo"></span><span class="pf-nav"></span><span class="pf-nav"></span><span class="pf-avatar"></span></div><div class="pf-body"><span class="pf-side"></span><div class="pf-main"><span class="pf-title"></span><div class="pf-cards"><i></i><i></i><i></i><i></i></div><span class="pf-chart"></span><span class="pf-table"></span></div></div></div><h4>${esc(name)}</h4><p>${esc(desc)}</p><span class="page-state">STATIC_STRUCTURE_PREVIEW</span></article>`).join('\n')
 
   const manifestMini = {
     version: M.version, status: M.status, tokenCount: M.tokenCount,
@@ -259,7 +259,7 @@ ${darkVars}
 html { scroll-behavior: smooth; }
 body { margin:0; background:var(--page-bg); color:var(--page-fg); font-family:var(--ds-font-ui); font-size:var(--ds-text-sm); line-height:var(--ds-leading-body); }
 code, pre, .mono { font-family:var(--ds-font-mono); }
-a { color:var(--ds-color-text-link); text-decoration:none; }
+a { color:var(--ds-color-text-link); text-decoration:underline; text-underline-offset:2px; }
 a:hover { text-decoration:underline; }
 h1,h2,h3,h4 { margin:0; font-weight:var(--ds-weight-semibold); }
 .topbar { position:fixed; inset:0 0 auto 0; height:var(--ds-layout-header-height); display:flex; align-items:center; gap:var(--ds-space-4); padding:0 var(--ds-space-6); background:var(--page-surface); border-bottom:1px solid var(--page-border); z-index:100; }
@@ -272,7 +272,7 @@ h1,h2,h3,h4 { margin:0; font-weight:var(--ds-weight-semibold); }
 .topbar .review-pill { font-size:var(--ds-text-2xs); padding:4px 10px; border-radius:var(--ds-radius-full); background:var(--ds-color-status-warning-soft); color:var(--ds-color-status-warning-on); border:1px solid var(--ds-color-status-warning-border); white-space:nowrap; }
 .sidebar { position:fixed; top:var(--ds-layout-header-height); bottom:0; left:0; width:var(--ds-layout-sidebar-width); overflow-y:auto; background:var(--page-surface); border-right:1px solid var(--page-border); padding:var(--ds-space-4) var(--ds-space-3); }
 .sidebar h4 { font-size:var(--ds-text-2xs); letter-spacing:.08em; text-transform:uppercase; color:var(--page-muted); margin:var(--ds-space-4) var(--ds-space-2) var(--ds-space-2); }
-.nav-item { display:flex; align-items:center; gap:var(--ds-space-2); padding:6px 8px; border-radius:var(--ds-radius-md); font-size:var(--ds-text-xs); color:var(--page-fg); line-height:1.35; }
+.nav-item { display:flex; align-items:center; gap:var(--ds-space-2); padding:6px 8px; border-radius:var(--ds-radius-md); font-size:var(--ds-text-xs); color:var(--page-fg); line-height:1.35; text-decoration:none; }
 .nav-item:hover { background:var(--ds-color-surface-sunken); text-decoration:none; }
 .nav-item.active { background:var(--ds-color-surface-sunken); color:var(--ds-color-brand-1); font-weight:var(--ds-weight-medium); }
 .nav-num { font-family:var(--ds-font-mono); font-size:var(--ds-text-2xs); color:var(--page-muted); min-width:26px; }
@@ -341,13 +341,13 @@ td.desc { color:var(--page-muted); }
 .type-label { min-width:230px; font-size:var(--ds-text-2xs); color:var(--page-muted); }
 .type-sample { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:var(--ds-control-md); padding:0 var(--ds-space-4); border-radius:var(--ds-radius-button); font-size:var(--ds-text-sm); font-weight:var(--ds-weight-medium); border:1px solid transparent; cursor:pointer; font-family:var(--ds-font-ui); }
-.btn-primary { background:var(--ds-color-brand-1); color:var(--ds-color-text-on-brand); }
-.btn-primary:hover { background:var(--ds-color-brand-2); }
-.btn-primary:active { background:var(--ds-color-brand-3); }
+.btn-primary { background:var(--ds-color-brand-solid); color:var(--ds-color-text-on-brand); }
+.btn-primary:hover { background:var(--ds-color-brand-solid-hover); }
+.btn-primary:active { background:var(--ds-color-brand-solid-active); }
 .btn-outline { border-color:var(--ds-color-border-input); background:transparent; color:var(--page-fg); }
 .btn-ghost { background:transparent; color:var(--ds-color-text-secondary); }
-.btn-destructive { background:var(--ds-color-status-danger); color:#fff; }
-.btn:focus-visible, .inp:focus-visible { outline:var(--ds-focus-ring-width) solid var(--ds-color-focus-ring); outline-offset:var(--ds-focus-ring-offset); }
+.btn-destructive { background:var(--ds-color-status-danger-solid); color:#fff; }
+:where(a, button, input, select, textarea, [tabindex]):focus, :where(a, button, input, select, textarea, [tabindex]):focus-visible { outline:var(--ds-focus-ring-width) solid var(--ds-color-focus-ring); outline-offset:var(--ds-focus-ring-offset); }
 .btn:disabled { opacity:.5; cursor:not-allowed; }
 .btn-sm { height:var(--ds-control-sm); font-size:var(--ds-text-2xs); }
 .btn-lg { height:var(--ds-control-lg); }
@@ -479,12 +479,12 @@ ${moduleNav}
         <h3 style="font-size:var(--ds-text-sm);margin-bottom:8px">Component State Preview（8 个基础状态）</h3>
         <div class="state-grid">
           <div class="state-cell"><span>default</span><button class="btn btn-primary">创建 API Key</button></div>
-          <div class="state-cell"><span>hover</span><button class="btn btn-primary" style="background:var(--ds-color-brand-2)">创建 API Key</button></div>
+          <div class="state-cell"><span>hover</span><button class="btn btn-primary" style="background:var(--ds-color-brand-solid-hover)">创建 API Key</button></div>
           <div class="state-cell"><span>focus</span><button class="btn btn-primary" style="outline:2px solid var(--ds-color-focus-ring);outline-offset:2px">创建 API Key</button></div>
-          <div class="state-cell"><span>active</span><button class="btn btn-primary" style="background:var(--ds-color-brand-3)">创建 API Key</button></div>
+          <div class="state-cell"><span>active</span><button class="btn btn-primary" style="background:var(--ds-color-brand-solid-active)">创建 API Key</button></div>
           <div class="state-cell"><span>disabled</span><button class="btn btn-primary" disabled>创建 API Key</button></div>
           <div class="state-cell"><span>loading</span><button class="btn btn-primary" aria-busy="true"><span class="spinner"></span>创建 API Key</button></div>
-          <div class="state-cell"><span>error</span><input class="inp inp-error" value="名称不能为空" aria-invalid="true" /></div>
+          <div class="state-cell"><span>error</span><input class="inp inp-error" value="名称不能为空" aria-invalid="true" aria-label="错误状态输入框示例" /></div>
           <div class="state-cell"><span>success</span><span style="color:var(--ds-color-status-success);font-size:var(--ds-text-xs)">✓ 创建成功</span></div>
         </div>
         <h3 style="font-size:var(--ds-text-sm);margin:16px 0 8px">Component Playground（尺寸 / 变体）</h3>
@@ -524,7 +524,7 @@ ${moduleNav}
       </div>
     </div>
     <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">渐变插值采样对比度（每 10% 摘录，完整 101 点见 CONTRAST-VERIFICATION-REPORT.md）</h3>
-    <div class="table-wrap"><table><thead><tr><th>位置</th><th>Light 色</th><th>canvas</th><th>surface</th><th>code-bg</th><th>Dark 色</th><th>canvas</th><th>surface</th><th>code-bg</th></tr></thead><tbody>${gradientSampleTable}</tbody></table></div>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="可滚动数据表"><table><thead><tr><th>位置</th><th>Light 色</th><th>canvas</th><th>surface</th><th>code-bg</th><th>Dark 色</th><th>canvas</th><th>surface</th><th>code-bg</th></tr></thead><tbody>${gradientSampleTable}</tbody></table></div>
     <p class="note">阈值：普通文字 ≥4.5:1、大号文字 ≥3:1。本方案按更严格的 4.5:1 冻结，无字号例外。方向 <code>${esc(cssVal(T['--ds-gradient-direction'], 'light'))}</code> · 字体 <code>var(--ds-font-ui)</code>（不得改变字体 / 字重 / 字号 / 行高）。</p>
   </section>
 
@@ -536,7 +536,7 @@ ${moduleNav}
     <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">语言示例（${LANG_SAMPLES.length} 种 · 行号 / 选区 / 语言标签 / 复制）</h3>
     <div class="grid2">${langBlocks}</div>
     <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">引擎统一映射（5 个真实存在的引擎）</h3>
-    <div class="table-wrap"><table><thead><tr><th>引擎</th><th>版本 / 位置</th><th>Adapter</th><th>Renderer</th></tr></thead><tbody>${M.highlighterEngines.map((e) => `<tr><td>${esc(e.name)}</td><td>${esc(e.version)}</td><td>${esc(e.adapter)}</td><td><code>${esc(e.renderer)}</code></td></tr>`).join('')}</tbody></table></div>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="可滚动数据表"><table><thead><tr><th>引擎</th><th>版本 / 位置</th><th>Adapter</th><th>Renderer</th></tr></thead><tbody>${M.highlighterEngines.map((e) => `<tr><td>${esc(e.name)}</td><td>${esc(e.version)}</td><td>${esc(e.adapter)}</td><td><code>${esc(e.renderer)}</code></td></tr>`).join('')}</tbody></table></div>
     <p class="note">JSON 编辑器（Yace）禁止使用 chart-1..5；映射 property / string / number / boolean / null / punctuation 到对应 <code>--ds-syntax-*</code>。inserted / deleted / invalid 除颜色外另有 <code>+ / - / 波浪下划线</code> 标识。不支持语言降级 Plain Text 并显示 <code>text</code> 标签。</p>
   </section>
 
@@ -550,7 +550,7 @@ ${moduleNav}
   <section class="panel" id="tokens">
     <h2>完整 Token 清单（${M.tokenCount} 个 · 零遗漏）</h2>
     <p class="panel-sub">P = Primitive / S = Semantic / C = Component。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
-    <div class="table-wrap" style="max-height:640px;overflow:auto"><table class="token-table"><thead><tr><th>Token</th><th>层 / 类别</th><th>Light</th><th>Dark</th><th>单位</th><th>说明</th></tr></thead><tbody>${tokenRows}</tbody></table></div>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="完整 Token 清单（可滚动）" style="max-height:640px;overflow:auto"><table class="token-table"><thead><tr><th>Token</th><th>层 / 类别</th><th>Light</th><th>Dark</th><th>单位</th><th>说明</th></tr></thead><tbody>${tokenRows}</tbody></table></div>
   </section>
 
   <h2 style="font-size:var(--ds-text-3xl);margin:var(--ds-space-10) 0 var(--ds-space-2)">36 个规范模块 + 2 个专项规范</h2>
@@ -666,7 +666,7 @@ function visualPreview(id) {
   if (id === '01' || id === '01-S') return `<div class="g-new g-cta">Uter · AI Token 中转站</div><p class="note">唯一出口 <code>ds-text-gradient-brand</code>，Token 自动切换 Light / Dark。</p>`
   if (id === '24' || id === '24-S') return `<pre class="code"><code><span class="syn syn-keyword">const</span> <span class="syn syn-variable">client</span> <span class="syn syn-operator">=</span> <span class="syn syn-function">createClient</span>(<span class="syn syn-string">'sk-...'</span>)</code></pre>`
   if (id === '18') return `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary">Primary</button><button class="btn btn-outline">Outline</button><button class="btn btn-ghost">Ghost</button><button class="btn btn-destructive">Destructive</button></div>`
-  if (id === '19' || id === '20') return `<div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" placeholder="API Key 名称" /><input class="inp inp-error" value="错误状态" /><input class="inp" value="禁用" disabled /></div>`
+  if (id === '19' || id === '20') return `<div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" placeholder="API Key 名称" aria-label="API Key 名称输入框示例" /><input class="inp inp-error" value="错误状态" aria-label="错误状态输入框示例" /><input class="inp" value="禁用" disabled aria-label="禁用状态输入框示例" /></div>`
   if (id === '21') return `<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="status-pill">success</span><span class="status-pill" style="background:var(--ds-color-status-danger-soft);border-color:var(--ds-color-status-danger-border)">danger</span><span class="status-pill" style="background:var(--ds-color-status-info-soft);border-color:var(--ds-color-status-info-border)">info</span></div>`
   if (id === '27' || id === '23' || id === '30') return `<div style="font-family:var(--ds-font-mono);font-variant-numeric:var(--ds-numeric-tabular);font-size:var(--ds-text-3xl);font-weight:600;text-align:right">¥ 12,345.67</div><p class="note">金额 / Token 强制等宽数字右对齐</p>`
   if (id === '09') return `<div style="display:flex;gap:12px;flex-wrap:wrap">${[1, 2, 3, 4].map((i) => `<div data-token="--ds-elevation-${i}" style="width:80px;height:56px;border:1px solid var(--page-border);border-radius:8px;box-shadow:var(--ds-elevation-${i});background:var(--page-surface)"></div>`).join('')}</div>`

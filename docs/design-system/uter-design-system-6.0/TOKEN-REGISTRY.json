@@ -2,18 +2,18 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-TOKENS",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T02:27:20.184Z",
+  "generated_at": "2026-11-15T02:40:39.916Z",
   "source": "TOKEN-MANIFEST.json",
-  "total": 250,
+  "total": 254,
   "byLayer": {
-    "primitive": 110,
-    "semantic": 105,
+    "primitive": 113,
+    "semantic": 106,
     "component": 35
   },
   "byCategory": {
     "border": 10,
     "border-width": 9,
-    "brand": 3,
+    "brand": 6,
     "breakpoint": 7,
     "chart": 5,
     "code": 13,
@@ -36,14 +36,14 @@
     "radius-application": 7,
     "selection": 2,
     "spacing": 13,
-    "status": 16,
+    "status": 17,
     "surface": 7,
     "syntax": 20,
     "terminal": 10,
     "text": 8,
     "z-index": 8
   },
-  "themeIndependent": 150,
+  "themeIndependent": 154,
   "themed": 100,
   "tokens": [
     {
@@ -540,6 +540,57 @@
       ]
     },
     {
+      "name": "--ds-color-brand-solid",
+      "layer": "primitive",
+      "category": "brand",
+      "type": "color",
+      "unit": "color",
+      "light": "#5B5EE6",
+      "dark": "#5B5EE6",
+      "description": "品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底）",
+      "themeIndependent": true,
+      "definedIn": [
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/light.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/dark.css",
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.ts"
+      ]
+    },
+    {
+      "name": "--ds-color-brand-solid-active",
+      "layer": "primitive",
+      "category": "brand",
+      "type": "color",
+      "unit": "color",
+      "light": "#3F42B0",
+      "dark": "#3F42B0",
+      "description": "品牌实底 Active（白字 8.02:1）",
+      "themeIndependent": true,
+      "definedIn": [
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/light.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/dark.css",
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.ts"
+      ]
+    },
+    {
+      "name": "--ds-color-brand-solid-hover",
+      "layer": "primitive",
+      "category": "brand",
+      "type": "color",
+      "unit": "color",
+      "light": "#494CC7",
+      "dark": "#494CC7",
+      "description": "品牌实底 Hover（白字 6.68:1）",
+      "themeIndependent": true,
+      "definedIn": [
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/light.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/dark.css",
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.ts"
+      ]
+    },
+    {
       "name": "--ds-color-chart-1",
       "layer": "semantic",
       "category": "chart",
@@ -715,9 +766,9 @@
       "category": "code",
       "type": "color",
       "unit": "color",
-      "light": "#94A3B8",
-      "dark": "#64748B",
-      "description": "行号",
+      "light": "#5B6779",
+      "dark": "#94A3B8",
+      "description": "行号（真实代码背景实测 ≥4.5:1，axe color-contrast 通过）",
       "themeIndependent": false,
       "definedIn": [
         "docs/design-system/uter-design-system-6.0/runtime/tokens.css",
@@ -1314,6 +1365,23 @@
       "dark": "#450A0A",
       "description": "危险浅底",
       "themeIndependent": false,
+      "definedIn": [
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/light.css",
+        "docs/design-system/uter-design-system-6.0/runtime/themes/dark.css",
+        "docs/design-system/uter-design-system-6.0/runtime/tokens.ts"
+      ]
+    },
+    {
+      "name": "--ds-color-status-danger-solid",
+      "layer": "semantic",
+      "category": "status",
+      "type": "color",
+      "unit": "color",
+      "light": "#B91C1C",
+      "dark": "#B91C1C",
+      "description": "危险实底（Light/Dark 同值，白字 ≥4.5:1）",
+      "themeIndependent": true,
       "definedIn": [
         "docs/design-system/uter-design-system-6.0/runtime/tokens.css",
         "docs/design-system/uter-design-system-6.0/runtime/themes/light.css",

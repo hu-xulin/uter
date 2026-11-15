@@ -26,7 +26,7 @@ For commercial licensing, please contact support@uter.ai
  * 退出码 0 = 全部通过；1 = 有失败项；2 = 环境不满足（BLOCKED）
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -98,7 +98,6 @@ check('C01', 'TOKEN-MANIFEST 结构与 Token 唯一性', () => {
 })
 
 /* C02 38 份规范文件 / 唯一编号 / 唯一文件名 -------------------------------- */
-const modImports = []
 check('C02', '36 + 2 规范模块文件与唯一编号', () => {
   const files = walk(DS, (p) => p.endsWith('.md')).map((p) => rel(p)).sort()
   const specs = files.filter((f) => /^\d\d-[A-Z].*\.md$/.test(f.split('/').pop()))
@@ -268,9 +267,9 @@ check('C12', 'Uter 当前字体体系逐字保留，未引入新字体', () => {
 
 /* C13 chart / syntax / terminal 色系隔离 ----------------------------------- */
 check('C13', 'chart 色不得作为 syntax 色，代码/终端色系不互引', () => {
-  const chartVals = names.filter((n) => n.startsWith('--ds-color-chart-')).flatMap((n) => [String(T[n].light), String(T[n].dark)])
+  const chartVals = new Set(names.filter((n) => n.startsWith('--ds-color-chart-')).flatMap((n) => [String(T[n].light), String(T[n].dark)]))
   const synNames = names.filter((n) => n.startsWith('--ds-syntax-'))
-  const cross = synNames.filter((n) => chartVals.includes(String(T[n].light)) || chartVals.includes(String(T[n].dark)))
+  const cross = synNames.filter((n) => chartVals.has(String(T[n].light)) || chartVals.has(String(T[n].dark)))
   assert(cross.length === 0, 'C13', `syntax 使用了 chart 色值: ${cross.join(',')}`)
   const v6css = read(join(RUNTIME, 'tokens.css'))
   assert(!/--ds-syntax-[a-z-]+\s*:\s*var\(--ds-color-chart-/.test(v6css), 'C13', 'syntax Token 引用了 chart 变量')
@@ -356,7 +355,7 @@ if (process.argv.includes('--json')) {
   console.log(JSON.stringify(out, null, 2))
 } else {
   for (const c of out.checks) console.log(`${c.status === 'PASS' ? 'PASS' : 'FAIL'} ${c.code} ${c.label} — ${c.detail}`)
-  for (const e of errors) console.error('  ' + e)
+  for (const e of errors) console.error(`  ${e}`)
   console.log(`\nVERDICT ${verdict} · ${passed}/${checks.length} checks · ${errors.length} errors`)
 }
 process.exit(verdict === 'PASS' ? 0 : 1)

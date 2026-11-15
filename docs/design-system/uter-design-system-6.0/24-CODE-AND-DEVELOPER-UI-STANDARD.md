@@ -27,7 +27,7 @@
 1. 实际扫描结果：引擎为 CodeMirror 6 + Lezer + Yace 1.1.0 + Marked 18 + Shiki 4.3.0；组件位于 `web/src/components/ai-elements/code-block.tsx`、`web/src/components/json-code-editor.tsx`、`web/src/components/json-editor.tsx`、`web/src/components/ui/markdown.tsx`
 2. 代码字体强制 `var(--ds-font-mono)`（保留 Uter 现有栈），默认 13px/20px
 3. 代码背景 `--ds-color-code-background` #F6F8FA / #0E1524；默认前景 4.5:1 起
-4. 20 个 Syntax Token 全部有 Light / Dark 明确 HEX，在真实代码背景上实测：Light 最低 5.15:1、Dark 最低 7.11:1
+4. 20 个 Syntax Token 全部有 Light / Dark 明确 HEX，在真实代码背景上实测：Light 最低 5.15:1、Dark 最低 7.11:1；行号 `--ds-color-code-gutter` #5B6779 / #94A3B8 同样实测 ≥4.5:1（axe color-contrast 通过）
 5. 统一语义映射：`--ds-syntax-*` → Highlighter Adapter → Renderer；不同引擎不得为同一语义使用不同颜色
 6. JSON 编辑器（Yace）禁止再用 chart-1..5 代替 Syntax Token；必须映射到 `--ds-syntax-property` / `-string` / `-number` / `-boolean` / `-null` / `-punctuation`
 7. 13 个组件状态：Default / Hover / Focus / Selected / Read-only / Editable / Disabled / Loading / Error / Copy Success / Copy Failure / Collapsed / Expanded
@@ -47,7 +47,7 @@
 | `--ds-leading-code` | 20px | —（同值） | px | 13px 代码 / 20px 控件 |
 | `--ds-color-code-background` | #F6F8FA | #0E1524 | color | 编辑器背景 |
 | `--ds-color-code-foreground` | #0F172A | #E2E8F0 | color | 编辑器默认前景 |
-| `--ds-color-code-gutter` | #94A3B8 | #64748B | color | 行号 |
+| `--ds-color-code-gutter` | #5B6779 | #94A3B8 | color | 行号（真实代码背景实测 ≥4.5:1，axe color-contrast 通过） |
 | `--ds-color-code-current-line` | #EAF0FF | #16203A | color | 当前行高亮 |
 | `--ds-color-code-selection` | #C7D2FE | #33417A | color | 编辑器选区 |
 | `--ds-color-code-cursor` | #5B5EE6 | #A1A3F7 | color | 光标 |

@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS6-R-PAGES",
   "version": "6.0.0",
-  "generated_at": "2026-11-15T02:27:20.184Z",
+  "generated_at": "2026-11-15T02:40:39.916Z",
   "scanned_route_files": 72,
   "route_files": [
     "web/src/routes/(auth)/forgot-password.tsx",

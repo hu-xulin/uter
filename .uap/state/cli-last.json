@@ -1,84 +1,38 @@
 {
-  "status": "FAIL",
-  "exit_code": 1,
-  "summary": "final acceptance: FAILED, consistency FAILED (5)",
+  "status": "PASS",
+  "exit_code": 0,
+  "summary": "test: 14 test files passed, exit_code=0",
   "data": {
-    "mode": "full-closure",
-    "prepare_status": "FAILED",
-    "verify_status": "FAILED",
-    "manifest_entries": 14,
-    "manifest_missing": [],
-    "gate_status": "FAILED",
-    "overall_status": "FAILED",
-    "claim_allowed": false,
-    "counts": {
-      "gate_groups": 6,
-      "gate_groups_pass": 3,
-      "gate_groups_fail": 3,
-      "necessary_blocked": 2,
-      "necessary_unverified": 532,
-      "problems": 39
-    },
-    "blocked_items": [
-      {
-        "id": "EXT-PROVIDER-SANDBOX",
-        "reason": "{\"id\":\"EXT-PROVIDER-SANDBOX\",\"reason\":\"no genuine payment-provider sandbox credentials/endpoints recorded in this repository; ValidateConfig fails closed on ModeProviderSandbox\",\"missing_conditions\":[\"provider sandbox AppID / merchant id\",\"provider sandbox private key / API key (never read from production config)\",\"verified sandbox endpoint reachability\",\"explicit user authorisation for sandbox calls\"],\"unblock_condition\":\"user supplies genuine sandbox credentials + authorises sandbox-only calls; then re-run uap verify-payment\"}",
-        "impact": "real payment gateway verification cannot be claimed; FULLY_VERIFIED is not allowed"
-      },
-      {
-        "id": "REQUIREMENTS-NOT-ALL-VERIFIED",
-        "reason": "532 requirement(s) are NOT_VERIFIED / BLOCKED / NOT_APPLICABLE",
-        "impact": "full requirement closure not achieved"
-      }
+    "generated_at": "2026-11-15T02:22:00.341Z",
+    "mode": "all",
+    "test_files": [
+      ".uap/tests/execution-identity-race.test.mjs",
+      ".uap/tests/final-acceptance-negative.test.mjs",
+      ".uap/tests/independent-repair-review.test.mjs",
+      ".uap/tests/independent-verification.test.mjs",
+      ".uap/tests/phase2-requirement-verification.test.mjs",
+      ".uap/tests/phase2-security-negative.test.mjs",
+      ".uap/tests/real-code-repair-boundaries.test.mjs",
+      ".uap/tests/real-repair-e2e.test.mjs",
+      ".uap/tests/requirement-behavior-suite.test.mjs",
+      ".uap/tests/requirement-honesty.test.mjs",
+      ".uap/tests/runtime.test.mjs",
+      ".uap/tests/status-consistency.test.mjs",
+      ".uap/tests/status-snapshot.test.mjs",
+      ".uap/tests/test-collector.test.mjs"
     ],
-    "problems": [
-      "accessibility: status=BLOCKED passed=13 failed=0",
-      "visual: status=FAIL exit=1 diffs=29",
-      "visual: 26 unclassified diff(s)",
-      "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest",
-      "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest",
-      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest",
-      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest",
-      "evidence: VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd",
-      "evidence: VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "evidence: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: DATABASE-INTEGRATION.json: worktree_fingerprint mismatch",
-      "evidence: DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch",
-      "evidence: PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: PAYMENT-SANDBOX.json: worktree_fingerprint mismatch",
-      "evidence: SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: SECURITY-VERIFICATION.json: worktree_fingerprint mismatch",
-      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4",
-      "evidence: REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch"
-    ],
-    "status_consistency": {
-      "ok": false,
-      "checks_passed": 14,
-      "checks_total": 19,
-      "problems": [
-        "index_overall_matches_report: index=IMPLEMENTED_NOT_VERIFIED report=FAILED",
-        "all_final_reports_bound_to_same_batch: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b expected=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b expected=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 expected=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b expected=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b expected=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d expected=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 expected=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch",
-        "capability_cards_have_real_counts_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b; PAYMENT-SANDBOX.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870; VALIDATION-RESULTS.json: fingerprint mismatch",
-        "evidence_manifest_hashes_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261114024647-2afbb0f4 manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch with manifest; DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261114024649-cfe85d8b manifest=UAP-EXEC-20261114050504-37d751d4; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch with manifest; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261114024723-9b967b8b manifest=UAP-EXEC-20261114050504-37d751d4; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch with manifest; REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261114024749-0d25182b manifest=UAP-EXEC-20261114050504-37d751d4; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch with manifest; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261114030129-9683980b manifest=UAP-EXEC-20261114050504-37d751d4; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261114025542-07c59bb9 manifest=UAP-EXEC-20261114050504-37d751d4; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch with manifest; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261113170538-86dca44d manifest=UAP-EXEC-20261114050504-37d751d4; VALIDATION-RESULTS.json: git_head=80b38608348398b9282d8b9e5e82532de7fc8870 manifest=d83e81f3ed69182c612b3c1dc8dec165caa0fccd; VALIDATION-RESULTS.json: worktree_fingerprint mismatch with manifest",
-        "cli_overall_matches_report: cli=IMPLEMENTED_NOT_VERIFIED report=FAILED"
-      ]
-    },
-    "evidence_manifest_path": ".uap/reports/EVIDENCE-MANIFEST.json"
+    "command": "node --test --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_ms": 358685,
+    "stdout_tail": "项不合格即失败\n    ok 6 - 证据链校验：ID/HEAD/哈希/篡改任一项不合格即失败\n      ---\n      duration_ms: 0.826613\n      type: 'test'\n      ...\n    1..6\nok 65 - 状态引擎附加不变量\n  ---\n  duration_ms: 6.420387\n  type: 'suite'\n  ...\n# Subtest: 执行身份绑定\n    # Subtest: git HEAD 来自真实仓库且是 40 位 sha\n    ok 1 - git HEAD 来自真实仓库且是 40 位 sha\n      ---\n      duration_ms: 57.432831\n      type: 'test'\n      ...\n    # Subtest: worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n    ok 2 - worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n      ---\n      duration_ms: 22273.24302\n      type: 'test'\n      ...\n    # Subtest: currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n    ok 3 - currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n      ---\n      duration_ms: 5369.752382\n      type: 'test'\n      ...\n    1..3\nok 66 - 执行身份绑定\n  ---\n  duration_ms: 27705.150873\n  type: 'suite'\n  ...\n# Subtest: 真实快照适配器\n    # Subtest: 从真实追踪矩阵构造 538 条要求与 32 份规范\n    ok 1 - 从真实追踪矩阵构造 538 条要求与 32 份规范\n      ---\n      duration_ms: 2027.497422\n      type: 'test'\n      ...\n    # Subtest: stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n      ---\n      duration_ms: 1999.522536\n      type: 'test'\n      ...\n    # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n    ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n      ---\n      duration_ms: 1894.01752\n      type: 'test'\n      ...\n    # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n      ---\n      duration_ms: 5799.629569\n      type: 'test'\n      ...\n    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n      ---\n      duration_ms: 6663.601934\n      type: 'test'\n      ...\n    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致\n    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致\n      ---\n      duration_ms: 4041.29948\n      type: 'test'\n      ...\n    1..6\nok 67 - 真实快照适配器\n  ---\n  duration_ms: 22427.86645\n  type: 'suite'\n  ...\n# Subtest: 证据链 fail-closed\n    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败\n    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败\n      ---\n      duration_ms: 1.164547\n      type: 'test'\n      ...\n    1..1\nok 68 - 证据链 fail-closed\n  ---\n  duration_ms: 2.79478\n  type: 'suite'\n  ...\n# Subtest: fixtures are excluded, real self-tests are kept\nok 69 - fixtures are excluded, real self-tests are kept\n  ---\n  duration_ms: 11.208892\n  type: 'test'\n  ...\n# Subtest: the intentionally failing repair canaries are never collected\nok 70 - the intentionally failing repair canaries are never collected\n  ---\n  duration_ms: 1.933328\n  type: 'test'\n  ...\n# Subtest: discovery is fail-closed on non-test / malformed paths\nok 71 - discovery is fail-closed on non-test / malformed paths\n  ---\n  duration_ms: 2.62133\n  type: 'test'\n  ...\n# Subtest: the CLI actually uses the shared collector (no re-introduced inline filter)\nok 72 - the CLI actually uses the shared collector (no re-introduced inline filter)\n  ---\n  duration_ms: 1.990833\n  type: 'test'\n  ...\n1..72\n# tests 161\n# suites 31\n# pass 161\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 358411.881187\n",
+    "stderr_tail": "",
+    "execution_id": "UAP-EXEC-20261115021942-8a1fe421",
+    "git_head": "ba502ba9739dcddcb989fa7780e85bf446593ec8",
+    "worktree_fingerprint": "866c509d3e4cf868a6a81a0dc101da36af30bcfb56d7fa62d4ca8d9286e4a230"
   },
-  "command": "accept",
-  "duration_ms": 10143,
-  "generated_at": "2026-11-14T05:19:30.609Z",
-  "evidence_ref": "UAP-EV-20261114051930-6d5a1538"
+  "command": "--json test --all",
+  "duration_ms": 362466,
+  "generated_at": "2026-11-15T02:22:04.087Z",
+  "evidence_ref": "UAP-EV-20261115022204-ef44f827"
 }

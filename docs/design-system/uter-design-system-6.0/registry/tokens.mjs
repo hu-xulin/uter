@@ -36,6 +36,9 @@ const COLOR_GROUPS = [
       ['1', '#5B5EE6', '#8B8DF5', '品牌主色 / Dark 浅化档'],
       ['2', '#494CC7', '#A1A3F7', '品牌深一档 / Dark 浅化档'],
       ['3', '#3F42B0', '#B7B8FA', '品牌深二档 / Dark 浅化档'],
+      ['solid', '#5B5EE6', null, '品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底）'],
+      ['solid-hover', '#494CC7', null, '品牌实底 Hover（白字 6.68:1）'],
+      ['solid-active', '#3F42B0', null, '品牌实底 Active（白字 8.02:1）'],
     ],
   },
   {
@@ -95,7 +98,7 @@ const COLOR_GROUPS = [
       ['success-border', '#86EFAC', '#065F46', '成功边框'], ['success-on', '#052E16', '#ECFDF5', '成功底上前景'],
       ['warning', '#A54600', '#FCD34D', '警告'], ['warning-soft', '#FEF3C7', '#451A03', '警告浅底'],
       ['warning-border', '#FCD34D', '#78350F', '警告边框'], ['warning-on', '#451A03', '#FFFBEB', '警告底上前景'],
-      ['danger', '#B91C1C', '#FCA5A5', '危险'], ['danger-soft', '#FEE2E2', '#450A0A', '危险浅底'],
+      ['danger', '#B91C1C', '#FCA5A5', '危险'], ['danger-solid', '#B91C1C', null, '危险实底（Light/Dark 同值，白字 ≥4.5:1）'], ['danger-soft', '#FEE2E2', '#450A0A', '危险浅底'],
       ['danger-border', '#FCA5A5', '#7F1D1D', '危险边框'], ['danger-on', '#450A0A', '#FEF2F2', '危险底上前景'],
       ['info', '#1D4ED8', '#93C5FD', '信息'], ['info-soft', '#DBEAFE', '#172554', '信息浅底'],
       ['info-border', '#93C5FD', '#1E40AF', '信息边框'], ['info-on', '#172554', '#EFF6FF', '信息底上前景'],

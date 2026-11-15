@@ -27,7 +27,7 @@ For commercial licensing, please contact support@uter.ai
 export const DS6_VERSION = "6.0.0" as const
 
 export type DsTheme = 'light' | 'dark'
-export type DsTokenName = "--ds-border-width-card" | "--ds-border-width-code" | "--ds-border-width-default" | "--ds-border-width-dialog" | "--ds-border-width-divider" | "--ds-border-width-focus" | "--ds-border-width-input" | "--ds-border-width-strong" | "--ds-border-width-table" | "--ds-bp-2xl" | "--ds-bp-lg" | "--ds-bp-md" | "--ds-bp-sm" | "--ds-bp-wide" | "--ds-bp-xl" | "--ds-bp-xs" | "--ds-color-border-card" | "--ds-color-border-code" | "--ds-color-border-danger" | "--ds-color-border-default" | "--ds-color-border-dialog" | "--ds-color-border-divider" | "--ds-color-border-focus" | "--ds-color-border-input" | "--ds-color-border-strong" | "--ds-color-border-table" | "--ds-color-brand-1" | "--ds-color-brand-2" | "--ds-color-brand-3" | "--ds-color-chart-1" | "--ds-color-chart-2" | "--ds-color-chart-3" | "--ds-color-chart-4" | "--ds-color-chart-5" | "--ds-color-code-background" | "--ds-color-code-current-line" | "--ds-color-code-cursor" | "--ds-color-code-fold" | "--ds-color-code-foreground" | "--ds-color-code-gutter" | "--ds-color-code-gutter-background" | "--ds-color-code-language-badge" | "--ds-color-code-line-added" | "--ds-color-code-line-deleted" | "--ds-color-code-line-error" | "--ds-color-code-scrollbar" | "--ds-color-code-selection" | "--ds-color-focus-ring" | "--ds-color-focus-ring-offset" | "--ds-color-gradient-dark-from" | "--ds-color-gradient-dark-to" | "--ds-color-gradient-dark-via" | "--ds-color-gradient-light-from" | "--ds-color-gradient-light-to" | "--ds-color-gradient-light-via" | "--ds-color-neutral-100" | "--ds-color-neutral-200" | "--ds-color-neutral-300" | "--ds-color-neutral-400" | "--ds-color-neutral-50" | "--ds-color-neutral-500" | "--ds-color-neutral-600" | "--ds-color-neutral-700" | "--ds-color-neutral-800" | "--ds-color-neutral-900" | "--ds-color-overlay-dropdown" | "--ds-color-overlay-scrim" | "--ds-color-overlay-tooltip" | "--ds-color-overlay-tooltip-fg" | "--ds-color-selection-background" | "--ds-color-selection-foreground" | "--ds-color-status-danger" | "--ds-color-status-danger-border" | "--ds-color-status-danger-on" | "--ds-color-status-danger-soft" | "--ds-color-status-info" | "--ds-color-status-info-border" | "--ds-color-status-info-on" | "--ds-color-status-info-soft" | "--ds-color-status-success" | "--ds-color-status-success-border" | "--ds-color-status-success-on" | "--ds-color-status-success-soft" | "--ds-color-status-warning" | "--ds-color-status-warning-border" | "--ds-color-status-warning-on" | "--ds-color-status-warning-soft" | "--ds-color-surface-base" | "--ds-color-surface-canvas" | "--ds-color-surface-code" | "--ds-color-surface-overlay" | "--ds-color-surface-raised" | "--ds-color-surface-sunken" | "--ds-color-surface-terminal" | "--ds-color-terminal-background" | "--ds-color-terminal-command" | "--ds-color-terminal-dot" | "--ds-color-terminal-flag" | "--ds-color-terminal-foreground" | "--ds-color-terminal-number" | "--ds-color-terminal-online" | "--ds-color-terminal-prompt" | "--ds-color-terminal-property" | "--ds-color-terminal-string" | "--ds-color-text-disabled" | "--ds-color-text-inverse" | "--ds-color-text-link" | "--ds-color-text-muted" | "--ds-color-text-on-brand" | "--ds-color-text-on-dark" | "--ds-color-text-primary" | "--ds-color-text-secondary" | "--ds-control-h5-input-font-size" | "--ds-control-lg" | "--ds-control-md" | "--ds-control-sm" | "--ds-control-touch" | "--ds-density-comfortable-cell-y" | "--ds-density-comfortable-row" | "--ds-density-compact-cell-y" | "--ds-density-compact-row" | "--ds-density-default-cell-y" | "--ds-density-default-row" | "--ds-easing-enter" | "--ds-easing-exit" | "--ds-easing-linear" | "--ds-easing-standard" | "--ds-elevation-0" | "--ds-elevation-1" | "--ds-elevation-2" | "--ds-elevation-3" | "--ds-elevation-4" | "--ds-elevation-dialog" | "--ds-elevation-drawer" | "--ds-elevation-dropdown" | "--ds-elevation-overlay" | "--ds-focus-ring-offset" | "--ds-focus-ring-width" | "--ds-font-body" | "--ds-font-mono" | "--ds-font-ui" | "--ds-gradient-direction" | "--ds-gradient-utility" | "--ds-icon-2xs" | "--ds-icon-lg" | "--ds-icon-md" | "--ds-icon-sm" | "--ds-icon-stroke" | "--ds-icon-stroke-small" | "--ds-icon-xs" | "--ds-layout-columns-desktop" | "--ds-layout-columns-mobile" | "--ds-layout-columns-tablet" | "--ds-layout-drawer-width" | "--ds-layout-gutter-desktop" | "--ds-layout-gutter-mobile" | "--ds-layout-gutter-tablet" | "--ds-layout-header-height" | "--ds-layout-max-width" | "--ds-layout-modal-width" | "--ds-layout-sidebar-collapsed" | "--ds-layout-sidebar-width" | "--ds-leading-base" | "--ds-leading-body" | "--ds-leading-button" | "--ds-leading-caption" | "--ds-leading-code" | "--ds-leading-display" | "--ds-leading-h1" | "--ds-leading-h2" | "--ds-leading-h3" | "--ds-leading-long" | "--ds-leading-table" | "--ds-motion-fast" | "--ds-motion-instant" | "--ds-motion-moderate" | "--ds-motion-normal" | "--ds-motion-slow" | "--ds-motion-slower" | "--ds-numeric-tabular" | "--ds-radius-2xl" | "--ds-radius-3xl" | "--ds-radius-badge" | "--ds-radius-button" | "--ds-radius-card" | "--ds-radius-code" | "--ds-radius-dialog" | "--ds-radius-full" | "--ds-radius-input" | "--ds-radius-lg" | "--ds-radius-md" | "--ds-radius-none" | "--ds-radius-sm" | "--ds-radius-table" | "--ds-radius-xl" | "--ds-space-0" | "--ds-space-1" | "--ds-space-10" | "--ds-space-12" | "--ds-space-16" | "--ds-space-2" | "--ds-space-20" | "--ds-space-24" | "--ds-space-3" | "--ds-space-4" | "--ds-space-5" | "--ds-space-6" | "--ds-space-8" | "--ds-syntax-attribute" | "--ds-syntax-boolean" | "--ds-syntax-builtin" | "--ds-syntax-comment" | "--ds-syntax-constant" | "--ds-syntax-deleted" | "--ds-syntax-function" | "--ds-syntax-inserted" | "--ds-syntax-invalid" | "--ds-syntax-keyword" | "--ds-syntax-null" | "--ds-syntax-number" | "--ds-syntax-operator" | "--ds-syntax-property" | "--ds-syntax-punctuation" | "--ds-syntax-regexp" | "--ds-syntax-string" | "--ds-syntax-tag" | "--ds-syntax-type" | "--ds-syntax-variable" | "--ds-text-2xl" | "--ds-text-2xs" | "--ds-text-3xl" | "--ds-text-4xl" | "--ds-text-5xl" | "--ds-text-base" | "--ds-text-lg" | "--ds-text-sm" | "--ds-text-xl" | "--ds-text-xs" | "--ds-weight-bold" | "--ds-weight-medium" | "--ds-weight-regular" | "--ds-weight-semibold" | "--ds-z-base" | "--ds-z-dropdown" | "--ds-z-modal" | "--ds-z-overlay" | "--ds-z-popover" | "--ds-z-sticky" | "--ds-z-toast" | "--ds-z-tooltip"
+export type DsTokenName = "--ds-border-width-card" | "--ds-border-width-code" | "--ds-border-width-default" | "--ds-border-width-dialog" | "--ds-border-width-divider" | "--ds-border-width-focus" | "--ds-border-width-input" | "--ds-border-width-strong" | "--ds-border-width-table" | "--ds-bp-2xl" | "--ds-bp-lg" | "--ds-bp-md" | "--ds-bp-sm" | "--ds-bp-wide" | "--ds-bp-xl" | "--ds-bp-xs" | "--ds-color-border-card" | "--ds-color-border-code" | "--ds-color-border-danger" | "--ds-color-border-default" | "--ds-color-border-dialog" | "--ds-color-border-divider" | "--ds-color-border-focus" | "--ds-color-border-input" | "--ds-color-border-strong" | "--ds-color-border-table" | "--ds-color-brand-1" | "--ds-color-brand-2" | "--ds-color-brand-3" | "--ds-color-brand-solid" | "--ds-color-brand-solid-active" | "--ds-color-brand-solid-hover" | "--ds-color-chart-1" | "--ds-color-chart-2" | "--ds-color-chart-3" | "--ds-color-chart-4" | "--ds-color-chart-5" | "--ds-color-code-background" | "--ds-color-code-current-line" | "--ds-color-code-cursor" | "--ds-color-code-fold" | "--ds-color-code-foreground" | "--ds-color-code-gutter" | "--ds-color-code-gutter-background" | "--ds-color-code-language-badge" | "--ds-color-code-line-added" | "--ds-color-code-line-deleted" | "--ds-color-code-line-error" | "--ds-color-code-scrollbar" | "--ds-color-code-selection" | "--ds-color-focus-ring" | "--ds-color-focus-ring-offset" | "--ds-color-gradient-dark-from" | "--ds-color-gradient-dark-to" | "--ds-color-gradient-dark-via" | "--ds-color-gradient-light-from" | "--ds-color-gradient-light-to" | "--ds-color-gradient-light-via" | "--ds-color-neutral-100" | "--ds-color-neutral-200" | "--ds-color-neutral-300" | "--ds-color-neutral-400" | "--ds-color-neutral-50" | "--ds-color-neutral-500" | "--ds-color-neutral-600" | "--ds-color-neutral-700" | "--ds-color-neutral-800" | "--ds-color-neutral-900" | "--ds-color-overlay-dropdown" | "--ds-color-overlay-scrim" | "--ds-color-overlay-tooltip" | "--ds-color-overlay-tooltip-fg" | "--ds-color-selection-background" | "--ds-color-selection-foreground" | "--ds-color-status-danger" | "--ds-color-status-danger-border" | "--ds-color-status-danger-on" | "--ds-color-status-danger-soft" | "--ds-color-status-danger-solid" | "--ds-color-status-info" | "--ds-color-status-info-border" | "--ds-color-status-info-on" | "--ds-color-status-info-soft" | "--ds-color-status-success" | "--ds-color-status-success-border" | "--ds-color-status-success-on" | "--ds-color-status-success-soft" | "--ds-color-status-warning" | "--ds-color-status-warning-border" | "--ds-color-status-warning-on" | "--ds-color-status-warning-soft" | "--ds-color-surface-base" | "--ds-color-surface-canvas" | "--ds-color-surface-code" | "--ds-color-surface-overlay" | "--ds-color-surface-raised" | "--ds-color-surface-sunken" | "--ds-color-surface-terminal" | "--ds-color-terminal-background" | "--ds-color-terminal-command" | "--ds-color-terminal-dot" | "--ds-color-terminal-flag" | "--ds-color-terminal-foreground" | "--ds-color-terminal-number" | "--ds-color-terminal-online" | "--ds-color-terminal-prompt" | "--ds-color-terminal-property" | "--ds-color-terminal-string" | "--ds-color-text-disabled" | "--ds-color-text-inverse" | "--ds-color-text-link" | "--ds-color-text-muted" | "--ds-color-text-on-brand" | "--ds-color-text-on-dark" | "--ds-color-text-primary" | "--ds-color-text-secondary" | "--ds-control-h5-input-font-size" | "--ds-control-lg" | "--ds-control-md" | "--ds-control-sm" | "--ds-control-touch" | "--ds-density-comfortable-cell-y" | "--ds-density-comfortable-row" | "--ds-density-compact-cell-y" | "--ds-density-compact-row" | "--ds-density-default-cell-y" | "--ds-density-default-row" | "--ds-easing-enter" | "--ds-easing-exit" | "--ds-easing-linear" | "--ds-easing-standard" | "--ds-elevation-0" | "--ds-elevation-1" | "--ds-elevation-2" | "--ds-elevation-3" | "--ds-elevation-4" | "--ds-elevation-dialog" | "--ds-elevation-drawer" | "--ds-elevation-dropdown" | "--ds-elevation-overlay" | "--ds-focus-ring-offset" | "--ds-focus-ring-width" | "--ds-font-body" | "--ds-font-mono" | "--ds-font-ui" | "--ds-gradient-direction" | "--ds-gradient-utility" | "--ds-icon-2xs" | "--ds-icon-lg" | "--ds-icon-md" | "--ds-icon-sm" | "--ds-icon-stroke" | "--ds-icon-stroke-small" | "--ds-icon-xs" | "--ds-layout-columns-desktop" | "--ds-layout-columns-mobile" | "--ds-layout-columns-tablet" | "--ds-layout-drawer-width" | "--ds-layout-gutter-desktop" | "--ds-layout-gutter-mobile" | "--ds-layout-gutter-tablet" | "--ds-layout-header-height" | "--ds-layout-max-width" | "--ds-layout-modal-width" | "--ds-layout-sidebar-collapsed" | "--ds-layout-sidebar-width" | "--ds-leading-base" | "--ds-leading-body" | "--ds-leading-button" | "--ds-leading-caption" | "--ds-leading-code" | "--ds-leading-display" | "--ds-leading-h1" | "--ds-leading-h2" | "--ds-leading-h3" | "--ds-leading-long" | "--ds-leading-table" | "--ds-motion-fast" | "--ds-motion-instant" | "--ds-motion-moderate" | "--ds-motion-normal" | "--ds-motion-slow" | "--ds-motion-slower" | "--ds-numeric-tabular" | "--ds-radius-2xl" | "--ds-radius-3xl" | "--ds-radius-badge" | "--ds-radius-button" | "--ds-radius-card" | "--ds-radius-code" | "--ds-radius-dialog" | "--ds-radius-full" | "--ds-radius-input" | "--ds-radius-lg" | "--ds-radius-md" | "--ds-radius-none" | "--ds-radius-sm" | "--ds-radius-table" | "--ds-radius-xl" | "--ds-space-0" | "--ds-space-1" | "--ds-space-10" | "--ds-space-12" | "--ds-space-16" | "--ds-space-2" | "--ds-space-20" | "--ds-space-24" | "--ds-space-3" | "--ds-space-4" | "--ds-space-5" | "--ds-space-6" | "--ds-space-8" | "--ds-syntax-attribute" | "--ds-syntax-boolean" | "--ds-syntax-builtin" | "--ds-syntax-comment" | "--ds-syntax-constant" | "--ds-syntax-deleted" | "--ds-syntax-function" | "--ds-syntax-inserted" | "--ds-syntax-invalid" | "--ds-syntax-keyword" | "--ds-syntax-null" | "--ds-syntax-number" | "--ds-syntax-operator" | "--ds-syntax-property" | "--ds-syntax-punctuation" | "--ds-syntax-regexp" | "--ds-syntax-string" | "--ds-syntax-tag" | "--ds-syntax-type" | "--ds-syntax-variable" | "--ds-text-2xl" | "--ds-text-2xs" | "--ds-text-3xl" | "--ds-text-4xl" | "--ds-text-5xl" | "--ds-text-base" | "--ds-text-lg" | "--ds-text-sm" | "--ds-text-xl" | "--ds-text-xs" | "--ds-weight-bold" | "--ds-weight-medium" | "--ds-weight-regular" | "--ds-weight-semibold" | "--ds-z-base" | "--ds-z-dropdown" | "--ds-z-modal" | "--ds-z-overlay" | "--ds-z-popover" | "--ds-z-sticky" | "--ds-z-toast" | "--ds-z-tooltip"
 
 export interface DsToken { layer: string; category: string; type: string; unit: string; light: string | number; dark: string | number; description: string; themeIndependent: boolean }
 
@@ -61,6 +61,36 @@ export const DS6_TOKENS: Record<DsTokenName, DsToken> = {
     "dark": "#B7B8FA",
     "description": "品牌深二档 / Dark 浅化档",
     "themeIndependent": false
+  },
+  "--ds-color-brand-solid": {
+    "layer": "primitive",
+    "category": "brand",
+    "type": "color",
+    "unit": "color",
+    "light": "#5B5EE6",
+    "dark": "#5B5EE6",
+    "description": "品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底）",
+    "themeIndependent": true
+  },
+  "--ds-color-brand-solid-hover": {
+    "layer": "primitive",
+    "category": "brand",
+    "type": "color",
+    "unit": "color",
+    "light": "#494CC7",
+    "dark": "#494CC7",
+    "description": "品牌实底 Hover（白字 6.68:1）",
+    "themeIndependent": true
+  },
+  "--ds-color-brand-solid-active": {
+    "layer": "primitive",
+    "category": "brand",
+    "type": "color",
+    "unit": "color",
+    "light": "#3F42B0",
+    "dark": "#3F42B0",
+    "description": "品牌实底 Active（白字 8.02:1）",
+    "themeIndependent": true
   },
   "--ds-color-neutral-50": {
     "layer": "primitive",
@@ -502,6 +532,16 @@ export const DS6_TOKENS: Record<DsTokenName, DsToken> = {
     "description": "危险",
     "themeIndependent": false
   },
+  "--ds-color-status-danger-solid": {
+    "layer": "semantic",
+    "category": "status",
+    "type": "color",
+    "unit": "color",
+    "light": "#B91C1C",
+    "dark": "#B91C1C",
+    "description": "危险实底（Light/Dark 同值，白字 ≥4.5:1）",
+    "themeIndependent": true
+  },
   "--ds-color-status-danger-soft": {
     "layer": "semantic",
     "category": "status",
@@ -787,9 +827,9 @@ export const DS6_TOKENS: Record<DsTokenName, DsToken> = {
     "category": "code",
     "type": "color",
     "unit": "color",
-    "light": "#94A3B8",
-    "dark": "#64748B",
-    "description": "行号",
+    "light": "#5B6779",
+    "dark": "#94A3B8",
+    "description": "行号（真实代码背景实测 ≥4.5:1，axe color-contrast 通过）",
     "themeIndependent": false
   },
   "--ds-color-code-gutter-background": {
