@@ -45,6 +45,24 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: '1.4.0'
+      - name: Install H5 browser and frontend dependencies
+        working-directory: web
+        run: |
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+      - name: Start isolated H5 frontend target
+        working-directory: web
+        run: |
+          (bun run dev --host 127.0.0.1 --port 3000 > "$RUNNER_TEMP/uap-h5-server.log" 2>&1 & echo $! > "$RUNNER_TEMP/uap-h5-server.pid")
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3000/ >/dev/null; then
+              echo "H5 target ready at http://127.0.0.1:3000"
+              exit 0
+            fi
+            sleep 2
+          done
+          cat "$RUNNER_TEMP/uap-h5-server.log"
+          exit 1
       # Run every UAP gate even when an earlier gate fails so CI preserves
       # complete evidence instead of skipping the self-test suite on validator failure.
       - name: UAP runtime health
@@ -54,12 +72,43 @@ jobs:
       - name: UAP registry and validator execution
         id: uap_validate
         continue-on-error: true
+        env:
+          H5_BASE_URL: http://127.0.0.1:3000
         run: node .uap/bin/uap.mjs validate --all
       - name: UAP complete self-test suite
         id: uap_test
         if: always()
         continue-on-error: true
         run: node .uap/bin/uap.mjs test --all
+      - name: Publish full UAP self-test failure context
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p = '.uap/reports/RUNTIME-TEST-RESULTS.json';
+          if (!fs.existsSync(p)) {
+            console.log('RUNTIME-TEST-RESULTS.json not generated');
+            process.exit(0);
+          }
+          const report = JSON.parse(fs.readFileSync(p, 'utf8'));
+          console.log(JSON.stringify({
+            exit_code: report.exit_code,
+            timed_out: report.timed_out,
+            duration_ms: report.duration_ms,
+            test_files: report.test_files,
+            stderr_tail: report.stderr_tail,
+          }, null, 2));
+          const tap = String(report.stdout_tail || '');
+          const lines = tap.split('\\n');
+          const failed = [];
+          for (let i = 0; i < lines.length; i++) {
+            if (/^not ok \\d+/.test(lines[i]) || /failureType:|error:|AssertionError|ERR_/.test(lines[i])) {
+              failed.push(lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 18)).join('\\n'));
+            }
+          }
+          console.log('--- TAP FAILURE CONTEXT ---');
+          console.log(failed.length ? failed.join('\\n--- FAILURE ---\\n') : tap.slice(-12000));
+          NODE
       - name: Enforce UAP governance gate
         if: always()
         env:
