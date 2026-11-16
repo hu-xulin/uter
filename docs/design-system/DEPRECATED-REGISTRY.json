@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS7-R-DEPRECATED",
   "version": "7.0.0",
-  "generated_at": "2026-11-15T23:49:37.438Z",
+  "generated_at": "2026-11-16T00:28:51.147Z",
   "policy": "先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；本轮不执行删除",
   "items": [
     {

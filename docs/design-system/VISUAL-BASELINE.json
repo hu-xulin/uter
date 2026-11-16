@@ -1,19 +1,19 @@
 {
   "schema": "UDS7-VISUAL-BASELINE/1.0",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "status": "FROZEN",
-  "frozen_at": "2026-11-15T15:02:25.915Z",
-  "frozen_by": "用户明确授权更新基线（2026-11-15，AskUserQuestion「授权更新基线」）；审查确认 4 个 Dark 公开页差异为预期设计变化（Dark 表面 #020617 → clerk.com 对齐三层 #0B1120/#111827/#1B2436，theme.css 明文登记），旧基线归档于 audit/baseline/archive-*/",
+  "frozen_at": "2026-11-16T00:32:13.143Z",
+  "frozen_by": "用户明确授权「真正切换到 7.0 标量值」（2026-11-16）：运行时字号/行高/圆角/图表色经 @theme 真源字面切换为 7.0 TOKEN-MANIFEST 值（typography.css / primitives.css / theme.css，tokens.test.ts 三方守卫钉死），全站视觉随之变化，旧 7.0.0 基线作废归档于 audit/baseline/archive-7.0.0/；本基线摄于切换后真实渲染",
   "sources": {
     "showcaseLog": {
       "path": "web/visual-regression/uds7/run-log.json",
       "verdict": "PASS",
-      "started_at": "2026-11-15T14:27:14.494Z"
+      "started_at": "2026-11-16T00:31:25.709Z"
     },
     "realPageLog": {
       "path": "docs/design-system/audit/visual-regression.json",
       "verdict": "PASS",
-      "generated_at": "2026-11-15T14:37:27.205Z"
+      "generated_at": "2026-11-16T00:32:01.726Z"
     },
     "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）"
   },
@@ -28,8 +28,8 @@
       "height": 900,
       "originalPath": "web/visual-regression/uds7/screenshots/uds7-light-desktop.png",
       "expectedSha": null,
-      "sha256": "5a8728c61708e1fc5683c9412831207d8adc292e4ea9db0da2f8d367e5cb478b",
-      "bytes": 234366,
+      "sha256": "50e9cf9b4fe8890fc1c2ddbe15d75dbd7419669c5a98f9f8cd5769ca4b8e8cb9",
+      "bytes": 233566,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-light-desktop.png"
     },
     {
@@ -41,8 +41,8 @@
       "height": 900,
       "originalPath": "web/visual-regression/uds7/screenshots/uds7-dark-desktop.png",
       "expectedSha": null,
-      "sha256": "a30e42ddc99da70a846808017955d7c846b04f1d711e61e0cb56772254875ee6",
-      "bytes": 237428,
+      "sha256": "2b76185aa0c78d7f62c1174e33e3c02acee7aa94bb9a9ab21d603bf00aa31470",
+      "bytes": 236522,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-dark-desktop.png"
     },
     {
@@ -54,8 +54,8 @@
       "height": 844,
       "originalPath": "web/visual-regression/uds7/screenshots/uds7-light-mobile.png",
       "expectedSha": null,
-      "sha256": "e501c5bd846aa82618b6938dc31f3cbb09655038d95beaca08bebb9cd90bacc1",
-      "bytes": 82932,
+      "sha256": "68dc88ccc70c09486a6208a993e5b4857f6d13704b7022985ce901b4fa79b79a",
+      "bytes": 82437,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-light-mobile.png"
     },
     {
@@ -67,8 +67,8 @@
       "height": 844,
       "originalPath": "web/visual-regression/uds7/screenshots/uds7-dark-mobile.png",
       "expectedSha": null,
-      "sha256": "9ab6d78e666ae916fc8fd7c5ef9da784f12512262f8d8af14835f8e9df02b433",
-      "bytes": 84441,
+      "sha256": "462d371f47d59b8fd8ff9615314f3036ad81622cb406e92684857246d07314a0",
+      "bytes": 83936,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-dark-mobile.png"
     },
     {
@@ -82,15 +82,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 957,
-        "meanLuminance": 237,
-        "luminanceStdDev": 33.87,
-        "nonWhitePixelRatio": 0.0675
+        "distinctColors": 804,
+        "meanLuminance": 235.06,
+        "luminanceStdDev": 38.61,
+        "nonWhitePixelRatio": 0.0711
       },
       "originalPath": "web/visual-regression/uds7/real-pages/home-light.png",
-      "expectedSha": "77827d129377106f7f02a3af749327f4bf160d7f349660f126c89bd233ea885e",
-      "sha256": "77827d129377106f7f02a3af749327f4bf160d7f349660f126c89bd233ea885e",
-      "bytes": 376077,
+      "expectedSha": "30b9b8eeb1acedd94c2af145fe0b286dc20da19d61a66d956279691cb8f555ce",
+      "sha256": "30b9b8eeb1acedd94c2af145fe0b286dc20da19d61a66d956279691cb8f555ce",
+      "bytes": 371519,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-home-light.png"
     },
     {
@@ -104,15 +104,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 970,
-        "meanLuminance": 30.85,
-        "luminanceStdDev": 36.19,
-        "nonWhitePixelRatio": 0.9894
+        "distinctColors": 775,
+        "meanLuminance": 32.44,
+        "luminanceStdDev": 39.95,
+        "nonWhitePixelRatio": 0.983
       },
       "originalPath": "web/visual-regression/uds7/real-pages/home-dark.png",
-      "expectedSha": "7bb03f967eabfbd822b7c369398948292e15a6fd8f245d19d78115c38629e64f",
-      "sha256": "7bb03f967eabfbd822b7c369398948292e15a6fd8f245d19d78115c38629e64f",
-      "bytes": 263568,
+      "expectedSha": "f292b98fe8becf8758f51e0e2213abd37c11f6bcf450af47a2ddbd20344613eb",
+      "sha256": "f292b98fe8becf8758f51e0e2213abd37c11f6bcf450af47a2ddbd20344613eb",
+      "bytes": 254775,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-home-dark.png"
     },
     {
@@ -127,14 +127,14 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 239,
-        "meanLuminance": 247.03,
-        "luminanceStdDev": 23.06,
-        "nonWhitePixelRatio": 0.0257
+        "meanLuminance": 245.87,
+        "luminanceStdDev": 23.62,
+        "nonWhitePixelRatio": 0.0266
       },
       "originalPath": "web/visual-regression/uds7/real-pages/login-light.png",
-      "expectedSha": "9648a8d2b6311bcdb8d4ee970dfc919dba723205c3a81375940cfb9a8820d276",
-      "sha256": "9648a8d2b6311bcdb8d4ee970dfc919dba723205c3a81375940cfb9a8820d276",
-      "bytes": 38615,
+      "expectedSha": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
+      "sha256": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
+      "bytes": 38771,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-login-light.png"
     },
     {
@@ -148,15 +148,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 280,
-        "meanLuminance": 21.67,
-        "luminanceStdDev": 23.47,
-        "nonWhitePixelRatio": 0.9971
+        "distinctColors": 279,
+        "meanLuminance": 21.86,
+        "luminanceStdDev": 24.1,
+        "nonWhitePixelRatio": 0.9967
       },
       "originalPath": "web/visual-regression/uds7/real-pages/login-dark.png",
-      "expectedSha": "4bad67106f47ea5a8f36a22b40d2fda18268cdac0570b47c67875b2ec8d1ebcb",
-      "sha256": "4bad67106f47ea5a8f36a22b40d2fda18268cdac0570b47c67875b2ec8d1ebcb",
-      "bytes": 39486,
+      "expectedSha": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
+      "sha256": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
+      "bytes": 39313,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-login-dark.png"
     },
     {
@@ -170,15 +170,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 312,
-        "meanLuminance": 241.26,
-        "luminanceStdDev": 26.76,
-        "nonWhitePixelRatio": 0.0383
+        "distinctColors": 306,
+        "meanLuminance": 240.98,
+        "luminanceStdDev": 27.79,
+        "nonWhitePixelRatio": 0.0397
       },
       "originalPath": "web/visual-regression/uds7/real-pages/about-light.png",
-      "expectedSha": "540d9a39dd839bd5b13a7ed668003abefc8e24515b4d6737f837b6ba1a512780",
-      "sha256": "540d9a39dd839bd5b13a7ed668003abefc8e24515b4d6737f837b6ba1a512780",
-      "bytes": 235495,
+      "expectedSha": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
+      "sha256": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
+      "bytes": 236453,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-about-light.png"
     },
     {
@@ -192,15 +192,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 313,
-        "meanLuminance": 24.78,
-        "luminanceStdDev": 32.03,
-        "nonWhitePixelRatio": 0.9958
+        "distinctColors": 310,
+        "meanLuminance": 25.08,
+        "luminanceStdDev": 32.93,
+        "nonWhitePixelRatio": 0.9947
       },
       "originalPath": "web/visual-regression/uds7/real-pages/about-dark.png",
-      "expectedSha": "77b7f28156a17ec5e7582abf56f284764a75adf596937f40d66d7923f8e1d75b",
-      "sha256": "77b7f28156a17ec5e7582abf56f284764a75adf596937f40d66d7923f8e1d75b",
-      "bytes": 182659,
+      "expectedSha": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
+      "sha256": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
+      "bytes": 183069,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-about-dark.png"
     },
     {
@@ -214,15 +214,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 1465,
-        "meanLuminance": 236.37,
-        "luminanceStdDev": 39.89,
-        "nonWhitePixelRatio": 0.0679
+        "distinctColors": 1466,
+        "meanLuminance": 236.36,
+        "luminanceStdDev": 39.97,
+        "nonWhitePixelRatio": 0.0678
       },
       "originalPath": "web/visual-regression/uds7/real-pages/docs-light.png",
-      "expectedSha": "97688e6c1f96d1718ac15720e1bd8d405bc89d0d855d6bc182cbd6fa5a7cf650",
-      "sha256": "97688e6c1f96d1718ac15720e1bd8d405bc89d0d855d6bc182cbd6fa5a7cf650",
-      "bytes": 321778,
+      "expectedSha": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
+      "sha256": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
+      "bytes": 320795,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-docs-light.png"
     },
     {
@@ -236,15 +236,15 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 1458,
+        "distinctColors": 1457,
         "meanLuminance": 30.44,
-        "luminanceStdDev": 45.76,
-        "nonWhitePixelRatio": 0.9706
+        "luminanceStdDev": 45.78,
+        "nonWhitePixelRatio": 0.9705
       },
       "originalPath": "web/visual-regression/uds7/real-pages/docs-dark.png",
-      "expectedSha": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
-      "sha256": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
-      "bytes": 264983,
+      "expectedSha": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
+      "sha256": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
+      "bytes": 262692,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-docs-dark.png"
     },
     {
@@ -286,8 +286,8 @@
       "kind": "forced-colors",
       "originalPath": "web/visual-regression/uds7/real-pages/forced-colors-showcase.png",
       "expectedSha": null,
-      "sha256": "6d5eb1013e6901e237aad89eb8c9770083301e4bd0c3a356b71dd590dc601ad7",
-      "bytes": 206404,
+      "sha256": "2471a0a5c930f0700185e42de1a575f1bfd9af08de413767e624d4640e99f92c",
+      "bytes": 205956,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/forced-colors-showcase.png"
     }
   ],

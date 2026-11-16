@@ -603,6 +603,8 @@ export function buildManifest() {
       rule: 'series > 6 时必须直接标注；线型 / 点型 / 图例三通道必须可用',
     },
     // §2.3 / §十二 运行时接入边界：bridge 只注入颜色语义层，不覆盖 3.0 同名变量。
+    // 标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件
+    // 字面切换为 7.0 值（tokens.test.ts 三方守卫钉死），不经 bridge 注入。
     runtimeBridge: {
       canonicalPrefix: '--ds-',
       runtimePrefix: '--ds7-',
@@ -611,6 +613,7 @@ export function buildManifest() {
       entryImport: 'web/src/styles/index.css',
       rollback: '删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚',
       excludeScalarTokens: true,
+      scalarAlignment: 'web/src 真源字面值 = TOKEN-MANIFEST 值（2026-11-16 经用户授权切换，tokens.test.ts 钉死）',
     },
     fontPolicy: {
       uiStackVerifiedAgainst: 'web/src/styles/theme.css:301-306',

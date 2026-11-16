@@ -61,14 +61,13 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-mono-title: var(--text-mono-title);
 
   /* ── 语义行高 ──────────────────────────────────────────────────────── */
-  --ds-line-display: var(--text-5xl--line-height, 2.75rem);
+  --ds-line-display: var(--text-5xl--line-height, 3.5rem);
   /* 多行主标题专用行高，**无单位比例**，随字号缩放：
-   * 36px × 1.5 = 54px（移动端 30px × 1.5 = 45px）。单行 display 用
-   * 40px（1.11）是对的，但中文主标题常折成 3–4 行，1.11 会让行与行
-   * 挤在一起；1.35 实测仍然偏紧，按首页实测反馈调到 1.5。 */
+   * 48px × 1.5 = 72px（移动端缩放同理）。单行 display 用紧凑行高是对的，
+   * 但中文主标题常折成 3–4 行，1.5 让行与行保持呼吸感。 */
   --ds-line-display-multiline: 1.5;
-  --ds-line-page-title: var(--text-4xl--line-height, 2.375rem);
-  --ds-line-section-title: var(--text-3xl--line-height, 2rem);
+  --ds-line-page-title: var(--text-4xl--line-height, 2.75rem);
+  --ds-line-section-title: var(--text-3xl--line-height, 2.375rem);
   --ds-line-card-title: var(--text-lg--line-height, 1.625rem);
   --ds-line-dialog-title: var(--text-lg--line-height, 1.625rem);
   --ds-line-group-title: var(--text-group--line-height, 1.5rem);
@@ -76,7 +75,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-line-body-sm: var(--text-sm--line-height, 1.375rem);
   --ds-line-long: var(--text-long--line-height, 1.625rem);
   --ds-line-label: var(--text-sm--line-height, 1.375rem);
-  --ds-line-caption: var(--text-xs--line-height, 1.125rem);
+  --ds-line-caption: var(--text-xs--line-height, 1.25rem);
   --ds-line-dense: var(--text-dense--line-height, 1.25rem);
   --ds-line-mono: var(--text-mono--line-height, 1.25rem);
   --ds-line-mono-code: var(--text-mono-code--line-height, 1.25rem);
@@ -90,21 +89,21 @@ For commercial licensing, please contact support@uter.ai
   --ds-weight-semibold: var(--primitive-weight-semibold);
   --ds-weight-bold: var(--primitive-weight-bold);
 
-  /* ── 语义圆角（UTER-DESIGN-SYSTEM-3.0 §5）────────────────────────────── */
-  --ds-radius-xs: var(--primitive-radius-xs); /* 6px 极小徽标、内嵌标记 */
-  --ds-radius-sm: var(--primitive-radius-sm); /* 8px 关闭按钮、密集控件点击区 */
+  /* ── 语义圆角（7.0 §Shape radius 刻度，2026-11-16 切换）────────────── */
+  --ds-radius-xs: var(--primitive-radius-xs); /* 3px 极小徽标、内嵌标记（并入 7.0 sm） */
+  --ds-radius-sm: var(--primitive-radius-sm); /* 3px 关闭按钮、密集控件点击区（7.0 sm） */
   --ds-radius-md: var(
     --primitive-radius-md
-  ); /* 10px 按钮、输入框、标签页触发器（默认控件档） */
+  ); /* 5px 按钮、输入框、标签页触发器（默认控件档，7.0 md） */
   --ds-radius-lg: var(
     --primitive-radius-lg
-  ); /* 12px 卡片、弹窗、标签页容器、图标按钮 */
+  ); /* 8px 卡片、弹窗、标签页容器、图标按钮（7.0 lg） */
   --ds-radius-xl: var(
     --primitive-radius-xl
-  ); /* 14px 强调容器、大圆角方形头像 */
-  --ds-radius-2xl: var(--primitive-radius-2xl); /* 16px 展示型卡片 */
-  --ds-radius-3xl: var(--primitive-radius-3xl); /* 18px 大型展示容器 */
-  --ds-radius-4xl: var(--primitive-radius-4xl); /* 20px 胶囊大标签等 */
+  ); /* 12px 强调容器、大圆角方形头像（7.0 xl） */
+  --ds-radius-2xl: var(--primitive-radius-2xl); /* 16px 展示型卡片（7.0 2xl） */
+  --ds-radius-3xl: var(--primitive-radius-3xl); /* 20px 大型展示容器（7.0 3xl） */
+  --ds-radius-4xl: var(--primitive-radius-4xl); /* 20px 胶囊大标签等（并入 7.0 3xl） */
   --ds-radius-full: var(
     --primitive-radius-full
   ); /* 胶囊徽标、圆形头像、开关轨道 */

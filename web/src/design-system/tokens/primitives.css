@@ -30,8 +30,10 @@ For commercial licensing, please contact support@uter.ai
  */
 
 :root {
-  /* ── Font size primitives（与 typography.css 的 @theme 阶梯一一对应） */
+  /* ── Font size primitives（与 typography.css 的 @theme 阶梯一一对应，
+   * 7.0 主档 2xs..5xl = 12/13/14/16/18/20/24/30/36/48） */
   --primitive-font-size-12: 0.75rem;
+  --primitive-font-size-13: 0.8125rem;
   --primitive-font-size-14: 0.875rem;
   --primitive-font-size-16: 1rem;
   --primitive-font-size-18: 1.125rem;
@@ -39,8 +41,10 @@ For commercial licensing, please contact support@uter.ai
   --primitive-font-size-24: 1.5rem;
   --primitive-font-size-30: 1.875rem;
   --primitive-font-size-36: 2.25rem;
+  --primitive-font-size-48: 3rem;
 
-  /* ── Line height primitives */
+  /* ── Line height primitives（7.0 --ds-leading-*：caption18/code20/
+   * body22/base24/long26/h3 26/h2 38/h1 44/display 56） */
   --primitive-line-16: 1rem;
   --primitive-line-20: 1.25rem;
   --primitive-line-24: 1.5rem;
@@ -48,6 +52,8 @@ For commercial licensing, please contact support@uter.ai
   --primitive-line-32: 2rem;
   --primitive-line-36: 2.25rem;
   --primitive-line-40: 2.5rem;
+  --primitive-line-44: 2.75rem;
+  --primitive-line-56: 3.5rem;
 
   /* ── Font weight primitives */
   --primitive-weight-regular: 400;
@@ -67,15 +73,18 @@ For commercial licensing, please contact support@uter.ai
   --primitive-space-6: 1.5rem; /* 24px */
   --primitive-space-8: 2rem; /* 32px */
 
-  /* ── Radius primitives（规范 §5：基准 10px=控件档 r-md，
-   * 卡片/弹窗 12px；与 theme.css 的 calc 阶梯逐档对齐，改一边必须同步另一边） */
-  --primitive-radius-xs: 6px;
-  --primitive-radius-sm: 8px;
-  --primitive-radius-md: 10px;
-  --primitive-radius-lg: 12px;
-  --primitive-radius-xl: 14px;
+  /* ── Radius primitives（7.0 §Shape：sm=3 / md=5 / lg=8 / xl=12 /
+   * 2xl=16 / 3xl=20 / full=9999，基准 5px=控件档 r-md；
+   * 与 theme.css 的 calc 阶梯逐档对齐，改一边必须同步另一边。
+   * 3.0 特有的 xs / 4xl 档按最近 7.0 值并入：xs→sm(3)、4xl→3xl(20)。
+   * 2026-11-16 经用户授权从 v1.2（基准 10px）正式切换到 7.0 刻度。 */
+  --primitive-radius-xs: 3px;
+  --primitive-radius-sm: 3px;
+  --primitive-radius-md: 5px;
+  --primitive-radius-lg: 8px;
+  --primitive-radius-xl: 12px;
   --primitive-radius-2xl: 16px;
-  --primitive-radius-3xl: 18px;
+  --primitive-radius-3xl: 20px;
   --primitive-radius-4xl: 20px;
   --primitive-radius-full: 9999px;
 

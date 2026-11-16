@@ -1,6 +1,6 @@
 {
   "schema": "UDS7-REMEDIATION-STATE/1.0",
-  "generated_at": "2026-11-16T00:02:14.333Z",
+  "generated_at": "2026-11-16T00:42:47.088Z",
   "method": "check-uds7-remediation.mjs 真实探针，未执行项一律不标 PASS",
   "probeSummary": {
     "PASS": 50

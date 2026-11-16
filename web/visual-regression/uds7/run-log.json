@@ -2,7 +2,7 @@
   "checker": "visual-check.mjs",
   "executed": true,
   "engine": "Playwright Chromium (headless)",
-  "started_at": "2026-11-15T23:50:28.018Z",
+  "started_at": "2026-11-16T00:37:12.134Z",
   "verdict": "PASS",
   "cases": [
     {
@@ -29,7 +29,7 @@
         "bodyFg": "rgb(15, 23, 42)",
         "newGradientImage": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 102167,
+        "scrollHeight": 102189,
         "reducedMotionRule": true
       },
       "errors": []
@@ -58,7 +58,7 @@
         "bodyFg": "rgb(241, 245, 249)",
         "newGradientImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 102167,
+        "scrollHeight": 102189,
         "reducedMotionRule": true
       },
       "errors": []
@@ -87,7 +87,7 @@
         "bodyFg": "rgb(15, 23, 42)",
         "newGradientImage": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 184967,
+        "scrollHeight": 185033,
         "reducedMotionRule": true
       },
       "errors": []
@@ -116,7 +116,7 @@
         "bodyFg": "rgb(241, 245, 249)",
         "newGradientImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
         "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
-        "scrollHeight": 184967,
+        "scrollHeight": 185033,
         "reducedMotionRule": true
       },
       "errors": []

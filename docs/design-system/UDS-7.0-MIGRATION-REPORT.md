@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 7.0 — 现状清单与迁移报告（Phase 1 清单 + Phase 9 迁移状态）
 
-> 生成时间 2026-11-15T23:49:37.438Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
+> 生成时间 2026-11-16T00:28:51.147Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
 > 本报告只记录真实扫描结果，不覆盖任何并发未提交修改。
 
 ## 1. Phase 1 仓库审计（真实命令输出）
@@ -51,10 +51,10 @@
 | 组件 | `components/ai-elements/code-block.tsx`（CodeMirror + HighlightStyle）、`components/json-code-editor.tsx`（Yace）、`components/json-editor.tsx`、`components/ui/markdown.tsx`、`features/task-plugins/components/javascript-viewer.tsx`（classHighlighter）、`features/home/components/hero-terminal-demo.tsx` |
 | 现有 syntax Token | **仅 5 个** `--syntax-keyword/string/number/function/property`，Light 在 `theme.css:402-406`（oklch），Dark 在 `theme.css:663-667` |
 | 现有 Terminal 色 | `--term-*` 系列在 `theme.css:412-474 / 672-711`，与 syntax 分离 |
-| 现有图表色 | `--chart-1..5` 在 `theme.css:389-393 / 645-649`（oklch） |
+| 现有图表色 | `--chart-1..6` 在 `theme.css`（Light/Dark 双主题），已活引用 `--ds7-color-chart-N`（7.0 十二色板前 6 系列） |
 | 问题 | 语义不全（5/20）、未覆盖 Yace / Marked / Shiki 的统一映射、JSON 编辑器存在用图表色替代语法色的风险 |
 | 迁移后落地（本轮真实验证） | syntax 20 Token × 2 主题经 `syntax-adapter` 统一映射（15 语言 / 29 grammars 真实解析，C19）；CodeMirror `code-block.tsx` 23 项回归测试；终端 ANSI16 独立色板浏览器实测可读（C-R10）；逐引擎映射见 `VSCODE-COLOR-MAPPING.md` |
-| 剩余缺口 | chart-1..12 尚无业务消费者（业务图表仍走 3.0 `--chart-1..6`）；产品无 diff 界面，`diff-added/removed` 为预留 Token |
+| 剩余缺口 | 业务图表最多 6 系列（前 6 色经 theme.css 活引用 + resolveUds6ChartPalette 消费）；chart-7..12 已注入 bridge 备用；产品无 diff 界面，`diff-added/removed` 为预留 Token |
 
 ## 5. 迁移批次与当前状态（唯一真源：COMPAT-MAP.json）
 
@@ -62,25 +62,27 @@
 |---|---|---|---|
 | B1 | 代码高亮 / JSON 编辑器 / Terminal | DONE_VERIFIED | syntax-validation.json 15 语言 / 29 grammars 真实解析；C-R02 bridge 浏览器实测；C-R10 ANSI16；code-block 23 项回归测试 |
 | B2 | 渐变文字单一出口与插值空间 | DONE_VERIFIED | gradient-validation.json pixelValidation PASS（55483 像素）；C11 唯一 owner；G17 像素断言；EX-006 RESOLVED |
-| B3 | 状态色 / 图表色去 chart 依赖 | PARTIAL | 状态色变体族已落地（C-R12）；chart-1..12 尚无业务消费者，业务图表仍走 3.0 --chart-1..6，迁移待 B5 批次 |
-| B4 | Payment / Auth / Wallet 高风险页面 | BLOCKED | 须用户逐批单独授权且通过视觉审核 |
-| B5 | 其余 72 个路由页面 | BLOCKED | 视觉基线已冻结（2026-11-15）；全站迁移按 Phase 6 分期执行，须并发 WIP 收敛后启动 |
-| B6 | 删除 3.0 兼容层 | PROHIBITED | 文档 §2.3 明令在 7.0 完成全部验收前不得删除 |
+| B3 | 状态色 / 图表色去 chart 依赖 | DONE_VERIFIED | theme.css --chart-1..6 活引用 --ds7-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS7_CHART_PALETTE；状态色变体族已落地（C-R12） |
+| B4 | Payment / Auth / Wallet 高风险页面 | DONE_VERIFIED | 2026-11-16 经用户授权完成样式层 7.0 值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线 |
+| B5 | 其余 72 个路由页面 | DONE_VERIFIED | 全站路由视觉值经 @theme 标量切换到 7.0（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证 |
+| B6 | 删除 3.0 兼容层 | PROHIBITED | 3.0 兼容层（theme.css / tokens/）现已是 7.0 值的运行时载体，承载 Tailwind @theme 注册机制；7.0 完成全部验收前不得删除 |
 
 状态语义：`DONE_VERIFIED` = 已落地且通过真实验证；`PARTIAL` = 部分落地、剩余诚实登记；`BLOCKED` = 待用户逐批授权；`PROHIBITED` = 规范明令禁止。未迁移页面清单见 `COMPAT-MAP.json::unmigratedPages`（72 个路由）。
 
-### 5.1 冲突档（ISOLATE，不直接覆盖）
+### 5.1 冲突档处置
+
+CM-01 / CM-T01 / CM-T02 已于 2026-11-16 经用户授权正式切换为 REPLACED / RESOLVED（运行时值 = 7.0 manifest 值）；CM-02..CM-06（颜色语义冲突）保持 ISOLATE——颜色经 bridge 隔离命名（--ds7-*）注入，3.0 同名变量保留主题联动机制。
 
 | ID | Token | 3.0 | 7.0 | 级别 | 处置 |
 |---|---|---|---|---|---|
-| CM-01 | `--ds-radius-md` | 10px (3.0.md:1100) | 5px (TOKEN-MANIFEST) | HIGH | ISOLATE |
+| CM-01 | `--ds-radius-md` | 10px (3.0.md:1100) | 5px (TOKEN-MANIFEST) | HIGH | REPLACED |
 | CM-02 | `--ds-color-surface-overlay` | #000000 (colors.css:86) | #FFFFFF / #1B2436 | CRITICAL | ISOLATE |
 | CM-03 | `--ds-color-text-primary` | var(--foreground) (colors.css:34) | #0F172A / #F1F5F9 | MEDIUM | ISOLATE |
 | CM-04 | `--ds-color-text-secondary` | var(--muted-foreground) (colors.css:35) | #475569 / #CBD5E1 | MEDIUM | ISOLATE |
 | CM-05 | `--ds-color-text-inverse` | var(--primary-foreground) (colors.css:50) | #FFFFFF / #0F172A | MEDIUM | ISOLATE |
 | CM-06 | `--ds-color-border-input` | var(--input) (colors.css:125) | #CBD5E1 / #3B4A63 | MEDIUM | ISOLATE |
-| CM-T01 | `--ds-text-2xs` | NOT_IN_RUNTIME | 12px | — | RESERVED_ONLY |
-| CM-T02 | `--ds-text-5xl` | NOT_IN_RUNTIME | 48px | — | RESERVED_ONLY |
+| CM-T01 | `--ds-text-2xs` | NOT_IN_RUNTIME | 12px | — | RESOLVED |
+| CM-T02 | `--ds-text-5xl` | NOT_IN_RUNTIME | 48px | — | RESOLVED |
 | CM-T03 | `--ds-numeric-tabular` | tabular-nums (styles/index.css:657) | tabular-nums | — | ALIAS_ONLY |
 
 bridge（`uds-semantic-bridge.css`）只注入 `--ds7-*` 隔离命名，不覆盖任何 3.0 变量；回滚 = 删除 `web/src/styles/index.css` 的唯一 import 行。

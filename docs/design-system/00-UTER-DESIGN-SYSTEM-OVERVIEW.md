@@ -33,7 +33,7 @@
 7. 例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷
 8. 废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验
 9. 状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED
-10. 当前生效状态：7.0 规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权达成，证据齐备、已达用户审核条件，accepted 仍为 false）；7.0 视觉基线已于 2026-11-15 经用户授权冻结（VISUAL-BASELINE.json）；3.0 仍是现行运行时强制标准，全站迁移按 Phase 6 分期执行
+10. 当前生效状态：7.0 规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权达成，证据齐备、已达用户审核条件，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色已于 2026-11-16 经用户授权正式切换为 7.0 TOKEN-MANIFEST 值（B1–B5 DONE_VERIFIED，tokens.test.ts 三方守卫钉死）；颜色语义层经 --ds7-* 隔离命名注入；7.0.0 视觉基线随值切换重冻结
 
 ## 3. Tokens
 

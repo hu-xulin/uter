@@ -1651,7 +1651,8 @@
     "injectedFile": "web/src/design-system/tokens/uds-semantic-bridge.css",
     "entryImport": "web/src/styles/index.css",
     "rollback": "删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚",
-    "excludeScalarTokens": true
+    "excludeScalarTokens": true,
+    "scalarAlignment": "web/src 真源字面值 = TOKEN-MANIFEST 值（2026-11-16 经用户授权切换，tokens.test.ts 钉死）"
   },
   "fontPolicy": {
     "uiStackVerifiedAgainst": "web/src/styles/theme.css:301-306",

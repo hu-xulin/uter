@@ -137,7 +137,9 @@ const baseline = {
   frozen_at: new Date().toISOString(),
   frozen_by: VERSION === '7.0.0'
     ? '用户指令「冻结 7.0.0 视觉基线」（2026-11-15）；Phase 5 收口动作，冻结后授权 Phase 6'
-    : `用户明确授权更新基线（2026-11-15，AskUserQuestion「授权更新基线」）；审查确认 4 个 Dark 公开页差异为预期设计变化（Dark 表面 #020617 → clerk.com 对齐三层 #0B1120/#111827/#1B2436，theme.css 明文登记），旧基线归档于 audit/baseline/archive-*/`,
+    : VERSION === '7.0.1'
+      ? '用户明确授权「真正切换到 7.0 标量值」（2026-11-16）：运行时字号/行高/圆角/图表色经 @theme 真源字面切换为 7.0 TOKEN-MANIFEST 值（typography.css / primitives.css / theme.css，tokens.test.ts 三方守卫钉死），全站视觉随之变化，旧 7.0.0 基线作废归档于 audit/baseline/archive-7.0.0/；本基线摄于切换后真实渲染'
+      : `用户明确授权更新基线（2026-11-15，AskUserQuestion「授权更新基线」）；审查确认 4 个 Dark 公开页差异为预期设计变化（Dark 表面 #020617 → clerk.com 对齐三层 #0B1120/#111827/#1B2436，theme.css 明文登记），旧基线归档于 audit/baseline/archive-*/`,
   sources: {
     showcaseLog: { path: 'web/visual-regression/uds7/run-log.json', verdict: showcaseLog.verdict, started_at: showcaseLog.started_at ?? null },
     realPageLog: { path: 'docs/design-system/audit/visual-regression.json', verdict: realPageLog.verdict, generated_at: realPageLog.generated_at ?? null },

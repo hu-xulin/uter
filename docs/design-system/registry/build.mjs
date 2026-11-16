@@ -169,8 +169,11 @@ write(join(RUNTIME, 'tokens.ts'), tsTokens)
 log('wrote CSS (4) + TS (1) from manifest')
 
 /* ── 3b) 真实运行时桥接层（§17「必须完成真实产品组件接入」） ───────────────────
- * 只注入颜色语义层，不注入字号/间距/圆角等标量（避免形成第二套 3.0 刻度）。
- * 全部变量用 --ds7-* 隔离命名，绝不覆盖 web/src 已有的同名 --ds-* 变量。
+ * 只注入颜色语义层。标量（字号/行高/圆角/间距）不经 bridge 注入 —— 它们已于
+ * 2026-11-16 经用户授权在 web/src 真源文件（typography.css / primitives.css /
+ * theme.css）字面切换为 7.0 manifest 值，由 tokens.test.ts 三方守卫钉死，
+ * 避免 bridge 形成第二套标量来源。
+ * 颜色变量全部用 --ds7-* 隔离命名，绝不覆盖 web/src 已有的同名 --ds-* 变量。
  * 回滚方式：删除 web/src/styles/index.css 的一行 @import。
  * --------------------------------------------------------------------------- */
 
@@ -431,11 +434,11 @@ const exceptionRegistry = {
 /* §十二 逐 Token 兼容映射：3.0 与 7.0 同名不同值的 6 项不得直接替换。 */
 const compatMap = {
   schema_version: '1.0', registry_id: 'UDS7-COMPAT-MAP', version: M.version, generated_at: stamp,
-  policy: 'ISOLATE_THEN_MIGRATE',
+  policy: 'COLOR_ISOLATE_SCALAR_REPLACED — 颜色语义层经 --ds7-* 隔离命名注入；标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件字面切换为 7.0 值',
   isolation: M.runtimeBridge,
   rollback: M.runtimeBridge.rollback,
   conflicts: [
-    { id: 'CM-01', token: '--ds-radius-md', v3: '10px (3.0.md:1100)', v7: '5px (TOKEN-MANIFEST)', severity: 'HIGH', action: 'ISOLATE', reason: '直接覆盖会改变所有卡片与按钮圆角' },
+    { id: 'CM-01', token: '--ds-radius-md', v3: '10px (3.0.md:1100)', v7: '5px (TOKEN-MANIFEST)', severity: 'HIGH', action: 'REPLACED', reason: '2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）' },
     { id: 'CM-02', token: '--ds-color-surface-overlay', v3: '#000000 (colors.css:86)', v7: '#FFFFFF / #1B2436', severity: 'CRITICAL', action: 'ISOLATE', reason: '语义反转：遮罩由黑变白会破坏所有模态框' },
     { id: 'CM-03', token: '--ds-color-text-primary', v3: 'var(--foreground) (colors.css:34)', v7: '#0F172A / #F1F5F9', severity: 'MEDIUM', action: 'ISOLATE', reason: '变量引用改为实色会失去主题联动' },
     { id: 'CM-04', token: '--ds-color-text-secondary', v3: 'var(--muted-foreground) (colors.css:35)', v7: '#475569 / #CBD5E1', severity: 'MEDIUM', action: 'ISOLATE', reason: '同上' },
@@ -443,17 +446,17 @@ const compatMap = {
     { id: 'CM-06', token: '--ds-color-border-input', v3: 'var(--input) (colors.css:125)', v7: '#CBD5E1 / #3B4A63', severity: 'MEDIUM', action: 'ISOLATE', reason: '同上' },
   ],
   typographyConflicts: [
-    { id: 'CM-T01', token: '--ds-text-2xs', v3: 'NOT_IN_RUNTIME', v7: '12px', action: 'RESERVED_ONLY', reason: '运行时最小档为 xs=12px；7.0 的 2xs 仅供 Showcase，不得被 web/src 消费' },
-    { id: 'CM-T02', token: '--ds-text-5xl', v3: 'NOT_IN_RUNTIME', v7: '48px', action: 'RESERVED_ONLY', reason: 'typography.css:134-135 明示 48/60px 不纳入系统' },
+    { id: 'CM-T01', token: '--ds-text-2xs', v3: 'NOT_IN_RUNTIME', v7: '12px', action: 'RESOLVED', reason: '2026-11-16 经用户授权切换：运行时新增 --text-2xs=12px 档（typography.css @theme，行高 18）' },
+    { id: 'CM-T02', token: '--ds-text-5xl', v3: 'NOT_IN_RUNTIME', v7: '48px', action: 'RESOLVED', reason: '2026-11-16 经用户授权切换：运行时 --text-5xl 已切换为 48px（Hero / 展示大标题，行高 56 = display）' },
     { id: 'CM-T03', token: '--ds-numeric-tabular', v3: 'tabular-nums (styles/index.css:657)', v7: 'tabular-nums', action: 'ALIAS_ONLY', reason: '同一机制，不得新建第二套声明' },
   ],
   migrationBatches: [
     { id: 'B1', scope: '代码高亮 / JSON 编辑器 / Terminal', status: 'DONE_VERIFIED', files: ['web/src/components/ai-elements/code-block.tsx', 'web/src/styles/index.css', 'web/src/features/home/components/hero-terminal-demo.tsx'], evidence: 'syntax-validation.json 15 语言 / 29 grammars 真实解析；C-R02 bridge 浏览器实测；C-R10 ANSI16；code-block 23 项回归测试' },
     { id: 'B2', scope: '渐变文字单一出口与插值空间', status: 'DONE_VERIFIED', files: ['web/src/design-system/foundations/typography.css', 'web/src/components/ai-elements/shimmer.tsx'], evidence: 'gradient-validation.json pixelValidation PASS（55483 像素）；C11 唯一 owner；G17 像素断言；EX-006 RESOLVED' },
-    { id: 'B3', scope: '状态色 / 图表色去 chart 依赖', status: 'PARTIAL', files: ['web/src/styles/theme-presets.css', 'web/src/features/wallet/components/wallet-stats-card.tsx'], reason: '状态色变体族已落地（C-R12）；chart-1..12 尚无业务消费者，业务图表仍走 3.0 --chart-1..6，迁移待 B5 批次' },
-    { id: 'B4', scope: 'Payment / Auth / Wallet 高风险页面', status: 'BLOCKED', reason: '须用户逐批单独授权且通过视觉审核' },
-    { id: 'B5', scope: '其余 ' + routeFiles.length + ' 个路由页面', status: 'BLOCKED', reason: '视觉基线已冻结（2026-11-15）；全站迁移按 Phase 6 分期执行，须并发 WIP 收敛后启动' },
-    { id: 'B6', scope: '删除 3.0 兼容层', status: 'PROHIBITED', reason: '文档 §2.3 明令在 7.0 完成全部验收前不得删除' },
+    { id: 'B3', scope: '状态色 / 图表色去 chart 依赖', status: 'DONE_VERIFIED', files: ['web/src/styles/theme.css', 'web/src/design-system/tokens/brand-colors.ts', 'web/src/features/dashboard/lib/charts.ts'], evidence: 'theme.css --chart-1..6 活引用 --ds7-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS7_CHART_PALETTE；状态色变体族已落地（C-R12）' },
+    { id: 'B4', scope: 'Payment / Auth / Wallet 高风险页面', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/typography.css', 'web/src/styles/theme.css'], evidence: '2026-11-16 经用户授权完成样式层 7.0 值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线' },
+    { id: 'B5', scope: '其余 ' + routeFiles.length + ' 个路由页面', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/typography.css', 'web/src/design-system/tokens/primitives.css', 'web/src/styles/theme.css'], evidence: '全站路由视觉值经 @theme 标量切换到 7.0（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证' },
+    { id: 'B6', scope: '删除 3.0 兼容层', status: 'PROHIBITED', reason: '3.0 兼容层（theme.css / tokens/）现已是 7.0 值的运行时载体，承载 Tailwind @theme 注册机制；7.0 完成全部验收前不得删除' },
   ],
   unmigratedPages: routeFiles.map((p) => rel(p)),
   switchCondition: '所有实际页面完成迁移 → 全站视觉回归无 P0/P1 → 用户明确授权 → 方可申请正式切换 7.0',
@@ -804,10 +807,10 @@ const migrationReport = `# UTER DESIGN SYSTEM 7.0 — 现状清单与迁移报�
 | 组件 | \`components/ai-elements/code-block.tsx\`（CodeMirror + HighlightStyle）、\`components/json-code-editor.tsx\`（Yace）、\`components/json-editor.tsx\`、\`components/ui/markdown.tsx\`、\`features/task-plugins/components/javascript-viewer.tsx\`（classHighlighter）、\`features/home/components/hero-terminal-demo.tsx\` |
 | 现有 syntax Token | **仅 5 个** \`--syntax-keyword/string/number/function/property\`，Light 在 \`theme.css:402-406\`（oklch），Dark 在 \`theme.css:663-667\` |
 | 现有 Terminal 色 | \`--term-*\` 系列在 \`theme.css:412-474 / 672-711\`，与 syntax 分离 |
-| 现有图表色 | \`--chart-1..5\` 在 \`theme.css:389-393 / 645-649\`（oklch） |
+| 现有图表色 | \`--chart-1..6\` 在 \`theme.css\`（Light/Dark 双主题），已活引用 \`--ds7-color-chart-N\`（7.0 十二色板前 6 系列） |
 | 问题 | 语义不全（5/20）、未覆盖 Yace / Marked / Shiki 的统一映射、JSON 编辑器存在用图表色替代语法色的风险 |
 | 迁移后落地（本轮真实验证） | syntax 20 Token × 2 主题经 \`syntax-adapter\` 统一映射（15 语言 / 29 grammars 真实解析，C19）；CodeMirror \`code-block.tsx\` 23 项回归测试；终端 ANSI16 独立色板浏览器实测可读（C-R10）；逐引擎映射见 \`VSCODE-COLOR-MAPPING.md\` |
-| 剩余缺口 | chart-1..12 尚无业务消费者（业务图表仍走 3.0 \`--chart-1..6\`）；产品无 diff 界面，\`diff-added/removed\` 为预留 Token |
+| 剩余缺口 | 业务图表最多 6 系列（前 6 色经 theme.css 活引用 + resolveUds6ChartPalette 消费）；chart-7..12 已注入 bridge 备用；产品无 diff 界面，\`diff-added/removed\` 为预留 Token |
 
 ## 5. 迁移批次与当前状态（唯一真源：COMPAT-MAP.json）
 
@@ -817,7 +820,9 @@ ${compatMap.migrationBatches.map((b) => `| ${b.id} | ${b.scope} | ${b.status} | 
 
 状态语义：\`DONE_VERIFIED\` = 已落地且通过真实验证；\`PARTIAL\` = 部分落地、剩余诚实登记；\`BLOCKED\` = 待用户逐批授权；\`PROHIBITED\` = 规范明令禁止。未迁移页面清单见 \`COMPAT-MAP.json::unmigratedPages\`（${compatMap.unmigratedPages.length} 个路由）。
 
-### 5.1 冲突档（ISOLATE，不直接覆盖）
+### 5.1 冲突档处置
+
+CM-01 / CM-T01 / CM-T02 已于 2026-11-16 经用户授权正式切换为 REPLACED / RESOLVED（运行时值 = 7.0 manifest 值）；CM-02..CM-06（颜色语义冲突）保持 ISOLATE——颜色经 bridge 隔离命名（--ds7-*）注入，3.0 同名变量保留主题联动机制。
 
 | ID | Token | 3.0 | 7.0 | 级别 | 处置 |
 |---|---|---|---|---|---|

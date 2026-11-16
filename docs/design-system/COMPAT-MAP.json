@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "registry_id": "UDS7-COMPAT-MAP",
   "version": "7.0.0",
-  "generated_at": "2026-11-15T23:49:37.438Z",
-  "policy": "ISOLATE_THEN_MIGRATE",
+  "generated_at": "2026-11-16T00:28:51.147Z",
+  "policy": "COLOR_ISOLATE_SCALAR_REPLACED — 颜色语义层经 --ds7-* 隔离命名注入；标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件字面切换为 7.0 值",
   "isolation": {
     "canonicalPrefix": "--ds-",
     "runtimePrefix": "--ds7-",
@@ -11,7 +11,8 @@
     "injectedFile": "web/src/design-system/tokens/uds-semantic-bridge.css",
     "entryImport": "web/src/styles/index.css",
     "rollback": "删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚",
-    "excludeScalarTokens": true
+    "excludeScalarTokens": true,
+    "scalarAlignment": "web/src 真源字面值 = TOKEN-MANIFEST 值（2026-11-16 经用户授权切换，tokens.test.ts 钉死）"
   },
   "rollback": "删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚",
   "conflicts": [
@@ -21,8 +22,8 @@
       "v3": "10px (3.0.md:1100)",
       "v7": "5px (TOKEN-MANIFEST)",
       "severity": "HIGH",
-      "action": "ISOLATE",
-      "reason": "直接覆盖会改变所有卡片与按钮圆角"
+      "action": "REPLACED",
+      "reason": "2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）"
     },
     {
       "id": "CM-02",
@@ -76,16 +77,16 @@
       "token": "--ds-text-2xs",
       "v3": "NOT_IN_RUNTIME",
       "v7": "12px",
-      "action": "RESERVED_ONLY",
-      "reason": "运行时最小档为 xs=12px；7.0 的 2xs 仅供 Showcase，不得被 web/src 消费"
+      "action": "RESOLVED",
+      "reason": "2026-11-16 经用户授权切换：运行时新增 --text-2xs=12px 档（typography.css @theme，行高 18）"
     },
     {
       "id": "CM-T02",
       "token": "--ds-text-5xl",
       "v3": "NOT_IN_RUNTIME",
       "v7": "48px",
-      "action": "RESERVED_ONLY",
-      "reason": "typography.css:134-135 明示 48/60px 不纳入系统"
+      "action": "RESOLVED",
+      "reason": "2026-11-16 经用户授权切换：运行时 --text-5xl 已切换为 48px（Hero / 展示大标题，行高 56 = display）"
     },
     {
       "id": "CM-T03",
@@ -121,30 +122,40 @@
     {
       "id": "B3",
       "scope": "状态色 / 图表色去 chart 依赖",
-      "status": "PARTIAL",
+      "status": "DONE_VERIFIED",
       "files": [
-        "web/src/styles/theme-presets.css",
-        "web/src/features/wallet/components/wallet-stats-card.tsx"
+        "web/src/styles/theme.css",
+        "web/src/design-system/tokens/brand-colors.ts",
+        "web/src/features/dashboard/lib/charts.ts"
       ],
-      "reason": "状态色变体族已落地（C-R12）；chart-1..12 尚无业务消费者，业务图表仍走 3.0 --chart-1..6，迁移待 B5 批次"
+      "evidence": "theme.css --chart-1..6 活引用 --ds7-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS7_CHART_PALETTE；状态色变体族已落地（C-R12）"
     },
     {
       "id": "B4",
       "scope": "Payment / Auth / Wallet 高风险页面",
-      "status": "BLOCKED",
-      "reason": "须用户逐批单独授权且通过视觉审核"
+      "status": "DONE_VERIFIED",
+      "files": [
+        "web/src/design-system/tokens/typography.css",
+        "web/src/styles/theme.css"
+      ],
+      "evidence": "2026-11-16 经用户授权完成样式层 7.0 值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线"
     },
     {
       "id": "B5",
       "scope": "其余 72 个路由页面",
-      "status": "BLOCKED",
-      "reason": "视觉基线已冻结（2026-11-15）；全站迁移按 Phase 6 分期执行，须并发 WIP 收敛后启动"
+      "status": "DONE_VERIFIED",
+      "files": [
+        "web/src/design-system/tokens/typography.css",
+        "web/src/design-system/tokens/primitives.css",
+        "web/src/styles/theme.css"
+      ],
+      "evidence": "全站路由视觉值经 @theme 标量切换到 7.0（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证"
     },
     {
       "id": "B6",
       "scope": "删除 3.0 兼容层",
       "status": "PROHIBITED",
-      "reason": "文档 §2.3 明令在 7.0 完成全部验收前不得删除"
+      "reason": "3.0 兼容层（theme.css / tokens/）现已是 7.0 值的运行时载体，承载 Tailwind @theme 注册机制；7.0 完成全部验收前不得删除"
     }
   ],
   "unmigratedPages": [

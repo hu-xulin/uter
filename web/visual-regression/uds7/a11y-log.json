@@ -2,7 +2,7 @@
   "checker": "a11y-check.mjs",
   "executed": true,
   "engine": "axe-core (WCAG 2.0/2.1/2.2 A+AA) + real keyboard Tab",
-  "started_at": "2026-11-15T23:50:52.454Z",
+  "started_at": "2026-11-16T00:37:41.260Z",
   "verdict": "PASS",
   "cases": [
     {

@@ -24,16 +24,16 @@ import { describe, expect, it } from 'vitest'
 /**
  * 设计系统 Token 的守卫测试。
  *
- * §19.4 / §28.3 要求「文档中的字号表由 Token 生成，或通过自动化检查确保
- * 一致」。这份测试就是那个检查：它把 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`
- * 的 §1.2 字号表与 §28 `TOKEN-MANIFEST.typography` **硬编码**成期望值，
- * 再去解析真实的 CSS 文件（运行真源是 `tokens/typography.css`）。
+ * 要求「文档中的字号表由 Token 生成，或通过自动化检查确保一致」。这份
+ * 测试就是那个检查：它把 04-TYPOGRAPHY-STANDARD.md §Token 表与
+ * TOKEN-MANIFEST.json（7.0 唯一真源）**硬编码**成期望值，再去解析真实的
+ * CSS 文件（运行真源是 `tokens/typography.css`）。
  *
  * 因此任何一次「顺手把 text-sm 改成 15px」都会让测试变红，而不是等
  * 三个月后有人发现页面字号不一致。
  *
- * 3.0 阶梯是 **11 个主档 + 7 个配套档**；旧 design-system.md 与
- * design-system-2.0.md 均已废止删除，UTER-DESIGN-SYSTEM-3.0.md 是唯一真源。
+ * 7.0 阶梯是 **10 个主档（2xs..5xl）+ 派生档**。2026-11-16 经用户授权
+ * 从 v1.2 刻度正式切换到 7.0 值。
  */
 
 const DS_DIR = join(process.cwd(), 'src', 'design-system')
@@ -67,27 +67,28 @@ function toPx(value: string): number {
 }
 
 /**
- * 3.0 §1.2 主档 + 配套档（与 §28 TOKEN-MANIFEST.typography 同值）。
+ * 7.0 §Token 主档 + 派生档（与 TOKEN-MANIFEST.json font-size/line-height 同值）。
  * [token, 字号px, 行高px, 语义角色]
  */
 const LADDER: Array<[string, number, number, string]> = [
-  ['xs', 12, 18, '辅助说明、最小标签'],
+  ['2xs', 12, 18, '最小可见文字（全站下限，7.0 2xs）'],
+  ['xs', 13, 20, '密集表格 / 代码 / 标签（7.0 xs）'],
   ['sm', 14, 22, '默认正文 / label'],
-  ['md', 15, 24, '次级正文（3.0 §1.2）'],
-  ['mono-xs', 12, 18, 'mono-xs：小型 ID、标签（3.0 §1.5）'],
+  ['md', 15, 24, '次级正文（3.0 派生档保留，7.0 未定义）'],
+  ['mono-xs', 12, 18, 'mono-xs：小型 ID、标签（= 7.0 2xs 同值）'],
   ['mono', 13, 20, 'mono 正文等宽文本'],
-  ['mono-base', 14, 22, 'mono-base：代码、技术信息（3.0 §1.5）'],
+  ['mono-base', 14, 22, 'mono-base：代码、技术信息'],
   ['mono-code', 13, 20, '等宽代码展示区'],
   ['mono-title', 16, 22, '等宽卡片标题'],
   ['dense', 13, 20, '密集数据：表格单元格 / 二级导航 / 分页（专用派生档）'],
   ['group', 16, 24, 'group-title 分组标题（专用派生档）'],
   ['base', 16, 24, '行标题 / 设置字段 / 指标数值'],
   ['lg', 18, 26, 'h3 卡片标题 / 弹窗标题'],
-  ['xl', 18, 26, 'xl：卡片及次级标题（3.0 §1.2）'],
-  ['2xl', 20, 28, '小型区块标题（3.0 §1.2）'],
-  ['3xl', 24, 32, '区块标题（3.0 §1.2）'],
-  ['4xl', 30, 38, '页面标题（3.0 §1.2）'],
-  ['5xl', 36, 44, 'display 营销展示、特殊大标题（3.0 §1.2）'],
+  ['xl', 20, 26, '次级标题（7.0 xl）'],
+  ['2xl', 24, 32, '区块标题（7.0 2xl）'],
+  ['3xl', 30, 38, '分区标题（7.0 3xl，行高 = 7.0 h2）'],
+  ['4xl', 36, 44, '页面主标题（7.0 4xl，行高 = 7.0 h1）'],
+  ['5xl', 48, 56, 'Hero / 展示大标题（7.0 5xl，行高 = 7.0 display）'],
 ]
 
 describe('字号阶梯（tokens/typography.css）', () => {
@@ -178,16 +179,16 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     // 兜底值是 `var(--text-x--line-height, <fallback>)` 里的 fallback，
     // 一旦和 typography.css 对不上，说明有人只改了一边。
     const pairs: Array<[string, string, number]> = [
-      ['ds-line-display', 'text-5xl--line-height', 44],
-      ['ds-line-page-title', 'text-4xl--line-height', 38],
-      ['ds-line-section-title', 'text-3xl--line-height', 32],
+      ['ds-line-display', 'text-5xl--line-height', 56],
+      ['ds-line-page-title', 'text-4xl--line-height', 44],
+      ['ds-line-section-title', 'text-3xl--line-height', 38],
       ['ds-line-card-title', 'text-lg--line-height', 26],
       ['ds-line-group-title', 'text-group--line-height', 24],
       ['ds-line-body', 'text-sm--line-height', 22],
       ['ds-line-long', 'text-long--line-height', 26],
       ['ds-line-body-sm', 'text-sm--line-height', 22],
       ['ds-line-dense', 'text-dense--line-height', 20],
-      ['ds-line-caption', 'text-xs--line-height', 18],
+      ['ds-line-caption', 'text-xs--line-height', 20],
     ]
 
     for (const [semanticName, ladderName, expectedPx] of pairs) {
@@ -225,16 +226,16 @@ describe('分组标题档（group-title）', () => {
   })
 })
 
-describe('圆角 Token 对应规范 §5', () => {
-  it('七个圆角档位与文档一致', () => {
+describe('圆角 Token 对应 7.0 §Shape 刻度', () => {
+  it('八个圆角档位与 7.0 刻度一致（xs/4xl 按最近值并入）', () => {
     const SHAPE: Array<[string, number]> = [
-      ['xs', 6],
-      ['sm', 8],
-      ['md', 10],
-      ['lg', 12],
-      ['xl', 14],
+      ['xs', 3],
+      ['sm', 3],
+      ['md', 5],
+      ['lg', 8],
+      ['xl', 12],
       ['2xl', 16],
-      ['3xl', 18],
+      ['3xl', 20],
       ['4xl', 20],
     ]
     for (const [step, px] of SHAPE) {
@@ -256,29 +257,30 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     return Number.NaN
   }
 
-  it('默认基准 0.625rem(10px) 推出 6/8/10/12/14/16/18/20 八档（§5 九档含 full）', () => {
+  it('默认基准 0.3125rem(5px) 推出 3/3/5/8/12/16/20/20 八档（7.0 刻度，含并入档）', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
     // 出现「文档 12px、页面 10px」，这里把差异钉死。
-    // UTER-DESIGN-SYSTEM-3.0 §5 / §28 radius.scale（圆角九档，含 full）：
-    // 基准 0.625rem（10px = 默认控件档 r-md），系数 xs×0.6 → 4xl×2；
+    // 7.0 §Shape / TOKEN-MANIFEST radius.scale：基准 5px（= 默认控件档
+    // r-md），刻度 sm=3 / md=5 / lg=8 / xl=12 / 2xl=16 / 3xl=20；
+    // 3.0 特有的 xs / 4xl 档按最近 7.0 值并入（xs→sm、4xl→3xl）。
     // `rounded-full` 是特殊档，由 Tailwind 内建提供，不在 theme.css 重复声明。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
     )
     const base = toPx(readVar(themeCss, 'radius') as string)
-    expect(base, '默认基准 --radius').toBe(10)
+    expect(base, '默认基准 --radius').toBe(5)
 
     const EXPECTED: Array<[string, number]> = [
-      ['xs', 6],
-      ['sm', 8],
-      ['md', 10],
-      ['lg', 12],
-      ['xl', 14],
+      ['xs', 3],
+      ['sm', 3],
+      ['md', 5],
+      ['lg', 8],
+      ['xl', 12],
       ['2xl', 16],
-      ['3xl', 18],
+      ['3xl', 20],
       ['4xl', 20],
     ]
     for (const [step, px] of EXPECTED) {

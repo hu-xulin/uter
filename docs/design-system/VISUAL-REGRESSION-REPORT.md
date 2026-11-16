@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 7.0 — 视觉回归与无障碍验证报告
 
-> 生成时间 2026-11-15T23:50:13.131Z · 由 `registry/finalize.mjs` 从真实运行日志派生
+> 生成时间 2026-11-16T00:36:54.098Z · 由 `registry/finalize.mjs` 从真实运行日志派生
 > **范围口径**：本报告只覆盖 7.0 Design Showcase 的自动化视觉 / 无障碍验证，**不等于** Phase 8 全站真实产品页面视觉回归。
 
 ## 1. 执行环境与真实命令
@@ -15,7 +15,7 @@
 | 无障碍日志 | `web/visual-regression/uds7/a11y-log.json` · verdict `PASS` |
 | 单元测试 | `bun run test` · EXIT=0 |
 | 构建校验 | `bun run build:check` · EXIT=0 |
-| 校对对象 | `docs/design-system/SHOWCASE-7.0.html`（936026 字符） |
+| 校对对象 | `docs/design-system/SHOWCASE-7.0.html`（936090 字符） |
 
 ## 2. 四个真实渲染场景
 
@@ -75,8 +75,8 @@
 
 ## 6. 构建产物验证
 
-- `web/dist/design-system/7.0.html` · exists=true · 998429 bytes
-- `web/dist/design-system/7.0/index.html` · exists=true · 998429 bytes
+- `web/dist/design-system/7.0.html` · exists=true · 998553 bytes
+- `web/dist/design-system/7.0/index.html` · exists=true · 998553 bytes
 
 - 说明：`web/dist` 被 `web/.gitignore:11` 忽略，不进提交；此项只证明 `build:check` 后 7.0 页面确实进入产物。
 

@@ -1,6 +1,6 @@
 {
   "schema": "UDS7-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-16T00:02:14.333Z",
+  "generated_at": "2026-11-16T00:42:47.088Z",
   "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）",
   "backend": "http://127.0.0.1:3000",
   "dist": "web/dist",
@@ -86,13 +86,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 958,
-        "meanLuminance": 237,
-        "luminanceStdDev": 33.87,
-        "nonWhitePixelRatio": 0.0675
+        "distinctColors": 804,
+        "meanLuminance": 235.06,
+        "luminanceStdDev": 38.61,
+        "nonWhitePixelRatio": 0.0711
       },
       "screenshot": "web/visual-regression/uds7/real-pages/home-light.png",
-      "screenshotSha256": "73c44f636a34282ab3f19227edf0841aae6357c334ca660ceea3ecdc5fed04c7",
+      "screenshotSha256": "30b9b8eeb1acedd94c2af145fe0b286dc20da19d61a66d956279691cb8f555ce",
       "consoleErrors": [],
       "pass": true
     },
@@ -130,13 +130,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 971,
-        "meanLuminance": 30.85,
-        "luminanceStdDev": 36.19,
-        "nonWhitePixelRatio": 0.9894
+        "distinctColors": 775,
+        "meanLuminance": 32.44,
+        "luminanceStdDev": 39.95,
+        "nonWhitePixelRatio": 0.983
       },
       "screenshot": "web/visual-regression/uds7/real-pages/home-dark.png",
-      "screenshotSha256": "578112838d6b598d2efe5d761c1614902070d6a6c43a0c12689f1ed821137021",
+      "screenshotSha256": "0122d7f9aaf84c592866d7850cedcb0aa22ff89f991a03302fd82842f75c7e0d",
       "consoleErrors": [],
       "pass": true
     },
@@ -175,12 +175,12 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 239,
-        "meanLuminance": 246.03,
-        "luminanceStdDev": 23.06,
-        "nonWhitePixelRatio": 0.0257
+        "meanLuminance": 245.87,
+        "luminanceStdDev": 23.62,
+        "nonWhitePixelRatio": 0.0266
       },
       "screenshot": "web/visual-regression/uds7/real-pages/login-light.png",
-      "screenshotSha256": "9648a8d2b6311bcdb8d4ee970dfc919dba723205c3a81375940cfb9a8820d276",
+      "screenshotSha256": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
       "consoleErrors": [],
       "pass": true
     },
@@ -218,13 +218,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 280,
-        "meanLuminance": 21.67,
-        "luminanceStdDev": 23.47,
-        "nonWhitePixelRatio": 0.9971
+        "distinctColors": 279,
+        "meanLuminance": 21.86,
+        "luminanceStdDev": 24.1,
+        "nonWhitePixelRatio": 0.9967
       },
       "screenshot": "web/visual-regression/uds7/real-pages/login-dark.png",
-      "screenshotSha256": "4bad67106f47ea5a8f36a22b40d2fda18268cdac0570b47c67875b2ec8d1ebcb",
+      "screenshotSha256": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
       "consoleErrors": [],
       "pass": true
     },
@@ -262,13 +262,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 312,
-        "meanLuminance": 241.26,
-        "luminanceStdDev": 26.76,
-        "nonWhitePixelRatio": 0.0383
+        "distinctColors": 306,
+        "meanLuminance": 240.98,
+        "luminanceStdDev": 27.79,
+        "nonWhitePixelRatio": 0.0397
       },
       "screenshot": "web/visual-regression/uds7/real-pages/about-light.png",
-      "screenshotSha256": "540d9a39dd839bd5b13a7ed668003abefc8e24515b4d6737f837b6ba1a512780",
+      "screenshotSha256": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
       "consoleErrors": [],
       "pass": true
     },
@@ -306,13 +306,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 313,
-        "meanLuminance": 24.78,
-        "luminanceStdDev": 32.03,
-        "nonWhitePixelRatio": 0.9958
+        "distinctColors": 310,
+        "meanLuminance": 25.08,
+        "luminanceStdDev": 32.93,
+        "nonWhitePixelRatio": 0.9947
       },
       "screenshot": "web/visual-regression/uds7/real-pages/about-dark.png",
-      "screenshotSha256": "77b7f28156a17ec5e7582abf56f284764a75adf596937f40d66d7923f8e1d75b",
+      "screenshotSha256": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
       "consoleErrors": [],
       "pass": true
     },
@@ -350,13 +350,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 1465,
-        "meanLuminance": 236.37,
-        "luminanceStdDev": 39.89,
-        "nonWhitePixelRatio": 0.0679
+        "distinctColors": 1466,
+        "meanLuminance": 236.36,
+        "luminanceStdDev": 39.97,
+        "nonWhitePixelRatio": 0.0678
       },
       "screenshot": "web/visual-regression/uds7/real-pages/docs-light.png",
-      "screenshotSha256": "97688e6c1f96d1718ac15720e1bd8d405bc89d0d855d6bc182cbd6fa5a7cf650",
+      "screenshotSha256": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
       "consoleErrors": [],
       "pass": true
     },
@@ -394,13 +394,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 1458,
+        "distinctColors": 1457,
         "meanLuminance": 30.44,
-        "luminanceStdDev": 45.76,
-        "nonWhitePixelRatio": 0.9706
+        "luminanceStdDev": 45.78,
+        "nonWhitePixelRatio": 0.9705
       },
       "screenshot": "web/visual-regression/uds7/real-pages/docs-dark.png",
-      "screenshotSha256": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
+      "screenshotSha256": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
       "consoleErrors": [],
       "pass": true
     },
@@ -437,13 +437,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 547,
-        "meanLuminance": 241.42,
-        "luminanceStdDev": 31.48,
-        "nonWhitePixelRatio": 0.0456
+        "distinctColors": 549,
+        "meanLuminance": 241.22,
+        "luminanceStdDev": 32.04,
+        "nonWhitePixelRatio": 0.0465
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-dashboard-light.png",
-      "screenshotSha256": "efba266d445d4131bd2aa67ee6b73b6741353bb44c5445c04b21005c1ead86a2",
+      "screenshotSha256": "b32895b9b10f9db3ab7fd8f6fc349498d7f1c97791b70eb76d05a6cf0e4ab015",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -482,12 +482,12 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 389,
-        "meanLuminance": 245.12,
-        "luminanceStdDev": 27.6,
-        "nonWhitePixelRatio": 0.0327
+        "meanLuminance": 244.85,
+        "luminanceStdDev": 28.32,
+        "nonWhitePixelRatio": 0.0339
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-wallet-light.png",
-      "screenshotSha256": "1ae258598ce60120745749ee534f8269a1f92b8525b659df19180aecd42aff7d",
+      "screenshotSha256": "b8b679f1919b9312d7a281cf563c242f6be73b0937ac0b8fe93aa0a84eb4a8ce",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -525,13 +525,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 332,
-        "meanLuminance": 244.98,
-        "luminanceStdDev": 22.81,
-        "nonWhitePixelRatio": 0.0232
+        "distinctColors": 334,
+        "meanLuminance": 244.74,
+        "luminanceStdDev": 23.74,
+        "nonWhitePixelRatio": 0.0247
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-keys-light.png",
-      "screenshotSha256": "910847167dfdbc510bb344dde2c9856e7e7a324d7b0e35c7673931565d8cdabf",
+      "screenshotSha256": "0c7cf8a8563d6d6e7eb1501d88b4b4f4163ac6a206f66477a77f7ffa1d4f9d18",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -570,12 +570,12 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 336,
-        "meanLuminance": 244.59,
-        "luminanceStdDev": 24.2,
-        "nonWhitePixelRatio": 0.0263
+        "meanLuminance": 244.38,
+        "luminanceStdDev": 25.02,
+        "nonWhitePixelRatio": 0.0275
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-usage-logs-light.png",
-      "screenshotSha256": "2c960b1ce85161a9c927302e473fe43ee170c2a3963a28a5c7fbbe0b6054305a",
+      "screenshotSha256": "a8010cfecf701b2c4af6349c4c8adb8b4ae7d127295cf29b643f6e5eaffd6837",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -613,13 +613,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 554,
-        "meanLuminance": 30.26,
-        "luminanceStdDev": 35.45,
-        "nonWhitePixelRatio": 0.9893
+        "distinctColors": 557,
+        "meanLuminance": 30.46,
+        "luminanceStdDev": 35.94,
+        "nonWhitePixelRatio": 0.9886
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-dashboard-dark.png",
-      "screenshotSha256": "23dcd46986221821a65421b4988f0ebc10e7794941be1fd524533f8839a6fdfc",
+      "screenshotSha256": "462d5e56e530c9b5878c45eb527519ab7785cfda030c2b670fae6a0df0842cc2",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -657,13 +657,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 384,
-        "meanLuminance": 29.88,
-        "luminanceStdDev": 31.13,
-        "nonWhitePixelRatio": 0.991
+        "distinctColors": 394,
+        "meanLuminance": 30.07,
+        "luminanceStdDev": 31.84,
+        "nonWhitePixelRatio": 0.9902
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-wallet-dark.png",
-      "screenshotSha256": "923e73b40c16b096de4a218b9acf1367bce8ed4597bfc64195b65b85dcbba45d",
+      "screenshotSha256": "73595b6bbfaa6615a11f53a2c4bee246846486c791f92df5bc302433f92205a2",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -701,13 +701,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 364,
-        "meanLuminance": 22.37,
-        "luminanceStdDev": 25.42,
-        "nonWhitePixelRatio": 0.9939
+        "distinctColors": 374,
+        "meanLuminance": 22.65,
+        "luminanceStdDev": 26.39,
+        "nonWhitePixelRatio": 0.9932
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-keys-dark.png",
-      "screenshotSha256": "3f4d5941a1453c175bcc84c540e2bedf07b7f6ee00352558b7f3ea28cb0b771b",
+      "screenshotSha256": "d9a7c739604379e245be304d6a1e8f17ae86d9713a90ad312d70b736dc840cc8",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -745,13 +745,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 372,
-        "meanLuminance": 23.58,
-        "luminanceStdDev": 27.34,
-        "nonWhitePixelRatio": 0.9931
+        "distinctColors": 379,
+        "meanLuminance": 23.81,
+        "luminanceStdDev": 28.1,
+        "nonWhitePixelRatio": 0.9924
       },
       "screenshot": "web/visual-regression/uds7/real-pages/auth-usage-logs-dark.png",
-      "screenshotSha256": "aeec8e88e7065f4537cd0de7b6c18306763685e69fd5bc9048026b4e2a643d69",
+      "screenshotSha256": "47d05dcf749398c73375b961138f9ff6a06605fc46dc6d623348af9b0987e375",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true

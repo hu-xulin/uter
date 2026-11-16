@@ -17,24 +17,33 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Layer 1 · Typography scale（唯一字号阶梯）────────────────────────
- * 11 主档 + 7 配套档，与 UTER-DESIGN-SYSTEM-3.0.md §1.2 / §28 逐行对应：
+ * 10 主档 + 配套派生档，与 04-TYPOGRAPHY-STANDARD.md §Token 表 /
+ * TOKEN-MANIFEST.json（7.0 唯一真源）逐行对应：
  *
- *   display  36 / 600 / 44   页面主视觉标题（营销页 hero）
- *   h1       30 / 600 / 38   页面标题（--text-4xl）
- *   h2       24 / 600 / 32   区块标题（--text-3xl）
+ *   display  48 / 600 / 56   页面主视觉标题（营销页 hero，--text-5xl）
+ *   h1       36 / 600 / 44   页面标题（--text-4xl）
+ *   h2       30 / 600 / 38   区块标题（--text-3xl）
  *   h3       18 / 600 / 26   卡片标题、弹窗标题
  *   body     14 / 400 / 22   常规正文、表单内容、普通说明（全站基准）
  *   body-long 16 / 400 / 26  长文本：文章、协议、帮助文档、连续阅读
  *   body-sm  14 / 400 / 22   紧凑辅助正文
  *   label    14 / 500 / 22   按钮文字、表单标签、导航项（Body Medium）
- *   small    12 / 400 / 18   辅助信息、时间、次要说明
- *   caption  12 / 400 / 18   说明、占位符、徽标
+ *   small    13 / 400 / 20   密集表格 / 代码 / 标签（7.0 xs）
+ *   caption  13 / 400 / 20   说明、占位符、徽标
+ *   2xs      12 / 400 / 18   最小可见文字（全站下限，7.0 2xs）
  *   mono     13 / 400 / 20   正文里的等宽文本（模型 ID、密钥、行内代码）
  *   dense    13 / 400 / 20   密集数据专用：表格单元格、二级导航、分页
  *
- * 行高 2026-10-30 v1.2 放宽：正文 14px 从 20 → 22（1.57）、12px 从 16 → 18
- * （1.50）—— 长时间阅读的段落需要呼吸感，控件文本因落在固定高度容器里
- * （按钮 h-9、输入框 h-9），行高变化不改变控件实际高度。
+ * 2026-11-16 经用户授权从 v1.2 刻度（h1=30/24/18、display=36）正式
+ * 切换到 7.0 字号阶梯（04 规范 §Token 表）：新增 2xs=12 档，xs 由 12
+ * 上调至 13（密集/代码/标签语义），xl 起每档 +1 档位（20/24/30/36/48）。
+ * 行高对齐 7.0 --ds-leading-*：caption=18 / code=20 / body=22 /
+ * base=24 / long=26 / h3=26 / h2=38 / h1=44 / display=56；24px 档
+ * 7.0 未单列行高，沿用 3.0 的 24/32 惯例。
+ *
+ * 行高基准（7.0 body=22、caption/code=20）：长时间阅读的段落需要呼吸感，
+ * 控件文本因落在固定高度容器里（按钮 h-9、输入框 h-9），行高变化不
+ * 改变控件实际高度。
  *
  * group-title 是语义层级的第 4 层，取值走独立的 `--text-group`（16/24），
  * 不占用上表阶梯位置 —— 与 dense / mono-code / mono-title 同属「专用派生档」。
@@ -66,13 +75,21 @@ For commercial licensing, please contact support@uter.ai
  * 不缩放 `--text-*`（§7.2 / §17.7）；放大文字走 simple-large 预设。
  */
 @theme {
-  --text-xs: 0.75rem; /* 12px — small / caption */
-  --text-xs--line-height: 1.125rem; /* 18px */
+  /* 7.0 主档（04-TYPOGRAPHY-STANDARD.md §Token 表，TOKEN-MANIFEST 唯一真源）：
+   * 2xs=12 / xs=13 / sm=14 / base=16 / lg=18 / xl=20 / 2xl=24 / 3xl=30 /
+   * 4xl=36 / 5xl=48。行高对齐 --ds-leading-*：caption=18 / code=20 /
+   * body=22 / base=24 / h3=26 / （24px 沿用 3.0 惯例 32）/ h2=38 / h1=44 /
+   * display=56。2026-11-16 经用户授权从 v1.2 刻度正式切换到 7.0 值。 */
+  --text-2xs: 0.75rem; /* 12px — 最小可见文字（全站下限，7.0 2xs） */
+  --text-2xs--line-height: 1.125rem; /* 18px — 7.0 caption */
 
-  --text-sm: 0.875rem; /* 14px — body / body-sm / label */
-  --text-sm--line-height: 1.375rem; /* 22px */
+  --text-xs: 0.8125rem; /* 13px — 密集表格 / 代码 / 标签（7.0 xs） */
+  --text-xs--line-height: 1.25rem; /* 20px — 7.0 code/table */
 
-  --text-mono-xs: 0.75rem; /* 12px — 3.0 §1.5 mono-xs：小型 ID、标签 */
+  --text-sm: 0.875rem; /* 14px — body / body-sm / label（7.0 sm） */
+  --text-sm--line-height: 1.375rem; /* 22px — 7.0 body */
+
+  --text-mono-xs: 0.75rem; /* 12px — mono-xs：小型 ID、标签（= 7.0 2xs 同值） */
   --text-mono-xs--line-height: 1.125rem; /* 18px */
 
   --text-mono: 0.8125rem; /* 13px — mono（3.0 mono-sm），正文里的等宽文本 */
@@ -106,20 +123,20 @@ For commercial licensing, please contact support@uter.ai
   --text-lg: 1.125rem; /* 18px — h3 */
   --text-lg--line-height: 1.625rem; /* 26px */
 
-  --text-xl: 1.125rem; /* 18px — 3.0 §1.2 xl：卡片及次级标题（500） */
-  --text-xl--line-height: 1.625rem; /* 26px */
+  --text-xl: 1.25rem; /* 20px — 次级标题（7.0 xl） */
+  --text-xl--line-height: 1.625rem; /* 26px — 7.0 long/h3 */
 
-  --text-2xl: 1.25rem; /* 20px — 3.0 §1.2 2xl：小型区块标题 */
-  --text-2xl--line-height: 1.75rem; /* 28px */
+  --text-2xl: 1.5rem; /* 24px — 区块标题（7.0 2xl） */
+  --text-2xl--line-height: 2rem; /* 32px — 7.0 未单列 24px 行高，沿用 3.0 的 24/32 惯例 */
 
-  --text-3xl: 1.5rem; /* 24px — 3.0 §1.2 3xl：区块标题 */
-  --text-3xl--line-height: 2rem; /* 32px */
+  --text-3xl: 1.875rem; /* 30px — 分区标题（7.0 3xl） */
+  --text-3xl--line-height: 2.375rem; /* 38px — 7.0 h2 */
 
-  --text-4xl: 1.875rem; /* 30px — 3.0 §1.2 4xl：页面标题 */
-  --text-4xl--line-height: 2.375rem; /* 38px */
+  --text-4xl: 2.25rem; /* 36px — 页面主标题（7.0 4xl） */
+  --text-4xl--line-height: 2.75rem; /* 44px — 7.0 h1 */
 
-  --text-5xl: 2.25rem; /* 36px — 3.0 §1.2 5xl：营销展示、特殊大标题 */
-  --text-5xl--line-height: 2.75rem; /* 44px */
+  --text-5xl: 3rem; /* 48px — Hero / 展示大标题（7.0 5xl） */
+  --text-5xl--line-height: 3.5rem; /* 56px — 7.0 display */
 
   /* group-title 专用档：16/24。分组标题与「行标题 / 设置字段 / 指标数值」
    * 同为 16px，靠字重（600 vs 400/500）与语义区分，不是两个字号档。
@@ -131,8 +148,9 @@ For commercial licensing, please contact support@uter.ai
   --text-group: 1rem; /* 16px — 3.0 §1.3 group-title 分组标题 */
   --text-group--line-height: 1.5rem; /* 24px */
 
-  /* 阶梯到此为止。更大的尺寸（48/60px）不纳入系统 —— 需要时先确认是否
-     真的必要，并按 exceptions.md 的流程登记。 */
+  /* 阶梯到此为止（7.0 主档 2xs..5xl，5xl=48px 为 Hero 展示档）。更大的
+     尺寸（60px+）不纳入系统 —— 需要时先确认是否真的必要，并按
+     exceptions.md 的流程登记。 */
 
   /* ── 字重阶梯：全站只用这四档 */
   --font-weight-normal: 400;

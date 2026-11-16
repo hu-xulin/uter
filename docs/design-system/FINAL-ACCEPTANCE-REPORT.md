@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 7.0 — 最终验收报告（PART 12）
 
-> 生成时间 2026-11-15T23:50:13.131Z · 由 `registry/finalize.mjs` 从 `GATE-EVIDENCE.json` 的真实命令结果派生
+> 生成时间 2026-11-16T00:36:54.098Z · 由 `registry/finalize.mjs` 从 `GATE-EVIDENCE.json` 的真实命令结果派生
 > **状态纪律**：`IMPLEMENTED` ≠ `VERIFIED` ≠ `ACCEPTANCE_READY` ≠ `ACCEPTED`。用户审核前一律不得标 `ACCEPTED`。
 
 ## 1. 总体结论
@@ -26,7 +26,7 @@
 | 注册表 | 7 | `TOKEN / COMPONENT / PAGE / DEPENDENCY-GRAPH / ACCEPTANCE-MATRIX / DEPRECATED / EXCEPTION` |
 | 唯一真源 | 1 | `TOKEN-MANIFEST.json` |
 | 运行时派生产物 | 5 | `runtime/tokens.css`、`runtime/themes/light.css`、`runtime/themes/dark.css`、`runtime/foundations.css`、`runtime/tokens.ts` |
-| Showcase | 1 源 + 2 入口 | `SHOWCASE-7.0.html`（936026 字符）、`web/public/design-system/7.0.html`、`web/public/design-system/7.0/index.html` |
+| Showcase | 1 源 + 2 入口 | `SHOWCASE-7.0.html`（936090 字符）、`web/public/design-system/7.0.html`、`web/public/design-system/7.0/index.html` |
 | 自动化 | 4 脚本 | `web/scripts/check-design-system-7.0.mjs`、`registry/contrast-engine.mjs`、`registry/visual-check.mjs`、`registry/a11y-check.mjs` |
 | 构建链 | 3 脚本 | `registry/tokens.mjs`、`registry/spec-modules.mjs`、`registry/build.mjs`、`registry/render-showcase.mjs`、`registry/finalize.mjs` |
 | 报告 | 4 | `UDS-7.0-MIGRATION-REPORT.md`、`CONTRAST-VERIFICATION-REPORT.md`、`VISUAL-REGRESSION-REPORT.md`、本报告 |
@@ -118,12 +118,12 @@
 
 | 项目 | 实测 | 依据 |
 |---|---|---|
-| 单文件自包含 | 936026 字符，零外链、0 个 `<img>` | C14 |
+| 单文件自包含 | 936090 字符，零外链、0 个 `<img>` | C14 |
 | 模块 / 小节 | 38 / 418 | Playwright |
 | Token 行 / 语言 | 748 / 12 | Playwright |
 | Playwright 4 场景 | PASS · consoleErrors=0 | `run-log.json` |
 | axe-core 4 场景 | PASS · violationsTotal=0 · focusOk=undefined | `a11y-log.json` |
-| 真实页面回归 | PASS · 8 场景（4 公开 + 4 认证路由 × Light/Dark，隔离栈真实 API 登录） | `audit/visual-regression.json` |
+| 真实页面回归 | PASS · 16 场景（4 公开 + 4 认证路由 × Light/Dark，隔离栈真实 API 登录） | `audit/visual-regression.json` |
 | 构建产物 | 2/2 存在 | `build:check` |
 
 详见 `VISUAL-REGRESSION-REPORT.md`。**注意**：以上覆盖 Showcase + 8 条真实路由，仍不是全站视觉回归（72 路由待 Phase 8）。
@@ -150,21 +150,21 @@
 
 | ID | 门禁 | 命令 | 退出码 | 耗时 | 备注 |
 |---|---|---|---|---|---|
-| G01 | TypeScript 类型检查 | `bun run typecheck` | **0** | 5364ms | PASS |
-| G02 | 设计 Token 严格门禁 | `bun run lint:design:strict` | **0** | 1727ms | PASS |
-| G06 | 设计 Token 生成一致性 | `bun run design:tokens:check` | **0** | 94ms | PASS |
-| G07 | 7.0 Showcase 同步校验 | `bun run design:showcase:check` | **0** | 1629ms | PASS |
-| G08 | 现行对比度门禁 | `bun run verify:contrast` | **0** | 215ms | PASS |
-| G09 | 版权头检查 | `bun run copyright:check` | **0** | 332ms | PASS |
-| G10 | 全量 oxlint | `bun run lint` | **0** | 1509ms | PASS |
-| G12 | 7.0 Showcase 视觉回归（Playwright） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/visual-check.mjs` | **0** | 4026ms | PASS |
-| G13 | 7.0 无障碍（axe-core + 真实 Tab） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/a11y-check.mjs` | **0** | 24433ms | PASS |
-| G14 | 全量单元测试（vitest） | `bun run test` | **0** | 240560ms | PASS |
-| G15 | 构建校验（tsgo + rsbuild） | `bun run build:check` | **0** | 30600ms | PASS |
-| G17 | 7.0 真实页面回归（本地 SPA + 像素验证） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/real-page-regression.mjs` | **0** | 20374ms | PASS |
-| G19 | 7.0 视觉基线校验（冻结基线 vs 当前渲染） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/check-visual-baseline.mjs` | **0** | 1181ms | PASS |
-| G16 | 7.0 自动化检查器（C01-C22） | `bun run design:7:check` | **0** | 628ms | PASS |
-| G18 | 7.0 整改验证器（48 项探针 + 机器可读报告） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/check-uds7-remediation.mjs` | **0** | 1454ms | PASS |
+| G01 | TypeScript 类型检查 | `bun run typecheck` | **0** | 6655ms | PASS |
+| G02 | 设计 Token 严格门禁 | `bun run lint:design:strict` | **0** | 2029ms | PASS |
+| G06 | 设计 Token 生成一致性 | `bun run design:tokens:check` | **0** | 118ms | PASS |
+| G07 | 7.0 Showcase 同步校验 | `bun run design:showcase:check` | **0** | 1880ms | PASS |
+| G08 | 现行对比度门禁 | `bun run verify:contrast` | **0** | 259ms | PASS |
+| G09 | 版权头检查 | `bun run copyright:check` | **0** | 381ms | PASS |
+| G10 | 全量 oxlint | `bun run lint` | **0** | 1794ms | PASS |
+| G12 | 7.0 Showcase 视觉回归（Playwright） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/visual-check.mjs` | **0** | 4934ms | PASS |
+| G13 | 7.0 无障碍（axe-core + 真实 Tab） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/a11y-check.mjs` | **0** | 29122ms | PASS |
+| G14 | 全量单元测试（vitest） | `bun run test` | **0** | 240380ms | PASS |
+| G15 | 构建校验（tsgo + rsbuild） | `bun run build:check` | **0** | 27808ms | PASS |
+| G17 | 7.0 真实页面回归（本地 SPA + 像素验证） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/real-page-regression.mjs` | **0** | 35955ms | PASS |
+| G19 | 7.0 视觉基线校验（冻结基线 vs 当前渲染） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/check-visual-baseline.mjs` | **0** | 982ms | PASS |
+| G16 | 7.0 自动化检查器（C01-C22） | `bun run design:7:check` | **0** | 599ms | PASS |
+| G18 | 7.0 整改验证器（48 项探针 + 机器可读报告） | `/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-6/bin/node /Users/lincolnhu/uter/docs/design-system/registry/check-uds7-remediation.mjs` | **0** | 1434ms | PASS |
 
 - 7.0 检查器 `check-design-system-7.0.mjs` 的 C01–C21 最终结果见 `GATE-EVIDENCE.json` 的 `checker` 字段（报告写盘后复跑）。
 - 全量单元测试：`bun run test` EXIT=0；构建校验：`bun run build:check` EXIT=0。
@@ -192,10 +192,10 @@
 
 | 项目 | 实测值 |
 |---|---|
-| 基线版本 | `7.0.0` |
+| 基线版本 | `7.0.1` |
 | 状态 | `FROZEN` |
-| 冻结时间 | `2026-11-15T15:02:25.915Z` |
-| 冻结授权 | `用户明确授权更新基线（2026-11-15，AskUserQuestion「授权更新基线」）；审查确认 4 个 Dark 公开页差异为预期设计变化（Dark 表面 #020617 → clerk.com 对齐三层 #0B1120/#111827/#1B2436，theme.css 明文登记），旧基线归档于 audit/baseline/archive-*/` |
+| 冻结时间 | `2026-11-16T00:32:13.143Z` |
+| 冻结授权 | `用户明确授权「真正切换到 7.0 标量值」（2026-11-16）：运行时字号/行高/圆角/图表色经 @theme 真源字面切换为 7.0 TOKEN-MANIFEST 值（typography.css / primitives.css / theme.css，tokens.test.ts 三方守卫钉死），全站视觉随之变化，旧 7.0.0 基线作废归档于 audit/baseline/archive-7.0.0/；本基线摄于切换后真实渲染` |
 | 基线文件 | `VISUAL-BASELINE.json` |
 | 冻结场景数 | 15（Showcase 4 + 真实页面 8 + 渐变 hero 2 + forced-colors 1） |
 | 冻结副本 | `audit/baseline/screenshots/*.png`（逐场景 SHA256 已登记） |
@@ -216,15 +216,15 @@
 | 项目 | 实测值 |
 |---|---|
 | 分支 | `main` |
-| HEAD | `3f4eb0d7a docs(design-system): 冻结 6.0.0 视觉基线（Phase 5 收口，新增 G19 基线校验门禁）` |
-| HEAD 提交文件数 | 89 |
-| 7.0 目录已被 HEAD 跟踪的文件数 | 138 |
-| 7.0 目录当前工作区改动项 | 172 |
+| HEAD | `400a7c45e test(design-system): 隔离栈真实重跑G17恢复认证场景验证(16/16)，remediation 48/0` |
+| HEAD 提交文件数 | 14 |
+| 7.0 目录已被 HEAD 跟踪的文件数 | 140 |
+| 7.0 目录当前工作区改动项 | 42 |
 | 本任务 Git 动作 | 无 commit / push / merge / rebase |
 
-- 观察到 HEAD 提交（`3f4eb0d7a docs(design-system): 冻结 6.0.0 视觉基线（Phase 5 收口，新增 G19 基线校验门禁）`）覆盖 89 个文件并包含 7.0 目录的 138 个产物。**本任务未执行任何 Git 写操作，该提交不是本任务产生的**；且它发生在视觉审核与验收完成之前，即未收敛产物已被纳入版本库。入库 ≠ `VERIFIED` ≠ `ACCEPTED`，不改变本报告 §1 的状态判定。
+- 观察到 HEAD 提交（`400a7c45e test(design-system): 隔离栈真实重跑G17恢复认证场景验证(16/16)，remediation 48/0`）覆盖 14 个文件并包含 7.0 目录的 140 个产物。**本任务未执行任何 Git 写操作，该提交不是本任务产生的**；且它发生在视觉审核与验收完成之前，即未收敛产物已被纳入版本库。入库 ≠ `VERIFIED` ≠ `ACCEPTED`，不改变本报告 §1 的状态判定。
 - 由此带来一个真实后果：`lint` 的 3 个 `no-empty-pattern` error 与 `copyright:check` 的 2 个缺头文件目前都已是 **HEAD 基线内容**（`git status` 显示 CLEAN），而不是本轮未提交 WIP；详见 §9.1。按 `AGENTS.md` 变更保护纪律，本轮仍不擅自修改。
-- 当前工作区仍有 172 项 7.0 改动（本轮重建产物），**尚未提交**。按 `AGENTS.md` 单分支工作模式与「提交/推送逐次单独授权」纪律，本任务不代为提交。
+- 当前工作区仍有 42 项 7.0 改动（本轮重建产物），**尚未提交**。按 `AGENTS.md` 单分支工作模式与「提交/推送逐次单独授权」纪律，本任务不代为提交。
 - 并发 WIP 保护已生效：`lint` 与 `copyright:check` 的失败项已定位到并发修改或 HEAD 基线，未覆盖任何用户未提交修改（见 §9.1）。
 
 ---
