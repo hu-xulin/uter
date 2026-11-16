@@ -192,13 +192,22 @@ export const validators = {
     const cmd = await runCommand({ command: 'node', args: [rootPath(toolRel)], timeoutMs: 120000 });
     const rehearsal = parseOut(cmd) || readJSON(rootPath(reportRel), null);
 
+    if (rehearsal?.blocked === true && !cmdRan(cmd)) {
+      return assemble('delivery.deployment_integrity', checks, [], {
+        started, registry, evidence_refs: evidenceIds, commands: [cmd],
+        blocked: true, block_category: 'ENVIRONMENT_UNAVAILABLE',
+        findings: [finding('BLOCKER', 'deploy_environment_unavailable',
+          `发布演练前置环境不完整: ${String(rehearsal.reason || cmd.stderr || 'release artifacts unavailable').slice(0, 180)}; 不将环境缺失伪装为代码能力 FAIL`)],
+        note: 'BLOCKED: 演练工具已明确报告环境/产物缺失; 需在具备真实构建产物的发布环境复验',
+      });
+    }
     if (!cmdRan(cmd) || !rehearsal || typeof rehearsal.verdict !== 'object') {
       return assemble('delivery.deployment_integrity', checks, [
         { name: 'deployment_plan', ok: false, detail: `授权在案(${auth.authorization_id})但演练工具故障(exit=${cmd.exit_code}, stderr=${(cmd.stderr || '').slice(0, 120)}) — fail-closed FAIL` },
       ], {
         started, registry, evidence_refs: evidenceIds, commands: [cmd],
         findings: [finding('BLOCKER', 'deploy_rehearsal_tool_failure', '发布演练工具执行失败, 无法取证')],
-        note: 'FAIL: 授权有效但演练未能执行, 按能力失败处理(不归为环境受限)',
+        note: 'FAIL: 授权有效但演练工具自身故障, 按能力失败处理',
       });
     }
 
