@@ -439,9 +439,10 @@ const PROBES = {
       'AGENTS.md',
       'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
       'docs/design-system/TOKEN-MANIFEST.json',
-      'docs/design-system/UDS-7.0-MIGRATION-REPORT.md',
+      'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md',
       'docs/design-system/COMPAT-MAP.json',
       'docs/design-system/FINAL-ACCEPTANCE-REPORT.md',
+      'docs/design-system/SHOWCASE-8.0.0.html',
       '.uap/README.md',
       '.uap/SPECIFICATION-INDEX.md',
     ];
@@ -449,15 +450,21 @@ const PROBES = {
     const manifest = readJSON(path.join(ROOT, 'docs/design-system/TOKEN-MANIFEST.json'));
     const compat = readJSON(path.join(ROOT, 'docs/design-system/COMPAT-MAP.json'));
     const overview = read(path.join(ROOT, 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md')) || '';
-    const migration = read(path.join(ROOT, 'docs/design-system/UDS-7.0-MIGRATION-REPORT.md')) || '';
+    const migration = read(path.join(ROOT, 'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md')) || '';
     const acceptance = read(path.join(ROOT, 'docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) || '';
-    const currentDocs = manifest?.version === '7.0.0'
+    const batches = Array.isArray(compat?.migrationBatches) ? compat.migrationBatches : [];
+    const currentDocs = manifest?.version === '8.0.0'
       && manifest?.status === 'ACCEPTANCE_READY'
-      && overview.includes('当前运行时兼容层仍以 UDS 3.0 为基础')
-      && overview.includes('全站迁移按 Phase 6 分期执行');
-    const runtimeTransition = typeof compat?.isolation?.scalarAlignment === 'string'
+      && overview.includes('UDS 8.0.0 是唯一现行规范')
+      && overview.includes('TOKEN-MANIFEST.json')
+      && exists(path.join(ROOT, 'docs/design-system/SHOWCASE-8.0.0.html'));
+    const runtimeTransition = compat?.version === '8.0.0'
+      && compat?.isolation?.runtimePrefix === '--ds8-'
+      && typeof compat?.isolation?.scalarAlignment === 'string'
       && compat.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
-      && migration.includes('B6') && migration.includes('PROHIBITED');
+      && batches.length >= 6 && batches.every((batch) => batch.status === 'DONE_VERIFIED')
+      && migration.includes('B6') && migration.includes('DONE_VERIFIED')
+      && migration.includes('PROHIBITED');
     const acceptanceHonest = acceptance.includes('ACCEPTANCE_READY')
       && acceptance.includes('accepted: false');
     const ok = missing.length === 0 && currentDocs && runtimeTransition && acceptanceHonest;
@@ -468,7 +475,7 @@ const PROBES = {
         + `|currentDocs=${currentDocs}|runtimeTransition=${runtimeTransition}|acceptanceHonest=${acceptanceHonest}`),
       duration_ms: 0,
     }, {
-      detail: `missing=${missing.join(',') || 'none'}; UDS=${manifest?.version ?? 'missing'}/${manifest?.status ?? 'missing'}; runtime transition/3.0 compatibility retained=${runtimeTransition}; accepted=false preserved=${acceptanceHonest}`,
+      detail: `missing=${missing.join(',') || 'none'}; UDS=${manifest?.version ?? 'missing'}/${manifest?.status ?? 'missing'}; 8.0.0 runtime bridge/migration batches verified=${runtimeTransition}; accepted=false preserved=${acceptanceHonest}`,
     });
   },
 
