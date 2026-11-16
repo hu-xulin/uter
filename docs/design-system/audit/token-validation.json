@@ -1,7 +1,7 @@
 {
   "schema": "UDS8-TOKEN-VALIDATION/1.0",
   "design_system": "UTER DESIGN SYSTEM 8.0.0",
-  "generated_at": "2026-11-16T13:29:22.824Z",
+  "generated_at": "2026-11-16T13:32:51.495Z",
   "tokens": 389,
   "manifest_declared": "389 declared = manifest 389",
   "structure_check": "PASS",

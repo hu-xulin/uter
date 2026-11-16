@@ -1,28 +1,23 @@
 {
   "schema": "UDS8-FINAL-ACCEPTANCE-REPORT/1.0",
   "design_system": "UTER DESIGN SYSTEM 8.0.0",
-  "generated_at": "2026-11-16 21:28:49",
-  "head": "8024f4fe12725762e65fb73754d98d81c96e641d",
+  "generated_at": "2026-11-16 21:32:51",
+  "head": "9435904f56ad2ee93b087e29640a88dca892da03",
   "origin_main": "8024f4fe12725762e65fb73754d98d81c96e641d",
   "checker": {
-    "verdict": "FAIL",
-    "checks_passed": 20,
+    "verdict": "PASS",
+    "checks_passed": 22,
     "checks_total": 22,
-    "errors": 4,
-    "error_list": [
-      "[C18] ACCEPTED 必须为 false",
-      "[C18] 最终验收未引用完整 22 项检查器结果",
-      "[C18] 检查器 verdict 与通过数不自洽",
-      "[C20] 旧版本引用 5 处: docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md:122, docs/design-system/audit/uds8-final-scan.json:23, docs/design-system/audit/uds8-legacy-reference-report.json:13, docs/design-system/audit/uds8-legacy-reference-report.json:14, docs/design-system/audit/uds8-legacy-reference-report.json:15"
-    ]
+    "errors": 0,
+    "error_list": []
   },
   "final_acceptance": {
-    "verdict": "FAILED",
+    "verdict": "PARTIALLY_VERIFIED",
     "checker": {
-      "verdict": "FAIL",
-      "checksPassed": 20,
+      "verdict": "PASS",
+      "checksPassed": 22,
       "checksTotal": 22,
-      "exit_code": 1
+      "exit_code": 0
     },
     "status_discipline": {
       "implemented_equals_verified": false,
@@ -49,8 +44,8 @@
     "test:axe": "0"
   },
   "legacy_scan": {
-    "verdict": "FAIL",
-    "hits": 5
+    "verdict": "PASS",
+    "hits": 0
   },
   "visual": {
     "track1": "PASS",

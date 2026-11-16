@@ -1,12 +1,12 @@
 {
   "schema": "UDS8-FINAL-SCAN/1.0",
   "design_system": "UTER DESIGN SYSTEM 8.0.0",
-  "generated_at": "2026-11-16 21:28:49",
-  "head": "8024f4fe12725762e65fb73754d98d81c96e641d",
+  "generated_at": "2026-11-16 21:32:51",
+  "head": "9435904f56ad2ee93b087e29640a88dca892da03",
   "origin_main": "8024f4fe12725762e65fb73754d98d81c96e641d",
-  "tracked_files": 16939,
+  "tracked_files": 16870,
   "scanned_files": 2952,
-  "legacy_references": 5,
+  "legacy_references": 0,
   "scope": [
     "docs",
     "web/src",
@@ -21,5 +21,5 @@
     "web/AGENTS.md"
   ],
   "rules": "legacy version numbers in design context; legacy file/dir names; COMPAT-MAP/MIGRATION-REPORT/old SHOWCASE",
-  "verdict": "FAIL"
+  "verdict": "PASS"
 }

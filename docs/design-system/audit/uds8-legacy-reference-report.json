@@ -1,8 +1,8 @@
 {
   "schema": "UDS8-LEGACY-REFERENCE-REPORT/1.0",
-  "generated_at": "2026-11-16 21:28:49",
-  "verdict": "FAIL",
-  "hits": 5,
+  "generated_at": "2026-11-16 21:32:51",
+  "verdict": "PASS",
+  "hits": 0,
   "hit_details": [],
   "deleted_artifacts": [
     "docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md",
