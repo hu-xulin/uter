@@ -28,7 +28,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Heading } from '@/design-system'
 import { Callout } from '@/features/docs/native/callout'
+import { DocsCodeBlock } from '@/features/docs/native/docs-code-block'
 import { loadNativeDoc } from '@/features/docs/native/docs-loader'
+import { DocsTable } from '@/features/docs/native/docs-table'
 import { PROSE_CLASSES } from '@/features/docs/native/prose-classes'
 import { useStatus } from '@/hooks/use-status'
 import { getSafeHttpUrl, isLikelyHtml } from '@/lib/content-format'
@@ -145,17 +147,23 @@ function BundledLegalDocument({
   return (
     <PublicLayout>
       <div className='mx-auto w-full max-w-3xl px-6 py-10'>
-        {/* §1.8: a document's first-level title uses the interface
-         * `page-title` (30/38/600). PROSE_CLASSES only styles the Markdown
-         * body ladder (20/18/16/14) and must not be applied to this heading. */}
-        <Heading variant='page-title' level={1} className='mt-6 mb-2'>
-          {title}
-        </Heading>
+        {/* 每份法务 MDX 都以 `# 官方全称` 开头，它才是页面唯一 h1。
+            曾经在外层再画一个 page-title，导致两个 36px 标题叠在一起。 */}
         <div className={PROSE_CLASSES}>
           {Doc ? (
-            <Doc components={{ Callout }} locale={locale} />
+            <Doc
+              components={{
+                Callout,
+                pre: DocsCodeBlock,
+                table: DocsTable,
+              }}
+              locale={locale}
+            />
           ) : (
-            <Skeleton className='h-4 w-full' />
+            <>
+              <span className='sr-only'>{title}</span>
+              <Skeleton className='h-9 w-2/3' />
+            </>
           )}
         </div>
       </div>
@@ -257,7 +265,12 @@ function ConfiguredLegalDocument({
   return (
     <PublicLayout showMainContainer={!contentIsHtml}>
       {contentIsHtml ? (
-        <RichContent mode='html' htmlVariant='isolated' content={rawContent} />
+        <RichContent
+          mode='html'
+          htmlVariant='isolated'
+          content={rawContent}
+          className='[&_th]:whitespace-nowrap'
+        />
       ) : (
         <div className='mx-auto max-w-4xl space-y-6 py-12'>
           <div className='space-y-2'>
@@ -267,7 +280,7 @@ function ConfiguredLegalDocument({
           <RichContent
             mode='markdown'
             content={rawContent}
-            className='prose-neutral dark:prose-invert max-w-none'
+            className='prose-neutral dark:prose-invert max-w-none [&_th]:whitespace-nowrap'
           />
         </div>
       )}

@@ -16,22 +16,86 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import {
+  CircleAlert,
+  CircleCheck,
+  CircleX,
+  Info,
+  Lightbulb,
+  type LucideIcon,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Native docs callout — the SPA's replacement for fumadocs' `<Callout>`.
  *
- * Authored in MDX as `<Callout type="…">`; the MDX compiler resolves it
- * through `MDXProvider` (see the native docs view). Styled with the design
- * system's status tokens (`*-soft` surfaces) so it follows the app's
- * light/dark themes instead of the fumadocs `fd-*` palette.
+ * Authored in MDX as `<Callout type="…">`. The visual anatomy mirrors
+ * Clerk's docs callouts: a white, ringed surface with a 2px coloured rail on
+ * the left, a 20px status icon, a bold localised title (Warning / Note / Tip
+ * / Caution / Success) and muted body copy. The rail, icon and title share
+ * one status colour, exactly as Clerk ties its three `--callout-*` variables
+ * to a single semantic hue. Every colour is a UDS 8.0.0 `--ds-color-*`
+ * semantic token (§21 rule 2), so light/dark follows the runtime bridge.
  */
-const TONES: Record<string, string> = {
-  info: 'border-info/40 bg-info-soft',
-  warn: 'border-warning/40 bg-warning-soft',
-  warning: 'border-warning/40 bg-warning-soft',
-  danger: 'border-destructive/40 bg-destructive-soft',
-  success: 'border-success/40 bg-success-soft',
+type Tone = {
+  icon: LucideIcon
+  /** Status colour token shared by the rail, icon and title. */
+  accent: string
+  rail: string
+  /** Existing i18n key — present in all seven locale bundles. */
+  titleKey: string
+}
+
+const TONES: Record<string, Tone> = {
+  info: {
+    icon: Info,
+    accent: 'text-(--ds-color-status-info)',
+    rail: 'bg-(--ds-color-status-info)',
+    titleKey: 'Note',
+  },
+  note: {
+    icon: Info,
+    accent: 'text-(--ds-color-status-info)',
+    rail: 'bg-(--ds-color-status-info)',
+    titleKey: 'Note',
+  },
+  idea: {
+    icon: Lightbulb,
+    accent: 'text-(--ds-color-status-success)',
+    rail: 'bg-(--ds-color-status-success)',
+    titleKey: 'Tip',
+  },
+  tip: {
+    icon: Lightbulb,
+    accent: 'text-(--ds-color-status-success)',
+    rail: 'bg-(--ds-color-status-success)',
+    titleKey: 'Tip',
+  },
+  warn: {
+    icon: CircleAlert,
+    accent: 'text-(--ds-color-status-warning)',
+    rail: 'bg-(--ds-color-status-warning)',
+    titleKey: 'Warning',
+  },
+  warning: {
+    icon: CircleAlert,
+    accent: 'text-(--ds-color-status-warning)',
+    rail: 'bg-(--ds-color-status-warning)',
+    titleKey: 'Warning',
+  },
+  danger: {
+    icon: CircleX,
+    accent: 'text-(--ds-color-status-danger)',
+    rail: 'bg-(--ds-color-status-danger)',
+    titleKey: 'Caution',
+  },
+  success: {
+    icon: CircleCheck,
+    accent: 'text-(--ds-color-status-success)',
+    rail: 'bg-(--ds-color-status-success)',
+    titleKey: 'Success',
+  },
 }
 
 export function Callout({
@@ -41,13 +105,27 @@ export function Callout({
   type?: string
   children?: ReactNode
 }) {
+  const { t } = useTranslation()
+  const tone = TONES[type] ?? TONES.info
+  const Icon = tone.icon
+
   return (
-    <div
-      className={`my-4 rounded-lg border p-4 text-sm [&_ol]:my-1 [&_p]:my-1 [&_ul]:my-1 ${
-        TONES[type] ?? TONES.info
-      }`}
-    >
-      {children}
+    <div className='relative my-7 rounded-lg border border-(--ds-color-border-default) bg-(--ds-color-surface-base) py-3.5 pr-4 pl-6 text-sm'>
+      <span
+        aria-hidden='true'
+        className={`absolute inset-y-2 left-2 w-0.5 rounded-full ${tone.rail}`}
+      />
+      <p className='mb-2 flex items-center gap-x-2'>
+        <Icon aria-hidden='true' className={`size-5 shrink-0 ${tone.accent}`} />
+        <span className={`text-sm font-semibold ${tone.accent}`}>
+          {t(tone.titleKey)}
+        </span>
+      </p>
+      {/* 提示 / 警告正文统一 14/22（`--ds-text-sm`），不跟随文档长文本的
+          16/26；`!` 用于压过 PROSE_CLASSES 的 `[&_p]:text-long`。 */}
+      <div className='text-sm text-(--ds-color-text-secondary) [&_li]:text-sm! [&_ol]:my-1 [&_p]:my-1 [&_p]:text-sm! [&_ul]:my-1'>
+        {children}
+      </div>
     </div>
   )
 }

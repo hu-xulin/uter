@@ -24,9 +24,11 @@ import { resolveDocsLocaleCode, type DocsLocaleCode } from '@/lib/docs-link'
 import { labelTaskListCheckboxes } from '@/lib/task-checkbox-a11y'
 
 import { Callout } from './callout'
+import { DocsCodeBlock } from './docs-code-block'
 import { docRefForPagePath, NATIVE_USER_GUIDE_PATH } from './docs-content'
 import { loadNativeDoc } from './docs-loader'
 import { NativeDocsShell, type TocItem } from './docs-shell'
+import { DocsTable } from './docs-table'
 import { PROSE_CLASSES } from './prose-classes'
 
 /**
@@ -140,7 +142,10 @@ export function NativeDocsView({
           // first, so the Callout is passed explicitly — the `MDXProvider`
           // context is unreliable across the CJS/ESM boundary of the lazy
           // chunks.
-          <Doc components={{ Callout }} locale={locale} />
+          <Doc
+            components={{ Callout, pre: DocsCodeBlock, table: DocsTable }}
+            locale={locale}
+          />
         ) : null}
       </div>
     </NativeDocsShell>

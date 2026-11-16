@@ -44,7 +44,7 @@ export function getMessageContentStyles() {
     'group-[.is-assistant]:rounded-none',
     'group-[.is-assistant]:overflow-visible',
     'group-[.is-assistant]:[font-family:var(--font-body)]',
-    'group-[.is-assistant]:text-muted-foreground',
+    'group-[.is-assistant]:text-fg-secondary',
 
     // Preferred readable widths and wrapping. 对话是连续阅读场景，走
     // body-long（16/26）而不是 body（14/20）——14px 长回答读起来太挤。

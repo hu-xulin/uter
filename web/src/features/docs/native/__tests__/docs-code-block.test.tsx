@@ -99,15 +99,24 @@ describe('PROSE_CLASSES code and table tokens (UDS 8.0.0 §23 / §24)', () => {
     expect(classes).toContain('[&_td]:border-b')
     expect(classes).not.toContain('[&_td]:border')
     expect(classes).not.toContain('[&_th]:border')
+    // 表头永远单行；窄列时由表格滚动容器承接，不得逐字换行。
+    expect(classes).toContain('[&_th]:whitespace-nowrap')
+    expect(classes).not.toContain('[&_th]:break-words')
   })
 
-  test('table first column is emphasised like Clerk row labels', () => {
-    expect(PROSE_CLASSES).toContain('[&_tbody_td:first-child]:font-medium')
-    expect(PROSE_CLASSES).toContain(
-      '[&_tbody_td:first-child]:text-(--ds-color-text-primary)'
-    )
+  test('inline emphasis is flattened: strong/b keep the body weight and colour', () => {
+    const classes = PROSE_CLASSES.split(' ')
+    expect(classes).toContain('[&_strong]:font-normal')
+    expect(classes).toContain('[&_strong]:text-inherit')
+    expect(classes).toContain('[&_b]:font-normal')
+    expect(classes).not.toContain('[&_strong]:font-semibold')
+    expect(classes).not.toContain('[&_tbody_td:first-child]:font-medium')
+    expect(classes).not.toContain('[&_tbody_th]:font-semibold')
+    // 提示 / 引用类文案统一 14/22（`--ds-text-sm`）。
+    expect(classes).toContain('[&_blockquote]:text-sm')
+    expect(classes).toContain('[&_blockquote_p]:text-sm')
     // 圆角外框由 DocsTable 负责，单元格层不再把 table 强制成滚动块。
-    expect(PROSE_CLASSES.split(' ')).not.toContain('[&_table]:block')
+    expect(classes).not.toContain('[&_table]:block')
     expect(PROSE_CLASSES).toContain('[&_tbody_tr:last-child>*]:border-b-0')
   })
 })

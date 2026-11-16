@@ -781,6 +781,8 @@ export function Markdown(props: MarkdownProps) {
     <div
       className={cn(
         /* Long-form body copy: 16px / 400 / 26px (`text-long` = body-long).
+         * 长文本统一使用次级文本色 `--ds-color-text-secondary`；标题仍回到
+         * 主文本色，避免整页正文与标题同深。
          * `prose` / `prose-sm` are inert here — @tailwindcss/typography is
          * not a dependency — so the scale is pinned with explicit
          * descendant selectors instead.
@@ -792,11 +794,11 @@ export function Markdown(props: MarkdownProps) {
          * 标题比它所在卡片的标题（18px）还大，页面层级当场塌掉。
          * §1.12 的 72ch 宽度由文档 / 协议容器负责，AI 对话气泡由父级
          * `max-w-[84%]` 负责，这里保持 `max-w-none` 不重复限宽。 */
-        'max-w-none text-long',
-        '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold',
-        '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-lg [&_h2]:font-semibold',
-        '[&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold',
-        '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-sm [&_h4]:font-semibold',
+        'max-w-none text-long text-fg-secondary',
+        '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:text-fg-primary',
+        '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-fg-primary',
+        '[&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-fg-primary',
+        '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:text-fg-primary',
         '[&_p]:my-2 [&_p]:text-long [&_strong]:font-semibold [&_em]:italic',
         '[&_a]:text-fg-link hover:[&_a]:text-fg-link',
         '[&_ol]:my-2 [&_ul]:my-2 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5 [&_li]:my-1 [&_li]:pl-1',

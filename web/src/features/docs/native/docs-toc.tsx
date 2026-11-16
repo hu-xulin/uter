@@ -54,7 +54,7 @@ export function DocsToc({
   return (
     <nav
       aria-label={t('docs.toc.heading')}
-      className={cn('text-dense', className)}
+      className={cn('text-sm', className)}
     >
       {showHeading ? (
         <p className='text-fg-secondary mb-2 px-3 font-medium'>
@@ -98,7 +98,7 @@ export function DocsTocInline({ items }: { items: TocItem[] }) {
   if (items.length === 0) return null
   return (
     <details className='border-border bg-card mb-6 rounded-lg border px-3 py-2 xl:hidden'>
-      <summary className='text-dense text-fg-secondary cursor-pointer font-medium select-none'>
+      <summary className='text-fg-secondary cursor-pointer text-sm font-medium select-none'>
         {t('docs.toc.heading')}
       </summary>
       <DocsToc items={items} showHeading={false} className='mt-2' />

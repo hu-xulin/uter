@@ -29,7 +29,7 @@ For commercial licensing, please contact support@uter.ai
 export const CONTENT_CARD_GRID_CLASS = 'mt-8 grid gap-3 sm:grid-cols-2'
 
 export const CONTENT_CARD_CLASS =
-  'focus-visible:ring-ring hover:bg-muted flex h-full flex-col rounded-lg border p-6 no-underline transition-colors outline-none focus-visible:ring-2'
+  'focus-visible:ring-ring hover:bg-muted flex h-full flex-col rounded-xl border p-6 no-underline transition-colors outline-none focus-visible:ring-2'
 
 export const CONTENT_CARD_TITLE_CLASS = 'text-xl text-fg-primary font-semibold'
 
