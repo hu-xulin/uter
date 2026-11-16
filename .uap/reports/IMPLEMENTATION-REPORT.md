@@ -1,6 +1,6 @@
 # UAP 1.0 Implementation Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T14:04:16.537Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T06:49:40.578Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 结论（三项独立验收，不可互相替代）
@@ -9,7 +9,7 @@
 | --- | --- | --- |
 | 规范完整性 | COMPLETE | 32/32 规范完整，registry_ok=true |
 | UAP 实际运行能力 | NOT_FULLY_VERIFIED | 组件 10/10，验证器 32/32，测试退出码 0 |
-| Uter 真实合规性 | NOT_FULLY_VERIFIED | audit=true，资金失败=0，未处理 P0=0，P1=2 |
+| Uter 真实合规性 | NOT_FULLY_VERIFIED | audit=true，资金失败=0，未处理 P0=0，P1=0 |
 
 > 只有前两项各自成立，第三项才可能被认定。文档存在不等于 Runtime 可运行；Runtime 可运行不等于 Uter 已合规。
 
@@ -80,4 +80,4 @@
 
 ## 未解决项
 
-共 6 条，详见 [BLOCKED-ITEMS.md](BLOCKED-ITEMS.md)。
+共 4 条，详见 [BLOCKED-ITEMS.md](BLOCKED-ITEMS.md)。

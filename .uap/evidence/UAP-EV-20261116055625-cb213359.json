@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116055625-cb213359",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T05:56:25.612Z",
+  "started_at": "2026-11-16T05:56:25.612Z",
+  "finished_at": "2026-11-16T05:56:25.612Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116055437-90608e80",
+    "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+    "worktree_fingerprint": "eb7480be06bb0420594a1e67b128949c56c11ec72e28df2f2288052fe2ca4e12",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116055437-90608e80",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "worktree_fingerprint": "eb7480be06bb0420594a1e67b128949c56c11ec72e28df2f2288052fe2ca4e12",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.ci_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.ci_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "delivery.ci_integrity 实检: pipeline_config=PASS(门禁族覆盖: 核心[gofmt=ci:true, go vet (4 modules)=ci:true, make test=ci:true, bun run typecheck=ci:true, bun run lint=ci:true, bun run test=ci:true] 其余[bun run lint:design:strict=ci, bun run copyright:check=ci, bun run format:check=ci, bun run build:check=ci]; ci.yml 缺失核心=无; ci+verify 均缺=无; ci.yml bytes=28871; BASELINE.ci_workflows=9 个; release-gate.yml=true); local_equivalent=PASS(verify-all.sh bytes=8063; BASELINE.real_gate_commands=11 条; AGENTS.md 声明 verify-all.sh=true); failure_propagation=PASS(ci.yml 含 exit 1=true; verify-all.sh 含 exit 非零传播=true; 真实门禁命令覆盖 go/前端=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9432 个 | 真实读取 .github/workflows/ci.yml、scripts/verify-all.sh、BASELINE 门禁命令清单并核对失败非零退出传播",
+  "content_hash": "de2e29d5d5fb4e992e6ef3cac62c0c114375d7689940543b23a7c5273b0051ec"
+}

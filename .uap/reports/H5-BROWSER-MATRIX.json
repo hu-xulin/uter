@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-15T13:54:56.976Z",
-  "target": "http://localhost:3100",
+  "generated_at": "2026-11-16T05:58:20.313Z",
+  "target": "http://localhost:3000",
   "blocked": false,
   "browser": "playwright chromium (headless, real render)",
   "viewports": [
@@ -23,7 +23,7 @@
       "viewport": "mobile-390",
       "route": "/",
       "http_status": 200,
-      "final_url": "http://localhost:3100/",
+      "final_url": "http://localhost:3000/",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -73,7 +73,7 @@
       "viewport": "mobile-390",
       "route": "/sign-in",
       "http_status": 200,
-      "final_url": "http://localhost:3100/sign-in",
+      "final_url": "http://localhost:3000/sign-in",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -81,14 +81,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [294x40] eff=[294x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [294x40] eff=[294x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
+            "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -100,8 +100,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -123,7 +123,7 @@
       "viewport": "mobile-390",
       "route": "/pricing",
       "http_status": 200,
-      "final_url": "http://localhost:3100/pricing",
+      "final_url": "http://localhost:3000/pricing",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -131,14 +131,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [294x40] eff=[294x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [294x40] eff=[294x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
+            "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -150,8 +150,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -173,7 +173,7 @@
       "viewport": "mobile-390",
       "route": "/rankings",
       "http_status": 200,
-      "final_url": "http://localhost:3100/rankings",
+      "final_url": "http://localhost:3000/rankings",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -181,14 +181,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [294x40] eff=[294x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [294x40] eff=[294x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
+            "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -200,8 +200,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -223,7 +223,7 @@
       "viewport": "mobile-390",
       "route": "/docs",
       "http_status": 200,
-      "final_url": "http://localhost:3100/docs",
+      "final_url": "http://localhost:3000/docs",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -270,7 +270,7 @@
       "viewport": "mobile-375",
       "route": "/",
       "http_status": 200,
-      "final_url": "http://localhost:3100/",
+      "final_url": "http://localhost:3000/",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -320,7 +320,7 @@
       "viewport": "mobile-375",
       "route": "/sign-in",
       "http_status": 200,
-      "final_url": "http://localhost:3100/sign-in",
+      "final_url": "http://localhost:3000/sign-in",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -328,14 +328,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [279x40] eff=[279x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [279x40] eff=[279x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
+            "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -347,8 +347,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -370,7 +370,7 @@
       "viewport": "mobile-375",
       "route": "/pricing",
       "http_status": 200,
-      "final_url": "http://localhost:3100/pricing",
+      "final_url": "http://localhost:3000/pricing",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -378,14 +378,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [279x40] eff=[279x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [279x40] eff=[279x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
+            "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -397,8 +397,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -420,7 +420,7 @@
       "viewport": "mobile-375",
       "route": "/rankings",
       "http_status": 200,
-      "final_url": "http://localhost:3100/rankings",
+      "final_url": "http://localhost:3000/rankings",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -428,14 +428,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [279x40] eff=[279x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [279x40] eff=[279x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
+            "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -447,8 +447,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -470,7 +470,7 @@
       "viewport": "mobile-375",
       "route": "/docs",
       "http_status": 200,
-      "final_url": "http://localhost:3100/docs",
+      "final_url": "http://localhost:3000/docs",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -517,7 +517,7 @@
       "viewport": "mobile-430",
       "route": "/",
       "http_status": 200,
-      "final_url": "http://localhost:3100/",
+      "final_url": "http://localhost:3000/",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -567,7 +567,7 @@
       "viewport": "mobile-430",
       "route": "/sign-in",
       "http_status": 200,
-      "final_url": "http://localhost:3100/sign-in",
+      "final_url": "http://localhost:3000/sign-in",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -575,14 +575,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [334x40] eff=[334x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [334x40] eff=[334x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
+            "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -594,8 +594,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -617,7 +617,7 @@
       "viewport": "mobile-430",
       "route": "/pricing",
       "http_status": 200,
-      "final_url": "http://localhost:3100/pricing",
+      "final_url": "http://localhost:3000/pricing",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -625,14 +625,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [334x40] eff=[334x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [334x40] eff=[334x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
+            "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -644,8 +644,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -667,7 +667,7 @@
       "viewport": "mobile-430",
       "route": "/rankings",
       "http_status": 200,
-      "final_url": "http://localhost:3100/rankings",
+      "final_url": "http://localhost:3000/rankings",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -675,14 +675,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [334x40] eff=[334x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [334x40] eff=[334x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
+            "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -694,8 +694,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -717,7 +717,7 @@
       "viewport": "mobile-430",
       "route": "/docs",
       "http_status": 200,
-      "final_url": "http://localhost:3100/docs",
+      "final_url": "http://localhost:3000/docs",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -764,7 +764,7 @@
       "viewport": "tablet-768",
       "route": "/",
       "http_status": 200,
-      "final_url": "http://localhost:3100/",
+      "final_url": "http://localhost:3000/",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -814,7 +814,7 @@
       "viewport": "tablet-768",
       "route": "/sign-in",
       "http_status": 200,
-      "final_url": "http://localhost:3100/sign-in",
+      "final_url": "http://localhost:3000/sign-in",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -822,14 +822,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -841,8 +841,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -864,7 +864,7 @@
       "viewport": "tablet-768",
       "route": "/pricing",
       "http_status": 200,
-      "final_url": "http://localhost:3100/pricing",
+      "final_url": "http://localhost:3000/pricing",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -872,14 +872,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -891,8 +891,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -914,7 +914,7 @@
       "viewport": "tablet-768",
       "route": "/rankings",
       "http_status": 200,
-      "final_url": "http://localhost:3100/rankings",
+      "final_url": "http://localhost:3000/rankings",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -922,14 +922,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -941,8 +941,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -964,7 +964,7 @@
       "viewport": "tablet-768",
       "route": "/docs",
       "http_status": 200,
-      "final_url": "http://localhost:3100/docs",
+      "final_url": "http://localhost:3000/docs",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -1011,7 +1011,7 @@
       "viewport": "desktop-1440",
       "route": "/",
       "http_status": 200,
-      "final_url": "http://localhost:3100/",
+      "final_url": "http://localhost:3000/",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -1056,7 +1056,7 @@
       "viewport": "desktop-1440",
       "route": "/sign-in",
       "http_status": 200,
-      "final_url": "http://localhost:3100/sign-in",
+      "final_url": "http://localhost:3000/sign-in",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -1064,14 +1064,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -1083,8 +1083,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -1101,7 +1101,7 @@
       "viewport": "desktop-1440",
       "route": "/pricing",
       "http_status": 200,
-      "final_url": "http://localhost:3100/pricing",
+      "final_url": "http://localhost:3000/pricing",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -1109,14 +1109,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -1128,8 +1128,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -1146,7 +1146,7 @@
       "viewport": "desktop-1440",
       "route": "/rankings",
       "http_status": 200,
-      "final_url": "http://localhost:3100/rankings",
+      "final_url": "http://localhost:3000/rankings",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -1154,14 +1154,14 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 8,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
             "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
-            "input#_r_1_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "input#_r_3_-form-item.border-input.hover:border-border-strong [416x40] eff=[416x40]",
-            "button.group/button.inline-flex \"切换密码可见性\" [24x24] eff=[24x24]"
+            "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
+            "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
+            "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -1173,8 +1173,8 @@
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
-          "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "inline_exception": 2,
+          "pseudo_extended_pass": 8
         }
       },
       "small_fonts": {
@@ -1191,7 +1191,7 @@
       "viewport": "desktop-1440",
       "route": "/docs",
       "http_status": 200,
-      "final_url": "http://localhost:3100/docs",
+      "final_url": "http://localhost:3000/docs",
       "spa_rendered": true,
       "meta_viewport_ok": true,
       "meta_viewport": "width=device-width, initial-scale=1.0",
@@ -1237,7 +1237,7 @@
     "small_font_rows": 0,
     "page_error_rows": 0,
     "touch_target_44_coverage": {
-      "interactive_elements_below_44": 164,
+      "interactive_elements_below_44": 140,
       "interactive_elements_below_24": 0,
       "note": "44x44 为 Uter 推荐（§15.3），达标率供 UI 迭代跟踪；24x24 为 WCAG 硬线"
     },

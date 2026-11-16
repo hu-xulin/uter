@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-15T02:04:54.609Z",
+  "generated_at": "2026-11-16T05:56:51.692Z",
   "registry": {
     "ok": true,
     "findings": 0
   },
   "audit": {
-    "generated_at": "2026-11-15T02:04:54.596Z",
+    "generated_at": "2026-11-16T05:56:51.679Z",
     "domains": [
       {
         "domain": "authentication",
@@ -22,7 +22,7 @@
           {
             "severity": "INFO",
             "code": "authz_controller_token_files",
-            "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 211",
+            "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 210",
             "file": "controller/",
             "domain": "authentication"
           },
@@ -134,7 +134,7 @@
           {
             "severity": "INFO",
             "code": "designsystem_src_files",
-            "message": "web/src/design-system/ 真实文件计数 = 43",
+            "message": "web/src/design-system/ 真实文件计数 = 37",
             "file": "web/src/design-system/",
             "domain": "frontend-design-system"
           },
@@ -148,7 +148,7 @@
           {
             "severity": "INFO",
             "code": "designsystem_docs_files",
-            "message": "docs/design-system/ 真实文件计数 = 115",
+            "message": "docs/design-system/ 真实文件计数 = 176",
             "file": "docs/design-system/",
             "domain": "frontend-design-system"
           }
@@ -162,7 +162,7 @@
           {
             "severity": "INFO",
             "code": "cicd_ci_yml_content",
-            "message": ".github/workflows/ci.yml 真实字节长度 = 18315，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+            "message": ".github/workflows/ci.yml 真实字节长度 = 31816，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
             "file": ".github/workflows/ci.yml",
             "domain": "ci-cd"
           },
@@ -190,14 +190,14 @@
           {
             "severity": "INFO",
             "code": "deps_package_json_text",
-            "message": "web/package.json 真实解析：dependencies=55，devDependencies=29",
+            "message": "web/package.json 真实解析：dependencies=63，devDependencies=31",
             "file": "web/package.json",
             "domain": "dependencies"
           },
           {
             "severity": "INFO",
             "code": "deps_lockfile_presence",
-            "message": "lockfile 存在=true（web/bun.lock，真实字符长度=360342）（存在性探测，仅 INFO）",
+            "message": "lockfile 存在=true（web/bun.lock，真实字符长度=363611）（存在性探测，仅 INFO）",
             "file": "web/bun.lock",
             "domain": "dependencies"
           }
@@ -211,7 +211,7 @@
           {
             "severity": "INFO",
             "code": "env_git_status",
-            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1109",
+            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=180",
             "domain": "environment"
           },
           {
@@ -233,7 +233,7 @@
       {
         "path": "controller/",
         "exists": true,
-        "file_count": 211
+        "file_count": 210
       },
       {
         "path": "model/",
@@ -243,12 +243,12 @@
       {
         "path": "service/",
         "exists": true,
-        "file_count": 167
+        "file_count": 166
       },
       {
         "path": "middleware/",
         "exists": true,
-        "file_count": 58
+        "file_count": 57
       },
       {
         "path": "router/",
@@ -263,12 +263,12 @@
       {
         "path": "web/src/",
         "exists": true,
-        "file_count": 2155
+        "file_count": 2143
       },
       {
         "path": "web/src/features/",
         "exists": true,
-        "file_count": 1039
+        "file_count": 1037
       },
       {
         "path": "scripts/",
@@ -283,7 +283,7 @@
       {
         "path": "docs/design-system/",
         "exists": true,
-        "file_count": 115
+        "file_count": 176
       },
       {
         "path": "relaykit/",
@@ -302,7 +302,7 @@
         "exit_code": 0,
         "timed_out": false,
         "spawn_error": null,
-        "stdout_preview": "M .uap/SPECIFICATION-INDEX.md\n M .uap/bin/uap.mjs\n M .uap/config/requirement-probes.yaml\n M .uap/reports/ACCESSIBILITY-RESULTS.json\n M .uap/reports/AGENT-COMPLIANCE-REPORT.md\n M .uap/reports/AUDIT-REP",
+        "stdout_preview": "M  .github/ISSUE_TEMPLATE/bug_report.yml\nM  .github/ISSUE_TEMPLATE/bug_report_en.yml\nM  .github/ISSUE_TEMPLATE/feature_request.yml\nM  .github/ISSUE_TEMPLATE/feature_request_en.yml\nM  .github/PULL_REQU",
         "stderr_preview": ""
       },
       {
@@ -322,7 +322,7 @@
         "stderr_preview": ""
       }
     ],
-    "files_scanned_total": 4292,
+    "files_scanned_total": 4336,
     "findings": [
       {
         "severity": "INFO",
@@ -334,7 +334,7 @@
       {
         "severity": "INFO",
         "code": "authz_controller_token_files",
-        "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 211",
+        "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 210",
         "file": "controller/",
         "domain": "authentication"
       },
@@ -418,7 +418,7 @@
       {
         "severity": "INFO",
         "code": "designsystem_src_files",
-        "message": "web/src/design-system/ 真实文件计数 = 43",
+        "message": "web/src/design-system/ 真实文件计数 = 37",
         "file": "web/src/design-system/",
         "domain": "frontend-design-system"
       },
@@ -432,14 +432,14 @@
       {
         "severity": "INFO",
         "code": "designsystem_docs_files",
-        "message": "docs/design-system/ 真实文件计数 = 115",
+        "message": "docs/design-system/ 真实文件计数 = 176",
         "file": "docs/design-system/",
         "domain": "frontend-design-system"
       },
       {
         "severity": "INFO",
         "code": "cicd_ci_yml_content",
-        "message": ".github/workflows/ci.yml 真实字节长度 = 18315，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+        "message": ".github/workflows/ci.yml 真实字节长度 = 31816，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
         "file": ".github/workflows/ci.yml",
         "domain": "ci-cd"
       },
@@ -460,21 +460,21 @@
       {
         "severity": "INFO",
         "code": "deps_package_json_text",
-        "message": "web/package.json 真实解析：dependencies=55，devDependencies=29",
+        "message": "web/package.json 真实解析：dependencies=63，devDependencies=31",
         "file": "web/package.json",
         "domain": "dependencies"
       },
       {
         "severity": "INFO",
         "code": "deps_lockfile_presence",
-        "message": "lockfile 存在=true（web/bun.lock，真实字符长度=360342）（存在性探测，仅 INFO）",
+        "message": "lockfile 存在=true（web/bun.lock，真实字符长度=363611）（存在性探测，仅 INFO）",
         "file": "web/bun.lock",
         "domain": "dependencies"
       },
       {
         "severity": "INFO",
         "code": "env_git_status",
-        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=1109",
+        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=180",
         "domain": "environment"
       },
       {
@@ -490,7 +490,7 @@
         "domain": "environment"
       }
     ],
-    "summary": "扫描 13 个路径（真实文件计数合计 4292，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
+    "summary": "扫描 13 个路径（真实文件计数合计 4336，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
     "blockers": 0,
     "severities": [
       "BLOCKER",
@@ -500,7 +500,7 @@
     ]
   },
   "financial": {
-    "generated_at": "2026-11-15T02:04:54.609Z",
+    "generated_at": "2026-11-16T05:56:51.692Z",
     "simulated_only": true,
     "safety": {
       "network_calls": 0,

@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116061335-8c39c4ba",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T06:13:35.744Z",
+  "started_at": "2026-11-16T06:13:35.744Z",
+  "finished_at": "2026-11-16T06:13:35.744Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116061245-a13a751a",
+    "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+    "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116061245-a13a751a",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-database (go test ./model/ -run TestPhase2DB|TestIsolatedDB|TestPhase2FK|TestSchemaMigration|TestEnsureSQLite|TestPhase2EvidenceMarkers|TestPhase2BusinessFunctions -count=1 -json)",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"package\":\"./model/\",\"fk_metrics\":{\"foreign_keys\":\"1\",\"fk_relations\":\"1\",\"orphan_rejected\":\"true\",\"orphan_persisted\":\"false\",\"fk_after_restart\":\"true\",\"pool_fk_consistent\":\"true\"},\"migrations\":{\"upgrade\":\"PASS\",\"rollback\":\"PASS\",\"failure_recovery\":\"PASS\",\"idempotent\":\"PASS\",\"version_consistency\":\"PASS\",\"business_data_integrity\":\"PASS\"}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "database integration: 80 pass / 0 fail / 0 skip; FK proof=PASS",
+  "content_hash": "5a1f69726ed408fa8cd989880efe2a47c7daf2600f926aa04243be3fddb7d53c"
+}

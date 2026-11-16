@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generated_at": "2026-11-15T02:06:56.372Z",
+  "generated_at": "2026-11-16T05:58:30.129Z",
   "defects": [
     {
       "id": "UAP-DEFECT-0001",
@@ -112,8 +112,10 @@
       "validator_id": "cross_platform.h5_integrity",
       "repair_strategy": "requires source-level change; evaluate safely before applying",
       "repair_attempts": 0,
-      "status": "OPEN",
-      "evidence_refs": []
+      "status": "VERIFIED",
+      "evidence_refs": [],
+      "resolution": "root cause no longer reproduces: cross_platform.h5_integrity PASS on the fresh validation run",
+      "closed_at": "2026-11-16T05:58:30.129Z"
     },
     {
       "id": "UAP-DEFECT-0006",
@@ -133,8 +135,10 @@
       "validator_id": "delivery.deployment_integrity",
       "repair_strategy": "requires source-level change; evaluate safely before applying",
       "repair_attempts": 0,
-      "status": "OPEN",
-      "evidence_refs": []
+      "status": "VERIFIED",
+      "evidence_refs": [],
+      "resolution": "root cause no longer reproduces: delivery.deployment_integrity PASS on the fresh validation run",
+      "closed_at": "2026-11-16T05:58:30.129Z"
     }
   ],
   "registry_snapshot": {

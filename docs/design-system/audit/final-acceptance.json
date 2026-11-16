@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-FINAL-ACCEPTANCE/1.0",
-  "generated_at": "2026-11-16T05:31:01.910Z",
+  "generated_at": "2026-11-16T07:07:31.076Z",
   "verdict": "PARTIALLY_VERIFIED",
   "allowedVerdicts": [
     "FULLY_VERIFIED",
@@ -488,7 +488,7 @@
       "evidence": "consumer-scan.mjs 现场扫描 web/src + Showcase 渲染链；虚假登记 / 零消费者 / 未登记真实引用均须为 0",
       "metrics": {
         "exit": 0,
-        "scannedAt": "2026-11-16T05:31:02.943Z",
+        "scannedAt": "2026-11-16T07:07:32.921Z",
         "filesScanned": 1278,
         "tokens": 389,
         "declaredConsumers": 389,

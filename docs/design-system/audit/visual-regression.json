@@ -1,13 +1,13 @@
 {
   "schema": "UDS8-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-16T05:31:01.910Z",
-  "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）",
+  "generated_at": "2026-11-16T07:08:52.723Z",
+  "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis",
   "backend": "http://127.0.0.1:3000",
   "dist": "web/dist",
   "verdict": "PASS",
   "executed": true,
   "realPageCount": 4,
-  "scenarioCount": 16,
+  "scenarioCount": 8,
   "themeScenarios": [
     "light",
     "dark"
@@ -41,7 +41,7 @@
     "noConsoleErrors"
   ],
   "authenticated": {
-    "executed": true,
+    "executed": false,
     "backend": "http://127.0.0.1:3100",
     "routes": [
       "/dashboard",
@@ -49,7 +49,7 @@
       "/keys",
       "/usage-logs"
     ],
-    "reason": ""
+    "reason": "隔离栈不可达：TypeError: fetch failed"
   },
   "results": [
     {
@@ -87,13 +87,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 804,
-        "meanLuminance": 235.06,
-        "luminanceStdDev": 38.61,
-        "nonWhitePixelRatio": 0.0711
+        "distinctColors": 976,
+        "meanLuminance": 236.85,
+        "luminanceStdDev": 33.93,
+        "nonWhitePixelRatio": 0.0696
       },
       "screenshot": "web/visual-regression/uds8/real-pages/home-light.png",
-      "screenshotSha256": "854cabf1a564af6a650a04ba0fafe1bf6225651b43953a49fb8296bb5e633cf6",
+      "screenshotSha256": "07dc95b8d989f909687165de3324a3fb596f2f677ff92d08e368af2bd589a978",
       "consoleErrors": [],
       "pass": true
     },
@@ -132,13 +132,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 775,
-        "meanLuminance": 32.44,
-        "luminanceStdDev": 39.95,
-        "nonWhitePixelRatio": 0.983
+        "distinctColors": 984,
+        "meanLuminance": 30.69,
+        "luminanceStdDev": 35.95,
+        "nonWhitePixelRatio": 0.9894
       },
       "screenshot": "web/visual-regression/uds8/real-pages/home-dark.png",
-      "screenshotSha256": "f292b98fe8becf8758f51e0e2213abd37c11f6bcf450af47a2ddbd20344613eb",
+      "screenshotSha256": "77f05c01cb2c9ea702ba083e45acae1cd30f9268ea7cb70fae1da9c3112813f6",
       "consoleErrors": [],
       "pass": true
     },
@@ -178,12 +178,12 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 239,
-        "meanLuminance": 245.87,
-        "luminanceStdDev": 23.62,
+        "meanLuminance": 245.88,
+        "luminanceStdDev": 23.61,
         "nonWhitePixelRatio": 0.0266
       },
       "screenshot": "web/visual-regression/uds8/real-pages/login-light.png",
-      "screenshotSha256": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
+      "screenshotSha256": "31022f03d970b76a4fb05cb9910c5e1bbfa937509ad9a829b9c8aec8bb7728fb",
       "consoleErrors": [],
       "pass": true
     },
@@ -223,12 +223,12 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 279,
-        "meanLuminance": 21.86,
-        "luminanceStdDev": 24.1,
+        "meanLuminance": 21.85,
+        "luminanceStdDev": 24.08,
         "nonWhitePixelRatio": 0.9967
       },
       "screenshot": "web/visual-regression/uds8/real-pages/login-dark.png",
-      "screenshotSha256": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
+      "screenshotSha256": "6746593d00869acbed2c477922bf41f0f75cead67bf8c5f9f6a8158fcab0de28",
       "consoleErrors": [],
       "pass": true
     },
@@ -267,13 +267,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 306,
+        "distinctColors": 308,
         "meanLuminance": 240.98,
-        "luminanceStdDev": 27.79,
+        "luminanceStdDev": 27.78,
         "nonWhitePixelRatio": 0.0397
       },
       "screenshot": "web/visual-regression/uds8/real-pages/about-light.png",
-      "screenshotSha256": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
+      "screenshotSha256": "67ef20fae12829f984bd2a3c37ae3650eb793a10e685545637c39cae67ba6b5f",
       "consoleErrors": [],
       "pass": true
     },
@@ -312,13 +312,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 310,
+        "distinctColors": 312,
         "meanLuminance": 25.08,
         "luminanceStdDev": 32.93,
         "nonWhitePixelRatio": 0.9947
       },
       "screenshot": "web/visual-regression/uds8/real-pages/about-dark.png",
-      "screenshotSha256": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
+      "screenshotSha256": "e944eed3b2835801f532083b7359e888047681b59888cf004fa2ae5792cb2831",
       "consoleErrors": [],
       "pass": true
     },
@@ -358,12 +358,12 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 1466,
-        "meanLuminance": 236.36,
-        "luminanceStdDev": 39.97,
-        "nonWhitePixelRatio": 0.0678
+        "meanLuminance": 236.37,
+        "luminanceStdDev": 39.96,
+        "nonWhitePixelRatio": 0.0677
       },
       "screenshot": "web/visual-regression/uds8/real-pages/docs-light.png",
-      "screenshotSha256": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
+      "screenshotSha256": "87ad59d74bfea24d0bd227e6214f0c9fe8de9157c8a10adb55f4bbaa2fbfce9a",
       "consoleErrors": [],
       "pass": true
     },
@@ -404,372 +404,12 @@
         "sampledPixels": 1024000,
         "distinctColors": 1457,
         "meanLuminance": 30.44,
-        "luminanceStdDev": 45.78,
+        "luminanceStdDev": 45.77,
         "nonWhitePixelRatio": 0.9705
       },
       "screenshot": "web/visual-regression/uds8/real-pages/docs-dark.png",
-      "screenshotSha256": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
+      "screenshotSha256": "f98ee56063ebf43c00fbc3f220c51f0555a055ba4daa76b342387d37c563e451",
       "consoleErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/dashboard",
-      "name": "Dashboard / Console",
-      "theme": "light",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/dashboard/overview",
-        "main": true,
-        "bodyChars": 2212,
-        "tables": 0,
-        "htmlClass": "font-inter light",
-        "ds6Brand": "#5b5ee6",
-        "ds6Keyword": "#00f",
-        "ds6TerminalBg": "#f1f5f9",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 549,
-        "meanLuminance": 241.22,
-        "luminanceStdDev": 32.04,
-        "nonWhitePixelRatio": 0.0465
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-dashboard-light.png",
-      "screenshotSha256": "11811b9514f9072c268e8c304109888f118682dee44810f053691babe0655ce1",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/wallet",
-      "name": "Wallet / Billing",
-      "theme": "light",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/wallet",
-        "main": true,
-        "bodyChars": 947,
-        "tables": 0,
-        "htmlClass": "font-inter light",
-        "ds6Brand": "#5b5ee6",
-        "ds6Keyword": "#00f",
-        "ds6TerminalBg": "#f1f5f9",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 389,
-        "meanLuminance": 244.85,
-        "luminanceStdDev": 28.33,
-        "nonWhitePixelRatio": 0.0339
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-wallet-light.png",
-      "screenshotSha256": "5b76b4ed2dec4ddabb33c1dd77e32eed3907649c6e18882bb0fac12f4ac802f4",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/keys",
-      "name": "API Keys",
-      "theme": "light",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/keys",
-        "main": true,
-        "bodyChars": 610,
-        "tables": 1,
-        "htmlClass": "font-inter light",
-        "ds6Brand": "#5b5ee6",
-        "ds6Keyword": "#00f",
-        "ds6TerminalBg": "#f1f5f9",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 340,
-        "meanLuminance": 244.74,
-        "luminanceStdDev": 23.74,
-        "nonWhitePixelRatio": 0.0247
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-keys-light.png",
-      "screenshotSha256": "90ef649d94b87773e0abfab545b3444bfe96d23fef94731da77cb5165cc1c647",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/usage-logs",
-      "name": "Usage Logs",
-      "theme": "light",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/usage-logs/common",
-        "main": true,
-        "bodyChars": 676,
-        "tables": 1,
-        "htmlClass": "font-inter light",
-        "ds6Brand": "#5b5ee6",
-        "ds6Keyword": "#00f",
-        "ds6TerminalBg": "#f1f5f9",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 342,
-        "meanLuminance": 244.39,
-        "luminanceStdDev": 25,
-        "nonWhitePixelRatio": 0.0275
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-usage-logs-light.png",
-      "screenshotSha256": "20e3620df99a112d386405297726434fe68f0d4bbe40664c16e6b080809301c2",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/dashboard",
-      "name": "Dashboard / Console",
-      "theme": "dark",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/dashboard/overview",
-        "main": true,
-        "bodyChars": 2212,
-        "tables": 0,
-        "htmlClass": "font-inter dark",
-        "ds6Brand": "#8b8df5",
-        "ds6Keyword": "#569cd6",
-        "ds6TerminalBg": "#0a101e",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 557,
-        "meanLuminance": 30.46,
-        "luminanceStdDev": 35.94,
-        "nonWhitePixelRatio": 0.9886
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-dashboard-dark.png",
-      "screenshotSha256": "8ad0c2cd706df00ed763c779cb606ed63aba822a0fb1452f996c39ae195e714b",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/wallet",
-      "name": "Wallet / Billing",
-      "theme": "dark",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/wallet",
-        "main": true,
-        "bodyChars": 947,
-        "tables": 0,
-        "htmlClass": "font-inter dark",
-        "ds6Brand": "#8b8df5",
-        "ds6Keyword": "#569cd6",
-        "ds6TerminalBg": "#0a101e",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 394,
-        "meanLuminance": 30.07,
-        "luminanceStdDev": 31.84,
-        "nonWhitePixelRatio": 0.9902
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-wallet-dark.png",
-      "screenshotSha256": "dbb70920f43316c2ce26de6a0ac925090b586134cee188628553e9a3b462cbd3",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/keys",
-      "name": "API Keys",
-      "theme": "dark",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/keys",
-        "main": true,
-        "bodyChars": 610,
-        "tables": 1,
-        "htmlClass": "font-inter dark",
-        "ds6Brand": "#8b8df5",
-        "ds6Keyword": "#569cd6",
-        "ds6TerminalBg": "#0a101e",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 371,
-        "meanLuminance": 22.65,
-        "luminanceStdDev": 26.38,
-        "nonWhitePixelRatio": 0.9932
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-keys-dark.png",
-      "screenshotSha256": "22712dad6fc7b5192fbec94e46dbfcc3b96f530622ef2d56146e54f73ea60b4b",
-      "consoleErrors": [],
-      "httpErrors": [],
-      "pass": true
-    },
-    {
-      "route": "/usage-logs",
-      "name": "Usage Logs",
-      "theme": "dark",
-      "authenticated": true,
-      "httpStatus": 200,
-      "dom": {
-        "title": "优特智能",
-        "url": "/usage-logs/common",
-        "main": true,
-        "bodyChars": 676,
-        "tables": 1,
-        "htmlClass": "font-inter dark",
-        "ds6Brand": "#8b8df5",
-        "ds6Keyword": "#569cd6",
-        "ds6TerminalBg": "#0a101e",
-        "ds8SurfaceScrim": "#000",
-        "legacySurfaceOverlayGone": true
-      },
-      "checks": {
-        "http200": true,
-        "authenticatedRender": true,
-        "renderedContent": true,
-        "bridgeLive": true,
-        "syntaxBridgeLive": true,
-        "terminalBridgeLive": true,
-        "scrimTokenLive": true,
-        "nonBlankPixels": true,
-        "noConsoleErrors": true
-      },
-      "pixels": {
-        "width": 1280,
-        "height": 800,
-        "sampledPixels": 1024000,
-        "distinctColors": 376,
-        "meanLuminance": 23.81,
-        "luminanceStdDev": 28.08,
-        "nonWhitePixelRatio": 0.9924
-      },
-      "screenshot": "web/visual-regression/uds8/real-pages/auth-usage-logs-dark.png",
-      "screenshotSha256": "b2028f2e20b867597e91ec9ba0e0fe6e53b64660d565f9b37c644e541cfd8473",
-      "consoleErrors": [],
-      "httpErrors": [],
       "pass": true
     }
   ],
@@ -817,11 +457,5 @@
     "pass": true
   },
   "errors": [],
-  "scopeNote": "公共 4 路由 + 认证 4 路由（隔离栈真实登录）× Light/Dark 渲染与 token 断言；认证场景不建像素基线。管理员专属页（Channels / System Settings）与其余认证页未覆盖，如实登记，不得视为已覆盖。",
-  "showcase": {
-    "verdict": "PASS",
-    "screenshots": "web/visual-regression/uds8/screenshots/"
-  },
-  "pixelMethod": "Playwright screenshot → browser canvas getImageData → distinct colors / luminance stddev / non-white ratio / SHA256 theme diff",
-  "combinedVerdict": "PASS"
+  "scopeNote": "真实 SPA 路由回归；认证页面未执行（隔离栈不可达：TypeError: fetch failed），故不含 Dashboard / Billing / Orders / Refunds 等页面。该限制如实登记，不得视为已覆盖。"
 }

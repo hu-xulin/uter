@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116055820-420a257a",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T05:58:20.333Z",
+  "started_at": "2026-11-16T05:58:20.333Z",
+  "finished_at": "2026-11-16T05:58:20.333Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116055652-c49df875",
+    "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+    "worktree_fingerprint": "eb7480be06bb0420594a1e67b128949c56c11ec72e28df2f2288052fe2ca4e12",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116055652-c49df875",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "worktree_fingerprint": "eb7480be06bb0420594a1e67b128949c56c11ec72e28df2f2288052fe2ca4e12",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.h5_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.h5_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "cross_platform.h5_integrity 实检: h5_build=PASS(真实浏览器矩阵 verdict.h5_build=PASS (25 行(5 视口 x 5 路由), 全部真实渲染=true)); viewport=PASS(真实浏览器矩阵 verdict.viewport=PASS (meta viewport + 横向溢出 0: 0 行溢出)); touch=PASS(真实浏览器矩阵 verdict.touch=PASS (真实触屏 tap 派发 + WCAG 2.5.8 24x24 硬线违规 <24=0 个(含等效命中区/豁免判定); 44x44 推荐以下=140 个如实记录(设计系统 §15.3 非强制))); mobile_tests=PASS(真实浏览器矩阵 verdict.mobile_tests=PASS (matrix_rows=25, rendered=25, 控制台/页面错误行=0)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9445 个 | 真实 Playwright Chromium 矩阵(5 视口 x 5 路由), 产物 .uap/reports/H5-BROWSER-MATRIX.json 存在=true; verdict={\"h5_build\":\"PASS\",\"viewport\":\"PASS\",\"touch\":\"PASS\",\"mobile_tests\":\"PASS\"}",
+  "content_hash": "f397affa1439c3ce6234bbbab0e08ab5199b6bfa582963ccf8de29fa12b87f80"
+}

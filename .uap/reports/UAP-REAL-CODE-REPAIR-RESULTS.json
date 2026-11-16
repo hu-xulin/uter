@@ -1,18 +1,18 @@
 {
   "schema_version": "1.0",
   "status_model": "UAP-TEST-STATUS-1.0",
-  "generated_at": "2026-11-15T14:04:12.101Z",
+  "generated_at": "2026-11-16T06:13:27.173Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+  "commit_sha": "2a6e470d1384319039c53860c6c7082894147135",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "execution_id": "UAP-EXEC-20261116061245-a13a751a",
+  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
   "command": "node .uap/tools/phase2-capability-cards.mjs",
   "exit_code": 0,
   "environment": {
     "platform": "darwin",
-    "node": "v24.21.0",
+    "node": "v22.22.2",
     "cwd": "/Users/lincolnhu/uter",
     "isolated": true,
     "sandbox": "os.tmpdir() dedicated repair sandbox (no tracked file modified)"
@@ -108,59 +108,59 @@
   ],
   "failures": [],
   "repair": {
-    "task_id": "UAP-E2E-REPAIR-8b382c64",
+    "task_id": "UAP-E2E-REPAIR-877dccc6",
     "status": "SUCCEEDED",
     "before_failing_exit_code": 1,
     "after_passing": {
       "original_test": {
         "command": "node",
         "args": [
-          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8/tests/original.test.mjs"
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k/tests/original.test.mjs"
         ],
-        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8",
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k",
         "exit_code": 0,
         "timed_out": false,
         "signal": null,
-        "duration_ms": 97,
+        "duration_ms": 83,
         "stdout": "E2E_OK original.test.mjs\n",
         "stderr": ""
       },
       "regression_test": {
         "command": "node",
         "args": [
-          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8/tests/regression.test.mjs"
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k/tests/regression.test.mjs"
         ],
-        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8",
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k",
         "exit_code": 0,
         "timed_out": false,
         "signal": null,
-        "duration_ms": 102,
+        "duration_ms": 80,
         "stdout": "E2E_OK regression.test.mjs\n",
         "stderr": ""
       },
       "module_test": {
         "command": "node",
         "args": [
-          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8/tests/module.test.mjs"
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k/tests/module.test.mjs"
         ],
-        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8",
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k",
         "exit_code": 0,
         "timed_out": false,
         "signal": null,
-        "duration_ms": 104,
+        "duration_ms": 82,
         "stdout": "E2E_OK module.test.mjs\n",
         "stderr": ""
       },
       "full_test": {
         "command": "node",
         "args": [
-          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8/tests/full.test.mjs"
+          "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k/tests/full.test.mjs"
         ],
-        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8",
+        "cwd": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k",
         "exit_code": 0,
         "timed_out": false,
         "signal": null,
-        "duration_ms": 103,
+        "duration_ms": 78,
         "stdout": "E2E_OK full.test.mjs (5 add cases + mul)\n",
         "stderr": ""
       }
@@ -285,14 +285,14 @@
   "provenance": {
     "repair_command": "node .uap/tools/real-repair-e2e.mjs",
     "repair_exit_code": 0,
-    "independent_command": "node .uap/tools/independent-regression-e2e.mjs /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8 60000",
+    "independent_command": "node .uap/tools/independent-regression-e2e.mjs /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k 60000",
     "independent_exit_code": 0,
     "independent_verdict": "PASS",
-    "evidence_ref": "UAP-EV-20261115140411-0710d7bc",
-    "evidence_hash": "eaf93ecdc96244aadfb20796a9bbff2082343c114974f337fb2b916f75b09807",
+    "evidence_ref": "UAP-EV-20261116061326-97d35650",
+    "evidence_hash": "2e50ee19510dbb04befd0612368aae6ddc773d366f5202af2dc1bf843c56f2e4",
     "evidence_hash_valid": true,
     "evidence_binding_valid": true,
-    "sandbox_dir": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-xiBlc8",
+    "sandbox_dir": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-rrepair-gvzM6k",
     "generated_by": "real command results (never hand-edited status)"
   }
 }

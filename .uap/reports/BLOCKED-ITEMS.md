@@ -1,18 +1,16 @@
 # Blocked Items
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-15T14:04:18.271Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T06:49:42.565Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 汇总
 
-共 **6** 条。按来源分组：UAP-DEFECT-0005=1, UAP-DEFECT-0006=1, AUTH=4。
+共 **4** 条。按来源分组：AUTH=4。
 
 ## 明细
 
 | ID | 级别 | 原因 | 来源 |
 | --- | --- | --- | --- |
-| UAP-DEFECT-0005 | P1 | cross_platform.h5_integrity: FAIL | DEFECT-REGISTRY.json |
-| UAP-DEFECT-0006 | P1 | delivery.deployment_integrity: FAIL | DEFECT-REGISTRY.json |
 | AUTH:production_deploy | BLOCKED_BY_DESIGN | requires explicit production authorization; UAP performs local simulation only | .uap/config/permission-policy.yaml |
 | AUTH:production_database_write | BLOCKED_BY_DESIGN | requires explicit production authorization; UAP performs local simulation only | .uap/config/permission-policy.yaml |
 | AUTH:real_payment | BLOCKED_BY_DESIGN | requires explicit production authorization; UAP performs local simulation only | .uap/config/permission-policy.yaml |

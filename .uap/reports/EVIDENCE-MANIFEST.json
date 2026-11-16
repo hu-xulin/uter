@@ -1,14 +1,14 @@
 {
   "schema_version": "1.0",
   "component": "runtime.evidence-engine.manifest",
-  "generated_at": "2026-11-15T14:04:23.715Z",
+  "generated_at": "2026-11-16T06:12:09.174Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
-  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "commit_sha": "2a6e470d1384319039c53860c6c7082894147135",
+  "execution_id": "UAP-EXEC-20261116061142-f8f8bf2a",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
   "fingerprint_basis": {
     "algorithm": "sha256(sorted( head + status-lines + sha256(git diff --binary) + sha256(git diff --cached --binary) + sha256(untracked file bytes base64) ))",
     "excludes": [
@@ -244,21 +244,21 @@
     {
       "path": ".uap/reports/FINAL-ACCEPTANCE.json",
       "name": "FINAL-ACCEPTANCE.json",
-      "bytes": 22070,
-      "sha256": "c40edf39a424e1e5e11ff384ef1181f9aa7a4745e218b5cbd440d2dc3620e0fa",
+      "bytes": 78814,
+      "sha256": "eb26f2d88a571226861921e6ec28805b7b1c7e9affb7f67f27d8c62a27f88f3a",
       "binding": {
-        "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-        "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-        "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
-        "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
-        "generated_at": "2026-11-15T14:04:23.251Z",
+        "execution_id": "UAP-EXEC-20261116061142-f8f8bf2a",
+        "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+        "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+        "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+        "generated_at": "2026-11-16T06:12:08.367Z",
         "status_model": "UAP-TEST-STATUS-1.0",
-        "status": "NOT_ACCEPTED",
+        "status": "FAILED",
         "counts": null,
         "test_command": "node .uap/tools/final-acceptance-gate.mjs",
         "environment": {
           "platform": "darwin",
-          "node": "v24.21.0",
+          "node": "v22.22.2",
           "cwd": "/Users/lincolnhu/uter"
         }
       },
@@ -267,14 +267,14 @@
     {
       "path": ".uap/reports/FINAL-STATUS.json",
       "name": "FINAL-STATUS.json",
-      "bytes": 5343,
-      "sha256": "218db12b8394f42cddb371f84222c528e55890831c6b504293e3815a4db7449c",
+      "bytes": 49505,
+      "sha256": "d6e537396a0bc57eb78fed7448b7ac48d1d2297763256a61d3e40bd90cd44e96",
       "binding": {
-        "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-        "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-        "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
-        "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
-        "generated_at": "2026-11-15T14:04:23.468Z",
+        "execution_id": "UAP-EXEC-20261116061142-f8f8bf2a",
+        "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+        "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+        "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+        "generated_at": "2026-11-16T06:12:08.760Z",
         "status_model": "UAP-TEST-STATUS-1.0",
         "status": null,
         "counts": null,
@@ -358,18 +358,18 @@
     {
       "path": ".uap/reports/RUNTIME-TEST-RESULTS.json",
       "name": "RUNTIME-TEST-RESULTS.json",
-      "bytes": 5974,
-      "sha256": "6e7600c3c1eb2b199351c290a6b0438ba8003e3ec2907e543f9d95f0efeea100",
+      "bytes": 17938,
+      "sha256": "f48d9ed881b28160d3b605fb6e091af6ea228e496b5246f5f5120e0de217818d",
       "binding": {
-        "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-        "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-        "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
-        "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
-        "generated_at": "2026-11-15T13:53:25.001Z",
+        "execution_id": "UAP-EXEC-20261116055652-c49df875",
+        "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+        "worktree_fingerprint": "eb7480be06bb0420594a1e67b128949c56c11ec72e28df2f2288052fe2ca4e12",
+        "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+        "generated_at": "2026-11-16T05:58:46.320Z",
         "status_model": null,
         "status": null,
         "counts": null,
-        "test_command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+        "test_command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
         "environment": null
       },
       "is_json": true
@@ -403,14 +403,14 @@
     {
       "path": ".uap/reports/VALIDATION-RESULTS.json",
       "name": "VALIDATION-RESULTS.json",
-      "bytes": 12676102,
-      "sha256": "47ba59eca7fee68d7b57169d047cb24a15dbd440ce9a784a843f3801c459a752",
+      "bytes": 12805046,
+      "sha256": "3e5f507334d02e9c2a599b46dbd6030fd2d3ebd3e9ccbe32cc3ea99d0b846707",
       "binding": {
-        "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-        "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-        "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
-        "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
-        "generated_at": "2026-11-15T13:55:03.854Z",
+        "execution_id": "UAP-EXEC-20261116055652-c49df875",
+        "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+        "worktree_fingerprint": "eb7480be06bb0420594a1e67b128949c56c11ec72e28df2f2288052fe2ca4e12",
+        "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+        "generated_at": "2026-11-16T05:58:29.737Z",
         "status_model": null,
         "status": null,
         "counts": null,
@@ -581,7 +581,7 @@
     },
     {
       "name": "STATUS-CONSISTENCY.json",
-      "execution_id": "UAP-EXEC-20261115131510-7d730ada",
+      "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
       "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
       "classification": "HISTORICAL"
     },
@@ -617,5 +617,5 @@
     }
   ],
   "manifest_scope": "all FINAL_REPORTS except EVIDENCE-MANIFEST.json; FINAL-ACCEPTANCE.json pins manifest_integrity_hash",
-  "manifest_integrity_hash": "3b7c99f3b3cebc29bb54f7bc1240db2df17475a13ad83eca1edd7d3da53eedf8"
+  "manifest_integrity_hash": "f0d05baacb365173b5f720807472e7c3c8871aa740ca07242a3a52751e209192"
 }

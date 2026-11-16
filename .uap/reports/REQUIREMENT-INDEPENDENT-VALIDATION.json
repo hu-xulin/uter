@@ -1,15 +1,15 @@
 {
   "validator_id": "phase2.requirement_independent_validator",
-  "generated_at": "2026-11-15T14:04:09.971Z",
-  "execution_id": "UAP-EXEC-20261115135024-6a46ff96",
-  "git_head": "3f4eb0d7afd640471368c49bfa71d8383eb7740b",
-  "worktree_fingerprint": "e6bf3e5884a13aade1c31ee8a917b6b9ba835a8a326391b7da2169c97ac19024",
+  "generated_at": "2026-11-16T06:13:24.389Z",
+  "execution_id": "UAP-EXEC-20261116061245-a13a751a",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
   "ok": true,
   "checks": [
     {
       "name": "execution_identity_present",
       "ok": true,
-      "detail": "UAP-EXEC-20261115135024-6a46ff96 @ 3f4eb0d7afd640471368c49bfa71d8383eb7740b"
+      "detail": "UAP-EXEC-20261116061245-a13a751a @ 2a6e470d1384319039c53860c6c7082894147135"
     },
     {
       "name": "states_line_matches_matrix",

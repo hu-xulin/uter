@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261116064414-cfd4de5c",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T06:44:14.833Z",
+  "started_at": "2026-11-16T06:40:14.212Z",
+  "finished_at": "2026-11-16T06:44:14.833Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116061245-a13a751a",
+    "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+    "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116061245-a13a751a",
+  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
+  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-e2e",
+  "exit_code": 1,
+  "duration_ms": 240621,
+  "inputs": "{\"argv\":[\"verify-e2e\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "e2e FAILED: business e2e exit=1; business e2e collected 0 scenarios (expected=0, exit=1) — runner produced no business test evidence; this is a FAIL; business e2e reporter stats.expected=0 with exit=1 — runner aborted before collecting tests; PASS=14 FAIL=1 BLOCKED=0 SKIPPED=0"
+    }
+  ],
+  "summary": "e2e FAILED: business e2e exit=1; business e2e collected 0 scenarios (expected=0, exit=1) — runner produced no business test evidence; this is a FAIL; business e2e reporter stats.expected=0 with exit=1 — runner aborted before collecting tests; PASS=14 FAIL=1 BLOCKED=0 SKIPPED=0",
+  "content_hash": "fa64b280a8761c619816d5bc6e88a0eb9ff23ebc205af22c98f6fd3417e1021e"
+}
