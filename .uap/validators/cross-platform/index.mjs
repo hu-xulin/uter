@@ -177,7 +177,7 @@ export const validators = {
     const h5Spec = specById(configs).get('UAP-07-002');
 
     // feature_mapping: web and H5 share ONE source tree and ONE API layer.
-    // The previous 3.0 Markdown path was removed during the UDS 7.0 rebuild,
+    // The single authoritative Markdown path is the UDS 8.0.0 standard,
     // so checking that retired path made this validator fail for the wrong
     // reason. Validate the current canonical 7.0 SSOT and its explicit
     // compatibility boundary instead: 7.0 is acceptance-ready but NOT yet

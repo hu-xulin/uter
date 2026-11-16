@@ -30,7 +30,7 @@ REDIS_PORT=6380
 BACKEND_ORIGIN="http://localhost:${BACKEND_PORT}"
 TEST_FRONTEND_URL="${TEST_FRONTEND_URL:-http://localhost:${FRONTEND_PORT}}"
 export TEST_FRONTEND_URL
-# UDS 6.0 真实页面回归（real-page-regression.mjs）的认证场景静态服务器固定端口。
+# UDS 8.0.0 真实页面回归（real-page-regression.mjs）的认证场景静态服务器固定端口。
 # 浏览器从该 origin 发起的带凭证 POST 必须被隔离后端 CORS 放行，否则 403。
 HARNESS_PORT="${UDS7_HARNESS_PORT:-3102}"
 HARNESS_ORIGIN="http://127.0.0.1:${HARNESS_PORT}"
@@ -291,7 +291,7 @@ do_start() {
     *",${TEST_FRONTEND_URL},"*) isolated_cors="${base_cors}" ;;
     *) isolated_cors="${base_cors:+${base_cors},}${TEST_FRONTEND_URL}" ;;
   esac
-  # UDS 6.0 真实页面回归的认证场景：harness 静态服务器（固定端口 HARNESS_PORT）
+  # UDS 8.0.0 真实页面回归的认证场景：harness 静态服务器（固定端口 HARNESS_PORT）
   # 代理 API 到本隔离后端，浏览器 POST 携带 Origin: ${HARNESS_ORIGIN}。
   # 与上面 TEST_FRONTEND_URL 同理，只在这个测试进程上追加精确 origin，
   # 不删除任何既有放行来源，生产 :3000 的 CORS 配置完全不受影响。
@@ -353,7 +353,7 @@ export UTER_TEST_STACK='isolated'
 # testAuthIsolated 判定）。只写 UTER_TEST_STACK 会让隔离性判定落回
 # 「靠 VISUAL_BASE_URL 猜测」，属于环境契约不一致；两个名字都写入。
 export UAP_TEST_STACK='isolated'
-# UDS 6.0 真实页面回归认证场景的固定端口 / origin（已加入本栈 CORS 白名单）。
+# UDS 8.0.0 真实页面回归认证场景的固定端口 / origin（已加入本栈 CORS 白名单）。
 export UDS7_HARNESS_PORT='${HARNESS_PORT}'
 export UDS7_HARNESS_ORIGIN='${HARNESS_ORIGIN}'
 EOF

@@ -112,7 +112,7 @@ describe('执行身份绑定', () => {
     assert.ok(!basis.excludes.some((p) => p.includes('/audit/') && p.endsWith('.md')),
       '手写审计 .md 源文档不得被排除');
     assert.ok(basis.excludes.includes('docs/design-system/03-COLOR-STANDARD.md'),
-      'UDS7 生成的规范文档必须被排除（build.mjs 每次再生）');
+      'UDS 8.0.0 生成的规范文档必须被排除（build.mjs 每次再生）');
     assert.ok(basis.excludes.some((p) => p.startsWith('web/public/docs-search')),
       '前端构建生成的搜索索引必须被排除（build:check 每次再生，否则本批次自漂移）');
     assert.ok(basis.excludes.includes('web/public/sitemap.xml'),
@@ -148,7 +148,7 @@ describe('执行身份绑定', () => {
     assert.notEqual(withSrc, base, '新增审计源文档必须改变指纹');
     assert.notEqual(withSrcChanged, withSrc, '审计源文档内容变化必须改变指纹（源仍被绑定）');
 
-    // UDS7 代码生成产物（runtime/ 下的派生 CSS）内容变化不得改变指纹。
+    // UDS 8.0.0 代码生成产物（runtime/ 下的派生 CSS）内容变化不得改变指纹。
     const runtimeDir = path.join(ROOT, 'docs', 'design-system', 'runtime');
     const genProbe = path.join(runtimeDir, `zz-fp-gen-probe-${process.pid}.css`);
     fs.mkdirSync(runtimeDir, { recursive: true });
@@ -158,7 +158,7 @@ describe('执行身份绑定', () => {
       fs.writeFileSync(genProbe, 'gen-B');
       const gB = readStableFingerprint();
       return [gA, gB];
-    }, 'UDS7 生成产物不得使本批次证据失效');
+    }, 'UDS 8.0.0 生成产物不得使本批次证据失效');
     fs.unlinkSync(genProbe);
 
     // registry/ 下的手写生成器源（.mjs）必须仍被绑定：排除只针对派生产物。

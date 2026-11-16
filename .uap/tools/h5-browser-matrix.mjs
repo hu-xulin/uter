@@ -394,7 +394,7 @@ async function main() {
       if (!mobileRows.length) return 'FAIL';
       const tapOk = mobileRows.filter((r) => r.spa_rendered).every((r) => r.tap && (r.tap.touchstart > 0 || r.tap.pointerdown > 0));
       // WCAG 2.5.8 hard floor gates the check; the 44px recommendation is
-      // surfaced separately (UDS 7.0 13-ACCESSIBILITY-STANDARD.md: "not the uniform minimum").
+      // surfaced separately (UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: "not the uniform minimum").
       const wcagOk = mobileRows.filter((r) => r.spa_rendered).every((r) => r.small_touch_targets && r.small_touch_targets.below_wcag_min_24.count === 0);
       return tapOk && wcagOk ? 'PASS' : 'FAIL';
     })(),
