@@ -1,5 +1,5 @@
 # UAP-09-001 — 知识管理规范
-> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+> **UDS 8.0.0 状态边界：** 当前唯一设计系统 SSOT 为 `TOKEN-MANIFEST.json`（version `8.0.0`、`ACCEPTANCE_READY`、`accepted: false`）。运行时颜色语义由 manifest 派生的 `--ds8-*` bridge 提供；3.0 颜色兼容层已退役，B1–B6 迁移批次须以 `COMPAT-MAP.json` 的实时状态为准。设计系统达到 `ACCEPTANCE_READY` 不等于用户已最终接受；不得将设计系统状态等同于 Uter 全站业务合规。
 
 
 **编号：** UAP-09-001
@@ -7,7 +7,7 @@
 **名称：** 知识管理规范
 **版本：** 1.0.0
 **状态：** ACTIVE
-**适用范围：** 约束 Uter 与 UAP 治理体系中全部项目知识的来源、适用范围、更新时间、检索与差异管理，覆盖 `AGENTS.md`（全仓强制约定）、`web/AGENTS.md`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 与 `docs/design-system/SHOWCASE-7.0.html`、`docs-dev/`（含 `plugin-api/v1.md` / `v1.schema.json` / `v1.d.ts`、`channel-adaptor-map.md`、`authentication.md`、`translation-glossary*.md`）、`pkg/billingexpr/expr.md`，以及 `.uap/config/` 六份注册中心、`.uap/tools/spec-baseline.md`、`.uap/state/BASELINE.json`、`VERSION`。
+**适用范围：** 约束 Uter 与 UAP 治理体系中全部项目知识的来源、适用范围、更新时间、检索与差异管理，覆盖 `AGENTS.md`（全仓强制约定）、`web/AGENTS.md`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 与 `docs/design-system/SHOWCASE-8.0.0.html`、`docs-dev/`（含 `plugin-api/v1.md` / `v1.schema.json` / `v1.d.ts`、`channel-adaptor-map.md`、`authentication.md`、`translation-glossary*.md`）、`pkg/billingexpr/expr.md`，以及 `.uap/config/` 六份注册中心、`.uap/tools/spec-baseline.md`、`.uap/state/BASELINE.json`、`VERSION`。
 **关键级别：** P1
 **依赖标准：** UAP-00-004
 
