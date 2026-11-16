@@ -62,6 +62,35 @@ jobs:
         run: |
           node docs/design-system/registry/build.mjs
           node docs/design-system/registry/finalize.mjs
+      - name: Publish UDS 8.0.0 failure diagnostics
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const read = (p) => fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : null;
+          const real = read('docs/design-system/audit/visual-regression.json');
+          const baseline = read('docs/design-system/audit/visual-baseline-check.json');
+          const gates = read('docs/design-system/audit/GATE-EVIDENCE.json');
+          console.log('--- UDS8 REAL PAGE REGRESSION ---');
+          if (!real) console.log('visual-regression.json missing');
+          else console.log(JSON.stringify({
+            verdict: real.verdict, executed: real.executed, authenticated: real.authenticated,
+            failed_scenarios: (real.results || []).filter(x => !x.pass).map(x => ({
+              route: x.route, theme: x.theme, checks: x.checks, error: x.error,
+              consoleErrors: x.consoleErrors, httpErrors: x.httpErrors
+            })),
+            gradient: real.gradient, forcedColors: real.forcedColors, errors: real.errors
+          }, null, 2));
+          console.log('--- UDS8 VISUAL BASELINE ---');
+          if (!baseline) console.log('visual-baseline-check.json missing');
+          else console.log(JSON.stringify({
+            verdict: baseline.verdict, reason: baseline.reason, summary: baseline.summary,
+            failed_scenarios: (baseline.results || []).filter(x => x.verdict !== 'PASS')
+          }, null, 2));
+          console.log('--- UDS8 GATE EVIDENCE ---');
+          if (!gates) console.log('GATE-EVIDENCE.json missing');
+          else console.log(JSON.stringify(gates, null, 2).slice(-24000));
+          NODE
       - name: Build isolated Uter backend release binary
         run: go build -o uter-bin .
       - name: Start isolated Uter server with disposable SQLite
