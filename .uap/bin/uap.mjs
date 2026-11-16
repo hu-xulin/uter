@@ -588,7 +588,10 @@ async function cmdTest({ flags, positional }) {
     generated_at: nowISO(), mode: flags.has('all') ? 'all' : 'selected',
     test_files: files.map((f) => relToRoot(f)), command: r.command,
     exit_code: r.exit_code, timed_out: r.timed_out, duration_ms: r.duration_ms,
-    stdout_tail: r.stdout.slice(-3000), stderr_tail: r.stderr.slice(-1500),
+    // Preserve enough TAP context to diagnose nested suite failures from CI
+    // artifacts/logs; the previous 3 KB tail often retained only the parent
+    // suite summary and discarded the failing assertion itself.
+    stdout_tail: r.stdout.slice(-12000), stderr_tail: r.stderr.slice(-3000),
   });
   writeJSON(reportPath('RUNTIME-TEST-RESULTS.json'), data);
   // Every test run — passing or failing — gets its own immutable evidence

@@ -103,7 +103,10 @@ Rules:
 - If the task touches `web/`, also Read `web/AGENTS.md` before editing frontend files.
 - If the task touches billing as defined under **Billing rules (mandatory read gate)** in `AGENTS.md`, also Read `.agents/rules/billing.md` in full before planning or editing. Tasks outside that definition may skip it.
 
-Note: the previous AES governance system was retired on 2026-11-12. A new
-standard system will be published separately; until then `AGENTS.md` and the
-product quality gates (`scripts/verify-all.sh`, `.github/workflows/ci.yml`)
-are the only binding conventions.
+Note: the previous AES governance system was retired on 2026-11-12.
+UAP is now the active, repository-local governance and execution system.
+The applicable UAP specifications in `.uap/config/specification-registry.yaml`
+are binding alongside the preserved project-specific rules in `AGENTS.md`,
+`web/AGENTS.md`, and the product quality gates
+(`scripts/verify-all.sh`, `.github/workflows/ci.yml`). UAP supplements and
+enforces these rules; it does not silently replace or weaken them.

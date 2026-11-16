@@ -19,6 +19,46 @@ concurrency:
 # Checkout the event commit in both jobs. A PR merge ref can disappear while
 # queued runs start, and a base branch can advance after the merge event.
 jobs:
+  # UAP 是仓库内的治理与执行平台；每次 main push / PR 都必须先证明
+  # Runtime、32 个验证器与 UAP 自身测试可执行，不能只靠 nightly schedule。
+  uap-governance:
+    name: UAP runtime, validators and self-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      # Run every UAP gate even when an earlier gate fails so CI preserves
+      # complete evidence instead of skipping the self-test suite on validator failure.
+      - name: UAP runtime health
+        id: uap_doctor
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs doctor
+      - name: UAP registry and validator execution
+        id: uap_validate
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs validate --all
+      - name: UAP complete self-test suite
+        id: uap_test
+        if: always()
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs test --all
+      - name: Enforce UAP governance gate
+        if: always()
+        env:
+          DOCTOR_OUTCOME: ${{ steps.uap_doctor.outcome }}
+          VALIDATE_OUTCOME: ${{ steps.uap_validate.outcome }}
+          TEST_OUTCOME: ${{ steps.uap_test.outcome }}
+        run: |
+          printf 'doctor=%s\\nvalidate=%s\\ntest=%s\\n' "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME"
+          test "$DOCTOR_OUTCOME" = success
+          test "$VALIDATE_OUTCOME" = success
+          test "$TEST_OUTCOME" = success
+
   ueqe-review:
     name: UEQE review engine (all modules)
     runs-on: ubuntu-latest

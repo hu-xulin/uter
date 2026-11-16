@@ -176,25 +176,37 @@ export const validators = {
     const webSpec = specById(configs).get('UAP-07-001');
     const h5Spec = specById(configs).get('UAP-07-002');
 
-    // feature_mapping: web and H5 share ONE source tree, ONE API layer and
-    // ONE type scale. The authoritative declaration of the shared type scale
-    // is the design-system spec (UTER-DESIGN-SYSTEM-3.0.md declares its scope
-    // as "PC Web、H5、响应式页面及全部业务组件" with unified 字号 Token), and
-    // AGENTS.md binds that spec as mandatory. Demanding a specific English
-    // paraphrase inside AGENTS.md was a false requirement — the SSOT is the
-    // design-system document itself.
-    const dsRel = 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md';
+    // feature_mapping: web and H5 share ONE source tree and ONE API layer.
+    // The previous 3.0 Markdown path was removed during the UDS 7.0 rebuild,
+    // so checking that retired path made this validator fail for the wrong
+    // reason. Validate the current canonical 7.0 SSOT and its explicit
+    // compatibility boundary instead: 7.0 is acceptance-ready but NOT yet
+    // accepted, while 3.0 remains the runtime-enforced standard until Phase 6.
+    const dsRel = 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md';
+    const manifestRel = 'docs/design-system/TOKEN-MANIFEST.json';
+    const migrationRel = 'docs/design-system/UDS-7.0-MIGRATION-REPORT.md';
     const ds = exists(rootPath(dsRel)) ? readText(rootPath(dsRel)) : '';
+    const manifest = readJSON(rootPath(manifestRel), null);
+    const migration = exists(rootPath(migrationRel)) ? readText(rootPath(migrationRel)) : '';
+    const designSystemReady = !!manifest
+      && manifest.version === '7.0.0'
+      && manifest.status === 'ACCEPTANCE_READY'
+      && ds.includes('TOKEN-MANIFEST.json')
+      && ds.includes('当前运行时强制标准仍为 3.0')
+      && migration.includes('当前字号真值')
+      && exists(rootPath('docs/design-system/SHOWCASE-7.0.html'));
+    const runtimeBoundaryExplicit = ds.includes('3.0 仍是现行运行时强制标准')
+      && ds.includes('全站迁移按 Phase 6 分期执行');
     const dupTrees = ['h5/src', 'mobile/src', 'web-h5/src', 'm/src'].filter((d) => exists(rootPath(d)));
     const featureDirs = exists(rootPath('web/src/features'))
       ? fs.readdirSync(rootPath('web/src/features'), { withFileTypes: true }).filter((e) => e.isDirectory()).length
       : 0;
-    const sharedTypeScale = ds.includes('PC Web、H5') && ds.includes('响应式') && ds.includes('字号 Token');
+    const sharedTypeScale = designSystemReady && runtimeBoundaryExplicit;
     const rFeature = {
       name: 'feature_mapping',
       ok: dupTrees.length === 0 && featureDirs > 0 && sharedTypeScale
-        && agentsMd.includes('UTER-DESIGN-SYSTEM-3.0.md') && !!webSpec && !!h5Spec,
-      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; 设计系统 SSOT(${dsRel}) 声明 PC Web、H5、响应式共用统一字号 Token=${sharedTypeScale}; AGENTS.md 绑定设计系统规范=${agentsMd.includes('UTER-DESIGN-SYSTEM-3.0.md')}`,
+        && agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md') && !!webSpec && !!h5Spec,
+      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 7.0 SSOT/Token Manifest/迁移报告/Showcase 完整=${designSystemReady}; 3.0 运行时兼容边界明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
     };
 
     // api_consistency: single frontend API client + backend-only business rules.
