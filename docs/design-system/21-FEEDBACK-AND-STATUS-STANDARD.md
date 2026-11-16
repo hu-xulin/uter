@@ -24,7 +24,7 @@ Toast / Alert / Badge / Banner / Tooltip / Inline Feedback / Loading / Success /
 
 ## 2. Rules
 
-1. Toast：宽 360px、圆角 8px、surface-raised + elevation-3；进入 200ms / 停留 5000ms / 退出 150ms；role="status"
+1. Toast：宽 360px、圆角 10px、surface-raised + elevation-3；进入 200ms / 停留 5000ms / 退出 150ms；role="status"
 2. Alert：4 种语义（success / warning / danger / info），soft 底 + 1px border + 16px 图标 + 标题 14px + 说明 12px
 3. Badge：高 24px、full 圆角、12px/18px medium；状态色取对应 status-on + status-soft
 4. 营销首屏胶囊（Hero Pill Badge）：仅用于首页首屏身份标识「AI Application Infrastructure Foundation」；高 32px / full 圆角 / 1px `--ds-color-status-info-border` 20% 描边 / `--ds-color-status-info-soft` 30% 浅底 / `--ds-color-status-info` 12px（18px 行高）medium 文字；左侧双色脉冲点 6px（ping 层 info 60% + 实心 info，脉冲沿用 `animate-ping`，不新增动效 Token）。该效果锚定上游 new-api `sections/hero.tsx` 的蓝色胶囊（`blue-500/20` 描边、`blue-500/5` 浅底、`blue-600` 文字、11px 字号）；按 §1.2 全站下限把 11px 提至 `--ds-text-2xs`（12px），蓝系裸色一律翻成 info 语义 Token，Light / Dark 由同名 Token 映射，禁止在业务组件写上游裸类
@@ -48,7 +48,7 @@ Toast / Alert / Badge / Banner / Tooltip / Inline Feedback / Loading / Success /
 | `--ds-color-status-info` | #1D4ED8 | #93C5FD | color | 信息 |
 | `--ds-color-status-info-soft` | #DBEAFE | #172554 | color | 信息浅底 |
 | `--ds-color-status-info-border` | #93C5FD | #1E40AF | color | 信息边框 |
-| `--ds-radius-lg` | 8px | —（同值） | px | 卡片 |
+| `--ds-radius-lg` | 10px | —（同值） | px | 卡片 |
 | `--ds-radius-full` | 9999px | —（同值） | px | 圆形 / 胶囊 |
 | `--ds-elevation-3` | 0 8px 24px rgba(15, 23, 42, 0.12) | —（同值） | css | 下拉 / Popover |
 | `--ds-text-sm` | 14px | —（同值） | px | 正文默认 |

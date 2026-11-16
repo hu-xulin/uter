@@ -30,7 +30,7 @@ Popover / Tooltip / Dropdown / Dialog / Drawer / Context Menu / Command Menu 统
 4. 焦点管理：打开时焦点移入第一个可聚焦元素，Tab 在浮层内循环，关闭时归还触发元素
 5. 滚动锁定：模态打开时锁定 body 滚动；关闭时恢复原滚动位置
 6. 关闭行为：Esc / 点击遮罩 / 显式关闭按钮；有未保存改动的 Dialog 点击遮罩不关闭并给出确认
-7. Dropdown / Context Menu 项高 36px、圆角 5px、Hover surface-sunken、键盘上下箭头导航
+7. Dropdown / Context Menu 项高 36px、圆角 md 6px、Hover surface-sunken、键盘上下箭头导航
 8. Command Menu 宽 640px、输入框高 44px、结果项 40px、支持 ↑↓ / Enter / Esc
 9. 所有浮层必须标注 role / aria-modal / aria-labelledby；Tooltip 不承载可交互内容
 
@@ -53,7 +53,7 @@ Popover / Tooltip / Dropdown / Dialog / Drawer / Context Menu / Command Menu 统
 | `--ds-layout-drawer-width` | 400px | —（同值） | px | Drawer 默认宽度 |
 | `--ds-radius-dialog` | var(--ds-radius-xl) | —（同值） | token-ref | Dialog = 12px |
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
-| `--ds-radius-md` | 5px | —（同值） | px | 默认 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

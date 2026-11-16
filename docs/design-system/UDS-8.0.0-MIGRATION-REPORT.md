@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 8.0.0 — 现状清单与迁移报告（Phase 1 清单 + Phase 9 迁移状态）
 
-> 生成时间 2026-11-16T05:29:25.953Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
+> 生成时间 2026-11-16T09:44:20.137Z · 分支 `main` · 工作区脏区 **998 项**（审计时实测）
 > 本报告只记录真实扫描结果，不覆盖任何并发未提交修改。
 
 ## 1. Phase 1 仓库审计（真实命令输出）
@@ -75,7 +75,7 @@ CM-01 / CM-T01 / CM-T02 已于 2026-11-16 经用户授权正式切换为 REPLACE
 
 | ID | Token | 3.0 | 7.0 | 级别 | 处置 |
 |---|---|---|---|---|---|
-| CM-01 | `--ds-radius-md` | 10px (3.0.md:1100) | 5px (TOKEN-MANIFEST) | HIGH | REPLACED |
+| CM-01 | `--ds-radius-md` | 10px (3.0.md:1100) | 6px (UDS 8.0 TOKEN-MANIFEST) | HIGH | REPLACED |
 | CM-02 | `--ds-color-surface-overlay` | #000000 (colors.css:86，已删除) | #FFFFFF / #1B2436 | CRITICAL | RESOLVED |
 | CM-03 | `--ds-color-text-primary` | var(--foreground) (colors.css:34，已删除) | #0F172A / #F1F5F9 | MEDIUM | RESOLVED |
 | CM-04 | `--ds-color-text-secondary` | var(--muted-foreground) (colors.css:35，已删除) | #475569 / #CBD5E1 | MEDIUM | RESOLVED |

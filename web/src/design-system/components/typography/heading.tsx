@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils'
 /**
  * 视觉层级。与 HTML 语义（h1–h6）**分离**：
  *
- * - `display`       36/600/44  营销页主视觉（§1.2 `text-5xl`）
+ * - `display`       48/600/56  展示型标题（§1.2 `text-5xl`；首页 hero 使用 4xl 36/44）
  * - `page-title`    30/600/38  页面标题（§1.2 `text-4xl`）
  * - `section-title` 24/600/32  区块标题（§1.2 `text-3xl`）
  * - `card-title`    18/600/26  卡片标题（§1.2 `text-lg`）

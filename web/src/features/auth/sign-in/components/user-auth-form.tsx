@@ -360,7 +360,7 @@ export function UserAuthForm({
             variant='outline'
             disabled={passkeyButtonDisabled}
             onClick={handlePasskeyLogin}
-            className='hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-lg) hover:border-transparent dark:hover:border-transparent'
+            className='hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-button) hover:border-transparent dark:hover:border-transparent'
           >
             {isPasskeyLoading ? (
               <Loader2 className='h-4.5 w-4.5 animate-spin' />
@@ -453,7 +453,7 @@ export function UserAuthForm({
                 （40px），两者上下相邻时按钮会窄出一圈。 */}
             <Button
               type='submit'
-              className='mt-2 h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-lg)'
+              className='mt-2 h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-button)'
               disabled={isLoading}
             >
               {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
@@ -525,7 +525,7 @@ export function UserAuthForm({
                 <Button
                   type='button'
                   variant='outline'
-                  className='h-(--ds-control-height-md) shrink-0 rounded-(--ds-radius-lg)'
+                  className='h-(--ds-control-height-md) shrink-0 rounded-(--ds-radius-button)'
                   disabled={
                     isSendingCode || codeResendSeconds > 0 || !codeEmail.trim()
                   }
@@ -551,7 +551,7 @@ export function UserAuthForm({
             <Button
               type='button'
               onClick={onEmailCodeSubmit}
-              className='mt-2 h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-lg)'
+              className='mt-2 h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-button)'
               disabled={isCodeLoginLoading}
             >
               {isCodeLoginLoading ? (

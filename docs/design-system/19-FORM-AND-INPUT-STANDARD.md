@@ -24,7 +24,7 @@ Text / Password / Number / Search / Textarea 及 Label / Helper / Error / Prefix
 
 ## 2. Rules
 
-1. 控件高度 Small 32 / Medium 36 / Large 40 / Touch 44 px；圆角 md 5px；边框 1px border-input
+1. 控件高度 Small 32 / Medium 36 / Large 40 / Touch 44 px；圆角 lg 10px；边框 1px border-input
 2. 输入文字 14px/22px；H5 输入强制 ≥16px（`--ds-control-h5-input-font-size`）防 iOS 自动放大
 3. Label 12px/18px medium text-primary，与控件间距 8px；必填标记用 `*` + aria-required
 4. Helper Text 12px/18px text-secondary，距控件 4px；Error Text 12px/18px status-danger + 图标 + aria-describedby
@@ -45,7 +45,7 @@ Text / Password / Number / Search / Textarea 及 Label / Helper / Error / Prefix
 | `--ds-control-lg` | 40px | —（同值） | px | Large 按钮 / 输入 |
 | `--ds-control-touch` | 44px | —（同值） | px | Touch 最小触控目标 / H5 |
 | `--ds-control-h5-input-font-size` | 16px | —（同值） | px | H5 输入字号（iOS 防自动放大） |
-| `--ds-radius-input` | var(--ds-radius-md) | —（同值） | token-ref | Input = 5px |
+| `--ds-radius-input` | var(--ds-radius-lg) | —（同值） | token-ref | Input = 10px |
 | `--ds-border-width-input` | 1px | —（同值） | px | 输入框 |
 | `--ds-color-border-input` | #CBD5E1 | #3B4A63 | color | 输入框边框 |
 | `--ds-color-border-danger` | #B91C1C | #FCA5A5 | color | 错误态边框 |

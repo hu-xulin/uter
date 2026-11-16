@@ -24,7 +24,7 @@ Model Card / Channel Card / Model Pricing / Channel Health / Routing / Availabil
 
 ## 2. Rules
 
-1. Model Card：圆角 8px、内边距 16px、模型名 16px/24px semibold 等宽、Provider Badge 24px
+1. Model Card：圆角 10px、内边距 16px、模型名 16px/24px semibold 等宽、Provider Badge 24px
 2. Channel Card：显示健康度（Progress 4px）、延迟（ms，tabular-nums）、状态 Badge
 3. Model Pricing：Table 价格列右对齐等宽，单位 `¥/1K tokens` 固定显示
 4. Channel Health：healthy / degraded / down 三态，取 success / warning / danger，且附文字与图标
@@ -39,7 +39,7 @@ Model Card / Channel Card / Model Pricing / Channel Health / Routing / Availabil
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 8px |
+| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
 | `--ds-space-4` | 16px | —（同值） | px | 16 |
 | `--ds-text-base` | 16px | —（同值） | px | 长文本默认 / 指标数值 / H5 输入 |
 | `--ds-leading-base` | 24px | —（同值） | px | 16px 长文本 / 控件 |

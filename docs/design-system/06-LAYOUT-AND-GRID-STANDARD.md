@@ -29,7 +29,7 @@
 3. Header 高 64px，固定置顶；Sidebar 展开 240px、收起 64px
 4. Main Content 最小宽度 0（允许内部滚动），Content Container 居中且左右外边距按断点取 24 / 16 / 12 px
 5. Modal 默认宽 560px、圆角 12px、阴影 `--ds-elevation-dialog`；Drawer 默认宽 400px
-6. Card 圆角 8px、边框 1px `--ds-color-border-card`、内边距 16px；优先用背景 + 边框区分层级
+6. Card 圆角 10px、边框 1px `--ds-color-border-card`、内边距 16px；优先用背景 + 边框区分层级
 7. Dashboard 采用 12 列：Metric Cards 每卡 3 列（4 卡一行），主图表 8 列、侧列表 4 列
 8. Documentation Layout：左侧目录 240px、正文最大 800px、右侧 TOC 200px；≤1024px 隐藏右侧 TOC
 9. 所有布局容器不得使用绝对定位表达常规流式排布
@@ -52,7 +52,7 @@
 | `--ds-layout-sidebar-collapsed` | 64px | —（同值） | px | Sidebar 收起宽度 |
 | `--ds-layout-modal-width` | 560px | —（同值） | px | Modal 默认宽度 |
 | `--ds-layout-drawer-width` | 400px | —（同值） | px | Drawer 默认宽度 |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 8px |
+| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

@@ -24,7 +24,7 @@ Card / Table / Pagination / Description List / Statistics / Avatar / Tag / Progr
 
 ## 2. Rules
 
-1. Card：圆角 8px、1px border-card、内边距 16px、标题 18px/26px semibold
+1. Card：圆角 10px、1px border-card、内边距 16px、标题 18px/26px semibold
 2. Table：表头 12px/18px medium surface-sunken、单元格 13px/20px、行高按密度档、仅横向 1px 分隔线
 3. 金额 / Token / 用量列右对齐 + `tabular-nums` + `--ds-font-mono`；文本列左对齐
 4. Pagination：按钮 32px、当前页 brand-1 实底 + 白字、页间显示省略号、提供 aria-label
@@ -40,8 +40,8 @@ Card / Table / Pagination / Description List / Statistics / Avatar / Tag / Progr
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 8px |
-| `--ds-radius-table` | var(--ds-radius-lg) | —（同值） | token-ref | Table = 8px |
+| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
+| `--ds-radius-table` | var(--ds-radius-lg) | —（同值） | token-ref | Table = 10px |
 | `--ds-border-width-table` | 1px | —（同值） | px | 表格 |
 | `--ds-color-border-table` | #E2E8F0 | #263349 | color | 表格边框 |
 | `--ds-color-surface-sunken` | #F1F5F9 | #080D18 | color | 下沉表面（代码块 / 井） |

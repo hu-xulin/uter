@@ -54,7 +54,7 @@
 | `--ds-text-2xl` | 24px | —（同值） | px | 区块标题 |
 | `--ds-text-3xl` | 30px | —（同值） | px | 分区标题 |
 | `--ds-text-4xl` | 36px | —（同值） | px | 页面主标题 |
-| `--ds-text-5xl` | 48px | —（同值） | px | Hero / 展示大标题 |
+| `--ds-text-5xl` | 48px | —（同值） | px | 展示大标题（Hero 使用 4xl） |
 | `--ds-leading-body` | 22px | —（同值） | px | 14px 正文 |
 | `--ds-leading-long` | 26px | —（同值） | px | 16–18px 长文本 / h3 |
 | `--ds-leading-code` | 20px | —（同值） | px | 13px 代码 / 20px 控件 |

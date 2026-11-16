@@ -233,7 +233,7 @@ const SCALAR_GROUPS = [
       ['--ds-text-2xl', 24, 'px', '区块标题'],
       ['--ds-text-3xl', 30, 'px', '分区标题'],
       ['--ds-text-4xl', 36, 'px', '页面主标题'],
-      ['--ds-text-5xl', 48, 'px', 'Hero / 展示大标题'],
+      ['--ds-text-5xl', 48, 'px', '展示大标题（Hero 使用 4xl）'],
     ],
   },
   {
@@ -287,8 +287,8 @@ const SCALAR_GROUPS = [
     layer: 'primitive', category: 'radius', type: 'size', unit: 'px',
     description: '圆角八档',
     items: [
-      ['--ds-radius-none', 0, 'px', '无圆角'], ['--ds-radius-sm', 3, 'px', '小控件'],
-      ['--ds-radius-md', 5, 'px', '默认'], ['--ds-radius-lg', 8, 'px', '卡片'],
+      ['--ds-radius-none', 0, 'px', '无圆角'], ['--ds-radius-sm', 4, 'px', '小控件'],
+      ['--ds-radius-md', 6, 'px', '默认'], ['--ds-radius-lg', 10, 'px', '卡片'],
       ['--ds-radius-xl', 12, 'px', '弹层'], ['--ds-radius-2xl', 16, 'px', '大卡片'],
       ['--ds-radius-3xl', 20, 'px', '大型容器'], ['--ds-radius-full', 9999, 'px', '圆形 / 胶囊'],
     ],
@@ -426,13 +426,13 @@ const SCALAR_GROUPS = [
     layer: 'component', category: 'radius-application', type: 'keyword', unit: 'token-ref',
     description: '组件圆角绑定（每个组件明确使用哪个圆角档）',
     items: [
-      ['--ds-radius-button', 'var(--ds-radius-md)', 'token-ref', 'Button = 5px'],
-      ['--ds-radius-input', 'var(--ds-radius-md)', 'token-ref', 'Input = 5px'],
-      ['--ds-radius-card', 'var(--ds-radius-lg)', 'token-ref', 'Card = 8px'],
+      ['--ds-radius-button', 'var(--ds-radius-lg)', 'token-ref', 'Button = 10px'],
+      ['--ds-radius-input', 'var(--ds-radius-lg)', 'token-ref', 'Input = 10px'],
+      ['--ds-radius-card', 'var(--ds-radius-lg)', 'token-ref', 'Card = 10px'],
       ['--ds-radius-dialog', 'var(--ds-radius-xl)', 'token-ref', 'Dialog = 12px'],
       ['--ds-radius-badge', 'var(--ds-radius-full)', 'token-ref', 'Badge = 9999px'],
-      ['--ds-radius-code', 'var(--ds-radius-lg)', 'token-ref', 'Code Block = 8px'],
-      ['--ds-radius-table', 'var(--ds-radius-lg)', 'token-ref', 'Table = 8px'],
+      ['--ds-radius-code', 'var(--ds-radius-lg)', 'token-ref', 'Code Block = 10px'],
+      ['--ds-radius-table', 'var(--ds-radius-lg)', 'token-ref', 'Table = 10px'],
     ],
   },
 ]

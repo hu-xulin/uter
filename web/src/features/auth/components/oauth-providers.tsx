@@ -187,7 +187,7 @@ export function OAuthProviders({
               disabled={disabled || isLoading || extraDisabled}
               onClick={() => handleProviderClick(onClick)}
               className={cn(
-                'h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-lg)',
+                'h-(--ds-control-height-md) w-full justify-center gap-2 rounded-(--ds-radius-button)',
                 // 3.0 §2.3 审计整改：hover 统一走语义 Token（primary 底 +
                 // primary-foreground 前景），深浅主题自适应；原先「品牌色底
                 // + 硬编码白字」缺少逐状态对比度验收记录。

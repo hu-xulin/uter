@@ -25,7 +25,7 @@ Header / Sidebar / Collapsed Sidebar / Breadcrumb / Tabs / Navigation Item / Mob
 ## 2. Rules
 
 1. Header 高 64px（<768px 56px），背景 surface-base，底边框 1px border-divider
-2. Sidebar 展开 240px、收起 64px；导航项高 36px、圆角 5px、图标 16px、文字 14px/22px
+2. Sidebar 展开 240px、收起 64px；导航项高 36px、圆角 md 6px、图标 16px、文字 14px/22px
 3. Active 状态：surface-sunken 背景 + brand-1 左侧 2px 指示条 + 文字 text-primary semibold
 4. Hover：surface-sunken 背景，100ms standard 过渡；Focus：2px 焦点环 + 2px offset
 5. Breadcrumb：12px/18px text-secondary，分隔符 `/`，当前项 text-primary；≥1024px 显示
@@ -43,7 +43,7 @@ Header / Sidebar / Collapsed Sidebar / Breadcrumb / Tabs / Navigation Item / Mob
 | `--ds-layout-sidebar-width` | 240px | —（同值） | px | Sidebar 展开宽度 |
 | `--ds-layout-sidebar-collapsed` | 64px | —（同值） | px | Sidebar 收起宽度 |
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
-| `--ds-radius-md` | 5px | —（同值） | px | 默认 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
 | `--ds-icon-xs` | 16px | —（同值） | px | 图标 16（默认） |
 | `--ds-text-sm` | 14px | —（同值） | px | 正文默认 |
 | `--ds-text-2xs` | 12px | —（同值） | px | 最小可见文字（全站下限） |

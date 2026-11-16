@@ -27,7 +27,7 @@ Sign In / Sign Up / Email OTP / SMS OTP / OAuth / Verification / Error / Loading
 1. 认证卡片宽 400px、圆角 12px、内边距 32px、surface-base + 1px 边框；<480px 宽 100%−24px
 2. 标题 30px/38px semibold，副标题 14px/22px text-secondary
 3. 输入框高度 40px（H5 44px）、字号 ≥16px（H5 防放大）；Label 12px/18px
-4. OTP 输入：6 格，每格 44×48px、圆角 5px、字号 20px/26px、等宽数字；支持粘贴自动分发
+4. OTP 输入：6 格，每格 44×48px、圆角 lg 10px、字号 20px/26px、等宽数字；支持粘贴自动分发
 5. OAuth 按钮：高 40px、Outline 变体、厂商图标 20px；不得显示第三方品牌标语
 6. Primary 提交按钮高 40px（H5 44px）、宽 100%；Loading 保留文案 + Spinner + aria-busy
 7. 错误：Alert danger 组件 + 具体原因 + aria-live；成功：Toast success 后跳转
@@ -48,7 +48,7 @@ Sign In / Sign Up / Email OTP / SMS OTP / OAuth / Verification / Error / Loading
 | `--ds-control-lg` | 40px | —（同值） | px | Large 按钮 / 输入 |
 | `--ds-control-touch` | 44px | —（同值） | px | Touch 最小触控目标 / H5 |
 | `--ds-control-h5-input-font-size` | 16px | —（同值） | px | H5 输入字号（iOS 防自动放大） |
-| `--ds-radius-md` | 5px | —（同值） | px | 默认 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
 | `--ds-color-status-success` | #15803D | #6EE7B7 | color | 成功 |
 

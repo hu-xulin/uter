@@ -25,7 +25,7 @@ Metric Cards / Balance / Token Usage / Request Count / Error Rate / Model Usage 
 ## 2. Rules
 
 1. 指标优先级：1 余额 / 2 今日 Token 用量 / 3 请求数 / 4 错误率 / 5 收入；前 4 项为首屏 4 张 Metric Card
-2. Metric Card：3 列（12 栅格中每卡 3 列）、圆角 8px、内边距 16px、数值 30px/38px semibold tabular-nums、标签 12px/18px
+2. Metric Card：3 列（12 栅格中每卡 3 列）、圆角 10px、内边距 16px、数值 30px/38px semibold tabular-nums、标签 12px/18px
 3. 时间范围：今天 / 7 天 / 30 天 / 自定义，默认 7 天；切换用 Tabs 且保持图表状态
 4. 主图表 8 列（Token 用量折线）、侧列表 4 列（Model Usage Top 5）；图表高 320px
 5. 错误率 > 1% 用 status-danger 且附警示图标；不得只变颜色
@@ -41,7 +41,7 @@ Metric Cards / Balance / Token Usage / Request Count / Error Rate / Model Usage 
 |---|---|---|---|---|
 | `--ds-layout-columns-desktop` | 12 | —（同值） | count | 桌面 12 列 |
 | `--ds-layout-gutter-desktop` | 24px | —（同值） | px | 桌面栅格间距 |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 8px |
+| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
 | `--ds-space-4` | 16px | —（同值） | px | 16 |
 | `--ds-text-3xl` | 30px | —（同值） | px | 分区标题 |
 | `--ds-leading-h2` | 38px | —（同值） | px | 30px 分区标题 |

@@ -73,15 +73,15 @@ For commercial licensing, please contact support@uter.ai
   --primitive-space-6: 1.5rem; /* 24px */
   --primitive-space-8: 2rem; /* 32px */
 
-  /* ── Radius primitives（7.0 §Shape：sm=3 / md=5 / lg=8 / xl=12 /
-   * 2xl=16 / 3xl=20 / full=9999，基准 5px=控件档 r-md；
-   * 与 theme.css 的 calc 阶梯逐档对齐，改一边必须同步另一边。
-   * 3.0 特有的 xs / 4xl 档按最近 7.0 值并入：xs→sm(3)、4xl→3xl(20)。
-   * 2026-11-16 经用户授权从 v1.2（基准 10px）正式切换到 7.0 刻度。 */
-  --primitive-radius-xs: 3px;
-  --primitive-radius-sm: 3px;
-  --primitive-radius-md: 5px;
-  --primitive-radius-lg: 8px;
+  /* ── Radius primitives（UDS 8.0 §Shape：sm=4 / md=6 / lg=10 / xl=12 /
+   * 2xl=16 / 3xl=20 / full=9999，基准 6px=md 默认档；
+   * 与 theme.css 的阶梯逐档对齐，改一边必须同步另一边。
+   * 3.0 特有的 xs / 4xl 档按最近刻度并入：xs→sm(4)、4xl→3xl(20)。
+   * 2026-11-16 经用户授权由 7.0（3/5/8/12/16/20）切换到 8.0 刻度。 */
+  --primitive-radius-xs: 4px;
+  --primitive-radius-sm: 4px;
+  --primitive-radius-md: 6px;
+  --primitive-radius-lg: 10px;
   --primitive-radius-xl: 12px;
   --primitive-radius-2xl: 16px;
   --primitive-radius-3xl: 20px;

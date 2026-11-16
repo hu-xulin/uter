@@ -46,7 +46,7 @@ API Key / Token Usage / RPM / TPM / Usage / Quota / Model Pricing / Request Logs
 | `--ds-numeric-tabular` | tabular-nums | —（同值） | keyword | 金额 / 余额 / Token 数 / 价格 / 用量 / 订单号 / 指标 |
 | `--ds-color-chart-1` | #0088FF | #11A0FF | color | 系列 1 蓝 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
-| `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 8px |
+| `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 10px |
 | `--ds-layout-sidebar-width` | 240px | —（同值） | px | Sidebar 展开宽度 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。

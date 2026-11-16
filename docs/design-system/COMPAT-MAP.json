@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-COMPAT-MAP",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T05:29:25.953Z",
+  "generated_at": "2026-11-16T09:44:20.137Z",
   "policy": "B6_EXECUTED — 3.0 颜色兼容层（colors.css）已于 2026-11-16 经用户授权整体退役；颜色唯一运行时权威 = TOKEN-MANIFEST 派生 --ds8-* bridge；标量（字号/行高/圆角/间距）经用户授权在 web/src 真源文件字面切换为 manifest 值",
   "isolation": {
     "canonicalPrefix": "--ds-",
@@ -20,10 +20,10 @@
       "id": "CM-01",
       "token": "--ds-radius-md",
       "v3": "10px (3.0.md:1100)",
-      "v7": "5px (TOKEN-MANIFEST)",
+      "v7": "6px (UDS 8.0 TOKEN-MANIFEST)",
       "severity": "HIGH",
       "action": "REPLACED",
-      "reason": "2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）"
+      "reason": "2026-11-16 经用户授权切换到 UDS 8.0 刻度：sm 4 / md 6 / lg 10 / xl 12 / 2xl 16 / 3xl 20（--radius 基准 0.375rem），Button/Input/Select 绑定 lg 10px（theme.css / primitives.css / tokens.test.ts 三方同步）"
     },
     {
       "id": "CM-02",

@@ -160,7 +160,7 @@ export function SecretFileInput({
       <div className='flex items-start gap-2'>
         <div
           className={cn(
-            'border-input bg-muted/40 min-w-0 flex-1 rounded-md border px-3 py-2',
+            'border-input bg-muted/40 min-w-0 flex-1 rounded-lg border px-3 py-2',
             disabled && 'opacity-60'
           )}
         >

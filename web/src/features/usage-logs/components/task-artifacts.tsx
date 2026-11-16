@@ -156,7 +156,7 @@ function ArtifactMedia(props: {
         src={props.mediaUrl}
         controls
         preload='metadata'
-        className='bg-term-background max-h-[60vh] w-full rounded-md'
+        className='bg-term-background max-h-[60vh] w-full rounded-lg'
         onError={props.onError}
       />
     )
@@ -485,7 +485,7 @@ function LegacyVideoMedia(props: LegacyVideoMediaProps) {
       src={props.contentUrl}
       controls
       preload='metadata'
-      className='bg-term-background max-h-[60vh] w-full rounded-md'
+      className='bg-term-background max-h-[60vh] w-full rounded-lg'
       onError={() => setMediaFailed(true)}
     />
   )

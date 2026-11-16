@@ -27,7 +27,7 @@ Chart Palette、折线 / 柱 / 面积 / 饼 / 环图、Tooltip、Legend、Axis�
 1. 5 色图表调色板：Light #2563EB / #0891B2 / #7C3AED / #EA580C / #059669；Dark #60A5FA / #22D3EE / #A78BFA / #FB923C / #34D399
 2. 相邻系列必须同时有色相差与明度差；红绿色盲模拟下 chart-1 与 chart-5 可区分
 3. 图表背景固定 `--ds-color-surface-base`；网格线 1px `--ds-color-border-divider`；坐标轴文字 12px/18px `--ds-color-text-secondary`
-4. 折线宽 2px、数据点半径 4px；柱状图柱间距 8px、圆角 `--ds-radius-sm` 3px
+4. 折线宽 2px、数据点半径 4px；柱状图柱间距 8px、圆角 `--ds-radius-sm` 4px
 5. 面积图填充为该系列色的 12% 透明度（由 `--ds-color-chart-*-soft` 派生，不写死 rgba）
 6. 饼 / 环图：环宽 24px、起始角 -90°，扇区间隙 2px；中心显示总量，16px/24px semibold + tabular-nums
 7. Tooltip：surface-raised + 1px 边框 + elevation-3，文字 12px/18px，数值 tabular-nums 右对齐
@@ -51,7 +51,7 @@ Chart Palette、折线 / 柱 / 面积 / 饼 / 环图、Tooltip、Legend、Axis�
 | `--ds-color-border-divider` | #E2E8F0 | #1F2A3D | color | 分隔线 |
 | `--ds-text-2xs` | 12px | —（同值） | px | 最小可见文字（全站下限） |
 | `--ds-elevation-3` | 0 8px 24px rgba(15, 23, 42, 0.12) | —（同值） | css | 下拉 / Popover |
-| `--ds-radius-sm` | 3px | —（同值） | px | 小控件 |
+| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

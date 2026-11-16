@@ -226,13 +226,13 @@ describe('分组标题档（group-title）', () => {
   })
 })
 
-describe('圆角 Token 对应 7.0 §Shape 刻度', () => {
-  it('八个圆角档位与 7.0 刻度一致（xs/4xl 按最近值并入）', () => {
+describe('圆角 Token 对应 UDS 8.0 §Shape 刻度', () => {
+  it('八个圆角档位与 8.0 刻度一致（xs/4xl 按最近值并入）', () => {
     const SHAPE: Array<[string, number]> = [
-      ['xs', 3],
-      ['sm', 3],
-      ['md', 5],
-      ['lg', 8],
+      ['xs', 4],
+      ['sm', 4],
+      ['md', 6],
+      ['lg', 10],
       ['xl', 12],
       ['2xl', 16],
       ['3xl', 20],
@@ -249,35 +249,42 @@ describe('圆角 Token 对应 7.0 §Shape 刻度', () => {
 })
 
 describe('theme.css 圆角阶梯与文档一致', () => {
-  /** 把 `var(--radius)` 或 `calc(var(--radius) * N)` 按基准值解析成 px。 */
+  /** 把 `var(--radius)` 或 `calc(var(--radius) * A / B)` 按基准值解析成 px。 */
   function resolveLadderPx(declaration: string, base: number): number {
-    const scaled = /^calc\(var\(--radius\)\s*\*\s*([\d.]+)\)$/.exec(declaration)
-    if (scaled) return base * Number.parseFloat(scaled[1])
+    const scaled =
+      /^calc\(var\(--radius\)\s*\*\s*([\d.]+)(?:\s*\/\s*([\d.]+))?\)$/.exec(
+        declaration
+      )
+    if (scaled) {
+      const factor = Number.parseFloat(scaled[1])
+      const divisor = scaled[2] ? Number.parseFloat(scaled[2]) : 1
+      return (base * factor) / divisor
+    }
     if (declaration === 'var(--radius)') return base
     return Number.NaN
   }
 
-  it('默认基准 0.3125rem(5px) 推出 3/3/5/8/12/16/20/20 八档（7.0 刻度，含并入档）', () => {
+  it('默认基准 0.375rem(6px) 推出 4/4/6/10/12/16/20/20 八档（8.0 刻度，含并入档）', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
     // 出现「文档 12px、页面 10px」，这里把差异钉死。
-    // 7.0 §Shape / TOKEN-MANIFEST radius.scale：基准 5px（= 默认控件档
-    // r-md），刻度 sm=3 / md=5 / lg=8 / xl=12 / 2xl=16 / 3xl=20；
-    // 3.0 特有的 xs / 4xl 档按最近 7.0 值并入（xs→sm、4xl→3xl）。
+    // UDS 8.0 §Shape / TOKEN-MANIFEST radius.scale：基准 6px（= md），
+    // 刻度 sm=4 / md=6 / lg=10 / xl=12 / 2xl=16 / 3xl=20；
+    // 3.0 特有的 xs / 4xl 档按最近刻度并入（xs→sm、4xl→3xl）。
     // `rounded-full` 是特殊档，由 Tailwind 内建提供，不在 theme.css 重复声明。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
     )
     const base = toPx(readVar(themeCss, 'radius') as string)
-    expect(base, '默认基准 --radius').toBe(5)
+    expect(base, '默认基准 --radius').toBe(6)
 
     const EXPECTED: Array<[string, number]> = [
-      ['xs', 3],
-      ['sm', 3],
-      ['md', 5],
-      ['lg', 8],
+      ['xs', 4],
+      ['sm', 4],
+      ['md', 6],
+      ['lg', 10],
       ['xl', 12],
       ['2xl', 16],
       ['3xl', 20],
@@ -302,15 +309,20 @@ describe('showcase 核查页与 Token 真源一致', () => {
   const THEME_CSS_PATH = join(process.cwd(), 'src', 'styles', 'theme.css')
   const LADDER_STEPS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const
 
-  /** theme.css 的圆角声明解析成 px：`var(--radius)` 基准 × 系数。 */
+  /** theme.css 的圆角声明解析成 px：`var(--radius)` 基准 × 系数 / 分母。 */
   function themeRadiusPx(themeCss: string, step: string): number {
     // `full` 是 Tailwind 内建的第九档（9999px），theme.css 不重复声明，
     // 这里直接取内建值，与 primitives.css 的 primitive-radius-full 对齐。
     if (step === 'full') return 9999
     const base = toPx(readVar(themeCss, 'radius') as string)
     const declaration = readVar(themeCss, `radius-${step}`) as string
-    const scaled = /^calc\(var\(--radius\)\s*\*\s*([\d.]+)\)$/.exec(declaration)
-    return scaled ? base * Number.parseFloat(scaled[1]) : base
+    const scaled =
+      /^calc\(var\(--radius\)\s*\*\s*([\d.]+)(?:\s*\/\s*([\d.]+))?\)$/.exec(
+        declaration
+      )
+    if (!scaled) return base
+    const divisor = scaled[2] ? Number.parseFloat(scaled[2]) : 1
+    return (base * Number.parseFloat(scaled[1])) / divisor
   }
 
   const themeCss = readFileSync(THEME_CSS_PATH, 'utf8')

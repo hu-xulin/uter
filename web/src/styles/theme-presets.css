@@ -670,20 +670,22 @@ For commercial licensing, please contact support@uter.ai
 }
 
 /* ── Border radius ────────────────────────────────────────────────────── */
+/* 预设改的是 `--radius` 基准（= md 档）；阶梯按 UDS 8.0 比例（4/6/10/12/16/20）
+ * 整体缩放。基准值对齐对应档位的绝对刻度。 */
 [data-theme-radius='none'] {
   --radius: 0rem;
 }
 [data-theme-radius='sm'] {
-  --radius: 0.3rem;
+  --radius: 0.25rem;
 }
 [data-theme-radius='md'] {
-  --radius: 0.5rem;
+  --radius: 0.375rem;
 }
 [data-theme-radius='lg'] {
-  --radius: 0.75rem;
+  --radius: 0.625rem;
 }
 [data-theme-radius='xl'] {
-  --radius: 1rem;
+  --radius: 0.75rem;
 }
 
 /* ── Density scale ────────────────────────────────────────────────────── */

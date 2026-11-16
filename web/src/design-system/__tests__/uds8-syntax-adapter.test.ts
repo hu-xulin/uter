@@ -38,18 +38,18 @@ import { SYNTAX_ADAPTER } from '../../components/ai-elements/code-block'
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..')
 const BRIDGE = readFileSync(
   resolve(REPO, 'web/src/design-system/tokens/uds-semantic-bridge.css'),
-  'utf8',
+  'utf8'
 )
 const CODE_BLOCK = readFileSync(
   resolve(REPO, 'web/src/components/ai-elements/code-block.tsx'),
-  'utf8',
+  'utf8'
 )
 const ADAPTER_START = CODE_BLOCK.indexOf('SYNTAX_ADAPTER = [')
 const ADAPTER_END = CODE_BLOCK.indexOf('] as const', ADAPTER_START)
 const adapterLiteral = CODE_BLOCK.slice(ADAPTER_START, ADAPTER_END)
 
 const BRIDGE_VARS = new Set(
-  [...BRIDGE.matchAll(/(--ds8-syntax-[a-z]+)\s*:/g)].map((m) => m[1]),
+  [...BRIDGE.matchAll(/(--ds8-syntax-[a-z]+)\s*:/g)].map((m) => m[1])
 )
 
 describe('UDS8 syntax adapter mapping', () => {
@@ -67,7 +67,9 @@ describe('UDS8 syntax adapter mapping', () => {
     // inserted 不得复用 keyword 的 tags 集合
     const inserted = SYNTAX_ADAPTER.find((e) => e.token === 'inserted')
     const keyword = SYNTAX_ADAPTER.find((e) => e.token === 'keyword')
-    expect(inserted && keyword ? inserted.tags.includes(keyword.tags[0]) : true).toBe(false)
+    expect(
+      inserted && keyword ? inserted.tags.includes(keyword.tags[0]) : true
+    ).toBe(false)
   })
 
   it('maps every entry to var(--ds8-syntax-*) with no hardcoded colors', () => {
@@ -81,7 +83,9 @@ describe('UDS8 syntax adapter mapping', () => {
   })
 
   it('bridge defines exactly the 20 --ds8-syntax-* variables the adapter consumes', () => {
-    const consumed = new Set(SYNTAX_ADAPTER.map((e) => `--ds8-syntax-${e.token}`))
+    const consumed = new Set(
+      SYNTAX_ADAPTER.map((e) => `--ds8-syntax-${e.token}`)
+    )
     expect(BRIDGE_VARS.size).toBe(20)
     for (const v of consumed) expect(BRIDGE_VARS.has(v)).toBe(true)
     expect(BRIDGE_VARS.size).toBe(consumed.size)
@@ -89,9 +93,14 @@ describe('UDS8 syntax adapter mapping', () => {
 
   it('manifest declares the same 20 semantic syntax tokens', () => {
     const manifest = JSON.parse(
-      readFileSync(resolve(REPO, 'docs/design-system/TOKEN-MANIFEST.json'), 'utf8'),
+      readFileSync(
+        resolve(REPO, 'docs/design-system/TOKEN-MANIFEST.json'),
+        'utf8'
+      )
     ) as { tokens: Record<string, unknown> }
-    const syntaxKeys = Object.keys(manifest.tokens).filter((n) => n.startsWith('--ds-syntax-'))
+    const syntaxKeys = Object.keys(manifest.tokens).filter((n) =>
+      n.startsWith('--ds-syntax-')
+    )
     expect(syntaxKeys).toHaveLength(20)
     for (const entry of SYNTAX_ADAPTER) {
       // manifest 名 --ds-syntax-<key> ↔ 运行时名 --ds8-syntax-<key>

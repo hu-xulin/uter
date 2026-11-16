@@ -62,7 +62,7 @@ export function Hero(props: HeroProps) {
     return (
       <Button
         variant='outline'
-        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 rounded-(--ds-radius-lg) px-5'
+        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 rounded-(--ds-radius-button) px-5'
         render={rendered}
       >
         <BookOpen className='text-muted-foreground group-hover:text-foreground ds-motion-marketing-fast size-4.5 transition-colors' />
@@ -188,7 +188,7 @@ export function Hero(props: HeroProps) {
             {props.isAuthenticated ? (
               <>
                 <Button
-                  className='group rounded-(--ds-radius-lg) px-5'
+                  className='group rounded-(--ds-radius-button) px-5'
                   render={<Link to='/dashboard' />}
                 >
                   {t('Go to Dashboard')}
@@ -199,7 +199,7 @@ export function Hero(props: HeroProps) {
             ) : (
               <>
                 <Button
-                  className='group rounded-(--ds-radius-lg) px-5'
+                  className='group rounded-(--ds-radius-button) px-5'
                   render={<Link to='/sign-up' />}
                 >
                   {t('Get Started')}
@@ -207,7 +207,7 @@ export function Hero(props: HeroProps) {
                 </Button>
                 <Button
                   variant='outline'
-                  className='border-border/50 hover:border-border hover:bg-muted/50 rounded-(--ds-radius-lg) px-5'
+                  className='border-border/50 hover:border-border hover:bg-muted/50 rounded-(--ds-radius-button) px-5'
                   render={<Link to='/pricing' />}
                 >
                   {t('View Pricing')}

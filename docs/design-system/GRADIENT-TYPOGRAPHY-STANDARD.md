@@ -52,7 +52,7 @@
 | `--ds-gradient-utility` | ds-text-gradient-brand | —（同值） | identifier | 全站唯一渐变出口 |
 | `--ds-font-ui` | 'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' | —（同值） | stack | UI 字体栈（中英文 + Emoji 回退） |
 | `--ds-text-4xl` | 36px | —（同值） | px | 页面主标题 |
-| `--ds-text-5xl` | 48px | —（同值） | px | Hero / 展示大标题 |
+| `--ds-text-5xl` | 48px | —（同值） | px | 展示大标题（Hero 使用 4xl） |
 | `--ds-leading-h1` | 44px | —（同值） | px | 36px 页面标题 |
 | `--ds-leading-display` | 56px | —（同值） | px | 48px 展示标题 |
 
@@ -102,7 +102,7 @@ Showcase 中 `#mod-01-S` 分区提供本模块的真实渲染：色块、字号�
 
 ## 10. Responsive
 
-- ≤480px Hero 36px/44px；≥1440px Hero 48px/56px，渐变色值不变
+- Hero 统一 4xl 36px/44px，各断点不放大；渐变色值不变
 
 - 全系统断点：360 / 480 / 768 / 1024 / 1280 / 1440 / 1920 px；桌面 12 列、平板 8 列、移动 4 列；内容最大宽度 1440px
 - 所有断点共用同一字号阶梯，普通可见文字不得低于 12px

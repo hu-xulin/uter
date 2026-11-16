@@ -209,12 +209,12 @@ button.chip{cursor:pointer}
 .chip-plan{color:var(--ds-warn)}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
 .fld-label{display:block;font-weight:600;margin-bottom:4px;font-size:13px}
-.ctl{width:100%;min-height:34px;padding:6px 10px;border:1px solid var(--ds-border);border-radius:8px;font:inherit;color:inherit;background:var(--ds-surface)}
+.ctl{width:100%;min-height:34px;padding:6px 10px;border:1px solid var(--ds-border);border-radius:10px;font:inherit;color:inherit;background:var(--ds-surface)}
 .ctl:focus{outline:2px solid var(--ds-primary-weak);border-color:var(--ds-primary)}
 .ctl-static{padding:4px 0}
 .radio-group{display:flex;gap:12px;flex-wrap:wrap}
 .radio-item{display:inline-flex;align-items:center;gap:6px}
-.btn{min-height:34px;padding:6px 16px;border-radius:8px;border:1px solid transparent;font:inherit;cursor:pointer}
+.btn{min-height:34px;padding:6px 16px;border-radius:10px;border:1px solid transparent;font:inherit;cursor:pointer}
 .btn-primary{background:var(--ds-primary);color:#fff}
 .btn-primary:hover{filter:brightness(1.06)}
 .btn-ghost{background:var(--ds-surface);border-color:var(--ds-border);color:var(--ds-text)}
@@ -224,7 +224,7 @@ button.chip{cursor:pointer}
 .alert-error{background:#FDECEA;color:var(--ds-err);border:1px solid #F5B9B4}
 .alert-info{background:var(--ds-primary-weak);color:var(--ds-primary)}
 .alert-warn{background:#FFF7E8;color:var(--ds-warn);border:1px solid #F5D8A8}
-.tbl-wrap{overflow:auto;border:1px solid var(--ds-border);border-radius:8px}
+.tbl-wrap{overflow:auto;border:1px solid var(--ds-border);border-radius:10px}
 .tbl,.mini{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th,.mini th{text-align:left;background:var(--ds-bg);padding:6px 10px;border-bottom:1px solid var(--ds-border);white-space:nowrap}
 .tbl td,.mini td{padding:6px 10px;border-bottom:1px solid var(--ds-border)}
@@ -245,7 +245,7 @@ button.chip{cursor:pointer}
 .prog-bar{height:10px;border-radius:999px;background:var(--ds-primary)}
 .prog .caption{position:absolute;left:calc(100% + 8px);top:-4px;white-space:nowrap}
 .prog{overflow:visible;width:60%}
-.code{background:#0F1115;color:#D6E2F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px}
+.code{background:#0F1115;color:#D6E2F0;border-radius:10px;padding:12px;overflow:auto;font-size:12px}
 .tl{list-style:none;margin:0;padding:0}
 .tl li{padding:6px 0 6px 18px;position:relative}
 .tl li::before{content:'';position:absolute;left:4px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--ds-primary)}
@@ -266,7 +266,7 @@ button.chip{cursor:pointer}
 .skeleton{height:14px;border-radius:6px;background:linear-gradient(90deg,#EEE 25%,#F7F7F7 45%,#EEE 65%);background-size:200% 100%;animation:sk 1.2s infinite;margin:10px 0}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .state-card{border:1px dashed var(--ds-border);border-radius:var(--radius);padding:36px;text-align:center;color:var(--ds-text-2)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1F2329;color:#fff;border-radius:8px;padding:8px 16px;font-size:13px;z-index:99;opacity:0;transition:.2s;pointer-events:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1F2329;color:#fff;border-radius:10px;padding:8px 16px;font-size:13px;z-index:99;opacity:0;transition:.2s;pointer-events:none}
 .toast.show{opacity:1}
 .flash{animation:fl 1.6s ease}
 @keyframes fl{0%,60%{box-shadow:0 0 0 3px rgba(91,94,230,.55)}100%{box-shadow:none}}
@@ -277,9 +277,9 @@ button.chip{cursor:pointer}
 .req summary{cursor:pointer;padding:8px 12px;font-weight:600}
 .req-body{padding:0 12px 10px}
 .req-body p{margin:6px 0}
-.story{background:var(--ds-bg);border-radius:8px;padding:6px 10px;margin:6px 0}
+.story{background:var(--ds-bg);border-radius:10px;padding:6px 10px;margin:6px 0}
 .flow{margin:4px 0 8px;padding-left:20px}
-.status-note{background:var(--ds-bg);border-radius:8px;padding:6px 10px}
+.status-note{background:var(--ds-bg);border-radius:10px;padding:6px 10px}
 .demo-banner{background:#FFF7E8;color:var(--ds-warn);padding:8px 16px;font-size:13px;border-bottom:1px solid #F5D8A8}
 @media (max-width:900px){.split{flex-direction:column;height:auto}.pane-left{width:100%;border-right:none;border-bottom:1px solid var(--ds-border)}.pane{height:auto;max-height:none}}
 `;

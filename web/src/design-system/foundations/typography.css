@@ -254,7 +254,9 @@ For commercial licensing, please contact support@uter.ai
  * 底层文字色 --color-muted-foreground 已通过对比度验证；扫光层是动画装饰，
  * 不承载文字信息，不依赖颜色传递状态。 */
 @utility ds-text-shimmer {
-  background-size: 250% 100%, auto;
+  background-size:
+    250% 100%,
+    auto;
   background-repeat: no-repeat, padding-box;
   background-image:
     linear-gradient(
@@ -264,7 +266,10 @@ For commercial licensing, please contact support@uter.ai
       var(--color-background) calc(50% + var(--ds8-shimmer-spread)),
       transparent calc(50% + var(--ds8-shimmer-spread))
     ),
-    linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground));
+    linear-gradient(
+      var(--color-muted-foreground),
+      var(--color-muted-foreground)
+    );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

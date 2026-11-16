@@ -294,7 +294,7 @@ h1,h2,h3,h4 { margin:0; font-weight:var(--ds-weight-semibold); }
 .nav-special { border-left:2px solid var(--ds-color-brand-1); }
 .main { margin-left:var(--ds-layout-sidebar-width); padding:calc(var(--ds-layout-header-height) + var(--ds-space-6)) var(--ds-space-8) var(--ds-space-24); max-width:min(var(--ds-layout-max-width), calc(100vw - var(--ds-layout-sidebar-width))); }
 .hero { padding:var(--ds-space-8) 0 var(--ds-space-6); }
-.hero h1 { font-size:var(--ds-text-5xl); line-height:var(--ds-leading-display); font-weight:var(--ds-weight-semibold); }
+.hero h1 { font-size:var(--ds-text-4xl); line-height:var(--ds-leading-display); font-weight:var(--ds-weight-semibold); }
 .hero p { color:var(--page-muted); max-width:70ch; margin:var(--ds-space-3) 0 0; }
 .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:var(--ds-space-3); margin:var(--ds-space-6) 0; }
 .stat { background:var(--page-surface); border:1px solid var(--page-border); border-radius:var(--ds-radius-lg); padding:var(--ds-space-4); }
@@ -313,7 +313,7 @@ section.panel > h2 { font-size:var(--ds-text-2xl); line-height:1.4; margin-botto
 [data-ds-theme="dark"] .g-new { background-image:linear-gradient(var(--ds-gradient-direction),var(--ds-color-gradient-dark-from) 0%,var(--ds-color-gradient-dark-via) 50%,var(--ds-color-gradient-dark-to) 100%); }
 .g-old { background-image:linear-gradient(90deg,#60A5FA 0%,#A78BFA 50%,#A855F7 100%); background-clip:text; -webkit-background-clip:text; color:transparent; font-family:var(--ds-font-ui); }
 @media (forced-colors: active) { .g-new, .g-old { background-image:none; color:CanvasText; -webkit-text-fill-color:CanvasText; } }
-.g-hero { font-size:var(--ds-text-5xl); line-height:var(--ds-leading-display); font-weight:var(--ds-weight-semibold); }
+.g-hero { font-size:var(--ds-text-4xl); line-height:var(--ds-leading-display); font-weight:var(--ds-weight-semibold); }
 .g-cta { font-size:var(--ds-text-3xl); line-height:var(--ds-leading-h2); font-weight:var(--ds-weight-semibold); }
 .g-body { font-size:var(--ds-text-base); line-height:var(--ds-leading-long); font-weight:var(--ds-weight-medium); }
 .syn-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:var(--ds-space-2); }

@@ -24,11 +24,11 @@
 
 ## 2. Rules
 
-1. 圆角档位：none 0 / sm 3 / md 5 / lg 8 / xl 12 / 2xl 16 / 3xl 20 / full 9999 px
-2. Button / Input / Select = md 5px；Checkbox = sm 3px；Switch / Badge / Avatar / Pill = full
-3. Card / Table / Code Block = lg 8px；Dialog / Popover / Drawer 面板 = xl 12px
+1. 圆角档位：none 0 / sm 4 / md 6 / lg 10 / xl 12 / 2xl 16 / 3xl 20 / full 9999 px
+2. Button / Input / Select = lg 10px；Checkbox = sm 4px；Switch / Badge / Avatar / Pill = full
+3. Card / Table / Code Block = lg 10px；Dialog / Popover / Drawer 面板 = xl 12px
 4. 大型容器 = 2xl 16px；营销展示容器 = 3xl 20px
-5. 嵌套圆角规则：内层圆角 = 外层圆角 − 外层内边距，最小不低于 sm 3px
+5. 嵌套圆角规则：内层圆角 = 外层圆角 − 外层内边距，最小不低于 sm 4px
 6. 组件必须通过 `--ds-radius-*` 或 `--ds-radius-button/input/card/...` 引用，禁止写死 `border-radius: 6px`
 
 ## 3. Tokens
@@ -38,20 +38,20 @@
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
 | `--ds-radius-none` | 0px | —（同值） | px | 无圆角 |
-| `--ds-radius-sm` | 3px | —（同值） | px | 小控件 |
-| `--ds-radius-md` | 5px | —（同值） | px | 默认 |
-| `--ds-radius-lg` | 8px | —（同值） | px | 卡片 |
+| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
+| `--ds-radius-lg` | 10px | —（同值） | px | 卡片 |
 | `--ds-radius-xl` | 12px | —（同值） | px | 弹层 |
 | `--ds-radius-2xl` | 16px | —（同值） | px | 大卡片 |
 | `--ds-radius-3xl` | 20px | —（同值） | px | 大型容器 |
 | `--ds-radius-full` | 9999px | —（同值） | px | 圆形 / 胶囊 |
-| `--ds-radius-button` | var(--ds-radius-md) | —（同值） | token-ref | Button = 5px |
-| `--ds-radius-input` | var(--ds-radius-md) | —（同值） | token-ref | Input = 5px |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 8px |
+| `--ds-radius-button` | var(--ds-radius-lg) | —（同值） | token-ref | Button = 10px |
+| `--ds-radius-input` | var(--ds-radius-lg) | —（同值） | token-ref | Input = 10px |
+| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
 | `--ds-radius-dialog` | var(--ds-radius-xl) | —（同值） | token-ref | Dialog = 12px |
 | `--ds-radius-badge` | var(--ds-radius-full) | —（同值） | token-ref | Badge = 9999px |
-| `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 8px |
-| `--ds-radius-table` | var(--ds-radius-lg) | —（同值） | token-ref | Table = 8px |
+| `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 10px |
+| `--ds-radius-table` | var(--ds-radius-lg) | —（同值） | token-ref | Table = 10px |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

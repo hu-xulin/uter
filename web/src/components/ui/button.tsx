@@ -24,11 +24,10 @@ import { Spinner } from '@/components/ui/spinner'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  // 圆角按尺寸给：普通按钮 r-md（10px，--radius 基准档），
-  // 图标按钮 r-lg（12px）。
-  // 规范 2.1：Button → r-md，Icon Button → r-lg。写在基类上会让
-  // 调用方的 rounded-* 覆盖失效顺序不稳定，因此这里逐档位声明。
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
+  // 圆角统一走 UDS 8.0 默认按钮令牌 `--ds-radius-button`（= lg 10px），
+  // 普通按钮与图标按钮同档。写在基类上会让调用方的 rounded-* 覆盖
+  // 失效顺序不稳定，因此尺寸档内显式重申同一令牌。
+  "group/button inline-flex shrink-0 items-center justify-center rounded-(--ds-radius-button) border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
   {
     variants: {
       // Disabled 统一模式（3.0 §10.5）：禁止只依赖 opacity，必须保留明确的禁用
@@ -66,14 +65,14 @@ const buttonVariants = cva(
         // `icon-xs`（24px 方形），文字按钮最低就是 sm。
         default:
           'h-(--ds-button-height-md) gap-1 px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5',
-        sm: "h-(--ds-button-height-sm) gap-0 rounded-md px-2 text-xs in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
+        sm: "h-(--ds-button-height-sm) gap-0 rounded-(--ds-radius-button) px-2 text-xs in-data-[slot=button-group]:rounded-(--ds-radius-button) has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
         lg: 'h-(--ds-button-height-lg) gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
-        icon: 'size-(--ds-button-height-md) rounded-lg',
+        icon: 'size-(--ds-button-height-md) rounded-(--ds-radius-button)',
         'icon-xs':
-          "size-6 rounded-lg in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-4 [&>[data-slot=button-spinner]]:size-3",
+          "size-6 rounded-(--ds-radius-button) in-data-[slot=button-group]:rounded-(--ds-radius-button) [&_svg:not([class*='size-'])]:size-4 [&>[data-slot=button-spinner]]:size-3",
         'icon-sm':
-          'size-(--ds-button-height-sm) rounded-lg in-data-[slot=button-group]:rounded-lg',
-        'icon-lg': 'size-(--ds-button-height-lg) rounded-lg',
+          'size-(--ds-button-height-sm) rounded-(--ds-radius-button) in-data-[slot=button-group]:rounded-(--ds-radius-button)',
+        'icon-lg': 'size-(--ds-button-height-lg) rounded-(--ds-radius-button)',
         // 内联文字按钮（规范 §2.1 Button 的 inline 档）。
         //
         // 高度退回文本行盒、左右内边距归零。用于表格单元格里的「查看详情」

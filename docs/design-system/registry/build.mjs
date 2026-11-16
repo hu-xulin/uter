@@ -438,7 +438,7 @@ const compatMap = {
   isolation: M.runtimeBridge,
   rollback: M.runtimeBridge.rollback,
   conflicts: [
-    { id: 'CM-01', token: '--ds-radius-md', v3: '10px (3.0.md:1100)', v7: '5px (TOKEN-MANIFEST)', severity: 'HIGH', action: 'REPLACED', reason: '2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）' },
+    { id: 'CM-01', token: '--ds-radius-md', v3: '10px (3.0.md:1100)', v7: '6px (UDS 8.0 TOKEN-MANIFEST)', severity: 'HIGH', action: 'REPLACED', reason: '2026-11-16 经用户授权切换到 UDS 8.0 刻度：sm 4 / md 6 / lg 10 / xl 12 / 2xl 16 / 3xl 20（--radius 基准 0.375rem），Button/Input/Select 绑定 lg 10px（theme.css / primitives.css / tokens.test.ts 三方同步）' },
     { id: 'CM-02', token: '--ds-color-surface-overlay', v3: '#000000 (colors.css:86，已删除)', v7: '#FFFFFF / #1B2436', severity: 'CRITICAL', action: 'RESOLVED', reason: '8.0.0 语义分离：遮罩语义改名 --ds8-color-surface-scrim（#000000 恒黑，登记入 manifest）；surface-overlay 只保留浮层容器语义；4 个模态组件 bg-surface-overlay/10 已迁移为 bg-surface-scrim/10；colors.css 整体退役（B6）' },
     { id: 'CM-03', token: '--ds-color-text-primary', v3: 'var(--foreground) (colors.css:34，已删除)', v7: '#0F172A / #F1F5F9', severity: 'MEDIUM', action: 'RESOLVED', reason: '8.0.0：colors.css 遗留别名删除，消费者（typography.css 兜底规则）迁移到 --ds8-color-text-primary；主题联动由 bridge .dark / 预设分块保证' },
     { id: 'CM-04', token: '--ds-color-text-secondary', v3: 'var(--muted-foreground) (colors.css:35，已删除)', v7: '#475569 / #CBD5E1', severity: 'MEDIUM', action: 'RESOLVED', reason: '同 CM-03' },
