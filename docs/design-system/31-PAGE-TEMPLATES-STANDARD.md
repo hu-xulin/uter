@@ -31,6 +31,7 @@
 5. 每个模板必须声明：布局、栅格、组件清单、数据状态（default / loading / empty / error）、断点矩阵、验收项
 6. 页面模板不得直接引用 Primitive 色值；全部经 Semantic / Component Token
 7. 真实产品页面预览在 Showcase 中优先复用真实组件，不以静态设计稿替代
+8. 首页（public home）首屏身份胶囊复用 §21「营销首屏胶囊（Hero Pill Badge）」规则与 info 语义 Token，不另立色值、字号或组件出口
 
 ## 3. Tokens
 

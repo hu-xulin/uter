@@ -1327,11 +1327,6 @@ func GetUserUsedQuota(id int) (quota int, err error) {
 	return quota, err
 }
 
-func GetUserEmail(id int) (email string, err error) {
-	err = DB.Model(&User{}).Where("id = ?", id).Select("email").Find(&email).Error
-	return email, err
-}
-
 // GetUserGroup gets group from Redis first, falls back to DB if needed
 func GetUserGroup(id int, fromDB bool) (group string, err error) {
 	defer func() {
@@ -1502,17 +1497,6 @@ func decreaseUserQuota(id int, quota int) error {
 		return gorm.ErrRecordNotFound
 	}
 	return errors.New("user quota debit did not affect exactly one row")
-}
-
-func DeltaUpdateUserQuota(id int, delta int) (err error) {
-	if delta == 0 {
-		return nil
-	}
-	if delta > 0 {
-		return IncreaseUserQuota(id, delta, false)
-	} else {
-		return DecreaseUserQuota(id, -delta, false)
-	}
 }
 
 //func GetRootUserEmail() (email string) {

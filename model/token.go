@@ -399,29 +399,6 @@ func (token *Token) GetModelLimitsMap() map[string]bool {
 	return limitsMap
 }
 
-func DisableModelLimits(tokenId int) error {
-	token, err := GetTokenById(tokenId)
-	if err != nil {
-		return err
-	}
-	token.ModelLimitsEnabled = false
-	token.ModelLimits = ""
-	return token.Update()
-}
-
-func DeleteTokenById(id int, userId int) (err error) {
-	// Why we need userId here? In case user want to delete other's token.
-	if id == 0 || userId == 0 {
-		return common.NewMessage("Token ID or user ID is empty")
-	}
-	token := Token{Id: id, UserId: userId}
-	err = DB.Where(token).First(&token).Error
-	if err != nil {
-		return err
-	}
-	return token.Delete()
-}
-
 func IncreaseTokenQuota(tokenId int, key string, quota int) (err error) {
 	if quota < 0 {
 		return errors.New("quota cannot be negative")

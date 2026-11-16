@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-TOKEN-VALIDATION/1.0",
-  "generated_at": "2026-11-16T03:42:17.724Z",
+  "generated_at": "2026-11-16T05:31:01.910Z",
   "manifest": {
     "id": "UDS8-TOKEN-MANIFEST",
     "version": "8.0.0",
@@ -52,7 +52,7 @@
   },
   "hardcodedColor": {
     "runtimeCssHexOccurrences": 252,
-    "showcaseHexOccurrences": 3447,
+    "showcaseHexOccurrences": 3451,
     "checkerC16": "PASS"
   },
   "typography": {

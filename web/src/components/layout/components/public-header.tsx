@@ -123,7 +123,12 @@ export function PublicHeader(props: PublicHeaderProps) {
   let authContent = (
     // 规范 v1.2 第 7 条：首页登录按钮 = Body Medium（14/500/22），
     // 走 default 档（36px 高），不压到 sm 的 12px 小按钮档。
-    <Button render={<Link to='/sign-in' />}>{t('Sign in')}</Button>
+    <Button
+      className='rounded-(--ds-radius-lg)'
+      render={<Link to='/sign-in' />}
+    >
+      {t('Sign in')}
+    </Button>
   )
   if (isAuthenticated) authContent = <ProfileDropdown />
   if (loading) {
@@ -425,7 +430,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             {showAuthButtons && (
               // 移动端主操作也走 Button，不在这里重写一份高度/圆角/字号。
               <Button
-                className='w-full'
+                className='w-full rounded-(--ds-radius-lg)'
                 render={
                   <Link
                     to={isAuthenticated ? '/dashboard' : '/sign-in'}
@@ -458,7 +463,12 @@ export function PublicHeader(props: PublicHeaderProps) {
             <Button variant='outline' onClick={closeAuthPrompt}>
               {t('Cancel')}
             </Button>
-            <Button onClick={navigateToSignIn}>{t('Sign in now')}</Button>
+            <Button
+              className='rounded-(--ds-radius-lg)'
+              onClick={navigateToSignIn}
+            >
+              {t('Sign in now')}
+            </Button>
           </>
         }
       >

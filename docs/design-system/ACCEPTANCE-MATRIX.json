@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-ACCEPTANCE",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T03:42:15.963Z",
+  "generated_at": "2026-11-16T05:29:25.953Z",
   "status_definitions": {
     "IMPLEMENTED": "已完成实现",
     "VERIFIED": "已通过真实自动化与必要的视觉验证",
@@ -409,7 +409,7 @@
         "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
-      "checks": 5,
+      "checks": 6,
       "outstanding": [
         "真实产品页面迁移（Phase 6）",
         "全站视觉回归（Phase 8）"

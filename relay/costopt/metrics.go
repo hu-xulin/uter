@@ -56,14 +56,11 @@ func enabledInc(p *int64) {
 	}
 }
 
-func IncCacheHit()          { enabledInc(&metrics.CacheHits) }
-func IncNegativeHit()       { enabledInc(&metrics.NegativeHits) }
-func IncSpikeAlert()        { enabledInc(&metrics.SpikeAlerts) }
-func IncToolCacheHit()      { enabledInc(&metrics.ToolCacheHits) }
-func IncCascadeEscalation() { enabledInc(&metrics.CascadeEscalations) }
-func IncLoopBreak()         { enabledInc(&metrics.LoopBreaks) }
-func IncAgentBudgetBlock()  { enabledInc(&metrics.AgentBudgetBlocks) }
-func IncAnomalyAlert()      { enabledInc(&metrics.AnomalyAlerts) }
+func IncCacheHit()         { enabledInc(&metrics.CacheHits) }
+func IncNegativeHit()      { enabledInc(&metrics.NegativeHits) }
+func IncLoopBreak()        { enabledInc(&metrics.LoopBreaks) }
+func IncAgentBudgetBlock() { enabledInc(&metrics.AgentBudgetBlocks) }
+func IncAnomalyAlert()     { enabledInc(&metrics.AnomalyAlerts) }
 
 // ===== 各降本钩子命中率计数（仅在 MetricsEnabled 时累加） =====
 func IncCostOptRequest()     { enabledInc(&metrics.CostOptRequests) }

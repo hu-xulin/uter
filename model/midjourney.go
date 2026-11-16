@@ -188,10 +188,6 @@ func GetMjByuId(id int) *Midjourney {
 	return mj
 }
 
-func UpdateProgress(id int, progress string) error {
-	return DB.Model(&Midjourney{}).Where("id = ?", id).Update("progress", progress).Error
-}
-
 func (midjourney *Midjourney) Insert() error {
 	var err error
 	err = DB.Create(midjourney).Error
@@ -257,18 +253,6 @@ func (midjourney *Midjourney) UpdateWithStatus(fromStatus string) (bool, error) 
 		return false, result.Error
 	}
 	return result.RowsAffected > 0, nil
-}
-
-func MjBulkUpdate(mjIds []string, params map[string]any) error {
-	return DB.Model(&Midjourney{}).
-		Where("mj_id in (?)", mjIds).
-		Updates(params).Error
-}
-
-func MjBulkUpdateByTaskIds(taskIDs []int, params map[string]any) error {
-	return DB.Model(&Midjourney{}).
-		Where("id in (?)", taskIDs).
-		Updates(params).Error
 }
 
 // CountAllTasks returns total midjourney tasks for admin query

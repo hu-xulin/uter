@@ -1,6 +1,6 @@
 {
   "summary": {
-    "scannedAt": "2026-11-16T03:42:18.712Z",
+    "scannedAt": "2026-11-16T05:31:02.943Z",
     "filesScanned": 1278,
     "tokens": 389,
     "declaredConsumers": 389,
@@ -3561,6 +3561,7 @@
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
+        "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
       ],
       "undeclaredUsage": []
@@ -3615,6 +3616,7 @@
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
+        "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
       ],
       "undeclaredUsage": []

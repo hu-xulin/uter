@@ -69,6 +69,7 @@ require (
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tiktoken-go/tokenizer v0.10.0 // indirect
 	github.com/tklauser/go-sysconf v0.4.0 // indirect
 	github.com/tklauser/numcpus v0.12.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
@@ -145,7 +146,6 @@ require (
 	github.com/thanhpk/randstr v1.0.6
 	github.com/tidwall/gjson v1.20.0
 	github.com/tidwall/sjson v1.2.5
-	github.com/tiktoken-go/tokenizer v0.10.0
 	github.com/uter-ai/uter/relaykit v0.0.0
 	github.com/uter-ai/uter/tokenkit v0.0.0
 	github.com/waffo-com/waffo-go v1.3.2

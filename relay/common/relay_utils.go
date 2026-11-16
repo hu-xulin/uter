@@ -16,10 +16,6 @@ import (
 	"github.com/samber/lo"
 )
 
-type HasPrompt interface {
-	GetPrompt() string
-}
-
 type HasImage interface {
 	HasImage() bool
 }

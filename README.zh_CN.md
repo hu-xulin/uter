@@ -1,6 +1,6 @@
 <div align="center">
 
-![uter](/web/public/logo.png)
+![uter](./web/public/logo.png)
 
 # Uter
 

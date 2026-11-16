@@ -3,7 +3,6 @@ package minimax
 import (
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -14,7 +13,6 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/uter-ai/uter/service"
 )
 
 type MiniMaxTTSRequest struct {
@@ -92,20 +90,6 @@ type MiniMaxBaseResp struct {
 	StatusMsg  string `json:"status_msg"`
 }
 
-func getContentTypeByFormat(format string) string {
-	contentTypeMap := map[string]string{
-		"mp3":  "audio/mpeg",
-		"wav":  "audio/wav",
-		"flac": "audio/flac",
-		"aac":  "audio/aac",
-		"pcm":  "audio/pcm",
-	}
-	if ct, ok := contentTypeMap[format]; ok {
-		return ct
-	}
-	return "audio/mpeg" // default to mp3
-}
-
 func handleTTSResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.UterError) {
 	body, readErr := common.ReadUpstreamBody(resp.Body)
 	if readErr != nil {
@@ -171,29 +155,4 @@ func handleTTSResponse(c *gin.Context, resp *http.Response, info *relaycommon.Re
 	}
 
 	return usage, nil
-}
-
-func handleChatCompletionResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.UterError) {
-	defer resp.Body.Close()
-	body, readErr := common.ReadUpstreamBody(resp.Body)
-	if readErr != nil {
-		return nil, types.NewErrorWithStatusCode(
-			errors.New("failed to read minimax response"),
-			types.ErrorCodeReadResponseBodyFailed,
-			http.StatusInternalServerError,
-		)
-	}
-
-	// Set response headers
-	for key, values := range resp.Header {
-		if !service.ShouldCopyUpstreamHeader(c, key, values) {
-			continue
-		}
-		for _, value := range values {
-			c.Header(key, value)
-		}
-	}
-
-	c.Data(resp.StatusCode, "application/json", body)
-	return nil, nil
 }

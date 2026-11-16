@@ -447,12 +447,6 @@ type RecordTaskBillingLogParams struct {
 	NodeName  string // 任务发起节点；为空时回退当前节点
 }
 
-func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
-	if err := RecordTaskBillingLogWithError(params); err != nil {
-		common.SysLog(common.LogText("failed to record task billing log: %s", err.Error()))
-	}
-}
-
 // RecordTaskBillingLogWithError is used by financial workflows that must not
 // silently report completion when the audit record could not be persisted.
 func RecordTaskBillingLogWithError(params RecordTaskBillingLogParams) error {

@@ -58,31 +58,6 @@ func MidjourneyErrorWithStatusCodeWrapper(code int, desc string, statusCode int)
 //	return openaiErr
 //}
 
-func ClaudeErrorWrapper(err error, code string, statusCode int) *dto.ClaudeErrorWithStatusCode {
-	text := err.Error()
-	lowerText := strings.ToLower(text)
-	if !strings.HasPrefix(lowerText, "get file base64 from url") {
-		if strings.Contains(lowerText, "post") || strings.Contains(lowerText, "dial") || strings.Contains(lowerText, "http") {
-			common.SysLog(common.LogText("error: %s", text))
-			text = "request to the upstream address failed"
-		}
-	}
-	claudeError := types.ClaudeError{
-		Message: text,
-		Type:    "new_api_error",
-	}
-	return &dto.ClaudeErrorWithStatusCode{
-		Error:      claudeError,
-		StatusCode: statusCode,
-	}
-}
-
-func ClaudeErrorWrapperLocal(err error, code string, statusCode int) *dto.ClaudeErrorWithStatusCode {
-	claudeErr := ClaudeErrorWrapper(err, code, statusCode)
-	claudeErr.LocalError = true
-	return claudeErr
-}
-
 func RelayErrorHandler(ctx context.Context, resp *http.Response, showBodyWhenFail bool) (newApiErr *types.NewAPIError) {
 	newApiErr = types.InitOpenAIError(types.ErrorCodeBadResponseStatusCode, resp.StatusCode)
 

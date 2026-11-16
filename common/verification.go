@@ -120,16 +120,6 @@ func DeleteKey(key string, purpose string) {
 	delete(verificationMap, purpose+key)
 }
 
-// no lock inside, so the caller must lock the verificationMap before calling!
-func removeExpiredPairs() {
-	now := time.Now()
-	for key := range verificationMap {
-		if int(now.Sub(verificationMap[key].time).Seconds()) >= VerificationValidMinutes*60 {
-			delete(verificationMap, key)
-		}
-	}
-}
-
 // evictOldestPairs removes the n oldest verification entries (by creation time)
 // to keep the in-memory map bounded. Caller must hold verificationMutex.
 func evictOldestPairs(n int) {

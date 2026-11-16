@@ -62,7 +62,7 @@ export function Hero(props: HeroProps) {
     return (
       <Button
         variant='outline'
-        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 px-5'
+        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 rounded-(--ds-radius-lg) px-5'
         render={rendered}
       >
         <BookOpen className='text-muted-foreground group-hover:text-foreground ds-motion-marketing-fast size-4.5 transition-colors' />
@@ -89,14 +89,18 @@ export function Hero(props: HeroProps) {
       <div className='mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-8'>
         {/* Left Column: Title, description, action buttons and application support */}
         <div className='flex flex-col items-start text-left lg:col-span-6'>
-          {/* Top Pill Badge */}
+          {/* Top Pill Badge — 对齐上游 new-api `sections/hero.tsx` 的蓝色胶囊：
+              透明蓝描边 + 极浅蓝底 + 蓝色文字 + 双色脉冲圆点。上游写的是
+              `border-blue-500/20 bg-blue-500/5 text-blue-600 text-[11px]`；
+              这里按 8.0 规范把每个效果翻成 Token：蓝系走 info 语义色，
+              11px 提到全站下限 2xs=12px（§1.2），主题差异由 Token 映射。 */}
           <div
-            className='landing-animate-fade-up border-primary-border bg-primary-subtle text-sidebar-active-foreground mb-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium opacity-0'
+            className='landing-animate-fade-up border-info/20 bg-info-soft/30 text-info text-2xs mb-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium opacity-0'
             style={{ animationDelay: '0ms' }}
           >
             <span className='relative flex size-1.5'>
-              <span className='bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75' />
-              <span className='bg-primary relative inline-flex size-1.5 rounded-full' />
+              <span className='bg-info/60 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75' />
+              <span className='bg-info relative inline-flex size-1.5 rounded-full' />
             </span>
             <span>{t('AI Application Infrastructure Foundation')}</span>
           </div>
@@ -108,7 +112,7 @@ export function Hero(props: HeroProps) {
             variant='display'
             level={1}
             multiline
-            className='landing-animate-fade-up text-4xl md:text-5xl'
+            className='landing-animate-fade-up text-4xl'
             style={{ animationDelay: '60ms' }}
           >
             {(() => {
@@ -184,7 +188,7 @@ export function Hero(props: HeroProps) {
             {props.isAuthenticated ? (
               <>
                 <Button
-                  className='group px-5'
+                  className='group rounded-(--ds-radius-lg) px-5'
                   render={<Link to='/dashboard' />}
                 >
                   {t('Go to Dashboard')}
@@ -194,13 +198,16 @@ export function Hero(props: HeroProps) {
               </>
             ) : (
               <>
-                <Button className='group px-5' render={<Link to='/sign-up' />}>
+                <Button
+                  className='group rounded-(--ds-radius-lg) px-5'
+                  render={<Link to='/sign-up' />}
+                >
                   {t('Get Started')}
                   <ArrowRight className='ds-motion-marketing-fast ml-1.5 size-4.5 transition-transform group-hover:translate-x-0.5' />
                 </Button>
                 <Button
                   variant='outline'
-                  className='border-border/50 hover:border-border hover:bg-muted/50 px-5'
+                  className='border-border/50 hover:border-border hover:bg-muted/50 rounded-(--ds-radius-lg) px-5'
                   render={<Link to='/pricing' />}
                 >
                   {t('View Pricing')}

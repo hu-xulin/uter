@@ -2066,18 +2066,6 @@ func stringMetaField(object map[string]any, name string) (string, error) {
 	return text, nil
 }
 
-func boolMetaField(object map[string]any, name string) (bool, error) {
-	value, exists := object[name]
-	if !exists {
-		return false, nil
-	}
-	flag, ok := value.(bool)
-	if !ok {
-		return false, fmt.Errorf("plugin meta %s must be a boolean", name)
-	}
-	return flag, nil
-}
-
 func localizedTextMetaField(object map[string]any, name string, maxRunes int) (LocalizedText, error) {
 	value, exists := object[name]
 	if !exists {

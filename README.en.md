@@ -1,6 +1,6 @@
 <div align="center">
 
-![uter](/web/public/logo.png)
+![uter](./web/public/logo.png)
 
 # Uter
 
@@ -371,7 +371,7 @@ docker run --name uter -d --restart always \
 2. Search for **Uter** in the application store
 3. One-click installation
 
-📖 [Tutorial with images](./docs-dev/BT.md)
+📖 [Tutorial with images](./docs-dev/installation/BT.md)
 
 </details>
 

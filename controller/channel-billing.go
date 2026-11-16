@@ -47,13 +47,6 @@ type OpenAIUsageDailyCost struct {
 	}
 }
 
-type OpenAICreditGrants struct {
-	Object         string  `json:"object"`
-	TotalGranted   float64 `json:"total_granted"`
-	TotalUsed      float64 `json:"total_used"`
-	TotalAvailable float64 `json:"total_available"`
-}
-
 const maxAdvancedCustomBalanceResponseBytes = 256 << 10
 
 type channelBalanceResult struct {
@@ -212,22 +205,6 @@ func GetResponseBody(method, url string, channel *model.Channel, headers http.He
 		return nil, err
 	}
 	return body, nil
-}
-
-func updateChannelCloseAIBalance(channel *model.Channel) (float64, error) {
-	url := fmt.Sprintf("%s/dashboard/billing/credit_grants", channel.GetBaseURL())
-	body, err := GetResponseBody("GET", url, channel, GetAuthHeader(channel.Key))
-
-	if err != nil {
-		return 0, err
-	}
-	response := OpenAICreditGrants{}
-	err = common.Unmarshal(body, &response)
-	if err != nil {
-		return 0, err
-	}
-	channel.UpdateBalance(response.TotalAvailable)
-	return response.TotalAvailable, nil
 }
 
 func updateChannelOpenAISBBalance(channel *model.Channel) (float64, error) {

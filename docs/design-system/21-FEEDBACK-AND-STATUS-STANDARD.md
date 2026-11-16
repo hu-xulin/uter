@@ -27,12 +27,13 @@ Toast / Alert / Badge / Banner / Tooltip / Inline Feedback / Loading / Success /
 1. Toast：宽 360px、圆角 8px、surface-raised + elevation-3；进入 200ms / 停留 5000ms / 退出 150ms；role="status"
 2. Alert：4 种语义（success / warning / danger / info），soft 底 + 1px border + 16px 图标 + 标题 14px + 说明 12px
 3. Badge：高 24px、full 圆角、12px/18px medium；状态色取对应 status-on + status-soft
-4. Banner：页面顶部通栏，高 48px，不可关闭的系统级提示必须说明持续时间
-5. Tooltip：surface-tooltip 底 + 文字 12px/18px + elevation-2，延迟 200ms 显示，Esc 可关闭
-6. Inline Feedback：表单控件下方 4px、12px/18px + 图标；成功 / 错误用对应 status Token
-7. Loading：Spinner 16px / 1000ms linear；超过 300ms 才显示，避免闪烁；Skeleton 用 surface-sunken
-8. 业务状态统一映射：API Key / Channel / Model / Payment / Refund / Order / Task / Account 各有 enabled|disabled|error|pending 四态，颜色与文案固定
-9. 支付 / 退款 / 余额状态不得用渐变或弱化色；危险状态必须同时有图标与文字
+4. 营销首屏胶囊（Hero Pill Badge）：仅用于首页首屏身份标识「AI Application Infrastructure Foundation」；高 32px / full 圆角 / 1px `--ds-color-status-info-border` 20% 描边 / `--ds-color-status-info-soft` 30% 浅底 / `--ds-color-status-info` 12px（18px 行高）medium 文字；左侧双色脉冲点 6px（ping 层 info 60% + 实心 info，脉冲沿用 `animate-ping`，不新增动效 Token）。该效果锚定上游 new-api `sections/hero.tsx` 的蓝色胶囊（`blue-500/20` 描边、`blue-500/5` 浅底、`blue-600` 文字、11px 字号）；按 §1.2 全站下限把 11px 提至 `--ds-text-2xs`（12px），蓝系裸色一律翻成 info 语义 Token，Light / Dark 由同名 Token 映射，禁止在业务组件写上游裸类
+5. Banner：页面顶部通栏，高 48px，不可关闭的系统级提示必须说明持续时间
+6. Tooltip：surface-tooltip 底 + 文字 12px/18px + elevation-2，延迟 200ms 显示，Esc 可关闭
+7. Inline Feedback：表单控件下方 4px、12px/18px + 图标；成功 / 错误用对应 status Token
+8. Loading：Spinner 16px / 1000ms linear；超过 300ms 才显示，避免闪烁；Skeleton 用 surface-sunken
+9. 业务状态统一映射：API Key / Channel / Model / Payment / Refund / Order / Task / Account 各有 enabled|disabled|error|pending 四态，颜色与文案固定
+10. 支付 / 退款 / 余额状态不得用渐变或弱化色；危险状态必须同时有图标与文字
 
 ## 3. Tokens
 
@@ -45,6 +46,8 @@ Toast / Alert / Badge / Banner / Tooltip / Inline Feedback / Loading / Success /
 | `--ds-color-status-warning` | #A54600 | #FCD34D | color | 警告 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
 | `--ds-color-status-info` | #1D4ED8 | #93C5FD | color | 信息 |
+| `--ds-color-status-info-soft` | #DBEAFE | #172554 | color | 信息浅底 |
+| `--ds-color-status-info-border` | #93C5FD | #1E40AF | color | 信息边框 |
 | `--ds-radius-lg` | 8px | —（同值） | px | 卡片 |
 | `--ds-radius-full` | 9999px | —（同值） | px | 圆形 / 胶囊 |
 | `--ds-elevation-3` | 0 8px 24px rgba(15, 23, 42, 0.12) | —（同值） | css | 下拉 / Popover |
@@ -72,17 +75,27 @@ Showcase 中 `#mod-21` 分区提供本模块的真实渲染：色块、字号、
 
 ```tsx
 <div role="status" class="toast toast--success"><CheckIcon/> 充值成功 ¥ 100.00</div>
+/* Hero Pill Badge：上游蓝色效果按 §21 映射为 info 语义 Token，字号取全站下限 12px */
+<div class="landing-animate-fade-up border-info/20 bg-info-soft/30 text-info inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-2xs font-medium">
+  <span class="relative flex size-1.5">
+    <span class="bg-info/60 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+    <span class="bg-info relative inline-flex size-1.5 rounded-full" />
+  </span>
+  <span>{t("AI Application Infrastructure Foundation")}</span>
+</div>
 ```
 
 ## 7. Do
 
 - 8 类业务状态走统一映射表
 - 危险状态给图标 + 文字
+- 营销首屏胶囊按上游锚定效果取 info 语义 Token，11px 提至 12px
 
 ## 8. Don't
 
 - 用品牌渐变做支付成功提示
 - Toast 只显示颜色不显示文字
+- 在 Hero 胶囊写 bg-blue-500/5 / text-blue-600 / text-[11px] 等上游裸类
 
 ## 9. Accessibility
 
@@ -102,10 +115,11 @@ Showcase 中 `#mod-21` 分区提供本模块的真实渲染：色块、字号、
 ## 11. Acceptance
 
 1. 8 类业务状态映射齐全
-2. 本模块引用的每个 Token 必须能在 TOKEN-MANIFEST.json 中解析，且 CSS / TS / Showcase 三处数值一致
-3. check-design-system-8.0.0.mjs 对应检查项 EXIT=0
-4. Light / Dark 两套映射完整，无缺失键、无主题特例裸色值
-5. Do / Don’t 中的反例在全库静态扫描中命中数为 0（或已登记进 EXCEPTION-REGISTRY.json）
+2. Hero Pill Badge 的描边 / 底 / 文字 / 字号 / 脉冲点逐项命中 §21 映射，且 lint:design:strict 与 design:8:check EXIT=0
+3. 本模块引用的每个 Token 必须能在 TOKEN-MANIFEST.json 中解析，且 CSS / TS / Showcase 三处数值一致
+4. check-design-system-8.0.0.mjs 对应检查项 EXIT=0
+5. Light / Dark 两套映射完整，无缺失键、无主题特例裸色值
+6. Do / Don’t 中的反例在全库静态扫描中命中数为 0（或已登记进 EXCEPTION-REGISTRY.json）
 
 | 检查项 | 执行方式 | 当前结果 |
 |---|---|---|

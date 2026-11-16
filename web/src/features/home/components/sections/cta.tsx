@@ -69,13 +69,16 @@ export function CTA(props: CTAProps) {
           )}
         </Text>
         <div className='mt-8 flex items-center justify-center gap-3'>
-          <Button className='group' render={<Link to='/sign-up' />}>
+          <Button
+            className='group rounded-(--ds-radius-lg)'
+            render={<Link to='/sign-up' />}
+          >
             {t('Get Started')}
             <ArrowRight className='ds-motion-marketing-fast ml-1 size-4.5 transition-transform group-hover:translate-x-0.5' />
           </Button>
           <Button
             variant='outline'
-            className='border-border/50 hover:border-border hover:bg-muted/50'
+            className='border-border/50 hover:border-border hover:bg-muted/50 rounded-(--ds-radius-lg)'
             render={<Link to='/pricing' />}
           >
             {t('View Pricing')}

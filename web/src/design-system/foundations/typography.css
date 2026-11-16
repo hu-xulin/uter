@@ -206,7 +206,7 @@ For commercial licensing, please contact support@uter.ai
  * 需要保留 Tailwind 的响应式字号（移动端 30px、桌面 36px），只把行高
  * 换成多行档。放在 components 层会被 utilities 层覆盖，等于没写。
  *
- * 用法：<h1 className='ds-heading--display-multiline text-4xl md:text-5xl'>
+ * 用法：<h1 className='ds-heading--display-multiline text-4xl'>
  */
 .ds-heading--display-multiline {
   line-height: var(--ds-line-display-multiline);

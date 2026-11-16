@@ -3,11 +3,9 @@ package common
 import (
 	crand "crypto/rand"
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"log"
 	"math/big"
@@ -15,8 +13,6 @@ import (
 	"net"
 	"net/url"
 	"os"
-	"os/exec"
-	"runtime"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -25,22 +21,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
-
-func OpenBrowser(url string) {
-	var err error
-
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", url).Start()
-	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "darwin":
-		err = exec.Command("open", url).Start()
-	}
-	if err != nil {
-		log.Println(err)
-	}
-}
 
 func GetIp() (ip string) {
 	ips, err := net.InterfaceAddrs()
@@ -145,24 +125,6 @@ var sizeKB = 1024
 var sizeMB = sizeKB * 1024
 var sizeGB = sizeMB * 1024
 
-func Bytes2Size(num int64) string {
-	numStr := ""
-	unit := "B"
-	if num/int64(sizeGB) > 1 {
-		numStr = fmt.Sprintf("%.2f", float64(num)/float64(sizeGB))
-		unit = "GB"
-	} else if num/int64(sizeMB) > 1 {
-		numStr = fmt.Sprintf("%d", int(float64(num)/float64(sizeMB)))
-		unit = "MB"
-	} else if num/int64(sizeKB) > 1 {
-		numStr = fmt.Sprintf("%d", int(float64(num)/float64(sizeKB)))
-		unit = "KB"
-	} else {
-		numStr = fmt.Sprintf("%d", num)
-	}
-	return numStr + " " + unit
-}
-
 func Interface2String(inter any) string {
 	switch inter.(type) {
 	case string:
@@ -181,18 +143,6 @@ func Interface2String(inter any) string {
 		return ""
 	}
 	return fmt.Sprintf("%v", inter)
-}
-
-func UnescapeHTML(x string) any {
-	return template.HTML(x)
-}
-
-func IntMax(a int, b int) int {
-	if a >= b {
-		return a
-	} else {
-		return b
-	}
 }
 
 func GetUUID() string {
@@ -216,14 +166,6 @@ func GenerateRandomCharsKey(length int) (string, error) {
 	}
 
 	return string(b), nil
-}
-
-func GenerateRandomKey(length int) (string, error) {
-	bytes := make([]byte, length*3/4) // 对于48位的输出，这里应该是36
-	if _, err := crand.Read(bytes); err != nil {
-		return "", err
-	}
-	return base64.StdEncoding.EncodeToString(bytes), nil
 }
 
 func GenerateKey() (string, error) {

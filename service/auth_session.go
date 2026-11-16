@@ -512,10 +512,3 @@ func authSessionErrorCode(err error) (int, string) {
 func AuthSessionErrorCode(err error) (int, string) {
 	return authSessionErrorCode(err)
 }
-
-func FormatAuthError(err error) string {
-	if err == nil {
-		return ""
-	}
-	return fmt.Sprintf("authentication failed: %v", err)
-}
