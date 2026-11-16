@@ -92,7 +92,7 @@ jobs:
           else console.log(JSON.stringify(gates, null, 2).slice(-24000));
           NODE
       - name: Build isolated Uter backend release binary
-        run: go build -o uter-bin .
+        run: go build -o "$RUNNER_TEMP/uter-bin" .
       - name: Start isolated Uter server with disposable SQLite
         run: |
           mkdir -p "$RUNNER_TEMP/uap"
@@ -104,7 +104,7 @@ jobs:
             SESSION_SECRET="$(openssl rand -hex 48)" \
             UTER_I18N_DIR="$GITHUB_WORKSPACE/web/src/i18n/locales" \
             GIN_MODE=release \
-            ./uter-bin > "$RUNNER_TEMP/uap/uter-server.log" 2>&1 &
+            "$RUNNER_TEMP/uter-bin" > "$RUNNER_TEMP/uap/uter-server.log" 2>&1 &
             echo $! > "$RUNNER_TEMP/uap/uter-server.pid"
           )
           for attempt in $(seq 1 90); do
