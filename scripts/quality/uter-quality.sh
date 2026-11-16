@@ -62,7 +62,9 @@ run_check() {
   else
     echo FAILED > "$ROOT/$UEQE_STATE_DIR/$stage.$name.status"
     echo "  ✘ $name 退出码 ${rc}（日志：${log}）" >&2
-    tail -5 "$log" | sed 's/^/    │ /' >&2
+    # Preserve actionable lint/test diagnostics in CI logs; five lines hid
+    # the actual Oxlint errors and forced guess-based remediation.
+    tail -80 "$log" | sed 's/^/    │ /' >&2
   fi
   return $rc
 }
