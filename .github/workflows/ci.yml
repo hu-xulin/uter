@@ -92,6 +92,24 @@ jobs:
           done
           cat "$RUNNER_TEMP/uap/uter-server.log"
           exit 1
+      # Establish one immutable execution identity for every UAP report in this CI run.
+      # Each CLI command is a separate Node process; without this batch lock, each
+      # process can open a different execution_id and make otherwise valid evidence
+      # impossible to combine. The fingerprint is still independently rechecked.
+      - name: Open single UAP evidence batch
+        id: uap_batch
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { startExecution } from './.uap/runtime/status-engine/execution.mjs';
+          const execution = startExecution('github-actions single-batch UAP acceptance');
+          fs.appendFileSync(process.env.GITHUB_ENV, `UAP_BATCH_LOCK_ID=${execution.execution_id}\\n`);
+          console.log(JSON.stringify(execution, null, 2));
+          NODE
+      - name: Generate current UAP build evidence
+        id: uap_build
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs build
       # Run every UAP gate even when an earlier gate fails so CI preserves
       # complete evidence instead of skipping the self-test suite on validator failure.
       - name: UAP runtime health
@@ -244,13 +262,15 @@ jobs:
       - name: Enforce UAP governance gate
         if: always()
         env:
+          BUILD_OUTCOME: ${{ steps.uap_build.outcome }}
           DOCTOR_OUTCOME: ${{ steps.uap_doctor.outcome }}
           VALIDATE_OUTCOME: ${{ steps.uap_validate.outcome }}
           TEST_OUTCOME: ${{ steps.uap_test.outcome }}
           ACCEPTANCE_OUTCOME: ${{ steps.uap_accept.outcome }}
         run: |
-          printf 'doctor=%s\\nvalidate=%s\\ntest=%s\\nfinal_acceptance=%s\\n' "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$ACCEPTANCE_OUTCOME"
+          printf 'build=%s\\ndoctor=%s\\nvalidate=%s\\ntest=%s\\nfinal_acceptance=%s\\n' "$BUILD_OUTCOME" "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$ACCEPTANCE_OUTCOME"
           if [[ "$ACCEPTANCE_OUTCOME" != "success" ]]; then echo "::warning::Operational UAP gate passed/checked separately; final acceptance remains blocked or unverified."; fi
+          test "$BUILD_OUTCOME" = success
           test "$DOCTOR_OUTCOME" = success
           test "$VALIDATE_OUTCOME" = success
           test "$TEST_OUTCOME" = success
