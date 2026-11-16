@@ -201,16 +201,27 @@ export const validators = {
       detail: `本地配置明文密钥命中=${secretHits}; policy secret_export=deny=${/secret_export:\s*\n?\s*effect:\s*deny/.test(policyText)}; fail_closed=${regPass(registry, 'policy.fail_closed')}; 未运行外部 CVE 库扫描(离线), 不声称无 CVE`,
     };
 
+    // Execute the repository's strict Knip configuration. A baseline stating
+    // that no new dependency was installed is not evidence that existing
+    // dependencies or exports are still used; dead-code checks must run.
+    const knip = await runCommand({
+      command: 'bun',
+      args: ['run', 'knip', '--reporter', 'json'],
+      cwd: rootPath('web'),
+      timeoutMs: 300000,
+    });
+    const knipOk = cmdRan(knip);
     const newDeps = baseline?.toolchain?.new_dependencies_installed;
     const rUnused = {
       name: 'unused_dependencies',
-      ok: Array.isArray(newDeps) && newDeps.length === 0 && regPass(registry, 'independence.no_retired_governance_refs')
+      ok: knipOk && Array.isArray(newDeps) && newDeps.length === 0
+        && regPass(registry, 'independence.no_retired_governance_refs')
         && goMod.includes('require') && !!webPkg?.scripts,
-      detail: `BASELINE.new_dependencies_installed=${Array.isArray(newDeps) ? newDeps.length : 'n/a'}(零新增); 无退役 AES/UAES 治理引用=${regPass(registry, 'independence.no_retired_governance_refs')}; go.mod 含 require=${goMod.includes('require')}; web scripts 存在=${!!webPkg?.scripts}`,
+      detail: `Knip 实际执行=${knipOk} (exit=${knip.exit_code ?? 'n/a'}, timeout=${knip.timed_out}, spawn_error=${knip.spawn_error ?? 'none'}); BASELINE.new_dependencies_installed=${Array.isArray(newDeps) ? newDeps.length : 'n/a'}(零新增); 无退役 AES/UAES 治理引用=${regPass(registry, 'independence.no_retired_governance_refs')}; go.mod 含 require=${goMod.includes('require')}; web scripts 存在=${!!webPkg?.scripts}`,
     };
     return assemble('development.dependency_integrity', checks, [rLock, rVuln, rUnused], {
-      started, registry, evidence_refs: evidenceIds,
-      note: '真实读取 go.sum/go.mod/web/package.json/BASELINE + 配置明文密钥正则扫描; 未安装/删除任何依赖',
+      started, registry, evidence_refs: evidenceIds, commands: [knip],
+      note: '真实执行 web/package.json 的 Knip + 读取 Go/前端锁文件与 UAP baseline + 配置明文密钥正则扫描; 未自动删除任何依赖',
     });
   },
 };
