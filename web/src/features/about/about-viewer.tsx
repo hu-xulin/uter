@@ -17,10 +17,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
+import {
+  BookOpen,
+  Boxes,
+  Building2,
+  Gem,
+  Handshake,
+  Mail,
+  Target,
+  UserPlus,
+  UsersRound,
+  type LucideIcon,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
+import { IconBadge } from '@/components/ui/icon-badge'
 import { Heading } from '@/design-system'
 import {
   CONTENT_CARD_CLASS,
@@ -48,9 +61,28 @@ import {
   type AboutContent,
   type AboutPartner,
   type AboutSection,
+  type AboutSectionSlug,
   type AboutSubSection,
 } from './about-shared'
 import { ABOUT_CONTENT_BY_LOCALE } from './content'
+
+/**
+ * 索引页九张卡片的标题图标。
+ *
+ * 按 slug 绑定而不是按下标：标题文案每语言各写一遍，图标与语言无关，
+ * 绑定 slug 后章节顺序或标题措辞调整都不会让图标错位。
+ */
+const SECTION_ICONS: Record<AboutSectionSlug, LucideIcon> = {
+  'who-we-are': Building2,
+  'what-we-do': Boxes,
+  'our-team': UsersRound,
+  'our-mission': Target,
+  'our-values': Gem,
+  'our-story': BookOpen,
+  'our-partners': Handshake,
+  'join-us': UserPlus,
+  'contact-us': Mail,
+}
 
 /**
  * 章节与子节的锚点 id。
@@ -106,7 +138,7 @@ function AboutSidebar({
 }) {
   const { t } = useTranslation()
   return (
-    <nav aria-label={t('Contents')} className='text-dense flex flex-col'>
+    <nav aria-label={t('Contents')} className='flex flex-col text-sm'>
       <Link
         to='/about'
         aria-current={activeSlug === null ? 'page' : undefined}
@@ -155,7 +187,7 @@ function AboutShell({
   return (
     <PublicLayout showMainContainer={false}>
       <div className='h-16 shrink-0' aria-hidden='true' />
-      <div className='mx-auto flex w-full max-w-[1440px] items-start'>
+      <div className='mx-auto flex w-full max-w-7xl items-start px-4 md:px-6'>
         <aside className='border-border sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
           <AboutSidebar content={content} activeSlug={activeSlug} />
         </aside>
@@ -284,7 +316,7 @@ function ChapterBody({
           </Heading>
           <ProfileBlock sub={sub} />
           {sub.paragraphs?.map((paragraph) => (
-            <p key={paragraph} className='text-long text-fg-primary mb-2'>
+            <p key={paragraph} className='text-long text-fg-secondary mb-2'>
               {paragraph}
             </p>
           ))}
@@ -313,7 +345,7 @@ function ChapterBody({
         </div>
       ))}
       {section.closing?.map((paragraph) => (
-        <p key={paragraph} className='text-long text-fg-primary mt-4'>
+        <p key={paragraph} className='text-long text-fg-secondary mt-4'>
           {paragraph}
         </p>
       ))}
@@ -343,16 +375,27 @@ export function AboutViewer() {
       <p className='text-long text-fg-secondary mb-8'>{content.description}</p>
       <ul className={CONTENT_CARD_GRID_CLASS}>
         {content.sections.map((section, i) => {
+          const slug = ABOUT_SECTION_SLUGS[i]
+          const SectionIcon = SECTION_ICONS[slug]
           const teaser = teaserOf(section)
           return (
-            <li key={ABOUT_SECTION_SLUGS[i]}>
+            <li key={slug}>
               <Link
                 to='/about/$section'
-                params={{ section: ABOUT_SECTION_SLUGS[i] }}
+                params={{ section: slug }}
                 className={CONTENT_CARD_CLASS}
               >
-                <span className={CONTENT_CARD_TITLE_CLASS}>
-                  {section.heading}
+                <span className='flex items-center gap-3'>
+                  <IconBadge
+                    tone='primary'
+                    size='title'
+                    className='[&>svg]:size-(--ds-icon-sm)!'
+                  >
+                    <SectionIcon />
+                  </IconBadge>
+                  <span className={cn(CONTENT_CARD_TITLE_CLASS, 'min-w-0')}>
+                    {section.heading}
+                  </span>
                 </span>
                 {teaser ? (
                   <span className={CONTENT_CARD_TEASER_CLASS}>{teaser}</span>

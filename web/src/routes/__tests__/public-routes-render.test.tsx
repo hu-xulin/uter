@@ -147,6 +147,22 @@ describe('public routes render through the real route tree', () => {
     })
     expect(container.querySelector('iframe')).toBeNull()
 
+    // 索引页把九章入口铺成卡片：桌面两列，且每张卡片标题前都有章节图标
+    // （图标是装饰性的，可访问名称来自标题文字）。
+    const grid = container.querySelector('main ul')
+    expect(grid?.className).toContain('sm:grid-cols-2')
+    expect(grid?.className).not.toContain('lg:grid-cols-3')
+    const cards = grid?.querySelectorAll('li > a') ?? []
+    expect(cards).toHaveLength(9)
+    for (const card of cards) {
+      const icon = card.querySelector('svg')
+      expect(icon).not.toBeNull()
+      const badge = icon?.parentElement
+      expect(badge).not.toBeNull()
+      // 章节图标按 UDS 8.0 §10 的 sm 档（20px）渲染。
+      expect(badge?.getAttribute('class')).toContain('--ds-icon-sm')
+    }
+
     expect(container.querySelector('[data-public-page-glow]')).not.toBeNull()
     // The header is transparent until the reader scrolls, letting the shared
     // top-of-page glow bleed through.
