@@ -99,11 +99,11 @@ jobs:
             stderr_tail: report.stderr_tail,
           }, null, 2));
           const tap = String(report.stdout_tail || '');
-          const lines = tap.split('\\n');
+          const lines = tap.split('\n');
           const failed = [];
           for (let i = 0; i < lines.length; i++) {
-            if (/^not ok \\d+/.test(lines[i]) || /failureType:|error:|AssertionError|ERR_/.test(lines[i])) {
-              failed.push(lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 18)).join('\\n'));
+            if (/^not ok \d+/.test(lines[i]) || /failureType:|error:|AssertionError|ERR_/.test(lines[i])) {
+              failed.push(lines.slice(Math.max(0, i - 5), Math.min(lines.length, i + 18)).join('\n'));
             }
           }
           console.log('--- TAP FAILURE CONTEXT ---');
