@@ -207,8 +207,9 @@ jobs:
         env:
           VISUAL_BASE_URL: http://127.0.0.1:3000
           # Port 3000 is backed by this job's disposable SQLite + ephemeral session secret.
-          # Mark the target as isolated so auth tests never confuse it with production.
+          # Both runners must receive their own explicit isolated-stack contract.
           UTER_TEST_STACK: isolated
+          UAP_TEST_STACK: isolated
         run: node .uap/bin/uap.mjs verify-e2e
       - name: UAP visual regression verification
         if: github.event_name == 'push'
@@ -217,6 +218,7 @@ jobs:
         env:
           VISUAL_BASE_URL: http://127.0.0.1:3000
           UTER_TEST_STACK: isolated
+          UAP_TEST_STACK: isolated
         run: node .uap/bin/uap.mjs verify-visual
       - name: UAP security negative tests and secret scan
         if: github.event_name == 'push'
