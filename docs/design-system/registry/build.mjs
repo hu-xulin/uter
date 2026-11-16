@@ -145,7 +145,7 @@ const foundationsCss =
 const tsTokens =
   header('UDS 8.0.0 TypeScript token mirror') +
   `/** Generated from TOKEN-MANIFEST.json. Never hand-edit. */\n\n` +
-  `export const DS7_VERSION = ${JSON.stringify(M.version)} as const\n\n` +
+  `export const DS8_VERSION = ${JSON.stringify(M.version)} as const\n\n` +
   `export type DsTheme = 'light' | 'dark'\n` +
   `export type DsTokenName = ${tokenNames.map((n) => JSON.stringify(n)).join(' | ')}\n\n` +
   `export interface DsToken { layer: string; category: string; type: string; unit: string; light: string | number; dark: string | number; description: string; themeIndependent: boolean }\n\n` +
