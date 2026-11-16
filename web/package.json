@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.11",
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-markdown": "^6.5.0",
@@ -139,6 +141,7 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "shadcn": "^4.12.0",
+    "unified": "^11.0.5",
     "vitest": "^5.0.4"
   },
   "overrides": {
