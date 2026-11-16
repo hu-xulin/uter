@@ -16,11 +16,38 @@ import { fileURLToPath } from 'node:url';
 import { ROOT, REPORTS, FILES, relToRoot } from '../runtime/_lib/paths.mjs';
 import { nowISO, readJSON, writeJSON, hash } from '../runtime/_lib/util.mjs';
 import { currentExecution, gitHead, worktreeFingerprint } from '../runtime/status-engine/execution.mjs';
+import { buildStatusSnapshot } from '../runtime/status-engine/snapshot.mjs';
 import { verifyEvidenceManifest, verifyFinalReportBindings, MANIFEST_FILE, repositoryIdentity, FINAL_REPORTS, MAX_REPORT_AGE_MS } from '../runtime/evidence-engine/manifest.mjs';
 import { TEST_STATUS, summarize, assertNoFalsePass } from '../runtime/status-engine/test-status.mjs';
 
 export const component = 'uap.final-acceptance-gate';
 export const version = '1.0.0';
+
+const REQUIRED_OPERATIONAL_CAPABILITIES = Object.freeze([
+  'real_code_repair',
+  'independent_regression',
+  'recovery',
+  'e2e',
+  'database_integration',
+  'financial_integrity',
+]);
+
+/** Every capability required by the canonical status engine must be proven. */
+export function allOperationalCapabilitiesProven(capabilities = {}) {
+  return REQUIRED_OPERATIONAL_CAPABILITIES.every((name) => capabilities[name] === true);
+}
+
+/** Reuse the canonical snapshot adapter; never maintain a second capability model. */
+function capabilitiesForExecution(execution) {
+  const snapshot = buildStatusSnapshot();
+  const sameExecution = snapshot.execution_id === execution.execution_id
+    && snapshot.git_head === execution.git_head
+    && snapshot.worktree_fingerprint === execution.worktree_fingerprint;
+  return Object.fromEntries(REQUIRED_OPERATIONAL_CAPABILITIES.map((name) => [
+    name,
+    sameExecution && snapshot.capabilities?.[name] === true,
+  ]));
+}
 
 const ACCEPTANCE_FILE = path.join(REPORTS, 'FINAL-ACCEPTANCE.json');
 
@@ -454,8 +481,11 @@ export function runFinalAcceptance({ write = false, execution, evidencePhase = '
   else if (necessaryBlocked > 0 || necessaryUnverified > 0) overall_status = 'NOT_ACCEPTED';
   else overall_status = 'FULLY_VERIFIED';
 
-  const uap_platform_status = groups.find((g) => g.id === 'uap_self').status === TEST_STATUS.PASS
-    ? 'PARTIALLY_VERIFIED' : 'FAILED';
+  const uapSelfPassed = groups.find((g) => g.id === 'uap_self').status === TEST_STATUS.PASS;
+  const operationalCapabilities = capabilitiesForExecution(e);
+  const uap_platform_status = !uapSelfPassed ? 'FAILED'
+    : allOperationalCapabilitiesProven(operationalCapabilities) ? 'FULLY_OPERATIONAL'
+      : 'PARTIALLY_VERIFIED';
   const uter_business_status = hardFailures.length ? 'FAILED'
     : (necessaryUnverified > 0 ? 'PARTIALLY_VERIFIED' : 'FULLY_VERIFIED');
   const payment_gateway_status = paymentGroup?.gateway_status || 'BLOCKED';
@@ -554,11 +584,7 @@ function writeFinalStatus(result, e) {
   const req = result.checks.find((c) => c.id === '6.4_requirements')?.details || {};
   const tests = result.checks.find((c) => c.id === '6.2_6.3_tests')?.details || {};
   const payment = result.checks.find((c) => c.id === '6.5_payment')?.details || {};
-  const headNow = gitHead();
-  const capabilities = {
-    real_code_repair: capabilityProven('UAP-REAL-CODE-REPAIR-RESULTS.json', headNow),
-    independent_regression: capabilityProven('UAP-INDEPENDENT-REGRESSION-RESULTS.json', headNow),
-  };
+  const capabilities = capabilitiesForExecution(e);
   const missingCaps = Object.entries(capabilities).filter(([, v]) => v !== true).map(([k]) => k);
   // The canonical 18 prescribed reports (same list report-generator.mjs writes
   // into legacy FINAL-STATUS.json). Every entry must exist on disk.
@@ -632,7 +658,7 @@ function writeFinalStatus(result, e) {
       report: '.uap/reports/FINAL-ACCEPTANCE.json',
       evidence_manifest_hash: result.evidence_manifest_hash,
       command: result.command,
-      uap_fully_operational: missingCaps.length === 0,
+      uap_fully_operational: result.uap_platform_status === 'FULLY_OPERATIONAL' && allOperationalCapabilitiesProven(capabilities),
     },
     // Compatibility with the legacy consistency verifier.
     status_engine: {
