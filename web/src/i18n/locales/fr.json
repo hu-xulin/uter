@@ -1,12 +1,12 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "System task history must be kept for at least 1 day": "L'historique des tâches système doit être conservé pendant au moins 1 jour",
     "Previous month": "Mois précédent",
     "Next month": "Mois suivant",
     "Referral link": "Lien de parrainage",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "Email & Notifications": "E-mail et notifications",
     "Default reminder threshold": "Seuil de rappel par défaut",
     "Email code": "Code e-mail",
@@ -3350,6 +3350,7 @@
     "Invalid billing expression for model {{model}}: {{error}}": "Expression de facturation invalide pour le modèle {{model}} : {{error}}",
     "Important": "Important",
     "Importing metadata does not add channels, enable model access, or configure prices.": "L’import ne crée pas de canaux, n’ouvre pas l’accès aux modèles et ne configure pas les prix.",
+    "Invalid channel ID": "Invalid channel ID",
     "Invalid channel priority move": "Déplacement de priorité non valide",
     "Invalid channel settings format: {{error}}": "Format des paramètres du canal invalide : {{error}}",
     "In BotFather, open Login Widget, register this callback URL, and copy the Client ID and Client Secret. Existing Telegram bindings will continue to work after configuration.": "Dans BotFather, ouvrez Login Widget, enregistrez cette URL de rappel et copiez le Client ID et le Client Secret. Les comptes Telegram déjà liés fonctionneront après la configuration.",
@@ -7790,7 +7791,6 @@
     "docs.search.noResults": "Aucune page trouvée",
     "Contents": "Sommaire",
     "docs.toc.heading": "Sur cette page",
-    "Previous page": "Page précédente",
     "Page navigation": "Navigation de page"
   }
 }

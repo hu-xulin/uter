@@ -1,12 +1,12 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "System task history must be kept for at least 1 day": "История системных задач должна храниться не менее 1 дня",
     "Previous month": "Предыдущий месяц",
     "Next month": "Следующий месяц",
     "Referral link": "Реферальная ссылка",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "Email & Notifications": "Почта и уведомления",
     "Default reminder threshold": "Порог напоминания по умолчанию",
     "Email code": "Код из письма",
@@ -3350,6 +3350,7 @@
     "Invalid billing expression for model {{model}}: {{error}}": "Недопустимое выражение тарификации для модели {{model}}: {{error}}",
     "Important": "Важно",
     "Importing metadata does not add channels, enable model access, or configure prices.": "Импорт метаданных не добавляет каналы, не открывает доступ к моделям и не задаёт цены.",
+    "Invalid channel ID": "Invalid channel ID",
     "Invalid channel priority move": "Недопустимое изменение приоритета канала",
     "Invalid channel settings format: {{error}}": "Неверный формат настроек канала: {{error}}",
     "In BotFather, open Login Widget, register this callback URL, and copy the Client ID and Client Secret. Existing Telegram bindings will continue to work after configuration.": "Откройте Login Widget в BotFather, зарегистрируйте этот URL обратного вызова и скопируйте Client ID и Client Secret. После настройки существующие привязки Telegram продолжат работать.",
@@ -7790,7 +7791,6 @@
     "docs.search.noResults": "Ничего не найдено",
     "Contents": "Содержание",
     "docs.toc.heading": "На этой странице",
-    "Previous page": "Предыдущая страница",
     "Page navigation": "Навигация по страницам"
   }
 }

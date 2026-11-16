@@ -1,12 +1,12 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "System task history must be kept for at least 1 day": "系統任務歷史至少需要保留 1 天",
     "Previous month": "上個月",
     "Next month": "下個月",
     "Referral link": "推廣連結",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "Email & Notifications": "電郵與通知",
     "Default reminder threshold": "預設提醒閾值",
     "Email code": "信箱驗證碼",
@@ -3350,6 +3350,7 @@
     "Invalid billing expression for model {{model}}: {{error}}": "模型 {{model}} 的計費運算式無效：{{error}}",
     "Important": "重要",
     "Importing metadata does not add channels, enable model access, or configure prices.": "匯入中繼資料不會新增渠道、開放模型存取或設定價格。",
+    "Invalid channel ID": "Invalid channel ID",
     "Invalid channel priority move": "無效的通道優先級調整",
     "Invalid channel settings format: {{error}}": "渠道額外設定格式錯誤：{{error}}",
     "In BotFather, open Login Widget, register this callback URL, and copy the Client ID and Client Secret. Existing Telegram bindings will continue to work after configuration.": "在 BotFather 中開啟 Login Widget，登記此回呼網址並複製 Client ID 和 Client Secret。完成設定後，現有 Telegram 綁定可繼續使用。",
@@ -7790,7 +7791,6 @@
     "docs.search.noResults": "未找到相關文件",
     "Contents": "內容導覽",
     "docs.toc.heading": "目錄",
-    "Previous page": "上一頁",
     "Page navigation": "頁面導覽"
   }
 }

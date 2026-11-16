@@ -1,12 +1,12 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "System task history must be kept for at least 1 day": "システムタスクの履歴は少なくとも 1 日保持する必要があります",
     "Previous month": "前の月",
     "Next month": "次の月",
     "Referral link": "紹介リンク",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "Email & Notifications": "メールと通知",
     "Default reminder threshold": "デフォルトの通知しきい値",
     "Email code": "メールコード",
@@ -3350,6 +3350,7 @@
     "Invalid billing expression for model {{model}}: {{error}}": "モデル {{model}} の課金式が無効です：{{error}}",
     "Important": "重要",
     "Importing metadata does not add channels, enable model access, or configure prices.": "メタデータのインポートでは、チャネルの追加、モデルへのアクセス許可、料金設定は行いません。",
+    "Invalid channel ID": "Invalid channel ID",
     "Invalid channel priority move": "チャンネルの優先度変更が無効です",
     "Invalid channel settings format: {{error}}": "チャネル設定の形式が正しくありません：{{error}}",
     "In BotFather, open Login Widget, register this callback URL, and copy the Client ID and Client Secret. Existing Telegram bindings will continue to work after configuration.": "BotFather で Login Widget を開き、このコールバック URL を登録して Client ID と Client Secret をコピーしてください。設定後は既存の Telegram 連携を引き続き利用できます。",
@@ -7790,7 +7791,6 @@
     "docs.search.noResults": "一致するドキュメントがありません",
     "Contents": "目次",
     "docs.toc.heading": "このページの内容",
-    "Previous page": "前のページ",
     "Page navigation": "ページナビゲーション"
   }
 }

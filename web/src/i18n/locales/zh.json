@@ -1,12 +1,12 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "System task history must be kept for at least 1 day": "系统任务历史至少需要保留 1 天",
     "Previous month": "上个月",
     "Next month": "下个月",
     "Referral link": "推广链接",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "Email & Notifications": "邮件与通知",
     "Default reminder threshold": "默认提醒阈值",
     "Email code": "邮箱验证码",
@@ -7791,7 +7791,6 @@
     "docs.search.noResults": "未找到相关文档",
     "Contents": "内容导航",
     "docs.toc.heading": "目录",
-    "Previous page": "上一页",
     "Page navigation": "页面导航"
   }
 }

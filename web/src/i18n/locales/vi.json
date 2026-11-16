@@ -1,12 +1,12 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "System task history must be kept for at least 1 day": "Lịch sử tác vụ hệ thống phải được giữ lại ít nhất 1 ngày",
     "Previous month": "Tháng trước",
     "Next month": "Tháng sau",
     "Referral link": "Liên kết giới thiệu",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "Email & Notifications": "Email và thông báo",
     "Default reminder threshold": "Ngưỡng nhắc nhở mặc định",
     "Email code": "Mã email",
@@ -3350,6 +3350,7 @@
     "Invalid billing expression for model {{model}}: {{error}}": "Biểu thức tính phí của mô hình {{model}} không hợp lệ: {{error}}",
     "Important": "Quan trọng",
     "Importing metadata does not add channels, enable model access, or configure prices.": "Nhập siêu dữ liệu không thêm kênh, mở quyền truy cập mô hình hay cấu hình giá.",
+    "Invalid channel ID": "Invalid channel ID",
     "Invalid channel priority move": "Thay đổi độ ưu tiên kênh không hợp lệ",
     "Invalid channel settings format: {{error}}": "Định dạng cài đặt kênh không hợp lệ: {{error}}",
     "In BotFather, open Login Widget, register this callback URL, and copy the Client ID and Client Secret. Existing Telegram bindings will continue to work after configuration.": "Trong BotFather, mở Login Widget, đăng ký URL gọi lại này và sao chép Client ID cùng Client Secret. Các liên kết Telegram hiện có sẽ tiếp tục hoạt động sau khi cấu hình.",
@@ -7790,7 +7791,6 @@
     "docs.search.noResults": "Không tìm thấy tài liệu phù hợp",
     "Contents": "Mục lục",
     "docs.toc.heading": "Trên trang này",
-    "Previous page": "Trang trước",
     "Page navigation": "Điều hướng trang"
   }
 }
