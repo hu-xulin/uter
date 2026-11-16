@@ -174,13 +174,27 @@ export const validators = {
     };
     const depSpec = specById(configs).get('UAP-02-001');
     const depTargetExists = !!depSpec && exists(rootPath(depSpec.file));
+    // ADR-0001 records the historically accepted 3.0 runtime baseline. The
+    // 3.0 source document was later retired while UDS 7.0 is acceptance-ready
+    // (not yet accepted); verify the current canonical docs and explicit
+    // compatibility boundary rather than requiring the deleted historical path.
+    const designOverview = exists(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md'))
+      ? readText(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md')) : '';
+    const tokenManifest = readJSON(rootPath('docs/design-system/TOKEN-MANIFEST.json'), null);
+    const migrationReport = exists(rootPath('docs/design-system/UDS-7.0-MIGRATION-REPORT.md'))
+      ? readText(rootPath('docs/design-system/UDS-7.0-MIGRATION-REPORT.md')) : '';
+    const currentDesignEvidence = !!tokenManifest
+      && tokenManifest.version === '7.0.0'
+      && tokenManifest.status === 'ACCEPTANCE_READY'
+      && designOverview.includes('当前运行时强制标准仍为 3.0')
+      && migrationReport.includes('当前字号真值');
     const rTrace = {
       name: 'decision_traceability',
       ok: depTargetExists && /Accepted/i.test(adr0001)
         && exists(rootPath('go.mod')) && exists(rootPath('web/package.json'))
-        && exists(rootPath('docs/design-system/UTER-DESIGN-SYSTEM-3.0.md'))
+        && currentDesignEvidence
         && ['追溯', '依赖标准'].every((k) => spec.text.includes(k)),
-      detail: `依赖标准 UAP-02-001 文件存在=${depTargetExists}; 0001 ADR 含 Accepted=${/Accepted/i.test(adr0001)}; 决策落地 go.mod/web/package.json/design-system 存在=${exists(rootPath('go.mod')) && exists(rootPath('web/package.json')) && exists(rootPath('docs/design-system/UTER-DESIGN-SYSTEM-3.0.md'))}; 规范含 追溯/依赖标准=${['追溯', '依赖标准'].every((k) => spec.text.includes(k))}`,
+      detail: `依赖标准 UAP-02-001 文件存在=${depTargetExists}; 0001 ADR 含 Accepted=${/Accepted/i.test(adr0001)}; go.mod/web/package.json 存在=${exists(rootPath('go.mod')) && exists(rootPath('web/package.json'))}; 当前设计证据(UDS7总纲+Manifest+迁移报告+3.0运行时兼容边界)=${currentDesignEvidence}; 规范含 追溯/依赖标准=${['追溯', '依赖标准'].every((k) => spec.text.includes(k))}`,
     };
     return assemble('architecture.adr_integrity', checks, [rRecords, rTrace], {
       started, registry, evidence_refs: evidenceIds,
