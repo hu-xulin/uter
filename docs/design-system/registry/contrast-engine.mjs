@@ -2,10 +2,10 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UTER DESIGN SYSTEM 7.0 — Contrast Engine
+ * UTER DESIGN SYSTEM 8.0.0 — Contrast Engine
  *
  * 真实 WCAG 2.2 相对亮度 / 对比度计算 + sRGB 渐变插值采样 + 有界自动优化。
- * 本文件是 CONTRAST-VERIFICATION-REPORT.md 与 check-design-system-7.0.mjs
+ * 本文件是 CONTRAST-VERIFICATION-REPORT.md 与 check-design-system-8.0.0.mjs
  * 的唯一计算来源；不允许其它脚本另写一套对比度公式。
  *
  * 用法：

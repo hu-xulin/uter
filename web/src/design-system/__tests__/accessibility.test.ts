@@ -42,7 +42,6 @@ const ROOT = process.cwd()
 const read = (rel: string) => readFileSync(join(ROOT, 'src', rel), 'utf8')
 
 const accessibilityCss = read('design-system/foundations/accessibility.css')
-const colorsCss = read('design-system/tokens/colors.css')
 const semanticCss = read('design-system/tokens/semantic.css')
 
 /** 递归收集 `src/` 下所有 .tsx / .ts 源码。 */
@@ -61,9 +60,10 @@ function sourceFiles(dir = join(ROOT, 'src')): string[] {
 
 describe('焦点指示器', () => {
   it('焦点环 Token 只有一个来源', () => {
-    // `--ds-color-focus-ring`（colors.css）与 `--ds-focus-ring-color`
-    // （semantic.css）曾是同一个值的两个名字，前者零引用。
-    expect(colorsCss).not.toContain('--ds-color-focus-ring')
+    // `--ds-color-focus-ring`（旧 colors.css）与 `--ds-focus-ring-color`
+    // （semantic.css）曾是同一个值的两个名字，前者零引用；colors.css
+    // 遗留层已在 8.0.0 删除（语义收编进 TOKEN-MANIFEST → bridge），
+    // 本守卫不再读取该文件，保留 semantic.css 侧断言。
     // 规范 §15.1 / §28：焦点环恒 2px（2026-11-13 用户裁决）。
     expect(semanticCss).toContain('--ds-focus-ring-width: 2px')
     expect(semanticCss).toContain('--ds-focus-ring-color: var(--ring)')

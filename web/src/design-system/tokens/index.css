@@ -25,12 +25,14 @@ For commercial licensing, please contact support@uter.ai
  *   2. primitives.css  —— 原始值（被语义层引用）；
  *   3. semantic.css    —— 语义层，组件的唯一入口；
  *   4. spacing.css     —— 密度 Token（按 data-theme-scale 分档）；
- *   5. colors.css      —— 颜色语义别名（指向既有主题 Token）；
- *   6. elevation.css   —— 阴影、动效时长。
+ *   5. elevation.css   —— 阴影、动效时长。
+ *
+ *   8.0.0 变更：colors.css 颜色语义别名层已删除 —— 颜色语义唯一来源是
+ *   TOKEN-MANIFEST.json 派生的 uds-semantic-bridge.css（--ds8-*，由
+ *   styles/index.css 导入）。CM-02~06 冲突就此闭合。
  */
 @import './typography.css';
 @import './primitives.css';
 @import './semantic.css';
 @import './spacing.css';
-@import './colors.css';
 @import './elevation.css';

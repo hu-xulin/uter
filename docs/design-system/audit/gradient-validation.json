@@ -1,11 +1,11 @@
 {
-  "schema": "UDS7-GRADIENT-VALIDATION/1.0",
-  "generated_at": "2026-11-16T00:42:47.088Z",
+  "schema": "UDS8-GRADIENT-VALIDATION/1.0",
+  "generated_at": "2026-11-16T03:37:40.778Z",
   "singleSource": {
     "manifest": "TOKEN-MANIFEST.json",
     "generator": "registry/build.mjs",
     "owner": "web/src/design-system/foundations/typography.css",
-    "checker": "check-design-system-7.0.mjs C04/C09/C11"
+    "checker": "check-design-system-8.0.0.mjs C04/C09/C11"
   },
   "cssInterpolation": "90deg in srgb",
   "engineInterpolation": "srgb",

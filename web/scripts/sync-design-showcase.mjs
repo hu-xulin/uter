@@ -21,12 +21,12 @@ For commercial licensing, please contact support@uter.ai
  * UTER Design System 7.0 · 展示页同步门禁（design:showcase:check / G07）
  *
  * 7.0 起 Showcase 由 `docs/design-system/registry/build.mjs` 从单一真源
- * `TOKEN-MANIFEST.json` 全量生成（SHOWCASE-7.0.html + web/public 副本），
+ * `TOKEN-MANIFEST.json` 全量生成（SHOWCASE-8.0.0.html + web/public 副本），
  * 不再存在手写 showcase.html / showcase.tokens.js / 3.0 §28 内联快照。
  * 本脚本因此收敛为 7.0 生成器的薄包装，避免在 web/scripts 里重复一套
  * 渲染逻辑：
  *   --check  → build.mjs --check-showcase：以当前 manifest 重新渲染并与
- *              磁盘 SHOWCASE-7.0.html 逐字节比对，漂移即 FAIL（只读，不写文件）。
+ *              磁盘 SHOWCASE-8.0.0.html 逐字节比对，漂移即 FAIL（只读，不写文件）。
  *   默认     → build.mjs：重新生成全部 7.0 产物（含 Showcase）。
  *
  * 用法（可在仓库根或 web/ 下执行）：

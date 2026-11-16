@@ -2,7 +2,7 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UTER DESIGN SYSTEM 7.0 — 36 个正式模块 + 2 个专项规范的结构化内容。
+ * UTER DESIGN SYSTEM 8.0.0 — 36 个正式模块 + 2 个专项规范的结构化内容。
  * 所有数值通过 `tokens` 引用 TOKEN-MANIFEST.json，生成器自动展开真实值，
  * 因此规范文档不可能与 CSS / TS / Showcase 数值漂移。
  *
@@ -39,7 +39,7 @@ export const PRINCIPLES = [
 /** 通用验收条目（每个模块自动附带）。 */
 export const COMMON_ACCEPTANCE = [
   '本模块引用的每个 Token 必须能在 TOKEN-MANIFEST.json 中解析，且 CSS / TS / Showcase 三处数值一致',
-  'check-design-system-7.0.mjs 对应检查项 EXIT=0',
+  'check-design-system-8.0.0.mjs 对应检查项 EXIT=0',
   'Light / Dark 两套映射完整，无缺失键、无主题特例裸色值',
   'Do / Don’t 中的反例在全库静态扫描中命中数为 0（或已登记进 EXCEPTION-REGISTRY.json）',
 ]
@@ -49,19 +49,19 @@ const M = (m) => m
 export const MODULES = [
   M({
     id: '00', file: '00-UTER-DESIGN-SYSTEM-OVERVIEW.md', name: 'Design System Overview',
-    specId: 'UDS7-S00', principle: ['Consistency', 'Predictability', 'Accessibility'],
-    summary: '7.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。7.0 是完整重建且为唯一现行规范；5.0 及更早版本已删除，仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。',
+    specId: 'UDS8-S00', principle: ['Consistency', 'Predictability', 'Accessibility'],
+    summary: '8.0.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。UDS 8.0.0 是唯一现行规范（2026-11-16 经用户授权由 7.0/7.0.1 升版）；5.0 及更早版本已删除，7.0 仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。',
     rules: [
       '五层架构固定为 Primitive Tokens → Semantic Tokens → Component Tokens → Component Specifications → Page Templates；业务页面不得直接引用未经登记的 Primitive 色值',
       '唯一数据源为 TOKEN-MANIFEST.json；CSS、TypeScript、Showcase、规范文档、自动化检查全部从它派生，禁止多处重复定义同一 Token',
       '统一单位：字体 / 行高 / 间距 / 圆角 / 边框 / 图标 / 控件高度 / 断点 = px，动效 = ms，阴影 = px + rgba，颜色 = HEX / OKLCH；基础间距 4px',
       'Token 命名统一 `--ds-*`；语义 Token 必须可读可追踪；同名 Token 全系统只允许定义一次',
       '36 个正式模块各自拥有唯一编号、唯一文件名、唯一注册记录；两个专项规范登记为 24-S / 01-S，不形成第二套设计系统',
-      '版本管理：语义化版本 `7.0.0`；数值冻结需通过对比度引擎与 Showcase 视觉审核；变更必须写入 DESIGN-SYSTEM-CHANGELOG 并同步注册表',
+      '版本管理：语义化版本 `8.0.0`；数值冻结需通过对比度引擎与 Showcase 视觉审核；变更必须写入 DESIGN-SYSTEM-CHANGELOG 并同步注册表',
       '例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷',
       '废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验',
       '状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED',
-      '当前生效状态：7.0 规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权达成，证据齐备、已达用户审核条件，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色已于 2026-11-16 经用户授权正式切换为 7.0 TOKEN-MANIFEST 值（B1–B5 DONE_VERIFIED，tokens.test.ts 三方守卫钉死）；颜色语义层经 --ds7-* 隔离命名注入；7.0.0 视觉基线随值切换重冻结',
+      '当前生效状态：UDS 8.0.0 唯一现行规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权由 7.0/7.0.1 正式升版，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色沿用 2026-11-16 用户授权切换的 TOKEN-MANIFEST 值（B1–B5 DONE_VERIFIED，tokens.test.ts 三方守卫钉死）；颜色语义层 --ds8-* bridge 为唯一运行时权威（3.0 兼容层 colors.css 已退役，CM-02~06 闭合）；8.0.0 视觉基线随升版重冻结',
     ],
     tokens: ['--ds-space-1', '--ds-layout-max-width', '--ds-focus-ring-width'],
     states: ['default', 'hover', 'focus', 'active', 'disabled', 'loading', 'error', 'success'],
@@ -83,7 +83,7 @@ export const MODULES = [
   }),
   M({
     id: '01', file: '01-BRAND-IDENTITY-STANDARD.md', name: 'Brand Identity Standard',
-    specId: 'UDS7-S01', principle: ['Clarity', 'Consistency', 'Hierarchy'],
+    specId: 'UDS8-S01', principle: ['Clarity', 'Consistency', 'Hierarchy'],
     summary: 'Uter 是面向开发者、企业与 API 使用者的 AI Token 中转站。品牌表达服务专业性与可信度，不覆盖状态色、图表色与语法色。渐变文字专项规范登记为 01-S。',
     rules: [
       '品牌定位：AI Token 中转站 / 开发者基础设施；视觉气质 = 专业、可信、克制、现代',
@@ -114,7 +114,7 @@ export const MODULES = [
   }),
   M({
     id: '02', file: '02-DESIGN-PRINCIPLES-STANDARD.md', name: 'Design Principles Standard',
-    specId: 'UDS7-S02', principle: ['Clarity', 'Consistency', 'Hierarchy', 'Accessibility', 'Efficiency', 'Predictability', 'Responsiveness', 'Reliability', 'Developer Experience', 'Data Integrity'],
+    specId: 'UDS8-S02', principle: ['Clarity', 'Consistency', 'Hierarchy', 'Accessibility', 'Efficiency', 'Predictability', 'Responsiveness', 'Reliability', 'Developer Experience', 'Data Integrity'],
     summary: '十项设计原则是全部 38 份规范的裁决依据；每条规范、每个组件、每次变更都必须能对应至少一项原则。',
     rules: [
       'Clarity 清晰：正文默认 14px/22px，普通可见文字不得低于 12px；信息不得靠装饰传达',
@@ -140,7 +140,7 @@ export const MODULES = [
   }),
   M({
     id: '03', file: '03-COLOR-STANDARD.md', name: 'Color System Standard',
-    specId: 'UDS7-S03', principle: ['Clarity', 'Consistency', 'Accessibility', 'Data Integrity'],
+    specId: 'UDS8-S03', principle: ['Clarity', 'Consistency', 'Accessibility', 'Data Integrity'],
     summary: '14 类语义独立的颜色体系，各自有独立 Token 组，不得混用。所有色值经 contrast-engine 在真实背景上实算。',
     rules: [
       '必须独立建立的 14 类：Brand / Neutral / Text / Surface / Border / Status / Chart / Syntax / Gradient / Overlay / Focus / Selection / Code Editor / Terminal',
@@ -166,7 +166,7 @@ export const MODULES = [
   }),
   M({
     id: '04', file: '04-TYPOGRAPHY-STANDARD.md', name: 'Typography Standard',
-    specId: 'UDS7-S04', principle: ['Clarity', 'Hierarchy', 'Accessibility', 'Developer Experience'],
+    specId: 'UDS8-S04', principle: ['Clarity', 'Hierarchy', 'Accessibility', 'Developer Experience'],
     summary: '完整保留 Uter 当前字体体系；10 档字号、11 个独立行高、4 档字重、等宽数字，全部以 px 给出确定值。',
     rules: [
       'UI 字体栈逐字保留 `web/src/styles/theme.css:301-306`；正文 = `var(--ds-font-body)` = `var(--ds-font-ui)`',
@@ -192,7 +192,7 @@ export const MODULES = [
   }),
   M({
     id: '05', file: '05-SPACING-AND-SIZING-STANDARD.md', name: 'Spacing and Sizing Standard',
-    specId: 'UDS7-S05', principle: ['Consistency', 'Efficiency', 'Hierarchy'],
+    specId: 'UDS8-S05', principle: ['Consistency', 'Efficiency', 'Hierarchy'],
     summary: '4px 基础网格，13 档间距与完整控件尺寸；所有内边距、页面间距、表单间距、卡片间距、列表间距均有确定值。',
     rules: [
       '基础单位 4px；间距阶梯 0 / 4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48 / 64 / 80 / 96 px',
@@ -215,7 +215,7 @@ export const MODULES = [
   }),
   M({
     id: '06', file: '06-LAYOUT-AND-GRID-STANDARD.md', name: 'Layout and Grid Standard',
-    specId: 'UDS7-S06', principle: ['Hierarchy', 'Efficiency', 'Responsiveness'],
+    specId: 'UDS8-S06', principle: ['Hierarchy', 'Efficiency', 'Responsiveness'],
     summary: '桌面内容最大宽度 1440px、12 列网格；定义 Header / Sidebar / Main / Container / Modal / Drawer / Card / Dashboard / Documentation 九类布局。',
     rules: [
       '桌面内容最大宽度 1440px；桌面 12 列、平板 8 列、移动 4 列',
@@ -239,7 +239,7 @@ export const MODULES = [
   }),
   M({
     id: '07', file: '07-SHAPE-AND-RADIUS-STANDARD.md', name: 'Shape and Radius Standard',
-    specId: 'UDS7-S07', principle: ['Consistency', 'Predictability'],
+    specId: 'UDS8-S07', principle: ['Consistency', 'Predictability'],
     summary: '圆角八档，每个组件明确绑定其中一档，不允许组件自选数值。',
     rules: [
       '圆角档位：none 0 / sm 3 / md 5 / lg 8 / xl 12 / 2xl 16 / 3xl 20 / full 9999 px',
@@ -260,7 +260,7 @@ export const MODULES = [
   }),
   M({
     id: '08', file: '08-BORDER-AND-DIVIDER-STANDARD.md', name: 'Border and Divider Standard',
-    specId: 'UDS7-S08', principle: ['Clarity', 'Consistency', 'Accessibility'],
+    specId: 'UDS8-S08', principle: ['Clarity', 'Consistency', 'Accessibility'],
     summary: '边框宽度与颜色分离：宽度 9 个 Token、颜色 10 个 Token，Light / Dark 各自明确。',
     rules: [
       'Default / Strong / Divider / Input / Card / Table / Code / Dialog Border = 1px；Focus Border = 2px',
@@ -283,7 +283,7 @@ export const MODULES = [
   }),
   M({
     id: '09', file: '09-ELEVATION-AND-SHADOW-STANDARD.md', name: 'Elevation and Shadow Standard',
-    specId: 'UDS7-S09', principle: ['Hierarchy', 'Clarity'],
+    specId: 'UDS8-S09', principle: ['Hierarchy', 'Clarity'],
     summary: '阴影九档，全部给出确定 px + rgba 参数；普通卡片优先用背景与边框区分层级。',
     rules: [
       'elevation-0 = none；elevation-1 = `0 1px 2px rgba(15,23,42,.06)`；elevation-2 = `0 2px 8px rgba(15,23,42,.10)`',
@@ -306,7 +306,7 @@ export const MODULES = [
   }),
   M({
     id: '10', file: '10-ICONOGRAPHY-STANDARD.md', name: 'Iconography Standard',
-    specId: 'UDS7-S10', principle: ['Consistency', 'Clarity', 'Efficiency'],
+    specId: 'UDS8-S10', principle: ['Consistency', 'Clarity', 'Efficiency'],
     summary: '统一 Lucide 风格图标，5 档尺寸与 2 档 stroke；统一图标注册表，禁止业务混用不同风格。',
     rules: [
       '图标尺寸：12 / 16 / 20 / 24 / 32 px，对应 `--ds-icon-2xs` … `--ds-icon-lg`；默认 16px',
@@ -328,7 +328,7 @@ export const MODULES = [
   }),
   M({
     id: '11', file: '11-MOTION-AND-ANIMATION-STANDARD.md', name: 'Motion and Animation Standard',
-    specId: 'UDS7-S11', principle: ['Predictability', 'Efficiency', 'Accessibility'],
+    specId: 'UDS8-S11', principle: ['Predictability', 'Efficiency', 'Accessibility'],
     summary: '6 档动效时间 + 4 条缓动；覆盖 Hover / Focus / Active / Dialog / Drawer / Dropdown / Toast / Collapse / Loading / Skeleton / Page Transition，强制支持 reduced-motion。',
     rules: [
       '时间档：instant 0 / fast 100 / normal 150 / moderate 200 / slow 250 / slower 300 ms',
@@ -351,7 +351,7 @@ export const MODULES = [
   }),
   M({
     id: '12', file: '12-RESPONSIVE-DESIGN-STANDARD.md', name: 'Responsive Design Standard',
-    specId: 'UDS7-S12', principle: ['Responsiveness', 'Efficiency'],
+    specId: 'UDS8-S12', principle: ['Responsiveness', 'Efficiency'],
     summary: '7 档断点，定义核心页面在各断点的结构、隐藏规则、堆叠方式、表格处理与导航变化。',
     rules: [
       '断点：xs 360 / sm 480 / md 768 / lg 1024 / xl 1280 / 2xl 1440 / wide 1920 px',
@@ -375,7 +375,7 @@ export const MODULES = [
   }),
   M({
     id: '13', file: '13-ACCESSIBILITY-STANDARD.md', name: 'Accessibility Standard',
-    specId: 'UDS7-S13', principle: ['Accessibility', 'Reliability'],
+    specId: 'UDS8-S13', principle: ['Accessibility', 'Reliability'],
     summary: '目标 WCAG 2.2 AA：对比度、键盘、Focus Visible / Not Obscured、Screen Reader、Reduced Motion、高对比度、色觉缺陷、触控目标、表单错误关联。',
     rules: [
       '普通文字 ≥4.5:1，大号文字（≥24px 或 ≥18.66px bold）≥3:1，UI 组件边界与状态指示 ≥3:1',
@@ -400,7 +400,7 @@ export const MODULES = [
   }),
   M({
     id: '14', file: '14-CONTENT-AND-WRITING-STANDARD.md', name: 'Content and Writing Standard',
-    specId: 'UDS7-S14', principle: ['Clarity', 'Data Integrity', 'Reliability'],
+    specId: 'UDS8-S14', principle: ['Clarity', 'Data Integrity', 'Reliability'],
     summary: '标题、正文、帮助、表单说明、错误 / 成功反馈、空状态、危险操作、API 文案、金额、Token 数量、时间日期单位与数字格式。',
     rules: [
       '标题：页面主标题 36px/44px semibold；分区 30px/38px；卡片 18px/26px；不使用渐变于普通标题',
@@ -426,7 +426,7 @@ export const MODULES = [
   }),
   M({
     id: '15', file: '15-DATA-VISUALIZATION-STANDARD.md', name: 'Data Visualization Standard',
-    specId: 'UDS7-S15', principle: ['Data Integrity', 'Clarity', 'Accessibility'],
+    specId: 'UDS8-S15', principle: ['Data Integrity', 'Clarity', 'Accessibility'],
     summary: 'Chart Palette、折线 / 柱 / 面积 / 饼 / 环图、Tooltip、Legend、Axis、Grid、Empty / Loading / Error，图表色不得当作语法色。',
     rules: [
       '5 色图表调色板：Light #2563EB / #0891B2 / #7C3AED / #EA580C / #059669；Dark #60A5FA / #22D3EE / #A78BFA / #FB923C / #34D399',
@@ -452,7 +452,7 @@ export const MODULES = [
   }),
   M({
     id: '16', file: '16-DENSITY-AND-INFORMATION-HIERARCHY-STANDARD.md', name: 'Density and Information Hierarchy Standard',
-    specId: 'UDS7-S16', principle: ['Efficiency', 'Hierarchy', 'Accessibility'],
+    specId: 'UDS8-S16', principle: ['Efficiency', 'Hierarchy', 'Accessibility'],
     summary: 'Compact / Default / Comfortable 三档密度，表格行高 36 / 44 / 52 px；密度调整不得破坏最小字号。',
     rules: [
       'Compact 行高 36px、单元格纵向内边距 6px；Default 44px / 10px；Comfortable 52px / 14px',
@@ -473,7 +473,7 @@ export const MODULES = [
   }),
   M({
     id: '17', file: '17-NAVIGATION-STANDARD.md', name: 'Navigation Standard',
-    specId: 'UDS7-S17', principle: ['Consistency', 'Efficiency', 'Predictability'],
+    specId: 'UDS8-S17', principle: ['Consistency', 'Efficiency', 'Predictability'],
     summary: 'Header / Sidebar / Collapsed Sidebar / Breadcrumb / Tabs / Navigation Item / Mobile Navigation 与 Active / Hover / Focus 状态。',
     rules: [
       'Header 高 64px（<768px 56px），背景 surface-base，底边框 1px border-divider',
@@ -496,7 +496,7 @@ export const MODULES = [
   }),
   M({
     id: '18', file: '18-BUTTON-STANDARD.md', name: 'Button Standard',
-    specId: 'UDS7-S18', principle: ['Consistency', 'Predictability', 'Efficiency'],
+    specId: 'UDS8-S18', principle: ['Consistency', 'Predictability', 'Efficiency'],
     summary: '7 变体 × 4 尺寸，8 个交互状态全部给出确定值；品牌实底按钮白字实测 5.01:1。',
     rules: [
       '变体：Primary / Secondary / Outline / Ghost / Destructive / Link / Icon',
@@ -521,7 +521,7 @@ export const MODULES = [
   }),
   M({
     id: '19', file: '19-FORM-AND-INPUT-STANDARD.md', name: 'Form and Input Standard',
-    specId: 'UDS7-S19', principle: ['Clarity', 'Accessibility', 'Reliability'],
+    specId: 'UDS8-S19', principle: ['Clarity', 'Accessibility', 'Reliability'],
     summary: 'Text / Password / Number / Search / Textarea 及 Label / Helper / Error / Prefix / Suffix / Clear / Copy / Password Visibility 的完整尺寸与状态。',
     rules: [
       '控件高度 Small 32 / Medium 36 / Large 40 / Touch 44 px；圆角 md 5px；边框 1px border-input',
@@ -545,7 +545,7 @@ export const MODULES = [
   }),
   M({
     id: '20', file: '20-SELECTION-CONTROLS-STANDARD.md', name: 'Selection Controls Standard',
-    specId: 'UDS7-S20', principle: ['Predictability', 'Accessibility'],
+    specId: 'UDS8-S20', principle: ['Predictability', 'Accessibility'],
     summary: 'Checkbox / Radio / Switch / Select / Combobox / Multi-select / Slider / Date Picker 的交互状态与无障碍规则。',
     rules: [
       'Checkbox 20×20px、圆角 sm 3px、边框 1px；选中态 brand-1 底 + 白色勾；Indeterminate 用横杠',
@@ -569,7 +569,7 @@ export const MODULES = [
   }),
   M({
     id: '21', file: '21-FEEDBACK-AND-STATUS-STANDARD.md', name: 'Feedback and Status Standard',
-    specId: 'UDS7-S21', principle: ['Reliability', 'Clarity', 'Predictability'],
+    specId: 'UDS8-S21', principle: ['Reliability', 'Clarity', 'Predictability'],
     summary: 'Toast / Alert / Badge / Banner / Tooltip / Inline Feedback / Loading / Success / Warning / Error，并统一 8 类业务状态映射。',
     rules: [
       'Toast：宽 360px、圆角 8px、surface-raised + elevation-3；进入 200ms / 停留 5000ms / 退出 150ms；role="status"',
@@ -593,7 +593,7 @@ export const MODULES = [
   }),
   M({
     id: '22', file: '22-OVERLAY-AND-FLOATING-STANDARD.md', name: 'Overlay and Floating Standard',
-    specId: 'UDS7-S22', principle: ['Predictability', 'Accessibility'],
+    specId: 'UDS8-S22', principle: ['Predictability', 'Accessibility'],
     summary: 'Popover / Tooltip / Dropdown / Dialog / Drawer / Context Menu / Command Menu 统一 z-index、焦点管理、滚动锁定与关闭行为。',
     rules: [
       'z-index：sticky 1100 / dropdown 1200 / overlay 1300 / modal 1400 / popover 1500 / toast 1600 / tooltip 1700',
@@ -617,7 +617,7 @@ export const MODULES = [
   }),
   M({
     id: '23', file: '23-DATA-DISPLAY-STANDARD.md', name: 'Data Display Standard',
-    specId: 'UDS7-S23', principle: ['Data Integrity', 'Clarity'],
+    specId: 'UDS8-S23', principle: ['Data Integrity', 'Clarity'],
     summary: 'Card / Table / Pagination / Description List / Statistics / Avatar / Tag / Progress / Timeline；金额与 Token 数据强制对齐并等宽。',
     rules: [
       'Card：圆角 8px、1px border-card、内边距 16px、标题 18px/26px semibold',
@@ -641,7 +641,7 @@ export const MODULES = [
   }),
   M({
     id: '24', file: '24-CODE-AND-DEVELOPER-UI-STANDARD.md', name: 'Code and Developer UI Standard',
-    specId: 'UDS7-S24', principle: ['Developer Experience', 'Data Integrity', 'Accessibility'],
+    specId: 'UDS8-S24', principle: ['Developer Experience', 'Data Integrity', 'Accessibility'],
     summary: '7.0 重点模块：覆盖 CodeBlock / CodeBlockEditor / JsonCodeEditor / JsonEditor / Markdown Code Block / Inline Code / API Request / API Response / cURL / 日志 / 错误栈 / 终端预览。专项规范 24-S 登记于此。',
     rules: [
       '实际扫描结果：引擎为 CodeMirror 6 + Lezer + Yace 1.1.0 + Marked 18 + Shiki 4.3.0；组件位于 `web/src/components/ai-elements/code-block.tsx`、`web/src/components/json-code-editor.tsx`、`web/src/components/json-editor.tsx`、`web/src/components/ui/markdown.tsx`',
@@ -667,7 +667,7 @@ export const MODULES = [
   }),
   M({
     id: '24-S', file: 'CODE-SYNTAX-HIGHLIGHTING-STANDARD.md', name: 'Code Syntax Highlighting Standard (专项)',
-    specId: 'UDS7-S24-S', parent: '24', principle: ['Developer Experience', 'Accessibility', 'Consistency'],
+    specId: 'UDS8-S24-S', parent: '24', principle: ['Developer Experience', 'Accessibility', 'Consistency'],
     summary: '24 号规范的专项补充：20 个语法语义 Token 的 Light / Dark 明确色值、5 个引擎 Adapter、26 语言降级、对比度实测。作为 24-S 登记在 36 模块体系内，不构成第二套设计系统。',
     rules: [
       '20 个语义 Token：keyword / string / number / function / property / variable / type / operator / punctuation / comment / constant / boolean / null / tag / attribute / regexp / builtin / inserted / deleted / invalid',
@@ -692,7 +692,7 @@ export const MODULES = [
   }),
   M({
     id: '25', file: '25-AUTHENTICATION-STANDARD.md', name: 'Authentication Standard',
-    specId: 'UDS7-S25', principle: ['Reliability', 'Accessibility', 'Consistency'],
+    specId: 'UDS8-S25', principle: ['Reliability', 'Accessibility', 'Consistency'],
     summary: 'Sign In / Sign Up / Email OTP / SMS OTP / OAuth / Verification / Error / Loading / Success，认证界面与全局设计系统一致。',
     rules: [
       '认证卡片宽 400px、圆角 12px、内边距 32px、surface-base + 1px 边框；<480px 宽 100%−24px',
@@ -716,7 +716,7 @@ export const MODULES = [
   }),
   M({
     id: '26', file: '26-USER-AND-ORGANIZATION-STANDARD.md', name: 'User and Organization Standard',
-    specId: 'UDS7-S26', principle: ['Consistency', 'Data Integrity'],
+    specId: 'UDS8-S26', principle: ['Consistency', 'Data Integrity'],
     summary: 'Avatar / Profile / User Menu / Account Settings / Organization / Role / Permission / Member List。',
     rules: [
       'Avatar 24 / 32 / 40 px 三档 full 圆角；首字母用 12 / 14 / 16px medium',
@@ -739,7 +739,7 @@ export const MODULES = [
   }),
   M({
     id: '27', file: '27-BILLING-AND-PAYMENTS-STANDARD.md', name: 'Billing and Payments Standard',
-    specId: 'UDS7-S27', principle: ['Reliability', 'Data Integrity', 'Accessibility'],
+    specId: 'UDS8-S27', principle: ['Reliability', 'Data Integrity', 'Accessibility'],
     summary: 'Balance / Recharge / Payment / Order / Refund / Invoice / Transaction / Payment Method。硬性红线：设计迁移不得修改真实支付业务逻辑或支付配置。',
     rules: [
       '金额显示强制 `¥` + 千分位 + 2 位小数 + `tabular-nums` + `--ds-font-mono` + 右对齐；字号 16px/24px semibold',
@@ -763,7 +763,7 @@ export const MODULES = [
   }),
   M({
     id: '28', file: '28-API-AND-TOKEN-MANAGEMENT-STANDARD.md', name: 'API and Token Management Standard',
-    specId: 'UDS7-S28', principle: ['Developer Experience', 'Data Integrity'],
+    specId: 'UDS8-S28', principle: ['Developer Experience', 'Data Integrity'],
     summary: 'API Key / Token Usage / RPM / TPM / Usage / Quota / Model Pricing / Request Logs / API Documentation 统一代码示例、表格、数字与图表。',
     rules: [
       'API Key 展示：`sk-****abcd` 脱敏，完整值仅在创建后一次显示 + Copy 按钮 + 16px 图标；等宽字体 13px/20px',
@@ -786,7 +786,7 @@ export const MODULES = [
   }),
   M({
     id: '29', file: '29-MODEL-AND-CHANNEL-MANAGEMENT-STANDARD.md', name: 'Model and Channel Management Standard',
-    specId: 'UDS7-S29', principle: ['Data Integrity', 'Clarity'],
+    specId: 'UDS8-S29', principle: ['Data Integrity', 'Clarity'],
     summary: 'Model Card / Channel Card / Model Pricing / Channel Health / Routing / Availability / Provider / Status。',
     rules: [
       'Model Card：圆角 8px、内边距 16px、模型名 16px/24px semibold 等宽、Provider Badge 24px',
@@ -809,7 +809,7 @@ export const MODULES = [
   }),
   M({
     id: '30', file: '30-DASHBOARD-STANDARD.md', name: 'Dashboard Standard',
-    specId: 'UDS7-S30', principle: ['Hierarchy', 'Data Integrity', 'Efficiency'],
+    specId: 'UDS8-S30', principle: ['Hierarchy', 'Data Integrity', 'Efficiency'],
     summary: 'Metric Cards / Balance / Token Usage / Request Count / Error Rate / Model Usage / Channel Health / Revenue / Charts / Tables；明确指标优先级、时间范围、空 / 异常状态。',
     rules: [
       '指标优先级：1 余额 / 2 今日 Token 用量 / 3 请求数 / 4 错误率 / 5 收入；前 4 项为首屏 4 张 Metric Card',
@@ -832,7 +832,7 @@ export const MODULES = [
   }),
   M({
     id: '31', file: '31-PAGE-TEMPLATES-STANDARD.md', name: 'Page Templates Standard',
-    specId: 'UDS7-S31', principle: ['Consistency', 'Responsiveness'],
+    specId: 'UDS8-S31', principle: ['Consistency', 'Responsiveness'],
     summary: '15 类页面模板 + 真实路由扫描补齐。扫描结果：`web/src/routes/` 共 72 个 `.tsx` 路由文件（目录内共 74 个文件），PAGE-REGISTRY.json 按真实路由登记，不制作虚构页面。',
     rules: [
       '文档要求 15 类：Dashboard / API Key List / API Key Detail / Model List / Model Detail / Channel List / Channel Detail / API Documentation / Usage Analytics / Billing / Recharge / Orders / Refunds / Account Settings / Authentication',
@@ -854,7 +854,7 @@ export const MODULES = [
   }),
   M({
     id: '32', file: '32-EMPTY-LOADING-AND-ERROR-STANDARD.md', name: 'Empty, Loading and Error Standard',
-    specId: 'UDS7-S32', principle: ['Clarity', 'Reliability', 'Predictability'],
+    specId: 'UDS8-S32', principle: ['Clarity', 'Reliability', 'Predictability'],
     summary: 'Empty / Skeleton / Spinner / Error / Retry / Offline / Permission Denied / Not Found 八态。',
     rules: [
       'Empty：插画区 ≤120px、标题 18px/26px、说明 14px/22px secondary、主操作 Primary 36px；容器最小高 240px 居中',
@@ -878,7 +878,7 @@ export const MODULES = [
   }),
   M({
     id: '33', file: '33-LOCALIZATION-STANDARD.md', name: 'Localization Standard',
-    specId: 'UDS7-S33', principle: ['Clarity', 'Data Integrity', 'Accessibility'],
+    specId: 'UDS8-S33', principle: ['Clarity', 'Data Integrity', 'Accessibility'],
     summary: '简体中文 / 英语、日期 / 时间 / 数字 / 货币、长文本、多语言换行、中英混排、代码内容；不得因中文回退破坏英文等宽。',
     rules: [
       '支持 locale：zh-CN / en；文案源为英文 key，使用 useTranslation() + t()；新增文案同步全部 locale 文件',
@@ -902,7 +902,7 @@ export const MODULES = [
   }),
   M({
     id: '34', file: '34-CROSS-PLATFORM-DESIGN-STANDARD.md', name: 'Cross-Platform Design Standard',
-    specId: 'UDS7-S34', principle: ['Responsiveness', 'Reliability'],
+    specId: 'UDS8-S34', principle: ['Responsiveness', 'Reliability'],
     summary: '设计目标 PC Web / H5 / Android / iOS / HarmonyOS；必须区分设计规范支持与实际产品实现状态，不得把未实现的原生应用标记为已交付。',
     rules: [
       'PC Web：设计规范已定义、运行时由现有 React 应用承载；状态 `DESIGNED` + 迁移待执行',
@@ -923,12 +923,12 @@ export const MODULES = [
   }),
   M({
     id: '35', file: '35-DESIGN-GOVERNANCE-STANDARD.md', name: 'Design Governance Standard',
-    specId: 'UDS7-S35', principle: ['Consistency', 'Reliability', 'Predictability'],
+    specId: 'UDS8-S35', principle: ['Consistency', 'Reliability', 'Predictability'],
     summary: 'Token / Component / Page / Dependency Graph / Acceptance Matrix / Deprecated / Exception Registry、Automated Checks、Visual Regression、CI Gate；所有规范必须能被自动检查。',
     rules: [
       '八份注册表：TOKEN-REGISTRY.json / COMPONENT-REGISTRY.json / PAGE-REGISTRY.json / DEPENDENCY-GRAPH.json / ACCEPTANCE-MATRIX.json / DEPRECATED-REGISTRY.json / EXCEPTION-REGISTRY.json + TOKEN-MANIFEST.json',
       '所有注册表由 build.mjs 从 TOKEN-MANIFEST.json + 真实仓库扫描生成；禁止手工维护第二份数值',
-      'Automated Checks：`check-design-system-7.0.mjs` 覆盖 Token 唯一性 / 完整性 / Light-Dark 完整性 / 未登记色值 / 未登记字号 / 未登记间距 / 未登记圆角 / 未登记阴影 / 未登记动效 / 依赖一致性 / Registry 一致性 / 渐变采样 / syntax 完整性 / 单一渐变出口',
+      'Automated Checks：`check-design-system-8.0.0.mjs` 覆盖 Token 唯一性 / 完整性 / Light-Dark 完整性 / 未登记色值 / 未登记字号 / 未登记间距 / 未登记圆角 / 未登记阴影 / 未登记动效 / 依赖一致性 / Registry 一致性 / 渐变采样 / syntax 完整性 / 单一渐变出口',
       '组件检查：8 个基础状态 + Responsive 必须逐一登记到 ACCEPTANCE-MATRIX.json',
       '无障碍检查：axe-core / WCAG Contrast / Keyboard / Focus Visibility / Screen Reader / Reduced Motion 六类',
       'Visual Regression：至少覆盖 15 类页面 / 组件 × Light / Dark × Mobile / Desktop，保留截图、差异报告、运行日志',
@@ -938,7 +938,7 @@ export const MODULES = [
     ],
     tokens: ['--ds-focus-ring-width', '--ds-text-2xs'],
     states: ['default', 'error'],
-    example: ['node web/scripts/check-design-system-7.0.mjs --json'],
+    example: ['node web/scripts/check-design-system-8.0.0.mjs --json'],
     do: ['所有规范挂到可自动检查项', '门禁失败即停止'],
     dont: ['删断言 / 降阈值 / 扩例外换 PASS', '手工维护第二份数值'],
     a11y: ['a11y 六类检查登记进 Acceptance Matrix'],
@@ -947,7 +947,7 @@ export const MODULES = [
   }),
   M({
     id: '01-S', file: 'GRADIENT-TYPOGRAPHY-STANDARD.md', name: 'Gradient Typography Standard (专项)',
-    specId: 'UDS7-S01-S', parent: '01', principle: ['Clarity', 'Accessibility', 'Consistency'],
+    specId: 'UDS8-S01-S', parent: '01', principle: ['Clarity', 'Accessibility', 'Consistency'],
     summary: '渐变文字专项：保留蓝紫方向但重新设计色值；Light / Dark 全区间 ≥4.5:1；全站唯一出口；作为 01-S 登记在 36 模块体系内。',
     rules: [
       '历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 ' + GL.legacyWorst.ratio + ':1、Dark 最差 ' + GD.legacyWorst.ratio + ':1，E28 例外在 7.0 注销',

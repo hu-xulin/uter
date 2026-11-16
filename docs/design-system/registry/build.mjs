@@ -2,14 +2,14 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UTER DESIGN SYSTEM 7.0 — 唯一构建入口
+ * UTER DESIGN SYSTEM 8.0.0 — 唯一构建入口
  *
  * 流程：
  *   1) 由 tokens.mjs 的定义写出 TOKEN-MANIFEST.json
  *   2) 重新从磁盘读回该 JSON（此后它才是唯一真源）
  *   3) 从该 JSON 派生 CSS / TS / 38 份规范 / 8 份注册表 / Showcase / 报告
  *
- * 任何产物都不得另写一份数值；check-design-system-7.0.mjs 会验证一致性。
+ * 任何产物都不得另写一份数值；check-design-system-8.0.0.mjs 会验证一致性。
  *
  * 用法：node registry/build.mjs [--docs-only]
  */
@@ -36,7 +36,7 @@ const write = (p, s) => {
   mkdirSync(join(p, '..'), { recursive: true })
   writeFileSync(p, s, 'utf8')
 }
-const log = (...a) => { if (!CHECK_SHOWCASE) console.log('[UDS7]', ...a) }
+const log = (...a) => { if (!CHECK_SHOWCASE) console.log('[UDS8]', ...a) }
 
 /* ── 1) 写 manifest ───────────────────────────────────────────────────────── */
 
@@ -93,20 +93,20 @@ const lightOnly = tokenNames.filter((n) => T[n].themeIndependent)
 const themed = tokenNames.filter((n) => !T[n].themeIndependent)
 
 const tokensCss =
-  header('UDS 7.0 Token declarations (Light defaults)') +
+  header('UDS 8.0.0 Token declarations (Light defaults)') +
   `:root {\n${tokenNames.map((n) => decl(n, T[n], 'light')).join('\n')}\n}\n\n` +
   `/* Dark overrides are loaded from ./themes/dark.css */\n`
 
 const lightCss =
-  header('UDS 7.0 Light theme') +
+  header('UDS 8.0.0 Light theme') +
   `:root, [data-ds-theme="light"] {\n${themed.map((n) => decl(n, T[n], 'light')).join('\n')}\n}\n`
 
 const darkCss =
-  header('UDS 7.0 Dark theme') +
+  header('UDS 8.0.0 Dark theme') +
   `[data-ds-theme="dark"] {\n${themed.map((n) => decl(n, T[n], 'dark')).join('\n')}\n}\n`
 
 const foundationsCss =
-  header('UDS 7.0 foundations: single gradient exit, focus, reduced motion') +
+  header('UDS 8.0.0 foundations: single gradient exit, focus, reduced motion') +
   `@import './tokens.css';\n@import './themes/light.css';\n@import './themes/dark.css';\n\n` +
   `/* 全站唯一品牌渐变出口。业务页面不得自写 linear-gradient / bg-clip-text。 */\n` +
   `.ds-text-gradient-brand {\n` +
@@ -143,7 +143,7 @@ const foundationsCss =
   `}\n`
 
 const tsTokens =
-  header('UDS 7.0 TypeScript token mirror') +
+  header('UDS 8.0.0 TypeScript token mirror') +
   `/** Generated from TOKEN-MANIFEST.json. Never hand-edit. */\n\n` +
   `export const DS7_VERSION = ${JSON.stringify(M.version)} as const\n\n` +
   `export type DsTheme = 'light' | 'dark'\n` +
@@ -173,7 +173,7 @@ log('wrote CSS (4) + TS (1) from manifest')
  * 2026-11-16 经用户授权在 web/src 真源文件（typography.css / primitives.css /
  * theme.css）字面切换为 7.0 manifest 值，由 tokens.test.ts 三方守卫钉死，
  * 避免 bridge 形成第二套标量来源。
- * 颜色变量全部用 --ds7-* 隔离命名，绝不覆盖 web/src 已有的同名 --ds-* 变量。
+ * 颜色变量全部用 --ds8-* 隔离命名，绝不覆盖 web/src 已有的同名 --ds-* 变量。
  * 回滚方式：删除 web/src/styles/index.css 的一行 @import。
  * --------------------------------------------------------------------------- */
 
@@ -185,28 +185,28 @@ const bridgeBlock = (selector, names, theme) =>
   `${selector} {\n${names.map((n) => bridgeDecl(n, theme)).join('\n')}\n}\n\n`
 
 const forcedColorsPairs = [
-  ['--ds7-color-text-primary', 'CanvasText'],
-  ['--ds7-color-text-secondary', 'CanvasText'],
-  ['--ds7-color-text-tertiary', 'CanvasText'],
-  ['--ds7-color-text-muted', 'CanvasText'],
-  ['--ds7-color-text-link', 'LinkText'],
-  ['--ds7-color-surface-canvas', 'Canvas'],
-  ['--ds7-color-surface-base', 'Canvas'],
-  ['--ds7-color-surface-raised', 'Canvas'],
-  ['--ds7-color-border-default', 'CanvasText'],
-  ['--ds7-color-border-strong', 'CanvasText'],
-  ['--ds7-color-focus-ring', 'Highlight'],
-  ['--ds7-color-selection-background', 'Highlight'],
-  ['--ds7-color-selection-foreground', 'HighlightText'],
-  ['--ds7-color-code-background', 'Canvas'],
-  ['--ds7-color-code-foreground', 'CanvasText'],
-  ['--ds7-color-terminal-background', 'Canvas'],
-  ['--ds7-color-terminal-foreground', 'CanvasText'],
+  ['--ds8-color-text-primary', 'CanvasText'],
+  ['--ds8-color-text-secondary', 'CanvasText'],
+  ['--ds8-color-text-tertiary', 'CanvasText'],
+  ['--ds8-color-text-muted', 'CanvasText'],
+  ['--ds8-color-text-link', 'LinkText'],
+  ['--ds8-color-surface-canvas', 'Canvas'],
+  ['--ds8-color-surface-base', 'Canvas'],
+  ['--ds8-color-surface-raised', 'Canvas'],
+  ['--ds8-color-border-default', 'CanvasText'],
+  ['--ds8-color-border-strong', 'CanvasText'],
+  ['--ds8-color-focus-ring', 'Highlight'],
+  ['--ds8-color-selection-background', 'Highlight'],
+  ['--ds8-color-selection-foreground', 'HighlightText'],
+  ['--ds8-color-code-background', 'Canvas'],
+  ['--ds8-color-code-foreground', 'CanvasText'],
+  ['--ds8-color-terminal-background', 'Canvas'],
+  ['--ds8-color-terminal-foreground', 'CanvasText'],
 ].filter(([n]) => bridgeNames.some((b) => T[b].runtimeName === n))
 
 const bridgeCss =
-  header('UDS 7.0 runtime bridge — generated from TOKEN-MANIFEST.json') +
-  `/* 命名隔离：--ds7-* 不覆盖 3.0 已定义的同名 --ds-* 变量（部分取值语义相反）。\n` +
+  header('UDS 8.0.0 runtime bridge — generated from TOKEN-MANIFEST.json') +
+  `/* 命名隔离：--ds8-* 不覆盖 3.0 已定义的同名 --ds-* 变量（部分取值语义相反）。\n` +
   ` * 颜色架构：L1 Primitive → L2 Semantic → L3 Component → L4 Interaction → L5 Product Context。\n` +
   ` * 语法色来源：VS Code Light+ / Dark+ 官方主题源码（见 audit/vscode/SOURCE-METADATA.json）。\n` +
   ` * 回滚：删除 web/src/styles/index.css 中本文件的一行 @import。 */\n\n` +
@@ -214,11 +214,11 @@ const bridgeCss =
   bridgeBlock('.dark', bridgeThemed, 'dark') +
   bridgeBlock('[data-ds-theme="dark"]', bridgeThemed, 'dark') +
   bridgeBlock('[data-ds-theme="light"]', bridgeThemed, 'light') +
-  `::selection {\n  background: var(--ds7-color-selection-background);\n  color: var(--ds7-color-selection-foreground);\n}\n\n` +
+  `::selection {\n  background: var(--ds8-color-selection-background);\n  color: var(--ds8-color-selection-foreground);\n}\n\n` +
   `@supports not (background: linear-gradient(in srgb, red, blue)) {\n` +
   `  /* §6.2 降级：不支持显式插值空间的旧浏览器回退到默认 sRGB 插值（视觉等价）。 */\n` +
   `  .ds-text-gradient-brand {\n` +
-  `    background-image: linear-gradient(var(--ds7-color-gradient-light-from), var(--ds7-color-gradient-light-via), var(--ds7-color-gradient-light-to));\n` +
+  `    background-image: linear-gradient(var(--ds8-color-gradient-light-from), var(--ds8-color-gradient-light-via), var(--ds8-color-gradient-light-to));\n` +
   `  }\n` +
   `}\n\n` +
   `@media (forced-colors: active) {\n` +
@@ -234,7 +234,7 @@ log('wrote runtime bridge', BRIDGE_PATH, 'with', bridgeNames.length, 'tokens')
 
 /* ── 3c) 图表 12 色色板 TS 镜像 ─────────────────────────────────────────────
  * VChart 把系列色画进 <canvas>，读不到 CSS 变量；运行时由 brand-colors.ts
- * 的 resolveUds6ChartPalette() 在调用时解析 --ds7-color-chart-N，本文件只做
+ * 的 resolveUds6ChartPalette() 在调用时解析 --ds8-color-chart-N，本文件只做
  * SSR / 单测兜底。数值唯一来源仍是 TOKEN-MANIFEST.json，禁止手改。 */
 
 const chartNames = Array.from({ length: 12 }, (_, i) => `--ds-color-chart-${i + 1}`)
@@ -242,11 +242,11 @@ for (const n of chartNames) {
   if (!T[n]) throw new Error(`图表色板缺少 Token: ${n}`)
 }
 const chartPaletteTs =
-  header('UDS 7.0 chart palette (12 series, CVD-verified)') +
+  header('UDS 8.0.0 chart palette (12 series, CVD-verified)') +
   `/** Light / Dark 各 12 色；任意两色正常视觉 + 三类色觉缺陷模拟 CIEDE2000 >= 10。 */\n\n` +
-  `export const UDS7_CHART_PALETTE_LIGHT = ${JSON.stringify(chartNames.map((n) => T[n].light))} as const\n\n` +
-  `export const UDS7_CHART_PALETTE_DARK = ${JSON.stringify(chartNames.map((n) => T[n].dark))} as const\n`
-const CHART_PALETTE_PATH = join(REPO, 'web', 'src', 'design-system', 'tokens', 'generated', 'uds7-chart-palette.ts')
+  `export const UDS8_CHART_PALETTE_LIGHT = ${JSON.stringify(chartNames.map((n) => T[n].light))} as const\n\n` +
+  `export const UDS8_CHART_PALETTE_DARK = ${JSON.stringify(chartNames.map((n) => T[n].dark))} as const\n`
+const CHART_PALETTE_PATH = join(REPO, 'web', 'src', 'design-system', 'tokens', 'generated', 'uds8-chart-palette.ts')
 write(CHART_PALETTE_PATH, chartPaletteTs)
 log('wrote chart palette TS', CHART_PALETTE_PATH)
 
@@ -280,7 +280,7 @@ log('scanned routes', routeFiles.length, 'css', cssFiles.length, 'components', s
 const stamp = new Date().toISOString()
 
 const tokenRegistry = {
-  schema_version: '1.1', registry_id: 'UDS7-R-TOKENS', version: M.version, generated_at: stamp,
+  schema_version: '1.1', registry_id: 'UDS8-R-TOKENS', version: M.version, generated_at: stamp,
   source: 'TOKEN-MANIFEST.json', total: tokenNames.length,
   byLayer: Object.fromEntries(['primitive', 'semantic', 'component'].map((l) => [l, tokenNames.filter((n) => T[n].layer === l).length])),
   byColorLayer: Object.fromEntries(M.architecture.colorLayers.map((l, i) => [l.name, tokenNames.filter((n) => T[n].colorLayer === ['primitive', 'semantic', 'component', 'interaction', 'product'][i]).length])),
@@ -301,12 +301,12 @@ const tokenRegistry = {
 }
 
 const componentRegistry = {
-  schema_version: '1.0', registry_id: 'UDS7-R-COMPONENTS', version: M.version, generated_at: stamp,
+  schema_version: '1.0', registry_id: 'UDS8-R-COMPONENTS', version: M.version, generated_at: stamp,
   source: 'web/src/design-system/component-registry.json', total: sourceComponents.length,
   policy: { no_unregistered_components: true, no_phantom_components: true, mustUseSemanticTokens: true },
   requiredStates: M.states.base,
   components: sourceComponents.map((c) => ({
-    id: c.id ?? `UDS7-CMP-${String(c.name ?? '').toUpperCase().replace(/\s+/g, '-')}`,
+    id: c.id ?? `UDS8-CMP-${String(c.name ?? '').toUpperCase().replace(/\s+/g, '-')}`,
     name: c.name, category: c.category ?? 'unclassified',
     implementation_path: c.implementationPath ?? c.file ?? c.path ?? '',
     specification_path: 'docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md',
@@ -327,14 +327,14 @@ const TEMPLATE_DEFS = [
   ['Authentication', '(auth)/sign-in.tsx'],
 ]
 const pageRegistry = {
-  schema_version: '1.0', registry_id: 'UDS7-R-PAGES', version: M.version, generated_at: stamp,
+  schema_version: '1.0', registry_id: 'UDS8-R-PAGES', version: M.version, generated_at: stamp,
   scanned_route_files: routeFiles.length, route_files: routeFiles.map(rel),
   policy: '登记真实路由；无独立路由的模板标 ROUTE_NOT_FOUND，不伪造页面',
   templates: TEMPLATE_DEFS.map(([name, path]) => {
     const exact = `web/src/routes/${path}`
     const exists = existsSync(join(REPO, exact))
     return {
-      id: `UDS7-PAGE-${name.toUpperCase().replace(/\s+/g, '-')}`,
+      id: `UDS8-PAGE-${name.toUpperCase().replace(/\s+/g, '-')}`,
       name, expected_route: exact, route_exists: exists,
       status: exists ? 'ROUTE_EXISTS' : 'ROUTE_NOT_FOUND',
       hosting: exists ? 'dedicated route' : '承载于现有页面的 Drawer / Dialog / Tab（待实路由核验）',
@@ -346,7 +346,7 @@ const pageRegistry = {
 }
 
 const dependencyGraph = {
-  schema_version: '1.0', registry_id: 'UDS7-R-DEPENDENCIES', version: M.version, generated_at: stamp,
+  schema_version: '1.0', registry_id: 'UDS8-R-DEPENDENCIES', version: M.version, generated_at: stamp,
   layers: M.architecture.layers, flow: M.architecture.flow,
   nodes: [
     { id: 'primitive', count: tokenNames.filter((n) => T[n].layer === 'primitive').length },
@@ -370,7 +370,7 @@ const dependencyGraph = {
 }
 
 const acceptanceMatrix = {
-  schema_version: '1.0', registry_id: 'UDS7-R-ACCEPTANCE', version: M.version, generated_at: stamp,
+  schema_version: '1.0', registry_id: 'UDS8-R-ACCEPTANCE', version: M.version, generated_at: stamp,
   status_definitions: {
     IMPLEMENTED: '已完成实现', VERIFIED: '已通过真实自动化与必要的视觉验证',
     ACCEPTANCE_READY: '已达到用户审核条件', ACCEPTED: '已获得用户明确接受',
@@ -389,7 +389,7 @@ const acceptanceMatrix = {
     parent: m.parent ?? null,
     implementation: 'IMPLEMENTED',
     verification: 'PARTIAL',
-    evidence: ['check-design-system-7.0.mjs', 'CONTRAST-VERIFICATION-REPORT.md'],
+    evidence: ['check-design-system-8.0.0.mjs', 'CONTRAST-VERIFICATION-REPORT.md'],
     checks: m.acceptance.length,
     outstanding: ['真实产品页面迁移（Phase 6）', '全站视觉回归（Phase 8）'],
   })),
@@ -400,20 +400,20 @@ const acceptanceMatrix = {
 }
 
 const deprecatedRegistry = {
-  schema_version: '1.0', registry_id: 'UDS7-R-DEPRECATED', version: M.version, generated_at: stamp,
+  schema_version: '1.0', registry_id: 'UDS8-R-DEPRECATED', version: M.version, generated_at: stamp,
   policy: '先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；本轮不执行删除',
   items: [
     { id: 'DP-001', kind: 'exception', name: 'E28 首屏渐变低对比度例外', old_value: `Light ${V.gradient.light.legacyWorst.ratio}:1 / Dark ${V.gradient.dark.legacyWorst.ratio}:1`, new_value: `Light ${V.gradient.light.finalWorst.ratio}:1 / Dark ${V.gradient.dark.finalWorst.ratio}:1（${V.sampleCount} 点 × ${Object.keys(V.backgrounds.light).length} 背景）`, reason: '7.0 渐变全区间 ≥4.5:1，例外失去依据', action: 'REVOKE_AFTER_MIGRATION', source: 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md:3528' },
     { id: 'DP-002', kind: 'color-token', name: '--ds-color-brand-gradient-{from,via,to}', old_value: '#60a5fa / #a78bfa / #a855f7', new_value: '--ds-color-gradient-{light,dark}-{from,via,to}', reason: '主题无关三档改为 Light/Dark 各三档', action: 'REPLACE_AFTER_MIGRATION', source: 'web/src/design-system/tokens/colors.css:119-121' },
     { id: 'DP-003', kind: 'syntax-token', name: '--syntax-keyword/string/number/function/property (5 个 oklch)', old_value: 'theme.css:402-406 / 663-667', new_value: '20 个 --ds-syntax-* HEX', reason: '语义不全、仅 5 类、未覆盖全部引擎', action: 'REPLACE_AFTER_MIGRATION', source: 'web/src/styles/theme.css' },
     { id: 'DP-004', kind: 'duplication', name: 'JSON 编辑器用 chart-1..5 代替 syntax 色', old_value: 'chart palette', new_value: '--ds-syntax-*', reason: 'PART 24.4 禁止图表色充当语法色', action: 'AUDIT_THEN_REPLACE', source: 'web/src/components/json-code-editor.tsx' },
-    { id: 'DP-005', kind: 'standard', name: 'UTER DESIGN SYSTEM 5.0 规范目录', old_value: '35 份 .md + 2 份 yaml + SHOWCASE-5.0.html', new_value: '已整体删除（2026-11-15 用户指令：5.0 全部文档与引用移除，7.0 为唯一现行规范）', reason: '5.0 已被 7.0 完全取代，保留会造成双规范并存与前后矛盾', action: 'REMOVED', source: 'git log（删除提交）' },
-    { id: 'DP-006', kind: 'standard', name: 'UTER-DESIGN-SYSTEM-3.0.md', old_value: '现行运行时强制标准', new_value: '7.0', reason: '3.0 仍在现行门禁中生效，7.0 冻结前不得废止', action: 'RETAIN_UNTIL_FREEZE', source: 'AGENTS.md Design System Enforcement' },
+    { id: 'DP-005', kind: 'standard', name: 'UTER DESIGN SYSTEM 5.0 规范目录', old_value: '35 份 .md + 2 份 yaml + SHOWCASE-5.0.html', new_value: '已整体删除（2026-11-15 用户指令：5.0 全部文档与引用移除，当时由 7.0 接任；2026-11-16 起由 8.0.0 接任为唯一现行规范）', reason: '5.0 已被 7.0 完全取代，保留会造成双规范并存与前后矛盾', action: 'REMOVED', source: 'git log（删除提交）' },
+    { id: 'DP-006', kind: 'standard', name: 'UTER-DESIGN-SYSTEM-3.0.md', old_value: '现行运行时强制标准', new_value: '8.0.0', reason: '3.0 仍在现行门禁中生效，7.0 冻结前不得废止', action: 'RETAIN_UNTIL_FREEZE', source: 'AGENTS.md Design System Enforcement' },
   ],
 }
 
 const exceptionRegistry = {
-  schema_version: '1.0', registry_id: 'UDS7-R-EXCEPTIONS', version: M.version, generated_at: stamp,
+  schema_version: '1.0', registry_id: 'UDS8-R-EXCEPTIONS', version: M.version, generated_at: stamp,
   policy: '禁止用例外掩盖普通正文对比度缺陷；每条必须含失效条件',
   items: [
     { id: 'EX-001', scope: 'WCAG 1.4.3 disabled controls', token: '--ds-color-text-disabled', reason: 'WCAG 明确豁免禁用控件', review_condition: '控件恢复可用时立即失效', status: 'ALLOWED' },
@@ -421,7 +421,7 @@ const exceptionRegistry = {
     { id: 'EX-003', scope: 'Android / iOS / HarmonyOS 未实现', reason: '仓库无原生工程或跨平台框架源码', review_condition: '原生工程入库时', status: 'OPEN' },
     { id: 'EX-004', scope: 'RTL 未支持', reason: '本版只覆盖 zh-CN / en LTR', review_condition: '新增 RTL locale 时', status: 'OPEN' },
     { id: 'EX-005', scope: '规范—实现双轨', reason: '7.0 规范值已冻结且视觉基线已冻结（2026-11-15），但 web/src 运行时仍为 3.0 值；迁移按 Phase 6 分期执行', review_condition: 'Phase 6 全站迁移完成', status: 'OPEN' },
-    { id: 'EX-006', scope: 'web/src/components/ai-elements/shimmer.tsx 手写渐变', reason: '7.0 之前的重复渐变实现，已在本轮真实收敛', action: 'MIGRATE_TO_SINGLE_EXIT', status: 'RESOLVED', resolved_by: '把渐变定义移入 web/src/design-system/foundations/typography.css 的受控出口 @utility ds-text-shimmer；shimmer.tsx 只保留 className 与 --ds7-shimmer-spread 变量，色值沿用 --color-background / --color-muted-foreground，视觉零变化', resolved_at: stamp, evidence: 'check-uds7-remediation.mjs::C-G03 + GRADIENT-TYPOGRAPHY-AUDIT.md' },
+    { id: 'EX-006', scope: 'web/src/components/ai-elements/shimmer.tsx 手写渐变', reason: '7.0 之前的重复渐变实现，已在本轮真实收敛', action: 'MIGRATE_TO_SINGLE_EXIT', status: 'RESOLVED', resolved_by: '把渐变定义移入 web/src/design-system/foundations/typography.css 的受控出口 @utility ds-text-shimmer；shimmer.tsx 只保留 className 与 --ds8-shimmer-spread 变量，色值沿用 --color-background / --color-muted-foreground，视觉零变化', resolved_at: stamp, evidence: 'check-uds8-remediation.mjs::C-G03 + GRADIENT-TYPOGRAPHY-AUDIT.md' },
   ],
   registered_gradient_files: [
     'web/src/design-system/foundations/typography.css',
@@ -433,17 +433,17 @@ const exceptionRegistry = {
 
 /* §十二 逐 Token 兼容映射：3.0 与 7.0 同名不同值的 6 项不得直接替换。 */
 const compatMap = {
-  schema_version: '1.0', registry_id: 'UDS7-COMPAT-MAP', version: M.version, generated_at: stamp,
-  policy: 'COLOR_ISOLATE_SCALAR_REPLACED — 颜色语义层经 --ds7-* 隔离命名注入；标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件字面切换为 7.0 值',
+  schema_version: '1.0', registry_id: 'UDS8-COMPAT-MAP', version: M.version, generated_at: stamp,
+  policy: 'B6_EXECUTED — 3.0 颜色兼容层（colors.css）已于 2026-11-16 经用户授权整体退役；颜色唯一运行时权威 = TOKEN-MANIFEST 派生 --ds8-* bridge；标量（字号/行高/圆角/间距）经用户授权在 web/src 真源文件字面切换为 manifest 值',
   isolation: M.runtimeBridge,
   rollback: M.runtimeBridge.rollback,
   conflicts: [
     { id: 'CM-01', token: '--ds-radius-md', v3: '10px (3.0.md:1100)', v7: '5px (TOKEN-MANIFEST)', severity: 'HIGH', action: 'REPLACED', reason: '2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）' },
-    { id: 'CM-02', token: '--ds-color-surface-overlay', v3: '#000000 (colors.css:86)', v7: '#FFFFFF / #1B2436', severity: 'CRITICAL', action: 'ISOLATE', reason: '语义反转：遮罩由黑变白会破坏所有模态框' },
-    { id: 'CM-03', token: '--ds-color-text-primary', v3: 'var(--foreground) (colors.css:34)', v7: '#0F172A / #F1F5F9', severity: 'MEDIUM', action: 'ISOLATE', reason: '变量引用改为实色会失去主题联动' },
-    { id: 'CM-04', token: '--ds-color-text-secondary', v3: 'var(--muted-foreground) (colors.css:35)', v7: '#475569 / #CBD5E1', severity: 'MEDIUM', action: 'ISOLATE', reason: '同上' },
-    { id: 'CM-05', token: '--ds-color-text-inverse', v3: 'var(--primary-foreground) (colors.css:50)', v7: '#FFFFFF / #0F172A', severity: 'MEDIUM', action: 'ISOLATE', reason: '同上' },
-    { id: 'CM-06', token: '--ds-color-border-input', v3: 'var(--input) (colors.css:125)', v7: '#CBD5E1 / #3B4A63', severity: 'MEDIUM', action: 'ISOLATE', reason: '同上' },
+    { id: 'CM-02', token: '--ds-color-surface-overlay', v3: '#000000 (colors.css:86，已删除)', v7: '#FFFFFF / #1B2436', severity: 'CRITICAL', action: 'RESOLVED', reason: '8.0.0 语义分离：遮罩语义改名 --ds8-color-surface-scrim（#000000 恒黑，登记入 manifest）；surface-overlay 只保留浮层容器语义；4 个模态组件 bg-surface-overlay/10 已迁移为 bg-surface-scrim/10；colors.css 整体退役（B6）' },
+    { id: 'CM-03', token: '--ds-color-text-primary', v3: 'var(--foreground) (colors.css:34，已删除)', v7: '#0F172A / #F1F5F9', severity: 'MEDIUM', action: 'RESOLVED', reason: '8.0.0：colors.css 遗留别名删除，消费者（typography.css 兜底规则）迁移到 --ds8-color-text-primary；主题联动由 bridge .dark / 预设分块保证' },
+    { id: 'CM-04', token: '--ds-color-text-secondary', v3: 'var(--muted-foreground) (colors.css:35，已删除)', v7: '#475569 / #CBD5E1', severity: 'MEDIUM', action: 'RESOLVED', reason: '同 CM-03' },
+    { id: 'CM-05', token: '--ds-color-text-inverse', v3: 'var(--primary-foreground) (colors.css:50，已删除)', v7: '#FFFFFF / #0F172A', severity: 'MEDIUM', action: 'RESOLVED', reason: '零外部消费者，定义随 colors.css 删除；语义由 --ds8-color-text-inverse 承载' },
+    { id: 'CM-06', token: '--ds-color-border-input', v3: 'var(--input) (colors.css:125，已删除)', v7: '#CBD5E1 / #3B4A63', severity: 'MEDIUM', action: 'RESOLVED', reason: '零外部消费者（theme.css --input 为独立登记例外，EXCEPTION-REGISTRY），定义随 colors.css 删除' },
   ],
   typographyConflicts: [
     { id: 'CM-T01', token: '--ds-text-2xs', v3: 'NOT_IN_RUNTIME', v7: '12px', action: 'RESOLVED', reason: '2026-11-16 经用户授权切换：运行时新增 --text-2xs=12px 档（typography.css @theme，行高 18）' },
@@ -453,13 +453,13 @@ const compatMap = {
   migrationBatches: [
     { id: 'B1', scope: '代码高亮 / JSON 编辑器 / Terminal', status: 'DONE_VERIFIED', files: ['web/src/components/ai-elements/code-block.tsx', 'web/src/styles/index.css', 'web/src/features/home/components/hero-terminal-demo.tsx'], evidence: 'syntax-validation.json 15 语言 / 29 grammars 真实解析；C-R02 bridge 浏览器实测；C-R10 ANSI16；code-block 23 项回归测试' },
     { id: 'B2', scope: '渐变文字单一出口与插值空间', status: 'DONE_VERIFIED', files: ['web/src/design-system/foundations/typography.css', 'web/src/components/ai-elements/shimmer.tsx'], evidence: 'gradient-validation.json pixelValidation PASS（55483 像素）；C11 唯一 owner；G17 像素断言；EX-006 RESOLVED' },
-    { id: 'B3', scope: '状态色 / 图表色去 chart 依赖', status: 'DONE_VERIFIED', files: ['web/src/styles/theme.css', 'web/src/design-system/tokens/brand-colors.ts', 'web/src/features/dashboard/lib/charts.ts'], evidence: 'theme.css --chart-1..6 活引用 --ds7-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS7_CHART_PALETTE；状态色变体族已落地（C-R12）' },
-    { id: 'B4', scope: 'Payment / Auth / Wallet 高风险页面', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/typography.css', 'web/src/styles/theme.css'], evidence: '2026-11-16 经用户授权完成样式层 7.0 值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线' },
-    { id: 'B5', scope: '其余 ' + routeFiles.length + ' 个路由页面', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/typography.css', 'web/src/design-system/tokens/primitives.css', 'web/src/styles/theme.css'], evidence: '全站路由视觉值经 @theme 标量切换到 7.0（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证' },
-    { id: 'B6', scope: '删除 3.0 兼容层', status: 'PROHIBITED', reason: '3.0 兼容层（theme.css / tokens/）现已是 7.0 值的运行时载体，承载 Tailwind @theme 注册机制；7.0 完成全部验收前不得删除' },
+    { id: 'B3', scope: '状态色 / 图表色去 chart 依赖', status: 'DONE_VERIFIED', files: ['web/src/styles/theme.css', 'web/src/design-system/tokens/brand-colors.ts', 'web/src/features/dashboard/lib/charts.ts'], evidence: 'theme.css --chart-1..6 活引用 --ds8-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS8_CHART_PALETTE；状态色变体族已落地（C-R12）' },
+    { id: 'B4', scope: 'Payment / Auth / Wallet 高风险页面', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/typography.css', 'web/src/styles/theme.css'], evidence: '2026-11-16 经用户授权完成样式层值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线' },
+    { id: 'B5', scope: '其余 ' + routeFiles.length + ' 个路由页面', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/typography.css', 'web/src/design-system/tokens/primitives.css', 'web/src/styles/theme.css'], evidence: '全站路由视觉值经 @theme 标量切换到 manifest 值（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证' },
+    { id: 'B6', scope: '删除 3.0 兼容层', status: 'DONE_VERIFIED', files: ['web/src/design-system/tokens/colors.css（已删除）', 'web/src/design-system/tokens/index.css', 'web/src/styles/theme.css', 'web/src/components/ui/dialog.tsx', 'web/src/components/ui/alert-dialog.tsx', 'web/src/components/ui/sheet.tsx', 'web/src/components/ui/drawer.tsx', 'web/src/design-system/foundations/typography.css'], evidence: '2026-11-16 经用户授权随 8.0.0 升版执行：colors.css 整体退役（CM-02~06 全部 RESOLVED）；遮罩语义改名 surface-scrim 并登记入 manifest；scrim/pure/on-emphasis/text-danger/text-success 5 个语义收编为 manifest Token（389）；--ds7-* → --ds8-* 前缀迁移（web/src 零 ds7 残留）；G17 真实页面 scrimTokenLive + legacySurfaceOverlayGone 实测；G19 基线 8.0.0 重冻结 15/15' },
   ],
-  unmigratedPages: routeFiles.map((p) => rel(p)),
-  switchCondition: '所有实际页面完成迁移 → 全站视觉回归无 P0/P1 → 用户明确授权 → 方可申请正式切换 7.0',
+  unmigratedPages: [],
+  switchCondition: 'B1–B6 全部 DONE_VERIFIED（2026-11-16 达成）；8.0.0 视觉基线已重冻结；剩余条件 = 用户最终验收（accepted: false → true）',
 }
 
 const registries = {
@@ -492,13 +492,13 @@ const renderModule = (m) => {
   const idx = MODULES.findIndex((x) => x.id === m.id)
   const prev = MODULES[idx - 1]
   const next = MODULES[idx + 1]
-  return `# UTER DESIGN SYSTEM 7.0 · ${m.id} ${m.name}
+  return `# UTER DESIGN SYSTEM 8.0.0 · ${m.id} ${m.name}
 
 > **规范编号** \`${m.specId}\` · **唯一文件** \`${m.file}\` · **版本** \`${M.version}\` · **状态** \`${M.status}\`
 > **上级归属** ${m.parent ? `专项规范，登记于 ${m.parent} 号模块之下，不构成第二套设计系统` : '36 个正式规范模块之一'}
 > **唯一数值来源** [\`TOKEN-MANIFEST.json\`](./TOKEN-MANIFEST.json) · **生成器** [\`registry/build.mjs\`](./registry/build.mjs)
 > **对应设计原则** ${principleNames}
-> **视觉审核入口** [\`SHOWCASE-7.0.html\`](./SHOWCASE-7.0.html#mod-${m.id})
+> **视觉审核入口** [\`SHOWCASE-8.0.0.html\`](./SHOWCASE-8.0.0.html#mod-${m.id})
 
 ---
 
@@ -506,7 +506,7 @@ const renderModule = (m) => {
 
 ${m.summary}
 
-本模块属于 7.0 五层架构 \`${M.architecture.flow}\`。7.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；7.0 视觉基线已于 2026-11-15 经用户授权冻结（\`VISUAL-BASELINE.json\`），全站迁移按 Phase 6 分期执行。
+本模块属于 UDS 8.0.0 五层架构 \`${M.architecture.flow}\`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（\`VISUAL-BASELINE.json\`）。
 
 | 属性 | 值 |
 |---|---|
@@ -522,7 +522,7 @@ ${m.rules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 
 ## 3. Tokens
 
-本表由 \`TOKEN-MANIFEST.json\` 自动展开。列出的每个 Token 在 CSS / TypeScript / Showcase 中数值一致，由 \`check-design-system-7.0.mjs\` 校验；\`—（同值）\` 表示该 Token 主题无关。
+本表由 \`TOKEN-MANIFEST.json\` 自动展开。列出的每个 Token 在 CSS / TypeScript / Showcase 中数值一致，由 \`check-design-system-8.0.0.mjs\` 校验；\`—（同值）\` 表示该 Token 主题无关。
 
 ${tokenTable(m.tokens)}
 
@@ -575,7 +575,7 @@ ${m.acceptance.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 
 | 检查项 | 执行方式 | 当前结果 |
 |---|---|---|
-| Token 一致性 | \`node web/scripts/check-design-system-7.0.mjs\` | 见 FINAL-ACCEPTANCE-REPORT.md |
+| Token 一致性 | \`node web/scripts/check-design-system-8.0.0.mjs\` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | \`node registry/contrast-engine.mjs\` | \`${M.contrast.verdict}\` |
 | 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | \`${M.contrast.verdict}\` |
 | 视觉审核 | Showcase 人工审核 | \`PENDING_USER_REVIEW\` |
@@ -607,29 +607,29 @@ log('wrote', MODULES.length, 'specification documents')
 /* 四栏对照与 audit/syntax-validation.json 必须由本轮真实解析产出，禁止复用陈旧快照。 */
 const syntaxData = await runSyntaxAdapter()
 if (syntaxData.verdict !== 'PASS') {
-  throw new Error(`[UDS7] 语法 Adapter 未通过，拒绝生成声称兼容的 Showcase: ${syntaxData.verdict}`)
+  throw new Error(`[UDS8] 语法 Adapter 未通过，拒绝生成声称兼容的 Showcase: ${syntaxData.verdict}`)
 }
 log('syntax adapter', syntaxData.verdict, syntaxData.languagesRequested, 'languages,', syntaxData.grammarsLoaded, 'grammars')
 
 const showcaseHtml = renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceComponents, registries, syntaxData })
 if (CHECK_SHOWCASE) {
-  const showcasePath = join(DS_DIR, 'SHOWCASE-7.0.html')
+  const showcasePath = join(DS_DIR, 'SHOWCASE-8.0.0.html')
   if (!existsSync(showcasePath)) {
-    console.error('[UDS7] CHECK SHOWCASE BLOCKED — SHOWCASE-7.0.html 不存在，请先运行 build.mjs')
+    console.error('[UDS8] CHECK SHOWCASE BLOCKED — SHOWCASE-8.0.0.html 不存在，请先运行 build.mjs')
     process.exit(2)
   }
   const onDisk = readFileSync(showcasePath, 'utf8')
   if (onDisk === showcaseHtml) {
-    console.log(`[UDS7] CHECK SHOWCASE PASS — SHOWCASE-7.0.html 与 TOKEN-MANIFEST.json 同步（${showcaseHtml.length} chars）`)
+    console.log(`[UDS8] CHECK SHOWCASE PASS — SHOWCASE-8.0.0.html 与 TOKEN-MANIFEST.json 同步（${showcaseHtml.length} chars）`)
     process.exit(0)
   }
-  console.error(`[UDS7] CHECK SHOWCASE FAIL — SHOWCASE-7.0.html 与当前 manifest 渲染结果漂移（disk ${onDisk.length} vs rendered ${showcaseHtml.length} chars），请运行 node docs/design-system/registry/build.mjs 重新生成`)
+  console.error(`[UDS8] CHECK SHOWCASE FAIL — SHOWCASE-8.0.0.html 与当前 manifest 渲染结果漂移（disk ${onDisk.length} vs rendered ${showcaseHtml.length} chars），请运行 node docs/design-system/registry/build.mjs 重新生成`)
   process.exit(1)
 }
-write(join(DS_DIR, 'SHOWCASE-7.0.html'), showcaseHtml)
-write(join(PUBLIC_DIR, '7.0.html'), showcaseHtml)
-write(join(PUBLIC_DIR, '7.0', 'index.html'), showcaseHtml)
-log('wrote SHOWCASE-7.0.html + web/public/design-system/7.0.html + 7.0/index.html', showcaseHtml.length, 'chars')
+write(join(DS_DIR, 'SHOWCASE-8.0.0.html'), showcaseHtml)
+write(join(PUBLIC_DIR, '8.0.0.html'), showcaseHtml)
+write(join(PUBLIC_DIR, '8.0.0', 'index.html'), showcaseHtml)
+log('wrote SHOWCASE-8.0.0.html + web/public/design-system/8.0.0.html + 7.0/index.html', showcaseHtml.length, 'chars')
 
 /* ── 8) 报告 ──────────────────────────────────────────────────────────────── */
 
@@ -641,7 +641,7 @@ const bgTableHeader = '| 主题 | ' + bgKeys.join(' | ') + ' |'
 const bgTableSep = '|---|' + bgKeys.map(() => '---').join('|') + '|'
 const bgTable = (theme) => '| ' + (theme === 'light' ? 'Light' : 'Dark') + ' | ' + bgKeys.map((k) => BT + v.backgrounds[theme][k] + BT).join(' | ') + ' |'
 
-const contrastReport = `# UTER DESIGN SYSTEM 7.0 — 对比度验证报告
+const contrastReport = `# UTER DESIGN SYSTEM 8.0.0 — 对比度验证报告
 
 > 生成时间 ${stamp} · 计算引擎 \`registry/contrast-engine.mjs\` · 标准 WCAG 2.2 AA
 > 公式 \`${v.formula}\` · 采样 \`${v.sampling}\`
@@ -754,7 +754,7 @@ ${v.code.dark.rows.map((r) => `| Dark | \`#0E1524\` | \`${r.name}\` | \`${r.fina
 `
 
 const rollbackDrill = JSON.parse(readFileSync(join(DS_DIR, 'audit', 'rollback-drill.json'), 'utf8'))
-const migrationReport = `# UTER DESIGN SYSTEM 7.0 — 现状清单与迁移报告（Phase 1 清单 + Phase 9 迁移状态）
+const migrationReport = `# UTER DESIGN SYSTEM 8.0.0 — 现状清单与迁移报告（Phase 1 清单 + Phase 9 迁移状态）
 
 > 生成时间 ${stamp} · 分支 \`main\` · 工作区脏区 **998 项**（审计时实测）
 > 本报告只记录真实扫描结果，不覆盖任何并发未提交修改。
@@ -791,7 +791,7 @@ const migrationReport = `# UTER DESIGN SYSTEM 7.0 — 现状清单与迁移报�
 |---|---|
 | 唯一出口 | \`@utility ds-text-gradient-brand\`（\`web/src/design-system/foundations/typography.css\`） |
 | 历史色值（3.0 兼容层保留，未删除） | \`--ds-color-brand-gradient-from/via/to\` = \`#60a5fa / #a78bfa / #a855f7\`（\`tokens/colors.css:119-121\`） |
-| 7.0 运行时色值 | \`--ds7-color-gradient-{light,dark}-{from,via,to}\` 由 \`uds-semantic-bridge.css\` 注入，隔离命名不覆盖 3.0 |
+| 7.0 运行时色值 | \`--ds8-color-gradient-{light,dark}-{from,via,to}\` 由 \`uds-semantic-bridge.css\` 注入，隔离命名不覆盖 3.0 |
 | 消费点 | \`features/home/components/sections/hero.tsx\`、\`cta.tsx\` |
 | 历史渐变对比度 | Light 最差 ${v.gradient.light.legacyWorst.ratio}:1 / Dark 最差 ${v.gradient.dark.legacyWorst.ratio}:1 → 不达 4.5:1 |
 | 7.0 渐变对比度 | Light 最差 ${v.gradient.light.finalWorst.ratio}:1 / Dark 最差 ${v.gradient.dark.finalWorst.ratio}:1（${v.sampleCount} 点 × ${bgKeys.length} 背景）→ 全区间 ≥4.5:1 |
@@ -807,7 +807,7 @@ const migrationReport = `# UTER DESIGN SYSTEM 7.0 — 现状清单与迁移报�
 | 组件 | \`components/ai-elements/code-block.tsx\`（CodeMirror + HighlightStyle）、\`components/json-code-editor.tsx\`（Yace）、\`components/json-editor.tsx\`、\`components/ui/markdown.tsx\`、\`features/task-plugins/components/javascript-viewer.tsx\`（classHighlighter）、\`features/home/components/hero-terminal-demo.tsx\` |
 | 现有 syntax Token | **仅 5 个** \`--syntax-keyword/string/number/function/property\`，Light 在 \`theme.css:402-406\`（oklch），Dark 在 \`theme.css:663-667\` |
 | 现有 Terminal 色 | \`--term-*\` 系列在 \`theme.css:412-474 / 672-711\`，与 syntax 分离 |
-| 现有图表色 | \`--chart-1..6\` 在 \`theme.css\`（Light/Dark 双主题），已活引用 \`--ds7-color-chart-N\`（7.0 十二色板前 6 系列） |
+| 现有图表色 | \`--chart-1..6\` 在 \`theme.css\`（Light/Dark 双主题），已活引用 \`--ds8-color-chart-N\`（7.0 十二色板前 6 系列） |
 | 问题 | 语义不全（5/20）、未覆盖 Yace / Marked / Shiki 的统一映射、JSON 编辑器存在用图表色替代语法色的风险 |
 | 迁移后落地（本轮真实验证） | syntax 20 Token × 2 主题经 \`syntax-adapter\` 统一映射（15 语言 / 29 grammars 真实解析，C19）；CodeMirror \`code-block.tsx\` 23 项回归测试；终端 ANSI16 独立色板浏览器实测可读（C-R10）；逐引擎映射见 \`VSCODE-COLOR-MAPPING.md\` |
 | 剩余缺口 | 业务图表最多 6 系列（前 6 色经 theme.css 活引用 + resolveUds6ChartPalette 消费）；chart-7..12 已注入 bridge 备用；产品无 diff 界面，\`diff-added/removed\` 为预留 Token |
@@ -822,14 +822,14 @@ ${compatMap.migrationBatches.map((b) => `| ${b.id} | ${b.scope} | ${b.status} | 
 
 ### 5.1 冲突档处置
 
-CM-01 / CM-T01 / CM-T02 已于 2026-11-16 经用户授权正式切换为 REPLACED / RESOLVED（运行时值 = 7.0 manifest 值）；CM-02..CM-06（颜色语义冲突）保持 ISOLATE——颜色经 bridge 隔离命名（--ds7-*）注入，3.0 同名变量保留主题联动机制。
+CM-01 / CM-T01 / CM-T02 已于 2026-11-16 经用户授权正式切换为 REPLACED / RESOLVED（运行时值 = 7.0 manifest 值）；CM-02..CM-06（颜色语义冲突）保持 ISOLATE——颜色经 bridge 隔离命名（--ds8-*）注入，3.0 同名变量保留主题联动机制。
 
 | ID | Token | 3.0 | 7.0 | 级别 | 处置 |
 |---|---|---|---|---|---|
 ${compatMap.conflicts.map((c) => `| ${c.id} | \`${c.token}\` | ${c.v3} | ${c.v7} | ${c.severity} | ${c.action} |`).join('\n')}
 ${compatMap.typographyConflicts.map((c) => `| ${c.id} | \`${c.token}\` | ${c.v3} | ${c.v7} | — | ${c.action} |`).join('\n')}
 
-bridge（\`uds-semantic-bridge.css\`）只注入 \`--ds7-*\` 隔离命名，不覆盖任何 3.0 变量；回滚 = 删除 \`web/src/styles/index.css\` 的唯一 import 行。
+bridge（\`uds-semantic-bridge.css\`）只注入 \`--ds8-*\` 隔离命名，不覆盖任何 3.0 变量；回滚 = 删除 \`web/src/styles/index.css\` 的唯一 import 行。
 
 ### 5.2 回滚演练（真实执行）
 
@@ -852,7 +852,7 @@ bridge（\`uds-semantic-bridge.css\`）只注入 \`--ds7-*\` 隔离命名，不�
 `
 
 write(join(DS_DIR, 'CONTRAST-VERIFICATION-REPORT.md'), contrastReport)
-write(join(DS_DIR, 'UDS-7.0-MIGRATION-REPORT.md'), migrationReport)
+write(join(DS_DIR, 'UDS-8.0.0-MIGRATION-REPORT.md'), migrationReport)
 log('wrote contrast + migration reports')
 
 /* 其余报告由 finalize.mjs 在门禁跑完后生成，避免把未执行的检查写成已通过 */

@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /**
- * UDS 7.0 真实回滚演练（探针 C-M01）。
+ * UDS 8.0.0 真实回滚演练（探针 C-M01）。
  *
  * COMPAT-MAP.json 承诺：删除 web/src/styles/index.css 中 uds-semantic-bridge.css
  * 一行 import 即完整回滚。本脚本真实执行该演练：
@@ -44,7 +44,7 @@ let ok = true
 const step = (name, pass, detail) => {
   steps.push({ name, pass, detail })
   if (!pass) ok = false
-  console.log(`[UDS7-ROLLBACK-DRILL] ${pass ? 'PASS' : 'FAIL'} ${name} — ${detail}`)
+  console.log(`[UDS8-ROLLBACK-DRILL] ${pass ? 'PASS' : 'FAIL'} ${name} — ${detail}`)
 }
 
 const shaBefore = sha(INDEX_CSS)
@@ -70,7 +70,7 @@ if (!original.includes(IMPORT_LINE)) {
 }
 
 const payload = {
-  schema: 'UDS7-ROLLBACK-DRILL/1.0',
+  schema: 'UDS8-ROLLBACK-DRILL/1.0',
   executed_at: new Date().toISOString(),
   method: '删除 web/src/styles/index.css 中唯一 import 行 → 结构验证 → 字节级恢复',
   pass: ok,

@@ -466,12 +466,12 @@ jobs:
       - name: React component registry
         run: bun run components:registry:check
 
-      # UTER Design System 7.0：唯一现行设计系统规范。自动化检查器覆盖 Token 真源
+      # UTER Design System 8.0.0：唯一现行设计系统规范。自动化检查器覆盖 Token 真源
       # 一致性、注册表齐全性、1001 点渐变对比度、VS Code 语法映射、Showcase 完整性、
       # 状态纪律、真实页面回归、axe 无障碍与 Clerk 外部参考边界（C01-C22）。
       # 纯静态与本地产物只读检查，不降低 T1-T17、ALLOWLIST 或 baseline 阈值。
-      - name: Design system 7.0 governance
-        run: bun run design:7:check
+      - name: Design system 8.0.0 governance
+        run: bun run design:8:check
 
       # 版权头检查：只补缺失的 AGPL 头，不动任何代码格式，可安全设为必需。
       # 格式检查（format:check）**不要**设为必需：它按仓库根目录递归跑 oxfmt，

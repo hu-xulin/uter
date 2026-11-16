@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "registry_id": "UDS7-R-COMPONENTS",
-  "version": "7.0.0",
-  "generated_at": "2026-11-16T00:28:51.147Z",
+  "registry_id": "UDS8-R-COMPONENTS",
+  "version": "8.0.0",
+  "generated_at": "2026-11-16T03:32:38.176Z",
   "source": "web/src/design-system/component-registry.json",
   "total": 65,
   "policy": {
@@ -27,7 +27,7 @@
       "category": "disclosure",
       "implementation_path": "src/components/ui/accordion.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -48,7 +48,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/alert-dialog.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -69,7 +69,7 @@
       "category": "feedback",
       "implementation_path": "src/components/ui/alert.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -90,7 +90,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/aspect-ratio.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -111,7 +111,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/avatar.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -132,7 +132,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/badge.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -153,7 +153,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/breadcrumb.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -174,7 +174,7 @@
       "category": "action",
       "implementation_path": "src/components/ui/button-group.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -195,7 +195,7 @@
       "category": "action",
       "implementation_path": "src/components/ui/button.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -216,7 +216,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/calendar.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -237,7 +237,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/card.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -258,7 +258,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/carousel.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -279,7 +279,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/chart.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -300,7 +300,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/checkbox.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -321,7 +321,7 @@
       "category": "disclosure",
       "implementation_path": "src/components/ui/collapsible.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -342,7 +342,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/combobox-input.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -363,7 +363,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/combobox.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -384,7 +384,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/command.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -405,7 +405,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/context-menu.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -426,7 +426,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/dialog.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -447,7 +447,7 @@
       "category": "utility",
       "implementation_path": "src/components/ui/direction.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -468,7 +468,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/discount-badge.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -489,7 +489,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/drawer.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -510,7 +510,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/dropdown-menu.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -531,7 +531,7 @@
       "category": "feedback",
       "implementation_path": "src/components/ui/empty.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -552,7 +552,7 @@
       "category": "form",
       "implementation_path": "src/components/ui/field.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -573,7 +573,7 @@
       "category": "form",
       "implementation_path": "src/components/ui/form-label-tier.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -594,7 +594,7 @@
       "category": "form",
       "implementation_path": "src/components/ui/form.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -615,7 +615,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/hover-card.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -636,7 +636,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/icon-badge.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -657,7 +657,7 @@
       "category": "form",
       "implementation_path": "src/components/ui/input-group.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -678,7 +678,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/input-otp.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -699,7 +699,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/input.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -720,7 +720,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/item.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -741,7 +741,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/kbd.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -762,7 +762,7 @@
       "category": "form",
       "implementation_path": "src/components/ui/label.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -783,7 +783,7 @@
       "category": "content",
       "implementation_path": "src/components/ui/markdown.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -804,7 +804,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/menubar.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -825,7 +825,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/native-select.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -846,7 +846,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/navigation-menu.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -867,7 +867,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/pagination.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -888,7 +888,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/popover.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -909,7 +909,7 @@
       "category": "feedback",
       "implementation_path": "src/components/ui/progress.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -930,7 +930,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/radio-group.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -951,7 +951,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/resizable.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -972,7 +972,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/scroll-area.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -993,7 +993,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/secret-file-input.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1014,7 +1014,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/secret-input.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1035,7 +1035,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/secret-textarea.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1056,7 +1056,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/select.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1077,7 +1077,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/separator.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1098,7 +1098,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/sheet.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1119,7 +1119,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/sidebar.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1140,7 +1140,7 @@
       "category": "feedback",
       "implementation_path": "src/components/ui/skeleton.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1161,7 +1161,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/slider.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1182,7 +1182,7 @@
       "category": "feedback",
       "implementation_path": "src/components/ui/sonner.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1203,7 +1203,7 @@
       "category": "feedback",
       "implementation_path": "src/components/ui/spinner.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1224,7 +1224,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/switch.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1245,7 +1245,7 @@
       "category": "data-display",
       "implementation_path": "src/components/ui/table.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1266,7 +1266,7 @@
       "category": "navigation",
       "implementation_path": "src/components/ui/tabs.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1287,7 +1287,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/textarea.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1308,7 +1308,7 @@
       "category": "layout",
       "implementation_path": "src/components/ui/titled-card.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1329,7 +1329,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/toggle-group.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1350,7 +1350,7 @@
       "category": "input",
       "implementation_path": "src/components/ui/toggle.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [
@@ -1371,7 +1371,7 @@
       "category": "overlay",
       "implementation_path": "src/components/ui/tooltip.tsx",
       "specification_path": "docs/design-system/24-CODE-AND-DEVELOPER-UI-STANDARD.md",
-      "design_system_version": "7.0.0",
+      "design_system_version": "8.0.0",
       "implementation_status": "EXISTS_PRE_6",
       "migration_status": "PENDING_VISUAL_FREEZE",
       "states": [

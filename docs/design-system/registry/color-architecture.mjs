@@ -1,5 +1,5 @@
 /**
- * UDS 7.0 — 五层颜色架构（§4.1）与真实消费者语义
+ * UDS 8.0.0 — 五层颜色架构（§4.1）与真实消费者语义
  *
  * 五层：
  *   L1 Primitive Colors        → 基础色值，业务组件不得直接引用
@@ -13,7 +13,7 @@
  * 写入 TOKEN-REGISTRY.json 的 actualConsumers，检查器做双向断言。
  *
  * 命名隔离：canonical name 沿用 7.0 的 --ds-*（保留现有结构）；
- * build.mjs 派生的 runtimeName 为 --ds7-*，避免覆盖 3.0 运行时同名不同值变量。
+ * build.mjs 派生的 runtimeName 为 --ds8-*，避免覆盖 3.0 运行时同名不同值变量。
  */
 
 /** 每项：[短名, light, dark, 说明, 语义, 登记消费者] */
@@ -68,7 +68,7 @@ export const EXTRA_COLOR_GROUPS = [
     description: 'Chart Colors 6–12（1–5 见 tokens.mjs）—— 12 色体系，颜色不得作为唯一区分手段',
     contrastRequirement: '每个系列色 on chart surface >= 3:1（非文本）；任意两系列在正常视觉 + protanopia / deuteranopia / tritanopia 模拟下 CIEDE2000 >= 10（正常视觉 >= 12）',
     // 2026-11-15：v5 色板搜索定稿后接入真实图表运行时。消费者是
-    // brand-colors.ts 的调用时解析器（读 --ds7-color-chart-N，生成数组兜底），
+    // brand-colors.ts 的调用时解析器（读 --ds8-color-chart-N，生成数组兜底），
     // 由 dashboard/lib/charts.ts 的 getDashboardChartColors / USER_COLORS 使用。
     items: [
       I('6', '#9D6013', '#CD3503', '系列 6 赭橙', '第 6 数据系列', 'web/src/design-system/tokens/brand-colors.ts'),
@@ -92,7 +92,7 @@ export const EXTRA_COLOR_GROUPS = [
       // hero-terminal-demo.tsx 只消费 term-* 别名中的 command/flag/property/
       // string/number，不引用下列任何变量 —— 原登记为虚假消费者。这 22 色的
       // 真实消费者是 Showcase 终端区（scopedTerminalVars 按 pane 注入
-      // --ds7-color-terminal-*，光标 / 选区 / 状态输出 / ANSI16 全部 var() 消费）。
+      // --ds8-color-terminal-*，光标 / 选区 / 状态输出 / ANSI16 全部 var() 消费）。
       // 本组只做增量补齐，避免同名 Token 重复定义。
       I('cursor', '#5B5EE6', '#A1A3F7', '终端光标', '光标块 / 竖线', 'docs/design-system/registry/showcase-extensions.mjs'),
       I('selection', '#C7D2FE', '#33417A', '终端选区', '文本选中背景', 'docs/design-system/registry/showcase-extensions.mjs'),
@@ -228,8 +228,8 @@ export const COMPONENT_SPECS = [
 ].map((name, i) => ({
   id: 'CS-' + String(i + 1).padStart(2, '0'),
   name,
-  surfaceToken: '--ds7-color-component-' + name.toLowerCase() + '-surface',
-  foregroundToken: '--ds7-color-component-' + name.toLowerCase() + '-foreground',
+  surfaceToken: '--ds8-color-component-' + name.toLowerCase() + '-surface',
+  foregroundToken: '--ds8-color-component-' + name.toLowerCase() + '-foreground',
   interactionStates: ['default', 'hover', 'active', 'focus', 'selected', 'disabled', 'loading', 'error'],
   keyboardAccessible: true,
 }))
@@ -250,7 +250,7 @@ export const PRODUCT_CONTEXTS = [
   ['task-status', '任务状态', '任务失败 / 异常', '不得使用 chart-*'],
 ].map(([key, name, usage, rule]) => ({
   key, name, usage, rule,
-  token: '--ds7-color-product-' + key,
+  token: '--ds8-color-product-' + key,
 }))
 
 export const COLOR_LAYERS = [

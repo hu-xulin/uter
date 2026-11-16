@@ -20,9 +20,9 @@ import { describe, expect, test } from 'vitest'
 
 import { resolveUds6ChartPalette } from '@/design-system/tokens/brand-colors'
 import {
-  UDS7_CHART_PALETTE_DARK,
-  UDS7_CHART_PALETTE_LIGHT,
-} from '@/design-system/tokens/generated/uds7-chart-palette'
+  UDS8_CHART_PALETTE_DARK,
+  UDS8_CHART_PALETTE_LIGHT,
+} from '@/design-system/tokens/generated/uds8-chart-palette'
 import type { QuotaDataItem } from '@/features/dashboard/types'
 import type { TimeGranularity } from '@/lib/time'
 
@@ -164,12 +164,12 @@ describe.each(cases)('dashboard $granularity chart chronology', (scenario) => {
   })
 })
 
-describe('UDS 7.0 chart palette', () => {
+describe('UDS 8.0.0 chart palette', () => {
   test('series colors are the 12-token palette, distinct and cycled beyond 12', () => {
     const twelve = getDashboardChartColors(12)
     expect(twelve).toHaveLength(12)
     expect(new Set(twelve).size).toBe(12)
-    expect(twelve).toEqual([...UDS7_CHART_PALETTE_LIGHT])
+    expect(twelve).toEqual([...UDS8_CHART_PALETTE_LIGHT])
 
     const fourteen = getDashboardChartColors(14)
     expect(fourteen).toHaveLength(14)
@@ -179,13 +179,13 @@ describe('UDS 7.0 chart palette', () => {
 
   test('falls back to the generated mirror when CSS variables are unavailable', () => {
     // 测试环境没有注入 bridge CSS：必须回退到生成的 TS 镜像而不是空串。
-    expect(resolveUds6ChartPalette()).toEqual([...UDS7_CHART_PALETTE_LIGHT])
+    expect(resolveUds6ChartPalette()).toEqual([...UDS8_CHART_PALETTE_LIGHT])
   })
 
   test('selects the dark mirror when the document is in dark mode', () => {
     document.documentElement.classList.add('dark')
     try {
-      expect(resolveUds6ChartPalette()).toEqual([...UDS7_CHART_PALETTE_DARK])
+      expect(resolveUds6ChartPalette()).toEqual([...UDS8_CHART_PALETTE_DARK])
     } finally {
       document.documentElement.classList.remove('dark')
     }

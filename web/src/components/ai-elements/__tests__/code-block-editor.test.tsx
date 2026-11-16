@@ -76,7 +76,7 @@ describe('CodeBlockEditor', () => {
   })
 })
 
-describe('CodeBlock language coverage (UDS 7.0 Phase 3)', () => {
+describe('CodeBlock language coverage (UDS 8.0.0 Phase 3)', () => {
   const cases: Array<{ code: string; language: string }> = [
     { language: 'json', code: '{"name": "uter", "count": 1}' },
     { language: 'python', code: 'def hello():\n    return 42\n' },
@@ -108,13 +108,13 @@ describe('CodeBlock language coverage (UDS 7.0 Phase 3)', () => {
   })
 })
 
-describe('Code chrome (UDS 7.0 §5.3 / §5.4)', () => {
+describe('Code chrome (UDS 8.0.0 §5.3 / §5.4)', () => {
   test('code block and editor use separate background tokens', () => {
     const { getByRole, rerender } = render(
       <CodeBlock code='x' language='plaintext' />
     )
     expect(getByRole('textbox', { name: 'plaintext' }).closest('.group\\/code-block')?.className).toContain(
-      'bg-(--ds7-color-code-codeblock-background)'
+      'bg-(--ds8-color-code-codeblock-background)'
     )
 
     rerender(
@@ -127,7 +127,7 @@ describe('Code chrome (UDS 7.0 §5.3 / §5.4)', () => {
       />
     )
     expect(getByRole('textbox', { name: 'Edit' }).closest('.group\\/code-block')?.className).toContain(
-      'bg-(--ds7-color-code-editor-background)'
+      'bg-(--ds8-color-code-editor-background)'
     )
   })
 

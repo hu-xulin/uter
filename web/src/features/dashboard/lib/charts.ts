@@ -60,7 +60,7 @@ function monoLegend(extra: Record<string, unknown> = {}) {
 }
 
 /**
- * 图表系列色：UDS 7.0 的 12 色语义色板（--ds7-color-chart-1..12），
+ * 图表系列色：UDS 8.0.0 的 12 色语义色板（--ds8-color-chart-1..12），
  * 调用时按当前主题解析；超过 12 个系列时循环取色。
  * 色板通过正常视觉 + 三类色觉缺陷模拟的 CIEDE2000 >= 10 校验。
  */
@@ -735,7 +735,7 @@ export function processUserChartData(
   const tt: TFunction = t ?? ((x) => x)
   const { config } = getCurrencyDisplay()
   const quotaPerUnit = config.quotaPerUnit
-  // UDS 7.0 图表色板：调用时按当前主题解析，主题切换后重新取色。
+  // UDS 8.0.0 图表色板：调用时按当前主题解析，主题切换后重新取色。
   const userColors = resolveUds6ChartPalette()
 
   const formatVal = (raw: number) => renderQuotaCompat(raw, 2)

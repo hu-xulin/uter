@@ -1,0 +1,153 @@
+{
+  "checker": "visual-check.mjs",
+  "executed": true,
+  "engine": "Playwright Chromium (headless)",
+  "started_at": "2026-11-16T03:33:09.114Z",
+  "verdict": "PASS",
+  "cases": [
+    {
+      "theme": "light",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "screenshot": "web/visual-regression/uds8/screenshots/uds8-light-desktop.png",
+      "info": {
+        "theme": "light",
+        "viewport": "desktop",
+        "modules": 38,
+        "sections": 418,
+        "tokenRows": 883,
+        "languages": 18,
+        "syntaxSwatches": 36,
+        "componentStates": 20,
+        "gradientSamples": 1,
+        "brandVar": "#5B5EE6",
+        "bodyFontVar": "14px",
+        "gradientFrom": "#1D4ED8",
+        "syntaxKeyword": "#0000FF",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyFg": "rgb(15, 23, 42)",
+        "newGradientImage": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
+        "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
+        "scrollHeight": 102211,
+        "reducedMotionRule": true
+      },
+      "errors": []
+    },
+    {
+      "theme": "dark",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "screenshot": "web/visual-regression/uds8/screenshots/uds8-dark-desktop.png",
+      "info": {
+        "theme": "dark",
+        "viewport": "desktop",
+        "modules": 38,
+        "sections": 418,
+        "tokenRows": 883,
+        "languages": 18,
+        "syntaxSwatches": 36,
+        "componentStates": 20,
+        "gradientSamples": 1,
+        "brandVar": "#8B8DF5",
+        "bodyFontVar": "14px",
+        "gradientFrom": "#1D4ED8",
+        "syntaxKeyword": "#569CD6",
+        "bodyBg": "rgb(11, 17, 32)",
+        "bodyFg": "rgb(241, 245, 249)",
+        "newGradientImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
+        "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
+        "scrollHeight": 102211,
+        "reducedMotionRule": true
+      },
+      "errors": []
+    },
+    {
+      "theme": "light",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "screenshot": "web/visual-regression/uds8/screenshots/uds8-light-mobile.png",
+      "info": {
+        "theme": "light",
+        "viewport": "mobile",
+        "modules": 38,
+        "sections": 418,
+        "tokenRows": 883,
+        "languages": 18,
+        "syntaxSwatches": 36,
+        "componentStates": 20,
+        "gradientSamples": 1,
+        "brandVar": "#5B5EE6",
+        "bodyFontVar": "14px",
+        "gradientFrom": "#1D4ED8",
+        "syntaxKeyword": "#0000FF",
+        "bodyBg": "rgb(248, 250, 252)",
+        "bodyFg": "rgb(15, 23, 42)",
+        "newGradientImage": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
+        "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
+        "scrollHeight": 185055,
+        "reducedMotionRule": true
+      },
+      "errors": []
+    },
+    {
+      "theme": "dark",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "screenshot": "web/visual-regression/uds8/screenshots/uds8-dark-mobile.png",
+      "info": {
+        "theme": "dark",
+        "viewport": "mobile",
+        "modules": 38,
+        "sections": 418,
+        "tokenRows": 883,
+        "languages": 18,
+        "syntaxSwatches": 36,
+        "componentStates": 20,
+        "gradientSamples": 1,
+        "brandVar": "#8B8DF5",
+        "bodyFontVar": "14px",
+        "gradientFrom": "#1D4ED8",
+        "syntaxKeyword": "#569CD6",
+        "bodyBg": "rgb(11, 17, 32)",
+        "bodyFg": "rgb(241, 245, 249)",
+        "newGradientImage": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
+        "oldGradientImage": "linear-gradient(90deg, rgb(96, 165, 250) 0%, rgb(167, 139, 250) 50%, rgb(168, 85, 247) 100%)",
+        "scrollHeight": 185055,
+        "reducedMotionRule": true
+      },
+      "errors": []
+    }
+  ],
+  "lightDarkDiff": [
+    {
+      "key": "brandVar",
+      "light": "#5B5EE6",
+      "dark": "#8B8DF5",
+      "changed": true
+    },
+    {
+      "key": "bodyBg",
+      "light": "rgb(248, 250, 252)",
+      "dark": "rgb(11, 17, 32)",
+      "changed": true
+    },
+    {
+      "key": "bodyFg",
+      "light": "rgb(15, 23, 42)",
+      "dark": "rgb(241, 245, 249)",
+      "changed": true
+    },
+    {
+      "key": "newGradientImage",
+      "light": "linear-gradient(90deg, rgb(29, 78, 216) 0%, rgb(109, 40, 217) 50%, rgb(126, 34, 206) 100%)",
+      "dark": "linear-gradient(90deg, rgb(147, 197, 253) 0%, rgb(196, 181, 253) 50%, rgb(216, 180, 254) 100%)",
+      "changed": true
+    }
+  ],
+  "consoleErrors": 0,
+  "limitation": "仅覆盖 7.0 Showcase 单文件在 Light/Dark × Desktop/Mobile 的真实渲染；真实产品页面（React 路由）视觉回归需完整服务栈，状态 BLOCKED，未执行，不得计为 PASS。"
+}

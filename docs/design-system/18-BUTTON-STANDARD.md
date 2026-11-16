@@ -1,10 +1,10 @@
-# UTER DESIGN SYSTEM 7.0 · 18 Button Standard
+# UTER DESIGN SYSTEM 8.0.0 · 18 Button Standard
 
-> **规范编号** `UDS7-S18` · **唯一文件** `18-BUTTON-STANDARD.md` · **版本** `7.0.0` · **状态** `ACCEPTANCE_READY`
+> **规范编号** `UDS8-S18` · **唯一文件** `18-BUTTON-STANDARD.md` · **版本** `8.0.0` · **状态** `ACCEPTANCE_READY`
 > **上级归属** 36 个正式规范模块之一
 > **唯一数值来源** [`TOKEN-MANIFEST.json`](./TOKEN-MANIFEST.json) · **生成器** [`registry/build.mjs`](./registry/build.mjs)
 > **对应设计原则** Consistency / Predictability / Efficiency
-> **视觉审核入口** [`SHOWCASE-7.0.html`](./SHOWCASE-7.0.html#mod-18)
+> **视觉审核入口** [`SHOWCASE-8.0.0.html`](./SHOWCASE-8.0.0.html#mod-18)
 
 ---
 
@@ -12,7 +12,7 @@
 
 7 变体 × 4 尺寸，8 个交互状态全部给出确定值；品牌实底按钮白字实测 5.01:1。
 
-本模块属于 7.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；7.0 视觉基线已于 2026-11-15 经用户授权冻结（`VISUAL-BASELINE.json`），全站迁移按 Phase 6 分期执行。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
 
 | 属性 | 值 |
 |---|---|
@@ -37,7 +37,7 @@
 
 ## 3. Tokens
 
-本表由 `TOKEN-MANIFEST.json` 自动展开。列出的每个 Token 在 CSS / TypeScript / Showcase 中数值一致，由 `check-design-system-7.0.mjs` 校验；`—（同值）` 表示该 Token 主题无关。
+本表由 `TOKEN-MANIFEST.json` 自动展开。列出的每个 Token 在 CSS / TypeScript / Showcase 中数值一致，由 `check-design-system-8.0.0.mjs` 校验；`—（同值）` 表示该 Token 主题无关。
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
@@ -109,13 +109,13 @@ Showcase 中 `#mod-18` 分区提供本模块的真实渲染：色块、字号、
 
 1. 7 变体 × 4 尺寸 × 8 状态矩阵齐全
 2. 本模块引用的每个 Token 必须能在 TOKEN-MANIFEST.json 中解析，且 CSS / TS / Showcase 三处数值一致
-3. check-design-system-7.0.mjs 对应检查项 EXIT=0
+3. check-design-system-8.0.0.mjs 对应检查项 EXIT=0
 4. Light / Dark 两套映射完整，无缺失键、无主题特例裸色值
 5. Do / Don’t 中的反例在全库静态扫描中命中数为 0（或已登记进 EXCEPTION-REGISTRY.json）
 
 | 检查项 | 执行方式 | 当前结果 |
 |---|---|---|
-| Token 一致性 | `node web/scripts/check-design-system-7.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
+| Token 一致性 | `node web/scripts/check-design-system-8.0.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
 | 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
@@ -125,7 +125,7 @@ Showcase 中 `#mod-18` 分区提供本模块的真实渲染：色块、字号、
 
 | 项目 | 值 |
 |---|---|
-| 规范注册 | [`ACCEPTANCE-MATRIX.json`](./ACCEPTANCE-MATRIX.json) → `UDS7-S18` |
+| 规范注册 | [`ACCEPTANCE-MATRIX.json`](./ACCEPTANCE-MATRIX.json) → `UDS8-S18` |
 | Token 注册 | [`TOKEN-REGISTRY.json`](./TOKEN-REGISTRY.json) |
 | 依赖 | [`DEPENDENCY-GRAPH.json`](./DEPENDENCY-GRAPH.json) |
 | 废弃 | [`DEPRECATED-REGISTRY.json`](./DEPRECATED-REGISTRY.json) |

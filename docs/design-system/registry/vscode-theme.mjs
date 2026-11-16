@@ -1,5 +1,5 @@
 /**
- * UDS 7.0 — VS Code Light+ / Dark+ 官方主题提取器（唯一权威来源）
+ * UDS 8.0.0 — VS Code Light+ / Dark+ 官方主题提取器（唯一权威来源）
  *
  * 证据文件：audit/vscode/vscode-{light_vs,light_plus,dark_vs,dark_plus}.json
  *   来源：https://github.com/microsoft/vscode

@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "registry_id": "UDS7-R-DEPENDENCIES",
-  "version": "7.0.0",
-  "generated_at": "2026-11-16T00:28:51.147Z",
+  "registry_id": "UDS8-R-DEPENDENCIES",
+  "version": "8.0.0",
+  "generated_at": "2026-11-16T03:32:38.176Z",
   "layers": [
     "Primitive Tokens",
     "Semantic Tokens",
@@ -18,7 +18,7 @@
     },
     {
       "id": "semantic",
-      "count": 172
+      "count": 177
     },
     {
       "id": "component",
@@ -80,7 +80,6 @@
       "web/src/design-system/foundations/index.css",
       "web/src/design-system/foundations/motion.css",
       "web/src/design-system/foundations/typography.css",
-      "web/src/design-system/tokens/colors.css",
       "web/src/design-system/tokens/elevation.css",
       "web/src/design-system/tokens/generated/brand.css",
       "web/src/design-system/tokens/index.css",

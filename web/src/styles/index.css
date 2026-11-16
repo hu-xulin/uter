@@ -57,7 +57,7 @@ For commercial licensing, please contact support@uter.ai
  * 导入顺序有约束：`tokens/typography.css` 里的 `@theme` 必须晚于
  * `@import 'tailwindcss'`，否则覆盖不了内置字号阶梯。 */
 @import '../design-system/tokens/index.css';
-/* UDS 7.0 语义桥接层：--ds7-* 隔离命名，不覆盖 3.0 同名变量。
+/* UDS 8.0.0 语义桥接层：--ds8-* 隔离命名，不覆盖 3.0 同名变量。
  * 由 docs/design-system/registry/build.mjs 从 TOKEN-MANIFEST.json 生成。
  * 回滚 = 删除本行 @import。 */
 @import '../design-system/tokens/uds-semantic-bridge.css';
@@ -82,26 +82,26 @@ For commercial licensing, please contact support@uter.ai
     white-space: pre !important;
   }
 
-  /* UDS 7.0：JSON 语法色不得借用图表色（主题预设会漂移 chart 值）。
-   * 统一消费 VS Code Light+/Dark+ 官方主题派生的 --ds7-syntax-*。 */
+  /* UDS 8.0.0：JSON 语法色不得借用图表色（主题预设会漂移 chart 值）。
+   * 统一消费 VS Code Light+/Dark+ 官方主题派生的 --ds8-syntax-*。 */
   .json-code-editor-highlight .yace-tok--str {
-    color: var(--ds7-syntax-string);
+    color: var(--ds8-syntax-string);
   }
 
   .json-code-editor-highlight .yace-tok--num {
-    color: var(--ds7-syntax-number);
+    color: var(--ds8-syntax-number);
   }
 
   .json-code-editor-highlight .yace-tok--kw {
-    color: var(--ds7-syntax-keyword);
+    color: var(--ds8-syntax-keyword);
   }
 
   .json-code-editor-highlight .yace-tok--punc {
-    color: var(--ds7-syntax-punctuation);
+    color: var(--ds8-syntax-punctuation);
   }
 
   .json-code-editor-highlight .yace-tok--com {
-    color: var(--ds7-syntax-comment);
+    color: var(--ds8-syntax-comment);
   }
 }
 

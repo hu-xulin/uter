@@ -2,7 +2,7 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UTER DESIGN SYSTEM 7.0 — Showcase 扩展区块（P0 整改 §7 / §8 / §9）
+ * UTER DESIGN SYSTEM 8.0.0 — Showcase 扩展区块（P0 整改 §7 / §8 / §9）
  *
  * 本模块只做「从 TOKEN-MANIFEST.json + 真实验证结果 → HTML」的派生，
  * 不另立任何色值 / 字号 / 规范数值。所有 HEX 均来自 manifest 或验证引擎。
@@ -65,7 +65,7 @@ export function measuredTokenSet(v) {
 
 /* ── 扩展区块 CSS（全部使用 x- 前缀，避免与既有类名冲突） ────────────────── */
 export const EXTENSION_CSS = `
-/* UDS7 Showcase Extensions */
+/* UDS8 Showcase Extensions */
 :root { --x-line: var(--page-border); --x-muted: var(--page-fg); }
 .x-chip{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--x-line);vertical-align:middle;margin-left:5px;flex:none}
 .x-color{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -121,33 +121,33 @@ export const EXTENSION_CSS = `
 .x-ansi-cell b{display:block;width:100%;height:20px;border-radius:3px;margin-bottom:4px}
 .x-ansi-cell span{display:block;font:12px/1.35 var(--ds-font-mono);overflow:hidden;text-overflow:ellipsis}
 
-/* Code Chrome（§5.3 完整代码样式：全部颜色经 var(--ds7-color-code-*) 真实消费） */
+/* Code Chrome（§5.3 完整代码样式：全部颜色经 var(--ds8-color-code-*) 真实消费） */
 .x-code-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-top:10px}
 .x-code-pane{border:1px solid var(--x-line);border-radius:8px;overflow:hidden}
-.x-code-toolbar{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--ds7-color-code-toolbar-background);border-bottom:1px solid var(--x-line);font:500 12px/1.4 var(--ds-font-mono)}
-.x-code-lang{padding:1px 7px;border-radius:4px;background:var(--ds7-color-code-language-badge);color:var(--ds7-color-code-foreground)}
-.x-code-copy{margin-left:auto;padding:1px 8px;border:1px solid var(--x-line);border-radius:4px;color:var(--ds7-color-code-foreground)}
-.x-code-toolbar .x-muted{color:var(--ds7-color-code-foreground)}
-.x-code-editor{position:relative;background:var(--ds7-color-code-background);color:var(--ds7-color-code-foreground);font:var(--ds-weight-regular) var(--ds-text-xs)/var(--ds-leading-code) var(--ds-font-mono);padding:6px 14px 6px 0;white-space:pre;overflow-x:auto}
+.x-code-toolbar{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--ds8-color-code-toolbar-background);border-bottom:1px solid var(--x-line);font:500 12px/1.4 var(--ds-font-mono)}
+.x-code-lang{padding:1px 7px;border-radius:4px;background:var(--ds8-color-code-language-badge);color:var(--ds8-color-code-foreground)}
+.x-code-copy{margin-left:auto;padding:1px 8px;border:1px solid var(--x-line);border-radius:4px;color:var(--ds8-color-code-foreground)}
+.x-code-toolbar .x-muted{color:var(--ds8-color-code-foreground)}
+.x-code-editor{position:relative;background:var(--ds8-color-code-background);color:var(--ds8-color-code-foreground);font:var(--ds-weight-regular) var(--ds-text-xs)/var(--ds-leading-code) var(--ds-font-mono);padding:6px 14px 6px 0;white-space:pre;overflow-x:auto}
 .x-code-line{display:flex;min-height:var(--ds-leading-code)}
-.x-code-gutter{flex:none;width:44px;padding-right:6px;text-align:right;background:var(--ds7-color-code-gutter-background);color:var(--ds7-color-code-gutter);user-select:none}
-.x-code-foldmark{display:inline-block;width:12px;color:var(--ds7-color-code-fold-control);text-align:left}
+.x-code-gutter{flex:none;width:44px;padding-right:6px;text-align:right;background:var(--ds8-color-code-gutter-background);color:var(--ds8-color-code-gutter);user-select:none}
+.x-code-foldmark{display:inline-block;width:12px;color:var(--ds8-color-code-fold-control);text-align:left}
 .x-code-text{flex:1;min-width:0;padding-left:8px}
-.x-code-current{background:var(--ds7-color-code-current-line);box-shadow:inset 2px 0 0 var(--ds7-color-code-active-line-border)}
-.x-code-caret{display:inline-block;width:2px;height:14px;vertical-align:-2px;background:var(--ds7-color-code-cursor)}
-.x-code-selection{background:var(--ds7-color-code-selection)}
-.x-code-bracket{background:var(--ds7-color-code-bracket-match);border-radius:2px}
-.x-code-indent{display:inline-block;width:1px;height:14px;vertical-align:-2px;background:var(--ds7-color-code-indent-guide);margin-right:7px}
-.x-code-errline{background:var(--ds7-color-code-line-error)}
-.x-code-err{text-decoration:underline wavy var(--ds7-color-code-error-decoration);text-underline-offset:3px}
-.x-code-warn{text-decoration:underline wavy var(--ds7-color-code-warning-decoration);text-underline-offset:3px}
-.x-code-added{background:var(--ds7-color-code-diff-added)}
-.x-code-removed{background:var(--ds7-color-code-diff-removed)}
-.x-code-gutter-added{background:var(--ds7-color-code-line-added);color:var(--ds7-color-code-foreground)}
-.x-code-gutter-removed{background:var(--ds7-color-code-line-deleted);color:var(--ds7-color-code-foreground)}
-.x-code-foldchip{color:var(--ds7-color-code-fold);border:1px solid var(--ds7-color-code-fold);border-radius:3px;padding:0 4px;font-size:12px}
-.x-code-scrollbar{position:absolute;top:6px;right:3px;width:6px;height:42px;border-radius:3px;background:var(--ds7-color-code-scrollbar)}
-.x-code-blockstrip{margin:0;padding:8px 12px;background:var(--ds7-color-code-codeblock-background);color:var(--ds7-color-code-foreground);font:var(--ds-text-xs)/var(--ds-leading-code) var(--ds-font-mono);border-top:1px solid var(--x-line);white-space:pre}
+.x-code-current{background:var(--ds8-color-code-current-line);box-shadow:inset 2px 0 0 var(--ds8-color-code-active-line-border)}
+.x-code-caret{display:inline-block;width:2px;height:14px;vertical-align:-2px;background:var(--ds8-color-code-cursor)}
+.x-code-selection{background:var(--ds8-color-code-selection)}
+.x-code-bracket{background:var(--ds8-color-code-bracket-match);border-radius:2px}
+.x-code-indent{display:inline-block;width:1px;height:14px;vertical-align:-2px;background:var(--ds8-color-code-indent-guide);margin-right:7px}
+.x-code-errline{background:var(--ds8-color-code-line-error)}
+.x-code-err{text-decoration:underline wavy var(--ds8-color-code-error-decoration);text-underline-offset:3px}
+.x-code-warn{text-decoration:underline wavy var(--ds8-color-code-warning-decoration);text-underline-offset:3px}
+.x-code-added{background:var(--ds8-color-code-diff-added)}
+.x-code-removed{background:var(--ds8-color-code-diff-removed)}
+.x-code-gutter-added{background:var(--ds8-color-code-line-added);color:var(--ds8-color-code-foreground)}
+.x-code-gutter-removed{background:var(--ds8-color-code-line-deleted);color:var(--ds8-color-code-foreground)}
+.x-code-foldchip{color:var(--ds8-color-code-fold);border:1px solid var(--ds8-color-code-fold);border-radius:3px;padding:0 4px;font-size:12px}
+.x-code-scrollbar{position:absolute;top:6px;right:3px;width:6px;height:42px;border-radius:3px;background:var(--ds8-color-code-scrollbar)}
+.x-code-blockstrip{margin:0;padding:8px 12px;background:var(--ds8-color-code-codeblock-background);color:var(--ds8-color-code-foreground);font:var(--ds-text-xs)/var(--ds-leading-code) var(--ds-font-mono);border-top:1px solid var(--x-line);white-space:pre}
 .x-code-caption{padding:6px 10px;background:var(--page-surface);font:12px/1.5 var(--ds-font-mono);color:var(--page-muted)}
 
 /* 12 色图表 */
@@ -230,11 +230,11 @@ function renderArchitecture(M, T) {
 function renderVscode(M, syntaxData, T) {
   const rows = VSCODE_SYNTAX.rows
   const comparison = syntaxData ? renderVscodeComparison(syntaxData, 6) : '<p class="x-hint">语法解析数据不可用（BLOCKED，未伪造对照）。</p>'
-  const mapRows = rows.map((r) => `<tr data-runtime-token="--ds7-syntax-${esc(r.key)}">
+  const mapRows = rows.map((r) => `<tr data-runtime-token="--ds8-syntax-${esc(r.key)}">
     <td><code>${esc(r.key)}</code></td><td><code>${esc(r.scope)}</code></td>
     <td>${colorCell(r.officialLight)}</td><td>${colorCell(r.officialDark)}</td>
     <td>${colorCell(r.adopted.light)}</td><td>${colorCell(r.adopted.dark)}</td>
-    <td><code>--ds7-syntax-${esc(r.key)}</code></td>
+    <td><code>--ds8-syntax-${esc(r.key)}</code></td>
     <td>${r.adjustment?.light?.adjusted || r.adjustment?.dark?.adjusted ? '<span class="x-badge">WCAG 有限调整</span>' : '<span class="x-badge measured">官方原值</span>'}</td></tr>`).join('\n')
 
   const adjusted = rows.filter((r) => r.adjustment?.light?.adjusted || r.adjustment?.dark?.adjusted)
@@ -251,7 +251,7 @@ function renderVscode(M, syntaxData, T) {
   </div>
   <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">真实 Shiki TextMate grammar 解析结果 · 前 6 种语言四栏对照</h3>
   ${comparison}
-  <p class="x-cc-note">四栏使用不同基底：VS Code 栏取官方 light_vs / dark_vs 背景与官方 tokenColor；Uter 栏取 Uter 代码块背景与 <code>--ds7-syntax-*</code>（由 <code>uds-semantic-bridge.css</code> 注入，Showcase 内按 pane 作用域展开为 manifest 定值，保证 Light/Dark 同屏可比）。<code>data-variant</code> / <code>data-syntax</code> 可供自动化像素比对定位。</p>
+  <p class="x-cc-note">四栏使用不同基底：VS Code 栏取官方 light_vs / dark_vs 背景与官方 tokenColor；Uter 栏取 Uter 代码块背景与 <code>--ds8-syntax-*</code>（由 <code>uds-semantic-bridge.css</code> 注入，Showcase 内按 pane 作用域展开为 manifest 定值，保证 Light/Dark 同屏可比）。<code>data-variant</code> / <code>data-syntax</code> 可供自动化像素比对定位。</p>
   <h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">20 个语义 Token · 官方 scope → Uter 采用值（含 HEX / RGB）</h3>
   <div class="table-wrap x-scroll" tabindex="0" role="region" aria-label="VS Code 到 Uter 语法色映射表"><table><thead><tr><th>语义 Token</th><th>官方 TextMate Scope</th><th>VS Code Light+</th><th>VS Code Dark+</th><th>Uter Light</th><th>Uter Dark</th><th>Runtime Token</th><th>取值说明</th></tr></thead><tbody>${mapRows}</tbody></table></div>
   <p class="note">文档候选基线与官方源码存在 ${diffCount} 处主题取值差异，一律以官方源码为准；其中 ${adjusted.length} 个官方色在 Uter 代码块背景上低于 4.5:1，做有限明度调整并逐项记录，见 <code>VSCODE-COLOR-MAPPING.md</code> 与 <code>audit/syntax-validation.json</code>。源码仓库：<span class="x-mono">${esc(sourceText)}</span>。</p>
@@ -262,7 +262,7 @@ function renderVscode(M, syntaxData, T) {
 /* ── 2b) Code Chrome（§5.3 完整代码样式演示） ────────────────────────────── */
 /**
  * 代码 chrome 色板按 pane 作用域注入运行时变量（与 Terminal 同一机制）：
- * Light / Dark 同屏各自消费自己的 --ds7-color-code-*。元素一律写 var()，
+ * Light / Dark 同屏各自消费自己的 --ds8-color-code-*。元素一律写 var()，
  * HEX 只作信息标签。产品侧 CodeMirror（code-block.tsx）真实实现括号匹配 /
  * 缩进参考线 / 折叠 / 当前行 / JSON lint 错误警告装饰；diff 视图产品暂无
  * 表面，diff-added / diff-removed / line-* Token 在此真实演示并如实登记预留。
@@ -275,7 +275,7 @@ export function scopedCodeVars(T) {
 }
 
 function renderCodeChrome(M, T) {
-  const cv = (short) => `var(${T[`--ds-color-code-${short}`]?.runtimeName ?? `--ds7-color-code-${short}`})`
+  const cv = (short) => `var(${T[`--ds-color-code-${short}`]?.runtimeName ?? `--ds8-color-code-${short}`})`
   const hex = (short, theme) => T[`--ds-color-code-${short}`]?.[theme] ?? '—'
 
   const chromePane = (theme) => `<div class="x-code-pane" data-code-theme="${theme}">
@@ -305,8 +305,8 @@ function renderCodeChrome(M, T) {
     ['编辑器背景（CodeBlockEditor）', 'editor-background', null],
   ]
   const legendRows = features.map(([label, a, b]) => {
-    const cell = (short) => short ? `<td>${colorCell(hex(short, 'light'))}</td><td>${colorCell(hex(short, 'dark'))}</td><td><code>--ds7-color-code-${esc(short)}</code></td>` : '<td>—</td><td>—</td><td>—</td>'
-    return `<tr data-runtime-token="--ds7-color-code-${esc(a)}"><td>${esc(label)}</td>${cell(a)}${cell(b)}</tr>`
+    const cell = (short) => short ? `<td>${colorCell(hex(short, 'light'))}</td><td>${colorCell(hex(short, 'dark'))}</td><td><code>--ds8-color-code-${esc(short)}</code></td>` : '<td>—</td><td>—</td><td>—</td>'
+    return `<tr data-runtime-token="--ds8-color-code-${esc(a)}"><td>${esc(label)}</td>${cell(a)}${cell(b)}</tr>`
   }).join('\n')
 
   return `<h3 style="font-size:var(--ds-text-sm);margin:var(--ds-space-5) 0 8px">Code Chrome · §5.3 完整代码样式（Light / Dark 双面板真实消费 24 个 code Token）</h3>
@@ -318,7 +318,7 @@ function renderCodeChrome(M, T) {
 /* ── 3) Terminal / ANSI16 ────────────────────────────────────────────────── */
 /**
  * Terminal 色板按 pane 作用域注入运行时变量：Light / Dark 同屏时各自消费
- * 自己的 --ds7-color-terminal-*，与 scopedSyntaxVars 同一机制。元素一律写
+ * 自己的 --ds8-color-terminal-*，与 scopedSyntaxVars 同一机制。元素一律写
  * var()，不烘焙 HEX —— HEX 只作为信息标签展示。
  */
 export function scopedTerminalVars(T) {
@@ -329,7 +329,7 @@ export function scopedTerminalVars(T) {
 }
 
 function renderTerminal(M, T) {
-  const tv = (short) => `var(${T[`--ds-color-terminal-${short}`]?.runtimeName ?? `--ds7-color-terminal-${short}`})`
+  const tv = (short) => `var(${T[`--ds-color-terminal-${short}`]?.runtimeName ?? `--ds8-color-terminal-${short}`})`
   const ansi = Array.from({ length: 16 }, (_, i) => `--ds-color-terminal-ansi-${i}`)
   const ansiGrid = (theme) => ansi.map((n) => {
     const t = T[n]
@@ -354,7 +354,7 @@ function renderTerminal(M, T) {
 
   return `<section class="panel" id="terminal">
   <h2>Terminal Light / Dark 独立色板 + ANSI16</h2>
-  <p class="panel-sub">Terminal 色系与语法高亮色系、图表色系三者互不引用（检查器 C13）。Light / Dark 各有独立背景与前景，不复用 <code>--ds-color-surface-*</code> 或 <code>--ds-syntax-*</code>。全部 32 个终端 Token（背景 / 前景 / 提示符 / 命令 / 参数 / 属性 / 字符串 / 数字 / 在线点 / 窗口点 / 光标 / 选区 / 错误 / 警告 / 成功 / 信息 + ANSI16）均来自 <code>TOKEN-MANIFEST.json</code>，按 pane 作用域注入 <code>--ds7-color-terminal-*</code> 运行时变量真实消费，并展示 HEX / RGB。</p>
+  <p class="panel-sub">Terminal 色系与语法高亮色系、图表色系三者互不引用（检查器 C13）。Light / Dark 各有独立背景与前景，不复用 <code>--ds-color-surface-*</code> 或 <code>--ds-syntax-*</code>。全部 32 个终端 Token（背景 / 前景 / 提示符 / 命令 / 参数 / 属性 / 字符串 / 数字 / 在线点 / 窗口点 / 光标 / 选区 / 错误 / 警告 / 成功 / 信息 + ANSI16）均来自 <code>TOKEN-MANIFEST.json</code>，按 pane 作用域注入 <code>--ds8-color-terminal-*</code> 运行时变量真实消费，并展示 HEX / RGB。</p>
   <div class="x-term-grid">${termPane('light')}${termPane('dark')}</div>
   <p class="x-hint">ANSI 0–7 为标准色、8–15 为高亮色。终端文字对比度由 <code>registry/contrast-engine.mjs</code> 在各自 Terminal 背景上实算；色盲安全不依赖单一颜色通道，状态另有文字 / 符号标识（✓ / ℹ / ⚠ / ✗）。</p>
 </section>`
@@ -438,8 +438,8 @@ function renderRuntimeEvidence(M, v, syntaxData, measured) {
     ['唯一数值真源', 'TOKEN-MANIFEST.json', `${M.tokenCount} tokens · 所有 CSS / TS / 文档 / Showcase 由 build.mjs 从磁盘读回的同一份 JSON 派生`, 'MEASURED'],
     ['对比度引擎', 'registry/contrast-engine.mjs', `VERDICT ${esc(v.verdict)} · ${esc(v.sampling)}`, 'MEASURED'],
     ['语法真实解析', 'registry/syntax-adapter.mjs', `Shiki ${esc(syntax.engine?.version ?? '—')} · ${syntax.languagesRequested ?? 0} 语言 + ${syntax.coverageSamples ?? 0} 补样 · ${syntax.grammarsLoaded ?? 0} grammars · VERDICT ${esc(syntax.verdict ?? 'BLOCKED')}`, syntax.verdict === 'PASS' ? 'MEASURED' : 'BLOCKED'],
-    ['运行时桥接', 'web/src/design-system/tokens/uds-semantic-bridge.css', `${Object.values(M.tokens ?? {}).filter((t) => t.runtimeBridge).length} 个 --ds7-* 变量 · 隔离命名不覆盖 3.0 --ds-*`, 'MEASURED'],
-    ['前端真实验证', 'web/visual-regression/uds7/', 'Playwright 截图 + axe-core WCAG 2.2 A/AA + 键盘焦点可见性，见 run-log.json / a11y-log.json', 'MEASURED'],
+    ['运行时桥接', 'web/src/design-system/tokens/uds-semantic-bridge.css', `${Object.values(M.tokens ?? {}).filter((t) => t.runtimeBridge).length} 个 --ds8-* 变量 · 隔离命名不覆盖 3.0 --ds-*`, 'MEASURED'],
+    ['前端真实验证', 'web/visual-regression/uds8/', 'Playwright 截图 + axe-core WCAG 2.2 A/AA + 键盘焦点可见性，见 run-log.json / a11y-log.json', 'MEASURED'],
     ['真实页面视觉回归', 'audit/visual-regression.json', '真实页面回归状态以该机器可读报告为准；未执行项不得标 PASS', 'DECLARED'],
   ]
   const cards = items.map(([t, p, d, s]) => `<div class="x-evidence"><h4>${esc(t)} · <span class="x-badge ${s === 'MEASURED' ? 'measured' : ''}">${esc(s)}</span></h4><p><code>${esc(p)}</code><br>${d}</p></div>`).join('\n')
@@ -473,7 +473,7 @@ export function renderExtensions({ M, T, v, syntaxData }) {
   ].join('\n')
 }
 
-/** 给 Showcase 注入按 pane 作用域展开的 --ds7-syntax-* 定值。 */
+/** 给 Showcase 注入按 pane 作用域展开的 --ds8-syntax-* 定值。 */
 export function scopedSyntaxVars(T) {
   const names = Object.keys(T).filter((n) => n.startsWith('--ds-syntax-')).sort()
   const block = (theme) => `.cc-pane[data-pane="uter-${theme}"],.x-cc-pane[data-pane="uter-${theme}"] {\n` +

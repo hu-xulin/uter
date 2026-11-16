@@ -1,19 +1,19 @@
 {
-  "schema": "UDS7-VISUAL-BASELINE/1.0",
-  "version": "7.0.1",
+  "schema": "UDS8-VISUAL-BASELINE/1.0",
+  "version": "8.0.0",
   "status": "FROZEN",
-  "frozen_at": "2026-11-16T00:32:13.143Z",
-  "frozen_by": "用户明确授权「真正切换到 7.0 标量值」（2026-11-16）：运行时字号/行高/圆角/图表色经 @theme 真源字面切换为 7.0 TOKEN-MANIFEST 值（typography.css / primitives.css / theme.css，tokens.test.ts 三方守卫钉死），全站视觉随之变化，旧 7.0.0 基线作废归档于 audit/baseline/archive-7.0.0/；本基线摄于切换后真实渲染",
+  "frozen_at": "2026-11-16T02:54:18.220Z",
+  "frozen_by": "用户明确授权更新基线（2026-11-15，AskUserQuestion「授权更新基线」）；审查确认 4 个 Dark 公开页差异为预期设计变化（Dark 表面 #020617 → clerk.com 对齐三层 #0B1120/#111827/#1B2436，theme.css 明文登记），旧基线归档于 audit/baseline/archive-*/",
   "sources": {
     "showcaseLog": {
-      "path": "web/visual-regression/uds7/run-log.json",
+      "path": "web/visual-regression/uds8/run-log.json",
       "verdict": "PASS",
-      "started_at": "2026-11-16T00:31:25.709Z"
+      "started_at": "2026-11-16T02:54:05.735Z"
     },
     "realPageLog": {
       "path": "docs/design-system/audit/visual-regression.json",
       "verdict": "PASS",
-      "generated_at": "2026-11-16T00:32:01.726Z"
+      "generated_at": "2026-11-16T02:53:15.268Z"
     },
     "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）"
   },
@@ -26,10 +26,10 @@
       "viewport": "desktop",
       "width": 1440,
       "height": 900,
-      "originalPath": "web/visual-regression/uds7/screenshots/uds7-light-desktop.png",
+      "originalPath": "web/visual-regression/uds8/screenshots/uds8-light-desktop.png",
       "expectedSha": null,
-      "sha256": "50e9cf9b4fe8890fc1c2ddbe15d75dbd7419669c5a98f9f8cd5769ca4b8e8cb9",
-      "bytes": 233566,
+      "sha256": "011dfa4da8fa76ae98c97125d5dce2e83b71e342f4ba8f6f26b2ae5660bcc3e1",
+      "bytes": 233794,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-light-desktop.png"
     },
     {
@@ -39,10 +39,10 @@
       "viewport": "desktop",
       "width": 1440,
       "height": 900,
-      "originalPath": "web/visual-regression/uds7/screenshots/uds7-dark-desktop.png",
+      "originalPath": "web/visual-regression/uds8/screenshots/uds8-dark-desktop.png",
       "expectedSha": null,
-      "sha256": "2b76185aa0c78d7f62c1174e33e3c02acee7aa94bb9a9ab21d603bf00aa31470",
-      "bytes": 236522,
+      "sha256": "f3936caa352e63fe50c0d447ebdd42437321a9792d1dca4742a8ca4b4641818c",
+      "bytes": 236759,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-dark-desktop.png"
     },
     {
@@ -52,10 +52,10 @@
       "viewport": "mobile",
       "width": 390,
       "height": 844,
-      "originalPath": "web/visual-regression/uds7/screenshots/uds7-light-mobile.png",
+      "originalPath": "web/visual-regression/uds8/screenshots/uds8-light-mobile.png",
       "expectedSha": null,
-      "sha256": "68dc88ccc70c09486a6208a993e5b4857f6d13704b7022985ce901b4fa79b79a",
-      "bytes": 82437,
+      "sha256": "92406d4b159f004313c5fceebf5337e43dda5f3824320bd101b5c28f47ae79f2",
+      "bytes": 82663,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-light-mobile.png"
     },
     {
@@ -65,10 +65,10 @@
       "viewport": "mobile",
       "width": 390,
       "height": 844,
-      "originalPath": "web/visual-regression/uds7/screenshots/uds7-dark-mobile.png",
+      "originalPath": "web/visual-regression/uds8/screenshots/uds8-dark-mobile.png",
       "expectedSha": null,
-      "sha256": "462d371f47d59b8fd8ff9615314f3036ad81622cb406e92684857246d07314a0",
-      "bytes": 83936,
+      "sha256": "c5af26877752adb8dd8194ae8f65c001f6efebcf10108671dfdf40bbaa07675a",
+      "bytes": 84242,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/showcase-dark-mobile.png"
     },
     {
@@ -83,14 +83,14 @@
         "height": 800,
         "sampledPixels": 1024000,
         "distinctColors": 804,
-        "meanLuminance": 235.06,
+        "meanLuminance": 235.1,
         "luminanceStdDev": 38.61,
-        "nonWhitePixelRatio": 0.0711
+        "nonWhitePixelRatio": 0.071
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/home-light.png",
-      "expectedSha": "30b9b8eeb1acedd94c2af145fe0b286dc20da19d61a66d956279691cb8f555ce",
-      "sha256": "30b9b8eeb1acedd94c2af145fe0b286dc20da19d61a66d956279691cb8f555ce",
-      "bytes": 371519,
+      "originalPath": "web/visual-regression/uds8/real-pages/home-light.png",
+      "expectedSha": "96eedb22651ad1a02df92e3b675ef57511095062f4a9c655efcd828100bebc8b",
+      "sha256": "96eedb22651ad1a02df92e3b675ef57511095062f4a9c655efcd828100bebc8b",
+      "bytes": 371089,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-home-light.png"
     },
     {
@@ -109,10 +109,10 @@
         "luminanceStdDev": 39.95,
         "nonWhitePixelRatio": 0.983
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/home-dark.png",
-      "expectedSha": "f292b98fe8becf8758f51e0e2213abd37c11f6bcf450af47a2ddbd20344613eb",
-      "sha256": "f292b98fe8becf8758f51e0e2213abd37c11f6bcf450af47a2ddbd20344613eb",
-      "bytes": 254775,
+      "originalPath": "web/visual-regression/uds8/real-pages/home-dark.png",
+      "expectedSha": "8d4c3b0a1b14604bad0e7b8140eb93b011eb4d5bbd31792a9947b4713b30cd2f",
+      "sha256": "8d4c3b0a1b14604bad0e7b8140eb93b011eb4d5bbd31792a9947b4713b30cd2f",
+      "bytes": 254577,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/page-home-dark.png"
     },
     {
@@ -131,7 +131,7 @@
         "luminanceStdDev": 23.62,
         "nonWhitePixelRatio": 0.0266
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/login-light.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/login-light.png",
       "expectedSha": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
       "sha256": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
       "bytes": 38771,
@@ -153,7 +153,7 @@
         "luminanceStdDev": 24.1,
         "nonWhitePixelRatio": 0.9967
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/login-dark.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/login-dark.png",
       "expectedSha": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
       "sha256": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
       "bytes": 39313,
@@ -175,7 +175,7 @@
         "luminanceStdDev": 27.79,
         "nonWhitePixelRatio": 0.0397
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/about-light.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/about-light.png",
       "expectedSha": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
       "sha256": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
       "bytes": 236453,
@@ -197,7 +197,7 @@
         "luminanceStdDev": 32.93,
         "nonWhitePixelRatio": 0.9947
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/about-dark.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/about-dark.png",
       "expectedSha": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
       "sha256": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
       "bytes": 183069,
@@ -219,7 +219,7 @@
         "luminanceStdDev": 39.97,
         "nonWhitePixelRatio": 0.0678
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/docs-light.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/docs-light.png",
       "expectedSha": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
       "sha256": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
       "bytes": 320795,
@@ -241,7 +241,7 @@
         "luminanceStdDev": 45.78,
         "nonWhitePixelRatio": 0.9705
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/docs-dark.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/docs-dark.png",
       "expectedSha": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
       "sha256": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
       "bytes": 262692,
@@ -258,7 +258,7 @@
         "meanLuminance": 228.49,
         "nonWhitePixelRatio": 0.1556
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/gradient-hero-light.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/gradient-hero-light.png",
       "expectedSha": "d1dde16c4fd2dbd81c26d3575d2478e1d246cb469eb8ef0a2a773f43361aee2a",
       "sha256": "d1dde16c4fd2dbd81c26d3575d2478e1d246cb469eb8ef0a2a773f43361aee2a",
       "bytes": 13500,
@@ -275,7 +275,7 @@
         "meanLuminance": 47.55,
         "nonWhitePixelRatio": 1
       },
-      "originalPath": "web/visual-regression/uds7/real-pages/gradient-hero-dark.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/gradient-hero-dark.png",
       "expectedSha": "5437ffb7d3b3b496d78baa92430e3561593511ef96b3856be24f52f6d584345d",
       "sha256": "5437ffb7d3b3b496d78baa92430e3561593511ef96b3856be24f52f6d584345d",
       "bytes": 13031,
@@ -284,10 +284,10 @@
     {
       "id": "forced-colors-showcase",
       "kind": "forced-colors",
-      "originalPath": "web/visual-regression/uds7/real-pages/forced-colors-showcase.png",
+      "originalPath": "web/visual-regression/uds8/real-pages/forced-colors-showcase.png",
       "expectedSha": null,
-      "sha256": "2471a0a5c930f0700185e42de1a575f1bfd9af08de413767e624d4640e99f92c",
-      "bytes": 205956,
+      "sha256": "983b2e936ac7b548cbdfffadc682cb2982afcb112c231ae478335a83a5caf3b6",
+      "bytes": 206054,
       "frozenPath": "docs/design-system/audit/baseline/screenshots/forced-colors-showcase.png"
     }
   ],

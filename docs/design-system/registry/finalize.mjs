@@ -1,12 +1,12 @@
 /*
- * UTER DESIGN SYSTEM 7.0 — 收尾验收器（finalize）
+ * UTER DESIGN SYSTEM 8.0.0 — 收尾验收器（finalize）
  *
  * 职责：
  *   1) 真实重跑适用门禁，逐条捕获命令 / 退出码 / 输出尾部
  *   2) 读取 Playwright 与 axe-core 的真实运行日志
  *   3) 由真实证据生成 GATE-EVIDENCE.json / VISUAL-REGRESSION-REPORT.md /
  *      FINAL-ACCEPTANCE-REPORT.md
- *   4) 报告写盘后复跑 7.0 检查器，把最终 C01..C22 结果补进证据
+ *   4) 报告写盘后复跑 8.0.0 检查器，把最终 C01..C22 结果补进证据
  *
  * 原则：不把「未执行」「未通过」「并发 WIP 引入」写成已通过。
  * 用法：node docs/design-system/registry/finalize.mjs
@@ -26,7 +26,7 @@ const HERE = fileURLToPath(new URL('.', import.meta.url))
 const DS = join(HERE, '..')
 const REPO = join(DS, '..', '..')
 const WEB = join(REPO, 'web')
-const VR = join(WEB, 'visual-regression', 'uds7')
+const VR = join(WEB, 'visual-regression', 'uds8')
 const SHOTS = join(VR, 'screenshots')
 
 /* 生成 Markdown 里的行内代码：避免在模板字符串里写裸反引号（build.mjs 曾因此语法失败） */
@@ -51,18 +51,18 @@ const GATE_DEFS = [
   ['G01', 'TypeScript 类型检查', 'bun', ['run', 'typecheck'], WEB, false],
   ['G02', '设计 Token 严格门禁', 'bun', ['run', 'lint:design:strict'], WEB, false],
   ['G06', '设计 Token 生成一致性', 'bun', ['run', 'design:tokens:check'], WEB, false],
-  ['G07', '7.0 Showcase 同步校验', 'bun', ['run', 'design:showcase:check'], WEB, false],
+  ['G07', '8.0.0 Showcase 同步校验', 'bun', ['run', 'design:showcase:check'], WEB, false],
   ['G08', '现行对比度门禁', 'bun', ['run', 'verify:contrast'], WEB, false],
   ['G09', '版权头检查', 'bun', ['run', 'copyright:check'], WEB, false],
   ['G10', '全量 oxlint', 'bun', ['run', 'lint'], WEB, false],
-  ['G12', '7.0 Showcase 视觉回归（Playwright）', NODE, [join(DS, 'registry', 'visual-check.mjs')], REPO, false],
-  ['G13', '7.0 无障碍（axe-core + 真实 Tab）', NODE, [join(DS, 'registry', 'a11y-check.mjs')], REPO, false],
+  ['G12', '8.0.0 Showcase 视觉回归（Playwright）', NODE, [join(DS, 'registry', 'visual-check.mjs')], REPO, false],
+  ['G13', '8.0.0 无障碍（axe-core + 真实 Tab）', NODE, [join(DS, 'registry', 'a11y-check.mjs')], REPO, false],
   ['G14', '全量单元测试（vitest）', 'bun', ['run', 'test'], WEB, true],
   ['G15', '构建校验（tsgo + rsbuild）', 'bun', ['run', 'build:check'], WEB, true],
-  ['G17', '7.0 真实页面回归（本地 SPA + 像素验证）', NODE, [join(DS, 'registry', 'real-page-regression.mjs')], REPO, false],
-  ['G19', '7.0 视觉基线校验（冻结基线 vs 当前渲染）', NODE, [join(DS, 'registry', 'check-visual-baseline.mjs')], REPO, false],
-  ['G16', '7.0 自动化检查器（C01-C22）', 'bun', ['run', 'design:7:check'], WEB, false],
-  ['G18', '7.0 整改验证器（48 项探针 + 机器可读报告）', NODE, [join(DS, 'registry', 'check-uds7-remediation.mjs')], REPO, false],
+  ['G17', '8.0.0 真实页面回归（本地 SPA + 像素验证）', NODE, [join(DS, 'registry', 'real-page-regression.mjs')], REPO, false],
+  ['G19', '8.0.0 视觉基线校验（冻结基线 vs 当前渲染）', NODE, [join(DS, 'registry', 'check-visual-baseline.mjs')], REPO, false],
+  ['G16', '8.0.0 自动化检查器（C01-C22）', 'bun', ['run', 'design:8:check'], WEB, false],
+  ['G18', '8.0.0 整改验证器（50 项探针 + 机器可读报告）', NODE, [join(DS, 'registry', 'check-uds8-remediation.mjs')], REPO, false],
 ]
 
 function runGate(def) {
@@ -90,7 +90,7 @@ function runGate(def) {
     attribution: null,
   }
   if (exit !== 0) gate.attribution = attributeFailure(gate, out)
-  console.log(`[UDS7-FINALIZE] ${id} ${label} EXIT=${exit} (${gate.durationMs}ms)`)
+  console.log(`[UDS8-FINALIZE] ${id} ${label} EXIT=${exit} (${gate.durationMs}ms)`)
   return gate
 }
 
@@ -160,11 +160,11 @@ let gates = []
 if (REPORTS_ONLY) {
   const prior = jread(join(DS, 'GATE-EVIDENCE.json'))
   gates = prior.gates
-  console.log(`[UDS7-FINALIZE] --reports-only: reused ${gates.length} real gate results from GATE-EVIDENCE.json`)
+  console.log(`[UDS8-FINALIZE] --reports-only: reused ${gates.length} real gate results from GATE-EVIDENCE.json`)
 } else {
   for (const def of GATE_DEFS) {
     if (QUICK && def[5]) {
-      console.log(`[UDS7-FINALIZE] ${def[0]} SKIPPED (--quick)`)
+      console.log(`[UDS8-FINALIZE] ${def[0]} SKIPPED (--quick)`)
       continue
     }
     gates.push(runGate(def))
@@ -182,18 +182,18 @@ const V = runVerification()
 const visualLog = jread(join(VR, 'run-log.json'))
 const a11yLog = jread(join(VR, 'a11y-log.json'))
 const realPageLog = existsSync(join(DS, 'audit', 'visual-regression.json')) ? jread(join(DS, 'audit', 'visual-regression.json')) : null
-const showcase = read(join(DS, 'SHOWCASE-7.0.html'))
+const showcase = read(join(DS, 'SHOWCASE-8.0.0.html'))
 
 const screenshots = readdirSync(SHOTS)
   .filter((f) => f.endsWith('.png'))
   .sort()
   .map((f) => ({
-    file: `web/visual-regression/uds7/screenshots/${f}`,
+    file: `web/visual-regression/uds8/screenshots/${f}`,
     bytes: statSync(join(SHOTS, f)).size,
   }))
 
 const distArtifacts = [
-  'web/dist/design-system/7.0.html',
+  'web/dist/design-system/8.0.0.html',
   'web/dist/design-system/7.0/index.html',
 ].map((p) => ({ path: p, exists: existsSync(join(REPO, p)), bytes: existsSync(join(REPO, p)) ? statSync(join(REPO, p)).size : 0 }))
 
@@ -234,7 +234,7 @@ const a11yCases = (a11yLog.cases ?? []).map((x) => {
   return `| ${x.theme} | ${x.viewport} | ${x.width}×${x.height} | ${(x.violations ?? []).length} | ${f.visible ?? 0}/${f.checked ?? 0} | ${x.focusVisible === false ? 'FAIL' : 'PASS'} |`
 }).join('\n')
 
-const visualReport = `# UTER DESIGN SYSTEM 7.0 — 视觉回归与无障碍验证报告
+const visualReport = `# UTER DESIGN SYSTEM 8.0.0 — 视觉回归与无障碍验证报告
 
 > 生成时间 ${stamp} · 由 ${c('registry/finalize.mjs')} 从真实运行日志派生
 > **范围口径**：本报告只覆盖 7.0 Design Showcase 的自动化视觉 / 无障碍验证，**不等于** Phase 8 全站真实产品页面视觉回归。
@@ -247,11 +247,11 @@ const visualReport = `# UTER DESIGN SYSTEM 7.0 — 视觉回归与无障碍验�
 | 视觉命令 | ${c('node docs/design-system/registry/visual-check.mjs')} · ${fmtExit('G12')} |
 | 无障碍引擎 | ${c(a11yLog.engine)} |
 | 无障碍命令 | ${c('node docs/design-system/registry/a11y-check.mjs')} · ${fmtExit('G13')} |
-| 视觉日志 | ${c('web/visual-regression/uds7/run-log.json')} · verdict ${c(visualLog.verdict)} |
-| 无障碍日志 | ${c('web/visual-regression/uds7/a11y-log.json')} · verdict ${c(a11yLog.verdict)} |
+| 视觉日志 | ${c('web/visual-regression/uds8/run-log.json')} · verdict ${c(visualLog.verdict)} |
+| 无障碍日志 | ${c('web/visual-regression/uds8/a11y-log.json')} · verdict ${c(a11yLog.verdict)} |
 | 单元测试 | ${c('bun run test')} · ${fmtExit('G14')} |
 | 构建校验 | ${c('bun run build:check')} · ${fmtExit('G15')} |
-| 校对对象 | ${c('docs/design-system/SHOWCASE-7.0.html')}（${showcase.length} 字符） |
+| 校对对象 | ${c('docs/design-system/SHOWCASE-8.0.0.html')}（${showcase.length} 字符） |
 
 ## 2. 四个真实渲染场景
 
@@ -366,7 +366,7 @@ const exceptionRows = EX.items.map((i) =>
 const implemented = AM.modules.filter((m) => m.implementation === 'IMPLEMENTED').length
 const verified = AM.modules.filter((m) => m.verification === 'VERIFIED').length
 
-const finalReport = `# UTER DESIGN SYSTEM 7.0 — 最终验收报告（PART 12）
+const finalReport = `# UTER DESIGN SYSTEM 8.0.0 — 最终验收报告（PART 12）
 
 > 生成时间 ${stamp} · 由 ${c('registry/finalize.mjs')} 从 ${c('GATE-EVIDENCE.json')} 的真实命令结果派生
 > **状态纪律**：${c('IMPLEMENTED')} ≠ ${c('VERIFIED')} ≠ ${c('ACCEPTANCE_READY')} ≠ ${c('ACCEPTED')}。用户审核前一律不得标 ${c('ACCEPTED')}。
@@ -394,11 +394,11 @@ const finalReport = `# UTER DESIGN SYSTEM 7.0 — 最终验收报告（PART 12�
 | 注册表 | 7 | ${c('TOKEN / COMPONENT / PAGE / DEPENDENCY-GRAPH / ACCEPTANCE-MATRIX / DEPRECATED / EXCEPTION')} |
 | 唯一真源 | 1 | ${c('TOKEN-MANIFEST.json')} |
 | 运行时派生产物 | 5 | ${c('runtime/tokens.css')}、${c('runtime/themes/light.css')}、${c('runtime/themes/dark.css')}、${c('runtime/foundations.css')}、${c('runtime/tokens.ts')} |
-| Showcase | 1 源 + 2 入口 | ${c('SHOWCASE-7.0.html')}（${showcase.length} 字符）、${c('web/public/design-system/7.0.html')}、${c('web/public/design-system/7.0/index.html')} |
-| 自动化 | 4 脚本 | ${c('web/scripts/check-design-system-7.0.mjs')}、${c('registry/contrast-engine.mjs')}、${c('registry/visual-check.mjs')}、${c('registry/a11y-check.mjs')} |
+| Showcase | 1 源 + 2 入口 | ${c('SHOWCASE-8.0.0.html')}（${showcase.length} 字符）、${c('web/public/design-system/8.0.0.html')}、${c('web/public/design-system/7.0/index.html')} |
+| 自动化 | 4 脚本 | ${c('web/scripts/check-design-system-8.0.0.mjs')}、${c('registry/contrast-engine.mjs')}、${c('registry/visual-check.mjs')}、${c('registry/a11y-check.mjs')} |
 | 构建链 | 3 脚本 | ${c('registry/tokens.mjs')}、${c('registry/spec-modules.mjs')}、${c('registry/build.mjs')}、${c('registry/render-showcase.mjs')}、${c('registry/finalize.mjs')} |
-| 报告 | 4 | ${c('UDS-7.0-MIGRATION-REPORT.md')}、${c('CONTRAST-VERIFICATION-REPORT.md')}、${c('VISUAL-REGRESSION-REPORT.md')}、本报告 |
-| 视觉证据 | ${screenshots.length} 截图 + 2 日志 | ${c('web/visual-regression/uds7/')} |
+| 报告 | 4 | ${c('UDS-8.0.0-MIGRATION-REPORT.md')}、${c('CONTRAST-VERIFICATION-REPORT.md')}、${c('VISUAL-REGRESSION-REPORT.md')}、本报告 |
+| 视觉证据 | ${screenshots.length} 截图 + 2 日志 | ${c('web/visual-regression/uds8/')} |
 
 ## 3. 36 + 2 规范模块明细
 
@@ -415,7 +415,7 @@ ${moduleRows}
 |---|---|
 | 真源 | ${c('web/src/styles/theme.css:301-306')} 的 ${c('--font-ui')}、${c(':324-328')} 的 ${c('--font-mono')} |
 | 7.0 映射 | ${c('--ds-font-ui')} / ${c('--ds-font-body')} / ${c('--ds-font-mono')} |
-| 守卫 | ${c('check-design-system-7.0.mjs C12')} 逐字比对，运行结果 PASS |
+| 守卫 | ${c('check-design-system-8.0.0.mjs C12')} 逐字比对，运行结果 PASS |
 | 禁止项 | 未引入 Geist / Roboto / Arial-only 或任何新字体；CJK 字体族保持在 generic ${c('monospace')} 之后 |
 | 结论 | **保留成功**，未改动 ${c('web/src')} 现行字体栈 |
 
@@ -483,7 +483,7 @@ ${moduleRows}
 |---|---|---|---|---|---|
 ${gateRows}
 
-- 7.0 检查器 ${c('check-design-system-7.0.mjs')} 的 C01–C21 最终结果见 ${c('GATE-EVIDENCE.json')} 的 ${c('checker')} 字段（报告写盘后复跑）。
+- 7.0 检查器 ${c('check-design-system-8.0.0.mjs')} 的 C01–C21 最终结果见 ${c('GATE-EVIDENCE.json')} 的 ${c('checker')} 字段（报告写盘后复跑）。
 - 全量单元测试：${c('bun run test')} ${fmtExit('G14')}；构建校验：${c('bun run build:check')} ${fmtExit('G15')}。
 
 ### 9.1 非零退出项归属（不掩盖、不擅自修改）
@@ -546,11 +546,11 @@ ${baseline ? `| 项目 | 实测值 |
 
 write(join(DS, 'VISUAL-REGRESSION-REPORT.md'), visualReport)
 write(join(DS, 'FINAL-ACCEPTANCE-REPORT.md'), finalReport)
-console.log('[UDS7-FINALIZE] wrote VISUAL-REGRESSION-REPORT.md + FINAL-ACCEPTANCE-REPORT.md')
+console.log('[UDS8-FINALIZE] wrote VISUAL-REGRESSION-REPORT.md + FINAL-ACCEPTANCE-REPORT.md')
 
-/* ── 5) 报告写盘后复跑 7.0 检查器，把最终 C01..C21 补进证据 ─────────────── */
+/* ── 5) 报告写盘后复跑 8.0.0 检查器，把最终 C01..C21 补进证据 ─────────────── */
 
-const checkerRun = spawnSync(NODE, [join(WEB, 'scripts', 'check-design-system-7.0.mjs'), '--json'], {
+const checkerRun = spawnSync(NODE, [join(WEB, 'scripts', 'check-design-system-8.0.0.mjs'), '--json'], {
   cwd: REPO, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, timeout: 300000,
 })
 const checkerOut = `${checkerRun.stdout ?? ''}${checkerRun.stderr ?? ''}`
@@ -561,11 +561,11 @@ try {
   checker.parseError = String(e.message)
   checker.rawTail = checkerOut.trimEnd().split('\n').slice(-20).join('\n')
 }
-console.log('[UDS7-FINALIZE] checker EXIT=' + checker.exit +
+console.log('[UDS8-FINALIZE] checker EXIT=' + checker.exit +
   (checker.result ? ` verdict=${checker.result.verdict} checks=${checker.result.checks?.length}` : ''))
 
 const evidence = {
-  evidence_id: 'UDS7-GATE-EVIDENCE',
+  evidence_id: 'UDS8-GATE-EVIDENCE',
   generated_at: stamp,
   quick_mode: REPORTS_ONLY ? (jread(join(DS, 'GATE-EVIDENCE.json')).quick_mode ?? false) : QUICK,
   reports_only: REPORTS_ONLY,
@@ -573,7 +573,7 @@ const evidence = {
   governance: GOV,
   gates,
   checker: {
-    command: `${NODE} web/scripts/check-design-system-7.0.mjs --json`,
+    command: `${NODE} web/scripts/check-design-system-8.0.0.mjs --json`,
     cwd: '.',
     exit: checker.exit,
     verdict: checker.result?.verdict ?? null,
@@ -601,5 +601,5 @@ const evidence = {
   accepted: false,
 }
 write(join(DS, 'GATE-EVIDENCE.json'), `${JSON.stringify(evidence, null, 2)}\n`)
-console.log('[UDS7-FINALIZE] wrote GATE-EVIDENCE.json')
-console.log(`[UDS7-FINALIZE] DONE · gates=${gates.length} · checker=${checker.result?.verdict ?? 'N/A'} · visual=${visualLog.verdict} · a11y=${a11yLog.verdict}`)
+console.log('[UDS8-FINALIZE] wrote GATE-EVIDENCE.json')
+console.log(`[UDS8-FINALIZE] DONE · gates=${gates.length} · checker=${checker.result?.verdict ?? 'N/A'} · visual=${visualLog.verdict} · a11y=${a11yLog.verdict}`)

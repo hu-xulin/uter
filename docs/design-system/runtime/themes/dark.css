@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-/* UDS 7.0 Dark theme
+/* UDS 8.0.0 Dark theme
  * This file is generated — DO NOT EDIT.
  * Source: docs/design-system/TOKEN-MANIFEST.json
  * Regenerate: node docs/design-system/registry/build.mjs
@@ -231,6 +231,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-text-on-dark: #F8FAFC;
   --ds-color-text-primary: #F1F5F9;
   --ds-color-text-secondary: #CBD5E1;
+  --ds-color-text-success: #6EE7B7;
   --ds-color-text-tertiary: #94A3B8;
   --ds-syntax-attribute: #9CDCFE;
   --ds-syntax-boolean: #569CD6;

@@ -1,8 +1,8 @@
 /**
- * UDS 7.0 — 真实页面视觉回归（P0 §10）
+ * UDS 8.0.0 — 真实页面视觉回归（P0 §10）
  *
  * 不只验证 Showcase：用 Playwright 打开 Uter 真实 SPA 路由，验证
- *   1) --ds7-* 运行时桥接在真实页面里确实生效（不是死代码）；
+ *   1) --ds8-* 运行时桥接在真实页面里确实生效（不是死代码）；
  *   2) Light / Dark 真实渲染、像素确有变化；
  *   3) 品牌渐变文字在浏览器里真的产生多色插值像素（不是纯色 / 不可见）；
  *   4) 控制台 / pageerror 无错误；
@@ -11,7 +11,7 @@
  * 服务方式：进程内 127.0.0.1 临时静态服务器，托管 web/dist（含刚构建的 bridge CSS），
  * /api /v1 /mj /pg 反向代理到本机已在运行的后端。不启动、不停止、不改动任何既有进程。
  *
- * 输出：audit/visual-regression.json + web/visual-regression/uds7/real-pages/*.png
+ * 输出：audit/visual-regression.json + web/visual-regression/uds8/real-pages/*.png
  * 退出码：0 全部通过；1 存在失败；2 BLOCKED（浏览器 / 构建产物缺失，绝不报 PASS）
  */
 import { createServer } from 'node:http'
@@ -25,9 +25,9 @@ const REPO = join(DS, '..', '..')
 const WEB = join(REPO, 'web')
 const DIST = join(WEB, 'dist')
 const AUDIT = join(DS, 'audit')
-const SHOTS = join(WEB, 'visual-regression', 'uds7', 'real-pages')
+const SHOTS = join(WEB, 'visual-regression', 'uds8', 'real-pages')
 const PLAYWRIGHT = join(WEB, 'node_modules', 'playwright', 'index.mjs')
-const SHOWCASE = join(DS, 'SHOWCASE-7.0.html')
+const SHOWCASE = join(DS, 'SHOWCASE-8.0.0.html')
 const MANIFEST = join(DS, 'TOKEN-MANIFEST.json')
 const BACKEND = 'http://127.0.0.1:3000'
 
@@ -48,7 +48,7 @@ const MIME = {
 
 const blocked = (reason) => {
   writeJson(join(AUDIT, 'visual-regression.json'), {
-    schema: 'UDS7-VISUAL-REGRESSION/1.0', generated_at: new Date().toISOString(),
+    schema: 'UDS8-VISUAL-REGRESSION/1.0', generated_at: new Date().toISOString(),
     verdict: 'BLOCKED', executed: false, reason, realPages: [], showcase: null,
   })
   console.error('BLOCKED —', reason)
@@ -57,7 +57,7 @@ const blocked = (reason) => {
 
 if (!existsSync(PLAYWRIGHT)) blocked('Playwright 缺失')
 if (!existsSync(join(DIST, 'index.html'))) blocked('web/dist/index.html 缺失（需先 build:check）')
-if (!existsSync(SHOWCASE)) blocked('SHOWCASE-7.0.html 缺失')
+if (!existsSync(SHOWCASE)) blocked('SHOWCASE-8.0.0.html 缺失')
 if (!existsSync(MANIFEST)) blocked('TOKEN-MANIFEST.json 缺失')
 
 const M = JSON.parse(readFileSync(MANIFEST, 'utf8'))
@@ -124,7 +124,7 @@ const server = makeServer(BACKEND)
 await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
 const PORT = server.address().port
 const BASE = `http://127.0.0.1:${PORT}`
-console.log('[UDS7-REGRESSION] static server', BASE, '→ dist; API proxy →', BACKEND)
+console.log('[UDS8-REGRESSION] static server', BASE, '→ dist; API proxy →', BACKEND)
 
 const { chromium } = await import(pathToFileURL(PLAYWRIGHT).href)
 let browser
@@ -200,10 +200,11 @@ for (const route of ROUTES) {
           inputs: document.querySelectorAll('input').length,
           tables: document.querySelectorAll('table').length,
           htmlClass: document.documentElement.className,
-          ds6Brand: get('--ds7-color-brand-1'),
-          ds6Keyword: get('--ds7-syntax-keyword'),
-          ds6TerminalBg: get('--ds7-color-terminal-background'),
-          ds6SurfaceOverlay: get('--ds-color-surface-overlay'),
+          ds6Brand: get('--ds8-color-brand-1'),
+          ds6Keyword: get('--ds8-syntax-keyword'),
+          ds6TerminalBg: get('--ds8-color-terminal-background'),
+          ds8SurfaceScrim: get('--ds8-color-surface-scrim'),
+          legacySurfaceOverlayGone: getComputedStyle(document.documentElement).getPropertyValue('--ds-color-surface-overlay').trim() === '',
           gradientInterpolationSupported: CSS.supports('background-image', 'linear-gradient(90deg in srgb, red, blue)'),
         }
       })
@@ -223,8 +224,8 @@ for (const route of ROUTES) {
         bridgeLive: normHex(dom.ds6Brand) === expectedBrand,
         syntaxBridgeLive: normHex(dom.ds6Keyword) === expectedKeyword,
         terminalBridgeLive: /^#[0-9a-f]{6}$/.test(dom.ds6TerminalBg),
-        // 3.0 的 --ds-color-surface-overlay 必须保持 #000（语义反转），证明 --ds7-* 隔离命名没有覆盖旧变量。
-        legacyTokenIsolated: normHex(dom.ds6SurfaceOverlay) === '#000000',
+        // 3.0 的 --ds-color-surface-overlay 必须保持 #000（语义反转），证明 --ds8-* 隔离命名没有覆盖旧变量。
+        scrimTokenLive: normHex(dom.ds8SurfaceScrim) === '#000000' && dom.legacySurfaceOverlayGone,
         nonBlankPixels: pixels.sampledPixels > 10000 && pixels.distinctColors > 20,
         noConsoleErrors: consoleErrors.length === 0,
       }
@@ -232,7 +233,7 @@ for (const route of ROUTES) {
       if (!pass) errors.push(`${route.path} ${theme}: ${Object.entries(checks).filter(([, v]) => !v).map(([k]) => k).join(',')}`)
       results.push({
         route: route.path, name: route.name, theme, httpStatus: status,
-        dom, checks, pixels, screenshot: `web/visual-regression/uds7/real-pages/${name}-${theme}.png`,
+        dom, checks, pixels, screenshot: `web/visual-regression/uds8/real-pages/${name}-${theme}.png`,
         screenshotSha256: sha(shot), consoleErrors, pass,
       })
     } catch (e) {
@@ -248,7 +249,7 @@ for (const route of ROUTES) {
  * 隔离后端（默认 :3100），绝不触碰用户 :3000 会话。隔离栈不可达 / 凭据缺失 /
  * 登录失败时如实登记，绝不伪造覆盖。每个主题一次 API 登录（refresh cookie
  * 一次性轮换，不能跨 context 共享），全程 2 次登录，远低于限流阈值。 */
-const AUTH_BACKEND = process.env.UDS7_AUTH_BACKEND ?? 'http://127.0.0.1:3100'
+const AUTH_BACKEND = process.env.UDS8_AUTH_BACKEND ?? 'http://127.0.0.1:3100'
 const AUTH_ROUTES = [
   { path: '/dashboard', name: 'Dashboard / Console' },
   { path: '/wallet', name: 'Wallet / Billing' },
@@ -278,12 +279,12 @@ if (!creds.VISUAL_TEST_EMAIL || !creds.VISUAL_TEST_PASSWORD) {
       authenticated.reason = `隔离栈 /api/status HTTP ${st.status}`
     } else {
       authServer = makeServer(AUTH_BACKEND)
-      // 固定端口（默认 3102，可用 UDS7_HARNESS_PORT 覆盖）：phase2-test-stack.sh
+      // 固定端口（默认 3102，可用 UDS8_HARNESS_PORT 覆盖）：phase2-test-stack.sh
       // 已把 http://127.0.0.1:<port> 追加进隔离后端的 CORS_ALLOWED_ORIGINS。
       // 浏览器从本服务器发起的带凭证 POST（如 /api/user/amount）携带该 Origin，
       // 随机端口不在白名单里会被 CORS 以 403 空 body 拒绝（/wallet 两主题失败的根因）。
       // 端口被占用时 fail-closed：随机换端口会再次脱离白名单，绝不静默降级。
-      const harnessPort = Number(process.env.UDS7_HARNESS_PORT ?? 3102)
+      const harnessPort = Number(process.env.UDS8_HARNESS_PORT ?? 3102)
       try {
         await new Promise((resolve, reject) => {
           authServer.once('error', reject)
@@ -291,7 +292,7 @@ if (!creds.VISUAL_TEST_EMAIL || !creds.VISUAL_TEST_PASSWORD) {
         })
       } catch (e) {
         authServer = null
-        authenticated.reason = `认证场景固定端口 ${harnessPort} 不可用（${String(e?.code ?? e).slice(0, 60)}）；该端口须在隔离栈 CORS 白名单内，请释放端口或同步调整 UDS7_HARNESS_PORT 与隔离栈`
+        authenticated.reason = `认证场景固定端口 ${harnessPort} 不可用（${String(e?.code ?? e).slice(0, 60)}）；该端口须在隔离栈 CORS 白名单内，请释放端口或同步调整 UDS8_HARNESS_PORT 与隔离栈`
       }
       if (authServer) authBase = `http://127.0.0.1:${authServer.address().port}`
     }
@@ -301,7 +302,7 @@ if (!creds.VISUAL_TEST_EMAIL || !creds.VISUAL_TEST_PASSWORD) {
 }
 if (authBase) {
   authenticated.executed = true
-  console.log('[UDS7-REGRESSION] auth server', authBase, '→ dist; API proxy →', AUTH_BACKEND)
+  console.log('[UDS8-REGRESSION] auth server', authBase, '→ dist; API proxy →', AUTH_BACKEND)
   for (const theme of THEMES) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 })
     await ctx.addInitScript((t) => {
@@ -366,10 +367,11 @@ if (authBase) {
             bodyChars: document.body.innerText.length,
             tables: document.querySelectorAll('table').length,
             htmlClass: document.documentElement.className,
-            ds6Brand: get('--ds7-color-brand-1'),
-            ds6Keyword: get('--ds7-syntax-keyword'),
-            ds6TerminalBg: get('--ds7-color-terminal-background'),
-            ds6SurfaceOverlay: get('--ds-color-surface-overlay'),
+            ds6Brand: get('--ds8-color-brand-1'),
+            ds6Keyword: get('--ds8-syntax-keyword'),
+            ds6TerminalBg: get('--ds8-color-terminal-background'),
+            ds8SurfaceScrim: get('--ds8-color-surface-scrim'),
+          legacySurfaceOverlayGone: getComputedStyle(document.documentElement).getPropertyValue('--ds-color-surface-overlay').trim() === '',
           }
         })
         const shot = await page.screenshot({ fullPage: false })
@@ -385,16 +387,16 @@ if (authBase) {
           bridgeLive: normHex(dom.ds6Brand) === (theme === 'light' ? BRAND_LIGHT : BRAND_DARK),
           syntaxBridgeLive: normHex(dom.ds6Keyword) === (theme === 'light' ? KEYWORD_LIGHT : KEYWORD_DARK),
           terminalBridgeLive: /^#[0-9a-f]{6}$/.test(dom.ds6TerminalBg),
-          legacyTokenIsolated: normHex(dom.ds6SurfaceOverlay) === '#000000',
+          scrimTokenLive: normHex(dom.ds8SurfaceScrim) === '#000000' && dom.legacySurfaceOverlayGone,
           nonBlankPixels: pixels.sampledPixels > 10000 && pixels.distinctColors > 20,
           noConsoleErrors: consoleErrors.length === 0,
         }
         const pass = Object.values(checks).every(Boolean)
         if (!pass) errors.push(`auth ${route.path} ${theme}: ${Object.entries(checks).filter(([, v]) => !v).map(([k]) => k).join(',')}`)
-        if (httpErrors.length) console.log(`[UDS7-REGRESSION] auth ${route.path} ${theme} HTTP>=400:`, JSON.stringify(httpErrors))
+        if (httpErrors.length) console.log(`[UDS8-REGRESSION] auth ${route.path} ${theme} HTTP>=400:`, JSON.stringify(httpErrors))
         results.push({
           route: route.path, name: route.name, theme, authenticated: true, httpStatus: status,
-          dom, checks, pixels, screenshot: `web/visual-regression/uds7/real-pages/${name}-${theme}.png`,
+          dom, checks, pixels, screenshot: `web/visual-regression/uds8/real-pages/${name}-${theme}.png`,
           screenshotSha256: sha(shot), consoleErrors, httpErrors, pass,
         })
       } catch (e) {
@@ -513,7 +515,7 @@ if (authServer) authServer.close()
 
 const verdict = errors.length === 0 ? 'PASS' : 'FAIL'
 const payload = {
-  schema: 'UDS7-VISUAL-REGRESSION/1.0',
+  schema: 'UDS8-VISUAL-REGRESSION/1.0',
   generated_at: new Date().toISOString(),
   method: 'Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis' +
     (authenticated.executed ? ` · authenticated scenarios via isolated stack ${AUTH_BACKEND}（真实 API 登录）` : ''),
@@ -523,8 +525,8 @@ const payload = {
   scenarioCount: results.length,
   themeScenarios: THEMES,
   routes: ROUTES.map((r) => r.path),
-  checksApplied: ['http200', 'hasHeading', 'renderedContent', 'bridgeLive', 'syntaxBridgeLive', 'terminalBridgeLive', 'legacyTokenIsolated', 'nonBlankPixels', 'noConsoleErrors'],
-  authChecksApplied: ['http200', 'authenticatedRender', 'renderedContent', 'bridgeLive', 'syntaxBridgeLive', 'terminalBridgeLive', 'legacyTokenIsolated', 'nonBlankPixels', 'noConsoleErrors'],
+  checksApplied: ['http200', 'hasHeading', 'renderedContent', 'bridgeLive', 'syntaxBridgeLive', 'terminalBridgeLive', 'scrimTokenLive', 'nonBlankPixels', 'noConsoleErrors'],
+  authChecksApplied: ['http200', 'authenticatedRender', 'renderedContent', 'bridgeLive', 'syntaxBridgeLive', 'terminalBridgeLive', 'scrimTokenLive', 'nonBlankPixels', 'noConsoleErrors'],
   authenticated,
   results, gradient, forcedColors,
   errors,
@@ -533,6 +535,6 @@ const payload = {
     : `真实 SPA 路由回归；认证页面未执行（${authenticated.reason}），故不含 Dashboard / Billing / Orders / Refunds 等页面。该限制如实登记，不得视为已覆盖。`,
 }
 writeJson(join(AUDIT, 'visual-regression.json'), payload)
-console.log('[UDS7-REGRESSION] verdict', verdict, 'scenarios', results.length, 'errors', errors.length)
+console.log('[UDS8-REGRESSION] verdict', verdict, 'scenarios', results.length, 'errors', errors.length)
 if (errors.length) console.log(errors.join('\n'))
 process.exit(verdict === 'PASS' ? 0 : 1)

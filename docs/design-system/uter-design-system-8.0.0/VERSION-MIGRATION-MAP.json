@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.1",
+  "registry_id": "UDS8-VERSION-MIGRATION-MAP",
+  "version": "8.0.0",
+  "created_at": "2026-11-16",
+  "completed_at": "2026-11-16",
+  "policy": "8.0.0 拥有独立版本身份；7.0.1 不是 8.0.0 的别名。每条映射含旧→新权威路径、兼容性与验证要求。",
+  "migrations": [
+    {
+      "from_version": "3.0",
+      "to_version": "8.0.0",
+      "status": "DONE_VERIFIED",
+      "compatibility": "BREAKING",
+      "requires_code_change": true,
+      "requires_visual_regression": true,
+      "entries": [
+        {
+          "old": "tokens/colors.css 遗留 --ds-* 颜色定义（与 manifest 值冲突，COMPAT-MAP CM-02~06）",
+          "new": "registry/build.mjs 生成链统一派生 --ds8-*（8.0 canonical 前缀）；scrim/pure/on-emphasis/text-danger/text-success 5 个仍有消费者的语义收编为 manifest Token（manifest 384→389）",
+          "action": "DELETE_LEGACY_DEFINITIONS",
+          "conflicts_closed": ["CM-02", "CM-03", "CM-04", "CM-05", "CM-06"],
+          "done": true,
+          "evidence": "git rm colors.css + tokens/index.css 移除 import；theme.css 4 映射与 typography.css 4 消费迁移到 --ds8-*；COMPAT-MAP conflicts 全部 RESOLVED；C-M01 / C-R05 / C16 探针 PASS；G17 实测 legacySurfaceOverlayGone=true"
+        },
+        {
+          "old": "--ds-color-brand-gradient-{from,via,to} 3.0 命名（theme.css/colors.css 手写）",
+          "new": "8.0 生成链派生（--ds8-color-gradient-{light,dark}-*），值锚定 manifest 不变",
+          "action": "REGENERATE_UNDER_8",
+          "done": true,
+          "evidence": "verify-contrast.mjs PASS 37/0（含 GRADIENT_6_MANIFEST_* 与 GRADIENT_6_LEGACY_TRIO_REMOVED——断言升级为 colors.css 整体退役）；C09 对比度引擎 1001 点 × 2 主题 PASS"
+        }
+      ]
+    },
+    {
+      "from_version": "7.0",
+      "to_version": "8.0.0",
+      "status": "DONE_VERIFIED",
+      "compatibility": "BREAKING",
+      "requires_code_change": true,
+      "requires_visual_regression": true,
+      "entries": [
+        {
+          "old": "--ds7-* bridge 前缀（251 token，web/src 12 文件约 1100 处引用）",
+          "new": "--ds8-* canonical 前缀（bridge 重建后 256 token）",
+          "action": "RENAME_PREFIX_AND_MIGRATE_CONSUMERS",
+          "acceptance": "grep -r 'ds7-' web/src 结果为 0 且检查器无旧前缀规则",
+          "done": true,
+          "evidence": "git grep 'ds7-' web/src = 0；registry 18 个生成链脚本、检查器、verify-contrast、单测（uds8-syntax-adapter / charts / code-block-editor / brand-colors）全部迁移；G14 全量 vitest EXIT=0"
+        },
+        {
+          "old": "uds-semantic-bridge.css 隔离注入（与 3.0 colors.css 同名冲突共存）",
+          "new": "同一路径转为 8.0 唯一颜色运行时权威（colors.css 退役后隔离使命结束，文件成为 canonical emission）",
+          "action": "RETIRE_ISOLATION_ROLE",
+          "done": true,
+          "evidence": "colors.css 删除后 --ds-* 同名冲突不复存在；bridge 头注释更新为 8.0 权威语义；index.css import 不变；C-R02 bridge 浏览器实测 PASS"
+        },
+        {
+          "old": "COMPAT-MAP.json COLOR_ISOLATE_SCALAR_REPLACED policy + conflicts ISOLATE",
+          "new": "policy B6_EXECUTED；conflicts CM-01~06 全部 REPLACED/RESOLVED；unmigratedPages 清零（INC-01 闭合）；B6 批次 DONE_VERIFIED",
+          "action": "REWRITE_COMPAT_MAP",
+          "done": true,
+          "evidence": "build.mjs 派生源更新并重建；C-M01 探针 PASS；COMPAT-MAP.json::migrationBatches B1–B6 全 DONE_VERIFIED"
+        }
+      ]
+    },
+    {
+      "from_version": "7.0.1",
+      "to_version": "8.0.0",
+      "status": "DONE_VERIFIED",
+      "compatibility": "BREAKING",
+      "requires_code_change": false,
+      "requires_visual_regression": true,
+      "entries": [
+        {
+          "old": "视觉基线 7.0.1（registry/check-visual-baseline.mjs G19，15 场景字节一致）",
+          "new": "视觉基线 8.0.0 独立冻结（用户在本轮指令「继续执行剩下的任务」中对重冻结授权）；旧基线归档 audit/baseline/archive-7.0.1/",
+          "action": "REFREEZE_BASELINE",
+          "done": true,
+          "evidence": "freeze-baseline.mjs --version=8.0.0 --force EXIT=0；check-visual-baseline.mjs PASS 15 场景 15 字节一致 0 FAIL（G19 EXIT=0）"
+        },
+        {
+          "old": "docs/design-system 内 7.0 / UDS 7.0 现行声明 + SHOWCASE-7.0.html + check-design-system-7.0.mjs + design:7:check",
+          "new": "8.0.0 版本标识全面换版；历史段落仅存于升级证据与 git 历史（标记 HISTORICAL）",
+          "action": "VERSION_REBRAND",
+          "done": true,
+          "evidence": "38 规范文档由生成链重建（版本头 8.0.0）；SHOWCASE-8.0.0.html + web/public/design-system/8.0.0.html（旧 7.0 产物 git rm）；check-design-system-8.0.0.mjs（git mv）；package.json design:8:check；ci.yml 'Design system 8.0.0 governance'；AGENTS.md 治理入口声明 UDS 8.0.0 唯一权威；UDS-8.0.0-MIGRATION-REPORT.md"
+        }
+      ]
+    }
+  ],
+  "unresolved_registry_inconsistencies": [
+    {
+      "id": "INC-01",
+      "file": "docs/design-system/COMPAT-MAP.json",
+      "issue": "unmigratedPages 仍列 72 个路由文件，与 migrationBatches B5=DONE_VERIFIED 矛盾",
+      "disposition": "已闭合：build.mjs 派生源改为 unmigratedPages: []，B6 批次转 DONE_VERIFIED，switchCondition 更新为仅剩用户验收",
+      "status": "RESOLVED",
+      "evidence": "重建后 COMPAT-MAP.json unmigratedPages.length === 0"
+    },
+    {
+      "id": "INC-02",
+      "file": "registry/check-uds8-remediation.mjs（原 check-uds7-remediation.mjs）",
+      "issue": "探针 C-A04：12 色图表调色板仅靠颜色通道在 3 种色觉模拟下无法保持 ΔE00≥10",
+      "disposition": "已闭合：CHART_NON_COLOR_CHANNELS 非颜色通道登记（color-architecture.mjs）经整改验证器判定 RESOLVED，C-A04 不再出现在非 RESOLVED findings",
+      "status": "RESOLVED",
+      "evidence": "remediation-state.json findings 中无 C-A04（47 RESOLVED / 1 PARTIAL / 0 OPEN）"
+    },
+    {
+      "id": "INC-03",
+      "file": "docs/design-system/audit/remediation-state.json",
+      "issue": "C-R01 unchangedVsHead 断言在 AGENTS.md 治理更新提交前为 null → 探针 PARTIAL（预期暂态）",
+      "disposition": "AGENTS.md 治理入口更新随本轮提交落库后自动转 PASS；不影响其他门禁",
+      "status": "ACCEPTED_TRANSIENT"
+    }
+  ]
+}

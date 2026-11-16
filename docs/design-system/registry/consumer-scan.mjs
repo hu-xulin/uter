@@ -3,7 +3,7 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UDS 7.0 — Token 消费者真实性扫描（§4.1 五层架构的「真实消费者」断言）
+ * UDS 8.0.0 — Token 消费者真实性扫描（§4.1 五层架构的「真实消费者」断言）
  *
  * manifest 的 consumer 字段是「登记的预期消费者」。本脚本做双向验证：
  *   1. 正向：每个登记的 consumer 文件必须真实引用该 Token，否则判虚假登记；
@@ -11,9 +11,9 @@
  *      引用文件（actualConsumers），未登记的真实引用列为 undeclaredUsage。
  *
  * 「真实引用」的判定（只认可以下三种，不做语义猜测）：
- *   - 静态引用：文件文本含 runtimeName（--ds7-*）或 canonical name（--ds-*）；
- *     theme.css 的别名层 `--color-term-x: var(--ds7-color-terminal-x)` 属于此类。
- *   - 动态模板：`--ds7-color-chart-${i + 1}` 的静态前缀匹配整组 Token。
+ *   - 静态引用：文件文本含 runtimeName（--ds8-*）或 canonical name（--ds-*）；
+ *     theme.css 的别名层 `--color-term-x: var(--ds8-color-terminal-x)` 属于此类。
+ *   - 动态模板：`--ds8-color-chart-${i + 1}` 的静态前缀匹配整组 Token。
  *   - 全 manifest 迭代：registry 生成器中 Object.keys(T) 模式（Showcase 把每个
  *     Token 注入为运行时变量并逐行渲染），仅对 docs/ 下的 .mjs 生效。
  *
@@ -26,9 +26,9 @@ import { join, relative, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const UDS7 = join(HERE, '..')
-const REPO = join(UDS7, '..', '..')
-const MANIFEST = JSON.parse(readFileSync(join(UDS7, 'TOKEN-MANIFEST.json'), 'utf8'))
+const UDS8 = join(HERE, '..')
+const REPO = join(UDS8, '..', '..')
+const MANIFEST = JSON.parse(readFileSync(join(UDS8, 'TOKEN-MANIFEST.json'), 'utf8'))
 const T = MANIFEST.tokens
 
 const SCAN_DIRS = [
@@ -52,14 +52,14 @@ function walk(dir, out = []) {
 /**
  * 从文件文本提取 Token 引用证据。
  * - CSS 只认 var() 引用，定义处不算消费；
- * - web/src 产品文件只认 --ds7-* 运行时名：canonical --ds-* 在产品运行时
+ * - web/src 产品文件只认 --ds8-* 运行时名：canonical --ds-* 在产品运行时
  *   解析到 3.0 同名变量（值不同），不是 7.0 Token 的消费；
- * - docs/ registry 生成器认 canonical 名（manifest 键读取）与 --ds7-*；
+ * - docs/ registry 生成器认 canonical 名（manifest 键读取）与 --ds8-*；
  * - 注释不算引用。
  */
 function extractRefs(text, isRegistryGenerator, isCss, isProduct) {
   const clean = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-  const name = isProduct ? '--ds7-' : '--ds(?:7)?-'
+  const name = isProduct ? '--ds8-' : '--ds(?:8)?-'
   const statics = new Set()
   const prefixes = new Set()
   if (isCss) {
@@ -159,7 +159,7 @@ const summary = {
   undeclaredUsageCount: undeclaredUsage.length,
 }
 const out = { summary, falseDeclared, noVerifiedConsumer: noConsumer, undeclaredUsage, tokens: report }
-const outPath = join(UDS7, 'audit', 'CONSUMER-SCAN.json')
+const outPath = join(UDS8, 'audit', 'CONSUMER-SCAN.json')
 writeFileSync(outPath, JSON.stringify(out, null, 2) + '\n')
 
 console.log(`consumer-scan: ${files.length} 个源码文件，${names.length} 个 Token`)

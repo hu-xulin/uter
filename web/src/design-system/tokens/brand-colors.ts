@@ -26,9 +26,9 @@ For commercial licensing, please contact support@uter.ai
  *      这些是别人的商标配色，改成 `--primary` 就等于改人家的 logo，
  *      在任何主题下都必须保持原样。
  *   2. 未知厂商兜底序列 —— 历史遗留的静态序列，仅用于排行榜里没有官方
- *      品牌色的厂商，迁移状态见 UDS-7.0-MIGRATION-REPORT。
+ *      品牌色的厂商，迁移状态见 UDS-8.0.0-MIGRATION-REPORT。
  *
- * 多系列分类色已由 UDS 7.0 的 `--ds7-color-chart-1..12` 语义层承担
+ * 多系列分类色已由 UDS 8.0.0 的 `--ds8-color-chart-1..12` 语义层承担
  * （12 色，正常视觉 + 三类色觉缺陷模拟下任意两色 CIEDE2000 >= 10）。
  * VChart 画在 <canvas> 上读不到 CSS 变量，所以由本文件的
  * `resolveUds6ChartPalette()` 在**调用时**解析；生成的 TS 镜像只做
@@ -42,9 +42,9 @@ For commercial licensing, please contact support@uter.ai
  */
 
 import {
-  UDS7_CHART_PALETTE_DARK,
-  UDS7_CHART_PALETTE_LIGHT,
-} from './generated/uds7-chart-palette'
+  UDS8_CHART_PALETTE_DARK,
+  UDS8_CHART_PALETTE_LIGHT,
+} from './generated/uds8-chart-palette'
 
 // ---------------------------------------------------------------------------
 // 第三方品牌标识色
@@ -122,7 +122,7 @@ export const OAUTH_BRAND_COLORS: Record<string, string> = {
 }
 
 // ---------------------------------------------------------------------------
-// UDS 7.0 图表系列色（12 色，调用时解析）
+// UDS 8.0.0 图表系列色（12 色，调用时解析）
 // ---------------------------------------------------------------------------
 
 /**
@@ -141,8 +141,8 @@ export function resolveUds6ChartPalette(): string[] {
     typeof document !== 'undefined' &&
     (document.documentElement.classList.contains('dark') ||
       document.documentElement.getAttribute('data-ds-theme') === 'dark')
-      ? UDS7_CHART_PALETTE_DARK
-      : UDS7_CHART_PALETTE_LIGHT
+      ? UDS8_CHART_PALETTE_DARK
+      : UDS8_CHART_PALETTE_LIGHT
 
   if (typeof document === 'undefined') return [...fallback]
 
@@ -151,7 +151,7 @@ export function resolveUds6ChartPalette(): string[] {
   document.body.appendChild(probe)
   const style = getComputedStyle(probe)
   const colors = Array.from({ length: 12 }, (_, i) =>
-    style.getPropertyValue(`--ds7-color-chart-${i + 1}`).trim()
+    style.getPropertyValue(`--ds8-color-chart-${i + 1}`).trim()
   )
   probe.remove()
 
@@ -163,7 +163,7 @@ export function resolveUds6ChartPalette(): string[] {
  *
  * 取值刻意与 VENDOR_BRAND_COLORS 的厂商色保持低重复度，这样
  * 「有品牌色的厂商」和「未知厂商」在同一张饼图里不会撞色。
- * 迁移状态登记在 UDS-7.0-MIGRATION-REPORT（B3 批次）。
+ * 迁移状态登记在 UDS-8.0.0-MIGRATION-REPORT（B3 批次）。
  */
 export const VENDOR_FALLBACK_PALETTE = [
   '#0ea5e9',

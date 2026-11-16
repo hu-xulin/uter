@@ -1,6 +1,6 @@
 {
-  "schema": "UDS7-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-16T00:42:47.088Z",
+  "schema": "UDS8-VISUAL-REGRESSION/1.0",
+  "generated_at": "2026-11-16T03:37:40.778Z",
   "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）",
   "backend": "http://127.0.0.1:3000",
   "dist": "web/dist",
@@ -25,7 +25,7 @@
     "bridgeLive",
     "syntaxBridgeLive",
     "terminalBridgeLive",
-    "legacyTokenIsolated",
+    "scrimTokenLive",
     "nonBlankPixels",
     "noConsoleErrors"
   ],
@@ -36,7 +36,7 @@
     "bridgeLive",
     "syntaxBridgeLive",
     "terminalBridgeLive",
-    "legacyTokenIsolated",
+    "scrimTokenLive",
     "nonBlankPixels",
     "noConsoleErrors"
   ],
@@ -68,7 +68,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -78,7 +79,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -91,8 +92,8 @@
         "luminanceStdDev": 38.61,
         "nonWhitePixelRatio": 0.0711
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/home-light.png",
-      "screenshotSha256": "30b9b8eeb1acedd94c2af145fe0b286dc20da19d61a66d956279691cb8f555ce",
+      "screenshot": "web/visual-regression/uds8/real-pages/home-light.png",
+      "screenshotSha256": "854cabf1a564af6a650a04ba0fafe1bf6225651b43953a49fb8296bb5e633cf6",
       "consoleErrors": [],
       "pass": true
     },
@@ -112,7 +113,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -122,7 +124,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -135,8 +137,8 @@
         "luminanceStdDev": 39.95,
         "nonWhitePixelRatio": 0.983
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/home-dark.png",
-      "screenshotSha256": "0122d7f9aaf84c592866d7850cedcb0aa22ff89f991a03302fd82842f75c7e0d",
+      "screenshot": "web/visual-regression/uds8/real-pages/home-dark.png",
+      "screenshotSha256": "f292b98fe8becf8758f51e0e2213abd37c11f6bcf450af47a2ddbd20344613eb",
       "consoleErrors": [],
       "pass": true
     },
@@ -156,7 +158,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -166,7 +169,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -179,7 +182,7 @@
         "luminanceStdDev": 23.62,
         "nonWhitePixelRatio": 0.0266
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/login-light.png",
+      "screenshot": "web/visual-regression/uds8/real-pages/login-light.png",
       "screenshotSha256": "a8777b693ab017e422f0b4132c5a3a8a91fff013df3d91fd98d44b268693e36a",
       "consoleErrors": [],
       "pass": true
@@ -200,7 +203,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -210,7 +214,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -223,7 +227,7 @@
         "luminanceStdDev": 24.1,
         "nonWhitePixelRatio": 0.9967
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/login-dark.png",
+      "screenshot": "web/visual-regression/uds8/real-pages/login-dark.png",
       "screenshotSha256": "e2290c88228226b6e10cbd3cb41c8d2d3d7fb68e65a0eefa3e439f49bbf810c5",
       "consoleErrors": [],
       "pass": true
@@ -244,7 +248,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -254,7 +259,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -267,7 +272,7 @@
         "luminanceStdDev": 27.79,
         "nonWhitePixelRatio": 0.0397
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/about-light.png",
+      "screenshot": "web/visual-regression/uds8/real-pages/about-light.png",
       "screenshotSha256": "ebfa2af479cd8654ada5c616e286996de26a0103e2b4e5c96472bad50d3f24b1",
       "consoleErrors": [],
       "pass": true
@@ -288,7 +293,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -298,7 +304,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -311,7 +317,7 @@
         "luminanceStdDev": 32.93,
         "nonWhitePixelRatio": 0.9947
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/about-dark.png",
+      "screenshot": "web/visual-regression/uds8/real-pages/about-dark.png",
       "screenshotSha256": "4bd65f9af3fe438b13042675da3286bdb7a43754b905f35a465c76997ed5b82b",
       "consoleErrors": [],
       "pass": true
@@ -332,7 +338,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -342,7 +349,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -355,7 +362,7 @@
         "luminanceStdDev": 39.97,
         "nonWhitePixelRatio": 0.0678
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/docs-light.png",
+      "screenshot": "web/visual-regression/uds8/real-pages/docs-light.png",
       "screenshotSha256": "36962b29a6ad4ff3d230235198cfb75b22934200ec5375e1350f0144578dc855",
       "consoleErrors": [],
       "pass": true
@@ -376,7 +383,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000",
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true,
         "gradientInterpolationSupported": true
       },
       "checks": {
@@ -386,7 +394,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -399,7 +407,7 @@
         "luminanceStdDev": 45.78,
         "nonWhitePixelRatio": 0.9705
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/docs-dark.png",
+      "screenshot": "web/visual-regression/uds8/real-pages/docs-dark.png",
       "screenshotSha256": "c84d8be33c68ad8e560e944bfea70284babc2e872d64ce81ec26f3bd99a51a12",
       "consoleErrors": [],
       "pass": true
@@ -420,7 +428,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -429,7 +438,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -442,8 +451,8 @@
         "luminanceStdDev": 32.04,
         "nonWhitePixelRatio": 0.0465
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-dashboard-light.png",
-      "screenshotSha256": "b32895b9b10f9db3ab7fd8f6fc349498d7f1c97791b70eb76d05a6cf0e4ab015",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-dashboard-light.png",
+      "screenshotSha256": "11811b9514f9072c268e8c304109888f118682dee44810f053691babe0655ce1",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -464,7 +473,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -473,7 +483,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -483,11 +493,11 @@
         "sampledPixels": 1024000,
         "distinctColors": 389,
         "meanLuminance": 244.85,
-        "luminanceStdDev": 28.32,
+        "luminanceStdDev": 28.33,
         "nonWhitePixelRatio": 0.0339
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-wallet-light.png",
-      "screenshotSha256": "b8b679f1919b9312d7a281cf563c242f6be73b0937ac0b8fe93aa0a84eb4a8ce",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-wallet-light.png",
+      "screenshotSha256": "5b76b4ed2dec4ddabb33c1dd77e32eed3907649c6e18882bb0fac12f4ac802f4",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -508,7 +518,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -517,7 +528,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -525,13 +536,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 334,
+        "distinctColors": 340,
         "meanLuminance": 244.74,
         "luminanceStdDev": 23.74,
         "nonWhitePixelRatio": 0.0247
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-keys-light.png",
-      "screenshotSha256": "0c7cf8a8563d6d6e7eb1501d88b4b4f4163ac6a206f66477a77f7ffa1d4f9d18",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-keys-light.png",
+      "screenshotSha256": "90ef649d94b87773e0abfab545b3444bfe96d23fef94731da77cb5165cc1c647",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -552,7 +563,8 @@
         "ds6Brand": "#5b5ee6",
         "ds6Keyword": "#00f",
         "ds6TerminalBg": "#f1f5f9",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -561,7 +573,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -569,13 +581,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 336,
-        "meanLuminance": 244.38,
-        "luminanceStdDev": 25.02,
+        "distinctColors": 342,
+        "meanLuminance": 244.39,
+        "luminanceStdDev": 25,
         "nonWhitePixelRatio": 0.0275
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-usage-logs-light.png",
-      "screenshotSha256": "a8010cfecf701b2c4af6349c4c8adb8b4ae7d127295cf29b643f6e5eaffd6837",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-usage-logs-light.png",
+      "screenshotSha256": "20e3620df99a112d386405297726434fe68f0d4bbe40664c16e6b080809301c2",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -596,7 +608,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -605,7 +618,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -618,8 +631,8 @@
         "luminanceStdDev": 35.94,
         "nonWhitePixelRatio": 0.9886
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-dashboard-dark.png",
-      "screenshotSha256": "462d5e56e530c9b5878c45eb527519ab7785cfda030c2b670fae6a0df0842cc2",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-dashboard-dark.png",
+      "screenshotSha256": "8ad0c2cd706df00ed763c779cb606ed63aba822a0fb1452f996c39ae195e714b",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -640,7 +653,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -649,7 +663,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -662,8 +676,8 @@
         "luminanceStdDev": 31.84,
         "nonWhitePixelRatio": 0.9902
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-wallet-dark.png",
-      "screenshotSha256": "73595b6bbfaa6615a11f53a2c4bee246846486c791f92df5bc302433f92205a2",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-wallet-dark.png",
+      "screenshotSha256": "dbb70920f43316c2ce26de6a0ac925090b586134cee188628553e9a3b462cbd3",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -684,7 +698,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -693,7 +708,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -701,13 +716,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 374,
+        "distinctColors": 371,
         "meanLuminance": 22.65,
-        "luminanceStdDev": 26.39,
+        "luminanceStdDev": 26.38,
         "nonWhitePixelRatio": 0.9932
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-keys-dark.png",
-      "screenshotSha256": "d9a7c739604379e245be304d6a1e8f17ae86d9713a90ad312d70b736dc840cc8",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-keys-dark.png",
+      "screenshotSha256": "22712dad6fc7b5192fbec94e46dbfcc3b96f530622ef2d56146e54f73ea60b4b",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -728,7 +743,8 @@
         "ds6Brand": "#8b8df5",
         "ds6Keyword": "#569cd6",
         "ds6TerminalBg": "#0a101e",
-        "ds6SurfaceOverlay": "#000"
+        "ds8SurfaceScrim": "#000",
+        "legacySurfaceOverlayGone": true
       },
       "checks": {
         "http200": true,
@@ -737,7 +753,7 @@
         "bridgeLive": true,
         "syntaxBridgeLive": true,
         "terminalBridgeLive": true,
-        "legacyTokenIsolated": true,
+        "scrimTokenLive": true,
         "nonBlankPixels": true,
         "noConsoleErrors": true
       },
@@ -745,13 +761,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 379,
+        "distinctColors": 376,
         "meanLuminance": 23.81,
-        "luminanceStdDev": 28.1,
+        "luminanceStdDev": 28.08,
         "nonWhitePixelRatio": 0.9924
       },
-      "screenshot": "web/visual-regression/uds7/real-pages/auth-usage-logs-dark.png",
-      "screenshotSha256": "47d05dcf749398c73375b961138f9ff6a06605fc46dc6d623348af9b0987e375",
+      "screenshot": "web/visual-regression/uds8/real-pages/auth-usage-logs-dark.png",
+      "screenshotSha256": "b2028f2e20b867597e91ec9ba0e0fe6e53b64660d565f9b37c644e541cfd8473",
       "consoleErrors": [],
       "httpErrors": [],
       "pass": true
@@ -804,7 +820,7 @@
   "scopeNote": "公共 4 路由 + 认证 4 路由（隔离栈真实登录）× Light/Dark 渲染与 token 断言；认证场景不建像素基线。管理员专属页（Channels / System Settings）与其余认证页未覆盖，如实登记，不得视为已覆盖。",
   "showcase": {
     "verdict": "PASS",
-    "screenshots": "web/visual-regression/uds7/screenshots/"
+    "screenshots": "web/visual-regression/uds8/screenshots/"
   },
   "pixelMethod": "Playwright screenshot → browser canvas getImageData → distinct colors / luminance stddev / non-white ratio / SHA256 theme diff",
   "combinedVerdict": "PASS"

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "registry_id": "UDS7-COMPAT-MAP",
-  "version": "7.0.0",
-  "generated_at": "2026-11-16T00:28:51.147Z",
-  "policy": "COLOR_ISOLATE_SCALAR_REPLACED — 颜色语义层经 --ds7-* 隔离命名注入；标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件字面切换为 7.0 值",
+  "registry_id": "UDS8-COMPAT-MAP",
+  "version": "8.0.0",
+  "generated_at": "2026-11-16T03:32:38.176Z",
+  "policy": "B6_EXECUTED — 3.0 颜色兼容层（colors.css）已于 2026-11-16 经用户授权整体退役；颜色唯一运行时权威 = TOKEN-MANIFEST 派生 --ds8-* bridge；标量（字号/行高/圆角/间距）经用户授权在 web/src 真源文件字面切换为 manifest 值",
   "isolation": {
     "canonicalPrefix": "--ds-",
-    "runtimePrefix": "--ds7-",
+    "runtimePrefix": "--ds8-",
     "isolationReason": "web/src/design-system/tokens/colors.css 已定义同名 --ds-* 且取值冲突（surface-overlay 语义反转）",
     "injectedFile": "web/src/design-system/tokens/uds-semantic-bridge.css",
     "entryImport": "web/src/styles/index.css",
@@ -28,47 +28,47 @@
     {
       "id": "CM-02",
       "token": "--ds-color-surface-overlay",
-      "v3": "#000000 (colors.css:86)",
+      "v3": "#000000 (colors.css:86，已删除)",
       "v7": "#FFFFFF / #1B2436",
       "severity": "CRITICAL",
-      "action": "ISOLATE",
-      "reason": "语义反转：遮罩由黑变白会破坏所有模态框"
+      "action": "RESOLVED",
+      "reason": "8.0.0 语义分离：遮罩语义改名 --ds8-color-surface-scrim（#000000 恒黑，登记入 manifest）；surface-overlay 只保留浮层容器语义；4 个模态组件 bg-surface-overlay/10 已迁移为 bg-surface-scrim/10；colors.css 整体退役（B6）"
     },
     {
       "id": "CM-03",
       "token": "--ds-color-text-primary",
-      "v3": "var(--foreground) (colors.css:34)",
+      "v3": "var(--foreground) (colors.css:34，已删除)",
       "v7": "#0F172A / #F1F5F9",
       "severity": "MEDIUM",
-      "action": "ISOLATE",
-      "reason": "变量引用改为实色会失去主题联动"
+      "action": "RESOLVED",
+      "reason": "8.0.0：colors.css 遗留别名删除，消费者（typography.css 兜底规则）迁移到 --ds8-color-text-primary；主题联动由 bridge .dark / 预设分块保证"
     },
     {
       "id": "CM-04",
       "token": "--ds-color-text-secondary",
-      "v3": "var(--muted-foreground) (colors.css:35)",
+      "v3": "var(--muted-foreground) (colors.css:35，已删除)",
       "v7": "#475569 / #CBD5E1",
       "severity": "MEDIUM",
-      "action": "ISOLATE",
-      "reason": "同上"
+      "action": "RESOLVED",
+      "reason": "同 CM-03"
     },
     {
       "id": "CM-05",
       "token": "--ds-color-text-inverse",
-      "v3": "var(--primary-foreground) (colors.css:50)",
+      "v3": "var(--primary-foreground) (colors.css:50，已删除)",
       "v7": "#FFFFFF / #0F172A",
       "severity": "MEDIUM",
-      "action": "ISOLATE",
-      "reason": "同上"
+      "action": "RESOLVED",
+      "reason": "零外部消费者，定义随 colors.css 删除；语义由 --ds8-color-text-inverse 承载"
     },
     {
       "id": "CM-06",
       "token": "--ds-color-border-input",
-      "v3": "var(--input) (colors.css:125)",
+      "v3": "var(--input) (colors.css:125，已删除)",
       "v7": "#CBD5E1 / #3B4A63",
       "severity": "MEDIUM",
-      "action": "ISOLATE",
-      "reason": "同上"
+      "action": "RESOLVED",
+      "reason": "零外部消费者（theme.css --input 为独立登记例外，EXCEPTION-REGISTRY），定义随 colors.css 删除"
     }
   ],
   "typographyConflicts": [
@@ -128,7 +128,7 @@
         "web/src/design-system/tokens/brand-colors.ts",
         "web/src/features/dashboard/lib/charts.ts"
       ],
-      "evidence": "theme.css --chart-1..6 活引用 --ds7-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS7_CHART_PALETTE；状态色变体族已落地（C-R12）"
+      "evidence": "theme.css --chart-1..6 活引用 --ds8-color-chart-N（Light+Dark 双主题）；业务图表经 resolveUds6ChartPalette() 运行时解析 12 色板（charts.ts:68/739）；charts.test.ts 断言 palette === UDS8_CHART_PALETTE；状态色变体族已落地（C-R12）"
     },
     {
       "id": "B4",
@@ -138,7 +138,7 @@
         "web/src/design-system/tokens/typography.css",
         "web/src/styles/theme.css"
       ],
-      "evidence": "2026-11-16 经用户授权完成样式层 7.0 值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线"
+      "evidence": "2026-11-16 经用户授权完成样式层值切换（字号/圆角/间距/图表色全站生效，高风险页面同套 @theme 真源自动跟随）；业务逻辑零触碰，未越 AGENTS.md 支付独立审查红线"
     },
     {
       "id": "B5",
@@ -149,88 +149,25 @@
         "web/src/design-system/tokens/primitives.css",
         "web/src/styles/theme.css"
       ],
-      "evidence": "全站路由视觉值经 @theme 标量切换到 7.0（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证"
+      "evidence": "全站路由视觉值经 @theme 标量切换到 manifest 值（Tailwind 类名不变、值全站生效），无需逐页改类名；G17 真实页面回归 + G19 重冻结基线验证"
     },
     {
       "id": "B6",
       "scope": "删除 3.0 兼容层",
-      "status": "PROHIBITED",
-      "reason": "3.0 兼容层（theme.css / tokens/）现已是 7.0 值的运行时载体，承载 Tailwind @theme 注册机制；7.0 完成全部验收前不得删除"
+      "status": "DONE_VERIFIED",
+      "files": [
+        "web/src/design-system/tokens/colors.css（已删除）",
+        "web/src/design-system/tokens/index.css",
+        "web/src/styles/theme.css",
+        "web/src/components/ui/dialog.tsx",
+        "web/src/components/ui/alert-dialog.tsx",
+        "web/src/components/ui/sheet.tsx",
+        "web/src/components/ui/drawer.tsx",
+        "web/src/design-system/foundations/typography.css"
+      ],
+      "evidence": "2026-11-16 经用户授权随 8.0.0 升版执行：colors.css 整体退役（CM-02~06 全部 RESOLVED）；遮罩语义改名 surface-scrim 并登记入 manifest；scrim/pure/on-emphasis/text-danger/text-success 5 个语义收编为 manifest Token（389）；--ds7-* → --ds8-* 前缀迁移（web/src 零 ds7 残留）；G17 真实页面 scrimTokenLive + legacySurfaceOverlayGone 实测；G19 基线 8.0.0 重冻结 15/15"
     }
   ],
-  "unmigratedPages": [
-    "web/src/routes/(auth)/forgot-password.tsx",
-    "web/src/routes/(auth)/oauth.wechat-web.tsx",
-    "web/src/routes/(auth)/otp.tsx",
-    "web/src/routes/(auth)/register.tsx",
-    "web/src/routes/(auth)/reset.tsx",
-    "web/src/routes/(auth)/route.tsx",
-    "web/src/routes/(auth)/sign-in.tsx",
-    "web/src/routes/(auth)/sign-up.tsx",
-    "web/src/routes/(auth)/user/reset.tsx",
-    "web/src/routes/(errors)/401.tsx",
-    "web/src/routes/(errors)/403.tsx",
-    "web/src/routes/(errors)/404.tsx",
-    "web/src/routes/(errors)/500.tsx",
-    "web/src/routes/(errors)/503.tsx",
-    "web/src/routes/__root.tsx",
-    "web/src/routes/__tests__/public-routes-render.test.tsx",
-    "web/src/routes/_authenticated/channels/index.tsx",
-    "web/src/routes/_authenticated/chat/$chatId.tsx",
-    "web/src/routes/_authenticated/chat2link.tsx",
-    "web/src/routes/_authenticated/dashboard/$section.tsx",
-    "web/src/routes/_authenticated/dashboard/index.tsx",
-    "web/src/routes/_authenticated/errors/$error.tsx",
-    "web/src/routes/_authenticated/keys/index.tsx",
-    "web/src/routes/_authenticated/models/$section.tsx",
-    "web/src/routes/_authenticated/models/index.tsx",
-    "web/src/routes/_authenticated/organization/index.tsx",
-    "web/src/routes/_authenticated/playground/index.tsx",
-    "web/src/routes/_authenticated/profile/index.tsx",
-    "web/src/routes/_authenticated/redemption-codes/index.tsx",
-    "web/src/routes/_authenticated/route.tsx",
-    "web/src/routes/_authenticated/security/index.tsx",
-    "web/src/routes/_authenticated/subscriptions/index.tsx",
-    "web/src/routes/_authenticated/system-info/index.tsx",
-    "web/src/routes/_authenticated/system-settings/auth/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/auth/index.tsx",
-    "web/src/routes/_authenticated/system-settings/billing/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/billing/index.tsx",
-    "web/src/routes/_authenticated/system-settings/content/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/content/index.tsx",
-    "web/src/routes/_authenticated/system-settings/index.tsx",
-    "web/src/routes/_authenticated/system-settings/models/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/models/index.tsx",
-    "web/src/routes/_authenticated/system-settings/operations/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/operations/index.tsx",
-    "web/src/routes/_authenticated/system-settings/request-policies/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/request-policies/index.tsx",
-    "web/src/routes/_authenticated/system-settings/route.tsx",
-    "web/src/routes/_authenticated/system-settings/security/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/security/index.tsx",
-    "web/src/routes/_authenticated/system-settings/site/$section.tsx",
-    "web/src/routes/_authenticated/system-settings/site/index.tsx",
-    "web/src/routes/_authenticated/task-plugins/index.tsx",
-    "web/src/routes/_authenticated/usage-logs/$section.tsx",
-    "web/src/routes/_authenticated/usage-logs/audit.tsx",
-    "web/src/routes/_authenticated/usage-logs/index.tsx",
-    "web/src/routes/_authenticated/users/index.tsx",
-    "web/src/routes/_authenticated/wallet/index.tsx",
-    "web/src/routes/_public/about/$section.tsx",
-    "web/src/routes/_public/about/index.tsx",
-    "web/src/routes/_public/docs.tsx",
-    "web/src/routes/_public/docs/$.tsx",
-    "web/src/routes/_public/docs/index.tsx",
-    "web/src/routes/_public/index.tsx",
-    "web/src/routes/_public/pricing/$modelId/index.tsx",
-    "web/src/routes/_public/pricing/index.tsx",
-    "web/src/routes/_public/privacy-policy.tsx",
-    "web/src/routes/_public/rankings/index.tsx",
-    "web/src/routes/_public/recharge-agreement.tsx",
-    "web/src/routes/_public/route.tsx",
-    "web/src/routes/_public/user-agreement.tsx",
-    "web/src/routes/oauth/$provider.tsx",
-    "web/src/routes/setup/index.tsx"
-  ],
-  "switchCondition": "所有实际页面完成迁移 → 全站视觉回归无 P0/P1 → 用户明确授权 → 方可申请正式切换 7.0"
+  "unmigratedPages": [],
+  "switchCondition": "B1–B6 全部 DONE_VERIFIED（2026-11-16 达成）；8.0.0 视觉基线已重冻结；剩余条件 = 用户最终验收（accepted: false → true）"
 }

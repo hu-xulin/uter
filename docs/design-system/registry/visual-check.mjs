@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /*
- * UTER DESIGN SYSTEM 7.0 — 真实无头浏览器视觉验证
- * 输出：web/visual-regression/uds7/{screenshots,run-log.json}
+ * UTER DESIGN SYSTEM 8.0.0 — 真实无头浏览器视觉验证
+ * 输出：web/visual-regression/uds8/{screenshots,run-log.json}
  * 退出码：0 全部通过；1 存在渲染错误；2 浏览器缺失（BLOCKED，绝不报 PASS）
  */
 
@@ -28,8 +28,8 @@ import { fileURLToPath } from 'node:url'
 
 const DS = fileURLToPath(new URL('..', import.meta.url))
 const REPO = join(DS, '..', '..')
-const OUT = join(REPO, 'web', 'visual-regression', 'uds7')
-const HTML = join(DS, 'SHOWCASE-7.0.html')
+const OUT = join(REPO, 'web', 'visual-regression', 'uds8')
+const HTML = join(DS, 'SHOWCASE-8.0.0.html')
 const PLAYWRIGHT = join(REPO, 'web', 'node_modules', 'playwright', 'index.mjs')
 
 mkdirSync(join(OUT, 'screenshots'), { recursive: true })
@@ -101,10 +101,10 @@ for (const c of cases) {
     }
   })
 
-  const shot = join(OUT, 'screenshots', `uds7-${c.theme}-${c.viewport}.png`)
+  const shot = join(OUT, 'screenshots', `uds8-${c.theme}-${c.viewport}.png`)
   await page.screenshot({ path: shot })
   totalErrors += errors.length
-  results.push({ ...c, screenshot: `web/visual-regression/uds7/screenshots/uds7-${c.theme}-${c.viewport}.png`, info, errors })
+  results.push({ ...c, screenshot: `web/visual-regression/uds8/screenshots/uds8-${c.theme}-${c.viewport}.png`, info, errors })
   await page.close()
 }
 

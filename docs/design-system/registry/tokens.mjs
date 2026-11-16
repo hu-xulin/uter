@@ -2,7 +2,7 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UTER DESIGN SYSTEM 7.0 — Token definition (唯一数值输入)
+ * UTER DESIGN SYSTEM 8.0.0 — Token definition (唯一数值输入)
  *
  * 本文件只负责「定义」，产物 TOKEN-MANIFEST.json 才是被读取的唯一真源。
  * build.mjs 会先写出 manifest，再重新从磁盘读回，所有 CSS / TS / Showcase /
@@ -19,10 +19,10 @@ import {
   COLOR_LAYERS, CHART_NON_COLOR_CHANNELS,
 } from './color-architecture.mjs'
 
-export const VERSION = '7.0.0'
-/* 状态推进：2026-11-16 经用户授权，7.0 规范体系与运行时桥接已全部落地，
- * 全量自动化门禁（22/22 检查 + 50/50 整改 + 16/16 真实页面 + 8 项工程门禁）通过，
- * 已达到用户审核条件 → ACCEPTANCE_READY。accepted 仍为 false，须用户最终验收。 */
+export const VERSION = '8.0.0'
+/* 状态推进：2026-11-16 经用户授权正式升版 8.0.0 —— 运行时前缀 --ds7-* → --ds8-*、
+ * colors.css 遗留冲突语义（CM-02~06）闭合、产物文件名与检查器全部换版。
+ * 全量自动化门禁通过后为 ACCEPTANCE_READY。accepted 仍为 false，须用户最终验收。 */
 export const STATUS = 'ACCEPTANCE_READY'
 
 /* ── 字体栈：必须逐字保留 Uter 当前真实配置（theme.css:301-328） ─────────────── */
@@ -70,6 +70,8 @@ const COLOR_GROUPS = [
       ['code', '#F6F8FA', '#0E1524', '代码编辑器背景（对比度实测基准）'],
       ['terminal', '#F1F5F9', '#0A101E', '终端预览背景（Light / Dark 独立，禁止共用纯黑）'],
       ['overlay', '#FFFFFF', '#1B2436', '浮层容器背景'],
+      ['pure', '#FFFFFF', null, '纯白表面（二维码底 / 滑块手柄，深浅主题恒白）', '必须在深浅主题都保持纯白的表面', 'web/src/styles/theme.css'],
+      ['scrim', '#000000', null, '模态遮罩（深浅主题恒黑，浓淡由透明度修饰表达）', '把下层内容压暗的遮罩层（CM-02 闭合：与 surface-overlay 浮层容器语义分离）', 'web/src/styles/theme.css'],
     ],
   },
   {
@@ -84,6 +86,9 @@ const COLOR_GROUPS = [
       ['on-brand', '#FFFFFF', '#FFFFFF', '品牌实底按钮前景（实测 5.01:1）'],
       ['on-dark', '#F8FAFC', '#F8FAFC', '深色实底上的前景'],
       ['inverse', '#FFFFFF', '#0F172A', '反色文本'],
+      ['on-emphasis', '#FFFFFF', null, '饱和填充（品牌 / 状态色块）上的文字，恒白', '替代散落的 text-white（C-03 禁止手写白字）', 'web/src/styles/theme.css'],
+      ['danger', '#B91C1C', null, '危险文字（与 status-danger-solid 同源）', '语义化的危险前景色', 'web/src/design-system/foundations/typography.css'],
+      ['success', '#15803D', '#6EE7B7', '成功文字（与 status-success 同源）', '语义化的成功前景色', 'web/src/design-system/foundations/typography.css'],
     ],
   },
   {
@@ -117,7 +122,7 @@ const COLOR_GROUPS = [
   {
     layer: 'semantic', prefix: 'chart', description: 'Chart Colors 1–5（6–12 见 color-architecture.mjs）—— 12 色体系，任意两色在正常视觉 + 三类色觉缺陷模拟下 CIEDE2000 >= 10',
     items: [
-      // 2026-11-15 色板搜索 v5 定稿（/tmp/uds7-palette-v5.json，seed 987654321）：
+      // 2026-11-15 色板搜索 v5 定稿（/tmp/uds8-palette-v5.json，seed 987654321）：
       // Light minAll 10.50 / minNormal 13.14 / canvas >= 3.2:1 / chroma >= 43；
       // Dark minAll 10.51 / minNormal 15.09 / canvas >= 3.68:1 / chroma >= 31。
       // 系列顺序按常用优先（蓝/紫/青/红/绿…），与产品色无同值碰撞（C-R08）。
@@ -184,7 +189,7 @@ const COLOR_GROUPS = [
     layer: 'semantic', prefix: 'terminal', description: 'Terminal Colors —— 终端预览专用，不与 Syntax 互引',
     items: [
       // consumer 登记真实引用链：theme.css 别名层 → 产品组件；Showcase 终端区
-      // 按 pane 作用域注入 --ds7-color-terminal-* 并以 var() 真实消费全部 32 色。
+      // 按 pane 作用域注入 --ds8-color-terminal-* 并以 var() 真实消费全部 32 色。
       ['background', '#F1F5F9', '#0A101E', '终端背景（Light / Dark 独立）', '终端 / 任务产物预览背景', 'web/src/styles/theme.css; web/src/features/usage-logs/components/task-artifacts.tsx; docs/design-system/registry/showcase-extensions.mjs'],
       ['foreground', '#0F172A', '#E2E8F0', '终端前景', '终端正文文字', 'docs/design-system/registry/showcase-extensions.mjs'],
       ['prompt', '#047857', '#34D399', '提示符', 'shell 提示符', 'docs/design-system/registry/showcase-extensions.mjs'],
@@ -444,8 +449,8 @@ export function buildManifest() {
     tokens[name] = {
       layer, category, type, unit, light, dark, description, themeIndependent,
       // 运行时隔离名：3.0 已有同名 --ds-* 且取值冲突（见 LIGHT-DARK-CONSISTENCY-AUDIT）。
-      // 所有真实组件只消费 --ds7-*，由 build.mjs 从本字段派生 bridge CSS。
-      runtimeName: '--ds7-' + name.slice(5),
+      // 所有真实组件只消费 --ds8-*，由 build.mjs 从本字段派生 bridge CSS。
+      runtimeName: '--ds8-' + name.slice(5),
       semanticMeaning: meta.semanticMeaning ?? description,
       consumer: meta.consumer ?? null,
       consumerNote: meta.consumerNote ?? null,
@@ -519,8 +524,8 @@ export function buildManifest() {
 
   return {
     schema_version: '1.0',
-    manifest_id: 'UDS7-TOKEN-MANIFEST',
-    design_system: 'UTER DESIGN SYSTEM 7.0',
+    manifest_id: 'UDS8-TOKEN-MANIFEST',
+    design_system: 'UTER DESIGN SYSTEM 8.0.0',
     version: VERSION,
     status: STATUS,
     single_source_of_truth: 'docs/design-system/TOKEN-MANIFEST.json',
@@ -607,7 +612,7 @@ export function buildManifest() {
     // 字面切换为 7.0 值（tokens.test.ts 三方守卫钉死），不经 bridge 注入。
     runtimeBridge: {
       canonicalPrefix: '--ds-',
-      runtimePrefix: '--ds7-',
+      runtimePrefix: '--ds8-',
       isolationReason: 'web/src/design-system/tokens/colors.css 已定义同名 --ds-* 且取值冲突（surface-overlay 语义反转）',
       injectedFile: 'web/src/design-system/tokens/uds-semantic-bridge.css',
       entryImport: 'web/src/styles/index.css',

@@ -1,6 +1,6 @@
 {
-  "schema": "UDS7-ACCESSIBILITY-VALIDATION/1.0",
-  "generated_at": "2026-11-16T00:42:47.088Z",
+  "schema": "UDS8-ACCESSIBILITY-VALIDATION/1.0",
+  "generated_at": "2026-11-16T03:37:40.778Z",
   "axe": {
     "verdict": "PASS",
     "cases": [
@@ -617,7 +617,7 @@
     "forcedColors": {
       "cssFallbackDeclared": true,
       "playwrightVerified": true,
-      "evidence": "web/visual-regression/uds7/screenshots/forced-colors-showcase.png"
+      "evidence": "web/visual-regression/uds8/screenshots/forced-colors-showcase.png"
     }
   },
   "verdict": "PASS",

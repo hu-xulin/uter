@@ -1,7 +1,7 @@
 /*
 Copyright (C) 2023-2026 Uter.ai
 */
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -238,15 +238,16 @@ add(
   `legacy #5B5EE6 on #F0F0FF = ${oldValue.toFixed(2)}:1 and is rejected below AA 4.5:1`
 )
 
-// UDS 7.0 migration (2026-11-15, Phase 6 B2): the legacy upstream-anchored triple
+// UDS 8.0.0 migration (2026-11-15, Phase 6 B2): the legacy upstream-anchored triple
 // (--ds-color-brand-gradient-*, worst light-theme 2.54:1) has been removed from the
 // runtime. The single utility owner now consumes the TOKEN-MANIFEST-derived
-// --ds7-color-gradient-{light,dark}-* triples, each validated over 1001 sRGB sample
+// --ds8-color-gradient-{light,dark}-* triples, each validated over 1001 sRGB sample
 // points against 7 real backgrounds (see docs/design-system/
 // CONTRAST-VERIFICATION-REPORT.md: worst Light 5.99:1 / worst Dark 8.37:1).
 // E28 (spec §26.2) is revoked; the acceptance condition is now the ordinary 4.5:1
 // per-stop ratio on the theme canvas, plus single-owner and legacy-trio-removed.
-const colorsCss = readFileSync(colorsPath, 'utf8')
+// 8.0.0：colors.css 遗留别名层已整体删除（CM-02~06 闭合），读取改为存在性守卫
+const colorsCss = existsSync(colorsPath) ? readFileSync(colorsPath, 'utf8') : ''
 const typographyCss = readFileSync(typographyPath, 'utf8')
 const manifest = JSON.parse(
   readFileSync(
@@ -275,16 +276,16 @@ add(
   'GRADIENT_6_UTILITY_OWNER',
   Boolean(
     typographyCss.includes('@utility ds-text-gradient-brand') &&
-      typographyCss.includes('var(--ds7-color-gradient-light-from)') &&
-      typographyCss.includes('var(--ds7-color-gradient-dark-from)') &&
+      typographyCss.includes('var(--ds8-color-gradient-light-from)') &&
+      typographyCss.includes('var(--ds8-color-gradient-dark-from)') &&
       /90deg in srgb/.test(typographyCss)
   ),
-  'single utility consumes --ds7-color-gradient-{light,dark}-* with `90deg in srgb`'
+  'single utility consumes --ds8-color-gradient-{light,dark}-* with `90deg in srgb`'
 )
 add(
   'GRADIENT_6_LEGACY_TRIO_REMOVED',
-  !colorsCss.includes('--ds-color-brand-gradient-'),
-  'legacy §17.5 triple --ds-color-brand-gradient-* removed from colors.css (DP-002 executed, E28 revoked)'
+  !colorsCss.includes('--ds-color-brand-gradient-') && !existsSync(colorsPath),
+  'legacy §17.5 triple removed — colors.css retired entirely in 8.0.0 (DP-002 executed, E28 revoked)'
 )
 const registeredReport = readFileSync(
   join(
@@ -308,7 +309,7 @@ for (const [theme, bg] of [
     add(
       `GRADIENT_${theme}_${name}`,
       value >= 4.5,
-      `${fg} on canvas ${bg} = ${value.toFixed(2)}:1 (UDS 7.0, per-stop ≥ 4.5:1; E28 revoked 2026-11-15)`
+      `${fg} on canvas ${bg} = ${value.toFixed(2)}:1 (UDS 8.0.0, per-stop ≥ 4.5:1; E28 revoked 2026-11-15)`
     )
   }
 }

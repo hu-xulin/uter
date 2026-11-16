@@ -15,7 +15,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { chromium } from '@playwright/test'
 
 const WEB_ROOT = resolve(process.cwd())
-const SHOWCASE = resolve(WEB_ROOT, '../docs/design-system/SHOWCASE-7.0.html')
+const SHOWCASE = resolve(WEB_ROOT, '../docs/design-system/SHOWCASE-8.0.0.html')
 const REPORT_PATH =
   process.env.VISUAL_AUDIT_REPORT ||
   resolve(process.env.RUNNER_TEMP || '/tmp', 'uter-visual-a11y-report.json')
@@ -34,7 +34,7 @@ const hash = (value) => createHash('sha256').update(value).digest('hex')
 if (
   !SHOWCASE ||
   !pathToFileURL(SHOWCASE).href ||
-  !SHOWCASE.endsWith('SHOWCASE-7.0.html')
+  !SHOWCASE.endsWith('SHOWCASE-8.0.0.html')
 ) {
   add('SHOWCASE_PATH', false, 'Design System showcase path is invalid')
 } else {
@@ -298,7 +298,7 @@ const report = {
   engine: 'UTER_DESIGN_SYSTEM_VISUAL_A11Y_AUDIT',
   generated_at: new Date().toISOString(),
   design_system: 'UTER Design System 7.0',
-  target: 'docs/design-system/SHOWCASE-7.0.html',
+  target: 'docs/design-system/SHOWCASE-8.0.0.html',
   viewport_matrix: VIEWPORTS,
   theme_matrix: THEMES,
   verdict: failures.length ? 'FAIL' : 'PASS',

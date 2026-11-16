@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-/* UDS 7.0 Token declarations (Light defaults)
+/* UDS 8.0.0 Token declarations (Light defaults)
  * This file is generated — DO NOT EDIT.
  * Source: docs/design-system/TOKEN-MANIFEST.json
  * Regenerate: node docs/design-system/registry/build.mjs
@@ -224,7 +224,9 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-surface-canvas: #F8FAFC;
   --ds-color-surface-code: #F6F8FA;
   --ds-color-surface-overlay: #FFFFFF;
+  --ds-color-surface-pure: #FFFFFF;
   --ds-color-surface-raised: #FFFFFF;
+  --ds-color-surface-scrim: #000000;
   --ds-color-surface-sunken: #F1F5F9;
   --ds-color-surface-terminal: #F1F5F9;
   --ds-color-terminal-ansi-0: #1E293B;
@@ -259,14 +261,17 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-terminal-string: #B45309;
   --ds-color-terminal-success: #15803D;
   --ds-color-terminal-warning: #A54600;
+  --ds-color-text-danger: #B91C1C;
   --ds-color-text-disabled: #94A3B8;
   --ds-color-text-inverse: #FFFFFF;
   --ds-color-text-link: #1D4ED8;
   --ds-color-text-muted: #5B6779;
   --ds-color-text-on-brand: #FFFFFF;
   --ds-color-text-on-dark: #F8FAFC;
+  --ds-color-text-on-emphasis: #FFFFFF;
   --ds-color-text-primary: #0F172A;
   --ds-color-text-secondary: #475569;
+  --ds-color-text-success: #15803D;
   --ds-color-text-tertiary: #64748B;
   --ds-control-h5-input-font-size: 16px;
   --ds-control-lg: 40px;

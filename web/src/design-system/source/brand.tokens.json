@@ -8,16 +8,16 @@
       "sourceCommit": "77dab9bf56fff59d6bed0d11cb88fa0901253c4a",
       "provenance": {
         "themes.light.primary": "USER_CONFIRMED",
-        "themes.dark.primary": "UDS7_INTERACTION_DEFAULT_DARK",
+        "themes.dark.primary": "UDS8_INTERACTION_DEFAULT_DARK",
         "themes.light.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
-        "themes.light.hover": "UDS7_BRAND_SOLID_HOVER",
-        "themes.light.active": "UDS7_BRAND_SOLID_ACTIVE",
+        "themes.light.hover": "UDS8_BRAND_SOLID_HOVER",
+        "themes.light.active": "UDS8_BRAND_SOLID_ACTIVE",
         "themes.light.soft": "EXISTING_3_0_IMPLEMENTATION",
         "themes.light.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.light.border": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.primaryForeground": "EXISTING_3_0_IMPLEMENTATION",
-        "themes.dark.hover": "UDS7_INTERACTION_HOVER_DARK",
-        "themes.dark.active": "UDS7_INTERACTION_ACTIVE_DARK",
+        "themes.dark.hover": "UDS8_INTERACTION_HOVER_DARK",
+        "themes.dark.active": "UDS8_INTERACTION_ACTIVE_DARK",
         "themes.dark.soft": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
@@ -53,11 +53,11 @@
         },
         "hover": {
           "$value": "#494CC7",
-          "$description": "UDS 7.0 brand-solid-hover (Light)."
+          "$description": "UDS 8.0.0 brand-solid-hover (Light)."
         },
         "active": {
           "$value": "#3F42B0",
-          "$description": "UDS 7.0 brand-solid-active (Light)."
+          "$description": "UDS 8.0.0 brand-solid-active (Light)."
         },
         "soft": {
           "$value": "#F0F0FF",
@@ -82,7 +82,7 @@
         "$type": "color",
         "primary": {
           "$value": "#8B8DF5",
-          "$description": "UDS 7.0 interaction-default / brand-1 (Dark) — links & fills."
+          "$description": "UDS 8.0.0 interaction-default / brand-1 (Dark) — links & fills."
         },
         "primaryForeground": {
           "$value": "#020617",
@@ -90,11 +90,11 @@
         },
         "hover": {
           "$value": "#A1A3F7",
-          "$description": "UDS 7.0 interaction-hover (Dark)."
+          "$description": "UDS 8.0.0 interaction-hover (Dark)."
         },
         "active": {
           "$value": "#B7B8FA",
-          "$description": "UDS 7.0 interaction-active (Dark)."
+          "$description": "UDS 8.0.0 interaction-active (Dark)."
         },
         "soft": {
           "$value": "#25264A",

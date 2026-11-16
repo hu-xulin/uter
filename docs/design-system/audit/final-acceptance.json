@@ -1,6 +1,6 @@
 {
-  "schema": "UDS7-FINAL-ACCEPTANCE/1.0",
-  "generated_at": "2026-11-16T00:42:47.088Z",
+  "schema": "UDS8-FINAL-ACCEPTANCE/1.0",
+  "generated_at": "2026-11-16T03:37:40.778Z",
   "verdict": "PARTIALLY_VERIFIED",
   "allowedVerdicts": [
     "FULLY_VERIFIED",
@@ -30,20 +30,24 @@
     "allPassed": true
   },
   "probeSummary": {
-    "PASS": 50
+    "PARTIAL": 1,
+    "PASS": 49
   },
   "probes": {
     "C-R01": {
       "name": "C-R01",
-      "label": "AGENTS.md 的 3.0 权威声明未被改写",
-      "status": "PASS",
+      "label": "AGENTS.md 治理入口声明 8.0.0 唯一运行时权威",
+      "status": "PARTIAL",
       "assertions": {
         "authorityDeclared": true,
-        "unchangedVsHead": true
+        "manifestReferenced": true,
+        "unchangedVsHead": null
       },
       "failed": [],
-      "notExecuted": [],
-      "evidence": "AGENTS.md 保持现行运行时权威；未因 7.0 建设改写治理入口",
+      "notExecuted": [
+        "unchangedVsHead"
+      ],
+      "evidence": "AGENTS.md 声明 UDS 8.0.0 为唯一现行权威；未在建设期外被并发改写",
       "metrics": {}
     },
     "C-R02": {
@@ -82,9 +86,9 @@
       "notExecuted": [],
       "evidence": "bridge CSS 四个选择器块：暗块逐字相同、亮属性块与 :root 逐值相同、:root 为主题无关 Token 超集",
       "metrics": {
-        "rootTokens": 251,
-        "themedTokens": 229,
-        "manifestThemed": 229
+        "rootTokens": 256,
+        "themedTokens": 230,
+        "manifestThemed": 230
       }
     },
     "C-R04": {
@@ -93,12 +97,12 @@
       "status": "PASS",
       "assertions": {
         "onlyDs6Prefix": true,
-        "legacyOverlayIsolated": true,
+        "scrimTokenLive": true,
         "rollbackIsOneLine": true
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "隔离命名 --ds7-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）",
+      "evidence": "隔离命名 --ds8-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）",
       "metrics": {}
     },
     "C-R05": {
@@ -114,12 +118,12 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "五层齐全；249/249 个颜色 Token 有 colorLayer；consumer 已登记 384/384",
+      "evidence": "五层齐全；254/254 个颜色 Token 有 colorLayer；consumer 已登记 389/389",
       "metrics": {
-        "colorTokens": 249,
-        "withLayer": 249,
-        "withConsumer": 384,
-        "total": 384
+        "colorTokens": 254,
+        "withLayer": 254,
+        "withConsumer": 389,
+        "total": 389
       }
     },
     "C-R06": {
@@ -487,11 +491,11 @@
       "evidence": "consumer-scan.mjs 现场扫描 web/src + Showcase 渲染链；虚假登记 / 零消费者 / 未登记真实引用均须为 0",
       "metrics": {
         "exit": 0,
-        "scannedAt": "2026-11-16T00:42:48.095Z",
-        "filesScanned": 1279,
-        "tokens": 384,
-        "declaredConsumers": 384,
-        "verifiedTokens": 384,
+        "scannedAt": "2026-11-16T03:37:41.666Z",
+        "filesScanned": 1278,
+        "tokens": 389,
+        "declaredConsumers": 389,
+        "verifiedTokens": 389,
         "falseDeclaredCount": 0,
         "noVerifiedConsumerCount": 0,
         "undeclaredUsageCount": 0
@@ -516,7 +520,7 @@
         "aliasRefs": [
           {
             "file": "styles/theme.css",
-            "token": "--ds7-color-brand-solid",
+            "token": "--ds8-color-brand-solid",
             "count": 2,
             "foundation": true
           }
@@ -534,10 +538,10 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "384 个 Token 逐字段校验；384 条 consumer 路径逐条磁盘存在性检查",
+      "evidence": "389 个 Token 逐字段校验；389 条 consumer 路径逐条磁盘存在性检查",
       "metrics": {
         "missingFields": 0,
-        "consumerChecked": 384,
+        "consumerChecked": 389,
         "consumerMissing": 0
       }
     },
@@ -610,8 +614,8 @@
       "notExecuted": [],
       "evidence": "C16 校验 runtime CSS 与 manifest 一一对应；Showcase 内联 manifest 且色值由生成器展开",
       "metrics": {
-        "runtimeHexOccurrences": 247,
-        "showcaseHexOccurrences": 3419
+        "runtimeHexOccurrences": 252,
+        "showcaseHexOccurrences": 3447
       }
     },
     "C-F02": {
@@ -664,7 +668,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds7-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
+      "evidence": "syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds8-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
       "metrics": {}
     },
     "C-H02": {
@@ -714,7 +718,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "8 个真实页面场景逐一读取 --ds7-syntax-keyword 计算值并与 manifest 比对",
+      "evidence": "8 个真实页面场景逐一读取 --ds8-syntax-keyword 计算值并与 manifest 比对",
       "metrics": {}
     },
     "C-H04": {
@@ -728,11 +732,11 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds7-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css",
+      "evidence": "真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds8-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css",
       "metrics": {
         "referencedFiles": [
           "web/src/components/ai-elements/code-block.tsx",
-          "web/src/design-system/__tests__/uds7-syntax-adapter.test.ts",
+          "web/src/design-system/__tests__/uds8-syntax-adapter.test.ts",
           "web/src/design-system/tokens/uds-semantic-bridge.css",
           "web/src/styles/index.css",
           "web/src/styles/theme.css"
@@ -764,7 +768,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds7-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
+      "evidence": "code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds8-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
       "metrics": {
         "adapterEntries": 20
       }
@@ -794,7 +798,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（240560ms）",
+      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（225100ms）",
       "metrics": {}
     },
     "C-H09": {
@@ -934,7 +938,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds7/screenshots/forced-colors-showcase.png",
+      "evidence": "Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds8/screenshots/forced-colors-showcase.png",
       "metrics": {}
     },
     "C-A02": {
@@ -982,7 +986,7 @@
       "notExecuted": [],
       "evidence": "Showcase 由 build.mjs 从 TOKEN-MANIFEST.json 派生",
       "metrics": {
-        "tokenCount": 384
+        "tokenCount": 389
       }
     },
     "C-S02": {
@@ -1125,8 +1129,8 @@
   },
   "findings": {
     "total": 48,
-    "resolved": 48,
-    "partial": 0,
+    "resolved": 47,
+    "partial": 1,
     "open": 0
   },
   "checker": {

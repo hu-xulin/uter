@@ -1,20 +1,23 @@
 {
-  "schema": "UDS7-REMEDIATION-STATE/1.0",
-  "generated_at": "2026-11-16T00:42:47.088Z",
-  "method": "check-uds7-remediation.mjs 真实探针，未执行项一律不标 PASS",
+  "schema": "UDS8-REMEDIATION-STATE/1.0",
+  "generated_at": "2026-11-16T03:37:40.778Z",
+  "method": "check-uds8-remediation.mjs 真实探针，未执行项一律不标 PASS",
   "probeSummary": {
-    "PASS": 50
+    "PARTIAL": 1,
+    "PASS": 49
   },
   "findings": {
-    "UDS7-C-01": {
-      "status": "RESOLVED",
+    "UDS8-C-01": {
+      "status": "PARTIAL",
       "probe": "C-R01",
-      "probeStatus": "PASS",
-      "evidence": "C-R01 PASS · AGENTS.md 保持现行运行时权威；未因 7.0 建设改写治理入口",
+      "probeStatus": "PARTIAL",
+      "evidence": "C-R01 PARTIAL · AGENTS.md 声明 UDS 8.0.0 为唯一现行权威；未在建设期外被并发改写",
       "failedAssertions": [],
-      "notExecutedAssertions": []
+      "notExecutedAssertions": [
+        "unchangedVsHead"
+      ]
     },
-    "UDS7-C-02": {
+    "UDS8-C-02": {
       "status": "RESOLVED",
       "probe": "C-R02",
       "probeStatus": "PASS",
@@ -22,7 +25,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-03": {
+    "UDS8-C-03": {
       "status": "RESOLVED",
       "probe": "C-R03",
       "probeStatus": "PASS",
@@ -30,23 +33,23 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-04": {
+    "UDS8-C-04": {
       "status": "RESOLVED",
       "probe": "C-R04",
       "probeStatus": "PASS",
-      "evidence": "C-R04 PASS · 隔离命名 --ds7-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）",
+      "evidence": "C-R04 PASS · 隔离命名 --ds8-*；真实页面上 3.0 --ds-color-surface-overlay 仍为 #000000（语义未反转）",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-05": {
+    "UDS8-C-05": {
       "status": "RESOLVED",
       "probe": "C-R05",
       "probeStatus": "PASS",
-      "evidence": "C-R05 PASS · 五层齐全；249/249 个颜色 Token 有 colorLayer；consumer 已登记 384/384",
+      "evidence": "C-R05 PASS · 五层齐全；254/254 个颜色 Token 有 colorLayer；consumer 已登记 389/389",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-06": {
+    "UDS8-C-06": {
       "status": "RESOLVED",
       "probe": "C-R06",
       "probeStatus": "PASS",
@@ -54,7 +57,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-07": {
+    "UDS8-C-07": {
       "status": "RESOLVED",
       "probe": "C-R07",
       "probeStatus": "PASS",
@@ -62,7 +65,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-08": {
+    "UDS8-C-08": {
       "status": "RESOLVED",
       "probe": "C-R08",
       "probeStatus": "PASS",
@@ -70,7 +73,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-09": {
+    "UDS8-C-09": {
       "status": "RESOLVED",
       "probe": "C-R09",
       "probeStatus": "PASS",
@@ -78,7 +81,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-10": {
+    "UDS8-C-10": {
       "status": "RESOLVED",
       "probe": "C-R10",
       "probeStatus": "PASS",
@@ -86,7 +89,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-11": {
+    "UDS8-C-11": {
       "status": "RESOLVED",
       "probe": "C-R11",
       "probeStatus": "PASS",
@@ -94,7 +97,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-C-12": {
+    "UDS8-C-12": {
       "status": "RESOLVED",
       "probe": "C-R12",
       "probeStatus": "PASS",
@@ -102,15 +105,15 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-T-01": {
+    "UDS8-T-01": {
       "status": "RESOLVED",
       "probe": "C-T01",
       "probeStatus": "PASS",
-      "evidence": "C-T01 PASS · 384 个 Token 逐字段校验；384 条 consumer 路径逐条磁盘存在性检查",
+      "evidence": "C-T01 PASS · 389 个 Token 逐字段校验；389 条 consumer 路径逐条磁盘存在性检查",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-T-02": {
+    "UDS8-T-02": {
       "status": "RESOLVED",
       "probe": "C-T02",
       "probeStatus": "PASS",
@@ -118,7 +121,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-T-03": {
+    "UDS8-T-03": {
       "status": "RESOLVED",
       "probe": "C-T03",
       "probeStatus": "PASS",
@@ -126,7 +129,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-T-04": {
+    "UDS8-T-04": {
       "status": "RESOLVED",
       "probe": "C-T04",
       "probeStatus": "PASS",
@@ -134,7 +137,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-T-05": {
+    "UDS8-T-05": {
       "status": "RESOLVED",
       "probe": "C-T05",
       "probeStatus": "PASS",
@@ -142,15 +145,15 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-01": {
+    "UDS8-H-01": {
       "status": "RESOLVED",
       "probe": "C-H01",
       "probeStatus": "PASS",
-      "evidence": "C-H01 PASS · syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds7-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
+      "evidence": "C-H01 PASS · syntax-validation.json 由 Shiki 真实 grammar 解析产出；专用单测 uds8-syntax-adapter.test.ts（5 用例）随全量 vitest（G14 EXIT=0）真实执行",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-02": {
+    "UDS8-H-02": {
       "status": "RESOLVED",
       "probe": "C-H02",
       "probeStatus": "PASS",
@@ -158,23 +161,23 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-03": {
+    "UDS8-H-03": {
       "status": "RESOLVED",
       "probe": "C-H03",
       "probeStatus": "PASS",
-      "evidence": "C-H03 PASS · 8 个真实页面场景逐一读取 --ds7-syntax-keyword 计算值并与 manifest 比对",
+      "evidence": "C-H03 PASS · 8 个真实页面场景逐一读取 --ds8-syntax-keyword 计算值并与 manifest 比对",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-04": {
+    "UDS8-H-04": {
       "status": "RESOLVED",
       "probe": "C-H04",
       "probeStatus": "PASS",
-      "evidence": "C-H04 PASS · 真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds7-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css",
+      "evidence": "C-H04 PASS · 真实引用文件：web/src/components/ai-elements/code-block.tsx, web/src/design-system/__tests__/uds8-syntax-adapter.test.ts, web/src/design-system/tokens/uds-semantic-bridge.css, web/src/styles/index.css, web/src/styles/theme.css",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-05": {
+    "UDS8-H-05": {
       "status": "RESOLVED",
       "probe": "C-H05",
       "probeStatus": "PASS",
@@ -182,15 +185,15 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-06": {
+    "UDS8-H-06": {
       "status": "RESOLVED",
       "probe": "C-H06",
       "probeStatus": "PASS",
-      "evidence": "C-H06 PASS · code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds7-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
+      "evidence": "C-H06 PASS · code-block.tsx SYNTAX_ADAPTER 20 条 + index.css yace 5 类映射；uds8-syntax-adapter.test.ts 组件级断言（20 条独立映射 / 禁裸 HEX / bridge 20 变量对齐）随全量 vitest 真实执行",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-07": {
+    "UDS8-H-07": {
       "status": "RESOLVED",
       "probe": "C-H07",
       "probeStatus": "PASS",
@@ -198,15 +201,15 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-08": {
+    "UDS8-H-08": {
       "status": "RESOLVED",
       "probe": "C-H08",
       "probeStatus": "PASS",
-      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（240560ms）",
+      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（225100ms）",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-09": {
+    "UDS8-H-09": {
       "status": "RESOLVED",
       "probe": "C-H09",
       "probeStatus": "PASS",
@@ -214,7 +217,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-H-10": {
+    "UDS8-H-10": {
       "status": "RESOLVED",
       "probe": "C-H10",
       "probeStatus": "PASS",
@@ -222,7 +225,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-01": {
+    "UDS8-G-01": {
       "status": "RESOLVED",
       "probe": "C-G01",
       "probeStatus": "PASS",
@@ -230,7 +233,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-02": {
+    "UDS8-G-02": {
       "status": "RESOLVED",
       "probe": "C-G02",
       "probeStatus": "PASS",
@@ -238,7 +241,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-03": {
+    "UDS8-G-03": {
       "status": "RESOLVED",
       "probe": "C-G03",
       "probeStatus": "PASS",
@@ -246,7 +249,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-04": {
+    "UDS8-G-04": {
       "status": "RESOLVED",
       "probe": "C-G04",
       "probeStatus": "PASS",
@@ -254,7 +257,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-05": {
+    "UDS8-G-05": {
       "status": "RESOLVED",
       "probe": "C-G05",
       "probeStatus": "PASS",
@@ -262,7 +265,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-06": {
+    "UDS8-G-06": {
       "status": "RESOLVED",
       "probe": "C-G06",
       "probeStatus": "PASS",
@@ -270,7 +273,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-G-07": {
+    "UDS8-G-07": {
       "status": "RESOLVED",
       "probe": "C-G07",
       "probeStatus": "PASS",
@@ -278,7 +281,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-F-01": {
+    "UDS8-F-01": {
       "status": "RESOLVED",
       "probe": "C-F01",
       "probeStatus": "PASS",
@@ -286,7 +289,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-F-02": {
+    "UDS8-F-02": {
       "status": "RESOLVED",
       "probe": "C-F02",
       "probeStatus": "PASS",
@@ -294,7 +297,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-F-03": {
+    "UDS8-F-03": {
       "status": "RESOLVED",
       "probe": "C-F03",
       "probeStatus": "PASS",
@@ -302,15 +305,15 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-A-01": {
+    "UDS8-A-01": {
       "status": "RESOLVED",
       "probe": "C-A01",
       "probeStatus": "PASS",
-      "evidence": "C-A01 PASS · Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds7/screenshots/forced-colors-showcase.png",
+      "evidence": "C-A01 PASS · Playwright emulateMedia({forcedColors:'active'})：真实页面 30 个元素 0 个透明；Showcase 渐变文字回退色=rgb(0, 0, 0)；截图 web/visual-regression/uds8/screenshots/forced-colors-showcase.png",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-A-02": {
+    "UDS8-A-02": {
       "status": "RESOLVED",
       "probe": "C-A02",
       "probeStatus": "PASS",
@@ -318,7 +321,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-A-03": {
+    "UDS8-A-03": {
       "status": "RESOLVED",
       "probe": "C-A03",
       "probeStatus": "PASS",
@@ -326,7 +329,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-A-04": {
+    "UDS8-A-04": {
       "status": "RESOLVED",
       "probe": "C-A04",
       "probeStatus": "PASS",
@@ -334,7 +337,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-S-01": {
+    "UDS8-S-01": {
       "status": "RESOLVED",
       "probe": "C-S01",
       "probeStatus": "PASS",
@@ -342,7 +345,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-S-02": {
+    "UDS8-S-02": {
       "status": "RESOLVED",
       "probe": "C-S02",
       "probeStatus": "PASS",
@@ -350,7 +353,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-S-03": {
+    "UDS8-S-03": {
       "status": "RESOLVED",
       "probe": "C-S03",
       "probeStatus": "PASS",
@@ -358,7 +361,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-R-01": {
+    "UDS8-R-01": {
       "status": "RESOLVED",
       "probe": "C-RG01",
       "probeStatus": "PASS",
@@ -366,7 +369,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-R-02": {
+    "UDS8-R-02": {
       "status": "RESOLVED",
       "probe": "C-RG02",
       "probeStatus": "PASS",
@@ -374,7 +377,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-R-03": {
+    "UDS8-R-03": {
       "status": "RESOLVED",
       "probe": "C-M01",
       "probeStatus": "PASS",
@@ -382,7 +385,7 @@
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
-    "UDS7-R-04": {
+    "UDS8-R-04": {
       "status": "RESOLVED",
       "probe": "C-M02",
       "probeStatus": "PASS",

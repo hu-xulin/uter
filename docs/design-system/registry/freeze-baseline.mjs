@@ -1,5 +1,5 @@
 /**
- * UDS 7.0 — 视觉基线冻结（Phase 5 收口）
+ * UDS 8.0.0 — 视觉基线冻结（Phase 5 收口）
  *
  * 依据新鲜真实运行日志（visual-check.mjs + real-page-regression.mjs）把当前
  * 渲染状态固化为 7.0.0 视觉基线：
@@ -22,7 +22,7 @@ const REPO = join(DS, '..', '..')
 const WEB = join(REPO, 'web')
 const AUDIT = join(DS, 'audit')
 const FROZEN_SHOTS = join(AUDIT, 'baseline', 'screenshots')
-const SHOWCASE_LOG = join(WEB, 'visual-regression', 'uds7', 'run-log.json')
+const SHOWCASE_LOG = join(WEB, 'visual-regression', 'uds8', 'run-log.json')
 const REALPAGE_LOG = join(AUDIT, 'visual-regression.json')
 const BASELINE = join(DS, 'VISUAL-BASELINE.json')
 const versionArg = process.argv.find((a) => a.startsWith('--version='))
@@ -102,7 +102,7 @@ for (const theme of ['light', 'dark']) {
     width: g.width ?? null,
     height: g.height ?? null,
     pixels: { distinctColors: g.distinctColors, meanLuminance: g.meanLuminance, nonWhitePixelRatio: g.nonWhitePixelRatio },
-    originalPath: `web/visual-regression/uds7/real-pages/gradient-hero-${theme}.png`,
+    originalPath: `web/visual-regression/uds8/real-pages/gradient-hero-${theme}.png`,
     expectedSha: g.sha256 ?? null,
   })
 }
@@ -112,7 +112,7 @@ if (!realPageLog.forcedColors?.pass) fail(1, 'forced-colors 验证非 PASS，拒
 freezeScenario({
   id: 'forced-colors-showcase',
   kind: 'forced-colors',
-  originalPath: 'web/visual-regression/uds7/real-pages/forced-colors-showcase.png',
+  originalPath: 'web/visual-regression/uds8/real-pages/forced-colors-showcase.png',
   expectedSha: null,
 })
 
@@ -127,11 +127,11 @@ if (existsSync(BASELINE) && force) {
       if (f.endsWith('.png')) copyFileSync(join(FROZEN_SHOTS, f), join(archiveDir, 'screenshots', f))
     }
   }
-  console.log('[UDS7-BASELINE] 旧基线已归档 →', archiveDir)
+  console.log('[UDS8-BASELINE] 旧基线已归档 →', archiveDir)
 }
 
 const baseline = {
-  schema: 'UDS7-VISUAL-BASELINE/1.0',
+  schema: 'UDS8-VISUAL-BASELINE/1.0',
   version: VERSION,
   status: 'FROZEN',
   frozen_at: new Date().toISOString(),
@@ -141,7 +141,7 @@ const baseline = {
       ? '用户明确授权「真正切换到 7.0 标量值」（2026-11-16）：运行时字号/行高/圆角/图表色经 @theme 真源字面切换为 7.0 TOKEN-MANIFEST 值（typography.css / primitives.css / theme.css，tokens.test.ts 三方守卫钉死），全站视觉随之变化，旧 7.0.0 基线作废归档于 audit/baseline/archive-7.0.0/；本基线摄于切换后真实渲染'
       : `用户明确授权更新基线（2026-11-15，AskUserQuestion「授权更新基线」）；审查确认 4 个 Dark 公开页差异为预期设计变化（Dark 表面 #020617 → clerk.com 对齐三层 #0B1120/#111827/#1B2436，theme.css 明文登记），旧基线归档于 audit/baseline/archive-*/`,
   sources: {
-    showcaseLog: { path: 'web/visual-regression/uds7/run-log.json', verdict: showcaseLog.verdict, started_at: showcaseLog.started_at ?? null },
+    showcaseLog: { path: 'web/visual-regression/uds8/run-log.json', verdict: showcaseLog.verdict, started_at: showcaseLog.started_at ?? null },
     realPageLog: { path: 'docs/design-system/audit/visual-regression.json', verdict: realPageLog.verdict, generated_at: realPageLog.generated_at ?? null },
     method: realPageLog.method ?? null,
   },
@@ -157,5 +157,5 @@ const baseline = {
 }
 
 writeFileSync(BASELINE, JSON.stringify(baseline, null, 2) + '\n')
-console.log('[UDS7-BASELINE] frozen', VERSION, 'scenarios', scenarios.length, '→', 'docs/design-system/VISUAL-BASELINE.json')
+console.log('[UDS8-BASELINE] frozen', VERSION, 'scenarios', scenarios.length, '→', 'docs/design-system/VISUAL-BASELINE.json')
 for (const s of scenarios) console.log('  ', s.id, s.sha256.slice(0, 12) + '…', statSync(join(REPO, s.frozenPath)).size + 'B')

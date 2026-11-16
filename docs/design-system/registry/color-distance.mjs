@@ -2,7 +2,7 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UDS 7.0 — 真实色差 / 色觉模拟计算（供 C-R09 / A11Y 图表验证使用）
+ * UDS 8.0.0 — 真实色差 / 色觉模拟计算（供 C-R09 / A11Y 图表验证使用）
  *
  * 实现：
  *   sRGB → linear → XYZ(D65) → CIELAB → CIEDE2000 (ΔE00)

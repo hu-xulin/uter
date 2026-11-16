@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "registry_id": "UDS7-R-ACCEPTANCE",
-  "version": "7.0.0",
-  "generated_at": "2026-11-16T00:28:51.147Z",
+  "registry_id": "UDS8-R-ACCEPTANCE",
+  "version": "8.0.0",
+  "generated_at": "2026-11-16T03:32:38.176Z",
   "status_definitions": {
     "IMPLEMENTED": "已完成实现",
     "VERIFIED": "已通过真实自动化与必要的视觉验证",
@@ -21,14 +21,14 @@
   "modules": [
     {
       "id": "00",
-      "specId": "UDS7-S00",
+      "specId": "UDS8-S00",
       "file": "00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
       "name": "Design System Overview",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -39,14 +39,14 @@
     },
     {
       "id": "01",
-      "specId": "UDS7-S01",
+      "specId": "UDS8-S01",
       "file": "01-BRAND-IDENTITY-STANDARD.md",
       "name": "Brand Identity Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -57,14 +57,14 @@
     },
     {
       "id": "02",
-      "specId": "UDS7-S02",
+      "specId": "UDS8-S02",
       "file": "02-DESIGN-PRINCIPLES-STANDARD.md",
       "name": "Design Principles Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -75,14 +75,14 @@
     },
     {
       "id": "03",
-      "specId": "UDS7-S03",
+      "specId": "UDS8-S03",
       "file": "03-COLOR-STANDARD.md",
       "name": "Color System Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -93,14 +93,14 @@
     },
     {
       "id": "04",
-      "specId": "UDS7-S04",
+      "specId": "UDS8-S04",
       "file": "04-TYPOGRAPHY-STANDARD.md",
       "name": "Typography Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -111,14 +111,14 @@
     },
     {
       "id": "05",
-      "specId": "UDS7-S05",
+      "specId": "UDS8-S05",
       "file": "05-SPACING-AND-SIZING-STANDARD.md",
       "name": "Spacing and Sizing Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -129,14 +129,14 @@
     },
     {
       "id": "06",
-      "specId": "UDS7-S06",
+      "specId": "UDS8-S06",
       "file": "06-LAYOUT-AND-GRID-STANDARD.md",
       "name": "Layout and Grid Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -147,14 +147,14 @@
     },
     {
       "id": "07",
-      "specId": "UDS7-S07",
+      "specId": "UDS8-S07",
       "file": "07-SHAPE-AND-RADIUS-STANDARD.md",
       "name": "Shape and Radius Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -165,14 +165,14 @@
     },
     {
       "id": "08",
-      "specId": "UDS7-S08",
+      "specId": "UDS8-S08",
       "file": "08-BORDER-AND-DIVIDER-STANDARD.md",
       "name": "Border and Divider Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -183,14 +183,14 @@
     },
     {
       "id": "09",
-      "specId": "UDS7-S09",
+      "specId": "UDS8-S09",
       "file": "09-ELEVATION-AND-SHADOW-STANDARD.md",
       "name": "Elevation and Shadow Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -201,14 +201,14 @@
     },
     {
       "id": "10",
-      "specId": "UDS7-S10",
+      "specId": "UDS8-S10",
       "file": "10-ICONOGRAPHY-STANDARD.md",
       "name": "Iconography Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -219,14 +219,14 @@
     },
     {
       "id": "11",
-      "specId": "UDS7-S11",
+      "specId": "UDS8-S11",
       "file": "11-MOTION-AND-ANIMATION-STANDARD.md",
       "name": "Motion and Animation Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -237,14 +237,14 @@
     },
     {
       "id": "12",
-      "specId": "UDS7-S12",
+      "specId": "UDS8-S12",
       "file": "12-RESPONSIVE-DESIGN-STANDARD.md",
       "name": "Responsive Design Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -255,14 +255,14 @@
     },
     {
       "id": "13",
-      "specId": "UDS7-S13",
+      "specId": "UDS8-S13",
       "file": "13-ACCESSIBILITY-STANDARD.md",
       "name": "Accessibility Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -273,14 +273,14 @@
     },
     {
       "id": "14",
-      "specId": "UDS7-S14",
+      "specId": "UDS8-S14",
       "file": "14-CONTENT-AND-WRITING-STANDARD.md",
       "name": "Content and Writing Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -291,14 +291,14 @@
     },
     {
       "id": "15",
-      "specId": "UDS7-S15",
+      "specId": "UDS8-S15",
       "file": "15-DATA-VISUALIZATION-STANDARD.md",
       "name": "Data Visualization Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -309,14 +309,14 @@
     },
     {
       "id": "16",
-      "specId": "UDS7-S16",
+      "specId": "UDS8-S16",
       "file": "16-DENSITY-AND-INFORMATION-HIERARCHY-STANDARD.md",
       "name": "Density and Information Hierarchy Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -327,14 +327,14 @@
     },
     {
       "id": "17",
-      "specId": "UDS7-S17",
+      "specId": "UDS8-S17",
       "file": "17-NAVIGATION-STANDARD.md",
       "name": "Navigation Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -345,14 +345,14 @@
     },
     {
       "id": "18",
-      "specId": "UDS7-S18",
+      "specId": "UDS8-S18",
       "file": "18-BUTTON-STANDARD.md",
       "name": "Button Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -363,14 +363,14 @@
     },
     {
       "id": "19",
-      "specId": "UDS7-S19",
+      "specId": "UDS8-S19",
       "file": "19-FORM-AND-INPUT-STANDARD.md",
       "name": "Form and Input Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -381,14 +381,14 @@
     },
     {
       "id": "20",
-      "specId": "UDS7-S20",
+      "specId": "UDS8-S20",
       "file": "20-SELECTION-CONTROLS-STANDARD.md",
       "name": "Selection Controls Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -399,14 +399,14 @@
     },
     {
       "id": "21",
-      "specId": "UDS7-S21",
+      "specId": "UDS8-S21",
       "file": "21-FEEDBACK-AND-STATUS-STANDARD.md",
       "name": "Feedback and Status Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -417,14 +417,14 @@
     },
     {
       "id": "22",
-      "specId": "UDS7-S22",
+      "specId": "UDS8-S22",
       "file": "22-OVERLAY-AND-FLOATING-STANDARD.md",
       "name": "Overlay and Floating Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -435,14 +435,14 @@
     },
     {
       "id": "23",
-      "specId": "UDS7-S23",
+      "specId": "UDS8-S23",
       "file": "23-DATA-DISPLAY-STANDARD.md",
       "name": "Data Display Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -453,14 +453,14 @@
     },
     {
       "id": "24",
-      "specId": "UDS7-S24",
+      "specId": "UDS8-S24",
       "file": "24-CODE-AND-DEVELOPER-UI-STANDARD.md",
       "name": "Code and Developer UI Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 7,
@@ -471,14 +471,14 @@
     },
     {
       "id": "24-S",
-      "specId": "UDS7-S24-S",
+      "specId": "UDS8-S24-S",
       "file": "CODE-SYNTAX-HIGHLIGHTING-STANDARD.md",
       "name": "Code Syntax Highlighting Standard (专项)",
       "parent": "24",
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -489,14 +489,14 @@
     },
     {
       "id": "25",
-      "specId": "UDS7-S25",
+      "specId": "UDS8-S25",
       "file": "25-AUTHENTICATION-STANDARD.md",
       "name": "Authentication Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -507,14 +507,14 @@
     },
     {
       "id": "26",
-      "specId": "UDS7-S26",
+      "specId": "UDS8-S26",
       "file": "26-USER-AND-ORGANIZATION-STANDARD.md",
       "name": "User and Organization Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -525,14 +525,14 @@
     },
     {
       "id": "27",
-      "specId": "UDS7-S27",
+      "specId": "UDS8-S27",
       "file": "27-BILLING-AND-PAYMENTS-STANDARD.md",
       "name": "Billing and Payments Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -543,14 +543,14 @@
     },
     {
       "id": "28",
-      "specId": "UDS7-S28",
+      "specId": "UDS8-S28",
       "file": "28-API-AND-TOKEN-MANAGEMENT-STANDARD.md",
       "name": "API and Token Management Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -561,14 +561,14 @@
     },
     {
       "id": "29",
-      "specId": "UDS7-S29",
+      "specId": "UDS8-S29",
       "file": "29-MODEL-AND-CHANNEL-MANAGEMENT-STANDARD.md",
       "name": "Model and Channel Management Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -579,14 +579,14 @@
     },
     {
       "id": "30",
-      "specId": "UDS7-S30",
+      "specId": "UDS8-S30",
       "file": "30-DASHBOARD-STANDARD.md",
       "name": "Dashboard Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -597,14 +597,14 @@
     },
     {
       "id": "31",
-      "specId": "UDS7-S31",
+      "specId": "UDS8-S31",
       "file": "31-PAGE-TEMPLATES-STANDARD.md",
       "name": "Page Templates Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -615,14 +615,14 @@
     },
     {
       "id": "32",
-      "specId": "UDS7-S32",
+      "specId": "UDS8-S32",
       "file": "32-EMPTY-LOADING-AND-ERROR-STANDARD.md",
       "name": "Empty, Loading and Error Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -633,14 +633,14 @@
     },
     {
       "id": "33",
-      "specId": "UDS7-S33",
+      "specId": "UDS8-S33",
       "file": "33-LOCALIZATION-STANDARD.md",
       "name": "Localization Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -651,14 +651,14 @@
     },
     {
       "id": "34",
-      "specId": "UDS7-S34",
+      "specId": "UDS8-S34",
       "file": "34-CROSS-PLATFORM-DESIGN-STANDARD.md",
       "name": "Cross-Platform Design Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 5,
@@ -669,14 +669,14 @@
     },
     {
       "id": "35",
-      "specId": "UDS7-S35",
+      "specId": "UDS8-S35",
       "file": "35-DESIGN-GOVERNANCE-STANDARD.md",
       "name": "Design Governance Standard",
       "parent": null,
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,
@@ -687,14 +687,14 @@
     },
     {
       "id": "01-S",
-      "specId": "UDS7-S01-S",
+      "specId": "UDS8-S01-S",
       "file": "GRADIENT-TYPOGRAPHY-STANDARD.md",
       "name": "Gradient Typography Standard (专项)",
       "parent": "01",
       "implementation": "IMPLEMENTED",
       "verification": "PARTIAL",
       "evidence": [
-        "check-design-system-7.0.mjs",
+        "check-design-system-8.0.0.mjs",
         "CONTRAST-VERIFICATION-REPORT.md"
       ],
       "checks": 6,

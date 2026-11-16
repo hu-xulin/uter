@@ -2,11 +2,11 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UDS 7.0 — Token 消费者权威登记（证据驱动，2026-11-15 生成）
+ * UDS 8.0.0 — Token 消费者权威登记（证据驱动，2026-11-15 生成）
  *
  * 来源：registry/consumer-scan.mjs 对 web/src 与 registry 渲染链的全量引用
  * 扫描（audit/CONSUMER-SCAN.json）。只登记真实引用文件：
- *   - web/src 产品文件只认 --ds7-* 运行时引用（CSS 仅 var()，注释不算）；
+ *   - web/src 产品文件只认 --ds8-* 运行时引用（CSS 仅 var()，注释不算）；
  *   - docs 侧只认 Showcase 渲染链（render-showcase / showcase-extensions /
  *     syntax-adapter），其余 registry 工具文件是数据处理，不是视觉消费。
  *
@@ -259,8 +259,13 @@ export const CONSUMERS = {
   '--ds-color-text-muted': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: '产品暂无该语义表面；Showcase 注入运行时变量并渲染，为当前唯一真实消费者' },
   '--ds-color-text-on-brand': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: '产品暂无该语义表面；Showcase 注入运行时变量并渲染，为当前唯一真实消费者' },
   '--ds-color-text-on-dark': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: '产品暂无该语义表面；Showcase 注入运行时变量并渲染，为当前唯一真实消费者' },
-  '--ds-color-text-primary': { consumer: 'docs/design-system/registry/showcase-extensions.mjs; web/src/styles/theme.css; docs/design-system/registry/render-showcase.mjs' },
-  '--ds-color-text-secondary': { consumer: 'web/src/styles/theme.css; docs/design-system/registry/render-showcase.mjs' },
+    '--ds-color-surface-pure': { consumer: 'web/src/styles/theme.css; docs/design-system/registry/render-showcase.mjs', note: '8.0.0 收编 colors.css 遗留语义；theme.css --color-surface-pure 映射（二维码底 / 滑块手柄）' },
+  '--ds-color-surface-scrim': { consumer: 'web/src/styles/theme.css; docs/design-system/registry/render-showcase.mjs', note: '8.0.0 收编：CM-02 闭合，遮罩语义由 surface-overlay 改名 surface-scrim；theme.css --color-surface-scrim 映射，消费方为 dialog / alert-dialog / sheet / drawer 的 bg-surface-scrim 工具类' },
+  '--ds-color-text-on-emphasis': { consumer: 'web/src/styles/theme.css; docs/design-system/registry/render-showcase.mjs', note: '8.0.0 收编 colors.css 遗留语义；theme.css --color-on-emphasis 映射（替代手写 text-white，C-03）' },
+  '--ds-color-text-danger': { consumer: 'web/src/design-system/foundations/typography.css; docs/design-system/registry/render-showcase.mjs', note: '8.0.0 收编 colors.css 遗留语义；typography.css .ds-text--danger 兜底规则消费' },
+  '--ds-color-text-success': { consumer: 'web/src/design-system/foundations/typography.css; docs/design-system/registry/render-showcase.mjs', note: '8.0.0 收编 colors.css 遗留语义；typography.css .ds-text--success 兜底规则消费' },
+'--ds-color-text-primary': { consumer: 'docs/design-system/registry/showcase-extensions.mjs; web/src/styles/theme.css; web/src/design-system/foundations/typography.css; docs/design-system/registry/render-showcase.mjs' },
+  '--ds-color-text-secondary': { consumer: 'web/src/styles/theme.css; web/src/design-system/foundations/typography.css; docs/design-system/registry/render-showcase.mjs' },
   '--ds-color-text-tertiary': { consumer: 'web/src/styles/theme.css; docs/design-system/registry/render-showcase.mjs' },
   '--ds-control-h5-input-font-size': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: '产品运行时仍使用 3.0 权威刻度（COMPAT-MAP CM-T*）；Showcase 注入运行时变量并逐行渲染，为 7.0 值当前唯一真实消费者' },
   '--ds-control-lg': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: '产品运行时仍使用 3.0 权威刻度（COMPAT-MAP CM-T*）；Showcase 注入运行时变量并逐行渲染，为 7.0 值当前唯一真实消费者' },

@@ -1,6 +1,6 @@
-# UTER DESIGN SYSTEM 7.0 — 视觉回归与无障碍验证报告
+# UTER DESIGN SYSTEM 8.0.0 — 视觉回归与无障碍验证报告
 
-> 生成时间 2026-11-16T00:36:54.098Z · 由 `registry/finalize.mjs` 从真实运行日志派生
+> 生成时间 2026-11-16T03:32:55.122Z · 由 `registry/finalize.mjs` 从真实运行日志派生
 > **范围口径**：本报告只覆盖 7.0 Design Showcase 的自动化视觉 / 无障碍验证，**不等于** Phase 8 全站真实产品页面视觉回归。
 
 ## 1. 执行环境与真实命令
@@ -11,29 +11,29 @@
 | 视觉命令 | `node docs/design-system/registry/visual-check.mjs` · EXIT=0 |
 | 无障碍引擎 | `axe-core (WCAG 2.0/2.1/2.2 A+AA) + real keyboard Tab` |
 | 无障碍命令 | `node docs/design-system/registry/a11y-check.mjs` · EXIT=0 |
-| 视觉日志 | `web/visual-regression/uds7/run-log.json` · verdict `PASS` |
-| 无障碍日志 | `web/visual-regression/uds7/a11y-log.json` · verdict `PASS` |
+| 视觉日志 | `web/visual-regression/uds8/run-log.json` · verdict `PASS` |
+| 无障碍日志 | `web/visual-regression/uds8/a11y-log.json` · verdict `PASS` |
 | 单元测试 | `bun run test` · EXIT=0 |
 | 构建校验 | `bun run build:check` · EXIT=0 |
-| 校对对象 | `docs/design-system/SHOWCASE-7.0.html`（936090 字符） |
+| 校对对象 | `docs/design-system/SHOWCASE-8.0.0.html`（942320 字符） |
 
 ## 2. 四个真实渲染场景
 
 | 主题 | 视口 | 分辨率 | 模块 | 小节 | Token 行 | 语言示例 | console error | 截图 |
 |---|---|---|---|---|---|---|---|---|
-| light | desktop | 1440×900 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds7/screenshots/uds7-light-desktop.png |
-| dark | desktop | 1440×900 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds7/screenshots/uds7-dark-desktop.png |
-| light | mobile | 390×844 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds7/screenshots/uds7-light-mobile.png |
-| dark | mobile | 390×844 | 38 | 418 | 878 | 18 | 0 | web/visual-regression/uds7/screenshots/uds7-dark-mobile.png |
+| light | desktop | 1440×900 | 38 | 418 | 883 | 18 | 0 | web/visual-regression/uds8/screenshots/uds8-light-desktop.png |
+| dark | desktop | 1440×900 | 38 | 418 | 883 | 18 | 0 | web/visual-regression/uds8/screenshots/uds8-dark-desktop.png |
+| light | mobile | 390×844 | 38 | 418 | 883 | 18 | 0 | web/visual-regression/uds8/screenshots/uds8-light-mobile.png |
+| dark | mobile | 390×844 | 38 | 418 | 883 | 18 | 0 | web/visual-regression/uds8/screenshots/uds8-dark-mobile.png |
 
 - 视觉验证覆盖：模块数 38、小节数 418、语言数 12、Token 行 748、`prefers-reduced-motion` 规则存在、Light/Dark 计算样式必须不同。
 - consoleErrors 合计 **0**。
 - 截图清单（真实文件，非示意）：
 
-- `web/visual-regression/uds7/screenshots/uds7-dark-desktop.png` · 236522 bytes
-- `web/visual-regression/uds7/screenshots/uds7-dark-mobile.png` · 83936 bytes
-- `web/visual-regression/uds7/screenshots/uds7-light-desktop.png` · 233566 bytes
-- `web/visual-regression/uds7/screenshots/uds7-light-mobile.png` · 82437 bytes
+- `web/visual-regression/uds8/screenshots/uds8-dark-desktop.png` · 236759 bytes
+- `web/visual-regression/uds8/screenshots/uds8-dark-mobile.png` · 84242 bytes
+- `web/visual-regression/uds8/screenshots/uds8-light-desktop.png` · 233794 bytes
+- `web/visual-regression/uds8/screenshots/uds8-light-mobile.png` · 82663 bytes
 
 ## 3. Light / Dark 计算样式差异（真实 getComputedStyle）
 
@@ -75,8 +75,8 @@
 
 ## 6. 构建产物验证
 
-- `web/dist/design-system/7.0.html` · exists=true · 998553 bytes
-- `web/dist/design-system/7.0/index.html` · exists=true · 998553 bytes
+- `web/dist/design-system/8.0.0.html` · exists=true · 1005267 bytes
+- `web/dist/design-system/7.0/index.html` · exists=false · 0 bytes
 
 - 说明：`web/dist` 被 `web/.gitignore:11` 忽略，不进提交；此项只证明 `build:check` 后 7.0 页面确实进入产物。
 

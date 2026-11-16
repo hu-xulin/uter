@@ -1,5 +1,5 @@
 /**
- * UDS 7.0 — 视觉基线校验（G19）
+ * UDS 8.0.0 — 视觉基线校验（G19）
  *
  * 校验当前真实渲染是否仍与冻结视觉基线（VISUAL-BASELINE.json）一致：
  *   1) 基线完整性：VISUAL-BASELINE.json 存在、每场景冻结副本存在且 SHA256 吻合；
@@ -20,7 +20,7 @@ const REPO = join(DS, '..', '..')
 const WEB = join(REPO, 'web')
 const AUDIT = join(DS, 'audit')
 const BASELINE = join(DS, 'VISUAL-BASELINE.json')
-const SHOWCASE_LOG = join(WEB, 'visual-regression', 'uds7', 'run-log.json')
+const SHOWCASE_LOG = join(WEB, 'visual-regression', 'uds8', 'run-log.json')
 const REALPAGE_LOG = join(AUDIT, 'visual-regression.json')
 const OUT = join(AUDIT, 'visual-baseline-check.json')
 const PLAYWRIGHT = join(WEB, 'node_modules', 'playwright', 'index.mjs')
@@ -29,8 +29,8 @@ const sha = (buf) => createHash('sha256').update(buf).digest('hex')
 const j = (p) => JSON.parse(readFileSync(p, 'utf8'))
 const writeJson = (o) => { mkdirSync(AUDIT, { recursive: true }); writeFileSync(OUT, JSON.stringify(o, null, 2) + '\n') }
 const finish = (code, verdict, payload) => {
-  writeJson({ schema: 'UDS7-VISUAL-BASELINE-CHECK/1.0', generated_at: new Date().toISOString(), verdict, executed: code !== 2, ...payload })
-  console.log('[UDS7-BASELINE-CHECK]', verdict, payload.summary ?? '')
+  writeJson({ schema: 'UDS8-VISUAL-BASELINE-CHECK/1.0', generated_at: new Date().toISOString(), verdict, executed: code !== 2, ...payload })
+  console.log('[UDS8-BASELINE-CHECK]', verdict, payload.summary ?? '')
   process.exit(code)
 }
 

@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "registry_id": "UDS7-R-DEPRECATED",
-  "version": "7.0.0",
-  "generated_at": "2026-11-16T00:28:51.147Z",
+  "registry_id": "UDS8-R-DEPRECATED",
+  "version": "8.0.0",
+  "generated_at": "2026-11-16T03:32:38.176Z",
   "policy": "先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；本轮不执行删除",
   "items": [
     {
@@ -50,7 +50,7 @@
       "kind": "standard",
       "name": "UTER DESIGN SYSTEM 5.0 规范目录",
       "old_value": "35 份 .md + 2 份 yaml + SHOWCASE-5.0.html",
-      "new_value": "已整体删除（2026-11-15 用户指令：5.0 全部文档与引用移除，7.0 为唯一现行规范）",
+      "new_value": "已整体删除（2026-11-15 用户指令：5.0 全部文档与引用移除，当时由 7.0 接任；2026-11-16 起由 8.0.0 接任为唯一现行规范）",
       "reason": "5.0 已被 7.0 完全取代，保留会造成双规范并存与前后矛盾",
       "action": "REMOVED",
       "source": "git log（删除提交）"
@@ -60,7 +60,7 @@
       "kind": "standard",
       "name": "UTER-DESIGN-SYSTEM-3.0.md",
       "old_value": "现行运行时强制标准",
-      "new_value": "7.0",
+      "new_value": "8.0.0",
       "reason": "3.0 仍在现行门禁中生效，7.0 冻结前不得废止",
       "action": "RETAIN_UNTIL_FREEZE",
       "source": "AGENTS.md Design System Enforcement"

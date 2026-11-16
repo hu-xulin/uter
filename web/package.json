@@ -41,11 +41,11 @@
     "design:tokens:generate": "node scripts/generate-design-tokens.mjs",
     "design:tokens:check": "node scripts/generate-design-tokens.mjs --check",
     "design:showcase:check": "node scripts/sync-design-showcase.mjs --check",
-    "design:7:check": "node scripts/check-design-system-7.0.mjs",
     "verify:contrast": "node scripts/verify-contrast.mjs",
     "components:registry:check": "node scripts/check-component-registry.mjs",
     "components:registry:strict": "node scripts/check-component-registry.mjs --strict",
-    "test:business:e2e": "playwright test --config e2e/business/playwright.config.ts"
+    "test:business:e2e": "playwright test --config e2e/business/playwright.config.ts",
+    "design:8:check": "node scripts/check-design-system-8.0.0.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

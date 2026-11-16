@@ -1,5 +1,5 @@
 /**
- * UDS 7.0 Phase 1 — 审计报告生成器
+ * UDS 8.0.0 Phase 1 — 审计报告生成器
  *
  * 数据来自：
  *   1. registry/audit-findings.mjs  —— 三路只读审计的结构化事实（file/lines/current 不可改写）
@@ -31,7 +31,7 @@ const meta = {
   git_sha: git('rev-parse HEAD'),
   git_branch: git('branch --show-current'),
   dirty_entries: Number(git('status --short | wc -l')) || 0,
-  tool_versions: { node: process.version, generator: 'UDS7-audit/1.0.0' },
+  tool_versions: { node: process.version, generator: 'UDS8-audit/1.0.0' },
   command: 'node docs/design-system/registry/generate-audit.mjs',
 }
 
@@ -87,7 +87,7 @@ function scanTokenUsage() {
     const text = readFileSync(f, 'utf8')
     varRefs += (text.match(/var\(--/g) || []).length
     dsRefs += (text.match(/var\(--ds-/g) || []).length
-    ds6Refs += (text.match(/var\(--ds7-/g) || []).length
+    ds6Refs += (text.match(/var\(--ds8-/g) || []).length
     const stripped = text.replaceAll(/\/\*[\s\S]*?\*\//g, '').replaceAll(/^\s*\/\/.*$/gm, '')
     const hits = (stripped.match(/#[0-9a-fA-F]{6}\b/g) || []).length
     if (hits > 0) hexByFile.push({ file: relative(REPO, f), hits, isTokenDefinition: /design-system\/tokens\/|styles\/(theme|theme-presets)\.css/.test(relative(REPO, f)) })
@@ -133,7 +133,7 @@ function header(title, scope, note) {
   return [
     '# ' + title,
     '',
-    '> UTER DESIGN SYSTEM 7.0 · 全面审计整改（P0）· Phase 1 重新审计产出',
+    '> UTER DESIGN SYSTEM 8.0.0 · 全面审计整改（P0）· Phase 1 重新审计产出',
     '> 本报告由 `registry/generate-audit.mjs` 从磁盘实时扫描生成，不以任何历史报告结论为依据。',
     '',
     '| 元数据 | 值 |',
@@ -218,7 +218,7 @@ writeFileSync(join(AUDIT, 'TOKEN-CONSUMPTION-AUDIT.md'), [
   '| 扫描源码文件数 | ' + usage.files + ' |',
   '| `var(--` 引用总数 | ' + usage.varRefs + ' |',
   '| `var(--ds-` 引用总数 | ' + usage.dsRefs + ' |',
-  '| `var(--ds7-` 引用总数（整改前） | ' + usage.ds6Refs + ' |',
+  '| `var(--ds8-` 引用总数（整改前） | ' + usage.ds6Refs + ' |',
   '| 含 HEX 字面量的文件数 | ' + usage.hexByFile.length + ' |',
   '| 其中 Token 定义文件 | ' + usage.hexByFile.filter((x) => x.isTokenDefinition).length + ' |',
   '',
@@ -390,7 +390,7 @@ writeFileSync(join(AUDIT, 'IMPLEMENTATION-GAP-REPORT.md'), [
   '## 3. 统一整改方案（一次性识别完整问题集合）', '',
   '| 批次 | 覆盖问题 | 实际动作 | 验收命令 |',
   '|---|---|---|---|',
-  '| B1 唯一真源 | T-01/02/03、C-05、S-03 | `tokens.mjs` 扩展 manifest 字段与五层实体；`build.mjs` 从 manifest 派生计数 | `check-uds7-remediation.mjs` |',
+  '| B1 唯一真源 | T-01/02/03、C-05、S-03 | `tokens.mjs` 扩展 manifest 字段与五层实体；`build.mjs` 从 manifest 派生计数 | `check-uds8-remediation.mjs` |',
   '| B2 颜色体系 | C-07/08/09/10/11/12 | neutral 10 档、4 状态 × 6 变体、12 色图表、Terminal ANSI16、12 类业务上下文 | `contrast-validation.json` |',
   '| B3 VS Code 高亮 | H-01..H-10 | 官方主题提取、20 Token 落地、统一 Adapter、JSON 编辑器去 chart、15 语言样例 | `syntax-validation.json` |',
   '| B4 渐变 | G-01..G-07 | `in srgb`、1001 采样、背景矩阵、三处同源、shimmer 收敛、浏览器像素分析 | `gradient-validation.json` |',
@@ -407,7 +407,7 @@ writeFileSync(join(AUDIT, 'IMPLEMENTATION-GAP-REPORT.md'), [
   '| 3 VS Code 高亮 | 20 Token 真实消费 | `syntax-validation.json` | 不进入 4 |',
   '| 4 渐变验证 | 1001 点 + 浏览器像素 | `gradient-validation.json` | 不进入 5 |',
   '| 5 字体/无障碍 | 12 类 WCAG + forced-colors | `accessibility-validation.json` | 不进入 6 |',
-  '| 6 Showcase | 真实 Token 驱动 + 四栏对照 | `SHOWCASE-7.0.html` | 不进入 7 |',
+  '| 6 Showcase | 真实 Token 驱动 + 四栏对照 | `SHOWCASE-8.0.0.html` | 不进入 7 |',
   '| 7 自动化门禁 | 全 P0 PASS | `design-system-audit.json` 复跑 | 不进入 8 |',
   '| 8 页面回归 | Light/Dark 产品页 | `visual-regression.json` | 如实标 BLOCKED |',
   '| 9 迁移兼容 | 映射 + 回滚 | `COMPAT-MAP.json` | 不申请切换 |',
@@ -482,7 +482,7 @@ writeFileSync(join(DS_DIR, 'VSCODE-COLOR-MAPPING.md'), [
 
 /* ── 9. 机器可读审计结果 ───────────────────────────────────────────── */
 const machine = {
-  schema: 'UDS7-AUDIT/1.0',
+  schema: 'UDS8-AUDIT/1.0',
   ...meta,
   audit_scope: ['docs/design-system', 'web/src/design-system', 'web/src/styles', 'web/src/components', 'web/scripts', 'all showcases', 'all gradient usages', 'all code editors', 'theme switching', 'token generators/validators'],
   counts,
@@ -501,9 +501,9 @@ const machine = {
 }
 writeFileSync(join(AUDIT, 'design-system-audit.json'), JSON.stringify(machine, null, 2) + '\n')
 
-console.log('[UDS7-AUDIT] generated_at=' + now)
-console.log('[UDS7-AUDIT] git_sha=' + meta.git_sha + ' dirty=' + meta.dirty_entries)
-console.log('[UDS7-AUDIT] findings=' + counts.findings + ' ' + JSON.stringify(counts.bySeverity))
-console.log('[UDS7-AUDIT] gradient_hits=' + counts.gradientHits + ' ' + JSON.stringify(counts.gradientByKind))
-console.log('[UDS7-AUDIT] vscode rows=' + counts.vscodeSyntax + ' baseline_diffs=' + counts.vscodeBaselineDiffs + ' adjustments=' + counts.vscodeAdjustments)
-console.log('[UDS7-AUDIT] reports=' + REPORT_ORDER.length + ' + VSCODE-COLOR-MAPPING.md + design-system-audit.json')
+console.log('[UDS8-AUDIT] generated_at=' + now)
+console.log('[UDS8-AUDIT] git_sha=' + meta.git_sha + ' dirty=' + meta.dirty_entries)
+console.log('[UDS8-AUDIT] findings=' + counts.findings + ' ' + JSON.stringify(counts.bySeverity))
+console.log('[UDS8-AUDIT] gradient_hits=' + counts.gradientHits + ' ' + JSON.stringify(counts.gradientByKind))
+console.log('[UDS8-AUDIT] vscode rows=' + counts.vscodeSyntax + ' baseline_diffs=' + counts.vscodeBaselineDiffs + ' adjustments=' + counts.vscodeAdjustments)
+console.log('[UDS8-AUDIT] reports=' + REPORT_ORDER.length + ' + VSCODE-COLOR-MAPPING.md + design-system-audit.json')

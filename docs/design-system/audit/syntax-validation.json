@@ -1,6 +1,6 @@
 {
-  "schema": "UDS7-SYNTAX-VALIDATION/1.0",
-  "generated_at": "2026-11-16T00:37:04.595Z",
+  "schema": "UDS8-SYNTAX-VALIDATION/1.0",
+  "generated_at": "2026-11-16T03:33:03.044Z",
   "engine": {
     "name": "shiki",
     "version": "4.3.0",
@@ -4699,7 +4699,7 @@
       "vscodeDark": "#569CD6",
       "uterLight": "#0000FF",
       "uterDark": "#569CD6",
-      "runtimeToken": "--ds7-syntax-keyword",
+      "runtimeToken": "--ds8-syntax-keyword",
       "manifestToken": "--ds-syntax-keyword",
       "contrastOnUterBg": {
         "light": 8.07,
@@ -4731,7 +4731,7 @@
       "vscodeDark": "#CE9178",
       "uterLight": "#A31515",
       "uterDark": "#CE9178",
-      "runtimeToken": "--ds7-syntax-string",
+      "runtimeToken": "--ds8-syntax-string",
       "manifestToken": "--ds-syntax-string",
       "contrastOnUterBg": {
         "light": 7.37,
@@ -4763,7 +4763,7 @@
       "vscodeDark": "#B5CEA8",
       "uterLight": "#098255",
       "uterDark": "#B5CEA8",
-      "runtimeToken": "--ds7-syntax-number",
+      "runtimeToken": "--ds8-syntax-number",
       "manifestToken": "--ds-syntax-number",
       "contrastOnUterBg": {
         "light": 4.55,
@@ -4795,7 +4795,7 @@
       "vscodeDark": "#DCDCAA",
       "uterLight": "#795E26",
       "uterDark": "#DCDCAA",
-      "runtimeToken": "--ds7-syntax-function",
+      "runtimeToken": "--ds8-syntax-function",
       "manifestToken": "--ds-syntax-function",
       "contrastOnUterBg": {
         "light": 5.73,
@@ -4827,7 +4827,7 @@
       "vscodeDark": "#9CDCFE",
       "uterLight": "#001080",
       "uterDark": "#9CDCFE",
-      "runtimeToken": "--ds7-syntax-property",
+      "runtimeToken": "--ds8-syntax-property",
       "manifestToken": "--ds-syntax-property",
       "contrastOnUterBg": {
         "light": 14.23,
@@ -4859,7 +4859,7 @@
       "vscodeDark": "#9CDCFE",
       "uterLight": "#001080",
       "uterDark": "#9CDCFE",
-      "runtimeToken": "--ds7-syntax-variable",
+      "runtimeToken": "--ds8-syntax-variable",
       "manifestToken": "--ds-syntax-variable",
       "contrastOnUterBg": {
         "light": 14.23,
@@ -4891,7 +4891,7 @@
       "vscodeDark": "#4EC9B0",
       "uterLight": "#257B94",
       "uterDark": "#4EC9B0",
-      "runtimeToken": "--ds7-syntax-type",
+      "runtimeToken": "--ds8-syntax-type",
       "manifestToken": "--ds-syntax-type",
       "contrastOnUterBg": {
         "light": 4.55,
@@ -4923,7 +4923,7 @@
       "vscodeDark": "#D4D4D4",
       "uterLight": "#000000",
       "uterDark": "#D4D4D4",
-      "runtimeToken": "--ds7-syntax-operator",
+      "runtimeToken": "--ds8-syntax-operator",
       "manifestToken": "--ds-syntax-operator",
       "contrastOnUterBg": {
         "light": 19.73,
@@ -4955,7 +4955,7 @@
       "vscodeDark": "#D4D4D4",
       "uterLight": "#000000",
       "uterDark": "#D4D4D4",
-      "runtimeToken": "--ds7-syntax-punctuation",
+      "runtimeToken": "--ds8-syntax-punctuation",
       "manifestToken": "--ds-syntax-punctuation",
       "contrastOnUterBg": {
         "light": 19.73,
@@ -4987,7 +4987,7 @@
       "vscodeDark": "#6A9955",
       "uterLight": "#008000",
       "uterDark": "#6A9955",
-      "runtimeToken": "--ds7-syntax-comment",
+      "runtimeToken": "--ds8-syntax-comment",
       "manifestToken": "--ds-syntax-comment",
       "contrastOnUterBg": {
         "light": 4.83,
@@ -5019,7 +5019,7 @@
       "vscodeDark": "#4FC1FF",
       "uterLight": "#0070C1",
       "uterDark": "#4FC1FF",
-      "runtimeToken": "--ds7-syntax-constant",
+      "runtimeToken": "--ds8-syntax-constant",
       "manifestToken": "--ds-syntax-constant",
       "contrastOnUterBg": {
         "light": 4.83,
@@ -5051,7 +5051,7 @@
       "vscodeDark": "#569CD6",
       "uterLight": "#0000FF",
       "uterDark": "#569CD6",
-      "runtimeToken": "--ds7-syntax-boolean",
+      "runtimeToken": "--ds8-syntax-boolean",
       "manifestToken": "--ds-syntax-boolean",
       "contrastOnUterBg": {
         "light": 8.07,
@@ -5083,7 +5083,7 @@
       "vscodeDark": "#569CD6",
       "uterLight": "#0000FF",
       "uterDark": "#569CD6",
-      "runtimeToken": "--ds7-syntax-null",
+      "runtimeToken": "--ds8-syntax-null",
       "manifestToken": "--ds-syntax-null",
       "contrastOnUterBg": {
         "light": 8.07,
@@ -5115,7 +5115,7 @@
       "vscodeDark": "#569CD6",
       "uterLight": "#800000",
       "uterDark": "#569CD6",
-      "runtimeToken": "--ds7-syntax-tag",
+      "runtimeToken": "--ds8-syntax-tag",
       "manifestToken": "--ds-syntax-tag",
       "contrastOnUterBg": {
         "light": 10.29,
@@ -5147,7 +5147,7 @@
       "vscodeDark": "#9CDCFE",
       "uterLight": "#E50000",
       "uterDark": "#9CDCFE",
-      "runtimeToken": "--ds7-syntax-attribute",
+      "runtimeToken": "--ds8-syntax-attribute",
       "manifestToken": "--ds-syntax-attribute",
       "contrastOnUterBg": {
         "light": 4.55,
@@ -5179,7 +5179,7 @@
       "vscodeDark": "#D16969",
       "uterLight": "#811F3F",
       "uterDark": "#D16969",
-      "runtimeToken": "--ds7-syntax-regexp",
+      "runtimeToken": "--ds8-syntax-regexp",
       "manifestToken": "--ds-syntax-regexp",
       "contrastOnUterBg": {
         "light": 8.96,
@@ -5211,7 +5211,7 @@
       "vscodeDark": "#4EC9B0",
       "uterLight": "#257B94",
       "uterDark": "#4EC9B0",
-      "runtimeToken": "--ds7-syntax-builtin",
+      "runtimeToken": "--ds8-syntax-builtin",
       "manifestToken": "--ds-syntax-builtin",
       "contrastOnUterBg": {
         "light": 4.55,
@@ -5243,7 +5243,7 @@
       "vscodeDark": "#B5CEA8",
       "uterLight": "#098255",
       "uterDark": "#B5CEA8",
-      "runtimeToken": "--ds7-syntax-inserted",
+      "runtimeToken": "--ds8-syntax-inserted",
       "manifestToken": "--ds-syntax-inserted",
       "contrastOnUterBg": {
         "light": 4.55,
@@ -5275,7 +5275,7 @@
       "vscodeDark": "#CE9178",
       "uterLight": "#A31515",
       "uterDark": "#CE9178",
-      "runtimeToken": "--ds7-syntax-deleted",
+      "runtimeToken": "--ds8-syntax-deleted",
       "manifestToken": "--ds-syntax-deleted",
       "contrastOnUterBg": {
         "light": 7.37,
@@ -5307,7 +5307,7 @@
       "vscodeDark": "#F44747",
       "uterLight": "#CD3131",
       "uterDark": "#F44747",
-      "runtimeToken": "--ds7-syntax-invalid",
+      "runtimeToken": "--ds8-syntax-invalid",
       "manifestToken": "--ds-syntax-invalid",
       "contrastOnUterBg": {
         "light": 4.84,

@@ -1,18 +1,18 @@
-# UTER DESIGN SYSTEM 7.0 · 00 Design System Overview
+# UTER DESIGN SYSTEM 8.0.0 · 00 Design System Overview
 
-> **规范编号** `UDS7-S00` · **唯一文件** `00-UTER-DESIGN-SYSTEM-OVERVIEW.md` · **版本** `7.0.0` · **状态** `ACCEPTANCE_READY`
+> **规范编号** `UDS8-S00` · **唯一文件** `00-UTER-DESIGN-SYSTEM-OVERVIEW.md` · **版本** `8.0.0` · **状态** `ACCEPTANCE_READY`
 > **上级归属** 36 个正式规范模块之一
 > **唯一数值来源** [`TOKEN-MANIFEST.json`](./TOKEN-MANIFEST.json) · **生成器** [`registry/build.mjs`](./registry/build.mjs)
 > **对应设计原则** Consistency / Predictability / Accessibility
-> **视觉审核入口** [`SHOWCASE-7.0.html`](./SHOWCASE-7.0.html#mod-00)
+> **视觉审核入口** [`SHOWCASE-8.0.0.html`](./SHOWCASE-8.0.0.html#mod-00)
 
 ---
 
 ## 1. Overview
 
-7.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。7.0 是完整重建且为唯一现行规范；5.0 及更早版本已删除，仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。
+8.0.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。UDS 8.0.0 是唯一现行规范（2026-11-16 经用户授权由 7.0/7.0.1 升版）；5.0 及更早版本已删除，7.0 仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。
 
-本模块属于 7.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为完整重建，5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时强制标准仍为 3.0；7.0 视觉基线已于 2026-11-15 经用户授权冻结（`VISUAL-BASELINE.json`），全站迁移按 Phase 6 分期执行。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
 
 | 属性 | 值 |
 |---|---|
@@ -29,15 +29,15 @@
 3. 统一单位：字体 / 行高 / 间距 / 圆角 / 边框 / 图标 / 控件高度 / 断点 = px，动效 = ms，阴影 = px + rgba，颜色 = HEX / OKLCH；基础间距 4px
 4. Token 命名统一 `--ds-*`；语义 Token 必须可读可追踪；同名 Token 全系统只允许定义一次
 5. 36 个正式模块各自拥有唯一编号、唯一文件名、唯一注册记录；两个专项规范登记为 24-S / 01-S，不形成第二套设计系统
-6. 版本管理：语义化版本 `7.0.0`；数值冻结需通过对比度引擎与 Showcase 视觉审核；变更必须写入 DESIGN-SYSTEM-CHANGELOG 并同步注册表
+6. 版本管理：语义化版本 `8.0.0`；数值冻结需通过对比度引擎与 Showcase 视觉审核；变更必须写入 DESIGN-SYSTEM-CHANGELOG 并同步注册表
 7. 例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷
 8. 废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验
 9. 状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED
-10. 当前生效状态：7.0 规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权达成，证据齐备、已达用户审核条件，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色已于 2026-11-16 经用户授权正式切换为 7.0 TOKEN-MANIFEST 值（B1–B5 DONE_VERIFIED，tokens.test.ts 三方守卫钉死）；颜色语义层经 --ds7-* 隔离命名注入；7.0.0 视觉基线随值切换重冻结
+10. 当前生效状态：UDS 8.0.0 唯一现行规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权由 7.0/7.0.1 正式升版，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色沿用 2026-11-16 用户授权切换的 TOKEN-MANIFEST 值（B1–B5 DONE_VERIFIED，tokens.test.ts 三方守卫钉死）；颜色语义层 --ds8-* bridge 为唯一运行时权威（3.0 兼容层 colors.css 已退役，CM-02~06 闭合）；8.0.0 视觉基线随升版重冻结
 
 ## 3. Tokens
 
-本表由 `TOKEN-MANIFEST.json` 自动展开。列出的每个 Token 在 CSS / TypeScript / Showcase 中数值一致，由 `check-design-system-7.0.mjs` 校验；`—（同值）` 表示该 Token 主题无关。
+本表由 `TOKEN-MANIFEST.json` 自动展开。列出的每个 Token 在 CSS / TypeScript / Showcase 中数值一致，由 `check-design-system-8.0.0.mjs` 校验；`—（同值）` 表示该 Token 主题无关。
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
@@ -106,13 +106,13 @@ Showcase 中 `#mod-00` 分区提供本模块的真实渲染：色块、字号、
 1. 36 + 2 份规范文件全部存在且编号唯一
 2. TOKEN-MANIFEST.json 与 CSS / TS / Showcase 一致性检查 EXIT=0
 3. 本模块引用的每个 Token 必须能在 TOKEN-MANIFEST.json 中解析，且 CSS / TS / Showcase 三处数值一致
-4. check-design-system-7.0.mjs 对应检查项 EXIT=0
+4. check-design-system-8.0.0.mjs 对应检查项 EXIT=0
 5. Light / Dark 两套映射完整，无缺失键、无主题特例裸色值
 6. Do / Don’t 中的反例在全库静态扫描中命中数为 0（或已登记进 EXCEPTION-REGISTRY.json）
 
 | 检查项 | 执行方式 | 当前结果 |
 |---|---|---|
-| Token 一致性 | `node web/scripts/check-design-system-7.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
+| Token 一致性 | `node web/scripts/check-design-system-8.0.0.mjs` | 见 FINAL-ACCEPTANCE-REPORT.md |
 | 对比度 | `node registry/contrast-engine.mjs` | `PASS` |
 | 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | `PASS` |
 | 视觉审核 | Showcase 人工审核 | `PENDING_USER_REVIEW` |
@@ -122,7 +122,7 @@ Showcase 中 `#mod-00` 分区提供本模块的真实渲染：色块、字号、
 
 | 项目 | 值 |
 |---|---|
-| 规范注册 | [`ACCEPTANCE-MATRIX.json`](./ACCEPTANCE-MATRIX.json) → `UDS7-S00` |
+| 规范注册 | [`ACCEPTANCE-MATRIX.json`](./ACCEPTANCE-MATRIX.json) → `UDS8-S00` |
 | Token 注册 | [`TOKEN-REGISTRY.json`](./TOKEN-REGISTRY.json) |
 | 依赖 | [`DEPENDENCY-GRAPH.json`](./DEPENDENCY-GRAPH.json) |
 | 废弃 | [`DEPRECATED-REGISTRY.json`](./DEPRECATED-REGISTRY.json) |

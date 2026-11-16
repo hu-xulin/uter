@@ -1,19 +1,19 @@
 {
-  "schema": "UDS7-TOKEN-VALIDATION/1.0",
-  "generated_at": "2026-11-16T00:42:47.088Z",
+  "schema": "UDS8-TOKEN-VALIDATION/1.0",
+  "generated_at": "2026-11-16T03:37:40.778Z",
   "manifest": {
-    "id": "UDS7-TOKEN-MANIFEST",
-    "version": "7.0.0",
+    "id": "UDS8-TOKEN-MANIFEST",
+    "version": "8.0.0",
     "status": "ACCEPTANCE_READY",
-    "tokenCount": 384,
+    "tokenCount": 389,
     "singleSource": "docs/design-system/TOKEN-MANIFEST.json"
   },
   "verdict": "PASS",
   "counts": {
-    "total": 384,
-    "colorTokens": 249,
-    "withColorLayer": 249,
-    "withConsumer": 384,
+    "total": 389,
+    "colorTokens": 254,
+    "withColorLayer": 254,
+    "withConsumer": 389,
     "consumerCoverage": 100,
     "groupCounts": {
       "syntax": 20,
@@ -47,12 +47,12 @@
   ],
   "missingFields": [],
   "consumerPaths": {
-    "checked": 384,
+    "checked": 389,
     "missing": 0
   },
   "hardcodedColor": {
-    "runtimeCssHexOccurrences": 247,
-    "showcaseHexOccurrences": 3419,
+    "runtimeCssHexOccurrences": 252,
+    "showcaseHexOccurrences": 3447,
     "checkerC16": "PASS"
   },
   "typography": {
@@ -140,6 +140,21 @@
       "--ds-gradient-utility",
       "--ds-focus-ring-width",
       "--ds-focus-ring-offset"
+    ],
+    "8.0.0 收编 colors.css 遗留语义；theme.css --color-surface-pure 映射（二维码底 / 滑块手柄）": [
+      "--ds-color-surface-pure"
+    ],
+    "8.0.0 收编：CM-02 闭合，遮罩语义由 surface-overlay 改名 surface-scrim；theme.css --color-surface-scrim 映射，消费方为 dialog / alert-dialog / sheet / drawer 的 bg-surface-scrim 工具类": [
+      "--ds-color-surface-scrim"
+    ],
+    "8.0.0 收编 colors.css 遗留语义；theme.css --color-on-emphasis 映射（替代手写 text-white，C-03）": [
+      "--ds-color-text-on-emphasis"
+    ],
+    "8.0.0 收编 colors.css 遗留语义；typography.css .ds-text--danger 兜底规则消费": [
+      "--ds-color-text-danger"
+    ],
+    "8.0.0 收编 colors.css 遗留语义；typography.css .ds-text--success 兜底规则消费": [
+      "--ds-color-text-success"
     ],
     "产品组件仍消费 3.0 语义变量（COMPAT-MAP B4/B5）；Showcase 为当前唯一真实消费者，产品接入待迁移": [
       "--ds-color-component-button-surface",
@@ -339,6 +354,6 @@
     "TOKEN-MANIFEST.json",
     "runtime/tokens.css",
     "runtime/tokens.ts",
-    "check-design-system-7.0.mjs C01/C04/C06/C16"
+    "check-design-system-8.0.0.mjs C01/C04/C06/C16"
   ]
 }

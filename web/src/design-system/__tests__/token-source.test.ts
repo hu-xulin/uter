@@ -38,10 +38,10 @@ describe('structured brand token source', () => {
     expect(source.themes.light.brand.primary.$value).toBe('#5B5EE6')
     expect(metadata.provenance['themes.light.primary']).toBe('USER_CONFIRMED')
   })
-  it('aligns Dark palette to UDS 7.0 interaction tokens', () => {
+  it('aligns Dark palette to UDS 8.0.0 interaction tokens', () => {
     expect(source.themes.dark.brand.primary.$value).toBe('#8B8DF5')
     expect(metadata.provenance['themes.dark.primary']).toBe(
-      'UDS7_INTERACTION_DEFAULT_DARK'
+      'UDS8_INTERACTION_DEFAULT_DARK'
     )
   })
   it('has generated CSS for both themes', () => {

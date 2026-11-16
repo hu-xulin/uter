@@ -54,31 +54,31 @@ For commercial licensing, please contact support@uter.ai
   /* ── 颜色 ─────────────────────────────────────────────────────────── */
   /* 颜色一律带兜底值。
    *
-   * `--ds-color-text-primary` / `--ds-color-text-secondary` 的声明在
-   * `tokens/colors.css` 里，但**构建产物中会丢**（已用两次生产构建复现：
-   * 三个纯别名声明 `--ds-color-text-primary`、`--ds-color-text-secondary`、
-   * `--ds-color-success-soft` 在压缩后消失，其余 93 个 `--ds-*` 都在）。
+   * 8.0.0：颜色真源是 TOKEN-MANIFEST 派生的 `--ds8-color-text-*`
+   * （uds-semantic-bridge.css），colors.css 遗留别名层已删除（CM-03/04 闭合）。
+   * **构建产物中别名声明会丢**（已用两次生产构建复现：纯别名声明
+   * `--ds-color-text-primary` 等在压缩后消失，具体值声明都在）。
    * 一旦变量缺失，`color: var(--x)` 就是无效声明，元素退回 `inherit` ——
    * 表现是所有次要文字（卡片说明、占位符）渲染成正文黑，和主标题一个颜色。
    *
-   * 兜底值让这两条规则在 Token 缺失时仍然指向同一个颜色来源，不再退回
+   * 兜底值让这些规则在 Token 缺失时仍然指向同一个颜色来源，不再退回
    * `inherit`。与 `tokens/semantic.css` 行高用 `var(--text-*--line-height, …)`
    * 的兜底是同一套做法。 */
   .ds-text--primary,
   .ds-heading--primary {
-    color: var(--ds-color-text-primary, var(--foreground));
+    color: var(--ds8-color-text-primary, var(--foreground));
   }
   .ds-text--secondary,
   .ds-heading--secondary {
-    color: var(--ds-color-text-secondary, var(--muted-foreground));
+    color: var(--ds8-color-text-secondary, var(--muted-foreground));
   }
   .ds-text--danger,
   .ds-heading--danger {
-    color: var(--ds-color-text-danger, var(--destructive));
+    color: var(--ds8-color-text-danger, var(--destructive));
   }
   .ds-text--success,
   .ds-heading--success {
-    color: var(--ds-color-text-success, var(--success));
+    color: var(--ds8-color-text-success, var(--success));
   }
   .ds-text--inherit,
   .ds-heading--inherit {
@@ -223,14 +223,14 @@ For commercial licensing, please contact support@uter.ai
  * 注意 `@utility`（不是 `@layer utilities`）：只有前者会被 Tailwind 的变体
  * 系统识别，`hover:ds-text-gradient-brand` 这类写法才生成选择器。 */
 @utility ds-text-gradient-brand {
-  /* UDS 7.0：渐变值来自 TOKEN-MANIFEST 派生的 --ds7-* 语义层（唯一真源）。
+  /* UDS 8.0.0：渐变值来自 TOKEN-MANIFEST 派生的 --ds8-* 语义层（唯一真源）。
    * `in srgb` 与 registry/contrast-engine.mjs 的 1001 点 sRGB 采样严格同源；
    * 旧浏览器降级见 uds-semantic-bridge.css 的 @supports not 块（视觉等价，不引入第三套值）。 */
   background-image: linear-gradient(
     90deg in srgb,
-    var(--ds7-color-gradient-light-from),
-    var(--ds7-color-gradient-light-via),
-    var(--ds7-color-gradient-light-to)
+    var(--ds8-color-gradient-light-from),
+    var(--ds8-color-gradient-light-via),
+    var(--ds8-color-gradient-light-to)
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -241,9 +241,9 @@ For commercial licensing, please contact support@uter.ai
 .dark .ds-text-gradient-brand {
   background-image: linear-gradient(
     90deg in srgb,
-    var(--ds7-color-gradient-dark-from),
-    var(--ds7-color-gradient-dark-via),
-    var(--ds7-color-gradient-dark-to)
+    var(--ds8-color-gradient-dark-from),
+    var(--ds8-color-gradient-dark-via),
+    var(--ds8-color-gradient-dark-to)
   );
 }
 
@@ -259,10 +259,10 @@ For commercial licensing, please contact support@uter.ai
   background-image:
     linear-gradient(
       90deg,
-      transparent calc(50% - var(--ds7-shimmer-spread)),
-      var(--color-background) calc(50% - var(--ds7-shimmer-spread)),
-      var(--color-background) calc(50% + var(--ds7-shimmer-spread)),
-      transparent calc(50% + var(--ds7-shimmer-spread))
+      transparent calc(50% - var(--ds8-shimmer-spread)),
+      var(--color-background) calc(50% - var(--ds8-shimmer-spread)),
+      var(--color-background) calc(50% + var(--ds8-shimmer-spread)),
+      transparent calc(50% + var(--ds8-shimmer-spread))
     ),
     linear-gradient(var(--color-muted-foreground), var(--color-muted-foreground));
   -webkit-background-clip: text;

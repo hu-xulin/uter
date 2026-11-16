@@ -2,9 +2,9 @@
  * Copyright (C) 2026 Uter.ai
  * SPDX-License-Identifier: UNLICENSED
  *
- * UTER DESIGN SYSTEM 7.0 — Showcase 渲染器
+ * UTER DESIGN SYSTEM 8.0.0 — Showcase 渲染器
  * 单文件 / 零外链 / 无 <img> / 真实 DOM / 所有数值来自 TOKEN-MANIFEST.json
- * 输出到 docs/.../SHOWCASE-7.0.html 与 web/public/design-system/7.0/index.html
+ * 输出到 docs/.../SHOWCASE-8.0.0.html 与 web/public/design-system/7.0/index.html
  */
 
 import { runVerification } from './contrast-engine.mjs'
@@ -255,7 +255,7 @@ export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceCo
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UTER DESIGN SYSTEM 7.0 · Design Showcase</title>
+<title>UTER DESIGN SYSTEM 8.0.0 · Design Showcase</title>
 <style>
 :root {
 ${rootVars}
@@ -570,7 +570,7 @@ ${extensionSections}
 
   <section class="panel" id="tokens">
     <h2>完整 Token 清单（${M.tokenCount} 个 · 零遗漏）</h2>
-    <p class="panel-sub">P = Primitive / S = Semantic / C = Component。每行同时给出 <strong>HEX + RGB</strong>、运行时 Token 名（<code>--ds7-*</code>）、真实消费者、对比度要求与 <code>MEASURED / DECLARED</code> 实测标记。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
+    <p class="panel-sub">P = Primitive / S = Semantic / C = Component。每行同时给出 <strong>HEX + RGB</strong>、运行时 Token 名（<code>--ds8-*</code>）、真实消费者、对比度要求与 <code>MEASURED / DECLARED</code> 实测标记。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
     <div class="table-wrap x-scroll" tabindex="0" role="region" aria-label="完整 Token 清单（可滚动）" style="max-height:640px;overflow:auto"><table class="token-table"><thead><tr><th>Token / Runtime</th><th>层 / 类别 / 颜色层</th><th>Light HEX+RGB</th><th>Dark HEX+RGB</th><th>单位</th><th>语义说明</th><th>真实消费者</th><th>实测标记 / 对比度要求</th></tr></thead><tbody>${tokenRows}</tbody></table></div>
   </section>
 
@@ -580,7 +580,7 @@ ${moduleSections}
 
   <footer class="footer">
     UTER DESIGN SYSTEM ${esc(M.version)} · 状态 <strong>${esc(M.status)}</strong> · 视觉审核 <strong>PENDING_USER_REVIEW</strong> · ACCEPTED = false<br>
-    单一数值来源 <code>TOKEN-MANIFEST.json</code> · 生成器 <code>registry/build.mjs</code> · 检查器 <code>web/scripts/check-design-system-7.0.mjs</code><br>
+    单一数值来源 <code>TOKEN-MANIFEST.json</code> · 生成器 <code>registry/build.mjs</code> · 检查器 <code>web/scripts/check-design-system-8.0.0.mjs</code><br>
     本页零外链、0 个 &lt;img&gt;、可 <code>file://</code> 打开。参考产品成熟设计原则，不复制其品牌标识或专有实现。
   </footer>
 </main>
@@ -592,11 +592,11 @@ ${moduleSections}
   <button class="btn btn-outline copy-token" id="ins-copy">复制 Token 名</button>
 </div>
 
-<script id="uds7-manifest" type="application/json">${JSON.stringify(manifestMini).replace(/</g, '\\u003c')}</script>
+<script id="uds8-manifest" type="application/json">${JSON.stringify(manifestMini).replace(/</g, '\\u003c')}</script>
 <script>
 (function () {
   var doc = document.documentElement, body = document.body;
-  var THEME_KEY = 'uds7-theme';
+  var THEME_KEY = 'uds8-theme';
   function setTheme(t) { doc.setAttribute('data-ds-theme', t); try { localStorage.setItem(THEME_KEY, t); } catch (e) {} }
   try { var saved = localStorage.getItem(THEME_KEY); if (saved) setTheme(saved); } catch (e) {}
   document.getElementById('theme-toggle').addEventListener('click', function () {
