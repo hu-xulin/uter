@@ -8,7 +8,7 @@
 | ----------------- | ---------------------------------------------------- | ---------------------------------------- |
 | 命令              | `bun run test:visual`                                | `bun run test:visual:e2e`                |
 | 实现              | `scripts/visual-regression.mjs` + 本机 Chrome CLI    | `@playwright/test` + Playwright Chromium |
-| 覆盖面            | 仅 `docs/design-system/SHOWCASE-7.0.html` 静态核查页 | 真实路由，含需登录页                     |
+| 覆盖面            | 仅 `docs/design-system/SHOWCASE-8.0.0.html` 静态核查页 | 真实路由，含需登录页                     |
 | 前置              | 有 Chrome 即可                                       | 需完整栈（Go 后端 + 前端 dev server）    |
 | 耗时              | 秒级                                                 | 分钟级                                   |
 | 可否挂 pre-commit | 可以                                                 | **不可以**（太慢）                       |
