@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-CONTRAST-VALIDATION/1.0",
-  "generated_at": "2026-11-16T03:37:40.778Z",
+  "generated_at": "2026-11-16T03:42:17.724Z",
   "engine": "registry/contrast-engine.mjs",
   "formula": "(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045",
   "sampling": "linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops",

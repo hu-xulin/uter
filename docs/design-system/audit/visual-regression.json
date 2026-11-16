@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-16T03:37:40.778Z",
+  "generated_at": "2026-11-16T03:42:17.724Z",
   "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）",
   "backend": "http://127.0.0.1:3000",
   "dist": "web/dist",

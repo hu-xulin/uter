@@ -1,21 +1,18 @@
 {
   "schema": "UDS8-REMEDIATION-STATE/1.0",
-  "generated_at": "2026-11-16T03:37:40.778Z",
+  "generated_at": "2026-11-16T03:42:17.724Z",
   "method": "check-uds8-remediation.mjs 真实探针，未执行项一律不标 PASS",
   "probeSummary": {
-    "PARTIAL": 1,
-    "PASS": 49
+    "PASS": 50
   },
   "findings": {
     "UDS8-C-01": {
-      "status": "PARTIAL",
+      "status": "RESOLVED",
       "probe": "C-R01",
-      "probeStatus": "PARTIAL",
-      "evidence": "C-R01 PARTIAL · AGENTS.md 声明 UDS 8.0.0 为唯一现行权威；未在建设期外被并发改写",
+      "probeStatus": "PASS",
+      "evidence": "C-R01 PASS · AGENTS.md 声明 UDS 8.0.0 为唯一现行权威；未在建设期外被并发改写",
       "failedAssertions": [],
-      "notExecutedAssertions": [
-        "unchangedVsHead"
-      ]
+      "notExecutedAssertions": []
     },
     "UDS8-C-02": {
       "status": "RESOLVED",
@@ -205,7 +202,7 @@
       "status": "RESOLVED",
       "probe": "C-H08",
       "probeStatus": "PASS",
-      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（225100ms）",
+      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（185527ms）",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },

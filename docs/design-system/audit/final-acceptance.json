@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-FINAL-ACCEPTANCE/1.0",
-  "generated_at": "2026-11-16T03:37:40.778Z",
+  "generated_at": "2026-11-16T03:42:17.724Z",
   "verdict": "PARTIALLY_VERIFIED",
   "allowedVerdicts": [
     "FULLY_VERIFIED",
@@ -30,23 +30,20 @@
     "allPassed": true
   },
   "probeSummary": {
-    "PARTIAL": 1,
-    "PASS": 49
+    "PASS": 50
   },
   "probes": {
     "C-R01": {
       "name": "C-R01",
       "label": "AGENTS.md 治理入口声明 8.0.0 唯一运行时权威",
-      "status": "PARTIAL",
+      "status": "PASS",
       "assertions": {
         "authorityDeclared": true,
         "manifestReferenced": true,
-        "unchangedVsHead": null
+        "unchangedVsHead": true
       },
       "failed": [],
-      "notExecuted": [
-        "unchangedVsHead"
-      ],
+      "notExecuted": [],
       "evidence": "AGENTS.md 声明 UDS 8.0.0 为唯一现行权威；未在建设期外被并发改写",
       "metrics": {}
     },
@@ -491,7 +488,7 @@
       "evidence": "consumer-scan.mjs 现场扫描 web/src + Showcase 渲染链；虚假登记 / 零消费者 / 未登记真实引用均须为 0",
       "metrics": {
         "exit": 0,
-        "scannedAt": "2026-11-16T03:37:41.666Z",
+        "scannedAt": "2026-11-16T03:42:18.712Z",
         "filesScanned": 1278,
         "tokens": 389,
         "declaredConsumers": 389,
@@ -798,7 +795,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（225100ms）",
+      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（185527ms）",
       "metrics": {}
     },
     "C-H09": {
@@ -1129,8 +1126,8 @@
   },
   "findings": {
     "total": 48,
-    "resolved": 47,
-    "partial": 1,
+    "resolved": 48,
+    "partial": 0,
     "open": 0
   },
   "checker": {

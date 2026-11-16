@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-COMPAT-MAP",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T03:32:38.176Z",
+  "generated_at": "2026-11-16T03:42:15.963Z",
   "policy": "B6_EXECUTED — 3.0 颜色兼容层（colors.css）已于 2026-11-16 经用户授权整体退役；颜色唯一运行时权威 = TOKEN-MANIFEST 派生 --ds8-* bridge；标量（字号/行高/圆角/间距）经用户授权在 web/src 真源文件字面切换为 manifest 值",
   "isolation": {
     "canonicalPrefix": "--ds-",
