@@ -2,7 +2,7 @@
  * UTER Product Workspace — 本地服务（零外部依赖）
  *
  * 同时提供：
- *  1) 产品规格中心 SPA（静态资源，遵循 UTER Design System 3.0 tokens）
+ *  1) 产品规格中心 SPA（静态资源，遵循 UDS 8.0.0 tokens）
  *  2) 统一需求模型 REST API（读写唯一数据源 product-model.json）
  *
  * 启动：node tools/product-workspace/server.mjs [--port 7788]

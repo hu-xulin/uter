@@ -12,7 +12,7 @@
 
 Token / Component / Page / Dependency Graph / Acceptance Matrix / Deprecated / Exception Registry、Automated Checks、Visual Regression、CI Gate；所有规范必须能被自动检查。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|
@@ -30,7 +30,7 @@ Token / Component / Page / Dependency Graph / Acceptance Matrix / Deprecated / E
 4. 组件检查：8 个基础状态 + Responsive 必须逐一登记到 ACCEPTANCE-MATRIX.json
 5. 无障碍检查：axe-core / WCAG Contrast / Keyboard / Focus Visibility / Screen Reader / Reduced Motion 六类
 6. Visual Regression：至少覆盖 15 类页面 / 组件 × Light / Dark × Mobile / Desktop，保留截图、差异报告、运行日志
-7. CI Gate：本机门禁为 `bun run typecheck` / `lint` / `test` / `lint:design:strict` / `copyright:check` / `build:check`；7.0 检查器以独立脚本接入，未通过禁止冻结数值
+7. CI Gate：本机门禁为 `bun run typecheck` / `lint` / `test` / `lint:design:strict` / `copyright:check` / `build:check`；设计系统检查器以独立脚本接入，未通过禁止变更数值
 8. 不得通过跳过测试、降低阈值、删除断言或扩大例外获得 PASS
 9. 状态判定：IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED 四级严格区分；ACCEPTED 只能由用户明确给出
 

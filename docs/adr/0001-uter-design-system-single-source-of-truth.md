@@ -1,40 +1,47 @@
 ---
 id: ADR-0001
-title: UTER Design System 3.0 作为设计规范唯一事实来源
+title: UDS 8.0.0 作为唯一设计系统事实来源
 status: Accepted
-date: 2026-11-03
+date: 2026-11-16
 decision_owner: Uter Project Maintainers
 ---
 
-# ADR-0001：UTER Design System 3.0 作为设计规范唯一事实来源
+# ADR-0001：UDS 8.0.0 作为唯一设计系统事实来源
 
 ## 背景
 
-Uter 的视觉 Token、字号、颜色、组件与设计约束曾分散在多个文档或历史版本中，容易导致 AI Agent 和开发人员读取到不一致或已经废弃的规则。项目已明确将 UTER Design System 3.0 收敛为正式设计标准，并要求旧版分篇不再作为当前依据。
+Uter 的视觉 Token、字号、颜色、组件与页面约束必须有单一权威来源，否则 AI Agent 与开发人员会读取到不一致规则，业务 UI 也会出现并行 Token 体系。
 
 ## 决策
 
-将 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 作为 Uter 设计规范的唯一权威文档；配套 `showcase-3.0.html` 用于展示和核验规范效果。其他文档只能引用该权威来源，不得复制维护平行版本，也不得引用已废弃的 `design-system.md` 作为当前标准。
+1. **UDS 8.0.0 是仓库唯一现行设计系统**，也是唯一有效执行依据；不存在并行版本、兼容层、旧 Token 或第二套主题。
+2. **`docs/design-system/TOKEN-MANIFEST.json` 是全部设计数值的唯一事实源**。CSS、TypeScript、注册表、规范文档与 Showcase 一律由 `docs/design-system/registry/build.mjs` 从该文件派生，禁止手改派生值。
+3. **组件注册表与页面注册表是自动生成并验证的正式资产**：`COMPONENT-REGISTRY.json`、`PAGE-REGISTRY.json` 必须与实际组件、真实路由一致。
+4. **所有业务 UI 必须遵守 UDS 8.0.0**：颜色、字号、行高、间距、圆角、边框、阴影、动效与交互状态只能引用已登记 Token 或共享组件，不得写死设计数值。
+5. **禁止独立设计 Token 体系、旧版兼容实现、绕过设计系统或未登记组件/页面。**
+6. **权威文档集合**：`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`、38 份编号规范、`TOKEN-MANIFEST.json`、8 份注册表与 `SHOWCASE-8.0.0.html`。
 
 ## 决策依据
 
-- `AGENTS.md` 将 UTER Design System 3.0 标记为单一权威设计文件。
-- `AGENTS.md` 同时约定了目录纪律：设计规范相关文档集中于 `docs/design-system/`，不得另建平行真源（原 `uaes/standards/` 与 `.ai/` 规范已于 2026-11-12 退休删除，其相关约束由本 ADR 与 `AGENTS.md` 承接）。
+- `AGENTS.md` 将 UDS 8.0.0 标记为唯一设计系统权威。
+- `bun run design:8:check` 对规范完整性、Token 唯一性、引用、Light/Dark、注册表一致性、Showcase 同步、旧版本零残留等执行 fail-closed 检查。
+- `bun run lint:design:strict`、`typecheck`、`lint`、`test`、`format:check`、`build:check` 与 `./scripts/verify-all.sh` 共同约束真实实现。
 
 ## 后果
 
-- 设计 Token、颜色、字号或组件规则发生变化时，必须更新权威设计系统文档并运行对应设计门禁。
-- 其他规范不得创建重复的设计 Token 真源。
-- 发现旧路径、旧版本或冲突描述时，必须修正引用并保留必要的历史说明。
-- 任何拟改变该决策的行为必须提交新的 ADR，不得直接覆盖本记录。
+- 修改任何设计数值必须：先改 `TOKEN-MANIFEST.json` 源定义（`registry/tokens.mjs`）→ 运行 `registry/build.mjs` → 通过全部设计门禁 → 再提交。
+- 新增组件或页面必须登记并重新生成注册表。
+- 不允许恢复已删除的旧版本设计系统文件、迁移说明、兼容映射或旧 Token。
+- 任何拟改变本决策的行为必须提交新的 ADR，不得直接覆盖本记录。
 
 ## 实施与验证
 
 | 验证对象 | 当前证据 |
 |---|---|
-| 权威设计文档 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` |
-| 项目宪法引用 | `AGENTS.md` |
-| 文档治理规则 | `AGENTS.md` |
-| 方法论入口 | `AGENTS.md`（原 `.ai/README.md` 已于 2026-11-12 退休删除） |
+| 唯一数值来源 | `docs/design-system/TOKEN-MANIFEST.json`（389 tokens） |
+| 唯一生成入口 | `docs/design-system/registry/build.mjs` |
+| 检查器 | `web/scripts/check-design-system-8.0.0.mjs` |
+| 设计门禁 | `design:8:check` / `design:tokens:check` / `design:showcase:check` / `lint:design:strict` |
+| 全仓门禁 | `./scripts/verify-all.sh` |
 
-本 ADR 记录的是已经在项目规范中明确批准的决策；它不声称所有历史设计相关实现已经完成独立运行时审计。实施符合性仍由对应设计门禁和后续审计验证。
+本 ADR 记录已批准的治理决策；具体实现符合性由设计门禁与全仓门禁的真实验证结果判定，不以本文件存在作为通过依据。

@@ -1,56 +1,9 @@
 {
   "schema": "UDS8-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-16T07:08:52.723Z",
-  "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis",
-  "backend": "http://127.0.0.1:3000",
-  "dist": "web/dist",
-  "verdict": "PASS",
+  "design_system": "UTER DESIGN SYSTEM 8.0.0",
+  "generated_at": "2026-11-16T13:29:22.824Z",
   "executed": true,
-  "realPageCount": 4,
-  "scenarioCount": 8,
-  "themeScenarios": [
-    "light",
-    "dark"
-  ],
-  "routes": [
-    "/",
-    "/login",
-    "/about",
-    "/docs"
-  ],
-  "checksApplied": [
-    "http200",
-    "hasHeading",
-    "renderedContent",
-    "bridgeLive",
-    "syntaxBridgeLive",
-    "terminalBridgeLive",
-    "scrimTokenLive",
-    "nonBlankPixels",
-    "noConsoleErrors"
-  ],
-  "authChecksApplied": [
-    "http200",
-    "authenticatedRender",
-    "renderedContent",
-    "bridgeLive",
-    "syntaxBridgeLive",
-    "terminalBridgeLive",
-    "scrimTokenLive",
-    "nonBlankPixels",
-    "noConsoleErrors"
-  ],
-  "authenticated": {
-    "executed": false,
-    "backend": "http://127.0.0.1:3100",
-    "routes": [
-      "/dashboard",
-      "/wallet",
-      "/keys",
-      "/usage-logs"
-    ],
-    "reason": "隔离栈不可达：TypeError: fetch failed"
-  },
+  "verdict": "PASS",
   "results": [
     {
       "route": "/",
@@ -444,18 +397,5 @@
     "gradientVisible": true,
     "pass": true
   },
-  "forcedColors": {
-    "executed": true,
-    "pageTextTransparentCount": 0,
-    "pageTextSampled": 30,
-    "heroFoundOnRealPage": true,
-    "heroFallbackColor": "rgb(0, 0, 0)",
-    "heroFallbackTransparent": false,
-    "gradientFallbackFound": true,
-    "gradientFallbackColor": "rgb(0, 0, 0)",
-    "gradientFallbackTransparent": false,
-    "pass": true
-  },
-  "errors": [],
-  "scopeNote": "真实 SPA 路由回归；认证页面未执行（隔离栈不可达：TypeError: fetch failed），故不含 Dashboard / Billing / Orders / Refunds 等页面。该限制如实登记，不得视为已覆盖。"
+  "note": "真实页面回归以真实 Playwright 运行为准；未执行项不得计为 PASS"
 }

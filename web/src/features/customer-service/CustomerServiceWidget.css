@@ -17,7 +17,7 @@ along with this program. If not see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 
-/* 智能客服挂件样式（UTER 3.0 语义 Token）。
+/* 智能客服挂件样式（UTER UDS 8.0.0 语义 Token）。
    颜色 / 字号 / 圆角 / 阴影全部取自设计系统变量，切换浅深主题或主题预设时自动一致。
    原本散落在组件里的内联 style 已集中到此文件，减少内联样式数量、便于审计与维护。
    唯一保留内联的是 BotIcon 的 SVG `fill`（品牌色跟随主题，var() 注入）。 */
@@ -244,7 +244,7 @@ For commercial licensing, please contact support@uter.ai
 .cs-send:not(:disabled):hover {
   filter: brightness(1.08);
 }
-/* Disabled 统一模式（3.0 §10.5）：用底色 + 文字双重信号区分，而非仅 opacity 蒙版。 */
+/* Disabled 统一模式（UDS 8.0.0 §10.5）：用底色 + 文字双重信号区分，而非仅 opacity 蒙版。 */
 .cs-send:disabled {
   background: var(--muted);
   color: var(--muted-foreground);

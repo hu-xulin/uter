@@ -12,7 +12,7 @@
 
 24 号规范的专项补充：20 个语法语义 Token 的 Light / Dark 明确色值、5 个引擎 Adapter、26 语言降级、对比度实测。作为 24-S 登记在 36 模块体系内，不构成第二套设计系统。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|
@@ -27,7 +27,7 @@
 1. 20 个语义 Token：keyword / string / number / function / property / variable / type / operator / punctuation / comment / constant / boolean / null / tag / attribute / regexp / builtin / inserted / deleted / invalid
 2. Light（代码背景 #F6F8FA）：keyword #7C3AED、string #047857、number #A54600、function #1D4ED8、property #0369A1、variable #0F172A、type #0369A1、operator #475569、punctuation #475569、comment #5B6779、constant #A54600、boolean #7C3AED、null #7C3AED、tag #1D4ED8、attribute #047857、regexp #A54600、builtin #1D4ED8、inserted #047857、deleted #B91C1C、invalid #B91C1C
 3. Dark（代码背景 #0E1524）：keyword #C4B5FD、string #6EE7B7、number #FCD34D、function #93C5FD、property #7DD3FC、variable #E2E8F0、type #7DD3FC、operator #CBD5E1、punctuation #CBD5E1、comment #94A3B8、constant #FCD34D、boolean #C4B5FD、null #C4B5FD、tag #93C5FD、attribute #6EE7B7、regexp #FCD34D、builtin #93C5FD、inserted #6EE7B7、deleted #FCA5A5、invalid #FCA5A5
-4. 旧 5 个 oklch Token 仅作迁移参考，不自动继承为 7.0 值；7.0 全部改用 HEX 并经实算
+4. 语法 Token 全部使用 HEX 并经实算，Light / Dark 各 20 档，不得使用 oklch 或未登记色值
 5. 实测：Light 最低 5.15:1、Dark 最低 7.11:1，全部 ≥4.5:1（contrast-engine.mjs）
 6. 引擎 Adapter：CodeMirror 6 `HighlightStyle` / Lezer `tags` / Yace token class / Marked code fence / Shiki 仅语言类型，颜色一律回落到 `--ds-syntax-*`
 7. JSON / JSONC 映射：property → `--ds-syntax-property`、string → `-string`、number → `-number`、true/false → `-boolean`、null → `-null`、括号逗号 → `-punctuation`

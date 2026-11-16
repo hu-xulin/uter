@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest'
  *
  * 要求「文档中的字号表由 Token 生成，或通过自动化检查确保一致」。这份
  * 测试就是那个检查：它把 04-TYPOGRAPHY-STANDARD.md §Token 表与
- * TOKEN-MANIFEST.json（7.0 唯一真源）**硬编码**成期望值，再去解析真实的
+ * TOKEN-MANIFEST.json（UDS 8.0.0 唯一真源）**硬编码**成期望值，再去解析真实的
  * CSS 文件（运行真源是 `tokens/typography.css`）。
  *
  * 因此任何一次「顺手把 text-sm 改成 15px」都会让测试变红，而不是等
@@ -67,7 +67,7 @@ function toPx(value: string): number {
 }
 
 /**
- * 7.0 §Token 主档 + 派生档（与 TOKEN-MANIFEST.json font-size/line-height 同值）。
+ * UDS 8.0.0 §Token 主档 + 派生档（与 TOKEN-MANIFEST.json font-size/line-height 同值）。
  * [token, 字号px, 行高px, 语义角色]
  */
 const LADDER: Array<[string, number, number, string]> = [
@@ -299,7 +299,7 @@ describe('theme.css 圆角阶梯与文档一致', () => {
 })
 
 describe('showcase 核查页与 Token 真源一致', () => {
-  // 3.0 §18.1 / §28「数据链」：核查页（showcase.html）的页内内联快照与
+  // UDS 8.0.0 §18.1 / §28「数据链」：核查页（showcase.html）的页内内联快照与
   // showcase.tokens.js 兼容回退，都是 §28 TOKEN-MANIFEST 的派生产物。
   // 原测试直接比对「核查页 HTML 里的 --radius-* / .rounded-* 声明」，但
   // showcase.html 遵守 §28.3 禁止在页内重复 :root Token，因此无法再依赖

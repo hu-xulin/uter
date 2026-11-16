@@ -12,7 +12,7 @@
 
 渐变文字专项：保留蓝紫方向但重新设计色值；Light / Dark 全区间 ≥4.5:1；全站唯一出口；作为 01-S 登记在 36 模块体系内。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|
@@ -24,8 +24,8 @@
 
 ## 2. Rules
 
-1. 历史实现登记：from #60A5FA / via #A78BFA / to #A855F7 / to right / utility `ds-text-gradient-brand`；实测 Light 最差 2.27:1、Dark 最差 3.92:1，E28 例外在 7.0 注销
-2. 7.0 Light：from #1D4ED8 / via #6D28D9 / to #7E22CE；Dark：from #93C5FD / via #C4B5FD / to #D8B4FE
+1. 唯一出口：utility `ds-text-gradient-brand`；渐变 Token 必须通过全区间实算，禁止任何低对比度实现
+2. Light：from #1D4ED8 / via #6D28D9 / to #7E22CE；Dark：from #93C5FD / via #C4B5FD / to #D8B4FE
 3. 方向固定 `linear-gradient(90deg in srgb, from 0%, via 50%, to 100%)`（`--ds-gradient-direction: 90deg`、`--ds-gradient-interpolation: srgb`；CSS 与引擎插值空间必须一致）
 4. 对比度实测：在 canvas / surface / raised / sunken / overlay / hero-glow / code-bg 共 7 种真实文字背景上按 0.1% 步长共 1001 点采样（含全部渐变 stop）；Light 最差 5.99:1（hero-glow @0%）、Dark 最差 8.37:1（raised @45.4%），全部 ≥4.5:1
 5. 阈值：普通文字 ≥4.5:1、大号文字 ≥3:1；本方案按更严格的 4.5:1 冻结，因此无字号例外

@@ -173,7 +173,7 @@ right scope every time:
 |---|---|
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
-| Design system / typography / color / components / interaction | `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` + `docs/design-system/TOKEN-MANIFEST.json` + `docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md` (**UDS 8.0.0 is the sole current authority**, `ACCEPTANCE_READY`, `accepted: false`; do not claim final acceptance. The 3.0 runtime compatibility layer was retired in 8.0.0 — runtime colors come from the TOKEN-MANIFEST-derived `--ds8-*` bridge) |
+| Design system / typography / color / components / interaction | `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` + `docs/design-system/TOKEN-MANIFEST.json` + `docs/design-system/35-DESIGN-GOVERNANCE-STANDARD.md` (**UDS 8.0.0 is the sole and only design-system authority**, `ACCEPTANCE_READY`, `accepted: false`; do not claim final acceptance. There is no parallel version, compatibility layer or legacy token set — runtime colors come from the TOKEN-MANIFEST-derived `--ds8-*` bridge) |
 | Domain standards (product / architecture / API / database / payment / billing / security / cross-platform / delivery / lifecycle) | `.uap/SPECIFICATION-INDEX.md` + the applicable registered specification in `.uap/config/specification-registry.yaml` |
 | Engineering quality standards (code review / testing / auto-fix / quality gate) | `.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md` through `UAP-05-004-QUALITY-GATES.md`, enforced by registered UAP executors and validators |
 
@@ -186,7 +186,7 @@ time, and remembered rules are exactly how regressions get reintroduced.
 (`docs/ai-specs/`, `uaes/standards/`) has been retired on 2026-11-12 pending
 replacement by a new standard system. Until the new corpus is published, the
 binding sources are this file, `web/AGENTS.md`, and
-`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` and `docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md`. UDS 8.0.0 (UTER DESIGN SYSTEM 8.0.0) remains ACCEPTANCE_READY / accepted=false; the 3.0 runtime compatibility layer is retired (B6 executed 2026-11-16 with user authorization) — runtime color authority is the TOKEN-MANIFEST-derived `--ds8-*` bridge. Payment/billing/auth work must
+`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` and `docs/design-system/35-DESIGN-GOVERNANCE-STANDARD.md`. UDS 8.0.0 (UTER DESIGN SYSTEM 8.0.0) is the sole current authority and remains ACCEPTANCE_READY / accepted=false; runtime color authority is the TOKEN-MANIFEST-derived `--ds8-*` bridge. Payment/billing/auth work must
 still follow the "Billing safety invariants", "Authentication Security (OWASP
 Mandatory)" and "Database compatibility" sections of this file.
 

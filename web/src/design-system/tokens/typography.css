@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 /* ── Layer 1 · Typography scale（唯一字号阶梯）────────────────────────
  * 10 主档 + 配套派生档，与 04-TYPOGRAPHY-STANDARD.md §Token 表 /
- * TOKEN-MANIFEST.json（7.0 唯一真源）逐行对应：
+ * TOKEN-MANIFEST.json（UDS 8.0.0 唯一真源）逐行对应：
  *
  *   display  48 / 600 / 56   展示型标题（--text-5xl；首页 hero 使用 4xl）
  *   h1       36 / 600 / 44   页面标题（--text-4xl）
@@ -35,7 +35,7 @@ For commercial licensing, please contact support@uter.ai
  *   dense    13 / 400 / 20   密集数据专用：表格单元格、二级导航、分页
  *
  * 2026-11-16 经用户授权从 v1.2 刻度（h1=30/24/18、display=36）正式
- * 切换到 7.0 字号阶梯（04 规范 §Token 表）：新增 2xs=12 档，xs 由 12
+ * 切换到 UDS 8.0.0 字号阶梯（04 规范 §Token 表）：新增 2xs=12 档，xs 由 12
  * 上调至 13（密集/代码/标签语义），xl 起每档 +1 档位（20/24/30/36/48）。
  * 行高对齐 7.0 --ds-leading-*：caption=18 / code=20 / body=22 /
  * base=24 / long=26 / h3=26 / h2=38 / h1=44 / display=56；24px 档
@@ -55,7 +55,7 @@ For commercial licensing, please contact support@uter.ai
  * `body-long`（16/26），不要拿 `text-base` 当正文。
  *
  * mono 档另有两个**等宽专用派生档**，只在等宽场景出现，不占十档位置
- * （详见 UTER-DESIGN-SYSTEM-3.0.md §1.5「mono 档位」）：
+ * （详见 00-UTER-DESIGN-SYSTEM-OVERVIEW.md §1.5「mono 档位」）：
  *
  *   mono-code  13 / 400 / 20  固定高度的等宽代码容器（首页代码卡片、编辑器视口）
  *   mono-title 16 / 600 / 22  用等宽字形的卡片标题（定价卡片模型名）
@@ -75,7 +75,7 @@ For commercial licensing, please contact support@uter.ai
  * 不缩放 `--text-*`（§7.2 / §17.7）；放大文字走 simple-large 预设。
  */
 @theme {
-  /* 7.0 主档（04-TYPOGRAPHY-STANDARD.md §Token 表，TOKEN-MANIFEST 唯一真源）：
+  /* UDS 8.0.0 主档（04-TYPOGRAPHY-STANDARD.md §Token 表，TOKEN-MANIFEST 唯一真源）：
    * 2xs=12 / xs=13 / sm=14 / base=16 / lg=18 / xl=20 / 2xl=24 / 3xl=30 /
    * 4xl=36 / 5xl=48。行高对齐 --ds-leading-*：caption=18 / code=20 /
    * body=22 / base=24 / h3=26 / （24px 沿用 3.0 惯例 32）/ h2=38 / h1=44 /
@@ -95,7 +95,7 @@ For commercial licensing, please contact support@uter.ai
   --text-mono: 0.8125rem; /* 13px — mono（3.0 mono-sm），正文里的等宽文本 */
   --text-mono--line-height: 1.25rem; /* 20px */
 
-  --text-mono-base: 0.875rem; /* 14px — 3.0 §1.5 mono-base：代码、技术信息 */
+  --text-mono-base: 0.875rem; /* 14px — UDS 8.0.0 §1.5 mono-base：代码、技术信息 */
   --text-mono-base--line-height: 1.375rem; /* 22px */
 
   --text-mono-code: 0.8125rem; /* 13px — 固定高度的等宽代码容器（首页代码卡片、编辑器视口） */
@@ -142,13 +142,13 @@ For commercial licensing, please contact support@uter.ai
    * 同为 16px，靠字重（600 vs 400/500）与语义区分，不是两个字号档。
    * 早期注释里的 15/22 对应 --text-md（次级正文），不要与 group-title 混淆。
    * 声明在阶梯里而不是 semantic 层写死，维持「--text-* 唯一来源」。 */
-  --text-md: 0.9375rem; /* 15px — 3.0 §1.2 md：次级正文 */
+  --text-md: 0.9375rem; /* 15px — UDS 8.0.0 §1.2 md：次级正文 */
   --text-md--line-height: 1.5rem; /* 24px */
 
-  --text-group: 1rem; /* 16px — 3.0 §1.3 group-title 分组标题 */
+  --text-group: 1rem; /* 16px — UDS 8.0.0 §1.3 group-title 分组标题 */
   --text-group--line-height: 1.5rem; /* 24px */
 
-  /* 阶梯到此为止（7.0 主档 2xs..5xl，5xl=48px 为展示档；首页 hero 使用 4xl 36px）。更大的
+  /* 阶梯到此为止（UDS 8.0.0 主档 2xs..5xl，5xl=48px 为展示档；首页 hero 使用 4xl 36px）。更大的
      尺寸（60px+）不纳入系统 —— 需要时先确认是否真的必要，并按
      exceptions.md 的流程登记。 */
 

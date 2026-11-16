@@ -57,7 +57,7 @@ For commercial licensing, please contact support@uter.ai
  * 导入顺序有约束：`tokens/typography.css` 里的 `@theme` 必须晚于
  * `@import 'tailwindcss'`，否则覆盖不了内置字号阶梯。 */
 @import '../design-system/tokens/index.css';
-/* UDS 8.0.0 语义桥接层：--ds8-* 隔离命名，不覆盖 3.0 同名变量。
+/* UDS 8.0.0 语义桥接层：--ds8-* 隔离命名，不覆盖 同名变量。
  * 由 docs/design-system/registry/build.mjs 从 TOKEN-MANIFEST.json 生成。
  * 回滚 = 删除本行 @import。 */
 @import '../design-system/tokens/uds-semantic-bridge.css';
@@ -790,7 +790,7 @@ a {
   text-decoration: none;
 }
 
-/* 3.0 §1（审计 AUDIT-004）：H5 输入文字 ≥16px。
+/* UDS 8.0.0 §1（审计 AUDIT-004）：H5 输入文字 ≥16px。
  * 移动端浏览器（iOS Safari）聚焦 font-size < 16px 的输入框时会自动放大视口，
  * 且规范要求 H5 输入文字至少 16px —— 这里统一兜底，组件层无需逐个处理。 */
 @media (max-width: 767px) {

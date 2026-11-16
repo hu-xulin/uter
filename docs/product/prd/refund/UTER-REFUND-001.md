@@ -2,7 +2,7 @@
 
 > **投影文档 · 禁止直接手工编辑**。唯一权威数据源为 `docs/product/registry/product-model.json`（Single Source of Truth）。
 > 请在产品规格中心（`http://127.0.0.1:7788/`）通过 PRD 或 Prototype 视图编辑；所有有效变更经统一模型事务化双写，并自动重渲染 PRD 与原型投影。
-> 模型版本 **v1** · PRD 版本 v1 · 渲染于 2026-11-09T15:47:41.713Z · 设计基线 UTER Design System 3.0
+> 模型版本 **v1** · PRD 版本 v1 · 渲染于 2026-11-09T15:47:41.713Z · 设计基线 UDS 8.0.0
 
 > **实现状态：`NOT_IMPLEMENTED` — 未实现（仅规划原型，非已上线功能）**。本文描述的是规划需求与规划原型，不代表该能力已上线。
 > 状态证据说明：经全仓扫描 router/controller/service/model 与 web/src/routes（含 /wallet、/subscriptions、/usage-logs、(auth)/*），未发现用户侧退款申请入口、退款 API 或退款审核后台；Midjourney 任务失败自动退款由后端事务处理，见 UTER-REFUND-002，不在此 Feature 范围。

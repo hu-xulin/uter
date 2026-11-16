@@ -295,7 +295,7 @@ const report = {
   schema_version: '1.0.0',
   engine: 'UTER_DESIGN_SYSTEM_VISUAL_A11Y_AUDIT',
   generated_at: new Date().toISOString(),
-  design_system: 'UTER Design System 7.0',
+  design_system: 'UTER UDS 8.0.0',
   target: 'docs/design-system/SHOWCASE-8.0.0.html',
   viewport_matrix: VIEWPORTS,
   theme_matrix: THEMES,

@@ -10,9 +10,9 @@
 
 ## 1. Overview
 
-8.0.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。UDS 8.0.0 是唯一现行规范（2026-11-16 经用户授权由 7.0/7.0.1 升版）；5.0 及更早版本已删除，7.0 仅存于 git 历史，供历史识别、代码依赖与迁移风险分析。
+8.0.0 总纲：目标、原则、版本、Token 架构、文件结构、命名、组件 / 页面注册、主题、响应式、无障碍、自动化、变更、例外与废弃流程。UDS 8.0.0 是唯一现行设计系统与唯一执行依据。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|
@@ -33,7 +33,7 @@
 7. 例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷
 8. 废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验
 9. 状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED
-10. 当前生效状态：UDS 8.0.0 唯一现行规范体系 ACCEPTANCE_READY（2026-11-16 经用户授权由 7.0/7.0.1 正式升版，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色沿用 2026-11-16 用户授权切换的 TOKEN-MANIFEST 值（B1–B5 DONE_VERIFIED，tokens.test.ts 三方守卫钉死）；颜色语义层 --ds8-* bridge 为唯一运行时权威（3.0 兼容层 colors.css 已退役，CM-02~06 闭合）；8.0.0 视觉基线随升版重冻结
+10. 当前生效状态：UDS 8.0.0 是唯一现行设计系统与唯一执行依据（ACCEPTANCE_READY，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色直接使用 TOKEN-MANIFEST 值（tokens.test.ts 三方守卫钉死）；颜色语义层 --ds8-* bridge 为唯一运行时权威；视觉基线见 VISUAL-BASELINE.json
 
 ## 3. Tokens
 

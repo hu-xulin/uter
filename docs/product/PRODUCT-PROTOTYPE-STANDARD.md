@@ -1,7 +1,7 @@
 # 交互式 Prototype 建设规范
 
 > UTER 产品原型与 PRD 一体化系统 · 规范编号 STD-PROTO-01 · 生效版本 v1 · 2026-11-09T15:47:41.777Z
-> 本规范由统一需求模型驱动；唯一事实源 `docs/product/registry/product-model.json`。设计基线：UTER Design System 3.0。
+> 本规范由统一需求模型驱动；唯一事实源 `docs/product/registry/product-model.json`。设计基线：UDS 8.0.0。
 
 ## 1. 覆盖要求
 - 每个 Feature 至少一个 Prototype Page；按功能类型覆盖表单、按钮、弹窗、抽屉、列表、详情、搜索、筛选、分页。
@@ -22,4 +22,4 @@
 - `NOT_IMPLEMENTED` 页面必须标记 `planned: true` 并显示规划提示，不得冒充上线功能。
 
 ## 3. 视觉基线
-UTER Design System 3.0：品牌主色 `#5B5EE6`、PC 正文 14px、基础圆角 10px、4px 间距网格、Light / Dark 主题；不得使用已废弃的 2.1 基线。
+UDS 8.0.0：品牌主色 `#5B5EE6`、PC 正文 14px、基础圆角 10px、4px 间距网格、Light / Dark 主题；不得使用已废弃的 2.1 基线。

@@ -39,7 +39,7 @@ import './CustomerServiceWidget.css'
 // 品牌色用于：面板头部徽标、悬浮气泡圆底、发送气泡与发送按钮。
 // **一律读 `var(--primary)`**，不得写死色值——否则改品牌色 / 换主题预设时
 // 挂件会停在旧颜色上，成为全站唯一不同步的地方。
-// 样式集中在同目录 CustomerServiceWidget.css（3.0 语义 Token）。
+// 样式集中在同目录 CustomerServiceWidget.css（UDS 8.0.0 语义 Token）。
 //
 // 文案配置（标题/欢迎语/预置问题）由后台「部署配置」实时下发。
 

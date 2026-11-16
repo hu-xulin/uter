@@ -81,7 +81,7 @@ const ORDER = [
   'custom',
 ] as const
 
-describe('OAuthProviders hover 语义 Token（3.0 §2.3 审计整改）', () => {
+describe('OAuthProviders hover 语义 Token（UDS 8.0.0 §2.3 审计整改）', () => {
   it('所有渠道 hover 统一走 primary 底 + primary-foreground 前景，不再硬编码白字', () => {
     renderProviders()
     const buttons = buttonsInOrder()

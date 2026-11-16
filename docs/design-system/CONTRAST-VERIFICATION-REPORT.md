@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 8.0.0 — 对比度验证报告
 
-> 生成时间 2026-11-16T09:44:20.137Z · 计算引擎 `registry/contrast-engine.mjs` · 标准 WCAG 2.2 AA
+> 生成时间 2026-11-16T12:53:56.020Z · 计算引擎 `registry/contrast-engine.mjs` · 标准 WCAG 2.2 AA
 > 公式 `(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045` · 采样 `linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops`
 > **总判定：`PASS`**
 
@@ -14,7 +14,7 @@
 | 大号文字（≥24px 或 ≥18.66px bold） | ≥3:1 |
 | 非文本（UI 组件边界 / 状态指示） | ≥3:1 |
 
-7.0 渐变按更严格的 **4.5:1** 冻结，因此不存在字号例外。
+UDS 8.0.0 渐变按更严格的 **4.5:1** 冻结，因此不存在字号例外。
 
 ## 2. 测试背景（7 种真实文字背景 · 取值来自 TOKEN-MANIFEST.json）
 
@@ -27,14 +27,13 @@ CSS 唯一出口为 `linear-gradient(90deg in srgb, ...)`，插值空间与本�
 
 ## 3. 品牌渐变（1001 点 / 主题，含全部插值与停靠点）
 
-| 主题 | 起点 | 中点 | 终点 | 基线最差 | 冻结最差 | 历史实现最差 | 结果 |
-|---|---|---|---|---|---|---|---|
-| Light | `#1D4ED8` | `#6D28D9` | `#7E22CE` | 5.99:1 | **5.99:1** | 2.27:1 | `PASS` |
-| Dark | `#93C5FD` | `#C4B5FD` | `#D8B4FE` | 8.37:1 | **8.37:1** | 3.92:1 | `PASS` |
+| 主题 | 起点 | 中点 | 终点 | 最差对比度 | 结果 |
+|---|---|---|---|---|---|
+| Light | `#1D4ED8` | `#6D28D9` | `#7E22CE` | **5.99:1** | `PASS` |
+| Dark | `#93C5FD` | `#C4B5FD` | `#D8B4FE` | **8.37:1** | `PASS` |
 
 - 最差点位置：Light `hero-glow` @ 0%；Dark `raised` @ 45.400000000000375%
 - 基线调整次数：Light 0 / Dark 0（0 表示建议基线无需调整即达标）
-- 历史实现 `#60A5FA → #A78BFA → #A855F7` 在 Light 仅 2.27:1、Dark 3.92:1，**均不满足 4.5:1**；3.0 的 E28 低对比度例外在 7.0 失去依据，登记为 `REVOKE_AFTER_MIGRATION`
 - 优化算法（如触发）：保持 HSL 色相 / 饱和度，按 0.005 步长调整明度，最多 200 次迭代，轨迹写入引擎输出
 
 ### 3.1 Light 采样（每 10% 摘录；完整 1001 点 × 7 背景见 audit/gradient-validation.json 与 Showcase 渐变背景矩阵）

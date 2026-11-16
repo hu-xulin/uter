@@ -53,7 +53,7 @@ function walk(dir, out = []) {
  * 从文件文本提取 Token 引用证据。
  * - CSS 只认 var() 引用，定义处不算消费；
  * - web/src 产品文件只认 --ds8-* 运行时名：canonical --ds-* 在产品运行时
- *   解析到 3.0 同名变量（值不同），不是 7.0 Token 的消费；
+ *   解析到 同名变量（值不同），不是 UDS 8.0.0 Token 的消费；
  * - docs/ registry 生成器认 canonical 名（manifest 键读取）与 --ds8-*；
  * - 注释不算引用。
  */

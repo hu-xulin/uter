@@ -351,7 +351,7 @@ function buildFeature(feature) {
       state_id: `ST-${base(f)}-${pad(1)}-${pad(i + 1)}`,
       name: s,
       kind: s,
-      description: `${s} 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。`,
+      description: `${s} 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。`,
     })),
   });
 

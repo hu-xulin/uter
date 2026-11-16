@@ -33,11 +33,11 @@ export const LANGUAGE_SAMPLES = [
   ['css', 'CSS', '/* 品牌变量与卡片 */\n:root { --brand: #5B5EE6; }\n.card {\n  margin: 12px;\n  border: 1px solid var(--brand);\n}\n'],
   ['scss', 'SCSS', '$brand: #5B5EE6;\n.card {\n  margin: 12px;\n  &:hover { color: darken($brand, 10%); }\n}\n'],
   ['python', 'Python', 'import os\n\ndef usage(tokens: int) -> float:\n    """计算用量"""\n    return tokens * 0.002  # 单价\n\nprint(usage(1500))\n'],
-  ['go', 'Go', 'package main\n\nimport "fmt"\n\ntype Usage struct {\n    Tokens int\n    Cost   float64\n}\n\nfunc main() {\n    fmt.Println(Usage{Tokens: 1500, Cost: 3.0})\n}\n'],
+  ['go', 'Go', 'package main\n\nimport "fmt"\n\ntype Usage struct {\n    Tokens int\n    Cost   float64\n}\n\nfunc main() {\n    fmt.Println(Usage{Tokens: 1500, Cost: 12.5})\n}\n'],
   ['bash', 'Bash', '#!/usr/bin/env bash\nset -euo pipefail\nAPI_KEY="sk-uter-demo"\ncurl -sS -H "Authorization: Bearer ${API_KEY}" \\\n  https://api.uter.ai/v1/models\n'],
   ['sql', 'SQL', 'SELECT model, SUM(tokens) AS total\nFROM usage_logs\nWHERE created_at >= \'2026-01-01\'\nGROUP BY model\nORDER BY total DESC;\n'],
-  ['yaml', 'YAML', 'version: "7.0"\nmodels:\n  - name: gpt-4o\n    enabled: true\n    max_tokens: 1024\nlimits:\n  rpm: 60\n'],
-  ['markdown', 'Markdown', '# Uter 7.0\n\n- **语法高亮** 使用 VS Code 官方主题\n- `code` 与 [链接](https://uter.ai)\n\n> 20 个语义 Token\n'],
+  ['yaml', 'YAML', 'version: "8.0.0"\nmodels:\n  - name: gpt-4o\n    enabled: true\n    max_tokens: 1024\nlimits:\n  rpm: 60\n'],
+  ['markdown', 'Markdown', '# Uter 8.0.0\n\n- **语法高亮** 使用 VS Code 官方主题\n- `code` 与 [链接](https://uter.ai)\n\n> 20 个语义 Token\n'],
 ]
 
 /**

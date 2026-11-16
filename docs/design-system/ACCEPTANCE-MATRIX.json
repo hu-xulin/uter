@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-ACCEPTANCE",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T09:44:20.137Z",
+  "generated_at": "2026-11-16T12:53:56.020Z",
   "status_definitions": {
     "IMPLEMENTED": "已完成实现",
     "VERIFIED": "已通过真实自动化与必要的视觉验证",
@@ -12,8 +12,8 @@
   "overall_status": "ACCEPTANCE_READY",
   "baseline_freeze": {
     "status": "FROZEN",
-    "version": "7.0.0",
-    "authorized_by": "用户指令「冻结 7.0.0 视觉基线」（2026-11-15）；Phase 5 收口，冻结后授权 Phase 6",
+    "version": "8.0.0",
+    "authorized_by": "UDS 8.0.0 唯一现行设计系统；视觉基线随 8.0.0 重冻结",
     "baseline_file": "VISUAL-BASELINE.json",
     "verification_gate": "G19 registry/check-visual-baseline.mjs",
     "note": "逐场景 SHA256 与冻结副本见 VISUAL-BASELINE.json 与 audit/baseline/screenshots/；更新基线须用户明确授权"

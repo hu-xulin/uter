@@ -1,6 +1,6 @@
 /* UTER Product Workspace SPA
  * 左侧 Prototype / 右侧 PRD，共享同一需求模型；所有编辑写入统一数据源。
- * 无外部依赖，遵循 UTER Design System 3.0 tokens。 */
+ * 无外部依赖，遵循 UDS 8.0.0 tokens。 */
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -182,7 +182,7 @@ function viewOverview() {
   ];
   const recent = m.changes.slice(-8).reverse();
   return `<div class="scrollview">
-    <div class="page-head"><div><h1>Product Overview</h1><p>单一需求数据源 <span class="mono">docs/product/registry/product-model.json</span> · 设计基线 UTER Design System 3.0</p></div>
+    <div class="page-head"><div><h1>Product Overview</h1><p>单一需求数据源 <span class="mono">docs/product/registry/product-model.json</span> · 设计基线 UDS 8.0.0</p></div>
       <div class="toolbar"><button class="btn btn-primary" data-act="view" data-view="detail">打开左右双栏详情</button>
       <button class="btn" data-act="view" data-view="coverage">查看一致性检查</button></div></div>
     <div class="subtle-note">DEMO / MOCK：原型只使用合成数据，不执行真实充值、退款、余额修改或支付；所有模拟交易均带 MOCK 标记。</div>

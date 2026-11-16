@@ -12,7 +12,7 @@
 
 设计目标 PC Web / H5 / Android / iOS / HarmonyOS；必须区分设计规范支持与实际产品实现状态，不得把未实现的原生应用标记为已交付。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|
@@ -27,7 +27,7 @@
 1. PC Web：设计规范已定义、运行时由现有 React 应用承载；状态 `DESIGNED` + 迁移待执行
 2. H5：设计规范已定义（7 档断点、Touch 44px、输入 ≥16px）；状态 `DESIGNED`，实际由同一 Web 应用响应式实现
 3. Android / iOS / HarmonyOS：仓库内无原生工程、无跨平台框架源码；状态 `NOT_IMPLEMENTED`，仅登记设计适配原则
-4. 原生适配原则（设计层）：安全区由平台处理、触控目标 ≥44px、字号沿用同一阶梯、Dark 主题映射沿用 7.0 Semantic Token
+4. 原生适配原则（设计层）：安全区由平台处理、触控目标 ≥44px、字号沿用同一阶梯、Dark 主题映射沿用 UDS 8.0.0 Semantic Token
 5. 禁止把 DESIGN SUPPORT 写成 PRODUCT DELIVERED；每项必须同时给出 designStatus 与 implementationStatus
 6. 跨平台差异写入 EXCEPTION-REGISTRY.json，注明复检条件
 

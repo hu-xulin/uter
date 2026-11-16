@@ -86,7 +86,7 @@ export function renderPRD(f, model) {
   L.push(`# ${f.feature_id} · ${f.name} — 产品需求文档（PRD）`, '');
   L.push(`> **投影文档 · 禁止直接手工编辑**。唯一权威数据源为 \`docs/product/registry/product-model.json\`（Single Source of Truth）。`);
   L.push(`> 请在产品规格中心（\`http://127.0.0.1:7788/\`）通过 PRD 或 Prototype 视图编辑；所有有效变更经统一模型事务化双写，并自动重渲染 PRD 与原型投影。`);
-  L.push(`> 模型版本 **v${model.model_version}** · PRD 版本 v${f.prd.version} · 渲染于 ${NOW()} · 设计基线 UTER Design System 3.0`, '');
+  L.push(`> 模型版本 **v${model.model_version}** · PRD 版本 v${f.prd.version} · 渲染于 ${NOW()} · 设计基线 UDS 8.0.0`, '');
   L.push(`> **实现状态：\`${f.status}\` — ${STATUS_LABEL[f.status] || f.status}**。${f.status === 'NOT_IMPLEMENTED' ? '本文描述的是规划需求与规划原型，不代表该能力已上线。' : ''}`);
   if (f.status_note) L.push(`> 状态证据说明：${f.status_note}`);
   if (f.open_decisions?.length) L.push(`> **待产品决策（${f.open_decisions.length}）**：${f.open_decisions.join('；')}`);
@@ -224,7 +224,7 @@ export function renderPrototype(f, model) {
   const L = [];
   L.push(`# ${f.feature_id} · ${f.name} — 交互式原型说明`, '');
   L.push(`> **投影文档 · 禁止直接手工编辑**。原型事实源与 PRD 相同：\`docs/product/registry/product-model.json\`。`);
-  L.push(`> 模型版本 **v${model.model_version}** · 渲染于 ${NOW()} · 设计基线 UTER Design System 3.0`, '');
+  L.push(`> 模型版本 **v${model.model_version}** · 渲染于 ${NOW()} · 设计基线 UDS 8.0.0`, '');
   L.push(`> **\`DEMO / MOCK\`**：本原型仅使用合成数据，不发起真实支付、退款、余额变更、账户操作或写生产数据；所有订单、金额、响应均为模拟值。`);
   L.push(`> **实现状态 \`${f.status}\`**：${STATUS_LABEL[f.status] || f.status}${f.status === 'NOT_IMPLEMENTED' ? '；下列页面均为规划原型（PLANNED），不得视为已上线能力。' : ''}`);
   L.push('');
@@ -338,7 +338,7 @@ function renderCatalog(model) {
   L.push('');
   L.push('## 证据来源（全量盘点维度）', '');
   L.push(list(model.scan.evidence_sources));
-  L.push('', `治理基线：${model.scan.governance}`, '', `设计基线：\`${model.scan.design_system}\`（UTER Design System 3.0；不使用已废弃的 2.1）`, '');
+  L.push('', `治理基线：${model.scan.governance}`, '', `设计基线：\`${model.scan.design_system}\`（UDS 8.0.0；不使用已废弃的 2.1）`, '');
   L.push('## 诚实性声明', '');
   L.push(list([
     '`UNKNOWN` 仅建立待确认条目，不编造业务决策；本次盘点未发现需要标记为 UNKNOWN 的功能。',
@@ -352,7 +352,7 @@ function renderCatalog(model) {
 
 function standards(model) {
   const s = model.standards;
-  const common = (title, no) => `# ${title}\n\n> UTER 产品原型与 PRD 一体化系统 · 规范编号 ${no} · 生效版本 v${model.model_version} · ${NOW()}\n> 本规范由统一需求模型驱动；唯一事实源 \`docs/product/registry/product-model.json\`。设计基线：UTER Design System 3.0。\n`;
+  const common = (title, no) => `# ${title}\n\n> UTER 产品原型与 PRD 一体化系统 · 规范编号 ${no} · 生效版本 v${model.model_version} · ${NOW()}\n> 本规范由统一需求模型驱动；唯一事实源 \`docs/product/registry/product-model.json\`。设计基线：UDS 8.0.0。\n`;
   const files = {};
 
   files['docs/product/PRODUCT-FEATURE-ID-STANDARD.md'] = common('统一 Feature ID 与关联 ID 规范', 'STD-ID-01') + `
@@ -416,7 +416,7 @@ ${table(['#', '章节', '最低要求'], [
 - \`NOT_IMPLEMENTED\` 页面必须标记 \`planned: true\` 并显示规划提示，不得冒充上线功能。
 
 ## 3. 视觉基线
-UTER Design System 3.0：品牌主色 \`#5B5EE6\`、PC 正文 14px、基础圆角 10px、4px 间距网格、Light / Dark 主题；不得使用已废弃的 2.1 基线。
+UDS 8.0.0：品牌主色 \`#5B5EE6\`、PC 正文 14px、基础圆角 10px、4px 间距网格、Light / Dark 主题；不得使用已废弃的 2.1 基线。
 `;
 
   files['docs/product/PRODUCT-TRACEABILITY-STANDARD.md'] = common('需求追溯与映射注册表规范', 'STD-TRACE-01') + `

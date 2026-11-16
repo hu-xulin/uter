@@ -1,7 +1,7 @@
 # UTER-REFUND-001 · 通用用户退款申请与审核 — 交互式原型说明
 
 > **投影文档 · 禁止直接手工编辑**。原型事实源与 PRD 相同：`docs/product/registry/product-model.json`。
-> 模型版本 **v1** · 渲染于 2026-11-09T15:47:41.713Z · 设计基线 UTER Design System 3.0
+> 模型版本 **v1** · 渲染于 2026-11-09T15:47:41.713Z · 设计基线 UDS 8.0.0
 
 > **`DEMO / MOCK`**：本原型仅使用合成数据，不发起真实支付、退款、余额变更、账户操作或写生产数据；所有订单、金额、响应均为模拟值。
 > **实现状态 `NOT_IMPLEMENTED`**：未实现（仅规划原型，非已上线功能）；下列页面均为规划原型（PLANNED），不得视为已上线能力。
@@ -49,12 +49,12 @@
 
 | State ID | Kind | 说明 |
 | --- | --- | --- |
-| ST-REFUND-001-01-01 | idle | idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
-| ST-REFUND-001-01-02 | loading | loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
-| ST-REFUND-001-01-03 | error | error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
-| ST-REFUND-001-01-04 | success | success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
-| ST-REFUND-001-01-05 | disabled | disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
-| ST-REFUND-001-01-06 | permission_denied | permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
+| ST-REFUND-001-01-01 | idle | idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
+| ST-REFUND-001-01-02 | loading | loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
+| ST-REFUND-001-01-03 | error | error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
+| ST-REFUND-001-01-04 | success | success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
+| ST-REFUND-001-01-05 | disabled | disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
+| ST-REFUND-001-01-06 | permission_denied | permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。 |
 
 ### 表单校验（与 PRD 业务规则同源）
 

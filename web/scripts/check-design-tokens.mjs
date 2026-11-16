@@ -179,7 +179,7 @@ const RAW_COLOR_OWNERS = [
   // 与上面的手写 Token 定义文件同为颜色落点，不是界面代码里的裸色值。
   // 该文件禁止手工编辑：改色值必须改 design-system/source/*.tokens.json 后重新生成。
   /^design-system\/tokens\/generated\/[a-z-]+\.css$/,
-  // UDS 6.0 生成的 TS Token 镜像（registry/build.mjs 产物，数值唯一来源是
+  // 设计系统生成的 TS Token 镜像（registry/build.mjs 产物，数值唯一来源是
   // TOKEN-MANIFEST.json）：与生成的 CSS 同为颜色落点，禁止手工编辑。
   /^design-system\/tokens\/generated\/[a-z0-9-]+\.ts$/,
   /^styles\/(theme|theme-presets|globals)\.css$/,

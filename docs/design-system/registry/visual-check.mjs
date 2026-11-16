@@ -124,7 +124,7 @@ const log = {
   started_at: new Date().toISOString(), verdict,
   cases: results, lightDarkDiff: diff,
   consoleErrors: totalErrors,
-  limitation: '仅覆盖 7.0 Showcase 单文件在 Light/Dark × Desktop/Mobile 的真实渲染；真实产品页面（React 路由）视觉回归需完整服务栈，状态 BLOCKED，未执行，不得计为 PASS。',
+  limitation: '仅覆盖 UDS 8.0.0 Showcase 单文件在 Light/Dark × Desktop/Mobile 的真实渲染；真实产品页面（React 路由）视觉回归需完整服务栈，状态 BLOCKED，未执行，不得计为 PASS。',
 }
 writeFileSync(join(OUT, 'run-log.json'), JSON.stringify(log, null, 2) + '\n')
 console.log(JSON.stringify({ verdict, cases: results.length, consoleErrors: totalErrors, diff, modules: light.modules, sections: light.sections, languages: light.languages, tokenRows: light.tokenRows }, null, 2))

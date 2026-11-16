@@ -97,7 +97,7 @@ export function PlaygroundInput({
    * 100% 的 `--border`。此前是 `bg-background/95` + `border-border/70` +
    * `ring-foreground/5`，页面底色会从舱体透出来，整个输入框看起来蒙了一层灰。
    *
-   * 焦点环按 3.0 规范 §15.1：全站只有一种 —— 2px、`ring` 满色、
+   * 焦点环按 UDS 8.0.0 规范 §15.1：全站只有一种 —— 2px、`ring` 满色、
    * 贴着边框外沿（offset 0）。此前是 `ring-primary/15` 的半透明环，既不是
    * 规定宽度也不是 ring 色，和 Input / Textarea 的焦点态对不上。基础态留
    * `ring-2 ring-transparent` 占位，是为了让 box-shadow 的宽度恒定、过渡

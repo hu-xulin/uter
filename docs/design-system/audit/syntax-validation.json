@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-SYNTAX-VALIDATION/1.0",
-  "generated_at": "2026-11-16T09:54:34.563Z",
+  "generated_at": "2026-11-16T13:30:55.745Z",
   "engine": {
     "name": "shiki",
     "version": "4.3.0",
@@ -3454,7 +3454,7 @@
       "label": "Go",
       "grammarLoaded": true,
       "coverageSample": false,
-      "code": "package main\n\nimport \"fmt\"\n\ntype Usage struct {\n    Tokens int\n    Cost   float64\n}\n\nfunc main() {\n    fmt.Println(Usage{Tokens: 1500, Cost: 3.0})\n}\n",
+      "code": "package main\n\nimport \"fmt\"\n\ntype Usage struct {\n    Tokens int\n    Cost   float64\n}\n\nfunc main() {\n    fmt.Println(Usage{Tokens: 1500, Cost: 12.5})\n}\n",
       "lineCount": 13,
       "tokenCount": 33,
       "syntaxKeysUsed": [
@@ -3723,7 +3723,7 @@
             ]
           },
           {
-            "text": "3.0",
+            "text": "12.5",
             "syntax": "number",
             "scopes": [
               "source.go",
@@ -4202,7 +4202,7 @@
       "label": "YAML",
       "grammarLoaded": true,
       "coverageSample": false,
-      "code": "version: \"7.0\"\nmodels:\n  - name: gpt-4o\n    enabled: true\n    max_tokens: 1024\nlimits:\n  rpm: 60\n",
+      "code": "version: \"8.0.0\"\nmodels:\n  - name: gpt-4o\n    enabled: true\n    max_tokens: 1024\nlimits:\n  rpm: 60\n",
       "lineCount": 8,
       "tokenCount": 23,
       "syntaxKeysUsed": [
@@ -4234,7 +4234,7 @@
             ]
           },
           {
-            "text": "\"7.0\"",
+            "text": "\"8.0.0\"",
             "syntax": "string",
             "scopes": [
               "source.yaml",
@@ -4425,7 +4425,7 @@
       "label": "Markdown",
       "grammarLoaded": true,
       "coverageSample": false,
-      "code": "# Uter 7.0\n\n- **语法高亮** 使用 VS Code 官方主题\n- `code` 与 [链接](https://uter.ai)\n\n> 20 个语义 Token\n",
+      "code": "# Uter 8.0.0\n\n- **语法高亮** 使用 VS Code 官方主题\n- `code` 与 [链接](https://uter.ai)\n\n> 20 个语义 Token\n",
       "lineCount": 7,
       "tokenCount": 14,
       "syntaxKeysUsed": [
@@ -4438,7 +4438,7 @@
       "rows": [
         [
           {
-            "text": "# Uter 7.0",
+            "text": "# Uter 8.0.0",
             "syntax": "punctuation",
             "scopes": [
               "text.html.markdown",

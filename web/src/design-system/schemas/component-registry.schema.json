@@ -21,7 +21,7 @@
       "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "designSystem": {
-      "const": "UTER Design System 3.0"
+      "const": "UDS 8.0.0"
     },
     "implementationRoot": {
       "const": "src/components/ui"

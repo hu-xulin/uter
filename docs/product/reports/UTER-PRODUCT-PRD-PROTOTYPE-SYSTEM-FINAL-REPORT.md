@@ -34,7 +34,7 @@ cp docs/product/history/v1.json             /tmp/uter-history-v1.backup.json
 | --- | --- | --- |
 | 项目入口 | `AGENTS.md`、`CLAUDE.md` | 已加载 |
 | 执行方法论 | `.ai/README.md`、`.ai/AIES.md`（L0–L4、阶段 0–11 SOP） | 已于 2026-11-12 退休删除 |
-| 设计系统 | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` | **唯一有效基线**；主色 `#5B5EE6`、PC 正文 14px、最小 12px、圆角 10px、语义 Token 优先 |
+| 设计系统 | `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` | **唯一有效基线**；主色 `#5B5EE6`、PC 正文 14px、最小 12px、圆角 10px、语义 Token 优先 |
 | 治理 | AES 治理体系（`.aes/`、`uaes/standards/`） | 已于 2026-11-12 退休删除，待新规范 |
 | 域规范 | `AGENTS.md`、`web/AGENTS.md` | 当前有效 |
 | 废弃基线 | `UTER Design System 2.1`、UAES 当前治理实体 | **未作为基线使用**（UAES 仅作历史/删除状态识别） |
@@ -130,7 +130,7 @@ PRD 中的业务规则、验收标准、测试追溯均由模型派生，不存�
 - 页面模型含 `components`、`interactions`、`states`、`layout`、`entry`；组件类型覆盖 `input`、`select`、`radio_group`、`button`、`modal`、`drawer`、`table`、`search`、`pagination`、`stat_card`、`tabs`、`toggle`、`progress`、`code_block`、`timeline` 等。
 - 每个页面具备状态集合（加载 / 空 / 错误 / 成功 / 禁用 / 权限不足）、组件按钮行为、有效跳转目标与必填输入校验；由 `V-PROTO` 检查强制保证。
 - **所有交易与账户操作均为 DEMO / MOCK**，不接触真实支付、退款、余额、生产密钥或生产数据。
-- 遵循 `UTER Design System 3.0`；前端 `bun run lint:design:strict` 扫描 1249 个文件通过（字号 / 行高 / 圆角 / 投影 / 颜色均符合规范）。
+- 遵循 `UDS 8.0.0`；前端 `bun run lint:design:strict` 扫描 1249 个文件通过（字号 / 行高 / 圆角 / 投影 / 颜色均符合规范）。
 
 ### 4.1 交互式 HTML 原型（主载体，本次新增）
 
@@ -467,7 +467,7 @@ web/src/i18n/locales/vi.json              +"Product Workspace": "Không gian s�
 重生成 docs/product/registry/*.yaml（6）、mappings/、reports/（3 + 本报告）
 ```
 
-**未改动**：`AGENTS.md`、`CLAUDE.md`、`.ai/**`、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`、`.aes/aes-pin.json`、`uaes/standards/**`，以及任何已有业务代码（Go 后端 / React 前端除上述导航与 i18n 外）。
+**未改动**：`AGENTS.md`、`CLAUDE.md`、`.ai/**`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`、`.aes/aes-pin.json`、`uaes/standards/**`，以及任何已有业务代码（Go 后端 / React 前端除上述导航与 i18n 外）。
 
 ## 附录 B · 6 场景原始证据（`SCENARIO_EVIDENCE`）
 

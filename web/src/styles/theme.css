@@ -70,7 +70,7 @@ For commercial licensing, please contact support@uter.ai
   --color-primary-active: var(--primary-active, var(--primary));
   --color-primary-subtle: var(--primary-subtle, var(--accent));
   --color-primary-subtle-hover: var(--primary-subtle-hover, var(--accent));
-  /* 浅底上的可读前景色（3.0 §2.2 brand-soft-foreground：#5558D8 on
+  /* 浅底上的可读前景色（UDS 8.0.0 §2.2 brand-soft-foreground：#5558D8 on
    * #F0F0FF = 4.93:1，脚本实算见 scripts/verify-contrast.mjs）。 */
   --color-primary-subtle-foreground: var(--primary-subtle-foreground);
   --color-primary-border: var(--primary-border, var(--border));
@@ -133,7 +133,7 @@ For commercial licensing, please contact support@uter.ai
   /* ── 柔和态（soft）状态色 ──────────────────────────────────────────
    * 用于「浅色底 + 深色文字」的徽标/提示条（如原 bg-amber-50 +
    * text-amber-900）。直接换成 bg-warning/10 + text-warning 会把
-   * 8.77:1 打到 2.7:1（见 UTER-DESIGN-SYSTEM-3.0.md §2.7，旧 D6），是
+   * 8.77:1 打到 2.7:1（见 00-UTER-DESIGN-SYSTEM-OVERVIEW.md §2.7，旧 D6），是
    * 不折不扣的可访问性回归。所以单独提供 soft 背景 / soft 前景，
    * 取值等于现状渲染值（浅色底≈*-50、深色文字≈*-900；暗色底≈*-950、
    * 前景≈*-100），迁移零视觉变化。 */
@@ -220,7 +220,7 @@ For commercial licensing, please contact support@uter.ai
    *     效果，必须跨主题预设恒定（规范 §17.5）。
    * 组件只写 `text-term-command` 这类语义类，不允许再出现调色板类名。 */
   /* UDS 8.0.0 §4.6：终端必须有独立 Light / Dark 主题，禁止深浅共用纯黑背景。
-   * 背景与主要前景改走 7.0 Terminal Token；dim / accent 装饰色保留 3.0 兼容层。 */
+   * 背景与主要前景改走 UDS 8.0.0 Terminal Token；dim / accent 装饰色保留 既有语义层。 */
   --color-term-command: var(--ds8-color-terminal-command);
   --color-term-flag: var(--ds8-color-terminal-flag);
   --color-term-background: var(--ds8-color-terminal-background);
@@ -377,7 +377,7 @@ For commercial licensing, please contact support@uter.ai
   --destructive: var(--ds8-color-status-danger-solid);
   --destructive-foreground: #f8fafc;
   /* green-700 #15803d：白底 5.02:1（green-600 #16a34a 仅 3.29:1，axe
-   * color-contrast serious —— 13px 常规文本需 4.5:1）。见 3.0 规范。 */
+   * color-contrast serious —— 13px 常规文本需 4.5:1）。见 UDS 8.0.0 规范。 */
   --success: var(--ds8-color-status-success);
   --success-foreground: #f8fafc;
   /* UDS 8.0.0 status-warning（Light #A54600）：白底 4.7:1（原 amber-600 oklch
@@ -402,8 +402,8 @@ For commercial licensing, please contact support@uter.ai
   --border: var(--ds8-color-border-default);
   --border-strong: var(
     --ds8-color-border-strong
-  ); /* 3.0 §2.6 强调边界 = 6.0 border-strong */
-  --subtle: #fafbfc; /* 3.0 §2.5 极浅表面 */
+  ); /* UDS 8.0.0 §2.6 强调边界 = border-strong */
+  --subtle: #fafbfc; /* UDS 8.0.0 §2.5 极浅表面 */
   --input: #d1d5e5;
   --ring: var(--uter-brand-primary);
   /* UDS 8.0.0 chart-1..6（Light）：12 色图表体系前 6 系列，活引用 --ds8-*，
@@ -414,7 +414,7 @@ For commercial licensing, please contact support@uter.ai
   --chart-4: var(--ds8-color-chart-4);
   --chart-5: var(--ds8-color-chart-5);
   --chart-6: var(--ds8-color-chart-6);
-  /* ── 状态边框（3.0 §2.7：{status}-border 全套）─────────────────────
+  /* ── 状态边框（UDS 8.0.0 §2.7：{status}-border 全套）─────────────────────
    * 用 color-mix 从状态色与背景派生，主题预设与深色模式自动跟随；
    * destructive 已有 --border-destructive-subtle，保持不动。 */
   --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
@@ -483,7 +483,7 @@ For commercial licensing, please contact support@uter.ai
    * 是为了让「这里允许一点点透明」这件事可扫描、可登记，而不是藏在组件里。 */
   --term-dot: color-mix(in srgb, var(--foreground) 15%, transparent);
   --term-online: #10b981;
-  /* 媒体信箱底（3.0 §2.10 审计整改）：视频 letterbox / 终端类媒体容器底色。
+  /* 媒体信箱底（UDS 8.0.0 §2.10 审计整改）：视频 letterbox / 终端类媒体容器底色。
    * 取值深浅主题同为纯黑 —— 视频内容在黑底上对比最稳，这是媒体信箱的行业
    * 惯例（YouTube / B 站同理）；登记成 Token 而不是在组件里写 bg-black，
    * 是为了让「这里允许一块实黑」可扫描、可跟随未来媒体主题调整。 */
@@ -563,7 +563,7 @@ For commercial licensing, please contact support@uter.ai
     var(--foreground) 16%,
     var(--background)
   );
-  /* ── 新规范 1.1 / 1.1.1 补充的色阶 ─────────────────────────────── */
+  /* ── UDS 8.0.0 文字层级色阶 ─────────────────────────────── */
   /* 文字色用 `--fg-*` 前缀，**不能**叫 `--text-*`：
    *   · Tailwind v4 把 `--text-*` 映射为字号工具类（`text-sm`），
    *     叫 `--text-primary` 会生成一个 `text-primary` 字号类，与颜色撞车；
@@ -578,7 +578,7 @@ For commercial licensing, please contact support@uter.ai
   --fg-inverse: var(--ds8-color-text-inverse);
   --fg-link: var(--uter-brand-primary);
   --fg-placeholder: #64748b;
-  /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 品牌色阶 / UDS 8.0.0 对齐）──
+  /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-UDS 8.0.0 §2.2 品牌色阶 / UDS 8.0.0 对齐）──
    * 主色 #5B5EE6（用户确认 + 6.0 brand-1 Light 同值）；Hover/Active 取
    * 6.0 brand-solid-hover #494CC7 / brand-solid-active #3F42B0（白字
    * 4.98:1 / 6.5:1），逐态对比度见 scripts/verify-contrast.mjs 输出；
@@ -627,10 +627,10 @@ For commercial licensing, please contact support@uter.ai
   --card-foreground: var(--ds8-color-text-primary);
   --popover: var(--ds8-color-surface-raised);
   --popover-foreground: var(--ds8-color-text-primary);
-  /* ── 品牌动作梯（3.0 §2.2 Dark / UDS 8.0.0 对齐，2026-11-15 起）：
+  /* ── 品牌动作梯（UDS 8.0.0 §2.2 Dark / UDS 8.0.0 对齐，2026-11-15 起）：
    * 基底取 6.0 interaction-default Dark #8B8DF5（on #0B1120 ≥ 6:1），
    * hover #A1A3F7 / active #B7B8FA = 6.0 interaction-hover/active Dark；
-   * 前景保持深色 #020617（3.0 §10.4：Dark 主按钮不默认白字）。
+   * 前景保持深色 #020617（UDS 8.0.0 §10.4：Dark 主按钮不默认白字）。
    * 7.0 的 brand-solid 实底白字架构（#5B5EE6 + #FFFFFF）需 button.tsx
    * 文字对逐点迁移，属正式切换批次；preset 兼容性亦要求保留品牌变量
    * 可覆写的 --primary-foreground。该残差登记于 EXCEPTION-REGISTRY。
@@ -670,9 +670,9 @@ For commercial licensing, please contact support@uter.ai
   --border-strong: var(
     --ds8-color-border-strong
   ); /* UDS 8.0.0 border-strong（Dark） */
-  --subtle: #111c30; /* 3.0 §2.5 极浅表面（6.0 无对应档，保留并登记） */
+  --subtle: #111c30; /* UDS 8.0.0 §2.5 极浅表面（保留并登记） */
   --input: #45465f; /* CM-06 ISOLATE：保留 3.0 值（EXCEPTION-REGISTRY） */
-  /* 焦点环跟品牌（3.0 §15.1）：#8B8DF5 on 深底 ≥ 3:1 非文本线；
+  /* 焦点环跟品牌（UDS 8.0.0 §15.1）：#8B8DF5 on 深底 ≥ 3:1 非文本线；
    * 与 6.0 border-focus Dark 同值。 */
   --ring: var(--uter-brand-primary);
   /* UDS 8.0.0 chart-1..6（Dark）：活引用 --ds8-*。 */
@@ -687,9 +687,9 @@ For commercial licensing, please contact support@uter.ai
   --overview-accent-2: var(--chart-2);
   --overview-accent-3: var(--chart-3);
   --term-online: #34d399;
-  /* 媒体信箱底（3.0 §2.10）：与浅色同值纯黑，见 :root 侧注释。 */
+  /* 媒体信箱底（UDS 8.0.0 §2.10）：与浅色同值纯黑，见 :root 侧注释。 */
   --term-background: #000000;
-  /* 状态边框（3.0 §2.7）：color-mix 派生，与浅色同一表达式自动跟随 */
+  /* 状态边框（UDS 8.0.0 §2.7）：color-mix 派生，与浅色同一表达式自动跟随 */
   --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
   --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
   --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
@@ -746,11 +746,11 @@ For commercial licensing, please contact support@uter.ai
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1e293b;
   --sidebar-accent-foreground: var(--ds8-color-text-primary);
-  /* 深色主题的选中态前景色（3.0 §14.3）：#B1B3FF on #25264A =
+  /* 深色主题的选中态前景色（UDS 8.0.0 §14.3）：#B1B3FF on #25264A =
    * 4.97:1，达 AA。动作梯（按钮填充）为实色基底 + 提亮 hover/active，
    * 但选中态文字是文字出口，不跟动作梯走 —— 与 --fg-link 同理。 */
   --sidebar-active-foreground: var(--uter-brand-soft-foreground);
-  /* 品牌浅底通用前景色（深色档，3.0 §2.2 brand-soft-foreground）。 */
+  /* 品牌浅底通用前景色（深色档，UDS 8.0.0 §2.2 brand-soft-foreground）。 */
   --primary-subtle-foreground: var(--uter-brand-soft-foreground);
   --sidebar-border: var(--ds8-color-border-default);
   --sidebar-ring: var(--uter-brand-primary);
@@ -779,7 +779,7 @@ For commercial licensing, please contact support@uter.ai
     var(--background)
   );
 
-  /* ── 新规范 1.1 / 1.1.1 补充的色阶（活引用 7.0 文字层级）───────────── */
+  /* ── UDS 8.0.0 文字层级色阶（活引用语义 Token）───────────── */
   --fg-primary: var(--ds8-color-text-primary);
   --fg-secondary: var(--ds8-color-text-secondary);
   --fg-tertiary: var(--ds8-color-text-tertiary);
@@ -787,10 +787,10 @@ For commercial licensing, please contact support@uter.ai
   --fg-inverse: var(--ds8-color-text-inverse);
   --fg-link: var(--uter-brand-primary);
   --fg-placeholder: #94a3b8;
-  /* ── 品牌动作梯（3.0 §2.2 Dark / UDS 8.0.0 对齐，2026-11-15 起）：
+  /* ── 品牌动作梯（UDS 8.0.0 §2.2 Dark / UDS 8.0.0 对齐，2026-11-15 起）：
    * 基底 #8B8DF5（6.0 interaction-default Dark，on #0B1120 ≥ 6:1），
    * hover #A1A3F7 / active #B7B8FA（6.0 interaction-hover/active Dark）；
-   * 前景改深色 #020617（3.0 §10.4：Dark 主按钮不得默认白字）。
+   * 前景改深色 #020617（UDS 8.0.0 §10.4：Dark 主按钮不得默认白字）。
    * 浅底 #25264A、brand-border #45466F；文字出口 --fg-link 同为 #8B8DF5。 */
   --primary-strong: var(--uter-brand-primary);
   --hover-primary: var(--uter-brand-hover);

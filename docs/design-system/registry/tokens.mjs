@@ -198,8 +198,8 @@ const COLOR_GROUPS = [
       ['property', '#0369A1', '#7DD3FC', '属性', '键名 / 路径', 'web/src/styles/theme.css; web/src/features/home/components/hero-terminal-demo.tsx; docs/design-system/registry/showcase-extensions.mjs'],
       ['string', '#B45309', '#FCD34D', '字符串', '字符串字面量', 'web/src/styles/theme.css; web/src/features/home/components/hero-terminal-demo.tsx; docs/design-system/registry/showcase-extensions.mjs'],
       ['number', '#6D28D9', '#C4B5FD', '数字', '数字字面量', 'web/src/styles/theme.css; web/src/features/home/components/hero-terminal-demo.tsx; docs/design-system/registry/showcase-extensions.mjs'],
-      // online / dot 的 theme.css 别名仍指向 3.0 遗留 --term-online / --term-dot
-      // （COMPAT-MAP 待迁移），当前真实消费者只有 Showcase 终端区。
+      // online / dot 的 theme.css 别名指向 --term-online / --term-dot（语义别名，非第二套色值）
+      // 当前真实消费者只有 Showcase 终端区。
       ['online', '#047857', '#34D399', '在线指示', '在线状态点', 'docs/design-system/registry/showcase-extensions.mjs'],
       ['dot', 'rgba(15, 23, 42, 0.15)', 'rgba(226, 232, 240, 0.15)', '窗口点', '窗口控制点 / 分隔点', 'docs/design-system/registry/showcase-extensions.mjs'],
     ],
@@ -441,14 +441,14 @@ const SCALAR_GROUPS = [
 
 export function buildManifest() {
   const v = runVerification()
-  if (v.verdict !== 'PASS') throw new Error(`对比度引擎未通过，禁止冻结 7.0 数值: ${v.verdict}`)
+  if (v.verdict !== 'PASS') throw new Error(`对比度引擎未通过，禁止冻结 UDS 8.0.0 数值: ${v.verdict}`)
 
   const tokens = {}
   const add = (name, layer, category, type, unit, light, dark, description, themeIndependent = false, meta = {}) => {
     if (tokens[name]) throw new Error(`Token 重复定义: ${name}`)
     tokens[name] = {
       layer, category, type, unit, light, dark, description, themeIndependent,
-      // 运行时隔离名：3.0 已有同名 --ds-* 且取值冲突（见 LIGHT-DARK-CONSISTENCY-AUDIT）。
+      // 运行时隔离名：web/src 已有同名 --ds-* 且取值冲突（见 LIGHT-DARK-CONSISTENCY-AUDIT）。
       // 所有真实组件只消费 --ds8-*，由 build.mjs 从本字段派生 bridge CSS。
       runtimeName: '--ds8-' + name.slice(5),
       semanticMeaning: meta.semanticMeaning ?? description,
@@ -507,7 +507,7 @@ export function buildManifest() {
   add('--ds-gradient-utility', 'semantic', 'gradient', 'keyword', 'identifier', 'ds-text-gradient-brand', 'ds-text-gradient-brand', '全站唯一渐变出口', true, { runtimeBridge: false })
 
   // 标量 Token（字号 / 间距 / 圆角 / 动效等）不注入 web/src 运行时：
-  // 现行 3.0 已有一套权威刻度，注入会形成第二套并改变页面字号。差异登记在 COMPAT-MAP。
+  // web/src 已有一套权威刻度，bridge 注入会形成第二套并改变页面字号；标量不经 bridge 注入。
   for (const g of SCALAR_GROUPS) {
     for (const [name, value, unit, description] of g.items) {
       add(name, g.layer, g.category, g.type, unit, value, value, description, true, { runtimeBridge: false, consumer: null })
@@ -567,7 +567,7 @@ export function buildManifest() {
       },
       legacyGradient: {
         light: v.gradient.light.legacyWorst.ratio, dark: v.gradient.dark.legacyWorst.ratio,
-        note: '历史渐变不达 4.5:1，E28 例外在 7.0 注销',
+        note: '渐变必须全区间 ≥4.5:1，不存在字号例外',
       },
       syntax: { lightMin: v.syntax.light.minRatio, darkMin: v.syntax.dark.minRatio },
       brandSolid: { lightMin: v.brandSolid.light.minRatio, darkMin: v.brandSolid.dark.minRatio },
@@ -607,9 +607,9 @@ export function buildManifest() {
       nonColorChannels: CHART_NON_COLOR_CHANNELS,
       rule: 'series > 6 时必须直接标注；线型 / 点型 / 图例三通道必须可用',
     },
-    // §2.3 / §十二 运行时接入边界：bridge 只注入颜色语义层，不覆盖 3.0 同名变量。
+    // §2.3 / §十二 运行时接入边界：bridge 只注入颜色语义层，不覆盖 web/src 同名变量。
     // 标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件
-    // 字面切换为 7.0 值（tokens.test.ts 三方守卫钉死），不经 bridge 注入。
+    // 字面使用 UDS 8.0.0 manifest 值（tokens.test.ts 三方守卫钉死），不经 bridge 注入。
     runtimeBridge: {
       canonicalPrefix: '--ds-',
       runtimePrefix: '--ds8-',

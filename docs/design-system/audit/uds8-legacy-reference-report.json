@@ -1,0 +1,33 @@
+{
+  "schema": "UDS8-LEGACY-REFERENCE-REPORT/1.0",
+  "generated_at": "2026-11-16 21:28:49",
+  "verdict": "FAIL",
+  "hits": 5,
+  "hit_details": [],
+  "deleted_artifacts": [
+    "docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md",
+    "docs/design-system/COMPAT-MAP.json",
+    "docs/design-system/UDS-8.0-FINAL-ACCEPTANCE-REPORT.md",
+    "docs/design-system/FINAL-ACCEPTANCE-REPORT.md",
+    "docs/design-system/uter-design-system-8.0.0/ (4 files)",
+    "docs/design-system/audit/baseline/archive-<legacy>",
+    "docs/design-system/audit/baseline/archive-<legacy> (2 dirs)",
+    "docs/design-system/audit/ACCESSIBILITY-AUDIT.md",
+    "docs/design-system/audit/CODE-HIGHLIGHT-AUDIT.md",
+    "docs/design-system/audit/COLOR-AUDIT-REPORT.md",
+    "docs/design-system/audit/COLOR-OPTIMIZATION-REPORT.md",
+    "docs/design-system/audit/GRADIENT-TYPOGRAPHY-AUDIT.md",
+    "docs/design-system/audit/IMPLEMENTATION-GAP-REPORT.md",
+    "docs/design-system/audit/LIGHT-DARK-CONSISTENCY-AUDIT.md",
+    "docs/design-system/audit/TOKEN-CONSUMPTION-AUDIT.md",
+    "docs/design-system/audit/remediation-state.json",
+    "docs/design-system/audit/rollback-drill.json",
+    "docs/design-system/audit/design-system-audit.json",
+    "docs/design-system/registry/audit-findings.mjs",
+    "docs/design-system/registry/generate-audit.mjs",
+    "docs/design-system/registry/check-uds8-remediation.mjs",
+    "docs/design-system/registry/freeze-baseline.mjs",
+    "docs/design-system/registry/rollback-drill.mjs"
+  ],
+  "note": "仅记录命中数量、路径与清理状态；不复制旧版本说明"
+}

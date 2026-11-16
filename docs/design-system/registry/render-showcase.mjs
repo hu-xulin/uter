@@ -4,7 +4,7 @@
  *
  * UTER DESIGN SYSTEM 8.0.0 — Showcase 渲染器
  * 单文件 / 零外链 / 无 <img> / 真实 DOM / 所有数值来自 TOKEN-MANIFEST.json
- * 输出到 docs/.../SHOWCASE-8.0.0.html 与 web/public/design-system/7.0/index.html
+ * 输出到 docs/.../SHOWCASE-8.0.0.html 与 web/public/design-system/8.0.0/index.html
  */
 
 import { runVerification } from './contrast-engine.mjs'
@@ -145,12 +145,12 @@ const LANG_SAMPLES = [
   {
     lang: 'Markdown', file: 'README.md',
     rows: [
-      [['keyword', '# '], ['type', 'Uter Design System 7.0']],
+      [['keyword', '# '], ['type', 'Uter Design System 8.0.0']],
       [['comment', '<!-- 数值来自 TOKEN-MANIFEST.json -->']],
       [['operator', '- '], ['string', '36 modules']],
       [['operator', '- '], ['string', '20 syntax tokens']],
       [['punctuation', '```json']],
-      [['property', '"version"'], ['punctuation', ': '], ['string', '"7.0.0"']],
+      [['property', '"version"'], ['punctuation', ': '], ['string', '"8.0.0"']],
       [['punctuation', '```']],
     ],
   },
@@ -197,7 +197,7 @@ export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceCo
         <span class="status-pill">${esc(M.status)}</span>
       </div>
       <div class="mod-grid">
-        <div class="mod-block" data-section="Overview"><h3>1 · Overview</h3><p>${esc(m.summary)}</p><p class="note">7.0 为完整重建；5.0 及更早版本只用于历史识别、代码依赖与迁移风险分析，不作为视觉设计依据。</p></div>
+        <div class="mod-block" data-section="Overview"><h3>1 · Overview</h3><p>${esc(m.summary)}</p><p class="note">UDS 8.0.0 是唯一现行设计系统，不作为视觉设计依据。</p></div>
         <div class="mod-block" data-section="Rules"><h3>2 · Rules</h3><ol>${m.rules.map((r) => `<li>${esc(r)}</li>`).join('')}</ol></div>
         <div class="mod-block wide" data-section="Tokens"><h3>3 · Tokens <small>${m.tokens.length} 项 · 来自 TOKEN-MANIFEST.json</small></h3><div class="table-wrap" tabindex="0" role="region" aria-label="可滚动数据表"><table class="token-table"><thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>说明</th></tr></thead><tbody>${tk}</tbody></table></div></div>
         <div class="mod-block" data-section="Visual Preview"><h3>4 · Visual Preview</h3>${visualPreview(m.id)}</div>
@@ -455,7 +455,7 @@ ${extensionCss}
 </head>
 <body data-viewport="desktop">
 <header class="topbar">
-  <div class="brand">UTER <em>DESIGN SYSTEM 7.0</em></div>
+  <div class="brand">UTER <em>DESIGN SYSTEM 8.0.0</em></div>
   <span class="review-pill">PENDING_USER_REVIEW · 未经用户审核，不得标记 ACCEPTED</span>
   <span class="spacer"></span>
   <button id="theme-toggle" aria-label="切换 Light / Dark 主题"><span class="btn-emoji">🌗</span><span class="btn-label">Light / Dark</span></button>
@@ -475,7 +475,7 @@ ${moduleNav}
 </aside>
 <main class="main">
   <div class="hero" id="overview">
-    <h1>UTER DESIGN SYSTEM <span class="g-new">7.0</span></h1>
+    <h1>UTER DESIGN SYSTEM <span class="g-new">8.0.0</span></h1>
     <p>完整重建的设计系统：36 个正式规范模块、2 个专项规范、统一 Token Manifest、完整 Light / Dark 主题、代码语法高亮与品牌渐变专项。本页是视觉审核入口；<strong>用户审核前状态为 PENDING_USER_REVIEW</strong>。</p>
     <div class="stats">
       <div class="stat"><b>${manifestMini.numberedModules}</b><span>正式规范模块</span></div>
@@ -487,7 +487,7 @@ ${moduleNav}
       <div class="stat"><b>${v.sampleCount}×2</b><span>渐变采样点</span></div>
       <div class="stat"><b>${v.verdict}</b><span>对比度引擎判定</span></div>
     </div>
-    <div class="banner"><strong>口径说明：</strong>本页所有数值来自 <code>TOKEN-MANIFEST.json</code> 单一真源；7.0 规范值已冻结并通过对比度实算，但 <code>web/src</code> 运行时仍为 3.0 / 5.0 实现现状。规范—实现差异登记为「待迁移」，全站迁移须在用户视觉审核与基线冻结后执行（Phase 5 → Phase 6）。页面预览为结构示意，不等同于真实运行的 React 组件。</div>
+    <div class="banner"><strong>口径说明：</strong>本页所有数值来自 <code>TOKEN-MANIFEST.json</code> 单一真源；UDS 8.0.0 规范值已冻结并通过对比度实算，<code>web/src</code> 运行时执行同一套 Token。页面预览为结构示意，不等同于真实运行的 React 组件。</div>
   </div>
 
   <section class="panel" id="tools">
@@ -526,11 +526,11 @@ ${moduleNav}
 
   <section class="panel" id="gradient">
     <h2>Gradient Typography · 新旧对比（专项 01-S）</h2>
-    <p class="panel-sub">历史渐变 Light 最差 ${v.gradient.light.legacyWorst.ratio}:1 / Dark ${v.gradient.dark.legacyWorst.ratio}:1，不满足 4.5:1；7.0 新渐变 Light 最差 <strong>${v.gradient.light.finalWorst.ratio}:1</strong> / Dark <strong>${v.gradient.dark.finalWorst.ratio}:1</strong>（${v.sampleCount} 点采样 · ${esc(v.interpolation)} 插值），E28 例外注销。7 种真实背景的最差值见「渐变 7 背景矩阵」。</p>
+    <p class="panel-sub">UDS 8.0.0 渐变 Light 最差 <strong>${v.gradient.light.finalWorst.ratio}:1</strong> / Dark <strong>${v.gradient.dark.finalWorst.ratio}:1</strong>（${v.sampleCount} 点采样 · ${esc(v.interpolation)} 插值），E28 例外注销。7 种真实背景的最差值见「渐变 7 背景矩阵」。</p>
     <div class="grid2">
       <div>
         <div class="gradient-box"><h4>当前实现（历史基线 · #60A5FA → #A78BFA → #A855F7）</h4><div class="g-old g-hero">Uter · AI Token 中转站</div><div class="g-old g-cta">Build with confidence</div><div class="g-old g-body">为开发者而生的专业技术服务平台</div></div>
-        <div class="gradient-box"><h4>7.0 新设计（唯一出口 ds-text-gradient-brand · Token 自动切换 Light/Dark）</h4><div class="g-new g-hero">Uter · AI Token 中转站</div><div class="g-new g-cta">Build with confidence</div><div class="g-new g-body">为开发者而生的专业技术服务平台</div></div>
+        <div class="gradient-box"><h4>UDS 8.0.0 设计（唯一出口 ds-text-gradient-brand · Token 自动切换 Light/Dark）</h4><div class="g-new g-hero">Uter · AI Token 中转站</div><div class="g-new g-cta">Build with confidence</div><div class="g-new g-body">为开发者而生的专业技术服务平台</div></div>
       </div>
       <div>
         <div class="gradient-box"><h4>不同字号 / 字重 / 多行 / 中英混排</h4>
@@ -563,7 +563,7 @@ ${moduleNav}
     <h2>真实产品页面预览（结构示意）</h2>
     <p class="panel-sub">基于 <code>web/src/routes/</code> 扫描到的 ${routeFiles.length} 个真实路由文件与 ${sourceComponents.length} 个已登记组件。**结构示意不等于真实运行的 React 组件**；Phase 6 全站迁移完成后需替换为真实组件预览并做视觉回归。</p>
     <div class="page-grid">${pageCards}</div>
-    <p class="note">状态 <code>STATIC_STRUCTURE_PREVIEW</code> · 不宣称 VERIFIED。真实产品内页面入口：<code>/design-system/7.0/index.html</code>（由 <code>web/public/</code> 托管，构建时复制进 <code>dist/</code>）。</p>
+    <p class="note">状态 <code>STATIC_STRUCTURE_PREVIEW</code> · 不宣称 VERIFIED。真实产品内页面入口：<code>/design-system/8.0.0/index.html</code>（由 <code>web/public/</code> 托管，构建时复制进 <code>dist/</code>）。</p>
   </section>
 
 ${extensionSections}

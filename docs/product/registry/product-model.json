@@ -5,14 +5,14 @@
   "source_of_truth": "docs/product/registry/product-model.json",
   "created_at": "2026-11-09T00:00:00+08:00",
   "updated_at": "2026-11-09T00:00:00+08:00",
-  "design_system": "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+  "design_system": "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
   "scan": {
     "scanned_at": "2026-11-09",
     "repository": "/Users/lincolnhu/uter",
     "branch": "main",
     "frontend": "React 19 + TypeScript + Rsbuild 2 + TanStack Router (web/)",
     "backend": "Go 1.27.3 + Gin + GORM (router/, controller/, service/, model/, relay/)",
-    "design_system": "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+    "design_system": "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
     "governance": "AGENTS.md / web/AGENTS.md",
     "evidence_sources": [
       "web/src/routes/**/*.tsx (71 route files)",
@@ -454,37 +454,37 @@
                 "state_id": "ST-AUTH-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-001-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-001-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-001-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -1270,37 +1270,37 @@
                 "state_id": "ST-AUTH-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-002-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-002-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-002-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -2046,37 +2046,37 @@
                 "state_id": "ST-AUTH-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-003-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-003-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-003-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -2779,37 +2779,37 @@
                 "state_id": "ST-AUTH-004-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-004-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-004-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-004-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-004-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-004-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -3601,37 +3601,37 @@
                 "state_id": "ST-AUTH-005-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-005-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-005-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-005-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-005-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-005-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -4512,43 +4512,43 @@
                 "state_id": "ST-AUTH-006-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-006-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-006-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-006-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-006-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-006-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-AUTH-006-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -5255,37 +5255,37 @@
                 "state_id": "ST-USER-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-001-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-001-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-001-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -5871,37 +5871,37 @@
                 "state_id": "ST-USER-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-002-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-002-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-002-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -6599,43 +6599,43 @@
                 "state_id": "ST-USER-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-003-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-USER-003-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -7539,43 +7539,43 @@
                 "state_id": "ST-PAY-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-001-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-001-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -8488,43 +8488,43 @@
                 "state_id": "ST-PAY-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-002-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-002-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -9367,37 +9367,37 @@
                 "state_id": "ST-PAY-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -10159,43 +10159,43 @@
                 "state_id": "ST-PAY-004-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-004-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-004-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-004-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-004-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-004-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PAY-004-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -10813,37 +10813,37 @@
                 "state_id": "ST-REFUND-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-001-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-001-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-001-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -11388,37 +11388,37 @@
                 "state_id": "ST-REFUND-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -12077,37 +12077,37 @@
                 "state_id": "ST-REFUND-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-REFUND-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -12680,37 +12680,37 @@
                 "state_id": "ST-BALANCE-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -13435,43 +13435,43 @@
                 "state_id": "ST-BALANCE-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-002-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-002-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -14132,37 +14132,37 @@
                 "state_id": "ST-BALANCE-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BALANCE-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -14745,37 +14745,37 @@
                 "state_id": "ST-BILLING-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -15539,43 +15539,43 @@
                 "state_id": "ST-BILLING-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-002-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-002-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -16304,37 +16304,37 @@
                 "state_id": "ST-BILLING-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-003-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-003-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-003-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-BILLING-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -17030,43 +17030,43 @@
                 "state_id": "ST-MODEL-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-001-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-001-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -17804,37 +17804,37 @@
                 "state_id": "ST-MODEL-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-002-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-002-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-002-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -18507,43 +18507,43 @@
                 "state_id": "ST-MODEL-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-003-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MODEL-003-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -19311,43 +19311,43 @@
                 "state_id": "ST-CHANNEL-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-001-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-001-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -20106,37 +20106,37 @@
                 "state_id": "ST-CHANNEL-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -20745,37 +20745,37 @@
                 "state_id": "ST-CHANNEL-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-CHANNEL-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -21429,43 +21429,43 @@
                 "state_id": "ST-APIKEY-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-001-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-001-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -22153,37 +22153,37 @@
                 "state_id": "ST-APIKEY-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-002-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-002-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-002-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -22823,43 +22823,43 @@
                 "state_id": "ST-APIKEY-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-003-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-APIKEY-003-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -23624,37 +23624,37 @@
                 "state_id": "ST-RELAY-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-001-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-001-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-001-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -24457,37 +24457,37 @@
                 "state_id": "ST-RELAY-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-002-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-002-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-002-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -25186,37 +25186,37 @@
                 "state_id": "ST-RELAY-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-RELAY-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -25840,37 +25840,37 @@
                 "state_id": "ST-TASK-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -26714,43 +26714,43 @@
                 "state_id": "ST-TASK-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-002-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-002-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -27442,37 +27442,37 @@
                 "state_id": "ST-TASK-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-TASK-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -28093,43 +28093,43 @@
                 "state_id": "ST-PLAN-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-001-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-001-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -28902,43 +28902,43 @@
                 "state_id": "ST-PLAN-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-002-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-002-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -29650,37 +29650,37 @@
                 "state_id": "ST-PLAN-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-003-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-003-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-003-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-PLAN-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -30268,37 +30268,37 @@
                 "state_id": "ST-ADMIN-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-001-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-001-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-001-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -30928,37 +30928,37 @@
                 "state_id": "ST-ADMIN-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-002-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -31715,43 +31715,43 @@
                 "state_id": "ST-ADMIN-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-003-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-003-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-003-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-003-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-003-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -32439,37 +32439,37 @@
                 "state_id": "ST-ADMIN-004-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-004-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-004-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-004-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-004-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-004-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -33094,37 +33094,37 @@
                 "state_id": "ST-ADMIN-005-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-005-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-005-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-005-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-005-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ADMIN-005-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -33855,43 +33855,43 @@
                 "state_id": "ST-ORG-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ORG-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ORG-001-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ORG-001-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ORG-001-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ORG-001-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-ORG-001-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -34556,37 +34556,37 @@
                 "state_id": "ST-MISC-001-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-001-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-001-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-001-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-001-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-001-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -35204,43 +35204,43 @@
                 "state_id": "ST-MISC-002-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-002-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-002-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-002-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-002-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-002-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-002-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -35918,37 +35918,37 @@
                 "state_id": "ST-MISC-003-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-003-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-003-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-003-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-003-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-003-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -36573,37 +36573,37 @@
                 "state_id": "ST-MISC-004-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-004-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-004-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-004-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-004-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-004-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -37200,37 +37200,37 @@
                 "state_id": "ST-MISC-005-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-005-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-005-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-005-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-005-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-005-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -37813,37 +37813,37 @@
                 "state_id": "ST-MISC-006-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-006-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-006-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-006-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-006-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-006-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -38509,37 +38509,37 @@
                 "state_id": "ST-MISC-007-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-007-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-007-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-007-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-007-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-007-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -39210,43 +39210,43 @@
                 "state_id": "ST-MISC-008-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-008-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-008-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-008-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-008-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-008-01-06",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-008-01-07",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           },
@@ -39920,37 +39920,37 @@
                 "state_id": "ST-MISC-009-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-009-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-009-01-03",
                 "name": "empty",
                 "kind": "empty",
-                "description": "empty 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "empty 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-009-01-04",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-009-01-05",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-009-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }
@@ -40421,37 +40421,37 @@
                 "state_id": "ST-MISC-010-01-01",
                 "name": "idle",
                 "kind": "idle",
-                "description": "idle 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "idle 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-010-01-02",
                 "name": "loading",
                 "kind": "loading",
-                "description": "loading 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "loading 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-010-01-03",
                 "name": "error",
                 "kind": "error",
-                "description": "error 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "error 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-010-01-04",
                 "name": "success",
                 "kind": "success",
-                "description": "success 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "success 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-010-01-05",
                 "name": "disabled",
                 "kind": "disabled",
-                "description": "disabled 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "disabled 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               },
               {
                 "state_id": "ST-MISC-010-01-06",
                 "name": "permission_denied",
                 "kind": "permission_denied",
-                "description": "permission_denied 状态：按 UTER Design System 3.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
+                "description": "permission_denied 状态：按 UDS 8.0.0 展示加载 / 空 / 错误 / 成功 / 禁用 / 权限不足反馈。"
               }
             ]
           }

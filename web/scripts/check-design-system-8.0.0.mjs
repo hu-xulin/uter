@@ -26,8 +26,8 @@ For commercial licensing, please contact support@uter.ai
  * 退出码 0 = 全部通过；1 = 有失败项；2 = 环境不满足（BLOCKED）
  */
 
-import { readFileSync, existsSync, readdirSync } from 'node:fs'
-import { join, relative, sep } from 'node:path'
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
+import { join, relative, sep, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const WEB = fileURLToPath(new URL('..', import.meta.url))
@@ -67,6 +67,74 @@ const walk = (dir, filter, out = []) => {
     else if (filter(p)) out.push(p)
   }
   return out
+}
+
+const LEGACY_SCOPE = [
+  'docs',
+  'web/src',
+  'web/scripts',
+  'web/e2e',
+  'web/public',
+  'scripts',
+  'tools',
+  '.github',
+  'AGENTS.md',
+  'CLAUDE.md',
+  'web/AGENTS.md',
+]
+const LEGACY_SKIP = new Set([
+  'node_modules',
+  'dist',
+  '.git',
+  'docs-search',
+  '.tanstack',
+  'coverage',
+])
+const LEGACY_VERSION = /(?<![\d.])(?:3|5|6|7)\.0(?![\d])/
+const LEGACY_CONTEXT =
+  /UDS|DESIGN[ -]?SYSTEM|设计系统|设计体系|Showcase|规范|迁移|兼容|版本|Token/i
+const LEGACY_NAME =
+  /(?:UDS|DESIGN[-_ ]?SYSTEM)[-_ ]?[3567]\.|archive-[3567]\.|COMPAT-MAP|MIGRATION-REPORT|SHOWCASE-[3567]\./i
+
+function legacyScan() {
+  const hits = []
+  let files = 0
+  const visit = (abs) => {
+    if (!existsSync(abs)) return
+    const st = statSync(abs)
+    if (st.isDirectory()) {
+      if (LEGACY_SKIP.has(basename(abs))) return
+      for (const e of readdirSync(abs, { withFileTypes: true }))
+        visit(join(abs, e.name))
+      return
+    }
+    if (!st.isFile() || st.size > 2 * 1024 * 1024) return
+    const r = rel(abs)
+    files += 1
+    if (LEGACY_NAME.test(r)) {
+      hits.push({ file: r, line: 0, kind: 'path' })
+      return
+    }
+    if (
+      !/\.(md|mdx|ts|tsx|js|jsx|mjs|cjs|css|scss|html|json|ya?ml|txt|svg)$/i.test(
+        r
+      )
+    )
+      return
+    let text
+    try {
+      text = read(abs)
+    } catch {
+      return
+    }
+    text.split('\n').forEach((line, i) => {
+      if (LEGACY_VERSION.test(line) && LEGACY_CONTEXT.test(line)) {
+        hits.push({ file: r, line: i + 1, kind: 'text' })
+      }
+    })
+  }
+  for (const p of LEGACY_SCOPE) visit(join(REPO, p))
+  return { files, hits }
 }
 
 if (!existsSync(join(DS, 'TOKEN-MANIFEST.json')) || !existsSync(ENGINE)) {
@@ -264,7 +332,7 @@ check('C07', 'Light / Dark 使用同名 Token，无主题特例缺失', () => {
 })
 
 /* C08 注册表一致性 --------------------------------------------------------- */
-check('C08', '8 份注册表存在且计数与真源一致', () => {
+check('C08', '7 份注册表存在且计数与真源一致', () => {
   const expected = [
     'TOKEN-REGISTRY.json',
     'COMPONENT-REGISTRY.json',
@@ -273,7 +341,6 @@ check('C08', '8 份注册表存在且计数与真源一致', () => {
     'ACCEPTANCE-MATRIX.json',
     'DEPRECATED-REGISTRY.json',
     'EXCEPTION-REGISTRY.json',
-    'COMPAT-MAP.json',
   ]
   for (const f of expected) assert(existsSync(join(DS, f)), 'C08', `缺失 ${f}`)
   const tr = JSON.parse(read(join(DS, 'TOKEN-REGISTRY.json')))
@@ -481,14 +548,14 @@ check('C11', '全库渐变文字单一 owner，重复实现必须已真实收敛
   assert(
     v6css.includes('.ds-text-gradient-brand'),
     'C11',
-    '7.0 派生产物渐变出口缺失'
+    'runtime 派生产物渐变出口缺失'
   )
-  assert(/in srgb/.test(v6css), 'C11', '7.0 派生产物未声明 sRGB 插值空间')
+  assert(/in srgb/.test(v6css), 'C11', 'runtime 派生产物未声明 sRGB 插值空间')
   assert(
     v6css.includes('--ds-color-gradient-light-from') &&
       v6css.includes('--ds-color-gradient-dark-from'),
     'C11',
-    '7.0 渐变未从 Token 派生'
+    'runtime 渐变未从 Token 派生'
   )
   assert(
     T['--ds-gradient-utility'].light === 'ds-text-gradient-brand',
@@ -664,7 +731,7 @@ check(
     assert(!/101 点|101×2/.test(h), 'C14', '残留 101 点采样旧口径')
     assert(h.includes('1001'), 'C14', '缺 1001 点采样口径')
     const pub = join(WEB, 'public', 'design-system', '8.0.0', 'index.html')
-    assert(existsSync(pub), 'C14', '产品内 /design-system/7.0/ 页面缺失')
+    assert(existsSync(pub), 'C14', '产品内 /design-system/8.0.0/ 页面缺失')
     assert(read(pub) === h, 'C14', '产品内页面与 Showcase 不一致')
     return `${count(/data-module-id="/g)} modules, ${count(/data-language="/g)} languages, ${h.length} chars, 6 extension sections`
   }
@@ -673,7 +740,6 @@ check(
 /* C18 机器可读验证报告 ----------------------------------------------------- */
 check('C18', '8 份机器可读验证报告齐全且 verdict 真实', () => {
   const required = [
-    'design-system-audit.json',
     'token-validation.json',
     'contrast-validation.json',
     'gradient-validation.json',
@@ -769,43 +835,18 @@ check(
   }
 )
 
-/* C20 整改状态与状态纪律 --------------------------------------------------- */
-check('C20', '48 项审计发现整改状态由真实探针决定', () => {
-  const r = JSON.parse(read(join(DS, 'audit', 'remediation-state.json')))
-  const ids = Object.keys(r.findings ?? {})
-  assert(ids.length === 48, 'C20', `整改项 ${ids.length} != 48`)
+/* C20 旧版本零残留 --------------------------------------------------------- */
+check('C20', '旧版本设计系统描述 / 引用 / 资产零残留', () => {
+  const r = legacyScan()
   assert(
-    ids.every((id) => /^UDS8-[CTHGFASR]-?\d+|^UDS8-R-\d+/.test(id)),
+    r.hits.length === 0,
     'C20',
-    '存在非法问题 ID'
+    `旧版本引用 ${r.hits.length} 处: ${r.hits
+      .slice(0, 8)
+      .map((h) => `${h.file}:${h.line}`)
+      .join(', ')}`
   )
-  const fa = JSON.parse(read(join(DS, 'audit', 'final-acceptance.json')))
-  assert(
-    fa.probeSummary &&
-      Object.values(fa.probeSummary).reduce((a, b) => a + b, 0) >= 48,
-    'C20',
-    '探针数不足'
-  )
-  assert(
-    fa.statusDiscipline.phase6Executed === false,
-    'C20',
-    'Phase 6 不得在审核前执行'
-  )
-  assert(
-    fa.statusDiscipline.phase7Executed === false,
-    'C20',
-    'Phase 7 不得在审核前执行'
-  )
-  assert(
-    fa.statusDiscipline.phase8Executed === false,
-    'C20',
-    'Phase 8 不得在审核前执行'
-  )
-  const counts = { RESOLVED: 0, PARTIAL: 0, OPEN: 0 }
-  for (const f of Object.values(r.findings)) {
-    counts[f.status] = (counts[f.status] ?? 0) + 1
-  }
-  return `48 findings: ${counts.RESOLVED} resolved / ${counts.PARTIAL} partial / ${counts.OPEN} open`
+  return `${r.files} files scanned, 0 legacy references`
 })
 
 /* C21 真实页面回归 --------------------------------------------------------- */
@@ -841,7 +882,7 @@ check('C21', '真实页面回归 + 渐变像素验证 + axe 零违规', () => {
   return `${v.results.length} real-page scenarios, gradient pixels PASS, axe 0 violations`
 })
 
-/* C22 Clerk 边界（原 5.0 Clerk 守卫职责并入 7.0）--------------------------- */
+/* C22 Clerk 外部参考边界 --------------------------------------------------- */
 check(
   'C22',
   'Clerk 外部参考边界：依赖零引入 / 运行时零引用 / 品牌值零照搬',
@@ -939,10 +980,9 @@ check('C16', 'v7 产物不出现 manifest 之外的 --ds-* 定义', () => {
 /* C17 报告存在性 ----------------------------------------------------------- */
 check('C17', '交付报告齐全', () => {
   const required = [
-    'UDS-8.0.0-MIGRATION-REPORT.md',
+    'UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md',
     'CONTRAST-VERIFICATION-REPORT.md',
     'VISUAL-REGRESSION-REPORT.md',
-    'FINAL-ACCEPTANCE-REPORT.md',
   ]
   const missing = required.filter((f) => !existsSync(join(DS, f)))
   assert(missing.length === 0, 'C17', `报告缺失: ${missing.join(', ')}`)

@@ -2,7 +2,7 @@
 
 > **投影文档 · 禁止直接手工编辑**。唯一权威数据源为 `docs/product/registry/product-model.json`（Single Source of Truth）。
 > 请在产品规格中心（`http://127.0.0.1:7788/`）通过 PRD 或 Prototype 视图编辑；所有有效变更经统一模型事务化双写，并自动重渲染 PRD 与原型投影。
-> 模型版本 **v1** · PRD 版本 v1 · 渲染于 2026-11-09T15:47:41.772Z · 设计基线 UTER Design System 3.0
+> 模型版本 **v1** · PRD 版本 v1 · 渲染于 2026-11-09T15:47:41.772Z · 设计基线 UDS 8.0.0
 
 > **实现状态：`IMPLEMENTED` — 已实现（前后端均有证据）**。
 

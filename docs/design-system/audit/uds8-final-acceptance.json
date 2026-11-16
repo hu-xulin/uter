@@ -1,0 +1,60 @@
+{
+  "schema": "UDS8-FINAL-ACCEPTANCE-REPORT/1.0",
+  "design_system": "UTER DESIGN SYSTEM 8.0.0",
+  "generated_at": "2026-11-16 21:28:49",
+  "head": "8024f4fe12725762e65fb73754d98d81c96e641d",
+  "origin_main": "8024f4fe12725762e65fb73754d98d81c96e641d",
+  "checker": {
+    "verdict": "FAIL",
+    "checks_passed": 20,
+    "checks_total": 22,
+    "errors": 4,
+    "error_list": [
+      "[C18] ACCEPTED 必须为 false",
+      "[C18] 最终验收未引用完整 22 项检查器结果",
+      "[C18] 检查器 verdict 与通过数不自洽",
+      "[C20] 旧版本引用 5 处: docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md:122, docs/design-system/audit/uds8-final-scan.json:23, docs/design-system/audit/uds8-legacy-reference-report.json:13, docs/design-system/audit/uds8-legacy-reference-report.json:14, docs/design-system/audit/uds8-legacy-reference-report.json:15"
+    ]
+  },
+  "final_acceptance": {
+    "verdict": "FAILED",
+    "checker": {
+      "verdict": "FAIL",
+      "checksPassed": 20,
+      "checksTotal": 22,
+      "exit_code": 1
+    },
+    "status_discipline": {
+      "implemented_equals_verified": false,
+      "accepted": false,
+      "note": "ACCEPTANCE_READY 不等于 VERIFIED / ACCEPTED；人工视觉接受须单独批准"
+    }
+  },
+  "gates": {
+    "verify-all": "1",
+    "design:8:check": "见最终 finalize 结果",
+    "design:tokens:check": "0",
+    "design:showcase:check": "0",
+    "lint:design:strict": "0",
+    "verify:contrast": "0",
+    "typecheck": "0",
+    "lint": "0",
+    "test": "0",
+    "copyright:check": "0",
+    "format:check": "0",
+    "build:check": "0",
+    "components:registry:check": "0",
+    "test:visual": "0",
+    "test:visual:e2e": "1（基线待人工批准）",
+    "test:axe": "0"
+  },
+  "legacy_scan": {
+    "verdict": "FAIL",
+    "hits": 5
+  },
+  "visual": {
+    "track1": "PASS",
+    "track2": "26 diffs pending human approval"
+  },
+  "conclusion": "ACCEPTANCE_READY / accepted=false; 未声明人工视觉已接受"
+}

@@ -42,8 +42,8 @@ function collectTsx(dir) {
   })
 }
 
-if (registry.designSystem !== 'UTER Design System 3.0') {
-  errors.push('Registry designSystem must be UTER Design System 3.0')
+if (registry.designSystem !== 'UDS 8.0.0') {
+  errors.push('Registry designSystem must be UDS 8.0.0')
 }
 if (registry.implementationRoot !== 'src/components/ui') {
   errors.push('Unexpected implementation root')

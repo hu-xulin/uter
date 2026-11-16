@@ -10,9 +10,9 @@
 
 ## 1. Overview
 
-7.0 重点模块：覆盖 CodeBlock / CodeBlockEditor / JsonCodeEditor / JsonEditor / Markdown Code Block / Inline Code / API Request / API Response / cURL / 日志 / 错误栈 / 终端预览。专项规范 24-S 登记于此。
+核心模块：覆盖 CodeBlock / CodeBlockEditor / JsonCodeEditor / JsonEditor / Markdown Code Block / Inline Code / API Request / API Response / cURL / 日志 / 错误栈 / 终端预览。专项规范 24-S 登记于此。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|

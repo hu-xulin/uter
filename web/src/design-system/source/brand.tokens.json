@@ -3,7 +3,7 @@
     "com.uter.tokens": {
       "id": "UTER-BRAND-TOKEN-SOURCE",
       "version": "1.0.0",
-      "designSystem": "UTER Design System 7.0",
+      "designSystem": "UTER UDS 8.0.0",
       "status": "DRAFT",
       "sourceCommit": "77dab9bf56fff59d6bed0d11cb88fa0901253c4a",
       "provenance": {
@@ -22,7 +22,7 @@
         "themes.dark.softForeground": "EXISTING_3_0_IMPLEMENTATION",
         "themes.dark.border": "EXISTING_3_0_IMPLEMENTATION"
       },
-      "notes": "Light primary is user-confirmed. Remaining values are carried forward from the UTER Design System 3.0 source and are subject to automated contrast, responsive visual-layout, keyboard-focus and WCAG 2.2 verification. No human approval or third-party sign-off is required; DRAFT remains until machine evidence passes.",
+      "notes": "Light primary is user-confirmed. Remaining values are carried forward from the UDS 8.0.0 source and are subject to automated contrast, responsive visual-layout, keyboard-focus and WCAG 2.2 verification. No human approval or third-party sign-off is required; DRAFT remains until machine evidence passes.",
       "governingSchema": "web/src/design-system/source/brand.tokens.schema.json",
       "changeApproval": "NOT_VERIFIED",
       "machineAuthorization": {

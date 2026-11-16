@@ -1,7 +1,7 @@
 {
   "$schema": "./schemas/component-registry.schema.json",
   "registryVersion": "1.0.0",
-  "designSystem": "UTER Design System 3.0",
+  "designSystem": "UDS 8.0.0",
   "implementationRoot": "src/components/ui",
   "policy": {
     "singleImplementationRoot": true,

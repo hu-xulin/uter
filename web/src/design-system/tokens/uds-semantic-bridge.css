@@ -22,7 +22,7 @@ For commercial licensing, please contact support@uter.ai
  * Regenerate: node docs/design-system/registry/build.mjs
  */
 
-/* 命名隔离：--ds8-* 不覆盖 3.0 已定义的同名 --ds-* 变量（部分取值语义相反）。
+/* 命名隔离：--ds8-* 不覆盖 web/src 已有的同名 --ds-* 变量（部分取值语义相反）。
  * 颜色架构：L1 Primitive → L2 Semantic → L3 Component → L4 Interaction → L5 Product Context。
  * 语法色来源：VS Code Light+ / Dark+ 官方主题源码（见 audit/vscode/SOURCE-METADATA.json）。
  * 回滚：删除 web/src/styles/index.css 中本文件的一行 @import。 */

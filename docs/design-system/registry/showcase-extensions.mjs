@@ -438,7 +438,7 @@ function renderRuntimeEvidence(M, v, syntaxData, measured) {
     ['唯一数值真源', 'TOKEN-MANIFEST.json', `${M.tokenCount} tokens · 所有 CSS / TS / 文档 / Showcase 由 build.mjs 从磁盘读回的同一份 JSON 派生`, 'MEASURED'],
     ['对比度引擎', 'registry/contrast-engine.mjs', `VERDICT ${esc(v.verdict)} · ${esc(v.sampling)}`, 'MEASURED'],
     ['语法真实解析', 'registry/syntax-adapter.mjs', `Shiki ${esc(syntax.engine?.version ?? '—')} · ${syntax.languagesRequested ?? 0} 语言 + ${syntax.coverageSamples ?? 0} 补样 · ${syntax.grammarsLoaded ?? 0} grammars · VERDICT ${esc(syntax.verdict ?? 'BLOCKED')}`, syntax.verdict === 'PASS' ? 'MEASURED' : 'BLOCKED'],
-    ['运行时桥接', 'web/src/design-system/tokens/uds-semantic-bridge.css', `${Object.values(M.tokens ?? {}).filter((t) => t.runtimeBridge).length} 个 --ds8-* 变量 · 隔离命名不覆盖 3.0 --ds-*`, 'MEASURED'],
+    ['运行时桥接', 'web/src/design-system/tokens/uds-semantic-bridge.css', `${Object.values(M.tokens ?? {}).filter((t) => t.runtimeBridge).length} 个 --ds8-* 变量 · 隔离命名不覆盖 web/src 既有 --ds-*`, 'MEASURED'],
     ['前端真实验证', 'web/visual-regression/uds8/', 'Playwright 截图 + axe-core WCAG 2.2 A/AA + 键盘焦点可见性，见 run-log.json / a11y-log.json', 'MEASURED'],
     ['真实页面视觉回归', 'audit/visual-regression.json', '真实页面回归状态以该机器可读报告为准；未执行项不得标 PASS', 'DECLARED'],
   ]

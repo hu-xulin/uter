@@ -1,7 +1,7 @@
 # 新增功能强制门禁与质量规范
 
 > UTER 产品原型与 PRD 一体化系统 · 规范编号 STD-GATE-01 · 生效版本 v1 · 2026-11-09T15:47:41.777Z
-> 本规范由统一需求模型驱动；唯一事实源 `docs/product/registry/product-model.json`。设计基线：UTER Design System 3.0。
+> 本规范由统一需求模型驱动；唯一事实源 `docs/product/registry/product-model.json`。设计基线：UDS 8.0.0。
 
 ## 1. 强制门禁顺序
 `Feature ID → PRD → Prototype → Mapping → Validation → Implementation → Testing → Acceptance`

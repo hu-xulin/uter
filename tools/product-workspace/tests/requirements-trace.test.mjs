@@ -20,7 +20,7 @@ describe('功能目录与 Feature ID', () => {
   test('模型是 v1+ 且声明了唯一事实源', () => {
     assert.ok(model.model_version >= 1);
     assert.equal(model.source_of_truth, 'docs/product/registry/product-model.json');
-    assert.equal(model.design_system, 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md');
+    assert.equal(model.design_system, 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md');
     assert.ok(!JSON.stringify(model.design_system).includes('2.1'));
   });
 

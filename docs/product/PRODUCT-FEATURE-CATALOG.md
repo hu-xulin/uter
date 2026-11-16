@@ -159,7 +159,7 @@
 
 治理基线：AGENTS.md / web/AGENTS.md
 
-设计基线：`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`（UDS 7.0（ACCEPTANCE_READY / accepted=false；保留 3.0 兼容层）；不使用已废弃的 2.1）
+设计基线：`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`（UDS 8.0.0（ACCEPTANCE_READY / accepted=false；保留 既有语义层）；不使用已废弃的 2.1）
 
 ## 诚实性声明
 

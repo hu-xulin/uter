@@ -12,7 +12,7 @@
 
 Uter 是面向开发者、企业与 API 使用者的 AI Token 中转站。品牌表达服务专业性与可信度，不覆盖状态色、图表色与语法色。渐变文字专项规范登记为 01-S。
 
-本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。7.0 为其直接前版（2026-11-16 经用户授权升版），5.0 及更早版本只用于识别历史文件、识别现有代码依赖与迁移风险分析，**不作为本模块的视觉设计依据**。当前运行时唯一权威为 UDS 8.0.0（3.0 兼容层已退役）；8.0.0 视觉基线随升版重冻结（`VISUAL-BASELINE.json`）。
+本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
 | 属性 | 值 |
 |---|---|
@@ -96,7 +96,7 @@ Showcase 中 `#mod-01` 分区提供本模块的真实渲染：色块、字号、
 ## 9. Accessibility
 
 - 渐变文字全区间 ≥4.5:1（1001 点采样 × 7 背景：Light 5.99:1 / Dark 8.37:1）
-- 历史渐变 Light 2.27:1 / Dark 3.92:1 不达标，E28 例外在 7.0 注销
+- 低对比度渐变不得进入 UDS 8.0.0；渐变 Token 必须通过全区间 4.5:1 实算
 
 - 全系统阈值：普通文字 ≥4.5:1、大号文字 ≥3:1、非文本 ≥3:1（WCAG 2.2 AA）
 - 例外只允许 WCAG 明确豁免项，并登记在 [`EXCEPTION-REGISTRY.json`](./EXCEPTION-REGISTRY.json)
