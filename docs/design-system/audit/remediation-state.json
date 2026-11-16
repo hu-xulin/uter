@@ -1,10 +1,9 @@
 {
   "schema": "UDS7-REMEDIATION-STATE/1.0",
-  "generated_at": "2026-11-15T23:55:45.894Z",
+  "generated_at": "2026-11-16T00:02:14.333Z",
   "method": "check-uds7-remediation.mjs 真实探针，未执行项一律不标 PASS",
   "probeSummary": {
-    "PASS": 49,
-    "FAIL": 1
+    "PASS": 50
   },
   "findings": {
     "UDS7-C-01": {
@@ -203,7 +202,7 @@
       "status": "RESOLVED",
       "probe": "C-H08",
       "probeStatus": "PASS",
-      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（266120ms）",
+      "evidence": "C-H08 PASS · Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（240560ms）",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
@@ -363,18 +362,16 @@
       "status": "RESOLVED",
       "probe": "C-RG01",
       "probeStatus": "PASS",
-      "evidence": "C-RG01 PASS · 4 条公开真实路由 × 2 主题 + 0 个认证场景 = 8 场景；未覆盖范围如实登记",
+      "evidence": "C-RG01 PASS · 4 条公开真实路由 × 2 主题 + 8 个认证场景 = 16 场景；未覆盖范围如实登记",
       "failedAssertions": [],
       "notExecutedAssertions": []
     },
     "UDS7-R-02": {
-      "status": "OPEN",
+      "status": "RESOLVED",
       "probe": "C-RG02",
-      "probeStatus": "FAIL",
-      "evidence": "C-RG02 FAIL · 4 条公开真实路由 Light/Dark 全通过；认证页面未执行（隔离栈不可达：TypeError: fetch failed），如实 NOT_EXECUTED",
-      "failedAssertions": [
-        "authenticatedPagesCovered"
-      ],
+      "probeStatus": "PASS",
+      "evidence": "C-RG02 PASS · 公开 4 路由 + 认证 4 路由（隔离栈 http://127.0.0.1:3100 真实 API 登录）× Light/Dark；认证场景 8/8 通过",
+      "failedAssertions": [],
       "notExecutedAssertions": []
     },
     "UDS7-R-03": {

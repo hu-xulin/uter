@@ -1,13 +1,13 @@
 {
   "schema": "UDS7-VISUAL-REGRESSION/1.0",
-  "generated_at": "2026-11-15T23:55:45.894Z",
-  "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis",
+  "generated_at": "2026-11-16T00:02:14.333Z",
+  "method": "Playwright chromium headless · in-process static server on web/dist · API proxy to 127.0.0.1:3000 · canvas getImageData pixel analysis · authenticated scenarios via isolated stack http://127.0.0.1:3100（真实 API 登录）",
   "backend": "http://127.0.0.1:3000",
   "dist": "web/dist",
   "verdict": "PASS",
   "executed": true,
   "realPageCount": 4,
-  "scenarioCount": 8,
+  "scenarioCount": 16,
   "themeScenarios": [
     "light",
     "dark"
@@ -41,7 +41,7 @@
     "noConsoleErrors"
   ],
   "authenticated": {
-    "executed": false,
+    "executed": true,
     "backend": "http://127.0.0.1:3100",
     "routes": [
       "/dashboard",
@@ -49,7 +49,7 @@
       "/keys",
       "/usage-logs"
     ],
-    "reason": "隔离栈不可达：TypeError: fetch failed"
+    "reason": ""
   },
   "results": [
     {
@@ -86,13 +86,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 957,
+        "distinctColors": 958,
         "meanLuminance": 237,
         "luminanceStdDev": 33.87,
         "nonWhitePixelRatio": 0.0675
       },
       "screenshot": "web/visual-regression/uds7/real-pages/home-light.png",
-      "screenshotSha256": "59874216794cff3d033ef6849093a63f7ca4bbe34c93f3b8f85400b527af431e",
+      "screenshotSha256": "73c44f636a34282ab3f19227edf0841aae6357c334ca660ceea3ecdc5fed04c7",
       "consoleErrors": [],
       "pass": true
     },
@@ -130,13 +130,13 @@
         "width": 1280,
         "height": 800,
         "sampledPixels": 1024000,
-        "distinctColors": 970,
+        "distinctColors": 971,
         "meanLuminance": 30.85,
         "luminanceStdDev": 36.19,
         "nonWhitePixelRatio": 0.9894
       },
       "screenshot": "web/visual-regression/uds7/real-pages/home-dark.png",
-      "screenshotSha256": "7bb03f967eabfbd822b7c369398948292e15a6fd8f245d19d78115c38629e64f",
+      "screenshotSha256": "578112838d6b598d2efe5d761c1614902070d6a6c43a0c12689f1ed821137021",
       "consoleErrors": [],
       "pass": true
     },
@@ -403,6 +403,358 @@
       "screenshotSha256": "51b12fddb5d54c276965b00342939ef697b31c18a3432f1e075b6ee25a1cdfec",
       "consoleErrors": [],
       "pass": true
+    },
+    {
+      "route": "/dashboard",
+      "name": "Dashboard / Console",
+      "theme": "light",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/dashboard/overview",
+        "main": true,
+        "bodyChars": 2212,
+        "tables": 0,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 547,
+        "meanLuminance": 241.42,
+        "luminanceStdDev": 31.48,
+        "nonWhitePixelRatio": 0.0456
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-dashboard-light.png",
+      "screenshotSha256": "efba266d445d4131bd2aa67ee6b73b6741353bb44c5445c04b21005c1ead86a2",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/wallet",
+      "name": "Wallet / Billing",
+      "theme": "light",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/wallet",
+        "main": true,
+        "bodyChars": 947,
+        "tables": 0,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 389,
+        "meanLuminance": 245.12,
+        "luminanceStdDev": 27.6,
+        "nonWhitePixelRatio": 0.0327
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-wallet-light.png",
+      "screenshotSha256": "1ae258598ce60120745749ee534f8269a1f92b8525b659df19180aecd42aff7d",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/keys",
+      "name": "API Keys",
+      "theme": "light",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/keys",
+        "main": true,
+        "bodyChars": 610,
+        "tables": 1,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 332,
+        "meanLuminance": 244.98,
+        "luminanceStdDev": 22.81,
+        "nonWhitePixelRatio": 0.0232
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-keys-light.png",
+      "screenshotSha256": "910847167dfdbc510bb344dde2c9856e7e7a324d7b0e35c7673931565d8cdabf",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/usage-logs",
+      "name": "Usage Logs",
+      "theme": "light",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/usage-logs/common",
+        "main": true,
+        "bodyChars": 676,
+        "tables": 1,
+        "htmlClass": "font-inter light",
+        "ds6Brand": "#5b5ee6",
+        "ds6Keyword": "#00f",
+        "ds6TerminalBg": "#f1f5f9",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 336,
+        "meanLuminance": 244.59,
+        "luminanceStdDev": 24.2,
+        "nonWhitePixelRatio": 0.0263
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-usage-logs-light.png",
+      "screenshotSha256": "2c960b1ce85161a9c927302e473fe43ee170c2a3963a28a5c7fbbe0b6054305a",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/dashboard",
+      "name": "Dashboard / Console",
+      "theme": "dark",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/dashboard/overview",
+        "main": true,
+        "bodyChars": 2212,
+        "tables": 0,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 554,
+        "meanLuminance": 30.26,
+        "luminanceStdDev": 35.45,
+        "nonWhitePixelRatio": 0.9893
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-dashboard-dark.png",
+      "screenshotSha256": "23dcd46986221821a65421b4988f0ebc10e7794941be1fd524533f8839a6fdfc",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/wallet",
+      "name": "Wallet / Billing",
+      "theme": "dark",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/wallet",
+        "main": true,
+        "bodyChars": 947,
+        "tables": 0,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 384,
+        "meanLuminance": 29.88,
+        "luminanceStdDev": 31.13,
+        "nonWhitePixelRatio": 0.991
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-wallet-dark.png",
+      "screenshotSha256": "923e73b40c16b096de4a218b9acf1367bce8ed4597bfc64195b65b85dcbba45d",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/keys",
+      "name": "API Keys",
+      "theme": "dark",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/keys",
+        "main": true,
+        "bodyChars": 610,
+        "tables": 1,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 364,
+        "meanLuminance": 22.37,
+        "luminanceStdDev": 25.42,
+        "nonWhitePixelRatio": 0.9939
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-keys-dark.png",
+      "screenshotSha256": "3f4d5941a1453c175bcc84c540e2bedf07b7f6ee00352558b7f3ea28cb0b771b",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
+    },
+    {
+      "route": "/usage-logs",
+      "name": "Usage Logs",
+      "theme": "dark",
+      "authenticated": true,
+      "httpStatus": 200,
+      "dom": {
+        "title": "优特智能",
+        "url": "/usage-logs/common",
+        "main": true,
+        "bodyChars": 676,
+        "tables": 1,
+        "htmlClass": "font-inter dark",
+        "ds6Brand": "#8b8df5",
+        "ds6Keyword": "#569cd6",
+        "ds6TerminalBg": "#0a101e",
+        "ds6SurfaceOverlay": "#000"
+      },
+      "checks": {
+        "http200": true,
+        "authenticatedRender": true,
+        "renderedContent": true,
+        "bridgeLive": true,
+        "syntaxBridgeLive": true,
+        "terminalBridgeLive": true,
+        "legacyTokenIsolated": true,
+        "nonBlankPixels": true,
+        "noConsoleErrors": true
+      },
+      "pixels": {
+        "width": 1280,
+        "height": 800,
+        "sampledPixels": 1024000,
+        "distinctColors": 372,
+        "meanLuminance": 23.58,
+        "luminanceStdDev": 27.34,
+        "nonWhitePixelRatio": 0.9931
+      },
+      "screenshot": "web/visual-regression/uds7/real-pages/auth-usage-logs-dark.png",
+      "screenshotSha256": "aeec8e88e7065f4537cd0de7b6c18306763685e69fd5bc9048026b4e2a643d69",
+      "consoleErrors": [],
+      "httpErrors": [],
+      "pass": true
     }
   ],
   "gradient": {
@@ -449,7 +801,7 @@
     "pass": true
   },
   "errors": [],
-  "scopeNote": "真实 SPA 路由回归；认证页面未执行（隔离栈不可达：TypeError: fetch failed），故不含 Dashboard / Billing / Orders / Refunds 等页面。该限制如实登记，不得视为已覆盖。",
+  "scopeNote": "公共 4 路由 + 认证 4 路由（隔离栈真实登录）× Light/Dark 渲染与 token 断言；认证场景不建像素基线。管理员专属页（Channels / System Settings）与其余认证页未覆盖，如实登记，不得视为已覆盖。",
   "showcase": {
     "verdict": "PASS",
     "screenshots": "web/visual-regression/uds7/screenshots/"

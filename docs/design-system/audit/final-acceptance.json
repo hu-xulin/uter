@@ -1,6 +1,6 @@
 {
   "schema": "UDS7-FINAL-ACCEPTANCE/1.0",
-  "generated_at": "2026-11-15T23:55:45.894Z",
+  "generated_at": "2026-11-16T00:02:14.333Z",
   "verdict": "PARTIALLY_VERIFIED",
   "allowedVerdicts": [
     "FULLY_VERIFIED",
@@ -30,8 +30,7 @@
     "allPassed": true
   },
   "probeSummary": {
-    "PASS": 49,
-    "FAIL": 1
+    "PASS": 50
   },
   "probes": {
     "C-R01": {
@@ -64,7 +63,7 @@
       "notExecuted": [],
       "evidence": "web/src/styles/index.css 单行 import + 8 个真实页面场景的 getComputedStyle 实测",
       "metrics": {
-        "realPageScenarios": 8
+        "realPageScenarios": 16
       }
     },
     "C-R03": {
@@ -488,7 +487,7 @@
       "evidence": "consumer-scan.mjs 现场扫描 web/src + Showcase 渲染链；虚假登记 / 零消费者 / 未登记真实引用均须为 0",
       "metrics": {
         "exit": 0,
-        "scannedAt": "2026-11-15T23:55:46.917Z",
+        "scannedAt": "2026-11-16T00:02:15.679Z",
         "filesScanned": 1279,
         "tokens": 384,
         "declaredConsumers": 384,
@@ -795,7 +794,7 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（266120ms）",
+      "evidence": "Showcase visual-check / real-page-regression / 7.0 checker 真实运行；全量 vitest G14 EXIT=0（240560ms）",
       "metrics": {}
     },
     "C-H09": {
@@ -1025,24 +1024,22 @@
       },
       "failed": [],
       "notExecuted": [],
-      "evidence": "4 条公开真实路由 × 2 主题 + 0 个认证场景 = 8 场景；未覆盖范围如实登记",
+      "evidence": "4 条公开真实路由 × 2 主题 + 8 个认证场景 = 16 场景；未覆盖范围如实登记",
       "metrics": {}
     },
     "C-RG02": {
       "name": "C-RG02",
       "label": "真实页面回归不只验证 Showcase",
-      "status": "FAIL",
+      "status": "PASS",
       "assertions": {
         "realPagesExecuted": true,
         "allScenariosPass": true,
         "screenshotsExist": true,
-        "authenticatedPagesCovered": false
+        "authenticatedPagesCovered": true
       },
-      "failed": [
-        "authenticatedPagesCovered"
-      ],
+      "failed": [],
       "notExecuted": [],
-      "evidence": "4 条公开真实路由 Light/Dark 全通过；认证页面未执行（隔离栈不可达：TypeError: fetch failed），如实 NOT_EXECUTED",
+      "evidence": "公开 4 路由 + 认证 4 路由（隔离栈 http://127.0.0.1:3100 真实 API 登录）× Light/Dark；认证场景 8/8 通过",
       "metrics": {
         "uncovered": [
           "Models",
@@ -1053,7 +1050,7 @@
           "System Settings（管理员）"
         ],
         "authenticated": {
-          "executed": false,
+          "executed": true,
           "backend": "http://127.0.0.1:3100",
           "routes": [
             "/dashboard",
@@ -1061,7 +1058,7 @@
             "/keys",
             "/usage-logs"
           ],
-          "reason": "隔离栈不可达：TypeError: fetch failed"
+          "reason": ""
         }
       }
     },
@@ -1128,9 +1125,9 @@
   },
   "findings": {
     "total": 48,
-    "resolved": 47,
+    "resolved": 48,
     "partial": 0,
-    "open": 1
+    "open": 0
   },
   "checker": {
     "verdict": "PASS",
