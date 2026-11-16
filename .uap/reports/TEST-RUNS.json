@@ -884,10 +884,45 @@
         "UAP-EV-20261116115209-c80536a1"
       ],
       "recorded_at": "2026-11-16T11:52:09.286Z"
+    },
+    {
+      "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 181196,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 205,
+        "pass": 205,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/execution-lifecycle.test.mjs",
+        ".uap/tests/final-acceptance-capabilities.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261116140842-0942c826"
+      ],
+      "recorded_at": "2026-11-16T14:08:42.150Z"
     }
   ],
   "schema_version": "1.0",
-  "generated_at": "2026-11-16T11:52:09.286Z",
+  "generated_at": "2026-11-16T14:08:42.150Z",
   "executor_ids": [
     "quality.engineering",
     "quality.testing",
@@ -896,14 +931,14 @@
   "node_version": "v24.21.0",
   "environment": "local",
   "summary": {
-    "total": 26,
-    "executed": 26,
-    "passed": 20,
+    "total": 27,
+    "executed": 27,
+    "passed": 21,
     "blocked": 0,
     "failed": 6
   },
   "test_plan": {
-    "generated_at": "2026-11-16T11:52:10.196Z",
+    "generated_at": "2026-11-16T14:08:42.805Z",
     "layers": [
       {
         "layer": "unit.go",

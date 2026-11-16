@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116140842-0942c826",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T14:08:42.494Z",
+  "started_at": "2026-11-16T14:05:41.298Z",
+  "finished_at": "2026-11-16T14:08:42.494Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116140715-2797a8c6",
+    "git_head": "b24709dd0368a3163bcb3deeb3d3d4a8c0ccafb1",
+    "worktree_fingerprint": "faa6dd170513e68dfcb3138d0878a36244b30113c2a976a1c5942d436c8b5fb7",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116140715-2797a8c6",
+  "git_head": "b24709dd0368a3163bcb3deeb3d3d4a8c0ccafb1",
+  "worktree_fingerprint": "faa6dd170513e68dfcb3138d0878a36244b30113c2a976a1c5942d436c8b5fb7",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 181196,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/execution-identity-race.test.mjs\",\".uap/tests/execution-lifecycle.test.mjs\",\".uap/tests/final-acceptance-capabilities.test.mjs\",\".uap/tests/final-acceptance-negative.test.mjs\",\".uap/tests/final-remediation-regression.test.mjs\",\".uap/tests/independent-repair-review.test.mjs\",\".uap/tests/independent-verification.test.mjs\",\".uap/tests/phase2-requirement-verification.test.mjs\",\".uap/tests/phase2-security-negative.test.mjs\",\".uap/tests/real-code-repair-boundaries.test.mjs\",\".uap/tests/real-repair-e2e.test.mjs\",\".uap/tests/requirement-behavior-suite.test.mjs\",\".uap/tests/requirement-honesty.test.mjs\",\".uap/tests/runtime.test.mjs\",\".uap/tests/status-consistency.test.mjs\",\".uap/tests/status-snapshot.test.mjs\",\".uap/tests/test-collector.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 17 files -> exit 0, tap pass=205 fail=0",
+  "content_hash": "ae58e94dee518ef3333f07e2741202679990b62e15664d173ee07ff5cead773a"
+}

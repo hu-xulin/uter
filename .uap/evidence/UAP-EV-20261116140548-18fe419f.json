@@ -1,0 +1,51 @@
+{
+  "evidence_id": "UAP-EV-20261116140548-18fe419f",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794837946279-13a0d8",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-16T14:05:48.123Z",
+  "started_at": "2026-11-16T14:05:48.016Z",
+  "finished_at": "2026-11-16T14:05:48.123Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116140547-b510e7f6",
+    "git_head": "b24709dd0368a3163bcb3deeb3d3d4a8c0ccafb1",
+    "worktree_fingerprint": "efc62166050fcc6db9d85069b6786c3b57d144ef24cf936d4b1e8981c8fd95da",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116140547-b510e7f6",
+  "git_head": "b24709dd0368a3163bcb3deeb3d3d4a8c0ccafb1",
+  "worktree_fingerprint": "efc62166050fcc6db9d85069b6786c3b57d144ef24cf936d4b1e8981c8fd95da",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --check .uap/tests/fixtures/repair-canary.mjs",
+  "exit_code": 0,
+  "duration_ms": 107,
+  "inputs": "{\"args\":[\"--check\",\".uap/tests/fixtures/repair-canary.mjs\"],\"phase\":\"targeted_test_attempt_1\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794837946279-13a0d8.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794837946279-13a0d8/repair-canary.mjs"
+  ],
+  "findings": [
+    "before=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+    "after=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1"
+  ],
+  "summary": "[targeted_test_attempt_1] SUCCEEDED",
+  "content_hash": "5ed12da50426f9a214610f84b2ffad81fee2c9e789f57aeed914025d842ec86f"
+}

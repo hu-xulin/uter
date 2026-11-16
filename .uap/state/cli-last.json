@@ -1,130 +1,42 @@
 {
   "status": "PASS",
   "exit_code": 0,
-  "summary": "status consistency PASS: 21/21 independent checks",
+  "summary": "test: 17 test files passed, exit_code=0",
   "data": {
-    "checks": [
-      {
-        "name": "final_status_exists",
-        "status": "PASS",
-        "detail": "FINAL-STATUS.json present"
-      },
-      {
-        "name": "final_acceptance_exists",
-        "status": "PASS",
-        "detail": "FINAL-ACCEPTANCE.json present"
-      },
-      {
-        "name": "index_status_block_exists",
-        "status": "PASS",
-        "detail": "UAP-STATUS-BLOCK present"
-      },
-      {
-        "name": "final_acceptance_bound_to_current_execution",
-        "status": "PASS",
-        "detail": "gate=UAP-EXEC-20261116115030-6a0ef6da/cfb471c6cd043d81228e9703ff95d6d61c61da62/c7131af634f4 current=UAP-EXEC-20261116115030-6a0ef6da/cfb471c6cd043d81228e9703ff95d6d61c61da62/c7131af634f4"
-      },
-      {
-        "name": "report_matches_recomputed_verdict",
-        "status": "PASS",
-        "detail": "report=FAILED recomputed=FAILED"
-      },
-      {
-        "name": "index_overall_matches_report",
-        "status": "PASS",
-        "detail": "index=FAILED report=FAILED"
-      },
-      {
-        "name": "claim_allowed_matches_engine",
-        "status": "PASS",
-        "detail": "report=false gate=false"
-      },
-      {
-        "name": "claim_allowed_matches_state_machine",
-        "status": "PASS",
-        "detail": "overall=FAILED claim_allowed=false"
-      },
-      {
-        "name": "all_final_reports_bound_to_same_batch",
-        "status": "PASS",
-        "detail": "15 final reports bound"
-      },
-      {
-        "name": "worktree_fingerprint_is_not_empty_hash",
-        "status": "PASS",
-        "detail": "fingerprint=c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b"
-      },
-      {
-        "name": "code_unchanged_since_batch_start",
-        "status": "PASS",
-        "detail": "now=c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b bound=c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b"
-      },
-      {
-        "name": "git_head_matches_current_run",
-        "status": "PASS",
-        "detail": "now=cfb471c6cd043d81228e9703ff95d6d61c61da62 bound=cfb471c6cd043d81228e9703ff95d6d61c61da62"
-      },
-      {
-        "name": "environment_fingerprint_matches_current_run",
-        "status": "PASS",
-        "detail": "now=949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a bound=949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a"
-      },
-      {
-        "name": "single_batch_consistency_proven",
-        "status": "PASS",
-        "detail": "single_execution_id=true single_git_head=true single_worktree_fingerprint=true single_environment_fingerprint=true evidence_integrity=true evidence_freshness=true"
-      },
-      {
-        "name": "capability_cards_have_real_counts_and_bindings",
-        "status": "PASS",
-        "detail": "8 cards verified"
-      },
-      {
-        "name": "evidence_manifest_hashes_and_bindings",
-        "status": "PASS",
-        "detail": "15 file hashes verified"
-      },
-      {
-        "name": "no_stale_pass_promoted",
-        "status": "PASS",
-        "detail": "claim_allowed=false gate_current=true manifest_ok=true"
-      },
-      {
-        "name": "p0_blockers_forbid_full_claim",
-        "status": "PASS",
-        "detail": "claim_allowed=false open_p0=0"
-      },
-      {
-        "name": "cli_process_executed",
-        "status": "PASS",
-        "detail": "uap status --json exit 0"
-      },
-      {
-        "name": "cli_overall_matches_report",
-        "status": "PASS",
-        "detail": "cli=FAILED report=FAILED"
-      },
-      {
-        "name": "cli_execution_matches_report",
-        "status": "PASS",
-        "detail": "cli=UAP-EXEC-20261116115030-6a0ef6da current=UAP-EXEC-20261116115030-6a0ef6da"
-      }
+    "generated_at": "2026-11-16T14:08:42.150Z",
+    "mode": "all",
+    "test_files": [
+      ".uap/tests/execution-identity-race.test.mjs",
+      ".uap/tests/execution-lifecycle.test.mjs",
+      ".uap/tests/final-acceptance-capabilities.test.mjs",
+      ".uap/tests/final-acceptance-negative.test.mjs",
+      ".uap/tests/final-remediation-regression.test.mjs",
+      ".uap/tests/independent-repair-review.test.mjs",
+      ".uap/tests/independent-verification.test.mjs",
+      ".uap/tests/phase2-requirement-verification.test.mjs",
+      ".uap/tests/phase2-security-negative.test.mjs",
+      ".uap/tests/real-code-repair-boundaries.test.mjs",
+      ".uap/tests/real-repair-e2e.test.mjs",
+      ".uap/tests/requirement-behavior-suite.test.mjs",
+      ".uap/tests/requirement-honesty.test.mjs",
+      ".uap/tests/runtime.test.mjs",
+      ".uap/tests/status-consistency.test.mjs",
+      ".uap/tests/status-snapshot.test.mjs",
+      ".uap/tests/test-collector.test.mjs"
     ],
-    "problems": [],
-    "recomputed_status": "FAILED",
-    "report_status": "FAILED",
-    "index_status": "FAILED",
-    "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
-    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
-    "reasons": [
-      "accessibility: status=BLOCKED passed=13 failed=0",
-      "visual: status=FAIL exit=1 diffs=26",
-      "415 requirement(s) lack current valid evidence — VERIFIED requires a real behaviour probe bound to this execution"
-    ],
-    "artefact": ".uap/reports/STATUS-CONSISTENCY.json"
+    "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_ms": 181196,
+    "stdout_tail": "查数组结构化、含指定检查项、ID 唯一判定与真实数据一致\n      ---\n      duration_ms: 11.942392\n      type: 'test'\n      ...\n    # Subtest: 缺依赖会报 FAIL：注入一个不存在的依赖 id\n    ok 2 - 缺依赖会报 FAIL：注入一个不存在的依赖 id\n      ---\n      duration_ms: 8.238756\n      type: 'test'\n      ...\n    1..2\nok 87 - 类别3 规范注册表\n  ---\n  duration_ms: 20.476439\n  type: 'suite'\n  ...\n# Subtest: 类别4 Agent 注册\n    # Subtest: listAgents() 为 11 个；assertTool 拒绝未声明工具；invoke 对未注册 Agent 返回 BLOCKED\n    ok 1 - listAgents() 为 11 个；assertTool 拒绝未声明工具；invoke 对未注册 Agent 返回 BLOCKED\n      ---\n      duration_ms: 2.189055\n      type: 'test'\n      ...\n    1..1\nok 88 - 类别4 Agent 注册\n  ---\n  duration_ms: 2.592902\n  type: 'suite'\n  ...\n# Subtest: 类别5 权限拒绝\n    # Subtest: 高危权限、未注册 Agent、未声明权限、curl 命令全部 DENY；default_effect=deny；DENY 写入 policy-audit.jsonl\n    ok 1 - 高危权限、未注册 Agent、未声明权限、curl 命令全部 DENY；default_effect=deny；DENY 写入 policy-audit.jsonl\n      ---\n      duration_ms: 65.185464\n      type: 'test'\n      ...\n    1..1\nok 89 - 类别5 权限拒绝\n  ---\n  duration_ms: 65.480057\n  type: 'suite'\n  ...\n# Subtest: 类别6 任务创建\n    # Subtest: createTask() 缺必需字段抛 ContractError；成功任务含 task_id/trace_id/state/steps/history\n    ok 1 - createTask() 缺必需字段抛 ContractError；成功任务含 task_id/trace_id/state/steps/history\n      ---\n      duration_ms: 200.129193\n      type: 'test'\n      ...\n    1..1\nok 90 - 类别6 任务创建\n  ---\n  duration_ms: 200.350335\n  type: 'suite'\n  ...\n# Subtest: 类别7 依赖调度\n    # Subtest: topologicalLevels() 对 DAG 返回正确层级\n    ok 1 - topologicalLevels() 对 DAG 返回正确层级\n      ---\n      duration_ms: 0.409668\n      type: 'test'\n      ...\n    # Subtest: 有环时 detectCycle 返回环信息；registryIntegrity 的 dependencies_acyclic 判 FAIL\n    ok 2 - 有环时 detectCycle 返回环信息；registryIntegrity 的 dependencies_acyclic 判 FAIL\n      ---\n      duration_ms: 9.23899\n      type: 'test'\n      ...\n    1..2\nok 91 - 类别7 依赖调度\n  ---\n  duration_ms: 9.861589\n  type: 'suite'\n  ...\n# Subtest: 类别8 并行执行\n    # Subtest: MAX_CONCURRENCY=4；第 5 个并发与重叠写集均抛 ResourceConflictError\n    ok 1 - MAX_CONCURRENCY=4；第 5 个并发与重叠写集均抛 ResourceConflictError\n      ---\n      duration_ms: 5.397858\n      type: 'test'\n      ...\n    # Subtest: runGraph() 按层级并行并检测重叠写集冲突\n    ok 2 - runGraph() 按层级并行并检测重叠写集冲突\n      ---\n      duration_ms: 7.200293\n      type: 'test'\n      ...\n    1..2\nok 92 - 类别8 并行执行\n  ---\n  duration_ms: 12.788397\n  type: 'suite'\n  ...\n# Subtest: 类别9 中断恢复\n    # Subtest: simulateInterruption 起独立进程在 step2 崩溃(exit 7)；recover 后 SUCCEEDED、已完成步骤不重复、写 2 条证据\n    ok 1 - simulateInterruption 起独立进程在 step2 崩溃(exit 7)；recover 后 SUCCEEDED、已完成步骤不重复、写 2 条证据\n      ---\n      duration_ms: 4174.617812\n      type: 'test'\n      ...\n    1..1\nok 93 - 类别9 中断恢复\n  ---\n  duration_ms: 4174.76715\n  type: 'suite'\n  ...\n# Subtest: 类别10 重试上限\n    # Subtest: MAX_RETRIES===2；前两次抛错第三次成功时 attempts===3；永远抛错仍 attempts===3 且任务不 SUCCEEDED\n    ok 1 - MAX_RETRIES===2；前两次抛错第三次成功时 attempts===3；永远抛错仍 attempts===3 且任务不 SUCCEEDED\n      ---\n      duration_ms: 3716.241113\n      type: 'test'\n      ...\n    1..1\nok 94 - 类别10 重试上限\n  ---\n  duration_ms: 3716.446224\n  type: 'suite'\n  ...\n# Subtest: 类别11 执行器/验证器映射\n    # Subtest: executorResult 强制 validation_results=[]；assertExecutorResult 拒绝自报非空 validation_results\n    ok 1 - executorResult 强制 validation_results=[]；assertExecutorResult 拒绝自报非空 validation_results\n      ---\n      duration_ms: 0.5411\n      type: 'test'\n      ...\n    # Subtest: validatorResult 在 executed=false / exit_code!==0 / BLOCKER finding 时把 PASS 降为 FAIL\n    ok 2 - validatorResult 在 executed=false / exit_code!==0 / BLOCKER finding 时把 PASS 降为 FAIL\n      ---\n      duration_ms: 0.232254\n      type: 'test'\n      ...\n    1..2\nok 95 - 类别11 执行器/验证器映射\n  ---\n  duration_ms: 0.948628\n  type: 'suite'\n  ...\n# Subtest: 类别12 证据完整性\n    # Subtest: record 生成 content_hash 且 verify 通过；同 ID 二次写入抛错；redact 脱敏 token\n    ok 1 - record 生成 content_hash 且 verify 通过；同 ID 二次写入抛错；redact 脱敏 token\n      ---\n      duration_ms: 561.07922\n      type: 'test'\n      ...\n    1..1\nok 96 - 类别12 证据完整性\n  ---\n  duration_ms: 561.216427\n  type: 'suite'\n  ...\n# Subtest: 类别13 工作流端到端\n    # Subtest: listWorkflows() 为 7 个；stepExecutor 对 validate_environment 返回真实工具链版本与 exit_code\n    ok 1 - listWorkflows() 为 7 个；stepExecutor 对 validate_environment 返回真实工具链版本与 exit_code\n      ---\n      duration_ms: 358.74428\n      type: 'test'\n      ...\n    # Subtest: runWorkflow(uap-financial-verification) 返回含 evidence 的 run 记录，state 与内部证据一致\n    ok 2 - runWorkflow(uap-financial-verification) 返回含 evidence 的 run 记录，state 与内部证据一致\n      ---\n      duration_ms: 7629.15792\n      type: 'test'\n      ...\n    1..2\nok 97 - 类别13 工作流端到端\n  ---\n  duration_ms: 7988.736577\n  type: 'suite'\n  ...\n# Subtest: 类别14 安全边界\n    # Subtest: 12 个 mustDeny 权限组全为 deny；配置无 AES/UAES 引用；COMMAND_ALLOWLIST 不含 curl\n    ok 1 - 12 个 mustDeny 权限组全为 deny；配置无 AES/UAES 引用；COMMAND_ALLOWLIST 不含 curl\n      ---\n      duration_ms: 10.322482\n      type: 'test'\n      ...\n    1..1\nok 98 - 类别14 安全边界\n  ---\n  duration_ms: 10.498563\n  type: 'suite'\n  ...\n# Subtest: 类别15 质量门禁阻断\n    # Subtest: defaultValidator 对未成功步骤/无证据步骤返回 FAIL；合规任务返回 PASS\n    ok 1 - defaultValidator 对未成功步骤/无证据步骤返回 FAIL；合规任务返回 PASS\n      ---\n      duration_ms: 0.458359\n      type: 'test'\n      ...\n    # Subtest: assertTransition(CREATED,SUCCEEDED) 抛 IllegalTransitionError（fail-closed）\n    ok 2 - assertTransition(CREATED,SUCCEEDED) 抛 IllegalTransitionError（fail-closed）\n      ---\n      duration_ms: 0.248596\n      type: 'test'\n      ...\n    1..2\nok 99 - 类别15 质量门禁阻断\n  ---\n  duration_ms: 0.957811\n  type: 'suite'\n  ...\n# Subtest: 类别16 模拟支付退款\n    # Subtest: financialSimulation()：simulated_only=true、>=13 检查、PASS 检查有 evidence 且可追溯真实源码、无真实外部调用\n    ok 1 - financialSimulation()：simulated_only=true、>=13 检查、PASS 检查有 evidence 且可追溯真实源码、无真实外部调用\n      ---\n      duration_ms: 6.719621\n      type: 'test'\n      ...\n    1..1\nok 100 - 类别16 模拟支付退款\n  ---\n  duration_ms: 6.962919\n  type: 'suite'\n  ...\n# Subtest: 类别17 自动修复闭环\n    # Subtest: normalizeSpecHeaders({dryRun:true}) 返回 scanned/fixed/already_ok/unfixable 且连续两次幂等\n    ok 1 - normalizeSpecHeaders({dryRun:true}) 返回 scanned/fixed/already_ok/unfixable 且连续两次幂等\n      ---\n      duration_ms: 17.789715\n      type: 'test'\n      ...\n    1..1\nok 101 - 类别17 自动修复闭环\n  ---\n  duration_ms: 17.996099\n  type: 'suite'\n  ...\n# Subtest: 类别18 状态机\n    # Subtest: TASK_STATES 9 个；legalNext(SUCCEEDED) 为空；canTransition(RUNNING,WAITING_RECOVERY)=true；transition 原地更新并追加合法 history\n    ok 1 - TASK_STATES 9 个；legalNext(SUCCEEDED) 为空；canTransition(RUNNING,WAITING_RECOVERY)=true；transition 原地更新并追加合法 history\n      ---\n      duration_ms: 0.378546\n      type: 'test'\n      ...\n    1..1\nok 102 - 类别18 状态机\n  ---\n  duration_ms: 0.528179\n  type: 'suite'\n  ...\n# Subtest: §3.4 状态一致性 — 8 个必须正确的场景\n    # Subtest: 1. 32 项全部通过 → FULLY_OPERATIONAL（且可声明成功）\n    ok 1 - 1. 32 项全部通过 → FULLY_OPERATIONAL（且可声明成功）\n      ---\n      duration_ms: 4.689112\n      type: 'test'\n      ...\n    # Subtest: 2. 存在一项未验证 → 不得 FULLY_VERIFIED / FULLY_OPERATIONAL\n    ok 2 - 2. 存在一项未验证 → 不得 FULLY_VERIFIED / FULLY_OPERATIONAL\n      ---\n      duration_ms: 0.705872\n      type: 'test'\n      ...\n    # Subtest: 3. 存在一项未实现 → PARTIALLY_BUILT 或更低，不得 FULLY_*\n    ok 3 - 3. 存在一项未实现 → PARTIALLY_BUILT 或更低，不得 FULLY_*\n      ---\n      duration_ms: 0.6594\n      type: 'test'\n      ...\n    # Subtest: 4. 存在一项阻断 → 不得 FULLY_*；关键依赖阻断判定 BLOCKED\n    ok 4 - 4. 存在一项阻断 → 不得 FULLY_*；关键依赖阻断判定 BLOCKED\n      ---\n      duration_ms: 0.977812\n      type: 'test'\n      ...\n    # Subtest: 5. 存在测试失败 → 不得 FULLY_*\n    ok 5 - 5. 存在测试失败 → 不得 FULLY_*\n      ---\n      duration_ms: 0.50872\n      type: 'test'\n      ...\n    # Subtest: 6. 存在缺失证据 → 不得 FULLY_*\n    ok 6 - 6. 存在缺失证据 → 不得 FULLY_*\n      ---\n      duration_ms: 1.778948\n      type: 'test'\n      ...\n    # Subtest: 7. 历史通过但当前失败（execution_id / HEAD 不匹配）→ 不得算通过\n    ok 7 - 7. 历史通过但当前失败（execution_id / HEAD 不匹配）→ 不得算通过\n      ---\n      duration_ms: 0.437622\n      type: 'test'\n      ...\n    # Subtest: 8. 规范索引与最终报告不一致 → 不得 FULLY_*\n    ok 8 - 8. 规范索引与最终报告不一致 → 不得 FULLY_*\n      ---\n      duration_ms: 0.447572\n      type: 'test'\n      ...\n    1..8\nok 103 - §3.4 状态一致性 — 8 个必须正确的场景\n  ---\n  duration_ms: 13.623248\n  type: 'suite'\n  ...\n# Subtest: 状态引擎附加不变量\n    # Subtest: 跳过的测试永不算通过\n    ok 1 - 跳过的测试永不算通过\n      ---\n      duration_ms: 0.518716\n      type: 'test'\n      ...\n    # Subtest: 真实业务代码修复闭环缺失 → 最高只能 FULLY_VERIFIED，不能 FULLY_OPERATIONAL\n    ok 2 - 真实业务代码修复闭环缺失 → 最高只能 FULLY_VERIFIED，不能 FULLY_OPERATIONAL\n      ---\n      duration_ms: 0.422412\n      type: 'test'\n      ...\n    # Subtest: NOT_APPLICABLE 无理由与审批 → 不得 FULLY_*\n    ok 3 - NOT_APPLICABLE 无理由与审批 → 不得 FULLY_*\n      ---\n      duration_ms: 0.302597\n      type: 'test'\n      ...\n    # Subtest: 无执行身份 / 无要求 → NOT_BUILT\n    ok 4 - 无执行身份 / 无要求 → NOT_BUILT\n      ---\n      duration_ms: 0.182204\n      type: 'test'\n      ...\n    # Subtest: 所有状态都在状态机枚举内\n    ok 5 - 所有状态都在状态机枚举内\n      ---\n      duration_ms: 0.398463\n      type: 'test'\n      ...\n    # Subtest: 证据链校验：ID/HEAD/哈希/篡改任一项不合格即失败\n    ok 6 - 证据链校验：ID/HEAD/哈希/篡改任一项不合格即失败\n      ---\n      duration_ms: 0.329219\n      type: 'test'\n      ...\n    1..6\nok 104 - 状态引擎附加不变量\n  ---\n  duration_ms: 2.627668\n  type: 'suite'\n  ...\n# Subtest: 执行身份绑定\n    # Subtest: git HEAD 来自真实仓库且是 40 位 sha\n    ok 1 - git HEAD 来自真实仓库且是 40 位 sha\n      ---\n      duration_ms: 28.137321\n      type: 'test'\n      ...\n    # Subtest: worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n    ok 2 - worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n      ---\n      duration_ms: 2783.755369\n      type: 'test'\n      ...\n    # Subtest: 生成验证报告与构建缓存被排除，审计源文档仍被绑定\n    ok 3 - 生成验证报告与构建缓存被排除，审计源文档仍被绑定\n      ---\n      duration_ms: 3481.380897\n      type: 'test'\n      ...\n    # Subtest: currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n    ok 4 - currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n      ---\n      duration_ms: 914.81952\n      type: 'test'\n      ...\n    1..4\nok 105 - 执行身份绑定\n  ---\n  duration_ms: 7210.214723\n  type: 'suite'\n  ...\n# Subtest: 真实快照适配器\n    # Subtest: 从真实追踪矩阵构造 538 条要求与 32 份规范\n    ok 1 - 从真实追踪矩阵构造 538 条要求与 32 份规范\n      ---\n      duration_ms: 437.066106\n      type: 'test'\n      ...\n    # Subtest: stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n      ---\n      duration_ms: 396.666999\n      type: 'test'\n      ...\n    # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n    ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n      ---\n      duration_ms: 402.677927\n      type: 'test'\n      ...\n    # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n      ---\n      duration_ms: 4203.257024\n      type: 'test'\n      ...\n    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n      ---\n      duration_ms: 1333.237913\n      type: 'test'\n      ...\n    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致\n    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致\n      ---\n      duration_ms: 1818.786066\n      type: 'test'\n      ...\n    1..6\nok 106 - 真实快照适配器\n  ---\n  duration_ms: 8592.547185\n  type: 'suite'\n  ...\n# Subtest: 证据链 fail-closed\n    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败\n    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败\n      ---\n      duration_ms: 0.23347\n      type: 'test'\n      ...\n    1..1\nok 107 - 证据链 fail-closed\n  ---\n  duration_ms: 0.35319\n  type: 'suite'\n  ...\n# Subtest: fixtures are excluded, real self-tests are kept\nok 108 - fixtures are excluded, real self-tests are kept\n  ---\n  duration_ms: 5.448614\n  type: 'test'\n  ...\n# Subtest: the intentionally failing repair canaries are never collected\nok 109 - the intentionally failing repair canaries are never collected\n  ---\n  duration_ms: 0.476058\n  type: 'test'\n  ...\n# Subtest: discovery is fail-closed on non-test / malformed paths\nok 110 - discovery is fail-closed on non-test / malformed paths\n  ---\n  duration_ms: 1.107952\n  type: 'test'\n  ...\n# Subtest: the CLI actually uses the shared collector (no re-introduced inline filter)\nok 111 - the CLI actually uses the shared collector (no re-introduced inline filter)\n  ---\n  duration_ms: 1.154328\n  type: 'test'\n  ...\n1..111\n# tests 205\n# suites 32\n# pass 205\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 181071.700188\n",
+    "stderr_tail": "",
+    "execution_id": "UAP-EXEC-20261116140715-2797a8c6",
+    "git_head": "b24709dd0368a3163bcb3deeb3d3d4a8c0ccafb1",
+    "worktree_fingerprint": "faa6dd170513e68dfcb3138d0878a36244b30113c2a976a1c5942d436c8b5fb7",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a"
   },
-  "command": "verify-status",
-  "duration_ms": 6904,
-  "generated_at": "2026-11-16T12:12:34.578Z",
-  "evidence_ref": "UAP-EV-20261116121234-666bc2e8"
+  "command": "test --all",
+  "duration_ms": 181868,
+  "generated_at": "2026-11-16T14:08:42.817Z",
+  "evidence_ref": "UAP-EV-20261116140842-9b99601f"
 }
