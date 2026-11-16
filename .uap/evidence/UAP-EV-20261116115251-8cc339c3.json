@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116115251-8cc339c3",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T11:52:51.067Z",
+  "started_at": "2026-11-16T11:52:10.799Z",
+  "finished_at": "2026-11-16T11:52:51.067Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-requirements",
+  "exit_code": 0,
+  "duration_ms": 40268,
+  "inputs": "{\"argv\":[\"verify-requirements\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "requirement verification complete: 538 requirements with honest statuses",
+  "content_hash": "169e6d2fc6a0366cc147ee246d330bf54fa2d5e77520f953f4cfec4fb6da86ed"
+}

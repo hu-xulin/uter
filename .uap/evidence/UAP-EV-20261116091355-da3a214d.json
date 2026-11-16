@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116091355-da3a214d",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261116091348-6094e32d",
+  "trace_id": "UAP-TRACE-20261116091348-85b36bd1",
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T09:13:55.437Z",
+  "started_at": "2026-11-16T09:13:55.437Z",
+  "finished_at": "2026-11-16T09:13:55.437Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116091218-968673a2",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116091218-968673a2",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261116091348-6094e32d",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"Execute workflow Final Verification\",\"specification_ids\":[\"UAP-00-001\",\"UAP-00-002\",\"UAP-00-003\",\"UAP-00-004\",\"UAP-01-001\",\"UAP-01-002\",\"UAP-01-003\",\"UAP-02-001\",\"UAP-02-002\",\"UAP-02-003\",\"UAP-03-001\",\"UAP-03-002\",\"UAP-03-003\",\"UAP-03-004\",\"UAP-04-001\",\"UAP-04-002\",\"UAP-04-003\",\"UAP-05-001\",\"UAP-05-002\",\"UAP-05-003\",\"UAP-05-004\",\"UAP-06-001\",\"UAP-06-002\",\"UAP-06-003\",\"UAP-07-001\",\"UAP-07-002\",\"UAP-07-003\",\"UAP-08-001\",\"UAP-08-002\",\"UAP-08-003\",\"UAP-09-001\",\"UAP-09-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-20261116091348-6094e32d finished: SUCCEEDED",
+  "content_hash": "a91cb35ca8eaa5eac14032d21b4f9a85574bf616d1710cb81e72153af0e8bb6f"
+}

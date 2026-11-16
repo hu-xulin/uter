@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116111141-f4af0f80",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T11:11:41.692Z",
+  "started_at": "2026-11-16T11:11:41.692Z",
+  "finished_at": "2026-11-16T11:11:41.692Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116110853-9ce3bc51",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "7a3807ed7b6dfe6bf02877a47905126995d8469ff60c7a4bfd6e53de8968e94d",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116110853-9ce3bc51",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "7a3807ed7b6dfe6bf02877a47905126995d8469ff60c7a4bfd6e53de8968e94d",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.review_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.review_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.review_integrity 实检: review_execution=PASS(执行器不得自报 validation_results(assertExecutorResult 拒绝)=true; 正常 executorResult 通过=true; code_review 执行器已登记=true); finding_schema=PASS(finding() 返回 severity/code/message/extra 结构=true); blocking_rules=PASS(BLOCKER 降级 PASS->FAIL / MAJOR 不阻断 / executed:false 降级=true (p1=FAIL p2=PASS p3=FAIL)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 11302 个 | node 子进程真实复验 执行器/验证器分离 + finding schema + BLOCKER-only 阻断; 未调用 code-review 引擎 execute() 给自己盖章",
+  "content_hash": "c7c7f67315c423c2273b5a216d537e65fdb23556b4f1ef80cb0ae59bf656a44d"
+}

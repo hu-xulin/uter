@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116105532-d7885610",
+  "kind": "task_result",
+  "task_id": "UAP-TASK-20261116105524-63583784",
+  "trace_id": "UAP-TRACE-20261116105524-ec018e93",
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T10:55:32.850Z",
+  "started_at": "2026-11-16T10:55:32.850Z",
+  "finished_at": "2026-11-16T10:55:32.850Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116105424-7a31c198",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "fcc49a827ff4161b9d6c93ae0f1dd26ad616925dcd57ec0508927e3d809e4821",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116105424-7a31c198",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "fcc49a827ff4161b9d6c93ae0f1dd26ad616925dcd57ec0508927e3d809e4821",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task run UAP-TASK-20261116105524-63583784",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"objective\":\"Execute workflow Financial Integrity Verification\",\"specification_ids\":[\"UAP-00-001\",\"UAP-00-002\",\"UAP-00-003\",\"UAP-00-004\",\"UAP-01-001\",\"UAP-01-002\",\"UAP-01-003\",\"UAP-02-001\",\"UAP-02-002\",\"UAP-02-003\",\"UAP-03-001\",\"UAP-03-002\",\"UAP-03-003\",\"UAP-03-004\",\"UAP-04-001\",\"UAP-04-002\",\"UAP-04-003\",\"UAP-05-001\",\"UAP-05-002\",\"UAP-05-003\",\"UAP-05-004\",\"UAP-06-001\",\"UAP-06-002\",\"UAP-06-003\",\"UAP-07-001\",\"UAP-07-002\",\"UAP-07-003\",\"UAP-08-001\",\"UAP-08-002\",\"UAP-08-003\",\"UAP-09-001\",\"UAP-09-002\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "task UAP-TASK-20261116105524-63583784 finished: SUCCEEDED",
+  "content_hash": "79bf65155d1ad312f2012b2611c2a95e3a67507acdcbee98fcce71d96e52b628"
+}

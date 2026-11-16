@@ -1,0 +1,51 @@
+{
+  "evidence_id": "UAP-EV-20261116103523-07692872",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794825322439-afd1dc",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-16T10:35:23.433Z",
+  "started_at": "2026-11-16T10:35:23.332Z",
+  "finished_at": "2026-11-16T10:35:23.433Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116103523-24238eff",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "07509b007ee856f64f2e1836529a227be3925220574361cb0767c7ba1e52b3d4",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116103523-24238eff",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "07509b007ee856f64f2e1836529a227be3925220574361cb0767c7ba1e52b3d4",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node .uap/tests/fixtures/repair-canary.repro.mjs",
+  "exit_code": 1,
+  "duration_ms": 101,
+  "inputs": "{\"args\":[\".uap/tests/fixtures/repair-canary.repro.mjs\"],\"phase\":\"reproduction_before\"}",
+  "stdout": "",
+  "stderr": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: add() 必须返回两数之和\n\n6 !== 5\n\n    at file:///Users/lincolnhu/uter/.uap/tests/fixtures/repair-canary.repro.mjs:8:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 6,\n  expected: 5,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v24.21.0\n",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794825322439-afd1dc.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794825322439-afd1dc/repair-canary.mjs"
+  ],
+  "findings": [
+    "before=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+    "after=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1"
+  ],
+  "summary": "[reproduction_before] SUCCEEDED",
+  "content_hash": "1bff4b94da7ab0d64d029c71945ae4341c9b699bc5c4c677369131b6c4c5179d"
+}

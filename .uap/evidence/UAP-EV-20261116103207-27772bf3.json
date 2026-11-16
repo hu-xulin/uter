@@ -1,0 +1,49 @@
+{
+  "evidence_id": "UAP-EV-20261116103207-27772bf3",
+  "kind": "real_code_repair_result",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1794825120296-49ccfe",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-16T10:32:07.794Z",
+  "started_at": "2026-11-16T10:32:07.794Z",
+  "finished_at": "2026-11-16T10:32:07.794Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116103208-b6ae03c1",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "85a5aaeaea98b0aaddaf349cb514c08a2d2ee1925bdbfd1936f708e0c4daf5a2",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116103208-b6ae03c1",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "85a5aaeaea98b0aaddaf349cb514c08a2d2ee1925bdbfd1936f708e0c4daf5a2",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": null,
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"attempts\":1,\"target_file\":\".uap/tests/fixtures/repair-canary.mjs\",\"classification\":{\"level\":\"AUTO_ALLOW\",\"reason\":\"普通业务代码，在任务授权范围内自动允许\",\"auto_allow\":true}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1794825120296-49ccfe.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1794825120296-49ccfe/repair-canary.mjs",
+    ".uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-CANARY-REPAIR.md"
+  ],
+  "findings": [],
+  "summary": "真实业务代码修复闭环 SUCCEEDED",
+  "content_hash": "6e4c5773ed60794d4a44f25eb048a7832e1a9a484958159e6ac22e760f0611d2"
+}

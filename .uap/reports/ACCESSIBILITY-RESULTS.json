@@ -1,6 +1,6 @@
 {
   "status_model": "UAP-TEST-STATUS-1.0",
-  "status": "PASS",
+  "status": "BLOCKED",
   "suite": "accessibility",
   "command": "npx playwright test --config e2e/axe/playwright.config.ts",
   "exit_code": 0,
@@ -8,12 +8,12 @@
     {
       "id": "axe_0_axe: 鉴权页批量扫描",
       "title": "axe: 鉴权页批量扫描",
-      "status": "PASS",
-      "reason": null,
+      "status": "SKIPPED",
+      "reason": "runner reported status=skipped",
       "source": "runner",
       "runner_ok": true,
       "runner_statuses": [
-        "passed"
+        "skipped"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -189,45 +189,45 @@
     }
   ],
   "counts": {
-    "PASS": 14,
+    "PASS": 13,
     "FAIL": 0,
-    "SKIPPED": 0,
+    "SKIPPED": 1,
     "BLOCKED": 0,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 14,
-  "pass": 14,
+  "pass": 13,
   "fail": 0,
   "blocked": 0,
-  "skipped": 0,
+  "skipped": 1,
   "not_run": 0,
   "not_applicable": 0,
-  "target": "http://localhost:3101",
-  "passed": 14,
+  "target": "http://localhost:3000",
+  "passed": 13,
   "failed": 0,
   "critical": 0,
   "serious": 0,
   "critical_violations": [],
   "test_authentication": {
-    "isolated": true,
-    "mechanism": "isolated test stack (DB copy + dedicated port/env); no production auth change, no backend bypass",
+    "isolated": false,
+    "mechanism": "NOT_ISOLATED",
     "production_auth_policy_modified": false
   },
-  "generated_at": "2026-11-16T06:44:14.381Z",
+  "generated_at": "2026-11-16T11:55:01.524Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "2a6e470d1384319039c53860c6c7082894147135",
+  "commit_sha": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
   "test_environment": {
     "platform": "darwin",
-    "node": "v22.22.2",
+    "node": "v24.21.0",
     "cwd": "/Users/lincolnhu/uter",
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261116061245-a13a751a",
-  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
-  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
-  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
-  "evidence_ref": "UAP-EV-20261116064414-7a7e7af3"
+  "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "evidence_ref": "UAP-EV-20261116115501-53a5cdff"
 }

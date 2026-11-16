@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116114852-d7c65c8f",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T11:48:52.463Z",
+  "started_at": "2026-11-16T11:48:52.463Z",
+  "finished_at": "2026-11-16T11:48:52.463Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116113851-c6d19ad8",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116113851-c6d19ad8",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate evolution.knowledge_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"evolution.knowledge_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "evolution.knowledge_integrity 实检: source_traceability=PASS(32 条规范均声明 file 字段=32/32; product-model.json source_of_truth=true; docs/adr/README.md=true; VERSION=1.0.0; (规范文件当前实际落盘 32/32, 如实记录)); stale_knowledge=PASS(registry.status_values=true; 已落盘规范文件状态非法=0; 32 条均声明 criticality=true; VERSION 非空=true); conflict_detection=PASS(registry ID 唯一/无孤儿验证器/依赖存在=true; product-model.conflicts=0; change-registry conflicts:[]=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 11648 个 | 真实读取规范注册表/业务 SSOT/ADR/VERSION 并核验状态合法性; 规范文件落盘 32/32 如实记录(并行施工中间态), 未把\"已登记\"当作\"已落盘\"",
+  "content_hash": "bb569957cf9dc44943e47ffe4b5008de9a88e26f4c4bc9e23bc22c3560d41b3c"
+}

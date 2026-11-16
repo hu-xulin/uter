@@ -1,6 +1,6 @@
 # Security Audit Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T06:49:41.341Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T12:10:58.577Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 权限策略
@@ -39,14 +39,11 @@
 
 ## 密钥形态字面量扫描
 
-| 文件 | 命中数 |
-| --- | --- |
-| .uap/tools/requirement-behavior-suite.mjs | 2 |
-
+UAP 目录 0 命中。
 
 ## 拒绝决策审计
 
-policy-audit.jsonl 共 11411 条决策，8542 条 DENY。
+policy-audit.jsonl 共 16953 条决策，10875 条 DENY。
 
 ## 生产授权边界
 

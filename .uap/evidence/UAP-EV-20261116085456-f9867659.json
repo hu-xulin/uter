@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116085456-f9867659",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T08:54:56.699Z",
+  "started_at": "2026-11-16T08:54:56.699Z",
+  "finished_at": "2026-11-16T08:54:56.699Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116085309-2155a692",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116085309-2155a692",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.deployment_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.deployment_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "delivery.deployment_integrity 实检: deployment_plan=PASS(真实演练: preflight(2872 文件清单+二进制 sha256) + 版本推进 v1.5.28→v1.5.29(仅计算) + 发布槽逐文件 sha256 一致=true; verdict.deployment_plan=PASS); rollback_plan=PASS(真实回滚演练: 注入新版本标记→恢复上一槽位→逐文件 sha256==原构建且标记清除=true; 静态语义(ADR Superseded/Deprecated, change-registry snapshots, no_destructive_git)=true; verdict.rollback_plan=PASS); health_check=PASS(对运行中发布实例真实探活: GET /api/status -> 200; 目标=http://localhost:3000 (仅本地服务, 不触生产); verdict.health_check=PASS) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9575 个 | 授权在案 AUTH-DEPLOY-2026-11-12(用户 用户（2026-11-12 会话内明确指令：delivery.deploymen…, 有效期至 2027-11-12T00:00:00+08:00); 已执行真实发布演练(产物清单/版本推进/回滚恢复/健康探针, 全程本地只读+临时目录写入); policy 对 Agent 生产写入保持 DENY=true(纵深防御); 线上生产流水线执行超出本地环境与授权边界, 如实记录、不声明\"生产已验证\"",
+  "content_hash": "7a73d439d9a8d98d66539882a197d44422518411a88a9c4ee3e7265a96cbdd35"
+}

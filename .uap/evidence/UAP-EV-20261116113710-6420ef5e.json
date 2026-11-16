@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116113710-6420ef5e",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261116113708-0ecde8f8",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T11:37:10.326Z",
+  "started_at": "2026-11-16T11:37:10.326Z",
+  "finished_at": "2026-11-16T11:37:10.326Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116113709-09005101",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116113709-09005101",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:validate_environment",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-2\",\"name\":\"validate_environment\",\"idempotent\":true,\"handler\":\"validate_environment\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "toolchain: node v24.21.0, go go version go1.27.4 darwin/amd64, bun 1.4.2",
+  "content_hash": "94e329b719679ab884317bd704d353d02498ccf75394902f866c6f826e9f5c37"
+}

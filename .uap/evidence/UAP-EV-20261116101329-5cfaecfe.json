@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116101329-5cfaecfe",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261116101329-70c4589d",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T10:13:29.628Z",
+  "started_at": "2026-11-16T10:13:29.628Z",
+  "finished_at": "2026-11-16T10:13:29.628Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116100348-2988ad54",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116100348-2988ad54",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:inspect_repository",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-1\",\"name\":\"inspect_repository\",\"idempotent\":true,\"handler\":\"inspect_repository\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "inspected repository: 207 controller Go files, 1526 frontend TS files",
+  "content_hash": "1bfbc5bdf6687a04f617503d61809460e3a055f833b49d18d099e5daa1e09e0a"
+}

@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116085557-d7f21dd4",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T08:55:57.165Z",
+  "started_at": "2026-11-16T08:55:57.165Z",
+  "finished_at": "2026-11-16T08:55:57.165Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116085309-2155a692",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116085309-2155a692",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.requirement_traceability",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.requirement_traceability\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.requirement_traceability 实检: feature_ids=PASS(product-model.json features=56 唯一ID=56; feature-registry.yaml feature_id 行=56; 格式 UTER-XXX-NNN); requirement_coverage=PASS(requirement-registry.yaml requirement_id 行=124; product-model mappings=124; 带 acceptance_ids 行=124); acceptance_criteria=PASS(规范 11 sections/验收条件=true; AC- 唯一ID=373; 覆盖报告存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9612 个 | 真实读取 docs/product/registry 业务产物(56 features / 124 requirements / 124 mappings), 非只读规范文字",
+  "content_hash": "26ec47cb504059ad18326fb27fae84c6091cd189d4cb180f4d8fe87c7459219a"
+}

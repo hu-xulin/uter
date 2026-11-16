@@ -1,0 +1,44 @@
+{
+  "evidence_id": "UAP-EV-20261116100518-a4935100",
+  "kind": "requirement_behavior_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-02-002"
+  ],
+  "requirement_ids": [
+    "UAP-02-002-REQ-004"
+  ],
+  "recorded_at": "2026-11-16T10:05:18.467Z",
+  "started_at": "2026-11-16T10:05:18.467Z",
+  "finished_at": "2026-11-16T10:05:18.467Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116100348-2988ad54",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116100348-2988ad54",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "go test ./model/ -count=1 -v -run TestPhase2DBIntegration/db_09_foreign_key",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"assertions\":[{\"name\":\"db_09_foreign_key_enforced\",\"required_output\":[\"FK enforced\",\"orphan rejected\"],\"found\":true}]}",
+  "stdout": "=== RUN   TestPhase2DBIntegration\n=== RUN   TestPhase2DBIntegration/db_09_foreign_key\n    phase2_db_integration_test.go:436: observed PRAGMA foreign_keys=1, top_ups FK relations=1\n    phase2_db_integration_test.go:462: FK enforced (foreign_keys=1, relations=1): legal order accepted, orphan rejected\n--- PASS: TestPhase2DBIntegration (0.03s)\n    --- PASS: TestPhase2DBIntegration/db_09_foreign_key (0.03s)\nPASS\nok  \tgithub.com/uter-ai/uter/model\t1.382s\n",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "behaviour run bhv.model-foreign-key: 1/1 distinct assertions observed in real stdout",
+  "content_hash": "985c08fece8be8b6249430614338844cca2f8df3d03b8a0e64d8c420067ecb03"
+}

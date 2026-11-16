@@ -530,7 +530,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  48205 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: dashboard-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[2",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  48099 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: dashboard-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[2",
       "has_evidence": true
     },
     {
@@ -538,7 +538,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  21004 pixels (ratio 0.07 of all image pixels) are different.\n\n  Snapshot: dashboard-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  20978 pixels (ratio 0.07 of all image pixels) are different.\n\n  Snapshot: dashboard-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m",
       "has_evidence": true
     },
     {
@@ -546,7 +546,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  13071 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: home-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(home-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  -",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  13067 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: home-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(home-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  -",
       "has_evidence": true
     },
     {
@@ -562,7 +562,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  36230 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: about-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m ",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  36227 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: about-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m ",
       "has_evidence": true
     },
     {
@@ -578,7 +578,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8999 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: pricing-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8986 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: pricing-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
@@ -586,7 +586,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8155 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: pricing-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8142 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: pricing-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
       "has_evidence": true
     },
     {
@@ -594,7 +594,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8999 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: rankings-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8986 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: rankings-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
       "has_evidence": true
     },
     {
@@ -602,7 +602,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8155 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: rankings-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8142 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: rankings-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
@@ -610,7 +610,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  42046 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: docs-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(docs-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  -",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  42043 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: docs-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(docs-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  -",
       "has_evidence": true
     },
     {
@@ -626,7 +626,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8999 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: sign-in-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8986 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: sign-in-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[",
       "has_evidence": true
     },
     {
@@ -634,7 +634,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8155 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: sign-in-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  8142 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: sign-in-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m",
       "has_evidence": true
     },
     {
@@ -658,7 +658,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  6895 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: forgot-password-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - font",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  6860 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: forgot-password-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - font",
       "has_evidence": true
     },
     {
@@ -666,7 +666,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  6000 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: forgot-password-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts ",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  5965 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: forgot-password-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(forgot-password-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts ",
       "has_evidence": true
     },
     {
@@ -674,7 +674,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3290 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-404-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3255 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-404-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22",
       "has_evidence": true
     },
     {
@@ -682,7 +682,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3290 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-404-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  3255 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: error-404-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(error-404-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n",
       "has_evidence": true
     },
     {
@@ -706,7 +706,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  40426 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: privacy-policy-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  40423 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: privacy-policy-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts",
       "has_evidence": true
     },
     {
@@ -722,7 +722,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  47195 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: user-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(user-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  47192 pixels (ratio 0.04 of all image pixels) are different.\n\n  Snapshot: user-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(user-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts",
       "has_evidence": true
     },
     {
@@ -738,7 +738,7 @@
       "ok": false,
       "category": "REAL_UI_REGRESSION",
       "evidence_basis": "message carries a real screenshot pixel-diff assertion",
-      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  52611 pixels (ratio 0.05 of all image pixels) are different.\n\n  Snapshot: recharge-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(recharge-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m ",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  52608 pixels (ratio 0.05 of all image pixels) are different.\n\n  Snapshot: recharge-agreement-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(recharge-agreement-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m ",
       "has_evidence": true
     },
     {
@@ -757,23 +757,23 @@
     "accounts_created": 0,
     "production_build_modified": false
   },
-  "stdout_tail": "l/public.spec.ts:26:5 › error-404 - desktop ──────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-404 - mobile ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - desktop ─────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - mobile ──────────────────────\n  3 passed (4.6m)\n",
+  "stdout_tail": "l/public.spec.ts:26:5 › error-404 - desktop ──────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-404 - mobile ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - desktop ─────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - mobile ──────────────────────\n  3 passed (5.4m)\n",
   "stderr_tail": "",
   "json_parsed": true,
-  "generated_at": "2026-11-16T06:48:53.184Z",
+  "generated_at": "2026-11-16T12:00:29.251Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "2a6e470d1384319039c53860c6c7082894147135",
+  "commit_sha": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
   "test_environment": {
     "platform": "darwin",
-    "node": "v22.22.2",
+    "node": "v24.21.0",
     "cwd": "/Users/lincolnhu/uter",
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261116061245-a13a751a",
-  "git_head": "2a6e470d1384319039c53860c6c7082894147135",
-  "worktree_fingerprint": "460ce3a10c5b4d69b0d24bcb2cb5385bc1f214122ae66252ec221dbfe1a803a5",
-  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
-  "evidence_ref": "UAP-EV-20261116064853-c0205e34"
+  "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "evidence_ref": "UAP-EV-20261116120029-2cbc6002"
 }

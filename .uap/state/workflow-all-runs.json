@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-11-13T15:24:30.419Z",
+  "generated_at": "2026-11-16T10:57:39.817Z",
   "results": [
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152327-feb0fc34",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105241-3d2b0cdb",
       "workflow_id": "uap-bootstrap",
-      "task_id": "UAP-TASK-20261113152327-feb0fc34",
+      "task_id": "UAP-TASK-20261116105241-3d2b0cdb",
       "state": "BLOCKED",
       "steps_total": 6,
       "steps_succeeded": 5,
       "steps_blocked": 1,
       "evidence_refs": [
-        "UAP-EV-20261113152327-f4a58b7c",
-        "UAP-EV-20261113152328-c04ff3cc",
-        "UAP-EV-20261113152328-5c390c9a",
-        "UAP-EV-20261113152328-d9050cf0",
-        "UAP-EV-20261113152330-a5fce8b1",
-        "UAP-EV-20261113152359-f5483502",
-        "UAP-EV-20261113152359-38d6839e"
+        "UAP-EV-20261116105242-25869e9e",
+        "UAP-EV-20261116105243-ff924b9b",
+        "UAP-EV-20261116105244-315f86a4",
+        "UAP-EV-20261116105245-c5cd4164",
+        "UAP-EV-20261116105254-aa61b56e",
+        "UAP-EV-20261116105553-78c3f0c7",
+        "UAP-EV-20261116105554-45cd37ce"
       ],
       "validation": [
         {
@@ -24,15 +24,15 @@
           "status": "FAIL",
           "executed": true,
           "exit_code": 1,
-          "checked_at": "2026-11-13T15:23:59.795Z",
+          "checked_at": "2026-11-16T10:55:54.215Z",
           "evidence_refs": [
-            "UAP-EV-20261113152327-f4a58b7c",
-            "UAP-EV-20261113152328-c04ff3cc",
-            "UAP-EV-20261113152328-5c390c9a",
-            "UAP-EV-20261113152328-d9050cf0",
-            "UAP-EV-20261113152330-a5fce8b1",
-            "UAP-EV-20261113152359-f5483502",
-            "UAP-EV-20261113152359-38d6839e"
+            "UAP-EV-20261116105242-25869e9e",
+            "UAP-EV-20261116105243-ff924b9b",
+            "UAP-EV-20261116105244-315f86a4",
+            "UAP-EV-20261116105245-c5cd4164",
+            "UAP-EV-20261116105254-aa61b56e",
+            "UAP-EV-20261116105553-78c3f0c7",
+            "UAP-EV-20261116105554-45cd37ce"
           ],
           "findings": [
             {
@@ -59,30 +59,30 @@
         }
       ],
       "acceptance": "runtime_health_check",
-      "started_at": "2026-11-13T15:23:27.555Z",
-      "finished_at": "2026-11-13T15:24:00.072Z"
+      "started_at": "2026-11-16T10:52:41.294Z",
+      "finished_at": "2026-11-16T10:55:55.274Z"
     },
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152400-7acd912c",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105555-e5659817",
       "workflow_id": "uap-full-audit",
-      "task_id": "UAP-TASK-20261113152400-7acd912c",
+      "task_id": "UAP-TASK-20261116105555-e5659817",
       "state": "SUCCEEDED",
       "steps_total": 11,
       "steps_succeeded": 11,
       "steps_blocked": 0,
       "evidence_refs": [
-        "UAP-EV-20261113152400-e87ce926",
-        "UAP-EV-20261113152400-82dcd18d",
-        "UAP-EV-20261113152400-8d91952f",
-        "UAP-EV-20261113152400-1a76eecd",
-        "UAP-EV-20261113152401-01714b27",
-        "UAP-EV-20261113152401-2e88c542",
-        "UAP-EV-20261113152401-fc6271af",
-        "UAP-EV-20261113152401-ce1f3f3a",
-        "UAP-EV-20261113152401-7b98c9da",
-        "UAP-EV-20261113152401-b4be8c3c",
-        "UAP-EV-20261113152402-eb5632e6",
-        "UAP-EV-20261113152402-dc744645"
+        "UAP-EV-20261116105556-fdade566",
+        "UAP-EV-20261116105557-7920286f",
+        "UAP-EV-20261116105558-a495f1d5",
+        "UAP-EV-20261116105559-cedafc3d",
+        "UAP-EV-20261116105600-3ef4c986",
+        "UAP-EV-20261116105601-a43386bc",
+        "UAP-EV-20261116105602-535cede4",
+        "UAP-EV-20261116105603-392619e7",
+        "UAP-EV-20261116105604-8a8b4a40",
+        "UAP-EV-20261116105605-1473c676",
+        "UAP-EV-20261116105606-9a72cf3c",
+        "UAP-EV-20261116105607-21b58ff3"
       ],
       "validation": [
         {
@@ -90,20 +90,20 @@
           "status": "PASS",
           "executed": true,
           "exit_code": 0,
-          "checked_at": "2026-11-13T15:24:02.212Z",
+          "checked_at": "2026-11-16T10:56:06.982Z",
           "evidence_refs": [
-            "UAP-EV-20261113152400-e87ce926",
-            "UAP-EV-20261113152400-82dcd18d",
-            "UAP-EV-20261113152400-8d91952f",
-            "UAP-EV-20261113152400-1a76eecd",
-            "UAP-EV-20261113152401-01714b27",
-            "UAP-EV-20261113152401-2e88c542",
-            "UAP-EV-20261113152401-fc6271af",
-            "UAP-EV-20261113152401-ce1f3f3a",
-            "UAP-EV-20261113152401-7b98c9da",
-            "UAP-EV-20261113152401-b4be8c3c",
-            "UAP-EV-20261113152402-eb5632e6",
-            "UAP-EV-20261113152402-dc744645"
+            "UAP-EV-20261116105556-fdade566",
+            "UAP-EV-20261116105557-7920286f",
+            "UAP-EV-20261116105558-a495f1d5",
+            "UAP-EV-20261116105559-cedafc3d",
+            "UAP-EV-20261116105600-3ef4c986",
+            "UAP-EV-20261116105601-a43386bc",
+            "UAP-EV-20261116105602-535cede4",
+            "UAP-EV-20261116105603-392619e7",
+            "UAP-EV-20261116105604-8a8b4a40",
+            "UAP-EV-20261116105605-1473c676",
+            "UAP-EV-20261116105606-9a72cf3c",
+            "UAP-EV-20261116105607-21b58ff3"
           ],
           "findings": [],
           "checks_run": [
@@ -119,25 +119,25 @@
         }
       ],
       "acceptance": "audit_evidence_complete",
-      "started_at": "2026-11-13T15:24:00.108Z",
-      "finished_at": "2026-11-13T15:24:02.456Z"
+      "started_at": "2026-11-16T10:55:55.351Z",
+      "finished_at": "2026-11-16T10:56:07.936Z"
     },
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152402-cf7ba4c8",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105608-6d769ea7",
       "workflow_id": "uap-implementation",
-      "task_id": "UAP-TASK-20261113152402-cf7ba4c8",
+      "task_id": "UAP-TASK-20261116105608-6d769ea7",
       "state": "SUCCEEDED",
       "steps_total": 6,
       "steps_succeeded": 6,
       "steps_blocked": 0,
       "evidence_refs": [
-        "UAP-EV-20261113152402-288b20dd",
-        "UAP-EV-20261113152402-354e74d6",
-        "UAP-EV-20261113152402-9a17467e",
-        "UAP-EV-20261113152403-fed4ac04",
-        "UAP-EV-20261113152405-0b436a40",
-        "UAP-EV-20261113152405-f6baefee",
-        "UAP-EV-20261113152405-ad53707a"
+        "UAP-EV-20261116105608-da3f7fca",
+        "UAP-EV-20261116105609-09565b4f",
+        "UAP-EV-20261116105610-cb2c6b7d",
+        "UAP-EV-20261116105611-4c807c65",
+        "UAP-EV-20261116105620-368fe847",
+        "UAP-EV-20261116105621-e4204cfa",
+        "UAP-EV-20261116105622-db5a616b"
       ],
       "validation": [
         {
@@ -145,15 +145,15 @@
           "status": "PASS",
           "executed": true,
           "exit_code": 0,
-          "checked_at": "2026-11-13T15:24:05.528Z",
+          "checked_at": "2026-11-16T10:56:21.973Z",
           "evidence_refs": [
-            "UAP-EV-20261113152402-288b20dd",
-            "UAP-EV-20261113152402-354e74d6",
-            "UAP-EV-20261113152402-9a17467e",
-            "UAP-EV-20261113152403-fed4ac04",
-            "UAP-EV-20261113152405-0b436a40",
-            "UAP-EV-20261113152405-f6baefee",
-            "UAP-EV-20261113152405-ad53707a"
+            "UAP-EV-20261116105608-da3f7fca",
+            "UAP-EV-20261116105609-09565b4f",
+            "UAP-EV-20261116105610-cb2c6b7d",
+            "UAP-EV-20261116105611-4c807c65",
+            "UAP-EV-20261116105620-368fe847",
+            "UAP-EV-20261116105621-e4204cfa",
+            "UAP-EV-20261116105622-db5a616b"
           ],
           "findings": [],
           "checks_run": [
@@ -169,27 +169,27 @@
         }
       ],
       "acceptance": "implementation_verified",
-      "started_at": "2026-11-13T15:24:02.488Z",
-      "finished_at": "2026-11-13T15:24:05.775Z"
+      "started_at": "2026-11-16T10:56:08.011Z",
+      "finished_at": "2026-11-16T10:56:22.919Z"
     },
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152405-4e4dca13",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105622-9928e615",
       "workflow_id": "uap-defect-repair",
-      "task_id": "UAP-TASK-20261113152405-4e4dca13",
+      "task_id": "UAP-TASK-20261116105622-9928e615",
       "state": "SUCCEEDED",
       "steps_total": 8,
       "steps_succeeded": 8,
       "steps_blocked": 0,
       "evidence_refs": [
-        "UAP-EV-20261113152405-3442b3a4",
-        "UAP-EV-20261113152406-6057d3d8",
-        "UAP-EV-20261113152406-7f4c7a2e",
-        "UAP-EV-20261113152406-7795fcbb",
-        "UAP-EV-20261113152406-d4e56ba4",
-        "UAP-EV-20261113152406-df82dc66",
-        "UAP-EV-20261113152406-07db5419",
-        "UAP-EV-20261113152407-1c5e5454",
-        "UAP-EV-20261113152407-b3e060a9"
+        "UAP-EV-20261116105623-8b08d517",
+        "UAP-EV-20261116105624-f02e6edd",
+        "UAP-EV-20261116105625-46374272",
+        "UAP-EV-20261116105626-b94ccd0a",
+        "UAP-EV-20261116105627-9b84faac",
+        "UAP-EV-20261116105628-71d1337b",
+        "UAP-EV-20261116105629-d774194b",
+        "UAP-EV-20261116105630-37ae7638",
+        "UAP-EV-20261116105631-2c010afa"
       ],
       "validation": [
         {
@@ -197,17 +197,17 @@
           "status": "PASS",
           "executed": true,
           "exit_code": 0,
-          "checked_at": "2026-11-13T15:24:07.250Z",
+          "checked_at": "2026-11-16T10:56:31.219Z",
           "evidence_refs": [
-            "UAP-EV-20261113152405-3442b3a4",
-            "UAP-EV-20261113152406-6057d3d8",
-            "UAP-EV-20261113152406-7f4c7a2e",
-            "UAP-EV-20261113152406-7795fcbb",
-            "UAP-EV-20261113152406-d4e56ba4",
-            "UAP-EV-20261113152406-df82dc66",
-            "UAP-EV-20261113152406-07db5419",
-            "UAP-EV-20261113152407-1c5e5454",
-            "UAP-EV-20261113152407-b3e060a9"
+            "UAP-EV-20261116105623-8b08d517",
+            "UAP-EV-20261116105624-f02e6edd",
+            "UAP-EV-20261116105625-46374272",
+            "UAP-EV-20261116105626-b94ccd0a",
+            "UAP-EV-20261116105627-9b84faac",
+            "UAP-EV-20261116105628-71d1337b",
+            "UAP-EV-20261116105629-d774194b",
+            "UAP-EV-20261116105630-37ae7638",
+            "UAP-EV-20261116105631-2c010afa"
           ],
           "findings": [],
           "checks_run": [
@@ -223,28 +223,28 @@
         }
       ],
       "acceptance": "defect_verified_or_blocked",
-      "started_at": "2026-11-13T15:24:05.806Z",
-      "finished_at": "2026-11-13T15:24:07.499Z"
+      "started_at": "2026-11-16T10:56:22.988Z",
+      "finished_at": "2026-11-16T10:56:32.225Z"
     },
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152407-6d210002",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105632-3bc281b3",
       "workflow_id": "uap-quality-gate",
-      "task_id": "UAP-TASK-20261113152407-6d210002",
+      "task_id": "UAP-TASK-20261116105632-3bc281b3",
       "state": "SUCCEEDED",
       "steps_total": 9,
       "steps_succeeded": 9,
       "steps_blocked": 0,
       "evidence_refs": [
-        "UAP-EV-20261113152416-8f9fd0e8",
-        "UAP-EV-20261113152416-17ac3610",
-        "UAP-EV-20261113152416-c2e6c25a",
-        "UAP-EV-20261113152416-2936f010",
-        "UAP-EV-20261113152416-adee3109",
-        "UAP-EV-20261113152417-d9b0789f",
-        "UAP-EV-20261113152417-01c18acf",
-        "UAP-EV-20261113152426-38325632",
-        "UAP-EV-20261113152426-567755f3",
-        "UAP-EV-20261113152426-f6f3b5df"
+        "UAP-EV-20261116105651-321d24dc",
+        "UAP-EV-20261116105652-9f205067",
+        "UAP-EV-20261116105653-f8a692cb",
+        "UAP-EV-20261116105654-6675d9f0",
+        "UAP-EV-20261116105655-0d71a7d9",
+        "UAP-EV-20261116105657-56cbd41b",
+        "UAP-EV-20261116105658-e884a583",
+        "UAP-EV-20261116105718-84919d3e",
+        "UAP-EV-20261116105718-8bac6212",
+        "UAP-EV-20261116105719-98c3d6f2"
       ],
       "validation": [
         {
@@ -252,18 +252,18 @@
           "status": "PASS",
           "executed": true,
           "exit_code": 0,
-          "checked_at": "2026-11-13T15:24:26.529Z",
+          "checked_at": "2026-11-16T10:57:19.505Z",
           "evidence_refs": [
-            "UAP-EV-20261113152416-8f9fd0e8",
-            "UAP-EV-20261113152416-17ac3610",
-            "UAP-EV-20261113152416-c2e6c25a",
-            "UAP-EV-20261113152416-2936f010",
-            "UAP-EV-20261113152416-adee3109",
-            "UAP-EV-20261113152417-d9b0789f",
-            "UAP-EV-20261113152417-01c18acf",
-            "UAP-EV-20261113152426-38325632",
-            "UAP-EV-20261113152426-567755f3",
-            "UAP-EV-20261113152426-f6f3b5df"
+            "UAP-EV-20261116105651-321d24dc",
+            "UAP-EV-20261116105652-9f205067",
+            "UAP-EV-20261116105653-f8a692cb",
+            "UAP-EV-20261116105654-6675d9f0",
+            "UAP-EV-20261116105655-0d71a7d9",
+            "UAP-EV-20261116105657-56cbd41b",
+            "UAP-EV-20261116105658-e884a583",
+            "UAP-EV-20261116105718-84919d3e",
+            "UAP-EV-20261116105718-8bac6212",
+            "UAP-EV-20261116105719-98c3d6f2"
           ],
           "findings": [],
           "checks_run": [
@@ -279,27 +279,27 @@
         }
       ],
       "acceptance": "all_required_gates_pass",
-      "started_at": "2026-11-13T15:24:07.530Z",
-      "finished_at": "2026-11-13T15:24:26.780Z"
+      "started_at": "2026-11-16T10:56:32.291Z",
+      "finished_at": "2026-11-16T10:57:20.479Z"
     },
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152426-96573fcc",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105720-c87eefa9",
       "workflow_id": "uap-financial-verification",
-      "task_id": "UAP-TASK-20261113152426-96573fcc",
+      "task_id": "UAP-TASK-20261116105720-c87eefa9",
       "state": "SUCCEEDED",
       "steps_total": 8,
       "steps_succeeded": 8,
       "steps_blocked": 0,
       "evidence_refs": [
-        "UAP-EV-20261113152426-fe20c6ff",
-        "UAP-EV-20261113152427-a654315e",
-        "UAP-EV-20261113152427-fb7bae66",
-        "UAP-EV-20261113152427-af35310c",
-        "UAP-EV-20261113152427-846dbac3",
-        "UAP-EV-20261113152427-14487eac",
-        "UAP-EV-20261113152427-f9e70e09",
-        "UAP-EV-20261113152428-e7b840d9",
-        "UAP-EV-20261113152428-737850b0"
+        "UAP-EV-20261116105721-7706cbc7",
+        "UAP-EV-20261116105722-41c0b3f7",
+        "UAP-EV-20261116105723-566258dc",
+        "UAP-EV-20261116105724-d25fc566",
+        "UAP-EV-20261116105725-ff35dbae",
+        "UAP-EV-20261116105726-d4f9016f",
+        "UAP-EV-20261116105727-a519653e",
+        "UAP-EV-20261116105728-dda43e38",
+        "UAP-EV-20261116105729-2f546018"
       ],
       "validation": [
         {
@@ -307,17 +307,17 @@
           "status": "PASS",
           "executed": true,
           "exit_code": 0,
-          "checked_at": "2026-11-13T15:24:28.224Z",
+          "checked_at": "2026-11-16T10:57:28.698Z",
           "evidence_refs": [
-            "UAP-EV-20261113152426-fe20c6ff",
-            "UAP-EV-20261113152427-a654315e",
-            "UAP-EV-20261113152427-fb7bae66",
-            "UAP-EV-20261113152427-af35310c",
-            "UAP-EV-20261113152427-846dbac3",
-            "UAP-EV-20261113152427-14487eac",
-            "UAP-EV-20261113152427-f9e70e09",
-            "UAP-EV-20261113152428-e7b840d9",
-            "UAP-EV-20261113152428-737850b0"
+            "UAP-EV-20261116105721-7706cbc7",
+            "UAP-EV-20261116105722-41c0b3f7",
+            "UAP-EV-20261116105723-566258dc",
+            "UAP-EV-20261116105724-d25fc566",
+            "UAP-EV-20261116105725-ff35dbae",
+            "UAP-EV-20261116105726-d4f9016f",
+            "UAP-EV-20261116105727-a519653e",
+            "UAP-EV-20261116105728-dda43e38",
+            "UAP-EV-20261116105729-2f546018"
           ],
           "findings": [],
           "checks_run": [
@@ -333,28 +333,28 @@
         }
       ],
       "acceptance": "financial_integrity_verified",
-      "started_at": "2026-11-13T15:24:26.811Z",
-      "finished_at": "2026-11-13T15:24:28.514Z"
+      "started_at": "2026-11-16T10:57:20.551Z",
+      "finished_at": "2026-11-16T10:57:29.675Z"
     },
     {
-      "run_id": "UAP-RUN-UAP-TASK-20261113152428-75d1c464",
+      "run_id": "UAP-RUN-UAP-TASK-20261116105729-4df34a4e",
       "workflow_id": "uap-final-verification",
-      "task_id": "UAP-TASK-20261113152428-75d1c464",
+      "task_id": "UAP-TASK-20261116105729-4df34a4e",
       "state": "SUCCEEDED",
       "steps_total": 9,
       "steps_succeeded": 9,
       "steps_blocked": 0,
       "evidence_refs": [
-        "UAP-EV-20261113152428-783c4a6a",
-        "UAP-EV-20261113152428-7fb47740",
-        "UAP-EV-20261113152429-329185bf",
-        "UAP-EV-20261113152429-f78643da",
-        "UAP-EV-20261113152429-d2d69951",
-        "UAP-EV-20261113152429-6e806c1f",
-        "UAP-EV-20261113152429-32033c83",
-        "UAP-EV-20261113152429-ac9c512c",
-        "UAP-EV-20261113152430-ea01a3f4",
-        "UAP-EV-20261113152430-ca05a0ec"
+        "UAP-EV-20261116105730-274a2c0a",
+        "UAP-EV-20261116105731-da6e0ea8",
+        "UAP-EV-20261116105732-57cbc356",
+        "UAP-EV-20261116105733-2a809e25",
+        "UAP-EV-20261116105734-2a18ccb6",
+        "UAP-EV-20261116105735-d4630db0",
+        "UAP-EV-20261116105736-0b54340a",
+        "UAP-EV-20261116105737-d7150014",
+        "UAP-EV-20261116105738-9703fe24",
+        "UAP-EV-20261116105739-faec7ede"
       ],
       "validation": [
         {
@@ -362,18 +362,18 @@
           "status": "PASS",
           "executed": true,
           "exit_code": 0,
-          "checked_at": "2026-11-13T15:24:30.162Z",
+          "checked_at": "2026-11-16T10:57:38.810Z",
           "evidence_refs": [
-            "UAP-EV-20261113152428-783c4a6a",
-            "UAP-EV-20261113152428-7fb47740",
-            "UAP-EV-20261113152429-329185bf",
-            "UAP-EV-20261113152429-f78643da",
-            "UAP-EV-20261113152429-d2d69951",
-            "UAP-EV-20261113152429-6e806c1f",
-            "UAP-EV-20261113152429-32033c83",
-            "UAP-EV-20261113152429-ac9c512c",
-            "UAP-EV-20261113152430-ea01a3f4",
-            "UAP-EV-20261113152430-ca05a0ec"
+            "UAP-EV-20261116105730-274a2c0a",
+            "UAP-EV-20261116105731-da6e0ea8",
+            "UAP-EV-20261116105732-57cbc356",
+            "UAP-EV-20261116105733-2a809e25",
+            "UAP-EV-20261116105734-2a18ccb6",
+            "UAP-EV-20261116105735-d4630db0",
+            "UAP-EV-20261116105736-0b54340a",
+            "UAP-EV-20261116105737-d7150014",
+            "UAP-EV-20261116105738-9703fe24",
+            "UAP-EV-20261116105739-faec7ede"
           ],
           "findings": [],
           "checks_run": [
@@ -389,8 +389,8 @@
         }
       ],
       "acceptance": "full_operational_acceptance",
-      "started_at": "2026-11-13T15:24:28.547Z",
-      "finished_at": "2026-11-13T15:24:30.416Z"
+      "started_at": "2026-11-16T10:57:29.737Z",
+      "finished_at": "2026-11-16T10:57:39.813Z"
     }
   ]
 }

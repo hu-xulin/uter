@@ -1,18 +1,18 @@
 # Cross-Platform Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T06:49:41.450Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T12:10:58.684Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 平台目录探测
 
 | 路径 | 存在 | 文件数 |
 | --- | --- | --- |
-| web | YES | 4515 |
+| web | YES | 4431 |
 | electron | YES | 14 |
 | desktop | NO | 0 |
 | web/src/design-system | YES | 37 |
 | web/src/features/wallet | YES | 40 |
-| docs/design-system | YES | 176 |
+| docs/design-system | YES | 178 |
 
 
 ## 设计系统约束

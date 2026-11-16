@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261116101603-9e96abb6",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T10:16:03.420Z",
+  "started_at": "2026-11-16T10:13:29.052Z",
+  "finished_at": "2026-11-16T10:16:03.420Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116101404-c4aa9f54",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116101404-c4aa9f54",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap workflow run --all",
+  "exit_code": 1,
+  "duration_ms": 154368,
+  "inputs": "{\"argv\":[\"workflow\",\"run\",\"--all\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "workflow: 2/7 workflows did not succeed"
+    }
+  ],
+  "summary": "workflow: 2/7 workflows did not succeed",
+  "content_hash": "b392485b96c713711ba928476c59e65a53279dddf5cbb207036e2f9e40307233"
+}

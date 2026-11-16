@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116110859-9b1a1f46",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T11:08:59.555Z",
+  "started_at": "2026-11-16T11:08:59.555Z",
+  "finished_at": "2026-11-16T11:08:59.555Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116110853-9ce3bc51",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "7a3807ed7b6dfe6bf02877a47905126995d8469ff60c7a4bfd6e53de8968e94d",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116110853-9ce3bc51",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "7a3807ed7b6dfe6bf02877a47905126995d8469ff60c7a4bfd6e53de8968e94d",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.consistency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.consistency\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.consistency 实检: module_boundaries=PASS(10 个域目录存在=10/10; 登记 domain 全部合法=true (10 个); spec 数=32; unique_ids=true); dependency_graph=PASS(自算 DAG cycles=0 missing_deps=0; registry dependencies_exist/acyclic=true/true); architecture_evidence=PASS(规范含证据要求章节=true; registry validator 映射/唯一/无孤儿=true; .uap/evidence/*.json 当前=11261 条(运行时产物,如实记录)) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 11261 个 | 按 10 域目录 + 自算依赖 DAG + 证据章节/映射完整性真实复算",
+  "content_hash": "ddb091dd682caf7a095cd6697a6360a29ee30fbf0d6042ecb8bf3d55d51f6708"
+}

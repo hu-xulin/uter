@@ -1,6 +1,6 @@
 # Workflow Verification Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T06:49:40.646Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T12:10:57.625Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 7 个注册工作流
@@ -95,8 +95,46 @@
 | uap-quality-gate | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113152407-6d210002 |
 | uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261113152426-96573fcc |
 | uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261113152428-75d1c464 |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116091154-fd9b600c |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261116091256-10b2a1fa |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261116091305-3cd04bd4 |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116091316-f684d6c7 |
+| uap-quality-gate | BLOCKED | 9 | 5 | 4 | 7 | UAP-RUN-UAP-TASK-20261116091322-58bc6ffe |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116091342-cfaa3c66 |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116091348-6094e32d |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116101329-70c4589d |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261116101450-eefd865f |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261116101500-9491e9f7 |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116101512-57a6bb91 |
+| uap-quality-gate | BLOCKED | 9 | 5 | 4 | 7 | UAP-RUN-UAP-TASK-20261116101520-48c38fe5 |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116101546-b8971bc4 |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116101554-3d7f4bb0 |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116103147-e7c3e515 |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261116103307-77262651 |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261116103318-bcb6712d |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116103330-e3c083d9 |
+| uap-quality-gate | BLOCKED | 9 | 5 | 4 | 7 | UAP-RUN-UAP-TASK-20261116103338-6e3745c6 |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116103402-d1dbc16d |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116103410-2e551e1a |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116103505-0763b234 |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261116103755-08fc591d |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261116103806-e7cc351f |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116103820-1a307292 |
+| uap-quality-gate | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116103828-c4ff3db0 |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116103912-b29b5fc1 |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116103920-5e3bd35d |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116104714-9748f06e |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116105241-3d2b0cdb |
+| uap-full-audit | SUCCEEDED | 11 | 11 | 0 | 12 | UAP-RUN-UAP-TASK-20261116105555-e5659817 |
+| uap-implementation | SUCCEEDED | 6 | 6 | 0 | 7 | UAP-RUN-UAP-TASK-20261116105608-6d769ea7 |
+| uap-defect-repair | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116105622-9928e615 |
+| uap-quality-gate | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116105632-3bc281b3 |
+| uap-financial-verification | SUCCEEDED | 8 | 8 | 0 | 9 | UAP-RUN-UAP-TASK-20261116105720-c87eefa9 |
+| uap-final-verification | SUCCEEDED | 9 | 9 | 0 | 10 | UAP-RUN-UAP-TASK-20261116105729-4df34a4e |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116113332-14514bc1 |
+| uap-bootstrap | BLOCKED | 6 | 5 | 1 | 7 | UAP-RUN-UAP-TASK-20261116113708-0ecde8f8 |
 
 
 ## 汇总
 
-注册 7；已运行 75；成功 67。
+注册 7；已运行 113；成功 94。

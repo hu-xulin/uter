@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116101350-9bdc38c9",
+  "kind": "recovery",
+  "task_id": "UAP-TASK-INTERRUPT-20261116101348-a2276ed0",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T10:13:50.338Z",
+  "started_at": "2026-11-16T10:13:50.338Z",
+  "finished_at": "2026-11-16T10:13:50.338Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116101350-e0251c29",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "4361ab490aaba2fbc09fc85b23573a0ce97325d90a679bf5efc1a1aed7b388fa",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116101350-e0251c29",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "4361ab490aaba2fbc09fc85b23573a0ce97325d90a679bf5efc1a1aed7b388fa",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap task resume UAP-TASK-INTERRUPT-20261116101348-a2276ed0",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"resumable\":true,\"state\":\"RUNNING\",\"context_version\":\"e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f\",\"completed_steps\":[\"step-1\"],\"pending_steps\":[\"step-2\",\"step-3\"],\"ambiguous_side_effects\":[],\"committed_side_effects\":[],\"trace_id\":\"UAP-TRACE-20261116101348-339fd9dd\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "recovery started: 1 completed steps, 0 ambiguous side effects",
+  "content_hash": "a1dd64713ef2db2d951d206f953e3598549c3841a637a03e66700f2a1ababe6f"
+}

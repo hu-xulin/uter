@@ -1,19 +1,19 @@
 {
-  "run_id": "UAP-RUN-UAP-TASK-20261113152327-feb0fc34",
+  "run_id": "UAP-RUN-UAP-TASK-20261116113708-0ecde8f8",
   "workflow_id": "uap-bootstrap",
-  "task_id": "UAP-TASK-20261113152327-feb0fc34",
+  "task_id": "UAP-TASK-20261116113708-0ecde8f8",
   "state": "BLOCKED",
   "steps_total": 6,
   "steps_succeeded": 5,
   "steps_blocked": 1,
   "evidence_refs": [
-    "UAP-EV-20261113152327-f4a58b7c",
-    "UAP-EV-20261113152328-c04ff3cc",
-    "UAP-EV-20261113152328-5c390c9a",
-    "UAP-EV-20261113152328-d9050cf0",
-    "UAP-EV-20261113152330-a5fce8b1",
-    "UAP-EV-20261113152359-f5483502",
-    "UAP-EV-20261113152359-38d6839e"
+    "UAP-EV-20261116113709-39941b71",
+    "UAP-EV-20261116113710-676fd947",
+    "UAP-EV-20261116113711-509c208e",
+    "UAP-EV-20261116113712-3a8a536f",
+    "UAP-EV-20261116113722-f573cb46",
+    "UAP-EV-20261116114026-0fe1e485",
+    "UAP-EV-20261116114027-78e639d0"
   ],
   "validation": [
     {
@@ -21,15 +21,15 @@
       "status": "FAIL",
       "executed": true,
       "exit_code": 1,
-      "checked_at": "2026-11-13T15:23:59.795Z",
+      "checked_at": "2026-11-16T11:40:27.355Z",
       "evidence_refs": [
-        "UAP-EV-20261113152327-f4a58b7c",
-        "UAP-EV-20261113152328-c04ff3cc",
-        "UAP-EV-20261113152328-5c390c9a",
-        "UAP-EV-20261113152328-d9050cf0",
-        "UAP-EV-20261113152330-a5fce8b1",
-        "UAP-EV-20261113152359-f5483502",
-        "UAP-EV-20261113152359-38d6839e"
+        "UAP-EV-20261116113709-39941b71",
+        "UAP-EV-20261116113710-676fd947",
+        "UAP-EV-20261116113711-509c208e",
+        "UAP-EV-20261116113712-3a8a536f",
+        "UAP-EV-20261116113722-f573cb46",
+        "UAP-EV-20261116114026-0fe1e485",
+        "UAP-EV-20261116114027-78e639d0"
       ],
       "findings": [
         {
@@ -56,6 +56,6 @@
     }
   ],
   "acceptance": "runtime_health_check",
-  "started_at": "2026-11-13T15:23:27.555Z",
-  "finished_at": "2026-11-13T15:24:00.072Z"
+  "started_at": "2026-11-16T11:37:08.319Z",
+  "finished_at": "2026-11-16T11:40:28.410Z"
 }

@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261116101545-f7449a17",
+  "kind": "workflow_step",
+  "task_id": "UAP-TASK-20261116101520-48c38fe5",
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T10:15:45.283Z",
+  "started_at": "2026-11-16T10:15:45.283Z",
+  "finished_at": "2026-11-16T10:15:45.283Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116101404-c4aa9f54",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116101404-c4aa9f54",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "6ecbeaabdba2d18266c01b501833270fb2e0a7acb8ed7e2f207b5a8fb7e88cd6",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "workflow:security_scan",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"step\":{\"step_id\":\"step-6\",\"name\":\"security_scan\",\"idempotent\":true,\"handler\":\"security_scan\",\"status\":\"PENDING\",\"attempts\":1,\"evidence_refs\":[],\"changed_files\":[],\"outputs\":{},\"error\":null}}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "workflow_step_failed",
+      "message": "2 secret-shaped literals found"
+    }
+  ],
+  "summary": "2 secret-shaped literals found",
+  "content_hash": "1493c0a3db85ad1bea407626e3a482d57602a3ea68a31bad2cd27c38463b41b5"
+}

@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261116085558-319ea70e",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-16T08:55:58.679Z",
+  "started_at": "2026-11-16T08:55:58.679Z",
+  "finished_at": "2026-11-16T08:55:58.679Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261116085309-2155a692",
+    "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+    "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261116085309-2155a692",
+  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "worktree_fingerprint": "e4952b4a9d24075fdfc3bc9ca6a6f8bbf10ab2069895f432525079e453ac6b9b",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.adr_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.adr_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.adr_integrity 实检: decision_records=PASS(docs/adr/README.md(bytes=703) 与 0001 ADR(bytes=1152) 存在; README 含状态枚举=true; 规范含 ADR/背景/备选方案/状态=true); decision_traceability=PASS(依赖标准 UAP-02-001 文件存在=true; 0001 ADR 含 Accepted=true; go.mod/web/package.json 存在=true; 当前设计证据(UDS8.0.0总纲+Manifest+迁移报告+B6迁移状态)=true; 规范含 追溯/依赖标准=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 9617 个 | 真实读取 docs/adr 决策记录与真实技术栈文件, 复核决策→代码可追溯",
+  "content_hash": "89504bcf273bc19cf9effd075c4c43a813fd69e06a1a8f293f2515d87273922a"
+}

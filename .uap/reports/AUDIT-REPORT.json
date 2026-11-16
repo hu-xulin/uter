@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-16T05:56:51.692Z",
+  "generated_at": "2026-11-16T10:11:37.722Z",
   "registry": {
     "ok": true,
     "findings": 0
   },
   "audit": {
-    "generated_at": "2026-11-16T05:56:51.679Z",
+    "generated_at": "2026-11-16T10:11:37.716Z",
     "domains": [
       {
         "domain": "authentication",
@@ -148,7 +148,7 @@
           {
             "severity": "INFO",
             "code": "designsystem_docs_files",
-            "message": "docs/design-system/ 真实文件计数 = 176",
+            "message": "docs/design-system/ 真实文件计数 = 178",
             "file": "docs/design-system/",
             "domain": "frontend-design-system"
           }
@@ -211,13 +211,13 @@
           {
             "severity": "INFO",
             "code": "env_git_status",
-            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=180",
+            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=677",
             "domain": "environment"
           },
           {
             "severity": "INFO",
             "code": "env_node_version",
-            "message": "真实命令 \"node --version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"v22.22.2\"",
+            "message": "真实命令 \"node --version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"v24.21.0\"",
             "domain": "environment"
           },
           {
@@ -283,7 +283,7 @@
       {
         "path": "docs/design-system/",
         "exists": true,
-        "file_count": 176
+        "file_count": 178
       },
       {
         "path": "relaykit/",
@@ -302,7 +302,7 @@
         "exit_code": 0,
         "timed_out": false,
         "spawn_error": null,
-        "stdout_preview": "M  .github/ISSUE_TEMPLATE/bug_report.yml\nM  .github/ISSUE_TEMPLATE/bug_report_en.yml\nM  .github/ISSUE_TEMPLATE/feature_request.yml\nM  .github/ISSUE_TEMPLATE/feature_request_en.yml\nM  .github/PULL_REQU",
+        "stdout_preview": "M .uap/SPECIFICATION-INDEX.md\n M .uap/reports/ACCESSIBILITY-RESULTS.json\n M .uap/reports/AGENT-COMPLIANCE-REPORT.md\n M .uap/reports/AUDIT-REPORT.json\n M .uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-B",
         "stderr_preview": ""
       },
       {
@@ -310,7 +310,7 @@
         "exit_code": 0,
         "timed_out": false,
         "spawn_error": null,
-        "stdout_preview": "v22.22.2",
+        "stdout_preview": "v24.21.0",
         "stderr_preview": ""
       },
       {
@@ -322,7 +322,7 @@
         "stderr_preview": ""
       }
     ],
-    "files_scanned_total": 4336,
+    "files_scanned_total": 4338,
     "findings": [
       {
         "severity": "INFO",
@@ -432,7 +432,7 @@
       {
         "severity": "INFO",
         "code": "designsystem_docs_files",
-        "message": "docs/design-system/ 真实文件计数 = 176",
+        "message": "docs/design-system/ 真实文件计数 = 178",
         "file": "docs/design-system/",
         "domain": "frontend-design-system"
       },
@@ -474,13 +474,13 @@
       {
         "severity": "INFO",
         "code": "env_git_status",
-        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=180",
+        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=677",
         "domain": "environment"
       },
       {
         "severity": "INFO",
         "code": "env_node_version",
-        "message": "真实命令 \"node --version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"v22.22.2\"",
+        "message": "真实命令 \"node --version\" exit_code=0, timed_out=false, spawn_error=null, stdout=\"v24.21.0\"",
         "domain": "environment"
       },
       {
@@ -490,7 +490,7 @@
         "domain": "environment"
       }
     ],
-    "summary": "扫描 13 个路径（真实文件计数合计 4336，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
+    "summary": "扫描 13 个路径（真实文件计数合计 4338，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
     "blockers": 0,
     "severities": [
       "BLOCKER",
@@ -500,7 +500,7 @@
     ]
   },
   "financial": {
-    "generated_at": "2026-11-16T05:56:51.692Z",
+    "generated_at": "2026-11-16T10:11:37.722Z",
     "simulated_only": true,
     "safety": {
       "network_calls": 0,

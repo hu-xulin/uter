@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "started": true,
   "health_check_passed": true,
-  "checked_at": "2026-11-16T05:58:24.208Z",
+  "checked_at": "2026-11-16T12:01:35.835Z",
   "components": {
     "orchestrator": {
       "component": "orchestrator",
@@ -11,7 +11,7 @@
       "checks": {
         "self": true
       },
-      "checked_at": "2026-11-16T05:58:20.044Z",
+      "checked_at": "2026-11-16T12:01:26.915Z",
       "note": "orchestrator is the caller of this health check"
     },
     "task-engine": {
@@ -26,8 +26,8 @@
         "executor_result_valid": true,
         "trace_id_present": true
       },
-      "checked_at": "2026-11-16T05:58:21.161Z",
-      "probe_task_id": "UAP-TASK-HEALTH-20261116055820-9017d031"
+      "checked_at": "2026-11-16T12:01:29.562Z",
+      "probe_task_id": "UAP-TASK-HEALTH-20261116120126-ce197cf1"
     },
     "state-machine": {
       "component": "state-machine",
@@ -41,7 +41,7 @@
         "legal_edge_accepted": true,
         "recovery_edge_accepted": true
       },
-      "checked_at": "2026-11-16T05:58:21.161Z"
+      "checked_at": "2026-11-16T12:01:29.562Z"
     },
     "event-system": {
       "component": "event-system",
@@ -53,7 +53,7 @@
         "structured_fields": true,
         "task_query": true
       },
-      "checked_at": "2026-11-16T05:58:21.341Z"
+      "checked_at": "2026-11-16T12:01:29.905Z"
     },
     "scheduler": {
       "component": "scheduler",
@@ -66,7 +66,7 @@
         "file_conflict_detected": true,
         "concurrency_limit_defined": true
       },
-      "checked_at": "2026-11-16T05:58:21.341Z"
+      "checked_at": "2026-11-16T12:01:29.906Z"
     },
     "resource-manager": {
       "component": "resource-manager",
@@ -79,7 +79,7 @@
         "conflict_detector": true,
         "max_concurrency": 4
       },
-      "checked_at": "2026-11-16T05:58:21.343Z"
+      "checked_at": "2026-11-16T12:01:29.909Z"
     },
     "recovery-engine": {
       "component": "recovery-engine",
@@ -93,9 +93,9 @@
         "completed_steps_not_repeated": true,
         "recovery_evidence_written": true
       },
-      "probe_task_id": "UAP-TASK-INTERRUPT-20261116055821-244ef55b",
+      "probe_task_id": "UAP-TASK-INTERRUPT-20261116120130-15215c09",
       "final_state": "SUCCEEDED",
-      "checked_at": "2026-11-16T05:58:23.746Z"
+      "checked_at": "2026-11-16T12:01:35.002Z"
     },
     "agent-runtime": {
       "component": "agent-runtime",
@@ -111,7 +111,7 @@
         "tool_guard_rejects_unknown": true,
         "policy_gate_active": true
       },
-      "checked_at": "2026-11-16T05:58:23.748Z"
+      "checked_at": "2026-11-16T12:01:35.005Z"
     },
     "evidence-engine": {
       "component": "evidence-engine",
@@ -126,8 +126,8 @@
         "command_and_exit_recorded": true,
         "secret_redaction": true
       },
-      "checked_at": "2026-11-16T05:58:24.175Z",
-      "probe_evidence_id": "UAP-EV-20261116055823-282f496a"
+      "checked_at": "2026-11-16T12:01:35.794Z",
+      "probe_evidence_id": "UAP-EV-20261116120135-9db302d9"
     },
     "policy-engine": {
       "component": "policy-engine",
@@ -144,7 +144,7 @@
         "all_high_risk_denied": true,
         "audit_logged": true
       },
-      "checked_at": "2026-11-16T05:58:24.208Z"
+      "checked_at": "2026-11-16T12:01:35.834Z"
     }
   },
   "registry": {

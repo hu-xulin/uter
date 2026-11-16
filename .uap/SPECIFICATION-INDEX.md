@@ -1,8 +1,8 @@
 # UAP 1.0 — 规范索引
 
-<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261116061245-a13a751a","git_head":"2a6e470d1384319039c53860c6c7082894147135","overall_status":"PARTIALLY_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":123,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-16T06:49:42.578Z"} -->
+<!-- UAP-STATUS-BLOCK {"computed_by":"uap.final-acceptance-gate","execution_id":"UAP-EXEC-20261116115030-6a0ef6da","git_head":"cfb471c6cd043d81228e9703ff95d6d61c61da62","overall_status":"FAILED","claim_allowed":false,"requirements_total":538,"requirements_verified":123,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-16T12:12:15.815Z"} -->
 
-- 生成时间：2026-11-16T06:49:42.578Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
+- 生成时间：2026-11-16T12:11:00.300Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
 - 规范总数：**32**
 - 注册表完整性：**PASS**（37/37 项检查，0 条阻断发现）
 
@@ -11,17 +11,17 @@
 | 字段 | 值 |
 | --- | --- |
 | 计算函数 | `runtime.status-engine/computeFinalStatus` |
-| execution_id | `UAP-EXEC-20261116061245-a13a751a` |
-| git_head | `2a6e470d1384319039c53860c6c7082894147135` |
-| **overall_status** | **PARTIALLY_VERIFIED** |
+| execution_id | `UAP-EXEC-20261116115030-6a0ef6da` |
+| git_head | `cfb471c6cd043d81228e9703ff95d6d61c61da62` |
+| **overall_status** | **FAILED** |
 | claim_allowed | false |
 | 适用要求 / 已验证 | 538 / 123 |
 | 规范已验证 / 总数 | 0 / 32 |
-| 能力缺口 | recovery, e2e, financial_integrity |
+| 能力缺口 | e2e, financial_integrity |
 
 > 状态口径由状态机给出：`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
 > 规范文件头的 `ACTIVE` 只表示「规范已建成」，不表示「已验证」；`IMPLEMENTED_NOT_VERIFIED` 不得自动改成 PASS。
-> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`415/538 applicable requirements lack current valid evidence`；`415 requirement(s) have no evidence record`
+> 判定原因：`415/538 applicable requirements lack current valid evidence`；`415 requirement(s) have no evidence record`；`authoritative final acceptance gate: FAILED`
 
 ## 统一章节要求
 
