@@ -182,7 +182,7 @@ export const validators = {
       ? readText(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md')) : '';
     const tokenManifest = readJSON(rootPath('docs/design-system/TOKEN-MANIFEST.json'), null);
     const migrationReport = exists(rootPath('docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md'))
-      ? readText(rootPath('docs/design-system/UDS-7.0-MIGRATION-REPORT.md')) : '';
+      ? readText(rootPath('docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md')) : '';
     const currentDesignEvidence = !!tokenManifest
       && tokenManifest.version === '8.0.0'
       && tokenManifest.status === 'ACCEPTANCE_READY'
