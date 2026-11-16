@@ -50,18 +50,35 @@ jobs:
         run: |
           bun install --frozen-lockfile
           bunx playwright install --with-deps chromium
-      - name: Start isolated H5 frontend target
+      - name: Build real frontend release artifacts for UAP rehearsal
         working-directory: web
+        run: bun run build
+      - name: Build isolated Uter backend release binary
+        run: go build -o uter-bin .
+      - name: Start isolated Uter server with disposable SQLite
         run: |
-          (bun run dev --host 127.0.0.1 --port 3000 > "$RUNNER_TEMP/uap-h5-server.log" 2>&1 & echo $! > "$RUNNER_TEMP/uap-h5-server.pid")
-          for attempt in $(seq 1 60); do
-            if curl --fail --silent http://127.0.0.1:3000/ >/dev/null; then
-              echo "H5 target ready at http://127.0.0.1:3000"
+          mkdir -p "$RUNNER_TEMP/uap"
+          (
+            HOST=127.0.0.1 \
+            PORT=3000 \
+            SQLITE_PATH="$RUNNER_TEMP/uap/uter.db" \
+            GIN_MODE=release \
+            ./uter-bin > "$RUNNER_TEMP/uap/uter-server.log" 2>&1 &
+            echo $! > "$RUNNER_TEMP/uap/uter-server.pid"
+          )
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://127.0.0.1:3000/api/status -o "$RUNNER_TEMP/uap/status.json" \
+              && curl --fail --silent http://127.0.0.1:3000/ -o "$RUNNER_TEMP/uap/index.html"; then
+              echo "Isolated Uter API and embedded SPA ready at http://127.0.0.1:3000"
               exit 0
+            fi
+            if ! kill -0 "$(cat "$RUNNER_TEMP/uap/uter-server.pid")" 2>/dev/null; then
+              cat "$RUNNER_TEMP/uap/uter-server.log"
+              exit 1
             fi
             sleep 2
           done
-          cat "$RUNNER_TEMP/uap-h5-server.log"
+          cat "$RUNNER_TEMP/uap/uter-server.log"
           exit 1
       # Run every UAP gate even when an earlier gate fails so CI preserves
       # complete evidence instead of skipping the self-test suite on validator failure.
@@ -75,6 +92,35 @@ jobs:
         env:
           H5_BASE_URL: http://127.0.0.1:3000
         run: node .uap/bin/uap.mjs validate --all
+      - name: Publish H5 browser matrix diagnostics
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p = '.uap/reports/H5-BROWSER-MATRIX.json';
+          if (!fs.existsSync(p)) {
+            console.log('H5-BROWSER-MATRIX.json not generated');
+          } else {
+            const r = JSON.parse(fs.readFileSync(p, 'utf8'));
+            console.log(JSON.stringify({
+              target: r.target, browser: r.browser, verdict: r.verdict,
+              matrix_rows: r.matrix_rows,
+              rows: (r.matrix || []).map(x => ({
+                viewport: x.viewport, route: x.route, http_status: x.http_status,
+                final_url: x.final_url, spa_rendered: x.spa_rendered,
+                meta_viewport_ok: x.meta_viewport_ok,
+                horizontal_overflow_px: x.horizontal_overflow_px,
+                console_errors: x.console_errors, http_failures: x.http_failures,
+                page_errors: x.page_errors,
+              })),
+            }, null, 2));
+          }
+          const log = process.env.RUNNER_TEMP + '/uap/uter-server.log';
+          if (fs.existsSync(log)) {
+            console.log('--- ISOLATED UTER SERVER LOG (TAIL) ---');
+            console.log(fs.readFileSync(log, 'utf8').split('\n').slice(-80).join('\n'));
+          }
+          NODE
       - name: UAP complete self-test suite
         id: uap_test
         if: always()

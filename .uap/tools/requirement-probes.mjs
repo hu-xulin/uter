@@ -435,13 +435,41 @@ const PROBES = {
     }, { detail: `${files.length} workflows, gates found: ${has.join(',')}` });
   },
   'docs.baseline': async () => {
-    const files = ['AGENTS.md', 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md', '.uap/README.md', '.uap/SPECIFICATION-INDEX.md'];
+    const files = [
+      'AGENTS.md',
+      'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
+      'docs/design-system/TOKEN-MANIFEST.json',
+      'docs/design-system/UDS-7.0-MIGRATION-REPORT.md',
+      'docs/design-system/COMPAT-MAP.json',
+      'docs/design-system/FINAL-ACCEPTANCE-REPORT.md',
+      '.uap/README.md',
+      '.uap/SPECIFICATION-INDEX.md',
+    ];
     const missing = files.filter((f) => !exists(path.join(ROOT, f)));
+    const manifest = readJSON(path.join(ROOT, 'docs/design-system/TOKEN-MANIFEST.json'));
+    const compat = readJSON(path.join(ROOT, 'docs/design-system/COMPAT-MAP.json'));
+    const overview = read(path.join(ROOT, 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md')) || '';
+    const migration = read(path.join(ROOT, 'docs/design-system/UDS-7.0-MIGRATION-REPORT.md')) || '';
+    const acceptance = read(path.join(ROOT, 'docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) || '';
+    const currentDocs = manifest?.version === '7.0.0'
+      && manifest?.status === 'ACCEPTANCE_READY'
+      && overview.includes('当前运行时强制标准仍为 3.0')
+      && overview.includes('全站迁移按 Phase 6 分期执行');
+    const runtimeTransition = typeof compat?.isolation?.scalarAlignment === 'string'
+      && compat.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
+      && migration.includes('B6') && migration.includes('PROHIBITED');
+    const acceptanceHonest = acceptance.includes('ACCEPTANCE_READY')
+      && acceptance.includes('accepted: false');
+    const ok = missing.length === 0 && currentDocs && runtimeTransition && acceptanceHonest;
     return result('docs.baseline', {
-      command: `stat ${files.length} governance baseline documents`,
-      exit_code: !missing.length ? 0 : 1,
-      output_hash: sha(files.map((f) => `${f}:${(read(path.join(ROOT, f)) || '').length}`).join('|')), duration_ms: 0,
-    }, { detail: `missing=${missing.join(',') || 'none'}` });
+      command: `verify ${files.length} current governance/design baseline documents and UDS acceptance/runtime boundaries`,
+      exit_code: ok ? 0 : 1,
+      output_hash: sha(files.map((f) => `${f}:${(read(path.join(ROOT, f)) || '').length}`).join('|')
+        + `|currentDocs=${currentDocs}|runtimeTransition=${runtimeTransition}|acceptanceHonest=${acceptanceHonest}`),
+      duration_ms: 0,
+    }, {
+      detail: `missing=${missing.join(',') || 'none'}; UDS=${manifest?.version ?? 'missing'}/${manifest?.status ?? 'missing'}; runtime transition/3.0 compatibility retained=${runtimeTransition}; accepted=false preserved=${acceptanceHonest}`,
+    });
   },
 
   // ---- phase-2 capability cards (produced by real CLI commands) ----------

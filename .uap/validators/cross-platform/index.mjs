@@ -188,6 +188,9 @@ export const validators = {
     const ds = exists(rootPath(dsRel)) ? readText(rootPath(dsRel)) : '';
     const manifest = readJSON(rootPath(manifestRel), null);
     const migration = exists(rootPath(migrationRel)) ? readText(rootPath(migrationRel)) : '';
+    const compatMap = readJSON(rootPath('docs/design-system/COMPAT-MAP.json'), null);
+    const acceptance = exists(rootPath('docs/design-system/FINAL-ACCEPTANCE-REPORT.md'))
+      ? readText(rootPath('docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) : '';
     const designSystemReady = !!manifest
       && manifest.version === '7.0.0'
       && manifest.status === 'ACCEPTANCE_READY'
@@ -196,7 +199,12 @@ export const validators = {
       && migration.includes('当前字号真值')
       && exists(rootPath('docs/design-system/SHOWCASE-7.0.html'));
     const runtimeBoundaryExplicit = ds.includes('当前运行时强制标准仍为 3.0')
-      && ds.includes('全站迁移按 Phase 6 分期执行');
+      && ds.includes('字号/行高/圆角/间距/图表色')
+      && ds.includes('全站迁移按 Phase 6 分期执行')
+      && typeof compatMap?.isolation?.scalarAlignment === 'string'
+      && compatMap.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
+      && migration.includes('B6') && migration.includes('PROHIBITED')
+      && acceptance.includes('accepted: false');
     const dupTrees = ['h5/src', 'mobile/src', 'web-h5/src', 'm/src'].filter((d) => exists(rootPath(d)));
     const featureDirs = exists(rootPath('web/src/features'))
       ? fs.readdirSync(rootPath('web/src/features'), { withFileTypes: true }).filter((e) => e.isDirectory()).length
@@ -206,7 +214,7 @@ export const validators = {
       name: 'feature_mapping',
       ok: dupTrees.length === 0 && featureDirs > 0 && sharedTypeScale
         && agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md') && !!webSpec && !!h5Spec,
-      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 7.0 SSOT/Token Manifest/迁移报告/Showcase 完整=${designSystemReady}; 3.0 运行时兼容边界明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
+      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 7.0 SSOT/Token Manifest/迁移报告/Showcase 完整=${designSystemReady}; 7.0 指定 Token 已切换且 3.0 兼容层/Phase 6 边界明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
     };
 
     // api_consistency: single frontend API client + backend-only business rules.

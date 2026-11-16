@@ -138,7 +138,7 @@ describe('执行身份绑定', () => {
     fs.unlinkSync(cacheProbe);
 
     // 审计目录下的手写源文档（.md）必须仍被绑定：排除只针对生成的 .json 报告。
-    const auditDir = path.join(ROOT, 'docs', 'design-system', 'design-system', 'audit');
+    const auditDir = path.join(ROOT, 'docs', 'design-system', 'audit');
     const srcProbe = path.join(auditDir, `zz-fp-source-probe-${process.pid}.md`);
     fs.writeFileSync(srcProbe, 'source-A');
     const withSrc = worktreeFingerprint();
