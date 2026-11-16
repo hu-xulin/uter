@@ -184,27 +184,32 @@ export const validators = {
     // accepted, while 3.0 remains the runtime-enforced standard until Phase 6.
     const dsRel = 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md';
     const manifestRel = 'docs/design-system/TOKEN-MANIFEST.json';
-    const migrationRel = 'docs/design-system/UDS-7.0-MIGRATION-REPORT.md';
+    const migrationRel = 'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md';
     const ds = exists(rootPath(dsRel)) ? readText(rootPath(dsRel)) : '';
     const manifest = readJSON(rootPath(manifestRel), null);
     const migration = exists(rootPath(migrationRel)) ? readText(rootPath(migrationRel)) : '';
     const compatMap = readJSON(rootPath('docs/design-system/COMPAT-MAP.json'), null);
     const acceptance = exists(rootPath('docs/design-system/FINAL-ACCEPTANCE-REPORT.md'))
       ? readText(rootPath('docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) : '';
+    const batches = Array.isArray(compatMap?.migrationBatches) ? compatMap.migrationBatches : [];
     const designSystemReady = !!manifest
-      && manifest.version === '7.0.0'
+      && manifest.version === '8.0.0'
       && manifest.status === 'ACCEPTANCE_READY'
+      && ds.includes('UDS 8.0.0 是唯一现行规范')
       && ds.includes('TOKEN-MANIFEST.json')
-      && ds.includes('当前运行时兼容层仍以 UDS 3.0 为基础')
       && migration.includes('当前字号真值')
-      && exists(rootPath('docs/design-system/SHOWCASE-7.0.html'));
-    const runtimeBoundaryExplicit = ds.includes('当前运行时兼容层仍以 UDS 3.0 为基础')
-      && ds.includes('运行时标量（字号/行高/圆角/间距）与图表色')
-      && ds.includes('颜色语义层通过 --ds7-* 隔离命名注入')
-      && ds.includes('全站产品迁移仍按 Phase 6 分期执行')
+      && migration.includes('B6')
+      && migration.includes('DONE_VERIFIED')
+      && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'));
+    const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds8-* bridge 为唯一运行时权威')
+      && ds.includes('3.0 兼容层 colors.css 已退役')
       && typeof compatMap?.isolation?.scalarAlignment === 'string'
+      && compatMap.version === '8.0.0'
+      && compatMap.isolation.runtimePrefix === '--ds8-'
       && compatMap.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
-      && migration.includes('B6') && migration.includes('PROHIBITED')
+      && batches.length >= 6 && batches.every((batch) => batch.status === 'DONE_VERIFIED')
+      && migration.includes('B6') && migration.includes('DONE_VERIFIED')
+      && migration.includes('PROHIBITED')
       && acceptance.includes('accepted: false');
     const dupTrees = ['h5/src', 'mobile/src', 'web-h5/src', 'm/src'].filter((d) => exists(rootPath(d)));
     const featureDirs = exists(rootPath('web/src/features'))
@@ -215,7 +220,7 @@ export const validators = {
       name: 'feature_mapping',
       ok: dupTrees.length === 0 && featureDirs > 0 && sharedTypeScale
         && agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md') && !!webSpec && !!h5Spec,
-      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 7.0 SSOT/Token Manifest/迁移报告/Showcase 完整=${designSystemReady}; 7.0 指定 Token 已切换且 3.0 兼容层/Phase 6 边界明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
+      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 8.0.0 SSOT/Token Manifest/迁移报告/Showcase 完整=${designSystemReady}; 8.0.0 运行时 bridge/迁移批次/未接受状态边界明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
     };
 
     // api_consistency: single frontend API client + backend-only business rules.
