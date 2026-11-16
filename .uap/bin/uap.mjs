@@ -1690,7 +1690,7 @@ async function cmdVerifyE2E() {
   const bizOutput = `${biz?.stdout || ''}\n${biz?.stderr || ''}`;
   const bizEnvironmentBlocked = Boolean(
     biz && biz.exit_code !== 0
-      && /目标服务不可达|BLOCKED:\\s*http:\\/\\//.test(bizOutput)
+      && /目标服务不可达|BLOCKED:\s*https?:\/\//.test(bizOutput)
   );
   const noScenarioItem = bizItems.length === 0 ? [{
     id: 'biz_NO_SCENARIOS_COLLECTED',
