@@ -1,8 +1,4 @@
-import {
-  expect,
-  test as base,
-  type Page,
-} from '@playwright/test'
+import { expect, test as base, type Page } from '@playwright/test'
 
 import { AuthedApi, createToken } from '../lib/authed-api'
 import { loginViaApi, loginViaUi, readBusinessCredentials } from '../lib/login'
@@ -30,7 +26,9 @@ interface UterResponse<T = unknown> {
 
 const test = base.extend<{ authedApi: AuthedApi; authedPage: Page }>({
   authedApi: [
-    async (_workerFixtures, use) => {
+    // Playwright 要求 fixture 首参为对象解构；本 fixture 不使用任何内建 fixture。
+    // eslint-disable-next-line no-empty-pattern
+    async ({}, use) => {
       const api = await AuthedApi.create()
       await use(api)
       await api.dispose()
@@ -64,15 +62,21 @@ test('biz_01 注册新用户 [BLOCKED_BY_POLICY]', async ({ request }) => {
   // 绝不伪造「注册成功」。
   test.info().annotations.push({
     type: 'BLOCKED_BY_POLICY',
-    description: 'RegisterEnabled=false 且红线禁止创建账号；注册场景只能等待用户显式授权解禁',
+    description:
+      'RegisterEnabled=false 且红线禁止创建账号；注册场景只能等待用户显式授权解禁',
   })
   const status = await request.get('/api/status')
-  const body = (await status.json()) as UterResponse<{ register_enabled?: boolean }>
+  const body = (await status.json()) as UterResponse<{
+    register_enabled?: boolean
+  }>
   expect(status.ok()).toBeTruthy()
   expect(body.success).toBe(true)
   // 验证阻断事实真实存在：站点确实关闭注册。
   expect(body.data?.register_enabled ?? false).toBe(false)
-  test.skip(true, 'BLOCKED_BY_POLICY: 红线禁止创建账号（本地/E2E/冒烟/脚本全覆盖）')
+  test.skip(
+    true,
+    'BLOCKED_BY_POLICY: 红线禁止创建账号（本地/E2E/冒烟/脚本全覆盖）'
+  )
 })
 
 test('biz_02 密码登录成功（真实凭据）', async () => {
@@ -91,7 +95,10 @@ test('biz_02 密码登录成功（真实凭据）', async () => {
 test('biz_03 错误密码登录被拒绝', async () => {
   const ctx = await base.request.newContext()
   const res = await ctx.post('/api/user/login', {
-    data: { username: readBusinessCredentials().username, password: 'definitely-wrong-password' },
+    data: {
+      username: readBusinessCredentials().username,
+      password: 'definitely-wrong-password',
+    },
   })
   const body = (await res.json()) as UterResponse
   // uter 登录失败也返回 HTTP 200 + success:false —— 必须看业务字段。
@@ -180,7 +187,10 @@ test('biz_12 排行榜 /api/rankings（登录态）', async ({ authedApi }) => {
 
 test('biz_13 密钥列表 /api/token/（登录态）', async ({ authedApi }) => {
   const res = await authedApi.get('/api/token/')
-  const body = (await res.json()) as UterResponse<{ items?: unknown[]; total?: number }>
+  const body = (await res.json()) as UterResponse<{
+    items?: unknown[]
+    total?: number
+  }>
   expect(res.ok()).toBeTruthy()
   expect(body.success).toBe(true)
   // 分页结构：{ page, page_size, total, items }。
@@ -192,7 +202,10 @@ test('biz_14 创建密钥 POST /api/token/', async ({ authedApi }) => {
   const id = await createToken(authedApi, `phase2-biz14-${Date.now()}`)
   expect(typeof id).toBe('number')
   const detail = await authedApi.get(`/api/token/${id}`)
-  const body = (await detail.json()) as UterResponse<{ id?: number; name?: string }>
+  const body = (await detail.json()) as UterResponse<{
+    id?: number
+    name?: string
+  }>
   expect(body.success).toBe(true)
   expect(body.data?.id).toBe(id)
 })
@@ -226,7 +239,9 @@ test('biz_16 删除密钥后列表不再包含', async ({ authedApi }) => {
   expect(del.ok()).toBeTruthy()
   // 回读验证：列表里不再有该密钥。
   const list = await authedApi.get('/api/token/?p=1&page_size=100')
-  const listBody = (await list.json()) as UterResponse<{ items?: { id: number }[] }>
+  const listBody = (await list.json()) as UterResponse<{
+    items?: { id: number }[]
+  }>
   expect((listBody.data?.items ?? []).some((t) => t.id === id)).toBe(false)
 })
 
@@ -255,7 +270,9 @@ test('biz_19 用户日志 /api/log/self（登录态）', async ({ authedApi }) =
   expect(body.success).toBe(true)
 })
 
-test('biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）', async ({ authedApi }) => {
+test('biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单）', async ({
+  authedApi,
+}) => {
   const res = await authedApi.get('/api/user/topup/self')
   const body = (await res.json()) as UterResponse
   expect(res.ok()).toBeTruthy()
@@ -263,11 +280,14 @@ test('biz_20 充值订单列表 /api/user/topup/self（只读，不创建订单�
   // 绝不触发真实支付：只读查询。
   test.info().annotations.push({
     type: 'READ_ONLY',
-    description: '充值域只调只读列表接口，不 POST /api/user/topup、不触发任何支付网关',
+    description:
+      '充值域只调只读列表接口，不 POST /api/user/topup、不触发任何支付网关',
   })
 })
 
-test('biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）', async ({ authedApi }) => {
+test('biz_21 签到状态 /api/user/checkin（只读 GET，不 POST）', async ({
+  authedApi,
+}) => {
   const res = await authedApi.get('/api/user/checkin')
   const body = (await res.json()) as UterResponse
   expect(res.ok()).toBeTruthy()
@@ -291,7 +311,10 @@ test('biz_22 普通用户访问管理 API 被 403 拒绝', async ({ authedApi })
   expect(res.status()).toBe(403)
 })
 
-test('biz_23 浏览器真实登录（表单）后 dashboard 渲染', async ({ authedApi, browser }) => {
+test('biz_23 浏览器真实登录（表单）后 dashboard 渲染', async ({
+  authedApi,
+  browser,
+}) => {
   // 用例标题要求的是「浏览器真实登录（表单）」。原先复用 worker 级 authedPage
   // 只注入了 API 登录的 cookie：前端的 access_token 在响应体而不是 cookie 里，
   // 所以该页面其实从未真正登录，只是先撞上 /_authenticated 的客户端重定向再
@@ -304,7 +327,9 @@ test('biz_23 浏览器真实登录（表单）后 dashboard 渲染', async ({ au
     await loginViaUi(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
     // 主内容真实渲染（不是空白/错误页）：断言本身不放宽。
-    await expect(page.locator('main, [role="main"]').first()).toBeVisible({ timeout: 20_000 })
+    await expect(page.locator('main, [role="main"]').first()).toBeVisible({
+      timeout: 20_000,
+    })
     // 网络层复核：worker 会话（Bearer）读自身信息成功。
     const res = await authedApi.get('/api/user/self')
     const body = (await res.json()) as UterResponse<{ username?: string }>

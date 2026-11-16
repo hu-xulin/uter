@@ -25,6 +25,10 @@
     "src/routeTree.gen.ts",
     "src/design-system/tokens/generated/brand.css",
     "src/docs-content",
-    "public/docs-search"
+    "public/docs-search",
+    "public/design-system/8.0.0.html",
+    "public/design-system/8.0.0/index.html",
+    "src/design-system/tokens/generated/uds8-chart-palette.ts",
+    "src/design-system/tokens/uds-semantic-bridge.css"
   ]
 }

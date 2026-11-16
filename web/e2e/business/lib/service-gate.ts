@@ -20,7 +20,13 @@ function parseTarget(rawUrl: string): { host: string; port: number } {
   }
 }
 
-function probePort({ host, port }: { host: string; port: number }): Promise<boolean> {
+function probePort({
+  host,
+  port,
+}: {
+  host: string
+  port: number
+}): Promise<boolean> {
   return new Promise((resolve) => {
     const socket = new net.Socket()
     socket.setTimeout(PROBE_TIMEOUT_MS)
@@ -61,7 +67,9 @@ async function globalSetup(_config: FullConfig): Promise<void> {
         '',
       ].join('\n')
     )
-    throw new Error(`BLOCKED: ${BASE_URL} 不可达，业务 E2E 未执行（有意失败，不得当作通过）`)
+    throw new Error(
+      `BLOCKED: ${BASE_URL} 不可达，业务 E2E 未执行（有意失败，不得当作通过）`
+    )
   }
 }
 

@@ -36,13 +36,19 @@ For commercial licensing, please contact support@uter.ai
  * 退出码：0 = 同步 / 生成成功；1 = 漂移或生成失败；2 = 输入缺失（BLOCKED）。
  */
 
-import path from 'node:path'
 import { spawnSync } from 'node:child_process'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
-const BUILD = path.join(REPO_ROOT, 'docs', 'design-system', 'registry', 'build.mjs')
+const BUILD = path.join(
+  REPO_ROOT,
+  'docs',
+  'design-system',
+  'registry',
+  'build.mjs'
+)
 const CHECK_ONLY = process.argv.includes('--check')
 
 const args = [BUILD]

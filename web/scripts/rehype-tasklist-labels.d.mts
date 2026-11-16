@@ -9,4 +9,6 @@ export interface RehypeTasklistLabelsOptions {
  * 为 GFM 任务清单 checkbox（type=checkbox 且 disabled）补 aria-label。
  * 见 rehype-tasklist-labels.mjs 的完整说明。
  */
-export function rehypeTasklistLabels(options?: RehypeTasklistLabelsOptions): Plugin
+export function rehypeTasklistLabels(
+  options?: RehypeTasklistLabelsOptions
+): Plugin

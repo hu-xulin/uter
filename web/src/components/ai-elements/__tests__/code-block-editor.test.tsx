@@ -94,7 +94,9 @@ describe('CodeBlock language coverage (UDS 8.0.0 Phase 3)', () => {
       const block = getByRole('textbox', { name: language })
       // 纯文本没有高亮 span；出现带 class 的 span 证明语言解析器真实生效。
       await waitFor(() => {
-        expect(block.querySelectorAll('.cm-content span[class]').length).toBeGreaterThan(0)
+        expect(
+          block.querySelectorAll('.cm-content span[class]').length
+        ).toBeGreaterThan(0)
       })
     })
   }
@@ -113,9 +115,10 @@ describe('Code chrome (UDS 8.0.0 §5.3 / §5.4)', () => {
     const { getByRole, rerender } = render(
       <CodeBlock code='x' language='plaintext' />
     )
-    expect(getByRole('textbox', { name: 'plaintext' }).closest('.group\\/code-block')?.className).toContain(
-      'bg-(--ds8-color-code-codeblock-background)'
-    )
+    expect(
+      getByRole('textbox', { name: 'plaintext' }).closest('.group\\/code-block')
+        ?.className
+    ).toContain('bg-(--ds8-color-code-codeblock-background)')
 
     rerender(
       <CodeBlockEditor
@@ -126,9 +129,10 @@ describe('Code chrome (UDS 8.0.0 §5.3 / §5.4)', () => {
         value='x'
       />
     )
-    expect(getByRole('textbox', { name: 'Edit' }).closest('.group\\/code-block')?.className).toContain(
-      'bg-(--ds8-color-code-editor-background)'
-    )
+    expect(
+      getByRole('textbox', { name: 'Edit' }).closest('.group\\/code-block')
+        ?.className
+    ).toContain('bg-(--ds8-color-code-editor-background)')
   })
 
   test('active line highlight only applies to the editable editor', () => {
@@ -141,9 +145,15 @@ describe('Code chrome (UDS 8.0.0 §5.3 / §5.4)', () => {
         value={'const a = 1\nconst b = 2\n'}
       />
     )
-    expect(getByRole('textbox', { name: 'Edit' }).querySelector('.cm-activeLine')).not.toBeNull()
+    expect(
+      getByRole('textbox', { name: 'Edit' }).querySelector('.cm-activeLine')
+    ).not.toBeNull()
 
     rerender(<CodeBlock code={'const a = 1\n'} language='javascript' />)
-    expect(getByRole('textbox', { name: 'javascript' }).querySelector('.cm-activeLine')).toBeNull()
+    expect(
+      getByRole('textbox', { name: 'javascript' }).querySelector(
+        '.cm-activeLine'
+      )
+    ).toBeNull()
   })
 })

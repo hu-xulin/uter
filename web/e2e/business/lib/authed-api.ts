@@ -1,7 +1,7 @@
 import type { APIRequestContext, APIResponse } from '@playwright/test'
 
-import { loginViaApi } from './login'
 import { cleanupTokens, trackToken } from './cleanup'
+import { loginViaApi } from './login'
 
 /**
  * 带 Bearer 头的已登录 API 客户端。
@@ -22,7 +22,9 @@ export class AuthedApi {
   }
 
   static async create(): Promise<AuthedApi> {
-    const ctx = await import('@playwright/test').then((m) => m.request.newContext())
+    const ctx = await import('@playwright/test').then((m) =>
+      m.request.newContext()
+    )
     const login = await loginViaApi(ctx)
     if (!login.accessToken) {
       await ctx.dispose()
@@ -35,7 +37,9 @@ export class AuthedApi {
     return { Authorization: `Bearer ${this.token}`, ...extra }
   }
 
-  private options(opts: { headers?: Record<string, string>; data?: unknown } = {}) {
+  private options(
+    opts: { headers?: Record<string, string>; data?: unknown } = {}
+  ) {
     return {
       headers: this.headers(opts.headers),
       ...(opts.data !== undefined ? { data: opts.data } : {}),
@@ -46,22 +50,34 @@ export class AuthedApi {
     return this.context.get(url, { headers: this.headers() })
   }
 
-  post(url: string, opts: { headers?: Record<string, string>; data?: unknown } = {}): Promise<APIResponse> {
+  post(
+    url: string,
+    opts: { headers?: Record<string, string>; data?: unknown } = {}
+  ): Promise<APIResponse> {
     return this.context.post(url, this.options(opts))
   }
 
-  put(url: string, opts: { headers?: Record<string, string>; data?: unknown } = {}): Promise<APIResponse> {
+  put(
+    url: string,
+    opts: { headers?: Record<string, string>; data?: unknown } = {}
+  ): Promise<APIResponse> {
     return this.context.put(url, this.options(opts))
   }
 
-  delete(url: string, opts: { headers?: Record<string, string> } = {}): Promise<APIResponse> {
+  delete(
+    url: string,
+    opts: { headers?: Record<string, string> } = {}
+  ): Promise<APIResponse> {
     return this.context.delete(url, { headers: this.headers(opts.headers) })
   }
 
   /** 刷新会话：refresh cookie 轮换 + 换取新 access token（旧 token 立即失效）。 */
   async refresh(): Promise<APIResponse> {
     const res = await this.context.post('/api/user/auth/refresh')
-    const body = (await res.json()) as { success?: boolean; data?: { access_token?: string } }
+    const body = (await res.json()) as {
+      success?: boolean
+      data?: { access_token?: string }
+    }
     if (body.success && body.data?.access_token) {
       this.token = body.data.access_token
     }
@@ -80,15 +96,22 @@ export class AuthedApi {
 
 // 密钥创建统一走这里：保证任何用例创建的资源都被登记进清理清单。
 // POST /api/token/ 只回 {success:true} 不带 id，故按名回查列表定位 id。
-export async function createToken(api: AuthedApi, name: string): Promise<number> {
+export async function createToken(
+  api: AuthedApi,
+  name: string
+): Promise<number> {
   const res = await api.post('/api/token/', {
     data: { name, expired_time: -1, remain_quota: 0, unlimited_quota: false },
   })
   const body = (await res.json()) as { success?: boolean }
   if (!body.success) {
-    throw new Error(`创建密钥失败：HTTP ${res.status()} ${JSON.stringify(body).slice(0, 200)}`)
+    throw new Error(
+      `创建密钥失败：HTTP ${res.status()} ${JSON.stringify(body).slice(0, 200)}`
+    )
   }
-  const search = await api.get(`/api/token/search?keyword=${encodeURIComponent(name)}&p=1&page_size=50`)
+  const search = await api.get(
+    `/api/token/search?keyword=${encodeURIComponent(name)}&p=1&page_size=50`
+  )
   const found = (await search.json()) as {
     success?: boolean
     data?: { items?: { id: number; name: string }[]; total?: number }

@@ -251,10 +251,7 @@ const colorsCss = existsSync(colorsPath) ? readFileSync(colorsPath, 'utf8') : ''
 const typographyCss = readFileSync(typographyPath, 'utf8')
 const manifest = JSON.parse(
   readFileSync(
-    join(
-      WEB_ROOT,
-      '../docs/design-system/TOKEN-MANIFEST.json'
-    ),
+    join(WEB_ROOT, '../docs/design-system/TOKEN-MANIFEST.json'),
     'utf8'
   )
 )
@@ -276,9 +273,9 @@ add(
   'GRADIENT_6_UTILITY_OWNER',
   Boolean(
     typographyCss.includes('@utility ds-text-gradient-brand') &&
-      typographyCss.includes('var(--ds8-color-gradient-light-from)') &&
-      typographyCss.includes('var(--ds8-color-gradient-dark-from)') &&
-      /90deg in srgb/.test(typographyCss)
+    typographyCss.includes('var(--ds8-color-gradient-light-from)') &&
+    typographyCss.includes('var(--ds8-color-gradient-dark-from)') &&
+    /90deg in srgb/.test(typographyCss)
   ),
   'single utility consumes --ds8-color-gradient-{light,dark}-* with `90deg in srgb`'
 )
@@ -288,10 +285,7 @@ add(
   'legacy §17.5 triple removed — colors.css retired entirely in 8.0.0 (DP-002 executed, E28 revoked)'
 )
 const registeredReport = readFileSync(
-  join(
-    WEB_ROOT,
-    '../docs/design-system/CONTRAST-VERIFICATION-REPORT.md'
-  ),
+  join(WEB_ROOT, '../docs/design-system/CONTRAST-VERIFICATION-REPORT.md'),
   'utf8'
 )
 add(

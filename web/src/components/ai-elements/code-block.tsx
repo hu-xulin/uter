@@ -272,7 +272,11 @@ const indentGuides = ViewPlugin.fromClass(
     }
 
     update(update: ViewUpdate) {
-      if (update.docChanged || update.viewportChanged || update.geometryChanged) {
+      if (
+        update.docChanged ||
+        update.viewportChanged ||
+        update.geometryChanged
+      ) {
         this.decorations = this.build(update.view)
       }
     }
@@ -285,7 +289,7 @@ const indentGuides = ViewPlugin.fromClass(
         return builder.finish()
       }
       for (const { from, to } of view.visibleRanges) {
-        for (let pos = from; pos <= to; ) {
+        for (let pos = from; pos <= to;) {
           const line = view.state.doc.lineAt(pos)
           let cols = 0
           for (const ch of line.text) {
@@ -299,7 +303,11 @@ const indentGuides = ViewPlugin.fromClass(
           }
           const width = Math.floor(cols / tabSize) * step
           if (width >= step) {
-            builder.add(line.from, line.from, indentGuideDecoration(width, step))
+            builder.add(
+              line.from,
+              line.from,
+              indentGuideDecoration(width, step)
+            )
           }
           pos = line.to + 1
         }
@@ -322,19 +330,39 @@ const indentGuides = ViewPlugin.fromClass(
 export const SYNTAX_ADAPTER = [
   {
     token: 'keyword',
-    tags: [highlightTags.keyword, highlightTags.controlKeyword, highlightTags.definitionKeyword, highlightTags.moduleKeyword, highlightTags.operatorKeyword, highlightTags.modifier],
+    tags: [
+      highlightTags.keyword,
+      highlightTags.controlKeyword,
+      highlightTags.definitionKeyword,
+      highlightTags.moduleKeyword,
+      highlightTags.operatorKeyword,
+      highlightTags.modifier,
+    ],
   },
   {
     token: 'string',
-    tags: [highlightTags.string, highlightTags.special(highlightTags.string), highlightTags.character, highlightTags.monospace],
+    tags: [
+      highlightTags.string,
+      highlightTags.special(highlightTags.string),
+      highlightTags.character,
+      highlightTags.monospace,
+    ],
   },
   {
     token: 'number',
-    tags: [highlightTags.number, highlightTags.integer, highlightTags.float, highlightTags.unit],
+    tags: [
+      highlightTags.number,
+      highlightTags.integer,
+      highlightTags.float,
+      highlightTags.unit,
+    ],
   },
   {
     token: 'function',
-    tags: [highlightTags.function(highlightTags.variableName), highlightTags.heading],
+    tags: [
+      highlightTags.function(highlightTags.variableName),
+      highlightTags.heading,
+    ],
     fontWeight: '600',
   },
   {
@@ -343,11 +371,22 @@ export const SYNTAX_ADAPTER = [
   },
   {
     token: 'variable',
-    tags: [highlightTags.variableName, highlightTags.self, highlightTags.local(highlightTags.variableName), highlightTags.strong, highlightTags.emphasis],
+    tags: [
+      highlightTags.variableName,
+      highlightTags.self,
+      highlightTags.local(highlightTags.variableName),
+      highlightTags.strong,
+      highlightTags.emphasis,
+    ],
   },
   {
     token: 'type',
-    tags: [highlightTags.typeName, highlightTags.className, highlightTags.namespace, highlightTags.standard(highlightTags.typeName)],
+    tags: [
+      highlightTags.typeName,
+      highlightTags.className,
+      highlightTags.namespace,
+      highlightTags.standard(highlightTags.typeName),
+    ],
   },
   {
     token: 'operator',
@@ -355,16 +394,40 @@ export const SYNTAX_ADAPTER = [
   },
   {
     token: 'punctuation',
-    tags: [highlightTags.punctuation, highlightTags.separator, highlightTags.bracket, highlightTags.paren, highlightTags.brace, highlightTags.squareBracket, highlightTags.angleBracket, highlightTags.contentSeparator, highlightTags.list],
+    tags: [
+      highlightTags.punctuation,
+      highlightTags.separator,
+      highlightTags.bracket,
+      highlightTags.paren,
+      highlightTags.brace,
+      highlightTags.squareBracket,
+      highlightTags.angleBracket,
+      highlightTags.contentSeparator,
+      highlightTags.list,
+    ],
   },
   {
     token: 'comment',
-    tags: [highlightTags.comment, highlightTags.lineComment, highlightTags.blockComment, highlightTags.docComment, highlightTags.quote, highlightTags.meta, highlightTags.processingInstruction],
+    tags: [
+      highlightTags.comment,
+      highlightTags.lineComment,
+      highlightTags.blockComment,
+      highlightTags.docComment,
+      highlightTags.quote,
+      highlightTags.meta,
+      highlightTags.processingInstruction,
+    ],
     fontStyle: 'italic',
   },
   {
     token: 'constant',
-    tags: [highlightTags.constant(highlightTags.variableName), highlightTags.literal, highlightTags.color, highlightTags.link, highlightTags.url],
+    tags: [
+      highlightTags.constant(highlightTags.variableName),
+      highlightTags.literal,
+      highlightTags.color,
+      highlightTags.link,
+      highlightTags.url,
+    ],
   },
   {
     token: 'boolean',
@@ -388,7 +451,12 @@ export const SYNTAX_ADAPTER = [
   },
   {
     token: 'builtin',
-    tags: [highlightTags.standard(highlightTags.variableName), highlightTags.special(highlightTags.variableName), highlightTags.atom, highlightTags.content],
+    tags: [
+      highlightTags.standard(highlightTags.variableName),
+      highlightTags.special(highlightTags.variableName),
+      highlightTags.atom,
+      highlightTags.content,
+    ],
   },
   {
     token: 'inserted',
@@ -407,7 +475,9 @@ export const SYNTAX_ADAPTER = [
 const codeMirrorHighlightStyle = syntaxHighlighting(
   HighlightStyle.define(
     SYNTAX_ADAPTER.map((entry) => ({
-      tag: entry.tags as Parameters<typeof HighlightStyle.define>[0][number]['tag'],
+      tag: entry.tags as Parameters<
+        typeof HighlightStyle.define
+      >[0][number]['tag'],
       color: `var(--ds8-syntax-${entry.token})`,
       ...('fontStyle' in entry ? { fontStyle: entry.fontStyle } : {}),
       ...('fontWeight' in entry ? { fontWeight: entry.fontWeight } : {}),
@@ -710,7 +780,7 @@ export const CodeBlockFrame = ({
     {...props}
   >
     {showToolbar && (
-      <div className='bg-(--ds8-color-code-toolbar-background) border-border/70 flex min-h-10 items-center gap-2 border-b px-2 py-1.5'>
+      <div className='border-border/70 flex min-h-10 items-center gap-2 border-b bg-(--ds8-color-code-toolbar-background) px-2 py-1.5'>
         <div className='min-w-0 flex-1'>
           <div className='text-muted-foreground text-mono truncate font-mono font-medium uppercase'>
             {title}
@@ -788,7 +858,7 @@ export const CodeBlock = ({
         bodyOverlay={
           <>
             {isCodeCollapsed && (
-              <div className='from-transparent to-(--ds8-color-code-codeblock-background) pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-b' />
+              <div className='pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-b from-transparent to-(--ds8-color-code-codeblock-background)' />
             )}
             {!showToolbar && children && (
               <div className='absolute top-2 right-2 flex items-center gap-1'>

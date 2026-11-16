@@ -12,7 +12,11 @@ export function trackToken(id: number): void {
 
 export async function cleanupTokens(request: APIRequestContext): Promise<void> {
   // pop 逐个消费：无需副本即可安全边遍历边清空。
-  for (let id = createdTokenIds.pop(); id !== undefined; id = createdTokenIds.pop()) {
+  for (
+    let id = createdTokenIds.pop();
+    id !== undefined;
+    id = createdTokenIds.pop()
+  ) {
     try {
       await request.delete(`/api/token/${id}`)
     } catch {

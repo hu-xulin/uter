@@ -98,7 +98,9 @@ export class VisualAuthUnavailableError extends Error {
   readonly backendMessage: string
 
   constructor(backendMessage: string, httpStatus: number) {
-    super(`目标栈未开放密码登录（PasswordLoginEnabled=false）：${backendMessage}`)
+    super(
+      `目标栈未开放密码登录（PasswordLoginEnabled=false）：${backendMessage}`
+    )
     this.name = 'VisualAuthUnavailableError'
     this.httpStatus = httpStatus
     this.backendMessage = backendMessage

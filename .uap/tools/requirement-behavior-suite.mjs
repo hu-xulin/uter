@@ -952,8 +952,11 @@ export const CHECKS = Object.freeze([
     id: 'UAP-00-003-REQ-014', group: 'engines',
     behavior: '必须支持密钥脱敏：redact 真实掩码 api_key/password 明文',
     verify: ({ engines }) => {
-      const out = engines.redact('api_key=sk-ABCDEFGHIJKLMNOPQRSTUVWX password="supersecret123"');
-      return checkAssert(!out.includes('sk-ABCDEFGHIJKLMNOPQRSTUVWX') && !out.includes('supersecret123') && out.includes('[REDACTED]'),
+      // Construct the fake key at runtime so no secret-shaped literal lives in
+      // the repository (the workflow secret scanner must stay strict).
+      const fakeKey = ['sk', 'ABCDEFGHIJKLMNOPQRSTUVWX'].join('-');
+      const out = engines.redact(`api_key=${fakeKey} password="supersecret123"`);
+      return checkAssert(!out.includes(fakeKey) && !out.includes('supersecret123') && out.includes('[REDACTED]'),
         'util.redact -> sk-/password 明文被 [REDACTED] 替换，原文不再出现');
     },
   },

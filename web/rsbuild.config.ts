@@ -8,6 +8,7 @@ import { pluginTailwindcss } from '@rsbuild/plugin-tailwindcss'
 import { tanstackRouter } from '@tanstack/router-plugin/rspack'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
+
 import { rehypeTasklistLabels } from './scripts/rehype-tasklist-labels.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))

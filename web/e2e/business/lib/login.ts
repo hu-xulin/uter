@@ -33,7 +33,10 @@ export function loadLocalEnv(): void {
   }
 }
 
-export function readBusinessCredentials(): { username: string; password: string } {
+export function readBusinessCredentials(): {
+  username: string
+  password: string
+} {
   loadLocalEnv()
   return {
     username: process.env.VISUAL_TEST_EMAIL ?? '',
@@ -42,7 +45,9 @@ export function readBusinessCredentials(): { username: string; password: string 
 }
 
 export function hasBusinessCredentials(): boolean {
-  return Boolean(readBusinessCredentials().username && readBusinessCredentials().password)
+  return Boolean(
+    readBusinessCredentials().username && readBusinessCredentials().password
+  )
 }
 
 export interface LoginResult {
@@ -54,22 +59,32 @@ export interface LoginResult {
 }
 
 /** 在给定 request context 上完成 API 登录；失败抛错，绝不静默继续。 */
-export async function loginViaApi(request: APIRequestContext): Promise<LoginResult> {
+export async function loginViaApi(
+  request: APIRequestContext
+): Promise<LoginResult> {
   const { username, password } = readBusinessCredentials()
   if (!username || !password) {
-    throw new Error('缺少 VISUAL_TEST_EMAIL / VISUAL_TEST_PASSWORD（web/.env.local）')
+    throw new Error(
+      '缺少 VISUAL_TEST_EMAIL / VISUAL_TEST_PASSWORD（web/.env.local）'
+    )
   }
   const response = await request.post('/api/user/login', {
     data: { username, password },
   })
-  let body: { success?: boolean; message?: string; data?: { access_token?: string } } = {}
+  let body: {
+    success?: boolean
+    message?: string
+    data?: { access_token?: string }
+  } = {}
   try {
     body = (await response.json()) as typeof body
   } catch {
     // 非 JSON 按失败处理
   }
   if (!response.ok() || body.success !== true) {
-    throw new Error(`API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`)
+    throw new Error(
+      `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`
+    )
   }
   return {
     ok: true,
@@ -90,12 +105,17 @@ export async function loginViaUi(page: Page): Promise<void> {
   // "Element is outside of the viewport"；真实用户点的是可见的
   // span[role="checkbox"]。这里走真实可点击元素，不做 DOM 直接改属性。
   const consent = page.getByRole('checkbox')
-  if ((await consent.count()) > 0 && !(await page.locator('#legal-consent').isChecked())) {
+  if (
+    (await consent.count()) > 0 &&
+    !(await page.locator('#legal-consent').isChecked())
+  ) {
     await consent.first().click()
   }
 
   await page.locator('form input').first().fill(username)
   await page.locator('form input[type="password"]').fill(password)
   await page.locator('form button[type="submit"]').click()
-  await page.waitForURL((u) => !u.pathname.includes('sign-in'), { timeout: 30_000 })
+  await page.waitForURL((u) => !u.pathname.includes('sign-in'), {
+    timeout: 30_000,
+  })
 }

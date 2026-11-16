@@ -159,11 +159,17 @@ describe('独立验收：状态口径（独立重算，不调用 computeFinalSta
     // 闭环完成后 P0 应当被真实关闭 —— 因此改为更强的口径：每个尚未证明的
     // 修复/回归能力都必须对应一个 OPEN 的 CAPABILITY_GAP，一个都不能少。
     const caps = finalStatus.status_engine.capabilities;
-    const expected = ['real_code_repair', 'independent_regression']
-      .filter((k) => caps[k] !== true).length;
+    // The acceptance gate now reports a CAPABILITY-GAP blocker for every
+    // unproven capability (not only the two repair/regression P0s). Require
+    // exactly one OPEN gap per missing capability and none without a gap.
+    const missing = Object.entries(caps).filter(([, v]) => v !== true).map(([k]) => k);
     const capBlockers = p0.filter((b) => b.category === 'CAPABILITY_GAP');
-    assert.equal(capBlockers.length, expected,
+    assert.equal(capBlockers.length, missing.length,
       `未证明的能力必须有对应 OPEN 阻断项: caps=${JSON.stringify(caps)} p0=${JSON.stringify(p0)}`);
+    for (const k of missing) {
+      assert.ok(capBlockers.some((b) => b.id === `CAPABILITY-GAP-${k}`),
+        `缺少能力缺口阻断项: ${k}`);
+    }
     if (p0.length > 0) assert.equal(finalStatus.claim_allowed, false);
   });
 });

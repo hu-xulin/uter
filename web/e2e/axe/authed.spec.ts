@@ -122,7 +122,9 @@ test('axe: 鉴权页批量扫描', async ({ page }) => {
               // Keep the ACTUAL measured colours in the failure message so a
               // contrast regression can be fixed against real numbers instead
               // of guessed CSS. axe exposes them on the rule's `any[0].data`.
-              const data = (n.any?.[0] as { data?: Record<string, unknown> } | undefined)?.data
+              const data = (
+                n.any?.[0] as { data?: Record<string, unknown> } | undefined
+              )?.data
               const measured = data
                 ? ` [fg=${data.fgColor ?? '?'} bg=${data.bgColor ?? '?'} ratio=${data.contrastRatio ?? '?'} expected=${data.expectedContrastRatio ?? '?'}]`
                 : ''

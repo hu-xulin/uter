@@ -10,6 +10,7 @@ import { topologicalLevels } from '../runtime/scheduler/index.mjs';
 import { record } from '../runtime/evidence-engine/index.mjs';
 import { publish } from '../runtime/event-system/index.mjs';
 import { health as runtimeHealth } from '../runtime/orchestrator/index.mjs';
+import * as codeReviewEngine from '../engines/code-review/index.mjs';
 
 export const component = 'workflows';
 export const version = '1.0.0';
@@ -85,8 +86,8 @@ export async function stepExecutor({ task, step }) {
     if (!files.length) {
       out.status = 'BLOCKED'; out.summary = 'no UAP test files found'; out.outputs = { test_files: 0 };
     } else {
-      const r = await runCommand({ command: 'node', args: ['--test', '--test-reporter=tap', ...files.map((f) => path.relative(ROOT, f))], timeoutMs: 180000 });
-      out.outputs = { test_files: files.length, exit_code: r.exit_code, duration_ms: r.duration_ms, tail: r.stdout.slice(-800) };
+      const r = await runCommand({ command: 'node', args: ['--test', '--test-reporter=tap', '--test-concurrency=1', ...files.map((f) => path.relative(ROOT, f))], timeoutMs: 600000 });
+      out.outputs = { test_files: files.length, exit_code: r.exit_code, duration_ms: r.duration_ms, tail: r.stdout.slice(-20000) };
       out.commands.push(r.command);
       if (r.exit_code !== 0) { out.status = 'BLOCKED'; out.summary = `UAP tests exited ${r.exit_code}`; }
       else out.summary = `UAP tests passed: ${files.length} files, exit ${r.exit_code}`;
@@ -154,6 +155,11 @@ export async function stepExecutor({ task, step }) {
     if (hits > 0) { out.status = 'BLOCKED'; out.summary = `${hits} secret-shaped literals found`; }
     else out.summary = `${name}: ${files.length} files scanned, 0 secret-shaped literals`;
   } else if (name === 'code_review' || name === 'independent_review') {
+    // Run the registered review engine so every gate run reviews the CURRENT
+    // working tree instead of trusting a possibly stale report file.
+    const reviewRun = await codeReviewEngine.execute({}, {});
+    out.commands.push('engine:development.code_review');
+    out.evidence_refs.push(...(reviewRun.evidence_refs || []));
     const review = readJSON(path.join(REPORTS, 'CODE-REVIEW.json'), null);
     out.outputs = { exists: Boolean(review), findings: review?.findings?.length ?? 0, blockers: review?.blockers ?? null };
     if (!review) { out.status = 'BLOCKED'; out.summary = 'CODE-REVIEW.json has not been produced'; }

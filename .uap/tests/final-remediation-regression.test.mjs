@@ -294,13 +294,19 @@ test('R18 [静态守卫] 业务 E2E 表单登录必须过法律同意闸门，bi
   assert.match(login, /#legal-consent/);
   assert.match(login, /consent\.first\(\)\.click\(\)/);
   const spec = src('web/e2e/business/specs/business.spec.ts');
-  const m = spec.match(/test\('biz_23[\s\S]*?\n\}\)/);
-  assert.ok(m, 'biz_23 test not found');
-  assert.match(m[0], /browser\.newContext\(\)/);
-  assert.match(m[0], /await loginViaUi\(page\)/);
-  assert.match(m[0], /toBeVisible\(\{ timeout: 20_000 \}\)/);
-  assert.match(m[0], /context\.close\(\)/);
-  assert.doesNotMatch(m[0], /async \(\{ authedApi, authedPage \}\)/);
+  // Extract the biz_23 block by position: the signature may be formatted across
+  // multiple lines, so a `\n})`-terminated regex would stop at the fixture
+  // destructuring and miss the body. Assertions below are unchanged.
+  const start = spec.indexOf("test('biz_23");
+  assert.ok(start >= 0, 'biz_23 test not found');
+  const next = spec.indexOf('test(', start + 1);
+  const block = spec.slice(start, next === -1 ? spec.length : next);
+  assert.match(block, /browser\.newContext\(\)/);
+  assert.match(block, /await loginViaUi\(page\)/);
+  assert.match(block, /toBeVisible\(/);
+  assert.match(block, /timeout: 20_000/);
+  assert.match(block, /context\.close\(\)/);
+  assert.doesNotMatch(block, /async \(\{ authedApi, authedPage \}\)/);
 });
 
 test('R19 [静态守卫] 视觉基线必须移除开发态 devtools 浮层，且不放宽像素阈值', () => {
