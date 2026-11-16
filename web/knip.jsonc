@@ -46,9 +46,6 @@
     "react-top-loading-bar",
     // CLI tooling: axe probe (MA-12 / M05-02), invoked ad hoc
     "@axe-core/cli",
-    // scripts/axe-audit.mjs imports playwright directly (bundled with
-    // @playwright/test); it is an ad-hoc evidence tool, not app code.
-    "playwright",
   ],
   // Exports referenced within their own file (e.g. exported for tests or for
   // local readability) are not dead API surface
