@@ -58,7 +58,7 @@ jobs:
       - name: Build real frontend release artifacts for UAP rehearsal
         working-directory: web
         run: bun run build
-      - name: Refresh UDS 7.0 migration and acceptance evidence
+      - name: Refresh UDS 8.0.0 migration and acceptance evidence
         run: |
           node docs/design-system/registry/build.mjs
           node docs/design-system/registry/finalize.mjs
