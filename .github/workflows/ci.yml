@@ -32,12 +32,32 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
+      # Run every UAP gate even when an earlier gate fails so CI preserves
+      # complete evidence instead of skipping the self-test suite on validator failure.
       - name: UAP runtime health
+        id: uap_doctor
+        continue-on-error: true
         run: node .uap/bin/uap.mjs doctor
       - name: UAP registry and validator execution
+        id: uap_validate
+        continue-on-error: true
         run: node .uap/bin/uap.mjs validate --all
       - name: UAP complete self-test suite
+        id: uap_test
+        if: always()
+        continue-on-error: true
         run: node .uap/bin/uap.mjs test --all
+      - name: Enforce UAP governance gate
+        if: always()
+        env:
+          DOCTOR_OUTCOME: ${{ steps.uap_doctor.outcome }}
+          VALIDATE_OUTCOME: ${{ steps.uap_validate.outcome }}
+          TEST_OUTCOME: ${{ steps.uap_test.outcome }}
+        run: |
+          printf 'doctor=%s\\nvalidate=%s\\ntest=%s\\n' "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME"
+          test "$DOCTOR_OUTCOME" = success
+          test "$VALIDATE_OUTCOME" = success
+          test "$TEST_OUTCOME" = success
 
   ueqe-review:
     name: UEQE review engine (all modules)
