@@ -195,7 +195,7 @@ export const validators = {
       && ds.includes('当前运行时强制标准仍为 3.0')
       && migration.includes('当前字号真值')
       && exists(rootPath('docs/design-system/SHOWCASE-7.0.html'));
-    const runtimeBoundaryExplicit = ds.includes('3.0 仍是现行运行时强制标准')
+    const runtimeBoundaryExplicit = ds.includes('当前运行时强制标准仍为 3.0')
       && ds.includes('全站迁移按 Phase 6 分期执行');
     const dupTrees = ['h5/src', 'mobile/src', 'web-h5/src', 'm/src'].filter((d) => exists(rootPath(d)));
     const featureDirs = exists(rootPath('web/src/features'))
