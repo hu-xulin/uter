@@ -173,7 +173,7 @@ right scope every time:
 |---|---|
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
-| Design system / typography / color / components / interaction | `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` + `docs/design-system/TOKEN-MANIFEST.json` (UTER DESIGN SYSTEM 7.0; token manifest is the sole numeric source) |
+| Design system / typography / color / components / interaction | `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` + `docs/design-system/TOKEN-MANIFEST.json` + `docs/design-system/UDS-7.0-MIGRATION-REPORT.md` (UDS 7.0 is `ACCEPTANCE_READY`, `accepted: false`; do not claim final acceptance or bypass its documented runtime-compatibility boundary) |
 | Domain standards (product / architecture / API / database / payment / billing / security / cross-platform / delivery / lifecycle) | `.uap/SPECIFICATION-INDEX.md` + the applicable registered specification in `.uap/config/specification-registry.yaml` |
 | Engineering quality standards (code review / testing / auto-fix / quality gate) | `.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md` through `UAP-05-004-QUALITY-GATES.md`, enforced by registered UAP executors and validators |
 
