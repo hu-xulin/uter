@@ -547,38 +547,6 @@ export function runFinalAcceptance({ write = false, execution, evidencePhase = '
   return result;
 }
 
-/**
- * `verified_by` must identify an INDEPENDENT verifier, never the gate itself.
- * Accepted forms (fail-closed otherwise):
- *   - object { independent: true }  OR  { verifier: "<independent string>" }
- *   - string containing an independence signal (independent/独立/external/
- *     third-party/replay/regression/separate/隔离/verifier/validator/e2e) that
- *     is NOT self-referential (final-acceptance-gate / self / 自签).
- */
-function looksIndependent(vb) {
-  if (!vb) return false;
-  if (typeof vb === 'object') {
-    if (vb.independent === true) return true;
-    return typeof vb.verifier === 'string' ? looksIndependent(vb.verifier) : false;
-  }
-  if (typeof vb !== 'string') return false;
-  if (/final[-_ ]?acceptance[-_ ]?gate|\bself\b|self[-_ ]?(signed|test|report)|自签/i.test(vb)) return false;
-  return /independent|独立|external|third.?party|replay|regression|separate|隔离|verifier|validator|e2e/i.test(vb);
-}
-
-/**
- * A capability is proven ONLY by a dedicated, independently-verified result
- * card bound to the CURRENT HEAD. Equating capabilities with "self-tests exit
- * 0" was dishonest; fail closed whenever the card is missing, not PASS, from
- * another version, or not attributed to an independent verifier.
- */
-function capabilityProven(fileName, headNow) {
-  const card = readJSON(path.join(REPORTS, fileName), null);
-  if (!card || card.status !== 'PASS') return false;
-  if (!card.git_head || card.git_head !== headNow) return false;
-  return looksIndependent(card.verified_by);
-}
-
 function writeFinalStatus(result, e) {
   const repo = repositoryIdentity();
   const req = result.checks.find((c) => c.id === '6.4_requirements')?.details || {};
