@@ -19,21 +19,19 @@ For commercial licensing, please contact support@uter.ai
 
 /*
  * Markdown prose scale — explicit descendant selectors for native docs and
- * bundled legal documents. Design-spec §1.8「内容排版（Markdown prose）」and
- * §28 `TOKEN-MANIFEST` are the authority: Markdown headings are their own
- * ladder, one or two steps below the interface headings (§1.3), and the
- * same ladder applies to `components/ui/markdown.tsx` and
- * `ai-elements/response-renderer-blocks.tsx`.
+ * bundled legal documents. UDS 8.0.0 §04 (type scale) and §24 (code and
+ * developer UI) are the authority; §23 governs table typography.
  *
- *   h1 20/28 / 600  → `text-2xl`
- *   h2 18/26 / 600  → `text-lg`
- *   h3 16/24 / 600  → `text-base`
- *   h4 14/22 / 600  → `text-sm`
- *   body / list items 16/26 → `text-long`
- *
- * The document-level first heading is rendered separately as the interface
- * `page-title` (30/38/600, §1.8) by `user-guide-index.tsx` and
- * `legal-document.tsx`; it must not borrow this Markdown ladder.
+ *   h1 36/44 → `text-4xl`   h2 24/32 → `text-2xl`   h3 18/26 → `text-lg`
+ *   h4 16/24 → `text-base`  body / list items 16/26 → `text-long`
+ *   body copy takes `--ds-color-text-secondary` (§03 secondary text,
+ *   ≥7:1 on the page surface); headings stay `--ds-color-text-primary`
+ *   so the hierarchy reads heading-dark / body-soft as in Clerk docs.
+ *   table header / cells 14/22 (`--ds-text-sm`, body default), horizontal
+ *   dividers only (§23 rule 2)
+ *   code 13/20 mono (§24 rule 2), inline + block surfaces take the
+ *   `--ds-color-code-*` tokens so code is never styled by generic
+ *   `--muted` / `--border` (the bridge is the only colour source).
  *
  * `max-w-[72ch]` is §1.12: 16/26 long-form copy must not stretch across a
  * 1280px content area. Card-like blocks (code blocks, images) use
@@ -44,21 +42,25 @@ For commercial licensing, please contact support@uter.ai
  * export plain constants.
  */
 export const PROSE_CLASSES = [
-  'max-w-[72ch] text-long',
-  '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:scroll-mt-20',
-  '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:scroll-mt-20',
-  '[&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:scroll-mt-20',
-  '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-sm [&_h4]:font-semibold',
+  'max-w-[72ch] text-long text-(--ds-color-text-secondary)',
+  '[&_h1]:mt-6 [&_h1]:mb-4 [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:text-(--ds-color-text-primary) [&_h1]:scroll-mt-20',
+  '[&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-(--ds-color-text-primary) [&_h2]:scroll-mt-20',
+  '[&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-(--ds-color-text-primary) [&_h3]:scroll-mt-20',
+  '[&_h4]:mt-5 [&_h4]:mb-2 [&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-(--ds-color-text-primary)',
   '[&_p]:my-2 [&_p]:text-long [&_strong]:font-semibold [&_em]:italic',
   '[&_a]:text-fg-link hover:[&_a]:text-fg-link',
   '[&_ol]:my-2 [&_ul]:my-2 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5 [&_li]:my-1 [&_li]:pl-1 [&_li]:text-long',
-  '[&_blockquote]:my-3 [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:bg-muted/50 [&_blockquote]:py-1 [&_blockquote]:pl-4',
-  '[&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-mono',
-  '[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:bg-muted [&_pre]:p-3 [&_pre]:text-mono',
-  '[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-sm',
-  '[&_table]:my-4 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_thead]:bg-muted [&_th]:border [&_td]:border [&_th]:px-3 [&_td]:px-3 [&_th]:py-2 [&_td]:py-2 [&_th]:text-left [&_th]:text-sm [&_th]:font-semibold [&_td]:text-sm',
+  '[&_blockquote]:my-3 [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:bg-(--ds-color-surface-sunken) [&_blockquote]:py-1 [&_blockquote]:pl-4',
+  '[&_code]:rounded [&_code]:bg-(--ds-color-code-background) [&_code]:text-(--ds-color-code-foreground) [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-mono',
+  '[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-(--ds-color-border-code) [&_pre]:bg-(--ds-color-code-codeblock-background) [&_pre]:p-3 [&_pre]:text-(--ds-color-code-foreground) [&_pre]:text-mono',
+  '[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-mono',
+  // 表格外框（圆角矩形）由 `DocsTable` 组件负责；这里只管单元格排版与分隔线。
+  '[&_table]:w-full [&_thead]:bg-(--ds-color-surface-sunken) [&_th]:border-b [&_td]:border-b [&_th]:border-(--ds-color-border-table) [&_td]:border-(--ds-color-border-table) [&_th]:break-words [&_td]:break-words [&_th]:px-4 [&_td]:px-4 [&_th]:py-3 [&_td]:py-3 [&_th]:text-left [&_th]:text-(--ds-color-text-primary) [&_th]:text-sm [&_th]:font-medium [&_td]:text-sm [&_tbody_tr:last-child>*]:border-b-0',
+  // Clerk emphasises the first column of docs tables (row labels) and keeps
+  // only horizontal dividers (§23 rule 2); the rest of the body stays muted.
+  '[&_tbody_th]:font-semibold [&_tbody_th]:text-(--ds-color-text-primary) [&_tbody_td:first-child]:font-medium [&_tbody_td:first-child]:text-(--ds-color-text-primary)',
   '[&_figcaption]:text-xs',
-  '[&_hr]:my-6 [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-lg',
+  '[&_hr]:my-8 [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-lg',
   '[&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
   '[overflow-wrap:anywhere]',
 ].join(' ')

@@ -49,6 +49,7 @@ For commercial licensing, please contact support@uter.ai
    * 16px 只留给 `body-long` 的连续阅读场景。 */
   --ds-text-body: var(--text-sm);
   --ds-text-body-sm: var(--text-sm);
+  --ds-text-sm: var(--text-sm); /* 正文默认字号别名（14/22） */
   /* 密集数据专用：13/20。表格单元格、二级导航、分页 —— 以扫读为主的
    * 密度场景才用它，普通说明文字仍是 14px（见阶梯注释）。 */
   --ds-text-dense: var(--text-dense);
@@ -166,6 +167,16 @@ For commercial licensing, please contact support@uter.ai
    *
    * 颜色**没有**对应的 `--ds-icon-color`：规范要求跟随父级文字色，
    * Lucide 内置 `stroke="currentColor"` 已满足。 */
+  /* UDS 8.0.0 §10 图标五档：TOKEN-MANIFEST 同值。scalar Token 不经 bridge，
+     在真源文件字面声明；与上面的旧别名并存，旧别名继续服务存量组件。 */
+  --ds-icon-2xs: 12px;
+  --ds-icon-xs: 16px;
+  --ds-icon-sm: 20px;
+  --ds-icon-md: 24px;
+  --ds-icon-lg: 32px;
+  --ds-icon-stroke: 2px;
+  --ds-icon-stroke-small: 1.75px;
+
   --ds-icon-size: var(--primitive-icon-glyph);
   --ds-icon-size-compact: var(--primitive-icon-glyph-compact);
   --ds-icon-size-emphasis: var(--primitive-icon-glyph-emphasis);
