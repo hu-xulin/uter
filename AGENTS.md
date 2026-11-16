@@ -431,12 +431,12 @@ sections. Two screenshot-diff tracks exist, and **neither runs in CI**:
 
 ```bash
 cd web
-bun run test:visual        # track 1: SHOWCASE-7.0.html diff, zero-dep, headless Chrome
+bun run test:visual        # track 1: SHOWCASE-8.0.0.html diff, zero-dep, headless Chrome
 bun run test:visual:e2e    # track 2: Playwright diff of real routes, needs the full stack
 ```
 
 - Track 1 (`scripts/visual-regression.mjs`) screenshots
-  `docs/design-system/SHOWCASE-7.0.html` at 1440x900 and 390x844 and compares
+  `docs/design-system/SHOWCASE-8.0.0.html` at 1440x900 and 390x844 and compares
   hashes stored in `visual-regression/baseline.json`.
 - Track 2 (`web/e2e/visual/`) covers real routes, including authenticated ones,
   and requires the Go backend plus `bun run dev` to be running.
