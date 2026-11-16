@@ -1,4 +1,6 @@
 # UAP-04-001 — 编码规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-04-001
 **标准编号：** UAP-04-001
@@ -39,7 +41,7 @@ Uter 是 Go 1.27.3 + React 19/TypeScript 的双栈仓库，编码约定已固化
 - `AGENTS.md`「Backend test quality」要求优先扩展既有测试文件、使用 `github.com/stretchr/testify/require`（fatal）与 `testify/assert`（非 fatal）、确定性 table tests；真实样例 `relay/helper/openai_image_request_test.go`、`relay/common/relay_utils_test.go`、`common/quota_math_test.go`、`service/authz/authz_test.go`。
 - `AGENTS.md`「Change Protection」规定 `.env`、`*.db`/`-shm`/`-wal`、`logs/`、构建产物不得进入提交；`.uap/runtime/_lib/util.mjs` 的 `redact()` 脱敏 `AIza`/`whsec_`/`sk-`/`ghp_` 及密码赋值模式，保证敏感数据不写入普通日志。
 - `relaykit/` 必须独立可构建（`cd relaykit && GOWORK=off go build ./...`），`tokenkit/tokenkit/` 必须独立验证 `GOWORK=off go vet ./... && GOWORK=off go test ./... && GOWORK=off go build ./...`；`AGENTS.md`「Database compatibility」要求 GORM 改动跑 SQLite/MySQL/PostgreSQL 三库验证矩阵并以 `model/main.go` 的 `lockForUpdate(tx)` 加行锁。
-- `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 与 `web/src/design-system/` 为 UI 基线，`web/src/components/ui/` 组件须优先复用；`pkg/billingexpr/expr.md` 为计费表达式变更必读文档，`setting/billing_setting/builtin_billing.go` 为内置模型价格定义位置。
+- `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 与 `web/src/design-system/` 为 UI 基线，`web/src/components/ui/` 组件须优先复用；`pkg/billingexpr/expr.md` 为计费表达式变更必读文档，`setting/billing_setting/builtin_billing.go` 为内置模型价格定义位置。
 - `./scripts/verify-all.sh [--quick]` 把上述检查收敛为一条本地命令，其 `step()` 强制输出「实际命令 + 退出码 + 耗时」，退出码 `0/1/2` 语义由脚本头定义；`AGENTS.md`「Verification Evidence」禁止「已检查」「tests passed」等无证据声明。
 
 ## 执行流程

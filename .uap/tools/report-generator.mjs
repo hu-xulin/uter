@@ -489,19 +489,32 @@ export async function generateReports({ final = false } = {}) {
   // 12 — H5
   const h5Scripts = webScripts.filter((s) => /h5|mobile|wap/i.test(s));
   const h5Dirs = ['web/src/pages/h5', 'web/src/features/h5', 'h5', 'mobile'].filter((d) => exists(rootPath(d)));
+  const h5Matrix = readJSON(rootPath('.uap/reports/H5-BROWSER-MATRIX.json'), null);
+  const h5Verdict = h5Matrix?.verdict || {};
+  const h5MatrixPass = Number(h5Matrix?.matrix_rows ?? h5Matrix?.matrix?.length ?? 0) > 0
+    && ['h5_build', 'viewport', 'touch', 'mobile_tests'].every((k) => h5Verdict[k] === 'PASS');
+  const h5MatrixFail = h5Matrix && Object.values(h5Verdict).some((v) => v === 'FAIL');
   write('H5-ENGINEERING-REPORT.md', md('H5 Engineering Report', [
-    ['H5 独立构建探测', `package.json 中 H5/mobile 相关脚本：${h5Scripts.join(', ') || '无'}；独立 H5 目录：${h5Dirs.join(', ') || '无'}。`],
-    ['结论', h5Scripts.length || h5Dirs.length
-      ? '发现独立 H5 入口，需单独执行其构建与测试后方可判定；当前报告不宣称 H5 验证通过。'
-      : '本项目未发现独立 H5 构建目标：Web/H5 一致性按同一 React 代码库判定。此项标记为 BLOCKED（缺少独立 H5 验证目标），不以「无目标即通过」冒充 PASS。'],
+    ['H5 独立构建探测', `package.json 中 H5/mobile 相关脚本：${h5Scripts.join(', ') || '无'}；独立 H5 目录：${h5Dirs.join(', ') || '无'}；Uter Web/H5 共用 React 代码库。`],
+    ['真实浏览器矩阵', h5MatrixPass
+      ? `PASS：真实 Chromium 执行 ${h5Matrix.matrix_rows ?? h5Matrix.matrix.length} 个视口/路由组合；h5_build、viewport、touch、mobile_tests 全部 PASS。`
+      : h5MatrixFail
+        ? `FAIL：真实浏览器矩阵存在失败；verdict=${JSON.stringify(h5Verdict)}。`
+        : 'BLOCKED / NOT_EXECUTED：缺少本次执行生成的 H5-BROWSER-MATRIX.json 或矩阵未完整通过；不得用旧报告或目录存在性替代浏览器证据。'],
     ['真实数据', `Web typecheck 退出码：${build?.commands?.find((c) => c.command.includes('typecheck'))?.exit_code ?? 'NOT_EXECUTED'}。`],
   ]));
 
   // 13 — cross platform
   const platformDirs = ['web', 'electron', 'desktop', 'web/src/design-system', 'web/src/features/wallet', 'docs/design-system'];
+  const udsFiles = ['00-UTER-DESIGN-SYSTEM-OVERVIEW.md', 'TOKEN-MANIFEST.json', 'UDS-7.0-MIGRATION-REPORT.md', 'COMPAT-MAP.json', 'FINAL-ACCEPTANCE-REPORT.md'];
+  const udsMissing = udsFiles.filter((f) => !exists(rootPath('docs', 'design-system', f)));
+  const udsManifest = readJSON(rootPath('docs', 'design-system', 'TOKEN-MANIFEST.json'), null);
+  const udsAcceptance = readText(rootPath('docs', 'design-system', 'FINAL-ACCEPTANCE-REPORT.md')) || '';
+  const udsReady = udsMissing.length === 0 && udsManifest?.version === '7.0.0'
+    && udsManifest?.status === 'ACCEPTANCE_READY' && udsAcceptance.includes('accepted: false');
   write('CROSS-PLATFORM-REPORT.md', md('Cross-Platform Report', [
     ['平台目录探测', table(['路径', '存在', '文件数'], platformDirs.map((d) => [d, exists(rootPath(d)) ? 'YES' : 'NO', listFiles(rootPath(d)).length]))],
-    ['设计系统约束', `设计系统规范文件：${exists(rootPath('docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md')) ? '存在' : '缺失'}；web/AGENTS.md：${exists(rootPath('web', 'AGENTS.md')) ? '存在' : '缺失'}。`],
+    ['设计系统约束', `UDS 7.0 文档集：${udsReady ? 'PRESENT / ACCEPTANCE_READY / accepted=false' : `INCOMPLETE; missing=${udsMissing.join(',')}`}; UDS 3.0 兼容层与已迁移 7.0 Token 边界按迁移证据保留；web/AGENTS.md：${exists(rootPath('web', 'AGENTS.md')) ? '存在' : '缺失'}。`],
     ['结论', '仅报告真实探测到的目录与命令结果；未完成独立平台构建验证的部分不标记为 PASS。'],
   ]));
 

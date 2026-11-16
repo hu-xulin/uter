@@ -1,4 +1,6 @@
 # UAP-00-004 — 证据与状态管理规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-00-004
 **标准编号：** UAP-00-004
@@ -39,7 +41,7 @@
 - 状态可恢复由 `.uap/config/workflow-registry.yaml` 的 `execution.persist_after_each_step: true` / `resume_on_interruption: true` / `require_evidence: true` 与 `uap-defect-repair` 的 `persist_evidence`、`uap-final-verification` 的 `verify_recovery` 落实。
 - 真实验证命令（证据中必须记录退出码）：`./scripts/verify-all.sh [--quick]`、`gofmt -l .`、`GOWORK=off go vet ./...`、`make test`、`cd web && bun run typecheck|lint|test|lint:design:strict|copyright:check|format:check|build:check`；CI 侧 `.github/workflows/ci.yml` / `release-gate.yml`。
 - 真实测试文件（存在不等于通过，须记录运行结果）：`common/quota_math_test.go`、`model/billing_integrity_test.go`、`relay/helper/openai_image_request_test.go`、`router/api-router.go` 配套的 `router/route_dump_test.go`、`web/src/design-system/__tests__`。
-- 「文件存在不能证明功能实现」的对照：`AGENTS.md` 的 Verification Evidence 要求报告写明确切命令、退出码、失败测试名与变更文件；`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 的 `showcase-3.0.html` 与 `web/e2e/visual/` 两条本地截图轨 `BLOCKED` 表示「未执行」，不得报为 pass。
+- 「文件存在不能证明功能实现」的对照：`AGENTS.md` 的 Verification Evidence 要求报告写明确切命令、退出码、失败测试名与变更文件；`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 的 `showcase-3.0.html` 与 `web/e2e/visual/` 两条本地截图轨 `BLOCKED` 表示「未执行」，不得报为 pass。
 - 报告索引 `.uap/reports/EVIDENCE-INDEX.md` 以 `evidence_refs` 关联 `.uap/evidence/`；`docs/product/reports/`（如 `BIDIRECTIONAL-SYNC-REPORT.md`）与 `docs/product/history/v1.json` 为 Uter 既有的可追溯报告范例。
 
 ## 执行流程

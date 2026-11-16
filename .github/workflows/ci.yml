@@ -24,7 +24,7 @@ jobs:
   uap-governance:
     name: UAP runtime, validators and self-tests
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -45,6 +45,11 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: '1.4.0'
+      - name: Install pinned gitleaks for UAP final acceptance
+        if: github.event_name == 'push'
+        run: |
+          go install github.com/gitleaks/gitleaks/v8@v8.24.2
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
       - name: Install H5 browser and frontend dependencies
         working-directory: web
         run: |
@@ -64,6 +69,7 @@ jobs:
             PORT=3000 \
             SQLITE_PATH="$RUNNER_TEMP/uap/uter.db" \
             SESSION_SECRET="$(openssl rand -hex 48)" \
+            UTER_I18N_DIR="$GITHUB_WORKSPACE/web/src/i18n/locales" \
             GIN_MODE=release \
             ./uter-bin > "$RUNNER_TEMP/uap/uter-server.log" 2>&1 &
             echo $! > "$RUNNER_TEMP/uap/uter-server.pid"
@@ -157,14 +163,90 @@ jobs:
           console.log('--- TAP FAILURE CONTEXT ---');
           console.log(failed.length ? failed.join('\\n--- FAILURE ---\\n') : tap.slice(-12000));
           NODE
+      - name: UAP real code repair and independent regression
+        if: github.event_name == 'push'
+        id: uap_capabilities
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs verify-capabilities
+      - name: UAP isolated database integration and migrations
+        if: github.event_name == 'push'
+        id: uap_database
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs verify-database
+      - name: UAP local payment simulation (no provider calls)
+        if: github.event_name == 'push'
+        id: uap_payment
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs verify-payment
+      - name: UAP browser E2E and accessibility verification
+        if: github.event_name == 'push'
+        id: uap_e2e
+        continue-on-error: true
+        env:
+          VISUAL_BASE_URL: http://127.0.0.1:3000
+        run: node .uap/bin/uap.mjs verify-e2e
+      - name: UAP visual regression verification
+        if: github.event_name == 'push'
+        id: uap_visual
+        continue-on-error: true
+        env:
+          VISUAL_BASE_URL: http://127.0.0.1:3000
+        run: node .uap/bin/uap.mjs verify-visual
+      - name: UAP security negative tests and secret scan
+        if: github.event_name == 'push'
+        id: uap_security
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs verify-security
+      - name: UAP full requirement traceability verification (538 requirements)
+        if: github.event_name == 'push'
+        id: uap_requirements
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs verify-requirements
+      - name: Regenerate final UAP reports from current execution
+        if: github.event_name == 'push'
+        id: uap_report
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs report --final
+      - name: Run authoritative UAP final acceptance closure
+        if: github.event_name == 'push'
+        id: uap_accept
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs accept
+      - name: Publish authoritative UAP final acceptance status
+        if: always() && github.event_name == 'push'
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const read = (p) => fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : null;
+          const acceptance = read('.uap/reports/FINAL-ACCEPTANCE.json');
+          const status = read('.uap/reports/FINAL-STATUS.json');
+          const summary = {
+            gate_status: acceptance?.status ?? 'NOT_RUN',
+            claim_allowed: acceptance?.claim_allowed ?? false,
+            overall_status: acceptance?.overall_status ?? 'NOT_RUN',
+            gate_groups_pass: acceptance?.counts?.gate_groups_pass ?? null,
+            gate_groups_fail: acceptance?.counts?.gate_groups_fail ?? null,
+            necessary_blocked: acceptance?.counts?.necessary_blocked ?? null,
+            necessary_unverified: acceptance?.counts?.necessary_unverified ?? null,
+            uap_fully_operational: status?.final_acceptance?.uap_fully_operational ?? false,
+            blocked_items: acceptance?.blocked_items ?? [],
+            problems: acceptance?.problems ?? [],
+          };
+          console.log(JSON.stringify(summary, null, 2));
+          if (summary.claim_allowed !== true) {
+            console.log('::warning::UAP final acceptance is not fully verified; see blocked_items/problems above. This is not a PASS.');
+          }
+          NODE
       - name: Enforce UAP governance gate
         if: always()
         env:
           DOCTOR_OUTCOME: ${{ steps.uap_doctor.outcome }}
           VALIDATE_OUTCOME: ${{ steps.uap_validate.outcome }}
           TEST_OUTCOME: ${{ steps.uap_test.outcome }}
+          ACCEPTANCE_OUTCOME: ${{ steps.uap_accept.outcome }}
         run: |
-          printf 'doctor=%s\\nvalidate=%s\\ntest=%s\\n' "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME"
+          printf 'doctor=%s\\nvalidate=%s\\ntest=%s\\nfinal_acceptance=%s\\n' "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$ACCEPTANCE_OUTCOME"
+          if [[ "$ACCEPTANCE_OUTCOME" != "success" ]]; then echo "::warning::Operational UAP gate passed/checked separately; final acceptance remains blocked or unverified."; fi
           test "$DOCTOR_OUTCOME" = success
           test "$VALIDATE_OUTCOME" = success
           test "$TEST_OUTCOME" = success

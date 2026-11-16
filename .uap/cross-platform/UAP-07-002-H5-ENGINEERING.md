@@ -1,11 +1,13 @@
 # UAP-07-002 — H5 工程规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-07-002
 **标准编号：** UAP-07-002
 **名称：** H5 工程规范
 **版本：** 1.0.0
 **状态：** ACTIVE
-**适用范围：** 约束 Uter 同一套 React 19 / Rsbuild 2 前端在移动视口下的呈现与交互，覆盖 `web/index.html` 的视口声明、`web/src/features/wallet/` 的充值与支付回跳链路、`controller/return_path.go` 的站内回跳拼接、`web/e2e/visual/` 的 desktop/mobile 双轨快照以及 `web/src/i18n/locales/` 的 7 语言文案。H5 与 Web 共用 `web/src/` 代码与业务规则，规范基线同样为 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（§16.4 响应式禁止事项、§16 responsive）。
+**适用范围：** 约束 Uter 同一套 React 19 / Rsbuild 2 前端在移动视口下的呈现与交互，覆盖 `web/index.html` 的视口声明、`web/src/features/wallet/` 的充值与支付回跳链路、`controller/return_path.go` 的站内回跳拼接、`web/e2e/visual/` 的 desktop/mobile 双轨快照以及 `web/src/i18n/locales/` 的 7 语言文案。H5 与 Web 共用 `web/src/` 代码与业务规则，规范基线同样为 `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`（`12-RESPONSIVE-DESIGN-STANDARD.md` 响应式禁止事项、`12-RESPONSIVE-DESIGN-STANDARD.md`）。
 **关键级别：** P1
 **依赖标准：** UAP-01-001
 
@@ -27,10 +29,10 @@
 12. 不得只根据桌面浏览器截图判断 H5 合格。
 
 ## Uter 落地细则
-- 移动端视口声明在 `web/index.html:45`：`<meta name="viewport" content="width=device-width, initial-scale=1.0" />`；响应式按 `web/AGENTS.md` §3.10 采用移动优先与 Tailwind `sm:` / `md:` / `lg:` 断点，`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §16.4 明令禁止固定桌面宽度导致 H5 横向溢出、禁止移动端简单缩小组件、禁止缩小字号低于规定值解决布局。
+- 移动端视口声明在 `web/index.html:45`：`<meta name="viewport" content="width=device-width, initial-scale=1.0" />`；响应式按 `web/AGENTS.md` §3.10 采用移动优先与 Tailwind `sm:` / `md:` / `lg:` 断点，`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` `12-RESPONSIVE-DESIGN-STANDARD.md` 明令禁止固定桌面宽度导致 H5 横向溢出、禁止移动端简单缩小组件、禁止缩小字号低于规定值解决布局。
 - `AGENTS.md` Design System Enforcement 规定「desktop and mobile share one type scale; input text is 14px on every platform (no H5 16px exception)」；H5 不得引入 16px 输入框例外或独立字号体系，设计值取自 `web/src/design-system/tokens/typography.css` 与 `web/src/styles/theme.css`。
 - 触摸交互与点击区域按设计系统 §0.2 第 10 条「组件的视觉尺寸与实际交互命中区域必须分别定义」检查；移动端专用组件真实存在于 `web/src/features/usage-logs/components/common-log-mobile-card.tsx`，键盘与可访问性按 `web/AGENTS.md` §3.12（焦点顺序、`aria-*`、装饰图标 `aria-hidden="true"`）验证。
-- 设备尺寸矩阵由 `web/scripts/visual-regression.mjs` 固定：`VIEWPORTS = [{ id: 'desktop', width: 1440, height: 900 }, { id: 'mobile', width: 390, height: 844 }]`，且 `THEMES = ['light', 'dark']`；`bun run test:visual` 对 `docs/design-system/showcase-3.0.html` 同时截两个尺寸，禁止只跑 desktop 判定 H5 合格。
+- 设备尺寸矩阵由 `web/scripts/visual-regression.mjs` 固定：`VIEWPORTS = [{ id: 'desktop', width: 1440, height: 900 }, { id: 'mobile', width: 390, height: 844 }]`，且 `THEMES = ['light', 'dark']`；`bun run test:visual` 对 `docs/design-system/SHOWCASE-7.0.html` 同时截两个尺寸，禁止只跑 desktop 判定 H5 合格。
 - 真实路由的双尺寸证据在 `web/e2e/visual/`：`public.spec.ts` / `authed.spec.ts` / `auth.setup.spec.ts` 及 `*.spec.ts-snapshots/` 下成对的 `*-desktop-chromium-darwin.png` 与 `*-mobile-chromium-darwin.png`（覆盖 home / pricing / sign-in / wallet / dashboard / channels / usage-logs 等页面）；`playwright.config.ts`、`lib/target.ts`、`lib/harness.ts`、`lib/pages.ts`、`lib/login.ts` 为执行入口。
 - **视觉两条 track 均为 local-only 且 BLOCKED 不算通过**：track 1 `bun run test:visual`（`web/scripts/visual-regression.mjs`）在无 Pinned Playwright Chromium 时以 `exit 2` 报 `BLOCKED`；track 2 `bun run test:visual:e2e` 在 Go 后端（`./uter-bin`，CWD 必须为仓库根）或 `cd web && bun run dev` 不可达时，由 `web/e2e/visual/lib/service-gate.ts` 的 `BLOCKED_BANNER` 报整轮 `BLOCKED`（原文「本轮判定为 BLOCKED，不当作通过」）。可用 `VISUAL_BASE_URL` 指定 dev server 端口；`AGENTS.md` 明确二者都不接入 CI。
 - 支付跳转/返回状态真实实现：`web/src/features/wallet/lib/payment-redirect.ts` 是支付跳转统一入口，只允许 http/https、拒绝 `javascript:` / `data:`、生产要求 HTTPS、按服务商主机名白名单校验、新窗口带 `noopener,noreferrer`、弹窗被拦截明确报错；`web/src/features/wallet/lib/alipay-return.ts` 用 `AlipayOrderStatus = 'success' | 'pending' | 'unpaid' | 'closed'` 与 `ALIPAY_RETURN_QUERY_ATTEMPTS` / `ALIPAY_RETURN_QUERY_INTERVAL_MS` 轮询查单并分流 `onSuccess` / `onPending`。
@@ -45,7 +47,7 @@
 ## 执行流程
 1. `uap-orchestrator`（`.uap/runtime/agent-runtime/index.mjs`，权限 `project_read/task_create/task_dispatch/evidence_write`）解析 `specification-registry.yaml` 中 `UAP-07-002` 的依赖 `UAP-01-001`，确认满足后创建结构化任务（`task_id` / `specification_ids` / `scope` / `constraints` / `acceptance_criteria`）。
 2. Orchestrator 经 `.uap/runtime/_lib/yaml.mjs` 加载 `execution-mapping.yaml`，解析 `cross_platform.h5` → `.uap/engines/cross-platform/index.mjs`，动态 `import()` 并调用 `health(ctx)`；不可导入或 `health()` 缺失写入 `blocked_reasons`。
-3. 执行器读取 `web/index.html`（viewport meta）、`web/src/features/wallet/lib/payment-redirect.ts` 与 `alipay-return.ts`、`controller/return_path.go`、`web/e2e/visual/playwright.config.ts`、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` §16.4/§16，建立移动端视口—支付回跳—路由快照映射。
+3. 执行器读取 `web/index.html`（viewport meta）、`web/src/features/wallet/lib/payment-redirect.ts` 与 `alipay-return.ts`、`controller/return_path.go`、`web/e2e/visual/playwright.config.ts`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` `12-RESPONSIVE-DESIGN-STANDARD.md`/§16，建立移动端视口—支付回跳—路由快照映射。
 4. 执行器按 `local_command` + `test_environment`（`isolated_environment_only: true`）运行 `bun run typecheck`、`bun run lint`、`bun run test`、`bun run build:check`；逐条记录命令、退出码、耗时与 stdout/stderr 摘要。
 5. 执行器触发移动端验证：`bun run test:visual`（必须包含 mobile 390x844）与 `bun run test:visual:e2e`（必须包含 `*-mobile-*.png` 快照）；模拟支付回跳用例只走模拟渠道，校验 `return_url` 落地状态与 `AlipayOrderStatus` 四种状态分流。服务栈或浏览器缺失时按 `BLOCKED` 记录（track 1 `exit 2`、track 2 `BLOCKED`），**不折算为 PASS**。
 6. 执行器用 `contract.mjs` 的 `executorResult()` 归一化输出；`validation_results` 留待独立验证器回填（`assertExecutorResult()` 强制），并把 `blocked_reasons` 写明。

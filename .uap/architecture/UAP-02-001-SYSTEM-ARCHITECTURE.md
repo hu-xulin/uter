@@ -1,11 +1,13 @@
 # UAP-02-001 — 系统架构规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-02-001
 **标准编号：** UAP-02-001
 **名称：** 系统架构规范
 **版本：** 1.0.0
 **状态：** IMPLEMENTED_NOT_VERIFIED
-**适用范围：** 约束 Uter 系统边界、模块依赖与关键链路的识别及 ADR 记录，覆盖 `router/`、`middleware/`、`controller/`、`service/`、`model/`、`relay/`、`common/`、`setting/`、`pkg/`、`plugins/tasks/`、`web/src/`、`electron/` 等真实工程模块，以及独立 Go 模块 `relaykit/`、`tokenkit/tokenkit/`。架构决策登记于 `docs/adr/README.md` 与 `docs/adr/0001-uter-design-system-single-source-of-truth.md`，设计基线为 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`。
+**适用范围：** 约束 Uter 系统边界、模块依赖与关键链路的识别及 ADR 记录，覆盖 `router/`、`middleware/`、`controller/`、`service/`、`model/`、`relay/`、`common/`、`setting/`、`pkg/`、`plugins/tasks/`、`web/src/`、`electron/` 等真实工程模块，以及独立 Go 模块 `relaykit/`、`tokenkit/tokenkit/`。架构决策登记于 `docs/adr/README.md` 与 `docs/adr/0001-uter-design-system-single-source-of-truth.md`，设计基线为 `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`。
 **关键级别：** P1
 **依赖标准：** UAP-00-001
 
@@ -33,7 +35,7 @@
 - 明确接口与职责划分：`middleware/access_token_routes.go`、`middleware/auth_origin.go`、`middleware/request-id.go`、`middleware/request_body_limit.go`（横切）；`controller/`（请求编排）；`service/authz/permission.go` / `role.go` / `registry.go`（Casbin 授权）；`model/main.go`（GORM 模型与方言 helper）；`common/json.go`（`common.Marshal` / `common.Unmarshal` 统一 JSON 封装）、`common/database.go`、`common/quota_math.go`。
 - 外部依赖识别：`relay/channel/` 下 40+ provider 目录（如 `relay/channel/openai/`、`claude/`、`gemini/`、`aws/`、`vertex/`）为上游依赖；`plugins/tasks/*/plugin.js`（`plugins/tasks/kling/plugin.js` 等）经 `pkg/jsplugin/` 由 Sobek 执行；Redis（go-redis）+ 内存缓存；SQLite/MySQL/PostgreSQL 主库与 ClickHouse 日志库。
 - ADR 正式注册入口：`docs/adr/README.md`（状态定义 Proposed / Accepted / Rejected / Deprecated / Superseded，维护规则 6 条：新 ADR 先核对现有决策、仅明确批准才 Accepted、必须记录来源/适用范围/实施状态/可核验证据、偏离 Accepted ADR 须修复或新 ADR 替代、状态变化不得删除历史、历史决策须逐项盘点）；现有 `docs/adr/0001-uter-design-system-single-source-of-truth.md`（Accepted，2026-11-03，UTER Design System 3.0 作为设计规范唯一事实来源）。
-- 设计系统唯一标准 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（已核验章节：`# 0. 规范效力与执行原则`、`# 1. Typography 字体系统`、`# 2. Color 色彩系统`、`# 3. Page Hierarchy`、`# 4. Surface 与 Border`、`# 5. Radius`、`# 6. Spacing`、`# 7. Density`、`# 8. Shadow 与 Elevation`）与视觉样本 `docs/design-system/showcase-3.0.html`；前端实现 `web/src/design-system/`、`web/src/components/ui/`。
+- 设计系统唯一标准 `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`（已核验章节：`# 0. 规范效力与执行原则`、`# 1. Typography 字体系统`、`# 2. Color 色彩系统`、`# 3. Page Hierarchy`、`# 4. Surface 与 Border`、`# 5. Radius`、`# 6. Spacing`、`# 7. Density`、`# 8. Shadow 与 Elevation`）与视觉样本 `docs/design-system/SHOWCASE-7.0.html`；前端实现 `web/src/design-system/`、`web/src/components/ui/`。
 - 架构与代码一致性的验证命令：`./scripts/verify-all.sh [--quick]`、`gofmt -l .`、`GOWORK=off go vet ./...`、`make test`（`Makefile` 的 `test` 目标覆盖 root / relaykit / tokenkit / tokenkit/tokenkit 四模块）、`cd relaykit && GOWORK=off go build ./...`、`cd web && bun run typecheck|lint|test|build:check`。
 - 关键业务链路端到端说明的落点：管理 API（`router/api-router.go` → `controller/` → `service/` → `model/`）、上游 relay（`router/relay-router.go` → `relay/channel/*/` → `common/quota_math.go` 计费）、认证（`middleware/access_token_routes.go` + `service/authz/`）、任务插件（`router/task-router.go` → `pkg/jsplugin/` → `plugins/tasks/`）、前端（`web/src/routes/` → `web/src/features/` → `web/src/lib/`）。
 - 单点故障与关键依赖：主库/日志库（`common/database.go` 的 `UsingMainDatabase` / `UsingLogDatabase`）、Redis 缓存、`model/migration_dialector.go` 的迁移入口；`AGENTS.md` 的 Database compatibility 要求三方言真实实例验证与迁移幂等（启动/迁移至少两次）。

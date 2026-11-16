@@ -186,7 +186,7 @@ time, and remembered rules are exactly how regressions get reintroduced.
 (`docs/ai-specs/`, `uaes/standards/`) has been retired on 2026-11-12 pending
 replacement by a new standard system. Until the new corpus is published, the
 binding sources are this file, `web/AGENTS.md`, and
-`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` and `docs/design-system/UDS-7.0-MIGRATION-REPORT.md`. UDS 7.0 remains ACCEPTANCE_READY / accepted=false; preserve the documented 3.0 runtime compatibility boundary. Payment/billing/auth work must
+`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` and `docs/design-system/UDS-7.0-MIGRATION-REPORT.md`. UDS 7.0 remains ACCEPTANCE_READY / accepted=false. Approved runtime scalar tokens (font size, line-height, radius, spacing) and chart colors have switched to UDS 7.0 values; retain the 3.0 compatibility layer for unmigrated runtime surfaces until Phase 6 completion. Do not infer global migration or final acceptance from the token switch. Payment/billing/auth work must
 still follow the "Billing safety invariants", "Authentication Security (OWASP
 Mandatory)" and "Database compatibility" sections of this file.
 

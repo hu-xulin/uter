@@ -1,11 +1,13 @@
 # UAP-00-001 — UAP 核心架构规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-00-001
 **标准编号：** UAP-00-001
 **名称：** UAP 核心架构规范
 **版本：** 1.0.0
 **状态：** ACTIVE
-**适用范围：** 约束 Uter 仓库内 UAP 1.0 的分层、模块边界、接口与可追溯性，覆盖 `.uap/config/` 的六份注册中心、`.uap/runtime/_lib/` 共享契约、`.uap/runtime/orchestrator/` 调度入口以及 `.uap/validators/` 验证入口；与 `AGENTS.md`（343 行全仓强制约定）、`web/AGENTS.md`、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 共同构成治理基线。UAP 对 `router/`、`middleware/`、`model/`、`controller/`、`service/`、`relay/`、`web/src/` 等 Uter 真实工程模块行使治理，但不替代其业务实现。
+**适用范围：** 约束 Uter 仓库内 UAP 1.0 的分层、模块边界、接口与可追溯性，覆盖 `.uap/config/` 的六份注册中心、`.uap/runtime/_lib/` 共享契约、`.uap/runtime/orchestrator/` 调度入口以及 `.uap/validators/` 验证入口；与 `AGENTS.md`（343 行全仓强制约定）、`web/AGENTS.md`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 共同构成治理基线。UAP 对 `router/`、`middleware/`、`model/`、`controller/`、`service/`、`relay/`、`web/src/` 等 Uter 真实工程模块行使治理，但不替代其业务实现。
 **关键级别：** P0
 **依赖标准：** 无
 
@@ -36,7 +38,7 @@
 - 稳定接口的可追溯范例：Uter 后端按 `go.mod`（`module github.com/uter-ai/uter`）分层于 `router/api-router.go`、`router/relay-router.go`、`middleware/access_token_routes.go`、`model/main.go`、`controller/`、`service/authz/permission.go`、`relay/`；`relaykit/go.mod` 声明独立模块 `github.com/uter-ai/uter/relaykit`，体现模块边界单一职责。
 - 健康启动契约由 `.uap/config/workflow-registry.yaml` 的 `uap-bootstrap` 定义，步骤 `inspect_repository → validate_environment → initialize_uap_structure → validate_specification_registry → initialize_runtime → run_runtime_tests`，`acceptance: runtime_health_check`。
 - 关键接口自动化测试入口：Go 侧 `make test`（`Makefile` 的 `test` 目标，含 root / relaykit / tokenkit / tokenkit/tokenkit 四个模块）、`GOWORK=off go vet ./...`、`gofmt -l .`；前端 `cd web && bun run test`（`web/package.json` 的 `test: vitest run`）。
-- 全仓强制约定以 `AGENTS.md` 为准（Rule Auto-Loading / Automated Quality Gates / Verification Evidence / Change Protection），前端以 `web/AGENTS.md` 为准，设计基线以 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 为准；`AGENTS.md` 记录的历史域规范语料已于 2026-11-12 退役，UAP 对其零运行时依赖，当前绑定来源仅上述三份文件。
+- 全仓强制约定以 `AGENTS.md` 为准（Rule Auto-Loading / Automated Quality Gates / Verification Evidence / Change Protection），前端以 `web/AGENTS.md` 为准，设计基线以 `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 为准；`AGENTS.md` 记录的历史域规范语料已于 2026-11-12 退役，UAP 对其零运行时依赖，当前绑定来源仅上述三份文件。
 - 基线环境快照在 `.uap/state/BASELINE.json`（`baseline_id: UAP-BASELINE-2026-11-12T10-19-06Z`，记录 Go `go1.27.4`、Node `v22.22.2`、Bun `1.4.2` 与 9 个 CI workflow），用于验证「UAP 独立运行」不依赖外部治理平台。
 - 全量验证命令由 `.uap/state/BASELINE.json` 的 `real_gate_commands` 与 `scripts/verify-all.sh` 固定：`./scripts/verify-all.sh [--quick]`、`.github/workflows/ci.yml`、`.github/workflows/release-gate.yml`。
 

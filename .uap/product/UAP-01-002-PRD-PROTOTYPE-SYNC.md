@@ -1,4 +1,6 @@
 # UAP-01-002 — PRD 与原型双向同步规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-01-002
 **标准编号：** UAP-01-002
@@ -34,7 +36,7 @@
 - 变更历史与差异：`docs/product/registry/change-registry.yaml`（`snapshots`、`conflicts: []`、`changes`，`change_id: CHG-INIT-0001`、`source_view`、`source_type`、`changed_fields: [features, mappings]`、`sync_event_count`）、`docs/product/history/v1.json`、`docs/product/reports/BIDIRECTIONAL-SYNC-REPORT.md`、`PRD-PROTOTYPE-CONSISTENCY-REPORT.md`。
 - 同步规则文档：`docs/product/PRODUCT-SYNC-STANDARD.md`、`PRODUCT-PROTOTYPE-STANDARD.md`、`PRODUCT-TRACEABILITY-STANDARD.md`、`PRODUCT-FEATURE-ID-STANDARD.md`、`PRODUCT-QUALITY-GATE-STANDARD.md`。
 - PRD 投影实例按域分布：`docs/product/prd/auth/UTER-AUTH-001.md` ~ `-006.md`、`org/UTER-ORG-001.md`、`plan/UTER-PLAN-001.md` ~ `-003.md`、`misc/UTER-MISC-001.md` ~ `-010.md`；原型投影同构分布于 `docs/product/prototypes/{auth,org,plan,misc}/` 下的 `.md` 与 `.html`。
-- 设计基线一致性：PRD 头部标注 `设计基线 UTER Design System 3.0`，UI 约束以 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 与 `docs/design-system/showcase-3.0.html` 为准；前端实现复用 `web/src/components/ui/` 与 `web/src/features/`。
+- 设计基线一致性：PRD 头部标注 `设计基线 UTER Design System 3.0`，UI 约束以 `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 与 `docs/design-system/SHOWCASE-7.0.html` 为准；前端实现复用 `web/src/components/ui/` 与 `web/src/features/`。
 - 自动同步不得改变已批准业务规则：`business_rule_ids`（如 `BR-AUTH-001-01-01`）在 `requirement-registry.yaml` 登记，规则实现落在 `common/quota_math.go`、`service/authz/permission.go`、`model/quota_reserve.go`；`AGENTS.md` 的 Billing safety invariants 与 Authentication Security 为不可自动改写的边界。
 - 自动同步测试与验证命令：`cd web && bun run test`（Vitest）、`bun run lint:design:strict`、`bun run typecheck`、`bun run build:check`；后端 `./scripts/verify-all.sh [--quick]`、`make test`；CI 见 `.github/workflows/ci.yml`、`release-gate.yml`。
 - 「未解决差异不得标记同步完成」的判定依据：`feature-registry.yaml` 的 `sync_status: SYNCED` 与 `change-registry.yaml` 的 `conflicts` 列表；`PRD-PROTOTYPE-CONSISTENCY-REPORT.md` 记录差异，`docs/product/history/v1.json` 保留历史快照，禁止静默覆盖。
