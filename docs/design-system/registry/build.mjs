@@ -403,12 +403,12 @@ const deprecatedRegistry = {
   schema_version: '1.0', registry_id: 'UDS7-R-DEPRECATED', version: M.version, generated_at: stamp,
   policy: '先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；本轮不执行删除',
   items: [
-    { id: 'DP-001', kind: 'exception', name: 'E28 首屏渐变低对比度例外', old_value: `Light ${V.gradient.light.legacyWorst.ratio}:1 / Dark ${V.gradient.dark.legacyWorst.ratio}:1`, new_value: `Light ${V.gradient.light.finalWorst.ratio}:1 / Dark ${V.gradient.dark.finalWorst.ratio}:1（${V.sampleCount} 点 × ${Object.keys(V.backgrounds.light).length} 背景）`, reason: '7.0 渐变全区间 ≥4.5:1，例外失去依据', action: 'REVOKE_AFTER_MIGRATION', source: 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md:3528' },
+    { id: 'DP-001', kind: 'exception', name: 'E28 首屏渐变低对比度例外', old_value: `Light ${V.gradient.light.legacyWorst.ratio}:1 / Dark ${V.gradient.dark.legacyWorst.ratio}:1`, new_value: `Light ${V.gradient.light.finalWorst.ratio}:1 / Dark ${V.gradient.dark.finalWorst.ratio}:1（${V.sampleCount} 点 × ${Object.keys(V.backgrounds.light).length} 背景）`, reason: '7.0 渐变全区间 ≥4.5:1，例外失去依据', action: 'REVOKE_AFTER_MIGRATION', source: 'docs/design-system/GRADIENT-TYPOGRAPHY-STANDARD.md + GRADIENT-VERIFICATION-REPORT.md' },
     { id: 'DP-002', kind: 'color-token', name: '--ds-color-brand-gradient-{from,via,to}', old_value: '#60a5fa / #a78bfa / #a855f7', new_value: '--ds-color-gradient-{light,dark}-{from,via,to}', reason: '主题无关三档改为 Light/Dark 各三档', action: 'REPLACE_AFTER_MIGRATION', source: 'web/src/design-system/tokens/colors.css:119-121' },
     { id: 'DP-003', kind: 'syntax-token', name: '--syntax-keyword/string/number/function/property (5 个 oklch)', old_value: 'theme.css:402-406 / 663-667', new_value: '20 个 --ds-syntax-* HEX', reason: '语义不全、仅 5 类、未覆盖全部引擎', action: 'REPLACE_AFTER_MIGRATION', source: 'web/src/styles/theme.css' },
     { id: 'DP-004', kind: 'duplication', name: 'JSON 编辑器用 chart-1..5 代替 syntax 色', old_value: 'chart palette', new_value: '--ds-syntax-*', reason: 'PART 24.4 禁止图表色充当语法色', action: 'AUDIT_THEN_REPLACE', source: 'web/src/components/json-code-editor.tsx' },
     { id: 'DP-005', kind: 'standard', name: 'UTER DESIGN SYSTEM 5.0 规范目录', old_value: '35 份 .md + 2 份 yaml + SHOWCASE-5.0.html', new_value: '已整体删除（2026-11-15 用户指令：5.0 全部文档与引用移除，7.0 为唯一现行规范）', reason: '5.0 已被 7.0 完全取代，保留会造成双规范并存与前后矛盾', action: 'REMOVED', source: 'git log（删除提交）' },
-    { id: 'DP-006', kind: 'standard', name: 'UTER-DESIGN-SYSTEM-3.0.md', old_value: '现行运行时强制标准', new_value: '7.0', reason: '3.0 仍在现行门禁中生效，7.0 冻结前不得废止', action: 'RETAIN_UNTIL_FREEZE', source: 'AGENTS.md Design System Enforcement' },
+    { id: 'DP-006', kind: 'standard', name: 'UDS 3.0 runtime compatibility layer', old_value: '全运行时统一使用 3.0 值', new_value: 'UDS 7.0 文档/Token SSOT；指定标量与图表色已迁移，未迁移页面保留 3.0 兼容载体', reason: '全站产品迁移 Phase 6 尚未完成；兼容层仍承载 Tailwind @theme 注册机制，不得提前删除', action: 'RETAIN_UNTIL_PHASE_6_COMPLETE', source: 'AGENTS.md Design System Enforcement' },
   ],
 }
 
@@ -420,7 +420,7 @@ const exceptionRegistry = {
     { id: 'EX-002', scope: 'PAGE-REGISTRY ROUTE_NOT_FOUND 模板', reason: '文档列出但仓库无独立路由，禁止伪造页面', review_condition: '对应路由被真实创建时', status: 'OPEN' },
     { id: 'EX-003', scope: 'Android / iOS / HarmonyOS 未实现', reason: '仓库无原生工程或跨平台框架源码', review_condition: '原生工程入库时', status: 'OPEN' },
     { id: 'EX-004', scope: 'RTL 未支持', reason: '本版只覆盖 zh-CN / en LTR', review_condition: '新增 RTL locale 时', status: 'OPEN' },
-    { id: 'EX-005', scope: '规范—实现双轨', reason: '7.0 规范值已冻结且视觉基线已冻结（2026-11-15），但 web/src 运行时仍为 3.0 值；迁移按 Phase 6 分期执行', review_condition: 'Phase 6 全站迁移完成', status: 'OPEN' },
+    { id: 'EX-005', scope: '规范—实现双轨', reason: '7.0 规范值与视觉基线已冻结；指定标量 Token/图表色已切换为 7.0，未迁移页面和语义色仍依赖 3.0 兼容载体与 --ds7-* 隔离桥接；全站迁移按 Phase 6 分期执行', review_condition: 'Phase 6 全站迁移完成', status: 'OPEN' },
     { id: 'EX-006', scope: 'web/src/components/ai-elements/shimmer.tsx 手写渐变', reason: '7.0 之前的重复渐变实现，已在本轮真实收敛', action: 'MIGRATE_TO_SINGLE_EXIT', status: 'RESOLVED', resolved_by: '把渐变定义移入 web/src/design-system/foundations/typography.css 的受控出口 @utility ds-text-shimmer；shimmer.tsx 只保留 className 与 --ds7-shimmer-spread 变量，色值沿用 --color-background / --color-muted-foreground，视觉零变化', resolved_at: stamp, evidence: 'check-uds7-remediation.mjs::C-G03 + GRADIENT-TYPOGRAPHY-AUDIT.md' },
   ],
   registered_gradient_files: [
@@ -438,7 +438,7 @@ const compatMap = {
   isolation: M.runtimeBridge,
   rollback: M.runtimeBridge.rollback,
   conflicts: [
-    { id: 'CM-01', token: '--ds-radius-md', v3: '10px (3.0.md:1100)', v7: '5px (TOKEN-MANIFEST)', severity: 'HIGH', action: 'REPLACED', reason: '2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）' },
+    { id: 'CM-01', token: '--ds-radius-md', v3: '10px (historical UDS 3.0 token baseline)', v7: '5px (TOKEN-MANIFEST)', severity: 'HIGH', action: 'REPLACED', reason: '2026-11-16 经用户授权正式切换：--radius 基准 0.3125rem(5px)，v1.2 十px 刻度退役（theme.css / primitives.css / tokens.test.ts 三方同步）' },
     { id: 'CM-02', token: '--ds-color-surface-overlay', v3: '#000000 (colors.css:86)', v7: '#FFFFFF / #1B2436', severity: 'CRITICAL', action: 'ISOLATE', reason: '语义反转：遮罩由黑变白会破坏所有模态框' },
     { id: 'CM-03', token: '--ds-color-text-primary', v3: 'var(--foreground) (colors.css:34)', v7: '#0F172A / #F1F5F9', severity: 'MEDIUM', action: 'ISOLATE', reason: '变量引用改为实色会失去主题联动' },
     { id: 'CM-04', token: '--ds-color-text-secondary', v3: 'var(--muted-foreground) (colors.css:35)', v7: '#475569 / #CBD5E1', severity: 'MEDIUM', action: 'ISOLATE', reason: '同上' },
@@ -766,8 +766,8 @@ const migrationReport = `# UTER DESIGN SYSTEM 7.0 — 现状清单与迁移报�
 | 分支 | \`main\` | \`git branch --show-current\` |
 | 全仓脏区 | 998 项 | \`git status --short \\| wc -l\` |
 | 5.0 目录删除前脏区 | 20 份（Phase 1 审计时点，含上一轮未提交的规范改动） | \`git log\` |
-| 现行设计权威 | \`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md\`（197,053 bytes） | \`AGENTS.md\` Design System Enforcement |
-| 3.0 视觉标本 | \`docs/design-system/showcase.html\` | 同上 |
+| 现行设计文档/Token SSOT | \`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md\` + \`TOKEN-MANIFEST.json\`（UDS 7.0.0 / ACCEPTANCE_READY / accepted=false） | \`AGENTS.md\` Design System Enforcement |
+| UDS 7.0 视觉样本 | \`docs/design-system/SHOWCASE-7.0.html\` | 同上 |
 | 5.0 目录 | 已整体删除（2026-11-15 用户指令），删除前状态：35 份 .md + 2 份 yaml + SHOWCASE-5.0.html | \`git log --diff-filter=D -- 'docs/design-system/uter-design-system-5.0/*'\` |
 | 路由文件 | ${routeFiles.length} 个 \`.tsx\`（目录内共 74 个文件） | \`find web/src/routes\` |
 | CSS 文件 | ${cssFiles.length} 份 | \`find web/src -name '*.css'\` |

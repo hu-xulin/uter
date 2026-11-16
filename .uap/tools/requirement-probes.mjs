@@ -453,7 +453,7 @@ const PROBES = {
     const acceptance = read(path.join(ROOT, 'docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) || '';
     const currentDocs = manifest?.version === '7.0.0'
       && manifest?.status === 'ACCEPTANCE_READY'
-      && overview.includes('当前运行时强制标准仍为 3.0')
+      && overview.includes('当前运行时兼容层仍以 UDS 3.0 为基础')
       && overview.includes('全站迁移按 Phase 6 分期执行');
     const runtimeTransition = typeof compat?.isolation?.scalarAlignment === 'string'
       && compat.isolation.scalarAlignment.includes('TOKEN-MANIFEST')

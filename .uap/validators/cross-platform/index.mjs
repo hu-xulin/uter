@@ -195,12 +195,13 @@ export const validators = {
       && manifest.version === '7.0.0'
       && manifest.status === 'ACCEPTANCE_READY'
       && ds.includes('TOKEN-MANIFEST.json')
-      && ds.includes('当前运行时强制标准仍为 3.0')
+      && ds.includes('当前运行时兼容层仍以 UDS 3.0 为基础')
       && migration.includes('当前字号真值')
       && exists(rootPath('docs/design-system/SHOWCASE-7.0.html'));
-    const runtimeBoundaryExplicit = ds.includes('当前运行时强制标准仍为 3.0')
+    const runtimeBoundaryExplicit = ds.includes('当前运行时兼容层仍以 UDS 3.0 为基础')
       && ds.includes('运行时标量（字号/行高/圆角/间距）与图表色')
-      && ds.includes('全站迁移按 Phase 6 分期执行')
+      && ds.includes('颜色语义层通过 --ds7-* 隔离命名注入')
+      && ds.includes('全站产品迁移仍按 Phase 6 分期执行')
       && typeof compatMap?.isolation?.scalarAlignment === 'string'
       && compatMap.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
       && migration.includes('B6') && migration.includes('PROHIBITED')

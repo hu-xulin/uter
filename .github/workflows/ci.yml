@@ -58,6 +58,10 @@ jobs:
       - name: Build real frontend release artifacts for UAP rehearsal
         working-directory: web
         run: bun run build
+      - name: Refresh UDS 7.0 migration and acceptance evidence
+        run: |
+          node docs/design-system/registry/build.mjs
+          node docs/design-system/registry/finalize.mjs
       - name: Build isolated Uter backend release binary
         run: go build -o uter-bin .
       - name: Start isolated Uter server with disposable SQLite
