@@ -1684,16 +1684,29 @@ async function cmdVerifyE2E() {
   // A zero-scenario business run is a REAL failure item, not an empty success.
   // Adding it to `items` makes the strict status model compute FAIL (instead of
   // silently counting only the axe suite as a pass).
+  // A missing isolated business stack is an external environment blocker only
+  // when Playwright's globalSetup explicitly reports the guarded service-gate
+  // failure. Any other zero-spec runner abort remains FAIL (fail-closed).
+  const bizOutput = `${biz?.stdout || ''}\n${biz?.stderr || ''}`;
+  const bizEnvironmentBlocked = Boolean(
+    biz && biz.exit_code !== 0
+      && /目标服务不可达|BLOCKED:\\s*http:\\/\\//.test(bizOutput)
+  );
   const noScenarioItem = bizItems.length === 0 ? [{
     id: 'biz_NO_SCENARIOS_COLLECTED',
     title: 'business e2e: 0 scenarios collected (runner aborted or reporter empty)',
-    status: TEST_STATUS.FAIL,
-    reason: `business e2e collected 0 scenarios; stats.expected=${Number(bizJson?.stats?.expected ?? 0)}; exit=${biz?.exit_code ?? 'NOT_RUN'}`,
+    status: bizEnvironmentBlocked ? TEST_STATUS.BLOCKED : TEST_STATUS.FAIL,
+    reason: bizEnvironmentBlocked
+      ? `BLOCKED: isolated business E2E target unavailable; stats.expected=${Number(bizJson?.stats?.expected ?? 0)}; exit=${biz?.exit_code ?? 'NOT_RUN'}`
+      : `business e2e collected 0 scenarios; stats.expected=${Number(bizJson?.stats?.expected ?? 0)}; exit=${biz?.exit_code ?? 'NOT_RUN'}`,
     suite: 'business', source: 'runner-diagnostics', runner_ok: false,
     evidence_ref: null,
   }] : [];
   const items = [...axeItems, ...bizItems, ...noScenarioItem];
-  const combinedExit = (Number(axe.exit_code) || 0) || (biz ? (Number(biz.exit_code) || 0) : 1) || (noScenarioItem.length ? 1 : 0);
+  const combinedExit = Number(axe.exit_code) !== 0
+    ? Number(axe.exit_code)
+    : bizEnvironmentBlocked ? 2
+      : (biz ? (Number(biz.exit_code) || 0) : 1) || (noScenarioItem.length ? 1 : 0);
 
   const axeSummary = summarize(axeItems);
   const bizSummary = summarize(bizItems);
@@ -1715,17 +1728,18 @@ async function cmdVerifyE2E() {
     },
   ];
   if (axe.exit_code !== 0) problems.push(`axe exit=${axe.exit_code}`);
-  if (biz && biz.exit_code !== 0) problems.push(`business e2e exit=${biz.exit_code}`);
+  if (biz && biz.exit_code !== 0 && !bizEnvironmentBlocked) problems.push(`business e2e exit=${biz.exit_code}`);
+  if (bizEnvironmentBlocked) problems.push('business e2e BLOCKED: guarded isolated target is unavailable; no scenarios were executed');
   if (!biz) problems.push('business e2e suite not present — NOT_RUN');
   // Phase-2 final remediation (P0): collecting ZERO business scenarios is a
   // FAIL, never a pass and never a silent empty result. `expected=0` from a
   // crashed runner must be surfaced with its real diagnostics.
   const businessScenarioCount = bizItems.length;
   const businessExpected = Number(bizJson?.stats?.expected ?? bizJson?.stats?.expectedTests ?? 0);
-  if (businessScenarioCount === 0) {
+  if (businessScenarioCount === 0 && !bizEnvironmentBlocked) {
     problems.push(`business e2e collected 0 scenarios (expected=${businessExpected}, exit=${biz?.exit_code ?? 'NOT_RUN'}) — runner produced no business test evidence; this is a FAIL`);
   }
-  if (bizJson && businessExpected === 0 && biz?.exit_code !== 0) {
+  if (!bizEnvironmentBlocked && bizJson && businessExpected === 0 && biz?.exit_code !== 0) {
     problems.push(`business e2e reporter stats.expected=0 with exit=${biz.exit_code} — runner aborted before collecting tests`);
   }
 
