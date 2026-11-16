@@ -141,8 +141,9 @@ export function health() {
   checks.agents_exists = exists(rootPath('AGENTS.md'));
   checks.claude_exists = exists(rootPath('CLAUDE.md'));
   checks.design_system_exists = exists(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md'))
+    && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'))
     && exists(rootPath('docs/design-system/TOKEN-MANIFEST.json'))
-    && exists(rootPath('docs/design-system/UDS-7.0-MIGRATION-REPORT.md'));
+    && exists(rootPath('docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md'));
   checks.uap_md_present = listFiles(uapPath(), {
     recursive: true, filter: (a) => a.endsWith('.md'),
   }).length >= 1;
