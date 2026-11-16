@@ -104,8 +104,9 @@ function legacyScan() {
     const st = statSync(abs)
     if (st.isDirectory()) {
       if (LEGACY_SKIP.has(basename(abs))) return
-      for (const e of readdirSync(abs, { withFileTypes: true }))
+      for (const e of readdirSync(abs, { withFileTypes: true })) {
         visit(join(abs, e.name))
+      }
       return
     }
     if (!st.isFile() || st.size > 2 * 1024 * 1024) return
@@ -119,8 +120,9 @@ function legacyScan() {
       !/\.(md|mdx|ts|tsx|js|jsx|mjs|cjs|css|scss|html|json|ya?ml|txt|svg)$/i.test(
         r
       )
-    )
+    ) {
       return
+    }
     let text
     try {
       text = read(abs)
