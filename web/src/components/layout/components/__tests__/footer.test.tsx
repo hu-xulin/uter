@@ -244,9 +244,9 @@ it('carries the real filing numbers in both Chinese locales', () => {
 // fragments rather than a single attribution. It also used to be darker
 // (`text-muted-foreground`, then `text-muted-foreground`) than the agreements on
 // its left, which made the copyright shout louder than the regulatory text.
-// The whole row — links and attribution alike — now uses the tertiary text
-// token, so this guards against either half drifting back to a heavier colour.
-it('colours the whole legal row like the tertiary text token', async () => {
+// The whole row — links and attribution alike — now uses the neutral tertiary
+// text token (`--ds-color-neutral-text-tertiary`), so this guards against either half drifting back to a heavier colour.
+it('colours the whole legal row with the neutral tertiary text token', async () => {
   const footer = await renderFooter('zhCN')
 
   const brand = footer.querySelector(
@@ -255,19 +255,21 @@ it('colours the whole legal row like the tertiary text token', async () => {
   expect(brand).not.toBeNull()
 
   const line = brand?.parentElement as HTMLElement
-  expect(line.className).toContain('text-tertiary-foreground')
+  expect(line.className).toContain('text-(--ds-color-neutral-text-tertiary)')
   expect(line.className).not.toContain('text-muted-foreground')
   expect(line.className).not.toContain('text-muted-foreground')
 
   // The right-aligned wrapper must not dim the line either: a colour on the
   // container would win wherever the inner span has no colour of its own.
   const wrapper = line.parentElement as HTMLElement
-  expect(wrapper.className).toContain('text-tertiary-foreground')
+  expect(wrapper.className).toContain('text-(--ds-color-neutral-text-tertiary)')
   expect(wrapper.className).not.toContain('text-muted-foreground')
 
   // Both halves of the row carry the same colour, so the row reads as one line.
   const legalLink = within(footer).getByText('User Agreement')
-  expect(legalLink.className).toContain('text-tertiary-foreground')
+  expect(legalLink.className).toContain(
+    'text-(--ds-color-neutral-text-tertiary)'
+  )
 
   // ...and the same weight: a `font-medium` on the brand link made the middle of
   // the sentence sit heavier than the words around it.

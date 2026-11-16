@@ -97,7 +97,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
         href={props.link.href}
         target='_blank'
         rel='noopener noreferrer'
-        className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
+        className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
       >
         {label}
       </a>
@@ -107,7 +107,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
   return (
     <Link
       to={props.link.href}
-      className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
+      className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
     >
       {label}
     </Link>
@@ -198,14 +198,17 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
       {items.map((item, index) => (
         <Fragment key={item.id}>
           {(props.leadingSeparator || index > 0) && (
-            <span aria-hidden='true' className='text-tertiary-foreground'>
+            <span
+              aria-hidden='true'
+              className='text-(--ds-color-neutral-text-tertiary)'
+            >
               ·
             </span>
           )}
           <a
             href={item.href}
             onClick={(event) => openInApp(event, item.id)}
-            className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
+            className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
           >
             {item.label}
           </a>
@@ -257,7 +260,10 @@ function FilingLinks(props: { className?: string }) {
       {FOOTER_FILING_LINKS.map((item, index) => (
         <Fragment key={item.labelKey}>
           {index > 0 && (
-            <span aria-hidden='true' className='text-tertiary-foreground'>
+            <span
+              aria-hidden='true'
+              className='text-(--ds-color-neutral-text-tertiary)'
+            >
               ·
             </span>
           )}
@@ -265,7 +271,7 @@ function FilingLinks(props: { className?: string }) {
             href={item.href}
             target='_blank'
             rel='noopener noreferrer'
-            className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
+            className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
           >
             {t(item.labelKey)}
           </a>
@@ -294,7 +300,7 @@ function ProjectAttribution(props: {
   // 整行是同一档次级小字，500 会让「优特智能」在「© 2026 … 版权所有。」中间
   // 凸出来，读成三个互不相干的碎片（用户红字：「都属于次级文本」）。
   const content = (
-    <span className='text-tertiary-foreground'>
+    <span className='text-(--ds-color-neutral-text-tertiary)'>
       &copy; {props.currentYear}{' '}
       <a
         href='https://uter.ai'
@@ -311,7 +317,7 @@ function ProjectAttribution(props: {
     return content
   }
   return (
-    <div className='text-tertiary-foreground text-center text-sm sm:text-right'>
+    <div className='text-center text-sm text-(--ds-color-neutral-text-tertiary) sm:text-right'>
       {content}
     </div>
   )
@@ -398,7 +404,7 @@ export function Footer(props: FooterProps) {
               className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
               content={footerHtml}
             />
-            <div className='border-border/60 text-tertiary-foreground flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
+            <div className='border-border/60 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm text-(--ds-color-neutral-text-tertiary) sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
               <ProjectAttribution
                 currentYear={currentYear}
@@ -423,7 +429,7 @@ export function Footer(props: FooterProps) {
             <div className='grid grid-cols-3 gap-8 md:gap-16'>
               {displayColumns.map((column) => (
                 <div key={column.title}>
-                  <p className='text-tertiary-foreground mb-3 text-sm font-medium uppercase'>
+                  <p className='mb-3 text-sm font-medium text-(--ds-color-neutral-text-tertiary) uppercase'>
                     {t(column.title)}
                   </p>
                   <ul className='space-y-2.5'>
