@@ -459,7 +459,7 @@ const PROBES = {
       && overview.includes('TOKEN-MANIFEST.json')
       && exists(path.join(ROOT, 'docs/design-system/SHOWCASE-8.0.0.html'));
     const runtimeTransition = compat?.version === '8.0.0'
-      && compat?.isolation?.runtimePrefix === '--ds8-'
+      && compat?.isolation?.runtimePrefix === '--ds-'
       && typeof compat?.isolation?.scalarAlignment === 'string'
       && compat.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
       && batches.length >= 6 && batches.every((batch) => batch.status === 'DONE_VERIFIED')

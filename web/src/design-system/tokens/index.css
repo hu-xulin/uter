@@ -28,7 +28,7 @@ For commercial licensing, please contact support@uter.ai
  *   5. elevation.css   —— 阴影、动效时长。
  *
  *   8.0.0 变更：colors.css 颜色语义别名层已删除 —— 颜色语义唯一来源是
- *   TOKEN-MANIFEST.json 派生的 uds-semantic-bridge.css（--ds8-*，由
+ *   TOKEN-MANIFEST.json 派生的 uds-semantic-bridge.css（--ds-*，由
  *   styles/index.css 导入）。CM-02~06 冲突就此闭合。
  */
 @import './typography.css';

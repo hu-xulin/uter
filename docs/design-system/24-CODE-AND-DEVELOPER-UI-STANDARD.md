@@ -59,7 +59,7 @@
 | `--ds-syntax-inserted` | #098255 | #B5CEA8 | color | 语法高亮 inserted（官方 #098658 / #B5CEA8） |
 | `--ds-syntax-deleted` | #A31515 | #CE9178 | color | 语法高亮 deleted（官方 #A31515 / #CE9178） |
 | `--ds-syntax-invalid` | #CD3131 | #F44747 | color | 语法高亮 invalid（官方 #CD3131 / #F44747） |
-| `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

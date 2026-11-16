@@ -10,7 +10,7 @@
 
 ## 1. Overview
 
-圆角八档，每个组件明确绑定其中一档，不允许组件自选数值。
+圆角九档，每个组件明确绑定其中一档，不允许组件自选数值。
 
 本模块属于 UDS 8.0.0 五层架构 `Primitive → Semantic → Component → UI Component → Product Page`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 `VISUAL-BASELINE.json`。
 
@@ -24,12 +24,12 @@
 
 ## 2. Rules
 
-1. 圆角档位：none 0 / sm 4 / md 6 / lg 10 / xl 12 / 2xl 16 / 3xl 20 / full 9999 px
-2. Button / Input / Select = lg 10px；Checkbox = sm 4px；Switch / Badge / Avatar / Pill = full
-3. Card / Table / Code Block = lg 10px；Dialog / Popover / Drawer 面板 = xl 12px
-4. 大型容器 = 2xl 16px；营销展示容器 = 3xl 20px
+1. 圆角档位：none 0 / sm 4 / md 6 / lg 8 / xl 10 / 2xl 12 / 3xl 16 / 4xl 20 / full 9999 px
+2. Button / Input / Select = lg 8px；Checkbox = sm 4px；Switch / Badge / Avatar / Pill = full
+3. Card / Table / Code Block = xl 10px；Dialog / Popover / Drawer 面板 = 2xl 12px
+4. 大型容器 = 3xl 16px；营销展示容器 = 4xl 20px
 5. 嵌套圆角规则：内层圆角 = 外层圆角 − 外层内边距，最小不低于 sm 4px
-6. 组件必须通过 `--ds-radius-*` 或 `--ds-radius-button/input/card/...` 引用，禁止写死 `border-radius: 6px`
+6. 组件必须直接引用刻度 Token（`--ds-radius-lg` / `--ds-radius-xl` / `--ds-radius-2xl` …），不再维护组件级别名，禁止写死 `border-radius: 6px`
 
 ## 3. Tokens
 
@@ -38,20 +38,14 @@
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
 | `--ds-radius-none` | 0px | —（同值） | px | 无圆角 |
-| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 |
-| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
-| `--ds-radius-lg` | 10px | —（同值） | px | 卡片 |
-| `--ds-radius-xl` | 12px | —（同值） | px | 弹层 |
-| `--ds-radius-2xl` | 16px | —（同值） | px | 大卡片 |
-| `--ds-radius-3xl` | 20px | —（同值） | px | 大型容器 |
+| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 / 标签 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 / 菜单项 |
+| `--ds-radius-lg` | 8px | —（同值） | px | Button / Input / Select |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
+| `--ds-radius-2xl` | 12px | —（同值） | px | Dialog / Popover / Drawer |
+| `--ds-radius-3xl` | 16px | —（同值） | px | 大型容器 |
+| `--ds-radius-4xl` | 20px | —（同值） | px | 营销展示容器 |
 | `--ds-radius-full` | 9999px | —（同值） | px | 圆形 / 胶囊 |
-| `--ds-radius-button` | var(--ds-radius-lg) | —（同值） | token-ref | Button = 10px |
-| `--ds-radius-input` | var(--ds-radius-lg) | —（同值） | token-ref | Input = 10px |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
-| `--ds-radius-dialog` | var(--ds-radius-xl) | —（同值） | token-ref | Dialog = 12px |
-| `--ds-radius-badge` | var(--ds-radius-full) | —（同值） | token-ref | Badge = 9999px |
-| `--ds-radius-code` | var(--ds-radius-lg) | —（同值） | token-ref | Code Block = 10px |
-| `--ds-radius-table` | var(--ds-radius-lg) | —（同值） | token-ref | Table = 10px |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 
@@ -71,8 +65,8 @@ Showcase 中 `#mod-07` 分区提供本模块的真实渲染：色块、字号、
 ## 6. Usage
 
 ```tsx
-.button { border-radius: var(--ds-radius-button); }
-.dialog { border-radius: var(--ds-radius-dialog); }
+.button { border-radius: var(--ds-radius-lg); }
+.dialog { border-radius: var(--ds-radius-2xl); }
 ```
 
 ## 7. Do

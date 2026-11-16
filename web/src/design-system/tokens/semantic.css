@@ -117,17 +117,6 @@ For commercial licensing, please contact support@uter.ai
     --primitive-radius-full
   ); /* 胶囊徽标、圆形头像、开关轨道 */
 
-  /* ── 组件圆角绑定（UDS 8.0 §07：每个组件明确绑定一档）──────────── */
-  --ds-radius-button: var(--ds-radius-lg); /* Button / Select = 10px */
-  --ds-radius-input: var(--ds-radius-lg); /* Input / Textarea = 10px */
-  --ds-radius-card: var(--ds-radius-lg); /* Card = 10px */
-  --ds-radius-dialog: var(
-    --ds-radius-xl
-  ); /* Dialog / Popover / Drawer = 12px */
-  --ds-radius-badge: var(--ds-radius-full); /* Badge / Switch / Avatar / Pill */
-  --ds-radius-code: var(--ds-radius-lg); /* Code Block = 10px */
-  --ds-radius-table: var(--ds-radius-lg); /* Table = 10px */
-
   /* ── 语义描边（文档 1.4 Stroke）───────────────────────────────────── */
   --ds-stroke-width: 1px;
   --ds-stroke-color-border: var(--border);

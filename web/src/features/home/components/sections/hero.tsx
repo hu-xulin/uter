@@ -62,7 +62,7 @@ export function Hero(props: HeroProps) {
     return (
       <Button
         variant='outline'
-        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 rounded-(--ds-radius-button) px-5'
+        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 rounded-(--ds-radius-lg) px-5'
         render={rendered}
       >
         <BookOpen className='text-muted-foreground group-hover:text-foreground ds-motion-marketing-fast size-4.5 transition-colors' />
@@ -168,12 +168,13 @@ export function Hero(props: HeroProps) {
               行高交回档位自带（26px），不再用 `` 覆盖成 32px：
               32px 是当年 14px 字号下「1.5 倍读着发闷」的权宜值，字号升到
               16px 后 1.625 倍本身就不闷了，再留 2 倍反而散。
-              颜色保持 `muted-foreground`（二级正文色）：红字只要求字号，
-              而且它比下方那两行三级小字深一档，正好撑起层级。 */}
+              颜色由 `body-long` 默认接着级文本色 `--ds-color-text-secondary`
+              （全站长文本统一规则），它比下方那两行三级小字深一档，
+              正好撑起层级。 */}
           <Text
             as='p'
             variant='body-long'
-            className='landing-animate-fade-up text-muted-foreground mt-8 max-w-xl opacity-0'
+            className='landing-animate-fade-up mt-8 max-w-xl opacity-0'
             style={{ animationDelay: '120ms' }}
           >
             {t(
@@ -188,7 +189,7 @@ export function Hero(props: HeroProps) {
             {props.isAuthenticated ? (
               <>
                 <Button
-                  className='group rounded-(--ds-radius-button) px-5'
+                  className='group rounded-(--ds-radius-lg) px-5'
                   render={<Link to='/dashboard' />}
                 >
                   {t('Go to Dashboard')}
@@ -199,7 +200,7 @@ export function Hero(props: HeroProps) {
             ) : (
               <>
                 <Button
-                  className='group rounded-(--ds-radius-button) px-5'
+                  className='group rounded-(--ds-radius-lg) px-5'
                   render={<Link to='/sign-up' />}
                 >
                   {t('Get Started')}
@@ -207,7 +208,7 @@ export function Hero(props: HeroProps) {
                 </Button>
                 <Button
                   variant='outline'
-                  className='border-border/50 hover:border-border hover:bg-muted/50 rounded-(--ds-radius-button) px-5'
+                  className='border-border/50 hover:border-border hover:bg-muted/50 rounded-(--ds-radius-lg) px-5'
                   render={<Link to='/pricing' />}
                 >
                   {t('View Pricing')}

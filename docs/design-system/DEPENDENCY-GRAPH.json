@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-DEPENDENCIES",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T12:53:56.020Z",
+  "generated_at": "2026-11-16T23:48:33.944Z",
   "layers": [
     "Primitive Tokens",
     "Semantic Tokens",
@@ -14,7 +14,7 @@
   "nodes": [
     {
       "id": "primitive",
-      "count": 113
+      "count": 114
     },
     {
       "id": "semantic",
@@ -22,7 +22,7 @@
     },
     {
       "id": "component",
-      "count": 99
+      "count": 92
     },
     {
       "id": "ui-components",

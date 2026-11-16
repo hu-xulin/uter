@@ -30,7 +30,7 @@ import { SYNTAX_ADAPTER } from '../../components/ai-elements/code-block'
  * 20 个语义 Token 必须与 VS Code Light+ / Dark+ 官方主题一一对应：
  * - CodeMirror Adapter 覆盖全部 20 个语义名，且 inserted / deleted / invalid
  *   独立成条，不得塌缩成 keyword；
- * - 颜色一律走 `var(--ds8-syntax-*)`，Adapter 内禁止硬编码 HEX；
+ * - 颜色一律走 `var(--ds-syntax-*)`，Adapter 内禁止硬编码 HEX；
  * - 运行时变量必须真实定义在 uds-semantic-bridge.css，且与 manifest 的
  *   `--ds-syntax-*` 集合一一对应（20 个，无缺、无多）。
  */
@@ -49,7 +49,7 @@ const ADAPTER_END = CODE_BLOCK.indexOf('] as const', ADAPTER_START)
 const adapterLiteral = CODE_BLOCK.slice(ADAPTER_START, ADAPTER_END)
 
 const BRIDGE_VARS = new Set(
-  [...BRIDGE.matchAll(/(--ds8-syntax-[a-z]+)\s*:/g)].map((m) => m[1])
+  [...BRIDGE.matchAll(/(--ds-syntax-[a-z]+)\s*:/g)].map((m) => m[1])
 )
 
 describe('UDS8 syntax adapter mapping', () => {
@@ -72,9 +72,9 @@ describe('UDS8 syntax adapter mapping', () => {
     ).toBe(false)
   })
 
-  it('maps every entry to var(--ds8-syntax-*) with no hardcoded colors', () => {
-    // HighlightStyle 统一用模板字面量生成颜色：var(--ds8-syntax-${entry.token})
-    expect(CODE_BLOCK).toContain('var(--ds8-syntax-${entry.token})')
+  it('maps every entry to var(--ds-syntax-*) with no hardcoded colors', () => {
+    // HighlightStyle 统一用模板字面量生成颜色：var(--ds-syntax-${entry.token})
+    expect(CODE_BLOCK).toContain('var(--ds-syntax-${entry.token})')
     for (const entry of SYNTAX_ADAPTER) {
       expect(adapterLiteral).toContain(`token: '${entry.token}'`)
     }
@@ -82,9 +82,9 @@ describe('UDS8 syntax adapter mapping', () => {
     expect(/#[0-9a-fA-F]{3,8}\b/.test(adapterLiteral)).toBe(false)
   })
 
-  it('bridge defines exactly the 20 --ds8-syntax-* variables the adapter consumes', () => {
+  it('bridge defines exactly the 20 --ds-syntax-* variables the adapter consumes', () => {
     const consumed = new Set(
-      SYNTAX_ADAPTER.map((e) => `--ds8-syntax-${e.token}`)
+      SYNTAX_ADAPTER.map((e) => `--ds-syntax-${e.token}`)
     )
     expect(BRIDGE_VARS.size).toBe(20)
     for (const v of consumed) expect(BRIDGE_VARS.has(v)).toBe(true)
@@ -103,7 +103,7 @@ describe('UDS8 syntax adapter mapping', () => {
     )
     expect(syntaxKeys).toHaveLength(20)
     for (const entry of SYNTAX_ADAPTER) {
-      // manifest 名 --ds-syntax-<key> ↔ 运行时名 --ds8-syntax-<key>
+      // manifest 名 --ds-syntax-<key> ↔ 运行时名 --ds-syntax-<key>
       expect(manifest.tokens[`--ds-syntax-${entry.token}`]).toBeDefined()
     }
   })

@@ -40,7 +40,7 @@ Checkbox / Radio / Switch / Select / Combobox / Multi-select / Slider / Date Pic
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 |
+| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 / 标签 |
 | `--ds-radius-full` | 9999px | —（同值） | px | 圆形 / 胶囊 |
 | `--ds-color-brand-1` | #5B5EE6 | #8B8DF5 | color | 品牌主色 / Dark 浅化档 |
 | `--ds-color-border-input` | #CBD5E1 | #3B4A63 | color | 输入框边框 |

@@ -159,7 +159,7 @@ export async function runSyntaxAdapter({ persist = true } = {}) {
     key: r.key, scope: r.scope,
     vscodeLight: r.officialLight, vscodeDark: r.officialDark,
     uterLight: r.adopted.light, uterDark: r.adopted.dark,
-    runtimeToken: '--ds8-syntax-' + r.key,
+    runtimeToken: '--ds-syntax-' + r.key,
     manifestToken: '--ds-syntax-' + r.key,
     contrastOnUterBg: {
       light: Number(contrastRatio(r.adopted.light, UTER_CODE_BG.light).toFixed(2)),
@@ -226,7 +226,7 @@ export function renderVscodeComparison(data, limitLanguages = 6) {
           const color = theme === 'light' ? r.officialLight : r.officialDark
           return '<span data-syntax="' + t.syntax + '" data-variant="vscode" style="color:' + color + '">' + esc(t.text) + '</span>'
         }
-        return '<span data-syntax="' + t.syntax + '" data-variant="uter" style="color:var(--ds8-syntax-' + t.syntax + ')">' + esc(t.text) + '</span>'
+        return '<span data-syntax="' + t.syntax + '" data-variant="uter" style="color:var(--ds-syntax-' + t.syntax + ')">' + esc(t.text) + '</span>'
       }).join('')
       return '<div class="cc-line"><span class="cc-gutter">' + String(i + 1).padStart(2, '0') + '</span><span class="cc-text">' + spans + '</span></div>'
     }).join('')
@@ -238,9 +238,9 @@ export function renderVscodeComparison(data, limitLanguages = 6) {
     const head = '<h4 data-language="' + esc(l.id) + '">' + esc(l.label) + ' <small>' + l.tokenCount + ' tokens / ' + l.syntaxKeysUsed.length + ' 语义类别 / copy=' + (l.copyIntact ? 'OK' : 'FAIL') + '</small></h4>'
     return head + '<div class="cc-grid">' +
       '<div class="cc-col"><span class="cc-cap">VS Code Light+（官方值）</span>' + render(l.rows, 'light', 'vscode') + '</div>' +
-      '<div class="cc-col"><span class="cc-cap">Uter Light（--ds8-syntax-*）</span>' + render(l.rows, 'light', 'uter') + '</div>' +
+      '<div class="cc-col"><span class="cc-cap">Uter Light（--ds-syntax-*）</span>' + render(l.rows, 'light', 'uter') + '</div>' +
       '<div class="cc-col"><span class="cc-cap">VS Code Dark+（官方值）</span>' + render(l.rows, 'dark', 'vscode') + '</div>' +
-      '<div class="cc-col"><span class="cc-cap">Uter Dark（--ds8-syntax-*）</span>' + render(l.rows, 'dark', 'uter') + '</div>' +
+      '<div class="cc-col"><span class="cc-cap">Uter Dark（--ds-syntax-*）</span>' + render(l.rows, 'dark', 'uter') + '</div>' +
       '</div>'
   })
   return blocks.join('\n')

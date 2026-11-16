@@ -48,7 +48,7 @@ Toast / Alert / Badge / Banner / Tooltip / Inline Feedback / Loading / Success /
 | `--ds-color-status-info` | #1D4ED8 | #93C5FD | color | 信息 |
 | `--ds-color-status-info-soft` | #DBEAFE | #172554 | color | 信息浅底 |
 | `--ds-color-status-info-border` | #93C5FD | #1E40AF | color | 信息边框 |
-| `--ds-radius-lg` | 10px | —（同值） | px | 卡片 |
+| `--ds-radius-lg` | 8px | —（同值） | px | Button / Input / Select |
 | `--ds-radius-full` | 9999px | —（同值） | px | 圆形 / 胶囊 |
 | `--ds-elevation-3` | 0 8px 24px rgba(15, 23, 42, 0.12) | —（同值） | css | 下拉 / Popover |
 | `--ds-text-sm` | 14px | —（同值） | px | 正文默认 |

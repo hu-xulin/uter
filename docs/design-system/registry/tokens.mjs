@@ -20,8 +20,10 @@ import {
 } from './color-architecture.mjs'
 
 export const VERSION = '8.0.0'
-/* 状态推进：2026-11-16 经用户授权正式升版 8.0.0 —— 运行时前缀 --ds7-* → --ds8-*、
- * colors.css 遗留冲突语义（CM-02~06）闭合、产物文件名与检查器全部换版。
+/* 状态推进：2026-11-16 经用户授权正式升版 8.0.0 —— colors.css 遗留冲突语义
+ * （CM-02~06）闭合、产物文件名与检查器全部换版。
+ * 2026-11-17：声明名与运行时名统一为单一 --ds-* 前缀（不再使用过渡前缀），
+ * 同名 Token 只允许一个定义、一个取值。
  * 全量自动化门禁通过后为 ACCEPTANCE_READY。accepted 仍为 false，须用户最终验收。 */
 export const STATUS = 'ACCEPTANCE_READY'
 
@@ -189,7 +191,7 @@ const COLOR_GROUPS = [
     layer: 'semantic', prefix: 'terminal', description: 'Terminal Colors —— 终端预览专用，不与 Syntax 互引',
     items: [
       // consumer 登记真实引用链：theme.css 别名层 → 产品组件；Showcase 终端区
-      // 按 pane 作用域注入 --ds8-color-terminal-* 并以 var() 真实消费全部 32 色。
+      // 按 pane 作用域注入 --ds-color-terminal-* 并以 var() 真实消费全部 32 色。
       ['background', '#F1F5F9', '#0A101E', '终端背景（Light / Dark 独立）', '终端 / 任务产物预览背景', 'web/src/styles/theme.css; web/src/features/usage-logs/components/task-artifacts.tsx; docs/design-system/registry/showcase-extensions.mjs'],
       ['foreground', '#0F172A', '#E2E8F0', '终端前景', '终端正文文字', 'docs/design-system/registry/showcase-extensions.mjs'],
       ['prompt', '#047857', '#34D399', '提示符', 'shell 提示符', 'docs/design-system/registry/showcase-extensions.mjs'],
@@ -285,12 +287,17 @@ const SCALAR_GROUPS = [
   },
   {
     layer: 'primitive', category: 'radius', type: 'size', unit: 'px',
-    description: '圆角八档',
+    description: '圆角九档（none / sm / md / lg / xl / 2xl / 3xl / 4xl / full）',
     items: [
-      ['--ds-radius-none', 0, 'px', '无圆角'], ['--ds-radius-sm', 4, 'px', '小控件'],
-      ['--ds-radius-md', 6, 'px', '默认'], ['--ds-radius-lg', 10, 'px', '卡片'],
-      ['--ds-radius-xl', 12, 'px', '弹层'], ['--ds-radius-2xl', 16, 'px', '大卡片'],
-      ['--ds-radius-3xl', 20, 'px', '大型容器'], ['--ds-radius-full', 9999, 'px', '圆形 / 胶囊'],
+      ['--ds-radius-none', 0, 'px', '无圆角'],
+      ['--ds-radius-sm', 4, 'px', '小控件 / 标签'],
+      ['--ds-radius-md', 6, 'px', '默认 / 菜单项'],
+      ['--ds-radius-lg', 8, 'px', 'Button / Input / Select'],
+      ['--ds-radius-xl', 10, 'px', 'Card / Table / Code Block'],
+      ['--ds-radius-2xl', 12, 'px', 'Dialog / Popover / Drawer'],
+      ['--ds-radius-3xl', 16, 'px', '大型容器'],
+      ['--ds-radius-4xl', 20, 'px', '营销展示容器'],
+      ['--ds-radius-full', 9999, 'px', '圆形 / 胶囊'],
     ],
   },
   {
@@ -317,7 +324,8 @@ const SCALAR_GROUPS = [
       ['--ds-elevation-2', '0 2px 8px rgba(15, 23, 42, 0.10)', 'css', '卡片'],
       ['--ds-elevation-3', '0 8px 24px rgba(15, 23, 42, 0.12)', 'css', '下拉 / Popover'],
       ['--ds-elevation-4', '0 16px 48px rgba(15, 23, 42, 0.16)', 'css', '模态'],
-      ['--ds-elevation-overlay', '0 12px 32px rgba(2, 6, 16, 0.28)', 'css', '通用浮层'],
+      // 运行时真值（elevation.css）优先：同名的 --ds-* 只能有一个取值。
+      ['--ds-elevation-overlay', '0 4px 6px -4px rgb(0 0 0 / 0.1), 0 10px 15px -3px rgb(0 0 0 / 0.1)', 'css', '通用浮层'],
       ['--ds-elevation-dropdown', '0 8px 24px rgba(15, 23, 42, 0.14)', 'css', '下拉菜单'],
       ['--ds-elevation-dialog', '0 24px 64px rgba(2, 6, 16, 0.32)', 'css', '对话框'],
       ['--ds-elevation-drawer', '-8px 0 32px rgba(2, 6, 16, 0.24)', 'css', '抽屉'],
@@ -331,7 +339,8 @@ const SCALAR_GROUPS = [
       ['--ds-motion-fast', 100, 'ms', 'Hover / Focus'],
       ['--ds-motion-normal', 150, 'ms', 'Active / 微交互'],
       ['--ds-motion-moderate', 200, 'ms', 'Dropdown / Tooltip'],
-      ['--ds-motion-slow', 250, 'ms', 'Dialog / Drawer'],
+      // 运行时真值（elevation.css）优先：同名的 --ds-* 只能有一个取值。
+      ['--ds-motion-slow', 350, 'ms', 'Dialog / Drawer'],
       ['--ds-motion-slower', 300, 'ms', 'Page Transition'],
     ],
   },
@@ -422,20 +431,7 @@ const SCALAR_GROUPS = [
       ['--ds-z-toast', 1600, 'number', 'Toast'], ['--ds-z-tooltip', 1700, 'number', 'Tooltip'],
     ],
   },
-  {
-    layer: 'component', category: 'radius-application', type: 'keyword', unit: 'token-ref',
-    description: '组件圆角绑定（每个组件明确使用哪个圆角档）',
-    items: [
-      ['--ds-radius-button', 'var(--ds-radius-lg)', 'token-ref', 'Button = 10px'],
-      ['--ds-radius-input', 'var(--ds-radius-lg)', 'token-ref', 'Input = 10px'],
-      ['--ds-radius-card', 'var(--ds-radius-lg)', 'token-ref', 'Card = 10px'],
-      ['--ds-radius-dialog', 'var(--ds-radius-xl)', 'token-ref', 'Dialog = 12px'],
-      ['--ds-radius-badge', 'var(--ds-radius-full)', 'token-ref', 'Badge = 9999px'],
-      ['--ds-radius-code', 'var(--ds-radius-lg)', 'token-ref', 'Code Block = 10px'],
-      ['--ds-radius-table', 'var(--ds-radius-lg)', 'token-ref', 'Table = 10px'],
-    ],
-  },
-]
+  ]
 
 /* ── 语法 Token：取自对比度引擎的冻结结果，禁止另写色值 ────────────────────── */
 
@@ -448,9 +444,9 @@ export function buildManifest() {
     if (tokens[name]) throw new Error(`Token 重复定义: ${name}`)
     tokens[name] = {
       layer, category, type, unit, light, dark, description, themeIndependent,
-      // 运行时隔离名：web/src 已有同名 --ds-* 且取值冲突（见 LIGHT-DARK-CONSISTENCY-AUDIT）。
-      // 所有真实组件只消费 --ds8-*，由 build.mjs 从本字段派生 bridge CSS。
-      runtimeName: '--ds8-' + name.slice(5),
+      // 声明名与运行时名统一：同名 Token 只有一个定义、一个取值（2026-11-17）。
+      // 真实组件与 bridge CSS 使用同一名称，不再维护第二套前缀。
+      runtimeName: name,
       semanticMeaning: meta.semanticMeaning ?? description,
       consumer: meta.consumer ?? null,
       consumerNote: meta.consumerNote ?? null,
@@ -607,13 +603,15 @@ export function buildManifest() {
       nonColorChannels: CHART_NON_COLOR_CHANNELS,
       rule: 'series > 6 时必须直接标注；线型 / 点型 / 图例三通道必须可用',
     },
-    // §2.3 / §十二 运行时接入边界：bridge 只注入颜色语义层，不覆盖 web/src 同名变量。
+    // §2.3 / §十二 运行时接入边界：bridge 只注入颜色语义层，标量不经 bridge 注入。
     // 标量（字号/行高/圆角/间距）已于 2026-11-16 经用户授权在 web/src 真源文件
-    // 字面使用 UDS 8.0.0 manifest 值（tokens.test.ts 三方守卫钉死），不经 bridge 注入。
+    // 字面使用 UDS 8.0.0 manifest 值（tokens.test.ts 三方守卫钉死）。
+    // 2026-11-17 起声明名与运行时名统一为 --ds-*，不存在第二套前缀。
     runtimeBridge: {
       canonicalPrefix: '--ds-',
-      runtimePrefix: '--ds8-',
-      isolationReason: 'web/src/design-system/tokens/colors.css 已定义同名 --ds-* 且取值冲突（surface-overlay 语义反转）',
+      runtimePrefix: '--ds-',
+      isolationReason: null,
+      namingRule: '声明名 = 运行时名 = --ds-*；同名 Token 只允许一个定义、一个取值',
       injectedFile: 'web/src/design-system/tokens/uds-semantic-bridge.css',
       entryImport: 'web/src/styles/index.css',
       rollback: '删除 web/src/styles/index.css 中 uds-semantic-bridge.css 一行 import 即完整回滚',

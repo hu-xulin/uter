@@ -118,7 +118,7 @@ describe('Code chrome (UDS 8.0.0 §5.3 / §5.4)', () => {
     expect(
       getByRole('textbox', { name: 'plaintext' }).closest('.group\\/code-block')
         ?.className
-    ).toContain('bg-(--ds8-color-code-codeblock-background)')
+    ).toContain('bg-(--ds-color-code-codeblock-background)')
 
     rerender(
       <CodeBlockEditor
@@ -132,7 +132,7 @@ describe('Code chrome (UDS 8.0.0 §5.3 / §5.4)', () => {
     expect(
       getByRole('textbox', { name: 'Edit' }).closest('.group\\/code-block')
         ?.className
-    ).toContain('bg-(--ds8-color-code-editor-background)')
+    ).toContain('bg-(--ds-color-code-editor-background)')
   })
 
   test('active line highlight only applies to the editable editor', () => {

@@ -1,17 +1,190 @@
 {
   "summary": {
-    "scannedAt": "2026-11-16T07:07:32.921Z",
-    "filesScanned": 1278,
-    "tokens": 389,
-    "declaredConsumers": 389,
-    "verifiedTokens": 389,
+    "scannedAt": "2026-11-16T23:49:02.097Z",
+    "filesScanned": 1276,
+    "tokens": 383,
+    "declaredConsumers": 382,
+    "verifiedTokens": 382,
     "falseDeclaredCount": 0,
-    "noVerifiedConsumerCount": 0,
-    "undeclaredUsageCount": 0
+    "noVerifiedConsumerCount": 1,
+    "undeclaredUsageCount": 26
   },
   "falseDeclared": [],
-  "noVerifiedConsumer": [],
-  "undeclaredUsage": [],
+  "noVerifiedConsumer": [
+    "--ds-radius-4xl"
+  ],
+  "undeclaredUsage": [
+    {
+      "token": "--ds-color-border-code",
+      "paths": [
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-border-default",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-border-table",
+      "paths": [
+        "web/src/features/docs/native/docs-table.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-code-background",
+      "paths": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-code-codeblock-background",
+      "paths": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-code-foreground",
+      "paths": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-neutral-text-tertiary",
+      "paths": [
+        "web/src/components/layout/components/footer.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-status-danger",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-status-info",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-status-success",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-status-warning",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-surface-base",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx",
+        "web/src/features/docs/native/docs-code-block.tsx"
+      ]
+    },
+    {
+      "token": "--ds-color-surface-sunken",
+      "paths": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-text-primary",
+      "paths": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-color-text-secondary",
+      "paths": [
+        "web/src/features/docs/native/callout.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
+    },
+    {
+      "token": "--ds-elevation-overlay",
+      "paths": [
+        "web/src/features/channels/hooks/use-channel-priority-drag.ts",
+        "web/src/features/customer-service/CustomerServiceWidget.css",
+        "web/src/features/playground/components/input/playground-input.tsx"
+      ]
+    },
+    {
+      "token": "--ds-focus-ring-width",
+      "paths": [
+        "web/src/design-system/foundations/accessibility.css"
+      ]
+    },
+    {
+      "token": "--ds-icon-sm",
+      "paths": [
+        "web/src/features/about/about-viewer.tsx",
+        "web/src/features/docs/native/user-guide-index.tsx"
+      ]
+    },
+    {
+      "token": "--ds-motion-fast",
+      "paths": [
+        "web/src/design-system/foundations/motion.css",
+        "web/src/design-system/tokens/elevation.css",
+        "web/src/styles/index.css"
+      ]
+    },
+    {
+      "token": "--ds-motion-slow",
+      "paths": [
+        "web/src/design-system/foundations/motion.css"
+      ]
+    },
+    {
+      "token": "--ds-radius-4xl",
+      "paths": [
+        "docs/design-system/registry/render-showcase.mjs"
+      ]
+    },
+    {
+      "token": "--ds-radius-full",
+      "paths": [
+        "web/src/features/customer-service/CustomerServiceWidget.css"
+      ]
+    },
+    {
+      "token": "--ds-radius-lg",
+      "paths": [
+        "web/src/components/layout/components/public-header.tsx",
+        "web/src/components/ui/button.tsx",
+        "web/src/features/auth/components/oauth-providers.tsx",
+        "web/src/features/auth/sign-in/components/user-auth-form.tsx",
+        "web/src/features/home/components/sections/cta.tsx",
+        "web/src/features/home/components/sections/hero.tsx"
+      ]
+    },
+    {
+      "token": "--ds-weight-medium",
+      "paths": [
+        "web/src/design-system/foundations/typography.css"
+      ]
+    },
+    {
+      "token": "--ds-weight-regular",
+      "paths": [
+        "web/src/design-system/foundations/typography.css"
+      ]
+    },
+    {
+      "token": "--ds-weight-semibold",
+      "paths": [
+        "web/src/design-system/foundations/typography.css"
+      ]
+    }
+  ],
   "tokens": {
     "--ds-border-width-card": {
       "declared": [
@@ -23,7 +196,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -42,7 +214,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -61,7 +232,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -80,7 +250,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -99,7 +268,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -118,7 +286,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -137,7 +304,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -156,7 +322,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -175,7 +340,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -194,7 +358,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -213,7 +376,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -232,7 +394,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -251,7 +412,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -270,7 +430,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -289,7 +448,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -308,7 +466,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -327,7 +484,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -346,13 +502,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-border-danger": {
       "declared": [
@@ -364,7 +524,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -385,15 +544,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/callout.tsx",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
     },
     "--ds-color-border-dialog": {
       "declared": [
@@ -405,7 +566,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -423,7 +583,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -442,7 +601,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -461,10 +619,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/generate-audit.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
@@ -483,7 +639,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -503,14 +658,18 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/docs-table.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/docs-table.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-brand-1": {
       "declared": [
@@ -524,10 +683,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/generate-audit.mjs",
         "docs/design-system/registry/real-page-regression.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
@@ -547,7 +704,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -566,7 +722,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -587,10 +742,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/finalize.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
@@ -608,7 +761,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -627,7 +779,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -652,7 +803,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -678,7 +828,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -703,7 +852,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -728,7 +876,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -755,7 +902,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -783,7 +929,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -811,7 +956,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -839,7 +983,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -867,7 +1010,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -893,7 +1035,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -918,7 +1059,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -943,7 +1083,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -968,7 +1107,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -990,15 +1128,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/prose-classes.ts"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-code-bracket-match": {
       "declared": [
@@ -1014,7 +1154,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1038,15 +1177,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/tokens.mjs",
-        "web/src/components/ai-elements/code-block.tsx"
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-code-current-line": {
       "declared": [
@@ -1062,7 +1203,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1087,7 +1227,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1110,7 +1249,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1131,7 +1269,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1154,7 +1291,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1178,7 +1314,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1200,7 +1335,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1223,7 +1357,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1247,16 +1380,18 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
-        "web/src/components/ai-elements/code-block.tsx"
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-code-gutter": {
       "declared": [
@@ -1272,10 +1407,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/finalize.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
@@ -1298,7 +1431,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1322,7 +1454,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1344,7 +1475,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1365,7 +1495,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1387,7 +1516,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1408,7 +1536,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1431,7 +1558,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1455,7 +1581,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1480,7 +1605,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1504,7 +1628,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1524,7 +1647,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1542,7 +1664,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1560,7 +1681,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1578,7 +1698,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1596,7 +1715,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1614,7 +1732,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1632,7 +1749,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1650,7 +1766,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1668,7 +1783,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1686,7 +1800,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1704,7 +1817,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1722,7 +1834,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1740,7 +1851,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1758,7 +1868,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1776,7 +1885,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1794,7 +1902,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1812,7 +1919,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1830,7 +1936,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1848,7 +1953,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1866,7 +1970,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1884,7 +1987,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1902,7 +2004,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1920,7 +2021,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1938,7 +2038,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1956,7 +2055,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1974,7 +2072,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -1992,7 +2089,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2010,7 +2106,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2028,7 +2123,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2046,7 +2140,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2064,7 +2157,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2082,7 +2174,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2100,7 +2191,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2118,7 +2208,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2136,7 +2225,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2154,7 +2242,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2172,7 +2259,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2190,7 +2276,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2208,7 +2293,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2226,7 +2310,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2244,7 +2327,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2262,7 +2344,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2280,7 +2361,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2298,7 +2378,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2316,7 +2395,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2335,7 +2413,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2355,7 +2432,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2377,7 +2453,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2399,7 +2474,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2423,7 +2497,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2449,7 +2522,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2474,7 +2546,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2495,7 +2566,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2513,7 +2583,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2531,7 +2600,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2549,7 +2617,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2567,7 +2634,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2585,7 +2651,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2603,7 +2668,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2621,7 +2685,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2639,7 +2702,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2657,7 +2719,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2675,7 +2736,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2693,7 +2753,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2711,7 +2770,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2729,7 +2787,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2747,7 +2804,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2765,7 +2821,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2783,7 +2838,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2801,7 +2855,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2819,7 +2872,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2837,7 +2889,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2855,7 +2906,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2873,7 +2923,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2891,7 +2940,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2909,7 +2957,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2927,7 +2974,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2945,7 +2991,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2963,7 +3008,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2981,7 +3025,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -2999,7 +3042,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3017,13 +3059,15 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/components/layout/components/footer.tsx"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/components/layout/components/footer.tsx"
+      ]
     },
     "--ds-color-overlay-dropdown": {
       "declared": [
@@ -3035,7 +3079,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3053,7 +3096,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3072,7 +3114,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3090,7 +3131,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3108,7 +3148,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3126,7 +3165,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3144,7 +3182,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3162,7 +3199,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3180,7 +3216,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3198,7 +3233,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3216,7 +3250,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3234,7 +3267,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3252,7 +3284,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3270,7 +3301,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3288,7 +3318,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3306,7 +3335,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3326,7 +3354,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3348,7 +3375,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3367,14 +3393,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/callout.tsx"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
     },
     "--ds-color-status-danger-active": {
       "declared": [
@@ -3386,7 +3414,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3404,7 +3431,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3422,7 +3448,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3440,7 +3465,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3458,7 +3482,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3478,10 +3501,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/finalize.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
@@ -3499,7 +3520,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3519,15 +3539,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/callout.tsx",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
     },
     "--ds-color-status-info-active": {
       "declared": [
@@ -3539,7 +3561,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3557,7 +3578,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3576,7 +3596,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3594,7 +3613,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3612,7 +3630,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3631,7 +3648,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3653,16 +3669,18 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/callout.tsx",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
     },
     "--ds-color-status-success-active": {
       "declared": [
@@ -3674,7 +3692,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3694,7 +3711,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3714,7 +3730,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3732,7 +3747,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3751,7 +3765,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3770,7 +3783,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3790,15 +3802,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/callout.tsx",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx"
+      ]
     },
     "--ds-color-status-warning-active": {
       "declared": [
@@ -3810,7 +3824,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3828,7 +3841,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3846,7 +3858,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3864,7 +3875,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3882,7 +3892,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3900,7 +3909,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3920,15 +3928,19 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/callout.tsx",
+        "web/src/features/docs/native/docs-code-block.tsx",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx",
+        "web/src/features/docs/native/docs-code-block.tsx"
+      ]
     },
     "--ds-color-surface-canvas": {
       "declared": [
@@ -3942,7 +3954,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3962,7 +3973,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -3979,12 +3989,9 @@
       ],
       "falseDeclared": [],
       "actualConsumers": [
-        "docs/design-system/registry/audit-findings.mjs",
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/generate-audit.mjs",
         "docs/design-system/registry/real-page-regression.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/tokens.mjs"
@@ -4003,7 +4010,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4024,7 +4030,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4046,7 +4051,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/real-page-regression.mjs",
@@ -4066,14 +4070,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/docs/native/prose-classes.ts"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-surface-terminal": {
       "declared": [
@@ -4085,7 +4091,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4105,7 +4110,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4126,7 +4130,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4147,7 +4150,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4168,7 +4170,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4189,7 +4190,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4210,7 +4210,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4231,7 +4230,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4252,7 +4250,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4273,7 +4270,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4294,7 +4290,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4315,7 +4310,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4336,7 +4330,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4357,7 +4350,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4378,7 +4370,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4399,7 +4390,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4420,7 +4410,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4443,7 +4432,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/real-page-regression.mjs",
@@ -4469,7 +4457,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4491,7 +4478,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4512,7 +4498,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4533,7 +4518,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4556,7 +4540,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4578,7 +4561,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4599,7 +4581,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4622,7 +4603,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4644,7 +4624,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4665,7 +4644,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4688,7 +4666,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4710,7 +4687,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4733,7 +4709,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4755,7 +4730,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4776,7 +4750,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4797,7 +4770,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4818,7 +4790,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4840,10 +4811,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/generate-audit.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/tokens.mjs",
         "web/src/styles/theme.css"
@@ -4860,7 +4829,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4878,7 +4846,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4896,7 +4863,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4915,7 +4881,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4935,7 +4900,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -4960,18 +4924,19 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/generate-audit.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
         "web/src/design-system/foundations/typography.css",
+        "web/src/features/docs/native/prose-classes.ts",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-text-secondary": {
       "declared": [
@@ -4987,16 +4952,20 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs",
         "web/src/design-system/foundations/typography.css",
+        "web/src/features/docs/native/callout.tsx",
+        "web/src/features/docs/native/prose-classes.ts",
         "web/src/styles/theme.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/docs/native/callout.tsx",
+        "web/src/features/docs/native/prose-classes.ts"
+      ]
     },
     "--ds-color-text-success": {
       "declared": [
@@ -5010,7 +4979,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5031,7 +4999,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5050,7 +5017,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5069,7 +5035,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5088,7 +5053,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5107,7 +5071,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5126,7 +5089,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5145,7 +5107,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5164,7 +5125,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5183,7 +5143,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5202,7 +5161,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5221,7 +5179,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5240,7 +5197,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5259,7 +5215,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5278,7 +5233,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5297,7 +5251,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5316,7 +5269,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5335,7 +5287,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5354,7 +5305,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5373,7 +5323,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5392,7 +5341,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5411,7 +5359,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5430,7 +5377,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5449,7 +5395,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5468,7 +5413,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5487,14 +5431,20 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/channels/hooks/use-channel-priority-drag.ts",
+        "web/src/features/customer-service/CustomerServiceWidget.css",
+        "web/src/features/playground/components/input/playground-input.tsx"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/channels/hooks/use-channel-priority-drag.ts",
+        "web/src/features/customer-service/CustomerServiceWidget.css",
+        "web/src/features/playground/components/input/playground-input.tsx"
+      ]
     },
     "--ds-focus-ring-offset": {
       "declared": [
@@ -5506,7 +5456,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5525,14 +5474,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/design-system/foundations/accessibility.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/design-system/foundations/accessibility.css"
+      ]
     },
     "--ds-font-body": {
       "declared": [
@@ -5544,10 +5495,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/finalize.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
@@ -5566,10 +5515,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/finalize.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
@@ -5587,10 +5534,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/finalize.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
@@ -5606,9 +5551,7 @@
       ],
       "falseDeclared": [],
       "actualConsumers": [
-        "docs/design-system/registry/audit-findings.mjs",
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5627,7 +5570,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5646,7 +5588,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5665,7 +5606,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5684,7 +5624,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5703,7 +5642,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5722,14 +5660,18 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/about/about-viewer.tsx",
+        "web/src/features/docs/native/user-guide-index.tsx"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/about/about-viewer.tsx",
+        "web/src/features/docs/native/user-guide-index.tsx"
+      ]
     },
     "--ds-icon-stroke": {
       "declared": [
@@ -5741,7 +5683,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5760,7 +5701,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5779,7 +5719,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5798,7 +5737,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5817,7 +5755,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5836,7 +5773,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5855,7 +5791,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5874,7 +5809,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5893,7 +5827,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5912,7 +5845,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5931,7 +5863,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5950,7 +5881,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5969,7 +5899,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -5988,7 +5917,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6007,7 +5935,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6026,7 +5953,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6045,7 +5971,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6064,7 +5989,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6083,7 +6007,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6103,7 +6026,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6123,7 +6045,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6142,7 +6063,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6161,7 +6081,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6180,7 +6099,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6199,7 +6117,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6218,7 +6135,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6237,14 +6153,20 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/design-system/foundations/motion.css",
+        "web/src/design-system/tokens/elevation.css",
+        "web/src/styles/index.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/design-system/foundations/motion.css",
+        "web/src/design-system/tokens/elevation.css",
+        "web/src/styles/index.css"
+      ]
     },
     "--ds-motion-instant": {
       "declared": [
@@ -6256,7 +6178,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6275,7 +6196,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6294,7 +6214,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6313,14 +6232,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/design-system/foundations/motion.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/design-system/foundations/motion.css"
+      ]
     },
     "--ds-motion-slower": {
       "declared": [
@@ -6332,7 +6253,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6350,9 +6270,7 @@
       ],
       "falseDeclared": [],
       "actualConsumers": [
-        "docs/design-system/registry/audit-findings.mjs",
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6371,7 +6289,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6390,7 +6307,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6399,100 +6315,20 @@
       ],
       "undeclaredUsage": []
     },
-    "--ds-radius-badge": {
-      "declared": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
+    "--ds-radius-4xl": {
+      "declared": [],
+      "verified": [],
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
       ],
-      "undeclaredUsage": []
-    },
-    "--ds-radius-button": {
-      "declared": [
+      "undeclaredUsage": [
         "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "falseDeclared": [],
-      "actualConsumers": [
-        "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
-        "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
-      ],
-      "undeclaredUsage": []
-    },
-    "--ds-radius-card": {
-      "declared": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "falseDeclared": [],
-      "actualConsumers": [
-        "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
-        "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
-      ],
-      "undeclaredUsage": []
-    },
-    "--ds-radius-code": {
-      "declared": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "falseDeclared": [],
-      "actualConsumers": [
-        "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
-        "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
-      ],
-      "undeclaredUsage": []
-    },
-    "--ds-radius-dialog": {
-      "declared": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "falseDeclared": [],
-      "actualConsumers": [
-        "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
-        "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
-      ],
-      "undeclaredUsage": []
+      ]
     },
     "--ds-radius-full": {
       "declared": [
@@ -6504,33 +6340,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/features/customer-service/CustomerServiceWidget.css"
       ],
-      "undeclaredUsage": []
-    },
-    "--ds-radius-input": {
-      "declared": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "falseDeclared": [],
-      "actualConsumers": [
-        "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
-        "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
-      ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/features/customer-service/CustomerServiceWidget.css"
+      ]
     },
     "--ds-radius-lg": {
       "declared": [
@@ -6542,14 +6361,26 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/components/layout/components/public-header.tsx",
+        "web/src/components/ui/button.tsx",
+        "web/src/features/auth/components/oauth-providers.tsx",
+        "web/src/features/auth/sign-in/components/user-auth-form.tsx",
+        "web/src/features/home/components/sections/cta.tsx",
+        "web/src/features/home/components/sections/hero.tsx"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/components/layout/components/public-header.tsx",
+        "web/src/components/ui/button.tsx",
+        "web/src/features/auth/components/oauth-providers.tsx",
+        "web/src/features/auth/sign-in/components/user-auth-form.tsx",
+        "web/src/features/home/components/sections/cta.tsx",
+        "web/src/features/home/components/sections/hero.tsx"
+      ]
     },
     "--ds-radius-md": {
       "declared": [
@@ -6561,10 +6392,8 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/generate-audit.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
         "docs/design-system/registry/tokens.mjs"
@@ -6581,7 +6410,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6600,26 +6428,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
-        "docs/design-system/registry/consumer-scan.mjs",
-        "docs/design-system/registry/consumers.mjs",
-        "docs/design-system/registry/render-showcase.mjs",
-        "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
-      ],
-      "undeclaredUsage": []
-    },
-    "--ds-radius-table": {
-      "declared": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "verified": [
-        "docs/design-system/registry/render-showcase.mjs"
-      ],
-      "falseDeclared": [],
-      "actualConsumers": [
-        "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6638,7 +6446,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6657,7 +6464,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6676,7 +6482,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6695,7 +6500,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6714,7 +6518,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6733,7 +6536,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6752,7 +6554,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6771,7 +6572,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6790,7 +6590,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6809,7 +6608,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6828,7 +6626,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6849,7 +6646,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6869,7 +6665,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6888,7 +6683,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6911,7 +6705,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6936,7 +6729,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6961,7 +6753,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -6988,7 +6779,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7014,7 +6804,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7039,7 +6828,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7066,7 +6854,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7092,7 +6879,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7117,7 +6903,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7146,7 +6931,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/real-page-regression.mjs",
@@ -7175,7 +6959,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7204,7 +6987,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7231,7 +7013,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7258,7 +7039,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7286,7 +7066,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7312,7 +7091,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7341,7 +7119,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7368,7 +7145,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7393,7 +7169,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7418,7 +7193,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7439,7 +7213,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7457,9 +7230,7 @@
       ],
       "falseDeclared": [],
       "actualConsumers": [
-        "docs/design-system/registry/audit-findings.mjs",
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7478,7 +7249,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7497,7 +7267,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7516,7 +7285,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7535,7 +7303,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7554,7 +7321,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7575,7 +7341,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7596,7 +7361,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7617,7 +7381,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7637,7 +7400,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7656,14 +7418,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/design-system/foundations/typography.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/design-system/foundations/typography.css"
+      ]
     },
     "--ds-weight-regular": {
       "declared": [
@@ -7677,15 +7441,17 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/showcase-extensions.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/design-system/foundations/typography.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/design-system/foundations/typography.css"
+      ]
     },
     "--ds-weight-semibold": {
       "declared": [
@@ -7697,14 +7463,16 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
         "docs/design-system/registry/spec-modules.mjs",
-        "docs/design-system/registry/tokens.mjs"
+        "docs/design-system/registry/tokens.mjs",
+        "web/src/design-system/foundations/typography.css"
       ],
-      "undeclaredUsage": []
+      "undeclaredUsage": [
+        "web/src/design-system/foundations/typography.css"
+      ]
     },
     "--ds-z-base": {
       "declared": [
@@ -7716,7 +7484,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7734,7 +7501,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7753,7 +7519,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7772,7 +7537,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7791,7 +7555,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7810,7 +7573,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7829,7 +7591,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",
@@ -7848,7 +7609,6 @@
       "falseDeclared": [],
       "actualConsumers": [
         "docs/design-system/registry/build.mjs",
-        "docs/design-system/registry/check-uds8-remediation.mjs",
         "docs/design-system/registry/consumer-scan.mjs",
         "docs/design-system/registry/consumers.mjs",
         "docs/design-system/registry/render-showcase.mjs",

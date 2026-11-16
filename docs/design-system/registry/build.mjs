@@ -173,7 +173,8 @@ log('wrote CSS (4) + TS (1) from manifest')
  * 2026-11-16 经用户授权在 web/src 真源文件（typography.css / primitives.css /
  * theme.css）字面使用 UDS 8.0.0 manifest 值，由 tokens.test.ts 三方守卫钉死，
  * 避免 bridge 形成第二套标量来源。
- * 颜色变量全部用 --ds8-* 隔离命名，绝不覆盖 web/src 已有的同名 --ds-* 变量。
+ * 颜色变量统一使用 --ds-*：声明名 = 运行时名，同名 Token 只允许一个取值。
+ * 与 web/src 既有的 --ds-* 标量变量不发生重名（已由 C16 校验）。
  * 回滚方式：删除 web/src/styles/index.css 的一行 @import。
  * --------------------------------------------------------------------------- */
 
@@ -185,28 +186,28 @@ const bridgeBlock = (selector, names, theme) =>
   `${selector} {\n${names.map((n) => bridgeDecl(n, theme)).join('\n')}\n}\n\n`
 
 const forcedColorsPairs = [
-  ['--ds8-color-text-primary', 'CanvasText'],
-  ['--ds8-color-text-secondary', 'CanvasText'],
-  ['--ds8-color-text-tertiary', 'CanvasText'],
-  ['--ds8-color-text-muted', 'CanvasText'],
-  ['--ds8-color-text-link', 'LinkText'],
-  ['--ds8-color-surface-canvas', 'Canvas'],
-  ['--ds8-color-surface-base', 'Canvas'],
-  ['--ds8-color-surface-raised', 'Canvas'],
-  ['--ds8-color-border-default', 'CanvasText'],
-  ['--ds8-color-border-strong', 'CanvasText'],
-  ['--ds8-color-focus-ring', 'Highlight'],
-  ['--ds8-color-selection-background', 'Highlight'],
-  ['--ds8-color-selection-foreground', 'HighlightText'],
-  ['--ds8-color-code-background', 'Canvas'],
-  ['--ds8-color-code-foreground', 'CanvasText'],
-  ['--ds8-color-terminal-background', 'Canvas'],
-  ['--ds8-color-terminal-foreground', 'CanvasText'],
+  ['--ds-color-text-primary', 'CanvasText'],
+  ['--ds-color-text-secondary', 'CanvasText'],
+  ['--ds-color-text-tertiary', 'CanvasText'],
+  ['--ds-color-text-muted', 'CanvasText'],
+  ['--ds-color-text-link', 'LinkText'],
+  ['--ds-color-surface-canvas', 'Canvas'],
+  ['--ds-color-surface-base', 'Canvas'],
+  ['--ds-color-surface-raised', 'Canvas'],
+  ['--ds-color-border-default', 'CanvasText'],
+  ['--ds-color-border-strong', 'CanvasText'],
+  ['--ds-color-focus-ring', 'Highlight'],
+  ['--ds-color-selection-background', 'Highlight'],
+  ['--ds-color-selection-foreground', 'HighlightText'],
+  ['--ds-color-code-background', 'Canvas'],
+  ['--ds-color-code-foreground', 'CanvasText'],
+  ['--ds-color-terminal-background', 'Canvas'],
+  ['--ds-color-terminal-foreground', 'CanvasText'],
 ].filter(([n]) => bridgeNames.some((b) => T[b].runtimeName === n))
 
 const bridgeCss =
   header('UDS 8.0.0 runtime bridge — generated from TOKEN-MANIFEST.json') +
-  `/* 命名隔离：--ds8-* 不覆盖 web/src 已有的同名 --ds-* 变量（部分取值语义相反）。\n` +
+  `/* 统一命名：声明名 = 运行时名 = --ds-*，同名 Token 只有一个定义、一个取值。\n` +
   ` * 颜色架构：L1 Primitive → L2 Semantic → L3 Component → L4 Interaction → L5 Product Context。\n` +
   ` * 语法色来源：VS Code Light+ / Dark+ 官方主题源码（见 audit/vscode/SOURCE-METADATA.json）。\n` +
   ` * 回滚：删除 web/src/styles/index.css 中本文件的一行 @import。 */\n\n` +
@@ -214,11 +215,11 @@ const bridgeCss =
   bridgeBlock('.dark', bridgeThemed, 'dark') +
   bridgeBlock('[data-ds-theme="dark"]', bridgeThemed, 'dark') +
   bridgeBlock('[data-ds-theme="light"]', bridgeThemed, 'light') +
-  `::selection {\n  background: var(--ds8-color-selection-background);\n  color: var(--ds8-color-selection-foreground);\n}\n\n` +
+  `::selection {\n  background: var(--ds-color-selection-background);\n  color: var(--ds-color-selection-foreground);\n}\n\n` +
   `@supports not (background: linear-gradient(in srgb, red, blue)) {\n` +
   `  /* §6.2 降级：不支持显式插值空间的旧浏览器回退到默认 sRGB 插值（视觉等价）。 */\n` +
   `  .ds-text-gradient-brand {\n` +
-  `    background-image: linear-gradient(var(--ds8-color-gradient-light-from), var(--ds8-color-gradient-light-via), var(--ds8-color-gradient-light-to));\n` +
+  `    background-image: linear-gradient(var(--ds-color-gradient-light-from), var(--ds-color-gradient-light-via), var(--ds-color-gradient-light-to));\n` +
   `  }\n` +
   `}\n\n` +
   `@media (forced-colors: active) {\n` +
@@ -234,7 +235,7 @@ log('wrote runtime bridge', BRIDGE_PATH, 'with', bridgeNames.length, 'tokens')
 
 /* ── 3c) 图表 12 色色板 TS 镜像 ─────────────────────────────────────────────
  * VChart 把系列色画进 <canvas>，读不到 CSS 变量；运行时由 brand-colors.ts
- * 的 resolveUds6ChartPalette() 在调用时解析 --ds8-color-chart-N，本文件只做
+ * 的 resolveUds6ChartPalette() 在调用时解析 --ds-color-chart-N，本文件只做
  * SSR / 单测兜底。数值唯一来源仍是 TOKEN-MANIFEST.json，禁止手改。 */
 
 const chartNames = Array.from({ length: 12 }, (_, i) => `--ds-color-chart-${i + 1}`)

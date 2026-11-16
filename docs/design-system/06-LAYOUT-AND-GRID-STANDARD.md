@@ -52,7 +52,7 @@
 | `--ds-layout-sidebar-collapsed` | 64px | —（同值） | px | Sidebar 收起宽度 |
 | `--ds-layout-modal-width` | 560px | —（同值） | px | Modal 默认宽度 |
 | `--ds-layout-drawer-width` | 400px | —（同值） | px | Drawer 默认宽度 |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

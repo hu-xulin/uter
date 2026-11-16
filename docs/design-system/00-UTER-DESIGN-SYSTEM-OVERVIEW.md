@@ -33,7 +33,7 @@
 7. 例外管理：所有例外必须登记 EXCEPTION-REGISTRY.json，含理由、范围、失效条件；禁止用例外掩盖普通正文对比度缺陷
 8. 废弃流程：旧 Token 先标记 DEPRECATED-REGISTRY.json → 依赖图确认零引用 → 从 CSS / TS / Showcase 同时移除 → 门禁复验
 9. 状态定义严格区分 IMPLEMENTED / VERIFIED / ACCEPTANCE_READY / ACCEPTED；用户明确审核前不得标记 ACCEPTED
-10. 当前生效状态：UDS 8.0.0 是唯一现行设计系统与唯一执行依据（ACCEPTANCE_READY，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色直接使用 TOKEN-MANIFEST 值（tokens.test.ts 三方守卫钉死）；颜色语义层 --ds8-* bridge 为唯一运行时权威；视觉基线见 VISUAL-BASELINE.json
+10. 当前生效状态：UDS 8.0.0 是唯一现行设计系统与唯一执行依据（ACCEPTANCE_READY，accepted 仍为 false）；运行时标量（字号/行高/圆角/间距）与图表色直接使用 TOKEN-MANIFEST 值（tokens.test.ts 三方守卫钉死）；颜色语义层 --ds-* bridge 为唯一运行时权威；视觉基线见 VISUAL-BASELINE.json
 
 ## 3. Tokens
 
@@ -69,7 +69,7 @@ Showcase 中 `#mod-00` 分区提供本模块的真实渲染：色块、字号、
   font-size: var(--ds-text-base);
   font-variant-numeric: var(--ds-numeric-tabular);
   padding: var(--ds-space-4);
-  border-radius: var(--ds-radius-card);
+  border-radius: var(--ds-radius-xl);
 }
 ```
 

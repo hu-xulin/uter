@@ -170,7 +170,7 @@ export function renderShowcase({ M, T, MODULES, PRINCIPLES, routeFiles, sourceCo
     const isMeasured = measured.has(n)
     const layerTag = t.layer === 'primitive' ? '<span class="tag tag-prim">P</span>' : t.layer === 'semantic' ? '<span class="tag tag-sem">S</span>' : '<span class="tag tag-cmp">C</span>'
     return `<tr data-token="${esc(n)}" data-token-layer="${esc(t.layer)}" data-runtime-name="${esc(t.runtimeName ?? '')}" data-runtime-measured="${isMeasured ? 'MEASURED' : 'DECLARED'}">
-      <td><code>${esc(n)}</code><small class="x-mono">${esc(t.runtimeName ?? '—')}</small></td>
+      <td><code>${esc(n)}</code>${t.runtimeName && t.runtimeName !== n ? `<small class="x-mono">${esc(t.runtimeName)}</small>` : ''}</td>
       <td>${layerTag} ${esc(t.category)}<small class="x-mono">${esc(t.colorLayer ?? '—')}</small></td>
       <td>${colorCell(cssVal(t, 'light'))}</td>
       <td>${colorCell(t.themeIndependent ? '—' : cssVal(t, 'dark'))}</td>
@@ -320,7 +320,7 @@ section.panel > h2 { font-size:var(--ds-text-2xl); line-height:1.4; margin-botto
 .syn-sw { display:flex; align-items:center; gap:var(--ds-space-2); padding:6px 8px; border:1px solid var(--page-border); border-radius:var(--ds-radius-sm); font-size:var(--ds-text-2xs); }
 .syn-dot { width:16px; height:16px; border-radius:var(--ds-radius-sm); border:1px solid var(--page-border); flex:none; }
 .syn-ratio { margin-left:auto; color:var(--page-muted); font-variant-numeric:var(--ds-numeric-tabular); }
-.lang-block { margin-bottom:var(--ds-space-4); border:1px solid var(--page-border); border-radius:var(--ds-radius-code); overflow:hidden; }
+.lang-block { margin-bottom:var(--ds-space-4); border:1px solid var(--page-border); border-radius:var(--ds-radius-xl); overflow:hidden; }
 .lang-head { display:flex; align-items:center; gap:var(--ds-space-3); padding:6px 10px; background:var(--ds-color-surface-sunken); border-bottom:1px solid var(--page-border); font-size:var(--ds-text-2xs); }
 .lang-name { font-weight:var(--ds-weight-semibold); }
 .lang-file { color:var(--page-muted); font-family:var(--ds-font-mono); }
@@ -355,7 +355,7 @@ td.desc { color:var(--page-muted); }
 .type-row { display:flex; align-items:baseline; gap:var(--ds-space-4); padding:var(--ds-space-2) 0; border-bottom:1px solid var(--ds-color-border-divider); }
 .type-label { min-width:230px; font-size:var(--ds-text-2xs); color:var(--page-muted); }
 .type-sample { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:var(--ds-control-md); padding:0 var(--ds-space-4); border-radius:var(--ds-radius-button); font-size:var(--ds-text-sm); font-weight:var(--ds-weight-medium); border:1px solid transparent; cursor:pointer; font-family:var(--ds-font-ui); }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:var(--ds-control-md); padding:0 var(--ds-space-4); border-radius:var(--ds-radius-lg); font-size:var(--ds-text-sm); font-weight:var(--ds-weight-medium); border:1px solid transparent; cursor:pointer; font-family:var(--ds-font-ui); }
 .btn-primary { background:var(--ds-color-brand-solid); color:var(--ds-color-text-on-brand); }
 .btn-primary:hover { background:var(--ds-color-brand-solid-hover); }
 .btn-primary:active { background:var(--ds-color-brand-solid-active); }
@@ -367,7 +367,7 @@ td.desc { color:var(--page-muted); }
 .btn-sm { height:var(--ds-control-sm); font-size:var(--ds-text-2xs); }
 .btn-lg { height:var(--ds-control-lg); }
 .btn-touch { height:var(--ds-control-touch); }
-.inp { height:var(--ds-control-md); padding:0 var(--ds-space-3); border:1px solid var(--ds-color-border-input); border-radius:var(--ds-radius-input); background:var(--page-surface); color:var(--page-fg); font-size:var(--ds-text-sm); font-family:var(--ds-font-ui); }
+.inp { height:var(--ds-control-md); padding:0 var(--ds-space-3); border:1px solid var(--ds-color-border-input); border-radius:var(--ds-radius-lg); background:var(--page-surface); color:var(--page-fg); font-size:var(--ds-text-sm); font-family:var(--ds-font-ui); }
 .inp-error { border-color:var(--ds-color-border-danger); }
 .state-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:var(--ds-space-3); }
 .state-cell { border:1px solid var(--page-border); border-radius:var(--ds-radius-md); padding:var(--ds-space-3); display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
@@ -570,7 +570,7 @@ ${extensionSections}
 
   <section class="panel" id="tokens">
     <h2>完整 Token 清单（${M.tokenCount} 个 · 零遗漏）</h2>
-    <p class="panel-sub">P = Primitive / S = Semantic / C = Component。每行同时给出 <strong>HEX + RGB</strong>、运行时 Token 名（<code>--ds8-*</code>）、真实消费者、对比度要求与 <code>MEASURED / DECLARED</code> 实测标记。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
+    <p class="panel-sub">P = Primitive / S = Semantic / C = Component。每行同时给出 <strong>HEX + RGB</strong>、运行时 Token 名（<code>--ds-*</code>）、真实消费者、对比度要求与 <code>MEASURED / DECLARED</code> 实测标记。点击任意行打开 Token Inspector。所有数值与 <code>runtime/tokens.css</code>、<code>runtime/tokens.ts</code> 一致，由检查器校验。</p>
     <div class="table-wrap x-scroll" tabindex="0" role="region" aria-label="完整 Token 清单（可滚动）" style="max-height:640px;overflow:auto"><table class="token-table"><thead><tr><th>Token / Runtime</th><th>层 / 类别 / 颜色层</th><th>Light HEX+RGB</th><th>Dark HEX+RGB</th><th>单位</th><th>语义说明</th><th>真实消费者</th><th>实测标记 / 对比度要求</th></tr></thead><tbody>${tokenRows}</tbody></table></div>
   </section>
 

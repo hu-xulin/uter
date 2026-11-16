@@ -11,9 +11,9 @@
  *      引用文件（actualConsumers），未登记的真实引用列为 undeclaredUsage。
  *
  * 「真实引用」的判定（只认可以下三种，不做语义猜测）：
- *   - 静态引用：文件文本含 runtimeName（--ds8-*）或 canonical name（--ds-*）；
- *     theme.css 的别名层 `--color-term-x: var(--ds8-color-terminal-x)` 属于此类。
- *   - 动态模板：`--ds8-color-chart-${i + 1}` 的静态前缀匹配整组 Token。
+ *   - 静态引用：文件文本含 runtimeName（--ds-*）或 canonical name（--ds-*）；
+ *     theme.css 的别名层 `--color-term-x: var(--ds-color-terminal-x)` 属于此类。
+ *   - 动态模板：`--ds-color-chart-${i + 1}` 的静态前缀匹配整组 Token。
  *   - 全 manifest 迭代：registry 生成器中 Object.keys(T) 模式（Showcase 把每个
  *     Token 注入为运行时变量并逐行渲染），仅对 docs/ 下的 .mjs 生效。
  *
@@ -52,14 +52,14 @@ function walk(dir, out = []) {
 /**
  * 从文件文本提取 Token 引用证据。
  * - CSS 只认 var() 引用，定义处不算消费；
- * - web/src 产品文件只认 --ds8-* 运行时名：canonical --ds-* 在产品运行时
+ * - web/src 产品文件只认 --ds-* 运行时名：canonical --ds-* 在产品运行时
  *   解析到 同名变量（值不同），不是 UDS 8.0.0 Token 的消费；
- * - docs/ registry 生成器认 canonical 名（manifest 键读取）与 --ds8-*；
+ * - docs/ registry 生成器认 canonical 名（manifest 键读取）与 --ds-*；
  * - 注释不算引用。
  */
 function extractRefs(text, isRegistryGenerator, isCss, isProduct) {
   const clean = text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-  const name = isProduct ? '--ds8-' : '--ds(?:8)?-'
+  const name = isProduct ? '--ds-' : '--ds(?:8)?-'
   const statics = new Set()
   const prefixes = new Set()
   if (isCss) {

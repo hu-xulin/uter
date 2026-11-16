@@ -25,7 +25,7 @@
 ## 2. Rules
 
 1. 变体：Primary / Secondary / Outline / Ghost / Destructive / Link / Icon
-2. 尺寸：Small 32px、Medium 36px、Large 40px、Touch 44px；圆角统一 lg 10px
+2. 尺寸：Small 32px、Medium 36px、Large 40px、Touch 44px；圆角统一 lg 8px
 3. Primary 默认底 `--ds-color-brand-solid` #5B5EE6 + 白字（5.01:1）；Hover `--ds-color-brand-solid-hover` #494CC7（6.68:1）；Active `--ds-color-brand-solid-active` #3F42B0（8.02:1）；三态 Light / Dark 同值
 4. Secondary：surface-sunken 底 + text-primary；Outline：1px border-input + transparent 底
 5. Ghost：透明底 + text-secondary，Hover surface-sunken；Destructive：#B91C1C 底 + 白字
@@ -45,7 +45,7 @@
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
 | `--ds-control-lg` | 40px | —（同值） | px | Large 按钮 / 输入 |
 | `--ds-control-touch` | 44px | —（同值） | px | Touch 最小触控目标 / H5 |
-| `--ds-radius-button` | var(--ds-radius-lg) | —（同值） | token-ref | Button = 10px |
+| `--ds-radius-lg` | 8px | —（同值） | px | Button / Input / Select |
 | `--ds-color-brand-solid` | #5B5EE6 | —（同值） | color | 品牌实底（Light/Dark 同值，白字实测 5.01:1；Dark 不得使用浅化档做按钮底） |
 | `--ds-color-brand-solid-hover` | #494CC7 | —（同值） | color | 品牌实底 Hover（白字 6.68:1） |
 | `--ds-color-brand-solid-active` | #3F42B0 | —（同值） | color | 品牌实底 Active（白字 8.02:1） |

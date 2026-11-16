@@ -45,6 +45,8 @@ For commercial licensing, please contact support@uter.ai
  *   T15 透明度凑浅底       `bg-warning/10`（§2.2 禁止，改用 `*-soft` / `*-subtle`）
  *   T16 低于最小字号       `text-[11px]` / `font-size: 10px`（§1.2 全站下限 12px）
  *   T17 任意间距           `p-[3px]` / `gap-[2px]`（间距阶梯就是 Tailwind 4px 单位）
+ *   T18 文本变量未标注类型 `text-(--ds-text-sm)` / `text-[var(--text-sm)]`
+ *        （Tailwind 把裸变量当颜色；字号必须写 `text-[length:var(…)]` 或标准档）
  *
  * 扫描不把硬编码一律判死：图表 canvas 的 `fontSize` 必须是数字、
  * 第三方控件的行内样式改不动、弹窗浮层本来就该有投影。这些进 ALLOWLIST，
@@ -157,6 +159,7 @@ const RULES = {
   T15: '透明度凑浅底（bg-{success|warning|info}/NN → *-soft；bg-{primary|destructive}/NN → *-subtle）',
   T16: '低于最小字号（规范 §1.2：全站可见文本下限 12px，布局不够用改布局不许缩字号）',
   T17: '任意间距（p-/m-/gap-[…]，间距阶梯就是 Tailwind 4px 单位，就近取整档）',
+  T18: '文本变量未标注类型（text-(--var) / text-[var(--var)] 默认按颜色解析；字号写 text-[length:var(…)] 或标准档）',
 }
 
 /**
@@ -354,12 +357,17 @@ for (const abs of walk(SRC)) {
     //
     // 匹配一切 `text-[…]`，但放行颜色与 CSS 变量：
     //   · text-[color-mix(...)] / text-[CanvasText] / text-[#hex] 是颜色
-    //   · text-[var(--text-sm)] 是引用 Token，属于正确写法
+    //   · text-[var(--text-sm)] 会被 Tailwind 当成颜色，**不是**字号写法；
+    //     字号必须写 `text-[length:var(--text-sm)]`（见下方 T18）
     // clamp() 不算颜色 —— 营销页常用 `text-[clamp(2rem,5vw,3.5rem)]`
     // 把标题顶到规范之外的字号，正是要拦的。
     for (const hit of raw.match(/text-\[[^\]]*\]/g) ?? []) {
       const inner = hit.slice('text-['.length, -1).trim()
       if (
+        // 显式标注了类型：length 是字号、color 是颜色，均按意图解析。
+        inner.startsWith('length:') ||
+        inner.startsWith('color:') ||
+        // 裸 var() 先放行（颜色变量合法）；字号变量由 T18 单独拦截。
         inner.startsWith('var(') ||
         inner.startsWith('#') ||
         /^(rgb|rgba|hsl|hsla|oklch|oklab|lab|lch|color|color-mix)\(/.test(
@@ -372,6 +380,24 @@ for (const abs of walk(SRC)) {
       }
       report('T2', rel, line, rawText)
       break
+    }
+
+    // T18：文本变量必须标注类型
+    //
+    // Tailwind 对 `text-(--var)` / `text-[var(--var)]` 无法推断类型，默认按
+    // **颜色** 解析：字号变量会静默失效，还会被 tailwind-merge 当成颜色类，
+    // 把同组的 `text-…` 颜色类挤掉。字号必须写 `text-[length:var(--…)]`
+    // 或标准档（text-sm / text-base…）。
+    const textVarHits = [
+      ...(raw.matchAll(/text-\((--[A-Za-z0-9-]+)\)/g) ?? []),
+      ...(raw.matchAll(/text-\[var\((--[A-Za-z0-9-]+)\)\]/g) ?? []),
+    ]
+    if (
+      textVarHits.some((hit) =>
+        /^--(?:ds-)?(?:text|font-size|leading)-/.test(hit[1])
+      )
+    ) {
+      report('T18', rel, line, rawText)
     }
 
     // T3：任意行高

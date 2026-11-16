@@ -6,7 +6,7 @@
  *
  * 来源：registry/consumer-scan.mjs 对 web/src 与 registry 渲染链的全量引用
  * 扫描（audit/CONSUMER-SCAN.json）。只登记真实引用文件：
- *   - web/src 产品文件只认 --ds8-* 运行时引用（CSS 仅 var()，注释不算）；
+ *   - web/src 产品文件只认 --ds-* 运行时引用（CSS 仅 var()，注释不算）；
  *   - docs 侧只认 Showcase 渲染链（render-showcase / showcase-extensions /
  *     syntax-adapter），其余 registry 工具文件是数据处理，不是视觉消费。
  *
@@ -338,18 +338,11 @@ export const CONSUMERS = {
   '--ds-numeric-tabular': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-2xl': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-3xl': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-badge': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-button': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-card': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-code': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-dialog': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-full': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-input': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-lg': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-md': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-none': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-sm': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
-  '--ds-radius-table': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-radius-xl': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-space-0': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },
   '--ds-space-1': { consumer: 'docs/design-system/registry/render-showcase.mjs', note: 'Showcase 注入 TOKEN-MANIFEST 运行时变量并逐行渲染，是 UDS 8.0.0 数值的真实消费者' },

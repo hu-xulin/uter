@@ -53,7 +53,7 @@ const ShimmerComponent = ({
         {
           /* UDS 8.0.0：渐变定义已收敛到 foundations/typography.css 的受控出口
            * ds-text-shimmer，业务组件不再手写 bg-clip-text / linear-gradient。 */
-          '--ds8-shimmer-spread': `${dynamicSpread}px`,
+          '--ds-shimmer-spread': `${dynamicSpread}px`,
         } as CSSProperties
       }
       transition={{

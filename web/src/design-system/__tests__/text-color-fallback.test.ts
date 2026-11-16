@@ -24,16 +24,16 @@ import { describe, expect, it } from 'vitest'
 /**
  * `.ds-text--*` 颜色规则的兜底值守卫。
  *
- * 背景：`--ds8-color-text-primary` / `--ds8-color-text-secondary` 在
+ * 背景：`--ds-color-text-primary` / `--ds-color-text-secondary` 在
  * `tokens/uds-semantic-bridge.css`（TOKEN-MANIFEST 派生）里声明；历史上
  * colors.css 的纯别名声明在生产构建压缩阶段会被丢掉（实测两次构建，
  * 产物里这些声明不存在）。变量缺失时
- * `color: var(--ds8-color-text-secondary)` 是无效声明，元素退回 `inherit`，
+ * `color: var(--ds-color-text-secondary)` 是无效声明，元素退回 `inherit`，
  * 于是所有次要文字（卡片说明、占位符）渲染成正文黑 —— 和主标题同色，
  * 层级直接塌掉。
  *
  * 所以 `foundations/typography.css` 的颜色规则一律带兜底值。这条测试就是
- * 防止有人「顺手简化」成 `var(--ds8-color-text-secondary)`，把线上再次变成
+ * 防止有人「顺手简化」成 `var(--ds-color-text-secondary)`，把线上再次变成
  * 全站次要文字变黑。
  */
 const FOUNDATIONS = join(
@@ -66,10 +66,10 @@ describe('ds-text 颜色规则的兜底值', () => {
 
   it('次要文字兜底到 muted-foreground，主文字兜底到 foreground', () => {
     expect(css).toContain(
-      'color: var(--ds8-color-text-secondary, var(--muted-foreground))'
+      'color: var(--ds-color-text-secondary, var(--muted-foreground))'
     )
     expect(css).toContain(
-      'color: var(--ds8-color-text-primary, var(--foreground))'
+      'color: var(--ds-color-text-primary, var(--foreground))'
     )
   })
 })

@@ -51,7 +51,7 @@ Chart Palette、折线 / 柱 / 面积 / 饼 / 环图、Tooltip、Legend、Axis�
 | `--ds-color-border-divider` | #E2E8F0 | #1F2A3D | color | 分隔线 |
 | `--ds-text-2xs` | 12px | —（同值） | px | 最小可见文字（全站下限） |
 | `--ds-elevation-3` | 0 8px 24px rgba(15, 23, 42, 0.12) | —（同值） | css | 下拉 / Popover |
-| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 |
+| `--ds-radius-sm` | 4px | —（同值） | px | 小控件 / 标签 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

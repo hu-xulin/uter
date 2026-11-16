@@ -49,7 +49,7 @@ Balance / Recharge / Payment / Order / Refund / Invoice / Transaction / Payment 
 | `--ds-color-status-success` | #15803D | #6EE7B7 | color | 成功 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
 | `--ds-color-status-warning` | #A54600 | #FCD34D | color | 警告 |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 | `--ds-border-width-focus` | 2px | —（同值） | px | 聚焦边框 / 焦点环 |
 | `--ds-color-border-focus` | #5B5EE6 | #8B8DF5 | color | 聚焦边框 / 焦点环 |
 | `--ds-control-lg` | 40px | —（同值） | px | Large 按钮 / 输入 |

@@ -40,8 +40,7 @@ Card / Table / Pagination / Description List / Statistics / Avatar / Tag / Progr
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
-| `--ds-radius-table` | var(--ds-radius-lg) | —（同值） | token-ref | Table = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 | `--ds-border-width-table` | 1px | —（同值） | px | 表格 |
 | `--ds-color-border-table` | #E2E8F0 | #263349 | color | 表格边框 |
 | `--ds-color-surface-sunken` | #F1F5F9 | #080D18 | color | 下沉表面（代码块 / 井） |

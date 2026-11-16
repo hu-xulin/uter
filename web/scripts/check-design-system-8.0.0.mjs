@@ -720,7 +720,7 @@ check(
       '渐变 7 背景矩阵缺失'
     )
     assert(
-      count(/data-runtime-name="--ds8-/g) >= names.length,
+      count(/data-runtime-name="--ds-/g) >= names.length,
       'C14',
       '运行时 Token 名 / 真实消费者列缺失'
     )
@@ -864,7 +864,7 @@ check('C21', '真实页面回归 + 渐变像素验证 + axe 零违规', () => {
   assert(
     v.results.every((r) => r.checks.bridgeLive && r.checks.syntaxBridgeLive),
     'C21',
-    '--ds8-* 桥接在真实页面未生效'
+    '--ds-* 桥接在真实页面未生效'
   )
   assert(v.gradient?.pass === true, 'C21', '渐变浏览器像素验证失败')
   assert(

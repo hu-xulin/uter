@@ -703,12 +703,14 @@ describe('brand color source', () => {
  * h4 14/22。规范点名了此前的错误：把 Markdown 的 h1 抬到界面 30px，会让回答
  * 里的标题比它所在卡片的标题（18px）还大，「页面层级当场塌掉」。
  *
- * 三处渲染 Markdown 的地方必须用同一套值：
+ * 内容型 Markdown 用这套值：
  *   `components/ui/markdown.tsx`（RichContent / 协议正文）、
- *   `components/ai-elements/response-renderer-blocks.tsx`（AI 回答）、
- *   `features/docs/native/prose-classes.ts`（原生文档 / 内置法务正文）。
- * 2026-11-13 前 `prose-classes.ts` 漏在守卫之外，长期停留在
- * h1 24/32 / h2 text-xl 的旧界面阶梯 —— 本组用例把它一并钉死。
+ *   `components/ai-elements/response-renderer-blocks.tsx`（AI 回答）。
+ *
+ * 原生文档页（`features/docs/native/prose-classes.ts`）是独立页面，不是嵌在
+ * 卡片里的内容：它使用文档页阶梯 h1 36/44（text-4xl）→ h2 24/32（text-2xl）
+ * → h3 18/26（text-lg）→ h4 16/24（text-base），与 Clerk 文档页一致；下方另有
+ * 独立用例钉死，禁止升到营销档 text-5xl。
  */
 describe('markdown prose ladder', () => {
   const LADDER: { expect: RegExp; forbid: RegExp; why: string }[] = [
@@ -734,10 +736,7 @@ describe('markdown prose ladder', () => {
     },
   ]
 
-  const PROSE_FILES: string[] = [
-    'components/ui/markdown.tsx',
-    'features/docs/native/prose-classes.ts',
-  ]
+  const PROSE_FILES: string[] = ['components/ui/markdown.tsx']
 
   it.each(PROSE_FILES)(
     '%s keeps markdown headings below the UI ladder',
@@ -758,6 +757,27 @@ describe('markdown prose ladder', () => {
       ).toEqual([])
     }
   )
+
+  it('keeps native docs pages on the docs page ladder', () => {
+    const body = fileBody('features/docs/native/prose-classes.ts')
+    const pairs: Array<[RegExp, string]> = [
+      [/\[&_h1\]:text-4xl/, 'docs h1 = text-4xl (36/44)'],
+      [/\[&_h2\]:text-2xl/, 'docs h2 = text-2xl (24/32)'],
+      [/\[&_h3\]:text-lg/, 'docs h3 = text-lg (18/26)'],
+      [/\[&_h4\]:text-base/, 'docs h4 = text-base (16/24)'],
+    ]
+    const missing = pairs
+      .filter(([re]) => !re.test(body))
+      .map(([, why]) => ({
+        file: 'prose-classes.ts',
+        line: 0,
+        text: why,
+      }))
+    expect(missing, `文档页标题阶梯被改动：\n${fmt(missing)}`).toEqual([])
+    expect(body, '文档页标题不得升到营销展示档 text-5xl（48px）').not.toMatch(
+      /\[&_h1\]:text-5xl/
+    )
+  })
 
   it('keeps the AI-answer headingClasses on the same ladder', () => {
     const body = fileBody('components/ai-elements/response-renderer-blocks.tsx')

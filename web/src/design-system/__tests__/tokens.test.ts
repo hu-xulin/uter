@@ -227,15 +227,15 @@ describe('分组标题档（group-title）', () => {
 })
 
 describe('圆角 Token 对应 UDS 8.0 §Shape 刻度', () => {
-  it('八个圆角档位与 8.0 刻度一致（xs/4xl 按最近值并入）', () => {
+  it('圆角档位与九档刻度一致（xs 为兼容别名）', () => {
     const SHAPE: Array<[string, number]> = [
       ['xs', 4],
       ['sm', 4],
       ['md', 6],
-      ['lg', 10],
-      ['xl', 12],
-      ['2xl', 16],
-      ['3xl', 20],
+      ['lg', 8],
+      ['xl', 10],
+      ['2xl', 12],
+      ['3xl', 16],
       ['4xl', 20],
     ]
     for (const [step, px] of SHAPE) {
@@ -264,14 +264,14 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     return Number.NaN
   }
 
-  it('默认基准 0.375rem(6px) 推出 4/4/6/10/12/16/20/20 八档（8.0 刻度，含并入档）', () => {
+  it('默认基准 0.375rem(6px) 推出 4/4/6/8/10/12/16/20（xs 为兼容别名）', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
     // 出现「文档 12px、页面 10px」，这里把差异钉死。
     // UDS 8.0 §Shape / TOKEN-MANIFEST radius.scale：基准 6px（= md），
-    // 刻度 sm=4 / md=6 / lg=10 / xl=12 / 2xl=16 / 3xl=20；
-    // 3.0 特有的 xs / 4xl 档按最近刻度并入（xs→sm、4xl→3xl）。
+    // 刻度 sm=4 / md=6 / lg=8 / xl=10 / 2xl=12 / 3xl=16 / 4xl=20；
+    // xs 只作为 历史别名（= sm 4px）。
     // `rounded-full` 是特殊档，由 Tailwind 内建提供，不在 theme.css 重复声明。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
@@ -284,10 +284,10 @@ describe('theme.css 圆角阶梯与文档一致', () => {
       ['xs', 4],
       ['sm', 4],
       ['md', 6],
-      ['lg', 10],
-      ['xl', 12],
-      ['2xl', 16],
-      ['3xl', 20],
+      ['lg', 8],
+      ['xl', 10],
+      ['2xl', 12],
+      ['3xl', 16],
       ['4xl', 20],
     ]
     for (const [step, px] of EXPECTED) {

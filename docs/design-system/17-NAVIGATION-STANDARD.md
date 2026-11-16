@@ -43,7 +43,7 @@ Header / Sidebar / Collapsed Sidebar / Breadcrumb / Tabs / Navigation Item / Mob
 | `--ds-layout-sidebar-width` | 240px | —（同值） | px | Sidebar 展开宽度 |
 | `--ds-layout-sidebar-collapsed` | 64px | —（同值） | px | Sidebar 收起宽度 |
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
-| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 / 菜单项 |
 | `--ds-icon-xs` | 16px | —（同值） | px | 图标 16（默认） |
 | `--ds-text-sm` | 14px | —（同值） | px | 正文默认 |
 | `--ds-text-2xs` | 12px | —（同值） | px | 最小可见文字（全站下限） |

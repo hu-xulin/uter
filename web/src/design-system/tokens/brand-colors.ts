@@ -28,7 +28,7 @@ For commercial licensing, please contact support@uter.ai
  *   2. 未知厂商兜底序列 —— 历史遗留的静态序列，仅用于排行榜里没有官方
  *      品牌色的厂商，迁移状态见 UDS-8.0.0-MIGRATION-REPORT。
  *
- * 多系列分类色已由 UDS 8.0.0 的 `--ds8-color-chart-1..12` 语义层承担
+ * 多系列分类色已由 UDS 8.0.0 的 `--ds-color-chart-1..12` 语义层承担
  * （12 色，正常视觉 + 三类色觉缺陷模拟下任意两色 CIEDE2000 >= 10）。
  * VChart 画在 <canvas> 上读不到 CSS 变量，所以由本文件的
  * `resolveUds6ChartPalette()` 在**调用时**解析；生成的 TS 镜像只做
@@ -151,7 +151,7 @@ export function resolveUds6ChartPalette(): string[] {
   document.body.appendChild(probe)
   const style = getComputedStyle(probe)
   const colors = Array.from({ length: 12 }, (_, i) =>
-    style.getPropertyValue(`--ds8-color-chart-${i + 1}`).trim()
+    style.getPropertyValue(`--ds-color-chart-${i + 1}`).trim()
   )
   probe.remove()
 

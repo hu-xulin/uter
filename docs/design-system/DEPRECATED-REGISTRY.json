@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-DEPRECATED",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T12:53:56.020Z",
+  "generated_at": "2026-11-16T23:48:33.944Z",
   "policy": "先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；UDS 8.0.0 是唯一现行设计系统，不存在并行版本或兼容层",
   "items": []
 }

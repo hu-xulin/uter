@@ -1,6 +1,6 @@
 # UTER DESIGN SYSTEM 8.0.0 — 对比度验证报告
 
-> 生成时间 2026-11-16T12:53:56.020Z · 计算引擎 `registry/contrast-engine.mjs` · 标准 WCAG 2.2 AA
+> 生成时间 2026-11-16T23:48:33.944Z · 计算引擎 `registry/contrast-engine.mjs` · 标准 WCAG 2.2 AA
 > 公式 `(L_hi + 0.05) / (L_lo + 0.05), sRGB linearized at 0.04045` · 采样 `linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops`
 > **总判定：`PASS`**
 

@@ -45,7 +45,7 @@ Avatar / Profile / User Menu / Account Settings / Organization / Role / Permissi
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
 | `--ds-density-default-row` | 44px | —（同值） | px | Default 表格行高 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 | `--ds-space-6` | 24px | —（同值） | px | 24 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。

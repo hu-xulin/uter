@@ -2,7 +2,7 @@
  * UDS 8.0.0 — 真实页面视觉回归（P0 §10）
  *
  * 不只验证 Showcase：用 Playwright 打开 Uter 真实 SPA 路由，验证
- *   1) --ds8-* 运行时桥接在真实页面里确实生效（不是死代码）；
+ *   1) --ds-* 运行时桥接在真实页面里确实生效（不是死代码）；
  *   2) Light / Dark 真实渲染、像素确有变化；
  *   3) 品牌渐变文字在浏览器里真的产生多色插值像素（不是纯色 / 不可见）；
  *   4) 控制台 / pageerror 无错误；
@@ -200,10 +200,10 @@ for (const route of ROUTES) {
           inputs: document.querySelectorAll('input').length,
           tables: document.querySelectorAll('table').length,
           htmlClass: document.documentElement.className,
-          ds6Brand: get('--ds8-color-brand-1'),
-          ds6Keyword: get('--ds8-syntax-keyword'),
-          ds6TerminalBg: get('--ds8-color-terminal-background'),
-          ds8SurfaceScrim: get('--ds8-color-surface-scrim'),
+          ds6Brand: get('--ds-color-brand-1'),
+          ds6Keyword: get('--ds-syntax-keyword'),
+          ds6TerminalBg: get('--ds-color-terminal-background'),
+          surfaceScrim: get('--ds-color-surface-scrim'),
           legacySurfaceOverlayGone: getComputedStyle(document.documentElement).getPropertyValue('--ds-color-surface-overlay').trim() === '',
           gradientInterpolationSupported: CSS.supports('background-image', 'linear-gradient(90deg in srgb, red, blue)'),
         }
@@ -224,8 +224,8 @@ for (const route of ROUTES) {
         bridgeLive: normHex(dom.ds6Brand) === expectedBrand,
         syntaxBridgeLive: normHex(dom.ds6Keyword) === expectedKeyword,
         terminalBridgeLive: /^#[0-9a-f]{6}$/.test(dom.ds6TerminalBg),
-        // 3.0 的 --ds-color-surface-overlay 必须保持 #000（语义反转），证明 --ds8-* 隔离命名没有覆盖旧变量。
-        scrimTokenLive: normHex(dom.ds8SurfaceScrim) === '#000000' && dom.legacySurfaceOverlayGone,
+        // 统一命名后 bridge 只提供 --ds-color-surface-scrim；旧名 --ds-color-surface-overlay 不应再被定义。
+        scrimTokenLive: normHex(dom.surfaceScrim) === '#000000' && dom.legacySurfaceOverlayGone,
         nonBlankPixels: pixels.sampledPixels > 10000 && pixels.distinctColors > 20,
         noConsoleErrors: consoleErrors.length === 0,
       }
@@ -367,10 +367,10 @@ if (authBase) {
             bodyChars: document.body.innerText.length,
             tables: document.querySelectorAll('table').length,
             htmlClass: document.documentElement.className,
-            ds6Brand: get('--ds8-color-brand-1'),
-            ds6Keyword: get('--ds8-syntax-keyword'),
-            ds6TerminalBg: get('--ds8-color-terminal-background'),
-            ds8SurfaceScrim: get('--ds8-color-surface-scrim'),
+            ds6Brand: get('--ds-color-brand-1'),
+            ds6Keyword: get('--ds-syntax-keyword'),
+            ds6TerminalBg: get('--ds-color-terminal-background'),
+            surfaceScrim: get('--ds-color-surface-scrim'),
           legacySurfaceOverlayGone: getComputedStyle(document.documentElement).getPropertyValue('--ds-color-surface-overlay').trim() === '',
           }
         })
@@ -387,7 +387,7 @@ if (authBase) {
           bridgeLive: normHex(dom.ds6Brand) === (theme === 'light' ? BRAND_LIGHT : BRAND_DARK),
           syntaxBridgeLive: normHex(dom.ds6Keyword) === (theme === 'light' ? KEYWORD_LIGHT : KEYWORD_DARK),
           terminalBridgeLive: /^#[0-9a-f]{6}$/.test(dom.ds6TerminalBg),
-          scrimTokenLive: normHex(dom.ds8SurfaceScrim) === '#000000' && dom.legacySurfaceOverlayGone,
+          scrimTokenLive: normHex(dom.surfaceScrim) === '#000000' && dom.legacySurfaceOverlayGone,
           nonBlankPixels: pixels.sampledPixels > 10000 && pixels.distinctColors > 20,
           noConsoleErrors: consoleErrors.length === 0,
         }

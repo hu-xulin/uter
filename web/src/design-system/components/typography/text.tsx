@@ -97,7 +97,7 @@ export type TextProps = {
 export function Text({
   as: Component = 'span',
   variant = 'body',
-  color = 'primary',
+  color,
   weight,
   truncate = false,
   clamp,
@@ -106,12 +106,16 @@ export function Text({
   children,
   ...rest
 }: TextProps & Record<string, unknown>) {
+  // 长文本（body-long）默认次级文本色 `--ds-color-text-secondary`：
+  // 连续阅读的正文不应与标题同深。显式 `color` 仍优先。
+  const resolvedColor =
+    color ?? (variant === 'body-long' ? 'secondary' : 'primary')
   return (
     <Component
       className={cn(
         'ds-text',
         `ds-text--${variant}`,
-        `ds-text--${color}`,
+        `ds-text--${resolvedColor}`,
         weight != null && WEIGHT_CLASS[weight],
         truncate && 'ds-text--truncate',
         clamp != null && `ds-text--clamp-${clamp}`,

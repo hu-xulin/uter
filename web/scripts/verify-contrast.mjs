@@ -241,7 +241,7 @@ add(
 // UDS 8.0.0 migration (2026-11-15, Phase 6 B2): the legacy upstream-anchored triple
 // (--ds-color-brand-gradient-*, worst light-theme 2.54:1) has been removed from the
 // runtime. The single utility owner now consumes the TOKEN-MANIFEST-derived
-// --ds8-color-gradient-{light,dark}-* triples, each validated over 1001 sRGB sample
+// --ds-color-gradient-{light,dark}-* triples, each validated over 1001 sRGB sample
 // points against 7 real backgrounds (see docs/design-system/
 // CONTRAST-VERIFICATION-REPORT.md: worst Light 5.99:1 / worst Dark 8.37:1).
 // E28 (spec §26.2) is revoked; the acceptance condition is now the ordinary 4.5:1
@@ -273,11 +273,11 @@ add(
   'GRADIENT_6_UTILITY_OWNER',
   Boolean(
     typographyCss.includes('@utility ds-text-gradient-brand') &&
-    typographyCss.includes('var(--ds8-color-gradient-light-from)') &&
-    typographyCss.includes('var(--ds8-color-gradient-dark-from)') &&
+    typographyCss.includes('var(--ds-color-gradient-light-from)') &&
+    typographyCss.includes('var(--ds-color-gradient-dark-from)') &&
     /90deg in srgb/.test(typographyCss)
   ),
-  'single utility consumes --ds8-color-gradient-{light,dark}-* with `90deg in srgb`'
+  'single utility consumes --ds-color-gradient-{light,dark}-* with `90deg in srgb`'
 )
 add(
   'GRADIENT_6_LEGACY_TRIO_REMOVED',

@@ -41,7 +41,7 @@ Metric Cards / Balance / Token Usage / Request Count / Error Rate / Model Usage 
 |---|---|---|---|---|
 | `--ds-layout-columns-desktop` | 12 | —（同值） | count | 桌面 12 列 |
 | `--ds-layout-gutter-desktop` | 24px | —（同值） | px | 桌面栅格间距 |
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 | `--ds-space-4` | 16px | —（同值） | px | 16 |
 | `--ds-text-3xl` | 30px | —（同值） | px | 分区标题 |
 | `--ds-leading-h2` | 38px | —（同值） | px | 30px 分区标题 |

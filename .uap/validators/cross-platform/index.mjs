@@ -201,11 +201,11 @@ export const validators = {
       && migration.includes('B6')
       && migration.includes('DONE_VERIFIED')
       && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'));
-    const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds8-* bridge 为唯一运行时权威')
+    const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds-* bridge 为唯一运行时权威')
       && ds.includes('3.0 兼容层 colors.css 已退役')
       && typeof compatMap?.isolation?.scalarAlignment === 'string'
       && compatMap.version === '8.0.0'
-      && compatMap.isolation.runtimePrefix === '--ds8-'
+      && compatMap.isolation.runtimePrefix === '--ds-'
       && compatMap.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
       && batches.length >= 6 && batches.every((batch) => batch.status === 'DONE_VERIFIED')
       && migration.includes('B6') && migration.includes('DONE_VERIFIED')

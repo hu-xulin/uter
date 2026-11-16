@@ -51,9 +51,9 @@ Popover / Tooltip / Dropdown / Dialog / Drawer / Context Menu / Command Menu 统
 | `--ds-elevation-dialog` | 0 24px 64px rgba(2, 6, 16, 0.32) | —（同值） | css | 对话框 |
 | `--ds-layout-modal-width` | 560px | —（同值） | px | Modal 默认宽度 |
 | `--ds-layout-drawer-width` | 400px | —（同值） | px | Drawer 默认宽度 |
-| `--ds-radius-dialog` | var(--ds-radius-xl) | —（同值） | token-ref | Dialog = 12px |
+| `--ds-radius-2xl` | 12px | —（同值） | px | Dialog / Popover / Drawer |
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
-| `--ds-radius-md` | 6px | —（同值） | px | 默认 |
+| `--ds-radius-md` | 6px | —（同值） | px | 默认 / 菜单项 |
 
 > 引用纪律：业务页面不得直接引用 `primitive` 层色值；必须经 `semantic` / `component` 层。新增数值必须先进入 `TOKEN-MANIFEST.json`，再由生成器派生，禁止在产物中手写。
 

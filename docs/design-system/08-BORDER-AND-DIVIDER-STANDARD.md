@@ -29,7 +29,7 @@
 3. Dark 默认边框 #263349、强边框 #3B4A63、输入 #3B4A63、聚焦 #8B8DF5
 4. Divider 只在语义分隔处使用；卡片内部优先用间距与表面色区分，不叠加分隔线
 5. 表格仅保留横向行分隔线 1px `--ds-color-border-table`，不画竖线
-6. 代码块边框 1px，配合 `--ds-radius-code` 10px 与 `--ds-color-code-background`
+6. 代码块边框 1px，配合 `--ds-radius-xl` 10px 与 `--ds-color-code-background`
 7. 危险态边框使用 `--ds-color-border-danger` #B91C1C / #FCA5A5，且必须同时有错误文字
 8. 聚焦边框不得替代焦点环；焦点环为 2px `--ds-focus-ring-width` + 2px offset
 

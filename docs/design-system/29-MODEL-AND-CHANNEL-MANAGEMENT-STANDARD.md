@@ -39,7 +39,7 @@ Model Card / Channel Card / Model Pricing / Channel Health / Routing / Availabil
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-radius-card` | var(--ds-radius-lg) | —（同值） | token-ref | Card = 10px |
+| `--ds-radius-xl` | 10px | —（同值） | px | Card / Table / Code Block |
 | `--ds-space-4` | 16px | —（同值） | px | 16 |
 | `--ds-text-base` | 16px | —（同值） | px | 长文本默认 / 指标数值 / H5 输入 |
 | `--ds-leading-base` | 24px | —（同值） | px | 16px 长文本 / 控件 |

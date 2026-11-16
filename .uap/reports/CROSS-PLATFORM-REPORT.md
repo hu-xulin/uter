@@ -17,7 +17,7 @@
 
 ## 设计系统约束
 
-UDS 8.0.0 文档集：PRESENT / ACCEPTANCE_READY / accepted=false; UDS 8.0.0 --ds8-* 运行时桥接与 3.0 兼容层退役边界按迁移证据核验；web/AGENTS.md：存在。
+UDS 8.0.0 文档集：PRESENT / ACCEPTANCE_READY / accepted=false; UDS 8.0.0 --ds-* 运行时桥接与 3.0 兼容层退役边界按迁移证据核验；web/AGENTS.md：存在。
 
 ## 结论
 

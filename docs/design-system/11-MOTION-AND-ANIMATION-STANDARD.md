@@ -24,10 +24,10 @@
 
 ## 2. Rules
 
-1. 时间档：instant 0 / fast 100 / normal 150 / moderate 200 / slow 250 / slower 300 ms
+1. 时间档：instant 0 / fast 100 / normal 150 / moderate 200 / slow 350 / slower 300 ms
 2. 缓动：standard cubic-bezier(0.2,0,0,1)、enter cubic-bezier(0,0,0.2,1)、exit cubic-bezier(0.4,0,1,1)、linear
 3. Hover / Focus = fast 100ms + standard；Active = normal 150ms + standard
-4. Dropdown / Tooltip = moderate 200ms（进入 enter / 退出 exit）；Dialog / Drawer = slow 250ms
+4. Dropdown / Tooltip = moderate 200ms（进入 enter / 退出 exit）；Dialog / Drawer = slow 350ms
 5. Toast 进入 200ms / 停留 5000ms / 退出 150ms；Collapse 200ms
 6. Loading / Skeleton 使用 1000ms linear 无限循环；Page Transition = slower 300ms
 7. prefers-reduced-motion: reduce 时所有过渡与动画降至 0.01ms，Skeleton 改为静态占位
@@ -43,7 +43,7 @@
 | `--ds-motion-fast` | 100ms | —（同值） | ms | Hover / Focus |
 | `--ds-motion-normal` | 150ms | —（同值） | ms | Active / 微交互 |
 | `--ds-motion-moderate` | 200ms | —（同值） | ms | Dropdown / Tooltip |
-| `--ds-motion-slow` | 250ms | —（同值） | ms | Dialog / Drawer |
+| `--ds-motion-slow` | 350ms | —（同值） | ms | Dialog / Drawer |
 | `--ds-motion-slower` | 300ms | —（同值） | ms | Page Transition |
 | `--ds-easing-standard` | cubic-bezier(0.2, 0, 0, 1) | —（同值） | css | 标准 |
 | `--ds-easing-enter` | cubic-bezier(0, 0, 0.2, 1) | —（同值） | css | 进入 |

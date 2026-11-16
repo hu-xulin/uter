@@ -26,7 +26,7 @@
 
 1. elevation-0 = none；elevation-1 = `0 1px 2px rgba(15,23,42,.06)`；elevation-2 = `0 2px 8px rgba(15,23,42,.10)`
 2. elevation-3 = `0 8px 24px rgba(15,23,42,.12)`；elevation-4 = `0 16px 48px rgba(15,23,42,.16)`
-3. overlay-shadow = `0 12px 32px rgba(2,6,16,.28)`；dropdown = `0 8px 24px rgba(15,23,42,.14)`
+3. overlay-shadow = `0 4px 6px -4px rgb(0 0 0 / .1), 0 10px 15px -3px rgb(0 0 0 / .1)`（运行时真值）；dropdown = `0 8px 24px rgba(15,23,42,.14)`
 4. dialog = `0 24px 64px rgba(2,6,16,.32)`；drawer = `-8px 0 32px rgba(2,6,16,.24)`
 5. 普通卡片默认 elevation-0 + 1px 边框 + surface-base；仅浮起卡片用 elevation-1
 6. Dropdown / Popover 用 elevation-3；Modal 用 elevation-4 或 dialog；Drawer 用 drawer
@@ -44,7 +44,7 @@
 | `--ds-elevation-2` | 0 2px 8px rgba(15, 23, 42, 0.10) | —（同值） | css | 卡片 |
 | `--ds-elevation-3` | 0 8px 24px rgba(15, 23, 42, 0.12) | —（同值） | css | 下拉 / Popover |
 | `--ds-elevation-4` | 0 16px 48px rgba(15, 23, 42, 0.16) | —（同值） | css | 模态 |
-| `--ds-elevation-overlay` | 0 12px 32px rgba(2, 6, 16, 0.28) | —（同值） | css | 通用浮层 |
+| `--ds-elevation-overlay` | 0 4px 6px -4px rgb(0 0 0 / 0.1), 0 10px 15px -3px rgb(0 0 0 / 0.1) | —（同值） | css | 通用浮层 |
 | `--ds-elevation-dropdown` | 0 8px 24px rgba(15, 23, 42, 0.14) | —（同值） | css | 下拉菜单 |
 | `--ds-elevation-dialog` | 0 24px 64px rgba(2, 6, 16, 0.32) | —（同值） | css | 对话框 |
 | `--ds-elevation-drawer` | -8px 0 32px rgba(2, 6, 16, 0.24) | —（同值） | css | 抽屉 |
