@@ -206,7 +206,7 @@ export function DocsSearchButton({ onOpen }: { onOpen: () => void }) {
       type='button'
       onClick={onOpen}
       aria-keyshortcuts={DOCS_SEARCH_HOTKEY_ARIA}
-      className='text-dense text-fg-secondary hover:bg-muted mb-4 flex w-full items-center gap-2 rounded-md border px-3 py-2 transition-colors'
+      className='text-dense text-fg-secondary hover:bg-muted border-input hover:border-border-strong focus-visible:border-ring focus-visible:ring-ring mb-4 flex w-full items-center gap-2 rounded-md border px-3 py-2 transition-colors outline-none focus-visible:ring-2'
     >
       <Search className='size-4' aria-hidden='true' />
       <span className='min-w-0 flex-1 text-left'>
