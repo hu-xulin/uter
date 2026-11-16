@@ -173,9 +173,9 @@ right scope every time:
 |---|---|
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
-| Design system / typography / color | `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` (single authoritative file, 2026-11-03 起唯一标准) |
-| Domain standards (architecture / API contract / database / payment / billing / security / UX / change / documentation) | （待新规范体系 — pending replacement standards; none in force until re-published） |
-| Engineering quality standards (code review / testing / auto-fix / quality gate) | （待新规范体系 — pending replacement standards） |
+| Design system / typography / color / components / interaction | `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` + `docs/design-system/TOKEN-MANIFEST.json` (UTER DESIGN SYSTEM 7.0; token manifest is the sole numeric source) |
+| Domain standards (product / architecture / API / database / payment / billing / security / cross-platform / delivery / lifecycle) | `.uap/SPECIFICATION-INDEX.md` + the applicable registered specification in `.uap/config/specification-registry.yaml` |
+| Engineering quality standards (code review / testing / auto-fix / quality gate) | `.uap/quality/UAP-05-001-QUALITY-ENGINEERING.md` through `UAP-05-004-QUALITY-GATES.md`, enforced by registered UAP executors and validators |
 
 Re-read them when you **start a new session**, **switch to a different task**,
 or **descend into a subdirectory that has its own `AGENTS.md`**. Never rely on
