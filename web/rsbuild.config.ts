@@ -164,6 +164,9 @@ export default defineConfig(({ envMode }) => {
         config.plugins.push(
           tanstackRouter({
             target: 'react',
+            // Route tests live under src/routes/__tests__ and export no Route.
+            // Exclude them from route-tree generation instead of renaming files.
+            routeFileIgnorePattern: '__tests__',
             // Dev: avoid per-route async chunks (reduces white flash on navigation + faster HMR feedback).
             // Prod: keep route-based code splitting.
             autoCodeSplitting: isProd,
