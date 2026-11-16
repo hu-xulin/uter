@@ -149,7 +149,7 @@ describe('执行身份绑定', () => {
     assert.notEqual(withSrcChanged, withSrc, '审计源文档内容变化必须改变指纹（源仍被绑定）');
 
     // UDS7 代码生成产物（runtime/ 下的派生 CSS）内容变化不得改变指纹。
-    const runtimeDir = path.join(ROOT, 'docs', 'design-system', 'design-system', 'runtime');
+    const runtimeDir = path.join(ROOT, 'docs', 'design-system', 'runtime');
     const genProbe = path.join(runtimeDir, `zz-fp-gen-probe-${process.pid}.css`);
     fs.mkdirSync(runtimeDir, { recursive: true });
     assertPairStable(() => {
@@ -162,7 +162,7 @@ describe('执行身份绑定', () => {
     fs.unlinkSync(genProbe);
 
     // registry/ 下的手写生成器源（.mjs）必须仍被绑定：排除只针对派生产物。
-    const registryDir = path.join(ROOT, 'docs', 'design-system', 'design-system', 'registry');
+    const registryDir = path.join(ROOT, 'docs', 'design-system', 'registry');
     const regProbe = path.join(registryDir, `zz-fp-reg-probe-${process.pid}.mjs`);
     fs.writeFileSync(regProbe, 'export const a = 1;');
     const withReg = worktreeFingerprint();

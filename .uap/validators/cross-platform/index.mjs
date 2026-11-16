@@ -199,7 +199,7 @@ export const validators = {
       && migration.includes('当前字号真值')
       && exists(rootPath('docs/design-system/SHOWCASE-7.0.html'));
     const runtimeBoundaryExplicit = ds.includes('当前运行时强制标准仍为 3.0')
-      && ds.includes('字号/行高/圆角/间距/图表色')
+      && ds.includes('运行时标量（字号/行高/圆角/间距）与图表色')
       && ds.includes('全站迁移按 Phase 6 分期执行')
       && typeof compatMap?.isolation?.scalarAlignment === 'string'
       && compatMap.isolation.scalarAlignment.includes('TOKEN-MANIFEST')

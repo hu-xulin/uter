@@ -58,10 +58,12 @@ jobs:
       - name: Start isolated Uter server with disposable SQLite
         run: |
           mkdir -p "$RUNNER_TEMP/uap"
+          rm -f .uap/reports/H5-BROWSER-MATRIX.json .uap/reports/DEPLOY-DRY-RUN.json
           (
             HOST=127.0.0.1 \
             PORT=3000 \
             SQLITE_PATH="$RUNNER_TEMP/uap/uter.db" \
+            SESSION_SECRET="$(openssl rand -hex 48)" \
             GIN_MODE=release \
             ./uter-bin > "$RUNNER_TEMP/uap/uter-server.log" 2>&1 &
             echo $! > "$RUNNER_TEMP/uap/uter-server.pid"
