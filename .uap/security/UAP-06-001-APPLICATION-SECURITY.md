@@ -1,4 +1,6 @@
 # UAP-06-001 — 应用安全规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-06-001
 **标准编号：** UAP-06-001
@@ -43,7 +45,7 @@
 - 外部数据一律不可信：`service/alipay_query_test.go` 的 `TestAlipayQueryOrderRejectsBadSignature`（另一把 RSA 私钥签名 → `signature invalid`）、`TestAlipayQueryOrderRejectsMismatchedTradeNumber`（`out_trade_no mismatch`）、`TestAlipayQueryOrderSurfacesOtherBusinessFailures`（`ACQ.INVALID_PARAMETER`）证明网关响应必须验签并核对订单号；`controller/topup_gateway_contract_test.go` 要求 9 个网关「验签在入账之前」；`controller/return_path.go` 的 `requestOrigin` 仅取 `X-Forwarded-Proto` / `X-Forwarded-Host` 第一段（`firstHeaderValue`）构造回跳站点根。
 - 安全修复必须执行回归测试：`AGENTS.md` Authentication Security 要求「Verify affected security controls with focused regression tests, including applicable failure, expiry, replay, and bypass cases」，并在变更摘要记录 OWASP 引用、验证内容与未解决差距，未满足或不可验证时不得声称合规；`web/AGENTS.md` §3.14 要求 Bug 修复先写能稳定复现的失败用例再修复并确认转绿。
 - P09 / P10 边界与桌面密钥：`AGENTS.md` Change Protection 规定 P10 定义安全要求、P09 执行并记录安全测试，二者互不替代；`.github/workflows/ci.yml` 与 `release-gate.yml` 的 `desktop` job 用 `node --test electron/desktop-secrets.test.js` 验证 SESSION_SECRET / CRYPTO_SECRET 跨重启稳定，`electron/main.js` 先过 `node --check`。
-- 环境基线：`.uap/state/BASELINE.json` 记录 9 个 CI workflow 与工具链（Go `go1.27.4` / Node `v22.22.2` / Bun `1.4.2`）；`docs/ai-specs/` 与 `uaes/standards/` 已于 2026-11-12 退役，不作为安全规范来源，绑定来源为 `AGENTS.md`、`web/AGENTS.md`、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`。
+- 环境基线：`.uap/state/BASELINE.json` 记录 9 个 CI workflow 与工具链（Go `go1.27.4` / Node `v22.22.2` / Bun `1.4.2`）；`docs/ai-specs/` 与 `uaes/standards/` 已于 2026-11-12 退役，不作为安全规范来源，绑定来源为 `AGENTS.md`、`web/AGENTS.md`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`。
 
 ## 执行流程
 1. `uap-security-agent`（`.uap/engines/security/index.mjs`，权限 `project_read/local_command/evidence_write`）按 `.uap/config/workflow-registry.yaml` 的 `uap-full-audit` 中 `scan_security` 与 `uap-quality-gate` 中 `security_scan` 发起，读取 `AGENTS.md` Authentication Security、`web/AGENTS.md` §3.9 / §3.13、`.uap/config/permission-policy.yaml`。

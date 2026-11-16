@@ -18,7 +18,7 @@ export const SCAN_META = {
   branch: 'main',
   frontend: 'React 19 + TypeScript + Rsbuild 2 + TanStack Router (web/)',
   backend: 'Go 1.27.3 + Gin + GORM (router/, controller/, service/, model/, relay/)',
-  design_system: 'docs/design-system/UTER-DESIGN-SYSTEM-3.0.md',
+  design_system: 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
   governance:
     'AGENTS.md / web/AGENTS.md',
   evidence_sources: [

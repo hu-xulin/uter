@@ -1,4 +1,6 @@
 # UAP-03-001 — Agent 架构规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-03-001
 **标准编号：** UAP-03-001
@@ -37,7 +39,7 @@ UAP 1.0 在 Uter 仓库内以 `.uap/config/agent-registry.yaml` 登记 11 个 Ag
 - `.uap/config/execution-mapping.yaml` 的 `executor_entries` 把 `agents.registry`/`agents.execution`/`agents.collaboration` 共同映射到 `.uap/runtime/agent-runtime/index.mjs`，`agents.recovery` 映射到 `.uap/runtime/recovery-engine/index.mjs`；目录分组 `engines.agents` 只是逻辑归组。
 - `.uap/config/validator-registry.yaml` 中 `agents.registry_integrity` 的 `checks: [agent_ids, implementation_exists, permission_mapping]` 与 `validation_policy.fail_if_validator_missing: true`、`fail_if_validator_not_executable: true` 为登记完整性的机器校验入口。
 - `.uap/runtime/_lib/paths.mjs` 的 `FILES` 集中定义 `tasks`（`.uap/state/tasks.json`）、`events`（`.uap/state/events.jsonl`）、`audit`（`.uap/state/audit.json`）、`evidenceIndex`（`.uap/reports/EVIDENCE-INDEX.md`），Agent 不得在内存或隐式全局状态中传递任务。
-- `AGENTS.md`「AI Agent Operating Discipline → Rule Auto-Loading」要求 Agent 行动前加载 `AGENTS.md`、`web/AGENTS.md`、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`，作为任务上下文的强制输入来源。
+- `AGENTS.md`「AI Agent Operating Discipline → Rule Auto-Loading」要求 Agent 行动前加载 `AGENTS.md`、`web/AGENTS.md`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`，作为任务上下文的强制输入来源。
 - `.uap/config/workflow-registry.yaml` 的 `uap-final-verification` 工作流包含 `validate_all_agents` 步骤，`uap-bootstrap` 包含 `validate_specification_registry` 与 `run_runtime_tests`，为 Agent 版本变更后的兼容性验证入口。
 
 ## 执行流程

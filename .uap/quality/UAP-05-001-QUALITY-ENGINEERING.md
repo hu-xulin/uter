@@ -1,4 +1,6 @@
 # UAP-05-001 — 质量工程总规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-05-001
 **标准编号：** UAP-05-001
@@ -39,7 +41,7 @@
 - 质量状态必须有证据：`.uap/config/execution-mapping.yaml` 的 `evidence.directory: .uap/evidence`、`reports_directory: .uap/reports`、`persist_task_state: true`；`.uap/config/validator-registry.yaml` 的 `validation_policy.fail_if_evidence_missing: true` 与 `fail_if_validator_not_executable: true`。
 - 质量系统自身被测：`.uap/runtime/_lib/contract.mjs` 的 `executorResult()` / `validatorResult()` / `assertExecutorResult()` / `assertValidatorResult()` 与 `LIFECYCLE_STATUSES` / `TASK_TRANSITIONS` 为运行时契约；`.uap/config/workflow-registry.yaml` 的 `uap-bootstrap` 步骤 `run_runtime_tests` 且 `acceptance: runtime_health_check`；被测对象含 `.uap/runtime/evidence-engine/index.mjs` 与 `.uap/runtime/state-machine/index.mjs`。
 - P09 / P10 边界：`AGENTS.md`「Change Protection」规定 P09 质量工程证明工程质量是否满足要求，P10 安全与可靠性定义系统必须满足的安全/可靠性要求，安全测试由 P09 测试系统执行并记录，二者互不替代。
-- 用户体验维度纳入门禁：`.github/workflows/ci.yml` 的 `frontend` job 含 `bun run design:tokens:check`、`bun run verify:contrast`、`bun run lint:design:strict`（T1–T16 令牌门禁）、`bun run test:visual`、`bun run components:registry:check`、`bun run copyright:check`，基线为 `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`。
+- 用户体验维度纳入门禁：`.github/workflows/ci.yml` 的 `frontend` job 含 `bun run design:tokens:check`、`bun run verify:contrast`、`bun run lint:design:strict`（T1–T16 令牌门禁）、`bun run test:visual`、`bun run components:registry:check`、`bun run copyright:check`，基线为 `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`。
 - 环境与工具链基线：`.uap/state/BASELINE.json` 记录 Go `go1.27.4`、Node `v22.22.2`、Bun `1.4.2`、Python `3.13.12` 与 9 个 CI workflow，其 `real_gate_commands` 固定全量门禁命令清单；`docs/ai-specs/` 与 `uaes/standards/` 已于 2026-11-12 退役，不作为质量规范来源。
 - `AGENTS.md` 的「Verification Evidence」把「禁止空话」写成硬规则：报告须写明可复制的命令原文、退出码、pass/fail 计数、失败测试名、改动文件清单、已知失败或跳过项；「已检查 / tests passed / looks correct」视为未完成工作。
 

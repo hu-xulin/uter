@@ -1,11 +1,13 @@
 # UAP-02-003 — 技术决策规范
+> **UDS 7.0 状态边界：** 当前文档/Token SSOT 为 UDS 7.0（`ACCEPTANCE_READY`、`accepted: false`）。指定运行时标量 Token 与图表色已切换到 7.0 值；UDS 3.0 兼容层仍须保留，未迁移页面不得假定已完成全站切换。页面级状态以 `COMPAT-MAP.json` 和 `FINAL-ACCEPTANCE-REPORT.md` 的本次证据为准，不得将局部 Token 迁移等同于整体验收。
+
 
 **编号：** UAP-02-003
 **标准编号：** UAP-02-003
 **名称：** 技术决策规范
 **版本：** 1.0.0
 **状态：** IMPLEMENTED_NOT_VERIFIED
-**适用范围：** 约束 Uter 重大技术选择的 ADR 记录与效果验证，覆盖 `docs/adr/README.md`（决策注册入口与 Proposed / Accepted / Rejected / Deprecated / Superseded 状态定义）、`docs/adr/0001-uter-design-system-single-source-of-truth.md`（Accepted，2026-11-03），以及受决策约束的真实技术栈 `go.mod`（Go 1.27.3 / Gin / GORM v2）、`relaykit/go.mod`、`web/package.json`（React 19 / Rsbuild 2 / Bun）、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`、`plugins/tasks/`、`electron/`。
+**适用范围：** 约束 Uter 重大技术选择的 ADR 记录与效果验证，覆盖 `docs/adr/README.md`（决策注册入口与 Proposed / Accepted / Rejected / Deprecated / Superseded 状态定义）、`docs/adr/0001-uter-design-system-single-source-of-truth.md`（Accepted，2026-11-03），以及受决策约束的真实技术栈 `go.mod`（Go 1.27.3 / Gin / GORM v2）、`relaykit/go.mod`、`web/package.json`（React 19 / Rsbuild 2 / Bun）、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`、`plugins/tasks/`、`electron/`。
 **关键级别：** P2
 **依赖标准：** UAP-02-001
 
@@ -27,13 +29,13 @@
 ## Uter 落地细则
 - ADR 正式注册入口 `docs/adr/README.md`（`Architecture Decision Records（ADR）`）：状态定义 5 类（Proposed 待批准不得作为已生效规范 / Accepted 已批准必须遵循 / Rejected 仅保留历史 / Deprecated 不得作为当前依据 / Superseded 必须链接替代记录），维护规则 6 条（新 ADR 先核对现有决策避免重复编号、仅明确批准才 Accepted、必须记录来源/适用范围/实施状态/可核验证据、偏离 Accepted ADR 须修复实现或新 ADR 正式替代、状态变化不得删除历史并保留 Git 历史、历史决策须逐项盘点且未经核实不得批量补写为 Accepted）。
 - 现有 ADR：`docs/adr/0001-uter-design-system-single-source-of-truth.md`（索引 ID `ADR-0001`，标题「UTER Design System 3.0 作为设计规范唯一事实来源」，状态 Accepted，日期 2026-11-03）。
-- 设计系统决策的实际落地：`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（唯一设计实施标准，已核验章节 `# 0. 规范效力与执行原则` / `# 1. Typography` / `# 2. Color` / `# 3. Page Hierarchy` / `# 4. Surface 与 Border` / `# 5. Radius` / `# 6. Spacing` / `# 7. Density` / `# 8. Shadow 与 Elevation`）、视觉样本 `docs/design-system/showcase-3.0.html`、实现 `web/src/design-system/`、门禁 `cd web && bun run lint:design:strict`（`web/package.json` 的 `lint:design:strict: node scripts/check-design-tokens.mjs --strict`）与 `bunx vitest run src/design-system/__tests__`。
+- 设计系统决策的实际落地：`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`（唯一设计实施标准，已核验章节 `# 0. 规范效力与执行原则` / `# 1. Typography` / `# 2. Color` / `# 3. Page Hierarchy` / `# 4. Surface 与 Border` / `# 5. Radius` / `# 6. Spacing` / `# 7. Density` / `# 8. Shadow 与 Elevation`）、视觉样本 `docs/design-system/SHOWCASE-7.0.html`、实现 `web/src/design-system/`、门禁 `cd web && bun run lint:design:strict`（`web/package.json` 的 `lint:design:strict: node scripts/check-design-tokens.mjs --strict`）与 `bunx vitest run src/design-system/__tests__`。
 - 现有技术栈（不得无理由替换）：`go.mod`（`module github.com/uter-ai/uter`，Go 1.27.3）、Gin + GORM v2、SQLite/MySQL/PostgreSQL 主库 + ClickHouse 日志库、Redis（go-redis）、Casbin（`service/authz/`）、JWT/WebAuthn/TOTP/OAuth；`web/package.json`（React 19、TypeScript、Rsbuild 2、TanStack Router/Query/Table、Zustand、Base UI、Tailwind CSS 4、Bun 包管理）；`electron/` 桌面包装；`plugins/tasks/*/plugin.js` 经 `pkg/jsplugin/` 由 Sobek 执行。
 - 独立模块决策：`relaykit/go.mod`（`module github.com/uter-ai/uter/relaykit`，独立可构建，禁止依赖根模块）、`tokenkit/tokenkit/` 独立 Go 模块；`AGENTS.md` 明确「不得在没有必要时替换现有成熟技术栈」，并要求 `cd relaykit && GOWORK=off go build ./...`、`cd tokenkit/tokenkit && GOWORK=off go vet ./... && GOWORK=off go test ./... && GOWORK=off go build ./...` 独立验证。
 - 架构与部署环境约束（`AGENTS.md` / `.uap/state/BASELINE.json`）：Go AI API gateway + React 19/Rsbuild 前端 + Electron 包装；toolchain（Go `go1.27.4`、Node `v22.22.2`、Bun `1.4.2`、Python `3.13.12`）；9 个 CI workflow（`ci.yml`、`release-gate.yml`、`nightly-full-audit.yml`、`weekly-security-audit.yml` 等）；PR 已被 main-only 治理策略禁用。
 - 重大依赖变更的兼容性与安全性评估命令：`./scripts/verify-all.sh [--quick]`、`gofmt -l .`、`GOWORK=off go vet ./...`、`make test`（四模块）、`cd web && bun run typecheck|lint|test|copyright:check|format:check|build:check`；`scripts/quality/gitleaks-allowlist.test.sh` 与 `.github/workflows/weekly-security-audit.yml` 为安全扫描；`AGENTS.md` 的 Database compatibility 要求 GORM core 与 dialect/driver 作为兼容版本集整体评估。
-- 决策实施效果验证：`docs/adr/README.md` 要求 ADR 记录「可核验的代码/文档证据」；`AGENTS.md` 的 Verification Evidence 要求报告写明确切命令、退出码、失败测试名与变更文件；`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` 的截图回归两条本地轨（`cd web && bun run test:visual` / `test:visual:e2e`）`BLOCKED` 表示未执行，不得报为 pass。
-- 已退役规范不得作为决策来源：`AGENTS.md` 明确历史域规范语料已于 2026-11-12 退役，UAP 对其零运行时依赖；当前绑定来源仅 `AGENTS.md`、`web/AGENTS.md`、`docs/design-system/UTER-DESIGN-SYSTEM-3.0.md`（AGENTS.md 的 Rule Auto-Loading 表格将其余域标准标记为待新规范体系发布）。
+- 决策实施效果验证：`docs/adr/README.md` 要求 ADR 记录「可核验的代码/文档证据」；`AGENTS.md` 的 Verification Evidence 要求报告写明确切命令、退出码、失败测试名与变更文件；`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` 的截图回归两条本地轨（`cd web && bun run test:visual` / `test:visual:e2e`）`BLOCKED` 表示未执行，不得报为 pass。
+- 已退役规范不得作为决策来源：`AGENTS.md` 明确历史域规范语料已于 2026-11-12 退役，UAP 对其零运行时依赖；当前绑定来源仅 `AGENTS.md`、`web/AGENTS.md`、`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`（AGENTS.md 的 Rule Auto-Loading 表格将其余域标准标记为待新规范体系发布）。
 - 决策与实际代码一致性检查：`router/main.go`、`router/api-router.go`、`common/json.go`（统一 JSON 封装）、`model/main.go`（`lockForUpdate(tx)`）、`setting/billing_setting/builtin_billing.go`（自包含计费表达式）、`web/src/routes/`（TanStack Router `createFileRoute`）、`web/src/i18n/locales/{lang}.json`（i18next flat JSON）。
 
 ## 执行流程
@@ -41,7 +43,7 @@
 2. 核对 `docs/adr/README.md` 的决策索引与状态定义，确认新 ADR 编号不重复、状态仅 Proposed / Accepted / Rejected / Deprecated / Superseded，且不得因技术流行或无必要而替换现有成熟栈。
 3. 起草 ADR，写入背景、问题、备选方案、决策、理由、影响、状态，并显式说明成本与风险、Uter 现有架构与部署环境约束（Go/Gin/GORM、React/Rsbuild/Bun、Electron、CI workflow）；已废弃决策记录替代方案（Superseded 链接）。
 4. 重大依赖变更执行兼容性与安全性评估：运行 `./scripts/verify-all.sh`、`GOWORK=off go vet ./...`、`make test`、`cd web && bun run typecheck|lint|test|build:check` 及独立模块构建，记录命令与退出码。
-5. 决策实施后验证实际效果：核对决策与真实代码一致（如 ADR-0001 ↔ `docs/design-system/UTER-DESIGN-SYSTEM-3.0.md` + `web/src/design-system/` + `bun run lint:design:strict`），把结论写入 `executorResult()` 与 ADR 的可核验证据。
+5. 决策实施后验证实际效果：核对决策与真实代码一致（如 ADR-0001 ↔ `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md` + `web/src/design-system/` + `bun run lint:design:strict`），把结论写入 `executorResult()` 与 ADR 的可核验证据。
 6. `architecture.adr_integrity` 验证器（`.uap/validators/architecture/index.mjs`）执行 `decision_records` / `decision_traceability`，返回 `validatorResult()` 并回填 `validation_results`。
 7. 生成证据 `UAP-EVD-...` 写入 `.uap/evidence/`，索引追加到 `.uap/reports/EVIDENCE-INDEX.md`；ADR 状态变化保留历史与 Git 历史，不得删除。
 8. 发现原决策不再成立时提出 ADR 修订（新 ADR 正式替代旧决策），并重新执行依赖影响验证；仅当 `executed=true && exit_code=0` 且无 BLOCKER 时判定通过，否则 BLOCKED / FAILED 并保留证据。

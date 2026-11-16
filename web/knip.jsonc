@@ -11,7 +11,7 @@
     // E2E suites are executables (playwright globalSetup includes e2e/visual/lib/service-gate.ts)
     "e2e/**/*.{ts,tsx}",
     // Repo maintenance scripts executed manually per docs (e.g.
-    // docs/design-system/UTER-DESIGN-SYSTEM-3.0.md documents
+    // docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md documents
     // `node scripts/generate-design-showcase.mjs`)
     "scripts/**/*.{ts,mts,cts,mjs,cjs}",
     // Vendored assistant-ui component library: full API surface is intentionally

@@ -261,14 +261,23 @@ func secNegReloadOrderStatus(t *testing.T, db *gorm.DB, tradeNo string) string {
 	return reloaded.Status
 }
 
-// secNegTamperedJWT 翻转 JWT 最后一个字符，构造签名被篡改的会话令牌。
-func secNegTamperedJWT(jwt string) string {
-	last := string(jwt[len(jwt)-1])
-	replacement := "A"
-	if last == "A" {
-		replacement = "B"
+// secNegTamperedJWT 修改签名段首个 Base64URL 字符，确保解码后的
+// HMAC 字节必然变化。不能只翻转末尾字符：HS256 的 32 字节签名编码为
+// 43 个 Base64URL 字符，最后一个字符含未使用填充位，A/B/C/D 等变换
+// 可能解码为完全相同的签名字节，导致负向测试偶发把原 token 当成 tamper。
+func secNegTamperedJWT(raw string) string {
+	parts := strings.Split(raw, ".")
+	if len(parts) != 3 || len(parts[2]) == 0 {
+		return raw + "A"
 	}
-	return jwt[:len(jwt)-1] + replacement
+	signature := []byte(parts[2])
+	if signature[0] == 'A' {
+		signature[0] = 'B'
+	} else {
+		signature[0] = 'A'
+	}
+	parts[2] = string(signature)
+	return strings.Join(parts, ".")
 }
 
 func TestPhase2SecurityNegative(t *testing.T) {
