@@ -210,14 +210,20 @@ export const validators = {
       cwd: rootPath('web'),
       timeoutMs: 300000,
     });
-    const knipOk = cmdRan(knip);
+    // Knip uses exit code 1 when it successfully reports unused items. Separate
+    // "the scanner ran" from "the repository is clean": execution must be
+    // recorded even when findings correctly make this validator fail.
+    const knipRan = !!knip && !knip.spawn_error && !knip.timed_out
+      && (knip.exit_code === 0 || knip.exit_code === 1);
+    const knipClean = knipRan && knip.exit_code === 0;
+    const knipOutputTail = (knip.stdout || knip.stderr || '').trim().slice(-2400);
     const newDeps = baseline?.toolchain?.new_dependencies_installed;
     const rUnused = {
       name: 'unused_dependencies',
-      ok: knipOk && Array.isArray(newDeps) && newDeps.length === 0
+      ok: knipClean && Array.isArray(newDeps) && newDeps.length === 0
         && regPass(registry, 'independence.no_retired_governance_refs')
         && goMod.includes('require') && !!webPkg?.scripts,
-      detail: `Knip 实际执行=${knipOk} (exit=${knip.exit_code ?? 'n/a'}, timeout=${knip.timed_out}, spawn_error=${knip.spawn_error ?? 'none'}); BASELINE.new_dependencies_installed=${Array.isArray(newDeps) ? newDeps.length : 'n/a'}(零新增); 无退役 AES/UAES 治理引用=${regPass(registry, 'independence.no_retired_governance_refs')}; go.mod 含 require=${goMod.includes('require')}; web scripts 存在=${!!webPkg?.scripts}`,
+      detail: `Knip 已执行=${knipRan}; 零发现/干净退出=${knipClean} (exit=${knip.exit_code ?? 'n/a'}, timeout=${knip.timed_out}, spawn_error=${knip.spawn_error ?? 'none'}); 报告尾部=${knipOutputTail || '(empty)'}; BASELINE.new_dependencies_installed=${Array.isArray(newDeps) ? newDeps.length : 'n/a'}(零新增); 无退役 AES/UAES 治理引用=${regPass(registry, 'independence.no_retired_governance_refs')}; go.mod 含 require=${goMod.includes('require')}; web scripts 存在=${!!webPkg?.scripts}`,
     };
     return assemble('development.dependency_integrity', checks, [rLock, rVuln, rUnused], {
       started, registry, evidence_refs: evidenceIds, commands: [knip],
