@@ -24,7 +24,7 @@ import { BASE_URL, ISOLATED_TEST_STACK } from './lib/target'
  */
 
 // 给「真正执行过 / 被显式标注」的用例统一补终态注解（见 lib/status.ts）。
-test.afterEach(async (_fixtures, testInfo) => finalizeUapStatus(testInfo))
+test.afterEach(async ({ page: _page }, testInfo) => finalizeUapStatus(testInfo))
 
 test('登录链路冒烟：凭据可登录', async ({ page }) => {
   if (!hasVisualCredentials()) {
