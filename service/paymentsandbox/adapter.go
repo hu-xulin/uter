@@ -90,12 +90,12 @@ type Config struct {
 
 // Sentinel errors returned by ValidateConfig. Callers may use errors.Is.
 var (
-	ErrInvalidMode              = errors.New("invalid mode")
-	ErrInvalidGatewayURL        = errors.New("invalid gateway URL")
-	ErrProductionGateway        = errors.New("production gateway host is forbidden")
-	ErrInsecureGatewayURL       = errors.New("gateway URL must be https (or loopback http)")
-	ErrRealLookingCredential    = errors.New("credential looks like a real merchant id/secret; only EXAMPLE placeholders allowed")
-	ErrProviderSandboxBlocked   = errors.New("BLOCKED_EXTERNAL_DEPENDENCY: real provider sandbox is not available")
+	ErrInvalidMode            = errors.New("invalid mode")
+	ErrInvalidGatewayURL      = errors.New("invalid gateway URL")
+	ErrProductionGateway      = errors.New("production gateway host is forbidden")
+	ErrInsecureGatewayURL     = errors.New("gateway URL must be https (or loopback http)")
+	ErrRealLookingCredential  = errors.New("credential looks like a real merchant id/secret; only EXAMPLE placeholders allowed")
+	ErrProviderSandboxBlocked = errors.New("BLOCKED_EXTERNAL_DEPENDENCY: real provider sandbox is not available")
 )
 
 // productionHosts is a deny-list of real payment-provider endpoints. A local
@@ -407,7 +407,7 @@ type Gateway interface {
 // t.TempDir() used by fault-injection tests) is NOT a production write and is
 // disclosed in Checks["sandbox_store_isolated"].
 type VerificationReport struct {
-	Mode                       Mode              `json:"mode"`
+	Mode Mode `json:"mode"`
 	// GatewayVerified is ALWAYS false for a local simulation. It may only become
 	// true via GatewayVerifiedFromEvidence with recorded REAL provider sandbox
 	// evidence — which this repository does not have. A local simulation is
@@ -552,10 +552,10 @@ func (m *MemoryStore) LedgerCount(_ context.Context, tradeNo string) (int64, err
 // ---------------------------------------------------------------------------
 
 type effectStats struct {
-	mu                sync.Mutex
-	networkCalls      int64
-	realPayments      int64
-	realRefunds       int64
+	mu                 sync.Mutex
+	networkCalls       int64
+	realPayments       int64
+	realRefunds        int64
 	productionDBWrites int64
 }
 
@@ -841,14 +841,14 @@ func (g *LocalSimulationGateway) Report() VerificationReport {
 		RealRefunds:                g.stats.realRefunds,
 		DatabaseWrites:             g.stats.productionDBWrites,
 		Checks: map[string]string{
-			"mode_local_simulation":            "PASS",
+			"mode_local_simulation":             "PASS",
 			"no_network_calls_to_real_provider": "PASS",
-			"no_real_payments":                 "PASS",
-			"no_real_refunds":                  "PASS",
-			"no_production_database_writes":    "PASS",
-			"no_production_keys_read":          "PASS",
-			"rsa_keys_generated_at_runtime":    "PASS",
-			"sandbox_store_isolated":           "PASS: " + g.store.Label(),
+			"no_real_payments":                  "PASS",
+			"no_real_refunds":                   "PASS",
+			"no_production_database_writes":     "PASS",
+			"no_production_keys_read":           "PASS",
+			"rsa_keys_generated_at_runtime":     "PASS",
+			"sandbox_store_isolated":            "PASS: " + g.store.Label(),
 		},
 	}
 }
