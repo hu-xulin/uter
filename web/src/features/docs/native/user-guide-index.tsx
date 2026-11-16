@@ -17,8 +17,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
+import {
+  BookOpen,
+  KeyRound,
+  LayoutDashboard,
+  ListChecks,
+  LogIn,
+  Puzzle,
+  ShieldCheck,
+  Terminal,
+  Trophy,
+  Wallet,
+  type LucideIcon,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { IconBadge } from '@/components/ui/icon-badge'
 import { Heading } from '@/design-system'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
@@ -28,6 +42,7 @@ import {
   CONTENT_CARD_TEASER_CLASS,
   CONTENT_CARD_TITLE_CLASS,
 } from './content-card'
+import { firstSentence } from './teaser'
 import {
   USER_GUIDE_CHAPTER_SLUGS,
   USER_GUIDE_PATH,
@@ -108,10 +123,22 @@ async function loadTeasers(
   for (const slug of USER_GUIDE_CHAPTER_SLUGS) {
     const row = rows.find((r) => r.p === `${USER_GUIDE_PATH}/${slug}`)
     if (!row?.b) continue
-    const text = row.b.trim()
-    teasers[slug] = text.length > 140 ? `${text.slice(0, 140)}…` : text
+    teasers[slug] = firstSentence(row.b)
   }
   return teasers
+}
+
+/** Title icons, keyed by locale-neutral slug so labels can change safely. */
+const CHAPTER_ICONS: Record<string, LucideIcon> = {
+  auth: LogIn,
+  dashboard: LayoutDashboard,
+  'profile-and-security': ShieldCheck,
+  'api-keys': KeyRound,
+  'api-and-playground': Terminal,
+  'app-integration': Puzzle,
+  'logs-and-tasks': ListChecks,
+  'wallet-and-subscription': Wallet,
+  'pricing-and-ranking': Trophy,
 }
 
 /** One chapter card — the framed export's `ContentCardGrid` shape. */
@@ -124,6 +151,7 @@ function ChapterCard({
   slug: string
   teaser: string
 }) {
+  const ChapterIcon = CHAPTER_ICONS[slug] ?? BookOpen
   return (
     <li>
       <Link
@@ -131,8 +159,17 @@ function ChapterCard({
         params={{ _splat: `${locale}/${USER_GUIDE_PATH}/${slug}` }}
         className={CONTENT_CARD_CLASS}
       >
-        <span className={CONTENT_CARD_TITLE_CLASS}>
-          {userGuideChapterTitle(locale, slug) ?? slug}
+        <span className='flex items-center gap-3'>
+          <IconBadge
+            tone='primary'
+            size='title'
+            className='[&>svg]:size-(--ds-icon-sm)!'
+          >
+            <ChapterIcon />
+          </IconBadge>
+          <span className={`${CONTENT_CARD_TITLE_CLASS} min-w-0`}>
+            {userGuideChapterTitle(locale, slug) ?? slug}
+          </span>
         </span>
         {teaser ? (
           <span className={CONTENT_CARD_TEASER_CLASS}>{teaser}</span>

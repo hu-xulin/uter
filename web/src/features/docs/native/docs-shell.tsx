@@ -65,7 +65,7 @@ function TreeItem({
         to='/docs/$'
         params={{ _splat: splat }}
         aria-current={isActive ? 'page' : undefined}
-        className={`text-dense block rounded-md py-1.5 pr-2 no-underline transition-colors ${
+        className={`block rounded-md py-1.5 pr-2 text-sm no-underline transition-colors ${
           isActive
             ? 'bg-primary-subtle text-sidebar-active-foreground font-medium'
             : 'text-fg-secondary hover:bg-muted hover:text-fg-primary'
@@ -85,28 +85,18 @@ function TreeItem({
         }`}
         style={indent}
       >
-        {node.noIndex ? (
-          <button
-            type='button'
-            onClick={() => setOpen((v) => !v)}
-            className='text-dense text-fg-secondary flex min-w-0 flex-1 items-center gap-1 bg-transparent text-left font-medium'
-          >
-            <span className='min-w-0 truncate'>{node.title}</span>
-          </button>
-        ) : (
-          <Link
-            to='/docs/$'
-            params={{ _splat: splat }}
-            aria-current={isActive ? 'page' : undefined}
-            className={`flex min-w-0 flex-1 items-center no-underline ${
-              isActive
-                ? 'text-sidebar-active-foreground font-medium'
-                : 'text-fg-secondary hover:text-fg-primary'
-            }`}
-          >
-            <span className='min-w-0 truncate'>{node.title}</span>
-          </Link>
-        )}
+        <button
+          type='button'
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className={`flex min-w-0 flex-1 items-center gap-1 bg-transparent text-left text-sm ${
+            isActive
+              ? 'text-sidebar-active-foreground font-medium'
+              : 'text-fg-secondary hover:text-fg-primary'
+          }`}
+        >
+          <span className='min-w-0 truncate'>{node.title}</span>
+        </button>
         <button
           type='button'
           aria-expanded={open}
@@ -182,7 +172,7 @@ export function NativeDocsShell({
   return (
     <PublicLayout showMainContainer={false}>
       <div className='h-16 shrink-0' aria-hidden='true' />
-      <div className='mx-auto flex w-full max-w-[1440px] items-start'>
+      <div className='mx-auto flex w-full max-w-7xl items-start px-4 md:px-6'>
         <aside className='border-border sticky top-16 hidden h-[calc(100svh-4rem)] w-64 shrink-0 overflow-y-auto border-r py-6 pr-3 pl-2 lg:block'>
           <DocsSearchButton onOpen={() => setSearchOpen(true)} />
           <nav aria-label={t('Docs')}>
