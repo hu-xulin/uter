@@ -135,8 +135,7 @@ export function ApiKeyQuotaCell(props: ApiKeyQuotaCellProps) {
             {t('Remaining')}
             <span className='ml-1'>({quotaUnit})</span>
           </span>
-        )}
-        {' '}
+        )}{' '}
         <span
           className={cn(
             'min-w-0 truncate',
@@ -158,12 +157,12 @@ export function ApiKeyQuotaCell(props: ApiKeyQuotaCellProps) {
             相邻数值渲染时会被拼进同一个 token（如「00」「0.00已」），
             aria-label（「剩余 0; 已用 0」）永远不含它；空白把可见文本切成
             「0 / 已用 0」，正好是 aria-label tokens 的连续子序列。
-            空白文本节点在 grid 布局里不产生盒子，视觉零变化。 */}
-        {' '}
+            空白文本节点在 grid 布局里不产生盒子，视觉零变化。 */}{' '}
         {props.variant === 'card' && (
           <>
-            <span className='text-muted-foreground'>{t('Used amount')}</span>
-            {' '}
+            <span className='text-muted-foreground'>
+              {t('Used amount')}
+            </span>{' '}
           </>
         )}
         <span
