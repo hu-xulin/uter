@@ -103,7 +103,7 @@ jobs:
           import fs from 'node:fs';
           import { startExecution } from './.uap/runtime/status-engine/execution.mjs';
           const execution = startExecution('github-actions single-batch UAP acceptance');
-          fs.appendFileSync(process.env.GITHUB_ENV, `UAP_BATCH_LOCK_ID=${execution.execution_id}\\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `UAP_BATCH_LOCK_ID=${execution.execution_id}\n`);
           console.log(JSON.stringify(execution, null, 2));
           NODE
       - name: Generate current UAP build evidence
