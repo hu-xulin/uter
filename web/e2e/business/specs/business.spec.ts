@@ -30,7 +30,7 @@ interface UterResponse<T = unknown> {
 
 const test = base.extend<{ authedApi: AuthedApi; authedPage: Page }>({
   authedApi: [
-    async ({ browser }, use) => {
+    async (_workerFixtures, use) => {
       const api = await AuthedApi.create()
       await use(api)
       await api.dispose()

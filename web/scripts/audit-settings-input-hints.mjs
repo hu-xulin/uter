@@ -42,7 +42,6 @@ const SUMMARY = process.argv.includes('--summary')
 function sliceElement(src, startIdx) {
   // startIdx 指向 '<'；扫描到该元素的闭合 '>'（跳过嵌套花括号与字符串）。
   let i = startIdx
-  const depth = 0
   while (i < src.length) {
     const ch = src[i]
     if (ch === "'" || ch === '"' || ch === '`') {

@@ -6,7 +6,6 @@ it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 */
-import { createHash } from 'node:crypto'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -29,7 +28,6 @@ const checks = []
 const add = (id, ok, detail, evidence = null) => {
   checks.push({ id, status: ok ? 'PASS' : 'FAIL', detail, evidence })
 }
-const hash = (value) => createHash('sha256').update(value).digest('hex')
 
 if (
   !SHOWCASE ||

@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 /**
  * 视觉回归（Playwright 轨）的公共常量。
  *
