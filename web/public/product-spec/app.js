@@ -3,8 +3,7 @@
  * 无外部依赖，遵循 UDS 8.0.0 tokens。 */
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
-const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const nl2br = (v) => esc(v).replace(/\n/g, '<br>');
+const esc = (v) => String(v ?? '').replaceAll(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 const VIEWS = [
   ['overview', 'Product Overview'], ['catalog', 'Feature Catalog'], ['detail', '左右双栏详情'],
@@ -329,12 +328,12 @@ function viewChanges() {
     ${conflicts.length ? `<div class="section-title">未解决冲突（${conflicts.length}）</div>${conflicts.map((c) => conflictHtml(c)).join('')}` : ''}
     <div class="section-title">版本快照</div>
     <div class="card"><table class="grid-table"><thead><tr><th>版本</th><th>时间</th><th>原因</th><th>Change ID</th><th></th></tr></thead><tbody>
-      ${m.snapshots.slice().reverse().slice(0, 40).map((s) => `<tr><td class="mono">v${s.version}</td><td class="caption">${esc((s.created_at || '').slice(0, 19))}</td><td>${esc(s.reason || '—')}</td><td class="mono">${esc(s.change_id || '—')}</td>
+      ${[...m.snapshots].reverse().slice(0, 40).map((s) => `<tr><td class="mono">v${s.version}</td><td class="caption">${esc((s.created_at || '').slice(0, 19))}</td><td>${esc(s.reason || '—')}</td><td class="mono">${esc(s.change_id || '—')}</td>
       <td><button class="btn btn-sm" data-act="diff-version" data-version="${s.version}">差异</button> <button class="btn btn-sm" data-act="restore-version" data-version="${s.version}">恢复</button></td></tr>`).join('')}
     </tbody></table></div>
     <div class="section-title">变更事件</div>
     <div class="card"><table class="grid-table"><thead><tr><th>Change ID</th><th>Feature</th><th>Source View</th><th>操作</th><th>版本</th><th>影响</th><th>状态</th><th>原因</th></tr></thead><tbody>
-      ${m.changes.slice().reverse().slice(0, 80).map((c) => `<tr><td class="mono">${esc(c.change_id)}</td><td class="mono">${esc(c.feature_id)}</td><td>${esc(c.source_view)}</td><td>${esc(c.op)}</td>
+      ${[...m.changes].reverse().slice(0, 80).map((c) => `<tr><td class="mono">${esc(c.change_id)}</td><td class="mono">${esc(c.feature_id)}</td><td>${esc(c.source_view)}</td><td>${esc(c.op)}</td>
       <td class="mono">v${c.base_version} → v${c.target_version}</td><td class="mono">${(c.sync_events || []).filter((e) => e.origin === 'SYSTEM_GENERATED').length} 项自动同步</td><td>${statusPill(c.sync_status)}</td><td class="caption">${esc(c.reason || '')}</td></tr>`).join('')}
     </tbody></table></div></div>`;
 }
@@ -358,7 +357,9 @@ function conflictHtml(c) {
 function viewDetail() {
   const f = feature();
   if (!f) return `<div class="scrollview"><div class="empty-state">请选择功能</div></div>`;
-  const cls = S.mode === 'prototype-fullscreen' ? 'prototype-fullscreen' : S.mode === 'prd-standalone' ? 'prd-standalone' : '';
+  let cls = '';
+  if (S.mode === 'prototype-fullscreen') cls = 'prototype-fullscreen';
+  else if (S.mode === 'prd-standalone') cls = 'prd-standalone';
   return `<div class="split ${cls}" id="split" style="--split:${S.split}">
     <section class="pane pane-left" id="paneLeft">${panePrototype(f)}</section>
     <div class="divider" id="divider" title="拖动调整宽度"></div>
@@ -447,7 +448,8 @@ function renderComponent(c, p, f) {
     case 'button': body = `<button class="btn ${c.action === 'back' ? '' : 'btn-primary'}" data-act="proto-action" data-action="${esc(c.action || 'submit')}" ${S.proto.state === 'disabled' ? 'disabled' : ''}>${esc(c.label)}</button>`; break;
     case 'alert': {
       const show = S.proto.state === 'error' || c.state === S.proto.state || c.state === 'permission_denied' && S.proto.state === 'permission_denied';
-      body = show ? `<div class="alert-box ${c.state === 'success' ? 'alert-success' : c.state === 'permission_denied' ? 'alert-error' : 'alert-error'}">${esc(c.props?.error_message || c.label)}</div>` : `<div class="caption">（错误提示组件 · 切换到 error 状态可见）</div>`;
+      const alertClass = c.state === 'success' ? 'alert-success' : 'alert-error';
+      body = show ? `<div class="alert-box ${alertClass}">${esc(c.props?.error_message || c.label)}</div>` : `<div class="caption">（错误提示组件 · 切换到 error 状态可见）</div>`;
       break;
     }
     case 'modal': body = `<div class="caption">弹窗组件 · 触发条件 ${esc(c.trigger || '—')}</div>`; break;
@@ -573,9 +575,12 @@ function prdSection(f, i, body) {
   return `<section class="prd-section" id="prd-${i}"><h3>${i + 1}. ${esc(f.prd.sections[i])}</h3>${body}</section>`;
 }
 function reqCard(q, f) {
+  let statusMarkup = '';
+  if (q.status === 'DEPRECATED') statusMarkup = '<span class="badge badge-not">已停用</span>';
+  else if (q.status === 'NEEDS_REVIEW') statusMarkup = '<span class="badge badge-partially">NEEDS_REVIEW</span>';
   return `<div class="req-card ${S.highlight === q.requirement_id ? 'highlight' : ''}" id="req-${esc(q.requirement_id)}">
     <h4><button class="chip" data-act="locate-proto" data-id="${f.feature_id}" data-page="${esc(q.prototype_page_ids?.[0] || f.prototype.primary_page_id)}">${esc(q.requirement_id)}</button>
-      ${esc(q.title)} ${q.status === 'DEPRECATED' ? '<span class="badge badge-not">已停用</span>' : q.status === 'NEEDS_REVIEW' ? '<span class="badge badge-partially">NEEDS_REVIEW</span>' : ''}
+      ${esc(q.title)} ${statusMarkup}
       <span style="flex:1"></span>
       <button class="btn btn-xs" data-act="edit-requirement" data-id="${esc(q.requirement_id)}">编辑</button>
       <button class="btn btn-xs btn-danger" data-act="delete-requirement" data-id="${esc(q.requirement_id)}">删除</button></h4>
@@ -712,7 +717,10 @@ document.addEventListener('click', async (ev) => {
           if (pg && el.dataset.int) { /* 交互高亮 */ }
         }
         S.highlight = el.dataset.cmp || el.dataset.int || null;
-        S.pendingLocate = { id: el.dataset.cmp ? `cmp-${el.dataset.cmp}` : el.dataset.int ? `int-${el.dataset.int}` : 'protoCanvas' };
+        let pendingId = 'protoCanvas';
+        if (el.dataset.cmp) pendingId = `cmp-${el.dataset.cmp}`;
+        else if (el.dataset.int) pendingId = `int-${el.dataset.int}`;
+        S.pendingLocate = { id: pendingId };
         render(); toast(`定位原型：${el.dataset.page || el.dataset.cmp || el.dataset.int}`); break;
       }
       /* ── PRD 编辑 ── */
@@ -936,21 +944,26 @@ function showDiff(version) {
       <p><b>该版本之后的变更</b></p><pre class="code-block">${esc(JSON.stringify(cur.changes.filter((x) => x.target_version > version).slice(-12).map((x) => ({ id: x.change_id, op: x.op, source: x.source_view, version: `v${x.target_version}`, reason: x.reason })), null, 2))}</pre>`,
     onOk: async () => true });
 }
-function openGateDemo() {
+async function openGateDemo() {
+  const acceptance = { given: 'A', when: 'B' };
+  acceptance['then'] = 'C';
   const payload = {
     feature_id: 'UTER-DEMO-001', name: '门禁演示功能', status: 'NOT_IMPLEMENTED',
     prd: { goal: '演示新增功能门禁' }, prototype: { pages: [{ name: '演示页' }] },
-    acceptance: [{ given: 'A', when: 'B', then: 'C' }], requirements: [{ title: '演示需求' }],
+    acceptance: [acceptance], requirements: [{ title: '演示需求' }],
     test_path: 'tools/product-workspace/tests/requirements-trace.test.mjs',
   };
-  api('/api/gate', { method: 'POST', body: JSON.stringify({ ...payload, role: S.role }) }).then((g) => {
+  try {
+    const g = await api('/api/gate', { method: 'POST', body: JSON.stringify({ ...payload, role: S.role }) });
     dialog({ title: `新增功能门禁：${g.decision}`, okText: '关闭',
       body: `<p>Feature ID → PRD → Prototype → Mapping → Validation → Implementation → Testing → Acceptance</p>
         <table class="grid-table"><thead><tr><th>检查</th><th>结果</th><th>说明</th></tr></thead><tbody>
         ${g.checks.map((c) => `<tr><td class="mono">${esc(c.id)}</td><td>${c.ok ? '✅ PASS' : '❌ BLOCK'}</td><td>${esc(c.detail)}</td></tr>`).join('')}</tbody></table>
         <div class="subtle-note" style="margin-top:10px">本按钮仅执行门禁校验（dry run），不会真的创建功能，避免污染功能目录。</div>`,
       onOk: async () => true });
-  });
+  } catch (error) {
+    toast(error.message, true);
+  }
 }
 
 /* ───────────────────────── 启动 ───────────────────────── */
