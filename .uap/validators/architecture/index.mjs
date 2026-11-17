@@ -163,16 +163,14 @@ export const validators = {
     const checks = checksOf(configs, 'architecture.adr_integrity');
     const spec = inspectSpec(configs, 'UAP-02-003');
     const adrReadme = exists(rootPath('docs/adr/README.md')) ? readText(rootPath('docs/adr/README.md')) : '';
-    const adr0001 = exists(rootPath('docs/adr/0001-uter-design-system-single-source-of-truth.md'))
-      ? readText(rootPath('docs/adr/0001-uter-design-system-single-source-of-truth.md')) : '';
 
-    const adrRows = [...adrReadme.matchAll(/^\\|\\s*\\[(ADR-\\d{4})\\]\\(([^)]+)\\)\\s*\\|\\s*([^|]+?)\\s*\\|\\s*(Proposed|Accepted|Rejected|Deprecated|Superseded)\\s*\\|\\s*(\\d{4}-\\d{2}-\\d{2})\\s*\\|$/gm)];
+    const adrRows = [...adrReadme.matchAll(/^\|\s*\[(ADR-\d{4})\]\(([^)]+)\)\s*\|\s*([^|]+?)\s*\|\s*(Proposed|Accepted|Rejected|Deprecated|Superseded)\s*\|\s*(\d{4}-\d{2}-\d{2})\s*\|$/gm)];
     const adrRecords = adrRows.map((row) => {
       const fileRel = `docs/adr/${row[2]}`;
       const body = exists(rootPath(fileRel)) ? readText(rootPath(fileRel)) : '';
-      const frontmatter = (body.match(/^---\\s*\\n([\\s\\S]*?)\\n---/) || [])[1] || '';
+      const frontmatter = (body.match(/^---\s*\n([\s\S]*?)\n---/) || [])[1] || '';
       const field = (key) => {
-        const line = frontmatter.split('\\n').find((item) => item.startsWith(`${key}:`));
+        const line = frontmatter.split('\n').find((item) => item.startsWith(`${key}:`));
         return line ? line.slice(key.length + 1).trim().replace(/^["']|["']$/g, '') : '';
       };
       return { id: row[1], fileRel, status: row[4], date: row[5], body,
@@ -184,7 +182,7 @@ export const validators = {
       && adrRecords.every((a) => a.body.length > 0 && a.id === a.frontmatterId
         && a.status === a.frontmatterStatus && a.date === a.frontmatterDate);
     const acceptedAdrEvidence = adrRecords.filter((a) => a.status === 'Accepted').every((a) => {
-      const refs = [...a.body.matchAll(/`((?:docs|web|\\.uap)\\/[^\`]+)`/g)].map((m) => m[1]);
+      const refs = a.body.split('`').filter((part, index) => index % 2 === 1 && /^(?:docs|web|\.uap)\//.test(part));
       return refs.filter((p) => exists(rootPath(p))).length >= 2;
     });
     const rRecords = {
@@ -208,7 +206,7 @@ export const validators = {
       && designOverview.includes('UDS 8.0.0 是唯一现行设计系统')
       && designOverview.includes('TOKEN-MANIFEST.json')
       && acceptance.includes('ACCEPTANCE_READY')
-      && /accepted\\s*=\\s*false/i.test(acceptance);
+      && /accepted\s*=\s*false/i.test(acceptance);
     const compatibilityBoundaryRecorded = !!compatibilityAdr
       && compatibilityAdr.status === 'Accepted'
       && compatibilityAdr.body.includes('3.0 runtime compatibility boundary')
