@@ -178,7 +178,7 @@ export const validators = {
 
     // UDS 8.0.0 is the current specification baseline, but ACCEPTANCE_READY
     // is not user acceptance. The existing 3.0 runtime compatibility boundary
-    // must remain until the project owner explicitly authorizes migration and
+    // must remain until the project owner 明确授权迁移 migration and
     // current-head migration evidence is verified. Deleted migration artifacts
     // are not treated as proof that the boundary has been retired.
     const dsRel = 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md';
@@ -202,7 +202,7 @@ export const validators = {
       && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'));
     const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds-* bridge 为唯一运行时权威')
       && compatibilityAdr.includes('3.0 runtime compatibility boundary')
-      && compatibilityAdr.includes('explicitly authorizes')
+      && compatibilityAdr.includes('明确授权迁移')
       && runtimeCss.includes('--ds-')
       && typographyCss.includes('3.0');
     const dupTrees = ['h5/src', 'mobile/src', 'web-h5/src', 'm/src'].filter((d) => exists(rootPath(d)));
