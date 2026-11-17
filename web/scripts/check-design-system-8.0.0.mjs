@@ -96,7 +96,7 @@ const LEGACY_CONTEXT =
 const LEGACY_NAME =
   /(?:UDS|DESIGN[-_ ]?SYSTEM)[-_ ]?[3567]\.|archive-[3567]\.|COMPAT-MAP|MIGRATION-REPORT|SHOWCASE-[3567]\./i
 const LEGACY_COMPATIBILITY_POLICY_FILE = 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'
-const LEGACY_ALLOWED_POLICY_LINE = /UDS\\s+3\\.0\\s+runtime compatibility boundary/i
+const LEGACY_ALLOWED_POLICY_LINE = /UDS\s+3\.0\s+runtime compatibility boundary/i
 const LEGACY_ALLOWED_POLICY_AUTH = /ADR-0002|明确授权迁移|project owner explicitly authorizes migration/i
 
 function legacyScan() {
