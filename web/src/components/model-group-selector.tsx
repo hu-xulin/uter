@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { ChevronsUpDown, Check, CpuIcon, LayersIcon } from 'lucide-react'
+import { ChevronsUpDown, Check, CpuIcon } from 'lucide-react'
 /*
 Copyright (C) 2023-2026 Uter.ai
 
@@ -63,7 +63,6 @@ import { Heading } from '@/design-system'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 
-import { formatGroupDetail } from './model-group-selector/group-detail'
 import {
   modelGroupSelectorLayoutClasses,
   scrollSelectedOptionIntoView,
@@ -76,26 +75,15 @@ interface ModelOption {
   description?: string
 }
 
-interface GroupOption {
+interface ChannelOption {
   label: string
   value: string
-  ratio?: number | string
-  desc?: string
-  description?: string
 }
 
 interface ModelSelectorProps {
   selectedModel: string
   models: ModelOption[]
   onModelChange: (value: string) => void
-  className?: string
-  disabled?: boolean
-}
-
-interface GroupSelectorProps {
-  selectedGroup: string
-  groups: GroupOption[]
-  onGroupChange: (value: string) => void
   className?: string
   disabled?: boolean
 }
@@ -134,41 +122,6 @@ const ModelTriggerButton = React.forwardRef<
 ))
 
 ModelTriggerButton.displayName = 'ModelTriggerButton'
-
-const GroupTriggerButton = React.forwardRef<
-  React.ComponentRef<typeof Button>,
-  React.ComponentPropsWithoutRef<typeof Button> & {
-    currentLabel: string
-    triggerClassName?: string
-    isDisabled?: boolean
-  }
->(({ currentLabel, triggerClassName, isDisabled, ...props }, ref) => (
-  <Button
-    ref={ref}
-    variant='outline'
-    role='combobox'
-    size='sm'
-    disabled={isDisabled}
-    className={cn(
-      'flex items-center gap-2 border px-3 font-medium',
-      'justify-center p-0 sm:w-auto sm:justify-start sm:px-3',
-      'w-8',
-      'bg-background text-foreground',
-      'hover:bg-accent transition-colors',
-      'shadow-none',
-      triggerClassName
-    )}
-    {...props}
-  >
-    <LayersIcon className='text-muted-foreground block size-4.5 sm:hidden' />
-    <span className='text-muted-foreground sm:text-foreground hidden truncate text-xs sm:block'>
-      {currentLabel}
-    </span>
-    <ChevronsUpDown className='text-muted-foreground hidden h-4.5 w-4.5 opacity-50 sm:block' />
-  </Button>
-))
-
-GroupTriggerButton.displayName = 'GroupTriggerButton'
 
 /**
  * Model Selector Component
@@ -365,181 +318,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = React.memo(
 
 ModelSelector.displayName = 'ModelSelector'
 
-/**
- * Group Selector Component
- * Styled following Scira's form-component design patterns
- */
-export const GroupSelector: React.FC<GroupSelectorProps> = React.memo(
-  ({ selectedGroup, groups, onGroupChange, className, disabled = false }) => {
-    const { t } = useTranslation()
-    const [open, setOpen] = useState(false)
-    const isMobile = useIsMobile()
-
-    const currentGroup = useMemo(
-      () => groups.find((g) => g.value === selectedGroup),
-      [groups, selectedGroup]
-    )
-
-    const handleGroupChange = useCallback(
-      (value: string) => {
-        onGroupChange(value)
-        setOpen(false)
-      },
-      [onGroupChange]
-    )
-
-    // Shared command content
-    const renderGroupCommandContent = () => (
-      <Command
-        className={cn(
-          isMobile
-            ? 'h-full flex-1 rounded-lg border-0 bg-transparent'
-            : 'rounded-lg'
-        )}
-        filter={(value, search) => {
-          const group = groups.find((g) => g.value === value)
-          if (!group || !search) return 1
-
-          const searchTerm = search.toLowerCase()
-          const searchableFields = [
-            group.label,
-            group.description || '',
-            group.value,
-          ]
-            .join(' ')
-            .toLowerCase()
-
-          return searchableFields.includes(searchTerm) ? 1 : 0
-        }}
-      >
-        <CommandInput placeholder={t('Search groups...')} className='h-9' />
-        <CommandEmpty>{t('No group found.')}</CommandEmpty>
-        <CommandList
-          className={isMobile ? '!max-h-full flex-1 p-2' : 'max-h-[240px]'}
-        >
-          <CommandGroup>
-            <div className='text-muted-foreground px-2 py-1 text-xs font-medium'>
-              {t('Model Group')}
-            </div>
-            {groups.map((group) => (
-              <CommandItem
-                key={group.value}
-                value={group.value}
-                onSelect={handleGroupChange}
-                className={cn(
-                  'mb-0.5 flex items-center justify-between rounded-lg px-2 py-2 text-xs',
-                  'transition-all ds-motion-base',
-                  'hover:bg-accent',
-                  'data-[selected=true]:bg-accent'
-                )}
-              >
-                <div className='flex min-w-0 flex-1 items-center gap-2 pr-4'>
-                  <div className='flex min-w-0 flex-1 flex-col'>
-                    <span className='text-foreground truncate text-xs font-medium'>
-                      {group.label}
-                    </span>
-                    {(group.desc || group.description) && (
-                      <div className='text-muted-foreground truncate text-xs'>
-                        {formatGroupDetail(group, t)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <Check
-                  className={cn(
-                    'ml-auto h-4 w-4',
-                    selectedGroup === group.value ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </Command>
-    )
-
-    return isMobile ? (
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>
-          <GroupTriggerButton
-            currentLabel={currentGroup?.label || t('Group')}
-            triggerClassName={className}
-            isDisabled={disabled}
-            aria-expanded={open}
-          />
-        </DrawerTrigger>
-        <DrawerContent className='max-h-[80vh]'>
-          <DrawerHeader className='pb-4 text-left'>
-            <DrawerTitle>{t('Choose Group')}</DrawerTitle>
-          </DrawerHeader>
-          <div className='max-h-[calc(80vh-100px)] overflow-y-auto px-4 pb-6'>
-            <div className='space-y-2'>
-              {groups.map((group) => (
-                <Button
-                  key={group.value}
-                  variant='outline'
-                  onClick={() => handleGroupChange(group.value)}
-                  className={cn(
-                    'flex h-auto w-full items-center justify-between rounded-lg p-4 text-left whitespace-normal',
-                    'border-border hover:bg-accent',
-                    selectedGroup === group.value
-                      ? 'bg-accent border-primary/20'
-                      : 'bg-background'
-                  )}
-                >
-                  <div className='flex min-w-0 flex-1 items-center gap-3'>
-                    <div className='flex min-w-0 flex-1 flex-col'>
-                      <span className='text-foreground text-sm font-medium'>
-                        {group.label}
-                      </span>
-                      {(group.desc || group.description) && (
-                        <div className='text-muted-foreground mt-0.5 text-xs'>
-                          {formatGroupDetail(group, t)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <Check
-                    className={cn(
-                      'ml-3 h-5 w-5 shrink-0',
-                      selectedGroup === group.value
-                        ? 'opacity-100'
-                        : 'opacity-0'
-                    )}
-                  />
-                </Button>
-              ))}
-            </div>
-          </div>
-        </DrawerContent>
-      </Drawer>
-    ) : (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger
-          render={
-            <GroupTriggerButton
-              currentLabel={currentGroup?.label || t('Group')}
-              triggerClassName={className}
-              isDisabled={disabled}
-              aria-expanded={open}
-            />
-          }
-        />
-        <PopoverContent
-          className='bg-popover z-50 w-[90vw] max-w-[14em] rounded-lg border p-0 !shadow-none sm:w-[14em]'
-          align='start'
-          side='bottom'
-          sideOffset={4}
-          collisionPadding={8}
-        >
-          {renderGroupCommandContent()}
-        </PopoverContent>
-      </Popover>
-    )
-  }
-)
-
-GroupSelector.displayName = 'GroupSelector'
 
 // Export combined selector component
 export interface ModelGroupSelectorProps {
@@ -547,26 +325,27 @@ export interface ModelGroupSelectorProps {
   selectedModel: string
   models: ModelOption[]
   onModelChange: (value: string) => void
-  // Group props
-  selectedGroup: string
-  groups: GroupOption[]
-  onGroupChange: (value: string) => void
+  // Channel props（左侧列表：管理-渠道的展示名）
+  selectedChannel: string
+  channels: ChannelOption[]
+  onChannelChange: (value: string) => void
   // Common props
   className?: string
   disabled?: boolean
 }
 
 /**
- * Combined Model and Group Selector Component
- * Provides both model and group selection in a unified interface
+ * Combined Model and Channel Selector Component
+ * Lets the reader pick a channel (admin channel display name) and one of the
+ * models that channel serves.
  */
 export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
   selectedModel,
   models,
   onModelChange,
-  selectedGroup,
-  groups,
-  onGroupChange,
+  selectedChannel,
+  channels,
+  onChannelChange,
   className,
   disabled = false,
 }) => {
@@ -582,9 +361,9 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
     () => models.find((model) => model.value === selectedModel),
     [models, selectedModel]
   )
-  const currentGroup = useMemo(
-    () => groups.find((group) => group.value === selectedGroup),
-    [groups, selectedGroup]
+  const currentChannel = useMemo(
+    () => channels.find((channel) => channel.value === selectedChannel),
+    [channels, selectedChannel]
   )
   const filteredModels = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
@@ -615,11 +394,11 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
     [onModelChange]
   )
 
-  const handleGroupChange = useCallback(
+  const handleChannelChange = useCallback(
     (value: string) => {
-      onGroupChange(value)
+      onChannelChange(value)
     },
-    [onGroupChange]
+    [onChannelChange]
   )
 
   useEffect(() => {
@@ -642,7 +421,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
       window.cancelAnimationFrame(firstFrameId)
       window.cancelAnimationFrame(secondFrameId)
     }
-  }, [open, selectedGroup, selectedModel])
+  }, [open, selectedChannel, selectedModel])
 
   const renderTrigger = () => (
     <Button
@@ -665,7 +444,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
         {currentModel?.label || t('Model')}
       </span>
       <span className='bg-muted text-muted-foreground hidden max-w-20 shrink-0 rounded px-1.5 py-0.5 text-xs sm:inline-flex'>
-        {currentGroup?.label || t('Group')}
+        {currentChannel?.label || t('Channel')}
       </span>
       <ChevronsUpDown className='text-muted-foreground ml-auto size-4.5 shrink-0 opacity-60' />
     </Button>
@@ -679,7 +458,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
       )}
     >
       <Heading variant='card-title' level={4}>
-        {t('Model Group')}
+        {t('Channels')}
       </Heading>
       <div
         className={cn(
@@ -688,8 +467,8 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
         )}
         ref={groupScrollContainerRef}
       >
-        {groups.map((group) => {
-          const isSelected = selectedGroup === group.value
+        {channels.map((channel) => {
+          const isSelected = selectedChannel === channel.value
 
           return (
             <button
@@ -700,13 +479,13 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
                   : modelGroupSelectorLayoutClasses.groupItemUnselected
               )}
               disabled={disabled}
-              key={group.value}
-              onClick={() => handleGroupChange(group.value)}
+              key={channel.value}
+              onClick={() => handleChannelChange(channel.value)}
               ref={isSelected ? selectedGroupOptionRef : undefined}
               type='button'
             >
               <span className='min-w-0 truncate font-medium'>
-                {group.label}
+                {channel.label}
               </span>
               <Check
                 className={cn(

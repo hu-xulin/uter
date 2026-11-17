@@ -59,6 +59,24 @@ test('reads a time without seconds as zero seconds', () => {
   expect(onChange).toHaveBeenLastCalledWith(new Date(2026, 9, 11, 9, 15, 0))
 })
 
+test('keeps the date, time and clear controls on the same 40px row scale', () => {
+  render(
+    <DateTimePicker
+      value={new Date(2026, 9, 11, 8, 30, 45)}
+      onChange={() => undefined}
+    />
+  )
+  const time = screen.getByLabelText('Time')
+  expect(time.className).toContain('h-(--ds-control-height-md)')
+  expect(time.className).toContain('text-sm')
+  expect(screen.getByLabelText('Clear').className).toContain(
+    'size-(--ds-control-height-md)'
+  )
+  expect(
+    screen.getByRole('button', { name: /2026-10-11/ }).className
+  ).toContain('h-(--ds-control-height-md)')
+})
+
 test('keeps the current time when the time field is emptied', () => {
   const onChange = vi.fn()
   render(

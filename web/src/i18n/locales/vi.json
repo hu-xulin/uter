@@ -8008,6 +8008,8 @@
     "{{count}} change": "{{count}} thay đổi",
     "Request plugin": "Plugin yêu cầu",
     "Request plugin instances": "Phiên bản plugin yêu cầu",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "Plugin này không khai báo trường cấu hình; hãy chỉnh cấu hình trong JSON bên dưới.",
+    "Configuration fields": "Trường cấu hình",
     "Dry run": "Chạy thử",
     "Request body": "Nội dung yêu cầu",
     "Saved": "Đã lưu",

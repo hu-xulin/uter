@@ -18,8 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { SystemTaskFilters } from '@/features/system-settings/types'
 import { api } from '@/lib/api'
+import { requireServerSuccess } from '@/lib/server-error-message'
 
 import type {
+  NodeSync,
+  NodeSyncResponse,
   SystemInstanceDeleteResponse,
   SystemInstanceListResponse,
   SystemTaskHistoryDeleteResponse,
@@ -54,4 +57,10 @@ export async function deleteSystemTaskHistory(
     { params: filters }
   )
   return res.data
+}
+
+export async function getNodeSync(): Promise<NodeSync> {
+  const res = await api.get<NodeSyncResponse>('/api/system-info/sync')
+  const sync = requireServerSuccess(res.data).data
+  return { topics: sync?.topics ?? [], nodes: sync?.nodes ?? [] }
 }

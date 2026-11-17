@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useQuery } from '@tanstack/react-query'
 import { useLocation } from '@tanstack/react-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { statusQueryOptions } from '@/lib/status-query'
 
@@ -82,14 +83,6 @@ interface WidgetConfig {
 }
 
 type ChatMsg = { role: 'user' | 'bot'; text: string }
-
-const DEFAULTS: Required<Omit<WidgetConfig, 'siteToken'>> = {
-  title: 'Uter优特智能客服',
-  greeting: '您好，我是Uter优特智能客服 👋\n请问有什么可以帮您？',
-  placeholder: '输入您的问题，回车发送',
-  powered: 'Uter优特智能客服 · 7×24 在线',
-  presetQuestions: [],
-}
 
 // 读取站点当前语言（i18next LanguageDetector 写入 i18nextLng）。
 // Uter 文档站有 7 个语言版本且内容高度重复，把语言告诉后端才能保证访客
@@ -166,10 +159,23 @@ function useCustomerServiceGates(): {
 export function CustomerServiceWidget() {
   // 空字符串 = 后端未配置客服地址，此时不渲染任何入口
   const { base, pages } = useCustomerServiceGates()
+  const { t } = useTranslation()
+  // 默认文案跟随界面语言：后台「部署配置」下发的标题/欢迎语仍优先生效。
+  const defaults = useMemo<Required<Omit<WidgetConfig, 'siteToken'>>>(
+    () => ({
+      title: t('Uter Customer Service'),
+      greeting: t("Hi, I'm Uter's assistant 👋\nHow can I help you?"),
+      placeholder: t('Type your question and press Enter'),
+      powered: t('Uter Customer Service · Online 24/7'),
+      presetQuestions: [],
+    }),
+    [t]
+  )
   // 只订阅 pathname：本组件只关心「当前在哪个页面」，订阅整个 location 会在
   // 每次导航时因 query/hash 变化而重渲染（与项目内 top-nav/nav-group 同一写法）。
   const pathname = useLocation({ select: (location) => location.pathname })
-  const [cfg, setCfg] = useState<WidgetConfig>(DEFAULTS)
+  const remoteCfg = useRef<WidgetConfig | null>(null)
+  const [cfg, setCfg] = useState<WidgetConfig>(defaults)
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [input, setInput] = useState('')
@@ -185,18 +191,25 @@ export function CustomerServiceWidget() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    setCfg(remoteCfg.current ? { ...defaults, ...remoteCfg.current } : defaults)
+  }, [defaults])
+
+  useEffect(() => {
     if (!base) return
     let alive = true
     fetch(`${base}/api/deploy/widget-config`)
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
-        if (alive && j) setCfg({ ...DEFAULTS, ...j })
+        if (alive && j) {
+          remoteCfg.current = j as WidgetConfig
+          setCfg({ ...defaults, ...j })
+        }
       })
       .catch(() => {})
     return () => {
       alive = false
     }
-  }, [base])
+  }, [base, defaults])
 
   useEffect(() => {
     if (bodyRef.current) {
@@ -232,7 +245,9 @@ export function CustomerServiceWidget() {
       })
       const data = await res.json()
       const reply =
-        data && data.reply ? data.reply : '抱歉，服务暂时有点忙，请稍后再试～'
+        data && data.reply
+          ? data.reply
+          : t('Sorry, the service is busy. Please try again later.')
       setMessages((m) => [...m, { role: 'bot', text: reply }])
       setHistory((h) =>
         [
@@ -244,7 +259,7 @@ export function CustomerServiceWidget() {
     } catch {
       setMessages((m) => [
         ...m,
-        { role: 'bot', text: '抱歉，网络似乎不太稳定，请稍后再试～' },
+        { role: 'bot', text: t('Sorry, the network seems unstable. Please try again later.') },
       ])
     } finally {
       setTyping(false)
@@ -301,7 +316,7 @@ export function CustomerServiceWidget() {
             <button
               type='button'
               onClick={() => setOpen(false)}
-              aria-label='关闭'
+              aria-label={t('Close')}
               className='cs-close'
             >
               ✕
@@ -364,10 +379,10 @@ export function CustomerServiceWidget() {
               type='button'
               onClick={() => send()}
               disabled={!input.trim() || typing}
-              aria-label='发送'
+              aria-label={t('Send')}
               className='cs-send'
             >
-              发送
+              {t('Send')}
             </button>
           </div>
 

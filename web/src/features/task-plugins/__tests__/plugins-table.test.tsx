@@ -38,7 +38,8 @@ afterEach(() => {
 function renderPlugins(
   enabled: boolean,
   view: 'card' | 'table' = 'card',
-  source: TaskPluginListItem['source'] = 'override'
+  source: TaskPluginListItem['source'] = 'override',
+  extra: Partial<TaskPluginListItem> = {}
 ) {
   localStorage.setItem('task-plugins-view-mode', view)
   const item: TaskPluginListItem = {
@@ -59,6 +60,7 @@ function renderPlugins(
     runtime_status: enabled ? 'registered' : 'disabled',
     channel_count: 0,
     in_flight_count: 0,
+    ...extra,
   }
   if (source === 'override_over_factory') {
     item.factory_meta = { ...item.meta, version: '0.9.0' }
@@ -281,5 +283,16 @@ test.each(['factory', 'override_over_factory'] as const)(
         })
       ).toBeVisible()
     }
+  }
+)
+
+test.each(['card', 'table'] as const)(
+  'marks a request processing plugin in %s view',
+  (view) => {
+    renderPlugins(true, view, 'factory', {
+      transform: true,
+      transform_hooks: ['ingress', 'egress'],
+    })
+    expect(screen.getAllByText('Request plugin').length).toBeGreaterThan(0)
   }
 )

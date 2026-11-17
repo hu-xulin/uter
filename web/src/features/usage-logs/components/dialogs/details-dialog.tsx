@@ -90,6 +90,8 @@ import {
   isPerCallBilling,
   isTimingLogType,
 } from '../../lib/utils'
+import { resolveLocalizedText } from '@/lib/localized-text'
+
 import { USAGE_BILLING_PATH, type LogOtherData } from '../../types'
 import { ResponseModelDetails } from '../model-badge'
 import { PluginAuthorLink } from '../plugin-author-link'
@@ -473,6 +475,67 @@ interface DetailsDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
+export function RequestPluginRecordsSection(props: {
+  records: NonNullable<LogOtherData['request_plugins']>
+}) {
+  const { t, i18n } = useTranslation()
+  return (
+    <DetailSection label={t('Request plugins')}>
+      {props.records.map((record) => {
+        const parts: string[] = []
+        if (record.stage) parts.push(record.stage)
+        const changes = (record.changes?.length || 0) + (record.more_changes || 0)
+        if (changes > 0) {
+          parts.push(
+            changes === 1
+              ? t('{{count}} change', { count: changes })
+              : t('{{count}} changes', { count: changes })
+          )
+        }
+        const headers =
+          (record.headers?.set?.length || 0) +
+          (record.headers?.remove?.length || 0)
+        if (headers > 0) parts.push(t('{{count}} header changes', { count: headers }))
+        if (record.media?.length) {
+          parts.push(t('{{count}} media changes', { count: record.media.length }))
+        }
+        if (record.masked) {
+          parts.push(t('{{count}} masked spans', { count: record.masked }))
+        }
+        const findings = (record.findings || []).reduce(
+          (total, finding) => total + (finding.count || 0),
+          0
+        )
+        if (findings > 0) {
+          parts.push(t('{{count}} findings', { count: findings }))
+        }
+        if (record.unchecked) parts.push(t('Not checked'))
+        if (record.audio) parts.push(t('Audio input not checked'))
+        if (record.rejected?.code) {
+          parts.push(t('Rejected: {{code}}', { code: record.rejected.code }))
+        }
+        if (record.truncated) {
+          parts.push(t('{{count}} entries truncated', { count: record.truncated }))
+        }
+        const notice = resolveLocalizedText(record.notice, i18n.language)
+        if (notice) parts.push(notice)
+        const label =
+          resolveLocalizedText(record.name, i18n.language) ||
+          record.plugin ||
+          t('Request plugin')
+        return (
+          <DetailRow
+            key={`${record.plugin || 'plugin'}-${record.stage || 'stage'}-${record.changes?.length || 0}-${record.masked || 0}`}
+            label={label}
+            value={parts.join(' · ')}
+            mono
+          />
+        )
+      })}
+    </DetailSection>
+  )
+}
+
 export function DetailsDialog(props: DetailsDialogProps) {
   const { t } = useTranslation()
   const { copiedText, copyToClipboard } = useCopyToClipboard({ notify: false })
@@ -499,6 +562,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
   )
   const hasAudioTokens = other?.ws || other?.audio
   const showTiming = isTimingLogType(props.log.type)
+
   const showAdminIp =
     !!props.log.ip && (showTiming || (props.isAdmin && isTopup))
   const adminInfo = other?.admin_info
@@ -1219,6 +1283,10 @@ export function DetailsDialog(props: DetailsDialogProps) {
               }
             />
           )}
+
+        {other?.request_plugins?.length ? (
+          <RequestPluginRecordsSection records={other.request_plugins} />
+        ) : null}
 
         {/* Stream status details */}
         {other?.stream_status && other.stream_status.status !== 'ok' && (

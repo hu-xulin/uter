@@ -8008,6 +8008,8 @@
     "{{count}} change": "{{count}} change",
     "Request plugin": "Request plugin",
     "Request plugin instances": "Request plugin instances",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "This plugin declares no configuration fields; edit its config in the JSON below.",
+    "Configuration fields": "Configuration fields",
     "Dry run": "Dry run",
     "Request body": "Request body",
     "Saved": "Saved",

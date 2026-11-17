@@ -158,6 +158,24 @@ it('spreads the agreements, the filing numbers and the attribution across the ro
   })
 })
 
+// 首页页脚的协议链接必须与文档页侧栏指向同一份文档、同一个 URL，而不是
+// 再走一套 SPA 副本。
+it('points the agreements at the same docs URLs the docs sidebar uses', async () => {
+  const footer = await renderFooter('zhCN')
+
+  const expected = [
+    ['User Agreement', '/docs/zh/legal/user-agreement'],
+    ['Privacy Policy', '/docs/zh/legal/privacy-policy'],
+    ['Recharge Agreement', '/docs/zh/legal/recharge-agreement'],
+  ] as const
+
+  for (const [label, href] of expected) {
+    expect(
+      within(footer).getByText(label).closest('a')?.getAttribute('href')
+    ).toBe(href)
+  }
+})
+
 it('keeps a single divider above the legal row', async () => {
   const footer = await renderFooter('zhCN')
 

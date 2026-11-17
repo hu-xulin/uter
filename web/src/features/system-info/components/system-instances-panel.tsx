@@ -67,6 +67,7 @@ import {
   listSystemInstances,
 } from '../api'
 import type { SystemInstance, SystemInstanceStatus } from '../types'
+import { NodeSyncIndicator } from './node-sync-indicator'
 
 const INSTANCE_POLL_INTERVAL_MS = 30_000
 const INSTANCE_SKELETON_KEYS = [
@@ -639,6 +640,7 @@ export function SystemInstancesPanel() {
             </div>
           </div>
           <div className='flex shrink-0 flex-wrap items-center gap-2 sm:justify-end'>
+            <NodeSyncIndicator />
             <span className='text-muted-foreground text-xs' aria-live='polite'>
               {t('Auto-refreshing every {{seconds}}s', {
                 seconds: INSTANCE_POLL_INTERVAL_MS / 1000,

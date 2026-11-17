@@ -248,7 +248,7 @@ export function ChannelSelectorDialog({
                 value={endpointType}
                 onValueChange={(v) => v !== null && handleTypeChange(v)}
               >
-                <SelectTrigger className='w-32'>
+                <SelectTrigger className='min-w-32'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent alignItemWithTrigger={false}>
@@ -267,7 +267,7 @@ export function ChannelSelectorDialog({
                   value={currentEndpoint}
                   onChange={(e) => updateEndpoint(channel.id, e.target.value)}
                   placeholder={t('/your/endpoint')}
-                  className='text-mono min-w-0 flex-1 font-mono'
+                  className='text-sm min-w-0 flex-1 font-mono'
                 />
               )}
             </div>

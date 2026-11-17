@@ -38,7 +38,7 @@ type FilterState = {
   search?: string
   sort?: string
   vendor?: string
-  group?: string
+  channel?: string
   quotaType?: string
   endpointType?: string
   tag?: string
@@ -60,7 +60,7 @@ export function useFilters(models: PricingModel[]) {
     search: search.search,
     sort: search.sort,
     vendor: search.vendor,
-    group: search.group,
+    channel: search.channel,
     quotaType: search.quotaType,
     endpointType: search.endpointType,
     tag: search.tag,
@@ -73,7 +73,7 @@ export function useFilters(models: PricingModel[]) {
   const debouncedSearchInput = useDebounce(searchInput, 200)
   const sortBy = filterState.sort || SORT_OPTIONS.NAME
   const vendorFilter = filterState.vendor || FILTER_ALL
-  const groupFilter = filterState.group || FILTER_ALL
+  const channelFilter = filterState.channel || FILTER_ALL
   const quotaTypeFilter = filterState.quotaType || QUOTA_TYPES.ALL
   const endpointTypeFilter = filterState.endpointType || ENDPOINT_TYPES.ALL
   // A `?tag=1m` bookmark created before context-size labels were hidden would
@@ -112,8 +112,9 @@ export function useFilters(models: PricingModel[]) {
     (v: string) => updateFilters({ vendor: v === FILTER_ALL ? undefined : v }),
     [updateFilters]
   )
-  const setGroupFilter = useCallback(
-    (v: string) => updateFilters({ group: v === FILTER_ALL ? undefined : v }),
+  const setChannelFilter = useCallback(
+    (v: string) =>
+      updateFilters({ channel: v === FILTER_ALL ? undefined : v }),
     [updateFilters]
   )
   const setQuotaTypeFilter = useCallback(
@@ -158,7 +159,7 @@ export function useFilters(models: PricingModel[]) {
     return filterAndSortModels(models, {
       search: debouncedSearchInput,
       vendor: vendorFilter,
-      group: groupFilter,
+      channel: channelFilter,
       quotaType: quotaTypeFilter,
       endpointType: endpointTypeFilter,
       tag: tagFilter,
@@ -168,7 +169,7 @@ export function useFilters(models: PricingModel[]) {
     models,
     debouncedSearchInput,
     vendorFilter,
-    groupFilter,
+    channelFilter,
     quotaTypeFilter,
     endpointTypeFilter,
     tagFilter,
@@ -178,27 +179,27 @@ export function useFilters(models: PricingModel[]) {
   const hasActiveFilters = useMemo(
     () =>
       vendorFilter !== FILTER_ALL ||
-      groupFilter !== FILTER_ALL ||
+      channelFilter !== FILTER_ALL ||
       quotaTypeFilter !== QUOTA_TYPES.ALL ||
       endpointTypeFilter !== ENDPOINT_TYPES.ALL ||
       tagFilter !== FILTER_ALL,
-    [vendorFilter, groupFilter, quotaTypeFilter, endpointTypeFilter, tagFilter]
+    [vendorFilter, channelFilter, quotaTypeFilter, endpointTypeFilter, tagFilter]
   )
 
   const activeFilterCount = useMemo(
     () =>
       (vendorFilter !== FILTER_ALL ? 1 : 0) +
-      (groupFilter !== FILTER_ALL ? 1 : 0) +
+      (channelFilter !== FILTER_ALL ? 1 : 0) +
       (quotaTypeFilter !== QUOTA_TYPES.ALL ? 1 : 0) +
       (endpointTypeFilter !== ENDPOINT_TYPES.ALL ? 1 : 0) +
       (tagFilter !== FILTER_ALL ? 1 : 0),
-    [vendorFilter, groupFilter, quotaTypeFilter, endpointTypeFilter, tagFilter]
+    [vendorFilter, channelFilter, quotaTypeFilter, endpointTypeFilter, tagFilter]
   )
 
   const clearFilters = useCallback(() => {
     updateFilters({
       vendor: undefined,
-      group: undefined,
+      channel: undefined,
       quotaType: undefined,
       endpointType: undefined,
       tag: undefined,
@@ -213,7 +214,7 @@ export function useFilters(models: PricingModel[]) {
     searchInput,
     sortBy,
     vendorFilter,
-    groupFilter,
+    channelFilter,
     quotaTypeFilter,
     endpointTypeFilter,
     tagFilter,
@@ -223,7 +224,7 @@ export function useFilters(models: PricingModel[]) {
     setSearchInput,
     setSortBy,
     setVendorFilter,
-    setGroupFilter,
+    setChannelFilter,
     setQuotaTypeFilter,
     setEndpointTypeFilter,
     setTagFilter,

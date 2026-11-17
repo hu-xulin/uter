@@ -29,7 +29,7 @@ import {
 import { getSubmittableInputText } from '../../lib'
 import type {
   ModelOption,
-  GroupOption,
+  ChannelOption,
   ParameterEnabled,
   PlaygroundConfig,
 } from '../../types'
@@ -46,9 +46,9 @@ interface PlaygroundInputProps {
   modelValue: string
   onModelChange: (value: string) => void
   isModelLoading?: boolean
-  groups: GroupOption[]
-  groupValue: string
-  onGroupChange: (value: string) => void
+  channels: ChannelOption[]
+  channelValue: string
+  onChannelChange: (value: string) => void
   hasMessages?: boolean
   onConfigChange: <K extends keyof PlaygroundConfig>(
     key: K,
@@ -72,9 +72,9 @@ export function PlaygroundInput({
   modelValue,
   onModelChange,
   isModelLoading = false,
-  groups,
-  groupValue,
-  onGroupChange,
+  channels,
+  channelValue,
+  onChannelChange,
   hasMessages = false,
   onConfigChange,
   onClearMessages,
@@ -138,13 +138,13 @@ export function PlaygroundInput({
         <PromptInputFooter className={COMPOSER_FOOTER_CLASS}>
           <PlaygroundInputControls
             disabled={disabled}
-            groups={groups}
-            groupValue={groupValue}
+            channels={channels}
+            channelValue={channelValue}
             isGenerating={isGenerating}
             isModelLoading={isModelLoading}
             models={models}
             modelValue={modelValue}
-            onGroupChange={onGroupChange}
+            onChannelChange={onChannelChange}
             onModelChange={onModelChange}
             onStop={onStop}
             text={text}

@@ -90,16 +90,16 @@ export function PasswordStrength({
             <span
               aria-hidden='true'
               className={cn(
-                'mt-0.5 grid size-3.5 shrink-0 place-items-center rounded-sm border',
+                'mt-0.5 grid size-4 shrink-0 place-items-center rounded-sm border',
                 rule.met
                   ? 'border-success bg-success text-success-foreground'
                   : 'border-border'
               )}
             >
               {rule.met ? (
-                <Check className='size-2.5' strokeWidth={2.5} />
+                <Check className='size-4' />
               ) : (
-                <X className='size-2.5' strokeWidth={2.5} />
+                <X className='size-4' />
               )}
             </span>
             <span className={cn(rule.met && 'text-foreground')}>

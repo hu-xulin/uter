@@ -432,7 +432,7 @@ export function SyncWizardDialog(props: {
                 }}
               >
                 <SelectTrigger
-                  className='w-44'
+                  className='min-w-44'
                   aria-label={t('Metadata language')}
                 >
                   <SelectValue />
@@ -511,7 +511,7 @@ export function SyncWizardDialog(props: {
                 >
                   <SelectTrigger
                     aria-label={t('Sync scope')}
-                    className='w-full sm:w-64'
+                    className='w-full sm:w-fit sm:min-w-64'
                   >
                     <SelectValue />
                   </SelectTrigger>

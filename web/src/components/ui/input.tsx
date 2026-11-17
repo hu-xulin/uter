@@ -62,13 +62,12 @@ function Input({
         // 清楚区分。若边框也跟着变成 ring 色，会和同色同位的焦点环融成一条
         // 更粗的线，焦点环反而「消失」（PR #31 focus-ring 修复）。
         'border-input hover:border-border-strong file:text-foreground placeholder:text-muted-foreground placeholder:text-sm focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 h-(--ds-control-height-md) w-full min-w-0 rounded-lg border bg-background px-3 py-2.5 transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-2',
-        // placeholder 的「默认文本」按 `--ds-text-sm`（14px，= text-sm）渲染；
-        // 只作用于 ::placeholder，输入文字仍保持 16px，不触发 iOS 聚焦缩放。
-        // 字号统一走 `text-long`（16px）：满足 AES P4 的 H5 无障碍要求
-        // （输入框字号 ≥16px 可阻止 iOS 在聚焦时自动缩放）。mono 只额外叠加
-        // `font-mono` 字形族，不再使用 13px 的 `text-mono` 档 —— size 与字形
-        // 拆成两件事，twMerge 不会再出现「两个字号类并存、源顺序定生死」。
-        useMono ? 'font-mono text-long' : 'text-long',
+        // 输入文字与 placeholder 统一走设计默认正文 `--ds-text-sm`（14px）。
+        // H5（≤767px）的 ≥16px 防缩放由 `src/styles/index.css` 的全局
+        // input/textarea/select 兜底规则承担，组件层不再常驻 16px。
+        // mono 只额外叠加 `font-mono` 字形族，size 与字形拆成两件事，
+        // twMerge 不会再出现「两个字号类并存、源顺序定生死」。
+        useMono ? 'font-mono text-sm' : 'text-sm',
         className
       )}
       {...props}

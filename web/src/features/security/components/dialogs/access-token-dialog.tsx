@@ -49,7 +49,7 @@ export function AccessTokenDialog(props: {
             value={props.token}
             readOnly
             autoComplete='off'
-            className='text-mono font-mono'
+            className='text-sm font-mono'
           />
           <CopyButton
             value={props.token}

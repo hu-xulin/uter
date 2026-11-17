@@ -347,7 +347,7 @@ export function SubscriptionPlansCard({
                 value={billingPreference}
                 onValueChange={(v) => v !== null && handlePreferenceChange(v)}
               >
-                <SelectTrigger className='flex-1 text-sm sm:w-[140px] sm:flex-none'>
+                <SelectTrigger className='flex-1 text-sm sm:min-w-[140px] sm:flex-none'>
                   <SelectValue>
                     {getBillingPreferenceLabel(billingPreference, t)}
                   </SelectValue>

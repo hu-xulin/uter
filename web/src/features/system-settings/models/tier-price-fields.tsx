@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import i18next from 'i18next'
 import { ChevronDown, RefreshCw } from 'lucide-react'
 import { useEffect, useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -186,6 +187,11 @@ const PRESET_SOURCE_OPTIONS: { value: PresetPriceSource; label: string }[] = [
   { value: 'models.dev', label: 'models.dev pricing preset' },
 ]
 
+/** Chinese pricing convention: append 折 only in Chinese UIs. */
+function zheSuffix(zheStr: string): string {
+  return i18next.language?.startsWith('zh') ? ` · ${zheStr}折` : ''
+}
+
 /** Formats a per-dimension discount for display under a Uter price input. */
 function discountHintText(
   discount: ReturnType<typeof computeDimensionDiscount>
@@ -197,7 +203,7 @@ function discountHintText(
     Math.abs(zhe - Math.round(zhe)) < 1e-6
       ? String(Math.round(zhe))
       : zhe.toFixed(1)
-  return `-${Math.round(discount.percent)}% · ${zheStr}折`
+  return `-${Math.round(discount.percent)}%${zheSuffix(zheStr)}`
 }
 
 /**
@@ -212,7 +218,7 @@ function discountSummaryText(ratio: number): string {
     Math.abs(zhe - Math.round(zhe)) < 1e-6
       ? String(Math.round(zhe))
       : zhe.toFixed(1)
-  return `-${Math.round(percent)}% · ${zheStr}折`
+  return `-${Math.round(percent)}%${zheSuffix(zheStr)}`
 }
 
 export function TierPriceFields(props: TierPriceFieldsProps) {
@@ -380,7 +386,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       <SelectTrigger
         aria-label={t('Tier billing mode')}
         size='sm'
-        className='w-full sm:w-48'
+        className='w-full sm:w-fit sm:min-w-48'
       >
         <SelectValue />
       </SelectTrigger>
@@ -442,7 +448,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
                 <SelectTrigger
                   aria-label={t('Official pricing preset')}
                   size='sm'
-                  className='w-full sm:w-52'
+                  className='w-full sm:w-fit sm:min-w-52'
                 >
                   <SelectValue />
                 </SelectTrigger>

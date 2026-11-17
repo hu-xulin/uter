@@ -239,7 +239,7 @@ export function UpstreamRatioSyncTable(props: UpstreamRatioSyncTableProps) {
             }}
             disabled={props.isDisabled}
           >
-            <SelectTrigger className='w-36' aria-label={t('Billing Mode')}>
+            <SelectTrigger className='min-w-36' aria-label={t('Billing Mode')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent alignItemWithTrigger={false}>

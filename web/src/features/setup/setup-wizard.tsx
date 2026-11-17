@@ -299,7 +299,7 @@ export function SetupWizard() {
               <img
                 src={logo}
                 alt={t('System logo')}
-                className='h-12 w-12 rounded-full object-cover'
+                className='h-12 w-12 object-contain'
               />
             )}
           </div>

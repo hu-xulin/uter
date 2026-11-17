@@ -55,12 +55,16 @@ function makeItem(): TaskPluginListItem {
   }
 }
 
-function renderSheet(metaOverrides: Partial<TaskPluginMeta>) {
+function renderSheet(
+  metaOverrides: Partial<TaskPluginMeta>,
+  detailOverrides: Partial<TaskPluginDetail> = {}
+) {
   const item = makeItem()
   const detail: TaskPluginDetail = {
     meta: { ...item.meta, ...metaOverrides },
     source: '',
     layer: 'factory',
+    ...detailOverrides,
   }
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -277,6 +281,31 @@ test('shows the plugin sort priority and HTTPS website in details', async () => 
     'href',
     'https://example.com/plugin'
   )
+})
+
+test('shows plugin parts and pricing issues in the overview', async () => {
+  renderSheet(
+    {},
+    {
+      task: true,
+      provider: true,
+      transform: true,
+      transform_hooks: ['ingress', 'egress'],
+      login: true,
+      refresh: true,
+      pricing_issues: [
+        { model_name: 'ghost-model', plugin_key: 'demo', plugin_name: 'Demo', reason: 'stale' },
+      ],
+    }
+  )
+  expect(await screen.findByText('Capabilities')).toBeVisible()
+  expect(screen.getByText('Task driver')).toBeVisible()
+  expect(screen.getByText('Provider relay')).toBeVisible()
+  expect(screen.getByText('Request processing')).toBeVisible()
+  expect(screen.getByText('Credential login')).toBeVisible()
+  expect(screen.getByText('Token refresh')).toBeVisible()
+  expect(screen.getByText('ghost-model')).toBeVisible()
+  expect(screen.getByText('The plugin no longer offers this model')).toBeVisible()
 })
 
 test('defaults to overview and switches tabs with the keyboard', async () => {

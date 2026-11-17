@@ -38,7 +38,7 @@ function toolbarProps(): PricingToolbarProps {
     quotaTypeFilter: 'all',
     endpointTypeFilter: 'all',
     vendorFilter: 'all',
-    groupFilter: 'all',
+    channelFilter: 'all',
     tagFilter: 'all',
     onSortChange: vi.fn(),
     onTokenUnitChange: vi.fn(),
@@ -47,11 +47,10 @@ function toolbarProps(): PricingToolbarProps {
     onQuotaTypeChange: vi.fn(),
     onEndpointTypeChange: vi.fn(),
     onVendorChange: vi.fn(),
-    onGroupChange: vi.fn(),
+    onChannelChange: vi.fn(),
     onTagChange: vi.fn(),
     vendors: [],
-    groups: ['default', 'premium'],
-    groupRatios: { default: 1, premium: 3 },
+    channels: ['优特渠道', '聚合渠道'],
     tags: [],
     models: [],
     hasActiveFilters: false,
@@ -106,7 +105,7 @@ describe('pricing controls', () => {
       <PricingSidebar {...sidebarProps} models={models} />
     )
 
-    // 「所有供应商」统计的是**供应商数量**（2 个有模型的供应商），不是模型总数。
+    // 「所有厂商」统计的是**厂商数量**（2 个有模型的厂商），不是模型总数。
     expect(
       screen.getByRole('button', { name: /^All Vendors\s*2$/ })
     ).toBeVisible()
@@ -125,7 +124,7 @@ describe('pricing controls', () => {
     ).toBeVisible()
 
     rerender(<PricingSidebar {...sidebarProps} models={[models[1]]} />)
-    // 供应商数量随目录变化：Vendor B 已无模型，被移出列表，剩 1 个。
+    // 厂商数量随目录变化：Vendor B 已无模型，被移出列表，剩 1 个。
     expect(
       screen.getByRole('button', { name: /^All Vendors\s*1$/ })
     ).toBeVisible()
@@ -141,7 +140,7 @@ describe('pricing controls', () => {
     ).toBeVisible()
   })
 
-  // 「所有…」chip 的徽标统一表示该分区的**可选项数量**（分组数、供应商数、
+  // 「所有…」chip 的徽标统一表示该分区的**可选项数量**（渠道数、厂商数、
   // 标签数、计费类型数、端点类型数），不是模型总数。此前五个分区全都显示模型
   // 总数，同一串数字重复 5 遍，看不出这一分区有多少个可选项。
   it('counts the options of each section on its "All" chip', () => {
@@ -161,7 +160,14 @@ describe('pricing controls', () => {
     render(
       <PricingSidebar
         {...props}
-        groups={['default', 'premium', 'vip0', 'vip1', 'vip2', 'vip3']}
+        channels={[
+          '优特渠道',
+          '聚合渠道',
+          '共享渠道',
+          '代理渠道',
+          '内部渠道',
+          '测试渠道',
+        ]}
         vendors={[
           { id: 1, name: 'Vendor A' },
           { id: 2, name: 'Vendor B' },
@@ -175,11 +181,11 @@ describe('pricing controls', () => {
       />
     )
 
-    // 分组数
+    // 渠道数
     expect(
-      screen.getByRole('button', { name: /^All Groups\s*6$/ })
+      screen.getByRole('button', { name: /^All Channels\s*6$/ })
     ).toBeVisible()
-    // 供应商数
+    // 厂商数
     expect(
       screen.getByRole('button', { name: /^All Vendors\s*2$/ })
     ).toBeVisible()
@@ -253,7 +259,7 @@ describe('pricing controls', () => {
     expect(props.onSortChange).toHaveBeenCalledWith('input-price-low')
   })
 
-  it('opens mobile filters from the left, selects a group, and restores focus on close', async () => {
+  it('opens mobile filters from the left, selects a channel, and restores focus on close', async () => {
     const props = toolbarProps()
     const user = userEvent.setup()
     const { rerender } = render(<PricingToolbar {...props} />)
@@ -261,18 +267,18 @@ describe('pricing controls', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Filter' })
     expect(dialog).toHaveAttribute('data-side', 'left')
     expect(within(dialog).getByRole('button', { name: 'Reset' })).toBeDisabled()
-    await user.click(within(dialog).getByRole('button', { name: /premium/ }))
-    expect(props.onGroupChange).toHaveBeenCalledWith('premium')
+    await user.click(within(dialog).getByRole('button', { name: /聚合渠道/ }))
+    expect(props.onChannelChange).toHaveBeenCalledWith('聚合渠道')
     rerender(
       <PricingToolbar
         {...props}
-        groupFilter='premium'
+        channelFilter='聚合渠道'
         hasActiveFilters
         activeFilterCount={1}
       />
     )
     expect(
-      within(dialog).getByRole('button', { name: /premium/ })
+      within(dialog).getByRole('button', { name: /聚合渠道/ })
     ).toHaveAttribute('aria-pressed', 'true')
     await user.click(within(dialog).getByRole('button', { name: 'Reset' }))
     expect(props.onClearFilters).toHaveBeenCalledOnce()
@@ -280,11 +286,11 @@ describe('pricing controls', () => {
     expect(await screen.findByRole('button', { name: /Filter/ })).toHaveFocus()
   })
 
-  // 侧栏筛选按钮统一「一行一个，宽度占行宽 2/3」：此前分组/供应商是两列
+  // 侧栏筛选按钮统一「一行一个，宽度占行宽 2/3」：此前渠道/厂商是两列
   // 定宽、标签是内容瀑布流，同一张侧栏三种排法，长名被挤成省略号。
   it('stacks every filter chip in a single column at two thirds width', () => {
     // 这份用例文件没有全局 afterEach，前一条用例的 DOM 还挂在 body 上，
-    // 不清掉会撞名（同名「All Groups」按钮出现两次）。
+    // 不清掉会撞名（同名「All Channels」按钮出现两次）。
     cleanup()
     const props = toolbarProps()
     const base: PricingModel = {
@@ -307,10 +313,10 @@ describe('pricing controls', () => {
       />
     )
 
-    // 名称末尾带计数（如「All Vendors3」），锚定到结尾才能与同名的分区标题
-    // 按钮（「All Vendors」折叠触发器）区分开。
+    // 名称末尾带计数（如「All Vendors3」），锚定到结尾以精确匹配「所有…」chip，
+    // 不受同分区里具体项名称影响。
     for (const allChip of [
-      /^All Groups\d+$/,
+      /^All Channels\d+$/,
       /^All Vendors\d+$/,
       /^All Tags\d+$/,
     ]) {
@@ -328,8 +334,10 @@ describe('pricing controls', () => {
       }
     }
 
-    // 「所有分组」的徽标是**分组数量**（props.groups.length），不是模型总数。
-    expect(screen.getByRole('button', { name: /^All Groups2$/ })).toBeVisible()
+    // 「所有渠道」的徽标是**渠道数量**（props.channels.length），不是模型总数。
+    expect(
+      screen.getByRole('button', { name: /^All Channels2$/ })
+    ).toBeVisible()
   })
 
   // 工具栏一行里的按钮、分段控件、视图切换必须等高：分段控件原本是写死的

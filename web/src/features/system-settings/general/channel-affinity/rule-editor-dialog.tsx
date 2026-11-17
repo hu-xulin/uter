@@ -387,7 +387,7 @@ export function RuleEditorDialog(props: Props) {
                     setKeySources(next)
                   }}
                 >
-                  <SelectTrigger className='w-full sm:w-[160px]'>
+                  <SelectTrigger className='w-full sm:w-fit sm:min-w-[160px]'>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent alignItemWithTrigger={false}>

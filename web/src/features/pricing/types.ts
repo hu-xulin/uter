@@ -95,6 +95,8 @@ export type PricingModel = {
   audio_ratio?: number | null
   audio_completion_ratio?: number | null
   enable_groups: string[]
+  /** 承载该模型的启用渠道展示名（管理-渠道的 name），用于定价页按渠道筛选。 */
+  channels?: string[]
   tags?: string
   supported_endpoint_types?: string[]
   key?: string

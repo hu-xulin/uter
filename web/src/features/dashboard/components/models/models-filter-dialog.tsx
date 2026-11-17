@@ -198,7 +198,11 @@ export function ModelsFilter(props: ModelsFilterProps) {
       open={open}
       onOpenChange={handleOpenChange}
       trigger={
-        <Button variant='outline' size='sm'>
+        <Button
+          variant='outline'
+          size='sm'
+          className='h-(--ds-control-height-md)'
+        >
           <Filter className='mr-2 h-4.5 w-4.5' />
           {t('Filter')}
         </Button>

@@ -73,10 +73,11 @@ import {
   getTaskPlugin,
   getTaskPluginVersions,
 } from '../api'
-import type { TaskPluginListItem } from '../types'
+import type { TaskPluginDetail, TaskPluginListItem } from '../types'
 import { JavaScriptViewer } from './javascript-viewer'
 import { PluginIcon } from './plugin-icon'
 import { PluginMetadataCard } from './plugin-metadata-card'
+import { PRICING_ISSUE_REASONS } from '@/features/system-settings/models/pricing-issues'
 import { PluginModelList } from './plugin-model-list'
 import { PluginSandbox } from './plugin-sandbox'
 import { SourceDiff } from './source-diff'
@@ -251,7 +252,13 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
           </TabsList>
         </div>
         <TabsContent value='overview' className={panelClassName}>
-          {detailState ?? (detail && <PluginMetadataCard meta={detail.meta} />)}
+          {detailState ??
+            (detail && (
+              <div className='space-y-6'>
+                <PluginPartsAndIssues detail={detail} />
+                <PluginMetadataCard meta={detail.meta} />
+              </div>
+            ))}
         </TabsContent>
         <TabsContent value='billing' className={panelClassName}>
           {detailState ?? (
@@ -384,5 +391,74 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
         </TabsContent>
       </Tabs>
     </SheetContent>
+  )
+}
+
+const ISSUE_VARIANTS = {
+  unconfigured: 'warning',
+  incompatible: 'destructive',
+  stale: 'secondary',
+} as const
+
+function PluginPartsAndIssues(props: { detail: TaskPluginDetail }) {
+  const { t } = useTranslation()
+  const detail = props.detail
+  const parts: Array<{ key: string; label: string }> = []
+  if (detail.task) parts.push({ key: 'task', label: t('Task driver') })
+  if (detail.provider) parts.push({ key: 'provider', label: t('Provider relay') })
+  if (detail.transform) {
+    parts.push({ key: 'transform', label: t('Request processing') })
+  }
+  if (detail.login) parts.push({ key: 'login', label: t('Credential login') })
+  if (detail.refresh) parts.push({ key: 'refresh', label: t('Token refresh') })
+  const issues = detail.pricing_issues ?? []
+  if (parts.length === 0 && issues.length === 0) return null
+  return (
+    <div className='space-y-4'>
+      {parts.length > 0 ? (
+        <section className='space-y-2' aria-label={t('Capabilities')}>
+          <Heading variant='group-title' level={3}>
+            {t('Capabilities')}
+          </Heading>
+          <div className='flex flex-wrap gap-1.5'>
+            {parts.map((part) => (
+              <Badge key={part.key} variant='secondary'>
+                {part.label}
+              </Badge>
+            ))}
+            {detail.transform_hooks?.length ? (
+              <span className='text-muted-foreground text-sm'>
+                {detail.transform_hooks.join(' · ')}
+              </span>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+      {issues.length > 0 ? (
+        <section className='space-y-2' aria-label={t('Pricing Issues')}>
+          <Heading variant='group-title' level={3}>
+            {t('Pricing Issues')}
+          </Heading>
+          <ul className='flex flex-col gap-2'>
+            {issues.map((issue) => (
+              <li
+                key={`${issue.model_name}-${issue.reason}`}
+                className='flex min-w-0 flex-wrap items-center gap-2 rounded-md border p-2.5'
+              >
+                <span className='min-w-0 truncate font-mono text-sm'>
+                  {issue.model_name}
+                </span>
+                <Badge
+                  variant={ISSUE_VARIANTS[issue.reason]}
+                  className='ml-auto'
+                >
+                  {t(PRICING_ISSUE_REASONS[issue.reason])}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </div>
   )
 }

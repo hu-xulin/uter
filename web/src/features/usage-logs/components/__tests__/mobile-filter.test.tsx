@@ -39,6 +39,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
 import zhTW from '@/i18n/locales/zh-TW.json'
 import zh from '@/i18n/locales/zh.json'
+import { Button } from '@/components/ui/button'
 import { api } from '@/lib/api'
 
 import { CommonLogsFilterBar } from '../common-logs-filter-bar'
@@ -277,6 +278,41 @@ it('places the end action between Search and View on desktop', () => {
     .getAllByRole('button')
     .map((button) => button.textContent)
   expect(names.slice(-4)).toEqual(['Reset', 'Search', 'Export', 'View'])
+})
+
+it('keeps Reset, Search, Export and View on the same control height', () => {
+  function HeightFixture() {
+    const table = useReactTable({
+      data: [],
+      columns: [],
+      getCoreRowModel: getCoreRowModel(),
+    })
+    return (
+      <LogsFilterToolbar
+        table={table}
+        primaryFilters={null}
+        actionEnd={
+          <Button
+            type='button'
+            variant='outline'
+            className='h-(--ds-control-height-md)'
+          >
+            Export
+          </Button>
+        }
+        hasActiveFilters={false}
+        onReset={() => {}}
+        onSearch={() => {}}
+      />
+    )
+  }
+  render(<HeightFixture />)
+  for (const name of ['Reset', 'Search', 'Export', 'View']) {
+    const button = screen.getByRole('button', { name })
+    // 同一工具栏区域内的控件与按钮统一为 --ds-control-height-md（40px）。
+    expect(button.className).toContain('h-(--ds-control-height-md)')
+    expect(button.className).not.toContain('h-(--ds-button-height-md)')
+  }
 })
 
 it('collapses only date and statistics while keeping the right-hand quick actions visible', async () => {

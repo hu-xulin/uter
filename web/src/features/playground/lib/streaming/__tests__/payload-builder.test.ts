@@ -29,7 +29,6 @@ import { buildChatCompletionPayload } from '../payload-builder'
 const config: PlaygroundConfig = {
   ...DEFAULT_CONFIG,
   model: 'gpt-test',
-  group: 'vip',
   temperature: 0.3,
   top_p: 0.9,
   max_tokens: 512,
@@ -54,7 +53,7 @@ const userMessage: Message = {
 }
 
 describe('buildChatCompletionPayload', () => {
-  test('always sends model, group, stream and the formatted messages', () => {
+  test('always sends model, stream and the formatted messages', () => {
     const payload = buildChatCompletionPayload(
       [userMessage],
       config,
@@ -62,7 +61,6 @@ describe('buildChatCompletionPayload', () => {
     )
 
     expect(payload.model).toBe('gpt-test')
-    expect(payload.group).toBe('vip')
     expect(payload.stream).toBe(true)
     expect(payload.messages).toEqual([{ role: 'user', content: 'hello' }])
   })

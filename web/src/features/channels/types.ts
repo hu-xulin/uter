@@ -78,6 +78,7 @@ export type Channel = z.infer<typeof channelSchema>
 // ============================================================================
 
 export interface ChannelSettings {
+  pricing_engine?: 'uter' | 'upstream' | ''
   task_plugin_key?: string
   task_extend_plugin_keys?: string[]
   force_format?: boolean
@@ -113,6 +114,7 @@ export interface ChannelOtherSettings {
   upstream_model_update_last_check_time?: number
   upstream_model_update_last_detected_models?: string[]
   advanced_custom?: AdvancedCustomConfig
+  plugin_config?: Record<string, unknown>
 }
 
 export interface AdvancedCustomConfig {

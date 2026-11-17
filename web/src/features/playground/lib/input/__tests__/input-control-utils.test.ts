@@ -18,17 +18,17 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import type { GroupOption, ModelOption } from '../../../types'
+import type { ChannelOption, ModelOption } from '../../../types'
 import {
   getInputControlState,
   getSubmittableInputText,
 } from '../input-control-utils'
 
 const models: ModelOption[] = [{ label: 'gpt-test', value: 'gpt-test' }]
-const groups: GroupOption[] = [{ label: 'default', value: 'default', ratio: 1 }]
+const channels: ChannelOption[] = [{ label: '优特渠道', value: '优特渠道' }]
 
 const baseState = {
-  groups,
+  channels,
   hasStopHandler: true,
   models,
   text: 'hello',
@@ -80,14 +80,14 @@ describe('getInputControlState', () => {
     ).toBe(false)
   })
 
-  test('disables the selectors while loading or without groups', () => {
+  test('disables the selectors while loading or without channels', () => {
     expect(getInputControlState(baseState).isSelectorDisabled).toBe(false)
     expect(
       getInputControlState({ ...baseState, isModelLoading: true })
         .isSelectorDisabled
     ).toBe(true)
     expect(
-      getInputControlState({ ...baseState, groups: [] }).isSelectorDisabled
+      getInputControlState({ ...baseState, channels: [] }).isSelectorDisabled
     ).toBe(true)
     expect(
       getInputControlState({ ...baseState, disabled: true }).isSelectorDisabled

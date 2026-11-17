@@ -8008,6 +8008,8 @@
     "{{count}} change": "{{count}} 處修改",
     "Request plugin": "請求外掛",
     "Request plugin instances": "請求外掛執行個體",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "此外掛未宣告設定欄位；請在下方 JSON 中編輯其設定。",
+    "Configuration fields": "設定欄位",
     "Dry run": "試執行",
     "Request body": "請求內容",
     "Saved": "已儲存",

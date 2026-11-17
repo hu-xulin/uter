@@ -43,6 +43,7 @@ import {
 import { MarketplacePanel } from './components/marketplace-panel'
 import { PluginDetailSheet } from './components/plugin-detail-sheet'
 import { PluginsTable } from './components/plugins-table'
+import { RequestPluginManager } from './components/request-plugin-manager'
 import { UploadDialog } from './components/upload-dialog'
 import type { TaskPluginListItem } from './types'
 
@@ -143,6 +144,7 @@ export function TaskPlugins() {
             <TabsList className='max-w-full flex-wrap justify-start group-data-horizontal/tabs:h-auto'>
               <TabsTrigger value='installed'>{t('Installed')}</TabsTrigger>
               <TabsTrigger value='marketplace'>{t('Marketplace')}</TabsTrigger>
+              <TabsTrigger value='request'>{t('Request plugins')}</TabsTrigger>
             </TabsList>
             <TabsContent value='installed' className='min-h-0 flex-1'>
               <PluginsTable
@@ -152,6 +154,9 @@ export function TaskPlugins() {
             </TabsContent>
             <TabsContent value='marketplace' className='min-h-0 flex-1'>
               <MarketplacePanel />
+            </TabsContent>
+            <TabsContent value='request' className='min-h-0 flex-1 overflow-y-auto'>
+              <RequestPluginManager />
             </TabsContent>
           </Tabs>
         </SectionPageLayout.Content>

@@ -93,6 +93,12 @@ export type TaskPluginOption = {
   models: string[]
   channelTypes?: number[] | null
   upstreams?: string[] | null
+  /** The schema of a request processing instance's config. */
+  configSchema?: Record<string, unknown> | null
+  /** The schema of the channel plugin config, as the plugin declares it. */
+  channelConfig?: Record<string, unknown> | null
+  /** Hint and example of the channel key field, localized. */
+  keyHint?: Record<string, string> | null
 }
 
 export async function getTaskPluginOptions(): Promise<TaskPluginOption[]> {
@@ -711,4 +717,85 @@ export async function getPrefillGroups(
 }> {
   const res = await api.get('/api/prefill_group', { params: { type } })
   return res.data
+}
+
+// ============================================================================
+// Task Plugin Channel Credentials
+// ============================================================================
+
+export type PluginCredentialView = {
+  index: number
+  label: string
+  account_id: string
+  expires_at: number
+  needs_login: boolean
+}
+
+export type PluginLoginField = {
+  name: string
+  label: Record<string, string>
+  type: string
+  required: boolean
+  placeholder?: Record<string, string>
+  description?: Record<string, string>
+}
+
+export type PluginLoginStep = {
+  type: string
+  url?: string
+  hint?: Record<string, string>
+  user_code?: string
+  verification_uri?: string
+  verification_uri_complete?: string
+  interval?: number
+  expires_at?: number
+  fields?: PluginLoginField[]
+  credential?: PluginCredentialView
+}
+
+export type PluginLoginResponse = {
+  success: boolean
+  message?: string
+  data?: {
+    flow?: string
+    step?: PluginLoginStep
+    channel_id?: number
+  }
+}
+
+export async function getPluginCredentials(
+  channelId: number
+): Promise<PluginCredentialView[]> {
+  const res = await api.get<{
+    success: boolean
+    data: { items: PluginCredentialView[] }
+  }>(`/api/channel/${channelId}/plugin_credentials`, channelActionConfig())
+  return requireServerSuccess(res.data).data.items
+}
+
+export async function startPluginLogin(
+  channelId: number,
+  body: { key_index?: number; add?: boolean }
+): Promise<PluginLoginResponse> {
+  const res = await api.post<PluginLoginResponse>(
+    `/api/channel/${channelId}/plugin_login`,
+    body,
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data)
+}
+
+export async function continuePluginLogin(
+  channelId: number,
+  body: {
+    flow: string
+    input: { callback_url?: string; fields?: Record<string, string>; poll?: boolean }
+  }
+): Promise<PluginLoginResponse> {
+  const res = await api.post<PluginLoginResponse>(
+    `/api/channel/${channelId}/plugin_login/continue`,
+    body,
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data)
 }

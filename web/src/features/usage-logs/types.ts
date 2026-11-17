@@ -124,6 +124,64 @@ export interface ToolSurchargeItem {
   price: number
 }
 
+export interface RequestPluginChangeRecord {
+  op: string
+  from?: string
+  path: string
+  value?: unknown
+  type?: string
+  length?: number
+  overridden?: boolean
+}
+
+export interface RequestPluginHeaderChange {
+  set?: string[]
+  remove?: string[]
+  overridden?: string[]
+}
+
+export interface RequestPluginMediaChange {
+  index: number
+  from?: { mime?: string; bytes?: number }
+  to?: { mime?: string; bytes?: number }
+  lossless?: boolean
+}
+
+export interface RequestPluginAttachmentRecord {
+  kind?: string
+  mime?: string
+  status?: string
+  reason?: string
+  rewritten?: boolean
+}
+
+export interface RequestPluginFindingCount {
+  category?: string
+  count: number
+}
+
+// The public audit entry of one request plugin instance run; it never holds
+// old values, matched or masked text, header values or plugin messages.
+export interface RequestPluginRecord {
+  plugin?: string
+  name?: Record<string, string>
+  stage?: string
+  unchecked?: boolean
+  audio?: boolean
+  changes?: RequestPluginChangeRecord[]
+  more_changes?: number
+  headers?: RequestPluginHeaderChange
+  reasoning_effort?: string
+  media?: RequestPluginMediaChange[]
+  attachments?: RequestPluginAttachmentRecord[]
+  more_attachments?: number
+  masked?: number
+  findings?: RequestPluginFindingCount[]
+  notice?: Record<string, string>
+  rejected?: { code?: string }
+  truncated?: number
+}
+
 export interface LogOtherData {
   admin_info?: {
     request_policy?: PolicyEvent[]
@@ -252,6 +310,7 @@ export interface LogOtherData {
   image_generation_call?: boolean
   image_generation_call_price?: number
   image_generation_call_count?: number
+  request_plugins?: RequestPluginRecord[]
   is_system_prompt_overwritten?: boolean
   po?: string[]
   billing_source?: string

@@ -198,7 +198,7 @@ export function ServerLogFiles() {
                     value !== null && setServerLogCleanupMode(value)
                   }
                 >
-                  <SelectTrigger className='w-[160px]'>
+                  <SelectTrigger className='min-w-[160px]'>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent alignItemWithTrigger={false}>

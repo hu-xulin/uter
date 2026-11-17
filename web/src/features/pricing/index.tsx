@@ -34,7 +34,7 @@ import {
   ModelCardGrid,
   ModelDetailsDrawer,
 } from './components'
-import { EXCLUDED_GROUPS, VIEW_MODES } from './constants'
+import { FILTER_ALL, VIEW_MODES } from './constants'
 import { useFilters } from './hooks/use-filters'
 import { usePricingData } from './hooks/use-pricing-data'
 
@@ -64,7 +64,7 @@ export function Pricing() {
     searchInput,
     sortBy,
     vendorFilter,
-    groupFilter,
+    channelFilter,
     quotaTypeFilter,
     endpointTypeFilter,
     tagFilter,
@@ -74,7 +74,7 @@ export function Pricing() {
     setSearchInput,
     setSortBy,
     setVendorFilter,
-    setGroupFilter,
+    setChannelFilter,
     setQuotaTypeFilter,
     setEndpointTypeFilter,
     setTagFilter,
@@ -103,13 +103,15 @@ export function Pricing() {
     [models, selectedModelName]
   )
 
-  const availableGroups = useMemo(
-    () =>
-      Object.keys(usableGroup || {}).filter(
-        (g) => !EXCLUDED_GROUPS.includes(g)
-      ),
-    [usableGroup]
-  )
+  // 渠道筛选的可选值来自目录里每个模型实际承载的启用渠道（管理-渠道的
+  // name），只保留能在当前目录命中的渠道，避免出现点了必然为空的选项。
+  const availableChannels = useMemo(() => {
+    const seen = new Set<string>()
+    for (const model of models || []) {
+      for (const channel of model.channels ?? []) seen.add(channel)
+    }
+    return [...seen]
+  }, [models])
 
   const handleClearAll = useCallback(() => {
     clearFilters()
@@ -136,7 +138,7 @@ export function Pricing() {
           usdExchangeRate={usdExchangeRate}
           tokenUnit={tokenUnit}
           showRechargePrice={showRechargePrice}
-          selectedGroup={groupFilter}
+          selectedGroup={FILTER_ALL}
           pricingSource={pricingSource}
           officialPrices={officialPrices}
           isSuperAdmin={isSuperAdmin}
@@ -151,7 +153,7 @@ export function Pricing() {
         usdExchangeRate={usdExchangeRate}
         tokenUnit={tokenUnit}
         showRechargePrice={showRechargePrice}
-        selectedGroup={groupFilter}
+        selectedGroup={FILTER_ALL}
         pricingSource={pricingSource}
         officialPrices={officialPrices}
         isSuperAdmin={isSuperAdmin}
@@ -208,16 +210,15 @@ export function Pricing() {
               quotaTypeFilter={quotaTypeFilter}
               endpointTypeFilter={endpointTypeFilter}
               vendorFilter={vendorFilter}
-              groupFilter={groupFilter}
+              channelFilter={channelFilter}
               tagFilter={tagFilter}
               onQuotaTypeChange={setQuotaTypeFilter}
               onEndpointTypeChange={setEndpointTypeFilter}
               onVendorChange={setVendorFilter}
-              onGroupChange={setGroupFilter}
+              onChannelChange={setChannelFilter}
               onTagChange={setTagFilter}
               vendors={vendors || []}
-              groups={availableGroups}
-              groupRatios={groupRatio}
+              channels={availableChannels}
               tags={availableTags}
               models={models || []}
               hasActiveFilters={hasActiveFilters}
@@ -240,17 +241,16 @@ export function Pricing() {
                 quotaTypeFilter={quotaTypeFilter}
                 endpointTypeFilter={endpointTypeFilter}
                 vendorFilter={vendorFilter}
-                groupFilter={groupFilter}
+                channelFilter={channelFilter}
                 tagFilter={tagFilter}
                 onQuotaTypeChange={setQuotaTypeFilter}
                 onEndpointTypeChange={setEndpointTypeFilter}
                 onVendorChange={setVendorFilter}
-                onGroupChange={setGroupFilter}
+                onChannelChange={setChannelFilter}
                 onTagChange={setTagFilter}
                 vendors={vendors || []}
-                groups={availableGroups}
-                groupRatios={groupRatio}
-                tags={availableTags}
+                channels={availableChannels}
+                  tags={availableTags}
                 models={models || []}
                 hasActiveFilters={hasActiveFilters}
                 activeFilterCount={activeFilterCount}

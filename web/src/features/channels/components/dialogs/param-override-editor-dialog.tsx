@@ -2411,7 +2411,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                   })
                 }
               >
-                <SelectTrigger className='w-[120px] text-sm'>
+                <SelectTrigger className='min-w-[120px] text-sm'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent alignItemWithTrigger={false}>
@@ -3202,7 +3202,7 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
                 )
               }
             >
-              <SelectTrigger className='w-[110px] text-sm'>
+              <SelectTrigger className='min-w-[110px] text-sm'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
@@ -3255,7 +3255,7 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
                 )
               }
             >
-              <SelectTrigger className='w-[110px] text-sm'>
+              <SelectTrigger className='min-w-[110px] text-sm'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>

@@ -82,6 +82,7 @@ import {
 } from '@/components/ui/form'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { PopoverDescription, PopoverTitle } from '@/components/ui/popover'
 import {
   Select,
@@ -216,6 +217,7 @@ import { ChannelQuickOptions } from '../channel-quick-options'
 import { ChannelTypeLogo } from '../channel-type-badge'
 import { useChannels } from '../channels-provider'
 import { AdvancedCustomEditorDialog } from '../dialogs/advanced-custom-editor-dialog'
+import { ChannelPluginConfigDialog } from '../dialogs/channel-plugin-config-dialog'
 import { ConfigureModelsDialog } from '../dialogs/configure-models-dialog'
 import {
   MissingModelsConfirmationDialog,
@@ -476,6 +478,7 @@ export function ChannelMutateDrawer({
   const [providerTarget, setProviderTarget] =
     useState<ChannelProviderTarget | null>(null)
   const [choosingProvider, setChoosingProvider] = useState(true)
+  const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
     useState<ChannelConfigurationSection>('connection')
   const [pendingErrorFocus, setPendingErrorFocus] = useState<string | null>(
@@ -614,6 +617,7 @@ export function ChannelMutateDrawer({
   const currentAdvancedCustom = formValues.advanced_custom
   const currentHeaderOverride = formValues.header_override
   const currentProxy = formValues.proxy
+  const currentPricingEngine = formValues.pricing_engine || 'inherit'
   const currentHttpProtocol = formValues.http_protocol
   const {
     unlocked: doubaoApiEditUnlocked,
@@ -4405,7 +4409,7 @@ export function ChannelMutateDrawer({
                         value={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger size='sm' className='w-full sm:w-56'>
+                          <SelectTrigger size='sm' className='w-full sm:w-fit sm:min-w-56'>
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
@@ -4564,7 +4568,7 @@ export function ChannelMutateDrawer({
                             readOnly
                             value={channelKey ?? ''}
                             placeholder={t('Hidden — verify to reveal')}
-                            className='text-mono font-mono'
+                            className='text-sm font-mono'
                           />
                         </div>
                       )}
@@ -4841,6 +4845,41 @@ export function ChannelMutateDrawer({
                 className='space-y-4 disabled:opacity-60'
               >
                 {taskPollingFields}
+                <div className='flex flex-col gap-1.5'>
+                  <Label>{t('Pricing stack')}</Label>
+                  <Select
+                    value={currentPricingEngine}
+                    onValueChange={(value) =>
+                      form.setValue(
+                        'pricing_engine',
+                        value === 'inherit'
+                          ? ''
+                          : (value as 'uter' | 'upstream'),
+                        { shouldDirty: true }
+                      )
+                    }
+                  >
+                    <SelectTrigger aria-label={t('Pricing stack')}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value='inherit'>
+                          {t('Follow instance default')}
+                        </SelectItem>
+                        <SelectItem value='uter'>{t('Uter (default)')}</SelectItem>
+                        <SelectItem value='upstream'>
+                          {t('Upstream new-api')}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <p className='text-muted-foreground text-sm'>
+                    {t(
+                      'Overrides the instance pricing stack for this channel only.'
+                    )}
+                  </p>
+                </div>
                 {proxyFields}
                 {httpProtocolFields}
                 {httpShardsFields}
@@ -4938,6 +4977,18 @@ export function ChannelMutateDrawer({
                       )}
                     </Button>
                   )}
+                  {currentType === CHANNEL_TYPE_TASK_PLUGIN &&
+                    currentTaskPluginKey && (
+                      <Button
+                        type='button'
+                        variant='outline'
+                        size='sm'
+                        className='h-(--ds-control-height-md) shrink-0'
+                        onClick={() => setPluginSettingsOpen(true)}
+                      >
+                        {t('Plugin settings')}
+                      </Button>
+                    )}
                 </div>
                 {!isEditing && !showProviderPicker && (
                   <Button
@@ -5135,6 +5186,24 @@ export function ChannelMutateDrawer({
           )}
         </SheetContent>
       </Sheet>
+
+      {currentType === CHANNEL_TYPE_TASK_PLUGIN && currentTaskPluginKey && (
+        <ChannelPluginConfigDialog
+          open={pluginSettingsOpen}
+          onOpenChange={setPluginSettingsOpen}
+          channelId={isEditing ? channelData?.data?.id : undefined}
+          pluginName={boundTaskPlugin?.name || currentTaskPluginKey}
+          keyHint={boundTaskPlugin?.keyHint}
+          schema={boundTaskPlugin?.channelConfig}
+          config={formValues.plugin_config || ''}
+          onConfigChange={(config) =>
+            form.setValue('plugin_config', config, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+        />
+      )}
 
       {open && modelConfiguration && (
         <ConfigureModelsDialog

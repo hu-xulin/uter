@@ -340,7 +340,7 @@ function RawExprEditor({ exprString, onChange }: RawExprEditorProps) {
         onChange={(event) => onChange(event.target.value)}
         placeholder='tier("base", p * 3 + c * 15)'
         rows={6}
-        className='text-mono font-mono'
+        className='text-sm font-mono'
         spellCheck={false}
       />
     </div>
@@ -422,7 +422,7 @@ function RuleConditionRow({
         value={timeCond.mode}
         onValueChange={(v) => v !== null && handleModeChange(v)}
       >
-        <SelectTrigger className='w-32'>
+        <SelectTrigger className='min-w-32'>
           <SelectValue>{getMatchLabel(timeCond.mode)}</SelectValue>
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -476,7 +476,7 @@ function RuleConditionRow({
         value={phCond.mode}
         onValueChange={(v) => v !== null && handleModeChange(v)}
       >
-        <SelectTrigger className='w-32'>
+        <SelectTrigger className='min-w-32'>
           <SelectValue>{getMatchLabel(phCond.mode)}</SelectValue>
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -514,7 +514,7 @@ function RuleConditionRow({
         value={condition.source}
         onValueChange={(v) => v !== null && handleSourceChange(v)}
       >
-        <SelectTrigger className='w-28'>
+        <SelectTrigger className='min-w-28'>
           <SelectValue>{sourceLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -1031,7 +1031,7 @@ function LlmPromptHelper({ modelName }: LlmPromptHelperProps) {
             value={prompt}
             readOnly
             rows={8}
-            className='text-mono font-mono'
+            className='text-sm font-mono'
             spellCheck={false}
           />
         </div>
@@ -1198,7 +1198,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
           >
             <SelectTrigger
               aria-label={t('Editor mode')}
-              className='w-full sm:w-56'
+              className='w-full sm:w-fit sm:min-w-56'
               size='sm'
             >
               <SelectValue />

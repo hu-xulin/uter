@@ -70,14 +70,14 @@ export function filterByVendor(
 }
 
 /**
- * Filter models by group
+ * Filter models by the enabled channel that serves them (管理-渠道的展示名).
  */
-export function filterByGroup(
+export function filterByChannel(
   models: PricingModel[],
-  group: string
+  channel: string
 ): PricingModel[] {
-  if (group === FILTER_ALL) return models
-  return models.filter((m) => m.enable_groups?.includes(group))
+  if (channel === FILTER_ALL) return models
+  return models.filter((m) => m.channels?.includes(channel))
 }
 
 /**
@@ -207,7 +207,7 @@ export function filterAndSortModels(
   filters: {
     search: string
     vendor: string
-    group: string
+    channel: string
     quotaType: string
     endpointType: string
     tag: string
@@ -216,7 +216,7 @@ export function filterAndSortModels(
 ): PricingModel[] {
   let result = filterBySearch(models, filters.search)
   result = filterByVendor(result, filters.vendor)
-  result = filterByGroup(result, filters.group)
+  result = filterByChannel(result, filters.channel)
   result = filterByQuotaType(result, filters.quotaType)
   result = filterByEndpointType(result, filters.endpointType)
   result = filterByTag(result, filters.tag)

@@ -114,7 +114,7 @@ function ComparisonOperator(props: {
     >
       <SelectTrigger
         size='sm'
-        className='w-20'
+        className='min-w-20'
         aria-label={t('Comparison operator')}
       >
         <SelectValue />
@@ -389,7 +389,7 @@ export function VisualConditionTree(props: ConditionProps) {
             <SelectTrigger
               aria-label={t('Condition group')}
               size='sm'
-              className='bg-background w-36'
+              className='bg-background min-w-36'
             >
               <SelectValue />
             </SelectTrigger>

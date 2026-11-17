@@ -36,7 +36,7 @@ export const DEFAULT_SYSTEM_NAME = 'Uter'
  * Keep this in sync with the `link rel="icon"` href in `web/index.html`,
  * which is a static template and cannot import this constant.
  */
-export const LOGO_ASSET_VERSION = '8'
+export const LOGO_ASSET_VERSION = '16'
 export const DEFAULT_LOGO = `/logo.png?v=${LOGO_ASSET_VERSION}`
 
 /**
@@ -55,7 +55,7 @@ export const DEFAULT_LOGO = `/logo.png?v=${LOGO_ASSET_VERSION}`
  * `link rel="icon"` href in `web/index.html`, which is a static template and
  * cannot import this constant.
  */
-export const FAVICON_ICO_VERSION = '2'
+export const FAVICON_ICO_VERSION = '9'
 export const FAVICON_URL = `/favicon-legacy.ico?v=${FAVICON_ICO_VERSION}`
 
 // LocalStorage Keys

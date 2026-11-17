@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { GroupOption, ModelOption } from '../../types'
+import type { ChannelOption, ModelOption } from '../../types'
 
 export function getModelFallback(
   models: ModelOption[],
@@ -31,7 +31,7 @@ export function getModelFallback(
   return models[0].value
 }
 
-export function shouldClearModelForGroup(
+export function shouldClearModelForChannel(
   models: ModelOption[],
   currentModel: string
 ): boolean {
@@ -42,19 +42,19 @@ export function shouldClearModelForGroup(
   return !models.some((model) => model.value === currentModel)
 }
 
-export function getGroupFallback(
-  groups: GroupOption[],
-  currentGroup: string
+export function getChannelFallback(
+  channels: ChannelOption[],
+  currentChannel: string
 ): string | null {
-  const hasCurrentGroup = groups.some((group) => group.value === currentGroup)
+  const hasCurrentChannel = channels.some(
+    (channel) => channel.value === currentChannel
+  )
 
-  if (hasCurrentGroup || groups.length === 0) {
+  if (hasCurrentChannel || channels.length === 0) {
     return null
   }
 
-  return (
-    groups.find((group) => group.value === 'default')?.value ?? groups[0].value
-  )
+  return channels[0].value
 }
 
 export function getOptionLoadErrorMessage(

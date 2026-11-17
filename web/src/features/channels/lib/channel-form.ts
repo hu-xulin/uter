@@ -209,6 +209,7 @@ export const channelFormSchema = z
     type: z.number().min(0, ERROR_MESSAGES.REQUIRED_TYPE),
     base_url: z.string().optional(),
     task_plugin_key: z.string().optional(),
+    pricing_engine: z.enum(['', 'uter', 'upstream']).optional(),
     task_extend_plugin_keys: z.array(z.string()).optional(),
     key: z.string(),
     openai_organization: z.string().optional(),
@@ -255,6 +256,10 @@ export const channelFormSchema = z
       .optional()
       .refine(isOptionalJsonObject, ERROR_MESSAGES.INVALID_JSON),
     advanced_custom: z.string().optional(),
+    plugin_config: z
+      .string()
+      .optional()
+      .refine(isOptionalJsonObject, ERROR_MESSAGES.INVALID_JSON),
     other: z.string().optional(),
     // Multi-key options (not sent to backend directly)
     multi_key_mode: z.enum(['single', 'batch', 'multi_to_single']).optional(),
@@ -435,6 +440,7 @@ export const CHANNEL_FORM_DEFAULT_VALUES: ChannelFormValues = {
   type: 1,
   base_url: '',
   task_plugin_key: '',
+  pricing_engine: '',
   task_extend_plugin_keys: [],
   key: '',
   openai_organization: '',
@@ -490,6 +496,7 @@ export const CHANNEL_FORM_DEFAULT_VALUES: ChannelFormValues = {
   upstream_model_update_auto_sync_enabled: false,
   upstream_model_update_ignored_models: '',
   advanced_custom: '',
+  plugin_config: '',
 }
 
 // ============================================================================
@@ -505,6 +512,7 @@ export function transformChannelToFormDefaults(
   // Parse channel extra settings from setting field
   let extraSettings = {
     task_plugin_key: '',
+    pricing_engine: '' as '' | 'uter' | 'upstream',
     task_extend_plugin_keys: [] as string[],
     force_format: false,
     thinking_to_content: false,
@@ -527,6 +535,10 @@ export function transformChannelToFormDefaults(
       )
       extraSettings = {
         task_plugin_key: parsed.task_plugin_key || '',
+        pricing_engine:
+          parsed.pricing_engine === 'uter' || parsed.pricing_engine === 'upstream'
+            ? parsed.pricing_engine
+            : '',
         task_extend_plugin_keys: readTaskExtendPluginKeys(channel.type, parsed),
         force_format: parsed.force_format || false,
         thinking_to_content: parsed.thinking_to_content || false,
@@ -566,6 +578,7 @@ export function transformChannelToFormDefaults(
   let upstreamModelUpdateAutoSyncEnabled = false
   let upstreamModelUpdateIgnoredModels = ''
   let advancedCustom = ''
+  let pluginConfig = ''
 
   if (channel.settings) {
     try {
@@ -596,6 +609,9 @@ export function transformChannelToFormDefaults(
         : ''
       if (parsed.advanced_custom) {
         advancedCustom = stringifyAdvancedCustomConfig(parsed.advanced_custom)
+      }
+      if (parsed.plugin_config) {
+        pluginConfig = JSON.stringify(parsed.plugin_config, null, 2)
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -651,6 +667,7 @@ export function transformChannelToFormDefaults(
     upstream_model_update_auto_sync_enabled: upstreamModelUpdateAutoSyncEnabled,
     upstream_model_update_ignored_models: upstreamModelUpdateIgnoredModels,
     advanced_custom: advancedCustom,
+    plugin_config: pluginConfig,
   }
 }
 
@@ -663,6 +680,7 @@ export function buildSettingJSON(formData: ChannelFormValues): string {
       formData.type === CHANNEL_TYPE_TASK_PLUGIN
         ? formData.task_plugin_key?.trim() || ''
         : undefined,
+    pricing_engine: formData.pricing_engine || undefined,
     task_extend_plugin_keys:
       formData.type === CHANNEL_TYPE_NEW_API &&
       formData.task_extend_plugin_keys?.length
@@ -714,6 +732,19 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
       // eslint-disable-next-line no-console
       console.error('Failed to parse existing settings:', error)
     }
+  }
+
+  // A task plugin channel's plugin config is validated against the plugin's
+  // channelConfig schema when the channel is saved.
+  if (formData.type === CHANNEL_TYPE_TASK_PLUGIN) {
+    const pluginConfig = formData.plugin_config?.trim()
+    if (pluginConfig) {
+      settingsObj.plugin_config = JSON.parse(pluginConfig)
+    } else {
+      delete settingsObj.plugin_config
+    }
+  } else {
+    delete settingsObj.plugin_config
   }
 
   // Add vertex_key_type for Vertex AI channels (type 41)

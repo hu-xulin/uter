@@ -253,7 +253,7 @@ function GroupSection(props: GroupSectionProps) {
                   }
                 >
                   <SelectTrigger
-                    className='w-full sm:w-[130px]'
+                    className='w-full sm:w-fit sm:min-w-[130px]'
                     aria-label={t('Group visibility')}
                   >
                     <SelectValue>

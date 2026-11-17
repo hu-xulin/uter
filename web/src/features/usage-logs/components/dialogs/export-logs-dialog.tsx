@@ -142,7 +142,11 @@ export function ExportLogsDialog() {
       open={open}
       onOpenChange={handleOpenChange}
       trigger={
-        <Button type='button' variant='outline'>
+        <Button
+          type='button'
+          variant='outline'
+          className='h-(--ds-control-height-md)'
+        >
           {t('Export')}
         </Button>
       }

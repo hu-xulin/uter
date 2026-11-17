@@ -56,7 +56,7 @@ export function DataTableViewOptions<TData>({
         render={
           <Button
             variant='outline'
-            className='shrink-0'
+            className='h-(--ds-control-height-md) shrink-0'
             aria-label={t('View')}
           />
         }

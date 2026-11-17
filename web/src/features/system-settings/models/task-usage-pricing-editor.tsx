@@ -459,7 +459,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
           >
             <SelectTrigger
               aria-label={t('Editor mode')}
-              className='w-full sm:w-56'
+              className='w-full sm:w-fit sm:min-w-56'
               size='sm'
             >
               <SelectValue />
@@ -632,7 +632,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                 }
                 placeholder='(header("x-priority") == "high" ? 2 : 1)'
                 rows={3}
-                className='text-mono font-mono'
+                className='text-sm font-mono'
                 spellCheck={false}
               />
               <FieldDescription>
@@ -672,7 +672,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
               onChange={(event) => handleRawChange(event.target.value)}
               placeholder='tier("base", u("seconds") * 0.4)'
               rows={7}
-              className='text-mono font-mono'
+              className='text-sm font-mono'
               spellCheck={false}
             />
             <TaskBillingPreview

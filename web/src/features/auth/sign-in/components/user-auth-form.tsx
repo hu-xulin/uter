@@ -391,6 +391,7 @@ export function UserAuthForm({
         consentRequired={requiresLegalConsent && !agreedToLegal}
         consentRequiredMessage={legalConsentErrorMessage}
       />
+
     </>
   )
 
@@ -503,6 +504,7 @@ export function UserAuthForm({
                 placeholder={t('Enter your email')}
                 value={codeEmail}
                 onChange={(event) => setCodeEmail(event.target.value)}
+                className='sm:text-sm'
               />
             </div>
 
@@ -517,6 +519,7 @@ export function UserAuthForm({
                   autoComplete='one-time-code'
                   maxLength={6}
                   placeholder={t('Enter the verification code')}
+                  className='sm:text-sm'
                   value={codeValue}
                   onChange={(event) =>
                     setCodeValue(event.target.value.replaceAll(/\D/g, ''))

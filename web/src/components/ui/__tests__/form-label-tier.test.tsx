@@ -16,6 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { render, screen } from '@testing-library/react'
 import { useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
@@ -25,6 +29,8 @@ import { Form, FormField, FormItem, FormLabel } from '../form'
 import { FormLabelTierProvider } from '../form-label-tier'
 import { Input } from '../input'
 import { Label } from '../label'
+import { NativeSelect } from '../native-select'
+import { Textarea } from '../textarea'
 
 /**
  * 设置页「名称 + 说明」三层档位的运行时守卫。
@@ -149,23 +155,45 @@ describe('分组容器', () => {
 })
 
 describe('mono values', () => {
-  it('Input 的 mono 走等宽字形 + 16px（font-mono text-long），不再用 13px text-mono 档', () => {
+  it('Input 的 mono 走等宽字形 + 设计默认 14px（font-mono text-sm）', () => {
     render(<Input mono aria-label='secret' />)
     const input = screen.getByLabelText('secret')
     const tokens = classes(input)
     expect(tokens).toContain('font-mono')
-    expect(tokens).toContain('text-long')
-    // AES P4：H5 输入框字号 ≥16px（防 iOS 聚焦自动缩放），等宽值不再用 13px
-    // 的 text-mono 档，size 统一走 text-long，字形族单独保留 font-mono。
-    expect(tokens).not.toContain('text-sm')
+    expect(tokens).toContain('text-sm')
+    // 输入文字统一 14px；H5 ≥16px 由 index.css 全局兜底，不再用 16px 的
+    // text-long 或 13px 的 text-mono 档，字形族单独保留 font-mono。
+    expect(tokens).not.toContain('text-long')
     expect(tokens).not.toContain('text-mono')
     expect(input.getAttribute('data-mono')).toBe('true')
   })
 
-  it('未开 mono 的输入框 ≥16px（text-long）以满足 H5 无障碍', () => {
+  it('未开 mono 的输入框走设计默认 14px（text-sm）', () => {
     render(<Input aria-label='plain' />)
     const input = screen.getByLabelText('plain')
-    expect(classes(input)).toContain('text-long')
+    expect(classes(input)).toContain('text-sm')
+    expect(classes(input)).not.toContain('text-long')
     expect(classes(input)).not.toContain('font-mono')
+  })
+
+  it('Textarea 与 NativeSelect 同样走设计默认 14px（text-sm）', () => {
+    render(
+      <>
+        <Textarea aria-label='plain-textarea' />
+        <NativeSelect aria-label='plain-select' />
+      </>
+    )
+    expect(classes(screen.getByLabelText('plain-textarea'))).toContain('text-sm')
+    expect(classes(screen.getByLabelText('plain-select'))).toContain('text-sm')
+  })
+
+  it('H5（≤767px）输入字号 ≥16px 的全局兜底仍生效', () => {
+    const css = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), '../../..', 'styles/index.css'),
+      'utf8'
+    )
+    expect(css).toMatch(
+      /@media \(max-width: 767px\) \{[\s\S]*?input,[\s\S]*?textarea,[\s\S]*?select[\s\S]*?font-size: max\(1rem, 0\.875em\);/
+    )
   })
 })

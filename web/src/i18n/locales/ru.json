@@ -8008,6 +8008,8 @@
     "{{count}} change": "Изменение: {{count}}",
     "Request plugin": "Плагин запросов",
     "Request plugin instances": "Экземпляры плагинов запросов",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "Плагин не объявляет поля конфигурации; измените его конфигурацию в JSON ниже.",
+    "Configuration fields": "Поля конфигурации",
     "Dry run": "Пробный запуск",
     "Request body": "Тело запроса",
     "Saved": "Сохранено",

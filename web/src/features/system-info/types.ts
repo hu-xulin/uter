@@ -86,6 +86,37 @@ export type SystemInstanceDeleteResponse = {
   }
 }
 
+export type NodeSyncTopic = {
+  topic: string
+  revision: number
+  updated_at: number
+  updated_by: string
+}
+
+export type NodeSyncNodeTopic = {
+  synced: boolean
+  applied_at: number
+  error: string
+  errors: Record<string, string>
+}
+
+export type NodeSyncNode = {
+  node_name: string
+  online: boolean
+  topics: Record<string, NodeSyncNodeTopic>
+}
+
+export type NodeSync = {
+  topics: NodeSyncTopic[]
+  nodes: NodeSyncNode[]
+}
+
+export type NodeSyncResponse = {
+  success: boolean
+  message: string
+  data?: NodeSync
+}
+
 export type SystemTaskHistoryDeleteResponse = {
   success: boolean
   message: string

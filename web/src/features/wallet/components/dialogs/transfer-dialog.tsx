@@ -139,7 +139,7 @@ export function TransferDialog({
             min={minimumAmount}
             max={maximumAmount}
             step={minimumAmount}
-            className='text-mono font-mono'
+            className='text-sm font-mono'
           />
           <p className='text-muted-foreground text-sm'>
             {t('Minimum:')} {formatQuota(minimumQuota)}

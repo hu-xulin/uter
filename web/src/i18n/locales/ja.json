@@ -8008,6 +8008,8 @@
     "{{count}} change": "{{count}} 件の変更",
     "Request plugin": "リクエストプラグイン",
     "Request plugin instances": "リクエストプラグインのインスタンス",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "このプラグインは設定項目を宣言していません。下の JSON で設定を編集してください。",
+    "Configuration fields": "設定項目",
     "Dry run": "ドライラン",
     "Request body": "リクエスト本文",
     "Saved": "保存しました",

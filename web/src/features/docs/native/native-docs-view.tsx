@@ -123,6 +123,20 @@ export function NativeDocsView({
     setToc(items)
   }, [Doc, locale])
 
+  // 法务协议的首个表格只做「版本/字段对照」，表头不参与内容分区：
+  // 文档路由同样去掉第一张表的 sunken 底色（SPA 法务页已有同一处理），
+  // 其他文档与后续表格仍沿用 PROSE_CLASSES 的表头底。
+  const isLegalDoc = pagePath.replace(/\/+$/, '').startsWith('legal/')
+  useEffect(() => {
+    if (!isLegalDoc) return
+    const thead = articleRef.current?.querySelector('table thead')
+    if (!(thead instanceof HTMLElement)) return
+    thead.style.backgroundColor = 'transparent'
+    return () => {
+      thead.style.removeProperty('background-color')
+    }
+  }, [Doc, locale, isLegalDoc])
+
   // The guide's landing is a synthesised card page, not a Markdown
   // document. Applying the prose scale here would override its `page-title`
   // (30/38/600, §1.8) with the Markdown h1 rule (20/28) and restyle the

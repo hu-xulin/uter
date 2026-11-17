@@ -8008,6 +8008,8 @@
     "{{count}} change": "{{count}} 处修改",
     "Request plugin": "请求插件",
     "Request plugin instances": "请求插件实例",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "该插件未声明配置字段；请在下方 JSON 中编辑其配置。",
+    "Configuration fields": "配置字段",
     "Dry run": "试运行",
     "Request body": "请求体",
     "Saved": "已保存",

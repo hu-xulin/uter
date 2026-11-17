@@ -214,7 +214,7 @@ export const ModelPricingEditorPanel = forwardRef<
   },
   ref
 ) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const promptPriceId = useId()
   const formElementRef = useRef<HTMLFormElement>(null)
   const currencyConfig = useSystemConfigStore((state) => state.config.currency)
@@ -377,7 +377,8 @@ export const ModelPricingEditorPanel = forwardRef<
           Math.abs(zhe - Math.round(zhe)) < 1e-6
             ? String(Math.round(zhe))
             : zhe.toFixed(1)
-        discountLabel = `-${Math.round(discount.percent)}% · ${zheStr}折`
+        const zheSuffix = i18n.language?.startsWith('zh') ? ` · ${zheStr}折` : ''
+        discountLabel = `-${Math.round(discount.percent)}%${zheSuffix}`
       } else if (discount.tone === 'markup') {
         discountLabel = `+${Math.round(discount.percent)}%`
       } else {
@@ -408,7 +409,8 @@ export const ModelPricingEditorPanel = forwardRef<
           Math.abs(zhe - Math.round(zhe)) < 1e-6
             ? String(Math.round(zhe))
             : zhe.toFixed(1)
-        discountLabel = `-${Math.round(discount.percent)}% · ${zheStr}折`
+        const zheSuffix = i18n.language?.startsWith('zh') ? ` · ${zheStr}折` : ''
+        discountLabel = `-${Math.round(discount.percent)}%${zheSuffix}`
       } else if (discount.tone === 'markup') {
         discountLabel = `+${Math.round(discount.percent)}%`
       } else {
@@ -416,7 +418,7 @@ export const ModelPricingEditorPanel = forwardRef<
       }
     }
     return { officialLabel, discountLabel, discountTone }
-  }, [officialRatios, watchedValues.price, currency, t])
+  }, [officialRatios, watchedValues.price, currency, t, i18n.language])
 
   const defaultTaskBillingExpr = useMemo(
     () =>

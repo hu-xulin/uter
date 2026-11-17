@@ -323,7 +323,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
               { value: 'fixed', label: t('Specified time') },
             ]}
           >
-            <SelectTrigger id={timeId} className='w-full sm:w-56'>
+            <SelectTrigger id={timeId} className='w-full sm:w-fit sm:min-w-56'>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -338,7 +338,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
               value={fixedTime}
               onChange={(event) => setFixedTime(event.target.value)}
               placeholder='2026-09-07T09:00:00+08:00'
-              className='text-mono font-mono'
+              className='text-sm font-mono'
             />
           )}
           <FieldDescription>

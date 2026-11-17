@@ -71,7 +71,11 @@ export function ModelsChartPreferences(props: ModelsChartPreferencesProps) {
       open={open}
       onOpenChange={handleOpenChange}
       trigger={
-        <Button variant='outline' size='sm'>
+        <Button
+          variant='outline'
+          size='sm'
+          className='h-(--ds-control-height-md)'
+        >
           <Settings2 className='mr-2 h-4.5 w-4.5' />
           {t('Preferences')}
         </Button>

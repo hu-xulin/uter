@@ -61,7 +61,7 @@ export function SystemBrand(props: SystemBrandProps) {
         // 品牌名可见，aria-label 只写「返回主页」会与之冲突。
         aria-label={`${name} · ${t('Go to home')}`}
         className={cn(
-          'text-foreground inline-flex h-7 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
+          'text-foreground inline-flex h-9 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
           'hover:bg-accent focus-visible:ring-ring focus-visible:ring-2'
         )}
       >
@@ -72,7 +72,7 @@ export function SystemBrand(props: SystemBrandProps) {
           <img
             src={logo}
             alt={t('Logo')}
-            className='size-full rounded-lg object-cover'
+            className='size-full rounded-lg object-contain'
           />
         </div>
         <span className='font-brand max-w-[12rem] truncate'>{name}</span>
@@ -88,11 +88,11 @@ export function SystemBrand(props: SystemBrandProps) {
           className='hover:text-sidebar-foreground active:text-sidebar-foreground cursor-default hover:bg-transparent active:bg-transparent'
           render={<div />}
         >
-          <div className='flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg'>
+          <div className='flex size-9 items-center justify-center overflow-hidden rounded-lg'>
             <img
               src={logo}
               alt={t('Logo')}
-              className='size-full rounded-lg object-cover'
+              className='size-full rounded-lg object-contain'
             />
           </div>
           <div className='grid flex-1 text-start text-sm group-data-[collapsible=icon]:hidden'>

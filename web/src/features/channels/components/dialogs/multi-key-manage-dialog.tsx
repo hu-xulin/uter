@@ -299,7 +299,7 @@ export function MultiKeyManageDialog({
               value={statusFilter === null ? 'all' : statusFilter.toString()}
               onValueChange={(v) => v !== null && handleStatusFilterChange(v)}
             >
-              <SelectTrigger className='w-40'>
+              <SelectTrigger className='min-w-40'>
                 <SelectValue placeholder={t('All Status')} />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>

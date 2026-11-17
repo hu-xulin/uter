@@ -48,10 +48,10 @@ function Textarea({
         // 焦点态不改边框色（不设 focus-visible:border-ring）：2px 满色焦点环
         // 单独承担焦点指示（PR #31 focus-ring 修复），边框保持 border-input。
         'border-input hover:border-border-strong placeholder:text-muted-foreground placeholder:text-sm focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-lg border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-2',
-        // 与 Input 一致：字号统一走 `text-long`（16px）满足 AES P4 H5 无障碍
-        // （≥16px 防 iOS 聚焦自动缩放）；mono 仅额外叠 `font-mono` 字形族，
-        // 不再用 13px 的 `text-mono` 档，size 与字形拆开避免 twMerge 冲突。
-        mono ? 'font-mono text-long' : 'text-long',
+        // 与 Input 一致：设计默认正文 `--ds-text-sm`（14px）；H5 的 ≥16px
+        // 防缩放由 `src/styles/index.css` 的全局兜底规则承担。
+        // mono 仅额外叠 `font-mono` 字形族，size 与字形拆开避免 twMerge 冲突。
+        mono ? 'font-mono text-sm' : 'text-sm',
         className
       )}
       {...props}

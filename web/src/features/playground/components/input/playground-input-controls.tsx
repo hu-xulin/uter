@@ -24,17 +24,17 @@ import { PromptInputButton } from '@/components/ai-elements/prompt-input'
 import { ModelGroupSelector } from '@/components/model-group-selector'
 
 import { getInputControlState } from '../../lib'
-import type { GroupOption, ModelOption } from '../../types'
+import type { ChannelOption, ModelOption } from '../../types'
 
 type PlaygroundInputControlsProps = {
   disabled?: boolean
-  groups: GroupOption[]
-  groupValue: string
+  channels: ChannelOption[]
+  channelValue: string
   isGenerating?: boolean
   isModelLoading?: boolean
   models: ModelOption[]
   modelValue: string
-  onGroupChange: (value: string) => void
+  onChannelChange: (value: string) => void
   onModelChange: (value: string) => void
   onStop?: () => void
   text: string
@@ -43,13 +43,13 @@ type PlaygroundInputControlsProps = {
 
 export function PlaygroundInputControls({
   disabled,
-  groups,
-  groupValue,
+  channels,
+  channelValue,
   isGenerating,
   isModelLoading = false,
   models,
   modelValue,
-  onGroupChange,
+  onChannelChange,
   onModelChange,
   onStop,
   text,
@@ -59,7 +59,7 @@ export function PlaygroundInputControls({
   const { canSubmit, isSelectorDisabled, shouldShowStop } =
     getInputControlState({
       disabled,
-      groups,
+      channels,
       hasStopHandler: Boolean(onStop),
       isGenerating,
       isModelLoading,
@@ -72,9 +72,9 @@ export function PlaygroundInputControls({
       selectedModel={modelValue}
       models={models}
       onModelChange={onModelChange}
-      selectedGroup={groupValue}
-      groups={groups}
-      onGroupChange={onGroupChange}
+      selectedChannel={channelValue}
+      channels={channels}
+      onChannelChange={onChannelChange}
       disabled={isSelectorDisabled}
     />
   )

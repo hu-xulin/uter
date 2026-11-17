@@ -125,7 +125,9 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   const isActive = checkIsActive(href, item)
   // Server-served routes (the embedded product specification centre) are not
   // part of the SPA route tree; a TanStack <Link> would render the SPA 404.
-  const serverServed = href.startsWith('/product-spec')
+  // Must be decided from the item's own URL: `href` is the *current* location,
+  // so checking it made every non-product-spec page link through the router.
+  const serverServed = String(item.url).startsWith('/product-spec')
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -141,7 +143,10 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
         className='font-medium'
         render={
           serverServed ? (
-            <a href={href} onClick={() => setOpenMobile(false)} />
+            <a
+              href={String(item.url)}
+              onClick={() => setOpenMobile(false)}
+            />
           ) : (
             <Link
               to={item.url}

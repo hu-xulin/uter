@@ -70,9 +70,9 @@ export function DataTableViewModeToggle(props: DataTableViewModeToggleProps) {
       role='group'
       aria-label={t('View mode')}
       className={cn(
-        // 与同一行的按钮同高：跟 --ds-button-height-sm 走，密度切换时一起变，
-        // 不再写死 h-8（紧凑密度下会比按钮高出 4px）。
-        'bg-muted/60 inline-flex h-(--ds-button-height-sm) items-center rounded-lg border p-0.5',
+        // 与同一行的输入框 / 选择器同高：跟 --ds-control-height-md 走，
+        // 密度切换时一起变。
+        'bg-muted/60 inline-flex h-(--ds-control-height-md) items-center rounded-lg border p-0.5',
         props.className
       )}
     >

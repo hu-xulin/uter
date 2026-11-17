@@ -41,19 +41,19 @@ import { useTranslation } from 'react-i18next'
 import { handleServerError } from '@/lib/handle-server-error'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
-import { getUserGroups, getUserModels } from '../api'
+import { getUserChannels, getUserModels } from '../api'
 import {
-  getGroupFallback,
+  getChannelFallback,
   getModelFallback,
   getOptionLoadErrorMessage,
-  shouldClearModelForGroup,
+  shouldClearModelForChannel,
 } from '../lib'
-import type { GroupOption, ModelOption, PlaygroundConfig } from '../types'
+import type { ChannelOption, ModelOption, PlaygroundConfig } from '../types'
 
 type UsePlaygroundOptionsParams = {
-  currentGroup: string
+  currentChannel: string
   currentModel: string
-  setGroups: (groups: GroupOption[]) => void
+  setChannels: (channels: ChannelOption[]) => void
   setModels: (models: ModelOption[]) => void
   updateConfig: <K extends keyof PlaygroundConfig>(
     key: K,
@@ -62,9 +62,9 @@ type UsePlaygroundOptionsParams = {
 }
 
 export function usePlaygroundOptions({
-  currentGroup,
+  currentChannel,
   currentModel,
-  setGroups,
+  setChannels,
   setModels,
   updateConfig,
 }: UsePlaygroundOptionsParams) {
@@ -76,19 +76,19 @@ export function usePlaygroundOptions({
     isError: isModelsError,
     isLoading: isLoadingModels,
   } = useQuery({
-    queryKey: ['playground-models', currentGroup],
+    queryKey: ['playground-models', currentChannel],
     queryFn: async () =>
-      requireServerSuccess(await getUserModels(currentGroup)),
-    enabled: currentGroup !== '',
+      requireServerSuccess(await getUserModels(currentChannel)),
+    enabled: currentChannel !== '',
   })
 
   const {
-    data: groupsData,
-    error: groupsError,
-    isError: isGroupsError,
+    data: channelsData,
+    error: channelsError,
+    isError: isChannelsError,
   } = useQuery({
-    queryKey: ['playground-groups'],
-    queryFn: async () => requireServerSuccess(await getUserGroups()),
+    queryKey: ['playground-channels'],
+    queryFn: async () => requireServerSuccess(await getUserChannels()),
   })
 
   useEffect(() => {
@@ -104,16 +104,16 @@ export function usePlaygroundOptions({
   }, [isModelsError, modelsError, t])
 
   useEffect(() => {
-    if (!isGroupsError) return
+    if (!isChannelsError) return
 
     handleServerError(
-      groupsError,
+      channelsError,
       getOptionLoadErrorMessage(
-        groupsError,
-        t('Failed to load playground groups')
+        channelsError,
+        t('Failed to load playground channels')
       )
     )
-  }, [isGroupsError, groupsError, t])
+  }, [isChannelsError, channelsError, t])
 
   useEffect(() => {
     if (!modelsData) return
@@ -126,21 +126,21 @@ export function usePlaygroundOptions({
       return
     }
 
-    if (shouldClearModelForGroup(modelsData, currentModel)) {
+    if (shouldClearModelForChannel(modelsData, currentModel)) {
       updateConfig('model', '')
     }
   }, [modelsData, currentModel, setModels, updateConfig])
 
   useEffect(() => {
-    if (!groupsData) return
+    if (!channelsData) return
 
-    setGroups(groupsData)
-    const fallback = getGroupFallback(groupsData, currentGroup)
+    setChannels(channelsData)
+    const fallback = getChannelFallback(channelsData, currentChannel)
 
     if (fallback) {
-      updateConfig('group', fallback)
+      updateConfig('channel', fallback)
     }
-  }, [groupsData, currentGroup, setGroups, updateConfig])
+  }, [channelsData, currentChannel, setChannels, updateConfig])
 
   return {
     isLoadingModels,

@@ -85,14 +85,12 @@ export function LogsFilterField(props: LogsFilterFieldProps) {
 }
 
 export function LogsFilterInput(props: ComponentProps<typeof Input>) {
-  // `text-sm` 只在非 mono 时加：`text-mono` 是自定义 token，twMerge 不认它是
-  // 字号类，两者会同时存在、由 CSS 源顺序决定胜负。等宽字段的字号只能来自
-  // `text-mono`（14/20）。
+  // 字号统一由 Input 基座给出（14px，mono 只换字形族），调用点不再叠加字号类。
   return (
     <Input
       {...props}
       autoComplete='off'
-      className={cn('min-w-0', !props.mono && 'text-sm', props.className)}
+      className={cn('min-w-0', props.className)}
     />
   )
 }
@@ -125,7 +123,7 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
       onClick={() => setAdvancedOpen((open) => !open)}
       aria-expanded={advancedOpen}
       className={cn(
-        'text-muted-foreground hover:text-foreground gap-1 px-2',
+        'text-muted-foreground hover:text-foreground h-(--ds-control-height-md) gap-1 px-2',
         props.hasAdvancedActiveFilters &&
           !advancedOpen &&
           'text-fg-link hover:text-fg-link'
@@ -277,9 +275,8 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
         {props.stats}
         <div className='ms-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2'>
           {props.actionStart}
-          {/* 操作按钮与筛选行里的输入框同高（`--ds-control-height-md`）。
-              Button 的高度写在 size 变体里，与这里的同名工具类同组，
-              twMerge 会让后写的这一个生效。 */}
+          {/* 同一工具栏区域内，按钮与输入框 / 选择器统一为控件高度
+              （`--ds-control-height-md`，40px）；上一行筛选控件也是这个高度。 */}
           <Button
             type='button'
             variant='outline'

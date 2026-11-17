@@ -95,6 +95,11 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
 
       {/* Row 2: source, runtime, and plugin version badges wrap freely. */}
       <div className='flex flex-wrap items-center gap-1.5'>
+        {row.original.transform ? (
+          <Badge variant='outline' className='font-normal'>
+            {t('Request plugin')}
+          </Badge>
+        ) : null}
         {renderCell('source')}
         {renderCell('runtime')}
         <Badge

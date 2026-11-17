@@ -97,7 +97,7 @@ export function PricingCurrencySelector(props: {
       >
         <SelectTrigger
           id={id}
-          className='w-full sm:w-64'
+          className='w-full sm:w-fit sm:min-w-64'
           aria-describedby={
             props.siteCurrency && !available ? `${id}-error` : undefined
           }

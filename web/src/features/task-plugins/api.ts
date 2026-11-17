@@ -219,3 +219,51 @@ export async function setTaskPluginEnabledOption(enabled: boolean) {
   )
   requireSuccess(response.data)
 }
+
+/** One request processing instance, as the settings API stores it. */
+export type RequestPluginInstance = {
+  id: string
+  name: string
+  plugin: string
+  enabled: boolean
+  global: boolean
+  groups: string[]
+  models: string[]
+  config: Record<string, unknown>
+  plugin_scope?: { models?: string[]; channel_types?: number[] }
+}
+
+export async function listRequestPluginInstances(): Promise<
+  RequestPluginInstance[]
+> {
+  const response = await api.get<
+    ApiResponse<{ instances: RequestPluginInstance[] }>
+  >('/api/request_plugin/instances')
+  return requireSuccess(response.data)?.instances ?? []
+}
+
+export async function updateRequestPluginInstances(
+  instances: RequestPluginInstance[]
+): Promise<RequestPluginInstance[]> {
+  const response = await api.put<
+    ApiResponse<{ instances: RequestPluginInstance[] }>
+  >('/api/request_plugin/instances', { instances }, mutationConfig)
+  return requireSuccess(response.data)?.instances ?? []
+}
+
+/** Runs the saved instances, or one unsaved instance, without sending or charging a request. */
+export async function dryRunRequestPlugins(input: {
+  format: string
+  model: string
+  path?: string
+  group?: string
+  body: unknown
+  reply?: string
+}): Promise<unknown> {
+  const response = await api.post<ApiResponse<unknown>>(
+    '/api/request_plugin/dry_run',
+    input,
+    mutationConfig
+  )
+  return requireSuccess(response.data)
+}

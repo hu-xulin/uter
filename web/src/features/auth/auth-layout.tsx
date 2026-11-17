@@ -21,41 +21,48 @@ import { useTranslation } from 'react-i18next'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { BRAND_LOGO_BOX_CLASS, localizedBrandName } from '@/lib/brand'
 
 type AuthLayoutProps = {
   children: React.ReactNode
 }
 
 export function AuthLayout({ children }: AuthLayoutProps) {
-  const { t } = useTranslation()
-  const { systemName, logo, loading } = useSystemConfig()
+  const { t, i18n } = useTranslation()
+  const { logo, loading } = useSystemConfig()
+  const brandName = localizedBrandName(i18n.language)
 
   return (
     <div data-auth-surface='' className='relative grid h-svh max-w-none'>
       <Link
         to='/'
-        className='absolute top-4 left-4 z-10 flex items-center gap-2 transition-opacity hover:opacity-80 sm:top-8 sm:left-8'
+        className='absolute top-4 left-4 z-10 flex items-center gap-2.5 transition-opacity hover:opacity-80 sm:top-8 sm:left-8'
       >
-        <div className='relative h-8 w-8'>
+        <div className={BRAND_LOGO_BOX_CLASS}>
           {loading ? (
-            <Skeleton className='absolute inset-0 rounded-full' />
+            <Skeleton className='size-full rounded-lg' />
           ) : (
             <img
               src={logo}
               alt={t('Logo')}
-              className='h-8 w-8 rounded-full object-cover'
+              className='size-full rounded-lg object-contain'
             />
           )}
         </div>
         {loading ? (
-          <Skeleton className='h-6 w-24' />
+          <Skeleton className='h-4 w-16' />
         ) : (
           /*
            * 这里是「logo + 站名」的品牌锁定区，属于标志而非页面标题：
-           * 页面标题由登录卡自身的标题承担。用 span + 阶梯内的 18/26/600，
+           * 页面标题由登录卡自身的标题承担。用 span + 阶梯内的 20/28/600，
            * 不用 h1（h1 恒为 30/38/600，见规范 §1.3 四层标题）。
            */
-          <span className='font-brand text-lg font-semibold'>{systemName}</span>
+          <span
+            className='font-brand max-w-48 truncate text-xl font-semibold'
+            title={brandName}
+          >
+            {brandName}
+          </span>
         )}
       </Link>
       <div className='container flex items-center pt-16 sm:pt-0'>

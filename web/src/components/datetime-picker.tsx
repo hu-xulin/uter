@@ -110,7 +110,9 @@ export function DateTimePicker({
             <Button
               variant='outline'
               className={cn(
-                'flex-1 justify-between font-normal',
+                // 与同一行的 Input / 清除按钮同高（40px），避免日期、时间、
+                // 清除三块出现 36/40 的高度差。
+                'h-(--ds-control-height-md) flex-1 justify-between px-3 text-sm font-normal',
                 !date && 'text-muted-foreground'
               )}
             />
@@ -139,7 +141,7 @@ export function DateTimePicker({
         value={time}
         aria-label={t('Time')}
         onChange={handleTimeChange}
-        className='w-32 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+        className='h-(--ds-control-height-md) w-32 appearance-none text-sm tabular-nums [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
         disabled={!date}
       />
       {date && (
@@ -148,7 +150,7 @@ export function DateTimePicker({
           variant='outline'
           size='icon'
           onClick={handleClear}
-          className='shrink-0'
+          className='size-(--ds-control-height-md) shrink-0 p-0'
           aria-label={t('Clear')}
         >
           <span aria-hidden='true'>✕</span>

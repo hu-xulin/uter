@@ -155,8 +155,15 @@ export function PluginsTable(props: PluginsTableProps) {
                 />
               </span>
               <div className='min-w-0'>
-                <div className='truncate text-sm font-medium'>
-                  {row.original.meta.name}
+                <div className='flex items-center gap-1.5'>
+                  <span className='truncate text-sm font-medium'>
+                    {row.original.meta.name}
+                  </span>
+                  {row.original.transform ? (
+                    <Badge variant='outline' className='shrink-0 font-normal'>
+                      {t('Request plugin')}
+                    </Badge>
+                  ) : null}
                 </div>
                 <div className='text-muted-foreground text-mono truncate font-mono'>
                   {row.original.meta.key}

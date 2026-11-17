@@ -62,7 +62,7 @@ import { ChannelSyncModelsTable } from './channel-sync-models-table'
  * 价格规则（对应后端 dreamRouterRuleFactor）：
  *   - increase（加价）：uter 价 = 官方基准价 × (上游折扣 r + 幅度)
  *   - decrease（降价）：uter 价 = 官方基准价 × (上游折扣 r − 幅度)
- * 幅度以「折」为单位（0.1 = 1 折）。降价幅度若超过上游折扣本身，算出的价格
+ * 幅度以「折」为单位（0.05 = 5 个百分点）。降价幅度若超过上游折扣本身，算出的价格
  * 非正，后端会跳过该模型不改价并记录告警。
  *
  * 口令是 secret option：后端 GET /api/option/ 以掩码串下发，浏览器永远拿不到
@@ -123,7 +123,7 @@ export function ChannelSyncSection({ defaultValues }: Props) {
         DreamRouterSyncRuleDirection:
           asText(defaultValues.DreamRouterSyncRuleDirection) || 'increase',
         DreamRouterSyncRuleAmount:
-          asText(defaultValues.DreamRouterSyncRuleAmount) || '0.1',
+          asText(defaultValues.DreamRouterSyncRuleAmount) || '0.05',
       }),
       [defaultValues]
     ),
@@ -369,13 +369,13 @@ export function ChannelSyncSection({ defaultValues }: Props) {
                         autoComplete='off'
                         {...field}
                         value={asText(field.value)}
-                        placeholder='0.1'
+                        placeholder='0.05'
                         disabled={updateOption.isPending}
                       />
                     </FormControl>
                     <FormDescription>
                       {t(
-                        'In discount steps: 0.1 means one tenth of the base price. A decrease larger than the upstream discount is skipped (it would produce a non-positive price).'
+                        'In discount steps: 0.05 adds five percentage points to the upstream discount (for example, upstream 60% → Uter 65%). A decrease larger than the upstream discount is skipped (it would produce a non-positive price).'
                       )}
                     </FormDescription>
                     <FormMessage />

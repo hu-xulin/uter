@@ -36,7 +36,7 @@ import type {
   PlaygroundConfig,
   ParameterEnabled,
   ModelOption,
-  GroupOption,
+  ChannelOption,
 } from '../types'
 
 const MESSAGE_SAVE_DEBOUNCE_MS = 500
@@ -61,7 +61,7 @@ export function usePlaygroundState() {
   const hasLoadedMessagesRef = useRef(false)
 
   const [models, setModels] = useState<ModelOption[]>([])
-  const [groups, setGroups] = useState<GroupOption[]>([])
+  const [channels, setChannels] = useState<ChannelOption[]>([])
 
   const { schedule: scheduleMessageLoad } = useTimeout()
 
@@ -159,11 +159,11 @@ export function usePlaygroundState() {
     messages,
     isLoadingMessages,
     models,
-    groups,
+    channels,
 
     // Setters
     setModels,
-    setGroups,
+    setChannels,
 
     // Actions
     updateConfig,

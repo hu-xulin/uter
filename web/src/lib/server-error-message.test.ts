@@ -17,6 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import i18next from 'i18next'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
 
 import {
@@ -90,6 +92,40 @@ describe('server error message mapping', () => {
       expect(
         getServerErrorMessage({ isAxiosError: true, response: { data } })
       ).toBe('额度超出有效范围，最大为 100')
+    } finally {
+      await i18next.changeLanguage('en')
+    }
+  })
+
+  test('renders the backend verification-code key in Chinese from the shipped catalog', async () => {
+    // 该 message_key 曾未进入语言包，中文界面直接漏出英文（登录验证码错误）。
+    const key = 'Verification code is incorrect or has expired'
+    const locales = ['en', 'zh', 'zh-TW', 'fr', 'ja', 'ru', 'vi']
+    const catalogs = Object.fromEntries(
+      locales.map((locale) => [
+        locale,
+        JSON.parse(
+          readFileSync(
+            join(process.cwd(), 'src/i18n/locales', `${locale}.json`),
+            'utf8'
+          )
+        ).translation as Record<string, string>,
+      ])
+    )
+    for (const locale of locales) {
+      expect(catalogs[locale][key], locale).toBeTruthy()
+    }
+
+    i18next.addResourceBundle('zhCN', 'translation', catalogs.zh, true, true)
+    await i18next.changeLanguage('zhCN')
+    try {
+      expect(
+        getServerErrorMessage({
+          success: false,
+          message: key,
+          message_key: key,
+        })
+      ).toBe('验证码错误或已过期')
     } finally {
       await i18next.changeLanguage('en')
     }

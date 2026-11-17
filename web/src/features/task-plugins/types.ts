@@ -100,6 +100,9 @@ export type TaskPluginListItem = {
   factory_meta?: TaskPluginMeta
   channel_count: number
   in_flight_count: number
+  /** 请求处理插件不声明任务平台或路由；transform_hooks 为其运行的阶段。 */
+  transform?: boolean
+  transform_hooks?: string[]
 }
 
 export type TaskPluginUsage = {
@@ -107,12 +110,29 @@ export type TaskPluginUsage = {
   in_flight_count: number
 }
 
-export type TaskPluginDetail = {
+export type ModelPricingIssue = {
+  model_name: string
+  plugin_key: string
+  plugin_name: string
+  reason: 'unconfigured' | 'incompatible' | 'stale'
+}
+
+export type TaskPluginParts = {
+  task?: boolean
+  provider?: boolean
+  transform?: boolean
+  transform_hooks?: string[]
+  login?: boolean
+  refresh?: boolean
+}
+
+export type TaskPluginDetail = TaskPluginParts & {
   plugin?: TaskPluginRecord
   meta: TaskPluginMeta
   source: string
   layer: 'factory' | 'override'
   has_icon?: boolean
+  pricing_issues?: ModelPricingIssue[]
 }
 
 export type ApiResponse<T> = {

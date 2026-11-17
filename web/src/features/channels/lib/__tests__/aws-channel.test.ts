@@ -76,3 +76,63 @@ test('changing an AWS channel to another provider removes the AWS interface sett
   expect(settings).not.toHaveProperty('aws_api_type')
   expect(settings).not.toHaveProperty('aws_key_type')
 })
+
+test('a task plugin channel round-trips its plugin config and drops it on other types', () => {
+  const pluginForm = channelFormSchema.parse({
+    ...CHANNEL_FORM_DEFAULT_VALUES,
+    name: 'Plugin',
+    type: 61,
+    base_url: 'https://vendor.example',
+    key: 'sk-key',
+    models: 'video-model',
+    task_plugin_key: 'vendor',
+    plugin_config: '{"region":"eu"}',
+  })
+  const pluginPayload = transformFormDataToCreatePayload(pluginForm).channel
+  expect(JSON.parse(pluginPayload.setting ?? '{}')).toMatchObject({
+    task_plugin_key: 'vendor',
+  })
+  expect(JSON.parse(pluginPayload.settings ?? '{}')).toMatchObject({
+    plugin_config: { region: 'eu' },
+  })
+
+  const plainForm = channelFormSchema.parse({
+    ...CHANNEL_FORM_DEFAULT_VALUES,
+    name: 'OpenAI',
+    type: 1,
+    key: 'sk-key',
+    models: 'gpt-4o',
+    plugin_config: '{"region":"eu"}',
+  })
+  const plainPayload = transformFormDataToCreatePayload(plainForm).channel
+  expect(JSON.parse(plainPayload.settings ?? '{}')).not.toHaveProperty(
+    'plugin_config'
+  )
+})
+
+test('a channel pricing-engine override round-trips and an empty one is omitted', () => {
+  const overridden = channelFormSchema.parse({
+    ...CHANNEL_FORM_DEFAULT_VALUES,
+    name: 'Upstream priced',
+    type: 1,
+    key: 'sk-key',
+    models: 'gpt-4o',
+    pricing_engine: 'upstream',
+  })
+  const payload = transformFormDataToCreatePayload(overridden).channel
+  expect(JSON.parse(payload.setting ?? '{}')).toMatchObject({
+    pricing_engine: 'upstream',
+  })
+
+  const inherited = channelFormSchema.parse({
+    ...CHANNEL_FORM_DEFAULT_VALUES,
+    name: 'Inherited',
+    type: 1,
+    key: 'sk-key',
+    models: 'gpt-4o',
+  })
+  const inheritedPayload = transformFormDataToCreatePayload(inherited).channel
+  expect(JSON.parse(inheritedPayload.setting ?? '{}')).not.toHaveProperty(
+    'pricing_engine'
+  )
+})

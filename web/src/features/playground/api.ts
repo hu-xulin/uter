@@ -24,7 +24,7 @@ import type {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ModelOption,
-  GroupOption,
+  ChannelOption,
 } from './types'
 
 /**
@@ -42,11 +42,11 @@ export async function sendChatCompletion(
 }
 
 /**
- * Get user available models
+ * Get the models served by one channel within the user's usable groups.
  */
-export async function getUserModels(group: string): Promise<ModelOption[]> {
+export async function getUserModels(channel: string): Promise<ModelOption[]> {
   const res = await api.get(API_ENDPOINTS.USER_MODELS, {
-    params: { group },
+    params: { channel },
   })
   const { data } = res
   requireServerSuccess(data)
@@ -62,27 +62,19 @@ export async function getUserModels(group: string): Promise<ModelOption[]> {
 }
 
 /**
- * Get user groups
+ * Get the enabled channels serving the user's usable groups (admin channel names).
  */
-export async function getUserGroups(): Promise<GroupOption[]> {
-  const res = await api.get(API_ENDPOINTS.USER_GROUPS)
+export async function getUserChannels(): Promise<ChannelOption[]> {
+  const res = await api.get(API_ENDPOINTS.USER_CHANNELS)
   const { data } = res
   requireServerSuccess(data)
 
-  if (!data.success || !data.data) {
+  if (!data.success || !Array.isArray(data.data)) {
     return []
   }
 
-  const groupData = data.data as Record<
-    string,
-    { desc: string; ratio: number | string }
-  >
-
-  // label is for button display (name only); desc is for dropdown content
-  return Object.entries(groupData).map(([group, info]) => ({
-    label: group,
-    value: group,
-    ratio: info.ratio,
-    desc: info.desc,
+  return data.data.map((channel: string) => ({
+    label: channel,
+    value: channel,
   }))
 }

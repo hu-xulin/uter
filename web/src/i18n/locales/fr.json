@@ -8008,6 +8008,8 @@
     "{{count}} change": "{{count}} modification",
     "Request plugin": "Plugin de requête",
     "Request plugin instances": "Instances de plugins de requête",
+    "This plugin declares no configuration fields; edit its config in the JSON below.": "Ce plugin ne déclare aucun champ de configuration ; modifiez sa configuration dans le JSON ci-dessous.",
+    "Configuration fields": "Champs de configuration",
     "Dry run": "Exécution à blanc",
     "Request body": "Corps de la requête",
     "Saved": "Enregistré",

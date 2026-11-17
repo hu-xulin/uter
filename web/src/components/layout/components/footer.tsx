@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -117,14 +117,10 @@ function FooterLinkItem(props: { link: FooterLink }) {
 /**
  * In-app route of each legal document.
  *
- * A footer legal link has to land where the top nav's 文档 link lands: on the
- * SPA route, which frames the exported docs page under the app's own
- * `PublicHeader`. Sending the reader to the exported page directly
- * (`/docs/<locale>/legal/<doc>/`) leaves the app behind and hands the top of
- * the screen to the docs site's own header — a bar that collapses into a
- * centred floating capsule once the page scrolls, instead of the app's
- * full-width solid one. The same document then appeared under two different
- * chromes depending on where it was opened from.
+ * Only used as the fallback destination when `docs_link` is repointed at an
+ * external knowledge base: the bundled docs page no longer exists, so the
+ * footer sends the reader to the SPA legal page, which renders the
+ * admin-configured text.
  */
 const LEGAL_ROUTES = {
   'user-agreement': '/user-agreement',
@@ -139,20 +135,15 @@ type LegalDocId = keyof typeof LEGAL_ROUTES
 // required to surface all three). Emits fragmented siblings so the parent flex
 // container's gap controls spacing.
 //
-// Each link keeps a real, independently resolvable destination as its `href`
-// — the bundled docs page, `/docs/<locale>/legal/<doc>` — but a plain left
-// click is routed in-app through {@link LEGAL_ROUTES}, so the reader stays
-// under the app shell. The `href` is what a crawler, a link unfurler or
-// anyone the reader shares the URL with follows; modified clicks (middle
-// click, ⌘/Ctrl-click, "open in new tab") are left to the browser and open
-// that standalone page.
+// Each link points at the very same URL the docs sidebar uses for that
+// document — `/docs/<locale>/legal/<doc>` — so the footer and the docs page
+// share one document and one address instead of a second SPA copy.
 //
 // When an admin repoints `docs_link` at an external knowledge base there is no
 // bundled page to link to and the SPA routes fall back to the configured text,
-// so the `href` becomes the SPA route itself.
+// so the destination becomes the SPA route itself.
 function LegalLinks(props: { leadingSeparator?: boolean }) {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const docsLocale = resolveDocsLocaleCode(i18n.language)
   // Always point the links at the bundled legal-doc pages; admins that repoint
   // `docs_link` elsewhere lose the bundled pages, but the site footer is fixed
@@ -177,19 +168,6 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
     },
   ]
 
-  // Modified clicks and non-primary buttons stay with the browser, so the
-  // standalone docs page remains one keystroke away; everything else is
-  // handled by the router and never reloads the document.
-  const openInApp = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-    id: LegalDocId
-  ) => {
-    if (event.defaultPrevented || event.button !== 0) return
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-    event.preventDefault()
-    navigate({ to: LEGAL_ROUTES[id] })
-  }
-
   if (items.length === 0) {
     return null
   }
@@ -205,13 +183,12 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
               ·
             </span>
           )}
-          <a
-            href={item.href}
-            onClick={(event) => openInApp(event, item.id)}
+          <Link
+            to={item.href}
             className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
           >
             {item.label}
-          </a>
+          </Link>
         </Fragment>
       ))}
     </>
@@ -229,7 +206,9 @@ function legalPageHref(
   useDocsPages: boolean,
   docsLocale: DocsLocaleCode
 ): string {
-  return useDocsPages ? legalDocsPathFor(docsLocale, docId) : `/${docId}`
+  return useDocsPages
+    ? legalDocsPathFor(docsLocale, docId)
+    : LEGAL_ROUTES[docId]
 }
 
 // The filing numbers, rendered as the middle block of the footer row.
