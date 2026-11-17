@@ -147,7 +147,7 @@ export function health() {
   const compatibilityAdr = exists(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'))
     ? readText(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md')) : '';
   checks.compatibility_boundary_documented = compatibilityAdr.includes('3.0 runtime compatibility boundary')
-    && compatibilityAdr.includes('explicitly authorizes');
+    && compatibilityAdr.includes('明确授权迁移');
   checks.uap_md_present = listFiles(uapPath(), {
     recursive: true, filter: (a) => a.endsWith('.md'),
   }).length >= 1;
