@@ -166,39 +166,64 @@ export const validators = {
     const adr0001 = exists(rootPath('docs/adr/0001-uter-design-system-single-source-of-truth.md'))
       ? readText(rootPath('docs/adr/0001-uter-design-system-single-source-of-truth.md')) : '';
 
+    const adrRows = [...adrReadme.matchAll(/^\\|\\s*\\[(ADR-\\d{4})\\]\\(([^)]+)\\)\\s*\\|\\s*([^|]+?)\\s*\\|\\s*(Proposed|Accepted|Rejected|Deprecated|Superseded)\\s*\\|\\s*(\\d{4}-\\d{2}-\\d{2})\\s*\\|$/gm)];
+    const adrRecords = adrRows.map((row) => {
+      const fileRel = `docs/adr/${row[2]}`;
+      const body = exists(rootPath(fileRel)) ? readText(rootPath(fileRel)) : '';
+      const frontmatter = (body.match(/^---\\s*\\n([\\s\\S]*?)\\n---/) || [])[1] || '';
+      const field = (key) => {
+        const line = frontmatter.split('\\n').find((item) => item.startsWith(`${key}:`));
+        return line ? line.slice(key.length + 1).trim().replace(/^["']|["']$/g, '') : '';
+      };
+      return { id: row[1], fileRel, status: row[4], date: row[5], body,
+        frontmatterId: field('id'), frontmatterStatus: field('status'), frontmatterDate: field('date') };
+    });
+    const adrIds = adrRecords.map((a) => a.id);
+    const adrRecordsValid = adrRecords.length > 0
+      && new Set(adrIds).size === adrIds.length
+      && adrRecords.every((a) => a.body.length > 0 && a.id === a.frontmatterId
+        && a.status === a.frontmatterStatus && a.date === a.frontmatterDate);
+    const acceptedAdrEvidence = adrRecords.filter((a) => a.status === 'Accepted').every((a) => {
+      const refs = [...a.body.matchAll(/`((?:docs|web|\\.uap)\\/[^\`]+)`/g)].map((m) => m[1]);
+      return refs.filter((p) => exists(rootPath(p))).length >= 2;
+    });
     const rRecords = {
       name: 'decision_records',
-      ok: !!adrReadme && !!adr0001 && ['ADR', '决策', '背景', '备选方案', '状态'].every((k) => spec.text.includes(k))
-        && /Accepted|Proposed|Deprecated|Superseded/.test(adrReadme),
-      detail: `docs/adr/README.md(bytes=${adrReadme.length}) 与 0001 ADR(bytes=${adr0001.length}) 存在; README 含状态枚举=${/Accepted|Proposed|Deprecated|Superseded/.test(adrReadme)}; 规范含 ADR/背景/备选方案/状态=${['ADR', '决策', '背景', '备选方案', '状态'].every((k) => spec.text.includes(k))}`,
+      ok: !!adrReadme && adrRecordsValid && acceptedAdrEvidence
+        && ['ADR', '决策', '背景', '备选方案', '状态'].every((k) => spec.text.includes(k))
+        && /Accepted|Proposed|Rejected|Deprecated|Superseded/.test(adrReadme),
+      detail: `ADR 索引条目=${adrRecords.length}; ID 唯一=${new Set(adrIds).size === adrIds.length}; frontmatter ID/status/date 与索引一致=${adrRecordsValid}; Accepted ADR 至少引用 2 个真实文件=${acceptedAdrEvidence}; 规范含 ADR/背景/备选方案/状态=${['ADR', '决策', '背景', '备选方案', '状态'].every((k) => spec.text.includes(k))}`,
     };
     const depSpec = specById(configs).get('UAP-02-001');
     const depTargetExists = !!depSpec && exists(rootPath(depSpec.file));
-    // ADR-0001 records the historically accepted 3.0 runtime baseline. The
-    // 3.0 source document was later retired while UDS 8.0.0 is acceptance-ready
-    // (not yet accepted); verify the current canonical docs and explicit
-    // compatibility boundary rather than requiring the deleted historical path.
     const designOverview = exists(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md'))
       ? readText(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md')) : '';
     const tokenManifest = readJSON(rootPath('docs/design-system/TOKEN-MANIFEST.json'), null);
-    const migrationReport = exists(rootPath('docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md'))
-      ? readText(rootPath('docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md')) : '';
+    const acceptanceRel = 'docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md';
+    const acceptance = exists(rootPath(acceptanceRel)) ? readText(rootPath(acceptanceRel)) : '';
+    const compatibilityAdr = adrRecords.find((a) => a.id === 'ADR-0002');
     const currentDesignEvidence = !!tokenManifest
       && tokenManifest.version === '8.0.0'
       && tokenManifest.status === 'ACCEPTANCE_READY'
-      && designOverview.includes('UDS 8.0.0 是唯一现行规范')
-      && migrationReport.includes('当前字号真值') && migrationReport.includes('B6') && migrationReport.includes('DONE_VERIFIED');
+      && designOverview.includes('UDS 8.0.0 是唯一现行设计系统')
+      && designOverview.includes('TOKEN-MANIFEST.json')
+      && acceptance.includes('ACCEPTANCE_READY')
+      && /accepted\\s*=\\s*false/i.test(acceptance);
+    const compatibilityBoundaryRecorded = !!compatibilityAdr
+      && compatibilityAdr.status === 'Accepted'
+      && compatibilityAdr.body.includes('3.0 runtime compatibility boundary')
+      && compatibilityAdr.body.includes('explicitly authorizes');
     const rTrace = {
       name: 'decision_traceability',
-      ok: depTargetExists && /Accepted/i.test(adr0001)
+      ok: depTargetExists && adrRecordsValid && acceptedAdrEvidence
         && exists(rootPath('go.mod')) && exists(rootPath('web/package.json'))
-        && currentDesignEvidence
+        && currentDesignEvidence && compatibilityBoundaryRecorded
         && ['追溯', '依赖标准'].every((k) => spec.text.includes(k)),
-      detail: `依赖标准 UAP-02-001 文件存在=${depTargetExists}; 0001 ADR 含 Accepted=${/Accepted/i.test(adr0001)}; go.mod/web/package.json 存在=${exists(rootPath('go.mod')) && exists(rootPath('web/package.json'))}; 当前设计证据(UDS8.0.0总纲+Manifest+迁移报告+B6迁移状态)=${currentDesignEvidence}; 规范含 追溯/依赖标准=${['追溯', '依赖标准'].every((k) => spec.text.includes(k))}`,
+      detail: `依赖标准 UAP-02-001 文件存在=${depTargetExists}; ADR 索引/文件/frontmatter 一致=${adrRecordsValid}; Accepted ADR 代码/文档引用存在=${acceptedAdrEvidence}; go.mod/web/package.json 存在=${exists(rootPath('go.mod')) && exists(rootPath('web/package.json'))}; 当前 UDS 总纲+Manifest+正式报告为 ACCEPTANCE_READY/accepted=false=${currentDesignEvidence}; ADR-0002 明确保留 3.0 runtime compatibility boundary=${compatibilityBoundaryRecorded}`,
     };
     return assemble('architecture.adr_integrity', checks, [rRecords, rTrace], {
       started, registry, evidence_refs: evidenceIds,
-      note: '真实读取 docs/adr 决策记录与真实技术栈文件, 复核决策→代码可追溯',
+      note: '解析 ADR 索引与 frontmatter、验证唯一 ID/状态/日期、Accepted 决策的真实文件引用及 UDS 当前验收/兼容边界证据',
     });
   },
 };
