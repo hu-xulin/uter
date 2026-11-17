@@ -95,6 +95,9 @@ const LEGACY_CONTEXT =
   /UDS|DESIGN[ -]?SYSTEM|设计系统|设计体系|Showcase|规范|迁移|兼容|版本|Token/i
 const LEGACY_NAME =
   /(?:UDS|DESIGN[-_ ]?SYSTEM)[-_ ]?[3567]\.|archive-[3567]\.|COMPAT-MAP|MIGRATION-REPORT|SHOWCASE-[3567]\./i
+const LEGACY_COMPATIBILITY_POLICY_FILE = 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'
+const LEGACY_ALLOWED_POLICY_LINE = /UDS\\s+3\\.0\\s+runtime compatibility boundary/i
+const LEGACY_ALLOWED_POLICY_AUTH = /ADR-0002|明确授权迁移|project owner explicitly authorizes migration/i
 
 function legacyScan() {
   const hits = []
@@ -131,7 +134,12 @@ function legacyScan() {
     }
     text.split('\n').forEach((line, i) => {
       if (LEGACY_VERSION.test(line) && LEGACY_CONTEXT.test(line)) {
-        hits.push({ file: r, line: i + 1, kind: 'text' })
+        // A single accepted ADR records the temporary compatibility boundary.
+        // Ignore only that policy file and explicit ADR-0002 authorization lines;
+        // legacy token/code references remain fail-closed findings.
+        const documentedBoundaryPolicy = r === LEGACY_COMPATIBILITY_POLICY_FILE
+          || (LEGACY_ALLOWED_POLICY_LINE.test(line) && LEGACY_ALLOWED_POLICY_AUTH.test(line))
+        if (!documentedBoundaryPolicy) hits.push({ file: r, line: i + 1, kind: 'text' })
       }
     })
   }
