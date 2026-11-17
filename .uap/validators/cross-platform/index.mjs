@@ -198,7 +198,7 @@ export const validators = {
       && ds.includes('UDS 8.0.0 是唯一现行设计系统')
       && ds.includes('TOKEN-MANIFEST.json')
       && acceptance.includes('ACCEPTANCE_READY')
-      && /accepted\\s*=\\s*false/i.test(acceptance)
+      && /accepted\s*=\s*false/i.test(acceptance)
       && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'));
     const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds-* bridge 为唯一运行时权威')
       && compatibilityAdr.includes('3.0 runtime compatibility boundary')
