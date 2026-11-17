@@ -945,8 +945,7 @@ function showDiff(version) {
     onOk: async () => true });
 }
 async function openGateDemo() {
-  const acceptance = { given: 'A', when: 'B' };
-  acceptance['then'] = 'C';
+  const acceptance = Object.fromEntries([['given', 'A'], ['when', 'B'], ['then', 'C']]);
   const payload = {
     feature_id: 'UTER-DEMO-001', name: '门禁演示功能', status: 'NOT_IMPLEMENTED',
     prd: { goal: '演示新增功能门禁' }, prototype: { pages: [{ name: '演示页' }] },
