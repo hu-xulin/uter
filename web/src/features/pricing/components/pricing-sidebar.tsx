@@ -226,9 +226,9 @@ export function PricingSidebar(props: PricingSidebarProps) {
   // 内部固定渠道的识别标：聚合渠道用合并图标，Uter 自营渠道用品牌 Logo。
   // 渠道名来自管理端的展示名，因此按名称映射而不是按供应商或类型猜测。
   const channelMarks: Record<string, ReactNode> = {
-    聚合渠道: <Combine className='size-3.5' aria-hidden='true' />,
-    优特渠道: <img src='/logo.png' alt='' className='size-3.5 rounded-sm' />,
-    内部渠道: <img src='/logo.png' alt='' className='size-3.5 rounded-sm' />,
+    聚合渠道: <Combine className='size-4.5' aria-hidden='true' />,
+    优特渠道: <img src='/logo.png' alt='' className='size-4.5 rounded-sm' />,
+    内部渠道: <img src='/logo.png' alt='' className='size-4.5 rounded-sm' />,
   }
   const channelOptions: FilterOption[] = [
     {
