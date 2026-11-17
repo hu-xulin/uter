@@ -55,23 +55,23 @@ vi.mock('@/components/ui/sidebar', () => ({
 
 describe('SystemBrand', () => {
   // The console top bar used to render the logo in a `size-5` box while the
-  // public header kept `size-7`. Both now share BRAND_LOGO_BOX_CLASS.
+  // public header and console share the same 36x36 logo box.
   test('renders the inline logo at the public header size', () => {
     render(<SystemBrand variant='inline' />)
     const logo = screen.getByAltText('Logo')
     const box = logo.parentElement
     expect(box).not.toBeNull()
     expect(box?.className).toBe(BRAND_LOGO_BOX_CLASS)
-    expect(BRAND_LOGO_BOX_CLASS).toContain('size-7')
+    expect(BRAND_LOGO_BOX_CLASS).toContain('size-(--ds-icon-lg)')
     expect(BRAND_LOGO_BOX_CLASS).not.toContain('size-5')
     expect(screen.getByText('Uter')).toBeInTheDocument()
   })
 
-  test('keeps the sidebar variant on its own larger box', () => {
+  test('keeps the sidebar variant on its own 36x36 box', () => {
     render(<SystemBrand variant='sidebar' />)
     const logo = screen.getByAltText('Logo')
     const box = logo.parentElement
-    expect(box?.className).toContain('size-8')
+    expect(box?.className).toContain('size-9')
     expect(box?.className).not.toBe(BRAND_LOGO_BOX_CLASS)
   })
 })
