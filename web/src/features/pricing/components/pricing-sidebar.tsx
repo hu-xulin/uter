@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { ChevronDown, RotateCcw } from 'lucide-react'
+import { ChevronDown, Combine, RotateCcw } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -40,11 +40,6 @@ import {
 } from '../constants'
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import {
-  formatGroupRatio,
-  groupRatioBadgeClass,
-  hasGroupRatioBadge,
-} from '../lib/group-ratio'
 import { orderVendorsByModelCount } from '../lib/vendor-order'
 import type { PricingModel, PricingVendor } from '../types'
 
@@ -52,9 +47,6 @@ type FilterOption = {
   value: string
   label: string
   count?: number
-  suffix?: string
-  /** 分组倍率（仅分组筛选带）：<1 才是真折扣，=1 是标准价。 */
-  suffixRatio?: number
   icon?: ReactNode
 }
 
@@ -75,16 +67,16 @@ export interface PricingSidebarProps {
   quotaTypeFilter: string
   endpointTypeFilter: string
   vendorFilter: string
-  groupFilter: string
+  channelFilter: string
   tagFilter: string
   onQuotaTypeChange: (value: string) => void
   onEndpointTypeChange: (value: string) => void
   onVendorChange: (value: string) => void
-  onGroupChange: (value: string) => void
+  onChannelChange: (value: string) => void
   onTagChange: (value: string) => void
   vendors: PricingVendor[]
-  groups: string[]
-  groupRatios?: Record<string, number>
+  /** 可筛选的渠道展示名（来自管理-渠道，已由目录数据过滤）。 */
+  channels: string[]
   tags: string[]
   models: PricingModel[]
   hasActiveFilters: boolean
@@ -101,9 +93,7 @@ function countBy(
 
 function FilterChip(props: FilterChipProps) {
   let badgeClass = 'bg-muted text-muted-foreground'
-  if (props.option.suffix) {
-    badgeClass = groupRatioBadgeClass(props.option.suffixRatio)
-  } else if (props.active) {
+  if (props.active) {
     // 选中态是品牌主色底，徽标跟着转白字，整块读起来才是一体的。
     // 底色用 `primary-active` 而不是 20% 白蒙版：白字压在半透明白底上
     // 只有约 3.3:1，12px 文字不达 AA；压在主色加深档上是 7.9:1。
@@ -117,8 +107,7 @@ function FilterChip(props: FilterChipProps) {
       onClick={props.onClick}
       aria-pressed={props.active}
       className={cn(
-        // 固定 32px 高：分组里「所有分组」没有倍数徽标，此前比带徽标的邻居
-        // 矮一截，同一列 chip 高度参差。定高后所有 chip 高度完全一致。
+        // 固定 32px 高：定高后同一列 chip 高度完全一致。
         'h-8 max-w-full gap-1.5 px-2 text-sm',
         // 一行一个，宽度占行宽的 2/3：长名（「SiliconFlow 硅基流动」）不再
         // 被两列布局挤成省略号，右侧留出的 1/3 是固定的呼吸位，不用铺满整行。
@@ -134,7 +123,7 @@ function FilterChip(props: FilterChipProps) {
         <span className='shrink-0'>{props.option.icon}</span>
       )}
       <span className='truncate'>{props.option.label}</span>
-      {(props.option.suffix || props.option.count != null) && (
+      {props.option.count != null && (
         <span
           className={cn(
             'shrink-0 rounded-md px-1.5 py-0.5 text-sm',
@@ -143,7 +132,7 @@ function FilterChip(props: FilterChipProps) {
             badgeClass
           )}
         >
-          {props.option.suffix ?? props.option.count}
+          {props.option.count}
         </span>
       )}
     </Button>
@@ -171,7 +160,7 @@ function FilterSection(props: FilterSectionProps) {
       </Heading>
       <CollapsibleContent>
         {/* 一行一个：所有筛选按钮纵向排列，宽度由 FilterChip 固定为行宽的
-            2/3。此前「分组」「供应商」两列定宽、「标签」按内容瀑布流，同一张
+            2/3。此前「渠道」「厂商」两列定宽、「标签」按内容瀑布流，同一张
             侧栏里三种排法，长名还被挤成省略号。 */}
         <div className='flex flex-col items-start gap-1.5'>
           {props.options.map((option) => (
@@ -200,9 +189,9 @@ export function PricingSidebar(props: PricingSidebarProps) {
   const orderedVendors = orderVendorsByModelCount(props.models, props.vendors)
 
   // 「所有…」chip 的徽标统一表示**该分区里可选项的数量**，不是模型总数。
-  // 此前五个分区（分组/供应商/标签/计费类型/端点类型）的「所有…」都显示模型
+  // 此前五个分区（渠道/厂商/标签/计费类型/端点类型）的「所有…」都显示模型
   // 总数：同一串数字重复 5 遍，既看不出这一分区有多少个可选项，也和旁边
-  // 展示模型数的具体项混在一起。现在各分区各说各的：分组数、供应商数、
+  // 展示模型数的具体项混在一起。现在各分区各说各的：渠道数、厂商数、
   // 标签数、计费类型数、端点类型数。
   const vendorOptions: FilterOption[] = [
     {
@@ -223,24 +212,36 @@ export function PricingSidebar(props: PricingSidebarProps) {
     })),
   ]
 
-  // 「所有分组」统计的是**分组数量**（如 VIP0-VIP5 共 6 个），具体分组仍只带
-  // 倍率徽标（x1.0、x0.9）：两者语义不同，不合并。
-  const groupOptions: FilterOption[] = [
+  // 渠道来自管理-渠道的展示名（`channels`），按承载模型数降序、同数量按名称排序。
+  // 「所有渠道」的徽标是**可筛选渠道数量**，具体渠道则显示各自承载的模型数。
+  const channelCounts = props.channels
+    .map((channel) => ({
+      channel,
+      count: countBy(
+        props.models,
+        (model) => model.channels?.includes(channel) ?? false
+      ),
+    }))
+    .sort((a, b) => b.count - a.count || a.channel.localeCompare(b.channel))
+  // 内部固定渠道的识别标：聚合渠道用合并图标，Uter 自营渠道用品牌 Logo。
+  // 渠道名来自管理端的展示名，因此按名称映射而不是按供应商或类型猜测。
+  const channelMarks: Record<string, ReactNode> = {
+    聚合渠道: <Combine className='size-3.5' aria-hidden='true' />,
+    优特渠道: <img src='/logo.png' alt='' className='size-3.5 rounded-sm' />,
+    内部渠道: <img src='/logo.png' alt='' className='size-3.5 rounded-sm' />,
+  }
+  const channelOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
-      label: t('All Groups'),
-      count: props.groups.length,
+      label: t('All Channels'),
+      count: props.channels.length,
     },
-    ...props.groups.map((group) => {
-      const ratio = props.groupRatios?.[group]
-      return {
-        value: group,
-        label: group,
-        // 倍率为 0 = 该档未配置计价，渲染成 x0.0 会被误读成「免费」，直接不显示徽标。
-        suffix: hasGroupRatioBadge(ratio) ? formatGroupRatio(ratio) : undefined,
-        suffixRatio: ratio,
-      }
-    }),
+    ...channelCounts.map(({ channel, count }) => ({
+      value: channel,
+      label: channel,
+      count,
+      icon: channelMarks[channel],
+    })),
   ]
 
   const quotaTypeOptions: FilterOption[] = [
@@ -320,12 +321,12 @@ export function PricingSidebar(props: PricingSidebarProps) {
           {/* 侧栏是一张卡片，所以「筛选」是**卡片标题**（h3 18/600/26），
               不是卡片内的分组标题。此前写成 16/600，既不是 18 的卡片标题，
               也不是 16 的分组标题档位对应位置（它在卡片头部，不在卡片内部再分组）。
-              下面 FilterSection 的「分组」「供应商」才是 group-title 16/600。 */}
+              下面 FilterSection 的「渠道」「厂商」才是 group-title 16/600。 */}
           <Heading variant='card-title' level={2}>
             {t('Filter')}
           </Heading>
           <p className='text-muted-foreground mt-1 text-sm'>
-            {t('Refine models by provider, group, type, and tags.')}
+            {t('Refine models by channel, vendor, type, and tags.')}
           </p>
         </div>
         <Button
@@ -349,13 +350,13 @@ export function PricingSidebar(props: PricingSidebarProps) {
 
       <div className='space-y-1'>
         <FilterSection
-          title={t('Groups')}
-          value={props.groupFilter}
-          options={groupOptions}
-          onChange={props.onGroupChange}
+          title={t('Channels')}
+          value={props.channelFilter}
+          options={channelOptions}
+          onChange={props.onChannelChange}
         />
         <FilterSection
-          title={t('All Vendors')}
+          title={t('Vendors')}
           value={props.vendorFilter}
           options={vendorOptions}
           onChange={props.onVendorChange}
