@@ -227,6 +227,9 @@ const (
 	// order, the decoded requestBody as JSON text (json.RawMessage) beside
 	// the Go value in task_request.
 	ContextKeyRequestBodyText = "task_plugin_request_body_text"
+	// ContextKeyRequestRefreshed is set once a request plugin changed the
+	// stored body, so the host decodes it again before continuing.
+	ContextKeyRequestRefreshed = "task_plugin_request_refreshed"
 )
 
 type PinnedPlugin struct {
@@ -399,7 +402,44 @@ var (
 )
 
 var reservedRouteNamespaces = []string{
-	"/api",
+	// /api 只保留管理接口的具体命名空间：官方任务插件会声明上游原生的
+	// /api/v3/...、/api/v1/services/... 等路径（豆包、阿里云等），一律
+	// 拒绝 /api 会让这些插件无法安装。这里逐项列出管理端点前缀，
+	// 插件若声明 /api/user、/api/plugin 等仍会被拦截。
+	"/api/authz",
+	"/api/channel",
+	"/api/costopt",
+	"/api/custom-oauth-provider",
+	"/api/data",
+	"/api/deployments",
+	"/api/group",
+	"/api/i18n",
+	"/api/log",
+	"/api/mj",
+	"/api/models",
+	"/api/notice",
+	"/api/option",
+	"/api/organization",
+	"/api/organizations",
+	"/api/perf-metrics",
+	"/api/performance",
+	"/api/plugin",
+	"/api/prefill_group",
+	"/api/privacy-policy",
+	"/api/ratio_sync",
+	"/api/redemption",
+	"/api/setup",
+	"/api/status",
+	"/api/subscription",
+	"/api/system-info",
+	"/api/system-task",
+	"/api/task",
+	"/api/token",
+	"/api/uptime",
+	"/api/usage",
+	"/api/user",
+	"/api/user-agreement",
+	"/api/vendors",
 	"/assets",
 	"/setup",
 	"/v1/tasks",
@@ -775,9 +815,9 @@ func validateRoute(route *Route) error {
 		if !pathNamePattern.MatchString(route.TaskIDParam) {
 			return fmt.Errorf("query route %s %s has invalid taskIdParam %q", route.Method, route.Path, route.TaskIDParam)
 		}
-		if !pathHasParameter(route.Path, route.TaskIDParam) {
-			return fmt.Errorf("query route %s %s must contain :%s", route.Method, route.Path, route.TaskIDParam)
-		}
+		// taskIdParam 可以来自路径（:task_id）也可以来自查询字符串
+		// （?task_ids=、?file_id=，官方 Kling / Hailuo 插件即如此）。
+		// 这里只校验参数名，运行时会依次在路径参数与查询参数中取值。
 	case RouteTypeDynamic:
 		if route.Decode == "" || route.Render == "" || route.TaskIDParam != "" {
 			return fmt.Errorf("dynamic route %s %s must declare decode and render and must not declare taskIdParam", route.Method, route.Path)

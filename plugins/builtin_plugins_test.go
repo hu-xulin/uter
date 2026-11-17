@@ -13,6 +13,9 @@ import (
 
 var expectedKeys = []string{"alibaba", "doubao", "google", "hailuo", "jimeng", "kling", "sora", "sunoapi", "vertex-ai", "vidu", "xai"}
 
+// 请求处理插件（transform）与任务平台插件同为内建插件，但不声明平台与路由。
+var expectedRequestPluginKeys = []string{"auto-reasoning", "content-moderation", "image-compress", "param-override", "request-filter", "request-redact"}
+
 func TestBuiltInVendorPluginsDeclareNativeRoutesAndLegacyChannelTypes(t *testing.T) {
 	generation := jsplugin.DefaultRegistry.Generation()
 	require.NotNil(t, generation)
@@ -98,12 +101,21 @@ func TestBuiltInTaskPluginResponsesAndUsageContracts(t *testing.T) {
 	entries, err := fs.ReadDir(taskPlugins, "tasks")
 	require.NoError(t, err)
 	actualKeys := make([]string, 0, len(entries))
+	requestKeys := make([]string, 0, len(entries))
 	for _, entry := range entries {
-		if entry.IsDir() {
-			actualKeys = append(actualKeys, entry.Name())
+		if !entry.IsDir() {
+			continue
 		}
+		plugin, found := generation.Get(entry.Name())
+		require.True(t, found, entry.Name())
+		if plugin.Meta.HasTransformPart() {
+			requestKeys = append(requestKeys, entry.Name())
+			continue
+		}
+		actualKeys = append(actualKeys, entry.Name())
 	}
 	assert.Equal(t, expectedKeys, actualKeys)
+	assert.Equal(t, expectedRequestPluginKeys, requestKeys)
 
 	for _, key := range expectedKeys {
 		t.Run(key, func(t *testing.T) {

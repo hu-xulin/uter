@@ -8,6 +8,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	vertexcore "github.com/uter-ai/uter/relay/channel/vertex"
@@ -74,6 +75,29 @@ func (a *TaskAdaptor) upstreamAuth(key, proxy string) (upstream, auth map[string
 
 // applyUpstreamAuth 把 upstream / auth / authHeader / apiKey 写进插件上下文。
 func (a *TaskAdaptor) applyUpstreamAuth(ctx map[string]any, key, proxy string) error {
+	channelType := a.channelType()
+	a.applyChannelContext(ctx, channelType)
+	if channelType == constant.ChannelTypeTaskPlugin {
+		credential, err := a.parseTaskCredential(channelType, key)
+		if err != nil {
+			return err
+		}
+		if credential != nil {
+			// A plugin credential replaces meta.auth; its data reaches the
+			// plugin's own hooks only.
+			authHeader := credentialAuthorization(credential)
+			ctx["upstream"] = map[string]any{"kind": pluginruntime.UpstreamKindVendor}
+			ctx["auth"] = map[string]any{"authHeader": authHeader}
+			ctx["authHeader"] = authHeader
+			var data any
+			if len(credential.Data) > 0 {
+				data = pluginruntime.RawJSON(credential.Data)
+			}
+			ctx["credential"] = data
+			delete(ctx, "apiKey")
+			return nil
+		}
+	}
 	upstream, auth, apiKey, err := a.upstreamAuth(key, proxy)
 	if err != nil {
 		return err
@@ -87,4 +111,23 @@ func (a *TaskAdaptor) applyUpstreamAuth(ctx map[string]any, key, proxy string) e
 		delete(ctx, "apiKey")
 	}
 	return nil
+}
+
+// applyChannelContext gives a hook ctx the plugin config of the executing
+// task plugin channel, {} elsewhere, and on a built-in channel type the plugin
+// serves (meta.channelTypes) the channel's raw other setting as channelOther.
+func (a *TaskAdaptor) applyChannelContext(ctx map[string]any, channelType int) {
+	ctx["config"] = map[string]any{}
+	if a.info == nil || !a.info.HasChannelMeta() || a.info.ChannelId == 0 || channelType == constant.ChannelTypeNewAPI {
+		return
+	}
+	channel, err := model.CacheGetChannel(a.info.ChannelId)
+	if err != nil {
+		return
+	}
+	if channelType == constant.ChannelTypeTaskPlugin {
+		ctx["config"] = pluginruntime.RawJSON(a.plugin.ChannelConfigFor(channel.GetOtherSettings().PluginConfig))
+		return
+	}
+	ctx["channelOther"] = channel.Other
 }

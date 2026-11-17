@@ -487,6 +487,7 @@ auth.token_ip_not_allowed: 您的 IP 不在令牌允许访问的列表中
 channel.notify_disabled_content: 通道「{{.Name}}」（#{{.Id}}）已被禁用，原因：{{.Reason}}
 channel.notify_disabled_subject: 通道「{{.Name}}」（#{{.Id}}）已被禁用
 channel.notify_enabled_content: 通道「{{.Name}}」（#{{.Id}}）已被启用
+channel.notify_scheduled_subject: '渠道“{{.Name}}” (#{{.Id}}) 插件通知'
 channel.notify_enabled_subject: 通道「{{.Name}}」（#{{.Id}}）已被启用
 channel.response_time_exceeded: 响应时间 {{.Seconds}}s 超过阈值 {{.Threshold}}s
 channel.test_completed_content: 所有通道测试已完成
@@ -512,6 +513,8 @@ relay.group_saturated: 当前分组负载已饱和，请稍后再试，或升级
 relay.group_upstream_saturated: 当前分组上游负载已饱和，请稍后再试
 relay.model_price_not_configured: 模型 {{.Model}} 的价格尚未由管理员配置，暂时无法使用，请联系站点管理员开启该模型；Model {{.Model}} has not been priced by the administrator yet. Please contact the site administrator to enable this model.
 relay.model_price_not_configured_admin: 模型 {{.Model}} 的价格未配置。请前往「系统设置 → 运营设置」开启自用模式，或在「系统设置 → 分组与模型定价设置」中为该模型配置价格；Model {{.Model}} price not configured. Go to System Settings → Operation Settings to enable self-use mode, or configure the model price in System Settings → Group & Model Pricing.
+relay.shared_task_price_needs_override: '模型 {{.Model}} 由插件 {{.Plugin}} 提供，需先为该插件配置独立价格才能计费。'
+relay.task_usage_price_unsupported: '模型 {{.Model}} 使用任务用量计价（u()），无法用于普通请求计费；请为其配置普通表达式。'
 relay.retry_get_channel_failed: '获取分组 {{.Group}} 下模型 {{.Model}} 的可用渠道失败（retry）: {{.Error}}'
 relay.retry_no_available_channel: 分组 {{.Group}} 下模型 {{.Model}} 的可用渠道不存在（retry）
 relay.task_channel_disabled: 该任务所属渠道已被禁用

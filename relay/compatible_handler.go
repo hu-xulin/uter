@@ -17,6 +17,7 @@ import (
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	costopt "github.com/uter-ai/uter/relay/costopt"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -346,6 +347,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 					logger.LogDebug(c, "requestBody: %s", debugBytes)
 				}
 			}
+			if uterErr := requestplugin.PassThrough(c, info, storage); uterErr != nil {
+				return nil, uterErr
+			}
 			requestBody = common.NewReplayableBodyReader(storage)
 		} else {
 			convertedRequest, err := adaptor.ConvertOpenAIRequest(c, info, request)
@@ -369,12 +373,19 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 				return nil, types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
 			}
 
+			var pluginErr *types.UterError
+			if jsonData, pluginErr = requestplugin.Outbound(c, info, jsonData); pluginErr != nil {
+				return nil, pluginErr
+			}
 			// apply param override
 			if len(info.ParamOverride) > 0 {
 				jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 				if err != nil {
 					return nil, uterErrorFromParamOverride(err)
 				}
+			}
+			if pluginErr = requestplugin.Egress(c, info, jsonData); pluginErr != nil {
+				return nil, pluginErr
 			}
 
 			logger.LogDebug(c, "text request body: %s", jsonData)

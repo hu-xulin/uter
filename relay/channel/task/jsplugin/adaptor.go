@@ -119,6 +119,13 @@ type TaskAdaptor struct {
 	// requestBodyText 是解码后的 requestBody 的 JSON 文本，保留 JSON 顺序的插件
 	// 的钩子收到的就是它而不是 Go 值。
 	requestBodyText json.RawMessage
+	// credential is the submission's plugin credential, nil for a static key.
+	credential *pluginruntime.Credential
+	// pollKey is the key line the last FetchTask or FetchBatchTasks sent; the
+	// parse hooks of its response receive the same line.
+	pollKey string
+	// bodySHA256 hashes the submit body for signRequest.
+	bodySHA256 string
 }
 
 func New(plugin *pluginruntime.LoadedPlugin) *TaskAdaptor { return &TaskAdaptor{plugin: plugin} }
@@ -263,16 +270,32 @@ func (a *TaskAdaptor) BuildRequestURL(info *relaycommon.RelayInfo) (string, erro
 	if a.submit == nil {
 		return "", fmt.Errorf("plugin submit request was not built")
 	}
-	return a.submit.URL, pluginruntime.ValidateRequestURL(a.submit.URL, info.ChannelBaseUrl, a.plugin.Meta.AllowedHosts)
+	requestURL := a.submit.URL
+	if a.credential != nil && len(a.credential.Query) > 0 {
+		target, err := url.Parse(requestURL)
+		if err != nil {
+			return "", err
+		}
+		applyTaskCredential(a.credential, target, http.Header{})
+		requestURL = target.String()
+	}
+	return requestURL, pluginruntime.ValidateRequestURL(requestURL, info.ChannelBaseUrl, a.plugin.Meta.AllowedHosts)
 }
 
-func (a *TaskAdaptor) BuildRequestHeader(_ *gin.Context, req *http.Request, _ *relaycommon.RelayInfo) error {
+func (a *TaskAdaptor) BuildRequestHeader(c *gin.Context, req *http.Request, _ *relaycommon.RelayInfo) error {
 	if a.submit == nil {
 		return fmt.Errorf("plugin submit request was not built")
 	}
 	for name, value := range a.submit.Headers {
 		req.Header.Set(name, value)
 	}
+	// BuildRequestBody rebuilt the multipart body with a new boundary and put
+	// its Content-Type on the client request; a plugin's own Content-Type
+	// cannot match it.
+	if a.submit.BodyType == "multipart" {
+		req.Header.Set("Content-Type", c.Request.Header.Get("Content-Type"))
+	}
+	applyTaskCredential(a.credential, &url.URL{}, req.Header)
 	return nil
 }
 
@@ -501,6 +524,24 @@ func (a *TaskAdaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, bod
 	wasStream := info.IsStream
 	info.IsStream = false
 	defer func() { info.IsStream = wasStream }()
+	if info.ChannelType == constant.ChannelTypeTaskPlugin && a.plugin.HasProviderHook("signRequest") {
+		var raw []byte
+		if body != nil {
+			var err error
+			if raw, err = io.ReadAll(body); err != nil {
+				return nil, err
+			}
+			body = bytes.NewReader(raw)
+		}
+		a.bodySHA256 = bodySHA256(raw)
+	}
+	// A credential line is no API key, so {api_key} in header overrides is
+	// empty while the request is built.
+	if a.credential != nil {
+		line := info.ApiKey
+		info.ApiKey = ""
+		defer func() { info.ApiKey = line }()
+	}
 	if a.submit != nil && strings.TrimSpace(a.submit.Method) != "" {
 		originalMethod := c.Request.Method
 		c.Request.Method = strings.ToUpper(a.submit.Method)
@@ -639,6 +680,17 @@ func (a *TaskAdaptor) GetChannelName() string { return a.plugin.Meta.Name }
 func (a *TaskAdaptor) FetchMode() string      { return a.plugin.Meta.FetchMode }
 
 func (a *TaskAdaptor) FetchBatchTasks(baseURL, key string, tasks []*model.Task, proxy string) (*http.Response, error) {
+	// The host batches only tasks one credential account submitted, so the
+	// first task's account polls them all.
+	var first *model.Task
+	if len(tasks) > 0 {
+		first = tasks[0]
+	}
+	key, err := a.taskCredentialLine(context.Background(), key, first)
+	if err != nil {
+		return nil, err
+	}
+	a.pollKey = key
 	taskContexts := make([]map[string]any, 0, len(tasks))
 	for _, task := range tasks {
 		taskCtx, err := a.queryContext(task, key, baseURL, proxy)
@@ -662,6 +714,11 @@ func (a *TaskAdaptor) FetchTask(baseURL, key string, task *model.Task, proxy str
 	if task != nil && task.PrivateData.Key != "" {
 		key = task.PrivateData.Key
 	}
+	key, err := a.taskCredentialLine(context.Background(), key, task)
+	if err != nil {
+		return nil, err
+	}
+	a.pollKey = key
 	ctx, err := a.queryContext(task, key, baseURL, proxy)
 	if err != nil {
 		return nil, err
@@ -674,6 +731,14 @@ func (a *TaskAdaptor) FetchTask(baseURL, key string, task *model.Task, proxy str
 }
 
 // channelSetting 返回当前渠道的渠道级设置，供 HTTP 客户端工厂使用。
+// channelType is the channel's type as the adaptor sees it.
+func (a *TaskAdaptor) channelType() int {
+	if a.info == nil || a.info.ChannelMeta == nil {
+		return 0
+	}
+	return a.info.ChannelType
+}
+
 func (a *TaskAdaptor) channelSetting() kitdto.ChannelSettings {
 	if a.info == nil || a.info.ChannelMeta == nil {
 		return kitdto.ChannelSettings{}
@@ -685,17 +750,25 @@ func (a *TaskAdaptor) doFetchDescriptor(baseURL, key, proxy string, descriptor r
 	if err := pluginruntime.ValidateRequestURL(descriptor.URL, baseURL, a.plugin.Meta.AllowedHosts); err != nil {
 		return nil, err
 	}
+	credential, err := a.parseTaskCredential(a.channelType(), key)
+	if err != nil {
+		return nil, err
+	}
+	var body []byte
 	var requestBody io.Reader
 	if descriptor.Body != nil {
 		if bodyText, ok := descriptor.Body.(string); ok {
+			body = []byte(bodyText)
 			requestBody = strings.NewReader(bodyText)
 		} else if descriptor.BodyText != nil {
+			body = descriptor.BodyText
 			requestBody = bytes.NewReader(descriptor.BodyText)
 		} else {
 			encoded, marshalErr := common.Marshal(descriptor.Body)
 			if marshalErr != nil {
 				return nil, marshalErr
 			}
+			body = encoded
 			requestBody = bytes.NewReader(encoded)
 		}
 	}
@@ -710,7 +783,11 @@ func (a *TaskAdaptor) doFetchDescriptor(baseURL, key, proxy string, descriptor r
 	for name, value := range descriptor.Headers {
 		req.Header.Set(name, value)
 	}
-	if err := channel.ApplyHeaderOverride(a.headerOverrideInfo(key), nil, req); err != nil {
+	applyTaskCredential(credential, req.URL, req.Header)
+	if err := channel.ApplyHeaderOverride(a.headerOverrideInfo(overrideKey(key, credential)), nil, req); err != nil {
+		return nil, err
+	}
+	if err := a.signTaskRequest(context.Background(), a.channelType(), baseURL, key, credential, method, req.URL, req.Header, bodySHA256(body)); err != nil {
 		return nil, err
 	}
 	client, err := service.GetHttpClientWithProxySettings(proxy, a.channelSetting())
@@ -1068,7 +1145,11 @@ func (a *TaskAdaptor) BuildContentRequest(ctxGo context.Context, task *model.Tas
 	ctx["baseUrl"] = a.info.ChannelBaseUrl
 	ctx["clientRequest"] = jsonValue(clientRequest)
 	proxy := a.info.ChannelSetting.Proxy
-	if err = a.applyUpstreamAuth(ctx, a.info.ApiKey, proxy); err != nil {
+	key, credentialErr := a.taskCredentialLine(ctxGo, a.info.ApiKey, task)
+	if credentialErr != nil {
+		return nil, credentialErr
+	}
+	if err = a.applyUpstreamAuth(ctx, key, proxy); err != nil {
 		return nil, err
 	}
 	// utils.fetch 受插件 allowedHosts 与渠道 base URL 约束，见 hookFetcher。
@@ -1114,27 +1195,46 @@ func (a *TaskAdaptor) BuildContentRequest(ctxGo context.Context, task *model.Tas
 			}
 		}
 	}
+	requestURL := descriptor.URL
 	headers := descriptor.Headers
 	if !descriptor.Credentialless {
+		credential, credentialErr := a.parseTaskCredential(a.info.ChannelType, key)
+		if credentialErr != nil {
+			return nil, credentialErr
+		}
 		var overrides map[string]string
-		if overrides, err = channel.ResolveHeaderOverride(a.headerOverrideInfo(a.info.ApiKey), nil); err != nil {
+		if overrides, err = channel.ResolveHeaderOverride(a.headerOverrideInfo(overrideKey(key, credential)), nil); err != nil {
 			return nil, err
 		}
-		if len(overrides) > 0 {
-			headers = make(map[string]string, len(descriptor.Headers)+len(overrides))
+		signs := a.info.ChannelType == constant.ChannelTypeTaskPlugin && a.plugin.HasProviderHook("signRequest")
+		if len(overrides) > 0 || credential != nil || signs {
+			header := make(http.Header, len(descriptor.Headers)+len(overrides))
 			for name, value := range descriptor.Headers {
-				headers[http.CanonicalHeaderKey(strings.TrimSpace(name))] = value
+				header.Set(strings.TrimSpace(name), value)
 			}
+			target, parseErr := url.Parse(requestURL)
+			if parseErr != nil {
+				return nil, parseErr
+			}
+			applyTaskCredential(credential, target, header)
 			for name, value := range overrides {
 				// A content request keeps the host of its URL.
 				if name != "host" {
-					headers[http.CanonicalHeaderKey(name)] = value
+					header.Set(name, value)
 				}
+			}
+			if err = a.signTaskRequest(ctxGo, a.info.ChannelType, a.info.ChannelBaseUrl, key, credential, method, target, header, bodySHA256(body)); err != nil {
+				return nil, err
+			}
+			requestURL = target.String()
+			headers = make(map[string]string, len(header))
+			for name := range header {
+				headers[name] = header.Get(name)
 			}
 		}
 	}
 	return &channel.TaskContentRequest{
-		URL:            descriptor.URL,
+		URL:            requestURL,
 		Method:         method,
 		Headers:        headers,
 		Body:           body,
@@ -1235,11 +1335,18 @@ func (a *TaskAdaptor) batchQueryContext(key, baseURL, proxy string, tasks []map[
 	return ctx, nil
 }
 
+// queryCredentials returns what the parse hooks of a poll response receive:
+// the key line the poll sent, which on a channel with credentials is the
+// submitting account's line rather than the whole key.
 func (a *TaskAdaptor) queryCredentials() (key, baseURL, proxy string) {
 	if a.info == nil || !a.info.HasChannelMeta() {
 		return "", "", ""
 	}
-	return a.info.ApiKey, a.info.ChannelBaseUrl, a.info.ChannelSetting.Proxy
+	key = a.pollKey
+	if key == "" {
+		key = a.info.ApiKey
+	}
+	return key, a.info.ChannelBaseUrl, a.info.ChannelSetting.Proxy
 }
 
 func hookHTTPResponse(resp *http.Response) map[string]any {
@@ -1374,6 +1481,11 @@ func requestDescriptorFailureReason(err error) string {
 func (a *TaskAdaptor) buildSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*requestDescriptor, error) {
 	if a.submit != nil {
 		return a.submit, nil
+	}
+	if info.HasChannelMeta() {
+		if err := a.useFreshSubmitCredential(c, info); err != nil {
+			return nil, err
+		}
 	}
 	started := time.Now()
 	// buildSubmitRequest 跑在配额预留之前，一次失败的 fetch 不花钱；真正发起

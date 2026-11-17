@@ -57,6 +57,19 @@ func TestRegistryRejectsPluginKeyLongerThanTaskPlatformColumn(t *testing.T) {
 	require.ErrorContains(t, err, "must not exceed 30 characters")
 }
 
+func TestValidateV1MetaAcceptsRequestOnlyPlugins(t *testing.T) {
+	// 上游请求钩子插件不声明 fetchMode / models / routes；元数据层放行，
+	// 由上层给出「运行时暂不支持 request hook」的明确多语言提示。
+	meta := Meta{
+		APIVersion: 1,
+		Key:        "request-hook",
+		Name:       "Request hook",
+		Version:    "1.0.0",
+		Author:     AuthorMeta{Name: "Test"},
+	}
+	require.NoError(t, ValidateV1Meta(meta))
+}
+
 func TestValidateV1MetaEnforcesTaskPluginKeyLength(t *testing.T) {
 	meta := Meta{APIVersion: 1, Key: strings.Repeat("a", 30), Name: "Test", Version: "1.0.0", Author: AuthorMeta{Name: "Test"}, Models: []string{"model"}, FetchMode: "per_task"}
 	require.NoError(t, ValidateV1Meta(meta))

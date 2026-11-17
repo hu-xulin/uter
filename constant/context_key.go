@@ -23,11 +23,14 @@ const (
 	ContextKeyTokenAutoGroups        ContextKey = "token_auto_groups"
 
 	/* channel related keys */
-	ContextKeyChannelId                ContextKey = "channel_id"
-	ContextKeyChannelName              ContextKey = "channel_name"
-	ContextKeyChannelCreateTime        ContextKey = "channel_create_time"
-	ContextKeyChannelBaseUrl           ContextKey = "base_url"
-	ContextKeyChannelType              ContextKey = "channel_type"
+	ContextKeyChannelId         ContextKey = "channel_id"
+	ContextKeyChannelName       ContextKey = "channel_name"
+	ContextKeyChannelCreateTime ContextKey = "channel_create_time"
+	ContextKeyChannelBaseUrl    ContextKey = "base_url"
+	ContextKeyChannelType       ContextKey = "channel_type"
+	// ContextKeyConsumeLog holds the *model.RecordConsumeLogParams of the
+	// request, which the task report reads.
+	ContextKeyConsumeLog               ContextKey = "consume_log"
 	ContextKeyChannelSetting           ContextKey = "channel_setting"
 	ContextKeyChannelOtherSetting      ContextKey = "channel_other_setting"
 	ContextKeyChannelParamOverride     ContextKey = "param_override"
@@ -39,6 +42,12 @@ const (
 	ContextKeyChannelIsMultiKey        ContextKey = "channel_is_multi_key"
 	ContextKeyChannelMultiKeyIndex     ContextKey = "channel_multi_key_index"
 	ContextKeyChannelKey               ContextKey = "channel_key"
+	// ContextKeyProviderPlugin holds the jsplugin.PinnedPlugin whose relay
+	// routes serve this request.
+	ContextKeyProviderPlugin ContextKey = "provider_plugin"
+	// ContextKeyUpstreamRequestOrigin holds the scheme and host of the
+	// upstream address actually requested, for error masking.
+	ContextKeyUpstreamRequestOrigin ContextKey = "upstream_request_origin"
 
 	ContextKeyAutoGroup           ContextKey = "auto_group"
 	ContextKeyAutoGroupIndex      ContextKey = "auto_group_index"

@@ -65,7 +65,90 @@ func (m Meta) RelayConfig() *dto.AdvancedCustomConfig {
 	return &dto.AdvancedCustomConfig{Routes: routes}
 }
 
+// HasTaskPart reports whether the plugin is a task driver: it exports
+// buildSubmitRequest.
+func (m Meta) HasTaskPart() bool {
+	return !m.noTaskPart
+}
+
 // HasProviderPart reports whether the plugin declares relay routes.
 func (m Meta) HasProviderPart() bool {
 	return len(m.Relay) > 0
+}
+
+// ChannelRelayConfig is RelayConfig for a channel: an upstream_path that
+// starts with {config.<name>} starts with that address of the channel's plugin
+// config instead, or is relative to the channel base URL when the address is
+// empty. config is the config as ChannelConfigFor returns it.
+func (m Meta) ChannelRelayConfig(config []byte) *dto.AdvancedCustomConfig {
+	relay := m.RelayConfig()
+	if relay == nil {
+		return nil
+	}
+	for index, route := range relay.Routes {
+		name, rest, ok := configAddressPath(route.UpstreamPath)
+		if !ok {
+			continue
+		}
+		address := ChannelConfigURL(config, name)
+		if address == "" && rest == "" {
+			rest = "/"
+		}
+		relay.Routes[index].UpstreamPath = address + rest
+	}
+	return relay
+}
+
+// configAddressPath splits an upstream_path of the form {config.<name>}<rest>.
+func configAddressPath(upstreamPath string) (name, rest string, ok bool) {
+	trimmed := strings.TrimSpace(upstreamPath)
+	if !strings.HasPrefix(trimmed, configAddressPrefix) {
+		return "", "", false
+	}
+	name, rest, ok = strings.Cut(trimmed[len(configAddressPrefix):], "}")
+	return name, rest, ok
+}
+
+const configAddressPrefix = "{config."
+
+// RelayRoute returns the relay route serving requestPath for model, with the
+// converter as the manifest declares it.
+func (m Meta) RelayRoute(requestPath, model string) (dto.AdvancedCustomRoute, bool) {
+	config := dto.AdvancedCustomConfig{Routes: m.Relay}
+	return config.MatchPathForModel(requestPath, model)
+}
+
+// RelaysModel reports whether a relay route accepts model for client
+// requests: the plugin serves the model on chat paths, not only as a task. The
+// model list and balance routes accept every model and serve none.
+func (m Meta) RelaysModel(model string) bool {
+	return slices.ContainsFunc(m.Relay, func(route dto.AdvancedCustomRoute) bool {
+		path := strings.TrimSpace(route.IncomingPath)
+		return path != dto.AdvancedCustomModelListPath && path != dto.AdvancedCustomBalancePath && route.AcceptsModel(model)
+	})
+}
+
+// ServesResponsesWebSocket reports whether a Responses WebSocket session for
+// model may run on the relay routes: the /v1/responses route serving it has no
+// converter, so the session forwards native events as Advanced Custom does.
+// An empty model asks whether any route of that path qualifies.
+func (m Meta) ServesResponsesWebSocket(model string) bool {
+	if model == "" {
+		return slices.ContainsFunc(m.Relay, func(route dto.AdvancedCustomRoute) bool {
+			config := dto.AdvancedCustomConfig{Routes: []dto.AdvancedCustomRoute{route}}
+			_, ok := config.MatchPath(responsesPath)
+			return ok && route.IsNative()
+		})
+	}
+	route, ok := m.RelayRoute(responsesPath, model)
+	return ok && route.IsNative()
+}
+
+const responsesPath = "/v1/responses"
+
+// ModelListRoute returns the /v1/models relay route, with the converter as the
+// manifest declares it.
+func (m Meta) ModelListRoute() (dto.AdvancedCustomRoute, bool) {
+	config := dto.AdvancedCustomConfig{Routes: m.Relay}
+	return config.ModelListRoute()
 }

@@ -12,6 +12,7 @@ import (
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -33,11 +34,14 @@ func DeepSeekToolsHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIErr
 		constant.ChannelTypeSub2API,
 		constant.ChannelTypeAdvancedCustom:
 	default:
-		// Allow retry onto another channel that may support this endpoint.
-		return types.NewError(
-			fmt.Errorf("channel does not support %s", c.Request.URL.Path),
-			types.ErrorCodeInvalidRequest,
-		)
+		// Provider plugin channels serve the paths of their relay routes.
+		if info.ApiType != constant.APITypeProviderPlugin {
+			// Allow retry onto another channel that may support this endpoint.
+			return types.NewError(
+				fmt.Errorf("channel does not support %s", c.Request.URL.Path),
+				types.ErrorCodeInvalidRequest,
+			)
+		}
 	}
 
 	request, ok := info.Request.(*dto.DeepSeekToolsRequest)
@@ -60,6 +64,10 @@ func DeepSeekToolsHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIErr
 		return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
 	}
 
+	var pluginErr *types.UterError
+	if jsonData, pluginErr = requestplugin.Outbound(c, info, jsonData); pluginErr != nil {
+		return pluginErr
+	}
 	if len(info.ParamOverride) > 0 {
 		jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 		if err != nil {
@@ -67,6 +75,9 @@ func DeepSeekToolsHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIErr
 		}
 	}
 
+	if pluginErr = requestplugin.Egress(c, info, jsonData); pluginErr != nil {
+		return pluginErr
+	}
 	logger.LogDebug(c, "requestBody: %s", jsonData)
 	body, closer, err := relaycommon.NewOutboundJSONBody(jsonData)
 	if err != nil {

@@ -2261,3 +2261,10 @@ func BuildParamOverrideContext(info *RelayInfo) map[string]any {
 func UterErrorFromParamOverride(err *ParamOverrideReturnError) *types.UterError {
 	return NewAPIErrorFromParamOverride(err)
 }
+
+// ReasoningEffortFromJSON reads the reasoning effort a JSON body of format
+// sets, and whether the body holds a reasoning control at all. Exported for
+// request processing plugins.
+func ReasoningEffortFromJSON(format types.RelayFormat, data []byte) (string, bool) {
+	return extractReasoningEffortFromJSON(format, data)
+}

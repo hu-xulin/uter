@@ -10,6 +10,7 @@ import (
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -51,13 +52,19 @@ func EmbeddingHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *ty
 		return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
 	}
 
+	var pluginErr *types.UterError
+	if jsonData, pluginErr = requestplugin.Outbound(c, info, jsonData); pluginErr != nil {
+		return pluginErr
+	}
 	if len(info.ParamOverride) > 0 {
 		jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 		if err != nil {
 			return uterErrorFromParamOverride(err)
 		}
 	}
-
+	if pluginErr = requestplugin.Egress(c, info, jsonData); pluginErr != nil {
+		return pluginErr
+	}
 	logger.LogDebug(c, "converted embedding request body: %s", jsonData)
 	body, closer, err := relaycommon.NewOutboundJSONBody(jsonData)
 	if err != nil {

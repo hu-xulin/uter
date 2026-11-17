@@ -2,6 +2,7 @@ package request_plugin_setting
 
 import (
 	"encoding/json"
+	"slices"
 	"sync"
 
 	"github.com/uter-ai/uter/common"
@@ -26,6 +27,48 @@ type Instance struct {
 	Groups  []string        `json:"groups"`
 	Models  []string        `json:"models"`
 	Config  json.RawMessage `json:"config"`
+	// PluginScope is the confirmed scope of a plugin scope instance; nil for
+	// an instance placed by hand.
+	PluginScope *Scope `json:"plugin_scope,omitempty"`
+}
+
+// Scope is a plugin's scope as an administrator confirmed it: its models
+// and channel types; an empty list leaves that side open.
+type Scope struct {
+	Models       []string `json:"models"`
+	ChannelTypes []int    `json:"channel_types"`
+}
+
+// Covers reports whether the scope holds a request for model, whose name
+// without its @ modifiers is base, sent through a channel of channelType.
+func (s *Scope) Covers(model, base string, channelType int) bool {
+	if len(s.Models) > 0 && !slices.Contains(s.Models, base) && !slices.Contains(s.Models, model) {
+		return false
+	}
+	return len(s.ChannelTypes) == 0 || channelType > 0 && slices.Contains(s.ChannelTypes, channelType)
+}
+
+// Equal reports whether the scope holds the same models and channel types,
+// in any order.
+func (s *Scope) Equal(models []string, channelTypes []int) bool {
+	return sameItems(s.Models, models) && sameItems(s.ChannelTypes, channelTypes)
+}
+
+func sameItems[T comparable](a, b []T) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for _, item := range a {
+		if !slices.Contains(b, item) {
+			return false
+		}
+	}
+	return true
+}
+
+// Clone returns a copy with empty lists, never nil ones.
+func (s *Scope) Clone() *Scope {
+	return &Scope{Models: append([]string{}, s.Models...), ChannelTypes: append([]int{}, s.ChannelTypes...)}
 }
 
 // Instances is the stored instance list. Every load replaces the whole list

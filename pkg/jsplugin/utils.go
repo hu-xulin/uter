@@ -62,6 +62,41 @@ func injectGlobals(runtime *moejs.Runtime, identity func() string, now func() ti
 			}
 			return call.fetch(r, moejs.Arg(args, 0))
 		}),
+		"keywords": runtime.Function("keywords", 3, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			call := currentCall()
+			if call == nil {
+				return moejs.Undefined(), fmt.Errorf("utils.keywords is not available outside hooks")
+			}
+			return call.keywords(r, moejs.Arg(args, 0), moejs.Arg(args, 1), moejs.Arg(args, 2))
+		}),
+		"paramOverride": runtime.Function("paramOverride", 2, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			call := currentCall()
+			if call == nil {
+				return moejs.Undefined(), fmt.Errorf("utils.paramOverride is not available outside hooks")
+			}
+			return call.paramOverride(r, moejs.Arg(args, 0), moejs.Arg(args, 1))
+		}),
+		"attachments": runtime.Function("attachments", 0, func(r *moejs.Realm, _ moejs.Value, _ []moejs.Value) (moejs.Value, error) {
+			call := currentCall()
+			if call == nil {
+				return moejs.Undefined(), fmt.Errorf("utils.attachments is not available outside hooks")
+			}
+			return call.attachments(r)
+		}),
+		"media": runtime.Function("media", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			call := currentCall()
+			if call == nil {
+				return moejs.Undefined(), fmt.Errorf("utils.media is not available outside hooks")
+			}
+			return call.media(r, moejs.Arg(args, 0))
+		}),
+		"mediaText": runtime.Function("mediaText", 2, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			call := currentCall()
+			if call == nil {
+				return moejs.Undefined(), fmt.Errorf("utils.mediaText is not available outside hooks")
+			}
+			return call.mediaText(r, moejs.Arg(args, 0), moejs.Arg(args, 1))
+		}),
 		"hasCapability": runtime.Function("hasCapability", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
 			name, err := stringValue(r, moejs.Arg(args, 0))
 			if err != nil {

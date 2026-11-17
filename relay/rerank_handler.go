@@ -10,6 +10,7 @@ import (
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -48,6 +49,9 @@ func RerankHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types
 		if err != nil {
 			return types.NewErrorWithStatusCode(err, types.ErrorCodeReadRequestBodyFailed, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
 		}
+		if uterErr := requestplugin.PassThrough(c, info, storage); uterErr != nil {
+			return uterErr
+		}
 		requestBody = common.NewReplayableBodyReader(storage)
 	} else {
 		convertedRequest, err := adaptor.ConvertRerankRequest(c, info.RelayMode, *request)
@@ -60,6 +64,10 @@ func RerankHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types
 			return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
 		}
 
+		var pluginErr *types.UterError
+		if jsonData, pluginErr = requestplugin.Outbound(c, info, jsonData); pluginErr != nil {
+			return pluginErr
+		}
 		// apply param override
 		if len(info.ParamOverride) > 0 {
 			jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
@@ -68,6 +76,9 @@ func RerankHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types
 			}
 		}
 
+		if pluginErr = requestplugin.Egress(c, info, jsonData); pluginErr != nil {
+			return pluginErr
+		}
 		logger.LogDebug(c, "Rerank request body: %s", jsonData)
 		body, closer, err := relaycommon.NewOutboundJSONBody(jsonData)
 		if err != nil {

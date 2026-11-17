@@ -487,6 +487,7 @@ auth.token_ip_not_allowed: 您的 IP 不在令牌允許存取的清單中
 channel.notify_disabled_content: 管道「{{.Name}}」（#{{.Id}}）已被停用，原因：{{.Reason}}
 channel.notify_disabled_subject: 管道「{{.Name}}」（#{{.Id}}）已被停用
 channel.notify_enabled_content: 管道「{{.Name}}」（#{{.Id}}）已被啟用
+channel.notify_scheduled_subject: '渠道「{{.Name}}」(#{{.Id}}) 外掛通知'
 channel.notify_enabled_subject: 管道「{{.Name}}」（#{{.Id}}）已被啟用
 channel.response_time_exceeded: 回應時間 {{.Seconds}}s 超過閾值 {{.Threshold}}s
 channel.test_completed_content: 所有管道測試已完成
@@ -512,6 +513,8 @@ relay.group_saturated: 目前分組負載已飽和，請稍後再試，或升級
 relay.group_upstream_saturated: 目前分組上游負載已飽和，請稍後再試
 relay.model_price_not_configured: 模型 {{.Model}} 的價格尚未由管理員設定，暫時無法使用，請聯絡站點管理員開啟該模型
 relay.model_price_not_configured_admin: 模型 {{.Model}} 的價格未設定。請前往「系統設定 → 營運設定」開啟自用模式，或在「系統設定 → 分組與模型定價設定」中為該模型設定價格
+relay.shared_task_price_needs_override: '模型 {{.Model}} 由外掛 {{.Plugin}} 提供，需先為該外掛設定獨立價格才能計費。'
+relay.task_usage_price_unsupported: '模型 {{.Model}} 使用任務用量計價（u()），無法用於一般請求計費；請為其設定一般表達式。'
 relay.retry_get_channel_failed: 獲取分組 {{.Group}} 下模型 {{.Model}} 的可用管道失敗（retry）：{{.Error}}
 relay.retry_no_available_channel: 分組 {{.Group}} 下模型 {{.Model}} 的可用管道不存在（retry）
 relay.task_channel_disabled: 該任務所屬管道已被停用

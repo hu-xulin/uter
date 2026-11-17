@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
@@ -58,6 +59,35 @@ func ApplyReasoningModelSuffix(c *gin.Context, info *relaycommon.RelayInfo, outb
 		selected, diagnostics = overlayMappedModelModifiers(selected, upstreamParsed, diagnostics)
 	}
 
+	if info.ChannelMeta != nil {
+		info.UpstreamModelName = selected.base
+	}
+
+	// A request plugin's reasoning.set applies as an @effort modifier does.
+	// Request returns none when the client or a modifier set an effort and
+	// the plugin does not override it.
+	modifierEffort := ""
+	if selected.hasThinking {
+		modifierEffort = string(reasoning.EffectiveEffort(selected.intent))
+	}
+	reasoningSet, pluginErr := requestplugin.Request(c, info, modifierEffort)
+	if pluginErr != nil {
+		return pluginErr
+	}
+	if reasoningSet != nil {
+		effort, _ := reasoning.ParseEffort(reasoningSet.Effort)
+		if effort == reasoning.EffortNone {
+			selected.intent = reasoning.Intent{Mode: reasoning.ModeDisabled, Effort: reasoning.EffortNone, Source: reasoning.SourceSuffix}
+		} else {
+			if selected.intent.Mode == reasoning.ModeUnset || selected.intent.Mode == reasoning.ModeDisabled {
+				selected.intent.Mode = reasoning.ModeEnabled
+			}
+			selected.intent.Effort = effort
+			selected.intent.Source = reasoning.SourceSuffix
+		}
+		selected.hasThinking = true
+	}
+
 	if selected.hasThinking {
 		explicit, explicitDiagnostics, err := explicitIntentFromRequest(info.Request)
 		if err != nil {
@@ -70,10 +100,6 @@ func ApplyReasoningModelSuffix(c *gin.Context, info *relaycommon.RelayInfo, outb
 		}
 		info.ReasoningConversion = reasoning.StateFromIntent(selected.intent)
 	}
-	if info.ChannelMeta != nil {
-		info.UpstreamModelName = selected.base
-	}
-
 	if selected.hasTemperature {
 		if current, exists := extractTemperature(info.Request); exists && *selected.temperature != current {
 			diagnostics = append(diagnostics, modelModifierDiagnostic(
@@ -229,4 +255,14 @@ func explicitIntentFromRequest(req dto.Request) (reasoning.Intent, []types.Conve
 	default:
 		return reasoning.Intent{}, nil, nil
 	}
+}
+
+// ModelModifierEffort is the reasoning effort the modifiers of a model name
+// set, as a relay request reads them; "" when they set none or are invalid.
+func ModelModifierEffort(modelName string) string {
+	parsed, err := parseRequestModelName(modelName, (&relaycommon.RelayInfo{}).ConvOptions())
+	if err != nil || !parsed.hasThinking {
+		return ""
+	}
+	return string(reasoning.EffectiveEffort(parsed.intent))
 }

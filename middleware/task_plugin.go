@@ -123,15 +123,28 @@ func PrepareTaskPluginRoute() gin.HandlerFunc {
 			return
 		}
 		if pinned.Route.Type == pluginruntime.RouteTypeQuery {
-			taskID := requestContext.Params[pinned.Route.TaskIDParam]
+			// 任务 ID 来自路径参数（:task_id）或查询字符串（?task_id=、?task_ids=a,b）。
+			// 官方 Kling / Hailuo 插件用查询字符串声明 taskIdParam。
+			taskIDs := taskPluginQueryTaskIDs(requestContext, pinned.Route.TaskIDParam)
+			if len(taskIDs) == 0 {
+				logger.LogWarn(
+					c,
+					"task_plugin subsystem=route event=prepare_rejected generation=%d plugin=%q stage=resolve_request reason=task_id_missing",
+					generation,
+					pinned.Plugin.Meta.Key,
+				)
+				abortTaskPluginRouteErrorDetail(c, http.StatusBadRequest, "task id is required")
+				return
+			}
 			logger.LogDebug(
 				c,
-				"task_plugin subsystem=route event=resolved generation=%d plugin=%q kind=query renderer=%q task_count=1 distribute=false",
+				"task_plugin subsystem=route event=resolved generation=%d plugin=%q kind=query renderer=%q task_count=%d distribute=false",
 				generation,
 				pinned.Plugin.Meta.Key,
 				pinned.Route.Render,
+				len(taskIDs),
 			)
-			renderTaskPluginQuery(c, pinned, requestContext, []string{taskID}, pinned.Route.Render, false)
+			renderTaskPluginQuery(c, pinned, requestContext, taskIDs, pinned.Route.Render, len(taskIDs) > 1)
 			return
 		}
 
@@ -762,6 +775,88 @@ func PrepareTaskPluginEndpoint() gin.HandlerFunc {
 			time.Since(hookStarted).Milliseconds(),
 		)
 		c.Next()
+	}
+}
+
+// taskPluginQueryTaskIDs resolves query-route task ids from the path parameter
+// first, then from the query string (comma-separated values expand to multiple
+// ids, matching the upstream new-api plugin protocol).
+func taskPluginQueryTaskIDs(
+	requestContext pluginruntime.RouteRequestContext,
+	param string,
+) []string {
+	if id := strings.TrimSpace(requestContext.Params[param]); id != "" {
+		return []string{id}
+	}
+	var ids []string
+	for _, value := range requestContext.Query[param] {
+		for _, part := range strings.Split(value, ",") {
+			if trimmed := strings.TrimSpace(part); trimmed != "" {
+				ids = append(ids, trimmed)
+			}
+		}
+	}
+	return ids
+}
+
+// RefreshTaskPluginRequest re-reads the stored body after a request plugin
+// changed it. Task submissions call it once, before validation and pricing.
+func RefreshTaskPluginRequest(c *gin.Context) *dto.TaskError {
+	c.Set(pluginruntime.ContextKeyRequestRefreshed, true)
+	if value, exists := c.Get(pluginruntime.ContextKeyRouteRequest); exists {
+		previous, _ := value.(pluginruntime.RouteRequestContext)
+		requestContext, err := buildTaskPluginRouteRequest(c)
+		if err != nil {
+			return service.TaskErrorWrapperLocal(err, "invalid_request", http.StatusBadRequest)
+		}
+		requestContext.Params, requestContext.RequestBody = previous.Params, previous.RequestBody
+		if pinnedValue, exists := c.Get(pluginruntime.ContextKeyPinnedEndpoint); exists {
+			pinned, _ := pinnedValue.(pluginruntime.PinnedEndpoint)
+			pinTaskPluginFormModel(requestContext, pinned.Model)
+			if protocolValue, exists := c.Get(pluginruntime.ContextKeyProtocolRequest); exists {
+				if protocolContext, ok := protocolValue.(pluginruntime.ProtocolRequestContext); ok {
+					protocolContext.RouteRequestContext = requestContext
+					c.Set(pluginruntime.ContextKeyProtocolRequest, protocolContext)
+				}
+			}
+		}
+		c.Set(pluginruntime.ContextKeyRouteRequest, requestContext)
+		return nil
+	}
+	value, _ := c.Get("task_request")
+	if _, entry := value.(map[string]any); !entry {
+		return nil
+	}
+	var requestBody map[string]any
+	if err := common.UnmarshalBodyReusable(c, &requestBody); err != nil {
+		return service.TaskErrorWrapperLocal(err, "invalid_request", invalidRequestStatus(err))
+	}
+	c.Set("task_request", requestBody)
+	if pinnedValue, exists := c.Get(pluginruntime.ContextKeyPinnedPlugin); exists {
+		if pinned, ok := pinnedValue.(pluginruntime.PinnedPlugin); ok && pinned.Plugin != nil && pinned.Plugin.Meta.PreservesJSONOrder() {
+			storage, err := common.GetBodyStorage(c)
+			var raw []byte
+			if err == nil {
+				raw, err = storage.Bytes()
+			}
+			if err != nil {
+				return service.TaskErrorWrapperLocal(err, "invalid_request", http.StatusBadRequest)
+			}
+			c.Set(pluginruntime.ContextKeyRequestBodyText, json.RawMessage(raw))
+		}
+	}
+	return nil
+}
+
+// pinTaskPluginFormModel sets the model field of a form body to the model the
+// endpoint was pinned to.
+func pinTaskPluginFormModel(requestContext pluginruntime.RouteRequestContext, model string) {
+	if body, ok := requestContext.Body.(map[string]any); ok {
+		if fields, ok := body["fields"].(map[string][]string); ok {
+			if values := fields["model"]; len(values) > 0 && values[0] != model {
+				fields["model"][0] = model
+			}
+		}
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -761,6 +762,24 @@ func TestGenericChannelTypesDoNotCreateLegacyIdentityConflicts(t *testing.T) {
 	}
 }
 
+func TestRegistryLooksPluginsUpByManifestKey(t *testing.T) {
+	registry := NewRegistry()
+	plugin, err := CompilePlugin(routingTestPluginSource("key-lookup", 0, `["model"]`, ``, ``), Options{})
+	require.NoError(t, err)
+	require.NoError(t, registry.ReplaceOverrides([]*LoadedPlugin{plugin}))
+
+	found, ok := registry.GetByKey("key-lookup")
+	require.True(t, ok)
+	require.Equal(t, "key-lookup", found.Meta.Key)
+
+	found, ok = registry.GetIgnoringMasterSwitch("key-lookup")
+	require.True(t, ok)
+	require.Equal(t, "key-lookup", found.Meta.Key)
+
+	_, ok = registry.GetByKey("missing")
+	require.False(t, ok)
+}
+
 func TestDeclarativeRouteValidationProtectsNamespacesAndCanonicalSyntax(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -770,7 +789,7 @@ func TestDeclarativeRouteValidationProtectsNamespacesAndCanonicalSyntax(t *testi
 		{
 			name:          "core API",
 			route:         Route{Method: "POST", Path: "/api/plugin", Type: RouteTypeSubmit},
-			expectedError: "reserved namespace /api",
+			expectedError: "reserved namespace /api/plugin",
 		},
 		{
 			name:          "generic task management",
@@ -813,9 +832,9 @@ func TestDeclarativeRouteValidationProtectsNamespacesAndCanonicalSyntax(t *testi
 			expectedError: "invalid catch-all",
 		},
 		{
-			name:          "query id mismatch",
-			route:         Route{Method: "GET", Path: "/vendor/jobs/:id", Type: RouteTypeQuery, Render: "native"},
-			expectedError: "must contain :task_id",
+			name:          "query id parameter name invalid",
+			route:         Route{Method: "GET", Path: "/vendor/jobs/:id", Type: RouteTypeQuery, Render: "native", TaskIDParam: "1bad"},
+			expectedError: "invalid taskIdParam",
 		},
 		{
 			name:          "query declares decoder",
@@ -860,6 +879,114 @@ func TestDeclarativeRouteValidationProtectsNamespacesAndCanonicalSyntax(t *testi
 			require.ErrorContains(t, ValidateV1Meta(meta), testCase.expectedError)
 		})
 	}
+}
+
+func TestDeclarativeRouteAllowsProviderNativeAPIPathsAndQueryTaskIDs(t *testing.T) {
+	accept := []Route{
+		// 官方豆包 / 阿里云插件声明上游原生 /api/... 路径。
+		{Method: "POST", Path: "/api/v3/contents/generations/tasks", Type: RouteTypeSubmit, Decode: "decode", Render: "created"},
+		{Method: "POST", Path: "/api/v1/services/aigc/multimodal-generation/generation", Type: RouteTypeSubmit, Decode: "decode", Render: "created"},
+		// Kling / Hailuo：taskIdParam 来自查询字符串而非路径。
+		{Method: "GET", Path: "/tasks", Type: RouteTypeQuery, Render: "tasks", TaskIDParam: "task_ids"},
+		{Method: "GET", Path: "/v1/query/video_generation", Type: RouteTypeQuery, Render: "status", TaskIDParam: "task_id"},
+		{Method: "GET", Path: "/v1/files/retrieve", Type: RouteTypeQuery, Render: "file", TaskIDParam: "file_id"},
+	}
+	for _, route := range accept {
+		meta := Meta{APIVersion: 1, Key: "native", Name: "Native", Version: "1.0.0", Author: AuthorMeta{Name: "Test"}, Models: []string{"model"}, FetchMode: "per_task", Routes: []Route{route}}
+		require.NoError(t, ValidateV1Meta(meta), route.Path)
+	}
+
+	blocked := []Route{
+		{Method: "POST", Path: "/api/user/login", Type: RouteTypeSubmit, Decode: "decode", Render: "created"},
+		{Method: "POST", Path: "/api/plugin/task", Type: RouteTypeSubmit, Decode: "decode", Render: "created"},
+		{Method: "POST", Path: "/api/option/", Type: RouteTypeSubmit, Decode: "decode", Render: "created"},
+	}
+	for _, route := range blocked {
+		meta := Meta{APIVersion: 1, Key: "native", Name: "Native", Version: "1.0.0", Author: AuthorMeta{Name: "Test"}, Models: []string{"model"}, FetchMode: "per_task", Routes: []Route{route}}
+		require.ErrorContains(t, ValidateV1Meta(meta), "reserved namespace", route.Path)
+	}
+}
+
+func TestCompileAcceptsLocalizedNameAndConfigUIFields(t *testing.T) {
+	source := routingTestPluginSource(
+		"localized-name",
+		0,
+		`["model"]`,
+		`name: {en: "Localized name", zh: "本地化名称"},
+	optional: true,
+	configSchema: {type: "object", properties: {level: {type: "string", title: {en: "Level"}}}},
+	samples: [],`,
+		`export function request(ctx, req) { return {action: "continue"}; }`,
+	)
+	loaded, err := CompilePlugin(source, Options{})
+	require.NoError(t, err)
+	require.Equal(t, "Localized name", loaded.Meta.Name)
+	require.True(t, loaded.Meta.Optional)
+	require.NotNil(t, loaded.Meta.ConfigSchema)
+	require.True(t, loaded.Meta.HasTransformPart())
+}
+
+func TestCompileValidatesRequestPluginConfigSchema(t *testing.T) {
+	good := routingTestPluginSource(
+		"schema-good", 0, `[]`,
+		`configSchema: {type: "object", properties: {level: {type: "string", title: {en: "Level"}, enum: ["low", "high"]}}},`,
+		`export function request(ctx, req) { return {action: "continue"}; }`,
+	)
+	// 请求处理插件不声明任务模型/抓取模式：清掉辅助函数的默认字段。
+	good = strings.ReplaceAll(good, "models: [],", "")
+	good = strings.ReplaceAll(good, "fetchMode: \"per_task\",", "")
+	loaded, err := CompilePlugin(good, Options{})
+	require.NoError(t, err)
+	require.NotNil(t, loaded.Meta.ConfigSchema)
+
+	bad := routingTestPluginSource(
+		"schema-bad", 0, `[]`,
+		`configSchema: {type: "object", properties: {level: {type: "nope", title: {en: "Level"}}}},`,
+		`export function request(ctx, req) { return {action: "continue"}; }`,
+	)
+	bad = strings.ReplaceAll(bad, "models: [],", "")
+	bad = strings.ReplaceAll(bad, "fetchMode: \"per_task\",", "")
+	_, err = CompilePlugin(bad, Options{})
+	require.Error(t, err)
+}
+
+func TestCompileRejectsMalformedRequestPluginSections(t *testing.T) {
+	tests := []struct {
+		name    string
+		fields  string
+		message string
+	}{
+		{name: "optional must be boolean", fields: `optional: "yes",`, message: "optional must be a boolean"},
+		{name: "configSchema must be object", fields: `configSchema: [],`, message: "configSchema must be an object"},
+		{name: "samples must be array", fields: `samples: {a: 1},`, message: "samples must be an array"},
+	}
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
+			source := routingTestPluginSource("bad-sections", 0, `["model"]`, testCase.fields, ``)
+			_, err := CompilePlugin(source, Options{})
+			require.ErrorContains(t, err, testCase.message)
+		})
+	}
+}
+
+func TestCompileAcceptsRequestOnlyPluginForSpecificHostError(t *testing.T) {
+	source := `
+export const meta = {
+	apiVersion: 1,
+	key: "request-hook",
+	name: {en: "Request hook", zh: "请求钩子"},
+	version: "1.0.0",
+	author: {name: "Test"},
+	optional: true,
+	configSchema: {type: "object", properties: {level: {type: "string", title: {en: "Level"}}}},
+	samples: [],
+};
+export function request(ctx, req) { return {action: "continue"}; }
+`
+	loaded, err := CompilePlugin(source, Options{})
+	require.NoError(t, err)
+	require.Empty(t, loaded.Meta.FetchMode)
+	require.Empty(t, loaded.Meta.Models)
 }
 
 func TestRemovedEndpointsAndProtocolHooksAreValidatedAtCompileTime(t *testing.T) {

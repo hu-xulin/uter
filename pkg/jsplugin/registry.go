@@ -32,6 +32,7 @@ const APIVersion1 = 1
 const (
 	maxLocalizedTextLocales       = 16
 	maxMetaDescriptionRunes       = 512
+	maxMetaKeyHintRunes           = 256
 	maxUsageFieldDescriptionRunes = 256
 )
 
@@ -129,6 +130,11 @@ type Meta struct {
 	// Relay is the provider part: the Advanced Custom routes a task plugin
 	// channel bound to the plugin serves.
 	Relay []dto.AdvancedCustomRoute `json:"relay,omitempty"`
+	// KeyHint is the hint and example of the channel key field.
+	KeyHint LocalizedText `json:"keyHint,omitempty"`
+	// noTaskPart marks a plugin that does not export buildSubmitRequest.
+	// CompilePlugin sets it; a Meta built by hand has the task part.
+	noTaskPart bool
 }
 
 // UsageProfile replaces the plugin's default usage metadata for its models.
@@ -380,8 +386,27 @@ func CompilePlugin(source string, options Options) (*LoadedPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = normalizeV1Meta(&meta); err != nil {
+	// Declarative members are read as JSON text so sample bodies keep the
+	// member order the plugin wrote.
+	memberTexts, err := engine.ExportMembers(context.Background(), "meta", []string{"configSchema", "samples", "channelConfig"})
+	if err != nil {
 		return nil, err
+	}
+	configSchemaText, samplesText, channelConfigText := memberTexts[0], memberTexts[1], memberTexts[2]
+	if configSchemaText != nil {
+		if meta.ConfigSchema, err = decodeConfigSchema(configSchemaText); err != nil {
+			return nil, err
+		}
+	}
+	if samplesText != nil {
+		if meta.Samples, err = decodeSamples(samplesText); err != nil {
+			return nil, err
+		}
+	}
+	if channelConfigText != nil {
+		if meta.ChannelConfig, err = decodeChannelConfigSchema(channelConfigText); err != nil {
+			return nil, err
+		}
 	}
 	engine.key = meta.Key
 	engine.version = meta.Version
@@ -400,10 +425,10 @@ func CompilePlugin(source string, options Options) (*LoadedPlugin, error) {
 		}
 		meta.transformHooks = append(meta.transformHooks, stage)
 	}
-	if meta.ConfigSchema != nil && !meta.HasTransformPart() {
+	if configSchemaText != nil && !meta.HasTransformPart() {
 		return nil, fmt.Errorf("plugin %s meta configSchema belongs to the request processing part; export ingress, request, outbound, egress, reply or report, or remove it", meta.Key)
 	}
-	if len(meta.Samples) > 0 && !meta.HasTransformPart() {
+	if samplesText != nil && !meta.HasTransformPart() {
 		return nil, fmt.Errorf("plugin %s meta samples belongs to the request processing part; export ingress, request, outbound, egress, reply or report, or remove it", meta.Key)
 	}
 	if meta.Optional && !meta.HasTransformPart() {
@@ -412,11 +437,39 @@ func CompilePlugin(source string, options Options) (*LoadedPlugin, error) {
 	if meta.Scope != nil && !meta.HasTransformPart() {
 		return nil, fmt.Errorf("plugin %s meta scope belongs to the request processing part; export ingress, request, outbound, egress, reply or report, or remove it", meta.Key)
 	}
+	if !engine.HasExport("buildSubmitRequest") {
+		if len(meta.Relay) == 0 && !meta.HasTransformPart() {
+			return nil, fmt.Errorf("plugin %s has no task part (export buildSubmitRequest), provider part (meta.relay) or request processing part (export ingress, request, outbound, egress, reply or report)", meta.Key)
+		}
+		object, _ := value.(map[string]any)
+		for _, field := range taskOnlyMetaFields {
+			if _, present := object[field]; present {
+				return nil, fmt.Errorf("plugin %s meta %s belongs to the task part; export buildSubmitRequest or remove it", meta.Key, field)
+			}
+		}
+		meta.noTaskPart = true
+	}
+	if meta.noTaskPart && len(meta.Relay) == 0 {
+		object, _ := value.(map[string]any)
+		for _, field := range []string{"channelConfig", "keyHint"} {
+			if _, present := object[field]; present {
+				return nil, fmt.Errorf("plugin %s meta %s belongs to a channel; export buildSubmitRequest or declare meta.relay, or remove it", meta.Key, field)
+			}
+		}
+	}
+	if engine.HasExport("buildBalanceRequest") != engine.HasExport("parseBalance") {
+		return nil, fmt.Errorf("plugin %s must export both buildBalanceRequest and parseBalance, or neither", meta.Key)
+	}
+	if err = normalizeV1Meta(&meta); err != nil {
+		return nil, err
+	}
+	if err := validateProviderHooks(meta, engine); err != nil {
+		return nil, err
+	}
 	// 请求处理插件不提供任务提交/查询导出，由 ingress/request/outbound/
 	// egress/reply/report 钩子驱动；编译层只跳过任务钩子校验。
-	requestOnly := meta.FetchMode == "" && len(meta.Models) == 0 && len(meta.Routes) == 0
 	var requiredHooks []string
-	if !requestOnly {
+	if meta.HasTaskPart() {
 		requiredHooks = []string{"buildSubmitRequest", "parseSubmitResponse", "parseTaskResult"}
 		if slices.Contains(meta.SubmitResponseTypes, "sse") {
 			if UsesSubmitEventDelta(meta, engine) {
@@ -998,6 +1051,10 @@ func cloneMeta(meta Meta) Meta {
 	if meta.NameI18n != nil {
 		meta.NameI18n = maps.Clone(meta.NameI18n)
 	}
+	if meta.KeyHint != nil {
+		meta.KeyHint = maps.Clone(meta.KeyHint)
+	}
+	meta.Relay = cloneRelayRoutes(meta.Relay)
 	if meta.Scope != nil {
 		meta.Scope = &TransformScope{
 			Models:       slices.Clone(meta.Scope.Models),
@@ -1139,7 +1196,7 @@ func decodeMeta(value any) (Meta, error) {
 			// config UI. Accept them so installation is not rejected; the console
 			// does not render this form yet, and the plugins fall back to their
 			// own defaults when no config is supplied.
-			"optional", "configSchema", "samples":
+			"optional", "configSchema", "samples", "relay", "channelConfig", "keyHint":
 		default:
 			return Meta{}, &UnknownMetaFieldError{Field: field}
 		}
@@ -1285,6 +1342,14 @@ func decodeMeta(value any) (Meta, error) {
 		if _, exists := object[removedField]; exists {
 			return Meta{}, fmt.Errorf("plugin meta %s is no longer supported; declare routes instead", removedField)
 		}
+	}
+	if relay, exists := object["relay"]; exists {
+		if meta.Relay, err = decodeRelayRoutes(relay); err != nil {
+			return Meta{}, err
+		}
+	}
+	if meta.KeyHint, err = localizedTextMetaField(object, "keyHint", maxMetaKeyHintRunes); err != nil {
+		return Meta{}, err
 	}
 	switch auth := object["auth"].(type) {
 	case nil:
@@ -1476,8 +1541,9 @@ func normalizeV1Meta(meta *Meta) error {
 	}
 	// 请求处理插件（上游 new-api 的 transform 插件）不声明 fetchMode /
 	// models / routes，只导出请求钩子；元数据层放行，由请求插件运行时执行。
-	requestOnly := meta.FetchMode == "" && len(meta.Models) == 0 && len(meta.Routes) == 0
-	if !requestOnly {
+	// 请求处理插件不声明任务字段；一旦声明了任务字段，就必须完整合法。
+	declaresTask := meta.FetchMode != "" || len(meta.Models) > 0 || len(meta.Routes) > 0
+	if meta.HasTaskPart() && declaresTask {
 		if meta.FetchMode != "per_task" && meta.FetchMode != "batch" {
 			return fmt.Errorf("plugin meta fetchMode must be per_task or batch")
 		}
@@ -1629,7 +1695,7 @@ func normalizeV1Meta(meta *Meta) error {
 			return fmt.Errorf("plugin meta usageProfiles[%d]: %w", index, err)
 		}
 	}
-	return nil
+	return validateRelayRoutes(meta.Relay, meta.ChannelConfig)
 }
 
 func validateUsageSchema(schema map[string]UsageFieldSchema) error {
@@ -2358,4 +2424,155 @@ func strictStringSlice(object map[string]any, name string) ([]string, error) {
 		result = append(result, text)
 	}
 	return result, nil
+}
+
+// relayErrorNames renames Advanced Custom validation errors for manifests.
+var relayErrorNames = strings.NewReplacer("advanced_custom.advanced_routes", "plugin meta relay", "advanced_routes[", "relay[")
+
+var relayRouteFields = []string{"incoming_path", "upstream_path", "converter", "models", "auth", "pass_through_body_enabled"}
+
+// decodeRelayRoutes reads meta.relay. Each route has exactly the keys of an
+// Advanced Custom route.
+func decodeRelayRoutes(value any) ([]dto.AdvancedCustomRoute, error) {
+	items, ok := value.([]any)
+	if !ok {
+		return nil, fmt.Errorf("plugin meta relay must be an array")
+	}
+	routes := make([]dto.AdvancedCustomRoute, len(items))
+	for index, item := range items {
+		object, ok := item.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("plugin meta relay[%d] must be an object", index)
+		}
+		for field, fieldValue := range object {
+			if !slices.Contains(relayRouteFields, field) {
+				return nil, fmt.Errorf("plugin meta relay[%d] has unknown field %q", index, field)
+			}
+			if field != "auth" || fieldValue == nil {
+				continue
+			}
+			auth, isObject := fieldValue.(map[string]any)
+			if !isObject {
+				return nil, fmt.Errorf("plugin meta relay[%d].auth must be an object", index)
+			}
+			for authField := range auth {
+				if authField != "type" && authField != "name" && authField != "value" {
+					return nil, fmt.Errorf("plugin meta relay[%d].auth has unknown field %q", index, authField)
+				}
+			}
+		}
+		encoded, err := common.Marshal(object)
+		if err != nil {
+			return nil, fmt.Errorf("plugin meta relay[%d]: %w", index, err)
+		}
+		if err = common.Unmarshal(encoded, &routes[index]); err != nil {
+			return nil, fmt.Errorf("plugin meta relay[%d] has a member of the wrong type: %w", index, err)
+		}
+	}
+	return routes, nil
+}
+
+// validateRelayRoutes applies the Advanced Custom route rules to meta.relay.
+// A plugin-converter route is checked as a native route of its client
+// endpoint, and a chained one as a route of its registered converter. An
+// upstream_path that starts with {config.<name>} must name a url property of
+// channelConfig and go on with nothing or a path; it is checked as a full URL.
+func validateRelayRoutes(routes []dto.AdvancedCustomRoute, channelConfig *ConfigSchema) error {
+	if len(routes) == 0 {
+		return nil
+	}
+	config := dto.AdvancedCustomConfig{Routes: make([]dto.AdvancedCustomRoute, len(routes))}
+	for index, route := range routes {
+		if name, rest, ok := configAddressPath(route.UpstreamPath); ok || strings.HasPrefix(strings.TrimSpace(route.UpstreamPath), configAddressPrefix) {
+			if !ok || !channelConfig.hasAddress(name) || (rest != "" && !strings.HasPrefix(rest, "/")) {
+				return fmt.Errorf("plugin meta relay[%d].upstream_path must start with {config.<name>} naming a format url property of meta.channelConfig, followed by nothing or a path", index)
+			}
+			route.UpstreamPath = "https://config.invalid" + rest
+		}
+		if converter, hooks := SplitProviderConverter(route.Converter); hooks {
+			if !providerConverterPath(route) {
+				return fmt.Errorf("plugin meta relay[%d].converter %q does not support incoming_path %s", index, strings.TrimSpace(route.Converter), route.IncomingPath)
+			}
+			if route.PassThroughBodyEnabled {
+				return fmt.Errorf("plugin meta relay[%d].pass_through_body_enabled requires converter none: %s", index, strings.TrimSpace(route.Converter))
+			}
+			if strings.TrimSpace(route.Converter) != ProviderConverter && (converter == "" || converter == "none" || converter == ProviderConverter) {
+				return fmt.Errorf("plugin meta relay[%d].converter %q must chain a registered converter other than none", index, strings.TrimSpace(route.Converter))
+			}
+			route.Converter = converter
+		}
+		config.Routes[index] = route
+	}
+	if err := config.Validate(); err != nil {
+		return errors.New(relayErrorNames.Replace(err.Error()))
+	}
+	return nil
+}
+
+// providerConverterPath reports whether the convert hooks can serve the client
+// endpoint of route: every relayed one but realtime, which is a WebSocket
+// session, and the model list, whose reply convertResponse converts. The
+// balance path is a channel management request with no hook.
+func providerConverterPath(route dto.AdvancedCustomRoute) bool {
+	if strings.TrimSpace(route.IncomingPath) == dto.AdvancedCustomBalancePath {
+		return false
+	}
+	config := dto.AdvancedCustomConfig{Routes: []dto.AdvancedCustomRoute{route}}
+	_, realtime := config.MatchPath("/v1/realtime")
+	return !realtime
+}
+
+// taskOnlyMetaFields are the manifest fields only a task part reads.
+var taskOnlyMetaFields = []string{"routes", "protocols", "fetchMode", "submitResponseTypes", "usageSchema", "usageExamples", "usageProfiles", "auth", "channelTypes", "upstreams"}
+
+// ProviderHooks are the optional credential, relay and channel exports of a
+// plugin.
+var ProviderHooks = []string{"login", "refresh", "revoke", "signRequest", "prepareRequest", "credentialRejected", "convertRequest", "convertResponse", "convertStreamEvent", "exchangeKey", "checkKey", "buildBalanceRequest", "parseBalance", "scheduled"}
+
+var providerConvertHooks = []string{"convertRequest", "convertResponse", "convertStreamEvent"}
+
+// relayOnlyHooks act on relay requests, so only a plugin with meta.relay may
+// export them. The credential hooks serve the task part as well.
+var relayOnlyHooks = []string{"prepareRequest", "credentialRejected", "convertRequest", "convertResponse", "convertStreamEvent"}
+
+func validateProviderHooks(meta Meta, engine *Engine) error {
+	exported := make(map[string]bool, len(ProviderHooks))
+	for _, hook := range ProviderHooks {
+		if !engine.HasExport(hook) {
+			continue
+		}
+		callable, err := engine.HasCallablePath(context.Background(), hook)
+		if err != nil {
+			return err
+		}
+		if !callable {
+			return fmt.Errorf("plugin %s export %q is not a function", meta.Key, hook)
+		}
+		if !meta.HasProviderPart() && slices.Contains(relayOnlyHooks, hook) {
+			return fmt.Errorf("plugin %s exports %s, which needs meta.relay routes", meta.Key, hook)
+		}
+		if !meta.HasProviderPart() && !meta.HasTaskPart() {
+			return fmt.Errorf("plugin %s exports %s, which needs a task part or meta.relay routes", meta.Key, hook)
+		}
+		exported[hook] = true
+	}
+	// The model list route only reads a reply, so it needs convertResponse
+	// alone; every other plugin-converter route needs all three.
+	usesConverter, relaysConverter := false, false
+	for _, route := range meta.Relay {
+		if _, hooks := SplitProviderConverter(route.Converter); hooks {
+			usesConverter = true
+			relaysConverter = relaysConverter || strings.TrimSpace(route.IncomingPath) != dto.AdvancedCustomModelListPath
+		}
+	}
+	for _, hook := range providerConvertHooks {
+		needed := relaysConverter || (usesConverter && hook == "convertResponse")
+		if needed && !exported[hook] {
+			return fmt.Errorf("plugin %s relay routes use converter %q but the plugin does not export %s", meta.Key, ProviderConverter, hook)
+		}
+		if !needed && exported[hook] {
+			return fmt.Errorf("plugin %s exports %s but no relay route that calls it uses converter %q", meta.Key, hook, ProviderConverter)
+		}
+	}
+	return nil
 }

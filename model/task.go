@@ -10,6 +10,7 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 	commonRelay "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 )
@@ -87,6 +88,27 @@ type Task struct {
 	// 上游用量结果此时已经拿不到了，重新求值会得到一个不同的数，按它重放就会
 	// 与第一次尝试扣不同的钱。没有这个字段，对账任务只能把任务转人工。
 	BillingTargetQuota int `json:"-" gorm:"default:0"`
+
+	// RequestPlugins is set when a request plugin instance may report the
+	// task: the task reports once, at its final state. Stored as JSON text so
+	// SQLite, MySQL and PostgreSQL share one column type.
+	RequestPlugins *TaskRequestPlugins `json:"request_plugins,omitempty" gorm:"serializer:json;type:text"`
+}
+
+// TaskRequestPlugins is what the report of a task needs from its submission.
+// The request id and path are in Execution; the model, group, user, channel
+// and token are on the task.
+type TaskRequestPlugins struct {
+	Instances   []string                          `json:"instances"`
+	Format      string                            `json:"format"`
+	ChannelType int                               `json:"channel_type,omitempty"`
+	Attempt     int                               `json:"attempt,omitempty"`
+	Username    string                            `json:"username,omitempty"`
+	TokenName   string                            `json:"token_name,omitempty"`
+	StartedAt   int64                             `json:"started_at"`
+	Request     json.RawMessage                   `json:"request,omitempty"`
+	Media       []jsplugin.TransformMedia         `json:"media,omitempty"`
+	Record      []commonRelay.RequestPluginRecord `json:"record,omitempty"`
 }
 
 func (t *Task) SetData(data any) {
@@ -139,6 +161,12 @@ type TaskPrivateData struct {
 	TokenId        int                 `json:"token_id,omitempty"`        // 令牌 ID，用于令牌额度退款
 	NodeName       string              `json:"node_name,omitempty"`       // 发起任务的节点名，轮询结算阶段据此归属日志而非最后查询节点
 	BillingContext *TaskBillingContext `json:"billing_context,omitempty"` // 计费参数快照（用于轮询阶段重新计算）
+	// CredentialAccount is the account ID of the plugin credential line a task
+	// plugin channel submitted the task with.
+	CredentialAccount string `json:"credential_account,omitempty"`
+	// RequestPlugins is set when a request plugin instance may report the
+	// task: the task reports once, at its final state.
+	RequestPlugins *TaskRequestPlugins `json:"request_plugins,omitempty"`
 	// OrganizationId 是**提交时**固化的出资组织快照。
 	//
 	// 异步任务的提交与结算之间可能隔很久：期间用户可能被移出组织、组织可能被停用，
@@ -292,6 +320,11 @@ func InitTask(platform constant.TaskPlatform, relayInfo *commonRelay.RelayInfo) 
 			relayInfo.ChannelMeta.ChannelType == constant.ChannelTypeVertexAi ||
 			relayInfo.ChannelMeta.ChannelType == constant.ChannelTypeNewAPI {
 			privateData.Key = relayInfo.ChannelMeta.ApiKey
+		}
+		if relayInfo.ChannelMeta.ChannelType == constant.ChannelTypeTaskPlugin {
+			if credential, ok := jsplugin.ParseCredential(relayInfo.ChannelMeta.ApiKey); ok {
+				privateData.CredentialAccount = credential.AccountID
+			}
 		}
 		if relayInfo.UpstreamModelName != "" {
 			properties.UpstreamModelName = relayInfo.UpstreamModelName

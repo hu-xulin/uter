@@ -13,6 +13,7 @@ import (
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -59,6 +60,9 @@ func ImageHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *type
 		if err != nil {
 			return types.NewErrorWithStatusCode(err, types.ErrorCodeReadRequestBodyFailed, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
 		}
+		if pluginErr := requestplugin.PassThrough(c, info, storage); pluginErr != nil {
+			return pluginErr
+		}
 		if strings.Contains(c.Request.Header.Get("Content-Type"), "multipart/form-data") {
 			requestBody = common.NewReplayableBodyReader(storage)
 		} else {
@@ -83,6 +87,9 @@ func ImageHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *type
 
 		switch convertedRequest.(type) {
 		case *bytes.Buffer:
+			if pluginErr := requestplugin.PassThrough(c, info, nil); pluginErr != nil {
+				return pluginErr
+			}
 			requestBody = convertedRequest.(io.Reader)
 		default:
 			jsonData, err = common.Marshal(convertedRequest)
@@ -90,12 +97,19 @@ func ImageHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *type
 				return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
 			}
 
+			var pluginErr *types.UterError
+			if jsonData, pluginErr = requestplugin.Outbound(c, info, jsonData); pluginErr != nil {
+				return pluginErr
+			}
 			// apply param override
 			if len(info.ParamOverride) > 0 {
 				jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 				if err != nil {
 					return newAPIErrorFromParamOverride(err)
 				}
+			}
+			if pluginErr = requestplugin.Egress(c, info, jsonData); pluginErr != nil {
+				return pluginErr
 			}
 
 		}

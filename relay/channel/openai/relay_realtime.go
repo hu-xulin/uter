@@ -2,11 +2,13 @@ package openai
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -30,6 +32,37 @@ func OpenaiRealtimeHandler(c *gin.Context, info *relaycommon.RelayInfo) (*types.
 	sendChan := make(chan []byte, 100)
 	receiveChan := make(chan []byte, 100)
 	errChan := make(chan error, 2)
+
+	var clientWriteMu, targetWriteMu sync.Mutex
+	writeClient := func(message []byte) error {
+		clientWriteMu.Lock()
+		defer clientWriteMu.Unlock()
+		return helper.WssString(c, clientConn, string(message))
+	}
+	writeTarget := func(message []byte) error {
+		targetWriteMu.Lock()
+		defer targetWriteMu.Unlock()
+		return helper.WssString(c, targetConn, string(message))
+	}
+	plugins := requestplugin.NewRealtime(c, info, func(message []byte) {
+		if writeErr := writeClient(message); writeErr != nil {
+			select {
+			case errChan <- fmt.Errorf("error writing to client: %v", writeErr):
+			default:
+			}
+		}
+	}, func(message []byte) {
+		if writeErr := writeTarget(message); writeErr != nil {
+			select {
+			case errChan <- fmt.Errorf("error writing to target: %v", writeErr):
+			default:
+			}
+		}
+	})
+	if plugins != nil {
+		// The consume log reads what the plugins did once the session ends.
+		defer plugins.Close(info)
+	}
 
 	usage := &dto.RealtimeUsage{}
 	localUsage := &dto.RealtimeUsage{}
@@ -61,6 +94,19 @@ func OpenaiRealtimeHandler(c *gin.Context, info *relaycommon.RelayInfo) (*types.
 					errChan <- fmt.Errorf("error unmarshalling message: %v", err)
 					return
 				}
+				if plugins != nil {
+					patched, dropped := plugins.ClientEvent(realtimeEvent.Type, message)
+					if dropped {
+						continue
+					}
+					if patched != nil {
+						message, realtimeEvent = patched, &dto.RealtimeEvent{}
+						if err = common.Unmarshal(message, realtimeEvent); err != nil {
+							errChan <- fmt.Errorf("error unmarshalling message: %v", err)
+							return
+						}
+					}
+				}
 
 				if realtimeEvent.Type == dto.RealtimeEventTypeSessionUpdate {
 					if realtimeEvent.Session != nil {
@@ -81,7 +127,7 @@ func OpenaiRealtimeHandler(c *gin.Context, info *relaycommon.RelayInfo) (*types.
 				localUsage.InputTokenDetails.TextTokens += textToken
 				localUsage.InputTokenDetails.AudioTokens += audioToken
 
-				err = helper.WssString(c, targetConn, string(message))
+				err = writeTarget(message)
 				if err != nil {
 					errChan <- fmt.Errorf("error writing to target: %v", err)
 					return
@@ -187,8 +233,13 @@ func OpenaiRealtimeHandler(c *gin.Context, info *relaycommon.RelayInfo) (*types.
 					localUsage.OutputTokenDetails.AudioTokens += audioToken
 				}
 
-				err = helper.WssString(c, clientConn, string(message))
-				if err != nil {
+				if plugins != nil {
+					var responseUsage *dto.RealtimeUsage
+					if realtimeEvent.Response != nil {
+						responseUsage = realtimeEvent.Response.Usage
+					}
+					plugins.ServerEvent(realtimeEvent.Type, message, responseUsage, 0)
+				} else if err = writeClient(message); err != nil {
 					errChan <- fmt.Errorf("error writing to client: %v", err)
 					return
 				}

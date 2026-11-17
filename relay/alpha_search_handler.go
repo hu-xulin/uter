@@ -11,6 +11,7 @@ import (
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relay/requestplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -27,11 +28,14 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError
 		constant.ChannelTypeCodex,
 		constant.ChannelTypeAdvancedCustom:
 	default:
-		// Allow retry onto another channel that may support this endpoint.
-		return types.NewError(
-			errors.New("channel does not support /v1/alpha/search"),
-			types.ErrorCodeInvalidRequest,
-		)
+		// Provider plugin channels serve the paths of their relay routes.
+		if info.ApiType != constant.APITypeProviderPlugin {
+			// Allow retry onto another channel that may support this endpoint.
+			return types.NewError(
+				errors.New("channel does not support /v1/alpha/search"),
+				types.ErrorCodeInvalidRequest,
+			)
+		}
 	}
 
 	request, ok := info.Request.(*dto.AlphaSearchRequest)
@@ -54,6 +58,10 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError
 		return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
 	}
 
+	var pluginErr *types.UterError
+	if jsonData, pluginErr = requestplugin.Outbound(c, info, jsonData); pluginErr != nil {
+		return pluginErr
+	}
 	if len(info.ParamOverride) > 0 {
 		jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 		if err != nil {
@@ -61,6 +69,9 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError
 		}
 	}
 
+	if pluginErr = requestplugin.Egress(c, info, jsonData); pluginErr != nil {
+		return pluginErr
+	}
 	logger.LogDebug(c, "requestBody: %s", jsonData)
 	body, closer, err := relaycommon.NewOutboundJSONBody(jsonData)
 	if err != nil {

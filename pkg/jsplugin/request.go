@@ -67,3 +67,29 @@ func canonicalHost(value *url.URL) string {
 	}
 	return net.JoinHostPort(host, port)
 }
+
+// ValidateServiceURL checks a utils.fetch URL of a hook that runs without a
+// channel: its host must be one of hosts, each `host` or `host:port`.
+func ValidateServiceURL(requestURL string, hosts []string) error {
+	request, err := url.Parse(requestURL)
+	if err != nil || request.Scheme == "" || request.Host == "" {
+		return fmt.Errorf("plugin request URL must be absolute")
+	}
+	if hostAllowed(request, hosts) {
+		return nil
+	}
+	return fmt.Errorf("plugin request host %q is not allowed", request.Host)
+}
+
+func hostAllowed(request *url.URL, allowedHosts []string) bool {
+	requestHost := canonicalHost(request)
+	for _, allowed := range allowedHosts {
+		// Parse with the request scheme so "host:443" matches an https request
+		// the same way an explicit default port on the request URL does.
+		allowedURL, parseErr := url.Parse(request.Scheme + "://" + strings.TrimSpace(allowed))
+		if parseErr == nil && requestHost == canonicalHost(allowedURL) {
+			return true
+		}
+	}
+	return false
+}
