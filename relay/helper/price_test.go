@@ -802,3 +802,62 @@ func (s *priceTestReservation) GetPreConsumedQuota() int { return s.held }
 func (s *priceTestReservation) Reserve(quota int) error  { s.held = max(s.held, quota); return nil }
 
 func (s *priceTestReservation) ReserveBeforeSubmit(quota int) error { return s.Reserve(quota) }
+
+func TestUpstreamPricingEngineMatchesRatioStack(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", nil)
+	ctx.Request.Header.Set("Content-Type", "application/json")
+	ctx.Set("group", "default")
+
+	newInfo := func(engine string) *relaycommon.RelayInfo {
+		return &relaycommon.RelayInfo{
+			OriginModelName: "gpt-4o",
+			UserGroup:       "default",
+			UsingGroup:      "default",
+			ChannelMeta: &relaycommon.ChannelMeta{
+				ChannelSetting: dto.ChannelSettings{PricingEngine: engine},
+			},
+		}
+	}
+	uterInfo, upstreamInfo := newInfo(""), newInfo("upstream")
+	uterPrice, err := ModelPriceHelper(ctx, uterInfo, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+	upstreamPrice, err := ModelPriceHelper(ctx, upstreamInfo, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+
+	assert.Equal(t, uterPrice.QuotaToPreConsume, upstreamPrice.QuotaToPreConsume)
+	assert.Equal(t, uterPrice.ModelRatio, upstreamPrice.ModelRatio)
+	assert.Equal(t, uterPrice.CompletionRatio, upstreamPrice.CompletionRatio)
+	assert.Equal(t, uterPrice.GroupRatioInfo.GroupRatio, upstreamPrice.GroupRatioInfo.GroupRatio)
+}
+
+func TestUpstreamPricingEngineMatchesPerCallStack(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/images/generations", nil)
+	ctx.Set("group", "default")
+
+	newInfo := func(engine string) *relaycommon.RelayInfo {
+		return &relaycommon.RelayInfo{
+			OriginModelName: "dall-e-3",
+			UserGroup:       "default",
+			UsingGroup:      "default",
+			ChannelMeta: &relaycommon.ChannelMeta{
+				ChannelSetting: dto.ChannelSettings{PricingEngine: engine},
+			},
+		}
+	}
+	uterPrice, err := ModelPriceHelperPerCall(ctx, newInfo(""))
+	require.NoError(t, err)
+	upstreamPrice, err := ModelPriceHelperPerCall(ctx, newInfo("upstream"))
+	require.NoError(t, err)
+
+	assert.Equal(t, uterPrice.QuotaToPreConsume, upstreamPrice.QuotaToPreConsume)
+	assert.Equal(t, uterPrice.UsePrice, upstreamPrice.UsePrice)
+	assert.Equal(t, uterPrice.ModelPrice, upstreamPrice.ModelPrice)
+}

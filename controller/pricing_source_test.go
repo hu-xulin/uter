@@ -88,10 +88,10 @@ func TestResolveOfficialPricesIsRepeatable(t *testing.T) {
 		"switching the pricing source must actually change the reference price")
 }
 
-// TestResolveOfficialPricesChannelUsesPrimaryPreset pins the new priority: the
-// platform ("channel") source compares against the models.dev primary preset,
-// not the basellm one.
-func TestResolveOfficialPricesChannelUsesPrimaryPreset(t *testing.T) {
+// TestResolveOfficialPricesChannelFallsBackToCatalogue keeps the gap-fill
+// behaviour: without a channel snapshot, the channel source still shows a
+// catalogue reference instead of an empty price.
+func TestResolveOfficialPricesChannelFallsBackToCatalogue(t *testing.T) {
 	official := map[string]map[string]float64{"m": {"p": 1}}
 	modelsDev := map[string]map[string]float64{"m": {"p": 99}}
 	seedPresetRatioCache(t, officialRatioPresetID, official)
@@ -99,6 +99,35 @@ func TestResolveOfficialPricesChannelUsesPrimaryPreset(t *testing.T) {
 
 	merged := resolveOfficialPrices("channel")
 	assert.Equal(t, float64(99), merged["m"]["p"])
+}
+
+// TestMergeOfficialPriceSourcesForSource pins the source-specific winner order:
+// `channel` prefers the upstream official base, while catalogue sources keep
+// their preset first. This is what aligns the plaza's strike-through price and
+// discount badge with the base Uter's selling price is derived from.
+func TestMergeOfficialPriceSourcesForSource(t *testing.T) {
+	catalogue := map[string]map[string]float64{
+		"shared":         {"p": 99},
+		"catalogue-only": {"p": 11},
+	}
+	channel := map[string]map[string]float64{
+		"shared":       {"p": 5},
+		"channel-only": {"p": 7},
+	}
+	fallback := map[string]map[string]float64{
+		"fallback-only": {"p": 2},
+	}
+
+	fromChannel := mergeOfficialPriceSourcesForSource("channel", catalogue, channel, fallback)
+	assert.Equal(t, float64(5), fromChannel["shared"]["p"],
+		"channel source must compare against the upstream official base")
+	assert.Equal(t, float64(7), fromChannel["channel-only"]["p"])
+	assert.Equal(t, float64(11), fromChannel["catalogue-only"]["p"])
+	assert.Equal(t, float64(2), fromChannel["fallback-only"]["p"])
+
+	fromCatalogue := mergeOfficialPriceSourcesForSource("models.dev", catalogue, channel, fallback)
+	assert.Equal(t, float64(99), fromCatalogue["shared"]["p"],
+		"catalogue sources keep the selected preset first")
 }
 
 // TestResolveOfficialPricesUnknownSourceFallsBack makes sure a corrupt or

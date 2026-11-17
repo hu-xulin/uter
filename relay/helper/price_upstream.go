@@ -1,0 +1,356 @@
+package helper
+
+import (
+	"errors"
+	"fmt"
+
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	hosttypes "github.com/uter-ai/uter/types"
+
+	"github.com/gin-gonic/gin"
+)
+
+// The upstream pricing stack, kept beside Uter's own one. A channel (or the
+// instance default) may select it; the two stacks read the same option values
+// but apply upstream's newer rules, including per-plugin task price guards and
+// endpoint-aware expression checks.
+
+func ModelPriceHelperUpstream(c *gin.Context, info *relaycommon.RelayInfo, promptTokens int, meta *types.TokenCountMeta) (hosttypes.PriceData, error) {
+	if info != nil {
+		if matched := resolveBillingModelName(info.GetOriginModelName()); matched != "" && matched != info.OriginModelName {
+			info.BillingModelName = matched
+		}
+	}
+	billingModelName := info.GetBillingModelName()
+	modelPrice, usePrice := ratio_setting.GetModelPrice(billingModelName, false)
+
+	groupRatioInfo := HandleGroupRatio(c, info)
+
+	// Check if this model uses tiered_expr billing
+	if billing_setting.GetBillingMode(billingModelName) == billing_setting.BillingModeTieredExpr {
+		return modelPriceHelperTieredUpstream(c, info, billingModelName, promptTokens, groupRatioInfo)
+	}
+
+	var preConsumedQuota int
+	var modelRatio float64
+	var completionRatio float64
+	var cacheRatio float64
+	var imageRatio float64
+	var cacheCreationRatio float64
+	var cacheCreationRatio5m float64
+	var cacheCreationRatio1h float64
+	var cacheCreationRatio12h float64
+	var audioRatio float64
+	var audioCompletionRatio float64
+	var freeModel bool
+	if !usePrice {
+		preConsumeMultiplier, err := operation_setting.InputPreConsumeMultiplier()
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+		preConsumedTokens := float64(promptTokens) * preConsumeMultiplier
+		var success bool
+		var matchName string
+		modelRatio, success, matchName = ratio_setting.GetModelRatio(billingModelName)
+		if !success {
+			acceptUnsetRatio := false
+			if info.UserSetting.AcceptUnsetRatioModel {
+				acceptUnsetRatio = true
+			}
+			if !acceptUnsetRatio {
+				return hosttypes.PriceData{}, modelPriceNotConfiguredError(c, matchName, info.UserId)
+			}
+		}
+		completionRatio = ratio_setting.GetCompletionRatio(billingModelName)
+		cacheRatio, _ = ratio_setting.GetCacheRatio(billingModelName)
+		cacheCreationRatio, _ = ratio_setting.GetCreateCacheRatio(billingModelName)
+		cacheCreationRatio5m = cacheCreationRatio
+		// 固定1h和5min缓存写入价格的比例
+		cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
+		cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
+		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
+		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
+		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
+		ratio := modelRatio * groupRatioInfo.GroupRatio
+		quota, err := common.QuotaFromFloatStrict(preConsumedTokens * ratio)
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+		preConsumedQuota = quota
+		if _, image := info.Request.(*dto.ImageRequest); image {
+			info.ImageQuotaBeforeGroup = preConsumedTokens * modelRatio
+		}
+	} else {
+		if meta.ImagePriceRatio != 0 {
+			modelPrice = modelPrice * meta.ImagePriceRatio
+		}
+		if _, image := info.Request.(*dto.ImageRequest); image {
+			info.ImageQuotaBeforeGroup = modelPrice * common.QuotaPerUnit
+		}
+	}
+
+	// check if free model pre-consume is disabled
+	if !operation_setting.GetQuotaSetting().EnableFreeModelPreConsume {
+		// if model price or ratio is 0, do not pre-consume quota
+		if groupRatioInfo.GroupRatio == 0 {
+			preConsumedQuota = 0
+			freeModel = true
+		} else if usePrice {
+			if modelPrice == 0 {
+				preConsumedQuota = 0
+				freeModel = true
+			}
+		} else {
+			if modelRatio == 0 {
+				preConsumedQuota = 0
+				freeModel = true
+			}
+		}
+	}
+
+	priceData := hosttypes.PriceData{
+		FreeModel:             freeModel,
+		ModelPrice:            modelPrice,
+		ModelRatio:            modelRatio,
+		CompletionRatio:       completionRatio,
+		GroupRatioInfo:        groupRatioInfo,
+		UsePrice:              usePrice,
+		CacheRatio:            cacheRatio,
+		ImageRatio:            imageRatio,
+		AudioRatio:            audioRatio,
+		AudioCompletionRatio:  audioCompletionRatio,
+		CacheCreationRatio:    cacheCreationRatio,
+		CacheCreation5mRatio:  cacheCreationRatio5m,
+		CacheCreation1hRatio:  cacheCreationRatio1h,
+		CacheCreation12hRatio: cacheCreationRatio12h,
+		QuotaToPreConsume:     preConsumedQuota,
+	}
+	if usePrice {
+		for name, ratio := range meta.BillingRatios {
+			priceData.AddOtherRatio(name, ratio)
+		}
+	}
+	if request, image := info.Request.(*dto.ImageRequest); image {
+		count, err := request.ImageCount(false)
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+		if usePrice {
+			priceData.AddOtherRatio("n", float64(count))
+		}
+		if !usePrice {
+			quota, err := common.QuotaFromFloatStrict(priceData.ApplyOtherRatiosToFloat(info.ImageQuotaBeforeGroup * groupRatioInfo.GroupRatio))
+			if err != nil {
+				return hosttypes.PriceData{}, err
+			}
+			priceData.QuotaToPreConsume = quota
+		}
+	}
+	if usePrice {
+		quotaToPreConsume := priceData.ApplyOtherRatiosToFloat(modelPrice * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
+		quota, err := common.QuotaFromFloatStrict(quotaToPreConsume)
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+		priceData.QuotaToPreConsume = quota
+	}
+
+	if common.DebugEnabled {
+		logger.LogDebug(c, "model_price_helper result: %s", priceData.ToSetting())
+	}
+	info.PriceData = priceData
+	return priceData, nil
+}
+
+// ModelPriceHelperPerCall 按次/按量计费的 PriceHelper (MJ、Task)
+func ModelPriceHelperPerCallUpstream(c *gin.Context, info *relaycommon.RelayInfo) (hosttypes.PriceData, error) {
+	groupRatioInfo := HandleGroupRatio(c, info)
+
+	modelPrice, success := ratio_setting.GetModelPrice(info.OriginModelName, true)
+	usePrice := success
+	var modelRatio float64
+
+	if !success {
+		defaultPrice, ok := ratio_setting.GetDefaultModelPriceMap()[info.OriginModelName]
+		if ok {
+			modelPrice = defaultPrice
+			usePrice = true
+		} else {
+			var ratioSuccess bool
+			var matchName string
+			modelRatio, ratioSuccess, matchName = ratio_setting.GetModelRatio(info.OriginModelName)
+			acceptUnsetRatio := false
+			if info.UserSetting.AcceptUnsetRatioModel {
+				acceptUnsetRatio = true
+			}
+			if !ratioSuccess && !acceptUnsetRatio {
+				return hosttypes.PriceData{}, modelPriceNotConfiguredError(c, matchName, info.UserId)
+			}
+		}
+	}
+
+	var quota int
+	freeModel := false
+
+	if usePrice {
+		var err error
+		quota, err = common.QuotaFromFloatStrict(modelPrice * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+		if !operation_setting.GetQuotaSetting().EnableFreeModelPreConsume {
+			if groupRatioInfo.GroupRatio == 0 || modelPrice == 0 {
+				quota = 0
+				freeModel = true
+			}
+		}
+	} else {
+		// 按量计费：以模型倍率的一半作为预扣额度
+		var err error
+		quota, err = common.QuotaFromFloatStrict(modelRatio / 2 * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+		modelPrice = -1
+		if !operation_setting.GetQuotaSetting().EnableFreeModelPreConsume {
+			if groupRatioInfo.GroupRatio == 0 || modelRatio == 0 {
+				quota = 0
+				freeModel = true
+			}
+		}
+	}
+
+	priceData := hosttypes.PriceData{
+		FreeModel:      freeModel,
+		ModelPrice:     modelPrice,
+		ModelRatio:     modelRatio,
+		UsePrice:       usePrice,
+		Quota:          quota,
+		GroupRatioInfo: groupRatioInfo,
+	}
+	return priceData, nil
+}
+
+func modelPriceHelperTieredUpstream(c *gin.Context, info *relaycommon.RelayInfo, billingModelName string, promptTokens int, groupRatioInfo hosttypes.GroupRatioInfo) (hosttypes.PriceData, error) {
+	exprStr, ok := billing_setting.GetBillingExpr(billingModelName)
+	if !ok {
+		return hosttypes.PriceData{}, fmt.Errorf("model %s is configured as tiered_expr but has no billing expression", billingModelName)
+	}
+	exprHash := billingexpr.ExprHashString(exprStr)
+	usedVars := billingexpr.UsedVarsByHash(exprStr, exprHash)
+	if usedVars["u"] {
+		return hosttypes.PriceData{}, errors.New(i18n.T(c, i18n.MsgRelayTaskUsagePriceUnsupported, map[string]any{"Model": billingModelName}))
+	}
+	fixedPricing := billingexpr.UsesFixedPricingByHash(exprStr, exprHash)
+	value, _ := c.Get(jsplugin.ContextKeyPinnedEndpoint)
+	if endpoint, ok := value.(jsplugin.PinnedEndpoint); ok && !fixedPricing {
+		for _, candidate := range endpoint.Candidates {
+			pluginKey := candidate.Plugin.Meta.Key
+			if _, overridden := billing_setting.GetPluginBillingExpr(pluginKey, endpoint.Model); overridden {
+				continue
+			}
+			if _, overridden := billing_setting.GetPluginBillingExpr(pluginKey, endpoint.MappedModel); endpoint.MappedModel != "" && overridden {
+				continue
+			}
+			taskBillingModel := endpoint.Model
+			if billing_setting.GetBillingMode(taskBillingModel) != billing_setting.BillingModeTieredExpr {
+				taskBillingModel = endpoint.MappedModel
+			}
+			// Task expressions return USD; ordinary expressions return USD *
+			// 1M. Even a constant without u() cannot safely serve both contracts.
+			if taskBillingModel == billingModelName {
+				return hosttypes.PriceData{}, errors.New(i18n.T(c, i18n.MsgRelaySharedTaskPriceNeedsOverride, map[string]any{"Model": billingModelName, "Plugin": pluginKey}))
+			}
+		}
+	}
+	if info.RelayFormat == types.RelayFormatOpenAIRealtime && fixedPricing {
+		return hosttypes.PriceData{}, fmt.Errorf("fixed pricing is not supported for Realtime requests")
+	}
+
+	preConsumeMultiplier, err := operation_setting.InputPreConsumeMultiplier()
+	if err != nil {
+		return hosttypes.PriceData{}, err
+	}
+
+	requestInput, err := ResolveIncomingBillingExprRequestInput(c, info, usedVars["param"])
+	if err != nil {
+		return hosttypes.PriceData{}, err
+	}
+	if usedVars["image_count"] {
+		requestInput, err = ResolveImageBillingRequestInput(c, info, requestInput)
+		if err != nil {
+			return hosttypes.PriceData{}, err
+		}
+	}
+
+	rawCost, trace, err := billingexpr.RunExprByHashWithRequest(exprStr, exprHash, billingexpr.TokenParams{
+		P:   float64(promptTokens),
+		C:   0,
+		Len: float64(promptTokens),
+	}, requestInput)
+	if err != nil {
+		return hosttypes.PriceData{}, fmt.Errorf("model %s tiered expr run failed: %w", billingModelName, err)
+	}
+
+	// Expression coefficients are $/1M tokens prices; convert to quota the same way per-call billing does.
+	quotaBeforeGroup := rawCost / 1_000_000 * common.QuotaPerUnit
+	// Scale the reservation, preserving the expression's context-length tier
+	// and leaving actual settlement and fixed request prices unchanged.
+	if trace.BillingUnit != billingexpr.BillingUnitRequest {
+		quotaBeforeGroup *= preConsumeMultiplier
+	}
+	preConsumedQuota, err := billingexpr.QuotaRoundStrict(quotaBeforeGroup * groupRatioInfo.GroupRatio)
+	if err != nil {
+		return hosttypes.PriceData{}, err
+	}
+
+	freeModel := false
+	if !operation_setting.GetQuotaSetting().EnableFreeModelPreConsume {
+		if groupRatioInfo.GroupRatio == 0 {
+			preConsumedQuota = 0
+			freeModel = true
+		}
+	}
+
+	snapshot := &billingexpr.BillingSnapshot{
+		EstimatedImageCount:       trace.ImageCount,
+		BillingMode:               billing_setting.BillingModeTieredExpr,
+		ModelName:                 billingModelName,
+		ExprString:                exprStr,
+		ExprHash:                  exprHash,
+		GroupRatio:                groupRatioInfo.GroupRatio,
+		EstimatedPromptTokens:     promptTokens,
+		EstimatedCompletionTokens: 0,
+		PreConsumeMultiplier:      preConsumeMultiplier,
+		EstimatedQuotaBeforeGroup: quotaBeforeGroup,
+		EstimatedQuotaAfterGroup:  preConsumedQuota,
+		EstimatedTier:             trace.MatchedTier,
+		EstimatedBillingUnit:      trace.BillingUnit,
+		EstimatedFixedPrice:       trace.FixedPrice,
+		QuotaPerUnit:              common.QuotaPerUnit,
+		ExprVersion:               billingexpr.ExprVersion(exprStr),
+	}
+	info.TieredBillingSnapshot = snapshot
+	info.BillingRequestInput = &requestInput
+
+	priceData := hosttypes.PriceData{
+		FreeModel:         freeModel,
+		GroupRatioInfo:    groupRatioInfo,
+		QuotaToPreConsume: preConsumedQuota,
+	}
+
+	logger.LogDebug(c, "model_price_helper_tiered result: model=%s preConsume=%d quotaBeforeGroup=%.2f groupRatio=%.2f tier=%s", billingModelName, preConsumedQuota, quotaBeforeGroup, groupRatioInfo.GroupRatio, trace.MatchedTier)
+
+	info.PriceData = priceData
+	return priceData, nil
+}

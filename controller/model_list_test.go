@@ -215,6 +215,62 @@ func TestGetUserModelsFiltersByRequestedGroup(t *testing.T) {
 	require.Empty(t, decodeUserModelsResponse(t, vipRecorder))
 }
 
+func TestGetUserChannelsListsEnabledChannelsAndFiltersModels(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	require.NoError(t, db.Create(&model.User{
+		Id:       1004,
+		Username: "playground-channel-user",
+		Password: "password",
+		Group:    "default",
+		Status:   common.UserStatusEnabled,
+	}).Error)
+	require.NoError(t, db.Create(&[]model.Channel{
+		{Id: 201, Name: "优特渠道", Key: "k201", Status: common.ChannelStatusEnabled},
+		{Id: 202, Name: "聚合渠道", Key: "k202", Status: common.ChannelStatusEnabled},
+		{Id: 203, Name: "", Key: "k203", Status: common.ChannelStatusEnabled},
+		{Id: 204, Name: "禁用渠道", Key: "k204", Status: common.ChannelStatusManuallyDisabled},
+	}).Error)
+	require.NoError(t, db.Create(&[]model.Ability{
+		{Group: "default", Model: "zz-shared-model", ChannelId: 201, Enabled: true},
+		{Group: "default", Model: "zz-uter-only-model", ChannelId: 201, Enabled: true},
+		{Group: "default", Model: "zz-shared-model", ChannelId: 202, Enabled: true},
+		{Group: "default", Model: "zz-aggregate-only-model", ChannelId: 202, Enabled: true},
+		{Group: "default", Model: "zz-unnamed-channel-model", ChannelId: 203, Enabled: true},
+		{Group: "default", Model: "zz-disabled-channel-model", ChannelId: 204, Enabled: true},
+	}).Error)
+
+	channelsRecorder := httptest.NewRecorder()
+	channelsContext, _ := gin.CreateTestContext(channelsRecorder)
+	channelsContext.Request = httptest.NewRequest(http.MethodGet, "/api/user/self/channels", nil)
+	channelsContext.Set("id", 1004)
+
+	GetUserChannels(channelsContext)
+
+	require.Equal(t, http.StatusOK, channelsRecorder.Code)
+	var channelsPayload userModelsResponse
+	require.NoError(t, common.Unmarshal(channelsRecorder.Body.Bytes(), &channelsPayload))
+	require.True(t, channelsPayload.Success)
+	require.Equal(t, []string{"优特渠道", "聚合渠道"}, channelsPayload.Data)
+
+	modelsRecorder := httptest.NewRecorder()
+	modelsContext, _ := gin.CreateTestContext(modelsRecorder)
+	modelsContext.Request = httptest.NewRequest(http.MethodGet, "/api/user/models?channel=%E8%81%9A%E5%90%88%E6%B8%A0%E9%81%93", nil)
+	modelsContext.Set("id", 1004)
+
+	GetUserModels(modelsContext)
+
+	require.Equal(t, []string{"zz-aggregate-only-model", "zz-shared-model"}, decodeUserModelsResponse(t, modelsRecorder))
+
+	missingRecorder := httptest.NewRecorder()
+	missingContext, _ := gin.CreateTestContext(missingRecorder)
+	missingContext.Request = httptest.NewRequest(http.MethodGet, "/api/user/models?channel=missing", nil)
+	missingContext.Set("id", 1004)
+
+	GetUserModels(missingContext)
+
+	require.Empty(t, decodeUserModelsResponse(t, missingRecorder))
+}
+
 func TestGetUserModelsExpandsAutoGroupsInConfiguredOrder(t *testing.T) {
 	originalAutoGroups := setting.AutoGroups2JsonString()
 	originalUsableGroups := setting.UserUsableGroups2JSONString()

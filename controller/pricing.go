@@ -143,18 +143,19 @@ func normalizePricingSource(raw string) string {
 // resolveOfficialPrices builds the per-model reference price map the plaza uses
 // for the strike-through official price and the discount badge.
 //
-// Priority (models.dev is the primary reference source):
-//  1. The selected preset. models.dev is authoritative unless an operator
-//     explicitly selects the basellm "official" preset. Making the catalogue
-//     source win matters: the channel-sync reference used to be applied first
-//     and silently overrode the chosen source for every model the channel
-//     carries, which made the pricing-source setting inert in practice.
-//  2. The upstream reference captured by the last channel sync (创梦 /
-//     DreamRouter). It now only fills genuine gaps — private or newly released
-//     names no public catalogue knows — so those cards still get a
-//     strike-through price and a discount badge.
-//  3. The sibling preset, because their model coverage is complementary (e.g.
-//     the official preset lacks many Alibaba/Qwen entries that models.dev has).
+// Priority depends on the selected source:
+//  1. `channel`: the upstream reference captured by the last channel sync
+//     (创梦 / DreamRouter) wins for every model it covers. Uter's selling price
+//     is derived from that same official base, so the strike-through price and
+//     discount badge must use it too; a public catalogue can disagree (for
+//     example models.dev lists sonnet-4-5 at $3.3 while the upstream base is
+//     $3), which made the plaza show the wrong discount.
+//  2. `official` / `models.dev`: the selected preset wins; the channel
+//     reference only fills genuine gaps (private or newly released names no
+//     public catalogue knows).
+//  3. The sibling preset fills any remaining gaps, because their model
+//     coverage is complementary (e.g. the official preset lacks many
+//     Alibaba/Qwen entries that models.dev has).
 //
 // getPresetModelRatiosNonBlocking hands out a private copy of the cached preset,
 // so the gap fill below mutates only that copy. Mutating the shared cache would
@@ -168,11 +169,26 @@ func resolveOfficialPrices(pricingSource string) map[string]map[string]float64 {
 	if pricingSource == "official" {
 		referencePresetID, fallbackPresetID = officialRatioPresetID, modelsDevPresetID
 	}
-	return mergeOfficialPriceSources(
+	return mergeOfficialPriceSourcesForSource(
+		pricingSource,
 		getPresetModelRatiosNonBlocking(referencePresetID),
 		service.LoadDreamRouterOfficialReference(),
 		getPresetModelRatiosNonBlocking(fallbackPresetID),
 	)
+}
+
+// mergeOfficialPriceSourcesForSource picks the winner order for the selected
+// source. `channel` compares against the upstream channel's official base
+// (the same base Uter's price is derived from); the other sources compare
+// against the selected catalogue preset. Kept pure for testing.
+func mergeOfficialPriceSourcesForSource(
+	source string,
+	catalogue, channel, fallback map[string]map[string]float64,
+) map[string]map[string]float64 {
+	if source == "channel" {
+		return mergeOfficialPriceSources(channel, catalogue, fallback)
+	}
+	return mergeOfficialPriceSources(catalogue, channel, fallback)
 }
 
 // mergeOfficialPriceSources applies the primary/fallback priority without

@@ -17,6 +17,7 @@ import (
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/pricing_engine"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
 	hosttypes "github.com/uter-ai/uter/types"
@@ -62,6 +63,9 @@ func HandleGroupRatio(ctx *gin.Context, relayInfo *relaycommon.RelayInfo) hostty
 }
 
 func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens int, meta *types.TokenCountMeta) (hosttypes.PriceData, error) {
+	if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
+		return ModelPriceHelperUpstream(c, info, promptTokens, meta)
+	}
 	if info != nil {
 		if matched := resolveBillingModelName(info.GetOriginModelName()); matched != "" && matched != info.OriginModelName {
 			info.BillingModelName = matched
@@ -210,6 +214,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 
 // ModelPriceHelperPerCall 按次/按量计费的 PriceHelper (MJ、Task)
 func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hosttypes.PriceData, error) {
+	if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
+		return ModelPriceHelperPerCallUpstream(c, info)
+	}
 	groupRatioInfo := HandleGroupRatio(c, info)
 
 	modelPrice, success := ratio_setting.GetModelPrice(info.OriginModelName, true)

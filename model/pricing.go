@@ -2,6 +2,7 @@ package model
 
 import (
 	"maps"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -32,21 +33,24 @@ type Pricing struct {
 	// Descriptions 是该模型描述的全语种副本，供前端在切换语言时本地切换，
 	// 无需为每种语言重新请求。Description 始终是按访客语言解析后的结果，
 	// 因此只关心单一语言的既有调用方不受影响。
-	Descriptions           map[string]string                    `json:"descriptions,omitempty"`
-	Icon                   string                               `json:"icon,omitempty"`
-	Tags                   string                               `json:"tags,omitempty"`
-	VendorID               int                                  `json:"vendor_id,omitempty"`
-	QuotaType              int                                  `json:"quota_type"`
-	ModelRatio             float64                              `json:"model_ratio"`
-	ModelPrice             float64                              `json:"model_price"`
-	OwnerBy                string                               `json:"owner_by"`
-	CompletionRatio        float64                              `json:"completion_ratio"`
-	CacheRatio             *float64                             `json:"cache_ratio,omitempty"`
-	CreateCacheRatio       *float64                             `json:"create_cache_ratio,omitempty"`
-	ImageRatio             *float64                             `json:"image_ratio,omitempty"`
-	AudioRatio             *float64                             `json:"audio_ratio,omitempty"`
-	AudioCompletionRatio   *float64                             `json:"audio_completion_ratio,omitempty"`
-	EnableGroup            []string                             `json:"enable_groups"`
+	Descriptions         map[string]string `json:"descriptions,omitempty"`
+	Icon                 string            `json:"icon,omitempty"`
+	Tags                 string            `json:"tags,omitempty"`
+	VendorID             int               `json:"vendor_id,omitempty"`
+	QuotaType            int               `json:"quota_type"`
+	ModelRatio           float64           `json:"model_ratio"`
+	ModelPrice           float64           `json:"model_price"`
+	OwnerBy              string            `json:"owner_by"`
+	CompletionRatio      float64           `json:"completion_ratio"`
+	CacheRatio           *float64          `json:"cache_ratio,omitempty"`
+	CreateCacheRatio     *float64          `json:"create_cache_ratio,omitempty"`
+	ImageRatio           *float64          `json:"image_ratio,omitempty"`
+	AudioRatio           *float64          `json:"audio_ratio,omitempty"`
+	AudioCompletionRatio *float64          `json:"audio_completion_ratio,omitempty"`
+	EnableGroup          []string          `json:"enable_groups"`
+	// Channels 是承载该模型的启用渠道展示名（管理-渠道的 name），定价页
+	// 「渠道」筛选直接消费它；空名渠道不会出现在这里。
+	Channels               []string                             `json:"channels,omitempty"`
 	SupportedEndpointTypes []constant.EndpointType              `json:"supported_endpoint_types"`
 	BillingMode            string                               `json:"billing_mode,omitempty"`
 	BillingExpr            string                               `json:"billing_expr,omitempty"`
@@ -246,6 +250,7 @@ func updatePricing() {
 	}
 
 	modelGroupsMap := make(map[string]*types.Set[string])
+	modelChannelsMap := make(map[string]*types.Set[string])
 
 	for _, ability := range enableAbilities {
 		groups, ok := modelGroupsMap[ability.Model]
@@ -254,6 +259,17 @@ func updatePricing() {
 			modelGroupsMap[ability.Model] = groups
 		}
 		groups.Add(ability.Group)
+
+		channelName := strings.TrimSpace(ability.ChannelName)
+		if channelName == "" || ability.ChannelStatus != common.ChannelStatusEnabled {
+			continue
+		}
+		channels, ok := modelChannelsMap[ability.Model]
+		if !ok {
+			channels = types.NewSet[string]()
+			modelChannelsMap[ability.Model] = channels
+		}
+		channels.Add(channelName)
 	}
 
 	//这里使用切片而不是Set，因为一个模型可能支持多个端点类型，并且第一个端点是优先使用端点
@@ -348,6 +364,11 @@ func updatePricing() {
 			ModelName:              model,
 			EnableGroup:            groups.Items(),
 			SupportedEndpointTypes: modelSupportEndpointTypes[model],
+		}
+		if channelSet, ok := modelChannelsMap[model]; ok {
+			channels := channelSet.Items()
+			slices.Sort(channels)
+			pricing.Channels = channels
 		}
 
 		// 补充模型元数据（描述、标签、供应商、状态）

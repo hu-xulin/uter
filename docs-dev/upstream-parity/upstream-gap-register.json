@@ -1,0 +1,1332 @@
+{
+  "schema": "UTER-UPSTREAM-PARITY-GAP/1.0",
+  "generated_at": "2026-11-17T01:26:12.392845+00:00",
+  "upstream": {
+    "repo": "https://github.com/QuantumNous/new-api",
+    "commit": "ce8fc49e4b1a874aa917dce4f1a8416c52ec8ec0",
+    "license": "AGPL-3.0",
+    "tracked_files": 2836
+  },
+  "uter": {
+    "license": "AGPL-3.0",
+    "tracked_files": 16998
+  },
+  "method": "浅克隆上游（blobless）→ 文件级差集 → 功能块归类 → 路径级核实 Uter 是否缺失；排除测试/文档/CI/资产等非功能文件（上游测试单列为验证项）。",
+  "caveats": [
+    "文件存在不等于能力等价；每批实施前需再核实语义差异。",
+    "上游与 Uter 均已分叉：禁止整仓合并，逐块移植并保持 Uter 治理、计费与设计系统约束。"
+  ],
+  "license_note": "双方均为 AGPL-3.0；移植代码需保留版权与 NOTICE 署名，并遵守上游条款。",
+  "summary": {
+    "gap_count": 10,
+    "by_priority": {
+      "P1": 4,
+      "P2": 4,
+      "P3": 2
+    },
+    "missing_file_total": 225,
+    "already_present": [
+      "OpenAI Chat/Responses、Claude Messages、Gemini、Realtime/Responses WebSocket",
+      "图片/音频/向量/重排/审查接口",
+      "65 种渠道类型与路由权重/重试/亲和",
+      "配额/订阅/表达式计费/缓存计费",
+      "OAuth/OIDC、Passkey、2FA、会话管理",
+      "JS 任务插件运行时与市场（13 个插件可安装）",
+      "UAP 治理、UDS 8.0 设计系统、7 语言前端"
+    ]
+  },
+  "batches": [
+    {
+      "id": "B0-audit",
+      "scope": [
+        "GAP-11"
+      ],
+      "gates": [
+        "逐项给出结论"
+      ]
+    },
+    {
+      "id": "B1",
+      "scope": [
+        "GAP-05",
+        "GAP-01"
+      ],
+      "gates": [
+        "go build/vet/test",
+        "6 个官方插件安装 + dry-run",
+        "JS 沙箱与 effects 白名单安全审计",
+        "计费不变量回归",
+        "三库验证",
+        "特性开关 + 回滚"
+      ]
+    },
+    {
+      "id": "B2",
+      "scope": [
+        "GAP-02"
+      ],
+      "gates": [
+        "凭据加密与登录回调安全测试",
+        "定时同步幂等",
+        "三库验证",
+        "回滚"
+      ]
+    },
+    {
+      "id": "B3",
+      "scope": [
+        "GAP-03",
+        "GAP-04"
+      ],
+      "gates": [
+        "SSRF/日志泄漏测试",
+        "适配器单测",
+        "渠道表单回归"
+      ]
+    },
+    {
+      "id": "B4",
+      "scope": [
+        "GAP-06",
+        "GAP-10"
+      ],
+      "gates": [
+        "设计系统严格门禁",
+        "a11y",
+        "7 语言",
+        "页面回归"
+      ]
+    },
+    {
+      "id": "B5",
+      "scope": [
+        "GAP-07",
+        "GAP-08"
+      ],
+      "gates": [
+        "视觉回归",
+        "计费不变量",
+        "7 语言"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "GAP-01",
+      "area": "请求钩子插件运行时",
+      "title": "Request-hook plugin runtime (JS request hooks, effects, attachments/media/PDF)",
+      "status": "PARTIAL",
+      "priority": "P1",
+      "effort": "XL",
+      "batch": "B1",
+      "impact": "公开 API 的请求改写/内容审查/脱敏/参数覆盖；6 个官方请求钩子插件当前被明确拒绝。",
+      "security_notes": "沙箱执行（Sobek）；effects 白名单；禁止凭证外泄；单请求预算与超时；optional 失败策略；审计记录；dry-run 与回放。",
+      "uter_equivalents": [
+        "pkg/jsplugin/（编译与沙箱核心）",
+        "controller/task_plugin.go（任务插件安装入口）"
+      ],
+      "dependencies": [
+        "GAP-05",
+        "GAP-10（部分 UI）"
+      ],
+      "exit_criteria": "6 个官方请求钩子插件可安装并通过 dry-run；请求链路 effects 生效；安全审计与回归测试通过；特性开关可回滚。",
+      "upstream_file_count": 48,
+      "upstream_test_count": 4,
+      "upstream_paths": [
+        "controller/request_plugin.go",
+        "pkg/jsplugin/config_schema.go",
+        "pkg/jsplugin/keywords.go",
+        "pkg/jsplugin/media.go",
+        "pkg/jsplugin/sample.go",
+        "pkg/jsplugin/transform.go",
+        "plugins/tasks/auto-reasoning/icon.svg",
+        "plugins/tasks/auto-reasoning/plugin.js",
+        "plugins/tasks/content-moderation/icon.svg",
+        "plugins/tasks/content-moderation/plugin.js",
+        "plugins/tasks/image-compress/icon.svg",
+        "plugins/tasks/image-compress/plugin.js",
+        "plugins/tasks/param-override/icon.svg",
+        "plugins/tasks/param-override/plugin.js",
+        "plugins/tasks/request-filter/icon.svg",
+        "plugins/tasks/request-filter/plugin.js",
+        "plugins/tasks/request-redact/icon.svg",
+        "plugins/tasks/request-redact/plugin.js",
+        "relay/common/request_plugin.go",
+        "relay/requestplugin/attachments.go",
+        "relay/requestplugin/attachments_test.go",
+        "relay/requestplugin/extract.go",
+        "relay/requestplugin/form.go",
+        "relay/requestplugin/media.go",
+        "relay/requestplugin/param_override.go",
+        "relay/requestplugin/pdf.go",
+        "relay/requestplugin/pdf_test.go",
+        "relay/requestplugin/plan.go",
+        "relay/requestplugin/record.go",
+        "relay/requestplugin/relay.go",
+        "relay/requestplugin/reply.go",
+        "relay/requestplugin/report.go",
+        "relay/requestplugin/requestplugin_test.go",
+        "relay/requestplugin/socket.go",
+        "relay/requestplugin/socket_test.go",
+        "relay/requestplugin/task_report.go",
+        "web/src/features/request-processing/index.tsx",
+        "web/src/features/task-plugins/components/request-plugin-config-field.tsx",
+        "web/src/features/task-plugins/components/request-plugin-config-form.tsx",
+        "web/src/features/task-plugins/components/request-plugin-config-model-values.tsx",
+        "web/src/features/task-plugins/components/request-plugin-config-rows.tsx",
+        "web/src/features/task-plugins/components/request-plugin-dry-run-dialog.tsx",
+        "web/src/features/task-plugins/components/request-plugin-field-hint.tsx",
+        "web/src/features/task-plugins/components/request-plugin-instance-editor.tsx",
+        "web/src/features/task-plugins/components/request-plugin-picker.tsx",
+        "web/src/features/task-plugins/components/request-plugin-summary.tsx",
+        "web/src/features/task-plugins/components/request-plugin-try-panel.tsx",
+        "web/src/routes/_authenticated/request-processing/index.tsx"
+      ],
+      "note": "聊天中转链路已接入并 dry-run 实测；任务提交链路已接入（构建/测试通过，未端到端验证）；Midjourney 路径未接入",
+      "evidence": [
+        "用量日志详情新增「Request plugins」区块：按插件实例展示阶段、修改/请求头/媒体/脱敏/发现计数、拒绝码、未检查与截断提示；浏览器端到端（隔离栈种子日志）验证渲染，0 API 失败",
+        "出站请求钩子接入真实链路：OpenAI/Claude/Gemini/图片/嵌入/Rerank/搜索/响应转译 handler 的 Outbound/Egress/PassThrough，Responses→Chat 双阶段，Realtime 会话 ClientEvent/ServerEvent，任务提交 TaskAttempt/TaskEgress，Midjourney 提交 ingress+late ingress+report，协议桥接 report 与 stop 错误码",
+        "修复真实缺陷：RecordConsumeLog 未把结算参数写入上下文，导致插件 report 的 cost.quota 恒为 0；规则码（如 reply.blocked）被域名脱敏误伤为 ***.blocked",
+        "移植上游 requestplugin 测试 2064 行，全部通过",
+        "I5 控制台：请求插件实例编辑新增按 configSchema 渲染的字段面板（选择实例、字符串/数字/布尔/枚举，localized 标题与说明），与整表 JSON 双向同步；插件选项下发 configSchema；浏览器端到端验证选择高等级并保存后实例 config 持久化"
+      ]
+    },
+    {
+      "id": "GAP-02",
+      "area": "Provider 插件系统",
+      "title": "Dynamic provider plugins (login, scheduled sync, relay routing)",
+      "status": "PARTIALLY_VERIFIED",
+      "priority": "P1",
+      "effort": "L",
+      "batch": "B2",
+      "impact": "动态接入供应商插件（登录授权、定时同步、中继路由），无需改代码。",
+      "security_notes": "插件凭据加密存储；登录回调校验与状态防重放；定时任务幂等；权限最小化。",
+      "uter_equivalents": [],
+      "dependencies": [
+        "GAP-03（凭据存储）"
+      ],
+      "exit_criteria": "Provider 插件可登录/同步/中继；三库验证；失败可回滚。",
+      "upstream_file_count": 30,
+      "upstream_test_count": 7,
+      "upstream_paths": [
+        "controller/provider_plugin.go",
+        "pkg/jsplugin/provider.go",
+        "relay/channel/providerplugin/adaptor.go",
+        "relay/channel/providerplugin/chain.go",
+        "relay/channel/providerplugin/eventstream.go",
+        "relay/channel/providerplugin/eventstream_test.go",
+        "relay/channel/providerplugin/management.go",
+        "relay/channel/providerplugin/management_test.go",
+        "relay/channel/providerplugin/stream.go",
+        "router/provider_plugin_gaps_test.go",
+        "router/provider_plugin_relay_test.go",
+        "service/provider_plugin.go",
+        "service/provider_plugin_login.go",
+        "service/provider_plugin_login_test.go",
+        "service/provider_plugin_scheduled.go",
+        "service/provider_plugin_test.go",
+        "service/provider_plugin_token_test.go",
+        "web/src/features/channels/components/dialogs/plugin-login-dialog.tsx",
+        "web/src/features/channels/components/dialogs/plugin-login-steps.tsx",
+        "web/src/features/channels/components/plugin-login-callback.tsx",
+        "web/src/features/channels/hooks/use-plugin-login.ts",
+        "web/src/features/channels/lib/plugin-login.ts",
+        "web/src/features/task-plugins/components/marketplace-source-menu.tsx",
+        "web/src/features/task-plugins/components/plugin-code-lookup.tsx",
+        "web/src/features/task-plugins/components/plugin-kind-switch.tsx",
+        "web/src/features/task-plugins/components/plugin-relay-routes.tsx",
+        "web/src/features/task-plugins/components/plugin-scope-summary.tsx",
+        "web/src/routes/(auth)/oauth.tsx",
+        "web/src/routes/_authenticated/oauth/plugin/$key/callback.tsx",
+        "web/src/stores/plugin-site-store.ts"
+      ],
+      "evidence": [
+        "pkg/jsplugin/provider.go ported (login/refresh/revoke/sign/prepare/convert/balance hooks)",
+        "providerplugin adaptor/chain/eventstream/management/stream ported + upstream tests pass",
+        "Meta.relay/channelConfig/keyHint decoded, task/provider/request part validation, ProviderHooks validation",
+        "distributor pins provider plugin; RelayInfo adopts APITypeProviderPlugin; channel-test/dry-run/channel save integrate plugin config",
+        "channel login/credential routes wired; credential/keyHint UI pending (B4)",
+        "渠道表单新增 plugin_config（JSON）编辑与插件登录/凭据对话框（channel-plugin-config-dialog），插件选项下发 channelConfig/keyHint；浏览器端到端验证：创建 type-61 渠道→保存配置→后端归一化持久化→重开回显，0 API 失败",
+        "渠道插件设置按 channelConfig schema 渲染顶层字段（字符串/数字/布尔/枚举，localized title/description/default），与 JSON 编辑器双向同步；浏览器端到端验证选择 eu→保存→后端持久化"
+      ]
+    },
+    {
+      "id": "GAP-03",
+      "area": "渠道凭据与余额",
+      "title": "Channel credential plugins and balance queries",
+      "status": "PARTIALLY_VERIFIED",
+      "priority": "P1",
+      "effort": "M",
+      "batch": "B3",
+      "impact": "渠道级凭据插件与余额查询（含前端余额详情）。",
+      "security_notes": "凭据不进日志；余额查询需 SSRF 防护（allowedHosts）；限流。",
+      "uter_equivalents": [
+        "relay/channel/task/jsplugin/（任务插件渠道运行时，部分）"
+      ],
+      "dependencies": [],
+      "exit_criteria": "凭据插件与余额接口可用；安全测试覆盖 SSRF/日志泄漏。",
+      "upstream_file_count": 7,
+      "upstream_test_count": 2,
+      "upstream_paths": [
+        "controller/channel_balance.go",
+        "model/channel_plugin_credential_test.go",
+        "relay/channel/task/jsplugin/credential.go",
+        "relay/channel/task/jsplugin/credential_test.go",
+        "web/src/features/channels/components/channel-balance-details.tsx",
+        "web/src/features/channels/components/drawers/plugin-credential-panel.tsx",
+        "web/src/features/channels/lib/channel-balance.ts"
+      ],
+      "evidence": [
+        "relay/channel/task/jsplugin/credential.go ported; submit/poll/content carry credential line, signRequest runs",
+        "batch polling groups tasks by credential account; parse hooks see polled credential",
+        "plugin balance query ported into UpdateChannelBalance/updateAllChannelsBalance with per-key detail",
+        "provider /v1/models route used for upstream model fetch; credential test suites pass",
+        "frontend credential login/config UI pending (B3 UI)",
+        "渠道表单新增 plugin_config（JSON）编辑与插件登录/凭据对话框（channel-plugin-config-dialog），插件选项下发 channelConfig/keyHint；浏览器端到端验证：创建 type-61 渠道→保存配置→后端归一化持久化→重开回显，0 API 失败",
+        "渠道插件设置按 channelConfig schema 渲染顶层字段（字符串/数字/布尔/枚举，localized title/description/default），与 JSON 编辑器双向同步；浏览器端到端验证选择 eu→保存→后端持久化"
+      ]
+    },
+    {
+      "id": "GAP-04",
+      "area": "渠道控制器与适配器",
+      "title": "WeChat/Image controllers, newapi adaptor, channel advanced UI",
+      "status": "PARTIALLY_VERIFIED",
+      "priority": "P2",
+      "effort": "M",
+      "batch": "B3",
+      "impact": "新增上游原生适配器与渠道高级配置界面。",
+      "security_notes": "文件上传/图片代理需大小与类型限制；微信回调验签。",
+      "uter_equivalents": [
+        "constant/channel.go（65 种渠道类型已存在）"
+      ],
+      "dependencies": [],
+      "exit_criteria": "适配器单测；渠道表单回归；三库无关路径验证。",
+      "upstream_file_count": 12,
+      "upstream_test_count": 4,
+      "upstream_paths": [
+        "controller/channel_create_test.go",
+        "controller/channel_plugin_gaps_test.go",
+        "controller/image.go",
+        "controller/wechat.go",
+        "relay/channel/newapi/adaptor.go",
+        "relay/channel/newapi/constants.go",
+        "relay/param_override_error_test.go",
+        "relay/responses_request_test.go",
+        "web/src/features/channels/components/drawers/channel-request-plugins-field.tsx",
+        "web/src/features/channels/components/drawers/sections/channel-advanced-section.tsx",
+        "web/src/features/channels/hooks/use-task-plugin-option.ts",
+        "web/src/features/channels/lib/channel-form-errors.ts"
+      ],
+      "evidence": [
+        "Uter/newapi adaptor verified equivalent to upstream current",
+        "plugin protocol image bridge reports through request plugins and masks upstream addresses",
+        "WeChat official-account login/bind (controller/wechat.go, model/user wechat_id, routes, 7-locale mail key) ported; settings UI pending",
+        "渠道表单新增 plugin_config（JSON）编辑与插件登录/凭据对话框（channel-plugin-config-dialog），插件选项下发 channelConfig/keyHint；浏览器端到端验证：创建 type-61 渠道→保存配置→后端归一化持久化→重开回显，0 API 失败",
+        "用户决定不引入微信公众号扫码登录（Uter 已有微信开放平台网页登录，避免重复入口）"
+      ]
+    },
+    {
+      "id": "GAP-05",
+      "area": "jsplugin 基础引擎扩展",
+      "title": "Config schema, keywords, media, transform, sample validation",
+      "status": "IMPLEMENTED_NOT_VERIFIED",
+      "priority": "P1",
+      "effort": "M",
+      "batch": "B1",
+      "impact": "请求钩子与配置化插件的前置能力（configSchema 校验/默认值、关键词匹配、媒体提取）。",
+      "security_notes": "schema 默认值注入需类型安全；媒体解析限制大小与解析时长。",
+      "uter_equivalents": [
+        "pkg/jsplugin/（核心编译/校验，部分）"
+      ],
+      "dependencies": [],
+      "exit_criteria": "单元测试覆盖 schema/keywords/media；安装校验与 GAP-01 联动。",
+      "upstream_file_count": 12,
+      "upstream_test_count": 11,
+      "upstream_paths": [
+        "common/database_test.go",
+        "middleware/gzip_test.go",
+        "middleware/recover.go",
+        "model/auth_cache_integrity_test.go",
+        "model/sensitive_word_migration_test.go",
+        "pkg/jsplugin/channel_config_test.go",
+        "pkg/jsplugin/keywords_test.go",
+        "pkg/jsplugin/provider_test.go",
+        "plugins/vertex_ai_region_test.go",
+        "relay/channel/vertex/service_account_test.go",
+        "relaykit/relayconvert/kitutil/mask_test.go",
+        "service/node_sync_test.go"
+      ],
+      "note": "configSchema/samples/transform/keywords/media 已移植并通过单测；默认值注入待 I3 完整验证",
+      "evidence": []
+    },
+    {
+      "id": "GAP-06",
+      "area": "任务插件控制台",
+      "title": "Task plugin console parity (readme, parts, transform, pricing issues, revoked)",
+      "status": "PARTIALLY_VERIFIED",
+      "priority": "P2",
+      "effort": "L",
+      "batch": "B4",
+      "impact": "插件详情、部件徽标、变换说明、定价问题、吊销告警等控制台能力。",
+      "security_notes": "仅展示服务端校验后的数据；不得渲染不可信 HTML。",
+      "uter_equivalents": [
+        "web/src/features/task-plugins/（子集）"
+      ],
+      "dependencies": [
+        "GAP-01",
+        "GAP-02"
+      ],
+      "exit_criteria": "页面回归 + 设计系统门禁 + 7 语言。",
+      "upstream_file_count": 18,
+      "upstream_test_count": 0,
+      "upstream_paths": [
+        "web/src/features/task-plugins/components/community-plugin-reach.tsx",
+        "web/src/features/task-plugins/components/plugin-parts-badges.tsx",
+        "web/src/features/task-plugins/components/plugin-readme-section.tsx",
+        "web/src/features/task-plugins/components/plugin-transform-section.tsx",
+        "web/src/features/task-plugins/components/pricing-issue-list.tsx",
+        "web/src/features/task-plugins/components/revoked-plugin-warning.tsx",
+        "web/src/features/task-plugins/lib/plugin-change-toast.tsx",
+        "web/src/features/task-plugins/lib/plugin-document-problem.ts",
+        "web/src/features/task-plugins/lib/plugin-document.ts",
+        "web/src/features/task-plugins/lib/plugin-kinds.ts",
+        "web/src/features/task-plugins/lib/plugin-name.ts",
+        "web/src/features/task-plugins/lib/plugin-parts.ts",
+        "web/src/features/task-plugins/lib/plugin-readme.ts",
+        "web/src/features/task-plugins/lib/plugin-scope.ts",
+        "web/src/features/task-plugins/lib/plugin-site.ts",
+        "web/src/features/task-plugins/lib/request-plugin-samples.ts",
+        "web/src/features/task-plugins/lib/request-plugins.ts",
+        "web/src/features/task-plugins/lib/text-diff.ts"
+      ],
+      "evidence": [
+        "任务插件控制台：详情返回 task/provider/transform(+hooks)/login/refresh 部件，插件选项下发部件与 checkKey/balance/relayPaths/responsesWebsocket/name_i18n；上传与启停响应携带 pricing_issues；详情页新增 Capabilities 与 Pricing Issues 区块；浏览器端到端验证"
+      ]
+    },
+    {
+      "id": "GAP-07",
+      "area": "站点外壳与首页路由",
+      "title": "Layout/nav/home/routes refresh",
+      "status": "PARTIAL",
+      "priority": "P3",
+      "effort": "L",
+      "batch": "B5",
+      "impact": "导航、首页视觉与公开路由的用户体验对齐。",
+      "security_notes": "无（纯前端），注意链接安全属性与 CSP。",
+      "uter_equivalents": [
+        "web/src/components/layout/, web/src/features/home/（已有实现，结构不同）"
+      ],
+      "dependencies": [],
+      "exit_criteria": "视觉回归、i18n、设计门禁。",
+      "upstream_file_count": 31,
+      "upstream_test_count": 0,
+      "upstream_paths": [
+        "new-api.service",
+        "web/knip.config.ts",
+        "web/src/components/layout/components/glow.tsx",
+        "web/src/components/layout/components/logo.tsx",
+        "web/src/components/layout/components/mobile-drawer.tsx",
+        "web/src/components/layout/components/mockup.tsx",
+        "web/src/components/layout/components/nav-link-item.tsx",
+        "web/src/components/layout/components/navbar.tsx",
+        "web/src/components/layout/components/public-navigation.tsx",
+        "web/src/components/layout/components/section.tsx",
+        "web/src/components/layout/constants.ts",
+        "web/src/features/home/components/connection-line.tsx",
+        "web/src/features/home/components/feature-item.tsx",
+        "web/src/features/home/components/gateway-card.tsx",
+        "web/src/features/home/components/hero-buttons.tsx",
+        "web/src/features/home/components/icon-card.tsx",
+        "web/src/features/home/components/scrolling-icons.tsx",
+        "web/src/features/home/components/stat-item.tsx",
+        "web/src/features/home/constants.ts",
+        "web/src/features/home/lib/icon-mapper.tsx",
+        "web/src/hooks/use-minimum-loading-time.ts",
+        "web/src/hooks/use-mobile.tsx",
+        "web/src/hooks/use-table-compact-mode.ts",
+        "web/src/lib/show-submitted-data.tsx",
+        "web/src/routes/about/index.tsx",
+        "web/src/routes/index.tsx",
+        "web/src/routes/pricing/$modelId/index.tsx",
+        "web/src/routes/pricing/index.tsx",
+        "web/src/routes/privacy-policy.tsx",
+        "web/src/routes/rankings/index.tsx",
+        "web/src/routes/user-agreement.tsx"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "GAP-08",
+      "area": "系统设置定价工具",
+      "title": "Pricing adjustment/upstream diff/JSON safe-state hooks",
+      "status": "PARTIALLY_VERIFIED",
+      "priority": "P2",
+      "effort": "M",
+      "batch": "B5",
+      "impact": "价格调整选择、价差对比、上游价差与 JSON 安全编辑。",
+      "security_notes": "价格写入必须走服务端校验与计费不变量。",
+      "uter_equivalents": [
+        "web/src/features/system-settings/models/（子集）"
+      ],
+      "dependencies": [],
+      "exit_criteria": "定价流程回归；计费不变量测试。",
+      "upstream_file_count": 10,
+      "upstream_test_count": 0,
+      "upstream_paths": [
+        "web/src/features/system-settings/content/json-toggle-section.tsx",
+        "web/src/features/system-settings/hooks/use-accordion-state.ts",
+        "web/src/features/system-settings/hooks/use-form-dirty-guard.ts",
+        "web/src/features/system-settings/hooks/use-safe-json-state.ts",
+        "web/src/features/system-settings/models/model-pricing-issue-alerts.tsx",
+        "web/src/features/system-settings/models/price-adjustment-select.tsx",
+        "web/src/features/system-settings/models/price-change-diff.tsx",
+        "web/src/features/system-settings/models/pricing-issues.ts",
+        "web/src/features/system-settings/models/upstream-price-adjustment.ts",
+        "web/src/features/system-settings/utils/route-config.ts"
+      ],
+      "evidence": [
+        "双定价栈：新增 setting/pricing_engine（全局默认 + 渠道覆盖），上游栈 relay/helper/price_upstream.go 与 Uter 栈并存；ModelPriceHelper/PerCall 按渠道选择，任务与 Midjourney 同步生效；前端系统设置新增 Pricing Engine，渠道 Other Settings 可覆盖；浏览器端到端验证全局与渠道保存，比例/按次两栈预扣结果一致",
+        "上游定价栈问题检测端点 GET /api/option/model_pricing/issues（unconfigured/incompatible/stale，按已启用渠道与插件声明求交，停止插件按已安装版本判定）+ 系统设置「Pricing Issues」面板；访问令牌作用域已登记；浏览器端到端验证 stale 告警展示"
+      ]
+    },
+    {
+      "id": "GAP-10",
+      "area": "AI 对话组件库",
+      "title": "ai-elements chat UI kit expansion",
+      "status": "PARTIAL",
+      "priority": "P3",
+      "effort": "M",
+      "batch": "B4",
+      "impact": "任务/计划/工具/附件/画布等对话组件。",
+      "security_notes": "不可信内容仅文本渲染；外链 noopener。",
+      "uter_equivalents": [
+        "web/src/components/ai-elements/（22 个文件，上游 44 个）"
+      ],
+      "dependencies": [
+        "GAP-01（请求处理 UI 使用）"
+      ],
+      "exit_criteria": "组件单测 + 设计系统门禁。",
+      "upstream_file_count": 22,
+      "upstream_test_count": 0,
+      "upstream_paths": [
+        "web/src/components/ai-elements/actions.tsx",
+        "web/src/components/ai-elements/artifact.tsx",
+        "web/src/components/ai-elements/branch.tsx",
+        "web/src/components/ai-elements/canvas.tsx",
+        "web/src/components/ai-elements/chain-of-thought.tsx",
+        "web/src/components/ai-elements/confirmation.tsx",
+        "web/src/components/ai-elements/connection.tsx",
+        "web/src/components/ai-elements/context.tsx",
+        "web/src/components/ai-elements/controls.tsx",
+        "web/src/components/ai-elements/edge.tsx",
+        "web/src/components/ai-elements/image.tsx",
+        "web/src/components/ai-elements/inline-citation.tsx",
+        "web/src/components/ai-elements/node.tsx",
+        "web/src/components/ai-elements/open-in-chat.tsx",
+        "web/src/components/ai-elements/panel.tsx",
+        "web/src/components/ai-elements/plan.tsx",
+        "web/src/components/ai-elements/queue.tsx",
+        "web/src/components/ai-elements/suggestion.tsx",
+        "web/src/components/ai-elements/task.tsx",
+        "web/src/components/ai-elements/tool.tsx",
+        "web/src/components/ai-elements/toolbar.tsx",
+        "web/src/components/ai-elements/web-preview.tsx"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "GAP-11",
+      "area": "其余杂项与验证",
+      "title": "Misc upstream files and verification gaps",
+      "status": "PARTIAL",
+      "priority": "P2",
+      "effort": "S",
+      "batch": "B0-audit",
+      "impact": "包含部分测试所描述的行为（敏感词迁移、鉴权缓存完整性、节点同步等），需先确认 Uter 是否已有等价行为。",
+      "security_notes": "逐项确认后再决定移植或补测试，禁止盲目合入。",
+      "uter_equivalents": [],
+      "dependencies": [],
+      "exit_criteria": "每项给出 PRESENT/EQUIVALENT/MISSING 结论与证据。",
+      "upstream_file_count": 35,
+      "upstream_test_count": 4,
+      "upstream_paths": [
+        "controller/provider_plugin_test.go",
+        "controller/responses_websocket_plugin_test.go",
+        "plugins/request_plugins_test.go",
+        "relay/channel/task/jsplugin/channel_context_test.go",
+        "web/src/assets/clerk-full-logo.tsx",
+        "web/src/assets/clerk-logo.tsx",
+        "web/src/components/auto-skeleton.tsx",
+        "web/src/components/coming-soon.tsx",
+        "web/src/components/date-picker.tsx",
+        "web/src/components/password-strength-utils.ts",
+        "web/src/components/password-strength.tsx",
+        "web/src/components/theme-quick-switcher.tsx",
+        "web/src/features/about/api.ts",
+        "web/src/features/about/index.tsx",
+        "web/src/features/about/types.ts",
+        "web/src/features/auth/components/telegram-login-dialog.tsx",
+        "web/src/features/auth/components/terms-footer.tsx",
+        "web/src/features/auth/index.ts",
+        "web/src/features/auth/lib/validation.ts",
+        "web/src/features/channels/components/drawers/channel-plugin-config-fields.tsx",
+        "web/src/features/models/components/dialogs/upstream-conflict-dialog.tsx",
+        "web/src/features/models/components/dialogs/vendors-management-dialog.tsx",
+        "web/src/features/models/lib/vendor-actions.ts",
+        "web/src/features/pricing/components/model-details-apps.tsx",
+        "web/src/features/pricing/hooks/index.ts",
+        "web/src/features/pricing/lib/index.ts",
+        "web/src/features/rankings/lib/index.ts",
+        "web/src/features/security/components/dialogs/telegram-bind-dialog.tsx",
+        "web/src/features/security/components/dialogs/wechat-bind-dialog.tsx",
+        "web/src/features/system-info/components/node-sync-indicator.tsx",
+        "web/src/features/system-info/hooks/use-node-sync.ts",
+        "web/src/features/system-info/lib/node-sync.ts",
+        "web/src/features/usage-logs/components/common-logs-header-actions.tsx",
+        "web/src/features/usage-logs/components/request-plugin-record.tsx",
+        "web/src/features/usage-logs/lib/index.ts"
+      ],
+      "evidence": []
+    }
+  ],
+  "b0": {
+    "executed_at": "2026-11-17T01:28:56.135312+00:00",
+    "scope": "GAP-11 全部文件 + 各功能块的上游测试文件",
+    "summary": {
+      "PRESENT": 0,
+      "EQUIVALENT": 11,
+      "PARTIAL": 4,
+      "MISSING": 20,
+      "PENDING_BATCH": 28
+    },
+    "items": [
+      {
+        "path": "relay/requestplugin/attachments_test.go",
+        "gap": "GAP-01",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "relay/requestplugin/pdf_test.go",
+        "gap": "GAP-01",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "relay/requestplugin/requestplugin_test.go",
+        "gap": "GAP-01",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "relay/requestplugin/socket_test.go",
+        "gap": "GAP-01",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "relay/channel/providerplugin/eventstream_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "relay/channel/providerplugin/management_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "router/provider_plugin_gaps_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "router/provider_plugin_relay_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "service/provider_plugin_login_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "service/provider_plugin_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "service/provider_plugin_token_test.go",
+        "gap": "GAP-02",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B2"
+      },
+      {
+        "path": "model/channel_plugin_credential_test.go",
+        "gap": "GAP-03",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B3"
+      },
+      {
+        "path": "relay/channel/task/jsplugin/credential_test.go",
+        "gap": "GAP-03",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B3"
+      },
+      {
+        "path": "controller/channel_create_test.go",
+        "gap": "GAP-04",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B3"
+      },
+      {
+        "path": "controller/channel_plugin_gaps_test.go",
+        "gap": "GAP-04",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B3"
+      },
+      {
+        "path": "relay/param_override_error_test.go",
+        "gap": "GAP-04",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B3"
+      },
+      {
+        "path": "relay/responses_request_test.go",
+        "gap": "GAP-04",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B3"
+      },
+      {
+        "path": "common/database_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "middleware/gzip_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "model/auth_cache_integrity_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "model/sensitive_word_migration_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "pkg/jsplugin/channel_config_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "pkg/jsplugin/keywords_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "pkg/jsplugin/provider_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "plugins/vertex_ai_region_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "relay/channel/vertex/service_account_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "relaykit/relayconvert/kitutil/mask_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "service/node_sync_test.go",
+        "gap": "GAP-05",
+        "result": "PENDING_BATCH",
+        "evidence": "对应功能块在清单中缺失，测试随该批次一起移植",
+        "action": "B1"
+      },
+      {
+        "path": "controller/provider_plugin_test.go",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无 service/provider_plugin 与 controller/provider_plugin",
+        "action": "B2 移植"
+      },
+      {
+        "path": "controller/responses_websocket_plugin_test.go",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无请求钩子运行时",
+        "action": "B1 移植"
+      },
+      {
+        "path": "plugins/request_plugins_test.go",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无内置请求插件",
+        "action": "B1 移植"
+      },
+      {
+        "path": "relay/channel/task/jsplugin/channel_context_test.go",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "任务插件渠道上下文无对应实现（仅有 adaptor/auth/fetch/submit_stream）",
+        "action": "B1/B2 前核实"
+      },
+      {
+        "path": "web/src/assets/clerk-full-logo.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无 Clerk 品牌素材；Uter 使用自有品牌",
+        "action": "默认不移植"
+      },
+      {
+        "path": "web/src/assets/clerk-logo.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "同上",
+        "action": "默认不移植"
+      },
+      {
+        "path": "web/src/components/auto-skeleton.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "仅有 ui/skeleton 基础组件",
+        "action": "B4 按需移植"
+      },
+      {
+        "path": "web/src/components/coming-soon.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无占位页组件",
+        "action": "B5 按需移植"
+      },
+      {
+        "path": "web/src/components/date-picker.tsx",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "compact-date-time-range-picker 与日期区间组件已覆盖",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/components/password-strength-utils.ts",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无密码强度计算",
+        "action": "B4 按需移植"
+      },
+      {
+        "path": "web/src/components/password-strength.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无密码强度 UI",
+        "action": "B4 按需移植"
+      },
+      {
+        "path": "web/src/components/theme-quick-switcher.tsx",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "components/theme-switch.tsx 已提供主题切换",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/about/api.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "about-viewer/about-shared/content 已覆盖数据与渲染",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/about/index.tsx",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "features/about/index.ts + about-viewer.tsx",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/about/types.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "about-shared.ts 内类型",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/auth/components/telegram-login-dialog.tsx",
+        "gap": "GAP-11",
+        "result": "PARTIAL",
+        "evidence": "security/account-bindings 含 Telegram 绑定；登录弹窗形态不同",
+        "action": "B4 核实"
+      },
+      {
+        "path": "web/src/features/auth/components/terms-footer.tsx",
+        "gap": "GAP-11",
+        "result": "PARTIAL",
+        "evidence": "注册表单内含条款文案；无独立 footer 组件",
+        "action": "B4 核实"
+      },
+      {
+        "path": "web/src/features/auth/index.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "features/auth 已有入口",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/auth/lib/validation.ts",
+        "gap": "GAP-11",
+        "result": "PARTIAL",
+        "evidence": "校验逻辑内联于表单 schema",
+        "action": "B4 核实"
+      },
+      {
+        "path": "web/src/features/channels/components/drawers/channel-plugin-config-fields.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "依赖 Provider/请求插件配置",
+        "action": "随 B1/B2 移植"
+      },
+      {
+        "path": "web/src/features/models/components/dialogs/upstream-conflict-dialog.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无上游冲突处理弹窗",
+        "action": "B4 移植"
+      },
+      {
+        "path": "web/src/features/models/components/dialogs/vendors-management-dialog.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无供应商管理弹窗",
+        "action": "B4 移植"
+      },
+      {
+        "path": "web/src/features/models/lib/vendor-actions.ts",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无供应商操作",
+        "action": "B4 移植"
+      },
+      {
+        "path": "web/src/features/pricing/components/model-details-apps.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "model-details 未含应用支持区块",
+        "action": "B5 按需移植"
+      },
+      {
+        "path": "web/src/features/pricing/hooks/index.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "已有 hooks（use-billing-time/use-filters/use-pricing-data）",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/pricing/lib/index.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "已有 lib（计费表达式/格式等）",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/rankings/lib/index.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "已有 rankings 实现",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/security/components/dialogs/telegram-bind-dialog.tsx",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "security/account-bindings.tsx 已覆盖绑定（含 Telegram）",
+        "action": "无需移植"
+      },
+      {
+        "path": "web/src/features/security/components/dialogs/wechat-bind-dialog.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无微信绑定能力",
+        "action": "随 GAP-04 微信控制器"
+      },
+      {
+        "path": "web/src/features/system-info/components/node-sync-indicator.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "无节点同步功能（service/node_sync 亦缺失）",
+        "action": "B2/B5 核实后移植"
+      },
+      {
+        "path": "web/src/features/system-info/hooks/use-node-sync.ts",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "同上",
+        "action": "B2/B5"
+      },
+      {
+        "path": "web/src/features/system-info/lib/node-sync.ts",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "同上",
+        "action": "B2/B5"
+      },
+      {
+        "path": "web/src/features/usage-logs/components/common-logs-header-actions.tsx",
+        "gap": "GAP-11",
+        "result": "PARTIAL",
+        "evidence": "操作按钮已在 filter bar，无独立 header-actions 组件",
+        "action": "B4 核实"
+      },
+      {
+        "path": "web/src/features/usage-logs/components/request-plugin-record.tsx",
+        "gap": "GAP-11",
+        "result": "MISSING",
+        "evidence": "依赖请求钩子审计记录",
+        "action": "B1 移植"
+      },
+      {
+        "path": "web/src/features/usage-logs/lib/index.ts",
+        "gap": "GAP-11",
+        "result": "EQUIVALENT",
+        "evidence": "已有 logs lib（format 等）",
+        "action": "无需移植"
+      }
+    ]
+  },
+  "b1_plan": {
+    "generated_at": "2026-11-17T01:30:18.868340+00:00",
+    "scope": [
+      "GAP-05",
+      "GAP-01"
+    ],
+    "status": "IN_PROGRESS",
+    "dependency_analysis": {
+      "js_engine": {
+        "uter": "github.com/Calcium-Ion/moejs v0.1.0-alpha.7",
+        "upstream": "github.com/MoeForge/moejs",
+        "action": "先做 API 兼容性对照；不兼容则评估升级依赖（需许可证与维护性审查）"
+      },
+      "safe_regex": {
+        "uter": "标准库 regexp",
+        "upstream": "github.com/MoeForge/moego/regexp",
+        "action": "引入 moego/regexp 或增加同等的超时/RE2 限制包装，禁止直接暴露不可信正则"
+      },
+      "json": {
+        "uter": "tidwall/gjson + sjson（已存在）",
+        "upstream": "同",
+        "action": "无需新增"
+      },
+      "keywords": {
+        "uter": "anknown/ahocorasick（已存在）",
+        "upstream": "同",
+        "action": "无需新增"
+      },
+      "common_pkg": {
+        "uter": "github.com/uter-ai/uter/common",
+        "upstream": "github.com/QuantumNous/new-api/common",
+        "action": "移植时替换导入路径，并遵守 Uter common 的 JSON/配额封装"
+      }
+    },
+    "increments": [
+      {
+        "id": "B1-I1",
+        "title": "Meta 契约扩展（NameI18n / Optional / ConfigSchema / Samples / ChannelConfig / KeyHint / Scope）",
+        "upstream": [
+          "pkg/jsplugin/config_schema.go",
+          "pkg/jsplugin/sample.go",
+          "pkg/jsplugin/registry.go（Meta/decode 部分）"
+        ],
+        "exit": [
+          "Meta 字段持久化并经 API 返回",
+          "configSchema/samples 结构校验与默认值",
+          "单测覆盖合法/非法样例"
+        ],
+        "status": "COMPLETED",
+        "done": [
+          "移植 config_schema.go / sample.go（适配 common 导入与标准库 regexp）",
+          "Meta.ConfigSchema/ChannelConfig/Samples 改为强类型并经 API 返回",
+          "configSchema/samples/optional 仅允许请求处理部件（阶段钩子/reply/report）",
+          "测试：合法 schema 编译、非法 schema 拒绝、非法形状拒绝"
+        ],
+        "remaining": [
+          "configSchema 默认值在实例化时的注入（随 I3 运行时落地）"
+        ]
+      },
+      {
+        "id": "B1-I2",
+        "title": "基础工具与沙箱绑定（transform types / utils.keywords / media source）",
+        "upstream": [
+          "pkg/jsplugin/transform.go",
+          "pkg/jsplugin/keywords.go",
+          "pkg/jsplugin/media.go"
+        ],
+        "exit": [
+          "引擎绑定可调用",
+          "关键词/媒体单测",
+          "资源上限与超时"
+        ],
+        "status": "PARTIAL_IMPLEMENTED",
+        "done": [
+          "移植 transform.go / keywords.go / media.go 并适配 moejs 依赖",
+          "runtimeCall 新增 transform 上下文；引擎在调用时注入",
+          "callOptions.discardResult；allowMembers/optionalString/integerValue/decodeLocalizedText 辅助",
+          "阶段钩子检测（ingress/request/outbound/egress/reply/report），全部测试通过"
+        ],
+        "remaining": [
+          "utils.keywords / media / attachments 的宿主侧数据源接线",
+          "effects 执行与 reply/socket 集成（I3）"
+        ]
+      },
+      {
+        "id": "B1-I3",
+        "title": "请求钩子运行时（阶段钩子/effects/失败策略/审计）",
+        "upstream": [
+          "relay/requestplugin/*.go",
+          "relay/common/request_plugin.go"
+        ],
+        "exit": [
+          "ingress/request/outbound/egress 生效",
+          "effects 白名单验证",
+          "optional 失败策略",
+          "审计记录",
+          "dry-run"
+        ],
+        "status": "BLOCKED_PENDING_STRUCTURAL_MERGE",
+        "blockers": [
+          "Registry 分叉：Uter Registry.Get(platform) 以任务平台为键；上游运行时按插件 key 查找并需要 GetIgnoringMasterSwitch",
+          "request_plugin_setting：Uter Instance 缺少 PluginScope / Scope（插件作用域实例）",
+          "model.Task：缺少 RequestPlugins / TaskRequestPlugins（任务报告数据）",
+          "转发链路缺少 ingress/outbound/egress 钩子接入点；Responses WebSocket 路径需单独接入",
+          "新增依赖 nativewebp、ledongthuc/pdf（已暂时移除，随运行时一起恢复）"
+        ],
+        "next_steps": [
+          "I3.1 为 Registry 增加按插件 key 的独立索引与 GetIgnoringMasterSwitch（不改变现有任务平台语义）",
+          "I3.2 合并 setting Scope/PluginScope 与 Meta.Scope 校验",
+          "I3.3 增加 model.Task.RequestPlugins/TaskRequestPlugins（三库迁移验证）",
+          "I3.4 适配移植运行时并接入转发链路与 WebSocket",
+          "I3.5 控制器 API 与控制台（I4/I5）"
+        ]
+      },
+      {
+        "id": "B1-I4",
+        "title": "控制面 API 与存储（实例/配置/试跑）",
+        "upstream": [
+          "controller/request_plugin.go"
+        ],
+        "exit": [
+          "权限与校验",
+          "三库验证",
+          "API 契约测试"
+        ]
+      },
+      {
+        "id": "B1-I5",
+        "title": "控制台界面",
+        "upstream": [
+          "web/src/features/task-plugins/components/request-plugin-*.tsx",
+          "web/src/features/request-processing/",
+          "web/src/routes/_authenticated/request-processing/",
+          "web/src/features/usage-logs/components/request-plugin-record.tsx"
+        ],
+        "exit": [
+          "设计系统严格门禁",
+          "a11y",
+          "7 语言",
+          "编辑器试跑与 dry-run 页面回归"
+        ]
+      }
+    ],
+    "security_gates": [
+      "沙箱逃逸与资源耗尽测试",
+      "凭证/密钥不得进入 JS 上下文或日志",
+      "SSRF：仅允许 allowedHosts 与渠道主机",
+      "effects 白名单与参数上限",
+      "optional 失败策略不得吞掉计费错误",
+      "特性开关 + 一键回滚",
+      "SQLite/MySQL/PostgreSQL 三库验证",
+      "最终：6 个官方请求钩子插件安装 + dry-run 通过"
+    ],
+    "not_done": [
+      "B1 代码尚未合入：现有仓库仅新增清单文档；避免半成品进入主分支。"
+    ],
+    "evidence": {
+      "commands": [
+        "go build ./...",
+        "go test ./pkg/jsplugin/ -count=1",
+        "go vet ./pkg/jsplugin/",
+        "隔离栈真实安装扫描"
+      ],
+      "results": "pkg/jsplugin 全部测试通过；GitHub 市场 13 个任务插件安装成功；6 个请求钩子插件通过编译并返回明确不支持提示（Official 市场本次网络超时）",
+      "updated_at": "2026-11-17T01:55:25.919258+00:00"
+    },
+    "i3_analysis": {
+      "analyzed_at": "2026-11-17T02:11:27.244792+00:00",
+      "method": "移植后编译对照：逐个解析缺失符号与签名差异，未合入不可编译代码",
+      "parked_files": "/tmp/parity-port-wip（仓库外，未提交）",
+      "repo_state": "go build ./... 与 pkg/jsplugin 测试通过；运行时尚未合入"
+    },
+    "i3_progress": {
+      "updated_at": "2026-11-17T06:59:36.814829+00:00",
+      "done": [
+        "I3.1 Registry.GetByKey / GetIgnoringMasterSwitch（按 manifest key 查找，测试通过）",
+        "I3.2 Meta.Scope 契约 + setting Scope/PluginScope（含 Covers/Equal/Clone）",
+        "relay/common 请求插件审计/记录类型（RequestPluginStep/Record、RelayInfo 字段）",
+        "relaykit/types 新增 request_rejected / request_plugin_failed 错误码",
+        "relay/common.ReasoningEffortFromJSON 导出包装",
+        "Meta.NameI18n 本地化名称（decode/clone，Name 取 en→zh→zh-TW 回退）",
+        "service.RequestPluginFetcher / sendPluginFetch（utils.fetch 宿主侧：allowedHosts + config URL 主机校验、TLS、无代理）",
+        "jsplugin.ValidateServiceURL / hostAllowed；FetchRequest 增加 Body/BodyStream/BodySize",
+        "RelayInfo.RequestPluginHeaders（outbound header.patch effects）与 dto.ChannelSettings.RequestPlugins",
+        "relaykit/types 新增 request_rejected / request_plugin_failed / response_rejected",
+        "后端 7 语言新增 relay.request_rejected / request_plugin_failed / response_rejected 文案"
+      ],
+      "deferred": [
+        "reply/socket 适配：common.UpstreamAddresses、ToClaudeError 签名差异等",
+        "运行时包暂存仓库外 /tmp/parity-port-wip/requestplugin3，待上述依赖合入后恢复"
+      ],
+      "evidence": [
+        "go test ./pkg/jsplugin/ 通过",
+        "go build ./pkg/... ./relay/... ./model/... ./setting/... ./controller/... ./middleware/... 通过",
+        "go vet 通过"
+      ],
+      "repo_state": "全部业务包构建通过；controller/middleware/pkg/jsplugin/i18n 测试通过",
+      "i3_3": {
+        "status": "COMPLETED",
+        "field": "model.Task.RequestPlugins *TaskRequestPlugins",
+        "storage": "gorm serializer:json; type:text（跨 SQLite/MySQL/PostgreSQL 通用）",
+        "evidence": [
+          "model/task_request_plugins_test.go 两轮通过（sqlite/mysql/postgres，新建与升级路径）",
+          "AutoMigrate 连续两次幂等",
+          "旧行数据保留，新列可回读 JSON"
+        ]
+      },
+      "milestone": {
+        "runtime_compiled": true,
+        "controller_compiled": true,
+        "wired": true,
+        "routed": true,
+        "notes": [
+          "relay/requestplugin 全部文件编译通过",
+          "controller/request_plugin.go 编译并注册路由（RootAuth）",
+          "controller/relay.go 接入 Ingress / Reply / Report",
+          "隔离栈真实验证：19 个官方插件（双市场源 38/38 次）全部安装成功",
+          "dry-run 实测 auto-reasoning：stage=request、effects=1、reasoning_effort=high、本地化插件名",
+          "controller/middleware 测试通过；三库迁移测试两轮通过"
+        ],
+        "next": [
+          "逐段合并 controller/relay.go 的 Ingress/Reply/Report/TaskReport 调用",
+          "运行时与控制器回归测试",
+          "控制台界面（I5）"
+        ],
+        "runtime_verified": true,
+        "remaining": [
+          "任务类插件的请求钩子路径（SubmitIngress / TaskAttempt / TaskReport）：缺 middleware.RefreshTaskPluginRequest 与 service.RecordRelayErrorLog 的移植",
+          "Midjourney 提交路径（midjourneyRequestPlugins）待接入",
+          "dry-run 的 ModifierEffort（thinking 修饰解析待移植）",
+          "运行时/控制器专项测试与控制台界面（I5）",
+          "B2–B5 其余批次；前端移植须剥离上游版权头（用户红线）"
+        ]
+      },
+      "task_path": {
+        "status": "IMPLEMENTED_NOT_VERIFIED",
+        "done": [
+          "middleware.RefreshTaskPluginRequest + pinTaskPluginFormModel",
+          "service.RecordRelayErrorLog + appendRequestPluginRecord",
+          "executeTaskSubmissionWith：SubmitIngress → 失败 RecordRelayErrorLog/TaskError → changed 时重新解析",
+          "任务持久化：PrivateData.RequestPlugins = TaskReport；TaskCreated；immediateTerminal 时 ReportTask",
+          "decideTaskRetry 增加 plugin 停止分支；尝试失败写插件错误日志"
+        ],
+        "verification": [
+          "业务包全部构建通过",
+          "controller 62.1s、middleware、pkg/jsplugin 测试通过"
+        ],
+        "remaining": [
+          "Midjourney 提交路径 midjourneyRequestPlugins",
+          "任务链路端到端验证（需真实任务渠道）",
+          "B2–B5 与 I5 控制台"
+        ]
+      },
+      "i5": {
+        "status": "PARTIAL",
+        "done": [
+          "任务插件页新增 Request plugins 标签：实例 JSON 编辑与保存、dry-run 试跑",
+          "API 客户端：GET/PUT /api/request_plugin/instances、POST /dry_run",
+          "7 语言文案、单元测试 3 项、浏览器实测（实例加载 + dry-run 结果，0 API 失败）"
+        ],
+        "remaining": [
+          "按 configSchema 渲染表单（当前为 JSON 编辑）",
+          "渠道绑定 UI（channel-request-plugins-field）",
+          "用量日志中的请求插件记录展示",
+          "试跑页独立路由与示例管理"
+        ]
+      }
+    }
+  },
+  "status_summary": {
+    "updated_at": "2026-11-17T18:51:27.305340+00:00",
+    "overall": "NOT_COMPLETE",
+    "verified_batches": [
+      "B0 差距清单",
+      "B1-请求钩子运行时（聊天全链路 + Realtime + 任务 + Midjourney + 协议桥接已接线，requestplugin 测试通过）",
+      "B2 Provider 插件运行时（后端链路 PARTIALLY_VERIFIED）",
+      "B3 渠道凭据与余额（后端 PARTIALLY_VERIFIED，三库迁移通过）"
+    ],
+    "pending_batches": [
+      "上游定价快照/预览端点的上游语义版本",
+      "B1 真实插件端到端复验",
+      "B2/B3 剩余前端",
+      "B4/B5/GAP-11 剩余项"
+    ],
+    "three_db_verification": "2026-11-17: TestUserWeChatIDColumnMigration sqlite/mysql:8.0/postgres:16 PASS（升级+二次迁移幂等+数据保留）"
+  }
+}
