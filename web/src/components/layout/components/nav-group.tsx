@@ -123,6 +123,9 @@ function NavBadge({ children }: { children: ReactNode }) {
 function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   const { isMobile, setOpenMobile } = useSidebar()
   const isActive = checkIsActive(href, item)
+  // Server-served routes (the embedded product specification centre) are not
+  // part of the SPA route tree; a TanStack <Link> would render the SPA 404.
+  const serverServed = href.startsWith('/product-spec')
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -137,11 +140,15 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
         // 首页 logic, and it lives in top-nav / public-header.)
         className='font-medium'
         render={
-          <Link
-            to={item.url}
-            preload={isMobile ? false : undefined}
-            onClick={() => setOpenMobile(false)}
-          />
+          serverServed ? (
+            <a href={href} onClick={() => setOpenMobile(false)} />
+          ) : (
+            <Link
+              to={item.url}
+              preload={isMobile ? false : undefined}
+              onClick={() => setOpenMobile(false)}
+            />
+          )
         }
       >
         {item.icon && <item.icon className='shrink-0' />}
