@@ -1193,6 +1193,30 @@ func TestUploadTaskPluginSourceSha256(t *testing.T) {
 	}
 }
 
+// TestUploadTaskPluginAcceptsRequestHookPlugin 钉住请求处理插件（上游 transform
+// 插件）的安装路径：它们不声明 models/fetchMode/routes，只导出请求钩子，
+// 必须与任务插件一样可以安装并由请求插件运行时执行。
+func TestUploadTaskPluginAcceptsRequestHookPlugin(t *testing.T) {
+	setupTaskPluginControllerTest(t)
+	cleanupTaskPluginControllerRuntime(t, "request-only")
+	source := `
+export const meta = {apiVersion: 1, key: "request-only", name: "Request only", version: "1.0.0", author: {name: "Test"}};
+export function request(req) { return req; }
+`
+	body, err := common.Marshal(map[string]any{"source": source})
+	require.NoError(t, err)
+	recorder := httptest.NewRecorder()
+	context, _ := gin.CreateTestContext(recorder)
+	context.Request = httptest.NewRequest(http.MethodPost, "/api/plugin/task", strings.NewReader(string(body)))
+	context.Request.Header.Set("Content-Type", "application/json")
+
+	UploadTaskPlugin(context)
+
+	assert.Contains(t, recorder.Body.String(), `"success":true`)
+	_, err = model.GetTaskPluginVersion("request-only", "")
+	require.NoError(t, err)
+}
+
 func setupTaskPluginMarketplaceSourcesTest(t *testing.T) {
 	t.Helper()
 	setupTaskPluginControllerTest(t)

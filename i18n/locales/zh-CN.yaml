@@ -516,3 +516,8 @@ relay.retry_get_channel_failed: '获取分组 {{.Group}} 下模型 {{.Model}} �
 relay.retry_no_available_channel: 分组 {{.Group}} 下模型 {{.Model}} 的可用渠道不存在（retry）
 relay.task_channel_disabled: 该任务所属渠道已被禁用
 # Channel notices sent to administrators who receive them and to model update watchers
+
+# Request plugin messages
+relay.request_rejected: "请求被策略拒绝"
+relay.request_plugin_failed: "请求插件执行失败"
+relay.response_rejected: "响应被策略终止"

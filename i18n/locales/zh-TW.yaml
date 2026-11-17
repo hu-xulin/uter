@@ -516,3 +516,8 @@ relay.retry_get_channel_failed: 獲取分組 {{.Group}} 下模型 {{.Model}} 的
 relay.retry_no_available_channel: 分組 {{.Group}} 下模型 {{.Model}} 的可用管道不存在（retry）
 relay.task_channel_disabled: 該任務所屬管道已被停用
 # Channel notices sent to administrators who receive them and to model update watchers
+
+# Request plugin messages
+relay.request_rejected: "請求被策略拒絕"
+relay.request_plugin_failed: "請求外掛執行失敗"
+relay.response_rejected: "回應被策略終止"

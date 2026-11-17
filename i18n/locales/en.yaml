@@ -515,3 +515,8 @@ relay.retry_get_channel_failed: 'Failed to get available channel for model {{.Mo
 relay.retry_no_available_channel: No available channel for model {{.Model}} under group {{.Group}} (retry)
 relay.task_channel_disabled: The channel of this task has been disabled
 # Channel notices sent to administrators who receive them and to model update watchers
+
+# Request plugin messages
+relay.request_rejected: "Request rejected by policy"
+relay.request_plugin_failed: "A request plugin failed"
+relay.response_rejected: "Response stopped by policy"

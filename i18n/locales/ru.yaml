@@ -447,3 +447,8 @@ relay.retry_get_channel_failed: 'Failed to get available channel for model {{.Mo
 relay.retry_no_available_channel: No available channel for model {{.Model}} under group {{.Group}} (retry)
 relay.task_channel_disabled: The channel of this task has been disabled
 user.default_token_name: '{{.Username}}''s initial token'
+
+# Request plugin messages
+relay.request_rejected: "Запрос отклонён политикой"
+relay.request_plugin_failed: "Плагин запроса завершился ошибкой"
+relay.response_rejected: "Ответ остановлен политикой"
