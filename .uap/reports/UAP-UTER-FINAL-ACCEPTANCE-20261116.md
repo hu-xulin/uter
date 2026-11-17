@@ -1,5 +1,10 @@
 # UAP 全面审计 / 整改 / 独立复验 —— 最终验收报告
 
+> **HISTORICAL / NOT CURRENT ACCEPTANCE EVIDENCE — 2026-11-17**
+>
+> This report is a prior-head snapshot and is not valid evidence for the current main HEAD. Its §9 statements that the UDS 3.0 runtime compatibility boundary was retired and that `COMPAT-MAP.json` verified all migration batches are superseded by [ADR-0002](../../docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md). The UDS 3.0 runtime compatibility boundary remains preserved until explicit project-owner authorization and verified current-HEAD migration. Do not reuse this report for current UAP acceptance.
+
+
 - 报告生成时间：2026-11-16（Asia/Shanghai）
 - 审计基准 HEAD：`2a6e470d1384319039c53860c6c7082894147135`（`origin/main`，本地已 ff 对齐，落后 0 提交）
 - 治理体系：UAP 1.0（仓库内 `.uap/`，唯一治理体系）

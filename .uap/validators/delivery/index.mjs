@@ -36,6 +36,26 @@ function parseOut(cmd) {
     return JSON.parse(lines[lines.length - 1]);
   } catch { return null; }
 }
+
+export function classifyDeploymentRehearsal(cmd, rehearsal) {
+  if (!cmd || cmd.spawn_error || cmd.timed_out || !Number.isInteger(cmd.exit_code)) {
+    return { status: 'FAIL', reason: 'deployment rehearsal process did not complete normally' };
+  }
+  const explicitPreflightBlock = cmd.exit_code === 1
+    && rehearsal?.blocked === true
+    && rehearsal.error == null
+    && rehearsal.reason === 'preflight: real release artifacts incomplete'
+    && Array.isArray(rehearsal.steps)
+    && rehearsal.steps.some((step) => step.name === 'preflight_artifacts' && step.ok === false);
+  if (explicitPreflightBlock) {
+    return { status: 'BLOCKED', reason: rehearsal.reason };
+  }
+  if (cmd.exit_code !== 0 || !rehearsal || rehearsal.error
+    || !rehearsal.verdict || typeof rehearsal.verdict !== 'object' || Array.isArray(rehearsal.verdict)) {
+    return { status: 'FAIL', reason: rehearsal?.error || 'deployment rehearsal returned no valid verdict' };
+  }
+  return { status: 'EXECUTED', reason: 'deployment rehearsal returned a structured verdict' };
+}
 async function probeHealth(rel) {
   const abs = rootPath(rel);
   if (!exists(abs)) return { ok: false, detail: `缺少 ${rel}` };
@@ -188,26 +208,28 @@ export const validators = {
 
     // --- authorized: run the REAL rehearsal ---
     const toolRel = '.uap/tools/deploy-dry-run.mjs';
-    const reportRel = '.uap/reports/DEPLOY-DRY-RUN.json';
     const cmd = await runCommand({ command: 'node', args: [rootPath(toolRel)], timeoutMs: 120000 });
-    const rehearsal = parseOut(cmd) || readJSON(rootPath(reportRel), null);
+    // Only stdout from this invocation is authoritative. Never fall back to a
+    // previous DEPLOY-DRY-RUN.json, which could turn a tool failure into BLOCKED.
+    const rehearsal = parseOut(cmd);
+    const classification = classifyDeploymentRehearsal(cmd, rehearsal);
 
-    if (rehearsal?.blocked === true && !cmdRan(cmd)) {
+    if (classification.status === 'BLOCKED') {
       return assemble('delivery.deployment_integrity', checks, [], {
         started, registry, evidence_refs: evidenceIds, commands: [cmd],
         blocked: true, block_category: 'ENVIRONMENT_UNAVAILABLE',
         findings: [finding('BLOCKER', 'deploy_environment_unavailable',
-          `发布演练前置环境不完整: ${String(rehearsal.reason || cmd.stderr || 'release artifacts unavailable').slice(0, 180)}; 不将环境缺失伪装为代码能力 FAIL`)],
-        note: 'BLOCKED: 演练工具已明确报告环境/产物缺失; 需在具备真实构建产物的发布环境复验',
+          `发布演练前置环境不完整: ${String(classification.reason).slice(0, 180)}; 不将环境缺失伪装为代码能力 FAIL`)],
+        note: 'BLOCKED: 本次工具调用明确报告真实构建产物缺失; 旧报告不会作为回退证据',
       });
     }
-    if (!cmdRan(cmd) || !rehearsal || typeof rehearsal.verdict !== 'object') {
+    if (classification.status === 'FAIL') {
       return assemble('delivery.deployment_integrity', checks, [
-        { name: 'deployment_plan', ok: false, detail: `授权在案(${auth.authorization_id})但演练工具故障(exit=${cmd.exit_code}, stderr=${(cmd.stderr || '').slice(0, 120)}) — fail-closed FAIL` },
+        { name: 'deployment_plan', ok: false, detail: `授权在案(${auth.authorization_id})但演练工具故障(exit=${cmd.exit_code}, stderr=${(cmd.stderr || '').slice(0, 120)}): ${classification.reason} — fail-closed FAIL` },
       ], {
         started, registry, evidence_refs: evidenceIds, commands: [cmd],
-        findings: [finding('BLOCKER', 'deploy_rehearsal_tool_failure', '发布演练工具执行失败, 无法取证')],
-        note: 'FAIL: 授权有效但演练工具自身故障, 按能力失败处理',
+        findings: [finding('BLOCKER', 'deploy_rehearsal_tool_failure', '发布演练工具执行失败或未返回有效 verdict, 无法取证')],
+        note: 'FAIL: 本次工具调用失败或输出无效; 不读取任何旧的 DEPLOY-DRY-RUN.json',
       });
     }
 

@@ -14,7 +14,8 @@
 
 | ID | 标题 | 状态 | 日期 |
 |---|---|---|---|
-| [ADR-0001](0001-uter-design-system-single-source-of-truth.md) | UDS 8.0.0 作为设计规范唯一事实来源 | Accepted | 2026-11-03 |
+| [ADR-0001](0001-uter-design-system-single-source-of-truth.md) | UDS 8.0.0 作为设计规范唯一事实来源 | Accepted | 2026-11-16 |
+| [ADR-0002](0002-preserve-uds-3-runtime-compatibility-boundary.md) | 在获准迁移并完成验证前保留 UDS 3.0 runtime compatibility boundary | Accepted | 2026-11-17 |
 
 ## 维护规则
 

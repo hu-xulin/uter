@@ -1,5 +1,5 @@
 # UAP-07-001 — Web 工程规范
-> **UDS 8.0.0 状态边界：** 当前唯一设计系统 SSOT 为 `TOKEN-MANIFEST.json`（version `8.0.0`、`ACCEPTANCE_READY`、`accepted: false`）。运行时颜色语义由 manifest 派生的 `--ds-*` bridge 提供；3.0 颜色兼容层已退役，B1–B6 迁移批次须以 `COMPAT-MAP.json` 的实时状态为准。设计系统达到 `ACCEPTANCE_READY` 不等于用户已最终接受；不得将设计系统状态等同于 Uter 全站业务合规。
+> **UDS 8.0.0 状态边界：** 当前唯一设计系统 SSOT 为 `TOKEN-MANIFEST.json`（version `8.0.0`、`ACCEPTANCE_READY`、`accepted: false`）。运行时颜色语义由 manifest 派生的 `--ds-*` bridge 提供；现有 UDS 3.0 runtime compatibility boundary 必须保留，直到项目所有者明确授权迁移并完成绑定当前 HEAD 的行为、视觉与兼容回归验证；不得因迁移/映射文件缺失或 UDS 8.0.0 达到 ACCEPTANCE_READY 就推断其已退役。设计系统达到 `ACCEPTANCE_READY` 不等于用户已最终接受；不得将设计系统状态等同于 Uter 全站业务合规。
 
 
 **编号：** UAP-07-001

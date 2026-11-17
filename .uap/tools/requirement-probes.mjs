@@ -439,43 +439,39 @@ const PROBES = {
       'AGENTS.md',
       'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
       'docs/design-system/TOKEN-MANIFEST.json',
-      'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md',
-      'docs/design-system/COMPAT-MAP.json',
-      'docs/design-system/FINAL-ACCEPTANCE-REPORT.md',
+      'docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md',
       'docs/design-system/SHOWCASE-8.0.0.html',
+      'docs/adr/README.md',
+      'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md',
       '.uap/README.md',
       '.uap/SPECIFICATION-INDEX.md',
     ];
     const missing = files.filter((f) => !exists(path.join(ROOT, f)));
     const manifest = readJSON(path.join(ROOT, 'docs/design-system/TOKEN-MANIFEST.json'));
-    const compat = readJSON(path.join(ROOT, 'docs/design-system/COMPAT-MAP.json'));
     const overview = read(path.join(ROOT, 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md')) || '';
-    const migration = read(path.join(ROOT, 'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md')) || '';
-    const acceptance = read(path.join(ROOT, 'docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) || '';
-    const batches = Array.isArray(compat?.migrationBatches) ? compat.migrationBatches : [];
+    const acceptance = read(path.join(ROOT, 'docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md')) || '';
+    const compatibilityAdr = read(path.join(ROOT, 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md')) || '';
+    const runtimeCss = read(path.join(ROOT, 'web/src/styles/theme.css')) || '';
+    const typographyCss = read(path.join(ROOT, 'web/src/design-system/tokens/typography.css')) || '';
     const currentDocs = manifest?.version === '8.0.0'
       && manifest?.status === 'ACCEPTANCE_READY'
-      && overview.includes('UDS 8.0.0 是唯一现行规范')
+      && overview.includes('UDS 8.0.0 是唯一现行设计系统')
       && overview.includes('TOKEN-MANIFEST.json')
       && exists(path.join(ROOT, 'docs/design-system/SHOWCASE-8.0.0.html'));
-    const runtimeTransition = compat?.version === '8.0.0'
-      && compat?.isolation?.runtimePrefix === '--ds-'
-      && typeof compat?.isolation?.scalarAlignment === 'string'
-      && compat.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
-      && batches.length >= 6 && batches.every((batch) => batch.status === 'DONE_VERIFIED')
-      && migration.includes('B6') && migration.includes('DONE_VERIFIED')
-      && migration.includes('PROHIBITED');
+    const compatibilityBoundary = compatibilityAdr.includes('3.0 runtime compatibility boundary')
+      && compatibilityAdr.includes('明确授权迁移')
+      && runtimeCss.includes('--ds-') && typographyCss.includes('3.0');
     const acceptanceHonest = acceptance.includes('ACCEPTANCE_READY')
-      && acceptance.includes('accepted: false');
-    const ok = missing.length === 0 && currentDocs && runtimeTransition && acceptanceHonest;
+      && /accepted\s*=\s*false/i.test(acceptance);
+    const ok = missing.length === 0 && currentDocs && compatibilityBoundary && acceptanceHonest;
     return result('docs.baseline', {
-      command: `verify ${files.length} current governance/design baseline documents and UDS acceptance/runtime boundaries`,
+      command: `verify ${files.length} current governance/design baseline documents and UDS acceptance/compatibility boundaries`,
       exit_code: ok ? 0 : 1,
       output_hash: sha(files.map((f) => `${f}:${(read(path.join(ROOT, f)) || '').length}`).join('|')
-        + `|currentDocs=${currentDocs}|runtimeTransition=${runtimeTransition}|acceptanceHonest=${acceptanceHonest}`),
+        + `|currentDocs=${currentDocs}|compatibilityBoundary=${compatibilityBoundary}|acceptanceHonest=${acceptanceHonest}`),
       duration_ms: 0,
     }, {
-      detail: `missing=${missing.join(',') || 'none'}; UDS=${manifest?.version ?? 'missing'}/${manifest?.status ?? 'missing'}; 8.0.0 runtime bridge/migration batches verified=${runtimeTransition}; accepted=false preserved=${acceptanceHonest}`,
+      detail: `missing=${missing.join(',') || 'none'}; UDS=${manifest?.version ?? 'missing'}/${manifest?.status ?? 'missing'}; 3.0 runtime compatibility boundary documented and source retained=${compatibilityBoundary}; accepted=false preserved=${acceptanceHonest}`,
     });
   },
 

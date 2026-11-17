@@ -402,7 +402,7 @@ const acceptanceMatrix = {
 
 const deprecatedRegistry = {
   schema_version: '1.0', registry_id: 'UDS8-R-DEPRECATED', version: M.version, generated_at: stamp,
-  policy: '先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；UDS 8.0.0 是唯一现行设计系统，不存在并行版本或兼容层',
+  policy: '先登记 → 依赖图确认零引用 → CSS/TS/Showcase 同时移除 → 门禁复验；UDS 8.0.0 是唯一设计系统权威与 Token 真源；既有 UDS 3.0 runtime compatibility boundary 按 ADR-0002 保留，直至项目所有者明确授权且迁移验证通过',
   items: [],
 }
 
@@ -466,7 +466,7 @@ const renderModule = (m) => {
 
 ${m.summary}
 
-本模块属于 UDS 8.0.0 五层架构 \`${M.architecture.flow}\`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；不存在并行版本、兼容层或第二套 Token。视觉基线见 \`VISUAL-BASELINE.json\`。
+本模块属于 UDS 8.0.0 五层架构 \`${M.architecture.flow}\`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；现有 UDS 3.0 runtime compatibility boundary 按 ADR-0002 保留，直到项目所有者明确授权迁移并完成当前 HEAD 绑定的行为、视觉与兼容回归验证；该边界不构成并行设计系统或第二套 Token。视觉基线见 \`VISUAL-BASELINE.json\`。
 
 | 属性 | 值 |
 |---|---|
@@ -535,7 +535,7 @@ ${m.acceptance.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 
 | 检查项 | 执行方式 | 当前结果 |
 |---|---|---|
-| Token 一致性 | \`node web/scripts/check-design-system-8.0.0.mjs\` | 见 FINAL-ACCEPTANCE-REPORT.md |
+| Token 一致性 | \`node web/scripts/check-design-system-8.0.0.mjs\` | 见 UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md |
 | 对比度 | \`node registry/contrast-engine.mjs\` | \`${M.contrast.verdict}\` |
 | 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | \`${M.contrast.verdict}\` |
 | 视觉审核 | Showcase 人工审核 | \`PENDING_USER_REVIEW\` |

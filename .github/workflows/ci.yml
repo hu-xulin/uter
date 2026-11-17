@@ -150,6 +150,7 @@ jobs:
         continue-on-error: true
         env:
           H5_BASE_URL: http://127.0.0.1:3000
+          UTER_RELEASE_BINARY: ${{ runner.temp }}/uter-bin
         run: node .uap/bin/uap.mjs validate --all
       - name: Publish H5 browser matrix diagnostics
         if: always()
