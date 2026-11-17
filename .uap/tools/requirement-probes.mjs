@@ -462,7 +462,7 @@ const PROBES = {
       && compatibilityAdr.includes('explicitly authorizes')
       && runtimeCss.includes('--ds-') && typographyCss.includes('3.0');
     const acceptanceHonest = acceptance.includes('ACCEPTANCE_READY')
-      && /accepted\\s*=\\s*false/i.test(acceptance);
+      && /accepted\s*=\s*false/i.test(acceptance);
     const ok = missing.length === 0 && currentDocs && compatibilityBoundary && acceptanceHonest;
     return result('docs.baseline', {
       command: `verify ${files.length} current governance/design baseline documents and UDS acceptance/compatibility boundaries`,
