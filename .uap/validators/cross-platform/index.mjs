@@ -176,41 +176,35 @@ export const validators = {
     const webSpec = specById(configs).get('UAP-07-001');
     const h5Spec = specById(configs).get('UAP-07-002');
 
-    // feature_mapping: web and H5 share ONE source tree and ONE API layer.
-    // The single authoritative Markdown path is the UDS 8.0.0 standard,
-    // so checking that retired path made this validator fail for the wrong
-    // reason. Validate the current canonical 7.0 SSOT and its explicit
-    // compatibility boundary instead: 7.0 is acceptance-ready but NOT yet
-    // accepted, while 3.0 remains the runtime-enforced standard until Phase 6.
+    // UDS 8.0.0 is the current specification baseline, but ACCEPTANCE_READY
+    // is not user acceptance. The existing 3.0 runtime compatibility boundary
+    // must remain until the project owner explicitly authorizes migration and
+    // current-head migration evidence is verified. Deleted migration artifacts
+    // are not treated as proof that the boundary has been retired.
     const dsRel = 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md';
     const manifestRel = 'docs/design-system/TOKEN-MANIFEST.json';
-    const migrationRel = 'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md';
+    const acceptanceRel = 'docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md';
     const ds = exists(rootPath(dsRel)) ? readText(rootPath(dsRel)) : '';
     const manifest = readJSON(rootPath(manifestRel), null);
-    const migration = exists(rootPath(migrationRel)) ? readText(rootPath(migrationRel)) : '';
-    const compatMap = readJSON(rootPath('docs/design-system/COMPAT-MAP.json'), null);
-    const acceptance = exists(rootPath('docs/design-system/FINAL-ACCEPTANCE-REPORT.md'))
-      ? readText(rootPath('docs/design-system/FINAL-ACCEPTANCE-REPORT.md')) : '';
-    const batches = Array.isArray(compatMap?.migrationBatches) ? compatMap.migrationBatches : [];
+    const acceptance = exists(rootPath(acceptanceRel)) ? readText(rootPath(acceptanceRel)) : '';
+    const compatibilityAdrRel = 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md';
+    const compatibilityAdr = exists(rootPath(compatibilityAdrRel)) ? readText(rootPath(compatibilityAdrRel)) : '';
+    const runtimeCss = exists(rootPath('web/src/styles/theme.css')) ? readText(rootPath('web/src/styles/theme.css')) : '';
+    const typographyCss = exists(rootPath('web/src/design-system/tokens/typography.css'))
+      ? readText(rootPath('web/src/design-system/tokens/typography.css')) : '';
     const designSystemReady = !!manifest
       && manifest.version === '8.0.0'
       && manifest.status === 'ACCEPTANCE_READY'
-      && ds.includes('UDS 8.0.0 是唯一现行规范')
+      && ds.includes('UDS 8.0.0 是唯一现行设计系统')
       && ds.includes('TOKEN-MANIFEST.json')
-      && migration.includes('当前字号真值')
-      && migration.includes('B6')
-      && migration.includes('DONE_VERIFIED')
+      && acceptance.includes('ACCEPTANCE_READY')
+      && /accepted\\s*=\\s*false/i.test(acceptance)
       && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'));
     const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds-* bridge 为唯一运行时权威')
-      && ds.includes('3.0 兼容层 colors.css 已退役')
-      && typeof compatMap?.isolation?.scalarAlignment === 'string'
-      && compatMap.version === '8.0.0'
-      && compatMap.isolation.runtimePrefix === '--ds-'
-      && compatMap.isolation.scalarAlignment.includes('TOKEN-MANIFEST')
-      && batches.length >= 6 && batches.every((batch) => batch.status === 'DONE_VERIFIED')
-      && migration.includes('B6') && migration.includes('DONE_VERIFIED')
-      && migration.includes('PROHIBITED')
-      && acceptance.includes('accepted: false');
+      && compatibilityAdr.includes('3.0 runtime compatibility boundary')
+      && compatibilityAdr.includes('explicitly authorizes')
+      && runtimeCss.includes('--ds-')
+      && typographyCss.includes('3.0');
     const dupTrees = ['h5/src', 'mobile/src', 'web-h5/src', 'm/src'].filter((d) => exists(rootPath(d)));
     const featureDirs = exists(rootPath('web/src/features'))
       ? fs.readdirSync(rootPath('web/src/features'), { withFileTypes: true }).filter((e) => e.isDirectory()).length
@@ -220,7 +214,7 @@ export const validators = {
       name: 'feature_mapping',
       ok: dupTrees.length === 0 && featureDirs > 0 && sharedTypeScale
         && agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md') && !!webSpec && !!h5Spec,
-      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 8.0.0 SSOT/Token Manifest/迁移报告/Showcase 完整=${designSystemReady}; 8.0.0 运行时 bridge/迁移批次/未接受状态边界明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
+      detail: `重复移动端源码树=${dupTrees.length ? dupTrees.join(',') : '无'}; web/src/features 实际 feature 目录数=${featureDirs}; UDS 8.0.0 SSOT/Token Manifest/正式验收报告/Showcase 完整且 accepted=false=${designSystemReady}; --ds-* bridge 与 3.0 runtime compatibility boundary 保留规则明确=${runtimeBoundaryExplicit}; AGENTS.md 绑定当前设计系统总纲=${agentsMd.includes('00-UTER-DESIGN-SYSTEM-OVERVIEW.md')}`,
     };
 
     // api_consistency: single frontend API client + backend-only business rules.
