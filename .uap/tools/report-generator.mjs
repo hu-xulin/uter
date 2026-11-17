@@ -518,7 +518,7 @@ export async function generateReports({ final = false } = {}) {
     ? readText(rootPath('docs', 'design-system', 'UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md')) : '';
   const udsReady = udsMissing.length === 0 && udsManifest?.version === '8.0.0'
     && udsManifest?.status === 'ACCEPTANCE_READY'
-    && udsAcceptance.includes('ACCEPTANCE_READY') && /accepted\\s*=\\s*false/i.test(udsAcceptance);
+    && udsAcceptance.includes('ACCEPTANCE_READY') && /accepted\s*=\s*false/i.test(udsAcceptance);
   write('CROSS-PLATFORM-REPORT.md', md('Cross-Platform Report', [
     ['平台目录探测', table(['路径', '存在', '文件数'], platformDirs.map((d) => [d, exists(rootPath(d)) ? 'YES' : 'NO', listFiles(rootPath(d)).length]))],
     ['设计系统约束', `UDS 8.0.0 文档集：${udsReady ? 'PRESENT / ACCEPTANCE_READY / accepted=false' : `INCOMPLETE; missing=${udsMissing.join(',')}`}; --ds-* bridge 由 TOKEN-MANIFEST 派生；UDS 3.0 runtime compatibility boundary 保留至项目所有者明确授权迁移且迁移证据验证完成，不以已删除的 COMPAT/MIGRATION 文件推断退役；web/AGENTS.md：${exists(rootPath('web', 'AGENTS.md')) ? '存在' : '缺失'}。`],
