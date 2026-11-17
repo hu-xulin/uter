@@ -9,11 +9,15 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
+	httpproxy "golang.org/x/net/http/httpproxy"
 
 	"github.com/gin-gonic/gin"
 )
@@ -462,4 +466,57 @@ func multipartMemoryLimit() int64 {
 		limitMB = 32
 	}
 	return int64(limitMB) << 20
+}
+
+// UpstreamAddresses collects the upstream addresses an error message may
+// quote, so the error renderers can redact them: the environment proxy, the
+// channel proxy and the channel base URL. Empty entries are dropped.
+// presetUpstreamHosts are the hosts, with any port, of the default base URLs
+// the project presets for channel types. They are public endpoints, so errors
+// keep them readable. The port keeps a configured localhost upstream apart
+// from the Ollama preset.
+var presetUpstreamHosts = sync.OnceValue(func() map[string]struct{} {
+	hosts := make(map[string]struct{}, len(constant.ChannelBaseURLs))
+	for _, baseURL := range constant.ChannelBaseURLs {
+		if parsed, err := url.Parse(baseURL); err == nil && parsed.Host != "" {
+			hosts[strings.ToLower(parsed.Host)] = struct{}{}
+		}
+	}
+	return hosts
+})
+
+// isPresetUpstreamHost reports whether address points at one of the preset
+// default base URL hosts.
+func isPresetUpstreamHost(address string) bool {
+	rawURL := strings.TrimSpace(address)
+	if !strings.Contains(rawURL, "://") {
+		rawURL = "//" + rawURL
+	}
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+	_, preset := presetUpstreamHosts()[strings.ToLower(parsed.Host)]
+	return preset
+}
+
+func UpstreamAddresses(c *gin.Context) []string {
+	environmentProxy := httpproxy.FromEnvironment()
+	candidates := []string{environmentProxy.HTTPProxy, environmentProxy.HTTPSProxy}
+	if setting, ok := GetContextKeyType[dto.ChannelSettings](c, constant.ContextKeyChannelSetting); ok {
+		candidates = append(candidates, setting.Proxy)
+	}
+	baseURL := strings.TrimSpace(GetContextKeyString(c, constant.ContextKeyChannelBaseUrl))
+	candidates = append(candidates, baseURL)
+	providerPlugin, _ := GetContextKey(c, constant.ContextKeyProviderPlugin)
+	if GetContextKeyInt(c, constant.ContextKeyChannelType) == constant.ChannelTypeAdvancedCustom || providerPlugin != nil || (baseURL != "" && !isPresetUpstreamHost(baseURL)) {
+		candidates = append(candidates, GetContextKeyString(c, constant.ContextKeyUpstreamRequestOrigin))
+	}
+	addresses := make([]string, 0, len(candidates))
+	for _, address := range candidates {
+		if strings.TrimSpace(address) != "" && !isPresetUpstreamHost(address) && !slices.Contains(addresses, address) {
+			addresses = append(addresses, address)
+		}
+	}
+	return addresses
 }

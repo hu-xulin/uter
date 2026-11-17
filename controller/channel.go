@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	relaychannel "github.com/uter-ai/uter/relay/channel"
@@ -516,9 +518,9 @@ func GetChannelKey(c *gin.Context) {
 		"name": channel.Name,
 	})
 
-	// 返回渠道密钥
+	// 返回渠道密钥；插件凭证只显示摘要，绝不回显密钥。
 	common.ApiSuccessT(c, "Fetched successfully", map[string]any{
-		"key": channel.Key,
+		"key": jsplugin.RedactCredentialLines(channel.Key),
 	})
 }
 
@@ -527,6 +529,40 @@ func GetChannelKey(c *gin.Context) {
 const maxTaskExtendPluginKeys = 32
 
 // validateChannel 通用的渠道校验函数
+// checkPluginChannelKeys runs the checkKey of a task plugin channel's plugin
+// on the key lines an administrator typed in: those of key that storedKey
+// does not hold.
+func checkPluginChannelKeys(c *gin.Context, channel *model.Channel, key, storedKey string) error {
+	if channel == nil || channel.Type != constant.ChannelTypeTaskPlugin {
+		return nil
+	}
+	plugin, ok := jsplugin.DefaultRegistry.Get(channel.GetSetting().TaskPluginKey)
+	if !ok {
+		return nil
+	}
+	config := plugin.ChannelConfigFor(channel.GetOtherSettings().PluginConfig)
+	return service.CheckPluginKeys(c.Request.Context(), plugin, channel.GetBaseURL(), config, key, storedKey, i18n.StatedLang(c))
+}
+
+// normalizePluginConfig validates the plugin config in the channel's settings
+// and stores it as the schema reads it: declared properties only, defaults
+// left to the read.
+func normalizePluginConfig(channel *model.Channel, plugin *jsplugin.LoadedPlugin) error {
+	otherSettings := channel.GetOtherSettings()
+	config, err := plugin.ValidateChannelConfig(otherSettings.PluginConfig)
+	if err != nil {
+		return common.NewMessage("Invalid plugin config: {{error}}", map[string]any{"error": err.Error()})
+	}
+	if plugin.Meta.ChannelConfig == nil || string(config) == "{}" {
+		config = nil
+	}
+	if !bytes.Equal(config, otherSettings.PluginConfig) {
+		otherSettings.PluginConfig = config
+		channel.SetOtherSettings(otherSettings)
+	}
+	return nil
+}
+
 func validateChannel(channel *model.Channel, isAdd bool) error {
 	if channel == nil {
 		return fmt.Errorf("channel cannot be empty")
@@ -548,6 +584,9 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 		if !ok {
 			return fmt.Errorf("task plugin %q is not registered", pluginKey)
 		}
+		if !plugin.Engine.HasExport("buildSubmitRequest") && !plugin.Meta.HasProviderPart() {
+			return common.NewMessage("Plugin {{plugin}} only processes requests and cannot be a channel type", map[string]any{"plugin": pluginKey})
+		}
 		if channel.BaseURL == nil || strings.TrimSpace(*channel.BaseURL) == "" {
 			// The plugin default is persisted onto the channel instead of being
 			// resolved per request, so the destination host stays an auditable
@@ -557,6 +596,9 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 			}
 			defaultBaseURL := plugin.Meta.BaseURL
 			channel.BaseURL = &defaultBaseURL
+		}
+		if err := normalizePluginConfig(channel, plugin); err != nil {
+			return err
 		}
 	}
 
@@ -608,7 +650,10 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 
 	// 如果是添加操作，检查 channel 和 key 是否为空
 	if isAdd {
-		if channel.Key == "" {
+		// A channel of a plugin that logs in may start without a key and wait
+		// for a login; batch mode makes one channel per key, so it still
+		// needs keys.
+		if channel.Key == "" && !service.ChannelSupportsPluginLogin(channel) {
 			return fmt.Errorf("channel cannot be empty")
 		}
 
@@ -756,6 +801,16 @@ func AddChannel(c *gin.Context) {
 	// 使用统一的校验函数
 	if err := validateChannel(addChannelRequest.Channel, true); err != nil {
 		common.ApiError(c, err)
+		return
+	}
+	if err := checkPluginChannelKeys(c, addChannelRequest.Channel, addChannelRequest.Channel.Key, ""); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if strings.TrimSpace(addChannelRequest.Channel.Key) == "" &&
+		service.ChannelSupportsPluginLogin(addChannelRequest.Channel) &&
+		addChannelRequest.Mode == "batch" {
+		common.ApiError(c, fmt.Errorf("channel cannot be empty"))
 		return
 	}
 
@@ -1109,6 +1164,33 @@ func UpdateChannel(c *gin.Context) {
 	if err != nil {
 		common.ApiError(c, err)
 		return
+	}
+	keptType := channel.Type
+	if keptType == 0 {
+		keptType = originChannel.Type
+	}
+	if keptType == constant.ChannelTypeTaskPlugin {
+		checked := channel.Channel
+		checked.Type = keptType
+		if checked.OtherSettings == "" {
+			checked.OtherSettings = originChannel.OtherSettings
+		}
+		if checked.BaseURL == nil {
+			checked.BaseURL = originChannel.BaseURL
+		}
+		if strings.TrimSpace(checked.GetSetting().TaskPluginKey) == "" {
+			settings := checked.GetSetting()
+			settings.TaskPluginKey = originChannel.GetSetting().TaskPluginKey
+			checked.SetSetting(settings)
+		}
+		newKey := channel.Key
+		if newKey == "" {
+			newKey = originChannel.Key
+		}
+		if err := checkPluginChannelKeys(c, &checked, newKey, originChannel.Key); err != nil {
+			common.ApiError(c, err)
+			return
+		}
 	}
 	// Do not trust the request's Type field for authorization: partial updates
 	// may omit it, while GORM ignores zero-valued fields and keeps the stored

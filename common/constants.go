@@ -135,6 +135,7 @@ var LinuxDOMinimumTrustLevel = 0
 // 微信开放平台「网站应用」登录（PC 网页扫码登录）：走标准 OAuth2 授权码流程，
 // uter 直连微信。身份用网站应用 openid（或开放平台 unionid）标识。
 var WeChatWebAuthEnabled = false
+
 var WeChatWebAppId = ""
 var WeChatWebAppSecret = ""
 

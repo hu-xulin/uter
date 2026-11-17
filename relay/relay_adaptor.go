@@ -34,6 +34,7 @@ import (
 	"github.com/uter-ai/uter/relay/channel/openai"
 	"github.com/uter-ai/uter/relay/channel/palm"
 	"github.com/uter-ai/uter/relay/channel/perplexity"
+	"github.com/uter-ai/uter/relay/channel/providerplugin"
 	"github.com/uter-ai/uter/relay/channel/replicate"
 	"github.com/uter-ai/uter/relay/channel/siliconflow"
 	"github.com/uter-ai/uter/relay/channel/sub2api"
@@ -122,6 +123,8 @@ func GetAdaptor(apiType int) channel.Adaptor {
 		return &advancedcustom.Adaptor{}
 	case constant.APITypeSub2API:
 		return &sub2api.Adaptor{}
+	case constant.APITypeProviderPlugin:
+		return &providerplugin.Adaptor{}
 	case constant.APITypeUter:
 		return &Uter.Adaptor{}
 	case constant.APITypeAIProxyLibrary:

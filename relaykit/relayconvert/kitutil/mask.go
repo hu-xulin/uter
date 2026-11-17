@@ -1,6 +1,7 @@
 package kitutil
 
 import (
+	"fmt"
 	"net/url"
 	"regexp"
 	"strings"
@@ -62,7 +63,27 @@ func maskHostForPlainDomain(domain string) string {
 // openai.com -> ***.com
 // www.openai.com -> ***.***.com
 // api.openai.com -> ***.***.com
-func MaskSensitiveInfo(str string) string {
+// ruleCodePattern protects policy rule codes quoted as "code: x.y": they name
+// a rule, not a host, and users need them to understand a rejection.
+var ruleCodePattern = regexp.MustCompile(`(code: )([A-Za-z0-9_.-]+)`)
+
+func MaskSensitiveInfo(str string, addresses ...string) string {
+	// The upstream addresses of the selected channel go first, whether or not
+	// they look like a URL: they are the addresses the request actually used.
+	for _, address := range addresses {
+		address = strings.TrimSpace(address)
+		if address != "" {
+			str = strings.ReplaceAll(str, address, "[upstream]")
+		}
+	}
+	protected := map[string]string{}
+	str = ruleCodePattern.ReplaceAllStringFunc(str, func(match string) string {
+		parts := ruleCodePattern.FindStringSubmatch(match)
+		placeholder := fmt.Sprintf("%%rule-code-%d%%", len(protected))
+		protected[placeholder] = parts[2]
+		return parts[1] + placeholder
+	})
+
 	// Mask URLs
 	str = maskURLPattern.ReplaceAllStringFunc(str, func(urlStr string) string {
 		u, err := url.Parse(urlStr)
@@ -128,5 +149,8 @@ func MaskSensitiveInfo(str string) string {
 	// the example is an explicit placeholder, never a real Google API key.
 	str = maskApiKeyPattern.ReplaceAllString(str, "${1}api_key:***${3}")
 
+	for placeholder, code := range protected {
+		str = strings.ReplaceAll(str, placeholder, code)
+	}
 	return str
 }

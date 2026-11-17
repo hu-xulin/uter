@@ -52,6 +52,7 @@ const maxAdvancedCustomBalanceResponseBytes = 256 << 10
 type channelBalanceResult struct {
 	Balance     float64
 	RawResponse string
+	Detail      *model.ChannelBalanceDetail
 }
 
 type OpenAIUsageResponse struct {
@@ -723,7 +724,28 @@ func UpdateChannelBalance(c *gin.Context) {
 		return
 	}
 	if channel.Type == constant.ChannelTypeTaskPlugin {
-		c.JSON(http.StatusOK, gin.H{"success": false, "message": "Task Plugin channels do not support balance queries"})
+		plugin, ok := service.PluginOfChannel(channel)
+		if !ok || !pluginReportsBalance(plugin) {
+			common.ApiErrorT(c, "The plugin of this channel does not report a balance")
+			return
+		}
+		_, detail, err := updatePluginChannelBalance(channel, plugin, false)
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		balance := channel.Balance
+		if detail != nil {
+			if usd, ok := usdBalance(detail.BalanceResult); ok {
+				balance = usd
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"success":        true,
+			"message":        "",
+			"balance":        balance,
+			"balance_detail": detail,
+		})
 		return
 	}
 	if channel.ChannelInfo.IsMultiKey {
@@ -741,6 +763,7 @@ func UpdateChannelBalance(c *gin.Context) {
 	}
 	if result.RawResponse == "" {
 		response["balance"] = result.Balance
+		response["balance_detail"] = result.Detail
 	} else {
 		response["raw_response"] = result.RawResponse
 	}
@@ -754,6 +777,13 @@ func updateAllChannelsBalance() error {
 	}
 	for _, channel := range channels {
 		if channel.Status != common.ChannelStatusEnabled {
+			continue
+		}
+		// A task plugin channel with balance hooks queries each key line and
+		// disables what has none left.
+		if channel.Type == constant.ChannelTypeTaskPlugin {
+			updateBalanceInRun(channel)
+			time.Sleep(common.RequestInterval)
 			continue
 		}
 		if channel.ChannelInfo.IsMultiKey {

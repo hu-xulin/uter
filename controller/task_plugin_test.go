@@ -424,6 +424,18 @@ func TestListTaskPluginsIncludesFactoryWithoutDatabaseRows(t *testing.T) {
 	assert.NotEmpty(t, factoryItem.SourceHash)
 }
 
+func TestListTaskPluginsFlagsRequestProcessingPlugins(t *testing.T) {
+	setupTaskPluginControllerTest(t)
+
+	request := listTaskPluginItem(t, "request-filter")
+	assert.True(t, request.Transform)
+	assert.ElementsMatch(t, []string{"ingress", "egress", "reply"}, request.TransformHooks)
+
+	task := listTaskPluginItem(t, "kling")
+	assert.False(t, task.Transform)
+	assert.Empty(t, task.TransformHooks)
+}
+
 func TestMasterSwitchEmptiesOptionsAndKeepsList(t *testing.T) {
 	setupTaskPluginControllerTest(t)
 	originalEnabled := constant.TaskPluginEnabled

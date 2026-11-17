@@ -20,6 +20,7 @@ import (
 	"github.com/uter-ai/uter/relay/channel/advancedcustom"
 	"github.com/uter-ai/uter/relay/channel/gemini"
 	"github.com/uter-ai/uter/relay/channel/ollama"
+	"github.com/uter-ai/uter/relay/channel/providerplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/dto"
@@ -367,6 +368,9 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		plugin, ok := jsplugin.DefaultRegistry.Get(channel.GetSetting().TaskPluginKey)
 		if !ok {
 			return nil, fmt.Errorf("task plugin %q is not registered", channel.GetSetting().TaskPluginKey)
+		}
+		if _, ok := plugin.Meta.ModelListRoute(); ok {
+			return fetchProviderPluginUpstreamModelIDs(channel, plugin)
 		}
 		return normalizeModelNames(plugin.Meta.Models), nil
 	}
@@ -1162,4 +1166,58 @@ func DetectAllChannelUpstreamModelUpdates(c *gin.Context) {
 			"status":  task.Status,
 		},
 	})
+}
+
+// pluginKeyIndex is the index of the key line key among the channel's keys,
+// 0 when it is not one of them.
+func pluginKeyIndex(channel *model.Channel, key string) int {
+	for index, line := range channel.GetKeys() {
+		if line == key {
+			return index
+		}
+	}
+	return 0
+}
+
+// fetchProviderPluginUpstreamModelIDs lists the models of a channel through
+// its plugin's /v1/models relay route, as on an Advanced Custom channel. A
+// route with the plugin converter answers in the vendor's format and
+// convertResponse turns the reply into an OpenAI model list, chaining more
+// pages when the vendor pages it.
+func fetchProviderPluginUpstreamModelIDs(channel *model.Channel, plugin *jsplugin.LoadedPlugin) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	key, err := service.PluginModelListKey(ctx, channel, plugin)
+	if err != nil {
+		return nil, err
+	}
+	settings := channel.GetOtherSettings()
+	settings.AdvancedCustom = plugin.Meta.ChannelRelayConfig(plugin.ChannelConfigFor(settings.PluginConfig))
+	info := &relaycommon.RelayInfo{
+		RelayFormat:    types.RelayFormatOpenAI,
+		RelayMode:      relayconstant.RelayModeUnknown,
+		RequestURLPath: dto.AdvancedCustomModelListPath,
+		ChannelMeta: &relaycommon.ChannelMeta{
+			ChannelType:          channel.Type,
+			ChannelId:            channel.Id,
+			ChannelIsMultiKey:    channel.ChannelInfo.IsMultiKey,
+			ChannelMultiKeyIndex: pluginKeyIndex(channel, key),
+			ChannelBaseUrl:       channel.GetBaseURL(),
+			ApiKey:               key,
+			ChannelSetting:       channel.GetSetting(),
+			ChannelOtherSettings: settings,
+		},
+	}
+	body, err := providerplugin.FetchModelList(ctx, plugin, info, providerplugin.ManagementClient{
+		Override: func(headers http.Header, apiKey string) error {
+			return applyFetchModelsHeaderOverrides(channel, apiKey, headers)
+		},
+		Send: func(request *http.Request) (*http.Response, error) {
+			return sendChannelRequest(channel, request)
+		},
+	})
+	if err != nil {
+		return nil, sanitizeFetchModelsError(err, key)
+	}
+	return parseOpenAIModelIDs(body)
 }

@@ -57,9 +57,9 @@ import (
 //	默认组售价 C = 官方基准价 × r            （页面显示的折后价）
 //	折扣徽标 -N% = 1 - r                     （r=0.6 → -40%）
 //
-// uter 目标价（业务规则）：在创梦默认组售价基础上「+1 折」——
-// 创梦打 r 折，uter 打 (r+step) 折，step 默认 0.1。
-// 例：创梦 claude-opus-4-5 -40%（6 折）→ uter 7 折，即官方价的 0.7 倍。
+// uter 目标价（业务规则）：在创梦默认组售价基础上「+0.5 折」——
+// 创梦打 r 折，uter 打 (r+step) 折，step 默认 0.05（5 个百分点）。
+// 例：创梦 claude-opus-4-5 -40%（6 折）→ uter 6.5 折，即官方价的 0.65 倍。
 //
 //	uter = C × (1 + step/r) = 官方基准价 × (r + step)
 //
@@ -126,12 +126,12 @@ const (
 	// 🔴 同步频率已固定为每 10 分钟一次（2026-10-30），原「每天几点」配置
 	// DreamRouterSyncHour 废弃：不再读取，库中残留值无害。
 	// 价格规则：方向（increase=加价 / decrease=降价）与幅度（折数，0-1）。
-	// 缺省 increase + 0.1，与历史 DreamRouterSyncStep=0.1 行为一致。
+	// 缺省 increase + 0.05（在创梦折扣基础上加 5 个百分点）。
 	dreamRouterSyncRuleDirectionKey = "DreamRouterSyncRuleDirection"
 	dreamRouterSyncRuleAmountKey    = "DreamRouterSyncRuleAmount"
 
 	dreamRouterDefaultChannelID = 20
-	dreamRouterDefaultStep      = 0.1
+	dreamRouterDefaultStep      = 0.05
 	dreamRouterHTTPTimeout      = 30 * time.Second
 )
 

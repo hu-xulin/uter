@@ -10,6 +10,7 @@ import (
 	"maps"
 	"net/http"
 	"net/url"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -121,7 +122,7 @@ func UploadTaskPlugin(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, taskPluginDetail{Plugin: &plugin, Meta: loaded.Meta, Source: string(plugin.Source), Layer: "override", HasIcon: plugin.HasIcon()})
+	common.ApiSuccess(c, taskPluginDetail{Plugin: &plugin, Meta: loaded.Meta, Source: string(plugin.Source), Layer: "override", HasIcon: plugin.HasIcon(), PricingIssues: taskPluginPricingIssues(plugin.Key), taskPluginParts: loadedTaskPluginParts(loaded)})
 }
 
 func GetTaskPluginVersions(c *gin.Context) {
@@ -146,6 +147,10 @@ type taskPluginListItem struct {
 	FactoryMeta   *jsplugin.Meta `json:"factory_meta,omitempty"`
 	ChannelCount  int            `json:"channel_count"`
 	InFlightCount int64          `json:"in_flight_count"`
+	// Transform marks a request processing plugin, which declares no task
+	// platform or routes; TransformHooks lists the stages it runs.
+	Transform      bool     `json:"transform"`
+	TransformHooks []string `json:"transform_hooks,omitempty"`
 }
 
 type taskPluginRebuildOutcome struct {
@@ -259,6 +264,10 @@ func ListTaskPlugins(c *gin.Context) {
 			item.ChannelCount = len(channels)
 			item.InFlightCount = inFlight
 		}
+		item.Transform = item.Meta.HasTransformPart()
+		if item.Transform {
+			item.TransformHooks = append([]string{}, item.Meta.TransformHooks()...)
+		}
 		items = append(items, item)
 	}
 	sort.Slice(items, func(i, j int) bool {
@@ -315,12 +324,58 @@ func GetTaskPluginRuntime(c *gin.Context) {
 	common.ApiSuccess(c, status)
 }
 
+type taskPluginParts struct {
+	Task           bool     `json:"task"`
+	Provider       bool     `json:"provider"`
+	Transform      bool     `json:"transform"`
+	TransformHooks []string `json:"transform_hooks"`
+	Login          bool     `json:"login"`
+	Refresh        bool     `json:"refresh"`
+}
+
+// loadedTaskPluginParts reads the parts of a plugin the runtime holds from its
+// manifest and its exports.
+func loadedTaskPluginParts(plugin *jsplugin.LoadedPlugin) taskPluginParts {
+	return taskPluginParts{
+		Task:           plugin.Meta.HasTaskPart(),
+		Provider:       plugin.Meta.HasProviderPart(),
+		Transform:      plugin.Meta.HasTransformPart(),
+		TransformHooks: append([]string{}, plugin.TransformHooks()...),
+		Login:          plugin.HasProviderHook("login"),
+		Refresh:        plugin.HasProviderHook("refresh"),
+	}
+}
+
+// relayPaths lists the distinct client paths a plugin's relay routes serve.
+func relayPaths(meta jsplugin.Meta) []string {
+	paths := make([]string, 0, len(meta.Relay))
+	for _, route := range meta.Relay {
+		if path := strings.TrimSpace(route.IncomingPath); !slices.Contains(paths, path) {
+			paths = append(paths, path)
+		}
+	}
+	return paths
+}
+
+// taskPluginPricingIssues lists the pricing problems of the models a plugin
+// declares.
+func taskPluginPricingIssues(key string) []model.ModelPricingIssue {
+	issues, err := model.GetModelPricingIssues(key)
+	if err != nil {
+		return nil
+	}
+	return issues
+}
+
 type taskPluginDetail struct {
 	Plugin  *model.TaskPlugin `json:"plugin,omitempty"`
 	Meta    jsplugin.Meta     `json:"meta"`
 	Source  string            `json:"source"`
 	Layer   string            `json:"layer"`
 	HasIcon bool              `json:"has_icon"`
+	// PricingIssues is set when the requested version is the serving one.
+	PricingIssues []model.ModelPricingIssue `json:"pricing_issues,omitempty"`
+	taskPluginParts
 }
 
 // GetTaskPluginIcon serves a plugin logo as an image. The active override wins
@@ -365,7 +420,11 @@ func GetTaskPlugin(c *gin.Context) {
 			taskPluginCompileError(c, compileErr)
 			return
 		}
-		common.ApiSuccess(c, taskPluginDetail{Plugin: plugin, Meta: loaded.Meta, Source: string(plugin.Source), Layer: "override", HasIcon: plugin.HasIcon()})
+		detail := taskPluginDetail{Plugin: plugin, Meta: loaded.Meta, Source: string(plugin.Source), Layer: "override", HasIcon: plugin.HasIcon(), taskPluginParts: loadedTaskPluginParts(loaded)}
+		if version == "" {
+			detail.PricingIssues = taskPluginPricingIssues(plugin.Key)
+		}
+		common.ApiSuccess(c, detail)
 		return
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) || version != "" {
@@ -383,7 +442,7 @@ func GetTaskPlugin(c *gin.Context) {
 		return
 	}
 	_, _, hasIcon := plugins.Icon(key)
-	common.ApiSuccess(c, taskPluginDetail{Meta: loaded.Meta, Source: source, Layer: "factory", HasIcon: hasIcon})
+	common.ApiSuccess(c, taskPluginDetail{Meta: loaded.Meta, Source: source, Layer: "factory", HasIcon: hasIcon, PricingIssues: taskPluginPricingIssues(key), taskPluginParts: loadedTaskPluginParts(loaded)})
 }
 
 type taskPluginDryRunRequest struct {
@@ -601,7 +660,7 @@ func SetTaskPluginStatus(c *gin.Context) {
 			return
 		}
 		if !hasActiveOverride {
-			common.ApiSuccess(c, gin.H{"plugin_enabled": *request.Enabled, "disabled_channels": disabledChannels, "unbound_channels": unboundChannels})
+			common.ApiSuccess(c, gin.H{"plugin_enabled": *request.Enabled, "disabled_channels": disabledChannels, "unbound_channels": unboundChannels, "pricing_issues": taskPluginPricingIssues(c.Param("key"))})
 			return
 		}
 	}
@@ -613,7 +672,7 @@ func SetTaskPluginStatus(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, gin.H{"plugin_enabled": *request.Enabled, "disabled_channels": disabledChannels, "unbound_channels": unboundChannels})
+	common.ApiSuccess(c, gin.H{"plugin_enabled": *request.Enabled, "disabled_channels": disabledChannels, "unbound_channels": unboundChannels, "pricing_issues": taskPluginPricingIssues(c.Param("key"))})
 }
 
 func taskPluginHasFactory(key string) bool {
@@ -871,9 +930,11 @@ func GetTaskPluginOptions(c *gin.Context) {
 			if layer == 1 && setting.IsTaskPluginFactoryDisabled(meta.Key) {
 				continue
 			}
-			if _, ok := jsplugin.DefaultRegistry.Get(meta.Key); !ok {
+			loaded, ok := jsplugin.DefaultRegistry.Get(meta.Key)
+			if !ok {
 				continue
 			}
+			parts := loadedTaskPluginParts(loaded)
 			seen[meta.Key] = true
 			hasIcon := false
 			if layer == 0 {
@@ -884,19 +945,36 @@ func GetTaskPluginOptions(c *gin.Context) {
 				_, _, hasIcon = plugins.Icon(meta.Key)
 			}
 			options = append(options, gin.H{
-				"key":           meta.Key,
-				"name":          meta.Name,
-				"description":   meta.Description,
-				"icon":          meta.Icon,
-				"hasIcon":       hasIcon,
-				"baseUrl":       meta.BaseURL,
-				"sortPriority":  meta.SortPriority,
-				"website":       meta.Website,
-				"models":        meta.Models,
-				"channelTypes":  meta.ChannelTypes,
-				"upstreams":     meta.Upstreams,
-				"usageSchema":   meta.UsageSchema,
-				"usageProfiles": meta.UsageProfiles,
+				"key":                meta.Key,
+				"name":               meta.Name,
+				"description":        meta.Description,
+				"icon":               meta.Icon,
+				"hasIcon":            hasIcon,
+				"baseUrl":            meta.BaseURL,
+				"sortPriority":       meta.SortPriority,
+				"website":            meta.Website,
+				"models":             meta.Models,
+				"channelTypes":       meta.ChannelTypes,
+				"upstreams":          meta.Upstreams,
+				"configSchema":       meta.ConfigSchemaJSON(),
+				"channelConfig":      meta.ChannelConfigSchemaJSON(),
+				"keyHint":            meta.KeyHint,
+				"usageSchema":        meta.UsageSchema,
+				"usageProfiles":      meta.UsageProfiles,
+				"samples":            meta.Samples,
+				"optional":           meta.Optional,
+				"scope":              meta.Scope,
+				"task":               parts.Task,
+				"provider":           parts.Provider,
+				"transform":          parts.Transform,
+				"transform_hooks":    parts.TransformHooks,
+				"login":              parts.Login,
+				"refresh":            parts.Refresh,
+				"checkKey":           loaded.HasProviderHook("checkKey"),
+				"balance":            loaded.HasProviderHook("buildBalanceRequest") && loaded.HasProviderHook("parseBalance"),
+				"relayPaths":         relayPaths(loaded.Meta),
+				"responsesWebsocket": loaded.Meta.ServesResponsesWebSocket(""),
+				"name_i18n":          meta.NameI18n,
 			})
 		}
 	}

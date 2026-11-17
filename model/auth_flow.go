@@ -20,6 +20,7 @@ const (
 	AuthFlowPurposeLoginVerification = "login_verification"
 	AuthFlowPurposeLoginPasskey      = "login_passkey"
 	AuthFlowPurposePasskeyLogin      = "passkey_login"
+	AuthFlowPurposePluginLogin       = "plugin_login"
 	AuthFlowPurposePasskeyRegister   = "passkey_register"
 	AuthFlowPurposePasskeyStepUp     = "passkey_step_up"
 	AuthFlowPurposeTelegramBind      = "telegram_bind"
@@ -283,6 +284,23 @@ func ConsumeAuthFlowWithAction(token string, match AuthFlowMatch, action func(tx
 		return nil, err
 	}
 	return &consumed, nil
+}
+
+// UpdateAuthFlowPayload replaces the payload of an unconsumed, unexpired flow
+// only while it still holds expected, so of two concurrent submits of one
+// step exactly one proceeds. It reports whether this call made the change;
+// payload must differ from expected.
+func UpdateAuthFlowPayload(token string, match AuthFlowMatch, expected, payload string) (bool, error) {
+	if token == "" || match.Purpose == "" {
+		return false, ErrAuthFlowInvalid
+	}
+	result := applyAuthFlowMatch(DB.Model(&AuthFlow{}), token, match).
+		Where("consumed_at IS NULL AND expires_at > ? AND payload = ?", time.Now(), expected).
+		Update("payload", payload)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return result.RowsAffected == 1, nil
 }
 
 func DeleteExpiredAuthFlows(now time.Time) error {

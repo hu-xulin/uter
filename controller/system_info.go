@@ -7,6 +7,7 @@ import (
 	"github.com/uter-ai/uter/common"
 
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,6 +30,18 @@ func ListSystemInstances(c *gin.Context) {
 		"message": "",
 		"data":    responses,
 	})
+}
+
+// GetNodeSync reports whether each node runs the latest revision of every
+// sync topic, so the console can show that a change reached every node.
+func GetNodeSync(c *gin.Context) {
+	status, err := service.GetNodeSyncStatus()
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+
+	common.ApiSuccess(c, status)
 }
 
 func DeleteStaleSystemInstances(c *gin.Context) {

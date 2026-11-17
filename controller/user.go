@@ -762,6 +762,34 @@ func calculateUserPermissions(userRole int) map[string]any {
 	return permissions
 }
 
+// usableGroupNames 把「用户可用分组」映射成列表，供按渠道查询时限定范围。
+func usableGroupNames(groups map[string]string) []string {
+	names := make([]string, 0, len(groups))
+	for group := range groups {
+		names = append(names, group)
+	}
+	return names
+}
+
+// GetUserChannels 返回当前用户可用分组内、启用渠道的展示名（管理-渠道的 name）。
+func GetUserChannels(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		id = c.GetInt("id")
+	}
+	user, err := model.GetUserCache(id)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	groups := service.GetUserUsableGroups(user.Group)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    model.GetEnabledChannelNamesForGroups(usableGroupNames(groups)),
+	})
+}
+
 func GetUserModels(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -773,6 +801,16 @@ func GetUserModels(c *gin.Context) {
 		return
 	}
 	groups := service.GetUserUsableGroups(user.Group)
+	// 游乐场按渠道列举模型：只在该用户可用分组内、由该启用渠道提供的模型，
+	// 避免借渠道名探测其它分组的目录。
+	if channel := strings.TrimSpace(c.Query("channel")); channel != "" {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "",
+			"data":    model.GetChannelEnabledModels(channel, usableGroupNames(groups)),
+		})
+		return
+	}
 	group := c.Query("group")
 	var groupsToQuery []string
 	switch {

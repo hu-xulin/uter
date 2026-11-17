@@ -125,10 +125,10 @@ func TestLoadDreamRouterSyncConfigRuleAndSchedule(t *testing.T) {
 	common.OptionMap = map[string]string{}
 	t.Cleanup(func() { common.OptionMap = previous })
 
-	// 默认值：加价 0.1 折、创梦渠道。
+	// 默认值：加价 0.05 折（5 个百分点）、创梦渠道。
 	cfg := LoadDreamRouterSyncConfig()
 	assert.Equal(t, DreamRouterRuleDirectionIncrease, cfg.RuleDirection)
-	assert.Equal(t, 0.1, cfg.RuleAmount)
+	assert.Equal(t, 0.05, cfg.RuleAmount)
 	assert.Equal(t, DreamRouterProviderDreamRouter, cfg.Provider)
 
 	// 历史部署只有 step=0.1：规则沿用为「加价 0.1 折」，价格不变。
@@ -148,6 +148,6 @@ func TestLoadDreamRouterSyncConfigRuleAndSchedule(t *testing.T) {
 	common.OptionMap[dreamRouterSyncRuleAmountKey] = "5"
 	common.OptionMap[dreamRouterSyncRuleDirectionKey] = "sideways"
 	cfg = LoadDreamRouterSyncConfig()
-	assert.Equal(t, 0.1, cfg.RuleAmount, "非法幅度应回退默认")
+	assert.Equal(t, 0.05, cfg.RuleAmount, "非法幅度应回退默认")
 	assert.Equal(t, DreamRouterRuleDirectionIncrease, cfg.RuleDirection, "非法方向应回退默认")
 }

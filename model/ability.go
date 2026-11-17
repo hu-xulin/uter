@@ -1,6 +1,7 @@
 package model
 
 import (
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -27,16 +28,67 @@ type Ability struct {
 type AbilityWithChannel struct {
 	Ability
 	ChannelType int `json:"channel_type"`
+	// ChannelName 是渠道的展示名（管理-渠道里的 name），定价页按渠道筛选用。
+	// 空名渠道不参与筛选，调用方据此跳过。
+	ChannelName string `json:"channel_name"`
+	// ChannelStatus 是渠道当前状态；能力行可能短暂残留于已禁用渠道，
+	// 定价页的渠道列表只认启用渠道。
+	ChannelStatus int `json:"channel_status"`
 }
 
 func GetAllEnableAbilityWithChannels() ([]AbilityWithChannel, error) {
 	var abilities []AbilityWithChannel
 	err := DB.Table("abilities").
-		Select("abilities.*, channels.type as channel_type").
+		Select("abilities.*, channels.type as channel_type, channels.name as channel_name, channels.status as channel_status").
 		Joins("left join channels on abilities.channel_id = channels.id").
 		Where("abilities.enabled = ?", true).
 		Scan(&abilities).Error
 	return abilities, err
+}
+
+// GetEnabledChannelNamesForGroups 返回在给定分组内可用、且处于启用状态的
+// 渠道展示名（去重后按名称排序）。空名渠道不会出现在结果里。
+func GetEnabledChannelNamesForGroups(groups []string) []string {
+	if len(groups) == 0 {
+		return []string{}
+	}
+	names := make([]string, 0)
+	err := DB.Table("abilities").
+		Distinct("channels.name").
+		Joins("join channels on abilities.channel_id = channels.id").
+		Where("abilities.enabled = ?", true).
+		Where("channels.status = ?", common.ChannelStatusEnabled).
+		Where("channels.name <> ''").
+		Where("abilities."+commonGroupCol+" IN ?", groups).
+		Pluck("channels.name", &names).Error
+	if err != nil {
+		common.SysError(common.LogText("list user channels error: %v", err))
+		return []string{}
+	}
+	slices.Sort(names)
+	return names
+}
+
+// GetChannelEnabledModels 返回某个渠道在给定分组内提供的模型（去重排序）。
+func GetChannelEnabledModels(channelName string, groups []string) []string {
+	if channelName == "" || len(groups) == 0 {
+		return []string{}
+	}
+	models := make([]string, 0)
+	err := DB.Table("abilities").
+		Distinct("abilities.model").
+		Joins("join channels on abilities.channel_id = channels.id").
+		Where("abilities.enabled = ?", true).
+		Where("channels.status = ?", common.ChannelStatusEnabled).
+		Where("channels.name = ?", channelName).
+		Where("abilities."+commonGroupCol+" IN ?", groups).
+		Pluck("abilities.model", &models).Error
+	if err != nil {
+		common.SysError(common.LogText("list channel models error: %v", err))
+		return []string{}
+	}
+	slices.Sort(models)
+	return models
 }
 
 func GetGroupEnabledModels(group string) []string {

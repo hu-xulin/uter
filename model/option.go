@@ -13,6 +13,7 @@ import (
 	"github.com/uter-ai/uter/setting/config"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/performance_setting"
+	"github.com/uter-ai/uter/setting/pricing_engine"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/uter-ai/uter/setting/system_setting"
 	"gorm.io/gorm"
@@ -47,6 +48,7 @@ func InitOptionMap() {
 	common.OptionMap["LinuxDOOAuthEnabled"] = strconv.FormatBool(common.LinuxDOOAuthEnabled)
 	common.OptionMap["TelegramOAuthEnabled"] = strconv.FormatBool(common.TelegramOAuthEnabled)
 	common.OptionMap["WeChatWebAuthEnabled"] = strconv.FormatBool(common.WeChatWebAuthEnabled)
+	common.OptionMap["PricingEngine"] = pricing_engine.Global()
 	common.OptionMap["WeChatWebAppId"] = common.WeChatWebAppId
 	common.OptionMap["WeChatWebAppSecret"] = common.WeChatWebAppSecret
 	common.OptionMap["WeChatWebCallbackDomain"] = common.WeChatWebCallbackDomain
@@ -516,6 +518,8 @@ func updateOptionMap(key string, value string) (err error) {
 			common.GitHubOAuthEnabled = boolValue
 		case "LinuxDOOAuthEnabled":
 			common.LinuxDOOAuthEnabled = boolValue
+		case "PricingEngine":
+			pricing_engine.SetGlobal(value)
 		case "WeChatWebAuthEnabled":
 			common.WeChatWebAuthEnabled = boolValue
 		case "WeChatWebUseUnionId":

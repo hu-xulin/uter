@@ -181,6 +181,40 @@ func TestDreamRouterRuleFactor(t *testing.T) {
 	}
 }
 
+func TestDreamRouterDefaultStepIsFivePoints(t *testing.T) {
+	if !nearlyEqualSync(dreamRouterDefaultStep, 0.05) {
+		t.Fatalf("default step = %v, want 0.05（在创梦折扣上加 5 个百分点）", dreamRouterDefaultStep)
+	}
+}
+
+// TestDreamRouterComputeTargetFivePointRule 锁定需求示例：
+// claude-fable-5 官方 $10/$50，创梦 6 折（$6/$30）→ uter 6.5 折（$6.5/$32.5）。
+func TestDreamRouterComputeTargetFivePointRule(t *testing.T) {
+	rec := dreamRouterRecord{
+		ModelName:        "claude-fable-5",
+		QuotaType:        0,
+		ModelRatio:       5,
+		CompletionRatio:  5,
+		CacheRatio:       0.1,
+		CreateCacheRatio: 1.25,
+		EnableGroups:     []string{"claude"},
+	}
+	factor := dreamRouterRuleFactor(0.6, dreamRouterDefaultStep, DreamRouterRuleDirectionIncrease)
+	if !nearlyEqualSync(factor, 0.65) {
+		t.Fatalf("factor = %v, want 0.65（0.6 + 0.05）", factor)
+	}
+	change := dreamRouterComputeTarget(rec, 0.6, factor)
+	if !nearlyEqualSync(change.NewModelRatio, 3.25) {
+		t.Errorf("NewModelRatio = %v, want 3.25（5 × 0.65）", change.NewModelRatio)
+	}
+	if !nearlyEqualSync(change.Official.Input, 10) {
+		t.Errorf("Official.Input = %v, want 10", change.Official.Input)
+	}
+	if !nearlyEqualSync(change.Upstream.Input, 6) {
+		t.Errorf("Upstream.Input = %v, want 6（10 × 0.6）", change.Upstream.Input)
+	}
+}
+
 // TestDreamRouterComputeTargetDecrease 锁定「降价」方向的实际算价结果。
 func TestDreamRouterComputeTargetDecrease(t *testing.T) {
 	// 与 TestDreamRouterComputeTargetPerToken 同一模型，但规则为降价 0.1 折：
