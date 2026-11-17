@@ -459,7 +459,7 @@ const PROBES = {
       && overview.includes('TOKEN-MANIFEST.json')
       && exists(path.join(ROOT, 'docs/design-system/SHOWCASE-8.0.0.html'));
     const compatibilityBoundary = compatibilityAdr.includes('3.0 runtime compatibility boundary')
-      && compatibilityAdr.includes('explicitly authorizes')
+      && compatibilityAdr.includes('明确授权迁移')
       && runtimeCss.includes('--ds-') && typographyCss.includes('3.0');
     const acceptanceHonest = acceptance.includes('ACCEPTANCE_READY')
       && /accepted\s*=\s*false/i.test(acceptance);
