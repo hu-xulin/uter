@@ -68,7 +68,15 @@ UAP 不依赖 AES / UAES / `docs/ai-specs` / `uaes/standards`（该体系已于 
 运行时不读取任何外部治理平台的注册表、执行器或审批结果。
 `registryIntegrity()` 有一项专门检查：6 份配置中不得出现对已退役体系的运行时引用。
 
-## 6. 状态口径
+## 6. 当前设计系统与历史证据边界
+
+- 当前设计系统事实来源：`docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`、`TOKEN-MANIFEST.json`、`UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md` 与 `SHOWCASE-8.0.0.html`。
+- UDS 8.0.0 当前为 `ACCEPTANCE_READY`、`accepted=false`；不得将其表述为用户已接受。
+- UDS 3.0 runtime compatibility boundary 按 ADR-0002 保留，直到项目所有者明确授权迁移且当前 HEAD 绑定的消费者盘点、行为/视觉/兼容回归证据全部验证通过。
+- 已删除的 `UDS-8.0.0-MIGRATION-REPORT.md`、`COMPAT-MAP.json`、旧版 `FINAL-ACCEPTANCE-REPORT.md` 不得作为当前状态来源；缺失这些文件不构成兼容边界已退役的证据。
+- 任何历史 UAP 验收报告均不代表当前 HEAD。只有本次执行重新生成、包含唯一 requirement ID、精确证据引用、HEAD/工作树指纹和显式 BLOCKED/NOT_VERIFIED 项的报告才可用于当前验收。
+
+## 7. 状态口径
 
 `NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` /
 `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
