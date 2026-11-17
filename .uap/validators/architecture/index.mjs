@@ -210,7 +210,7 @@ export const validators = {
     const compatibilityBoundaryRecorded = !!compatibilityAdr
       && compatibilityAdr.status === 'Accepted'
       && compatibilityAdr.body.includes('3.0 runtime compatibility boundary')
-      && compatibilityAdr.body.includes('explicitly authorizes');
+      && compatibilityAdr.body.includes('明确授权迁移');
     const rTrace = {
       name: 'decision_traceability',
       ok: depTargetExists && adrRecordsValid && acceptedAdrEvidence
