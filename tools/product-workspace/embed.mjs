@@ -21,6 +21,13 @@ const PROTOTYPES = path.join(ROOT, 'docs', 'product', 'prototypes')
 
 function copyFile(from, to) {
   fs.mkdirSync(path.dirname(to), { recursive: true })
+  if (from.endsWith('.html')) {
+    // Generated prototype HTML carries padding-only lines; strip trailing
+    // whitespace so committed copies pass `git diff --check`.
+    const html = fs.readFileSync(from, 'utf8').replace(/[ \t]+$/gm, '')
+    fs.writeFileSync(to, html)
+    return
+  }
   fs.copyFileSync(from, to)
 }
 
