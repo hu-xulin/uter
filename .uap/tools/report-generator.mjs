@@ -506,15 +506,22 @@ export async function generateReports({ final = false } = {}) {
 
   // 13 — cross platform
   const platformDirs = ['web', 'electron', 'desktop', 'web/src/design-system', 'web/src/features/wallet', 'docs/design-system'];
-  const udsFiles = ['00-UTER-DESIGN-SYSTEM-OVERVIEW.md', 'TOKEN-MANIFEST.json', 'UDS-8.0.0-MIGRATION-REPORT.md', 'COMPAT-MAP.json', 'FINAL-ACCEPTANCE-REPORT.md'];
+  const udsFiles = [
+    '00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
+    'TOKEN-MANIFEST.json',
+    'UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md',
+    'SHOWCASE-8.0.0.html',
+  ];
   const udsMissing = udsFiles.filter((f) => !exists(rootPath('docs', 'design-system', f)));
   const udsManifest = readJSON(rootPath('docs', 'design-system', 'TOKEN-MANIFEST.json'), null);
-  const udsAcceptance = readText(rootPath('docs', 'design-system', 'FINAL-ACCEPTANCE-REPORT.md')) || '';
+  const udsAcceptance = exists(rootPath('docs', 'design-system', 'UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md'))
+    ? readText(rootPath('docs', 'design-system', 'UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md')) : '';
   const udsReady = udsMissing.length === 0 && udsManifest?.version === '8.0.0'
-    && udsManifest?.status === 'ACCEPTANCE_READY' && udsAcceptance.includes('accepted: false');
+    && udsManifest?.status === 'ACCEPTANCE_READY'
+    && udsAcceptance.includes('ACCEPTANCE_READY') && /accepted\\s*=\\s*false/i.test(udsAcceptance);
   write('CROSS-PLATFORM-REPORT.md', md('Cross-Platform Report', [
     ['平台目录探测', table(['路径', '存在', '文件数'], platformDirs.map((d) => [d, exists(rootPath(d)) ? 'YES' : 'NO', listFiles(rootPath(d)).length]))],
-    ['设计系统约束', `UDS 8.0.0 文档集：${udsReady ? 'PRESENT / ACCEPTANCE_READY / accepted=false' : `INCOMPLETE; missing=${udsMissing.join(',')}`}; UDS 8.0.0 --ds-* 运行时桥接与 3.0 兼容层退役边界按迁移证据核验；web/AGENTS.md：${exists(rootPath('web', 'AGENTS.md')) ? '存在' : '缺失'}。`],
+    ['设计系统约束', `UDS 8.0.0 文档集：${udsReady ? 'PRESENT / ACCEPTANCE_READY / accepted=false' : `INCOMPLETE; missing=${udsMissing.join(',')}`}; --ds-* bridge 由 TOKEN-MANIFEST 派生；UDS 3.0 runtime compatibility boundary 保留至项目所有者明确授权迁移且迁移证据验证完成，不以已删除的 COMPAT/MIGRATION 文件推断退役；web/AGENTS.md：${exists(rootPath('web', 'AGENTS.md')) ? '存在' : '缺失'}。`],
     ['结论', '仅报告真实探测到的目录与命令结果；未完成独立平台构建验证的部分不标记为 PASS。'],
   ]));
 
