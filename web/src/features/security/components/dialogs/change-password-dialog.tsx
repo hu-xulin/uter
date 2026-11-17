@@ -26,6 +26,7 @@ import { z } from 'zod'
 
 import { Dialog } from '@/components/dialog'
 import { PasswordInput } from '@/components/password-input'
+import { PasswordStrength } from '@/components/password-strength'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -220,9 +221,10 @@ export function ChangePasswordDialog(props: ChangePasswordDialogProps) {
                       disabled={security.pending}
                     />
                   </FormControl>
-                  <p className='text-muted-foreground text-sm'>
-                    {t('Use 8–128 characters.')}
-                  </p>
+                  <PasswordStrength
+                    value={form.watch('newPassword') ?? ''}
+                    className='mt-2'
+                  />
                   <FormMessage />
                 </FormItem>
               )}

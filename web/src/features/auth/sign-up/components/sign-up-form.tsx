@@ -25,6 +25,7 @@ import { toast } from 'sonner'
 import type { z } from 'zod'
 
 import { PasswordInput } from '@/components/password-input'
+import { PasswordStrength } from '@/components/password-strength'
 import { Turnstile } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
 import {
@@ -257,6 +258,7 @@ export function SignUpForm({
                   {...field}
                 />
               </FormControl>
+              <PasswordStrength value={passwordValue ?? ''} className='mt-2' />
               <FormMessage />
             </FormItem>
           )}
