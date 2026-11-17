@@ -8,6 +8,9 @@
     // SPA + TanStack Router entry chain: index.html -> src/main.tsx -> routeTree.gen.ts -> src/routes/**
     "index.html",
     "src/main.tsx",
+    // Product specification centre is a standalone public SPA loaded by its own HTML entry.
+    "public/product-spec/index.html",
+    "public/product-spec/app.js",
     // E2E suites are executables (playwright globalSetup includes e2e/visual/lib/service-gate.ts)
     "e2e/**/*.{ts,tsx}",
     // Repo maintenance scripts executed manually per docs (e.g.
@@ -29,6 +32,8 @@
     // loaded by URL at runtime; first line of every file declares
     // "Protocol capabilities, not prices." — never statically imported
     "public/plugins/**",
+    // Static stylesheet is linked from public/product-spec/index.html and is not a JS module.
+    "public/product-spec/styles.css",
     // Deliberately parked component; see src/routes/__root.tsx comment
     // ("components/navigation-progress 与 react-top-loading-bar 依赖原样保留")
     "src/components/navigation-progress.tsx",
