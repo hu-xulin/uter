@@ -96,7 +96,7 @@ Never fabricate PASS or FULLY_OPERATIONAL.
 
 This file intentionally preserves the repository's original binding conventions
 in full below. UAP does not replace `AGENTS.md` project conventions,
-`web/AGENTS.md`, `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`, `docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md`,
+`web/AGENTS.md`, `docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md`, `docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md`, `docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md`,
 `scripts/verify-all.sh` or `.github/workflows/ci.yml`. Where rules differ, the
 stricter rule wins.
 
