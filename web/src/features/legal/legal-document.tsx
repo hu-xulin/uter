@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
 import { FileWarning } from 'lucide-react'
-import { useEffect, useMemo, useState, type ComponentType } from 'react'
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
@@ -144,12 +144,25 @@ function BundledLegalDocument({
     }
   }, [loader])
 
+  const proseRef = useRef<HTMLDivElement>(null)
+
+  // 法务协议的首个表格只做「版本/字段对照」，表头不参与内容分区，
+  // 因此去掉 sunken 底色；后续表格仍沿用 PROSE_CLASSES 的表头底。
+  useEffect(() => {
+    const thead = proseRef.current?.querySelector('table thead')
+    if (!(thead instanceof HTMLElement)) return
+    thead.style.backgroundColor = 'transparent'
+    return () => {
+      thead.style.removeProperty('background-color')
+    }
+  }, [Doc, locale])
+
   return (
     <PublicLayout>
       <div className='mx-auto w-full max-w-3xl px-6 py-10'>
         {/* 每份法务 MDX 都以 `# 官方全称` 开头，它才是页面唯一 h1。
             曾经在外层再画一个 page-title，导致两个 36px 标题叠在一起。 */}
-        <div className={PROSE_CLASSES}>
+        <div className={PROSE_CLASSES} ref={proseRef}>
           {Doc ? (
             <Doc
               components={{
