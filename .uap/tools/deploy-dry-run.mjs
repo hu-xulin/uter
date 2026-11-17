@@ -89,7 +89,7 @@ async function main() {
   if (fs.existsSync(path.join(distDir, 'index.html'))) {
     manifest = manifestOf(distDir);
   }
-  const binary = path.join(ROOT, 'uter-bin');
+  const binary = process.env.UTER_RELEASE_BINARY || path.join(ROOT, 'uter-bin');
   const binaryHash = fs.existsSync(binary) ? sha256(fs.readFileSync(binary)) : null;
   const preflightOk = !!versionText && !!manifest && manifest.length > 100 && !!binaryHash;
   push('preflight_artifacts', preflightOk,
