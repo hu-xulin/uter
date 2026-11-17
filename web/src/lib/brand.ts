@@ -24,7 +24,7 @@ For commercial licensing, please contact support@uter.ai
  * `size-5` while the public header stayed at `size-7`).
  */
 export const BRAND_LOGO_BOX_CLASS =
-  'flex size-(--ds-icon-lg) shrink-0 items-center justify-center overflow-hidden rounded-lg'
+  'flex size-(--ds-icon-md) shrink-0 items-center justify-center overflow-hidden rounded-lg'
 
 /*
  * Localized brand name for the public site.

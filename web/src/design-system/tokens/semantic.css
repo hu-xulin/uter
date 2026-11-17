@@ -50,6 +50,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-body: var(--text-sm);
   --ds-text-body-sm: var(--text-sm);
   --ds-text-sm: var(--text-sm); /* 正文默认字号别名（14/22） */
+  --ds-text-xl: var(--text-xl); /* 次级标题别名（20/26） */
   /* 密集数据专用：13/20。表格单元格、二级导航、分页 —— 以扫读为主的
    * 密度场景才用它，普通说明文字仍是 14px（见阶梯注释）。 */
   --ds-text-dense: var(--text-dense);

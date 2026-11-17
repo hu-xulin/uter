@@ -62,7 +62,7 @@ describe('SystemBrand', () => {
     const box = logo.parentElement
     expect(box).not.toBeNull()
     expect(box?.className).toBe(BRAND_LOGO_BOX_CLASS)
-    expect(BRAND_LOGO_BOX_CLASS).toContain('size-(--ds-icon-lg)')
+    expect(BRAND_LOGO_BOX_CLASS).toContain('size-(--ds-icon-md)')
     expect(BRAND_LOGO_BOX_CLASS).not.toContain('size-5')
     expect(screen.getByText('Uter')).toBeInTheDocument()
   })
