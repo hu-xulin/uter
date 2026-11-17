@@ -29,6 +29,14 @@ type WebAssets struct {
 func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.HandlerFunc) {
 	frontendFS := common.EmbedFolder(assets.BuildFS, "web/dist")
 
+	// 产品规格中心：与 Uter 共用同一服务端，从内嵌构建树 /product-spec/ 提供。
+	// 仅管理员可访问（内部 PRD / 原型），写操作仍由本地工具承担。
+	productSpecFS := http.FileServer(frontendFS)
+	router.GET("/product-spec", middleware.AdminAuth(), func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/product-spec/")
+	})
+	router.GET("/product-spec/*filepath", middleware.AdminAuth(), gin.WrapH(productSpecFS))
+
 	router.Use(
 		middleware.RouteTag("web"),
 		// 全局 gzip 已统一收敛到 router/gzip.go 的 GzipMiddleware（在 SetRouter 中

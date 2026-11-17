@@ -21,7 +21,34 @@ const S = {
   toastTimer: null,
 };
 
+// Served by the standalone tool at `/`, or embedded under Uter at `/product-spec/`.
+// The embedded copy is a read-only projection of product-model.json: no server
+// process, no writes, and every link resolves inside the Uter origin.
+const EMBEDDED = location.pathname.startsWith('/product-spec')
+const BASE = EMBEDDED
+  ? location.pathname.replace(/[^/]*$/, '') || '/product-spec/'
+  : '/'
+
 async function api(path, opts = {}) {
+  const method = (opts.method || 'GET').toUpperCase();
+  if (EMBEDDED) {
+    if (method !== 'GET') {
+      throw new Error('内嵌视图为只读；编辑请使用本地产品规格中心（node tools/product-workspace/server.mjs）');
+    }
+    if (path.startsWith('/api/model')) {
+      const res = await fetch(`${BASE}model.json`, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`无法加载内嵌模型：HTTP ${res.status}`);
+      return res.json();
+    }
+    if (path.startsWith('/api/validate')) {
+      return {
+        passed: false, total: 0, failed: 0,
+        errors: ['内嵌只读视图不执行服务端一致性检查；请在本地产品规格中心执行'],
+        warnings: [], checks: [],
+      };
+    }
+    return { ok: true, mode: 'embedded-readonly' };
+  }
   const headers = { 'Content-Type': 'application/json', 'X-Uter-Role': S.role };
   const token = localStorage.getItem('uter_pw_token');
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -367,7 +394,7 @@ function panePrototype(f) {
     <button class="btn btn-xs ${S.viewport === 'PC' ? 'btn-primary' : ''}" data-act="viewport" data-v="PC">PC</button>
     <button class="btn btn-xs ${S.viewport === 'H5' ? 'btn-primary' : ''}" data-act="viewport" data-v="H5">H5</button>
     <button class="btn btn-xs" data-act="fullscreen-proto" data-id="${f.feature_id}">全屏</button>
-    <a class="btn btn-xs" href="/docs/product/prototypes/${f.domain.toLowerCase()}/${f.feature_id}.html" target="_blank" rel="noopener" title="在浏览器打开独立 HTML 原型（左原型 / 右 PRD 同源双栏）">HTML 原型 ↗</a>
+    <a class="btn btn-xs" href="${EMBEDDED ? `${BASE}prototypes/${f.domain.toLowerCase()}` : `/docs/product/prototypes/${f.domain.toLowerCase()}`}/${f.feature_id}.html" target="_blank" rel="noopener" title="在浏览器打开独立 HTML 原型（左原型 / 右 PRD 同源双栏）">HTML 原型 ↗</a>
     <button class="btn btn-xs" data-act="standalone-prd" data-id="${f.feature_id}">PRD 独立</button>
     <button class="btn btn-xs" data-act="reset-layout">恢复 50/50</button>
   </div>
@@ -937,6 +964,7 @@ $('#themeToggle').addEventListener('click', () => {
 });
 
 (async function boot() {
+  if (EMBEDDED) document.querySelector('#healthLink')?.remove();
   try {
     await refresh(false);
     const params = new URLSearchParams(location.search);

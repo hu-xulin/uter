@@ -11,7 +11,8 @@
  *   node tools/product-workspace/render-docs.mjs --all      # 全量渲染
  *   node tools/product-workspace/render-docs.mjs --feature UTER-PAY-001
  */
-import fs from 'node:fs';
+import fs from 'node:fs'
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { prototypeHTMLPath, renderPrototypeHTML } from './render-html.mjs';
@@ -817,6 +818,9 @@ async function main() {
   const validation = engine.validate(model, null, { checkFiles: true });
   const cov = engine.coverage(model);
   files.push(...writeReportFiles(model, validation, cov));
+  const embed = spawnSync(process.execPath, [path.join(HERE, 'embed.mjs')], { cwd: ROOT, encoding: 'utf8' });
+  if (embed.status === 0) console.log(embed.stdout.trim());
+  else console.error('[render-docs] 内嵌投影生成失败:', embed.stderr.trim());
   console.log(`[render-docs] 写入 ${files.length} 个文件；模型 v${model.model_version}；一致性 checks=${validation.total} failed=${validation.failed} warnings=${validation.warnings.length}`);
 }
 

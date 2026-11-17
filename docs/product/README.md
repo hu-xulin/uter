@@ -6,7 +6,8 @@
 
 | 入口 | 地址 / 路径 |
 | --- | --- |
-| 产品规格中心（可操作 SPA） | `http://127.0.0.1:7788/`（`node tools/product-workspace/server.mjs`） |
+| 产品规格中心（内嵌，只读） | Uter 同源 `/product-spec/`（管理员可见；`node tools/product-workspace/embed.mjs` 生成） |
+| 产品规格中心（本地编辑） | `http://127.0.0.1:7788/`（`bash tools/product-workspace/start.sh`） |
 | 左侧 Prototype / 右侧 PRD 双栏 | 规格中心 → Feature Catalog → 任一 Feature → 左右双栏详情 |
 | 交互式 HTML 原型（56 份） | `docs/product/prototypes/{domain}/<Feature ID>.html` —— 浏览器直接打开，左原型 / 右 PRD 同源双栏 |
 | 唯一权威数据模型 | `docs/product/registry/product-model.json` |

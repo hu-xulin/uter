@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-feature-id="UTER-MISC-006">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UTER-MISC-006 · 性能指标与运行监控 — 交互式原型 × PRD</title>
+<style>
+:root{--ds-primary:#5B5EE6;--ds-primary-weak:#EEEFFF;--ds-text:#1F2329;--ds-text-2:#646A73;--ds-border:#DEE0E3;--ds-surface:#FFFFFF;--ds-bg:#F5F6F7;--ds-ok:#2EA121;--ds-warn:#B25E00;--ds-err:#D93026;--radius:10px}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ds-text);background:var(--ds-bg)}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--ds-surface);border-bottom:1px solid var(--ds-border);flex-wrap:wrap}
+.topbar .title{font-weight:700}
+.split{display:flex;height:calc(100vh - 96px);min-height:0}
+.pane{min-width:0;height:100%;overflow-y:auto;background:var(--ds-surface)}
+.pane-left{width:50%;border-right:1px solid var(--ds-border)}
+.pane-right{flex:1}
+.pane-hd{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--ds-border);position:sticky;top:0;background:var(--ds-surface);z-index:5;flex-wrap:wrap}
+.canvas{margin:14px;border:1px solid var(--ds-border);border-radius:var(--radius);padding:16px;transition:max-width .2s}
+.canvas.h5{max-width:390px;margin:14px auto}
+.page-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cmp{border:1px solid var(--ds-border);border-radius:var(--radius);padding:10px 12px;margin-bottom:10px;background:var(--ds-surface)}
+.cmp-meta{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.chip{display:inline-block;font-size:12px;border:1px solid var(--ds-border);border-radius:999px;padding:1px 8px;background:var(--ds-bg);cursor:default}
+button.chip{cursor:pointer}
+.chip-req{color:var(--ds-primary);border-color:var(--ds-primary-weak);background:var(--ds-primary-weak)}
+.chip-plan{color:var(--ds-warn)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+.fld-label{display:block;font-weight:600;margin-bottom:4px;font-size:13px}
+.ctl{width:100%;min-height:34px;padding:6px 10px;border:1px solid var(--ds-border);border-radius:8px;font:inherit;color:inherit;background:var(--ds-surface)}
+.ctl:focus{outline:2px solid var(--ds-primary-weak);border-color:var(--ds-primary)}
+.ctl-static{padding:4px 0}
+.radio-group{display:flex;gap:12px;flex-wrap:wrap}
+.radio-item{display:inline-flex;align-items:center;gap:6px}
+.btn{min-height:34px;padding:6px 16px;border-radius:8px;border:1px solid transparent;font:inherit;cursor:pointer}
+.btn-primary{background:var(--ds-primary);color:#fff}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{background:var(--ds-surface);border-color:var(--ds-border);color:var(--ds-text)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.badge{display:inline-block;font-size:12px;color:var(--ds-warn);background:#FFF7E8;border:1px solid #F5D8A8;border-radius:999px;padding:2px 10px}
+.alert{border-radius:var(--radius);padding:8px 12px;margin:6px 0;font-size:13px}
+.alert-error{background:#FDECEA;color:var(--ds-err);border:1px solid #F5B9B4}
+.alert-info{background:var(--ds-primary-weak);color:var(--ds-primary)}
+.alert-warn{background:#FFF7E8;color:var(--ds-warn);border:1px solid #F5D8A8}
+.tbl-wrap{overflow:auto;border:1px solid var(--ds-border);border-radius:8px}
+.tbl,.mini{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.mini th{text-align:left;background:var(--ds-bg);padding:6px 10px;border-bottom:1px solid var(--ds-border);white-space:nowrap}
+.tbl td,.mini td{padding:6px 10px;border-bottom:1px solid var(--ds-border)}
+.search{display:flex;gap:8px}
+.pager{display:flex;gap:4px}
+.pg{min-width:28px;min-height:28px;border:1px solid var(--ds-border);border-radius:6px;background:var(--ds-surface);cursor:pointer}
+.pg.is-on{background:var(--ds-primary);color:#fff;border-color:var(--ds-primary)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--ds-border);padding-bottom:6px}
+.tab{border:none;background:none;padding:4px 12px;cursor:pointer;border-radius:6px;font:inherit}
+.tab.is-on{background:var(--ds-primary-weak);color:var(--ds-primary);font-weight:600}
+.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.toggle-ui{width:36px;height:20px;border-radius:999px;background:var(--ds-border);position:relative;transition:.15s}
+.toggle input{display:none}
+.toggle input:checked+.toggle-ui{background:var(--ds-primary)}
+.toggle input:checked+.toggle-ui::after{transform:translateX(16px)}
+.toggle-ui::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}
+.prog{background:var(--ds-bg);border-radius:999px;height:10px;overflow:auto;position:relative}
+.prog-bar{height:10px;border-radius:999px;background:var(--ds-primary)}
+.prog .caption{position:absolute;left:calc(100% + 8px);top:-4px;white-space:nowrap}
+.prog{overflow:visible;width:60%}
+.code{background:#0F1115;color:#D6E2F0;border-radius:8px;padding:12px;overflow:auto;font-size:12px}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{padding:6px 0 6px 18px;position:relative}
+.tl li::before{content:'';position:absolute;left:4px;top:12px;width:8px;height:8px;border-radius:50%;background:var(--ds-primary)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{flex:1;min-width:140px;border:1px solid var(--ds-border);border-radius:var(--radius);padding:10px 12px}
+.stat-k{display:block;font-size:12px;color:var(--ds-text-2)}
+.stat-v{font-size:22px;font-weight:700}
+.stat-s{display:block;font-size:12px;color:var(--ds-text-2)}
+.ints{margin-top:10px;padding-top:8px;border-top:1px dashed var(--ds-border)}
+.field-err{color:var(--ds-err);font-size:12px;margin-top:4px}
+.modal-mask,.drawer-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50}
+.modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(480px,92vw);background:var(--ds-surface);border-radius:12px}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--ds-border)}
+.modal-x{border:none;background:none;font-size:18px;cursor:pointer}
+.modal-bd,.drawer-bd{padding:14px 16px}
+.drawer{position:absolute;top:0;right:0;height:100%;width:min(420px,90vw);background:var(--ds-surface);border-left:1px solid var(--ds-border)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.skeleton{height:14px;border-radius:6px;background:linear-gradient(90deg,#EEE 25%,#F7F7F7 45%,#EEE 65%);background-size:200% 100%;animation:sk 1.2s infinite;margin:10px 0}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.state-card{border:1px dashed var(--ds-border);border-radius:var(--radius);padding:36px;text-align:center;color:var(--ds-text-2)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1F2329;color:#fff;border-radius:8px;padding:8px 16px;font-size:13px;z-index:99;opacity:0;transition:.2s;pointer-events:none}
+.toast.show{opacity:1}
+.flash{animation:fl 1.6s ease}
+@keyframes fl{0%,60%{box-shadow:0 0 0 3px rgba(91,94,230,.55)}100%{box-shadow:none}}
+.prd-body{padding:14px}
+.prd-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.prd-body h5{margin:14px 0 6px;font-size:13px;color:var(--ds-primary);border-top:1px solid var(--ds-border);padding-top:10px}
+.req{border:1px solid var(--ds-border);border-radius:var(--radius);margin-bottom:8px}
+.req summary{cursor:pointer;padding:8px 12px;font-weight:600}
+.req-body{padding:0 12px 10px}
+.req-body p{margin:6px 0}
+.story{background:var(--ds-bg);border-radius:8px;padding:6px 10px;margin:6px 0}
+.flow{margin:4px 0 8px;padding-left:20px}
+.status-note{background:var(--ds-bg);border-radius:8px;padding:6px 10px}
+.demo-banner{background:#FFF7E8;color:var(--ds-warn);padding:8px 16px;font-size:13px;border-bottom:1px solid #F5D8A8}
+@media (max-width:900px){.split{flex-direction:column;height:auto}.pane-left{width:100%;border-right:none;border-bottom:1px solid var(--ds-border)}.pane{height:auto;max-height:none}}
+</style>
+</head>
+<body data-feature-id="UTER-MISC-006" data-prd-path="docs/product/prd/misc/UTER-MISC-006.md" data-model-version="1">
+<div class="demo-banner" data-demo="MOCK">🧪 DEMO / MOCK：本原型只使用合成数据，不会发起真实支付、退款或余额变更。 实现状态 <b>IMPLEMENTED</b>（已实现（前后端均有证据））</div>
+<header class="topbar">
+  <span class="title">UTER-MISC-006 · 性能指标与运行监控</span>
+  <span class="chip mono">模型 v1 · 原型 vPROTO-MISC-006</span>
+  <span class="chip mono" title="与 PRD 同一数据源">同源：registry/product-model.json</span>
+  <a class="chip" href="docs/product/prd/misc/UTER-MISC-006.md" target="_blank" rel="noopener">PRD Markdown ↗</a>
+  <a class="chip" href="docs/product/prototypes/misc/UTER-MISC-006.md" target="_blank" rel="noopener">原型说明 ↗</a>
+  <span style="flex:1"></span>
+  <label class="caption">页面 <select id="pageSel" class="ctl" style="width:auto;min-width:150px;display:inline-block"><option value="PP-MISC-006-01" selected>PP-MISC-006-01 · 性能指标与运行监控 · 主页面</option><option value="PP-MISC-006-02" >PP-MISC-006-02 · 性能指标与运行监控 · 指标明细</option></select></label>
+  <label class="caption">状态 <select id="stateSel" class="ctl" style="width:auto;display:inline-block"><option value="idle">idle</option><option value="loading">loading</option><option value="empty">empty</option><option value="error">error</option><option value="success">success</option><option value="permission_denied">permission_denied</option></select></label>
+  <label class="caption">视口 <select id="vpSel" class="ctl" style="width:auto;display:inline-block"><option>PC</option><option>H5</option></select></label>
+  <button id="resetBtn" class="btn btn-ghost" type="button">恢复默认</button>
+</header>
+<main class="split">
+  <section class="pane pane-left" aria-label="交互式原型">
+    <div class="pane-hd"><b>原型（可操作）</b><span class="chip mono">PP-MISC-006-01</span><span class="chip chip-req">点击组件 ID / 需求 ID 双向定位</span></div>
+    <div class="canvas" id="protoCanvas">
+      <section class="page-sec" data-page="PP-MISC-006-01" >
+    <div class="page-hd"><b>性能指标与运行监控 · 主页面</b><span class="chip mono">PP-MISC-006-01</span>
+      <span class="caption">布局 stat-grid · 入口 <code>web/src/features/performance-metrics</code></span></div>
+
+    <div class="canvas-body"><div class="cmp" data-component-id="CMP-MISC-006-01" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-01">CMP-MISC-006-01</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+        <label class="fld-label">时间范围</label>
+        <select class="ctl" name="range"><option value="今日">今日</option><option value="近 7 天">近 7 天</option><option value="近 30 天">近 30 天</option></select>
+        <div class="field-err" data-err-for="range" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-02" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-02">CMP-MISC-006-02</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <div class="stats"><div class="stat"><span class="stat-k">核心指标 A</span><span class="stat-v" data-demo="MOCK">128.00</span><span class="stat-s">合成数据，非真实值</span></div></div>
+        <div class="field-err" data-err-for="metric_a" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-03" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-03">CMP-MISC-006-03</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <div class="stats"><div class="stat"><span class="stat-k">核心指标 B</span><span class="stat-v" data-demo="MOCK">128.00</span><span class="stat-s">合成数据，非真实值</span></div></div>
+        <div class="field-err" data-err-for="metric_b" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-04" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-04">CMP-MISC-006-04</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <div class="stats"><div class="stat"><span class="stat-k">核心指标 C</span><span class="stat-v" data-demo="MOCK">128.00</span><span class="stat-s">合成数据，非真实值</span></div></div>
+        <div class="field-err" data-err-for="metric_c" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-05" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-05">CMP-MISC-006-05</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <div class="prog"><div class="prog-bar" style="width:62%"></div><span class="caption">62%（MOCK）</span></div>
+        <div class="field-err" data-err-for="quota" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-06" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-06">CMP-MISC-006-06</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <button class="btn btn-primary" type="button" data-action="refresh" data-act-btn="refresh">刷新</button>
+        <div class="field-err" data-err-for="CMP-MISC-006-06" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-07" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-07">CMP-MISC-006-07</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <div class="alert alert-error" data-alert="" hidden>加载失败提示</div>
+        <div class="field-err" data-err-for="CMP-MISC-006-07" hidden></div>
+      </div></div>
+    <div class="ints"><b class="caption">交互演示</b><div><button class="chip" type="button" data-int="INT-MISC-006-01" data-target="" data-steps="change:range → reload_stats" title="切换时间范围">INT-MISC-006-01</button><button class="chip" type="button" data-int="INT-MISC-006-02" data-target="" data-steps="click:refresh → reload_stats" title="刷新数据">INT-MISC-006-02</button><button class="chip" type="button" data-int="INT-MISC-006-03" data-target="PP-MISC-006-02" data-steps="click:metric → navigate" title="查看明细">INT-MISC-006-03</button></div></div>
+  </section>
+<section class="page-sec" data-page="PP-MISC-006-02" hidden>
+    <div class="page-hd"><b>性能指标与运行监控 · 指标明细</b><span class="chip mono">PP-MISC-006-02</span>
+      <span class="caption">布局 detail · 入口 <code>由 PP-MISC-006-01 的页面跳转进入</code></span></div>
+
+    <div class="canvas-body"><div class="cmp" data-component-id="CMP-MISC-006-101" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-101">CMP-MISC-006-101</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>时间</th><th>维度</th><th>数值</th></tr></thead><tbody><tr><td>MOCK-CMP-MISC-006-101-01</td><td>正常</td><td>2026-11-09 10:00</td></tr><tr><td>MOCK-CMP-MISC-006-101-02</td><td>处理中</td><td>2026-11-09 10:05</td></tr><tr><td>MOCK-CMP-MISC-006-101-03</td><td>已完成</td><td>2026-11-09 10:12</td></tr></tbody></table></div>
+        <div class="field-err" data-err-for="detail_rows" hidden></div>
+      </div>
+<div class="cmp" data-component-id="CMP-MISC-006-102" data-requirement-id="REQ-MISC-006-01">
+        <div class="cmp-meta"><span class="chip mono" data-loc-cmp="CMP-MISC-006-102">CMP-MISC-006-102</span>
+        <span class="chip chip-req mono" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</span>
+        </div>
+
+        <button class="btn btn-primary" type="button" data-action="back" data-act-btn="back">返回</button>
+        <div class="field-err" data-err-for="CMP-MISC-006-102" hidden></div>
+      </div></div>
+    <div class="ints"><b class="caption">交互演示</b><div><button class="chip" type="button" data-int="INT-MISC-006-100" data-target="PP-MISC-006-01" data-steps="click:back → restore_form_state" title="返回主页面并恢复状态">INT-MISC-006-100</button></div></div>
+  </section>
+      <div id="stateOverlay" hidden></div>
+    </div>
+  </section>
+  <section class="pane pane-right" aria-label="PRD 面板">
+    <div class="pane-hd"><b>PRD（同源对应）</b><span class="chip chip-req">点击需求 / 组件 / 页面 ID 回到左侧</span></div>
+    <div class="prd-body" id="prdPanel" data-feature-id="UTER-MISC-006" data-prd-path="docs/product/prd/misc/UTER-MISC-006.md">
+    <div class="prd-hd"><b>UTER-MISC-006 · 性能指标与运行监控 — PRD</b>
+      <span class="chip chip-status">IMPLEMENTED</span>
+      <span class="chip mono">PRD v1 · 模型 v1</span>
+      <a class="chip" href="docs/product/prd/misc/UTER-MISC-006.md" target="_blank" rel="noopener">打开 PRD Markdown ↗</a></div>
+
+
+
+    <h5>1 基础信息</h5>
+    <table class="mini"><tr><th>字段</th><th>值</th></tr>
+      <tr><td>实现状态</td><td>IMPLEMENTED — 已实现（前后端均有证据）</td></tr>
+      <tr><td>业务模块 / 优先级</td><td>misc / P2</td></tr>
+      <tr><td>用户角色</td><td>admin、super_admin</td></tr>
+      <tr><td>同步状态</td><td>SYNCED</td></tr></table>
+
+    <h5>2 产品背景</h5><p>采集并展示请求性能指标与运行数据。</p>
+    <p class="caption">场景：查看指标；筛选时间段；导出日志文件</p>
+    <p class="caption">边界：不含业务统计看板（UTER-ADMIN-002）</p>
+
+    <h5>3 用户角色 / 4 用户故事</h5>
+    <p class="story">作为 <b>管理员</b>，我希望 <b>查看性能指标</b>，以便 <b>定位性能瓶颈</b>。</p>
+
+    <h5>6 业务流程</h5>
+    <ol class="flow"><li>进入 性能指标与运行监控 · 主页面</li><li>填写/选择必要输入</li><li>提交并校验</li><li>展示成功结果与状态</li></ol>
+    <p class="caption">异常：输入校验失败并提示；上游错误时展示错误状态；权限不足时展示 403 / 权限状态</p>
+    <p class="caption">页面状态：idle、loading、empty、error、success、permission_denied</p>
+
+    <h5>7 功能需求（点击下方组件 ID 可在左侧原型高亮）</h5>
+    <details class="req" id="req-REQ-MISC-006-01" data-req="REQ-MISC-006-01" data-page-ids="PP-MISC-006-01" data-cmp-ids="CMP-MISC-006-01 CMP-MISC-006-02 CMP-MISC-006-03 CMP-MISC-006-04 CMP-MISC-006-05 CMP-MISC-006-06 CMP-MISC-006-07" open>
+    <summary><span class="mono">REQ-MISC-006-01</span> · 指标采集与展示 <span class="chip">ACTIVE</span></summary>
+    <div class="req-body">
+      <p>展示请求延迟与吞吐等指标。</p>
+
+      <table class="mini"><tr><th>Rule ID</th><th>规则</th><th>字段</th><th>值</th></tr><tr><td class="mono">BR-MISC-006-01-01</td><td>仅授权角色可访问</td><td>—</td><td>—</td></tr></table>
+
+      <p class="caption">关联组件：<button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-01">CMP-MISC-006-01</button> <button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-02">CMP-MISC-006-02</button> <button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-03">CMP-MISC-006-03</button> <button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-04">CMP-MISC-006-04</button> <button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-05">CMP-MISC-006-05</button> <button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-06">CMP-MISC-006-06</button> <button class="chip mono" type="button" data-loc-cmp="CMP-MISC-006-07">CMP-MISC-006-07</button>
+      ｜ 页面：<button class="chip mono" type="button" data-goto-page="PP-MISC-006-01">PP-MISC-006-01</button></p>
+    </div></details>
+<details class="req" id="req-REQ-MISC-006-02" data-req="REQ-MISC-006-02" data-page-ids="PP-MISC-006-01" data-cmp-ids="" open>
+    <summary><span class="mono">REQ-MISC-006-02</span> · 指标筛选 <span class="chip">ACTIVE</span></summary>
+    <div class="req-body">
+      <p>按时间段与维度过滤。</p>
+
+      <table class="mini"><tr><th>Rule ID</th><th>规则</th><th>字段</th><th>值</th></tr><tr><td class="mono">BR-MISC-006-02-01</td><td>无数据展示空状态</td><td>—</td><td>—</td></tr></table>
+
+      <p class="caption">关联组件：—
+      ｜ 页面：<button class="chip mono" type="button" data-goto-page="PP-MISC-006-01">PP-MISC-006-01</button></p>
+    </div></details>
+
+    <h5>8 页面交互</h5>
+    <table class="mini"><tr><th>页面</th><th>名称</th><th>关联需求</th></tr>
+      <tr><td><button class="chip mono" type="button" data-goto-page="PP-MISC-006-01">PP-MISC-006-01</button></td><td>性能指标与运行监控 · 主页面</td><td>REQ-MISC-006-01、REQ-MISC-006-02</td></tr><tr><td><button class="chip mono" type="button" data-goto-page="PP-MISC-006-02">PP-MISC-006-02</button></td><td>性能指标与运行监控 · 指标明细</td><td>REQ-MISC-006-01</td></tr></table>
+
+    <h5>9 API 和数据模型</h5>
+    <table class="mini"><tr><th>API</th><th>方法 / 路径</th></tr><tr><td class="mono">API-MISC-006-01</td><td class="mono">GET /api/perf-metrics</td></tr><tr><td class="mono">API-MISC-006-02</td><td class="mono">GET /api/performance/logs</td></tr><tr><td class="mono">API-MISC-006-03</td><td class="mono">GET /api/status</td></tr></table>
+    <p class="caption">数据模型：perf_metric.go</p>
+
+    <h5>10 验收标准（Given / When / Then）</h5>
+    <table class="mini"><tr><th>AC</th><th>Given</th><th>When</th><th>Then</th><th>需求</th></tr>
+      <tr><td class="mono">AC-MISC-006-01</td><td>用户具有 admin / super_admin 角色且已进入 性能指标与运行监控 · 主页面</td><td>执行「指标采集与展示」的正常操作</td><td>系统返回成功结果，且原型 PP-MISC-006-01 可复现相同行为</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</button></td></tr><tr><td class="mono">AC-MISC-006-02</td><td>输入不满足业务规则或上游返回错误</td><td>执行「指标采集与展示」并触发校验失败</td><td>展示明确错误提示，不写入真实数据，原型错误状态可见</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</button></td></tr><tr><td class="mono">AC-MISC-006-03</td><td>当前用户不具备该功能所需角色</td><td>访问该功能入口</td><td>展示权限不足状态或 403，不泄露受保护数据</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</button></td></tr><tr><td class="mono">AC-MISC-006-04</td><td>用户具有 admin / super_admin 角色且已进入 性能指标与运行监控 · 主页面</td><td>执行「指标筛选」的正常操作</td><td>系统返回成功结果，且原型 PP-MISC-006-01 可复现相同行为</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-02">REQ-MISC-006-02</button></td></tr><tr><td class="mono">AC-MISC-006-05</td><td>输入不满足业务规则或上游返回错误</td><td>执行「指标筛选」并触发校验失败</td><td>展示明确错误提示，不写入真实数据，原型错误状态可见</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-02">REQ-MISC-006-02</button></td></tr><tr><td class="mono">AC-MISC-006-06</td><td>当前用户不具备该功能所需角色</td><td>访问该功能入口</td><td>展示权限不足状态或 403，不泄露受保护数据</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-02">REQ-MISC-006-02</button></td></tr></table>
+
+    <h5>11 测试追溯</h5>
+    <table class="mini"><tr><th>TC</th><th>名称</th><th>需求</th><th>结果</th></tr><tr><td class="mono">TC-MISC-006-01</td><td>REQ-MISC-006-01 需求-原型-验收-测试追溯</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-01">REQ-MISC-006-01</button></td><td>NOT_RUN</td></tr><tr><td class="mono">TC-MISC-006-02</td><td>REQ-MISC-006-02 需求-原型-验收-测试追溯</td><td><button class="chip mono" type="button" data-loc-req="REQ-MISC-006-02">REQ-MISC-006-02</button></td><td>NOT_RUN</td></tr></table>
+
+    <h5>12 版本变更</h5>
+    <p class="caption">基线 v1 · 另有 1 条变更事件（最新 CHG-INIT-0001）。完整历史见 PRD Markdown §12 与 docs/product/history/。</p>
+  </div>
+  </section>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+  var F = document.body.dataset.featureId;
+  var $ = function(s,r){return (r||document).querySelector(s)};
+  var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show')},2200);}
+  function flash(el){if(!el)return;el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
+  function gotoPage(pid){
+    var sec=$('.page-sec[data-page="'+pid+'"]');if(!sec)return toast('未找到页面 '+pid);
+    $$('.page-sec').forEach(function(s){s.hidden=s!==sec});
+    var sel=$('#pageSel');if(sel)sel.value=pid;
+    window.scrollTo({top:0});
+  }
+  function locateReq(rid){
+    if(!rid)return;
+    var el=document.getElementById('req-'+rid);
+    if(!el)return toast('右侧未找到 '+rid);
+    el.open=true;el.scrollIntoView({block:'center'});flash(el);
+  }
+  function locateCmp(cid){
+    var el=$('.cmp[data-component-id="'+cid+'"]');
+    if(!el)return toast('左侧未找到 '+cid);
+    var sec=el.closest('.page-sec');if(sec){$$('.page-sec').forEach(function(s){s.hidden=s!==sec});var sel=$('#pageSel');if(sel)sel.value=sec.dataset.page;}
+    el.scrollIntoView({block:'center'});flash(el);
+  }
+  // 双向定位（原型 ↔ PRD）
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-loc-req],[data-loc-cmp],[data-goto-page],[data-int],[data-act-btn],[data-mock-ok],[data-mock-cancel],[data-mock-search],.modal-x,.pg,.tab');
+    if(!t)return;
+    if(t.dataset.locReq!==undefined&&t.dataset.locReq!==''){locateReq(t.dataset.locReq);return;}
+    if(t.dataset.locCmp){locateCmp(t.dataset.locCmp);return;}
+    if(t.dataset.gotoPage){gotoPage(t.dataset.gotoPage);return;}
+    if(t.dataset.int){
+      var steps=t.dataset.steps;toast('MOCK 交互 '+t.dataset.int+(steps?'：'+steps:''));
+      var sec=t.closest('.page-sec');
+      if(t.dataset.target){gotoPage(t.dataset.target);}
+      else if(sec){var first=sec.querySelector('.cmp');if(first)flash(first);}
+      return;
+    }
+    if(t.dataset.mockOk!==undefined||t.dataset.mockCancel!==undefined||t.classList.contains('modal-x')){
+      var m=t.closest('.modal-mask,.drawer-mask');if(m)m.hidden=true;toast('MOCK 操作完成，未产生真实数据');return;
+    }
+    if(t.dataset.mockSearch!==undefined){toast('MOCK 搜索：仅演示交互');return;}
+    if(t.classList.contains('pg')){var pg=t.parentNode.querySelector('.is-on');if(pg)pg.classList.remove('is-on');t.classList.add('is-on');toast('MOCK 分页：第 '+t.textContent+' 页');return;}
+    if(t.classList.contains('tab')){var tb=t.parentNode.querySelector('.is-on');if(tb)tb.classList.remove('is-on');t.classList.add('is-on');return;}
+    if(t.dataset.actBtn){
+      var act=t.dataset.actBtn;
+      $$('[data-alert]').forEach(function(a){a.hidden=true});
+      // 表单校验（规则来自 PRD 业务规则，同源同步）
+      var bad=null;
+      $$('.cmp .ctl[data-required],.cmp .ctl[data-min]').forEach(function(inp){
+        var errEl=document.querySelector('[data-err-for="'+inp.name+'"]');
+        var msg='';
+        if(inp.dataset.required&&inp.type!=='radio'&&inp.type!=='checkbox'&&!String(inp.value).trim())msg=inp.dataset.error||'该字段为必填项';
+        if(!msg&&inp.dataset.min!==undefined&&inp.value!==''&&Number(inp.value)<Number(inp.dataset.min))msg=inp.dataset.error||('不得低于 '+inp.dataset.min);
+        if(errEl){errEl.textContent=msg;errEl.hidden=!msg;}
+        if(msg&&!bad)bad={inp:inp,msg:msg};
+      });
+      var alertEl=document.querySelector('[data-alert]');
+      if(bad){if(alertEl){alertEl.textContent=bad.msg;alertEl.hidden=false;}locateCmp(bad.inp.closest('.cmp').dataset.componentId);toast('校验未通过：'+bad.msg);return;}
+      if(alertEl)alertEl.hidden=true;
+      var modal=document.querySelector('[data-modal="'+act+'"]');if(modal){modal.hidden=false;return;}
+      var drawer=document.querySelector('[data-drawer="'+act+'"]');if(drawer){drawer.hidden=false;return;}
+      var code=document.querySelector('[data-code]');
+      if(code)code.querySelector('code').textContent='// MOCK 响应（无真实资金/账户操作）\n{\n  "feature_id": "'+F+'",\n  "action": "'+act+'",\n  "form": '+JSON.stringify(collectForm())+'\n}';
+      toast('MOCK 动作 '+act+' 已执行（合成数据）');
+      return;
+    }
+  });
+  function collectForm(){
+    var out={};
+    $$('.canvas .ctl').forEach(function(el){if(el.name)out[el.name]=el.type==='radio'?(document.querySelector('input[name="'+el.name+'"]:checked')||{}).value||null:el.type==='checkbox'?el.checked:el.value;});
+    return out;
+  }
+  // 页面切换 / 状态切换 / 视口
+  var pageSel=$('#pageSel'),stateSel=$('#stateSel'),vpSel=$('#vpSel');
+  if(pageSel)pageSel.addEventListener('change',function(){gotoPage(pageSel.value)});
+  if(stateSel)stateSel.addEventListener('change',function(){applyState(stateSel.value)});
+  if(vpSel)vpSel.addEventListener('change',function(){var c=$('#protoCanvas');c.classList.toggle('h5',vpSel.value==='H5');});
+  function applyState(st){
+    var canvas=$('#protoCanvas');
+    var holder=$('#stateOverlay');
+    $$('.page-sec').forEach(function(s){s.hidden=!!st&&st!=='idle'});
+    if(!st||st==='idle'){holder.hidden=true;return;}
+    holder.hidden=false;
+    if(st==='loading')holder.innerHTML='<div class="skeleton" style="width:70%"></div><div class="skeleton" style="width:90%"></div><div class="skeleton" style="width:55%"></div>';
+    else if(st==='empty')holder.innerHTML='<div class="state-card">暂无数据（MOCK 空态）</div>';
+    else if(st==='error')holder.innerHTML='<div class="state-card">加载失败，请重试（MOCK 错误态）</div>';
+    else if(st==='disabled')holder.innerHTML='<div class="state-card">当前操作不可用（MOCK 禁用态）</div>';
+    else if(st==='no-permission')holder.innerHTML='<div class="state-card">权限不足：该功能不向当前角色开放（MOCK）</div>';
+    else if(st==='success')holder.innerHTML='<div class="state-card" style="color:var(--ds-ok)">操作成功（MOCK 成功态）</div>';
+  }
+  // 顶部还原按钮
+  var reset=$('#resetBtn');
+  if(reset)reset.addEventListener('click',function(){applyState('idle');if(stateSel)stateSel.value='idle';if(vpSel)vpSel.value='PC';$('#protoCanvas').classList.remove('h5');toast('已恢复默认视图');});
+})();
+</script>
+</body>
+</html>

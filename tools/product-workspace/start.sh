@@ -22,5 +22,8 @@ fi
 echo "[product-workspace] 一致性门禁…"
 node tools/product-workspace/cli.mjs check
 
+echo "[product-workspace] 生成 Uter 内嵌投影（web/public/product-spec）…"
+node tools/product-workspace/embed.mjs
+
 echo "[product-workspace] 启动： http://127.0.0.1:${PORT}/"
 exec node tools/product-workspace/cli.mjs serve --port "$PORT"

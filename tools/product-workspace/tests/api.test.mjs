@@ -34,7 +34,7 @@ describe('静态资源与健康检查', () => {
     assert.equal(status, 200);
     assert.equal(body.ok, true);
     assert.equal(body.features, 56);
-    assert.match(body.design_system, /3\.0/);
+    assert.match(body.design_system, /00-UTER-DESIGN-SYSTEM-OVERVIEW/);
   });
 
   test('SPA 入口、脚本与样式可访问', async () => {
