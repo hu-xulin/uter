@@ -200,7 +200,7 @@ export const validators = {
       && acceptance.includes('ACCEPTANCE_READY')
       && /accepted\s*=\s*false/i.test(acceptance)
       && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'));
-    const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds-* bridge 为唯一运行时权威')
+    const runtimeBoundaryExplicit = ds.includes('颜色语义层 --ds-* bridge 为新 UI 的唯一运行时权威')
       && compatibilityAdr.includes('3.0 runtime compatibility boundary')
       && compatibilityAdr.includes('明确授权迁移')
       && runtimeCss.includes('--ds-')
