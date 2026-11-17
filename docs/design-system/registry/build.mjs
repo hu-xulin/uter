@@ -535,7 +535,7 @@ ${m.acceptance.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 
 | 检查项 | 执行方式 | 当前结果 |
 |---|---|---|
-| Token 一致性 | \`node web/scripts/check-design-system-8.0.0.mjs\` | 见 FINAL-ACCEPTANCE-REPORT.md |
+| Token 一致性 | \`node web/scripts/check-design-system-8.0.0.mjs\` | 见 UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md |
 | 对比度 | \`node registry/contrast-engine.mjs\` | \`${M.contrast.verdict}\` |
 | 数值冻结 | 1001 点渐变采样 + syntax / text / brand-solid 实算 | \`${M.contrast.verdict}\` |
 | 视觉审核 | Showcase 人工审核 | \`PENDING_USER_REVIEW\` |
