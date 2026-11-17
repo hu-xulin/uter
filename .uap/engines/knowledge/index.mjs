@@ -15,7 +15,7 @@ export const version = '1.0.0';
 export const executors = ['evolution.knowledge', 'evolution.continuous'];
 
 const INDEX_FILE = path.join(STATE, 'knowledge-index.json');
-const EXTRA_DOCS = ['AGENTS.md', 'CLAUDE.md', 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md', 'docs/design-system/TOKEN-MANIFEST.json', 'docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md', 'docs/design-system/SHOWCASE-8.0.0.html'];
+const EXTRA_DOCS = ['AGENTS.md', 'CLAUDE.md', 'docs/adr/README.md', 'docs/adr/0001-uter-design-system-single-source-of-truth.md', 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md', 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md', 'docs/design-system/TOKEN-MANIFEST.json', 'docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md', 'docs/design-system/SHOWCASE-8.0.0.html'];
 const RETIRED = ['AES', 'UAES', 'docs/ai-specs', 'uaes/standards'];
 const RETIRE_WORDS = /(退役|退休|已删除|不再|废除|废止|废弃|retired|deprecated|no longer|removed|pending replacement|承接|historical|历史|must not|do not|禁止|不得|说明)/i;
 const RUNTIME_REF = /(?:import\s|require\(|from\s+['"]|run:\s|cd\s|cat\s|source\s|bash\s|sh\s|path\.join|os\.\w+|exec\(|spawn\(|include\s|\.mjs['"]|\.go['"]|=>\s*['"])/;
@@ -143,7 +143,11 @@ export function health() {
   checks.design_system_exists = exists(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md'))
     && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'))
     && exists(rootPath('docs/design-system/TOKEN-MANIFEST.json'))
-    && exists(rootPath('docs/design-system/UDS-8.0.0-MIGRATION-REPORT.md'));
+    && exists(rootPath('docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md'));
+  const compatibilityAdr = exists(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'))
+    ? readText(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md')) : '';
+  checks.compatibility_boundary_documented = compatibilityAdr.includes('3.0 runtime compatibility boundary')
+    && compatibilityAdr.includes('explicitly authorizes');
   checks.uap_md_present = listFiles(uapPath(), {
     recursive: true, filter: (a) => a.endsWith('.md'),
   }).length >= 1;
