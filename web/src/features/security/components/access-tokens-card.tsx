@@ -174,7 +174,8 @@ export function AccessTokensCard() {
         {list.items.length === 0 ? (
           <EmptyState
             icon={KeyRound}
-            className='min-h-40'
+            className='min-h-48 border-0 p-4'
+            titleClassName='text-muted-foreground text-sm font-normal'
             title={t('No access tokens')}
           />
         ) : (

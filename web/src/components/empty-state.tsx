@@ -37,6 +37,7 @@ interface EmptyStateProps {
   description?: string
   action?: ReactNode
   className?: string
+  titleClassName?: string
   bordered?: boolean
 }
 
@@ -57,7 +58,9 @@ export function EmptyState(props: EmptyStateProps) {
           <EmptyMedia variant='icon'>
             <Icon className='size-6' />
           </EmptyMedia>
-          <EmptyTitle>{props.title ?? t('No Data')}</EmptyTitle>
+          <EmptyTitle className={props.titleClassName}>
+            {props.title ?? t('No Data')}
+          </EmptyTitle>
           {props.description != null && (
             <EmptyDescription>{props.description}</EmptyDescription>
           )}
