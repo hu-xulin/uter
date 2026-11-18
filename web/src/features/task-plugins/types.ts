@@ -165,9 +165,14 @@ export type MarketplaceDocumentFile = {
   sourceUrl?: string
 }
 
+/** An English file and its translations, keyed by canonical language tag. */
+export type MarketplaceDocument = MarketplaceDocumentFile & {
+  translations?: Record<string, MarketplaceDocumentFile>
+}
+
 export type MarketplaceIndexVersion = {
   version: string
-  readme?: MarketplaceDocumentFile
+  readme?: MarketplaceDocument
   path: string
   sha256?: string
   minApiVersion?: number

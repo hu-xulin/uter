@@ -36,6 +36,15 @@ export const SUPPORTED_PLUGIN_KIND = 'task'
  * same index works behind any raw prefix (GitHub raw, jsDelivr, a mirror).
  * Returns `null` when the path escapes to another origin or cannot be resolved.
  */
+/** Whether a language tag is already in canonical BCP 47 form, such as zh-CN. */
+export function isCanonicalLanguageTag(tag: string): boolean {
+  try {
+    return Intl.getCanonicalLocales(tag)[0] === tag
+  } catch {
+    return false
+  }
+}
+
 export function resolvePluginSourceUrl(
   indexUrl: string,
   path: string
@@ -402,38 +411,4 @@ export function marketplaceIndexDisplayName(args: {
   return raw
     .replaceAll(/\bNew API\b/g, 'Uter.ai')
     .replaceAll(/\bnew-api\b/gi, 'Uter.ai')
-}
-
-/**
- * Resolves a document the index declares (such as a version's README) to an
- * absolute http(s) address on the index's origin. The gateway links to it
- * instead of downloading and rendering the file, so external content never
- * executes inside the admin console.
- */
-export function marketplaceDocumentURL(
-  indexUrl: string,
-  file: { path?: string; sourceUrl?: string } | undefined
-): string | null {
-  if (!file) return null
-  if (file.sourceUrl) {
-    try {
-      const source = new URL(file.sourceUrl)
-      if (source.protocol === 'http:' || source.protocol === 'https:') {
-        return source.toString()
-      }
-    } catch {
-      // Fall through to the index-relative path.
-    }
-  }
-  const path = file.path?.trim()
-  if (!path) return null
-  try {
-    const resolved = new URL(path, new URL('.', indexUrl))
-    if (resolved.protocol !== 'http:' && resolved.protocol !== 'https:') {
-      return null
-    }
-    return resolved.toString()
-  } catch {
-    return null
-  }
 }

@@ -37,7 +37,6 @@ import {
 } from '../api'
 import {
   findMarketplaceVersion,
-  marketplaceDocumentURL,
   resolvePluginSourceUrl,
   type InstallState,
 } from '../lib/marketplace'
@@ -49,6 +48,7 @@ import {
 } from '../lib/plugin-url'
 import type { MarketplacePlugin, MarketplaceSource } from '../types'
 import { JavaScriptViewer } from './javascript-viewer'
+import { PluginReadmeSection } from './plugin-readme-section'
 import { MarketplaceCapabilities } from './marketplace-capabilities'
 import { PluginIcon } from './plugin-icon'
 import { PluginIntegrityCheck } from './plugin-integrity-check'
@@ -92,10 +92,6 @@ function MarketplaceInstallContent(
   const [selectedVersion, setSelectedVersion] = useState(target.version)
   const pluginKey = target.plugin.key
   const entry = findMarketplaceVersion(target.plugin, selectedVersion)
-  const readmeLink = marketplaceDocumentURL(
-    target.source.index_url,
-    entry?.readme ? { ...entry.readme, sourceUrl: entry.readme.sourceUrl } : undefined
-  )
   const hasInstalledPlugin = target.installState.status !== 'not_installed'
   const [reviewTab, setReviewTab] = useState('details')
 
@@ -387,17 +383,12 @@ function MarketplaceInstallContent(
               void sourceQuery.refetch()
             }}
           />
-          {readmeLink ? (
-            <p className='text-sm'>
-              <a
-                className='text-(--ds-color-text-link) underline-offset-2 hover:underline'
-                href={readmeLink}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                {t('Read the usage guide')}
-              </a>
-            </p>
+          {entry?.readme ? (
+            <PluginReadmeSection
+              indexUrl={target.source.index_url}
+              plugin={target.plugin}
+              version={selectedVersion}
+            />
           ) : null}
         </TabsContent>
         <TabsContent value='changelog' className='min-w-0 space-y-2'>
