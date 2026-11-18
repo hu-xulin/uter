@@ -40,15 +40,22 @@ import { resolveLocalizedText } from '@/lib/localized-text'
 
 import {
   deleteTaskPluginVersion,
+  fetchMarketplaceIndex,
+  listMarketplaceSources,
   listTaskPlugins,
   setTaskPluginStatus,
   TaskPluginUsageError,
 } from '../api'
-import { isStaleFactoryOverride } from '../lib/marketplace'
-import type { TaskPluginListItem, TaskPluginUsage } from '../types'
+import { findRevokedEntryAcross, isStaleFactoryOverride } from '../lib/marketplace'
+import type {
+  MarketplaceIndex,
+  TaskPluginListItem,
+  TaskPluginUsage,
+} from '../types'
 import { PluginCard } from './plugin-card'
 import { PluginIcon } from './plugin-icon'
 import { PluginWebsiteLink } from './plugin-website-link'
+import { RevokedPluginWarning } from './revoked-plugin-warning'
 
 const VIEW_MODE_STORAGE_KEY = 'task-plugins-view-mode'
 
@@ -78,6 +85,46 @@ export function PluginsTable(props: PluginsTableProps) {
     queryKey: ['task-plugins'],
     queryFn: listTaskPlugins,
   })
+  // Installed code is checked against every configured index's takedown list,
+  // but only when something with a source hash was installed.
+  const sourceHashes = useMemo(
+    () =>
+      (pluginsQuery.data ?? [])
+        .filter((plugin) => plugin.source !== 'factory')
+        .map((plugin) => plugin.source_hash)
+        .filter(Boolean),
+    [pluginsQuery.data]
+  )
+  const sourcesQuery = useQuery({
+    queryKey: ['task-plugin-marketplace-sources'],
+    queryFn: listMarketplaceSources,
+    enabled: sourceHashes.length > 0,
+  })
+  const indexUrls = useMemo(
+    () =>
+      (sourcesQuery.data ?? [])
+        .map((source) => source.index_url)
+        .filter(Boolean),
+    [sourcesQuery.data]
+  )
+  const indexesQuery = useQuery({
+    queryKey: ['task-plugin-marketplace-indexes', indexUrls],
+    queryFn: async (): Promise<MarketplaceIndex[]> => {
+      const results = await Promise.allSettled(
+        indexUrls.map((url) => fetchMarketplaceIndex(url))
+      )
+      return results.flatMap((result) =>
+        result.status === 'fulfilled' ? [result.value] : []
+      )
+    },
+    enabled: indexUrls.length > 0,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const marketplaceIndexes = useMemo(
+    () => indexesQuery.data ?? [],
+    [indexesQuery.data]
+  )
   const statusMutation = useMutation({
     mutationFn: ({
       key,
@@ -169,6 +216,12 @@ export function PluginsTable(props: PluginsTableProps) {
                   {row.original.meta.key}
                 </div>
                 <PluginWebsiteLink website={row.original.meta.website} />
+                <RevokedPluginWarning
+                  entry={findRevokedEntryAcross(
+                    marketplaceIndexes,
+                    row.original.source_hash
+                  )}
+                />
               </div>
             </div>
           )
@@ -327,7 +380,7 @@ export function PluginsTable(props: PluginsTableProps) {
         ),
       },
     ],
-    [i18n.language, props, statusMutation, t]
+    [i18n.language, marketplaceIndexes, props, statusMutation, t]
   )
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -381,7 +434,15 @@ export function PluginsTable(props: PluginsTableProps) {
         applyHeaderSize
         enableCardView
         viewModeStorageKey={VIEW_MODE_STORAGE_KEY}
-        renderCard={(row) => <PluginCard row={row} />}
+        renderCard={(row) => (
+          <PluginCard
+            row={row}
+            revoked={findRevokedEntryAcross(
+              marketplaceIndexes,
+              row.original.source_hash
+            )}
+          />
+        )}
         cardGridClassName='grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3'
         toolbarProps={{ searchPlaceholder: t('Filter plugins...') }}
       />

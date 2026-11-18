@@ -296,3 +296,72 @@ test.each(['card', 'table'] as const)(
     expect(screen.getAllByText('Request plugin').length).toBeGreaterThan(0)
   }
 )
+
+test.each(['card', 'table'] as const)(
+  'warns in %s view when an installed hash was taken down by a marketplace',
+  async (view) => {
+    const hash = 'a'.repeat(64)
+    localStorage.setItem('task-plugins-view-mode', view)
+    const item: TaskPluginListItem = {
+      meta: {
+        key: 'example',
+        name: 'Example',
+        version: '1.0.0',
+        apiVersion: 1,
+        author: { name: 'Example' },
+        models: [],
+        fetchMode: 'per_task',
+      },
+      source: 'override',
+      enabled: true,
+      active: true,
+      source_hash: hash,
+      remark: '',
+      runtime_status: 'registered',
+      channel_count: 0,
+      in_flight_count: 0,
+    }
+    const client = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false, staleTime: Infinity },
+        mutations: { retry: false },
+      },
+    })
+    clients.push(client)
+    client.setQueryData(['task-plugins'], [item])
+    vi.spyOn(api, 'get').mockImplementation(async (url: string) => {
+      if (url === '/api/plugin/task/marketplace/sources') {
+        return {
+          data: {
+            success: true,
+            data: [{ name: 'Official', index_url: 'https://example.com/i.json' }],
+          },
+        }
+      }
+      if (url === '/api/plugin/task/marketplace/fetch') {
+        return {
+          data: {
+            success: true,
+            data: {
+              indexVersion: 1,
+              name: 'Official',
+              plugins: [],
+              revoked: [{ sha256: hash, reason: 'Backdoor code' }],
+            },
+          },
+        }
+      }
+      throw new Error(`unexpected request ${url}`)
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <PluginsTable onDetails={() => undefined} onUpload={() => undefined} />
+      </QueryClientProvider>
+    )
+    const warning = await screen.findByRole('alert')
+    expect(warning).toHaveTextContent(
+      'This version was taken down from the marketplace.'
+    )
+    expect(warning).toHaveTextContent('Backdoor code')
+  }
+)

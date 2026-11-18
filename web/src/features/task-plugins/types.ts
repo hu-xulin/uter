@@ -204,10 +204,18 @@ export type MarketplacePlugin = {
   versions: MarketplaceIndexVersion[]
 }
 
+export type MarketplaceRevokedEntry = {
+  sha256: string
+  key?: string
+  reason?: string | Record<string, string>
+}
+
 export type MarketplaceIndex = {
   indexVersion: number
   name: string
   plugins: MarketplacePlugin[]
+  /** Sources the index has taken down, matched against installed source hashes. */
+  revoked?: MarketplaceRevokedEntry[]
 }
 
 /** A missing source property is distinct from an empty value or an unreadable expression. */

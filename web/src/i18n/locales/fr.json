@@ -8047,6 +8047,8 @@
     "{{synced}}/{{total}} nodes updated": "{{synced}}/{{total}} nœuds mis à jour",
     "Nodes": "Nœuds",
     "In effect": "En vigueur",
-    "Updating": "Mise à jour"
+    "Updating": "Mise à jour",
+    "This version was taken down from the marketplace.": "Cette version a été retirée du marché.",
+    "Reason: {{reason}}": "Raison : {{reason}}"
   }
 }

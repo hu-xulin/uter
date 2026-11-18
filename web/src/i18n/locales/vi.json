@@ -8047,6 +8047,8 @@
     "{{synced}}/{{total}} nodes updated": "Đã cập nhật {{synced}}/{{total}} nút",
     "Nodes": "Nút",
     "In effect": "Đã áp dụng",
-    "Updating": "Đang cập nhật"
+    "Updating": "Đang cập nhật",
+    "This version was taken down from the marketplace.": "Phiên bản này đã bị gỡ khỏi chợ plugin.",
+    "Reason: {{reason}}": "Lý do: {{reason}}"
   }
 }

@@ -8047,6 +8047,8 @@
     "{{synced}}/{{total}} nodes updated": "{{synced}}/{{total}} nodes updated",
     "Nodes": "Nodes",
     "In effect": "In effect",
-    "Updating": "Updating"
+    "Updating": "Updating",
+    "This version was taken down from the marketplace.": "This version was taken down from the marketplace.",
+    "Reason: {{reason}}": "Reason: {{reason}}"
   }
 }

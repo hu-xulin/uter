@@ -123,6 +123,13 @@
 - 安装详情页展示指南；格式问题给出可读原因与源文件链接，下载失败可重试。
 - 证据：移植上游 README 校验/组件测试共 26 例通过；typecheck、lint、design:strict、copyright、i18n、build:check 全绿；提交 `5bd76878d`。
 
+## 市场撤下警示（2026-11-18）
+
+- 上游 `MarketplaceIndex.revoked` 在 Uter 完全缺失，现已补齐：索引解析支持 `revoked[].sha256`（校验 64 位十六进制并归一化小写）、可选 `key` 与本地化 `reason`。
+- 已安装插件按 `source_hash` 匹配已配置市场索引的撤下条目；命中时在表格与卡片视图显示警示（含原因，按界面语言本地化），提示管理员该版本已从市场撤下。
+- 为避免每次加载都请求全部索引，仅在存在非 factory 且带 `source_hash` 的已安装插件时才拉取索引，且单个索引失败不影响其余索引。
+- 证据：新增解析与匹配单测 5 例、组件单测 4 例、表格/卡片集成测试 2 例；`task-plugins` 全量 376 例通过；`lint`、`lint:design:strict`、`copyright:check`、`i18n:check` 通过。
+
 ## 使用方式
 
 - 每批开始前：重新核对上游对应提交与 Uter 当前实现的语义差异，更新本清单状态；

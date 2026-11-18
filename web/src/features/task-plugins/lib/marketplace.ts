@@ -21,6 +21,7 @@ import type {
   MarketplaceIndexVersion,
   MarketplacePlugin,
   MarketplacePluginIcon,
+  MarketplaceRevokedEntry,
   TaskPluginListItem,
 } from '../types'
 import { pluginProtocolClaimsSchema } from './plugin-meta-preview'
@@ -107,7 +108,30 @@ export function parseMarketplaceIndex(payload: unknown): MarketplaceIndex {
       if (left.key === right.key) return 0
       return left.key < right.key ? -1 : 1
     }),
+    revoked: parseRevokedEntries(raw.revoked),
   }
+}
+
+/**
+ * Entries the index took down. A malformed hash is skipped rather than shown,
+ * because the hash is the only thing that ties an entry to installed code.
+ */
+function parseRevokedEntries(value: unknown): MarketplaceRevokedEntry[] {
+  if (!Array.isArray(value)) return []
+  const entries: MarketplaceRevokedEntry[] = []
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object') continue
+    const raw = entry as Record<string, unknown>
+    const sha256 =
+      typeof raw.sha256 === 'string' ? raw.sha256.trim().toLowerCase() : ''
+    if (!/^[0-9a-f]{64}$/.test(sha256)) continue
+    entries.push({
+      sha256,
+      key: typeof raw.key === 'string' ? raw.key.trim() || undefined : undefined,
+      reason: parseMarketplaceDescription(raw.reason),
+    })
+  }
+  return entries
 }
 
 function parseMarketplacePlugin(entry: unknown): MarketplacePlugin | null {
@@ -310,6 +334,28 @@ export function isStaleFactoryOverride(item: TaskPluginListItem): boolean {
     item.factory_meta != null &&
     item.factory_meta.version !== item.meta.version
   )
+}
+
+/** The takedown entry for an installed plugin's source, if an index lists one. */
+export function findRevokedEntry(
+  index: MarketplaceIndex | undefined,
+  sourceHash: string | undefined
+): MarketplaceRevokedEntry | undefined {
+  const hash = sourceHash?.trim().toLowerCase()
+  if (!hash) return undefined
+  return index?.revoked?.find((entry) => entry.sha256 === hash)
+}
+
+/** The first takedown entry for a source across every configured index. */
+export function findRevokedEntryAcross(
+  indexes: readonly (MarketplaceIndex | undefined)[],
+  sourceHash: string | undefined
+): MarketplaceRevokedEntry | undefined {
+  for (const index of indexes) {
+    const entry = findRevokedEntry(index, sourceHash)
+    if (entry) return entry
+  }
+  return undefined
 }
 
 /**

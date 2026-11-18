@@ -8047,6 +8047,8 @@
     "{{synced}}/{{total}} nodes updated": "Обновлено узлов: {{synced}}/{{total}}",
     "Nodes": "Узлы",
     "In effect": "Применено",
-    "Updating": "Обновление"
+    "Updating": "Обновление",
+    "This version was taken down from the marketplace.": "Эта версия была удалена из магазина.",
+    "Reason: {{reason}}": "Причина: {{reason}}"
   }
 }

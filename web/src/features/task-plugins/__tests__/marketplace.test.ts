@@ -18,11 +18,13 @@ For commercial licensing, please contact support@uter.ai
 */
 import assert from 'node:assert/strict'
 
-import { describe, expect, test } from 'vitest'
+import { describe, test } from 'vitest'
 
 import {
   deriveInstallState,
   findMarketplaceVersion,
+  findRevokedEntry,
+  findRevokedEntryAcross,
   GITHUB_MARKETPLACE_INDEX_URL,
   indexHasIntegrityHashes,
   isDefaultMarketplaceSource,
@@ -30,7 +32,6 @@ import {
   isStaleFactoryOverride,
   MARKETPLACE_OFFICIAL_INDEX_NAME,
   marketplaceBuiltInVersion,
-  marketplaceDocumentURL,
   marketplaceIndexDisplayName,
   parseMarketplaceIndex,
   resolvePluginSourceUrl,
@@ -795,29 +796,78 @@ describe('marketplace source branding', () => {
   })
 })
 
-describe('marketplaceDocumentURL', () => {
-  test('resolves an index-relative readme path', () => {
-    expect(
-      marketplaceDocumentURL('https://www.newapi.ai/api/v1/plugins/index.json', {
-        path: 'plugins/incho/README.md',
-      })
-    ).toBe('https://www.newapi.ai/api/v1/plugins/plugins/incho/README.md')
+describe('marketplace takedown entries', () => {
+  const hash = 'a'.repeat(64)
+
+  test('parses a valid entry and normalizes its hash', () => {
+    const index = parseMarketplaceIndex({
+      indexVersion: 1,
+      plugins: [],
+      revoked: [
+        {
+          sha256: hash.toUpperCase(),
+          key: 'doubao',
+          reason: { zh: '后门代码', en: 'Backdoor code' },
+        },
+      ],
+    })
+    assert.deepEqual(index.revoked, [
+      {
+        sha256: hash,
+        key: 'doubao',
+        reason: { zh: '后门代码', en: 'Backdoor code' },
+      },
+    ])
   })
 
-  test('prefers a declared source page and rejects non-http addresses', () => {
-    expect(
-      marketplaceDocumentURL('https://example.com/index.json', {
-        path: 'README.md',
-        sourceUrl: 'https://github.com/acme/plugin/blob/main/README.md',
-      })
-    ).toBe('https://github.com/acme/plugin/blob/main/README.md')
-    expect(
-      marketplaceDocumentURL('https://example.com/index.json', {
-        path: 'javascript:alert(1)',
-      })
-    ).toBeNull()
-    expect(
-      marketplaceDocumentURL('https://example.com/index.json', undefined)
-    ).toBeNull()
+  test('drops entries without a 64-character hex hash', () => {
+    const index = parseMarketplaceIndex({
+      indexVersion: 1,
+      plugins: [],
+      revoked: [
+        { sha256: 'not-a-hash', reason: 'typo' },
+        { sha256: `${'a'.repeat(63)}g` },
+        { reason: 'missing hash' },
+        null,
+        { sha256: hash },
+      ],
+    })
+    assert.deepEqual(index.revoked, [{ sha256: hash, key: undefined, reason: undefined }])
+  })
+
+  test('ignores a non-array revoked field', () => {
+    const index = parseMarketplaceIndex({
+      indexVersion: 1,
+      plugins: [],
+      revoked: { sha256: hash },
+    })
+    assert.deepEqual(index.revoked, [])
+  })
+
+  test('matches an installed source hash case-insensitively', () => {
+    const index = parseMarketplaceIndex({
+      indexVersion: 1,
+      plugins: [],
+      revoked: [{ sha256: hash, reason: 'taken down' }],
+    })
+    assert.equal(findRevokedEntry(index, hash.toUpperCase())?.reason, 'taken down')
+    assert.equal(findRevokedEntry(index, 'b'.repeat(64)), undefined)
+    assert.equal(findRevokedEntry(index, undefined), undefined)
+    assert.equal(findRevokedEntry(undefined, hash), undefined)
+  })
+
+  test('finds a takedown entry in any configured index', () => {
+    const clean = parseMarketplaceIndex({ indexVersion: 1, plugins: [] })
+    const flagged = parseMarketplaceIndex({
+      indexVersion: 1,
+      plugins: [],
+      revoked: [{ sha256: hash, reason: 'taken down' }],
+    })
+    assert.equal(
+      findRevokedEntryAcross([undefined, clean, flagged], hash)?.reason,
+      'taken down'
+    )
+    assert.equal(findRevokedEntryAcross([clean], hash), undefined)
+    assert.equal(findRevokedEntryAcross([], hash), undefined)
   })
 })

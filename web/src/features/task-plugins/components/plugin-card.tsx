@@ -23,9 +23,13 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { resolveLocalizedText } from '@/lib/localized-text'
 
-import type { TaskPluginListItem } from '../types'
+import type {
+  MarketplaceRevokedEntry,
+  TaskPluginListItem,
+} from '../types'
 import { PluginIcon } from './plugin-icon'
 import { PluginWebsiteLink } from './plugin-website-link'
+import { RevokedPluginWarning } from './revoked-plugin-warning'
 
 /**
  * A card is one grid cell, so the model list has to stay a fixed number of
@@ -46,7 +50,13 @@ const MAX_VISIBLE_MODELS = 4
  * sheet: rendering it here made every card a different height and buried the
  * plugin's own description under its parameter descriptions.
  */
-function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
+function PluginCardComponent({
+  row,
+  revoked,
+}: {
+  row: Row<TaskPluginListItem>
+  revoked?: MarketplaceRevokedEntry
+}) {
   const { t, i18n } = useTranslation()
   const cells = row.getAllCells()
   const description = resolveLocalizedText(
@@ -92,6 +102,8 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
       </div>
 
       <PluginWebsiteLink website={row.original.meta.website} />
+
+      <RevokedPluginWarning entry={revoked} />
 
       {/* Row 2: source, runtime, and plugin version badges wrap freely. */}
       <div className='flex flex-wrap items-center gap-1.5'>

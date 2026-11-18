@@ -8047,6 +8047,8 @@
     "{{synced}}/{{total}} nodes updated": "已更新 {{synced}}/{{total}} 个节点",
     "Nodes": "节点",
     "In effect": "已生效",
-    "Updating": "更新中"
+    "Updating": "更新中",
+    "This version was taken down from the marketplace.": "该版本已从插件市场撤下。",
+    "Reason: {{reason}}": "原因：{{reason}}"
   }
 }

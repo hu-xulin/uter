@@ -8047,6 +8047,8 @@
     "{{synced}}/{{total}} nodes updated": "{{synced}}/{{total}} 個のノードを更新済み",
     "Nodes": "ノード",
     "In effect": "反映済み",
-    "Updating": "更新中"
+    "Updating": "更新中",
+    "This version was taken down from the marketplace.": "このバージョンはマーケットから削除されました。",
+    "Reason: {{reason}}": "理由: {{reason}}"
   }
 }
