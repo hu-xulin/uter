@@ -36,20 +36,12 @@ import {
   User,
   Users,
   Wallet,
+  Workflow,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import type { SidebarData } from '@/components/layout/types'
 import { ROLE } from '@/lib/roles'
-
-/**
- * 产品规格中心（PRD × Prototype）由 Uter 服务端在 /product-spec/ 同源提供，
- * 数据来自 tools/product-workspace/embed.mjs 生成的产品模型静态投影；内嵌
- * 视图只读，编辑仍使用本地 node tools/product-workspace/server.mjs。
- * 入口只对超级管理员开放，避免内部 PRD / 架构资料向普通用户暴露。
- */
-const PRODUCT_WORKSPACE_URL =
-  import.meta.env.VITE_PRODUCT_WORKSPACE_URL || '/product-spec/'
 
 /**
  * Root navigation groups for the application sidebar.
@@ -194,16 +186,16 @@ export function useSidebarData(): SidebarData {
             requiredRole: ROLE.SUPER_ADMIN,
           },
           {
+            title: t('Request processing'),
+            url: '/request-processing',
+            icon: Workflow,
+            requiredRole: ROLE.SUPER_ADMIN,
+          },
+          {
             title: t('System Settings'),
             url: '/system-settings/site',
             activeUrls: ['/system-settings'],
             icon: Settings,
-            requiredRole: ROLE.SUPER_ADMIN,
-          },
-          {
-            title: t('Product Workspace'),
-            url: PRODUCT_WORKSPACE_URL,
-            icon: FileText,
             requiredRole: ROLE.SUPER_ADMIN,
           },
         ],

@@ -32,10 +32,10 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 	// 产品规格中心：与 Uter 共用同一服务端，从内嵌构建树 /product-spec/ 提供。
 	// 仅管理员可访问（内部 PRD / 原型），写操作仍由本地工具承担。
 	productSpecFS := http.FileServer(frontendFS)
-	router.Any("/product-spec", middleware.AdminAuth(), func(c *gin.Context) {
+	router.Any("/product-spec", middleware.AdminPageAuth(), func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/product-spec/")
 	})
-	router.Any("/product-spec/*filepath", middleware.AdminAuth(), gin.WrapH(productSpecFS))
+	router.Any("/product-spec/*filepath", middleware.AdminPageAuth(), gin.WrapH(productSpecFS))
 
 	router.Use(
 		middleware.RouteTag("web"),
@@ -54,12 +54,13 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 		// the document — bookmark bars, chat unfurlers, feed readers — would
 		// otherwise match nothing and fall through to the SPA shell, receiving
 		// HTML where an image is expected. Point them at the un-versioned
-		// `/logo.png` instead: it is served `no-cache`, so every use
-		// revalidates against the current file and no version constant has to
-		// be duplicated from `web/src/lib/constants.ts` into the Go side.
+		// `/favicon-legacy.ico`: `Cache()` marks .ico as a revalidated asset
+		// (`no-cache`), so every use revalidates against the current file and
+		// no version constant has to be duplicated from
+		// `web/src/lib/constants.ts` into the Go side.
 		func(c *gin.Context) {
 			if c.Request.URL.Path == "/favicon.ico" {
-				c.Redirect(http.StatusFound, "/logo.png")
+				c.Redirect(http.StatusFound, "/favicon-legacy.ico")
 				c.Abort()
 				return
 			}

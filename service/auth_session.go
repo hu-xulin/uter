@@ -16,6 +16,17 @@ import (
 
 const RefreshCookieName = "new_api_refresh"
 
+// PageSessionCookieName carries the same session secret to server-rendered
+// pages that cannot receive the SPA's Authorization header (for example the
+// embedded product specification centre). It is scoped to that path so the
+// refresh credential is not echoed to ordinary page requests, and it is only
+// ever validated read-only — never rotated.
+const PageSessionCookieName = "uter_page_session"
+
+// PageSessionCookiePath is the only URL prefix the page-session cookie is sent
+// to. Keep it in sync with the server-rendered page routes in router/web-router.go.
+const PageSessionCookiePath = "/product-spec"
+
 // SessionHintCookieName is the script-readable companion to RefreshCookieName.
 // See writeSessionHintCookie for why it exists and what it is not.
 const SessionHintCookieName = "new_api_has_session"
@@ -319,6 +330,48 @@ func RefreshLoginSession(rawRefreshToken, expectedSID, ip, userAgent string) (*A
 	return bundle, currentUser, nil
 }
 
+// AuthenticateRefreshCookie 只读校验浏览器刷新 Cookie，不轮换令牌。
+//
+// 全页导航（例如内嵌的产品规格中心）拿不到 SPA 的 Authorization 头，只有
+// Cookie；读接口按与 RefreshLoginSession 相同的会话约束做只读校验，避免一个
+// 页面请求触发刷新轮换、与 SPA 的刷新流程抢令牌或触发重放检测。
+func AuthenticateRefreshCookie(rawRefreshToken string) (*model.UserBase, error) {
+	sid, secret, ok := splitRefreshToken(rawRefreshToken)
+	if !ok {
+		return nil, ErrRefreshTokenInvalid
+	}
+	// 校验需要 refresh_hash，而会话缓存条目不含该字段；这里必须直接读库，
+	// 否则登录后缓存一旦填充，页面会话就会被误判为非法的刷新令牌。
+	session, err := model.GetUserSessionBySID(sid)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, model.ErrUserSessionInvalid) {
+			return nil, ErrRefreshTokenInvalid
+		}
+		return nil, ErrAuthInternal
+	}
+	now := time.Now().Unix()
+	if session.Status != model.UserSessionStatusActive || session.RevokedAt != 0 || session.ExpiresAt <= now {
+		return nil, ErrLoginSessionRevoked
+	}
+	presented := hashRefreshSecret(secret)
+	// 刷新轮换有短暂重叠窗口：浏览器可能仍持有上一枚 Cookie。
+	if presented != session.RefreshHash {
+		if session.PreviousRefreshHash == "" ||
+			presented != session.PreviousRefreshHash ||
+			session.PreviousValidUntil < now {
+			return nil, ErrRefreshTokenInvalid
+		}
+	}
+	user, err := model.GetUserCache(session.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if user.Status != common.UserStatusEnabled || user.AuthVersion != session.UserAuthVersion {
+		return nil, ErrLoginSessionRevoked
+	}
+	return user, nil
+}
+
 func RevokeByRefreshToken(rawRefreshToken, expectedSID, reason string) error {
 	sid, secret, ok := splitRefreshToken(rawRefreshToken)
 	if !ok {
@@ -356,30 +409,40 @@ func WriteRefreshCookie(c *gin.Context, rawToken string) {
 		}
 	}
 	maxAge := max(int(time.Until(expiresAt)/time.Second), 1)
+	writeSessionCookie(c, RefreshCookieName, "/api/user/auth", rawToken, maxAge, expiresAt)
+	writeSessionCookie(c, PageSessionCookieName, PageSessionCookiePath, rawToken, maxAge, expiresAt)
+	writeSessionHintCookie(c, maxAge, expiresAt)
+}
+
+func writeSessionCookie(c *gin.Context, name, path, value string, maxAge int, expiresAt time.Time) {
 	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     RefreshCookieName,
-		Value:    rawToken,
-		Path:     "/api/user/auth",
+		Name:     name,
+		Value:    value,
+		Path:     path,
 		MaxAge:   maxAge,
 		Expires:  expiresAt,
 		HttpOnly: true,
 		Secure:   common.SessionCookieSecure,
 		SameSite: http.SameSiteStrictMode,
 	})
-	writeSessionHintCookie(c, maxAge, expiresAt)
 }
 
-func ClearRefreshCookie(c *gin.Context) {
+func clearSessionCookie(c *gin.Context, name, path string) {
 	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     RefreshCookieName,
+		Name:     name,
 		Value:    "",
-		Path:     "/api/user/auth",
+		Path:     path,
 		MaxAge:   -1,
 		Expires:  time.Unix(1, 0),
 		HttpOnly: true,
 		Secure:   common.SessionCookieSecure,
 		SameSite: http.SameSiteStrictMode,
 	})
+}
+
+func ClearRefreshCookie(c *gin.Context) {
+	clearSessionCookie(c, RefreshCookieName, "/api/user/auth")
+	clearSessionCookie(c, PageSessionCookieName, PageSessionCookiePath)
 	clearSessionHintCookie(c)
 }
 

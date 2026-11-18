@@ -553,3 +553,61 @@ func TestOrgAdminAuthRejectsScopedTokenOnSessionOnlyRoutes(t *testing.T) {
 	assert.Contains(t, response.Body.String(), "AUTH_SESSION_REQUIRED")
 	assert.False(t, handlerCalled, "personal access tokens must not enter organization-role handlers")
 }
+
+// 服务端直出的页面（如 /product-spec/）只能带浏览器 Cookie：已登录管理员
+// 应直接放行，匿名请求应重定向到登录页并带回跳地址，普通用户返回 403。
+func TestAdminPageAuthGatesBrowserNavigationsBySessionCookie(t *testing.T) {
+	setupDashboardAuthMiddlewareTest(t)
+	admin := &model.User{
+		Username:    "page-admin",
+		Password:    "unused",
+		Role:        common.RoleAdminUser,
+		Status:      common.UserStatusEnabled,
+		Group:       "default",
+		AuthVersion: 1,
+		AffCode:     "page-auth-admin-aff",
+	}
+	require.NoError(t, model.DB.Create(admin).Error)
+	member := &model.User{
+		Username:    "page-member",
+		Password:    "unused",
+		Role:        common.RoleCommonUser,
+		Status:      common.UserStatusEnabled,
+		Group:       "default",
+		AuthVersion: 1,
+		AffCode:     "page-auth-member-aff",
+	}
+	require.NoError(t, model.DB.Create(member).Error)
+
+	adminBundle, err := service.CreateLoginSession(admin.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+	memberBundle, err := service.CreateLoginSession(member.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.GET("/product-spec/", AdminPageAuth(), func(c *gin.Context) {
+		c.String(http.StatusOK, "page")
+	})
+
+	request := func(cookie string) *httptest.ResponseRecorder {
+		req := httptest.NewRequest(http.MethodGet, "/product-spec/", nil)
+		if cookie != "" {
+			req.AddCookie(&http.Cookie{Name: service.PageSessionCookieName, Value: cookie})
+		}
+		recorder := httptest.NewRecorder()
+		router.ServeHTTP(recorder, req)
+		return recorder
+	}
+
+	recorder := request(adminBundle.RefreshToken)
+	require.Equal(t, http.StatusOK, recorder.Code)
+	assert.Equal(t, "page", recorder.Body.String())
+
+	recorder = request("")
+	require.Equal(t, http.StatusFound, recorder.Code)
+	assert.Contains(t, recorder.Header().Get("Location"), "/sign-in?redirect=")
+
+	recorder = request(memberBundle.RefreshToken)
+	require.Equal(t, http.StatusForbidden, recorder.Code)
+}

@@ -121,7 +121,7 @@ describe('HTML 原型 · 服务端安全路由', () => {
     assert.equal(miss.status, 404);
     const norm = await fetch(`${base}/docs/product/prototypes/../registry/product-model.json`);
     assert.equal(norm.status, 200);
-    assert.match(await norm.text(), /<title>UTER 产品规格中心/, '规范化路径应落入 SPA fallback 而非泄露文件');
+    assert.match(await norm.text(), /<title>UTER 产品原型/, '规范化路径应落入 SPA fallback 而非泄露文件');
   });
 });
 

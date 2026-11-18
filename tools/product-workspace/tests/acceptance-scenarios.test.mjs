@@ -48,7 +48,7 @@ describe('最终交付验收 · 6 个场景', () => {
     const spa = await fetch(base + '/');
     assert.equal(spa.status, 200);
     const html = await spa.text();
-    assert.match(html, /UTER 产品规格中心/);
+    assert.match(html, /UTER 产品原型/);
     evidence(1, '查看现有功能', {
       feature_id: body.feature_id, prd_sections: body.prd.sections.length,
       prototype_pages: body.prototype.pages.length, requirements: body.requirements.length,

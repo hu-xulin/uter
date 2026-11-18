@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -145,6 +146,46 @@ func RootAuth() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		authHelper(c, common.RoleRootUser)
 	}
+}
+
+// AdminPageAuth gates server-rendered pages (no SPA fetch layer in front of
+// them). A browser navigation carries only the refresh cookie, never the
+// SPA's Authorization header, so this falls back to a read-only session-cookie
+// check; anonymous document requests are sent to sign-in with the original
+// URL instead of receiving an API JSON 401 in the address bar.
+//
+// Header-authenticated requests (curl, PAT, service-to-service) keep going
+// through the regular AdminAuth path.
+func AdminPageAuth() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		if _, ok := authorizationToken(c.GetHeader("Authorization")); ok {
+			authHelper(c, common.RoleAdminUser)
+			return
+		}
+		raw, err := c.Cookie(service.PageSessionCookieName)
+		if err != nil || strings.TrimSpace(raw) == "" {
+			redirectPageToSignIn(c)
+			return
+		}
+		user, err := service.AuthenticateRefreshCookie(raw)
+		if err != nil {
+			redirectPageToSignIn(c)
+			return
+		}
+		if user.Role < common.RoleAdminUser || user.Status != common.UserStatusEnabled {
+			abortWithWebMessage(c, http.StatusForbidden, "AUTH_INSUFFICIENT_PRIVILEGE", common.NewMessage("Unauthorized, insufficient privileges"))
+			return
+		}
+		c.Set("id", user.Id)
+		c.Set("role", user.Role)
+		c.Next()
+	}
+}
+
+func redirectPageToSignIn(c *gin.Context) {
+	target := "/sign-in?redirect=" + url.QueryEscape(c.Request.URL.RequestURI())
+	c.Redirect(http.StatusFound, target)
+	c.Abort()
 }
 
 // GetAuthIdentity returns a dashboard session identity. PAT-authenticated

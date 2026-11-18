@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -546,4 +547,81 @@ func TestAuthSessionErrorCodeMapsInternalErrorToServerError(t *testing.T) {
 	status, code := AuthSessionErrorCode(ErrAuthInternal)
 	assert.Equal(t, http.StatusInternalServerError, status)
 	assert.Equal(t, "AUTH_INTERNAL_ERROR", code)
+}
+
+// 页面导航（无 Authorization 头）用刷新 Cookie 只读认证：校验通过但不轮换，
+// 因此同一枚 Cookie 可以反复用于页面请求，不会与 SPA 的刷新流程抢令牌。
+func TestAuthenticateRefreshCookieValidatesWithoutRotating(t *testing.T) {
+	useTestSessionSecret(t)
+	user := setupAuthSessionTestDB(t)
+	bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+
+	authenticated, err := AuthenticateRefreshCookie(bundle.RefreshToken)
+	require.NoError(t, err)
+	assert.Equal(t, user.Id, authenticated.Id)
+
+	_, err = AuthenticateRefreshCookie(bundle.RefreshToken)
+	require.NoError(t, err, "read-only validation must not consume the cookie")
+
+	_, err = AuthenticateRefreshCookie(bundle.RefreshToken + "tampered")
+	assert.ErrorIs(t, err, ErrRefreshTokenInvalid)
+
+	require.NoError(t, RevokeByRefreshToken(bundle.RefreshToken, bundle.Session.SID, "test"))
+	_, err = AuthenticateRefreshCookie(bundle.RefreshToken)
+	assert.ErrorIs(t, err, ErrLoginSessionRevoked)
+}
+
+// 页面会话 Cookie 的哈希校验必须回源数据库：会话缓存条目不含 refresh_hash，
+// 一旦登录后缓存被填充，依赖缓存会把合法 Cookie 判成非法刷新令牌。
+func TestAuthenticateRefreshCookieUsesDatabaseRefreshHash(t *testing.T) {
+	useTestSessionSecret(t)
+	user := setupAuthSessionTestDB(t)
+	bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+
+	server, _, _, _ := useIndependentAuthSessionRedis(t)
+	_, err = model.GetUserSessionCached(bundle.Session.SID)
+	require.NoError(t, err)
+	require.NotEmpty(t, cachedLoginSessionKey(t, server))
+
+	authenticated, err := AuthenticateRefreshCookie(bundle.RefreshToken)
+	require.NoError(t, err)
+	assert.Equal(t, user.Id, authenticated.Id)
+}
+
+// 浏览器打开服务端直出页面时只能带 Cookie：登录/刷新响应必须同时下发一枚
+// 仅限 /product-spec 的页面会话 Cookie，退出登录时两者一起清除。
+func TestWriteRefreshCookieIssuesPathScopedPageSessionCookie(t *testing.T) {
+	useTestSessionSecret(t)
+	user := setupAuthSessionTestDB(t)
+	bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+
+	gin.SetMode(gin.TestMode)
+	recorder := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(recorder)
+	WriteRefreshCookie(c, bundle.RefreshToken)
+
+	byName := map[string]*http.Cookie{}
+	for _, cookie := range recorder.Result().Cookies() {
+		byName[cookie.Name] = cookie
+	}
+	refresh := byName[RefreshCookieName]
+	require.NotNil(t, refresh)
+	assert.Equal(t, "/api/user/auth", refresh.Path)
+	page := byName[PageSessionCookieName]
+	require.NotNil(t, page)
+	assert.Equal(t, PageSessionCookiePath, page.Path)
+	assert.True(t, page.HttpOnly)
+	assert.NotEmpty(t, page.Value)
+
+	recorder = httptest.NewRecorder()
+	c, _ = gin.CreateTestContext(recorder)
+	ClearRefreshCookie(c)
+	for _, cookie := range recorder.Result().Cookies() {
+		if cookie.Name == RefreshCookieName || cookie.Name == PageSessionCookieName {
+			assert.Less(t, cookie.MaxAge, 0, cookie.Name+" must be cleared")
+		}
+	}
 }

@@ -143,10 +143,7 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
         className='font-medium'
         render={
           serverServed ? (
-            <a
-              href={String(item.url)}
-              onClick={() => setOpenMobile(false)}
-            />
+            <a href={String(item.url)} onClick={() => setOpenMobile(false)} />
           ) : (
             <Link
               to={item.url}

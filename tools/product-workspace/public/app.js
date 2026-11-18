@@ -33,7 +33,7 @@ async function api(path, opts = {}) {
   const method = (opts.method || 'GET').toUpperCase();
   if (EMBEDDED) {
     if (method !== 'GET') {
-      throw new Error('内嵌视图为只读；编辑请使用本地产品规格中心（node tools/product-workspace/server.mjs）');
+      throw new Error('内嵌视图为只读；编辑请使用本地产品原型（node tools/product-workspace/server.mjs）');
     }
     if (path.startsWith('/api/model')) {
       const res = await fetch(`${BASE}model.json`, { cache: 'no-store' });
@@ -43,7 +43,7 @@ async function api(path, opts = {}) {
     if (path.startsWith('/api/validate')) {
       return {
         passed: false, total: 0, failed: 0,
-        errors: ['内嵌只读视图不执行服务端一致性检查；请在本地产品规格中心执行'],
+        errors: ['内嵌只读视图不执行服务端一致性检查；请在本地产品原型执行'],
         warnings: [], checks: [],
       };
     }
