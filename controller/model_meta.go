@@ -155,7 +155,7 @@ func UpdateModelMeta(c *gin.Context) {
 
 	if statusOnly {
 		if m.Status != 0 && m.Status != 1 {
-			common.ApiErrorMsg(c, "invalid catalog visibility")
+			common.ApiErrorT(c, "invalid catalog visibility")
 			return
 		}
 		// 只更新状态，防止误清空其他字段

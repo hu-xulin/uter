@@ -59,7 +59,7 @@ func DeleteStaleSystemInstances(c *gin.Context) {
 func DeleteStaleSystemInstance(c *gin.Context) {
 	nodeName := c.Param("node_name")
 	if strings.TrimSpace(nodeName) == "" {
-		common.ApiErrorMsg(c, "node name is required")
+		common.ApiErrorT(c, "node name is required")
 		return
 	}
 
@@ -69,7 +69,7 @@ func DeleteStaleSystemInstance(c *gin.Context) {
 		return
 	}
 	if !deleted {
-		common.ApiErrorMsg(c, "instance is not stale or no longer exists")
+		common.ApiErrorT(c, "instance is not stale or no longer exists")
 		return
 	}
 

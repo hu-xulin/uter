@@ -266,7 +266,7 @@ func GetOrganizationAuditLogs(c *gin.Context) {
 	}
 	page := common.GetPageQuery(c)
 	if page.Page < 1 || page.PageSize < 1 || page.Page > 100000000 {
-		common.ApiErrorMsg(c, "Invalid audit pagination")
+		common.ApiErrorT(c, "Invalid audit pagination")
 		return
 	}
 	userIds, ok := QueryUserIds(c)
@@ -279,7 +279,7 @@ func GetOrganizationAuditLogs(c *gin.Context) {
 	}
 	if raw := c.Query("success"); raw != "" {
 		if raw != "true" && raw != "false" {
-			common.ApiErrorMsg(c, "Invalid audit result")
+			common.ApiErrorT(c, "Invalid audit result")
 			return
 		}
 		success := raw == "true"
@@ -289,18 +289,18 @@ func GetOrganizationAuditLogs(c *gin.Context) {
 		if raw := c.Query(name); raw != "" {
 			parsed, err := strconv.ParseInt(raw, 10, 64)
 			if err != nil || parsed < 0 {
-				common.ApiErrorMsg(c, "Invalid audit time range")
+				common.ApiErrorT(c, "Invalid audit time range")
 				return
 			}
 			*target = parsed
 		}
 	}
 	if filter.EndTimestamp > 0 && filter.EndTimestamp < filter.StartTimestamp {
-		common.ApiErrorMsg(c, "Invalid audit time range")
+		common.ApiErrorT(c, "Invalid audit time range")
 		return
 	}
 	if !model.ValidAuditCategory(filter.Category) || !model.ValidTokenFingerprint(filter.TokenRef) || !model.ValidTokenFingerprint(filter.ExcludeTokenRef) {
-		common.ApiErrorMsg(c, "Invalid audit filters")
+		common.ApiErrorT(c, "Invalid audit filters")
 		return
 	}
 	usernames, err := orgAuditUsernames(c, org)

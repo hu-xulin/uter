@@ -65,6 +65,7 @@ type UserBase struct {
 	SubQuotaLimit  int64  `json:"sub_quota_limit"`
 	AuthVersion    int64  `json:"-"`
 	CacheSchema    int    `json:"-"`
+	CacheExpiresAt int64  `json:"-"`
 	CacheMAC       string `json:"-"`
 }
 
@@ -203,7 +204,7 @@ func cacheGetUserBase(userId int) (*UserBase, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !validAuthCacheMAC(expectedMAC, userCache.CacheMAC, 0) {
+	if !validAuthCacheMAC(expectedMAC, userCache.CacheMAC, userCache.CacheExpiresAt) {
 		return nil, fmt.Errorf("user cache signature is invalid")
 	}
 	floor, err := getUserAuthVersionFloor(userId)

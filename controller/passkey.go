@@ -434,7 +434,7 @@ func AdminResetPasskey(c *gin.Context) {
 	}
 	myRole := c.GetInt("role")
 	if !canManageTargetRole(myRole, user.Role) {
-		common.ApiErrorMsg(c, "no permission")
+		common.ApiErrorT(c, "no permission")
 		return
 	}
 	authorization := requireAdminUserProof(c, service.VerificationScopeAdminUserPasskeyReset, service.AdminUserContext{UserID: user.Id})

@@ -2,7 +2,7 @@ package oauth
 
 import (
 	"context"
-	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -37,6 +37,49 @@ type discordUser struct {
 	Name string `json:"global_name"`
 }
 
+// discordRedirectURI mirrors the origin the browser used for the authorization
+// request. Discord binds the authorization code to that redirect_uri, so using
+// the configured ServerAddress alone rejects local sign-ins when it hosts a
+// different origin. Requests from unknown hosts keep the ServerAddress value.
+func discordRedirectURI(c *gin.Context) string {
+	if c != nil {
+		if origin, ok := discordRequestOrigin(c.Request); ok {
+			return origin + "/oauth/discord"
+		}
+	}
+	return strings.TrimRight(system_setting.ServerAddress, "/") + "/oauth/discord"
+}
+
+func discordRequestOrigin(r *http.Request) (string, bool) {
+	scheme := "http"
+	if forwarded := strings.TrimSpace(strings.Split(r.Header.Get("X-Forwarded-Proto"), ",")[0]); forwarded != "" {
+		scheme = strings.ToLower(forwarded)
+	} else if r.TLS != nil {
+		scheme = "https"
+	}
+	origin, err := common.NormalizeOrigin(scheme + "://" + r.Host)
+	if err != nil || !discordOriginAllowed(origin) {
+		return "", false
+	}
+	return origin, true
+}
+
+func discordOriginAllowed(origin string) bool {
+	serverOrigin, err := common.NormalizeOrigin(system_setting.ServerAddress)
+	if err == nil && serverOrigin == origin {
+		return true
+	}
+	parsed, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	if strings.EqualFold(parsed.Hostname(), "localhost") {
+		return true
+	}
+	ip := net.ParseIP(parsed.Hostname())
+	return ip != nil && ip.IsLoopback()
+}
+
 func (p *DiscordProvider) GetName() string {
 	return "Discord"
 }
@@ -51,7 +94,7 @@ func (p *DiscordProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	}
 
 	settings := system_setting.GetDiscordSettings()
-	redirectUri := fmt.Sprintf("%s/oauth/discord", system_setting.ServerAddress)
+	redirectUri := discordRedirectURI(c)
 	values := url.Values{}
 	values.Set("client_id", settings.ClientId)
 	values.Set("client_secret", settings.ClientSecret)

@@ -541,7 +541,7 @@ func GetUserOAuthBindingsByAdmin(c *gin.Context) {
 	userIdStr := c.Param("id")
 	userId, err := strconv.Atoi(userIdStr)
 	if err != nil {
-		common.ApiErrorMsg(c, "invalid user id")
+		common.ApiErrorT(c, "invalid user id")
 		return
 	}
 
@@ -553,7 +553,7 @@ func GetUserOAuthBindingsByAdmin(c *gin.Context) {
 
 	myRole := c.GetInt("role")
 	if !canManageTargetRole(myRole, targetUser.Role) {
-		common.ApiErrorMsg(c, "no permission")
+		common.ApiErrorT(c, "no permission")
 		return
 	}
 
@@ -616,7 +616,7 @@ func UnbindCustomOAuthByAdmin(c *gin.Context) {
 	userIdStr := c.Param("id")
 	userId, err := strconv.Atoi(userIdStr)
 	if err != nil {
-		common.ApiErrorMsg(c, "invalid user id")
+		common.ApiErrorT(c, "invalid user id")
 		return
 	}
 
@@ -628,7 +628,7 @@ func UnbindCustomOAuthByAdmin(c *gin.Context) {
 
 	myRole := c.GetInt("role")
 	if !canManageTargetRole(myRole, targetUser.Role) {
-		common.ApiErrorMsg(c, "no permission")
+		common.ApiErrorT(c, "no permission")
 		return
 	}
 

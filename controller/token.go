@@ -176,7 +176,7 @@ func SearchTokensPost(c *gin.Context) {
 		Size    int    `json:"size"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.ApiErrorMsg(c, "Invalid parameters")
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
 

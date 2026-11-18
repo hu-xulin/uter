@@ -14,16 +14,16 @@ import (
 func parseFlowQuotaTimeRange(c *gin.Context) (int64, int64, bool) {
 	startTimestamp, err := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	if err != nil || startTimestamp <= 0 {
-		common.ApiErrorMsg(c, "invalid start_timestamp")
+		common.ApiErrorT(c, "invalid start_timestamp")
 		return 0, 0, false
 	}
 	endTimestamp, err := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	if err != nil || endTimestamp <= 0 {
-		common.ApiErrorMsg(c, "invalid end_timestamp")
+		common.ApiErrorT(c, "invalid end_timestamp")
 		return 0, 0, false
 	}
 	if endTimestamp < startTimestamp {
-		common.ApiErrorMsg(c, "invalid time range")
+		common.ApiErrorT(c, "invalid time range")
 		return 0, 0, false
 	}
 	return startTimestamp, endTimestamp, true

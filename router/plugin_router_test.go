@@ -340,7 +340,7 @@ func TestPluginStaticRouteConflictsAreExcluded(t *testing.T) {
 			outer.GET(testCase.staticPath, func(c *gin.Context) { c.String(http.StatusOK, "static") })
 			registry := jsplugin.NewRegistry()
 			plugin := compileRouterPlugin(t, "static-conflict", "1.0.0", fmt.Sprintf(`[
-				{method: "POST", path: %q, type: "submit"}
+				{method: "GET", path: %q, type: "submit"}
 			]`, testCase.pluginPath))
 			require.NoError(t, registry.ReplaceOverrides([]*jsplugin.LoadedPlugin{plugin}))
 			builder := newPluginGenerationBuilder(outer.Routes(), nil, testPluginRouteHandlers(
@@ -354,11 +354,93 @@ func TestPluginStaticRouteConflictsAreExcluded(t *testing.T) {
 				func(c *gin.Context) { c.String(http.StatusOK, "fallback") },
 			)
 
-			recorder := performPluginRequest(outer, http.MethodPost, testCase.pluginPath)
-			assert.Equal(t, "fallback", recorder.Body.String())
+			recorder := performPluginRequest(outer, http.MethodGet, testCase.pluginPath)
+			assert.NotEqual(t, "plugin", recorder.Body.String())
 			assert.Contains(t, registry.RoutingErrors()["static-conflict"], "intersects static route")
 		})
 	}
+}
+
+func TestPluginRouteConflictsAreMethodScoped(t *testing.T) {
+	outer := newOuterPluginTestEngine()
+	outer.GET("/core/:id", func(c *gin.Context) { c.String(http.StatusOK, "static") })
+	registry := jsplugin.NewRegistry()
+	plugin := compileRouterPlugin(t, "method-scoped", "1.0.0", `[
+		{method: "POST", path: "/core/fixed", type: "submit"}
+	]`)
+	require.NoError(t, registry.ReplaceOverrides([]*jsplugin.LoadedPlugin{plugin}))
+	builder := newPluginGenerationBuilder(outer.Routes(), nil, testPluginRouteHandlers(
+		func(c *gin.Context, _ *jsplugin.RoutingGeneration, _ jsplugin.RouteBinding) {
+			c.String(http.StatusOK, "plugin")
+		},
+	))
+	require.NoError(t, registry.SetGenerationPreparer(builder.prepare))
+
+	assert.Empty(t, registry.RoutingErrors())
+	_, ok := registry.Get("method-scoped")
+	assert.True(t, ok)
+}
+
+func TestHostRelayStaticRoutesDoNotRejectPluginNativeRoutes(t *testing.T) {
+	outer := newOuterPluginTestEngine()
+	outer.GET("/v1/videos/:task_id", func(c *gin.Context) { c.String(http.StatusOK, "static") })
+	registry := jsplugin.NewRegistry()
+	plugin := compileRouterPlugin(t, "relay-overlap", "1.0.0", `[
+		{method: "GET", path: "/v1/videos/text2video", type: "dynamic"}
+	]`)
+	require.NoError(t, registry.ReplaceOverrides([]*jsplugin.LoadedPlugin{plugin}))
+	builder := newPluginGenerationBuilder(outer.Routes(), nil, testPluginRouteHandlers(
+		func(c *gin.Context, _ *jsplugin.RoutingGeneration, _ jsplugin.RouteBinding) {
+			c.String(http.StatusOK, "plugin")
+		},
+	))
+	require.NoError(t, registry.SetGenerationPreparer(builder.prepare))
+
+	assert.Empty(t, registry.RoutingErrors())
+	_, ok := registry.Get("relay-overlap")
+	assert.True(t, ok)
+}
+
+func TestPluginRouteOwnershipAllowsDistinctShapesAcrossMethods(t *testing.T) {
+	alpha := compileRouterPlugin(t, "method-alpha", "1.0.0", `[
+		{method: "POST", path: "/v1/videos/text2video", type: "submit"}
+	]`)
+	beta := compileRouterPlugin(t, "method-beta", "1.0.0", `[
+		{method: "GET", path: "/v1/videos/:request_id", type: "query", render: "render"}
+	]`)
+	registry := jsplugin.NewRegistry()
+	require.NoError(t, registry.ReplaceOverrides([]*jsplugin.LoadedPlugin{alpha, beta}))
+	builder := newPluginGenerationBuilder(nil, nil, testPluginRouteHandlers(
+		func(c *gin.Context, _ *jsplugin.RoutingGeneration, _ jsplugin.RouteBinding) {
+			c.String(http.StatusOK, "plugin")
+		},
+	))
+	require.NoError(t, registry.SetGenerationPreparer(builder.prepare))
+
+	assert.Empty(t, registry.RoutingErrors())
+	for _, key := range []string{"method-alpha", "method-beta"} {
+		_, ok := registry.Get(key)
+		assert.True(t, ok)
+	}
+}
+
+func TestPluginRouteOwnershipRejectsSameMethodOverlap(t *testing.T) {
+	alpha := compileRouterPlugin(t, "method-alpha", "1.0.0", `[
+		{method: "POST", path: "/v1/videos/text2video", type: "submit"}
+	]`)
+	beta := compileRouterPlugin(t, "method-beta", "1.0.0", `[
+		{method: "POST", path: "/v1/videos/text2video", type: "submit"}
+	]`)
+	registry := jsplugin.NewRegistry()
+	require.NoError(t, registry.ReplaceOverrides([]*jsplugin.LoadedPlugin{alpha, beta}))
+	builder := newPluginGenerationBuilder(nil, nil, testPluginRouteHandlers(
+		func(c *gin.Context, _ *jsplugin.RoutingGeneration, _ jsplugin.RouteBinding) {
+			c.String(http.StatusOK, "plugin")
+		},
+	))
+	require.NoError(t, registry.SetGenerationPreparer(builder.prepare))
+
+	assert.Contains(t, registry.RoutingErrors()["method-beta"], "conflicts with plugin method-alpha")
 }
 
 func TestStaticConflictingUpdateRetainsIncumbentAndPublishesHealthyPeer(t *testing.T) {
@@ -369,7 +451,7 @@ func TestStaticConflictingUpdateRetainsIncumbentAndPublishesHealthyPeer(t *testi
 		{method: "GET", path: "/safe/incumbent", type: "dynamic"}
 	]`)
 	conflictingUpdate := compileRouterPlugin(t, "static-update", "2.0.0", `[
-		{method: "POST", path: "/core/fixed", type: "submit"}
+		{method: "GET", path: "/core/fixed", type: "submit"}
 	]`)
 	healthyV1 := compileRouterPlugin(t, "healthy-peer", "1.0.0", `[
 		{method: "GET", path: "/safe/healthy", type: "dynamic"}
@@ -416,7 +498,7 @@ func TestStaticConflictingNewOverrideRetainsFactoryRoute(t *testing.T) {
 	require.NoError(t, registry.SetGenerationPreparer(builder.prepare))
 	outer.NoRoute((&pluginRouteDispatcher{registry: registry}).dispatch)
 	conflictingOverride := compileRouterPlugin(t, "factory-route", "2.0.0", `[
-		{method: "POST", path: "/core/fixed", type: "submit"}
+		{method: "GET", path: "/core/fixed", type: "submit"}
 	]`)
 
 	require.NoError(t, registry.ReplaceOverrides([]*jsplugin.LoadedPlugin{conflictingOverride}))
@@ -902,6 +984,14 @@ func TestWebFallbackDoesNotCacheMissingAPIOrAssets(t *testing.T) {
 	assert.Equal(t, http.StatusOK, page.Code)
 	assert.Equal(t, "dashboard", page.Body.String())
 	assert.Equal(t, "no-cache", page.Header().Get("Cache-Control"))
+}
+
+func TestFaviconProbeRedirectsToTheShippedIcon(t *testing.T) {
+	outer := gin.New()
+	SetWebRouter(outer, WebAssets{IndexPage: []byte("dashboard")}, func(c *gin.Context) { c.Next() })
+	response := performPluginRequest(outer, http.MethodGet, "/favicon.ico")
+	assert.Equal(t, http.StatusFound, response.Code)
+	assert.Equal(t, "/favicon-legacy.ico", response.Header().Get("Location"))
 }
 
 func TestSecurityRoutesDisableCachingBeforeAuthentication(t *testing.T) {

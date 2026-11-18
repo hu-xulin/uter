@@ -43,6 +43,7 @@ type userCacheMACPayload struct {
 	OrganizationId int    `json:"organization_id"`
 	DepartmentId   int    `json:"department_id"`
 	OrgRole        string `json:"org_role"`
+	CacheExpiresAt int64  `json:"cache_expires_at"`
 }
 
 // userCacheMAC signs the cache entry of a user under its own cache key.
@@ -58,5 +59,6 @@ func userCacheMAC(user *UserBase) (string, error) {
 		OrganizationId: user.OrganizationId,
 		DepartmentId:   user.DepartmentId,
 		OrgRole:        user.OrgRole,
+		CacheExpiresAt: user.CacheExpiresAt,
 	})
 }

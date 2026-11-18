@@ -72,13 +72,13 @@ func UploadTaskPlugin(c *gin.Context) {
 		return
 	}
 	if len(request.Source) > maxTaskPluginSourceBytes {
-		common.ApiErrorMsg(c, "plugin source exceeds 8 MiB")
+		common.ApiErrorT(c, "plugin source exceeds 8 MiB")
 		return
 	}
 	if expected := strings.TrimSpace(request.SourceSha256); expected != "" {
 		actual := fmt.Sprintf("%x", sha256.Sum256([]byte(request.Source)))
 		if !strings.EqualFold(actual, expected) {
-			common.ApiErrorMsg(c, "plugin source sha256 mismatch")
+			common.ApiErrorT(c, "plugin source sha256 mismatch")
 			return
 		}
 	}
@@ -433,7 +433,7 @@ func GetTaskPlugin(c *gin.Context) {
 	}
 	source, err := plugins.Source(key)
 	if err != nil {
-		common.ApiErrorMsg(c, "task plugin not found")
+		common.ApiErrorT(c, "task plugin not found")
 		return
 	}
 	loaded, err := jsplugin.NewRegistry().RegisterFactory(source, jsplugin.Options{Key: key})
@@ -465,7 +465,7 @@ func DryRunTaskPlugin(c *gin.Context) {
 		detailSource, err = plugins.Source(c.Param("key"))
 	}
 	if err != nil {
-		common.ApiErrorMsg(c, "task plugin not found")
+		common.ApiErrorT(c, "task plugin not found")
 		return
 	}
 	loaded, err := jsplugin.NewRegistry().Register(detailSource, jsplugin.Options{Key: c.Param("key")})
@@ -476,7 +476,7 @@ func DryRunTaskPlugin(c *gin.Context) {
 	args := make([]any, len(request.Args))
 	for index, raw := range request.Args {
 		if err = common.Unmarshal(raw, &args[index]); err != nil {
-			common.ApiErrorMsg(c, fmt.Sprintf("invalid argument %d: %v", index+1, err))
+			common.ApiErrorT(c, "Invalid argument {{index}}: {{error}}", map[string]any{"index": index + 1, "error": err.Error()})
 			return
 		}
 	}
@@ -499,7 +499,7 @@ func DeleteTaskPluginVersion(c *gin.Context) {
 	plugin, lookupErr := model.GetTaskPluginVersion(key, version)
 	if lookupErr != nil {
 		if errors.Is(lookupErr, gorm.ErrRecordNotFound) {
-			common.ApiErrorMsg(c, "override plugin version not found; factory plugins cannot be deleted")
+			common.ApiErrorT(c, "override plugin version not found; factory plugins cannot be deleted")
 			return
 		}
 		common.ApiError(c, lookupErr)
@@ -519,7 +519,7 @@ func DeleteTaskPluginVersion(c *gin.Context) {
 	_, err := model.DeleteTaskPluginVersion(key, version)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			common.ApiErrorMsg(c, "override plugin version not found; factory plugins cannot be deleted")
+			common.ApiErrorT(c, "override plugin version not found; factory plugins cannot be deleted")
 			return
 		}
 		common.ApiError(c, err)
@@ -555,7 +555,7 @@ func ActivateTaskPlugin(c *gin.Context) {
 		}
 	}
 	if target == nil {
-		common.ApiErrorMsg(c, "plugin version not found")
+		common.ApiErrorT(c, "plugin version not found")
 		return
 	}
 	if _, err = jsplugin.NewRegistry().Register(string(target.Source), jsplugin.Options{Key: target.Key, Version: target.Version}); err != nil {
@@ -580,7 +580,7 @@ type taskPluginStatusRequest struct {
 func SetTaskPluginStatus(c *gin.Context) {
 	var request taskPluginStatusRequest
 	if err := c.ShouldBindJSON(&request); err != nil || request.Enabled == nil {
-		common.ApiErrorMsg(c, "enabled is required")
+		common.ApiErrorT(c, "enabled is required")
 		return
 	}
 	key := c.Param("key")
@@ -701,12 +701,12 @@ func UpdateTaskPluginMarketplaceSources(c *gin.Context) {
 		name := strings.TrimSpace(sources[i].Name)
 		indexURL := strings.TrimSpace(sources[i].IndexURL)
 		if name == "" {
-			common.ApiErrorMsg(c, "marketplace source name is required")
+			common.ApiErrorT(c, "marketplace source name is required")
 			return
 		}
 		parsed, err := url.Parse(indexURL)
 		if err != nil || !parsed.IsAbs() || parsed.Host == "" || (!strings.EqualFold(parsed.Scheme, "http") && !strings.EqualFold(parsed.Scheme, "https")) {
-			common.ApiErrorMsg(c, "marketplace source index_url must be an absolute http(s) URL")
+			common.ApiErrorT(c, "marketplace source index_url must be an absolute http(s) URL")
 			return
 		}
 		sources[i].Name = name
@@ -746,7 +746,7 @@ const marketplaceIndexAttemptTimeout = 10 * time.Second
 func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
 	rawURL := strings.TrimSpace(c.Query("url"))
 	if rawURL == "" {
-		common.ApiErrorMsg(c, "marketplace index url is required")
+		common.ApiErrorT(c, "marketplace index url is required")
 		return
 	}
 	parsed, err := url.Parse(rawURL)
@@ -755,7 +755,7 @@ func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
 		parsed.Host == "" ||
 		(!strings.EqualFold(parsed.Scheme, "http") &&
 			!strings.EqualFold(parsed.Scheme, "https")) {
-		common.ApiErrorMsg(c, "marketplace index url must be an absolute http(s) URL")
+		common.ApiErrorT(c, "marketplace index url must be an absolute http(s) URL")
 		return
 	}
 
@@ -769,7 +769,7 @@ func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
 		}
 	}
 	if !allowed {
-		common.ApiErrorMsg(c, "marketplace index url is not a configured source")
+		common.ApiErrorT(c, "marketplace index url is not a configured source")
 		return
 	}
 
@@ -777,24 +777,21 @@ func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
 	defer cancel()
 	body, statusCode, err := fetchMarketplaceIndex(ctx, rawURL)
 	if err != nil {
-		common.ApiErrorMsg(c, "failed to reach marketplace index: "+err.Error())
+		common.ApiErrorT(c, "Failed to reach marketplace index: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 	if statusCode != http.StatusOK {
-		common.ApiErrorMsg(
-			c,
-			fmt.Sprintf("marketplace index returned HTTP %d", statusCode),
-		)
+		common.ApiErrorT(c, "Marketplace index returned HTTP {{status}}", map[string]any{"status": statusCode})
 		return
 	}
 	if len(body) > maxTaskPluginSourceBytes {
-		common.ApiErrorMsg(c, "marketplace index exceeds size limit")
+		common.ApiErrorT(c, "marketplace index exceeds size limit")
 		return
 	}
 
 	var index any
 	if err := json.Unmarshal(body, &index); err != nil {
-		common.ApiErrorMsg(c, "marketplace index is not valid JSON: "+err.Error())
+		common.ApiErrorT(c, "Marketplace index is not valid JSON: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 	common.ApiSuccess(c, index)

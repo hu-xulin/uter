@@ -34,6 +34,8 @@ func TestSecretOptionKeysStayInSyncWithOptionMap(t *testing.T) {
 		// 注：AlipayPublicKey 与 Waffo 的两个 PublicCert 已不再是公开值，
 		// 与私钥同等待遇走掩码（见 common/secret_option_keys.go）。
 		"StripePublishableKey": {},
+		// 易支付平台公钥用于验签，属于公开材料。
+		"payment_setting.epay_platform_public_key": {},
 	}
 
 	sensitiveSuffixes := []string{

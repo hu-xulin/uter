@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/uter-ai/uter/common"
 
@@ -55,6 +56,7 @@ func writeUserCache(user *UserBase, includeQuota bool) error {
 		includeQuotaArg = "1"
 	}
 	ttl := userCacheTTLSeconds()
+	user.CacheExpiresAt = time.Now().Add(time.Duration(ttl) * time.Second).UnixMilli()
 	cacheMAC, err := userCacheMAC(user)
 	if err != nil {
 		return err
@@ -82,7 +84,7 @@ redis.call('HSET', KEYS[1],
   'Setting', ARGV[8], 'AuthVersion', ARGV[1], 'CacheSchema', ARGV[9],
   'OrganizationId', ARGV[13], 'DepartmentId', ARGV[14], 'OrgRole', ARGV[15],
   'UsedQuota', ARGV[16], 'SubQuotaLimit', ARGV[17], 'DepartmentName', ARGV[18],
-  'CacheMAC', ARGV[19])
+  'CacheMAC', ARGV[19], 'CacheExpiresAt', ARGV[20])
 if ARGV[10] == '1' and redis.call('HEXISTS', KEYS[1], 'Quota') == 0 then
   redis.call('HSET', KEYS[1], 'Quota', ARGV[11])
 end
@@ -93,7 +95,7 @@ return 1`
 		user.AuthVersion, user.Id, user.Group, user.Email, user.Status, user.Role,
 		user.Username, user.Setting, user.CacheSchema, includeQuotaArg, user.Quota, ttl,
 		user.OrganizationId, user.DepartmentId, user.OrgRole, user.UsedQuota, user.SubQuotaLimit,
-		user.DepartmentName, cacheMAC,
+		user.DepartmentName, cacheMAC, user.CacheExpiresAt,
 	).Int()
 	if err != nil {
 		return err

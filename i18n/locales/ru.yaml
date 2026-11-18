@@ -423,6 +423,21 @@ email.password_reset.link: Click <a href='{{.Link}}'>here</a> to reset your pass
 email.password_reset.link_fallback: If the link does not open, copy the link below into your browser:<br> {{.Link}}
 email.password_reset.subject: '{{.SystemName}} password reset'
 email.password_reset.validity: The reset link is valid for {{.Minutes}} minutes. If you did not request it, please ignore this email.
+email.binding.subject: "{{.SystemName}} — Подтвердите адрес электронной почты"
+email.binding.new_intro: "Подтвердите привязку этого адреса электронной почты к вашей учетной записи."
+email.binding.old_intro: "Запрошено изменение адреса электронной почты вашей учетной записи. Подтвердите замену текущего адреса."
+email.binding.code: "Код подтверждения: <strong>{{.Code}}</strong>"
+email.binding.new_validity: "Код действителен {{.Minutes}} минут. Если вы не запрашивали это изменение, не сообщайте код никому."
+email.binding.old_validity: "Код действителен {{.Minutes}} минут. Если вы не запрашивали это изменение, не сообщайте код никому и свяжитесь с администратором."
+email.security_notice.subject: "{{.SystemName}} — Уведомление о безопасности учетной записи"
+email.security_notice.changed: "Настройки безопасности вашей учетной записи изменились: {{.Event}}."
+email.security_notice.advice: "Если вы не вносили это изменение, откройте настройки безопасности учетной записи, отзовите другие сеансы входа и свяжитесь с администратором."
+email.security_event.password_updated: "Пароль обновлен"
+email.security_event.email_change_requested: "Запрошено изменение адреса электронной почты"
+email.security_event.email_changed: "Адрес электронной почты изменен"
+email.security_event.email_confirmed: "Адрес электронной почты подтвержден"
+email.security_event.login_linked: "Учетная запись для входа привязана: {{.Provider}}"
+email.security_event.login_unlinked: "Учетная запись для входа отвязана"
 email.verification.code: 'Your verification code is: <strong>{{.Code}}</strong>'
 email.verification.greeting: Hello, you are verifying your email address for {{.SystemName}}.
 email.login_code.subject: '{{.SystemName}} sign-in code'

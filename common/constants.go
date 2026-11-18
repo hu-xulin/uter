@@ -196,6 +196,11 @@ var RelayTimeout int // unit is second
 
 var RelayIdleConnTimeout int // unit is second
 
+// RelayHTTP2PingIdleTimeout enables an HTTP/2 PING probe after this many
+// seconds without incoming frames; 0 disables the probe.
+var RelayHTTP2PingIdleTimeout int
+var RelayHTTP2PingTimeout int // seconds to wait for the PING acknowledgement
+
 // RelayResponseHeaderTimeout limits how long the relay transport waits for the
 // upstream response headers after the request has been fully written.
 // 0 disables it (previous behaviour: wait forever).

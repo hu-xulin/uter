@@ -108,7 +108,10 @@ func TestMultiDBDialectCompat(t *testing.T) {
 				t.Fatalf("create %s: %v", c.name, err)
 			}
 			var row multiDBSmokeRow
-			if err := db.First(&row, 1).Error; err != nil {
+			// ClickHouse has no auto-increment: an ID-less insert keeps id=0,
+			// so `First(&row, 1)` can never find it. Query by the written value
+			// instead, which every dialect supports.
+			if err := db.Where("name = ?", "smoke").First(&row).Error; err != nil {
 				t.Fatalf("select %s: %v", c.name, err)
 			}
 			if row.Name != "smoke" {

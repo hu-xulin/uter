@@ -220,6 +220,9 @@ func (b *pluginGenerationBuilder) admitPlugins(
 func (b *pluginGenerationBuilder) validatePlugin(plugin *jsplugin.LoadedPlugin, accepted map[string]*jsplugin.LoadedPlugin) error {
 	for _, route := range plugin.Meta.Routes {
 		for _, staticRoute := range b.staticRoutes {
+			if route.Method != staticRoute.Method || isHostRelayStaticRoute(staticRoute.Path) {
+				continue
+			}
 			if routeIntersectsStaticRoute(route.Path, staticRoute.Path) {
 				return fmt.Errorf("route %s %s intersects static route %s %s", route.Method, route.Path, staticRoute.Method, staticRoute.Path)
 			}
@@ -244,12 +247,10 @@ func (b *pluginGenerationBuilder) validatePlugin(plugin *jsplugin.LoadedPlugin, 
 		}
 		for _, route := range plugin.Meta.Routes {
 			for _, otherRoute := range other.Meta.Routes {
-				if routePatternsIntersect(route.Path, otherRoute.Path) {
-					return fmt.Errorf("route %s %s overlaps plugin %s route %s %s", route.Method, route.Path, other.Meta.Key, otherRoute.Method, otherRoute.Path)
+				if !routePatternsEqual(route.Path, otherRoute.Path) {
+					continue
 				}
-				if route.Method == otherRoute.Method && !routesGinCompatible(route.Path, otherRoute.Path) {
-					return fmt.Errorf("route %s %s is structurally incompatible with plugin %s route %s", route.Method, route.Path, other.Meta.Key, otherRoute.Path)
-				}
+				return fmt.Errorf("route %s %s overlaps plugin %s route %s %s", route.Method, route.Path, other.Meta.Key, otherRoute.Method, otherRoute.Path)
 			}
 		}
 	}
@@ -518,6 +519,27 @@ func parseRoutePattern(routePath string) []routePatternSegment {
 	return segments
 }
 
+// routePatternsEqual reports whether two declarations own the same normalized
+// path shape. Plugin route ownership is exclusive per shape across plugins;
+// literals and parameters at the same position are distinct shapes and may
+// coexist.
+func routePatternsEqual(leftPath, rightPath string) bool {
+	left := parseRoutePattern(leftPath)
+	right := parseRoutePattern(rightPath)
+	if len(left) != len(right) {
+		return false
+	}
+	for index := range left {
+		if left[index].dynamic != right[index].dynamic || left[index].catchAll != right[index].catchAll {
+			return false
+		}
+		if !left[index].dynamic && left[index].value != right[index].value {
+			return false
+		}
+	}
+	return true
+}
+
 func routePatternsIntersect(leftPath, rightPath string) bool {
 	left := parseRoutePattern(leftPath)
 	right := parseRoutePattern(rightPath)
@@ -561,6 +583,16 @@ func routesGinCompatible(leftPath, rightPath string) bool {
 		return true
 	}
 	return true
+}
+
+// isHostRelayStaticRoute reports whether a static route lives in a host relay
+// namespace. Those routes take precedence over plugin routes and may also use
+// a plugin's native route manifest to dispatch model traffic, so overlapping
+// paths must not reject the plugin from the routing generation.
+func isHostRelayStaticRoute(path string) bool {
+	return path == "/v1" || strings.HasPrefix(path, "/v1/") ||
+		path == "/v1beta" || strings.HasPrefix(path, "/v1beta/") ||
+		path == "/v1beta1" || strings.HasPrefix(path, "/v1beta1/")
 }
 
 func routeIntersectsStaticRoute(pluginPath, staticPath string) bool {

@@ -31,29 +31,30 @@ import "strings"
 // 认证 / OAuth。键名取自前端实际使用的 option key（见
 // web/src/features/system-settings/auth/oauth-section.tsx 等处的 name=）。
 var secretOptionKeys = map[string]struct{}{
-	"GitHubClientSecret":        {},
-	"LinuxDOClientSecret":       {},
-	"discord.client_secret":     {},
-	"oidc.client_secret":        {},
-	"telegram.client_secret":    {},
-	"TelegramBotToken":          {},
-	"TurnstileSecretKey":        {},
-	"AccessToken":               {},
-	"SystemAccessToken":         {},
-	"CustomOAuthSecret":         {},
-	"GoogleClientSecret":        {},
-	"AppleClientSecret":         {},
-	"FacebookClientSecret":      {},
-	"SlackClientSecret":         {},
-	"StripeSecretKey":           {},
-	"CreemApiKey":               {},
-	"WaffoApiKey":               {},
-	"WaffoPancakeApiKey":        {},
-	"IONetApiKey":               {},
-	"EmailSecret":               {},
-	"EmailPassword":             {},
-	"CustomerServiceAdminToken": {},
-	"SMTPToken":                 {},
+	"GitHubClientSecret":                        {},
+	"LinuxDOClientSecret":                       {},
+	"discord.client_secret":                     {},
+	"oidc.client_secret":                        {},
+	"telegram.client_secret":                    {},
+	"TelegramBotToken":                          {},
+	"TurnstileSecretKey":                        {},
+	"AccessToken":                               {},
+	"SystemAccessToken":                         {},
+	"CustomOAuthSecret":                         {},
+	"GoogleClientSecret":                        {},
+	"AppleClientSecret":                         {},
+	"FacebookClientSecret":                      {},
+	"SlackClientSecret":                         {},
+	"StripeSecretKey":                           {},
+	"CreemApiKey":                               {},
+	"WaffoApiKey":                               {},
+	"WaffoPancakeApiKey":                        {},
+	"IONetApiKey":                               {},
+	"EmailSecret":                               {},
+	"EmailPassword":                             {},
+	"CustomerServiceAdminToken":                 {},
+	"SMTPToken":                                 {},
+	"payment_setting.epay_merchant_private_key": {},
 
 	// 微信支付（站点与品牌 → 集成 → 微信支付）的敏感字段。键名取自
 	// web/src/features/system-settings/integrations/wechat-pay-settings-section.tsx
@@ -99,6 +100,8 @@ var publicOptionKeys = map[string]struct{}{
 	"TurnstileSiteKey": {},
 	// Stripe 的可发布公钥（secret 侧的 StripeSecretKey 已另行登记）。
 	"StripePublishableKey": {},
+	// 易支付平台公钥用于校验回调，属于公开材料，管理员需要核对原文。
+	"payment_setting.epay_platform_public_key": {},
 }
 
 // secretOptionKeySuffixes 是兜底规则：显式登记表之外的键名若命中任一后缀，

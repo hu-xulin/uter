@@ -87,7 +87,7 @@ func QueryUserIds(c *gin.Context) (userIds []int, ok bool) {
 	}
 	parsed, err := strconv.Atoi(raw)
 	if err != nil || parsed <= 0 {
-		common.ApiErrorMsg(c, "Invalid user id")
+		common.ApiErrorT(c, "Invalid user id")
 		return nil, false
 	}
 	return []int{parsed}, true

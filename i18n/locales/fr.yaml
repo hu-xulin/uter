@@ -423,6 +423,21 @@ email.password_reset.link: Click <a href='{{.Link}}'>here</a> to reset your pass
 email.password_reset.link_fallback: If the link does not open, copy the link below into your browser:<br> {{.Link}}
 email.password_reset.subject: '{{.SystemName}} password reset'
 email.password_reset.validity: The reset link is valid for {{.Minutes}} minutes. If you did not request it, please ignore this email.
+email.binding.subject: "{{.SystemName}} — Confirmez votre adresse e-mail"
+email.binding.new_intro: "Confirmez l'association de cette adresse e-mail à votre compte."
+email.binding.old_intro: "Une modification de l'adresse e-mail de votre compte a été demandée. Confirmez le remplacement de votre adresse actuelle."
+email.binding.code: "Code de vérification : <strong>{{.Code}}</strong>"
+email.binding.new_validity: "Ce code expire dans {{.Minutes}} minutes. Si vous n'êtes pas à l'origine de cette demande, ne partagez pas ce code."
+email.binding.old_validity: "Ce code expire dans {{.Minutes}} minutes. Si vous n'êtes pas à l'origine de cette demande, ne partagez pas ce code et contactez votre administrateur."
+email.security_notice.subject: "{{.SystemName}} — Notification de sécurité du compte"
+email.security_notice.changed: "Les paramètres de sécurité de votre compte ont changé : {{.Event}}."
+email.security_notice.advice: "Si vous n'êtes pas à l'origine de ce changement, ouvrez les paramètres de sécurité de votre compte, révoquez les autres sessions de connexion et contactez votre administrateur."
+email.security_event.password_updated: "Mot de passe mis à jour"
+email.security_event.email_change_requested: "Une modification de votre adresse e-mail a été demandée"
+email.security_event.email_changed: "Adresse e-mail modifiée"
+email.security_event.email_confirmed: "Adresse e-mail confirmée"
+email.security_event.login_linked: "Compte de connexion associé : {{.Provider}}"
+email.security_event.login_unlinked: "Compte de connexion dissocié"
 email.verification.code: 'Your verification code is: <strong>{{.Code}}</strong>'
 email.verification.greeting: Hello, you are verifying your email address for {{.SystemName}}.
 email.login_code.subject: '{{.SystemName}} sign-in code'

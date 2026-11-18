@@ -1,6 +1,9 @@
 package relay
 
 import (
+	"errors"
+	"net/http"
+
 	relaycommon "github.com/uter-ai/uter/relay/common"
 
 	"github.com/uter-ai/uter/relaykit/types"
@@ -15,6 +18,10 @@ func newAPIErrorFromParamOverride(err error) *types.UterError {
 func uterErrorFromParamOverride(err error) *types.UterError {
 	if fixedErr, ok := relaycommon.AsParamOverrideReturnError(err); ok {
 		return relaycommon.UterErrorFromParamOverride(fixedErr)
+	}
+	var valueErr *relaycommon.ParamOverrideRequestValueError
+	if errors.As(err, &valueErr) {
+		return types.NewErrorWithStatusCode(err, types.ErrorCodeInvalidRequest, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
 	}
 	return types.NewError(err, types.ErrorCodeChannelParamOverrideInvalid, types.ErrOptionWithSkipRetry())
 }

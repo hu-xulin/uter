@@ -508,6 +508,11 @@ ensure_redis || fail "Redis 不可用，Uter 无法启动（见上方指引）"
 #     未托管时沿用「停端口 + 独立会话派生」。
 if launchd_managed "$LAUNCHD_LABEL"; then
   LOG=/tmp/uter-backend.log   # 托管进程的 stdout/stderr 落在 plist 指定的文件里
+  # kickstart 只能替换 launchd 自己拉起的实例；如果 3000 上还挂着一个手工启动
+  # 或从旧会话遗留的 uter-bin 孤儿进程，新实例会在 bind 3000 时立刻退出，
+  # launchd 随后按 KeepAlive 反复重启（日志里看到的是 vX.Y.Z started 后紧接着
+  # bind: address already in use）。所以托管分支也要先清掉端口监听者。
+  stop_port "$PORT" " Uter"
   launchctl kickstart -k "gui/$(id -u)/$LAUNCHD_LABEL"
 else
   # 5.2 停掉旧进程（可能是 uter-bin，也可能是 go run 的临时二进制）
