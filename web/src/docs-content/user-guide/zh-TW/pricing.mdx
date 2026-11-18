@@ -1,0 +1,32 @@
+# 定價
+
+「定價」頁彙總目前已啟用的模型，可依管道、廠商、類型與標籤篩選。頂部搜尋框支援模型名稱、供應商、端點與標籤。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="定價頁" src="/user-guide/zh/pricing-and-ranking/light/01-model-marketplace.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="定價頁" src="/user-guide/zh/pricing-and-ranking/dark/01-model-marketplace.webp" />
+
+### 篩選與檢視
+
+- **管道**：優特管道、廠商管道等，數字為管道內模型數量。
+- **廠商**：Anthropic、Google、OpenAI、ByteDance、Alibaba、DeepSeek、Meta、Z.ai、Moonshot、MiniMax 等。
+- **模型標籤**：推理、工具、視覺等能力標籤。
+- **檢視**：標準、儲值（人民幣）、`/1M`、`/1K` 等價格單位切換。
+- **排序與版面**：依名稱排序，列表/格狀切換。
+
+### 模型卡片
+
+卡片展示模型名稱、廠商、簡介、標籤、計費方式、優特單價、官方單價、折扣、分組、端點、狀態與延遲/吞吐。點選「詳情」開啟完整資訊。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="模型詳情" src="/user-guide/zh/pricing-and-ranking/light/03-model-detail.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="模型詳情" src="/user-guide/zh/pricing-and-ranking/dark/03-model-detail.webp" />
+
+詳情頁包含：
+
+- **概覽**：TPS、平均延遲、成功率、基礎定價（輸入/輸出/快取讀/快取寫）與依分組定價。
+- **效能**：近期效能指標。
+- **API**：可直接複製的請求範例與端點資訊。
+- **上下文**：最大輸入視窗、最大輸出、模態、知識截止與發布時間。
+
+<Callout type="info">
+  實際扣費以請求結算為準；定價頁展示的是目前設定的參考價。模型價格、折扣與分組倍率可能隨上游調整，請以頁面即時資料為準。
+</Callout>

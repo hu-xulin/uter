@@ -1,0 +1,38 @@
+# 概要
+
+ログイン後、左ナビゲーションの「概要」で `/dashboard/overview` を開きます。残高、直近 24 時間の使用量、リクエスト数、API 情報、お知らせ、FAQ、稼働状況をまとめて表示します。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="概要: はじめにと使用量" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概要: はじめにと使用量" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" />
+
+### はじめに
+
+上部に 3 ステップのガイドがあります。
+
+1. **API キーを作成**: API キー画面で最初のキーを作成します。
+2. **クォータを追加**: ウォレットでチャージするか引き換えコードを使用します。
+3. **リクエスト送信**: プレイグラウンドまたはクライアントで確認します。
+
+右側には選択中のモデル、認証状態、コピー可能な `curl` 例が表示されます。「設定ガイドを隠す」で折りたためます。
+
+### 使用量と API 情報
+
+直近 24 時間、累計使用量、リクエスト数、残高と利用可能期間の目安を表示します。API 情報には 3 つのエンドポイントがあります。
+
+- `https://api.uter.ai`: CN2 GIA 最適化、グローバル。
+- `https://api.uter.cc`: 中国本土向け。
+- `https://api.uter.pro`: 海外向け。
+
+各エンドポイントには遅延計測とコピーボタンがあります。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="概要: 使用量と API 情報" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概要: 使用量と API 情報" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" />
+
+### お知らせ・FAQ・稼働時間
+
+- **お知らせ**: 最新の通知、または空状態。
+- **FAQ**: エンドポイント、モデル、課金、チャージ、エラー、データ保存、残高、サポート。
+- **稼働時間**: Uptime Kuma 設定時はグループ監視、未設定時は案内を表示。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="概要: お知らせと FAQ" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概要: お知らせと FAQ" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" />

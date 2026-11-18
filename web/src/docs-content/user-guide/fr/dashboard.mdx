@@ -1,59 +1,17 @@
-# Aperçu et Tableau de bord
+# Tableau de bord
 
-## Page d’aperçu
+Ouvrez Tableau de bord dans la navigation gauche (`/dashboard/models`). Une même page regroupe plusieurs vues :
 
-* Après connexion, cliquez sur le bouton "Aperçu" dans la barre de navigation gauche pour accéder à la page d’aperçu `/dashboard/overview`.
-  Vous pouvez consulter des cartes telles que le Guide de démarrage rapide, l’Utilisation et l’état de santé, les Informations sur l’API, les Annonces, la FAQ et la Disponibilité.
+## Analyse des modèles
 
-### Guide de démarrage rapide
+Filtrez par période, modèle et groupe pour examiner requêtes, tokens, lectures/écritures de cache, RPM/TPM moyens, répartition et tendances. Basculez entre histogramme et aire, ajustez préférences et filtres.
 
-1. Cliquez sur "Créer une clé API" pour accéder à `/keys`.
-2. Ajoutez du quota à votre portefeuille (si la facturation est activée).
-3. Ouvrez le bac à sable ou utilisez votre client pour envoyer la première requête et vérifier la route.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Analyse des modèles" src="/user-guide/en/dashboard/light/04-dashboard-info-1.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Analyse des modèles" src="/user-guide/en/dashboard/dark/04-dashboard-info-1.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page de démarrage rapide" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
-<img alt="Page de démarrage rapide" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+## Répartition du trafic
 
-### Utilisation et état de santé
+Visualisez la répartition des requêtes entre utilisateurs, clés API, groupes, modèles et canaux pour comprendre l'origine du trafic.
 
-La page récapitule des indicateurs tels que le solde, la consommation, le nombre de requêtes, le taux de réussite, la latence et le débit, à partir des données actuelles du compte et de l’instance.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page d’informations d’aperçu 1" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
-<img alt="Page d’informations d’aperçu 1" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### Informations sur l’API, Annonces, FAQ et Disponibilité
-
-La page affiche des informations telles que les Informations sur l’API, les Annonces, la FAQ et la Disponibilité.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page d’informations d’aperçu 2" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
-<img alt="Page d’informations d’aperçu 2" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-<Callout type="info">
-  Ces cartes sont configurées par Root dans "Paramètres système" → "Contenu de la console".
-</Callout>
-
-## Tableau de bord
-
-* Après connexion, cliquez sur le bouton "Tableau de bord" dans la barre de navigation gauche pour accéder à la page du tableau de bord `/dashboard/models`.
-  Vous pouvez consulter l’analyse des appels de modèles et la répartition du trafic ; pour les statistiques sur les utilisateurs, veuillez accéder à `/dashboard/users` (uniquement pour les utilisateurs Admin et Root).
-
-### Analyse des appels de modèles
-
-Consultez le nombre d’appels, l’utilisation de jetons, la répartition de la consommation et les indicateurs de performance par période, par modèle et par groupe.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page d’informations du tableau de bord 1" src="/user-guide/en/dashboard/light/04-dashboard-info-1.webp" />
-<img alt="Page d’informations du tableau de bord 1" src="/user-guide/en/dashboard/dark/04-dashboard-info-1.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### Répartition du trafic
-
-Consultez le flux des requêtes entre les utilisateurs, les clés API, les groupes, les modèles et les canaux.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page d’informations du tableau de bord 2" src="/user-guide/en/dashboard/light/05-dashboard-info-2.webp" />
-<img alt="Page d’informations du tableau de bord 2" src="/user-guide/en/dashboard/dark/05-dashboard-info-2.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### Statistiques sur les utilisateurs
-
-Seuls les utilisateurs Admin et Root peuvent accéder à `/dashboard/users` pour consulter l’analyse des utilisateurs ; cette section n’est pas affichée dans la navigation pour les utilisateurs ordinaires.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page d’informations du tableau de bord 3" src="/user-guide/en/dashboard/light/06-dashboard-info-3.webp" />
-<img alt="Page d’informations du tableau de bord 3" src="/user-guide/en/dashboard/dark/06-dashboard-info-3.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tableau de répartition" src="/user-guide/en/dashboard/light/05-dashboard-info-2.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tableau de répartition" src="/user-guide/en/dashboard/dark/05-dashboard-info-2.webp" />

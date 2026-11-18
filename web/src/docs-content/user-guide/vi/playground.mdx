@@ -1,0 +1,26 @@
+# Sân chơi
+
+Sân chơi giúp thử và kiểm tra mô hình ngay trong trình duyệt, dùng cùng đường gọi như API.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sân chơi" src="/user-guide/en/api-and-playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sân chơi" src="/user-guide/en/api-and-playground/dark/01-playground.webp" />
+
+## Bắt đầu trò chuyện
+
+1. Chọn **kênh** và **mô hình** bên dưới ô nhập (ví dụ "kênh Uter / MiniMax-M2.5"); mô hình khả dụng khác nhau theo kênh.
+2. Dùng gợi ý (Phân tích dữ liệu, Tóm tắt văn bản, Mã, Nhận gợi ý) hoặc tự nhập yêu cầu.
+3. Nhấn "Gửi"; phản hồi hiện trong khung hội thoại và bạn có thể tiếp tục.
+
+## Tệp đính kèm, tìm kiếm web và tham số
+
+- Ô nhập có nút đính kèm, tìm kiếm web và công cụ, tùy khả năng của mô hình.
+- Bảng tham số điều chỉnh temperature, Top P, max tokens…; chỉ tham số được bật mới gửi đi.
+- Có thể dừng, tạo lại, sửa lịch sử và xóa hội thoại để so sánh kết quả.
+
+<Callout type="info">
+  Sân chơi tính phí vào tài khoản đang đăng nhập theo cùng quy tắc như API. Mô hình hoặc kênh không khả dụng sẽ không xuất hiện trong bộ chọn.
+</Callout>
+
+## Từ Sân chơi đến API
+
+Sau khi kiểm tra, tạo khóa ở trang Khóa API và gọi cùng tên mô hình. Dùng `https://api.uter.ai/v1` (Trung Quốc đại lục: `https://api.uter.cc/v1`, nước ngoài: `https://api.uter.pro/v1`) với `Authorization: Bearer sk-...`.

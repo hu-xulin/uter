@@ -1,59 +1,17 @@
-# Overview and Dashboard
+# Dashboard
 
-## Overview Page
+Choose Dashboard in the left navigation to open `/dashboard/models`. One page hosts several views:
 
-* After logging in, click the "Overview" button in the left navigation bar to enter the overview page `/dashboard/overview`.
-  You can view cards such as Quick Start Guide, Usage and Health Status, API Information, Announcements, FAQ, and Uptime.
+## Model analytics
 
-### Quick Start Guide
+Filter by time range, model and group to inspect requests, tokens, cache reads/writes, average RPM/TPM, consumption distribution and trends. Switch between bar and area charts, adjust preferences and filters.
 
-1. Click "Create API Key" to go to `/keys`.
-2. Add quota to your wallet (if billing is enabled).
-3. Open the playground or use your client to send the first request to verify the route.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model analytics" src="/user-guide/en/dashboard/light/04-dashboard-info-1.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model analytics" src="/user-guide/en/dashboard/dark/04-dashboard-info-1.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="快速开始页" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
-<img alt="快速开始页" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+## Flow
 
-### Usage and Health Status
+See how requests split across users, API keys, groups, models and channels to understand traffic sources and channel usage.
 
-The page summarizes metrics such as balance, consumption, request count, success rate, latency, and throughput based on current account and instance data.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="概览信息页1" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
-<img alt="概览信息页1" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### API Information, Announcements, FAQ, and Uptime
-
-The page displays information such as API Information, Announcements, FAQ, and Uptime.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="概览信息页2" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
-<img alt="概览信息页2" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-<Callout type="info">
-  These cards are configured by Root in "System Settings" → "Console Content".
-</Callout>
-
-## Dashboard
-
-* After logging in, click the "Dashboard" button in the left navigation bar to enter the dashboard page `/dashboard/models`.
-  You can view model call analysis and traffic splitting; for user statistics, please go to `/dashboard/users` (Admin and Root users only).
-
-### Model Call Analysis
-
-View call counts, Token usage, consumption distribution, and performance metrics by time range, model, and group.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="数据看板信息页1" src="/user-guide/en/dashboard/light/04-dashboard-info-1.webp" />
-<img alt="数据看板信息页1" src="/user-guide/en/dashboard/dark/04-dashboard-info-1.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### Traffic Splitting
-
-View request flow between users, API keys, groups, models, and channels.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="数据看板信息页2" src="/user-guide/en/dashboard/light/05-dashboard-info-2.webp" />
-<img alt="数据看板信息页2" src="/user-guide/en/dashboard/dark/05-dashboard-info-2.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### User Statistics
-
-Only Admin and Root can access `/dashboard/users` to view user analysis; this section will not be displayed in the navigation for regular users.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="数据看板信息页3" src="/user-guide/en/dashboard/light/06-dashboard-info-3.webp" />
-<img alt="数据看板信息页3" src="/user-guide/en/dashboard/dark/06-dashboard-info-3.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Flow dashboard" src="/user-guide/en/dashboard/light/05-dashboard-info-2.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Flow dashboard" src="/user-guide/en/dashboard/dark/05-dashboard-info-2.webp" />

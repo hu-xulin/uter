@@ -1,0 +1,26 @@
+# 遊樂場
+
+「遊樂場」用於在瀏覽器中快速體驗與驗證模型，呼叫鏈路與實際 API 一致。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="遊樂場" src="/user-guide/zh/api-and-playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="遊樂場" src="/user-guide/zh/api-and-playground/dark/01-playground.webp" />
+
+## 開始對話
+
+1. 在輸入框下方選擇**管道**與**模型**（例如「優特管道 / MiniMax-M2.5」）；不同管道可用的模型不同。
+2. 可直接使用「分析資料」「摘要文字」「程式碼」「取得建議」等入門提示詞，也可自行輸入問題或指令。
+3. 點選「傳送」提交請求，模型回覆會顯示在對話區；可繼續輸入進行多輪對話。
+
+## 附件、聯網與參數
+
+- 輸入框左側提供附件、聯網與工具按鈕，受所選模型能力限制。
+- 底部參數入口可調整溫度、Top P、最大 Tokens 等生成參數；只有啟用的參數會隨請求送出。
+- 支援停止生成、重新生成、編輯歷史訊息與清空對話，便於反覆比較結果。
+
+<Callout type="info">
+  遊樂場使用目前登入帳號的餘額計費，計費規則與實際 API 相同；模型或管道不可用時，選擇器中不會出現對應選項。
+</Callout>
+
+## 從遊樂場到 API
+
+在遊樂場驗證通過後，可在「API 金鑰」頁建立金鑰，並使用相同模型名稱呼叫介面。Base URL 建議使用 `https://api.uter.ai/v1`，國內可改用 `https://api.uter.cc/v1`，海外可改用 `https://api.uter.pro/v1`；請求標頭使用 `Authorization: Bearer sk-...`。

@@ -1,65 +1,40 @@
-# 登録とログイン
+# ログイン
 
-アカウント登録、パスワード忘れのリセット、アカウントパスワードでのログイン、および Passkey と各種サードパーティ OAuth 連携によるワンクリックログインに対応しています。初めてご利用になる場合は、先に登録を完了してください。
+Uter は現在、メール認証コード・GitHub・Discord の 3 つのログイン方法を提供しています。ログインするとコンソールに入り、初回のメールコードログインでは一般ユーザーアカウントが自動作成されます。
 
-## ログイン
+## メール認証コードでログイン
 
-### アカウントパスワードでログイン
+1. ログインページでメールアドレスを入力します。
+2. 「コードを送信」を押し、メールの 6 桁コードを確認します。
+3. コードを入力し、利用規約とプライバシーポリシーに同意します。
+4. 「ログイン」を押します。
 
-1. プラットフォームのトップページを開き、右上隅の「Login」ボタンをクリックするか、`/sign-in` に直接アクセスします。
-2. ユーザー名またはメールアドレスとパスワードを入力します。
-3. ページに Cloudflare Turnstile が表示されている場合は、人間認証を完了してください。
-4. まず、ユーザー規約とプライバシーポリシーを読み、同意することを確認してから、「Login」をクリックします。
-5. アカウントで 2FA が有効になっている場合、ワンタイム認証コードまたはバックアップコードの入力も求められます。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="ログインページ" src="/user-guide/en/auth/light/01-login.webp" />
-<img alt="ログインページ" src="/user-guide/en/auth/dark/01-login.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### Passkey およびサードパーティ OAuth でのログイン
-
-ログインページには、GitHub、Discord、LinuxDO、Passkey など、プラットフォームで有効になっているサードパーティプラットフォームのアイコンが表示されます。サードパーティアカウントまたは Passkey でログインするには、次の手順で操作します。
-
-1. ユーザー規約とプライバシーポリシーを読み、同意することを確認します。
-2. ページ下部にある、該当するプラットフォーム（GitHub、Discord、LinuxDO など）または Passkey のアイコンをクリックします。
-3. サードパーティアカウントを使う場合はサードパーティの認可ページに移動して認可を完了し、Passkey を使う場合はブラウザーやデバイスに表示される指示に従って認証を完了してください。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="OAuth ログインページ" src="/user-guide/en/auth/light/02-login.webp" />
-<img alt="OAuth ログインページ" src="/user-guide/en/auth/dark/02-login.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="メールコードによるログイン" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="メールコードによるログイン" src="/user-guide/en/auth/dark/01-login.webp" />
 
 <Callout type="info">
-  Passkey およびサードパーティ OAuth のログイン方法、および人間認証を有効にするかどうかは、プラットフォームのスーパー管理者（Root）が「System Settings」→「Authentication」で設定します。無効にした方法はログインページに表示されません。
+  コードは 10 分間有効で 1 回のみ使用できます。5 回間違えると無効になり再送が必要です。未登録のメールは認証後にそのままアカウントが作成されます。
 </Callout>
 
-## 登録
+## GitHub でログイン
 
-### 登録手順
+1. 利用規約とプライバシーポリシーに同意します。
+2. 「GitHub で続行」を押します。
+3. GitHub で認可すると Uter コンソールに戻ります。
 
-1. ログインページで「Register」をクリックするか、`/sign-up` に直接アクセスします。
-2. ユーザー名、パスワード、パスワード（確認）を入力します。
-3. プラットフォームの設定でメールアドレスの確認が求められる場合は、メールアドレスを入力し、認証コードを送信して、受け取ったコードを入力します。
-4. プラットフォームで Cloudflare Turnstile が有効になっている場合は、人間認証を完了してください。
-5. まず、ユーザー規約とプライバシーポリシーを読み、同意することを確認してから、「Create Account」をクリックして登録を完了します。
+## Discord でログイン
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="登録ページ" src="/user-guide/en/auth/light/03-register.webp" />
-<img alt="登録ページ" src="/user-guide/en/auth/dark/03-register.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+1. 利用規約とプライバシーポリシーに同意します。
+2. 「Discord で続行」を押します。
+3. Discord で認可すると Uter コンソールに戻ります。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub と Discord のログイン" src="/user-guide/en/auth/light/02-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub と Discord のログイン" src="/user-guide/en/auth/dark/02-login.webp" />
 
 <Callout type="info">
-  パスワードでの登録、OAuth での登録、メールアドレスの確認、およびメールアドレスドメインやエイリアスの制限を許可できるかどうかは、Root の認証設定によって決まります。
+  GitHub / Discord は各サービスのアカウントで認可します。Uter はログインに必要な基本情報のみ保存します。ボタンが表示されない場合は無効化されています。
 </Callout>
 
-### ログインセッション管理
+## ログイン後
 
-ログインに成功すると、独立したセッションが確立されます。ログイン中のユーザーは、左サイドバーの「Profile」→「Login Sessions」から、現在の他のデバイスとのログインセッションを確認したり、個々のセッションを無効化したり、すべての他のセッションを一度にログアウトしたりできます。現在のセッションを無効化した場合は、ログインページに戻ります。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="ログインセッションページ" src="/user-guide/en/auth/light/04-login-session.webp" />
-<img alt="ログインセッションページ" src="/user-guide/en/auth/dark/04-login-session.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-## パスワード忘れのリセット
-
-1. ログインページで「Forgot Password」をクリックします。
-2. アカウントに関連付けたメールアドレスを入力して送信します。
-3. システムから送信されたリセットリンクを開きます。
-4. リセットページで新しいパスワードを設定してから、もう一度ログインします。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="パスワード忘れのページ" src="/user-guide/en/auth/light/05-forgot-password.webp" />
-<img alt="パスワード忘れのページ" src="/user-guide/en/auth/dark/05-forgot-password.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+「概要」に移動します。「プロフィール」でアカウント情報、「セキュリティとアクセス」でセッション・連携・アクセストークン・セキュリティ設定を管理できます。

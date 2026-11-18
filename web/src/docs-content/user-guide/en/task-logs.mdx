@@ -1,0 +1,29 @@
+# Task Logs
+
+Task Logs in the left navigation opens `/usage-logs/task`; the top of the page switches between Drawing Logs and Task Logs.
+
+## Drawing logs
+
+Records image tasks. Filter by time range and inspect submission time, task ID, status, progress and result; open a task for details or artifacts.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Drawing logs" src="/user-guide/en/logs-and-tasks/light/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Drawing logs" src="/user-guide/en/logs-and-tasks/dark/02-drawing-logs.webp" />
+
+## Task logs
+
+Records asynchronous video and audio tasks. Filter by time range and task ID; inspect submission time, duration, status, progress, artifacts and details.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task logs" src="/user-guide/en/logs-and-tasks/light/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task logs" src="/user-guide/en/logs-and-tasks/dark/03-task-logs.webp" />
+
+<Callout type="info">
+  Task status and progress come from the server. Failed or timed-out tasks may be refunded according to the channel rules. Use the task ID to find the matching billing record in Usage Logs.
+</Callout>
+
+## How the logs relate
+
+- **Usage Logs**: billing and performance for each model call.
+- **Audit Logs**: sign-in, security and account-access events.
+- **Drawing/Task Logs**: asynchronous task lifecycle and artifacts.
+
+When troubleshooting, confirm the account and access in Audit Logs, verify billing in Usage Logs, then inspect async results in Task Logs.

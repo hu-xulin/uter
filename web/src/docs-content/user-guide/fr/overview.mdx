@@ -1,0 +1,38 @@
+# Vue d'ensemble
+
+Après connexion, ouvrez Vue d'ensemble dans la navigation gauche (`/dashboard/overview`). La page résume le solde, l'usage des dernières 24 h, les requêtes, les points d'accès API, les annonces, la FAQ et l'uptime.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Vue d’ensemble : démarrage et usage" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Vue d’ensemble : démarrage et usage" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" />
+
+### Démarrage
+
+Trois étapes sont proposées en haut de page :
+
+1. **Créer une clé API** dans Clés API.
+2. **Ajouter du quota** dans Portefeuille ou via un code.
+3. **Envoyer une requête** dans l'Aire de jeux ou votre client.
+
+La partie droite affiche le modèle sélectionné, l'état d'authentification et un exemple `curl` copiable. « Masquer le guide » replie cette zone.
+
+### Usage et informations API
+
+La page affiche les dernières 24 h, l'usage total, le nombre de requêtes et le solde restant avec une estimation de durée. Les informations API listent trois adresses :
+
+- `https://api.uter.ai` : optimisé CN2 GIA, mondial.
+- `https://api.uter.cc` : optimisé pour la Chine continentale.
+- `https://api.uter.pro` : optimisé pour l'étranger.
+
+Chaque adresse propose un test de latence et un bouton de copie.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Vue d’ensemble : usage et API" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Vue d’ensemble : usage et API" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" />
+
+### Annonces, FAQ et uptime
+
+- **Annonces** : dernières informations de la plateforme, ou état vide.
+- **FAQ** : adresses, modèles, facturation, recharge, erreurs, conservation des données, solde et support.
+- **Uptime** : supervision groupée si Uptime Kuma est configuré ; sinon une indication s'affiche.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Vue d’ensemble : annonces et FAQ" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Vue d’ensemble : annonces et FAQ" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" />

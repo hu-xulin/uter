@@ -1,0 +1,29 @@
+# Pricing
+
+The Pricing page lists enabled models and filters by channel, vendor, type and tag. The search box matches model name, provider, endpoint and tags.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Pricing page" src="/user-guide/en/pricing-and-ranking/light/01-model-marketplace.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Pricing page" src="/user-guide/en/pricing-and-ranking/dark/01-model-marketplace.webp" />
+
+### Filters and view
+
+- **Channel**: Uter channel, vendor channels and others; the number is the model count in that channel.
+- **Vendor**: Anthropic, Google, OpenAI, ByteDance, Alibaba, DeepSeek, Meta, Z.ai, Moonshot, MiniMax and more.
+- **Model tags**: capabilities such as reasoning, tools and vision.
+- **View**: standard, recharge (CNY), `/1M` and `/1K` price units.
+- **Sort and layout**: sort by name, switch list and grid.
+
+### Model cards
+
+Cards show name, vendor, summary, tags, billing mode, Uter unit price, official price, discount, group, endpoints, status and latency/throughput. "Details" opens the full view.
+
+The detail view includes:
+
+- **Overview**: TPS, average latency, success rate, base pricing (input/output/cache read/cache write) and per-group pricing.
+- **Performance**: recent metrics.
+- **API**: copyable request examples and endpoint information.
+- **Context**: max input, max output, modalities, knowledge cutoff and release date.
+
+<Callout type="info">
+  Actual charges follow request settlement; the page shows the currently configured reference price. Prices, discounts and group ratios can change with upstream updates — trust the live page.
+</Callout>

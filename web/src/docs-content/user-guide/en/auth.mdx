@@ -1,65 +1,40 @@
-# Registration and Login
+# Login
 
-Supports account registration, forgotten password reset, account password login, and one-click login with Passkey and various third-party OAuth providers. Please complete registration before your first use.
+Uter offers three sign-in methods: email verification code, GitHub, and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular user account.
 
-## Login
+## Sign in with an email code
 
-### Account Password Login
+1. Open the sign-in page and enter your email address.
+2. Click "Send code" and use the 6-digit code from the email.
+3. Enter the code and accept the User Agreement and Privacy Policy.
+4. Click "Sign in".
 
-1. Open the platform homepage, click the "Login" button in the top right corner, or directly visit `/sign-in`.
-2. Enter your username or email and password.
-3. If Cloudflare Turnstile is displayed on the page, you need to complete the human verification.
-4. First, click to confirm you have read and agree to the user agreement and privacy policy, then click "Login".
-5. When 2FA is enabled for the account, login will additionally require entering a one-time verification code or backup code.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Login Page" src="/user-guide/en/auth/light/01-login.webp" />
-<img alt="Login Page" src="/user-guide/en/auth/dark/01-login.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-### Passkey and Third-Party OAuth Login
-
-The login page will display icons for third-party platforms such as GitHub, Discord, LinuxDO, or Passkey, which are enabled by the platform. To log in using a third-party account or Passkey:
-
-1. Click to confirm you have read and agree to the user agreement and privacy policy.
-2. Click the icon of the corresponding platform (GitHub, Discord, LinuxDO, etc.) or the Passkey icon at the bottom of the page.
-3. When using a third-party account, you will be redirected to the third-party authorization page to complete authorization; when using Passkey, complete verification as prompted by your browser or device.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="OAuth Login Page" src="/user-guide/en/auth/light/02-login.webp" />
-<img alt="OAuth Login Page" src="/user-guide/en/auth/dark/02-login.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/01-login.webp" />
 
 <Callout type="info">
-  Passkey and third-party OAuth login methods, as well as whether human verification is enabled, are configured by the platform's super administrator (Root) in "System Settings" → "Authentication". Disabled methods will not appear on the login page.
+  The code is valid for 10 minutes and can be used once; five wrong attempts invalidate it and a new code is required. An unregistered email becomes a new account after verification — no separate registration step.
 </Callout>
 
-## Registration
+## Sign in with GitHub
 
-### Registration Process
+1. Accept the User Agreement and Privacy Policy on the sign-in page.
+2. Click "Continue with GitHub".
+3. Confirm on GitHub; you return to the Uter console automatically.
 
-1. On the login page, click "Register", or directly visit `/sign-up`.
-2. Fill in your username, password, and confirm password.
-3. If platform settings require email verification, enter your email, send the verification code, and input the received code.
-4. If Cloudflare Turnstile is enabled on the platform, you need to complete the human verification.
-5. First, click to confirm you have read and agree to the user agreement and privacy policy, then click "Create Account" to complete registration.
+## Sign in with Discord
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Registration Page" src="/user-guide/en/auth/light/03-register.webp" />
-<img alt="Registration Page" src="/user-guide/en/auth/dark/03-register.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+1. Accept the User Agreement and Privacy Policy on the sign-in page.
+2. Click "Continue with Discord".
+3. Confirm on Discord; you return to the Uter console automatically.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub and Discord sign-in" src="/user-guide/en/auth/light/02-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub and Discord sign-in" src="/user-guide/en/auth/dark/02-login.webp" />
 
 <Callout type="info">
-  Whether password registration, OAuth registration, email verification, and email domain/alias restrictions are allowed is determined by the Root's authentication settings.
+  GitHub and Discord use their own accounts for authorization; Uter stores only the basic profile needed to sign you in. A missing button means that method is disabled.
 </Callout>
 
-### Login Session Management
+## After sign-in
 
-Upon successful login, an independent session will be established. Logged-in users can click "Profile" → "Login Sessions" in the left sidebar to view current login sessions with other devices, revoke individual sessions, or log out of all other sessions at once; revoking the current session will return you to the login page.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Login Session Page" src="/user-guide/en/auth/light/04-login-session.webp" />
-<img alt="Login Session Page" src="/user-guide/en/auth/dark/04-login-session.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-## Forgot Password Reset
-
-1. On the login page, click "Forgot Password".
-2. Enter the email associated with your account and submit.
-3. Open the reset link sent by the system.
-4. Set a new password on the reset page, then log in again.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Forgot Password Page" src="/user-guide/en/auth/light/05-forgot-password.webp" />
-<img alt="Forgot Password Page" src="/user-guide/en/auth/dark/05-forgot-password.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+You land on Overview. Profile shows your account information, and Security & Access manages login sessions, account bindings, access tokens and security settings.

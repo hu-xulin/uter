@@ -1,0 +1,26 @@
+# プレイグラウンド
+
+プレイグラウンドはブラウザでモデルを試し、検証するための画面で、API と同じ呼び出し経路を使用します。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="プレイグラウンド" src="/user-guide/en/api-and-playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="プレイグラウンド" src="/user-guide/en/api-and-playground/dark/01-playground.webp" />
+
+## 会話を始める
+
+1. 入力欄の下で**チャネル**と**モデル**を選びます（例:「Uter チャネル / MiniMax-M2.5」）。利用可能なモデルはチャネルごとに異なります。
+2. 「データ分析」「テキスト要約」「コード」「アドバイス」などのスタータープロンプトを使うか、自由に入力します。
+3. 「送信」を押すと応答が表示され、続けて会話できます。
+
+## 添付・Web 検索・パラメータ
+
+- 入力欄には添付・Web 検索・ツールのボタンがあり、モデルの対応状況に依存します。
+- パラメータパネルで temperature、Top P、最大トークンなどを調整でき、有効にした項目だけが送信されます。
+- 生成の停止、再生成、履歴編集、会話の消去が可能です。
+
+<Callout type="info">
+  プレイグラウンドも API と同じ規則でログイン中アカウントの残高から課金されます。利用できないモデルやチャネルは選択肢に出ません。
+</Callout>
+
+## プレイグラウンドから API へ
+
+検証後、API キー画面でキーを作成し同じモデル名で呼び出します。Base URL は `https://api.uter.ai/v1`（中国本土は `https://api.uter.cc/v1`、海外は `https://api.uter.pro/v1`）、ヘッダーは `Authorization: Bearer sk-...` です。

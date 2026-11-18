@@ -1,0 +1,36 @@
+# Security & Access
+
+Security & Access in the left navigation opens `/security`. The page covers sign-in and authentication, sessions and access, and account operations and privacy.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Security and access" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Security and access" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+
+## Sign-in and authentication
+
+- **Change password**: enter the current and new password; the new one must meet the strength rules shown.
+- **Account bindings**: bind or unbind email, GitHub and Discord. Bound methods can sign in; keep at least one usable method before unbinding.
+
+## Login sessions
+
+Login Sessions lists sessions across browsers and devices with IP, sign-in method, last activity and expiry. Revoke one session, sign out others, or sign out the current session.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Login sessions" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Login sessions" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+
+## Access tokens
+
+Access tokens call the console API from scripts or automation; they are separate from the API keys used for model calls. When creating one you choose:
+
+- **Expiry**: 30/90/180 days, 1 year, custom, or never.
+- **Scopes**: personal-scope read/edit permissions for profile, API keys, usage, wallet and account security, following least privilege.
+
+The token is shown in full only once — store it immediately and delete it when no longer needed.
+
+## Account operations and privacy
+
+- **Delete account**: permanently removes the account and data; this cannot be undone.
+- **Record IP address**: controls whether request IPs are stored in usage and error logs.
+
+<Callout type="info">
+  Passwords, keys, sessions and account deletion are sensitive: confirm the account, the target and the impact before acting.
+</Callout>

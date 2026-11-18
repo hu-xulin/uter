@@ -1,0 +1,45 @@
+# 安全與存取
+
+點選左側導覽「安全與存取」進入 `/security`，頁面分為登入與驗證、工作階段與存取、帳號操作與隱私。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="安全與存取頁" src="/user-guide/zh/profile-and-security/light/08-personal-security.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="安全與存取頁" src="/user-guide/zh/profile-and-security/dark/08-personal-security.webp" />
+
+## 登入與驗證
+
+- **變更密碼**：輸入目前密碼與新密碼完成修改；新密碼需符合頁面提示的強度要求。
+- **帳號綁定**：綁定或解除綁定電子郵件、GitHub、Discord。綁定後可使用對應方式登入，解除綁定前需確保帳號仍有其他可用登入方式。
+
+## 登入工作階段
+
+「登入工作階段」列出目前帳號在不同瀏覽器與裝置上的工作階段，包括 IP、登入方式、最後活躍時間與到期時間。可以撤銷單一工作階段、登出其他工作階段，或登出目前工作階段。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="登入工作階段" src="/user-guide/zh/profile-and-security/light/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="登入工作階段" src="/user-guide/zh/profile-and-security/dark/11-personal-login-sessions.webp" />
+
+## 存取權杖
+
+存取權杖用於在腳本或自動化工具中呼叫主控台 API，與用於模型呼叫的 API 金鑰相互獨立。建立時可選擇：
+
+- **到期時間**：30 天、90 天、180 天、1 年、自訂或永不過期。
+- **權限範圍**：依「個人」維度授予個人資料、API 金鑰、用量、錢包、帳號安全等檢視/編輯權限，遵循最小權限原則。
+
+權杖只在建立時完整顯示一次，請立即保存；不再使用時請及時刪除。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="存取權杖列表" src="/user-guide/zh/profile-and-security/light/12-personal-access-tokens.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="存取權杖列表" src="/user-guide/zh/profile-and-security/dark/12-personal-access-tokens.webp" />
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="建立存取權杖" src="/user-guide/zh/profile-and-security/light/13-personal-access-token-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="建立存取權杖" src="/user-guide/zh/profile-and-security/dark/13-personal-access-token-create.webp" />
+
+## 帳號操作與隱私
+
+- **刪除帳號**：永久刪除帳號及資料，操作不可復原。
+- **記錄 IP 位址**：控制是否在使用日誌與錯誤日誌中記錄請求 IP；依需開啟後儲存設定。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="帳號操作與隱私" src="/user-guide/zh/profile-and-security/light/14-personal-account-privacy.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="帳號操作與隱私" src="/user-guide/zh/profile-and-security/dark/14-personal-account-privacy.webp" />
+
+<Callout type="info">
+  涉及密碼、金鑰、工作階段與帳號刪除的操作都屬於敏感操作，執行前請確認目前帳號、操作對象與影響範圍。
+</Callout>

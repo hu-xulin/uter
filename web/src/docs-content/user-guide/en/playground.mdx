@@ -1,0 +1,26 @@
+# Playground
+
+The Playground lets you try and verify a model in the browser; it uses the same call path as the API.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Playground" src="/user-guide/en/api-and-playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Playground" src="/user-guide/en/api-and-playground/dark/01-playground.webp" />
+
+## Start a conversation
+
+1. Choose a **channel** and a **model** below the composer (for example "Uter channel / MiniMax-M2.5"); available models differ per channel.
+2. Use the starter prompts (Analyze data, Summarize text, Code, Get suggestions) or type your own instruction.
+3. Click "Send"; the reply appears in the conversation area, and you can continue the conversation.
+
+## Attachments, web search and parameters
+
+- The composer provides attach, web-search and tool buttons, subject to the selected model's capabilities.
+- The parameter panel adjusts temperature, Top P, max tokens and more; only enabled parameters are sent.
+- Stop, regenerate, edit history and clear the conversation to compare results.
+
+<Callout type="info">
+  The Playground bills the signed-in account under the same rules as the API. Unavailable models or channels are not offered in the selectors.
+</Callout>
+
+## From Playground to API
+
+Once verified, create a key on the API Keys page and call the same model name. Use `https://api.uter.ai/v1` by default (`https://api.uter.cc/v1` for mainland China, `https://api.uter.pro/v1` for overseas) with `Authorization: Bearer sk-...`.

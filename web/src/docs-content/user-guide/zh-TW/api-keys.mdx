@@ -1,62 +1,52 @@
 # API 金鑰
 
-左側導航點選「API 金鑰」，或直接訪問 `/keys`。頁面展示金鑰名稱、掩碼金鑰、啟用狀態、額度使用情況、分組等資訊，並支援篩選、複製、編輯、啟用/禁用和批次刪除。行選單還可複製連線資訊、開啟管理員配置的聊天預設，以及把金鑰傳送到受支援的客戶端整合。
+API 金鑰用於呼叫 Uter 的模型介面。左側導覽「API 金鑰」進入 `/keys`，頁面頂部提供「API 位址」下拉選單，可在下列三個位址之間切換並複製：
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API金鑰資訊頁" src="/user-guide/zh/api-keys/light/01-keys-info.webp" />
-<img alt="API金鑰資訊頁" src="/user-guide/zh/api-keys/dark/01-keys-info.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+- `https://api.uter.ai`：CN2 GIA 優化線路，全球通用（預設）。
+- `https://api.uter.cc`：國內專用優化線路。
+- `https://api.uter.pro`：海外專用優化線路。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API 金鑰列表" src="/user-guide/zh/api-keys/light/01-keys-info.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API 金鑰列表" src="/user-guide/zh/api-keys/dark/01-keys-info.webp" />
+
+列表展示名稱、狀態、API Key（預設遮蔽）、額度、分組、模型限制、IP 限制、建立/最後使用時間與到期時間。支援依名稱、金鑰篩選，並依狀態查看。
 
 ## 建立 API 金鑰
 
-1. 開啟「API 金鑰」，點選「建立 API 金鑰」。
-2. 填寫金鑰名稱，便於區分應用或環境。
-3. 按需設定額度、過期時間、模型限制、IP 限制和分組。
-4. 儲存後從列表中檢視並複製完整金鑰。
+1. 點選右上角「建立 API 金鑰」。
+2. 填寫名稱，選擇分組。
+3. 設定到期時間：永不過期、1 個月、1 天、1 小時，或自訂時間。
+4. 設定建立數量；數量大於 1 時名稱會自動附加隨機後綴。
+5. 選擇「無限配額」，或關閉後設定具體額度。
+6. 展開「進階設定」可設定模型限制、IP 限制等存取約束。
+7. 點選「儲存變更」。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="建立API金鑰頁" src="/user-guide/zh/api-keys/light/02-create-key.webp" />
-<img alt="建立API金鑰頁" src="/user-guide/zh/api-keys/dark/02-create-key.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="建立 API 金鑰" src="/user-guide/zh/api-keys/light/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="建立 API 金鑰" src="/user-guide/zh/api-keys/dark/02-create-key.webp" />
 
-### 配置項說明
+建立成功後會提示建立數量，金鑰出現在列表中。
 
-| 設定        | 作用                                           |
-| --------- | -------------------------------------------- |
-| 名稱        | API金鑰名稱（建議按用途命名，如「生產環境」「測試用」）                |
-| 分組        | 指定該令牌使用的渠道分組                                 |
-| Auto 分組順序 | 僅在分組為 `auto` 時顯示；可以繼承 Root 的全域性順序，也可以設定金鑰級順序。 |
-| 跨分組重試開關   | 開啟後，當前分組渠道失敗時會按順序嘗試下一個分組的渠道。                 |
-| 過期時間      | 到期後拒絕使用該金鑰                                   |
-| 數量        | 可一次性建立多個 API 金鑰（名稱將新增隨機字尾）                   |
-| 額度        | 限制該金鑰可消耗的額度                                  |
-| 無限額度開關    | 開啟後為此 API 金鑰啟用無限配額                           |
-| 模型限制      | 限定該令牌只能呼叫指定模型，留空表示不限制                        |
-| IP 白名單    | 支援逐行填寫 IP 或 CIDR，留空表示不限制；應配合可信反向代理/CDN 使用    |
+## 查看、複製與操作
 
-<Callout type="warn">
-  API 金鑰等同於密碼。不要把完整金鑰提交到程式碼倉庫、截圖、日誌或聊天工具；懷疑洩露時應立即刪除並建立新金鑰。
-</Callout>
+- **查看/複製**：點選金鑰文字或複製按鈕。查看完整金鑰屬於敏感操作，需先完成安全驗證；若帳號沒有可用的驗證方式，頁面會提示先綁定驗證方式。
+- **操作選單**：可複製金鑰、複製連線資訊、開啟應用整合，或刪除金鑰。
+- **啟用/停用**：停用後該金鑰不能繼續呼叫介面，但記錄保留。
+- **編輯**：修改名稱、分組、額度、到期時間與存取限制。
 
-## 檢視和複製 API 金鑰
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API 金鑰操作選單" src="/user-guide/zh/api-keys/light/03-key-actions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API 金鑰操作選單" src="/user-guide/zh/api-keys/dark/03-key-actions.webp" />
 
-在 API 金鑰列表中點選掩碼金鑰，按頁面提示檢視和複製完整值。完整金鑰屬於敏感憑證，檢視行為可能需要額外安全驗證。
+## 使用金鑰
 
-「複製連線資訊」會將金鑰和平臺地址複製為應用匯入資訊；點選左側欄「聊天」中的目標預設聊天應用，瀏覽器將嘗試啟動已安裝的聊天應用，並自動跳轉填充配置資訊。
+在請求標頭中攜帶金鑰：
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="檢視API金鑰頁" src="/user-guide/zh/api-keys/light/03-view-key.webp" />
-<img alt="檢視API金鑰頁" src="/user-guide/zh/api-keys/dark/03-view-key.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
+```bash
+curl https://api.uter.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-你的金鑰" \
+  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"你好"}]}'
+```
 
-## 編輯 API 金鑰
-
-在API金鑰列表中找到目標金鑰，點選右側「編輯」按鈕，可修改金鑰的配置選項（不包括API金鑰本身）。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="編輯API金鑰頁" src="/user-guide/zh/api-keys/light/04-edit-key.webp" />
-<img alt="編輯API金鑰頁" src="/user-guide/zh/api-keys/dark/04-edit-key.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-## 啟用、禁用和刪除API 金鑰
-
-在列表行操作中可啟用、禁用或刪除金鑰；選擇多行後可以批次刪除。禁用可保留配置並停止呼叫，刪除則不可恢復。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="刪除API金鑰頁" src="/user-guide/zh/api-keys/light/05-delete-key.webp" />
-<img alt="刪除API金鑰頁" src="/user-guide/zh/api-keys/dark/05-delete-key.webp" className="block w-full rounded-lg border border-border hidden dark:block" />
-
-<Callout type="warn">
-  刪除確認後該API金鑰立即失效，無法恢復。刪除前請確認所選金鑰，避免誤刪生產金鑰。
+<Callout type="info">
+  金鑰等同帳號憑證，請勿寫入前端程式碼、公開倉庫或聊天記錄。發現洩漏時立即停用並刪除，再建立新金鑰。刪除金鑰前請確認沒有線上服務仍在使用。
 </Callout>

@@ -1,0 +1,26 @@
+# Aire de jeux
+
+L'Aire de jeux permet de tester un modèle dans le navigateur ; elle utilise le même chemin d'appel que l'API.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Aire de jeux" src="/user-guide/en/api-and-playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Aire de jeux" src="/user-guide/en/api-and-playground/dark/01-playground.webp" />
+
+## Démarrer une conversation
+
+1. Choisissez un **canal** et un **modèle** sous la zone de saisie (par ex. « canal Uter / MiniMax-M2.5 ») ; les modèles disponibles varient selon le canal.
+2. Utilisez les suggestions (Analyser des données, Résumer un texte, Code, Obtenir des conseils) ou saisissez votre propre consigne.
+3. Cliquez sur « Envoyer » ; la réponse s'affiche et vous pouvez poursuivre la conversation.
+
+## Pièces jointes, recherche web et paramètres
+
+- La zone de saisie propose des boutons pièce jointe, recherche web et outils, selon les capacités du modèle.
+- Le panneau de paramètres ajuste température, Top P, max tokens, etc. ; seuls les paramètres activés sont envoyés.
+- Arrêtez, régénérez, modifiez l'historique et effacez la conversation pour comparer les résultats.
+
+<Callout type="info">
+  L'Aire de jeux facture le compte connecté selon les mêmes règles que l'API. Les modèles ou canaux indisponibles n'apparaissent pas dans les sélecteurs.
+</Callout>
+
+## De l'Aire de jeux à l'API
+
+Après validation, créez une clé dans Clés API et appelez le même modèle. Utilisez `https://api.uter.ai/v1` par défaut (`https://api.uter.cc/v1` pour la Chine continentale, `https://api.uter.pro/v1` à l'étranger) avec `Authorization: Bearer sk-...`.

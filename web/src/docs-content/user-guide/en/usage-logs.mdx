@@ -1,0 +1,15 @@
+# Usage Logs
+
+Usage Logs in the left navigation opens `/usage-logs/common` and records every model call.
+
+- **Filters**: time range, model name, group and type, plus key, user and other conditions.
+- **Summary bar**: total usage for the current filter, RPM, TPM, cache reads/writes and each step's delta.
+- **Table**: time, key, model, streaming or not, tokens, cost, latency and details.
+- **Actions**: reset, search, export, page size, pagination and details.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Usage logs" src="/user-guide/en/logs-and-tasks/light/01-usage-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Usage logs" src="/user-guide/en/logs-and-tasks/dark/01-usage-logs.webp" />
+
+<Callout type="info">
+  Costs reflect the settled result of each request; whether a failed request is billed depends on the failure stage and the channel response. Cross-check balance and totals in Wallet.
+</Callout>

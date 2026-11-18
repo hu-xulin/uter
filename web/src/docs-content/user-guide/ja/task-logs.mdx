@@ -1,0 +1,29 @@
+# タスク履歴
+
+左ナビゲーションの「タスク履歴」で `/usage-logs/task` を開き、上部で「描画履歴」と「タスク履歴」を切り替えます。
+
+## 描画履歴
+
+画像タスクを記録します。期間で絞り込み、送信時刻、タスク ID、状態、進捗、結果を確認し、詳細や成果物を開けます。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="描画履歴" src="/user-guide/en/logs-and-tasks/light/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="描画履歴" src="/user-guide/en/logs-and-tasks/dark/02-drawing-logs.webp" />
+
+## タスク履歴
+
+動画・音声などの非同期タスクを記録します。期間とタスク ID で絞り込み、送信時刻、所要時間、状態、進捗、成果物、詳細を確認します。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="タスク履歴" src="/user-guide/en/logs-and-tasks/light/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="タスク履歴" src="/user-guide/en/logs-and-tasks/dark/03-task-logs.webp" />
+
+<Callout type="info">
+  状態と進捗はサーバー側の記録に基づきます。失敗・タイムアウト時はチャネル規則により返金される場合があります。タスク ID で利用履歴の課金記録を特定できます。
+</Callout>
+
+## ログの関係
+
+- **利用履歴**: 各モデル呼び出しの課金と性能。
+- **監査ログ**: ログイン、セキュリティ、アカウントアクセス。
+- **描画/タスク履歴**: 非同期タスクのライフサイクルと成果物。
+
+調査時は監査 → 利用 → タスクの順に確認すると効率的です。

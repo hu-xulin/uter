@@ -1,0 +1,15 @@
+# 利用履歴
+
+左ナビゲーションの「利用履歴」で `/usage-logs/common` を開き、すべてのモデル呼び出しを記録します。
+
+- **フィルター**: 期間、モデル名、グループ、種類、さらにキー・ユーザーなど。
+- **サマリーバー**: 絞り込み結果の合計使用量、RPM、TPM、キャッシュ読み書きと各段階の差分。
+- **表**: 時刻、キー、モデル、ストリーミング可否、トークン、費用、所要時間、詳細。
+- **操作**: リセット、検索、エクスポート、ページサイズ、ページ送り、詳細。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="利用履歴" src="/user-guide/en/logs-and-tasks/light/01-usage-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="利用履歴" src="/user-guide/en/logs-and-tasks/dark/01-usage-logs.webp" />
+
+<Callout type="info">
+  費用は各リクエストの確定結果です。失敗リクエストの課金は失敗段階とチャネルの応答によります。残高と合計はウォレットで照合できます。
+</Callout>

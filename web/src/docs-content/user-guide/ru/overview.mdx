@@ -1,0 +1,38 @@
+# Обзор
+
+После входа выберите «Обзор» в левом меню (`/dashboard/overview`). Страница показывает баланс, расход за 24 часа, число запросов, адреса API, объявления, FAQ и доступность.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Обзор: начало работы и расход" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Обзор: начало работы и расход" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" />
+
+### Начало работы
+
+Вверху три шага:
+
+1. **Создать ключ API** в разделе «Ключи API».
+2. **Пополнить квоту** в «Кошельке» или кодом.
+3. **Отправить запрос** в Песочнице или своём клиенте.
+
+Справа показаны выбранная модель, состояние авторизации и готовый `curl`. «Скрыть руководство» сворачивает блок.
+
+### Расход и информация об API
+
+Показаны расход за 24 часа, общий расход, число запросов, остаток и оценка срока. Информация об API содержит три адреса:
+
+- `https://api.uter.ai` — оптимизация CN2 GIA, глобально.
+- `https://api.uter.cc` — для материкового Китая.
+- `https://api.uter.pro` — для зарубежья.
+
+У каждого адреса есть проверка задержки и копирование.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Обзор: расход и API" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Обзор: расход и API" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" />
+
+### Объявления, FAQ и аптайм
+
+- **Объявления**: последние уведомления или пустое состояние.
+- **FAQ**: адреса, модели, биллинг, пополнение, ошибки, хранение данных, баланс, поддержка.
+- **Аптайм**: группы мониторинга при настроенном Uptime Kuma, иначе подсказка.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Обзор: объявления и FAQ" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Обзор: объявления и FAQ" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" />

@@ -1,0 +1,38 @@
+# 概覽
+
+登入後點選左側導覽「概覽」進入 `/dashboard/overview`。頁面彙總帳戶餘額、近 24 小時消耗、請求數、API 接入資訊、公告、常見問題與運行狀態。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="概覽頁開始使用與用量" src="/user-guide/zh/dashboard/light/01-overview-get-started.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概覽頁開始使用與用量" src="/user-guide/zh/dashboard/dark/01-overview-get-started.webp" />
+
+### 快速開始
+
+頁面頂部提供三步引導：
+
+1. **建立 API 金鑰**：進入「API 金鑰」建立第一個金鑰。
+2. **新增額度**：在「錢包」儲值或使用兌換碼。
+3. **送出請求**：在「遊樂場」或自己的用戶端驗證路由。
+
+右側會顯示目前選取的模型、驗證狀態與可直接複製的 `curl` 範例。點選「隱藏設定引導」可收合引導區域。
+
+### 用量概覽與 API 資訊
+
+頁面顯示近 24 小時消耗、歷史總消耗、請求數與剩餘餘額，並給出預計可用時長。下方「API 資訊」列出三個接入位址：
+
+- `https://api.uter.ai`：CN2 GIA 優化線路，全球通用。
+- `https://api.uter.cc`：國內專用優化線路。
+- `https://api.uter.pro`：海外專用優化線路。
+
+每個位址都提供延遲偵測與複製按鈕，可依用戶端所在網路選擇。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="概覽頁用量與 API 資訊" src="/user-guide/zh/dashboard/light/02-overview-info-1.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概覽頁用量與 API 資訊" src="/user-guide/zh/dashboard/dark/02-overview-info-1.webp" />
+
+### 公告、常見問題與運行時間
+
+- **公告**：顯示平台最新通知；沒有公告時顯示空狀態。
+- **常見問答**：涵蓋接入位址、模型、計費、儲值、錯誤、資料保存、餘額查詢與取得支援等常見問題。
+- **運行時間**：接入 Uptime Kuma 後顯示分組監控狀態；未設定時顯示提示。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="概覽頁公告與常見問題" src="/user-guide/zh/dashboard/light/03-overview-info-2.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概覽頁公告與常見問題" src="/user-guide/zh/dashboard/dark/03-overview-info-2.webp" />

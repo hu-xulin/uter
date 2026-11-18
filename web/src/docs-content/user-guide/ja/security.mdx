@@ -1,0 +1,36 @@
+# セキュリティとアクセス
+
+左ナビゲーションの「セキュリティとアクセス」で `/security` を開きます。ログインと認証、セッションとアクセス、アカウント操作とプライバシーに分かれます。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="セキュリティとアクセス" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="セキュリティとアクセス" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+
+## ログインと認証
+
+- **パスワード変更**: 現在と新しいパスワードを入力。新パスワードは表示される強度要件を満たす必要があります。
+- **アカウント連携**: メール、GitHub、Discord を連携/解除。解除前に別の利用可能なログイン方法を確保してください。
+
+## ログインセッション
+
+ブラウザ・端末ごとのセッションを IP、ログイン方法、最終アクティブ、有効期限とともに表示します。個別失効、他セッションのログアウト、現在のセッションのログアウトが可能です。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="ログインセッション" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="ログインセッション" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+
+## アクセストークン
+
+アクセストークンはスクリプトや自動化からコンソール API を呼ぶためのもので、モデル用 API キーとは別です。作成時に次を選びます。
+
+- **有効期限**: 30/90/180 日、1 年、カスタム、無期限。
+- **権限範囲**: プロフィール、API キー、使用量、ウォレット、アカウントセキュリティの個人向け読み書き権限（最小権限）。
+
+トークンは作成時のみ完全表示されます。すぐ保存し、不要になったら削除してください。
+
+## アカウント操作とプライバシー
+
+- **アカウント削除**: アカウントとデータを完全に削除（復元不可）。
+- **IP の記録**: 利用ログとエラーログにリクエスト IP を残すかどうか。
+
+<Callout type="info">
+  パスワード、キー、セッション、アカウント削除は機密操作です。実行前にアカウント、対象、影響範囲を確認してください。
+</Callout>

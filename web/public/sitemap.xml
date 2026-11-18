@@ -151,13 +151,10 @@
     <loc>https://uter.ai/docs/en/guide/wiki/model-testing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/api-and-playground</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/api-keys</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/app-integration</loc>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/audit-logs</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/auth</loc>
@@ -166,16 +163,31 @@
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/logs-and-tasks</loc>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/overview</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/pricing-and-ranking</loc>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/playground</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/profile-and-security</loc>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/pricing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/wallet-and-subscription</loc>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/profile</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/security</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/task-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/usage-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/wallet</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/en/legal/privacy-policy</loc>
@@ -334,13 +346,10 @@
     <loc>https://uter.ai/docs/fr/guide/wiki/model-testing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/api-and-playground</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/api-keys</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/app-integration</loc>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/audit-logs</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/auth</loc>
@@ -349,16 +358,31 @@
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/logs-and-tasks</loc>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/overview</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/pricing-and-ranking</loc>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/playground</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/profile-and-security</loc>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/pricing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/wallet-and-subscription</loc>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/profile</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/security</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/task-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/usage-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/wallet</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/legal/privacy-policy</loc>
@@ -517,13 +541,10 @@
     <loc>https://uter.ai/docs/ja/guide/wiki/model-testing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/api-and-playground</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/api-keys</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/app-integration</loc>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/audit-logs</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/auth</loc>
@@ -532,16 +553,31 @@
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/logs-and-tasks</loc>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/overview</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/pricing-and-ranking</loc>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/playground</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/profile-and-security</loc>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/pricing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/wallet-and-subscription</loc>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/profile</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/security</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/task-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/usage-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/wallet</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ja/legal/privacy-policy</loc>
@@ -700,13 +736,10 @@
     <loc>https://uter.ai/docs/ru/guide/wiki/model-testing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/api-and-playground</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/api-keys</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/app-integration</loc>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/audit-logs</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/auth</loc>
@@ -715,16 +748,31 @@
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/logs-and-tasks</loc>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/overview</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/pricing-and-ranking</loc>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/playground</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/profile-and-security</loc>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/pricing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/wallet-and-subscription</loc>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/profile</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/security</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/task-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/usage-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/wallet</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/legal/privacy-policy</loc>
@@ -883,13 +931,10 @@
     <loc>https://uter.ai/docs/vi/guide/wiki/model-testing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/api-and-playground</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/api-keys</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/app-integration</loc>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/audit-logs</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/auth</loc>
@@ -898,16 +943,31 @@
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/logs-and-tasks</loc>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/overview</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/pricing-and-ranking</loc>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/playground</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/profile-and-security</loc>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/pricing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/wallet-and-subscription</loc>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/profile</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/security</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/task-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/usage-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/wallet</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/vi/legal/privacy-policy</loc>
@@ -1066,13 +1126,10 @@
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/model-testing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/api-and-playground</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/api-keys</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/app-integration</loc>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/audit-logs</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/auth</loc>
@@ -1081,16 +1138,31 @@
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/logs-and-tasks</loc>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/overview</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/pricing-and-ranking</loc>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/playground</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/profile-and-security</loc>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/pricing</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/wallet-and-subscription</loc>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/profile</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/security</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/task-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/usage-logs</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/wallet</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh-TW/legal/privacy-policy</loc>

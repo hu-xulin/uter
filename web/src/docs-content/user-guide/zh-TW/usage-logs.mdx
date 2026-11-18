@@ -1,0 +1,15 @@
+# 使用日誌
+
+左側導覽「使用日誌」進入 `/usage-logs/common`，記錄每一次模型呼叫。
+
+- **篩選**：時間範圍、模型名稱、分組、類型，以及展開後的權杖、使用者等條件。
+- **統計條**：目前篩選結果的總用量、RPM、TPM、快取讀/寫，以及每一步的變化量。
+- **列表**：時間、權杖、模型、串流/非串流、Tokens、費用、耗時與詳情。
+- **操作**：重設、搜尋、匯出、調整每頁數量、分頁與查看詳情。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="使用日誌" src="/user-guide/zh/logs-and-tasks/light/01-usage-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="使用日誌" src="/user-guide/zh/logs-and-tasks/dark/01-usage-logs.webp" />
+
+<Callout type="info">
+  日誌中的費用依請求結算結果記錄；失敗請求是否計費取決於失敗階段與管道回應。餘額與總用量可在「錢包」交叉核對。
+</Callout>
