@@ -45,7 +45,7 @@ const keys = [
 for (const theme of ['light', 'dark']) {
   const group = source.themes?.[theme]?.brand
   if (group?.$type !== 'color') {
-    throw new Error('Missing color group: themes.' + theme + '.brand')
+    throw new Error(`Missing color group: themes.${theme}.brand`)
   }
   for (const key of keys) {
     const token = group[key]
@@ -54,16 +54,12 @@ for (const theme of ['light', 'dark']) {
       !/^#[0-9a-f]{6}$/i.test(token.$value)
     ) {
       throw new Error(
-        'Invalid themes.' +
-          theme +
-          '.brand.' +
-          key +
-          ': expected DTCG color token with #RRGGBB $value'
+        `Invalid themes.${theme}.brand.${key}: expected DTCG color token with #RRGGBB $value`
       )
     }
     if (typeof token.$description !== 'string' || !token.$description.trim()) {
       throw new Error(
-        'Missing $description for themes.' + theme + '.brand.' + key
+        `Missing $description for themes.${theme}.brand.${key}`
       )
     }
   }
@@ -82,11 +78,7 @@ const render = (theme) =>
   keys
     .map(
       (key) =>
-        '  --uter-brand-' +
-        names[key] +
-        ': ' +
-        source.themes[theme].brand[key].$value +
-        ';'
+        `  --uter-brand-${names[key]}: ${source.themes[theme].brand[key].$value};`
     )
     .join('\n')
 const output = [
@@ -112,7 +104,7 @@ const output = [
   '/*',
   ' * GENERATED FILE — DO NOT EDIT.',
   ' * Source: src/design-system/source/brand.tokens.json',
-  ' * Source version: ' + metadata.version + ' (' + metadata.status + ')',
+  ` * Source version: ${metadata.version} (${metadata.status})`,
   ' * Generator: scripts/generate-design-tokens.mjs',
   ' * Generator version: 1.1.0',
   ' * Spec: docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',

@@ -575,9 +575,7 @@ for (const abs of walk(SRC)) {
     ) ?? []) {
       const inner = hit.slice(hit.indexOf('[') + 1, -1)
       if (
-        inner.includes('var(') ||
-        inner.includes('calc(') ||
-        inner.includes('env(')
+        /\b(?:var|calc|env)\(/.test(inner)
       ) {
         continue
       }
@@ -650,10 +648,11 @@ if (WRITE_BASELINE) {
     )}\n`
   )
   console.log(
-    `design-tokens: 基线已写入 ${relative(ROOT, BASELINE_PATH)}，共 ${entries.length} 条` +
-      (previousCount
+    `design-tokens: 基线已写入 ${relative(ROOT, BASELINE_PATH)}，共 ${entries.length} 条${
+      previousCount
         ? `（此前 ${previousCount} 条，减少 ${previousCount - entries.length} 条）`
-        : '')
+        : ''
+    }`
   )
   process.exit(0)
 }

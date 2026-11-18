@@ -5,13 +5,7 @@ const entries = toc
   .filter((e) => e.param.hasColor || e.param.hasAvatar)
   .map(
     (e) =>
-      '\t"' +
-      e.id +
-      '": {' +
-      (e.param.hasColor ? 'true' : 'false') +
-      ', ' +
-      (e.param.hasAvatar ? 'true' : 'false') +
-      '},'
+      `\t"${e.id}": {${e.param.hasColor ? 'true' : 'false'}, ${e.param.hasAvatar ? 'true' : 'false'}},`
   )
 
 const header = `/*
@@ -55,6 +49,6 @@ type lobeIconVariant struct {
 var lobeIconVariants = map[string]lobeIconVariant{
 `
 
-const content = header + entries.join('\n') + '\n}\n'
+const content = `${header}${entries.join('\n')}\n}\n`
 fs.writeFileSync('/Users/lincolnhu/uter/model/lobe_icon_variants.go', content)
 console.log('已生成，收录品牌数:', entries.length)

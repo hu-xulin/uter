@@ -112,7 +112,7 @@ if (browser) {
             if (labelledBy) {
               const text = labelledBy
                 .split(/\s+/)
-                .map((id) => document.getElementById(id)?.textContent || '')
+                .map((id) => document.querySelector(`#${id}`)?.textContent || '')
                 .join(' ')
                 .trim()
               if (text) return text
@@ -306,6 +306,6 @@ const report = {
   checks,
 }
 mkdirSync(resolve(REPORT_PATH, '..'), { recursive: true })
-writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + '\n')
+writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`)
 console.log(JSON.stringify({ ...report, report_path: REPORT_PATH }, null, 2))
 if (failures.length) process.exitCode = 1

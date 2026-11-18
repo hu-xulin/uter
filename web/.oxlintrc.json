@@ -19,7 +19,8 @@
     ".eslintrc.cjs",
     "src/components/ui",
     "src/routeTree.gen.ts",
-    "public/plugins"
+    "public/plugins",
+    "public/product-spec"
   ],
   "rules": {
     "curly": ["error", "multi-line"],

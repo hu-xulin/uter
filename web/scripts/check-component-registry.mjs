@@ -54,22 +54,22 @@ if (!Array.isArray(registry.components)) {
 
 for (const component of registry.components ?? []) {
   if (ids.has(component.id)) {
-    errors.push('Duplicate component ID: ' + component.id)
+    errors.push(`Duplicate component ID: ${component.id}`)
   }
   ids.add(component.id)
   if (files.has(component.file)) {
-    errors.push('Duplicate component file: ' + component.file)
+    errors.push(`Duplicate component file: ${component.file}`)
   }
   files.add(component.file)
   if (!existsSync(join(ROOT, component.file))) {
-    errors.push('Missing component file: ' + component.file)
+    errors.push(`Missing component file: ${component.file}`)
   }
   if (!component.contract?.states?.length) {
-    errors.push('Missing states: ' + component.id)
+    errors.push(`Missing states: ${component.id}`)
   }
   for (const section of ['accessibility', 'responsive', 'tokens', 'evidence']) {
     if (!component.contract?.[section]) {
-      errors.push('Missing contract section ' + section + ': ' + component.id)
+      errors.push(`Missing contract section ${section}: ${component.id}`)
     }
   }
   if (
@@ -77,27 +77,27 @@ for (const component of registry.components ?? []) {
       component.contract?.evidence?.status
     )
   ) {
-    errors.push('Invalid evidence status: ' + component.id)
+    errors.push(`Invalid evidence status: ${component.id}`)
   }
   for (const test of component.contract?.evidence?.tests ?? []) {
     if (!existsSync(join(ROOT, test))) {
-      errors.push('Missing test evidence file ' + test + ' for ' + component.id)
+      errors.push(`Missing test evidence file ${test} for ${component.id}`)
     }
   }
   if (component.contract?.evidence?.status !== 'VERIFIED') {
-    warnings.push('Evidence not verified: ' + component.id)
+    warnings.push(`Evidence not verified: ${component.id}`)
   }
 }
 
 const actual = new Set(collectTsx(UI_ROOT))
 for (const file of actual) {
   if (!files.has(file)) {
-    errors.push('Unregistered UI component file: ' + file)
+    errors.push(`Unregistered UI component file: ${file}`)
   }
 }
 for (const file of files) {
   if (!actual.has(file)) {
-    errors.push('Registry entry is not an eligible UI component: ' + file)
+    errors.push(`Registry entry is not an eligible UI component: ${file}`)
   }
 }
 

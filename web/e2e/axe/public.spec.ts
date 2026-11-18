@@ -87,26 +87,24 @@ for (const route of PUBLIC_ROUTES) {
     )
     if (advisory.length > 0) {
       for (const v of advisory) {
+        // eslint-disable-next-line no-console
         console.log(
-          `[axe:advisory][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
-            `(${v.nodes.length} nodes)`
+          `[axe:advisory][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} (${v.nodes.length} nodes)`
         )
       }
     }
 
     expect(
       blocking,
-      `${route.path} 存在 critical/serious 可访问性违规：` +
-        blocking
-          .map(
-            (v) =>
-              `${v.impact}/${v.id} "${v.help}" -> ` +
-              v.nodes
-                .slice(0, 5)
-                .map((n) => n.target.join(' '))
-                .join('; ')
-          )
-          .join('\n')
+      `${route.path} 存在 critical/serious 可访问性违规：${blocking
+        .map(
+          (v) =>
+            `${v.impact}/${v.id} "${v.help}" -> ${v.nodes
+              .slice(0, 5)
+              .map((n) => n.target.join(' '))
+              .join('; ')}`
+        )
+        .join('\n')}`
     ).toEqual([])
   })
 }

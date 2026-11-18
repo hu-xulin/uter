@@ -108,29 +108,28 @@ test('axe: 鉴权页批量扫描', async ({ page }) => {
     for (const v of results.violations) {
       const tag =
         v.impact && BLOCKING_IMPACTS.has(v.impact) ? 'blocking' : 'advisory'
-      console.log(
-        `[axe:${tag}][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} ` +
-          `(${v.nodes.length} nodes)`
+      // eslint-disable-next-line no-console
+        console.log(
+        `[axe:${tag}][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} (${v.nodes.length} nodes)`
       )
     }
     for (const v of blocking) {
       blockingByRoute.push(
-        `${route.path} ${v.impact}/${v.id} "${v.help}" -> ` +
-          v.nodes
-            .slice(0, 5)
-            .map((n) => {
-              // Keep the ACTUAL measured colours in the failure message so a
-              // contrast regression can be fixed against real numbers instead
-              // of guessed CSS. axe exposes them on the rule's `any[0].data`.
-              const data = (
-                n.any?.[0] as { data?: Record<string, unknown> } | undefined
-              )?.data
-              const measured = data
-                ? ` [fg=${data.fgColor ?? '?'} bg=${data.bgColor ?? '?'} ratio=${data.contrastRatio ?? '?'} expected=${data.expectedContrastRatio ?? '?'}]`
-                : ''
-              return `${n.target.join(' ')}${measured}`
-            })
-            .join('; ')
+        `${route.path} ${v.impact}/${v.id} "${v.help}" -> ${v.nodes
+          .slice(0, 5)
+          .map((n) => {
+            // Keep the ACTUAL measured colours in the failure message so a
+            // contrast regression can be fixed against real numbers instead
+            // of guessed CSS. axe exposes them on the rule's `any[0].data`.
+            const data = (
+              n.any?.[0] as { data?: Record<string, unknown> } | undefined
+            )?.data
+            const measured = data
+              ? ` [fg=${data.fgColor ?? '?'} bg=${data.bgColor ?? '?'} ratio=${data.contrastRatio ?? '?'} expected=${data.expectedContrastRatio ?? '?'}]`
+              : ''
+            return `${n.target.join(' ')}${measured}`
+          })
+          .join('; ')}`
       )
     }
   }
