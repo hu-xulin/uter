@@ -1,51 +1,91 @@
 # Model Testing
 
-Before integrating a large model on Uter, work through this chapter to verify whether it connects, works, is stable, and bills accurately — so you don't hit surprises after going live.
+Before wiring a model into Uter, verify it step by step — can it connect, can it answer, is it stable, is it billed correctly — so problems surface before production.
 
-## Prerequisites
+Start with the **Playground** in the console, then re-check over the API. That split quickly separates “the model is unavailable” from “my request is wrong”.
 
-Confirm you have the following before testing. Missing any one of them makes the first step fail.
+## Before you start
 
-| Item | Description | Where to get it |
+Confirm you have the items below. Missing any one of them makes step 1 fail.
+
+| Item | What it is | Where to get it |
 | --- | --- | --- |
-| **API base URL** | Shaped like `https://uter.ai/v1`; use the address shown in your console (it may be a dedicated domain for you) | Console → Profile / integration docs |
-| **API key (token)** | Shaped like `sk-xxxxxxxx`. This is a credential equivalent to a password: never leak it, never put it in front-end code, never commit it to a repository | Console → Token management → Create token |
-| **Account quota** | Billing unit: 500,000 tokens ≈ 1 USD. Every call deducts quota; requests are rejected when it runs out | Console → Usage / balance; or `GET /v1/dashboard/billing/usage` |
-| **Model name** | The registered name of the model you want to test (it may differ from the vendor's original name) | The `id` returned by `GET /v1/models` |
+| **API Base URL** | e.g. `https://your-domain/v1`; use the domain this console is served from (your dedicated domain may differ) | Site address + `/v1` |
+| **API Key** | e.g. `sk-xxxxxxxx`. This is a credential equal to a password: never expose it, never ship it to the browser, never commit it | Console → API Keys → Create API Key |
+| **Quota** | Internal billing unit: **500,000 quota = US$1**; each model applies its own ratio and the wallet/usage screens show the site currency. Calls are rejected when quota runs out | Console → Wallet; Console → Usage Logs |
+| **Model name** | The registered name in Uter (not necessarily the vendor's original name) | Console → Pricing; or the `id` from `GET /v1/models` |
+
+### Channels and groups: two different dimensions
+
+- **Group**: determines billing ratio and the routable model set. A key bills and routes according to its group.
+- **Channel**: the upstream provider that actually serves a model (e.g. Uter channel, aggregate channel, shared channel). One model can be served by several enabled channels, or by a single one.
+
+The same model can therefore differ in availability and price across groups and over time. “No available channel” means no enabled channel currently serves that model for your group — not that your request is malformed.
 
 <Callout type="warn">
-  A key is equivalent to a password: use it only on your server or in a secret manager, never ship it to the browser, never write it in plaintext to logs, never commit it to Git.
+  An API key is a password: use it only server-side or in a secret manager. Never send it to a browser, never log it in plaintext, never commit it.
 </Callout>
 
-Keys have four states in the console: enabled, disabled, expired, and exhausted. Once the quota is used up the key is exhausted and every call reports insufficient quota. Check the state on the token management page before testing.
+### Check key status and limits first
+
+API keys have four states: **Enabled, Disabled, Expired, Exhausted**. Creating or editing a key can also apply:
+
+- **Expiry**: “Never expires” by default; after expiry calls return 401.
+- **Quota cap**: a dedicated allowance or “Unlimited”. When used up the key becomes Exhausted.
+- **Model limits**: allow only selected models. With no model selected the key cannot call anything.
+- **IP allowlist**: supports CIDR (e.g. `203.0.113.0/24`); other sources are rejected.
+- **Allow querying user quota**: whether this key may call `/v1/dashboard/billing/*`.
+
+## Fastest check: try it in the Playground
+
+Console → Playground exercises the same model path as the API.
+
+1. Pick a **channel** on the left; the right pane lists that channel's models. Select the model to test.
+2. Send a message and watch the reply (streamed by default).
+3. Open Parameter settings and enable what you need: `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. Only enabled parameters are sent.
+4. To test multimodal or web-search behaviour, use the composer's attach / search tools (subject to model support).
+5. Stop, regenerate, edit history, or clear the conversation at any time.
+
+The Playground bills quota under the same rules, which makes it ideal for iteration; still confirm over the API before shipping.
+
+## Check the model and its price
+
+Console → Pricing lets you:
+
+- search by model name;
+- filter by **channel, vendor, type, tag** to see which channels serve a model;
+- inspect billing mode (per token / per request / per task), context limits and supported endpoints;
+- compare public prices before choosing a model.
 
 ## Test dimensions
 
-Before using a model in production, verify these nine dimensions one by one. The first four answer "does it work at all"; the last five answer "is it stable and is the billing correct".
+Verify these eleven dimensions before going live. The first four answer “can it be used”, the next five “is it stable and billed correctly”, and the last two cover async tasks and observability.
 
-1. **Connectivity and authentication** — is the address right, is the key valid, is an IP restriction blocking you.
-2. **Model list and availability** — does the target model really exist and work.
-3. **Basic chat** — does a minimal request return normally.
-4. **Parameters and advanced capabilities** — streaming, temperature, max_tokens, tools/function calling, vision, JSON mode, system prompt.
-5. **Streaming (SSE)** — does it arrive token by token and parse correctly.
-6. **Performance and latency** — time to first token (TTFT), total latency, long-context behaviour.
-7. **Stability and rate limits** — behaviour under concurrency, retries, and 429s.
-8. **Quota and billing verification** — is the deduction accurate and the balance decreasing.
-9. **Errors and edge cases** — are errors for invalid parameters, over-long input, or an unavailable model clear and handleable in code.
+1. **Connectivity and auth** — right URL, valid key, IP allowlist not blocking.
+2. **Model list and availability** — the model exists and your group has a serving channel.
+3. **Basic chat** — one minimal request returns a real answer.
+4. **Parameters and advanced abilities** — streaming, `temperature`, `max_tokens`, tools/function calling, vision, JSON mode, system prompts.
+5. **Streaming (SSE)** — token-by-token output that parses correctly.
+6. **Performance** — time to first token (TTFT), total latency, long-context behaviour.
+7. **Stability and rate limits** — concurrency, retries, 429s and upstream saturation.
+8. **Quota and billing** — correct deductions that match the usage logs.
+9. **Errors and boundaries** — clear, machine-readable failures for bad input or unavailable models.
+10. **Async task models** — submit, poll and download for image / video / music tasks.
+11. **Observability** — usage/task logs identify model, channel, latency, quota and failure reason per call.
 
-## Step by step
+## Step by step (API)
 
-The examples below assume:
+Shared conventions:
 
-- Base URL `BASE=https://uter.ai/v1` (replace with your actual address)
-- Key `TOKEN=sk-your-token-here` (replace with the complete key from your console)
+- `BASE=https://your-domain/v1` (replace with your own)
+- `TOKEN=sk-your-token-here` (the full key from the console)
 
-All examples use `curl` — paste and run them in a terminal after substituting. If your machine uses a proxy, add `--noproxy '*'` to bypass it.
+Examples use `curl`. If a proxy is configured locally, add `--noproxy '*'`.
 
-### Step 1 · Minimal connectivity and authentication
+### Step 1 · Minimal connectivity + auth
 
 ```bash
-BASE=https://uter.ai/v1
+BASE=https://your-domain/v1
 TOKEN=sk-your-token-here
 
 curl --noproxy '*' -s "$BASE/models" \
@@ -53,44 +93,48 @@ curl --noproxy '*' -s "$BASE/models" \
 echo
 ```
 
-Pass criteria:
+What to look for:
 
-- A JSON body with `object: "list"` and several `id` values → connectivity and auth OK.
-- `{"error":{"message":"That token isn't valid.","type":"...","code":"..."}}` with HTTP 401 → the key is wrong or disabled (see the troubleshooting table).
-- Cannot connect at all / timeout → the address is wrong or the network is unreachable (see the troubleshooting table).
+- JSON with `object: "list"` and several `id`s → connectivity and auth are fine.
+- HTTP 401 with `That token isn’t valid.` → wrong or disabled key.
+- `This token doesn’t have access to any models.` or `This token can’t access the model «xxx».` → the key's model limits exclude the target.
+- Connection failure / timeout → wrong URL or network issue.
 
 <Callout type="info">
-  Some vendors' native APIs use their own authentication, needed only when you use the matching official SDK: Claude uses `POST /v1/messages` with `x-api-key: $TOKEN` and `anthropic-version: 2023-06-01`; Gemini uses `GET /v1beta/models` with `x-goog-api-key: $TOKEN` or `?key=$TOKEN` in the URL.
+  Native vendor auth is supported too: Claude via `POST /v1/messages` with `x-api-key: $TOKEN` and `anthropic-version: 2023-06-01`; Gemini via `GET /v1beta/models` with `x-goog-api-key: $TOKEN` (or `?key=$TOKEN`). OpenAI-compatible endpoints use `Authorization: Bearer`.
 </Callout>
 
-### Step 2 · List available models and confirm the target exists
+### Step 2 · List models and inspect one
 
 ```bash
 curl --noproxy '*' -s "$BASE/models" \
   -H "Authorization: Bearer $TOKEN" \
   | python3 -m json.tool | grep '"id"' | head -40
+
+curl --noproxy '*' -s "$BASE/models/your-model-id" \
+  -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-Find the `id` of the model you want to test (for example `gpt-4o`, `claude-3-5-sonnet-20241022`, or a platform-specific name).
+Copy the exact `id` you want to test (e.g. `gpt-4o`, `claude-3-5-sonnet-20241022`, or a custom name).
 
 <Callout type="warn">
-  If the model you want is not in the list, it has not been enabled for you — contact the platform. Guessing the name and calling it anyway will only return 404 or report no available channel.
+  If the model is missing, check Console → Pricing by channel first, then contact the platform. Do not guess names: that usually yields 404 or “no available channel”.
 </Callout>
 
-### Step 3 · One minimal chat completion (non-streaming)
+### Step 3 · One minimal chat call (non-streaming)
 
 ```bash
 curl --noproxy '*' -s "$BASE/chat/completions" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "replace with your model id",
+    "model": "your-model-id",
     "messages": [{"role": "user", "content": "Introduce yourself in one sentence."}],
     "max_tokens": 200
   }' | python3 -m json.tool
 ```
 
-Pass criteria: `choices[0].message.content` contains normal text and `usage` has `prompt_tokens` / `completion_tokens` → basic chat works.
+Pass when `choices[0].message.content` contains text and `usage` reports `prompt_tokens` / `completion_tokens`.
 
 ### Step 4 · Streaming (SSE)
 
@@ -99,32 +143,32 @@ curl --noproxy '*' -N -s "$BASE/chat/completions" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "replace with your model id",
+    "model": "your-model-id",
     "messages": [{"role": "user", "content": "Count to 10."}],
     "stream": true
   }'
 ```
 
-Pass criteria: the terminal should scroll `data: {...}` fragments line by line, ending with `data: [DONE]`. Correct token-by-token delivery means streaming works.
+Pass when `data: {...}` chunks keep arriving and end with `data: [DONE]`.
 
 <Callout type="info">
-  `curl` needs `-N` (disable buffering) to see the incremental output; on the SDK side, confirm `stream: true` is set and that nothing buffers the whole response.
+  With `curl` you must pass `-N` to disable buffering; SDKs must send `stream: true` and not buffer the whole body.
 </Callout>
 
-### Step 5 · Advanced capability: function calling
+### Step 5 · Advanced ability: function calling
 
 ```bash
 curl --noproxy '*' -s "$BASE/chat/completions" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "replace with your model id",
-    "messages": [{"role": "user", "content": "What is the weather in Beijing?"}],
+    "model": "your-model-id",
+    "messages": [{"role": "user", "content": "What is the weather in Beijing right now?"}],
     "tools": [{
       "type": "function",
       "function": {
         "name": "get_weather",
-        "description": "Query the weather of a city",
+        "description": "Look up city weather",
         "parameters": {
           "type": "object",
           "properties": {"city": {"type": "string"}},
@@ -135,20 +179,20 @@ curl --noproxy '*' -s "$BASE/chat/completions" \
   }' | python3 -m json.tool
 ```
 
-Pass criteria: `choices[0].message.tool_calls` appears in the response (the model decides to call `get_weather`) instead of it making up an answer → function calling works.
+Pass when the response contains `choices[0].message.tool_calls` (the model asks for `get_weather`) instead of inventing an answer.
 
 <Callout type="warn">
-  If your product depends on function calling, JSON mode, or vision, test each one separately — never assume "if it chats, everything works".
+  If your product depends on function calling, JSON mode or vision, test each one separately — “it can chat” does not imply them.
 </Callout>
 
-### Step 6 · Multimodal (vision) test — only if the model supports images
+### Step 6 · Multimodal (vision), only for models that accept images
 
 ```bash
 curl --noproxy '*' -s "$BASE/chat/completions" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "replace with a vision-capable model id",
+    "model": "your-vision-model-id",
     "messages": [{
       "role": "user",
       "content": [
@@ -159,178 +203,211 @@ curl --noproxy '*' -s "$BASE/chat/completions" \
   }' | python3 -m json.tool
 ```
 
-Pass criteria: the response correctly describes the image → vision works. The image must be a publicly reachable URL; the platform cannot read files from your local machine.
+Pass when the reply describes the image correctly. The image must be publicly reachable; the platform will not read local files.
 
-### Step 7 · Latency and performance baseline (run 3–5 times and average)
+### Step 7 · Latency baseline (run 3–5 times, average)
 
 ```bash
 for i in 1 2 3; do
-  curl --noproxy '*' -s -o /dev/null -w "run $i ttft=%{time_starttransfer}s total=%{time_total}s HTTP=%{http_code}\n" \
+  curl --noproxy '*' -s -o /dev/null -w "run $i ttfb=%{time_starttransfer}s total=%{time_total}s HTTP=%{http_code}\n" \
     "$BASE/chat/completions" \
     -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type: application/json" \
-    -d '{"model":"replace with your model id","messages":[{"role":"user","content":"hello"}],"max_tokens":128}'
+    -d '{"model":"your-model-id","messages":[{"role":"user","content":"hello"}],"max_tokens":128}'
 done
 ```
 
-Watch the time to first token (TTFT) and the total time, and compare them against your SLA. For long-context work, also test one long prompt (for example 8k / 32k tokens) to see whether latency grows linearly.
+Compare TTFT and total time with your SLA. Also test a long prompt (e.g. 8k / 32k tokens) to see whether latency grows linearly.
 
-### Step 8 · Quota and billing verification
+### Step 8 · Quota and billing check
 
-Record the balance before the call and again afterwards; the difference should match the actual consumption.
+`GET /v1/dashboard/billing/usage` returns **cumulative usage** (`total_usage`, in the site display currency), not the remaining balance — see Console → Wallet for the balance. Compare before/after:
 
 ```bash
-# before
+# Before
 curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 
-# (run the Step 3 chat in between)
+# (run Step 3 here)
 
-# after
+# After
 curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-You can also check the `usage` field of the single response (`prompt_tokens` + `completion_tokens`) against the billing rules.
+You can also read `usage` from a single response (`prompt_tokens` + `completion_tokens`, or task usage) and cross-check it with the quota shown in Console → Usage Logs / Task Logs.
 
-### Step 9 · Edge cases and error readability
+### Step 9 · Boundaries and readable errors
 
-Deliberately trigger an error to confirm the message is clear and catchable in code:
+Produce one bad request and confirm the error is clear and machine-readable:
 
 ```bash
-# oversized max_tokens / invalid parameter
 curl --noproxy '*' -s -w "\nHTTP=%{http_code}\n" "$BASE/chat/completions" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model":"replace with your model id","messages":[{"role":"user","content":"hi"}],"max_tokens":999999}'
+  -d '{"model":"your-model-id","messages":[{"role":"user","content":"hi"}],"max_tokens":999999}'
 ```
 
-Pass criteria: a structured `{"error":{"message":...,"type":...,"code":...}}` with a clear 4xx status code, rather than an empty body or a 500 stack trace → errors are handleable.
+Pass when the answer is a structured `{"error":{"message":...,"type":...,"code":...}}` with a 4xx status, not an empty body or a 500 stack trace.
 
-## Troubleshooting table
+## Async task models (image / video / music)
 
-| # | Symptom | Likely cause | Resolution |
-| --- | --- | --- | --- |
-| **A1** | `401` + `That token isn't valid.` | Key copied incompletely, mistyped, or disabled | Copy the complete key again from the console; confirm the state is "enabled" and that you did not truncate it or include stray spaces |
-| **A2** | `401` + `This token has expired. Please create a new one.` | The key has an expiry that has passed | Generate a new key in the console; for long-lived keys set the expiry to "never expires" |
-| **A3** | `403` + `Your IP is not in the token's allowed list` | The key has an IP whitelist and your current egress IP is not on it | Add your egress public IP to the key's whitelist in the console, or temporarily disable the IP restriction (test environments only) |
-| **A4** | Cannot connect / `Could not resolve host` / long timeout | Wrong base URL, self-signed certificate, intranet access | Check the base URL (it should be `https://your-domain/v1`); add `--noproxy '*'` if your local debugging goes through a proxy; confirm the network is reachable |
-| **B1** | `Your quota is insufficient.` HTTP 403 | Account or key quota is exhausted | Top up / raise the quota in the console; or check the remaining quota with `GET /v1/dashboard/billing/usage` |
-| **B2** | `No available channel for model "xxx" in group "default".` | No channel is configured for that model on your account | Contact the platform to confirm availability, or pick a model confirmed in the `/v1/models` list. Do not guess model names |
-| **B3** | `404` / `model not found` | Model name is wrong, or the model is not enabled for you | List models with Step 2 and copy the returned `id` exactly |
-| **C1** | `429` + rate limited | Key-level or platform-level rate limit hit | Lower concurrency / add backoff retries (exponential backoff); check the key's RPM/TPM limits; stagger batch jobs |
-| **C2** | Intermittent `5xx` / upstream timeout, succeeds on retry | Upstream model fluctuation | Implement retry with backoff; the platform retries automatically, but the client should have a fallback |
-| **D1** | Streaming arrives all at once instead of token by token | Client-side buffering (e.g. `curl` without `-N`, or the SDK not streaming) | Add `-N` to curl; confirm `stream: true` and no whole-response buffering in the SDK |
-| **D2** | Chinese or special characters render as garbage | Encoding not declared, or a parsing error | Use UTF-8 for both request and response; if `python3 -m json.tool` displays correctly, the server is fine and the issue is your terminal's encoding |
-| **D3** | Response is truncated | `max_tokens` too small, or the model hit its output cap | Raise `max_tokens`; receive long output in streamed chunks |
-| **E1** | Billing does not match expectations (over- or under-charged) | The billing basis may include hidden tokens such as chain-of-thought or tool calls, or models have different multipliers | Reconcile against the `usage` field of the response; contact the platform if in doubt |
-| **E2** | Function calling never triggers / JSON mode has no effect | The model does not expose that capability | Test it separately with Step 5; do not depend on unsupported capabilities — degrade gracefully in your product |
-| **F1** | `400` with an "announcement-style" message in Chinese | A temporary upstream supply change notice carried inside the error, not a mistake in your request | Once you have confirmed your request is well-formed, contact the platform and quote the error text |
+Task models are **submit → poll → download**, not one request → one answer:
+
+1. **Submit** via the endpoint shown on the platform's task-plugin page — the generic `POST /v1/tasks/<plugin-key>`, video `POST /v1/video/generations`, or the OpenAI-compatible `POST /v1/images/generations` handled by the matching channel/plugin.
+2. **Poll** with the returned `task_id`: `GET /v1/tasks/<task_id>` or `GET /v1/video/generations/<task_id>`. Until completion the status is queued / processing.
+3. **Artifacts**: `GET /v1/tasks/<task_id>/artifacts` lists outputs; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` downloads one.
+4. **Verify** in Console → Usage Logs → Task Logs: status, progress, duration and quota; failed tasks should show a reason, with an async-task refund where applicable.
+5. **Edge cases**: trigger one timeout or invalid parameter and confirm the task ends in a failed state instead of hanging forever.
+
+## Troubleshooting
+
+| # | What you see | HTTP | Likely cause | Fix |
+| --- | --- | --- | --- | --- |
+| **A1** | `That token isn’t valid.` | 401 | Key truncated, mistyped or disabled | Copy the full key again from Console → API Keys; confirm it is Enabled; no leading/trailing spaces |
+| **A2** | `This token has expired. Please create a new one.` | 401 | Expiry passed | Create a new key, or set expiry to never |
+| **A3** | `This token (sk-***) has run out of quota. Please add more.` | 401 | Key's own quota exhausted | Add quota to the key in Console → API Keys, or create a new key / raise user quota |
+| **A4** | `Your IP address is not on this token's allowlist` | 403 | IP allowlist (CIDR supported) excludes your egress IP | Add the egress IP/range, or disable the restriction in a test environment |
+| **A5** | `This token doesn’t have access to any models.` | 403 | Key's model limit list is empty | Edit the key and select the models to allow |
+| **A6** | `This token can’t access the model «xxx».` | 403 | Model not in the key's allowlist | Update the model limits, or use a key that allows it |
+| **A7** | Connection failure / `Could not resolve host` / timeouts | — | Wrong base URL, self-signed cert, private network | Verify `https://your-domain/v1`; use `--noproxy '*'` when a local proxy is configured; confirm reachability |
+| **B1** | `You don’t have enough quota.` | 403 | Account/key quota exhausted | Top up in Console → Wallet or add key quota; verify with Step 8 |
+| **B2** | `There’s no available channel for model «xxx» in group «default».` | 503 (400 for some filter cases) | No enabled channel serves the model in this group | Check Console → Pricing by channel; contact the platform; do not guess names |
+| **B3** | `404` / model not found | 404 | Wrong model name or no access | List models with Step 2 and copy the `id` exactly |
+| **C1** | `You’ve hit the limit: at most X requests every N minutes.` / total-limit variant | 429 | Key or platform rate limit | Lower concurrency, add exponential backoff, check RPM/TPM, stagger batches |
+| **C2** | Current group / upstream at capacity | 429 / 503 | Temporary upstream or group saturation | Retry later with backoff; contact the platform or switch group |
+| **C3** | Occasional `5xx` / upstream timeout that succeeds on retry | 5xx | Upstream model instability | Retry with backoff; the platform retries a limited number of times, but clients must too |
+| **D1** | Streaming arrives all at once | — | Client buffering (`curl` without `-N`, SDK buffering) | Add `-N`; ensure `stream: true` and no whole-body buffering |
+| **D2** | Mojibake in Chinese / special characters | — | Encoding or parsing issue | Keep UTF-8 both ways; if `python3 -m json.tool` renders fine, the server is fine and the terminal encoding is at fault |
+| **D3** | Output truncated | — | `max_tokens` too small or model output cap | Raise `max_tokens`; stream long answers |
+| **E1** | Deduction differs from expectation | — | Hidden tokens (reasoning, cache hits, tools) or model ratio differences | Reconcile with the response `usage` and the billing detail in Usage Logs; ask the platform |
+| **E2** | Function calling / JSON mode does nothing | — | The model does not expose it | Verify with Step 5; degrade gracefully in your product |
+| **F1** | `400` with an announcement-style message | 400 | Upstream provider notice, not your request | Validate your request format, then contact the platform with the raw error |
 
 <Callout type="idea">
-  Two lessons worth remembering. When you see "no available channel / model not found", check the real model name with `GET /v1/models` first, then contact the platform — **90% of "the model doesn't work" cases come from these two causes**, not from code. For `401` / `403`, check the key state and the IP whitelist before checking the base URL — **authentication problems almost always come from "incomplete copy / wrong address / restriction not disabled"**.
+  Two rules worth memorising: for “no available channel / model not found”, list models with `GET /v1/models` and check the Pricing page by channel before contacting the platform — most “the model doesn’t work” reports come from these two. For `401/403`, check key status, model limits and the IP allowlist, then the base URL — auth problems are nearly always truncated keys, unopened limits or a wrong address.
 </Callout>
 
-### What to do about a 400 (Bad Request)
+## When you get a 400 (Bad Request)
 
-`400` means "the request itself is wrong": the server received it but the content or parameters are invalid, so it was rejected outright. It is a different class from authentication (401), quota (403), and rate limiting (429).
+`400` means the request itself is invalid — the server received it and rejected its content. It differs from auth (401), permission/quota (403) and rate limits (429).
 
-First identify the source from the wording:
+Identify the source from the message:
 
-| What you see | Usually from | What to do |
+| Message style | Source | Action |
 | --- | --- | --- |
-| Chinese, phrased like a platform message | The platform validating the request before forwarding | Change the request parameters as it says |
-| English, phrased like an OpenAI / Claude / Gemini error | The upstream vendor (parameters do not meet that model's requirements) | Change the parameters as it says (e.g. supply messages, bring values back in range) |
-| Chinese, phrased like a notice or announcement | A temporary upstream supply change | Not your mistake — contact the platform with the error text |
+| English/Chinese, platform-style | Uter validated before forwarding | Fix the request as instructed |
+| English, vendor-style (OpenAI / Claude / Gemini) | Upstream rejected the parameters | Fix parameters (missing messages, out-of-range values) |
+| Announcement-style notice | Upstream supply change | Not your bug; contact the platform with the raw message |
 
-Common platform-side 400 messages:
+Common platform-side 400s:
 
-| What you see | Meaning | Resolution |
+| Message | Meaning | Fix |
 | --- | --- | --- |
-| `Invalid request: <details>` | The platform failed to validate the body | Read what follows the colon and fix accordingly |
-| `Invalid request: unable to determine which model you want to use.` | No model could be parsed | Confirm `"model": "<name>"` is present and spelled correctly |
-| `model field is required` | The `model` field is missing | Add the `model` parameter |
-| Something about "not valid JSON" | The request body is malformed JSON | Check quotes, commas, and escaping — especially with non-ASCII text and line breaks |
+| `The request isn’t valid: <detail>` | Body validation failed | Read the detail after the colon |
+| `The request isn’t valid and the model could not be determined.` | No usable model in the request | Ensure `"model": "..."` is present and spelled correctly |
+| `Please specify a model name.` | `model` missing | Add the `model` field |
+| `The request isn’t valid: invalid JSON request body` | Malformed JSON | Check quotes, commas and escapes, especially with CJK text and newlines |
 
 <Callout type="info">
-  If you see a message about model configuration or pricing not being set, that is a platform-side issue — contact the platform; you do not need to change the request.
+  Messages about model configuration or missing prices are platform-side; contact the platform instead of editing your request.
 </Callout>
 
-Common upstream 400 messages:
+Common upstream 400s:
 
-- `messages is required` / `messages must be a non-empty array` — `messages` is missing or empty
-- `temperature must be between 0 and 2` / `max_tokens too large` — a parameter is out of range
-- `Unknown parameter: 'xxx'` — you passed a field the model does not support
-- `1 validation error for ...` — a field type or required field does not match
+- `messages is required` / `messages must be a non-empty array`
+- `temperature must be between 0 and 2` / `max_tokens too large`
+- `Unknown parameter: 'xxx'`
+- `1 validation error for ...`
 
-Thirty-second diagnosis (add `-i` to curl to see the full response):
+30-second diagnosis (`curl -i` for the full response):
 
 ```bash
-curl -i https://uter.ai/v1/chat/completions \
+curl -i https://your-domain/v1/chat/completions \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model":"<model name>","messages":[{"role":"user","content":"hi"}]}'
+  -d '{"model":"<model-name>","messages":[{"role":"user","content":"hi"}]}'
 ```
 
-Focus on the `message` in the response — it usually states the direct cause.
+Read `message` first — it usually names the direct cause.
+
+## Reconcile every call in the logs
+
+Console → Usage Logs records time, model, key, channel (admins), latency, quota and error for each request; Task Logs record async task status, progress and artifacts. During integration:
+
+- compare the model, group/channel and quota in the log with what you expected;
+- keep the raw error for failures so platform-side and upstream-side issues stay distinguishable;
+- never write keys, full request headers or user privacy into your own logs.
 
 ## Pre-launch checklist
 
-Copy this checklist and tick every item before switching production traffic:
-
-- [ ] The **base URL** is pinned in configuration (environment variables or a config service), not hard-coded in front-end code.
-- [ ] The **key** was copied completely from the console, is "enabled", not expired, and has sufficient quota.
-- [ ] If the key has an IP whitelist, the production server's egress IP is on it.
-- [ ] `GET /v1/models` lists the target model, and its `id` matches the one in your code.
+- [ ] **Base URL** lives in configuration (env / config service), not hard-coded in the frontend.
+- [ ] **Key** copied in full, status Enabled, not expired, enough quota.
+- [ ] The key's **model limits** include every model the product uses.
+- [ ] If the **IP allowlist** is on, production egress IPs/CIDRs are added.
+- [ ] `GET /v1/models` lists the target model and the `id` matches the code.
 - [ ] Non-streaming chat works and returns `content` and `usage`.
-- [ ] Streaming (SSE) works and you can parse `data:` fragments and `[DONE]`.
-- [ ] Every **advanced capability** your product depends on (tools / JSON / vision / long context) has been verified individually.
-- [ ] You recorded a latency baseline (TTFT / total) that meets your SLA.
-- [ ] The client implements **backoff retries for rate limits** and a **fallback retry for upstream 5xx**.
-- [ ] Error responses are handled structurally via `error.message` / `error.code` / HTTP status, and raw credentials are never logged.
-- [ ] The quota deduction was reconciled against the `usage` field.
-- [ ] Production never prints or commits the key (a secret manager or environment variables are in place).
-- [ ] You have confirmed the target model's **availability and billing rules** with the platform.
+- [ ] Streaming (SSE) works and parses `data:` chunks and `[DONE]`.
+- [ ] Required **advanced abilities** (tools / JSON / vision / long context) are verified individually.
+- [ ] **Async task models** are verified end to end: submit, poll, download, failure state.
+- [ ] Latency baseline (TTFT / total) meets the SLA.
+- [ ] The client implements **rate-limit backoff** and **upstream 5xx retries**.
+- [ ] Errors are handled structurally via `error.message` / `error.code` / HTTP status, with credentials kept out of logs.
+- [ ] Quota deductions reconcile with `usage` and the Usage Logs.
+- [ ] Production never prints or commits keys (secret manager / env vars in place).
+- [ ] Availability and billing rules for the target model are confirmed with the platform.
 
 ## Appendix
 
-### Supported endpoints (mostly OpenAI-compatible)
+### Supported endpoints
+
+OpenAI-compatible first, plus native Claude / Gemini formats and task-plugin endpoints:
 
 | Capability | Method and path | Notes |
 | --- | --- | --- |
-| List models | `GET /v1/models` | See the models available to you after authenticating |
-| Retrieve model | `GET /v1/models/:model` | Inspect a single model |
-| Chat | `POST /v1/chat/completions` | The main endpoint; supports stream / tools / vision |
-| Text completion | `POST /v1/completions` | Legacy completion (supported by some models) |
-| Embeddings | `POST /v1/embeddings` | Text vectorisation |
-| Images | `POST /v1/images/generations`, `/v1/images/edits` | Text-to-image / image editing |
-| Audio | `POST /v1/audio/transcriptions`, `/translations`, `/speech` | Transcription / translation / synthesis |
-| Rerank | `POST /v1/rerank` | Retrieval reranking |
-| Moderation | `POST /v1/moderations` | Content safety checks |
-| Claude native | `POST /v1/messages` | Authenticates with `x-api-key` |
+| List models | `GET /v1/models` | Lists models available to the key; the response format follows the request headers (OpenAI / Claude / Gemini) |
+| Retrieve model | `GET /v1/models/:model` | Single-model information |
+| Chat | `POST /v1/chat/completions` | Main endpoint; stream / tools / vision |
+| Legacy completions | `POST /v1/completions` | Supported by some models |
+| Native Claude | `POST /v1/messages` | `x-api-key` + `anthropic-version` |
+| Native Gemini | `GET /v1beta/models` | `x-goog-api-key` or `?key=` |
+| Gemini OpenAI list | `GET /v1beta/openai/models` | Gemini models in OpenAI list format |
+| Gemini forwarding | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Native Gemini paths |
+| Responses realtime | `GET /v1/responses` (WebSocket) | Responses protocol over WebSocket |
+| Responses compaction | `POST /v1/responses/compact` | Compact conversation context |
 | Realtime voice | `GET /v1/realtime` (WebSocket) | Realtime mode |
-| Gemini native | `/v1beta/models/*` | Authenticates with `x-goog-api-key` |
-| Usage / subscription | `GET /v1/dashboard/billing/usage`, `/subscription` | Self-service quota lookup |
+| Embeddings | `POST /v1/embeddings` | Text embeddings |
+| Rerank | `POST /v1/rerank` | Retrieval reranking |
+| Moderation | `POST /v1/moderations` | Content safety |
+| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | Generation / editing (channel or task plugin) |
+| Audio | `POST /v1/audio/transcriptions`, `/translations`, `/speech` | Transcribe / translate / synthesize |
+| Web tools | `POST /v1/tools/search`, `/v1/tools/fetch`, `/v1/alpha/search` | DeepSeek tools and Codex standalone search |
+| Video | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Submit, query, remix |
+| Generic tasks | `POST /v1/tasks/:key`, `GET /v1/tasks/:task_id` | Unified task-plugin entry |
+| Task artifacts | `GET /v1/tasks/:task_id/artifacts`, `GET /v1/tasks/:task_id/artifacts/:artifact_key/content` | List / download |
+| Usage and subscription | `GET /v1/dashboard/billing/usage`, `/subscription` | Cumulative usage and subscription quota |
 
-### Uniform error format
+> These are the public endpoints currently registered. Which endpoints a specific model supports is shown on its page in Console → Pricing.
 
-All platform API errors use an OpenAI-style structure so clients can handle them uniformly:
+### Unified error envelope
+
+API errors use the OpenAI shape:
 
 ```json
 {
   "error": {
-    "message": "human-readable reason",
+    "message": "Human-readable reason",
     "type": "invalid_request_error | authentication_error | ...",
-    "code": "optional error code",
+    "code": "optional code",
     "param": "optional offending parameter"
   }
 }
 ```
 
-Paired with the HTTP status code (401 auth / 403 quota or permission / 404 model / 429 rate limit / 5xx upstream), this covers the vast majority of client handling logic.
+Combine it with the HTTP status (401 auth / 403 permission or quota / 404 model / 429 rate limit / 5xx upstream) to cover most client handling.
 
-### Security reminders (required)
+### Security reminders
 
-- **A key is a password**: use it only on the server or in a secret manager, never ship it to the browser, never write it in plaintext to logs, never commit it to Git.
-- **Redact logs**: the platform's audit trail does not record your key in plaintext, but when your own client prints responses, avoid writing the `Authorization` header into logs.
-- **Rate limits and retries**: always implement backoff retries, so an avalanche of retries does not turn a rate limit into a full outage.
+- **A key is a password**: server-side or secret manager only; never to a browser, never plaintext in logs, never in Git.
+- **Redact logs**: the platform never stores your key in plaintext; your own client must also keep `Authorization` out of its logs.
+- **Rate limits and retries**: always back off — a retry storm turns a limit into a full outage.

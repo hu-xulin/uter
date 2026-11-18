@@ -1,0 +1,15 @@
+# 使用日志
+
+左侧导航「使用日志」进入 `/usage-logs/common`，记录每一次模型调用。
+
+- **筛选**：时间范围、模型名称、分组、类型，以及展开后的令牌、用户等条件。
+- **统计条**：当前筛选结果的总用量、RPM、TPM、缓存读/写，以及每一步的变化量。
+- **列表**：时间、令牌、模型、流式/非流式、Tokens、费用、耗时和详情。
+- **操作**：重置、搜索、导出、调整每页数量、分页和查看详情。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="使用日志" src="/user-guide/zh/logs-and-tasks/light/01-usage-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="使用日志" src="/user-guide/zh/logs-and-tasks/dark/01-usage-logs.webp" />
+
+<Callout type="info">
+  日志中的费用按请求结算结果记录；失败请求是否计费取决于失败阶段和渠道返回。余额与总用量可在「钱包」交叉核对。
+</Callout>

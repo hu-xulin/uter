@@ -59,7 +59,7 @@ describe('docs sidebar user-guide folder', () => {
     const title = screen.getByRole('button', { name: '用户指南' })
     expect(title).toBeVisible()
     expect(title).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.queryByRole('link', { name: '注册与登录' })).toBeNull()
+    expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
   })
 
   it('toggles every chapter when the section title is clicked', async () => {
@@ -70,14 +70,14 @@ describe('docs sidebar user-guide folder', () => {
     await userEvent.click(title)
 
     expect(
-      await screen.findByRole('link', { name: '注册与登录' })
+      await screen.findByRole('link', { name: '登录' })
     ).toBeVisible()
-    expect(screen.getByRole('link', { name: '定价和排行' })).toBeVisible()
+    expect(screen.getByRole('link', { name: '排行' })).toBeVisible()
     expect(title).toHaveAttribute('aria-expanded', 'true')
 
     await userEvent.click(title)
 
-    expect(screen.queryByRole('link', { name: '注册与登录' })).toBeNull()
+    expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
     expect(title).toHaveAttribute('aria-expanded', 'false')
   })
 
@@ -89,7 +89,7 @@ describe('docs sidebar user-guide folder', () => {
     await userEvent.click(arrow)
 
     expect(arrow).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('link', { name: '注册与登录' })).toBeVisible()
-    expect(screen.getByRole('link', { name: '定价和排行' })).toBeVisible()
+    expect(screen.getByRole('link', { name: '登录' })).toBeVisible()
+    expect(screen.getByRole('link', { name: '排行' })).toBeVisible()
   })
 })

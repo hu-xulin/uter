@@ -41,7 +41,7 @@ import navManifestJson from '@/docs-content/nav.json'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
 import {
-  USER_GUIDE_CHAPTER_SLUGS,
+  userGuideChapterSlugs,
   USER_GUIDE_PATH,
   userGuideChapterTitle,
 } from './user-guide-identity'
@@ -154,7 +154,7 @@ function shorten(title: string, separator: string): string {
 
 /** The user guide's chapters, from the identity table above. */
 function chapterChildren(locale: DocsLocaleCode): SidebarNode[] {
-  return USER_GUIDE_CHAPTER_SLUGS.map((slug) => ({
+  return userGuideChapterSlugs(locale).map((slug) => ({
     title: userGuideChapterTitle(locale, slug) ?? slug,
     url: `/docs/${locale}/${USER_GUIDE_PATH}/${slug}`,
   }))

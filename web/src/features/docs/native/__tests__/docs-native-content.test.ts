@@ -69,7 +69,10 @@ describe('native docs search index', () => {
       const file = join(PUBLIC_ROOT, 'docs-search', `${locale}.json`)
       expect(existsSync(file), `missing ${locale} search index`).toBe(true)
       const docs = JSON.parse(readFileSync(file, 'utf8')) as { p: string }[]
-      expect(docs, `${locale} index`).toHaveLength(61)
+      // zh gains a page first; the other locales follow once translated, so
+      // the corpus is intentionally asymmetric while a guide update lands.
+      const expected = locale === 'zh' ? 65 : 61
+      expect(docs, `${locale} index`).toHaveLength(expected)
       expect(
         new Set(docs.map((doc) => doc.p)).size,
         `${locale} index has duplicate page paths`
@@ -89,7 +92,7 @@ describe('native docs search index', () => {
       }
       total += docs.length
     }
-    expect(total, '427 migrated documents across 7 locales').toBe(427)
+    expect(total, '431 migrated documents across 7 locales').toBe(431)
   })
 })
 

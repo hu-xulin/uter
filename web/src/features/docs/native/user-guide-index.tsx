@@ -18,15 +18,21 @@ For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
 import {
+  Activity,
   BookOpen,
+  ClipboardList,
+  FileText,
+  FlaskConical,
   KeyRound,
   LayoutDashboard,
   ListChecks,
   LogIn,
   Puzzle,
   ShieldCheck,
+  Tags,
   Terminal,
   Trophy,
+  User,
   Wallet,
   type LucideIcon,
 } from 'lucide-react'
@@ -44,7 +50,7 @@ import {
 } from './content-card'
 import { firstSentence } from './teaser'
 import {
-  USER_GUIDE_CHAPTER_SLUGS,
+  userGuideChapterSlugs,
   USER_GUIDE_PATH,
   userGuideChapterTitle,
 } from './user-guide-identity'
@@ -120,7 +126,7 @@ async function loadTeasers(
   if (!response.ok) return {}
   const rows = (await response.json()) as { p: string; b?: string }[]
   const teasers: Record<string, string> = {}
-  for (const slug of USER_GUIDE_CHAPTER_SLUGS) {
+  for (const slug of userGuideChapterSlugs(locale)) {
     const row = rows.find((r) => r.p === `${USER_GUIDE_PATH}/${slug}`)
     if (!row?.b) continue
     teasers[slug] = firstSentence(row.b)
@@ -131,9 +137,19 @@ async function loadTeasers(
 /** Title icons, keyed by locale-neutral slug so labels can change safely. */
 const CHAPTER_ICONS: Record<string, LucideIcon> = {
   auth: LogIn,
+  playground: FlaskConical,
+  overview: Activity,
   dashboard: LayoutDashboard,
-  'profile-and-security': ShieldCheck,
   'api-keys': KeyRound,
+  'usage-logs': FileText,
+  'audit-logs': ClipboardList,
+  'task-logs': ListChecks,
+  wallet: Wallet,
+  profile: User,
+  security: ShieldCheck,
+  pricing: Tags,
+  ranking: Trophy,
+  'profile-and-security': ShieldCheck,
   'api-and-playground': Terminal,
   'app-integration': Puzzle,
   'logs-and-tasks': ListChecks,
@@ -208,7 +224,7 @@ export function UserGuideIndex({ locale }: { locale: DocsLocaleCode }) {
       </Heading>
       <p className='text-long text-fg-secondary mb-8'>{identity.description}</p>
       <ul className={CONTENT_CARD_GRID_CLASS}>
-        {USER_GUIDE_CHAPTER_SLUGS.map((slug) => (
+        {userGuideChapterSlugs(locale).map((slug) => (
           <ChapterCard
             key={slug}
             locale={locale}

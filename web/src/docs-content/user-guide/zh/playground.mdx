@@ -1,0 +1,26 @@
+# 游乐场
+
+「游乐场」用于在浏览器中快速体验和验证模型，调用链路与实际 API 一致。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="游乐场" src="/user-guide/zh/api-and-playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="游乐场" src="/user-guide/zh/api-and-playground/dark/01-playground.webp" />
+
+## 开始对话
+
+1. 在输入框下方选择**渠道**和**模型**（例如「优特渠道 / MiniMax-M2.5」）；不同渠道可用的模型不同。
+2. 可以直接使用「分析数据」「总结文本」「代码」「获取建议」等入门提示词，也可以自己输入问题或指令。
+3. 点击「发送」提交请求，模型回复会显示在对话区；可以继续输入进行多轮对话。
+
+## 附件、联网与参数
+
+- 输入框左侧提供附件、联网和工具按钮，受所选模型能力限制。
+- 底部的参数入口可调整温度、Top P、最大 Tokens 等生成参数；只有启用的参数会随请求发送。
+- 支持停止生成、重新生成、编辑历史消息和清空会话，便于反复对比结果。
+
+<Callout type="info">
+  游乐场使用当前登录账号的余额计费，计费规则与实际 API 相同；模型或渠道不可用时，选择器中不会出现对应选项。
+</Callout>
+
+## 从游乐场到 API
+
+在游乐场验证通过后，可以在「API 密钥」页创建密钥，并使用同一模型名调用接口。Base URL 推荐 `https://api.uter.ai/v1`，国内可换 `https://api.uter.cc/v1`，海外可换 `https://api.uter.pro/v1`；请求头使用 `Authorization: Bearer sk-...`。

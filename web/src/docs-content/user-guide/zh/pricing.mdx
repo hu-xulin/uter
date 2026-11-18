@@ -1,0 +1,32 @@
+# 定价
+
+「定价」页汇总当前已启用的模型，可按渠道、厂商、类型和标签筛选。顶部搜索框支持模型名称、供应商、端点和标签。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="定价页" src="/user-guide/zh/pricing-and-ranking/light/01-model-marketplace.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="定价页" src="/user-guide/zh/pricing-and-ranking/dark/01-model-marketplace.webp" />
+
+### 筛选与视图
+
+- **渠道**：优特渠道、厂商渠道等，数字为渠道内模型数量。
+- **厂商**：Anthropic、Google、OpenAI、ByteDance、Alibaba、DeepSeek、Meta、Z.ai、Moonshot、MiniMax 等。
+- **模型标签**：推理、工具、视觉等能力标签。
+- **视图**：标准、充值（人民币）、`/1M`、`/1K` 等价格单位切换。
+- **排序与布局**：按名称排序，列表/网格切换。
+
+### 模型卡片
+
+卡片展示模型名称、厂商、简介、标签、计费方式、优特单价、官方单价、折扣、分组、端点、状态和延迟/吞吐。点击「详情」打开完整信息。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="模型详情" src="/user-guide/zh/pricing-and-ranking/light/03-model-detail.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="模型详情" src="/user-guide/zh/pricing-and-ranking/dark/03-model-detail.webp" />
+
+详情页包含：
+
+- **概览**：TPS、平均延迟、成功率、基础定价（输入/输出/缓存读/缓存写）和按分组定价。
+- **性能**：近期性能指标。
+- **API**：可直接复制的请求示例和端点信息。
+- **上下文**：最大输入窗口、最大输出、模态、知识截止和发布时间。
+
+<Callout type="info">
+  实际扣费以请求结算为准；定价页展示的是当前配置的参考价。模型价格、折扣和分组倍率可能随上游调整，请以页面实时数据为准。
+</Callout>

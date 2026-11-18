@@ -7,7 +7,7 @@
 ```
 web/src/docs-content/user-guide/
   zh/
-    auth.mdx                   # 章节：注册与登录
+    auth.mdx                   # 章节：登录
     dashboard.mdx              # 章节：概览与数据看板
     ...
   en/
@@ -30,15 +30,17 @@ web/public/user-guide/zh/auth/
 
 | slug | 中文标题 | 英文标题 |
 |---|---|---|
-| `auth` | 注册与登录 | Registration & Login |
+| `auth` | 登录 | Login |
 | `dashboard` | 概览与数据看板 | Overview & Dashboard |
 | `profile-and-security` | 个人资料与安全 | Profile & Security |
 | `api-keys` | API 密钥 | API Keys |
-| `api-and-playground` | 使用 API 与游乐场 | Using the API & Playground |
+| `api-and-playground` | 游乐场 | Playground |
 | `app-integration` | 聊天应用集成 | App Integration |
-| `logs-and-tasks` | 日志与异步任务 | Logs & Async Tasks |
-| `wallet-and-subscription` | 钱包与订阅 | Wallet & Subscription |
+| `logs-and-tasks` | 日志与任务 | Logs & Tasks |
+| `wallet-and-subscription` | 钱包 | Wallet |
 | `pricing-and-ranking` | 定价和排行 | Model Hub & Leaderboard |
+
+> 自 2026-11-18 起，中文（zh）用户指南按产品导航拆成 13 章：登录、游乐场、概览、数据看板、API 密钥、使用日志、审计日志、任务日志、钱包、个人资料、安全与访问、定价、排行。上表是其他语言暂时沿用的旧 9 章结构；中文文件名为 `auth.mdx`、`playground.mdx`、`overview.mdx`、`dashboard.mdx`、`api-keys.mdx`、`usage-logs.mdx`、`audit-logs.mdx`、`task-logs.mdx`、`wallet.mdx`、`profile.mdx`、`security.mdx`、`pricing.mdx`、`ranking.mdx`。
 
 > `model-testing`（模型测试）曾是这个列表的第 10 章，现为与「用户指南」平级的
 > 顶层板块，地址 `/docs/<lang>/model-testing`，正文文件仍在本目录

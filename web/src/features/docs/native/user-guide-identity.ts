@@ -51,89 +51,119 @@ export const USER_GUIDE_CHAPTER_SLUGS = [
   'pricing-and-ranking',
 ] as const
 
+/** Chinese guide chapters, in the product navigation order. */
+export const USER_GUIDE_CHAPTER_SLUGS_ZH = [
+  'auth',
+  'playground',
+  'overview',
+  'dashboard',
+  'api-keys',
+  'usage-logs',
+  'audit-logs',
+  'task-logs',
+  'wallet',
+  'profile',
+  'security',
+  'pricing',
+  'ranking',
+] as const
+
+export function userGuideChapterSlugs(
+  locale: DocsLocaleCode
+): readonly string[] {
+  return locale === 'zh' ? USER_GUIDE_CHAPTER_SLUGS_ZH : USER_GUIDE_CHAPTER_SLUGS
+}
+
 const CHAPTER_LABELS: Record<DocsLocaleCode, string[]> = {
   zh: [
-    '注册与登录',
-    '概览与数据看板',
-    '个人资料与安全',
+    '登录',
+    '游乐场',
+    '概览',
+    '数据看板',
     'API 密钥',
-    '使用 API 与游乐场',
-    '聊天应用集成',
-    '日志与异步任务',
-    '钱包与订阅',
-    '定价和排行',
+    '使用日志',
+    '审计日志',
+    '任务日志',
+    '钱包',
+    '个人资料',
+    '安全与访问',
+    '定价',
+    '排行',
   ],
   'zh-TW': [
-    '註冊與登入',
+    '登入',
     '概覽與資料儀表板',
     '個人資料與安全性',
     'API 金鑰',
-    '使用 API 與遊樂場',
+    '遊樂場',
     '聊天應用整合',
-    '日誌與非同步任務',
-    '錢包與訂閱',
+    '日誌與任務',
+    '錢包',
     '定價與排行',
   ],
   en: [
-    'Registration & Login',
+    'Login',
     'Overview & Dashboard',
     'Profile & Security',
     'API Keys',
-    'Using the API & Playground',
+    'Playground',
     'App Integration',
-    'Logs & Async Tasks',
-    'Wallet & Subscription',
+    'Logs & Tasks',
+    'Wallet',
     'Model Hub & Leaderboard',
   ],
   fr: [
-    'Inscription et connexion',
+    'Connexion',
     'Vue d’ensemble et tableau de bord',
     'Profil et sécurité',
     'Clés API',
-    'Utiliser l’API et le bac à sable',
+    'Bac à sable',
     'Intégration d’applications',
-    'Journaux et tâches asynchrones',
-    'Portefeuille et abonnement',
+    'Journaux et tâches',
+    'Portefeuille',
     'Hub de modèles et classement',
   ],
   ja: [
-    '登録とログイン',
+    'ログイン',
     '概要とダッシュボード',
     'プロフィールとセキュリティ',
     'API キー',
-    'API とプレイグラウンド',
+    'プレイグラウンド',
     'アプリ連携',
-    'ログと非同期タスク',
-    'ウォレットとサブスクリプション',
+    'ログとタスク',
+    'ウォレット',
     'モデルハブとランキング',
   ],
   ru: [
-    'Регистрация и вход',
+    'Вход',
     'Обзор и панель',
     'Профиль и безопасность',
     'API-ключи',
-    'Работа с API и песочницей',
+    'Песочница',
     'Интеграция приложений',
-    'Журналы и асинхронные задачи',
-    'Кошелёк и подписка',
+    'Журналы и задачи',
+    'Кошелёк',
     'Каталог моделей и рейтинг',
   ],
   vi: [
-    'Đăng ký và đăng nhập',
+    'Đăng nhập',
     'Tổng quan và bảng điều khiển',
     'Hồ sơ và bảo mật',
     'Khóa API',
-    'Sử dụng API và khu thử nghiệm',
+    'Khu thử nghiệm',
     'Tích hợp ứng dụng',
-    'Nhật ký và tác vụ bất đồng bộ',
-    'Ví và gói đăng ký',
+    'Nhật ký và tác vụ',
+    'Ví',
     'Trung tâm mô hình và bảng xếp hạng',
   ],
 }
 
 /** Position of a slug in the guide, or `-1`. */
-export function userGuideChapterIndex(slug: string): number {
-  return (USER_GUIDE_CHAPTER_SLUGS as readonly string[]).indexOf(slug)
+export function userGuideChapterIndex(
+  slug: string,
+  locale: DocsLocaleCode = 'zh'
+): number {
+  return userGuideChapterSlugs(locale).indexOf(slug)
 }
 
 /**
@@ -145,7 +175,7 @@ export function userGuideChapterTitle(
   locale: DocsLocaleCode,
   slug: string
 ): string | undefined {
-  const index = userGuideChapterIndex(slug)
+  const index = userGuideChapterIndex(slug, locale)
   if (index === -1) return undefined
   return CHAPTER_LABELS[locale][index]
 }

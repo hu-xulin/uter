@@ -1,0 +1,29 @@
+# 任务日志
+
+左侧导航「任务日志」进入 `/usage-logs/task`，页面顶部可切换「绘图日志」和「任务日志」。
+
+## 绘图日志
+
+记录绘图类任务。可按时间范围筛选，查看提交时间、任务 ID、状态、进度和结果；点击任务可查看详情或制品。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="绘图日志" src="/user-guide/zh/logs-and-tasks/light/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="绘图日志" src="/user-guide/zh/logs-and-tasks/dark/02-drawing-logs.webp" />
+
+## 任务日志
+
+记录视频、音频等异步任务。可按时间范围和任务 ID 筛选，查看提交时间、耗时、状态、进度、制品和详情。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="任务日志" src="/user-guide/zh/logs-and-tasks/light/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="任务日志" src="/user-guide/zh/logs-and-tasks/dark/03-task-logs.webp" />
+
+<Callout type="info">
+  异步任务的状态和进度以服务端记录为准；任务失败或超时后可按渠道规则自动退款。任务 ID 可用于在「使用日志」中定位对应的计费记录。
+</Callout>
+
+## 日志关系
+
+- **使用日志**：每次模型调用的计费与性能明细。
+- **审计日志**：登录、安全和账户访问事件。
+- **绘图/任务日志**：异步任务的生命周期和制品。
+
+排查问题时，建议先用审计日志确认账号与访问，再用使用日志核对计费，最后用任务日志查看异步执行结果。
