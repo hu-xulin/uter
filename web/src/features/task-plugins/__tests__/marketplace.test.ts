@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import assert from 'node:assert/strict'
 
-import { describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 import {
   deriveInstallState,
@@ -30,6 +30,7 @@ import {
   isStaleFactoryOverride,
   MARKETPLACE_OFFICIAL_INDEX_NAME,
   marketplaceBuiltInVersion,
+  marketplaceDocumentURL,
   marketplaceIndexDisplayName,
   parseMarketplaceIndex,
   resolvePluginSourceUrl,
@@ -791,5 +792,32 @@ describe('marketplace source branding', () => {
       marketplaceIndexDisplayName({ sourceName: 'Acme', isOfficial: false }),
       'Acme'
     )
+  })
+})
+
+describe('marketplaceDocumentURL', () => {
+  test('resolves an index-relative readme path', () => {
+    expect(
+      marketplaceDocumentURL('https://www.newapi.ai/api/v1/plugins/index.json', {
+        path: 'plugins/incho/README.md',
+      })
+    ).toBe('https://www.newapi.ai/api/v1/plugins/plugins/incho/README.md')
+  })
+
+  test('prefers a declared source page and rejects non-http addresses', () => {
+    expect(
+      marketplaceDocumentURL('https://example.com/index.json', {
+        path: 'README.md',
+        sourceUrl: 'https://github.com/acme/plugin/blob/main/README.md',
+      })
+    ).toBe('https://github.com/acme/plugin/blob/main/README.md')
+    expect(
+      marketplaceDocumentURL('https://example.com/index.json', {
+        path: 'javascript:alert(1)',
+      })
+    ).toBeNull()
+    expect(
+      marketplaceDocumentURL('https://example.com/index.json', undefined)
+    ).toBeNull()
   })
 })

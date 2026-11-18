@@ -403,3 +403,37 @@ export function marketplaceIndexDisplayName(args: {
     .replaceAll(/\bNew API\b/g, 'Uter.ai')
     .replaceAll(/\bnew-api\b/gi, 'Uter.ai')
 }
+
+/**
+ * Resolves a document the index declares (such as a version's README) to an
+ * absolute http(s) address on the index's origin. The gateway links to it
+ * instead of downloading and rendering the file, so external content never
+ * executes inside the admin console.
+ */
+export function marketplaceDocumentURL(
+  indexUrl: string,
+  file: { path?: string; sourceUrl?: string } | undefined
+): string | null {
+  if (!file) return null
+  if (file.sourceUrl) {
+    try {
+      const source = new URL(file.sourceUrl)
+      if (source.protocol === 'http:' || source.protocol === 'https:') {
+        return source.toString()
+      }
+    } catch {
+      // Fall through to the index-relative path.
+    }
+  }
+  const path = file.path?.trim()
+  if (!path) return null
+  try {
+    const resolved = new URL(path, new URL('.', indexUrl))
+    if (resolved.protocol !== 'http:' && resolved.protocol !== 'https:') {
+      return null
+    }
+    return resolved.toString()
+  } catch {
+    return null
+  }
+}

@@ -158,8 +158,16 @@ export type MarketplaceSource = {
  * omit them, and the confirmation dialog degrades to a warning rather than
  * refusing to render.
  */
+export type MarketplaceDocumentFile = {
+  path: string
+  sha256?: string
+  /** A page where readers can open the file, such as the file on GitHub. */
+  sourceUrl?: string
+}
+
 export type MarketplaceIndexVersion = {
   version: string
+  readme?: MarketplaceDocumentFile
   path: string
   sha256?: string
   minApiVersion?: number
