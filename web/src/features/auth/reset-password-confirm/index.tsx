@@ -159,7 +159,7 @@ export function ResetPasswordConfirm({
                   id='password'
                   value={newPassword}
                   disabled
-                  className='text-sm font-mono'
+                  className='font-mono text-sm'
                 />
                 <Button
                   type='button'

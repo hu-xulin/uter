@@ -293,7 +293,12 @@ export function DataTableToolbar<TData>(props: DataTableToolbarProps<TData>) {
   let resetButton: ReactNode = null
   if (hasSearch) {
     resetButton = (
-      <Button variant='outline' className='h-(--ds-control-height-md)' onClick={handleReset} disabled={!isFiltered}>
+      <Button
+        variant='outline'
+        className='h-(--ds-control-height-md)'
+        onClick={handleReset}
+        disabled={!isFiltered}
+      >
         {t('Reset')}
       </Button>
     )
@@ -311,7 +316,11 @@ export function DataTableToolbar<TData>(props: DataTableToolbarProps<TData>) {
   }
 
   const searchButton = hasSearch ? (
-    <Button className='h-(--ds-control-height-md)' onClick={props.onSearch} disabled={props.searchLoading}>
+    <Button
+      className='h-(--ds-control-height-md)'
+      onClick={props.onSearch}
+      disabled={props.searchLoading}
+    >
       {props.searchLoading && <Loader2 className='animate-spin' />}
       {t('Search')}
     </Button>

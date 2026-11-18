@@ -17,10 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { AdminCapabilities, AuthUser } from '@/types/auth'
+import { ROLE } from './roles'
 
 export type { AdminCapabilities } from '@/types/auth'
-
-import { ROLE } from './roles'
 
 export type AdminPermissionMatrix = AdminCapabilities
 

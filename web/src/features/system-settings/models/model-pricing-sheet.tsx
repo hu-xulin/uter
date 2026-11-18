@@ -377,7 +377,9 @@ export const ModelPricingEditorPanel = forwardRef<
           Math.abs(zhe - Math.round(zhe)) < 1e-6
             ? String(Math.round(zhe))
             : zhe.toFixed(1)
-        const zheSuffix = i18n.language?.startsWith('zh') ? ` · ${zheStr}折` : ''
+        const zheSuffix = i18n.language?.startsWith('zh')
+          ? ` · ${zheStr}折`
+          : ''
         discountLabel = `-${Math.round(discount.percent)}%${zheSuffix}`
       } else if (discount.tone === 'markup') {
         discountLabel = `+${Math.round(discount.percent)}%`
@@ -409,7 +411,9 @@ export const ModelPricingEditorPanel = forwardRef<
           Math.abs(zhe - Math.round(zhe)) < 1e-6
             ? String(Math.round(zhe))
             : zhe.toFixed(1)
-        const zheSuffix = i18n.language?.startsWith('zh') ? ` · ${zheStr}折` : ''
+        const zheSuffix = i18n.language?.startsWith('zh')
+          ? ` · ${zheStr}折`
+          : ''
         discountLabel = `-${Math.round(discount.percent)}%${zheSuffix}`
       } else if (discount.tone === 'markup') {
         discountLabel = `+${Math.round(discount.percent)}%`

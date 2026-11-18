@@ -45,6 +45,7 @@ import {
   type RequestRuleTrace,
   type TierCondition,
 } from '../lib/billing-expr'
+import { getCachePriceLabels, getTierCachePricingMode } from '../lib/cache-pricing'
 import { formatBillingCondition } from '../lib/billing-expression/condition-display'
 import { compileBillingExpression } from '../lib/billing-expression/parser'
 import { isBreakdownTierMatched } from '../lib/breakdown-tier-match'
@@ -64,6 +65,7 @@ import type { BillingUsageSchema, BillingUsageUnit } from '../types'
 
 type DynamicPricingBreakdownProps = {
   billingExpr: string | null | undefined
+  modelName?: string
   /**
    * Label of the tier that fired for the current request. When provided,
    * the corresponding row is highlighted and tagged as "Matched". Used by
@@ -281,6 +283,7 @@ function nextOccurrenceKey(
 
 export function DynamicPricingBreakdown({
   billingExpr,
+  modelName,
   matchedTierLabel,
   matchedBillingUnit,
   matchedFixedPrice,
@@ -406,6 +409,10 @@ export function DynamicPricingBreakdown({
       }
       return fields
     }
+    const cacheMode = getTierCachePricingMode(
+      tiers.filter((tier): tier is ParsedTier => !isTaskBreakdownTier(tier)),
+      modelName
+    )
     const fields: BreakdownPriceField[] = BILLING_PRICING_VARS.filter(
       (variable) => {
         if (hideCacheColumns && variable.group === 'cache') return false
@@ -417,7 +424,7 @@ export function DynamicPricingBreakdown({
       }
     ).map((variable, index) => ({
       id: variable.field ?? `price-${index}`,
-      label: variable.shortLabel,
+      label: getCachePriceLabels(variable, cacheMode).shortLabel,
       labelKind: 'i18n' as const,
       unit: 'token',
       value: (tier: BreakdownTier) =>

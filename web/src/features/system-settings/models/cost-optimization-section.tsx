@@ -295,7 +295,7 @@ function OptimizationField(props: {
               onChange={field.onChange}
               disabled={inputDisabled}
               placeholder={def.placeholder ?? '[]'}
-              className='text-sm font-mono'
+              className='font-mono text-sm'
             />
           )
         } else if (def.kind === 'number') {

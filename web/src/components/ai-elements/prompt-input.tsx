@@ -693,7 +693,7 @@ export const PromptInput = ({
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onloadend = () => resolve(reader.result as string)
-      reader.onerror = reject
+      reader.addEventListener('error', reject)
       reader.readAsDataURL(blob)
     })
   }
@@ -1170,11 +1170,14 @@ export const PromptInputSpeechButton = ({
         }
       }
 
-      speechRecognition.onerror = (event) => {
+      speechRecognition.addEventListener('error', (event) => {
         // eslint-disable-next-line no-console
-        console.error('Speech recognition error:', event.error)
+        console.error(
+          'Speech recognition error:',
+          (event as Event & { error?: string }).error
+        )
         setIsListening(false)
-      }
+      })
 
       recognitionRef.current = speechRecognition
       // eslint-disable-next-line react-hooks/set-state-in-effect

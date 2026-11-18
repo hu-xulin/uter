@@ -23,10 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { resolveLocalizedText } from '@/lib/localized-text'
 
-import type {
-  MarketplaceRevokedEntry,
-  TaskPluginListItem,
-} from '../types'
+import type { MarketplaceRevokedEntry, TaskPluginListItem } from '../types'
 import { PluginIcon } from './plugin-icon'
 import { PluginWebsiteLink } from './plugin-website-link'
 import { RevokedPluginWarning } from './revoked-plugin-warning'

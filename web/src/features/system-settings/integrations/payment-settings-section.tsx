@@ -45,8 +45,17 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SecretInput } from '@/components/ui/secret-input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Textarea } from '@/components/ui/textarea'
 import { formatUserId } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
 import { isMaskedSecret, maskSecret } from '@/lib/secret'
@@ -116,6 +125,9 @@ const paymentSchema = z.object({
   }, 'Provide a valid callback URL starting with http:// or https://'),
   EpayId: z.string(),
   EpayKey: z.string(),
+  EpaySignType: z.enum(['MD5', 'RSA']),
+  EpayMerchantPrivateKey: z.string(),
+  EpayPlatformPublicKey: z.string(),
   Price: z.coerce.number().min(0),
   MinTopUp: z.coerce.number().min(0),
   // 订单标题前缀（支付宝 subject / 微信 description 的品牌部分）。
@@ -470,6 +482,9 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(values.PayAddress),
       EpayId: values.EpayId.trim(),
       EpayKey: values.EpayKey.trim(),
+      EpaySignType: values.EpaySignType,
+      EpayMerchantPrivateKey: values.EpayMerchantPrivateKey.trim(),
+      EpayPlatformPublicKey: values.EpayPlatformPublicKey.trim(),
       Price: values.Price,
       MinTopUp: values.MinTopUp,
       OrderTitlePrefix: values.OrderTitlePrefix.trim(),
@@ -526,6 +541,9 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(initialRef.current.PayAddress),
       EpayId: initialRef.current.EpayId.trim(),
       EpayKey: initialRef.current.EpayKey.trim(),
+      EpaySignType: initialRef.current.EpaySignType,
+      EpayMerchantPrivateKey: initialRef.current.EpayMerchantPrivateKey.trim(),
+      EpayPlatformPublicKey: initialRef.current.EpayPlatformPublicKey.trim(),
       Price: initialRef.current.Price,
       MinTopUp: initialRef.current.MinTopUp,
       OrderTitlePrefix: initialRef.current.OrderTitlePrefix.trim(),
@@ -601,6 +619,34 @@ export function PaymentSettingsSection({
       sanitized.EpayKey !== initial.EpayKey
     ) {
       updates.push({ key: 'EpayKey', value: sanitized.EpayKey })
+    }
+
+    if (sanitized.EpaySignType !== initial.EpaySignType) {
+      updates.push({
+        key: 'payment_setting.epay_sign_type',
+        value: sanitized.EpaySignType,
+      })
+    }
+
+    if (
+      sanitized.EpayMerchantPrivateKey &&
+      !isMaskedSecret(sanitized.EpayMerchantPrivateKey) &&
+      sanitized.EpayMerchantPrivateKey !== initial.EpayMerchantPrivateKey
+    ) {
+      updates.push({
+        key: 'payment_setting.epay_merchant_private_key',
+        value: sanitized.EpayMerchantPrivateKey,
+      })
+    }
+
+    if (
+      sanitized.EpayPlatformPublicKey &&
+      sanitized.EpayPlatformPublicKey !== initial.EpayPlatformPublicKey
+    ) {
+      updates.push({
+        key: 'payment_setting.epay_platform_public_key',
+        value: sanitized.EpayPlatformPublicKey,
+      })
     }
 
     if (sanitized.Price !== initial.Price) {
@@ -925,6 +971,7 @@ export function PaymentSettingsSection({
     form.reset({
       ...values,
       EpayKey: maskSecret(values.EpayKey),
+      EpayMerchantPrivateKey: maskSecret(values.EpayMerchantPrivateKey),
       StripeApiSecret: maskSecret(values.StripeApiSecret),
       StripeWebhookSecret: maskSecret(values.StripeWebhookSecret),
       CreemApiKey: maskSecret(values.CreemApiKey),
@@ -1517,6 +1564,94 @@ export function PaymentSettingsSection({
                 </div>
 
                 <div className='flex flex-col gap-6'>
+                  <FormField
+                    control={form.control}
+                    name='EpaySignType'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('Epay signature type')}</FormLabel>
+                        <Select
+                          items={[
+                            { value: 'MD5', label: 'MD5' },
+                            { value: 'RSA', label: 'RSA' },
+                          ]}
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent alignItemWithTrigger={false}>
+                            <SelectGroup>
+                              <SelectItem value='MD5'>MD5</SelectItem>
+                              <SelectItem value='RSA'>RSA</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {t(
+                            'MD5 uses the secret key. RSA signs requests with the merchant private key and verifies callbacks with the platform public key.'
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch('EpaySignType') === 'RSA' && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name='EpayMerchantPrivateKey'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t('Epay merchant private key')}
+                            </FormLabel>
+                            <FormControl>
+                              <SecretInput
+                                value={field.value ?? ''}
+                                onChange={field.onChange}
+                                placeholder={t('Enter new key to update')}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t(
+                                'PEM private key used to sign Epay requests. Leave blank unless rotating the key.'
+                              )}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name='EpayPlatformPublicKey'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              {t('Epay platform public key')}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                className='min-h-28 font-mono text-sm'
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {t(
+                                'PEM public key supplied by the Epay platform, used to verify callbacks.'
+                              )}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
+                  )}
+
                   <FormField
                     control={form.control}
                     name='EpayId'

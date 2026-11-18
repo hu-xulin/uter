@@ -36,6 +36,7 @@ import {
   type ParsedTier,
 } from './billing-expr'
 import { compileBillingExpression } from './billing-expression/parser'
+import { getCachePriceLabels, getCachePricingMode } from './cache-pricing'
 import { getDisplayGroupRatio } from './model-helpers'
 import { withPluginPricing } from './plugin-pricing'
 import {
@@ -47,6 +48,7 @@ import { getTaskPricingDisplayTiers } from './task-matrix-display'
 
 export type DynamicPriceOptions = {
   tokenUnit: TokenUnit
+  modelName?: string
   showCurrencySymbol?: boolean
   showRechargePrice?: boolean
   priceRate?: number
@@ -332,6 +334,14 @@ export function getDynamicPriceEntries(
     return usageEntries
   }
 
+  const cacheMode = getCachePricingMode(
+    BILLING_PRICING_VARS.filter(
+      (variable) =>
+        variable.field &&
+        typeof (tier as ParsedTier)[variable.field] === 'number'
+    ).map((variable) => variable.key),
+    options.modelName
+  )
   return BILLING_PRICING_VARS.flatMap((variable) => {
     if (!variable.field) return []
     const value = Number((tier as ParsedTier)[variable.field])
@@ -347,20 +357,13 @@ export function getDynamicPriceEntries(
       return []
     }
 
+    const labels = getCachePriceLabels(variable, cacheMode)
     return [
       {
         key: variable.key,
         field: variable.field,
-        label:
-          variable.key === 'cc' &&
-          typeof (tier as ParsedTier).cacheCreate1hPrice === 'number'
-            ? 'Cache Creation (5m)'
-            : variable.label,
-        shortLabel:
-          variable.key === 'cc' &&
-          typeof (tier as ParsedTier).cacheCreate1hPrice === 'number'
-            ? 'Cache Write (5m)'
-            : variable.shortLabel,
+        label: labels.label,
+        shortLabel: labels.shortLabel,
         labelKind: 'i18n' as const,
         value,
         formatted: formatDynamicUnitPrice(value, options),

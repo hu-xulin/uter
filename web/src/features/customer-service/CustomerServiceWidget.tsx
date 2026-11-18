@@ -259,7 +259,10 @@ export function CustomerServiceWidget() {
     } catch {
       setMessages((m) => [
         ...m,
-        { role: 'bot', text: t('Sorry, the network seems unstable. Please try again later.') },
+        {
+          role: 'bot',
+          text: t('Sorry, the network seems unstable. Please try again later.'),
+        },
       ])
     } finally {
       setTyping(false)

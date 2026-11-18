@@ -103,7 +103,7 @@ export function AffiliateRewardsCard({
             value={affiliateLink}
             readOnly
             aria-label={t('Referral link')}
-            className='border-muted bg-background/70 text-sm min-w-0 flex-1 font-mono'
+            className='border-muted bg-background/70 min-w-0 flex-1 font-mono text-sm'
           />
           <CopyButton
             value={affiliateLink}

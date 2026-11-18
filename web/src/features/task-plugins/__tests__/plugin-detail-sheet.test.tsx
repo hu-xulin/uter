@@ -294,7 +294,12 @@ test('shows plugin parts and pricing issues in the overview', async () => {
       login: true,
       refresh: true,
       pricing_issues: [
-        { model_name: 'ghost-model', plugin_key: 'demo', plugin_name: 'Demo', reason: 'stale' },
+        {
+          model_name: 'ghost-model',
+          plugin_key: 'demo',
+          plugin_name: 'Demo',
+          reason: 'stale',
+        },
       ],
     }
   )
@@ -305,7 +310,9 @@ test('shows plugin parts and pricing issues in the overview', async () => {
   expect(screen.getByText('Credential login')).toBeVisible()
   expect(screen.getByText('Token refresh')).toBeVisible()
   expect(screen.getByText('ghost-model')).toBeVisible()
-  expect(screen.getByText('The plugin no longer offers this model')).toBeVisible()
+  expect(
+    screen.getByText('The plugin no longer offers this model')
+  ).toBeVisible()
 })
 
 test('defaults to overview and switches tabs with the keyboard', async () => {

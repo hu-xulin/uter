@@ -1195,6 +1195,7 @@ function ProviderGroupPricingSection(
     )
     const priceFields = getDynamicPriceFields(dynamicTiers, {
       tokenUnit: props.tokenUnit,
+      modelName: props.model.model_name,
       showRechargePrice,
       priceRate: props.priceRate,
       usdExchangeRate: props.usdExchangeRate,
@@ -1208,6 +1209,7 @@ function ProviderGroupPricingSection(
           group,
           getDynamicFormattedPricesByTier(dynamicTiers, {
             tokenUnit: props.tokenUnit,
+            modelName: props.model.model_name,
             showRechargePrice,
             priceRate: props.priceRate,
             usdExchangeRate: props.usdExchangeRate,
@@ -1618,6 +1620,7 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
             {isDynamic && !simpleTaskPricing && (
               <DynamicPricingBreakdown
                 billingExpr={props.model.billing_expr}
+                modelName={props.model.model_name}
                 usageSchema={props.model.billing_usage_schema}
                 taskPriceOptions={{
                   showRechargePrice,

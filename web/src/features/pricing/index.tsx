@@ -250,7 +250,7 @@ export function Pricing() {
                 onTagChange={setTagFilter}
                 vendors={vendors || []}
                 channels={availableChannels}
-                  tags={availableTags}
+                tags={availableTags}
                 models={models || []}
                 hasActiveFilters={hasActiveFilters}
                 activeFilterCount={activeFilterCount}

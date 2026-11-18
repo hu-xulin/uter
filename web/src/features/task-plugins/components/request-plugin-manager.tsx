@@ -35,8 +35,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
 import { getTaskPluginOptions } from '@/features/channels/api'
+
 import {
   dryRunRequestPlugins,
   listRequestPluginInstances,
@@ -101,7 +101,9 @@ export function RequestPluginManager() {
   const updateSelectedConfig = (next: Record<string, unknown>) => {
     if (!selectedInstance) return
     const updated = instances.map((instance) =>
-      instance.id === selectedInstance.id ? { ...instance, config: next } : instance
+      instance.id === selectedInstance.id
+        ? { ...instance, config: next }
+        : instance
     )
     setInstancesText(JSON.stringify(updated, null, 2))
   }
@@ -126,11 +128,12 @@ export function RequestPluginManager() {
   const [bodyText, setBodyText] = useState(DRY_RUN_BODY)
   const [result, setResult] = useState('')
   const run = useMutation({
-    mutationFn: async () => dryRunRequestPlugins({
-      format,
-      model,
-      body: JSON.parse(bodyText),
-    }),
+    mutationFn: async () =>
+      dryRunRequestPlugins({
+        format,
+        model,
+        body: JSON.parse(bodyText),
+      }),
     onSuccess: (data) => setResult(JSON.stringify(data, null, 2)),
     onError: (error) => toast.error(messageOf(error)),
   })
@@ -220,7 +223,11 @@ export function RequestPluginManager() {
         </div>
         <div className='mb-2 flex items-center justify-between gap-2'>
           <Label htmlFor='request-plugin-body'>{t('Request body')}</Label>
-          <Button type='button' onClick={() => run.mutate()} disabled={run.isPending}>
+          <Button
+            type='button'
+            onClick={() => run.mutate()}
+            disabled={run.isPending}
+          >
             {t('Dry run')}
           </Button>
         </div>

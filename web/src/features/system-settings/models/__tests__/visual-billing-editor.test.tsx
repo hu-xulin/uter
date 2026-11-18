@@ -179,7 +179,7 @@ test('retains all pricing inputs and switches inside an expanded rule', async ()
     'Input price',
     'Output price',
     'Cache read price',
-    'Cache create price',
+    'Standard cache write price',
     'Cache create (1h) price',
     'Image input price',
     'Image cache input price',

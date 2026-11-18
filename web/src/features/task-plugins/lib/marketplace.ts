@@ -127,7 +127,8 @@ function parseRevokedEntries(value: unknown): MarketplaceRevokedEntry[] {
     if (!/^[0-9a-f]{64}$/.test(sha256)) continue
     entries.push({
       sha256,
-      key: typeof raw.key === 'string' ? raw.key.trim() || undefined : undefined,
+      key:
+        typeof raw.key === 'string' ? raw.key.trim() || undefined : undefined,
       reason: parseMarketplaceDescription(raw.reason),
     })
   }

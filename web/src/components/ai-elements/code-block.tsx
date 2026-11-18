@@ -699,6 +699,14 @@ function CodeMirrorCodeView({
     const editorView = new EditorView({
       doc: initialValueRef.current,
       extensions: [
+        // CodeMirror renders its own `.cm-content[role=textbox]`; the aria-label
+        // on the wrapper div does not name that inner textbox, so the editor
+        // exposes an unnamed input field to axe. Bind the label to the content
+        // element as well.
+        EditorView.contentAttributes.of({
+          'aria-label': ariaLabel,
+          'aria-readonly': readOnly ? 'true' : 'false',
+        }),
         ...editorExtensions,
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
@@ -717,7 +725,7 @@ function CodeMirrorCodeView({
       editorView.destroy()
       editorViewRef.current = null
     }
-  }, [autoFocus, editorExtensions])
+  }, [ariaLabel, autoFocus, editorExtensions, readOnly])
 
   useEffect(() => {
     // Track the latest value so a future editor rebuild (e.g. language change)
@@ -745,11 +753,12 @@ function CodeMirrorCodeView({
 
   return (
     <div
-      aria-label={ariaLabel}
-      aria-readonly={readOnly}
+      // The editable surface is CodeMirror's own `.cm-content[role=textbox]`.
+      // Marking this layout wrapper as a second textbox produced two unnamed/
+      // duplicate inputs (axe `aria-input-field-name`), so the label is bound
+      // to the content element through `contentAttributes` above.
       className='min-h-(--code-editor-min-height)'
       ref={editorHostRef}
-      role='textbox'
       style={
         {
           '--code-editor-min-height': editorMinHeight,

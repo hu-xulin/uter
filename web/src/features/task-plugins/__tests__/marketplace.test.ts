@@ -832,7 +832,9 @@ describe('marketplace takedown entries', () => {
         { sha256: hash },
       ],
     })
-    assert.deepEqual(index.revoked, [{ sha256: hash, key: undefined, reason: undefined }])
+    assert.deepEqual(index.revoked, [
+      { sha256: hash, key: undefined, reason: undefined },
+    ])
   })
 
   test('ignores a non-array revoked field', () => {
@@ -850,7 +852,10 @@ describe('marketplace takedown entries', () => {
       plugins: [],
       revoked: [{ sha256: hash, reason: 'taken down' }],
     })
-    assert.equal(findRevokedEntry(index, hash.toUpperCase())?.reason, 'taken down')
+    assert.equal(
+      findRevokedEntry(index, hash.toUpperCase())?.reason,
+      'taken down'
+    )
     assert.equal(findRevokedEntry(index, 'b'.repeat(64)), undefined)
     assert.equal(findRevokedEntry(index, undefined), undefined)
     assert.equal(findRevokedEntry(undefined, hash), undefined)

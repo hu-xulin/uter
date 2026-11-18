@@ -143,7 +143,5 @@ it('a load failure wins over updating and the popover names each failing node', 
 
   expect(await screen.findByText('Nodes')).toBeVisible()
   expect(await screen.findByText('Incho video')).toBeVisible()
-  expect(
-    await screen.findByText('SyntaxError: Unexpected token')
-  ).toBeVisible()
+  expect(await screen.findByText('SyntaxError: Unexpected token')).toBeVisible()
 })

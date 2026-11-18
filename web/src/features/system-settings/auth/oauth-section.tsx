@@ -1211,7 +1211,6 @@ export function OAuthSection(props: OAuthSectionProps) {
                     </SettingsSwitchItem>
                   )}
                 />
-
               </TabsContent>
             </Tabs>
           </SettingsForm>

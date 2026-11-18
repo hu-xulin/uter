@@ -338,7 +338,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
               value={fixedTime}
               onChange={(event) => setFixedTime(event.target.value)}
               placeholder='2026-09-07T09:00:00+08:00'
-              className='text-sm font-mono'
+              className='font-mono text-sm'
             />
           )}
           <FieldDescription>

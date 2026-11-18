@@ -789,7 +789,11 @@ export async function continuePluginLogin(
   channelId: number,
   body: {
     flow: string
-    input: { callback_url?: string; fields?: Record<string, string>; poll?: boolean }
+    input: {
+      callback_url?: string
+      fields?: Record<string, string>
+      poll?: boolean
+    }
   }
 ): Promise<PluginLoginResponse> {
   const res = await api.post<PluginLoginResponse>(

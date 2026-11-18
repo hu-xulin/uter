@@ -23,13 +23,11 @@ import { toast } from 'sonner'
 
 import { Dialog } from '@/components/dialog'
 import { JsonCodeEditor } from '@/components/json-code-editor'
-import { Button } from '@/components/ui/button'
 import { PluginConfigFields } from '@/components/plugin-config-fields'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { resolveLocalizedText } from '@/lib/localized-text'
-
-import { parsePluginConfigObject } from '../../lib/channel-plugin-config'
 
 import {
   continuePluginLogin,
@@ -38,6 +36,7 @@ import {
   type PluginCredentialView,
   type PluginLoginStep,
 } from '../../api'
+import { parsePluginConfigObject } from '../../lib/channel-plugin-config'
 
 type ChannelPluginConfigDialogProps = {
   open: boolean
@@ -210,9 +209,7 @@ export function ChannelPluginConfigDialog(
     )
   } else if (credentials.length === 0) {
     credentialsBody = (
-      <p className='text-muted-foreground text-sm'>
-        {t('No credentials yet')}
-      </p>
+      <p className='text-muted-foreground text-sm'>{t('No credentials yet')}</p>
     )
   } else {
     credentialsBody = (
@@ -262,7 +259,9 @@ export function ChannelPluginConfigDialog(
           </div>
         ))}
         <Button type='button' onClick={submitFields} disabled={busy}>
-          {busy ? <Loader2 className='animate-spin' aria-hidden='true' /> : null}
+          {busy ? (
+            <Loader2 className='animate-spin' aria-hidden='true' />
+          ) : null}
           {t('Continue')}
         </Button>
       </div>
@@ -272,7 +271,7 @@ export function ChannelPluginConfigDialog(
       <div className='flex flex-col gap-3'>
         {step.url ? (
           <a
-            className='text-(--ds-color-text-link) break-all underline'
+            className='break-all text-(--ds-color-text-link) underline'
             href={step.url}
             target='_blank'
             rel='noreferrer'
@@ -296,13 +295,13 @@ export function ChannelPluginConfigDialog(
             onChange={(event) => setCallbackUrl(event.target.value)}
           />
           <p className='text-muted-foreground text-sm'>
-            {t(
-              'Paste the full address from the address bar after signing in.'
-            )}
+            {t('Paste the full address from the address bar after signing in.')}
           </p>
         </div>
         <Button type='button' onClick={submitCallback} disabled={busy}>
-          {busy ? <Loader2 className='animate-spin' aria-hidden='true' /> : null}
+          {busy ? (
+            <Loader2 className='animate-spin' aria-hidden='true' />
+          ) : null}
           {t('Continue')}
         </Button>
       </div>
@@ -312,7 +311,7 @@ export function ChannelPluginConfigDialog(
       <div className='flex flex-col gap-3'>
         {step.verification_uri_complete || step.url ? (
           <a
-            className='text-(--ds-color-text-link) break-all underline'
+            className='break-all text-(--ds-color-text-link) underline'
             href={step.verification_uri_complete || step.url}
             target='_blank'
             rel='noreferrer'

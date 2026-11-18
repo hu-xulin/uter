@@ -36,7 +36,7 @@ import { describe, expect, it } from 'vitest'
 const ROOT = join(process.cwd(), 'src')
 
 /** 语义状态键：它们的取值必须来自语义 Token，不得是 chart-N。 */
-const STATUS_KEYS = ['success', 'warning', 'danger', 'info', 'destructive']
+const STATUS_KEYS = new Set(['success', 'warning', 'danger', 'info', 'destructive'])
 
 const COLOR_MAP_FILES = [
   'components/status-badge.tsx',
@@ -52,7 +52,7 @@ function collectChartStatusMixups(): Violation[] {
     lines.forEach((line, index) => {
       if (!/\bchart-[1-5]\b/.test(line)) return
       const key = /^\s*'?([A-Za-z-]+)'?:/.exec(line)?.[1]
-      if (!key || !STATUS_KEYS.includes(key)) return
+      if (!key || !STATUS_KEYS.has(key)) return
       violations.push({ file, line: index + 1, text: line.trim() })
     })
   }

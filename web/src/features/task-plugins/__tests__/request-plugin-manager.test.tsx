@@ -25,9 +25,9 @@ import {
   waitFor,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { RequestPluginManager } from '../components/request-plugin-manager'
-import { afterEach, describe, expect, test, vi } from 'vitest'
 
 const api = vi.hoisted(() => ({
   dryRun: vi.fn(),
@@ -113,8 +113,11 @@ describe('RequestPluginManager', () => {
     renderManager()
     await waitFor(() =>
       expect(
-        (screen.getByLabelText('Request plugin instances') as HTMLTextAreaElement)
-          .value
+        (
+          screen.getByLabelText(
+            'Request plugin instances'
+          ) as HTMLTextAreaElement
+        ).value
       ).toContain('auto-reasoning')
     )
   })

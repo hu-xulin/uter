@@ -64,6 +64,7 @@ import { PolicyDecisionRecord } from '@/features/system-settings/request-policie
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { formatBillingCurrencyFromUSD } from '@/lib/currency'
 import { formatLogQuota, formatTokens, formatUseTime } from '@/lib/format'
+import { resolveLocalizedText } from '@/lib/localized-text'
 import { translateServerText } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
 
@@ -90,8 +91,6 @@ import {
   isPerCallBilling,
   isTimingLogType,
 } from '../../lib/utils'
-import { resolveLocalizedText } from '@/lib/localized-text'
-
 import { USAGE_BILLING_PATH, type LogOtherData } from '../../types'
 import { ResponseModelDetails } from '../model-badge'
 import { PluginAuthorLink } from '../plugin-author-link'
@@ -177,7 +176,7 @@ function BillingBreakdown(props: {
   const isPerCall = isPerCallBilling(other.model_price)
   const isClaude = other.claude === true
   const isTieredExpr = other.billing_mode === 'tiered_expr'
-  const tieredSummary = getTieredBillingSummary(other)
+  const tieredSummary = getTieredBillingSummary(other, log.model_name)
 
   const rows: Array<{ label: string; value: string }> = []
   const priceOpts = { digitsLarge: 4, digitsSmall: 6, abbreviate: false }
@@ -484,7 +483,8 @@ export function RequestPluginRecordsSection(props: {
       {props.records.map((record) => {
         const parts: string[] = []
         if (record.stage) parts.push(record.stage)
-        const changes = (record.changes?.length || 0) + (record.more_changes || 0)
+        const changes =
+          (record.changes?.length || 0) + (record.more_changes || 0)
         if (changes > 0) {
           parts.push(
             changes === 1
@@ -495,9 +495,13 @@ export function RequestPluginRecordsSection(props: {
         const headers =
           (record.headers?.set?.length || 0) +
           (record.headers?.remove?.length || 0)
-        if (headers > 0) parts.push(t('{{count}} header changes', { count: headers }))
+        if (headers > 0) {
+          parts.push(t('{{count}} header changes', { count: headers }))
+        }
         if (record.media?.length) {
-          parts.push(t('{{count}} media changes', { count: record.media.length }))
+          parts.push(
+            t('{{count}} media changes', { count: record.media.length })
+          )
         }
         if (record.masked) {
           parts.push(t('{{count}} masked spans', { count: record.masked }))
@@ -515,7 +519,9 @@ export function RequestPluginRecordsSection(props: {
           parts.push(t('Rejected: {{code}}', { code: record.rejected.code }))
         }
         if (record.truncated) {
-          parts.push(t('{{count}} entries truncated', { count: record.truncated }))
+          parts.push(
+            t('{{count}} entries truncated', { count: record.truncated })
+          )
         }
         const notice = resolveLocalizedText(record.notice, i18n.language)
         if (notice) parts.push(notice)

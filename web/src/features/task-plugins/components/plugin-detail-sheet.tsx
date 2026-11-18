@@ -65,6 +65,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Heading } from '@/design-system'
+import { PRICING_ISSUE_REASONS } from '@/features/system-settings/models/pricing-issues'
 import { handleServerError } from '@/lib/handle-server-error'
 import { resolveLocalizedText } from '@/lib/localized-text'
 
@@ -77,7 +78,6 @@ import type { TaskPluginDetail, TaskPluginListItem } from '../types'
 import { JavaScriptViewer } from './javascript-viewer'
 import { PluginIcon } from './plugin-icon'
 import { PluginMetadataCard } from './plugin-metadata-card'
-import { PRICING_ISSUE_REASONS } from '@/features/system-settings/models/pricing-issues'
 import { PluginModelList } from './plugin-model-list'
 import { PluginSandbox } from './plugin-sandbox'
 import { SourceDiff } from './source-diff'
@@ -405,7 +405,9 @@ function PluginPartsAndIssues(props: { detail: TaskPluginDetail }) {
   const detail = props.detail
   const parts: Array<{ key: string; label: string }> = []
   if (detail.task) parts.push({ key: 'task', label: t('Task driver') })
-  if (detail.provider) parts.push({ key: 'provider', label: t('Provider relay') })
+  if (detail.provider) {
+    parts.push({ key: 'provider', label: t('Provider relay') })
+  }
   if (detail.transform) {
     parts.push({ key: 'transform', label: t('Request processing') })
   }

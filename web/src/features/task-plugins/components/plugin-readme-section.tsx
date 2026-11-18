@@ -68,7 +68,7 @@ export function PluginReadmeSection(props: PluginReadmeSectionProps) {
         className='min-w-0 space-y-2 rounded-lg border p-4'
       >
         {locale !== 'en' && query.data.locale === 'en' && (
-          <p role='status' className='text-muted-foreground text-xs'>
+          <p role='status' className='text-muted-foreground text-sm'>
             {t(
               'This usage guide is not available in your language. Showing English.'
             )}
@@ -92,7 +92,7 @@ export function PluginReadmeSection(props: PluginReadmeSectionProps) {
   }
   if (query.error instanceof PluginDocumentFormatError) {
     return (
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t('Could not show the usage guide. {{problem}}', {
           problem: describePluginDocumentProblem(t, query.error),
         })}{' '}
@@ -117,7 +117,7 @@ export function PluginReadmeSection(props: PluginReadmeSectionProps) {
     )
   }
   return (
-    <p className='text-muted-foreground text-xs'>
+    <p className='text-muted-foreground text-sm'>
       {t('No usage guide for this version.')}
     </p>
   )

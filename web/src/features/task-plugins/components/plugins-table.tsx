@@ -46,7 +46,10 @@ import {
   setTaskPluginStatus,
   TaskPluginUsageError,
 } from '../api'
-import { findRevokedEntryAcross, isStaleFactoryOverride } from '../lib/marketplace'
+import {
+  findRevokedEntryAcross,
+  isStaleFactoryOverride,
+} from '../lib/marketplace'
 import type {
   MarketplaceIndex,
   TaskPluginListItem,

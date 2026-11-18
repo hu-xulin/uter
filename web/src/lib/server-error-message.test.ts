@@ -16,9 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import i18next from 'i18next'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+
+import i18next from 'i18next'
 import { describe, expect, test } from 'vitest'
 
 import {

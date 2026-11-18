@@ -48,10 +48,10 @@ import {
 } from '../lib/plugin-url'
 import type { MarketplacePlugin, MarketplaceSource } from '../types'
 import { JavaScriptViewer } from './javascript-viewer'
-import { PluginReadmeSection } from './plugin-readme-section'
 import { MarketplaceCapabilities } from './marketplace-capabilities'
 import { PluginIcon } from './plugin-icon'
 import { PluginIntegrityCheck } from './plugin-integrity-check'
+import { PluginReadmeSection } from './plugin-readme-section'
 import { SourceDiff } from './source-diff'
 
 const PluginChangelogPanel = lazy(() =>

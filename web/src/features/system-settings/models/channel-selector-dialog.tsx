@@ -267,7 +267,7 @@ export function ChannelSelectorDialog({
                   value={currentEndpoint}
                   onChange={(e) => updateEndpoint(channel.id, e.target.value)}
                   placeholder={t('/your/endpoint')}
-                  className='text-sm min-w-0 flex-1 font-mono'
+                  className='min-w-0 flex-1 font-mono text-sm'
                 />
               )}
             </div>

@@ -50,9 +50,7 @@ it('lists channels instead of groups and reports the clicked channel', async () 
 
   expect(screen.getByText('Channels')).toBeVisible()
   expect(screen.queryByText('Model Group')).toBeNull()
-  expect(
-    screen.getByRole('button', { name: /优特渠道/ })
-  ).toBeVisible()
+  expect(screen.getByRole('button', { name: /优特渠道/ })).toBeVisible()
 
   await user.click(screen.getByRole('button', { name: /聚合渠道/ }))
 

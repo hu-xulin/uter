@@ -22,6 +22,7 @@ import {
   Route,
   CreditCard,
   Layout,
+  LayoutTemplate,
   Settings,
   Shield,
   ShieldAlert,
@@ -38,6 +39,10 @@ import { getSecuritySectionNavItems } from '@/features/system-settings/security/
 import { getSiteSectionNavItems } from '@/features/system-settings/site/section-registry.tsx'
 
 import type { NavGroup, SidebarView } from '../types'
+
+/** Server-rendered product prototype centre, served at the Uter origin. */
+const PRODUCT_PROTOTYPE_URL =
+  import.meta.env.VITE_PRODUCT_WORKSPACE_URL || '/product-spec/'
 
 /**
  * Sidebar nav groups for the System Settings nested view.
@@ -91,6 +96,11 @@ function getSystemSettingsNavGroups(t: TFunction): NavGroup[] {
           title: t('Operations'),
           icon: Wrench,
           items: getOperationsSectionNavItems(t),
+        },
+        {
+          title: t('Product Prototypes'),
+          icon: LayoutTemplate,
+          url: PRODUCT_PROTOTYPE_URL,
         },
       ],
     },

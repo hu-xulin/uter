@@ -97,7 +97,7 @@ export const BILLING_VARS: BillingVar[] = [
     key: 'cc',
     field: 'cacheCreatePrice',
     tierField: 'cache_create_unit_cost',
-    label: 'Cache create price',
+    label: 'Standard cache write price',
     shortLabel: 'Cache Write',
     side: 'input',
     group: 'cache',

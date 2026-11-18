@@ -632,7 +632,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                 }
                 placeholder='(header("x-priority") == "high" ? 2 : 1)'
                 rows={3}
-                className='text-sm font-mono'
+                className='font-mono text-sm'
                 spellCheck={false}
               />
               <FieldDescription>
@@ -672,7 +672,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
               onChange={(event) => handleRawChange(event.target.value)}
               placeholder='tier("base", u("seconds") * 0.4)'
               rows={7}
-              className='text-sm font-mono'
+              className='font-mono text-sm'
               spellCheck={false}
             />
             <TaskBillingPreview

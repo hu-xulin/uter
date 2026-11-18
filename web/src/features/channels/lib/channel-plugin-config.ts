@@ -46,7 +46,11 @@ type SchemaProperty = {
 export function channelConfigFields(schema: unknown): ChannelConfigField[] {
   if (!schema || typeof schema !== 'object' || Array.isArray(schema)) return []
   const properties = (schema as { properties?: unknown }).properties
-  if (!properties || typeof properties !== 'object' || Array.isArray(properties)) {
+  if (
+    !properties ||
+    typeof properties !== 'object' ||
+    Array.isArray(properties)
+  ) {
     return []
   }
   const fields: ChannelConfigField[] = []
@@ -91,7 +95,9 @@ function readLocalized(value: unknown): LocalizedText {
 export type PluginConfigObject = Record<string, unknown>
 
 /** Parses the JSON editor text; null while it is not a JSON object. */
-export function parsePluginConfigObject(text: string): PluginConfigObject | null {
+export function parsePluginConfigObject(
+  text: string
+): PluginConfigObject | null {
   const trimmed = text.trim()
   if (!trimmed) return {}
   try {

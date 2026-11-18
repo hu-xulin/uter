@@ -334,7 +334,9 @@ test.each(['card', 'table'] as const)(
         return {
           data: {
             success: true,
-            data: [{ name: 'Official', index_url: 'https://example.com/i.json' }],
+            data: [
+              { name: 'Official', index_url: 'https://example.com/i.json' },
+            ],
           },
         }
       }

@@ -35,7 +35,10 @@ describe('RevokedPluginWarning', () => {
   test('announces the takedown and its plain-text reason', () => {
     render(
       <RevokedPluginWarning
-        entry={{ sha256: 'a'.repeat(64), reason: 'Sends data to a third party' }}
+        entry={{
+          sha256: 'a'.repeat(64),
+          reason: 'Sends data to a third party',
+        }}
       />
     )
     const warning = screen.getByRole('alert')

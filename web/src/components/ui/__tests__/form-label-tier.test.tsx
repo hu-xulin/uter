@@ -183,13 +183,19 @@ describe('mono values', () => {
         <NativeSelect aria-label='plain-select' />
       </>
     )
-    expect(classes(screen.getByLabelText('plain-textarea'))).toContain('text-sm')
+    expect(classes(screen.getByLabelText('plain-textarea'))).toContain(
+      'text-sm'
+    )
     expect(classes(screen.getByLabelText('plain-select'))).toContain('text-sm')
   })
 
   it('H5（≤767px）输入字号 ≥16px 的全局兜底仍生效', () => {
     const css = readFileSync(
-      resolve(dirname(fileURLToPath(import.meta.url)), '../../..', 'styles/index.css'),
+      resolve(
+        dirname(fileURLToPath(import.meta.url)),
+        '../../..',
+        'styles/index.css'
+      ),
       'utf8'
     )
     expect(css).toMatch(

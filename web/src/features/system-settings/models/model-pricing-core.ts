@@ -131,7 +131,7 @@ export const laneConfigs: Array<{
   },
   {
     key: 'createCache',
-    titleKey: 'Cache write price',
+    titleKey: 'Standard cache write price',
     descriptionKey: 'Token price for creating cache entries.',
     placeholder: '3.75',
   },
@@ -561,8 +561,8 @@ export function buildPreviewRows(
       key: 'createCache',
       label:
         cacheWriteMode === 'claude_ttl'
-          ? t('Cache Creation (5m)')
-          : t('Cache write price'),
+          ? t('Cache create (5m) price')
+          : t('Standard cache write price'),
       value:
         laneEnabled.createCache && lanePrices.createCache
           ? formatPricingAmount(lanePrices.createCache, currency)

@@ -340,7 +340,7 @@ function RawExprEditor({ exprString, onChange }: RawExprEditorProps) {
         onChange={(event) => onChange(event.target.value)}
         placeholder='tier("base", p * 3 + c * 15)'
         rows={6}
-        className='text-sm font-mono'
+        className='font-mono text-sm'
         spellCheck={false}
       />
     </div>
@@ -1031,7 +1031,7 @@ function LlmPromptHelper({ modelName }: LlmPromptHelperProps) {
             value={prompt}
             readOnly
             rows={8}
-            className='text-sm font-mono'
+            className='font-mono text-sm'
             spellCheck={false}
           />
         </div>

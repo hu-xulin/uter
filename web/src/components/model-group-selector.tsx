@@ -318,7 +318,6 @@ export const ModelSelector: React.FC<ModelSelectorProps> = React.memo(
 
 ModelSelector.displayName = 'ModelSelector'
 
-
 // Export combined selector component
 export interface ModelGroupSelectorProps {
   // Model props

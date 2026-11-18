@@ -391,7 +391,6 @@ export function UserAuthForm({
         consentRequired={requiresLegalConsent && !agreedToLegal}
         consentRequiredMessage={legalConsentErrorMessage}
       />
-
     </>
   )
 

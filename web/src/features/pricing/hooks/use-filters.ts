@@ -113,8 +113,7 @@ export function useFilters(models: PricingModel[]) {
     [updateFilters]
   )
   const setChannelFilter = useCallback(
-    (v: string) =>
-      updateFilters({ channel: v === FILTER_ALL ? undefined : v }),
+    (v: string) => updateFilters({ channel: v === FILTER_ALL ? undefined : v }),
     [updateFilters]
   )
   const setQuotaTypeFilter = useCallback(
@@ -183,7 +182,13 @@ export function useFilters(models: PricingModel[]) {
       quotaTypeFilter !== QUOTA_TYPES.ALL ||
       endpointTypeFilter !== ENDPOINT_TYPES.ALL ||
       tagFilter !== FILTER_ALL,
-    [vendorFilter, channelFilter, quotaTypeFilter, endpointTypeFilter, tagFilter]
+    [
+      vendorFilter,
+      channelFilter,
+      quotaTypeFilter,
+      endpointTypeFilter,
+      tagFilter,
+    ]
   )
 
   const activeFilterCount = useMemo(
@@ -193,7 +198,13 @@ export function useFilters(models: PricingModel[]) {
       (quotaTypeFilter !== QUOTA_TYPES.ALL ? 1 : 0) +
       (endpointTypeFilter !== ENDPOINT_TYPES.ALL ? 1 : 0) +
       (tagFilter !== FILTER_ALL ? 1 : 0),
-    [vendorFilter, channelFilter, quotaTypeFilter, endpointTypeFilter, tagFilter]
+    [
+      vendorFilter,
+      channelFilter,
+      quotaTypeFilter,
+      endpointTypeFilter,
+      tagFilter,
+    ]
   )
 
   const clearFilters = useCallback(() => {

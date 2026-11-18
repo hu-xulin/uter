@@ -109,7 +109,9 @@ test('renders schema fields and keeps them in sync with the JSON text', async ()
 
   expect(screen.getByLabelText('Region')).toBeVisible()
   const editor = screen.getByLabelText('Plugin config (JSON)')
-  fireEvent.change(editor, { target: { value: '{"region":"eu","enabled":true}' } })
+  fireEvent.change(editor, {
+    target: { value: '{"region":"eu","enabled":true}' },
+  })
   await waitFor(() =>
     expect(screen.getByLabelText('Enabled')).toHaveAttribute(
       'aria-checked',
@@ -141,7 +143,12 @@ test('lists credential summaries and completes a field login', async () => {
       step: {
         type: 'fields',
         fields: [
-          { name: 'access', label: { en: 'Token' }, type: 'password', required: true },
+          {
+            name: 'access',
+            label: { en: 'Token' },
+            type: 'password',
+            required: true,
+          },
         ],
       },
     },

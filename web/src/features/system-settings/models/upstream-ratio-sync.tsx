@@ -25,13 +25,25 @@ import { toast } from 'sonner'
 import { ErrorState } from '@/components/error-state'
 import { Button } from '@/components/ui/button'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   buildPricingChanges,
   getModelPricing,
   saveModelPricing,
   invalidateModelPricing,
   type ModelPricingConfig,
 } from '@/features/model-pricing/api'
+import {
+  getSitePricingCurrency,
+  isValidPricingCurrency,
+} from '@/features/model-pricing/currency'
 import { applyPriceSyncSelections } from '@/features/model-pricing/pricing'
+import { useSystemConfigStore } from '@/stores/system-config-store'
 import { handleServerError } from '@/lib/handle-server-error'
 import {
   requireServerSuccess,
@@ -71,6 +83,10 @@ import {
   type PricingSourceSelections,
 } from './upstream-ratio-sync-helpers'
 import { UpstreamRatioSyncTable } from './upstream-ratio-sync-table'
+import {
+  adjustSyncPrice,
+  type PriceAdjustment,
+} from './sync-price-adjustment'
 
 function getDefaultEndpointForChannel(channel: UpstreamChannel): string {
   if (channel.id === MODELS_DEV_PRESET_ID) return MODELS_DEV_PRESET_ENDPOINT
@@ -193,6 +209,29 @@ export function UpstreamRatioSync() {
     Record<number, string>
   >({})
   const [differences, setDifferences] = useState<DifferencesMap>({})
+  const [priceAdjustment, setPriceAdjustment] =
+    useState<PriceAdjustment>('keep')
+  const currencyConfig = useSystemConfigStore((state) => state.config.currency)
+  const siteCurrency = useMemo(
+    () => getSitePricingCurrency(currencyConfig),
+    [currencyConfig]
+  )
+  const adjustValues = useCallback(
+    (values: PricingSyncValues): PricingSyncValues => {
+      const adjusted = adjustSyncPrice(
+        values,
+        priceAdjustment,
+        isValidPricingCurrency(siteCurrency)
+          ? siteCurrency.exchangeRate
+          : null
+      )
+      if (adjusted.error || !adjusted.values) {
+        throw new Error(t(adjusted.error ?? 'Unset price'))
+      }
+      return adjusted.values
+    },
+    [priceAdjustment, siteCurrency, t]
+  )
   const [prices, setPrices] = useState<PricingSyncModels>({})
   const [selectedSources, setSelectedSources] =
     useState<PricingSourceSelections>({})
@@ -343,11 +382,17 @@ export function UpstreamRatioSync() {
       if (!Object.keys(resolved).length) {
         throw new Error(t('No price sources selected'))
       }
-      const after = applyPriceSyncSelections(pricingBaseline.options, resolved)
+      const adjusted = Object.fromEntries(
+        Object.entries(resolved).map(([model, values]) => [
+          model,
+          adjustValues(values),
+        ])
+      )
+      const after = applyPriceSyncSelections(pricingBaseline.options, adjusted)
       await saveModelPricing(
         buildPricingChanges(pricingBaseline, pricingBaseline.options, after)
       )
-      return resolved
+      return adjusted
     },
     onSuccess: async (saved) => {
       setPrices((previous) =>
@@ -432,12 +477,19 @@ export function UpstreamRatioSync() {
         const row = prices[model]
         const selected: PricingSyncValues | undefined = row?.upstreams[source]
         if (!row || !selected) return []
+        let adjusted: PricingSyncValues
+        try {
+          adjusted = adjustValues(selected)
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : String(error))
+          return []
+        }
         return [
           {
             model,
             channel: getUpstreamDisplayName(source, t),
             current: describeSyncPrice(row.current, t),
-            newVal: describeSyncPrice(selected, t),
+            newVal: describeSyncPrice(adjusted, t),
           },
         ]
       }
@@ -557,6 +609,47 @@ export function UpstreamRatioSync() {
         >
           {t('One-click sync upstream prices')}
         </Button>
+        <Select
+          items={[
+            { value: 'keep', label: t('Keep source price') },
+            {
+              value: 'divide',
+              label: t('Divide by exchange rate (÷ {{rate}})', {
+                rate: siteCurrency?.exchangeRate ?? '—',
+              }),
+            },
+            {
+              value: 'multiply',
+              label: t('Multiply by exchange rate (× {{rate}})', {
+                rate: siteCurrency?.exchangeRate ?? '—',
+              }),
+            },
+          ]}
+          onValueChange={(value) =>
+            setPriceAdjustment(value as PriceAdjustment)
+          }
+          value={priceAdjustment}
+        >
+          <SelectTrigger
+            className='w-[240px]'
+            disabled={!isValidPricingCurrency(siteCurrency)}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent alignItemWithTrigger={false}>
+            <SelectItem value='keep'>{t('Keep source price')}</SelectItem>
+            <SelectItem value='divide'>
+              {t('Divide by exchange rate (÷ {{rate}})', {
+                rate: siteCurrency?.exchangeRate ?? '—',
+              })}
+            </SelectItem>
+            <SelectItem value='multiply'>
+              {t('Multiply by exchange rate (× {{rate}})', {
+                rate: siteCurrency?.exchangeRate ?? '—',
+              })}
+            </SelectItem>
+          </SelectContent>
+        </Select>
         <Button
           onClick={handleApplySync}
           disabled={

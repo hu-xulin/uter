@@ -30,6 +30,13 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@/components/ui/empty'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
@@ -58,6 +65,7 @@ export function MarketplacePanel() {
   const [selectedSourceUrl, setSelectedSourceUrl] = useState('')
   const [installTarget, setInstallTarget] =
     useState<MarketplaceInstallTarget | null>(null)
+  const [kindFilter, setKindFilter] = useState('all')
 
   const sourcesQuery = useQuery({
     queryKey: ['task-plugin-marketplace-sources'],
@@ -95,6 +103,32 @@ export function MarketplacePanel() {
             )}
           </p>
           <div className='flex shrink-0 gap-2'>
+            <Select
+              items={[
+                { value: 'all', label: t('All plugin kinds') },
+                { value: 'task', label: t('Task plugins') },
+                { value: 'provider', label: t('Provider plugins') },
+                { value: 'request', label: t('Request processing') },
+              ]}
+              onValueChange={(value) => {
+                if (value) setKindFilter(value)
+              }}
+              value={kindFilter}
+            >
+              <SelectTrigger className='w-[190px]'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent alignItemWithTrigger={false}>
+                <SelectItem value='all'>{t('All plugin kinds')}</SelectItem>
+                <SelectItem value='task'>{t('Task plugins')}</SelectItem>
+                <SelectItem value='provider'>
+                  {t('Provider plugins')}
+                </SelectItem>
+                <SelectItem value='request'>
+                  {t('Request processing')}
+                </SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               variant='outline'
               size='sm'
@@ -164,6 +198,7 @@ export function MarketplacePanel() {
             isLoading={indexQuery.isLoading}
             error={indexQuery.error}
             installed={installedQuery.data ?? []}
+            kind={kindFilter}
             onInstall={setInstallTarget}
           />
         )}
@@ -190,6 +225,7 @@ type MarketplaceSourceSectionProps = {
   isLoading: boolean
   error: Error | null
   installed: Awaited<ReturnType<typeof listTaskPlugins>>
+  kind: string
   onInstall: (target: MarketplaceInstallTarget) => void
 }
 
@@ -199,6 +235,14 @@ function MarketplaceSourceSection(props: MarketplaceSourceSectionProps) {
   const missingHashes = props.index
     ? !indexHasIntegrityHashes(props.index)
     : false
+  const plugins =
+    props.index?.plugins.filter(
+      (plugin) =>
+        props.kind === 'all' ||
+        plugin.versions.some(
+          (version) => (version.kind ?? 'task') === props.kind
+        )
+    ) ?? []
 
   return (
     <section className='space-y-3'>
@@ -240,15 +284,15 @@ function MarketplaceSourceSection(props: MarketplaceSourceSectionProps) {
         </Alert>
       )}
 
-      {props.index && props.index.plugins.length === 0 && (
+      {props.index && plugins.length === 0 && (
         <p className='text-muted-foreground text-sm'>
-          {t('This source lists no installable task plugins.')}
+          {t('This source lists no installable plugins of this kind.')}
         </p>
       )}
 
-      {props.index && props.index.plugins.length > 0 && (
+      {props.index && plugins.length > 0 && (
         <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3'>
-          {props.index.plugins.map((plugin) => {
+          {plugins.map((plugin) => {
             const installState = deriveInstallState(plugin, props.installed)
             return (
               <MarketplacePluginCard

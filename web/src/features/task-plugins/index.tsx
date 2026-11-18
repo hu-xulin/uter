@@ -155,7 +155,10 @@ export function TaskPlugins() {
             <TabsContent value='marketplace' className='min-h-0 flex-1'>
               <MarketplacePanel />
             </TabsContent>
-            <TabsContent value='request' className='min-h-0 flex-1 overflow-y-auto'>
+            <TabsContent
+              value='request'
+              className='min-h-0 flex-1 overflow-y-auto'
+            >
               <RequestPluginManager />
             </TabsContent>
           </Tabs>
