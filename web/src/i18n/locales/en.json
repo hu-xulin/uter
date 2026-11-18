@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "Configure this plugin for the channel.",
     "Fields the plugin declares are checked when the channel is saved.": "Fields the plugin declares are checked when the channel is saved.",
     "I have finished signing in": "I have finished signing in",
+    "Paste the full address from the address bar after signing in.": "Paste the full address from the address bar after signing in.",
+    "Address after sign-in": "Address after sign-in",
     "Needs login": "Needs login",
     "No credentials yet": "No credentials yet",
     "Plugin config must be a JSON object": "Plugin config must be a JSON object",

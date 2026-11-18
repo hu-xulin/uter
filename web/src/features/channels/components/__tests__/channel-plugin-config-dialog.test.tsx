@@ -177,3 +177,39 @@ test('lists credential summaries and completes a field login', async () => {
   )
   expect(screen.queryByLabelText('Token')).not.toBeInTheDocument()
 })
+test('submits the pasted callback address for a paste step', async () => {
+  const user = userEvent.setup()
+  getPluginCredentials.mockResolvedValue([])
+  startPluginLogin.mockResolvedValue({
+    success: true,
+    data: {
+      flow: 'flow-paste',
+      step: { type: 'paste', url: 'https://vendor.example/login' },
+    },
+  })
+  continuePluginLogin.mockResolvedValue({
+    success: true,
+    data: { step: { type: 'done' } },
+  })
+
+  render(
+    <ChannelPluginConfigDialog
+      open
+      onOpenChange={vi.fn()}
+      channelId={9}
+      pluginName='Vendor'
+      config=''
+      onConfigChange={vi.fn()}
+    />
+  )
+  await user.click(screen.getByRole('button', { name: 'Sign in' }))
+  const address = await screen.findByLabelText('Address after sign-in')
+  await user.type(address, 'https://vendor.example/callback?code=abc')
+  await user.click(screen.getByRole('button', { name: 'Continue' }))
+  await waitFor(() =>
+    expect(continuePluginLogin).toHaveBeenCalledWith(9, {
+      flow: 'flow-paste',
+      input: { callback_url: 'https://vendor.example/callback?code=abc' },
+    })
+  )
+})

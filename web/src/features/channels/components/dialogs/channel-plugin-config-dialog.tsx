@@ -62,6 +62,7 @@ export function ChannelPluginConfigDialog(
   const [flow, setFlow] = useState<string | null>(null)
   const [step, setStep] = useState<PluginLoginStep | null>(null)
   const [fields, setFields] = useState<Record<string, string>>({})
+  const [callbackUrl, setCallbackUrl] = useState('')
   const [busy, setBusy] = useState(false)
 
   const channelId = props.channelId
@@ -74,6 +75,7 @@ export function ChannelPluginConfigDialog(
     setFlow(null)
     setStep(null)
     setFields({})
+    setCallbackUrl('')
   }, [props.open, props.config])
 
   useEffect(() => {
@@ -185,6 +187,22 @@ export function ChannelPluginConfigDialog(
     }
   }
 
+  const submitCallback = async () => {
+    if (!channelId || !flow || !callbackUrl.trim()) return
+    setBusy(true)
+    try {
+      const response = await continuePluginLogin(channelId, {
+        flow,
+        input: { callback_url: callbackUrl.trim() },
+      })
+      if (response.data?.step) applyStep(response.data.step)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error))
+    } finally {
+      setBusy(false)
+    }
+  }
+
   let credentialsBody = null
   if (loadingCredentials) {
     credentialsBody = (
@@ -244,6 +262,46 @@ export function ChannelPluginConfigDialog(
           </div>
         ))}
         <Button type='button' onClick={submitFields} disabled={busy}>
+          {busy ? <Loader2 className='animate-spin' aria-hidden='true' /> : null}
+          {t('Continue')}
+        </Button>
+      </div>
+    )
+  } else if (step?.type === 'paste') {
+    loginBody = (
+      <div className='flex flex-col gap-3'>
+        {step.url ? (
+          <a
+            className='text-(--ds-color-text-link) break-all underline'
+            href={step.url}
+            target='_blank'
+            rel='noreferrer'
+          >
+            {step.url}
+          </a>
+        ) : null}
+        {resolveLocalizedText(step.hint, i18n.language) ? (
+          <p className='text-muted-foreground text-sm'>
+            {resolveLocalizedText(step.hint, i18n.language)}
+          </p>
+        ) : null}
+        <div className='flex flex-col gap-1.5'>
+          <Label htmlFor='plugin-login-callback'>
+            {t('Address after sign-in')}
+          </Label>
+          <Input
+            id='plugin-login-callback'
+            autoComplete='off'
+            value={callbackUrl}
+            onChange={(event) => setCallbackUrl(event.target.value)}
+          />
+          <p className='text-muted-foreground text-sm'>
+            {t(
+              'Paste the full address from the address bar after signing in.'
+            )}
+          </p>
+        </div>
+        <Button type='button' onClick={submitCallback} disabled={busy}>
           {busy ? <Loader2 className='animate-spin' aria-hidden='true' /> : null}
           {t('Continue')}
         </Button>

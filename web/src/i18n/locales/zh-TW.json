@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "設定此渠道使用的外掛。",
     "Fields the plugin declares are checked when the channel is saved.": "儲存渠道時會依外掛宣告的欄位進行驗證。",
     "I have finished signing in": "我已完成登入",
+    "Paste the full address from the address bar after signing in.": "登入完成後，貼上位址列中的完整位址。",
+    "Address after sign-in": "登入後的位址",
     "Needs login": "需要登入",
     "No credentials yet": "尚無憑證",
     "Plugin config must be a JSON object": "外掛設定必須是 JSON 物件",

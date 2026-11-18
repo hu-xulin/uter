@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "配置该渠道使用的插件。",
     "Fields the plugin declares are checked when the channel is saved.": "渠道保存时会按插件声明的字段进行校验。",
     "I have finished signing in": "我已完成登录",
+    "Paste the full address from the address bar after signing in.": "登录完成后，粘贴地址栏中的完整地址。",
+    "Address after sign-in": "登录后的地址",
     "Needs login": "需要登录",
     "No credentials yet": "暂无凭证",
     "Plugin config must be a JSON object": "插件配置必须是 JSON 对象",

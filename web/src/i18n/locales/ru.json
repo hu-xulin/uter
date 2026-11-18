@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "Настройте плагин для этого канала.",
     "Fields the plugin declares are checked when the channel is saved.": "Поля, объявленные плагином, проверяются при сохранении канала.",
     "I have finished signing in": "Я завершил вход",
+    "Paste the full address from the address bar after signing in.": "После входа вставьте полный адрес из адресной строки.",
+    "Address after sign-in": "Адрес после входа",
     "Needs login": "Требуется вход",
     "No credentials yet": "Учётных данных пока нет",
     "Plugin config must be a JSON object": "Конфигурация плагина должна быть объектом JSON",

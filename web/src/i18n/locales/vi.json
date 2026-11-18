@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "Cấu hình plugin cho kênh này.",
     "Fields the plugin declares are checked when the channel is saved.": "Các trường plugin khai báo được kiểm tra khi lưu kênh.",
     "I have finished signing in": "Tôi đã đăng nhập xong",
+    "Paste the full address from the address bar after signing in.": "Sau khi đăng nhập, dán địa chỉ đầy đủ từ thanh địa chỉ.",
+    "Address after sign-in": "Địa chỉ sau khi đăng nhập",
     "Needs login": "Cần đăng nhập",
     "No credentials yet": "Chưa có thông tin xác thực",
     "Plugin config must be a JSON object": "Cấu hình plugin phải là một đối tượng JSON",

@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "このチャネル用にプラグインを設定します。",
     "Fields the plugin declares are checked when the channel is saved.": "チャネルの保存時にプラグインが宣言した項目が検証されます。",
     "I have finished signing in": "サインインが完了しました",
+    "Paste the full address from the address bar after signing in.": "サインイン後にアドレスバーの完全なアドレスを貼り付けてください。",
+    "Address after sign-in": "サインイン後のアドレス",
     "Needs login": "ログインが必要",
     "No credentials yet": "認証情報はまだありません",
     "Plugin config must be a JSON object": "プラグイン設定は JSON オブジェクトである必要があります",

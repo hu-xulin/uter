@@ -5827,6 +5827,8 @@
     "Configure this plugin for the channel.": "Configurez ce plugin pour le canal.",
     "Fields the plugin declares are checked when the channel is saved.": "Les champs déclarés par le plugin sont vérifiés lors de l’enregistrement du canal.",
     "I have finished signing in": "J'ai terminé la connexion",
+    "Paste the full address from the address bar after signing in.": "Collez l’adresse complète depuis la barre d’adresse après connexion.",
+    "Address after sign-in": "Adresse après connexion",
     "Needs login": "Connexion requise",
     "No credentials yet": "Aucun identifiant pour le moment",
     "Plugin config must be a JSON object": "La configuration du plugin doit être un objet JSON",
