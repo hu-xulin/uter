@@ -6,7 +6,9 @@
 
 **注意**: これは WebSocket エンドポイントであり、WebSocket プロトコルでの接続が必要です。
 
-接続 URL の例: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+接続 URL の例: `wss://uter.ai/v1/realtime?model=gpt-4o-realtime`
+
+認証：ハンドシェイク時に `Authorization: Bearer sk-...` を送信します。ヘッダーを設定できないブラウザクライアントは、サブプロトコル `Sec-WebSocket-Protocol: openai-insecure-api-key.sk-...` を使用できます。
 
 `GET` `/v1/realtime`
 

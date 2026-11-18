@@ -1,99 +1,112 @@
 # 影片（Videos）
 
+影片生成為非同步流程：提交任務 → 輪詢狀態 → 取回結果。Uter 同時提供兩套入口：
+
+- **通用任務格式**：`/v1/video/generations` 回傳 `task_id`，搭配查詢介面使用；各模型供應商的擴充參數寫在 `metadata` 中。
+- **OpenAI 影片格式**：`/v1/videos` 的請求和回應皆相容 OpenAI Videos API，可直接使用官方 SDK。
+
+不同供應商的請求欄位有差異，請同時閱讀下方對應的供應商格式頁面。
+
 ## 建立影片生成任務
-
-提交影片生成任務，支援文生影片和圖生影片。
-
-返回任務 ID，可透過 GET 介面查詢任務狀態。
 
 `POST` `/v1/video/generations`
 
-### 請求體（`application/json`）
+### 請求主體（`application/json`）
 
-| 欄位 | 型別 | 必填 | 說明 |
+| 欄位 | 類型 | 必填 | 說明 |
 |---|---|---|---|
-| `model` | string | 否 | 模型/風格 ID |
+| `model` | string | 是 | 影片模型 ID，取自 `GET /v1/models`；同時決定渠道與計費 |
 | `prompt` | string | 否 | 文字描述提示詞 |
-| `image` | string | 否 | 圖片輸入 (URL 或 Base64) |
-| `duration` | number | 否 | 影片時長（秒） |
-| `width` | integer | 否 | 影片寬度 |
-| `height` | integer | 否 | 影片高度 |
-| `fps` | integer | 否 | 影片幀率 |
-| `seed` | integer | 否 | 隨機種子 |
-| `n` | integer | 否 | 生成影片數量 |
-| `response_format` | string | 否 | 響應格式 |
-| `user` | string | 否 | 使用者標識 |
-| `metadata` | object | 否 | 擴充套件引數 (如 negative_prompt, style, quality_level 等) |
+| `image` | string | 否 | 首幀圖片（URL 或 Base64） |
+| `images` | array&lt;string&gt; | 否 | 多圖參考（部分模型支援） |
+| `duration` | number | 否 | 影片時長（秒），上限由模型決定 |
+| `size` | string | 否 | 解析度，例如 `1280x720` |
+| `metadata` | object | 否 | 供應商擴充參數，如 `negative_prompt`、`seed`、`fps` |
+| `user` | string | 否 | 呼叫方自帶的使用者識別碼，僅供追蹤 |
 
-### 響應
+### 回應
 
 | 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功建立影片生成任務 |
-| `400` | 請求引數錯誤 |
+| `200` | 任務已受理 |
+| `400` | 請求參數錯誤（如缺少 model、時長超限） |
+| `403` | 額度不足 |
+| `429` | 上游並行飽和 |
+| `503` | 模型不存在或目前分組無可用渠道 |
 
-#### `200` 響應欄位
+#### `200` 回應欄位
 
-| 欄位 | 型別 | 說明 |
+| 欄位 | 類型 | 說明 |
 |---|---|---|
+| `id` | string | 任務 ID（與 `task_id` 相同） |
 | `task_id` | string | 任務 ID |
-| `status` | string | 任務狀態 |
+| `status` | string | 初始狀態，通常為 `queued` |
+| `model` | string | 實際使用的模型名稱 |
+| `created_at` | integer | 建立時間（Unix 秒） |
 
-#### `400` 響應欄位
+部分供應商由任務外掛直接渲染回應，欄位以對應供應商頁面為準。
 
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `error.message` | string | 錯誤資訊 |
-| `error.type` | string | 錯誤型別 |
-| `error.param` | string | 相關引數 |
-| `error.code` | string | 錯誤程式碼 |
-
-## 獲取影片生成任務狀態
-
-查詢影片生成任務的狀態和結果。
-
-任務狀態：
-- `queued`: 排隊中
-- `in_progress`: 生成中
-- `completed`: 已完成
-- `failed`: 失敗
+## 查詢影片任務
 
 `GET` `/v1/video/generations/{task_id}`
 
-### 請求引數
+回傳 Uter 統一的任務結構（`code` 為 `success` 表示查詢成功）：
 
-| 引數名 | 位置 | 型別 | 必填 | 說明 |
-|---|---|---|---|---|
-| `task_id` | path | string | 是 | 任務 ID |
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4",
+    "fail_reason": "",
+    "submit_time": 1699990000,
+    "start_time": 1699990010,
+    "finish_time": 1699990200,
+    "properties": {},
+    "data": {}
+  }
+}
+```
 
-### 響應
+| 欄位 | 類型 | 說明 |
+|---|---|---|
+| `code` | string | `success` 表示查詢成功，其他值為錯誤碼 |
+| `data.task_id` | string | 任務 ID |
+| `data.status` | string | `NOT_START` / `SUBMITTED` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.progress` | string | 進度，如 `45%` |
+| `data.result_url` | string | 成功後的結果位址（影片或其他產物） |
+| `data.fail_reason` | string | 失敗原因 |
+| `data.properties` | object | 提交參數快照（模型、時長、解析度等） |
+| `data.data` | object | 供應商回傳的原始結果 |
 
-| 狀態碼 | 說明 |
+任務不存在或無權存取時回傳 `400`（`task_not_exist`）；任務屬於其他使用者時同樣視為不存在。
+
+## 使用 OpenAI 影片格式
+
+`POST` `/v1/videos` 支援 `application/json` 與 `multipart/form-data`，欄位為 `model`、`prompt`、`seconds`、`size`、`input_reference` 等 OpenAI Videos API 參數。回應為 OpenAI 影片物件：
+
+```json
+{
+  "id": "task_xxx",
+  "object": "video",
+  "model": "sora-2",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1699990000,
+  "seconds": "8",
+  "size": "1280x720"
+}
+```
+
+配套介面：
+
+| 方法與路徑 | 說明 |
 |---|---|
-| `200` | 成功獲取任務狀態 |
-| `404` | 任務不存在 |
+| `GET /v1/videos/{id}` | 查詢任務狀態，成功後回傳 `completed_at` 與最終 `status` |
+| `GET /v1/videos/{id}/content` | 代理下載影片檔案串流 |
+| `POST /v1/videos/{id}/remix` | 基於已有影片再次生成（remix），回傳新的影片物件 |
 
-#### `200` 響應欄位
-
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `task_id` | string | 任務 ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | 任務狀態 |
-| `url` | string | 影片資源 URL（成功時） |
-| `format` | string | 影片格式 |
-| `metadata.duration` | number | 實際生成的影片時長 |
-| `metadata.fps` | integer | 實際幀率 |
-| `metadata.width` | integer | 實際寬度 |
-| `metadata.height` | integer | 實際高度 |
-| `metadata.seed` | integer | 使用的隨機種子 |
-| `error.code` | integer | 錯誤碼 |
-| `error.message` | string | 錯誤資訊 |
-
-#### `404` 響應欄位
-
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `error.message` | string | 錯誤資訊 |
-| `error.type` | string | 錯誤型別 |
-| `error.param` | string | 相關引數 |
-| `error.code` | string | 錯誤程式碼 |
+`status` 取值：`queued`、`in_progress`、`completed`、`failed`。

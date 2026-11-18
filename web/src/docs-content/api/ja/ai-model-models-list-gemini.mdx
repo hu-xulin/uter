@@ -2,6 +2,8 @@
 
 Gemini API 形式で利用可能なモデル一覧を返します。
 
+認証：`?key=sk-...` クエリパラメータまたは `x-goog-api-key` ヘッダーを使用します。一覧はトークンのグループとモデルホワイトリストで絞り込まれます。
+
 `GET` `/v1beta/models`
 
 ### レスポンス
@@ -9,9 +11,13 @@ Gemini API 形式で利用可能なモデル一覧を返します。
 | ステータスコード | 説明 |
 |---|---|
 | `200` | モデル一覧の取得に成功 |
+| `401` | 認証失敗 |
 
 #### `200` レスポンスフィールド
 
 | フィールド | 型 | 説明 |
 |---|---|---|
-| `models` | array&lt;object&gt; | — |
+| `models` | array&lt;object&gt; | モデル一覧 |
+| `models[].name` | string | モデル ID（`models/` 接頭辞なし）。リクエストではそのまま使用します |
+| `models[].displayName` | string | 表示名 |
+| `nextPageToken` | null | 常に `null`。ページングには対応しません |

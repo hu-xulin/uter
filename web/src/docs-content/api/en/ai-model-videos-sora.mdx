@@ -101,6 +101,23 @@ OpenAI 兼容的视频任务状态查询接口。
 | `error.param` | string | 相关参数 |
 | `error.code` | string | 错误代码 |
 
+## Remix a video
+
+Generate again from an existing video (remix); the new task reuses the original video's channel and model.
+
+`POST` `/v1/videos/{video_id}/remix`
+
+### Request body (`application/json`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `prompt` | string | No | New prompt for this remix |
+| `model` | string | No | Reuses the original video's model when omitted |
+
+### Response
+
+Returns a new OpenAI video object with the same fields as "Create Video". A missing video, or one owned by another user, returns `400`.
+
 ## Get Video Content
 
 获取已完成视频任务的视频文件内容。

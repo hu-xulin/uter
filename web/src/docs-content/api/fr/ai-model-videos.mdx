@@ -1,99 +1,112 @@
-# vidéos
+# Vidéo (Videos)
+
+La génération de vidéos est asynchrone : soumettez une tâche, interrogez son état, puis récupérez le résultat. Uter expose deux entrées :
+
+- **Format de tâche générique** : `/v1/video/generations` renvoie un `task_id` ; les options propres au fournisseur vont dans `metadata`.
+- **Format vidéo OpenAI** : `/v1/videos` respecte l'API OpenAI Videos en requête comme en réponse ; le SDK officiel fonctionne tel quel.
+
+Les champs de requête varient selon le fournisseur ; consultez aussi la page de format correspondante ci-dessous.
 
 ## Créer une tâche de génération vidéo
 
-Soumet une tâche de génération vidéo, prenant en charge la génération vidéo à partir de texte et d'image.
-
-Renvoie un ID de tâche, dont l'état peut être consulté via l'interface GET.
-
 `POST` `/v1/video/generations`
 
-### Corps de la requête (`application/json`)
+### Corps de requête (`application/json`)
 
-| Champ | Type | Requis | Description |
+| Champ | Type | Obligatoire | Description |
 |---|---|---|---|
-| `model` | string | Non | ID du modèle/style |
-| `prompt` | string | Non | Invite de description textuelle |
-| `image` | string | Non | Entrée image (URL ou Base64) |
-| `duration` | number | Non | Durée de la vidéo (secondes) |
-| `width` | integer | Non | Largeur de la vidéo |
-| `height` | integer | Non | Hauteur de la vidéo |
-| `fps` | integer | Non | Fréquence d'images de la vidéo |
-| `seed` | integer | Non | Graine aléatoire |
-| `n` | integer | Non | Nombre de vidéos générées |
-| `response_format` | string | Non | Format de réponse |
-| `user` | string | Non | Identifiant utilisateur |
-| `metadata` | object | Non | Paramètres étendus (ex. negative_prompt, style, quality_level, etc.) |
+| `model` | string | Oui | ID du modèle vidéo, issu de `GET /v1/models` ; détermine aussi le canal et la facturation |
+| `prompt` | string | Non | Prompt textuel |
+| `image` | string | Non | Image de première image (URL ou Base64) |
+| `images` | array&lt;string&gt; | Non | Images de référence multiples (selon le modèle) |
+| `duration` | number | Non | Durée en secondes ; la limite dépend du modèle |
+| `size` | string | Non | Résolution, par exemple `1280x720` |
+| `metadata` | object | Non | Options du fournisseur : `negative_prompt`, `seed`, `fps`, etc. |
+| `user` | string | Non | Identifiant utilisateur fourni par l'appelant, pour le suivi uniquement |
 
 ### Réponse
 
-| Code d'état | Description |
+| Statut | Signification |
 |---|---|
-| `200` | Tâche de génération vidéo créée avec succès |
-| `400` | Erreur de paramètres de requête |
+| `200` | Tâche acceptée |
+| `400` | Requête invalide (model absent, durée hors limite…) |
+| `403` | Quota insuffisant |
+| `429` | Concurrence amont saturée |
+| `503` | Modèle inconnu ou aucun canal disponible dans le groupe courant |
 
-#### Champs de la réponse `200`
-
-| Champ | Type | Description |
-|---|---|---|
-| `task_id` | string | ID de tâche |
-| `status` | string | État de la tâche |
-
-#### Champs de la réponse `400`
+#### Champs `200`
 
 | Champ | Type | Description |
 |---|---|---|
-| `error.message` | string | Message d'erreur |
-| `error.type` | string | Type d'erreur |
-| `error.param` | string | Paramètre concerné |
-| `error.code` | string | Code d'erreur |
+| `id` | string | ID de la tâche (identique à `task_id`) |
+| `task_id` | string | ID de la tâche |
+| `status` | string | État initial, généralement `queued` |
+| `model` | string | Modèle réellement utilisé |
+| `created_at` | integer | Date de création (secondes Unix) |
 
-## Récupérer l'état de la tâche de génération vidéo
+Certains fournisseurs rendent la réponse directement depuis un plugin de tâche ; les champs suivent alors leur page dédiée.
 
-Interroge l'état et le résultat de la tâche de génération vidéo.
-
-États de la tâche :
-- `queued` : en file d'attente
-- `in_progress` : en génération
-- `completed` : terminé
-- `failed` : échoué
+## Interroger une tâche vidéo
 
 `GET` `/v1/video/generations/{task_id}`
 
-### Paramètres de requête
+Renvoie l'enveloppe de tâche unifiée de Uter (`code` vaut `success` en cas de succès) :
 
-| Nom du paramètre | Position | Type | Requis | Description |
-|---|---|---|---|---|
-| `task_id` | path | string | Oui | ID de tâche |
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4",
+    "fail_reason": "",
+    "submit_time": 1699990000,
+    "start_time": 1699990010,
+    "finish_time": 1699990200,
+    "properties": {},
+    "data": {}
+  }
+}
+```
 
-### Réponse
+| Champ | Type | Description |
+|---|---|---|
+| `code` | string | `success` en cas de succès ; toute autre valeur est un code d'erreur |
+| `data.task_id` | string | ID de la tâche |
+| `data.status` | string | `NOT_START` / `SUBMITTED` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.progress` | string | Progression, par exemple `45%` |
+| `data.result_url` | string | URL du résultat lorsque la tâche réussit |
+| `data.fail_reason` | string | Motif de l'échec |
+| `data.properties` | object | Instantané des paramètres soumis (modèle, durée, résolution…) |
+| `data.data` | object | Résultat brut du fournisseur |
 
-| Code d'état | Description |
+Une tâche inexistante, ou appartenant à un autre utilisateur, renvoie `400` (`task_not_exist`).
+
+## Utiliser le format vidéo OpenAI
+
+`POST` `/v1/videos` accepte `application/json` et `multipart/form-data` avec les champs OpenAI Videos : `model`, `prompt`, `seconds`, `size`, `input_reference`, etc. La réponse est un objet vidéo OpenAI :
+
+```json
+{
+  "id": "task_xxx",
+  "object": "video",
+  "model": "sora-2",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1699990000,
+  "seconds": "8",
+  "size": "1280x720"
+}
+```
+
+Points de terminaison associés :
+
+| Méthode et chemin | Description |
 |---|---|
-| `200` | État de la tâche récupéré avec succès |
-| `404` | Tâche inexistante |
+| `GET /v1/videos/{id}` | Interroge la tâche ; en cas de succès renvoie `completed_at` et le `status` final |
+| `GET /v1/videos/{id}/content` | Télécharge le flux vidéo via le proxy |
+| `POST /v1/videos/{id}/remix` | Régénère à partir d'une vidéo existante (remix) et renvoie un nouvel objet vidéo |
 
-#### Champs de la réponse `200`
-
-| Champ | Type | Description |
-|---|---|---|
-| `task_id` | string | ID de tâche |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | État de la tâche |
-| `url` | string | URL de la ressource vidéo (en cas de succès) |
-| `format` | string | Format vidéo |
-| `metadata.duration` | number | Durée réelle de la vidéo générée |
-| `metadata.fps` | integer | Fréquence d'images réelle |
-| `metadata.width` | integer | Largeur réelle |
-| `metadata.height` | integer | Hauteur réelle |
-| `metadata.seed` | integer | Graine aléatoire utilisée |
-| `error.code` | integer | Code d'erreur |
-| `error.message` | string | Message d'erreur |
-
-#### Champs de la réponse `404`
-
-| Champ | Type | Description |
-|---|---|---|
-| `error.message` | string | Message d'erreur |
-| `error.type` | string | Type d'erreur |
-| `error.param` | string | Paramètre concerné |
-| `error.code` | string | Code d'erreur |
+Valeurs de `status` : `queued`, `in_progress`, `completed`, `failed`.

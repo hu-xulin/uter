@@ -1,42 +1,58 @@
 # Native OpenAI Format
 
-获取当前可用的模型列表。
-
-根据请求头自动识别返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
-- 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
-- 其他情况返回 OpenAI 格式
+## List models
 
 `GET` `/v1/models`
 
-### 请求参数
+Returns the models the current token can call. The list is filtered by the token's group, the token's model allowlist and model billing configuration, so different tokens may see different lists.
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+The response format is selected from the request headers:
+
+- `x-api-key` and `anthropic-version` headers → Anthropic format
+- `x-goog-api-key` header or `key` query parameter → Gemini format
+- Otherwise → OpenAI format
+
+### Request parameters
+
+| Parameter | In | Type | Required | Description |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
-| `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `key` | query | string | No | API key for the Gemini format |
+| `x-api-key` | header | string | No | API key for the Anthropic format |
+| `anthropic-version` | header | string | No | Anthropic API version |
+| `x-goog-api-key` | header | string | No | API key for the Gemini format |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功获取模型列表 |
-| `401` | 认证失败 |
+| `200` | Model list returned |
+| `401` | Authentication failed |
 
-#### `200` 响应字段
+#### `200` fields (OpenAI format)
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | Always `true` |
+| `object` | string | Always `list` |
+| `data` | array&lt;object&gt; | Models |
+| `data[].id` | string | Model ID, used verbatim in requests |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | Registration time (Unix seconds) |
+| `data[].owned_by` | string | Owner |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Endpoint families the model serves: `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response`, … |
 
-#### `401` 响应字段
+## Retrieve a model
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+`GET` `/v1/models/{model}`
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `model` | path | string | Yes | Model ID |
+
+Returns the model object (fields as above) when it exists. When it does not, the response is still `200`, with an error body instead:
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+Check for an `error` field in the body rather than relying on the HTTP status alone.

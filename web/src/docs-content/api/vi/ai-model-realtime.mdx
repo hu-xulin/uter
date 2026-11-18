@@ -6,7 +6,9 @@ Thiết lập kết nối WebSocket để hội thoại thời gian thực.
 
 **Lưu ý**: Đây là một endpoint WebSocket, cần sử dụng giao thức WebSocket để kết nối.
 
-Ví dụ URL kết nối: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+Ví dụ URL kết nối: `wss://uter.ai/v1/realtime?model=gpt-4o-realtime`
+
+Xác thực: gửi `Authorization: Bearer sk-...` trong header bắt tay. Client trình duyệt không đặt được header có thể dùng giao thức con `Sec-WebSocket-Protocol: openai-insecure-api-key.sk-...`.
 
 `GET` `/v1/realtime`
 

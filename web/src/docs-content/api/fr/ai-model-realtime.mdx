@@ -6,7 +6,9 @@
 
 **Note** : il s'agit d'un point de terminaison WebSocket, nécessitant une connexion via le protocole WebSocket.
 
-Exemple d'URL de connexion : `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+Exemple d'URL de connexion : `wss://uter.ai/v1/realtime?model=gpt-4o-realtime`
+
+Authentification : envoyez `Authorization: Bearer sk-...` dans les en-têtes de la poignée de main. Les clients navigateur qui ne peuvent pas définir d'en-têtes peuvent utiliser le sous-protocole `Sec-WebSocket-Protocol: openai-insecure-api-key.sk-...`.
 
 `GET` `/v1/realtime`
 

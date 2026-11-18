@@ -1,99 +1,112 @@
-# videos
+# Videos
 
-## Create Video Generation Task
+Video generation is asynchronous: submit a task, poll its status, then fetch the result. Uter exposes two entry points:
 
-提交视频生成任务，支持文生视频和图生视频。
+- **Generic task format**: `/v1/video/generations` returns a `task_id`; provider-specific options go in `metadata`.
+- **OpenAI video format**: `/v1/videos` follows the OpenAI Videos API for both request and response, so the official SDK works unchanged.
 
-返回任务 ID，可通过 GET 接口查询任务状态。
+Request fields differ per provider; read the provider-specific pages below as well.
+
+## Create a video generation task
 
 `POST` `/v1/video/generations`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | Yes | Video model ID from `GET /v1/models`; also selects the channel and pricing |
+| `prompt` | string | No | Text prompt |
+| `image` | string | No | First-frame image (URL or Base64) |
+| `images` | array&lt;string&gt; | No | Multiple reference images (supported by some models) |
+| `duration` | number | No | Duration in seconds; the upper bound depends on the model |
+| `size` | string | No | Resolution, e.g. `1280x720` |
+| `metadata` | object | No | Provider options such as `negative_prompt`, `seed`, `fps` |
+| `user` | string | No | Caller-supplied user identifier, for tracing only |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功创建视频生成任务 |
-| `400` | 请求参数错误 |
+| `200` | Task accepted |
+| `400` | Invalid request (missing model, duration over the limit, …) |
+| `403` | Insufficient quota |
+| `429` | Upstream concurrency saturated |
+| `503` | Unknown model or no channel available in the current group |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | string | 任务状态 |
+| `id` | string | Task ID (same as `task_id`) |
+| `task_id` | string | Task ID |
+| `status` | string | Initial status, usually `queued` |
+| `model` | string | Model actually used |
+| `created_at` | integer | Creation time (Unix seconds) |
 
-#### `400` 响应字段
+Some providers render the response directly from a task plugin; in that case the fields follow the provider page.
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
-
-## Get Video Generation Task Status
-
-查询视频生成任务的状态和结果。
-
-任务状态：
-- `queued`: 排队中
-- `in_progress`: 生成中
-- `completed`: 已完成
-- `failed`: 失败
+## Query a video task
 
 `GET` `/v1/video/generations/{task_id}`
 
-### 请求参数
+Returns Uter's unified task envelope (`code` is `success` on success):
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
-|---|---|---|---|---|
-| `task_id` | path | string | 是 | 任务 ID |
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4",
+    "fail_reason": "",
+    "submit_time": 1699990000,
+    "start_time": 1699990010,
+    "finish_time": 1699990200,
+    "properties": {},
+    "data": {}
+  }
+}
+```
 
-### 响应
+| Field | Type | Description |
+|---|---|---|
+| `code` | string | `success` on success; any other value is an error code |
+| `data.task_id` | string | Task ID |
+| `data.status` | string | `NOT_START` / `SUBMITTED` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.progress` | string | Progress, e.g. `45%` |
+| `data.result_url` | string | Result URL once the task succeeds |
+| `data.fail_reason` | string | Failure reason |
+| `data.properties` | object | Snapshot of the submitted parameters (model, duration, resolution…) |
+| `data.data` | object | Raw provider result |
 
-| 状态码 | 说明 |
+A missing task, or one owned by another user, returns `400` (`task_not_exist`).
+
+## Using the OpenAI video format
+
+`POST` `/v1/videos` accepts `application/json` and `multipart/form-data` with the OpenAI Videos fields: `model`, `prompt`, `seconds`, `size`, `input_reference`, and so on. The response is an OpenAI video object:
+
+```json
+{
+  "id": "task_xxx",
+  "object": "video",
+  "model": "sora-2",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1699990000,
+  "seconds": "8",
+  "size": "1280x720"
+}
+```
+
+Companion endpoints:
+
+| Method and path | Description |
 |---|---|
-| `200` | 成功获取任务状态 |
-| `404` | 任务不存在 |
+| `GET /v1/videos/{id}` | Poll the task; on success returns `completed_at` and the final `status` |
+| `GET /v1/videos/{id}/content` | Proxy-download the video file stream |
+| `POST /v1/videos/{id}/remix` | Generate again from an existing video (remix) and return a new video object |
 
-#### `200` 响应字段
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | 任务状态 |
-| `url` | string | 视频资源 URL（成功时） |
-| `format` | string | 视频格式 |
-| `metadata.duration` | number | 实际生成的视频时长 |
-| `metadata.fps` | integer | 实际帧率 |
-| `metadata.width` | integer | 实际宽度 |
-| `metadata.height` | integer | 实际高度 |
-| `metadata.seed` | integer | 使用的随机种子 |
-| `error.code` | integer | 错误码 |
-| `error.message` | string | 错误信息 |
-
-#### `404` 响应字段
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+`status` values: `queued`, `in_progress`, `completed`, `failed`.

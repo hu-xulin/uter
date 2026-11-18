@@ -2,6 +2,8 @@
 
 Renvoie la liste des modèles disponibles au format Gemini API.
 
+Authentification : paramètre de requête `?key=sk-...` ou en-tête `x-goog-api-key`. La liste est filtrée par le groupe du jeton et sa liste de modèles autorisés.
+
 `GET` `/v1beta/models`
 
 ### Réponse
@@ -9,9 +11,13 @@ Renvoie la liste des modèles disponibles au format Gemini API.
 | Code d'état | Description |
 |---|---|
 | `200` | Liste des modèles récupérée avec succès |
+| `401` | Échec d'authentification |
 
 #### Champs de la réponse `200`
 
 | Champ | Type | Description |
 |---|---|---|
-| `models` | array&lt;object&gt; | — |
+| `models` | array&lt;object&gt; | Modèles |
+| `models[].name` | string | ID du modèle (sans préfixe `models/`), à utiliser tel quel |
+| `models[].displayName` | string | Nom d'affichage |
+| `nextPageToken` | null | Toujours `null` ; la pagination n'est pas prise en charge |

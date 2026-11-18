@@ -1,17 +1,40 @@
 # API Reference
 
-## Overview
+## Access
 
-Uter provides a complete set of RESTful API interfaces, categorized into **AI Model APIs** and **Management APIs**. You can use these interfaces to invoke AI capabilities and perform system management functions.
+| Item | Value |
+|---|---|
+| Base URL | `https://uter.ai` (API-only entry point: `https://api.uter.ai`) |
+| Authentication | `Authorization: Bearer sk-...` |
+| Token | Created on the console's Tokens page; can be limited to a group, a model allowlist and source IPs |
 
-> **Online Debugging**
->
-> You can visit the Apifox Playground to test and debug API interfaces online, or browse the API documentation below.
+Claude format (`/v1/messages`) also accepts an `x-api-key` header; Gemini format (`/v1beta/models/...`) accepts an `x-goog-api-key` header or a `?key=` query parameter.
+
+Failures use the OpenAI error envelope:
+
+```json
+{"error": {"message": "what went wrong", "type": "error type", "param": "", "code": "error code"}}
+```
 
 ## AI Model APIs
 
-AI Model APIs provide access to various AI capabilities and are compatible with the OpenAI API format.
+A single token reaches every upstream provider aggregated by the platform. The APIs fall into four protocol families:
 
-## Management APIs
+| Protocol | Main endpoints |
+|---|---|
+| OpenAI | `POST /v1/chat/completions`, `POST /v1/completions`, `POST /v1/responses`, `POST /v1/embeddings`, `POST /v1/images/generations`, `POST /v1/images/edits`, `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations`, `POST /v1/moderations`, `POST /v1/rerank`, `GET /v1/models`, `GET /v1/models/{model}` |
+| Anthropic | `POST /v1/messages` |
+| Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` |
+| Video tasks | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` |
 
-Management APIs are used for backend operations such as system configuration, user management, and business management.
+Which models a token can call is decided by its group, the token's model allowlist and the model's billing configuration. Always use the model names returned by `GET /v1/models`; do not guess model IDs.
+
+## Billing and limits
+
+- When a request is accepted, quota is pre-deducted from the model price and the estimated usage, then settled against the actual usage. Failed requests and tasks that produced no output are refunded.
+- Insufficient quota returns `403`; rate limiting or saturated upstream concurrency returns `429`; an unknown model or no channel available in the current group returns `503`.
+- Image generation count `n` is capped at 128. Video duration, resolution and batch size follow the selected model's limits; out-of-range requests are rejected before acceptance.
+
+## Not implemented
+
+`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` and `DELETE /v1/models/{model}` currently return `501`. Do not call them in production.

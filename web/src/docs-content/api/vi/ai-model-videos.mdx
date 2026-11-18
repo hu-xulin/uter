@@ -1,99 +1,112 @@
-# Video
+# Video (Videos)
+
+Tạo video là tác vụ bất đồng bộ: gửi tác vụ, thăm dò trạng thái, rồi lấy kết quả. Uter cung cấp hai lối vào:
+
+- **Định dạng tác vụ chung**: `/v1/video/generations` trả về `task_id`; các tùy chọn riêng của nhà cung cấp nằm trong `metadata`.
+- **Định dạng video OpenAI**: `/v1/videos` tuân theo OpenAI Videos API cho cả yêu cầu và phản hồi, nên SDK chính thức dùng được nguyên trạng.
+
+Trường yêu cầu khác nhau theo nhà cung cấp; hãy đọc thêm trang định dạng tương ứng bên dưới.
 
 ## Tạo tác vụ tạo video
 
-Gửi tác vụ tạo video, hỗ trợ tạo video từ văn bản và từ hình ảnh.
-
-Trả về ID tác vụ, có thể truy vấn trạng thái tác vụ qua giao diện GET.
-
 `POST` `/v1/video/generations`
 
-### Thân yêu cầu (`application/json`)
+### Body yêu cầu (`application/json`)
 
 | Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | Không | ID mô hình/phong cách |
-| `prompt` | string | Không | Prompt mô tả văn bản |
-| `image` | string | Không | Đầu vào hình ảnh (URL hoặc Base64) |
-| `duration` | number | Không | Thời lượng video (giây) |
-| `width` | integer | Không | Chiều rộng video |
-| `height` | integer | Không | Chiều cao video |
-| `fps` | integer | Không | Tốc độ khung hình video |
-| `seed` | integer | Không | Hạt ngẫu nhiên |
-| `n` | integer | Không | Số lượng video tạo ra |
-| `response_format` | string | Không | Định dạng phản hồi |
-| `user` | string | Không | Định danh người dùng |
-| `metadata` | object | Không | Tham số mở rộng (ví dụ negative_prompt, style, quality_level, v.v.) |
+| `model` | string | Có | ID model video lấy từ `GET /v1/models`; cũng quyết định kênh và cách tính phí |
+| `prompt` | string | Không | Câu lệnh văn bản |
+| `image` | string | Không | Ảnh khung đầu (URL hoặc Base64) |
+| `images` | array&lt;string&gt; | Không | Nhiều ảnh tham chiếu (một số model hỗ trợ) |
+| `duration` | number | Không | Thời lượng tính bằng giây; giới hạn trên tùy model |
+| `size` | string | Không | Độ phân giải, ví dụ `1280x720` |
+| `metadata` | object | Không | Tùy chọn của nhà cung cấp như `negative_prompt`, `seed`, `fps` |
+| `user` | string | Không | Mã người dùng do bên gọi cung cấp, chỉ để truy vết |
 
 ### Phản hồi
 
-| Mã trạng thái | Mô tả |
+| Mã | Ý nghĩa |
 |---|---|
-| `200` | Tạo tác vụ tạo video thành công |
-| `400` | Tham số yêu cầu lỗi |
+| `200` | Đã nhận tác vụ |
+| `400` | Yêu cầu không hợp lệ (thiếu model, thời lượng vượt giới hạn…) |
+| `403` | Không đủ hạn mức |
+| `429` | Nghẽn đồng thời phía upstream |
+| `503` | Model không tồn tại hoặc nhóm hiện tại không có kênh khả dụng |
 
-#### Trường phản hồi `200`
+#### Trường `200`
 
 | Trường | Kiểu | Mô tả |
 |---|---|---|
+| `id` | string | ID tác vụ (giống `task_id`) |
 | `task_id` | string | ID tác vụ |
-| `status` | string | Trạng thái tác vụ |
+| `status` | string | Trạng thái ban đầu, thường là `queued` |
+| `model` | string | Model thực tế được dùng |
+| `created_at` | integer | Thời điểm tạo (giây Unix) |
 
-#### Trường phản hồi `400`
+Một số nhà cung cấp trả phản hồi trực tiếp từ plugin tác vụ; khi đó các trường theo trang của nhà cung cấp đó.
 
-| Trường | Kiểu | Mô tả |
-|---|---|---|
-| `error.message` | string | Thông báo lỗi |
-| `error.type` | string | Loại lỗi |
-| `error.param` | string | Tham số liên quan |
-| `error.code` | string | Mã lỗi |
-
-## Lấy trạng thái tác vụ tạo video
-
-Truy vấn trạng thái và kết quả của tác vụ tạo video.
-
-Trạng thái tác vụ:
-- `queued`: Đang chờ xếp hàng
-- `in_progress`: Đang tạo
-- `completed`: Đã hoàn thành
-- `failed`: Thất bại
+## Truy vấn tác vụ video
 
 `GET` `/v1/video/generations/{task_id}`
 
-### Tham số yêu cầu
+Trả về phong bì tác vụ thống nhất của Uter (`code` là `success` khi thành công):
 
-| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
-|---|---|---|---|---|
-| `task_id` | path | string | Có | ID tác vụ |
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4",
+    "fail_reason": "",
+    "submit_time": 1699990000,
+    "start_time": 1699990010,
+    "finish_time": 1699990200,
+    "properties": {},
+    "data": {}
+  }
+}
+```
 
-### Phản hồi
+| Trường | Kiểu | Mô tả |
+|---|---|---|
+| `code` | string | `success` khi thành công; giá trị khác là mã lỗi |
+| `data.task_id` | string | ID tác vụ |
+| `data.status` | string | `NOT_START` / `SUBMITTED` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.progress` | string | Tiến độ, ví dụ `45%` |
+| `data.result_url` | string | URL kết quả khi tác vụ thành công |
+| `data.fail_reason` | string | Lý do thất bại |
+| `data.properties` | object | Bản chụp tham số đã gửi (model, thời lượng, độ phân giải…) |
+| `data.data` | object | Kết quả gốc từ nhà cung cấp |
 
-| Mã trạng thái | Mô tả |
+Tác vụ không tồn tại hoặc thuộc người dùng khác trả về `400` (`task_not_exist`).
+
+## Dùng định dạng video OpenAI
+
+`POST` `/v1/videos` nhận `application/json` và `multipart/form-data` với các trường OpenAI Videos: `model`, `prompt`, `seconds`, `size`, `input_reference`… Phản hồi là đối tượng video OpenAI:
+
+```json
+{
+  "id": "task_xxx",
+  "object": "video",
+  "model": "sora-2",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1699990000,
+  "seconds": "8",
+  "size": "1280x720"
+}
+```
+
+Các endpoint đi kèm:
+
+| Phương thức và đường dẫn | Mô tả |
 |---|---|
-| `200` | Lấy trạng thái tác vụ thành công |
-| `404` | Tác vụ không tồn tại |
+| `GET /v1/videos/{id}` | Thăm dò tác vụ; khi thành công trả về `completed_at` và `status` cuối |
+| `GET /v1/videos/{id}/content` | Tải luồng tệp video qua proxy |
+| `POST /v1/videos/{id}/remix` | Tạo lại từ video hiện có (remix), trả về đối tượng video mới |
 
-#### Trường phản hồi `200`
-
-| Trường | Kiểu | Mô tả |
-|---|---|---|
-| `task_id` | string | ID tác vụ |
-| `status` | enum (`queued`, `in_progress`, `completed`, `failed`) | Trạng thái tác vụ |
-| `url` | string | URL tài nguyên video (khi thành công) |
-| `format` | string | Định dạng video |
-| `metadata.duration` | number | Thời lượng video thực tế được tạo |
-| `metadata.fps` | integer | Tốc độ khung hình thực tế |
-| `metadata.width` | integer | Chiều rộng thực tế |
-| `metadata.height` | integer | Chiều cao thực tế |
-| `metadata.seed` | integer | Hạt ngẫu nhiên đã sử dụng |
-| `error.code` | integer | Mã lỗi |
-| `error.message` | string | Thông báo lỗi |
-
-#### Trường phản hồi `404`
-
-| Trường | Kiểu | Mô tả |
-|---|---|---|
-| `error.message` | string | Thông báo lỗi |
-| `error.type` | string | Loại lỗi |
-| `error.param` | string | Tham số liên quan |
-| `error.code` | string | Mã lỗi |
+Giá trị `status`: `queued`, `in_progress`, `completed`, `failed`.

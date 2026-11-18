@@ -1,17 +1,40 @@
 # API 参考
 
-## 概述
+## 接入信息
 
-Uter 提供完整的 RESTful API 接口，分为 **AI 模型接口** 和 **管理接口** 两大类。您可以通过这些接口实现 AI 能力调用和系统管理功能。
+| 项目 | 值 |
+|---|---|
+| Base URL | `https://uter.ai`（API 专用入口：`https://api.uter.ai`） |
+| 鉴权 | 请求头 `Authorization: Bearer sk-...` |
+| 令牌 | 在控制台「令牌」页创建，可限制分组、模型白名单与 IP |
 
-> **在线调试**
->
-> 您可以访问 Apifox 操练场 在线测试和调试 API 接口，或浏览下方的 API 文档。
+Claude 格式（`/v1/messages`）同时接受 `x-api-key` 请求头；Gemini 格式（`/v1beta/models/...`）接受 `x-goog-api-key` 请求头或 `?key=` 查询参数。
+
+请求失败时统一返回 OpenAI 风格错误：
+
+```json
+{"error": {"message": "错误说明", "type": "错误类型", "param": "", "code": "错误代码"}}
+```
 
 ## AI 模型接口
 
-AI 模型接口提供各种 AI 能力的调用，兼容 OpenAI API 格式。
+一个令牌即可调用平台聚合的全部上游供应商。按协议分为四族：
 
-## 管理接口
+| 协议族 | 主要端点 |
+|---|---|
+| OpenAI | `POST /v1/chat/completions`、`POST /v1/completions`、`POST /v1/responses`、`POST /v1/embeddings`、`POST /v1/images/generations`、`POST /v1/images/edits`、`POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations`、`POST /v1/moderations`、`POST /v1/rerank`、`GET /v1/models`、`GET /v1/models/{model}` |
+| Anthropic | `POST /v1/messages` |
+| Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` |
+| 视频任务 | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` |
 
-管理接口用于系统配置、用户管理、业务管理等后台操作。
+可调用的模型由令牌所属分组、令牌模型白名单与模型计费配置共同决定，请始终以 `GET /v1/models` 返回的模型名为准，不要猜测模型 ID。
+
+## 计费与限制
+
+- 请求受理时按模型单价与预估用量预扣额度，结束后按实际用量结算差额；失败或未生成内容的任务自动退回预扣额度。
+- 额度不足返回 `403`；请求频率或上游并发饱和返回 `429`；模型不存在或当前分组无可用渠道返回 `503`。
+- 图像生成数量 `n` 上限为 128；视频时长、分辨率与批量数量按所选模型的限制校验，超界请求在受理前即被拒绝。
+
+## 尚未实现的端点
+
+`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` 当前返回 `501`，请勿在生产环境调用。

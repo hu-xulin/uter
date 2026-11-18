@@ -101,6 +101,23 @@ OpenAI 相容的影片任務狀態查詢介面。
 | `error.param` | string | 相關引數 |
 | `error.code` | string | 錯誤程式碼 |
 
+## 影片 Remix
+
+基於已有影片再次生成（remix），新任務沿用原影片的渠道與模型。
+
+`POST` `/v1/videos/{video_id}/remix`
+
+### 請求主體（`application/json`）
+
+| 欄位 | 類型 | 必填 | 說明 |
+|---|---|---|---|
+| `prompt` | string | 否 | 本次 remix 的新提示詞 |
+| `model` | string | 否 | 省略時沿用原影片的模型 |
+
+### 回應
+
+回傳新的 OpenAI 影片物件，欄位與「建立影片」一致。原影片不存在或不屬於目前使用者時回傳 `400`。
+
 ## 獲取影片內容
 
 獲取已完成影片任務的影片檔案內容。

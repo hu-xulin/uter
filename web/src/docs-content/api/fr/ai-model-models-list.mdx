@@ -1,62 +1,19 @@
-# list
+# Modèles (Models)
 
-## Format OpenAI natif
+Uter expose trois points de terminaison de consultation des modèles :
 
-Récupère la liste des modèles actuellement disponibles.
-
-Le format de retour est automatiquement identifié selon les en-têtes de requête :
-- Renvoie le format Anthropic lorsque les en-têtes `x-api-key` et `anthropic-version` sont présents
-- Renvoie le format Gemini lorsque l'en-tête `x-goog-api-key` ou le paramètre de requête `key` est présent
-- Renvoie le format OpenAI dans les autres cas
-
-`GET` `/v1/models`
-
-### Paramètres de requête
-
-| Nom du paramètre | Position | Type | Requis | Description |
-|---|---|---|---|---|
-| `key` | query | string | Non | Clé API Google (pour le format Gemini) |
-| `x-api-key` | header | string | Non | Clé API Anthropic (pour le format Claude) |
-| `anthropic-version` | header | string | Non | Version de l'API Anthropic |
-| `x-goog-api-key` | header | string | Non | Clé API Google (pour le format Gemini) |
-
-### Réponse
-
-| Code d'état | Description |
+| Point de terminaison | Description |
 |---|---|
-| `200` | Liste des modèles récupérée avec succès |
-| `401` | Échec d'authentification |
+| `GET /v1/models` | Modèles que le jeton courant peut appeler |
+| `GET /v1/models/{model}` | Détails d'un modèle |
+| `GET /v1beta/models` | La même liste au format natif Gemini |
 
-#### Champs de la réponse `200`
+La liste est filtrée par le groupe du jeton, sa liste de modèles autorisés et la configuration de facturation. Fiez-vous à la liste renvoyée et ne codez pas les noms de modèles en dur.
 
-| Champ | Type | Description |
-|---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+`GET /v1/models` choisit le format de réponse d'après les en-têtes :
 
-#### Champs de la réponse `401`
+- en-têtes `x-api-key` et `anthropic-version` → format Anthropic
+- en-tête `x-goog-api-key` ou paramètre `key` → format Gemini
+- sinon → format OpenAI
 
-| Champ | Type | Description |
-|---|---|---|
-| `error.message` | string | Message d'erreur |
-| `error.type` | string | Type d'erreur |
-| `error.param` | string | Paramètre concerné |
-| `error.code` | string | Code d'erreur |
-
-## Format Gemini natif
-
-Renvoie la liste des modèles disponibles au format Gemini API.
-
-`GET` `/v1beta/models`
-
-### Réponse
-
-| Code d'état | Description |
-|---|---|
-| `200` | Liste des modèles récupérée avec succès |
-
-#### Champs de la réponse `200`
-
-| Champ | Type | Description |
-|---|---|---|
-| `models` | array&lt;object&gt; | — |
+Voir « Format OpenAI natif » et « Format Gemini natif » pour les champs et exemples de réponse de chaque format.

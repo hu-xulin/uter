@@ -1,17 +1,23 @@
 # Native Gemini Format
 
-以 Gemini API 格式返回可用模型列表
+Returns the available models in the Gemini API format.
+
+Authentication: use the `?key=sk-...` query parameter or the `x-goog-api-key` header. The list is filtered by the token's group and model allowlist.
 
 `GET` `/v1beta/models`
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功获取模型列表 |
+| `200` | Model list returned |
+| `401` | Authentication failed |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `models` | array&lt;object&gt; | — |
+| `models` | array&lt;object&gt; | Models |
+| `models[].name` | string | Model ID (no `models/` prefix), used verbatim in requests |
+| `models[].displayName` | string | Display name |
+| `nextPageToken` | null | Always `null`; paging is not supported |

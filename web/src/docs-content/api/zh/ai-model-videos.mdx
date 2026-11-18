@@ -1,10 +1,13 @@
 # 视频（Videos）
 
+视频生成采用「提交任务 → 轮询状态 → 取回结果」的异步模型。Uter 同时提供两套入口：
+
+- **通用任务格式**：`/v1/video/generations`，返回 `task_id`，配合查询接口使用；各模型供应商的扩展参数写在 `metadata` 中。
+- **OpenAI 视频格式**：`/v1/videos`，请求与响应均兼容 OpenAI Videos API，可直接使用官方 SDK。
+
+不同供应商的请求字段有差异，请同时阅读下方对应的供应商格式页面。
+
 ## 创建视频生成任务
-
-提交视频生成任务，支持文生视频和图生视频。
-
-返回任务 ID，可通过 GET 接口查询任务状态。
 
 `POST` `/v1/video/generations`
 
@@ -12,88 +15,98 @@
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
+| `model` | string | 是 | 视频模型 ID，取自 `GET /v1/models`；同时决定渠道与计费 |
 | `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `image` | string | 否 | 首帧图片（URL 或 Base64） |
+| `images` | array&lt;string&gt; | 否 | 多图参考（部分模型支持） |
+| `duration` | number | 否 | 视频时长（秒），上限由模型决定 |
+| `size` | string | 否 | 分辨率，如 `1280x720` |
+| `metadata` | object | 否 | 供应商扩展参数，如 `negative_prompt`、`seed`、`fps` |
+| `user` | string | 否 | 调用方自带的用户标识，仅用于追踪 |
 
 ### 响应
 
 | 状态码 | 说明 |
 |---|---|
-| `200` | 成功创建视频生成任务 |
-| `400` | 请求参数错误 |
+| `200` | 任务已受理 |
+| `400` | 请求参数错误（如缺少 model、时长超限） |
+| `403` | 额度不足 |
+| `429` | 上游并发饱和 |
+| `503` | 模型不存在或当前分组无可用渠道 |
 
 #### `200` 响应字段
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
+| `id` | string | 任务 ID（与 `task_id` 相同） |
 | `task_id` | string | 任务 ID |
-| `status` | string | 任务状态 |
+| `status` | string | 初始状态，通常为 `queued` |
+| `model` | string | 实际使用的模型名 |
+| `created_at` | integer | 创建时间（Unix 秒） |
 
-#### `400` 响应字段
+部分供应商由任务插件直接渲染响应，字段以对应供应商页面为准。
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
-
-## 获取视频生成任务状态
-
-查询视频生成任务的状态和结果。
-
-任务状态：
-- `queued`: 排队中
-- `in_progress`: 生成中
-- `completed`: 已完成
-- `failed`: 失败
+## 查询视频任务
 
 `GET` `/v1/video/generations/{task_id}`
 
-### 请求参数
+返回 Uter 统一的任务结构（`code` 为 `success` 表示查询成功）：
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
-|---|---|---|---|---|
-| `task_id` | path | string | 是 | 任务 ID |
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4",
+    "fail_reason": "",
+    "submit_time": 1699990000,
+    "start_time": 1699990010,
+    "finish_time": 1699990200,
+    "properties": {},
+    "data": {}
+  }
+}
+```
 
-### 响应
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `code` | string | `success` 表示查询成功，其他值为错误码 |
+| `data.task_id` | string | 任务 ID |
+| `data.status` | string | `NOT_START` / `SUBMITTED` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.progress` | string | 进度，如 `45%` |
+| `data.result_url` | string | 成功后的结果地址（视频或其他产物） |
+| `data.fail_reason` | string | 失败原因 |
+| `data.properties` | object | 提交参数快照（模型、时长、分辨率等） |
+| `data.data` | object | 供应商返回的原始结果 |
 
-| 状态码 | 说明 |
+任务不存在或无权访问时返回 `400`（`task_not_exist`）；任务属于其他用户时同样按不存在处理。
+
+## 使用 OpenAI 视频格式
+
+`POST` `/v1/videos` 支持 `application/json` 与 `multipart/form-data`，字段为 `model`、`prompt`、`seconds`、`size`、`input_reference` 等 OpenAI Videos API 参数。响应为 OpenAI 视频对象：
+
+```json
+{
+  "id": "task_xxx",
+  "object": "video",
+  "model": "sora-2",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1699990000,
+  "seconds": "8",
+  "size": "1280x720"
+}
+```
+
+配套接口：
+
+| 方法与路径 | 说明 |
 |---|---|
-| `200` | 成功获取任务状态 |
-| `404` | 任务不存在 |
+| `GET /v1/videos/{id}` | 查询任务状态，成功后返回 `completed_at` 与最终 `status` |
+| `GET /v1/videos/{id}/content` | 代理下载视频文件流 |
+| `POST /v1/videos/{id}/remix` | 基于已有视频再次生成（remix），返回新的视频对象 |
 
-#### `200` 响应字段
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | 任务状态 |
-| `url` | string | 视频资源 URL（成功时） |
-| `format` | string | 视频格式 |
-| `metadata.duration` | number | 实际生成的视频时长 |
-| `metadata.fps` | integer | 实际帧率 |
-| `metadata.width` | integer | 实际宽度 |
-| `metadata.height` | integer | 实际高度 |
-| `metadata.seed` | integer | 使用的随机种子 |
-| `error.code` | integer | 错误码 |
-| `error.message` | string | 错误信息 |
-
-#### `404` 响应字段
-
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+`status` 取值：`queued`、`in_progress`、`completed`、`failed`。

@@ -1,17 +1,40 @@
 # API リファレンス
 
-## 概要
+## 接続情報
 
-Uter は一連の RESTful API インターフェースを提供しており、**AI Model API** と **Management API** に分類されます。これらのインターフェースを使用して AI 機能を呼び出したり、システム管理機能を実行したりできます。
+| 項目 | 値 |
+|---|---|
+| Base URL | `https://uter.ai`（API 専用エンドポイント：`https://api.uter.ai`） |
+| 認証 | リクエストヘッダー `Authorization: Bearer sk-...` |
+| トークン | コンソールの「トークン」ページで作成。グループ、モデルのホワイトリスト、送信元 IP に制限できます |
 
-> **オンラインデバッグ**
->
-> Apifox Playground にアクセスして API インターフェースのオンラインテストとデバッグを行うか、以下の API ドキュメントを参照してください。
+Claude 形式（`/v1/messages`）は `x-api-key` ヘッダーも受け付けます。Gemini 形式（`/v1beta/models/...`）は `x-goog-api-key` ヘッダーまたは `?key=` クエリパラメータを受け付けます。
 
-## AI Model API
+エラーは OpenAI 形式で返されます：
 
-AI Model API は、さまざまな AI 機能へのアクセスを提供し、OpenAI API 形式と互換性があります。
+```json
+{"error": {"message": "エラーの説明", "type": "エラー種別", "param": "", "code": "エラーコード"}}
+```
 
-## Management API
+## AI モデル API
 
-Management API は、システム設定、ユーザー管理、業務管理などのバックエンド操作に使用されます。
+1 つのトークンで、プラットフォームが集約するすべての上流プロバイダーを呼び出せます。プロトコルごとに 4 つの系統があります：
+
+| プロトコル | 主なエンドポイント |
+|---|---|
+| OpenAI | `POST /v1/chat/completions`、`POST /v1/completions`、`POST /v1/responses`、`POST /v1/embeddings`、`POST /v1/images/generations`、`POST /v1/images/edits`、`POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations`、`POST /v1/moderations`、`POST /v1/rerank`、`GET /v1/models`、`GET /v1/models/{model}` |
+| Anthropic | `POST /v1/messages` |
+| Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` |
+| 動画タスク | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` |
+
+呼び出せるモデルは、トークンの所属グループ、モデルのホワイトリスト、モデルの課金設定で決まります。モデル ID を推測せず、必ず `GET /v1/models` が返すモデル名を使用してください。
+
+## 課金と制限
+
+- リクエスト受理時にモデル単価と推定使用量に基づいてクォータを事前控除し、終了後に実使用量で精算します。失敗したリクエストや結果を生成しなかったタスクは返金されます。
+- クォータ不足は `403`、レート制限または上流の同時接続飽和は `429`、モデルが存在しない場合やグループ内に利用可能な渠道がない場合は `503` を返します。
+- 画像生成数 `n` の上限は 128 です。動画の長さ・解像度・バッチ数は選択したモデルの制限に従い、範囲外のリクエストは受理前に拒否されます。
+
+## 未実装のエンドポイント
+
+`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` は現在 `501` を返します。本番環境では呼び出さないでください。

@@ -100,63 +100,6 @@
     <loc>https://uter.ai/docs/en/api/index</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/en/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/en/api/management-vendors</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/en/apps/aionui</loc>
   </url>
   <url>
@@ -338,63 +281,6 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/api/index</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/fr/api/management-vendors</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/apps/aionui</loc>
@@ -580,63 +466,6 @@
     <loc>https://uter.ai/docs/ja/api/index</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/ja/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ja/api/management-vendors</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/ja/apps/aionui</loc>
   </url>
   <url>
@@ -818,63 +647,6 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/api/index</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/ru/api/management-vendors</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/apps/aionui</loc>
@@ -1060,63 +832,6 @@
     <loc>https://uter.ai/docs/vi/api/index</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/vi/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/vi/api/management-vendors</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/vi/apps/aionui</loc>
   </url>
   <url>
@@ -1300,63 +1015,6 @@
     <loc>https://uter.ai/docs/zh-TW/api/index</loc>
   </url>
   <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh-TW/api/management-vendors</loc>
-  </url>
-  <url>
     <loc>https://uter.ai/docs/zh-TW/apps/aionui</loc>
   </url>
   <url>
@@ -1538,63 +1196,6 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/zh/api/index</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-channel-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-default</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-groups</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-logs</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-model-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-oauth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-payment</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-redemption</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-security-verification</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-statistics</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-system</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-system-settings</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-tasks</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-token-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-two-factor-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-user-auth</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-user-management</loc>
-  </url>
-  <url>
-    <loc>https://uter.ai/docs/zh/api/management-vendors</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh/apps/aionui</loc>

@@ -6,7 +6,9 @@
 
 **注意**: 这是一个 WebSocket 端点，需要使用 WebSocket 协议连接。
 
-连接 URL 示例: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+连接 URL 示例: `wss://uter.ai/v1/realtime?model=gpt-4o-realtime`
+
+鉴权：握手时在请求头携带 `Authorization: Bearer sk-...`；无法设置请求头的浏览器客户端可改用子协议 `Sec-WebSocket-Protocol: openai-insecure-api-key.sk-...`。
 
 `GET` `/v1/realtime`
 

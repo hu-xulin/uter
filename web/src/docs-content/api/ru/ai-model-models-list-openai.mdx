@@ -1,42 +1,58 @@
 # Нативный формат OpenAI
 
-Получает список доступных в данный момент моделей.
-
-Формат ответа определяется автоматически по заголовкам запроса:
-- при наличии заголовков `x-api-key` и `anthropic-version` возвращается формат Anthropic
-- при наличии заголовка `x-goog-api-key` или параметра запроса `key` возвращается формат Gemini
-- в остальных случаях возвращается формат OpenAI
+## Список моделей
 
 `GET` `/v1/models`
+
+Возвращает модели, доступные текущему токену. Список фильтруется по группе токена, его списку разрешённых моделей и настройкам тарификации, поэтому у разных токенов он может отличаться.
+
+Формат ответа определяется по заголовкам запроса:
+
+- заголовки `x-api-key` и `anthropic-version` → формат Anthropic
+- заголовок `x-goog-api-key` или параметр `key` → формат Gemini
+- иначе → формат OpenAI
 
 ### Параметры запроса
 
 | Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `key` | query | string | нет | Google API Key (для формата Gemini) |
-| `x-api-key` | header | string | нет | Anthropic API Key (для формата Claude) |
-| `anthropic-version` | header | string | нет | Версия Anthropic API |
-| `x-goog-api-key` | header | string | нет | Google API Key (для формата Gemini) |
+| `key` | query | string | Нет | API-ключ для формата Gemini |
+| `x-api-key` | header | string | Нет | API-ключ для формата Anthropic |
+| `anthropic-version` | header | string | Нет | Версия Anthropic API |
+| `x-goog-api-key` | header | string | Нет | API-ключ для формата Gemini |
 
 ### Ответ
 
-| Код статуса | Описание |
+| Статус | Значение |
 |---|---|
-| `200` | Список моделей успешно получен |
+| `200` | Список моделей получен |
 | `401` | Ошибка аутентификации |
 
-#### Поля ответа `200`
+#### Поля `200` (формат OpenAI)
 
 | Поле | Тип | Описание |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | Всегда `true` |
+| `object` | string | Всегда `list` |
+| `data` | array&lt;object&gt; | Модели |
+| `data[].id` | string | ID модели; используйте его в запросах без изменений |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | Время регистрации (Unix-секунды) |
+| `data[].owned_by` | string | Владелец |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Поддерживаемые семейства эндпоинтов: `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response` и др. |
 
-#### Поля ответа `401`
+## Одна модель
 
-| Поле | Тип | Описание |
-|---|---|---|
-| `error.message` | string | Текст ошибки |
-| `error.type` | string | Тип ошибки |
-| `error.param` | string | Связанный параметр |
-| `error.code` | string | Код ошибки |
+`GET` `/v1/models/{model}`
+
+| Параметр | Расположение | Тип | Обязательно | Описание |
+|---|---|---|---|---|
+| `model` | path | string | Да | ID модели |
+
+Если модель существует, возвращается её объект (поля выше). Если нет — HTTP-статус всё равно `200`, но тело ответа содержит ошибку:
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+Проверяйте наличие поля `error` в теле, а не только HTTP-статус.

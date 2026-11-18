@@ -458,24 +458,10 @@
                 ]
               }
             ]
-          },
-          {
-            "id": "management",
-            "label": {
-              "zh": "管理接口",
-              "en": "Management APIs",
-              "fr": "API de gestion",
-              "ru": "API управления",
-              "ja": "管理 API",
-              "vi": "API Quản lý",
-              "zh-TW": "管理介面"
-            }
           }
         ],
         "hidden": [
-          "ai-model-unimplemented-fine-tuning",
-          "management-auth",
-          "management-default"
+          "ai-model-unimplemented-fine-tuning"
         ]
       }
     },

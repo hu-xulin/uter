@@ -527,6 +527,11 @@ def sync_apps(upstream: Path, texts: list) -> None:
 # endpoint was never implemented, so the page only says so.
 SKIP_GROUPS = {'ai-model/unimplemented/files'}
 
+# Categories kept out of the API reference. The management surface is the
+# admin console's own API (channels, users, billing, settings), not part of
+# the public model API this reference documents.
+SKIP_CATEGORIES = {'management'}
+
 # Upstream keeps several protocol variants of one operation in a single
 # directory — 补全 / 嵌入 / 列出模型 — unlike 音频 / 聊天 / 图像 / 视频,
 # which it already splits one sub-directory per protocol. These are split
@@ -572,6 +577,8 @@ def sync_api(upstream: Path, texts: list) -> None:
         nav = []
         for key in sorted(groups):
             if key in SKIP_GROUPS:
+                continue
+            if key.split('/')[0] in SKIP_CATEGORIES:
                 continue
             sources = groups[key]
             group_id = key.replace('/', '-')

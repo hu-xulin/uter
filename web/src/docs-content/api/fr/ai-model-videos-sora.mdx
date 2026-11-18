@@ -101,6 +101,23 @@ Renvoie les informations d'état détaillées de la tâche vidéo.
 | `error.param` | string | Paramètre concerné |
 | `error.code` | string | Code d'erreur |
 
+## Remixer une vidéo
+
+Régénère à partir d'une vidéo existante (remix) ; la nouvelle tâche réutilise le canal et le modèle de la vidéo d'origine.
+
+`POST` `/v1/videos/{video_id}/remix`
+
+### Corps de requête (`application/json`)
+
+| Champ | Type | Obligatoire | Description |
+|---|---|---|---|
+| `prompt` | string | Non | Nouveau prompt pour ce remix |
+| `model` | string | Non | Réutilise le modèle de la vidéo d'origine s'il est omis |
+
+### Réponse
+
+Renvoie un nouvel objet vidéo OpenAI avec les mêmes champs que « Créer une vidéo ». Une vidéo inexistante, ou appartenant à un autre utilisateur, renvoie `400`.
+
 ## Récupérer le contenu vidéo
 
 Récupère le contenu du fichier vidéo de la tâche vidéo terminée.

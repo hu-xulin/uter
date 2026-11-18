@@ -1,42 +1,58 @@
 # 原生OpenAI格式
 
-獲取當前可用的模型列表。
-
-根據請求頭自動識別返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 頭時返回 Anthropic 格式
-- 包含 `x-goog-api-key` 頭或 `key` 查詢引數時返回 Gemini 格式
-- 其他情況返回 OpenAI 格式
+## 取得模型列表
 
 `GET` `/v1/models`
 
-### 請求引數
+回傳目前權杖可呼叫的模型。結果已依權杖所屬分組、權杖模型白名單與模型計費設定過濾，因此不同權杖看到的列表可能不同。
 
-| 引數名 | 位置 | 型別 | 必填 | 說明 |
+依請求標頭自動識別回傳格式：
+
+- 包含 `x-api-key` 和 `anthropic-version` 標頭時回傳 Anthropic 格式
+- 包含 `x-goog-api-key` 標頭或 `key` 查詢參數時回傳 Gemini 格式
+- 其他情況回傳 OpenAI 格式
+
+### 請求參數
+
+| 參數名 | 位置 | 類型 | 必填 | 說明 |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用於 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用於 Claude 格式) |
+| `key` | query | string | 否 | Gemini 格式的 API Key |
+| `x-api-key` | header | string | 否 | Anthropic 格式的 API Key |
 | `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用於 Gemini 格式) |
+| `x-goog-api-key` | header | string | 否 | Gemini 格式的 API Key |
 
-### 響應
+### 回應
 
 | 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功獲取模型列表 |
+| `200` | 成功取得模型列表 |
 | `401` | 認證失敗 |
 
-#### `200` 響應欄位
+#### `200` 回應欄位（OpenAI 格式）
 
-| 欄位 | 型別 | 說明 |
+| 欄位 | 類型 | 說明 |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | 固定為 `true` |
+| `object` | string | 固定為 `list` |
+| `data` | array&lt;object&gt; | 模型列表 |
+| `data[].id` | string | 模型 ID，呼叫時原樣使用 |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | 模型登記時間（Unix 秒） |
+| `data[].owned_by` | string | 模型歸屬 |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | 該模型支援的端點族：`openai`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`、`openai-response` 等 |
 
-#### `401` 響應欄位
+## 取得單一模型
 
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `error.message` | string | 錯誤資訊 |
-| `error.type` | string | 錯誤型別 |
-| `error.param` | string | 相關引數 |
-| `error.code` | string | 錯誤程式碼 |
+`GET` `/v1/models/{model}`
+
+| 參數名 | 位置 | 類型 | 必填 | 說明 |
+|---|---|---|---|---|
+| `model` | path | string | 是 | 模型 ID |
+
+模型存在時回傳單一模型物件（欄位同上）。模型不存在時**仍回傳 `200`**，但回應主體為錯誤物件：
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+呼叫方應檢查回應中是否存在 `error` 欄位，而不能只看 HTTP 狀態碼。

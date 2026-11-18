@@ -1,62 +1,19 @@
-# list
+# モデル（Models）
 
-## Native OpenAI Format
+Uter はモデル照会の入口を 3 つ提供します：
 
-現在利用可能なモデル一覧を取得します。
-
-リクエストヘッダーに基づいて返却フォーマットを自動判定します：
-- `x-api-key` と `anthropic-version` ヘッダーを含む場合は Anthropic 形式を返します
-- `x-goog-api-key` ヘッダーまたは `key` クエリパラメータを含む場合は Gemini 形式を返します
-- それ以外の場合は OpenAI 形式を返します
-
-`GET` `/v1/models`
-
-### リクエストパラメータ
-
-| パラメータ名 | 位置 | 型 | 必須 | 説明 |
-|---|---|---|---|---|
-| `key` | query | string | 任意 | Google API Key（Gemini 形式用） |
-| `x-api-key` | header | string | 任意 | Anthropic API Key（Claude 形式用） |
-| `anthropic-version` | header | string | 任意 | Anthropic API のバージョン |
-| `x-goog-api-key` | header | string | 任意 | Google API Key（Gemini 形式用） |
-
-### レスポンス
-
-| ステータスコード | 説明 |
+| エンドポイント | 説明 |
 |---|---|
-| `200` | モデル一覧の取得に成功 |
-| `401` | 認証失敗 |
+| `GET /v1/models` | 現在のトークンで呼び出せるモデル一覧 |
+| `GET /v1/models/{model}` | 単一モデルの詳細 |
+| `GET /v1beta/models` | 同じ一覧の Gemini ネイティブ形式 |
 
-#### `200` レスポンスフィールド
+一覧はトークンの所属グループ、モデルホワイトリスト、モデルの課金設定で絞り込まれます。返された結果を信頼し、モデル名をハードコードしないでください。
 
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+`GET /v1/models` はリクエストヘッダーでレスポンス形式を選びます：
 
-#### `401` レスポンスフィールド
+- `x-api-key` と `anthropic-version` ヘッダー → Anthropic 形式
+- `x-goog-api-key` ヘッダーまたは `key` クエリパラメータ → Gemini 形式
+- それ以外 → OpenAI 形式
 
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `error.message` | string | エラーメッセージ |
-| `error.type` | string | エラータイプ |
-| `error.param` | string | 関連パラメータ |
-| `error.code` | string | エラーコード |
-
-## Native Gemini Format
-
-Gemini API 形式で利用可能なモデル一覧を返します。
-
-`GET` `/v1beta/models`
-
-### レスポンス
-
-| ステータスコード | 説明 |
-|---|---|
-| `200` | モデル一覧の取得に成功 |
-
-#### `200` レスポンスフィールド
-
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `models` | array&lt;object&gt; | — |
+各形式のフィールドとレスポンス例は「ネイティブ OpenAI 形式」「ネイティブ Gemini 形式」を参照してください。

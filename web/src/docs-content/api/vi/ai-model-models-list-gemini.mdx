@@ -2,6 +2,8 @@
 
 Trả về danh sách mô hình khả dụng ở định dạng Gemini API.
 
+Xác thực: dùng tham số truy vấn `?key=sk-...` hoặc header `x-goog-api-key`. Danh sách được lọc theo nhóm của token và danh sách model được phép.
+
 `GET` `/v1beta/models`
 
 ### Phản hồi
@@ -9,9 +11,13 @@ Trả về danh sách mô hình khả dụng ở định dạng Gemini API.
 | Mã trạng thái | Mô tả |
 |---|---|
 | `200` | Lấy danh sách mô hình thành công |
+| `401` | Xác thực thất bại |
 
 #### Trường phản hồi `200`
 
 | Trường | Kiểu | Mô tả |
 |---|---|---|
-| `models` | array&lt;object&gt; | — |
+| `models` | array&lt;object&gt; | Danh sách model |
+| `models[].name` | string | ID model (không có tiền tố `models/`), dùng nguyên văn khi gọi |
+| `models[].displayName` | string | Tên hiển thị |
+| `nextPageToken` | null | Luôn là `null`; không hỗ trợ phân trang |

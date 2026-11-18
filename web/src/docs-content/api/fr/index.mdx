@@ -1,17 +1,40 @@
 # Référence API
 
-## Aperçu
+## Accès
 
-Uter fournit un ensemble complet d'interfaces API RESTful, classées en **API de modèle IA** et **API de gestion**. Vous pouvez utiliser ces interfaces pour invoquer des capacités IA et effectuer des fonctions de gestion système.
+| Élément | Valeur |
+|---|---|
+| Base URL | `https://uter.ai` (point d'entrée dédié à l'API : `https://api.uter.ai`) |
+| Authentification | `Authorization: Bearer sk-...` |
+| Jeton | Créé dans la page « Jetons » de la console ; peut être limité à un groupe, à une liste de modèles et à des IP sources |
 
-> **Débogage en ligne**
->
-> Vous pouvez visiter l'Apifox Playground pour tester et déboguer les interfaces API en ligne, ou parcourir la documentation API ci-dessous.
+Le format Claude (`/v1/messages`) accepte aussi l'en-tête `x-api-key` ; le format Gemini (`/v1beta/models/...`) accepte l'en-tête `x-goog-api-key` ou le paramètre de requête `?key=`.
 
-## API de modèle IA
+Les erreurs suivent le format OpenAI :
 
-Les API de modèle IA donnent accès à diverses capacités IA et sont compatibles avec le format API OpenAI.
+```json
+{"error": {"message": "description de l'erreur", "type": "type d'erreur", "param": "", "code": "code d'erreur"}}
+```
 
-## API de gestion
+## API des modèles d'IA
 
-Les API de gestion sont utilisées pour les opérations backend telles que la configuration système, la gestion des utilisateurs et la gestion commerciale.
+Un seul jeton donne accès à tous les fournisseurs amont agrégés par la plateforme. Les API se répartissent en quatre familles de protocoles :
+
+| Protocole | Points de terminaison principaux |
+|---|---|
+| OpenAI | `POST /v1/chat/completions`, `POST /v1/completions`, `POST /v1/responses`, `POST /v1/embeddings`, `POST /v1/images/generations`, `POST /v1/images/edits`, `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations`, `POST /v1/moderations`, `POST /v1/rerank`, `GET /v1/models`, `GET /v1/models/{model}` |
+| Anthropic | `POST /v1/messages` |
+| Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` |
+| Tâches vidéo | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` |
+
+Les modèles accessibles à un jeton dépendent de son groupe, de sa liste de modèles autorisés et de la configuration de facturation du modèle. Utilisez toujours les noms renvoyés par `GET /v1/models` ; ne devinez pas les identifiants de modèle.
+
+## Facturation et limites
+
+- À l'acceptation d'une requête, le quota est prélevé selon le prix du modèle et l'usage estimé, puis régularisé selon l'usage réel. Les requêtes en échec et les tâches sans résultat sont remboursées.
+- Un quota insuffisant renvoie `403` ; une limitation de débit ou une concurrence amont saturée renvoie `429` ; un modèle inconnu ou l'absence de canal disponible dans le groupe renvoie `503`.
+- Le nombre d'images `n` est plafonné à 128. La durée, la résolution et la taille de lot des vidéos suivent les limites du modèle choisi ; les valeurs hors limites sont rejetées avant acceptation.
+
+## Points de terminaison non implémentés
+
+`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` et `DELETE /v1/models/{model}` renvoient actuellement `501`. Ne pas les appeler en production.

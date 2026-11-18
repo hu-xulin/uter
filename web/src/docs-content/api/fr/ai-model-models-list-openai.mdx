@@ -1,42 +1,58 @@
 # Format OpenAI natif
 
-Récupère la liste des modèles actuellement disponibles.
-
-Le format de retour est automatiquement identifié selon les en-têtes de requête :
-- Renvoie le format Anthropic lorsque les en-têtes `x-api-key` et `anthropic-version` sont présents
-- Renvoie le format Gemini lorsque l'en-tête `x-goog-api-key` ou le paramètre de requête `key` est présent
-- Renvoie le format OpenAI dans les autres cas
+## Lister les modèles
 
 `GET` `/v1/models`
 
+Renvoie les modèles que le jeton courant peut appeler. La liste est filtrée par le groupe du jeton, sa liste de modèles autorisés et la configuration de facturation des modèles ; deux jetons peuvent donc voir des listes différentes.
+
+Le format de réponse est choisi d'après les en-têtes :
+
+- en-têtes `x-api-key` et `anthropic-version` → format Anthropic
+- en-tête `x-goog-api-key` ou paramètre `key` → format Gemini
+- sinon → format OpenAI
+
 ### Paramètres de requête
 
-| Nom du paramètre | Position | Type | Requis | Description |
+| Paramètre | Emplacement | Type | Obligatoire | Description |
 |---|---|---|---|---|
-| `key` | query | string | Non | Clé API Google (pour le format Gemini) |
-| `x-api-key` | header | string | Non | Clé API Anthropic (pour le format Claude) |
+| `key` | query | string | Non | Clé API pour le format Gemini |
+| `x-api-key` | header | string | Non | Clé API pour le format Anthropic |
 | `anthropic-version` | header | string | Non | Version de l'API Anthropic |
-| `x-goog-api-key` | header | string | Non | Clé API Google (pour le format Gemini) |
+| `x-goog-api-key` | header | string | Non | Clé API pour le format Gemini |
 
 ### Réponse
 
-| Code d'état | Description |
+| Statut | Signification |
 |---|---|
-| `200` | Liste des modèles récupérée avec succès |
+| `200` | Liste renvoyée |
 | `401` | Échec d'authentification |
 
-#### Champs de la réponse `200`
+#### Champs `200` (format OpenAI)
 
 | Champ | Type | Description |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | Toujours `true` |
+| `object` | string | Toujours `list` |
+| `data` | array&lt;object&gt; | Modèles |
+| `data[].id` | string | ID du modèle, à utiliser tel quel |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | Date d'enregistrement (secondes Unix) |
+| `data[].owned_by` | string | Propriétaire |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Familles d'endpoints prises en charge : `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response`, etc. |
 
-#### Champs de la réponse `401`
+## Récupérer un modèle
 
-| Champ | Type | Description |
-|---|---|---|
-| `error.message` | string | Message d'erreur |
-| `error.type` | string | Type d'erreur |
-| `error.param` | string | Paramètre concerné |
-| `error.code` | string | Code d'erreur |
+`GET` `/v1/models/{model}`
+
+| Paramètre | Emplacement | Type | Obligatoire | Description |
+|---|---|---|---|---|
+| `model` | path | string | Oui | ID du modèle |
+
+Renvoie l'objet du modèle (mêmes champs) s'il existe. S'il n'existe pas, la réponse reste `200` mais contient un corps d'erreur :
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+Vérifiez la présence du champ `error` dans le corps plutôt que de vous fier au seul statut HTTP.

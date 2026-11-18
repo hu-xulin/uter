@@ -1,42 +1,58 @@
-# Định dạng Native OpenAI
+# Định dạng OpenAI gốc
 
-Lấy danh sách mô hình hiện có sẵn.
-
-Tự động nhận diện định dạng trả về dựa trên header yêu cầu:
-- Trả về định dạng Anthropic khi chứa header `x-api-key` và `anthropic-version`
-- Trả về định dạng Gemini khi chứa header `x-goog-api-key` hoặc tham số query `key`
-- Các trường hợp khác trả về định dạng OpenAI
+## Lấy danh sách model
 
 `GET` `/v1/models`
 
+Trả về các model mà token hiện tại gọi được. Danh sách đã được lọc theo nhóm của token, danh sách model được phép và cấu hình tính phí, nên các token khác nhau có thể thấy danh sách khác nhau.
+
+Định dạng phản hồi được chọn theo header:
+
+- có `x-api-key` và `anthropic-version` → định dạng Anthropic
+- có `x-goog-api-key` hoặc tham số `key` → định dạng Gemini
+- còn lại → định dạng OpenAI
+
 ### Tham số yêu cầu
 
-| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `key` | query | string | Không | Google API Key (dùng cho định dạng Gemini) |
-| `x-api-key` | header | string | Không | Anthropic API Key (dùng cho định dạng Claude) |
+| `key` | query | string | Không | API key cho định dạng Gemini |
+| `x-api-key` | header | string | Không | API key cho định dạng Anthropic |
 | `anthropic-version` | header | string | Không | Phiên bản Anthropic API |
-| `x-goog-api-key` | header | string | Không | Google API Key (dùng cho định dạng Gemini) |
+| `x-goog-api-key` | header | string | Không | API key cho định dạng Gemini |
 
 ### Phản hồi
 
-| Mã trạng thái | Mô tả |
+| Mã | Ý nghĩa |
 |---|---|
-| `200` | Lấy danh sách mô hình thành công |
+| `200` | Trả danh sách model |
 | `401` | Xác thực thất bại |
 
-#### Trường phản hồi `200`
+#### Trường `200` (định dạng OpenAI)
 
 | Trường | Kiểu | Mô tả |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | Luôn là `true` |
+| `object` | string | Luôn là `list` |
+| `data` | array&lt;object&gt; | Danh sách model |
+| `data[].id` | string | ID model, dùng nguyên văn khi gọi |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | Thời điểm đăng ký (giây Unix) |
+| `data[].owned_by` | string | Chủ sở hữu |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Nhóm endpoint được hỗ trợ: `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response`… |
 
-#### Trường phản hồi `401`
+## Lấy một model
 
-| Trường | Kiểu | Mô tả |
-|---|---|---|
-| `error.message` | string | Thông báo lỗi |
-| `error.type` | string | Loại lỗi |
-| `error.param` | string | Tham số liên quan |
-| `error.code` | string | Mã lỗi |
+`GET` `/v1/models/{model}`
+
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|
+| `model` | path | string | Có | ID model |
+
+Nếu model tồn tại, trả về đối tượng model (các trường như trên). Nếu không, phản hồi **vẫn là `200`** nhưng body là đối tượng lỗi:
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+Hãy kiểm tra trường `error` trong body thay vì chỉ dựa vào mã HTTP.

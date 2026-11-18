@@ -1,62 +1,19 @@
-# 列出模型
+# 模型（Models）
 
-## 原生OpenAI格式
+Uter 提供三個模型查詢入口：
 
-獲取當前可用的模型列表。
-
-根據請求頭自動識別返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 頭時返回 Anthropic 格式
-- 包含 `x-goog-api-key` 頭或 `key` 查詢引數時返回 Gemini 格式
-- 其他情況返回 OpenAI 格式
-
-`GET` `/v1/models`
-
-### 請求引數
-
-| 引數名 | 位置 | 型別 | 必填 | 說明 |
-|---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用於 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用於 Claude 格式) |
-| `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用於 Gemini 格式) |
-
-### 響應
-
-| 狀態碼 | 說明 |
+| 端點 | 說明 |
 |---|---|
-| `200` | 成功獲取模型列表 |
-| `401` | 認證失敗 |
+| `GET /v1/models` | 目前權杖可呼叫的模型列表 |
+| `GET /v1/models/{model}` | 單一模型詳情 |
+| `GET /v1beta/models` | 同一列表的 Gemini 原生格式 |
 
-#### `200` 響應欄位
+列表已依權杖所屬分組、權杖模型白名單與模型計費設定過濾，請以回傳結果為準，不要硬編碼模型名稱。
 
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+`GET /v1/models` 依請求標頭自動選擇回傳格式：
 
-#### `401` 響應欄位
+- 包含 `x-api-key` 和 `anthropic-version` 標頭 → Anthropic 格式
+- 包含 `x-goog-api-key` 標頭或 `key` 查詢參數 → Gemini 格式
+- 其他情況 → OpenAI 格式
 
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `error.message` | string | 錯誤資訊 |
-| `error.type` | string | 錯誤型別 |
-| `error.param` | string | 相關引數 |
-| `error.code` | string | 錯誤程式碼 |
-
-## 原生Gemini格式
-
-以 Gemini API 格式返回可用模型列表
-
-`GET` `/v1beta/models`
-
-### 響應
-
-| 狀態碼 | 說明 |
-|---|---|
-| `200` | 成功獲取模型列表 |
-
-#### `200` 響應欄位
-
-| 欄位 | 型別 | 說明 |
-|---|---|---|
-| `models` | array&lt;object&gt; | — |
+各格式的欄位說明與回應範例見「原生OpenAI格式」與「原生Gemini格式」兩頁。

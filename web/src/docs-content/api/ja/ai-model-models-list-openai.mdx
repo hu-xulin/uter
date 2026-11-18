@@ -1,42 +1,58 @@
-# Native OpenAI Format
+# ネイティブ OpenAI 形式
 
-現在利用可能なモデル一覧を取得します。
-
-リクエストヘッダーに基づいて返却フォーマットを自動判定します：
-- `x-api-key` と `anthropic-version` ヘッダーを含む場合は Anthropic 形式を返します
-- `x-goog-api-key` ヘッダーまたは `key` クエリパラメータを含む場合は Gemini 形式を返します
-- それ以外の場合は OpenAI 形式を返します
+## モデル一覧を取得
 
 `GET` `/v1/models`
 
+現在のトークンで呼び出せるモデルを返します。トークンの所属グループ、トークンのモデルホワイトリスト、モデルの課金設定で絞り込まれるため、トークンごとに一覧が異なります。
+
+レスポンス形式はリクエストヘッダーで自動判定されます：
+
+- `x-api-key` と `anthropic-version` ヘッダー → Anthropic 形式
+- `x-goog-api-key` ヘッダーまたは `key` クエリパラメータ → Gemini 形式
+- それ以外 → OpenAI 形式
+
 ### リクエストパラメータ
 
-| パラメータ名 | 位置 | 型 | 必須 | 説明 |
+| パラメータ | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `key` | query | string | 任意 | Google API Key（Gemini 形式用） |
-| `x-api-key` | header | string | 任意 | Anthropic API Key（Claude 形式用） |
-| `anthropic-version` | header | string | 任意 | Anthropic API のバージョン |
-| `x-goog-api-key` | header | string | 任意 | Google API Key（Gemini 形式用） |
+| `key` | query | string | いいえ | Gemini 形式用の API キー |
+| `x-api-key` | header | string | いいえ | Anthropic 形式用の API キー |
+| `anthropic-version` | header | string | いいえ | Anthropic API バージョン |
+| `x-goog-api-key` | header | string | いいえ | Gemini 形式用の API キー |
 
 ### レスポンス
 
-| ステータスコード | 説明 |
+| ステータス | 意味 |
 |---|---|
-| `200` | モデル一覧の取得に成功 |
+| `200` | モデル一覧を返却 |
 | `401` | 認証失敗 |
 
-#### `200` レスポンスフィールド
+#### `200` のフィールド（OpenAI 形式）
 
 | フィールド | 型 | 説明 |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | 常に `true` |
+| `object` | string | 常に `list` |
+| `data` | array&lt;object&gt; | モデル一覧 |
+| `data[].id` | string | モデル ID。リクエストではそのまま使用します |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | 登録時刻（Unix 秒） |
+| `data[].owned_by` | string | 所有元 |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | 対応するエンドポイント系統：`openai`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`、`openai-response` など |
 
-#### `401` レスポンスフィールド
+## 単一モデルを取得
 
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `error.message` | string | エラーメッセージ |
-| `error.type` | string | エラータイプ |
-| `error.param` | string | 関連パラメータ |
-| `error.code` | string | エラーコード |
+`GET` `/v1/models/{model}`
+
+| パラメータ | 位置 | 型 | 必須 | 説明 |
+|---|---|---|---|---|
+| `model` | path | string | はい | モデル ID |
+
+モデルが存在すれば、そのモデルオブジェクト（上記と同じフィールド）を返します。存在しない場合も **HTTP は `200`** のままで、レスポンスボディがエラーオブジェクトになります：
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+HTTP ステータスだけで判断せず、ボディに `error` フィールドがあるかを確認してください。

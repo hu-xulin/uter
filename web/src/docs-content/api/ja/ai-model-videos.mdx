@@ -1,10 +1,13 @@
-# videos
+# 動画（Videos）
 
-## 動画生成タスクの作成
+動画生成は非同期です。タスクを送信し、状態をポーリングしてから結果を取得します。Uter は 2 つの入口を提供します：
 
-動画生成タスクを送信します。テキストから動画、画像から動画に対応します。
+- **汎用タスク形式**：`/v1/video/generations` は `task_id` を返します。プロバイダー固有のオプションは `metadata` に指定します。
+- **OpenAI 動画形式**：`/v1/videos` はリクエスト・レスポンスとも OpenAI Videos API に準拠し、公式 SDK をそのまま利用できます。
 
-タスク ID を返却し、GET インターフェースでタスク状態を照会できます。
+リクエスト項目はプロバイダーごとに異なります。下記の各プロバイダー形式ページも併せて参照してください。
+
+## 動画生成タスクを作成
 
 `POST` `/v1/video/generations`
 
@@ -12,88 +15,98 @@
 
 | フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 任意 | モデル/スタイル ID |
-| `prompt` | string | 任意 | テキスト説明プロンプト |
-| `image` | string | 任意 | 画像入力（URL または Base64） |
-| `duration` | number | 任意 | 動画の長さ（秒） |
-| `width` | integer | 任意 | 動画の幅 |
-| `height` | integer | 任意 | 動画の高さ |
-| `fps` | integer | 任意 | 動画のフレームレート |
-| `seed` | integer | 任意 | 乱数シード |
-| `n` | integer | 任意 | 生成する動画の数 |
-| `response_format` | string | 任意 | 応答フォーマット |
-| `user` | string | 任意 | ユーザー識別子 |
-| `metadata` | object | 任意 | 拡張パラメータ（negative_prompt、style、quality_level など） |
+| `model` | string | はい | `GET /v1/models` で取得した動画モデル ID。チャネルと課金もこれで決まります |
+| `prompt` | string | いいえ | テキストプロンプト |
+| `image` | string | いいえ | 先頭フレーム画像（URL または Base64） |
+| `images` | array&lt;string&gt; | いいえ | 複数の参照画像（一部モデルのみ） |
+| `duration` | number | いいえ | 動画の長さ（秒）。上限はモデル依存 |
+| `size` | string | いいえ | 解像度（例：`1280x720`） |
+| `metadata` | object | いいえ | `negative_prompt`、`seed`、`fps` などプロバイダー拡張パラメータ |
+| `user` | string | いいえ | 呼び出し側のユーザー識別子（追跡用途のみ） |
 
 ### レスポンス
 
-| ステータスコード | 説明 |
+| ステータス | 意味 |
 |---|---|
-| `200` | 動画生成タスクの作成に成功 |
-| `400` | リクエストパラメータエラー |
+| `200` | タスク受理済み |
+| `400` | リクエスト不正（model 欠落、長さ超過など） |
+| `403` | クォータ不足 |
+| `429` | 上流の同時接続飽和 |
+| `503` | モデルが存在しない、または現在のグループに利用可能な渠道がない |
 
-#### `200` レスポンスフィールド
+#### `200` のフィールド
 
 | フィールド | 型 | 説明 |
 |---|---|---|
+| `id` | string | タスク ID（`task_id` と同じ） |
 | `task_id` | string | タスク ID |
-| `status` | string | タスク状態 |
+| `status` | string | 初期状態。通常は `queued` |
+| `model` | string | 実際に使用されたモデル名 |
+| `created_at` | integer | 作成時刻（Unix 秒） |
 
-#### `400` レスポンスフィールド
+一部のプロバイダーはタスクプラグインがレスポンスを直接描画します。その場合は各プロバイダーのページに従ってください。
 
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `error.message` | string | エラーメッセージ |
-| `error.type` | string | エラータイプ |
-| `error.param` | string | 関連パラメータ |
-| `error.code` | string | エラーコード |
-
-## 動画生成タスク状態の取得
-
-動画生成タスクの状態と結果を照会します。
-
-タスク状態：
-- `queued`: 待機中
-- `in_progress`: 生成中
-- `completed`: 完了
-- `failed`: 失敗
+## 動画タスクを照会
 
 `GET` `/v1/video/generations/{task_id}`
 
-### リクエストパラメータ
+Uter の統合タスク形式（成功時は `code` が `success`）を返します：
 
-| パラメータ名 | 位置 | 型 | 必須 | 説明 |
-|---|---|---|---|---|
-| `task_id` | path | string | 必須 | タスク ID |
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4",
+    "fail_reason": "",
+    "submit_time": 1699990000,
+    "start_time": 1699990010,
+    "finish_time": 1699990200,
+    "properties": {},
+    "data": {}
+  }
+}
+```
 
-### レスポンス
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `code` | string | 成功時は `success`。それ以外はエラーコード |
+| `data.task_id` | string | タスク ID |
+| `data.status` | string | `NOT_START` / `SUBMITTED` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.progress` | string | 進捗（例：`45%`） |
+| `data.result_url` | string | 成功時の結果 URL |
+| `data.fail_reason` | string | 失敗理由 |
+| `data.properties` | object | 送信パラメータのスナップショット（モデル、長さ、解像度など） |
+| `data.data` | object | プロバイダーの生の結果 |
 
-| ステータスコード | 説明 |
+タスクが存在しない場合や他ユーザーのタスクは `400`（`task_not_exist`）を返します。
+
+## OpenAI 動画形式を使う
+
+`POST` `/v1/videos` は `application/json` と `multipart/form-data` を受け付け、OpenAI Videos の `model`、`prompt`、`seconds`、`size`、`input_reference` などを指定できます。レスポンスは OpenAI 動画オブジェクトです：
+
+```json
+{
+  "id": "task_xxx",
+  "object": "video",
+  "model": "sora-2",
+  "status": "queued",
+  "progress": 0,
+  "created_at": 1699990000,
+  "seconds": "8",
+  "size": "1280x720"
+}
+```
+
+関連エンドポイント：
+
+| メソッドとパス | 説明 |
 |---|---|
-| `200` | タスク状態の取得に成功 |
-| `404` | タスクが存在しません |
+| `GET /v1/videos/{id}` | タスクを照会。成功時は `completed_at` と最終 `status` を返します |
+| `GET /v1/videos/{id}/content` | 動画ファイルのストリームをプロキシ経由でダウンロード |
+| `POST /v1/videos/{id}/remix` | 既存動画から再生成（remix）し、新しい動画オブジェクトを返します |
 
-#### `200` レスポンスフィールド
-
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `task_id` | string | タスク ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | タスク状態 |
-| `url` | string | 動画リソース URL（成功時） |
-| `format` | string | 動画フォーマット |
-| `metadata.duration` | number | 実際に生成された動画の長さ |
-| `metadata.fps` | integer | 実際のフレームレート |
-| `metadata.width` | integer | 実際の幅 |
-| `metadata.height` | integer | 実際の高さ |
-| `metadata.seed` | integer | 使用された乱数シード |
-| `error.code` | integer | エラーコード |
-| `error.message` | string | エラーメッセージ |
-
-#### `404` レスポンスフィールド
-
-| フィールド | 型 | 説明 |
-|---|---|---|
-| `error.message` | string | エラーメッセージ |
-| `error.type` | string | エラータイプ |
-| `error.param` | string | 関連パラメータ |
-| `error.code` | string | エラーコード |
+`status` の値：`queued`、`in_progress`、`completed`、`failed`。

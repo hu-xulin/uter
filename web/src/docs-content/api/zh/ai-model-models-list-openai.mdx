@@ -1,22 +1,25 @@
 # 原生OpenAI格式
 
-获取当前可用的模型列表。
+## 获取模型列表
+
+`GET` `/v1/models`
+
+返回当前令牌可调用的模型。结果已按令牌所属分组、令牌模型白名单与模型计费配置过滤，因此不同令牌看到的列表可能不同。
 
 根据请求头自动识别返回格式：
+
 - 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
 - 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
 - 其他情况返回 OpenAI 格式
-
-`GET` `/v1/models`
 
 ### 请求参数
 
 | 参数名 | 位置 | 类型 | 必填 | 说明 |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
+| `key` | query | string | 否 | Gemini 格式的 API Key |
+| `x-api-key` | header | string | 否 | Anthropic 格式的 API Key |
 | `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `x-goog-api-key` | header | string | 否 | Gemini 格式的 API Key |
 
 ### 响应
 
@@ -25,18 +28,31 @@
 | `200` | 成功获取模型列表 |
 | `401` | 认证失败 |
 
-#### `200` 响应字段
+#### `200` 响应字段（OpenAI 格式）
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `object` | string | — |
-| `data` | array&lt;object&gt; | — |
+| `success` | boolean | 固定为 `true` |
+| `object` | string | 固定为 `list` |
+| `data` | array&lt;object&gt; | 模型列表 |
+| `data[].id` | string | 模型 ID，调用时原样使用 |
+| `data[].object` | string | `model` |
+| `data[].created` | integer | 模型登记时间（Unix 秒） |
+| `data[].owned_by` | string | 模型归属 |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | 该模型支持的端点族：`openai`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`、`openai-response` 等 |
 
-#### `401` 响应字段
+## 获取单个模型
 
-| 字段 | 类型 | 说明 |
-|---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+`GET` `/v1/models/{model}`
+
+| 参数名 | 位置 | 类型 | 必填 | 说明 |
+|---|---|---|---|---|
+| `model` | path | string | 是 | 模型 ID |
+
+模型存在时返回单个模型对象（字段同上）。模型不存在时**仍返回 `200`**，但响应体为错误对象：
+
+```json
+{"error": {"message": "The model 'xxx' does not exist", "type": "invalid_request_error", "param": "model", "code": "model_not_found"}}
+```
+
+调用方应检查响应中是否存在 `error` 字段，而不能只看 HTTP 状态码。

@@ -6,7 +6,9 @@
 
 **Внимание**: это WebSocket-конечная точка, для подключения необходим протокол WebSocket.
 
-Пример URL подключения: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+Пример URL подключения: `wss://uter.ai/v1/realtime?model=gpt-4o-realtime`
+
+Аутентификация: передайте `Authorization: Bearer sk-...` в заголовках рукопожатия. Браузерные клиенты, не умеющие задавать заголовки, могут использовать подпротокол `Sec-WebSocket-Protocol: openai-insecure-api-key.sk-...`.
 
 `GET` `/v1/realtime`
 

@@ -101,6 +101,23 @@ OpenAI 兼容的视频任务状态查询接口。
 | `error.param` | string | 相关参数 |
 | `error.code` | string | 错误代码 |
 
+## 视频 Remix
+
+基于已有视频再次生成（remix），新任务沿用原视频的渠道与模型。
+
+`POST` `/v1/videos/{video_id}/remix`
+
+### 请求体（`application/json`）
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `prompt` | string | 否 | 本次 remix 的新提示词 |
+| `model` | string | 否 | 省略时沿用原视频的模型 |
+
+### 响应
+
+返回新的 OpenAI 视频对象，字段与「创建视频」一致。原视频不存在或不属于当前用户时返回 `400`。
+
 ## 获取视频内容
 
 获取已完成视频任务的视频文件内容。

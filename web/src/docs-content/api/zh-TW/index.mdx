@@ -1,17 +1,40 @@
 # API 參考
 
-## 概述
+## 接入資訊
 
-優特提供完整的 RESTful API 介面，分為 **AI 模型介面** 和 **管理介面** 兩大類。您可以透過這些介面實現 AI 能力呼叫和系統管理功能。
+| 項目 | 值 |
+|---|---|
+| Base URL | `https://uter.ai`（API 專用入口：`https://api.uter.ai`） |
+| 鑑權 | 請求標頭 `Authorization: Bearer sk-...` |
+| 權杖 | 在主控台「權杖」頁建立，可限制分組、模型白名單與 IP |
 
-> **線上除錯**
->
-> 您可以訪問 Apifox 操練場 線上測試和除錯 API 介面，或瀏覽下方的 API 文件。
+Claude 格式（`/v1/messages`）同時接受 `x-api-key` 請求標頭；Gemini 格式（`/v1beta/models/...`）接受 `x-goog-api-key` 請求標頭或 `?key=` 查詢參數。
+
+請求失敗時統一傳回 OpenAI 風格錯誤：
+
+```json
+{"error": {"message": "錯誤說明", "type": "錯誤類型", "param": "", "code": "錯誤代碼"}}
+```
 
 ## AI 模型介面
 
-AI 模型介面提供各種 AI 能力的呼叫，相容 OpenAI API 格式。
+一個權杖即可呼叫平台彙整的全部上游供應商。依協定分為四族：
 
-## 管理介面
+| 協定族 | 主要端點 |
+|---|---|
+| OpenAI | `POST /v1/chat/completions`、`POST /v1/completions`、`POST /v1/responses`、`POST /v1/embeddings`、`POST /v1/images/generations`、`POST /v1/images/edits`、`POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations`、`POST /v1/moderations`、`POST /v1/rerank`、`GET /v1/models`、`GET /v1/models/{model}` |
+| Anthropic | `POST /v1/messages` |
+| Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` |
+| 影片任務 | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` |
 
-管理介面用於系統配置、使用者管理、業務管理等後臺操作。
+可呼叫的模型由權杖所屬分組、權杖模型白名單與模型計費設定共同決定，請一律以 `GET /v1/models` 傳回的模型名稱為準，不要猜測模型 ID。
+
+## 計費與限制
+
+- 請求受理時依模型單價與預估用量預扣額度，結束後依實際用量結算差額；失敗或未產生內容的任務會自動退回預扣額度。
+- 額度不足傳回 `403`；請求頻率或上游併發飽和傳回 `429`；模型不存在或目前分組無可用渠道傳回 `503`。
+- 影像生成數量 `n` 上限為 128；影片時長、解析度與批次數量依所選模型的限制校驗，超界請求會在受理前被拒絕。
+
+## 尚未實作的端點
+
+`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` 目前傳回 `501`，請勿在生產環境呼叫。

@@ -1,6 +1,8 @@
 # 原生Gemini格式
 
-以 Gemini API 格式返回可用模型列表
+以 Gemini API 格式返回可用模型列表。
+
+鉴权：使用 `?key=sk-...` 查询参数或 `x-goog-api-key` 请求头。列表按令牌分组与模型白名单过滤。
 
 `GET` `/v1beta/models`
 
@@ -9,9 +11,13 @@
 | 状态码 | 说明 |
 |---|---|
 | `200` | 成功获取模型列表 |
+| `401` | 认证失败 |
 
 #### `200` 响应字段
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `models` | array&lt;object&gt; | — |
+| `models` | array&lt;object&gt; | 模型列表 |
+| `models[].name` | string | 模型 ID（无 `models/` 前缀），调用时原样使用 |
+| `models[].displayName` | string | 展示名称 |
+| `nextPageToken` | null | 固定为 `null`，不支持分页 |

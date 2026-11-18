@@ -69,7 +69,7 @@ describe('native docs search index', () => {
       const file = join(PUBLIC_ROOT, 'docs-search', `${locale}.json`)
       expect(existsSync(file), `missing ${locale} search index`).toBe(true)
       const docs = JSON.parse(readFileSync(file, 'utf8')) as { p: string }[]
-      expect(docs, `${locale} index`).toHaveLength(80)
+      expect(docs, `${locale} index`).toHaveLength(61)
       expect(
         new Set(docs.map((doc) => doc.p)).size,
         `${locale} index has duplicate page paths`
@@ -89,7 +89,7 @@ describe('native docs search index', () => {
       }
       total += docs.length
     }
-    expect(total, '560 migrated documents across 7 locales').toBe(560)
+    expect(total, '427 migrated documents across 7 locales').toBe(427)
   })
 })
 
