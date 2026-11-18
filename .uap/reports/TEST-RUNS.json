@@ -919,10 +919,47 @@
         "UAP-EV-20261116140842-0942c826"
       ],
       "recorded_at": "2026-11-16T14:08:42.150Z"
+    },
+    {
+      "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 305195,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 211,
+        "pass": 211,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/architecture-adr-traceability.test.mjs",
+        ".uap/tests/deployment-drill-classification.test.mjs",
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/execution-lifecycle.test.mjs",
+        ".uap/tests/final-acceptance-capabilities.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261118064159-447d5286"
+      ],
+      "recorded_at": "2026-11-18T06:41:57.956Z"
     }
   ],
   "schema_version": "1.0",
-  "generated_at": "2026-11-16T14:08:42.150Z",
+  "generated_at": "2026-11-18T06:41:57.956Z",
   "executor_ids": [
     "quality.engineering",
     "quality.testing",
@@ -931,19 +968,19 @@
   "node_version": "v24.21.0",
   "environment": "local",
   "summary": {
-    "total": 27,
-    "executed": 27,
-    "passed": 21,
+    "total": 28,
+    "executed": 28,
+    "passed": 22,
     "blocked": 0,
     "failed": 6
   },
   "test_plan": {
-    "generated_at": "2026-11-16T14:08:42.805Z",
+    "generated_at": "2026-11-18T06:42:00.204Z",
     "layers": [
       {
         "layer": "unit.go",
         "source": "*_test.go",
-        "discovered_test_files": 446,
+        "discovered_test_files": 455,
         "sample": [
           "main_docs_test.go",
           "common/api_type_task_plugin_test.go",
@@ -961,23 +998,23 @@
       {
         "layer": "unit.web",
         "source": "web/src/**/*.test.ts(x)",
-        "discovered_test_files": 289,
+        "discovered_test_files": 306,
         "sample": [
           "web/src/components/__tests__/command-menu.test.tsx",
           "web/src/components/__tests__/datetime-picker-time.test.tsx",
           "web/src/components/__tests__/html-content.test.tsx",
+          "web/src/components/__tests__/password-strength.test.tsx",
           "web/src/components/__tests__/payment-icon-by-name.test.tsx",
           "web/src/components/ai-elements/__tests__/code-block-editor.test.tsx",
           "web/src/components/ai-elements/__tests__/response-fade-render.test.tsx",
-          "web/src/components/ai-elements/__tests__/response-fade.test.ts",
-          "web/src/components/data-table/core/__tests__/pagination.test.tsx"
+          "web/src/components/ai-elements/__tests__/response-fade.test.ts"
         ],
         "gate_command": "bun run test"
       },
       {
         "layer": "uap.runtime",
         "source": ".uap/tests/*.test.mjs",
-        "discovered_test_files": 21,
+        "discovered_test_files": 23,
         "gate_command": "node --test .uap/tests/*.test.mjs",
         "status": "READY"
       },
@@ -997,112 +1034,112 @@
     "ci_test_commands": [
       {
         "file": ".github/workflows/ci.yml",
-        "line": 187,
+        "line": 188,
         "command": "node .uap/bin/uap.mjs test --all"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 221,
+        "line": 222,
         "command": "node .uap/bin/uap.mjs verify-capabilities"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 226,
+        "line": 227,
         "command": "node .uap/bin/uap.mjs verify-database"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 231,
+        "line": 232,
         "command": "node .uap/bin/uap.mjs verify-payment"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 242,
+        "line": 243,
         "command": "node .uap/bin/uap.mjs verify-e2e"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 251,
+        "line": 252,
         "command": "node .uap/bin/uap.mjs verify-visual"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 256,
+        "line": 257,
         "command": "node .uap/bin/uap.mjs verify-security"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 261,
+        "line": 262,
         "command": "node .uap/bin/uap.mjs verify-requirements"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 400,
+        "line": 401,
         "command": "go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 404,
+        "line": 405,
         "command": "go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 408,
+        "line": 409,
         "command": "GOWORK=off go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 412,
+        "line": 413,
         "command": "GOWORK=off go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 430,
+        "line": 431,
         "command": "make test"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 483,
+        "line": 484,
         "command": "go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 488,
+        "line": 489,
         "command": "go test -race -count=1 ./e2e/..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 492,
+        "line": 493,
         "command": "GOWORK=off go test -race -count=1 ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 496,
+        "line": 497,
         "command": "GOWORK=off go test -race -count=1 ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 500,
+        "line": 501,
         "command": "GOWORK=off go test -race -count=1 ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 645,
+        "line": 646,
         "command": "node --test desktop-secrets.test.js"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 681,
+        "line": 682,
         "command": "bun run test"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 705,
+        "line": 706,
         "command": "bun run verify:contrast"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 714,
+        "line": 715,
         "command": "bun run test:visual"
       },
       {

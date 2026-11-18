@@ -389,3 +389,12 @@
 {"execution_id":"UAP-EXEC-20261116115030-6a0ef6da","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261116140543-b25e3c8d","closed_at":"2026-11-16T14:05:43.278Z"}
 {"execution_id":"UAP-EXEC-20261116140543-b25e3c8d","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261116140547-b510e7f6","closed_at":"2026-11-16T14:05:47.838Z"}
 {"execution_id":"UAP-EXEC-20261116140547-b510e7f6","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261116140715-2797a8c6","closed_at":"2026-11-16T14:07:15.916Z"}
+{"execution_id":"UAP-EXEC-20261116140715-2797a8c6","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118061155-86162304","closed_at":"2026-11-18T06:11:55.975Z"}
+{"execution_id":"UAP-EXEC-20261118061155-86162304","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118063655-24deaf1d","closed_at":"2026-11-18T06:36:55.875Z"}
+{"execution_id":"UAP-EXEC-20261118063655-24deaf1d","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118063705-79b08fa2","closed_at":"2026-11-18T06:37:05.021Z"}
+{"execution_id":"UAP-EXEC-20261118063705-79b08fa2","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118063910-ca24f049","closed_at":"2026-11-18T06:39:10.334Z"}
+{"execution_id":"UAP-EXEC-20261118063910-ca24f049","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118063922-17bbef2f","closed_at":"2026-11-18T06:39:22.594Z"}
+{"execution_id":"UAP-EXEC-20261118063922-17bbef2f","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118064000-e25d5397","closed_at":"2026-11-18T06:40:00.624Z"}
+{"execution_id":"UAP-EXEC-20261118064000-e25d5397","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118064048-f40f6930","closed_at":"2026-11-18T06:40:48.348Z"}
+{"execution_id":"UAP-EXEC-20261118064048-f40f6930","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118064138-71209e9b","closed_at":"2026-11-18T06:41:38.566Z"}
+{"execution_id":"UAP-EXEC-20261118064138-71209e9b","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261118064153-8984eda2","closed_at":"2026-11-18T06:41:53.741Z"}

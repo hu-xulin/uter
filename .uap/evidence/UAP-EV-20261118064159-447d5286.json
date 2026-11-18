@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261118064159-447d5286",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-18T06:41:59.067Z",
+  "started_at": "2026-11-18T06:36:53.872Z",
+  "finished_at": "2026-11-18T06:41:59.067Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261118064153-8984eda2",
+    "git_head": "4e79c44f17206d5ec98d3eb597cabf679c2079fd",
+    "worktree_fingerprint": "c062e74d850bd718bfc1681577f7a135f6420693dd25429ebe1ff4fda6bd38a5",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261118064153-8984eda2",
+  "git_head": "4e79c44f17206d5ec98d3eb597cabf679c2079fd",
+  "worktree_fingerprint": "c062e74d850bd718bfc1681577f7a135f6420693dd25429ebe1ff4fda6bd38a5",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 305195,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/architecture-adr-traceability.test.mjs\",\".uap/tests/deployment-drill-classification.test.mjs\",\".uap/tests/execution-identity-race.test.mjs\",\".uap/tests/execution-lifecycle.test.mjs\",\".uap/tests/final-acceptance-capabilities.test.mjs\",\".uap/tests/final-acceptance-negative.test.mjs\",\".uap/tests/final-remediation-regression.test.mjs\",\".uap/tests/independent-repair-review.test.mjs\",\".uap/tests/independent-verification.test.mjs\",\".uap/tests/phase2-requirement-verification.test.mjs\",\".uap/tests/phase2-security-negative.test.mjs\",\".uap/tests/real-code-repair-boundaries.test.mjs\",\".uap/tests/real-repair-e2e.test.mjs\",\".uap/tests/requirement-behavior-suite.test.mjs\",\".uap/tests/requirement-honesty.test.mjs\",\".uap/tests/runtime.test.mjs\",\".uap/tests/status-consistency.test.mjs\",\".uap/tests/status-snapshot.test.mjs\",\".uap/tests/test-collector.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 19 files -> exit 0, tap pass=211 fail=0",
+  "content_hash": "2d369c449bb635d8a884a237cfda20936f7c804f4ca9adc90cfa07535c2ba8d4"
+}

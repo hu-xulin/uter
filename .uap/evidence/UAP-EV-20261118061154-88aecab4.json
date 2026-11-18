@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261118061154-88aecab4",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-18T06:11:54.208Z",
+  "started_at": "2026-11-18T06:11:54.206Z",
+  "finished_at": "2026-11-18T06:11:54.208Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261118061155-86162304",
+    "git_head": "4e79c44f17206d5ec98d3eb597cabf679c2079fd",
+    "worktree_fingerprint": "c5ce2f4202a1d5eae897e75ac04cbd98163833c945ef5481ecec2bc86946c653",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261118061155-86162304",
+  "git_head": "4e79c44f17206d5ec98d3eb597cabf679c2079fd",
+  "worktree_fingerprint": "c5ce2f4202a1d5eae897e75ac04cbd98163833c945ef5481ecec2bc86946c653",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap --help",
+  "exit_code": 0,
+  "duration_ms": 2,
+  "inputs": "{\"argv\":[\"--help\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "help",
+  "content_hash": "428636ddae932647e06a527279db9f4b2c8707e1701c2de377d4e247558956db"
+}
