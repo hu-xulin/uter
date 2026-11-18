@@ -400,7 +400,8 @@
         "web/src/features/task-plugins/lib/text-diff.ts"
       ],
       "evidence": [
-        "任务插件控制台：详情返回 task/provider/transform(+hooks)/login/refresh 部件，插件选项下发部件与 checkKey/balance/relayPaths/responsesWebsocket/name_i18n；上传与启停响应携带 pricing_issues；详情页新增 Capabilities 与 Pricing Issues 区块；浏览器端到端验证"
+        "任务插件控制台：详情返回 task/provider/transform(+hooks)/login/refresh 部件，插件选项下发部件与 checkKey/balance/relayPaths/responsesWebsocket/name_i18n；上传与启停响应携带 pricing_issues；详情页新增 Capabilities 与 Pricing Issues 区块；浏览器端到端验证",
+        "任务插件市场 README：按版本下载（大小/超时/sha256/UTF-8 校验，语言回退）、front-matter 与结构校验、禁止 HTML/图片/不安全链接、Markdown 相对链接渲染；安装详情页展示并可重试；移植上游 README 测试（26 例）通过"
       ]
     },
     {
@@ -1313,7 +1314,7 @@
     }
   },
   "status_summary": {
-    "updated_at": "2026-11-17T18:51:27.305340+00:00",
+    "updated_at": "2026-11-18T02:51:10.480382+00:00",
     "overall": "NOT_COMPLETE",
     "verified_batches": [
       "B0 差距清单",
@@ -1324,7 +1325,6 @@
     "pending_batches": [
       "上游定价快照/预览端点的上游语义版本",
       "B1 真实插件端到端复验",
-      "B2/B3 剩余前端",
       "B4/B5/GAP-11 剩余项"
     ],
     "three_db_verification": "2026-11-17: TestUserWeChatIDColumnMigration sqlite/mysql:8.0/postgres:16 PASS（升级+二次迁移幂等+数据保留）"

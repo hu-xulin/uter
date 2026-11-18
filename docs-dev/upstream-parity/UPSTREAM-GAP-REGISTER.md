@@ -116,6 +116,13 @@
 - 复用渠道插件配置的解析与字段组件（提取为 `src/components/plugin-config-fields.tsx`），避免两套字段渲染逻辑。
 - 验证：单测（字段渲染 + JSON 同步）与浏览器端到端（上传带 configSchema 的请求插件 → 保存实例 → 选择 high → 保存 → 后端实例 config 持久化）通过；前端 typecheck/lint/design/copyright/i18n/build:check 全绿。
 
+## 任务插件 README（2026-11-18）
+
+- 按版本声明的 `readme` 下载使用文档：大小/超时上限、可选 sha256 校验、UTF-8 校验，按界面语言选择翻译并回退英文。
+- 校验 front matter（仅 locale/translations）、一级标题；禁止 HTML、图片与非 http/https/mailto/相对链接，Markdown 相对链接按文档地址解析。
+- 安装详情页展示指南；格式问题给出可读原因与源文件链接，下载失败可重试。
+- 证据：移植上游 README 校验/组件测试共 26 例通过；typecheck、lint、design:strict、copyright、i18n、build:check 全绿；提交 `5bd76878d`。
+
 ## 使用方式
 
 - 每批开始前：重新核对上游对应提交与 Uter 当前实现的语义差异，更新本清单状态；
