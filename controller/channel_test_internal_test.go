@@ -497,3 +497,30 @@ func TestTestAllChannelsRejectsExistingActiveTask(t *testing.T) {
 	require.Contains(t, recorder.Body.String(), existing.TaskID)
 	require.Contains(t, recorder.Body.String(), "A channel-test task is already running or queued")
 }
+
+func TestNormalizeBailianChannelBaseURL(t *testing.T) {
+	testCases := []struct{ name, input, want string }{
+		{"empty", "", ""},
+		{"dashscope host", "https://dashscope.aliyuncs.com", "https://dashscope.aliyuncs.com"},
+		{"bare dashscope host gains a scheme", "dashscope.aliyuncs.com", "https://dashscope.aliyuncs.com"},
+		{"bare alibaba cloud host is not a model API", "https://aliyuncs.com", "https://dashscope.aliyuncs.com"},
+		{"www alibaba cloud host", "https://www.aliyuncs.com/", "https://dashscope.aliyuncs.com"},
+		{"openai-compatible base is reduced to the host root", "https://dashscope.aliyuncs.com/compatible-mode/v1", "https://dashscope.aliyuncs.com"},
+		{"compatible base without version", "https://dashscope.aliyuncs.com/compatible-mode", "https://dashscope.aliyuncs.com"},
+		{"version suffix", "https://dashscope.aliyuncs.com/v1", "https://dashscope.aliyuncs.com"},
+		{"international host is preserved", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/", "https://dashscope-intl.aliyuncs.com"},
+		{"workspace host is preserved", "https://ws-1.cn-beijing.maas.aliyuncs.com", "https://ws-1.cn-beijing.maas.aliyuncs.com"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			assert.Equal(t, testCase.want, normalizeBailianChannelBaseURL(testCase.input))
+		})
+	}
+}
+
+func TestValidateChannelStripsBailianCompatiblePath(t *testing.T) {
+	base := "https://dashscope.aliyuncs.com/compatible-mode/v1"
+	channel := &model.Channel{Type: constant.ChannelTypeAli, BaseURL: &base}
+	require.NoError(t, validateChannel(channel, false))
+	assert.Equal(t, "https://dashscope.aliyuncs.com", channel.GetBaseURL())
+}

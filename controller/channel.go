@@ -571,6 +571,15 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 		return fmt.Errorf("channel cannot be empty")
 	}
 
+	// Bailian paths are appended to the host root, so a pasted
+	// `/compatible-mode/v1` suffix or the bare Alibaba Cloud host must not be
+	// persisted as the destination.
+	if channel.Type == constant.ChannelTypeAli && channel.BaseURL != nil {
+		if base := normalizeBailianChannelBaseURL(strings.TrimSpace(*channel.BaseURL)); base != "" {
+			channel.BaseURL = &base
+		}
+	}
+
 	// 校验 channel settings
 	if err := channel.ValidateSettings(); err != nil {
 		return common.NewMessage("Invalid channel settings format: {{error}}", map[string]any{"error": err.Error()})

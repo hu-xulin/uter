@@ -363,6 +363,41 @@ func getFetchModelsResponseBody(method string, requestURL string, channel *model
 	return common.ReadUpstreamBody(response.Body)
 }
 
+// normalizeBailianChannelBaseURL keeps a Bailian base URL at the host root that
+// Uter appends DashScope paths to. The Bailian documentation tells users to
+// enter the whole OpenAI-compatible base (`.../compatible-mode/v1`), and the
+// bare Alibaba Cloud host is a common copy/paste mistake; both produce 404s on
+// every request because the path is appended a second time or points at a host
+// that serves no model API.
+func normalizeBailianChannelBaseURL(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return ""
+	}
+	if !strings.Contains(trimmed, "://") {
+		trimmed = "https://" + trimmed
+	}
+	parsed, err := url.Parse(trimmed)
+	if err != nil || parsed.Host == "" {
+		return trimmed
+	}
+	switch strings.ToLower(parsed.Hostname()) {
+	case "aliyuncs.com", "www.aliyuncs.com":
+		parsed.Host = "dashscope.aliyuncs.com"
+	}
+	path := strings.TrimRight(parsed.Path, "/")
+	path = strings.TrimSuffix(path, "/compatible-mode/v1")
+	path = strings.TrimSuffix(path, "/compatible-mode")
+	if path == "/v1" {
+		path = ""
+	}
+	parsed.Path = path
+	parsed.RawPath = ""
+	parsed.RawQuery = ""
+	parsed.Fragment = ""
+	return strings.TrimRight(parsed.String(), "/")
+}
+
 func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 	if channel.Type == constant.ChannelTypeTaskPlugin {
 		plugin, ok := jsplugin.DefaultRegistry.Get(channel.GetSetting().TaskPluginKey)
@@ -377,6 +412,9 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 	baseURL := constant.GetChannelBaseURL(channel.Type)
 	if channel.GetBaseURL() != "" {
 		baseURL = channel.GetBaseURL()
+	}
+	if channel.Type == constant.ChannelTypeAli {
+		baseURL = normalizeBailianChannelBaseURL(baseURL)
 	}
 
 	if channel.Type == constant.ChannelTypeOllama {
