@@ -466,7 +466,7 @@ const renderModule = (m) => {
 
 ${m.summary}
 
-本模块属于 UDS 8.0.0 五层架构 \`${M.architecture.flow}\`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；现有 UDS 3.0 runtime compatibility boundary 按 ADR-0002 保留，直到项目所有者明确授权迁移并完成当前 HEAD 绑定的行为、视觉与兼容回归验证；该边界不构成并行设计系统或第二套 Token。视觉基线见 \`VISUAL-BASELINE.json\`。
+本模块属于 UDS 8.0.0 五层架构 \`${M.architecture.flow}\`。UDS 8.0.0 是本仓库唯一现行设计系统与唯一执行依据；颜色语义层 --ds-* bridge 为新 UI 的唯一运行时权威；现有 UDS 3.0 runtime compatibility boundary 按 ADR-0002 保留，直到项目所有者明确授权迁移并完成当前 HEAD 绑定的行为、视觉与兼容回归验证；该边界不构成并行设计系统或第二套 Token。视觉基线见 \`VISUAL-BASELINE.json\`。
 
 | 属性 | 值 |
 |---|---|
