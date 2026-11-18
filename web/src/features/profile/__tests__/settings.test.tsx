@@ -60,7 +60,9 @@ afterEach(() => vi.restoreAllMocks())
 
 /** The body a PUT sends over the wire: undefined fields are left out. */
 function sentBody(put: { mock: { calls: unknown[][] } }): unknown {
-  return structuredClone(put.mock.calls[0][1])
+  // JSON clone intentionally drops undefined keys from the request body.
+  // eslint-disable-next-line unicorn/prefer-structured-clone
+  return JSON.parse(JSON.stringify(put.mock.calls[0][1]))
 }
 
 describe('user settings saves across profile and security', () => {

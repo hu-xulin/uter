@@ -130,5 +130,7 @@ export function makeUniqueName(
 }
 
 export function cloneTemplate<T>(template: T): T {
-  return structuredClone(template)
+  // JSON clone intentionally drops undefined keys, matching the stored shape.
+  // eslint-disable-next-line unicorn/prefer-structured-clone
+  return JSON.parse(JSON.stringify(template))
 }
