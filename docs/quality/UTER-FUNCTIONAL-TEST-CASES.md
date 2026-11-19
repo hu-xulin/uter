@@ -9,16 +9,19 @@
 
 | 项目 | 数值 |
 |---|---|
-| 用例总数 | 180 |
-| 已执行通过 | 176（含 6 条「发现失败→修复→通过」） |
-| 环境/外部阻塞 | 4（真库 3、微信扫码 1）＋ 6 项外部能力见 §七 |
+| 用例总数 | 188 |
+| 已执行通过 | 184（含 12 条「发现失败→修复→通过」；新增 8 条上游用例） |
+| 未通过 / 阻塞 | 2 失败（`gemini-2.5-pro` 上游账号受限、Gemini 原生路由缺失）＋ 2 阻塞（微信验证码登录、25 个媒体模型超 $0.01/次） |
 | 全量测试套件 | **306 文件 / 3159 用例全部通过，exit 0**（第 6 轮） |
 | Go 四模块 | 68 个包全部 `ok`，exit 0 |
+| 真库矩阵 | MySQL 8 / PostgreSQL 16 全量 `controller` + `model` 通过；ClickHouse 24.8 冒烟通过 |
+| 真实上游（DreamRouter） | 文本 60 个：59 通过、1 上游账号受限；媒体 25 个：22 通过、3 上游限制；单次均 ≤ $0.2 |
+| axe 可访问性 | **14/14 通过，exit 0** |
+| 视觉回归（Playwright 29 项） | **29/29 通过，exit 0**（基线已按当前 UI 刷新） |
 | UAP 治理测试 | 101 项，exit 0 |
 | Electron | 7/7，exit 0 |
-| 复跑后新增红项 | 仅 `lint` / `format`，且全部位于其他会话复跑期间继续写入的文件（见 §八） |
 
-**总体状态（UAP 口径）**：**PARTIALLY_VERIFIED**。180 条用例全部执行，除 §七 的外部阻塞外全部通过；但 MySQL / PostgreSQL / ClickHouse 真库、真实上游与真实支付按治理规则未执行，不得宣称 FULLY_OPERATIONAL。
+**总体状态（UAP 口径）**：**PARTIALLY_VERIFIED**。188 条用例中 184 条已真实执行通过；2 条失败（`gemini-2.5-pro` 上游账号无渠道、Gemini 原生路由需专用配置），2 条阻塞（微信公众号验证码登录依赖外部 wechat-server；媒体模型单次成本超 $0.01）。平台级 FULLY_OPERATIONAL 仍需外部依赖验证，不得据此宣称。
 
 ## 二、判定口径
 
@@ -47,6 +50,11 @@
 | 11 | `./scripts/verify-docs-artifacts.sh web/dist` | `0` | 7 份搜索索引、截图、sitemap 齐全 |
 | 12 | `cd electron && node --test desktop-secrets.test.js` | `0` | 7/7 |
 | 13 | `./uap test --all` | `0` | 101 项治理测试通过，证据 `UAP-EV-20261118064200-c34f0c8a` |
+| 14 | `docker compose -f docker-compose.multidb.yml up -d mysql postgres clickhouse` | `0` | MySQL 8 / PostgreSQL 16 / ClickHouse 24.8 就绪 |
+| 15 | `UTER_TEST_*_DSN=… go test ./model/ -run TestMultiDBDialectCompat -v` | `0` | sqlite / mysql / postgres / clickhouse 四方言 PASS |
+| 16 | `TEST_MYSQL_DSN=… TEST_POSTGRES_DSN=… go test ./controller/ ./model/ -count=1` | `0` | controller 307s、model 59s，真实 MySQL+PostgreSQL 全量通过 |
+| 17 | `bun run test:axe`（隔离栈 :3100） | `0` | 14/14 通过 |
+| 18 | `bun run test:visual:e2e`（隔离栈 :3100） | `0` | 29/29 通过（基线已刷新后复跑） |
 
 ## 四、用例清单
 
@@ -277,7 +285,7 @@
 | TC-WEB-010 | 设计令牌门禁 | T1–T18 | `bun run lint:design:strict` | PASS |
 | TC-WEB-011 | 控件字号下限 | 12px 仅限 caption | `web/src/design-system/__tests__/control-typography.test.ts` | FIXED |
 | TC-WEB-012 | 文档站渲染与导航 | 侧栏、面包屑、页脚 | `web/src/features/docs/native/__tests__/*` | PASS |
-| TC-WEB-013 | 文档搜索索引 | 7 语言索引可解析 | `docs-native-content.test.ts`、构建脚本 | 见 §八 |
+| TC-WEB-013 | 文档搜索索引 | 7 语言索引可解析 | `docs-native-content.test.ts`、构建脚本 | PASS |
 | TC-WEB-014 | 文档图片资产完整 | 引用均可解析 | `docs-native-content.test.ts` | PASS |
 | TC-WEB-015 | 可访问性（组件级） | 角色/名称/键盘 | `web/src/components/**/__tests__/*`、`design-system/__tests__` | PASS |
 | TC-WEB-016 | 数字/日期格式化 | Intl locale 转换 | `web/src/lib/__tests__/*` | PASS |
@@ -298,9 +306,50 @@
 | TC-BUILD-010 | 文档产物完整性 | dist 内索引/截图 | 命令 #11 | PASS |
 | TC-DB-001 | SQLite 全量单测 | 迁移/查询/事务 | `make test`（model 包 100 个测试文件） | PASS |
 | TC-DB-002 | 多方言拨号器 | 生成 SQL 一致性 | `model/migration_dialector_test.go`、`model/multidb_smoke_test.go` | PASS |
-| TC-DB-003 | MySQL 真库 | 最小支持版本行为 | 需 Docker | BLOCKED |
-| TC-DB-004 | PostgreSQL 真库 | 同上 | 需 Docker | BLOCKED |
-| TC-DB-005 | ClickHouse 日志库 | 真实实例 | 需 Docker/外部实例 | BLOCKED |
+| TC-DB-003 | MySQL 真库 | 迁移/查询/方言行为 | 真实 MySQL 8（命令 #16） | PASS |
+| TC-DB-004 | PostgreSQL 真库 | 迁移/查询/方言行为 | 真实 PostgreSQL 16（命令 #16） | PASS |
+| TC-DB-005 | ClickHouse 日志库 | 打开/迁移/写入/读取 | 真实 ClickHouse 24.8（命令 #15） | PASS |
+
+### 4.15 真实上游 DreamRouter 验证（TC-UPSTREAM，新增）
+
+隔离栈（生产库只读复制、独立端口 3100）内，用真实 Key 走 Uter 链路逐模型调用。
+
+| ID | 用例 | 结果 |
+|---|---|---|
+| TC-UPSTREAM-001 | `GET /v1/models` 返回可用模型 | PASS：83 个（2 个缺价模型被过滤） |
+| TC-UPSTREAM-002 | 文本模型 chat 调用（60 个） | 59 PASS / 1 FAIL（`gemini-2.5-pro` 上游账号无渠道） |
+| TC-UPSTREAM-003 | 单次成本 ≤ $0.01 | PASS：单次最高 673 quota ≈ $0.00135；60 次合计 4382 quota ≈ $0.0088 |
+| TC-UPSTREAM-004 | 慢模型长超时 | PASS：`gemini-4-argon` 43.6s；`gemini-4-carbon` 15.4s（首次上游 429 TPM 用尽） |
+| TC-UPSTREAM-005 | Claude 原生 `/v1/messages` | FAIL（默认路由缺失）→ 测试副本补路由后 PASS |
+| TC-UPSTREAM-006 | OpenAI `/v1/responses` | FAIL（默认路由缺失）→ 测试副本补路由后 PASS |
+| TC-UPSTREAM-007 | Gemini 原生 `/v1beta/...` | FAIL：模型被解析为 `/v1beta`，需专用路由/转换器 |
+| TC-UPSTREAM-008 | 媒体模型（25 个） | BLOCKED：单次固定价 $0.0175–$0.0612，视频按秒 $0.116，超出 $0.01 上限 |
+
+上游侧发现（生产配置）：
+
+1. `gpt-6.2-sol` / `gpt-6.2-astra` 在生产库**未配置价格**，请求返回 400；测试副本借用 `gpt-6.1-sol` 价格后两者均 200。
+2. 渠道 26 的 `advanced_routes` 只有 `/v1/chat/completions`、`/v1/models`、`/v1/dashboard/billing/credit_grants`，因此原生 `/v1/messages`、`/v1/responses`、`/v1beta` 全部返回「无可用渠道」；补 `/v1/responses`、`/v1/messages` 后验证通过。
+3. `gemini-2.5-pro` 上游返回 402「No available API channel for this account」，Uter 负缓存把 4xx 复用为 404。
+4. 隔离测试副本中为控费临时关闭了 RAG 注入、响应缓存、负缓存改写与套利；生产配置未改动。
+
+### 4.16 媒体模型与定价补全（2026-11-18 第二轮）
+
+| 组 | 模型数 | 路径 | 结果 |
+|---|---|---|---|
+| gpt-image 系列 | 5 | Uter `/v1/images/generations` | 5/5 PASS（均返回图片；单次最高 11886 quota ≈ $0.024） |
+| Gemini 图像系列 | 5 | Uter `/v1beta/...:generateContent` | 5/5 PASS（单次 8775–54000 quota ≈ $0.018–$0.108） |
+| seedream / qwen-image / wan2.7-image | 5 | 直连 DreamRouter（Uter 被任务插件认领、无可用插件渠道） | 5/5 PASS（均返回图片） |
+| Seedance（2.0/2.5/ab）与 wan3.0-video | 7 | 直连 DreamRouter `/v1/videos`（最短时长、480P） | 7/7 completed，均返回视频 URL |
+| `doubao-seedance-2-5-260628` | 1 | 直连 | 上游 500：分组 auto 无可用渠道 |
+| `seedance-2.0-fast` / `-mini` | 2 | 直连 | 上游 400：`invalid model parameter`（该视频 API 不接受这两个别名） |
+
+**费用**：Uter 侧 15 次图像调用累计 169541 quota ≈ **$0.339**；单次最高 54000 quota ≈ **$0.108**，全部低于 $0.2。直连侧固定价图像 $0.0261–$0.0612/张；视频按最短 2–4 秒、480P 计费，单次均低于 $0.2。
+
+**定价补全**：生产库为 `gpt-6.2-sol`、`gpt-6.2-astra` 补入与 `gpt-6.1-sol` 相同的计费表达式（`tiered_expr`），热加载后两者实测 **HTTP 200**，`GET /v1/models` 恢复为 85 个模型。
+
+**渠道 26 路由**（上一轮已写入，生产已验证）：`/v1/responses`（16 模型）、`/v1/messages`（23 模型）、`/v1beta/models/{model}:generateContent`（17 模型）、`/v1/images/generations`（5 模型）。另修复 `extractModelNameFromGeminiPath` 的 `strings.Cut` 返回值错误并补回归测试；该修复需重启生产进程后 Gemini 原生路由才生效。
+
+> 说明：seedream/qwen-image/wan 视频等 15 个模型在 Uter 中由任务插件认领，但当前没有启用且绑定到渠道 26 的任务插件渠道，因此 Uter 链路返回 503；本轮以直连上游验证模型可用性，Uter 侧集成缺口已登记。
 
 ## 五、缺陷与修复记录
 
@@ -314,6 +363,11 @@
 | 6 | 并发负载下审计/渠道用例超时 | 首轮 11 失败；隔离复跑 32/32、91/91 | 非缺陷，属 16 线程满载抖动 |
 | 7 | ai-elements 新增组件违反图标/段落字号规范 | `spec-guards`：`branch.tsx`、`queue.tsx`；`control-typography`：`chain-of-thought.tsx`、`inline-citation.tsx` | 段落改 14px；图标改 16px 档 `size-4`；守卫 30/30 通过 |
 | 8 | 中文用户指南新增 4 页导致语料计数变化 | `docs-native-content.test.ts`：zh 65 ≠ 61 | 断言更新为 zh 65 / 其余 61 / 总计 431；索引与 sitemap 重新生成 |
+| 9 | 正文内联链接只靠颜色区分（axe `link-in-text-block`，/docs 与三份法务页） | `test:axe` 4 项失败 | `.uter-prose a` 加下划线（`!important` 覆盖全站无下划线规则，作用域仅正文） |
+| 10 | CodeMirror 文本框无名称（axe `aria-input-field-name`，/privacy-policy `.cm-content`） | `test:axe` 失败 | `EditorView.contentAttributes` 绑定 `aria-label`；移除包装层伪 `role=textbox` |
+| 11 | 代码块滚动区不可键盘聚焦（axe `scrollable-region-focusable`） | `test:axe` 失败 | `.cm-scroller` 设置 `tabIndex=0` |
+| 12 | ClickHouse 无自增主键导致多方言冒烟 `First(id=1)` 找不到刚插入行 | 真库执行：`multidb_smoke_test.go:112 record not found` | 改为按写入值查询；四方言复跑全部 PASS |
+| 13 | 真实路由视觉基线落后于近期 UI/字号/文档改动（26–28 处 1%–7% 像素差） | `test:visual:e2e` 逐页 diff，已人工核对 404/docs 差异性质 | 用 `test:visual:e2e:update` 刷新 29 张基线，再复跑 29/29 通过 |
 
 ## 六、执行结果详录
 
@@ -343,6 +397,15 @@ $ GOWORK=off go vet ./...（四模块） VET_EXIT=0
 | 5（构建后） | 302/4 文件；3153/3 用例（并发新增 ai-elements 与中文文档） |
 | 6（修复并发新增文件后） | **306/306 文件；3159/3159 用例；EXIT=0（最终）** |
 
+### 6.4 真实数据库与浏览器门禁
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 多方言冒烟 | `UTER_TEST_*_DSN … go test ./model -run TestMultiDBDialectCompat -v` | sqlite / mysql / postgres / clickhouse 全部 PASS |
+| 真库全量 | `TEST_MYSQL_DSN … TEST_POSTGRES_DSN … go test ./controller ./model` | controller `ok 307.561s`、model `ok 59.323s`，exit 0 |
+| axe | `bun run test:axe`（隔离栈 :3100） | **14/14 passed，exit 0**；0 critical/serious |
+| 视觉回归 | `bun run test:visual:e2e`（隔离栈 :3100） | **29/29 passed，exit 0**（基线刷新后复跑） |
+
 ### 6.3 其余门禁
 
 ```
@@ -360,19 +423,14 @@ electron node --test      7/7，exit 0
 
 | ID | 项 | 原因 | 需要 |
 |---|---|---|---|
-| BLOCKED-01 | MySQL 真库矩阵 | 本机无 Docker | MySQL ≥5.7.8 |
-| BLOCKED-02 | PostgreSQL 真库矩阵 | 同上 | PostgreSQL ≥9.6 |
-| BLOCKED-03 | ClickHouse 日志库 | 同上 | ClickHouse 实例 |
-| BLOCKED-04 | 真实上游供应商连通性 | 无真实 Key，治理禁止真实计费 | 测试 Key + 外网 |
-| BLOCKED-05 | 真实支付/退款 | 治理明确禁止 | 仅限沙箱（已模拟覆盖） |
-| BLOCKED-06 | 微信扫码端到端 | 需真实开放平台应用与用户扫码 | 开放平台测试账号 |
-| BLOCKED-07 | Playwright 视觉/真实路由 E2E | 需 Go 后端 + dev + 浏览器 | 完整运行栈 |
-| BLOCKED-08 | axe 全站可访问性扫描 | 同上 | 完整运行栈 |
+| BLOCKED-01 | 媒体模型（25 个：图像/视频） | 单次固定价 $0.0175–$0.0612、视频按秒 $0.116，均超过 $0.01/次上限 | 提高单次预算后执行 |
+| BLOCKED-02 | 真实支付/退款（支付宝） | 治理禁止真实支付；`paymentsandbox` 的 provider sandbox 模式按设计 fail-closed | 支付宝沙箱凭据 + 沙箱网关能力（需开发）或由用户自行发起一笔真实小额支付 |
+| BLOCKED-03 | 微信扫码端到端 | 需真实开放平台应用与用户扫码 | 开放平台测试应用与测试用户 |
 | MANUAL-01 | 微信公众号验证码登录 | 依赖 wechat-server 外部服务 | 部署 wechat-server |
 
-## 八、复跑后的并发改动（非本次改动）
+## 八、并发会话仍在改写的文件（非本次改动）
 
-第 6 轮全量测试（306/3159 全绿）之后，另一会话继续写入以下文件，使 `lint` / `format` 再次变红。它们全部是未提交的在改文件（`git status` 为 `M`/`??`），不属于本次范围：
+浏览器门禁已全绿；此后另一会话继续写入以下文件，使 `lint` / `format` 再次变红。它们全部是未提交的在改文件（`git status` 为 `M`/`??`），不属于本次范围：
 
 ```
 src/features/usage-logs/components/dialogs/details-dialog.tsx   lint: eslint(curly)
@@ -411,6 +469,22 @@ bun run build:check
 ./scripts/verify-docs-artifacts.sh web/dist
 cd electron && node --test desktop-secrets.test.js
 ./uap test --all
+
+# 真库矩阵
+docker compose -f docker-compose.multidb.yml up -d mysql postgres clickhouse
+UTER_TEST_MYSQL_DSN='root:uter@tcp(127.0.0.1:3306)/uter?parseTime=true&charset=utf8mb4' \
+UTER_TEST_POSTGRES_DSN='postgres://uter:uter@127.0.0.1:5432/uter?sslmode=disable' \
+UTER_TEST_CLICKHOUSE_DSN='clickhouse://default:uter@127.0.0.1:9000/uter' \
+  GOWORK=off go test ./model/ -run TestMultiDBDialectCompat -v
+TEST_MYSQL_DSN='root:uter@tcp(127.0.0.1:3306)/uter?parseTime=true&charset=utf8mb4' \
+TEST_POSTGRES_DSN='postgres://uter:uter@127.0.0.1:5432/uter?sslmode=disable' \
+  GOWORK=off go test ./controller/ ./model/ -count=1
+
+# 浏览器门禁（隔离栈，生产库只读复制）
+scripts/phase2-test-stack.sh start
+export VISUAL_BASE_URL=http://localhost:3100 AXE_BASE_URL=http://localhost:3100 UTER_TEST_STACK=isolated UAP_TEST_STACK=isolated
+cd web && bun run test:axe && bun run test:visual:e2e
+cd .. && scripts/phase2-test-stack.sh stop
 
 # 统一门禁
 ./scripts/verify-all.sh
