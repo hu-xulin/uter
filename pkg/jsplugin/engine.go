@@ -131,8 +131,8 @@ type Engine struct {
 	now              func() time.Time
 	log              func(string)
 	module           *moejs.Module
-	pool      chan *runtimeInstance
-	semaphore chan struct{}
+	pool             chan *runtimeInstance
+	semaphore        chan struct{}
 	// parked bounds the runtimes that lent their slot to other calls while
 	// utils.fetch waits on the network; its capacity is the concurrency.
 	parked  chan struct{}
@@ -215,18 +215,18 @@ func Compile(source string, options Options) (*Engine, error) {
 	}
 
 	engine := &Engine{
-		key:       options.Key,
-		version:   options.Version,
+		key:              options.Key,
+		version:          options.Version,
 		timeout:          timeout,
 		memoryLimitBytes: memoryLimitBytes,
 		now:              now,
-		log:       options.Log,
-		module:    moeModule,
-		semaphore: make(chan struct{}, concurrency),
-		parked:    make(chan struct{}, concurrency),
-		pool:      make(chan *runtimeInstance, concurrency),
-		hooks:     make(map[hookKey]moejs.Hook),
-		exports:   make(map[string]struct{}),
+		log:              options.Log,
+		module:           moeModule,
+		semaphore:        make(chan struct{}, concurrency),
+		parked:           make(chan struct{}, concurrency),
+		pool:              make(chan *runtimeInstance, concurrency),
+		hooks:             make(map[hookKey]moejs.Hook),
+		exports:           make(map[string]struct{}),
 	}
 	instance, err := engine.newRuntime(context.Background())
 	if err != nil {
