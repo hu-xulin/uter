@@ -112,9 +112,9 @@ func newHookError(hook, rawMessage string, wrapped error) *HookError {
 var forbiddenSyntax = regexp.MustCompile(`(?m)(^|[^A-Za-z0-9_$])(async|await|import)([^A-Za-z0-9_$]|$)`)
 
 type Options struct {
-	Key         string
-	Version     string
-	Timeout     time.Duration
+	Key     string
+	Version string
+	Timeout time.Duration
 	// MemoryLimitBytes bounds JavaScript allocations per call. Zero uses the
 	// production default so callers cannot accidentally disable the heap guard.
 	MemoryLimitBytes int64
@@ -224,9 +224,9 @@ func Compile(source string, options Options) (*Engine, error) {
 		module:           moeModule,
 		semaphore:        make(chan struct{}, concurrency),
 		parked:           make(chan struct{}, concurrency),
-		pool:              make(chan *runtimeInstance, concurrency),
-		hooks:             make(map[hookKey]moejs.Hook),
-		exports:           make(map[string]struct{}),
+		pool:             make(chan *runtimeInstance, concurrency),
+		hooks:            make(map[hookKey]moejs.Hook),
+		exports:          make(map[string]struct{}),
 	}
 	instance, err := engine.newRuntime(context.Background())
 	if err != nil {
