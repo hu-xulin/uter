@@ -74,7 +74,8 @@ const GENERATED_AUDIT_REPORTS = Object.freeze([
   'CONSUMER-SCAN.json', 'accessibility-validation.json', 'contrast-validation.json',
   'design-system-audit.json', 'final-acceptance.json', 'gradient-validation.json',
   'remediation-state.json', 'rollback-drill.json', 'syntax-validation.json',
-  'token-validation.json', 'visual-baseline-check.json', 'visual-regression.json',
+  'token-validation.json', 'uds8-final-acceptance.json', 'uds8-final-scan.json',
+  'uds8-legacy-reference-report.json', 'visual-baseline-check.json', 'visual-regression.json',
 ].map((f) => `docs/design-system/audit/${f}`));
 
 // `bun run build:check` (the first command of `uap build`) regenerates the docs
