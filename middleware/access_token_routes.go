@@ -236,6 +236,8 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"GET /api/ratio_sync/dreamrouter/status":       accessTokenScopeRule("option:read"),
 	"POST /api/ratio_sync/dreamrouter/run":         accessTokenScopeRule("option:write"),
 	"GET /api/ratio_sync/bailian/catalog":          accessTokenScopeRule("option:read"),
+	"GET /api/ratio_sync/bailian/status":           accessTokenScopeRule("option:read"),
+	"POST /api/ratio_sync/bailian/catalog/apply":   accessTokenScopeRule("option:write"),
 	"POST /api/ratio_sync/bailian/catalog/refresh": accessTokenScopeRule("option:write"),
 
 	// router/api-router.go: /api/performance, /api/system-task, /api/system-info
