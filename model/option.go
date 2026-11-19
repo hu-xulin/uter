@@ -108,6 +108,7 @@ func InitOptionMap() {
 	// 钱包里却始终没有对应支付方式」。
 	common.OptionMap["AlipayEnabled"] = strconv.FormatBool(operation_setting.AlipayEnabled)
 	common.OptionMap["AlipayAppId"] = operation_setting.AlipayAppId
+	common.OptionMap["AlipayGateway"] = operation_setting.AlipayGateway
 	common.OptionMap["AlipayPrivateKey"] = operation_setting.AlipayPrivateKey
 	common.OptionMap["AlipayPublicKey"] = operation_setting.AlipayPublicKey
 	common.OptionMap["WechatPayEnabled"] = strconv.FormatBool(operation_setting.WechatPayEnabled)
@@ -265,6 +266,11 @@ func validateOptionValue(key string, value string) error {
 	}
 	if err := operation_setting.ValidateEpaySignOption(key, value); err != nil {
 		return err
+	}
+	if key == "AlipayGateway" {
+		if err := operation_setting.ValidateAlipayGateway(value); err != nil {
+			return err
+		}
 	}
 	if key == "EmailProvider" || key == "ResendApiKey" || key == "ResendFrom" {
 		if key == "EmailProvider" && value != "smtp" && value != "resend" {
@@ -647,6 +653,11 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.AlipayEnabled = value == "true"
 	case "AlipayAppId":
 		operation_setting.AlipayAppId = strings.TrimSpace(value)
+	case "AlipayGateway":
+		if err := operation_setting.ValidateAlipayGateway(value); err != nil {
+			return err
+		}
+		operation_setting.AlipayGateway = strings.TrimSpace(value)
 	case "AlipayPrivateKey":
 		operation_setting.AlipayPrivateKey = value
 	case "AlipayPublicKey":

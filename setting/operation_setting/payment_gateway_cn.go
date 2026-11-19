@@ -17,6 +17,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 package operation_setting
 
+import (
+	"net/url"
+	"strings"
+
+	"github.com/uter-ai/uter/common"
+)
+
 // 支付宝（官方直连）配置。
 // 启用前提：已在支付宝开放平台签约「电脑网站支付」（PC 跳转收银台，
 // alipay.trade.page.pay，product_code=FAST_INSTANT_TRADE_PAY）与
@@ -55,6 +62,24 @@ var (
 	WechatPayPublicKey  = "" // 微信支付公钥（PEM，用于回调验签）
 	WechatPayGateway    = "https://api.mch.weixin.qq.com"
 )
+
+// ValidateAlipayGateway accepts only an absolute HTTPS gateway URL.
+// Production: https://openapi.alipay.com/gateway.do
+// Sandbox:    https://openapi-sandbox.dl.alipaydev.com/gateway.do
+func ValidateAlipayGateway(value string) error {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return common.NewMessage("Alipay gateway URL cannot be empty")
+	}
+	parsed, err := url.Parse(value)
+	if err != nil || parsed.Scheme != "https" || parsed.Host == "" || parsed.User != nil {
+		return common.NewMessage("Alipay gateway must be an absolute HTTPS URL")
+	}
+	if parsed.Fragment != "" {
+		return common.NewMessage("Alipay gateway must not contain a fragment")
+	}
+	return nil
+}
 
 // IsAlipayEnabled 支付宝网站支付（电脑网站支付 / 手机网站支付）是否可对外提供。
 func IsAlipayEnabled() bool {

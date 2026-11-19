@@ -73,6 +73,10 @@ import { useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
 import { formatPriceAdjustment } from '../utils/price-adjustment'
 import { AlipaySettingsSection } from './alipay-settings-section'
+import {
+  callbackAddressWarning,
+  callbackAddressWarningText,
+} from './payment-callback-address'
 import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
 import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
 import { CreemProductsVisualEditor } from './creem-products-visual-editor'
@@ -116,6 +120,10 @@ function isHttpOriginUrl(value: string) {
 // 前缀上限为 100 字符。
 const ORDER_TITLE_PREFIX_MAX_LENGTH = 100
 const ORDER_TITLE_PREFIX_FORBIDDEN_CHARS = /[/=&?#%+<>"'|]/
+
+
+
+
 
 const paymentSchema = z.object({
   PayAddress: z.string().refine((value) => {
@@ -228,6 +236,7 @@ const paymentSchema = z.object({
   // 子配置段若自带表单就会再渲染一个「保存所有设置」按钮，且会形成 form 嵌套 form。
   AlipayEnabled: z.boolean(),
   AlipayAppId: z.string(),
+  AlipayGateway: z.string(),
   AlipayPrivateKey: z.string(),
   AlipayPublicKey: z.string(),
   WechatPayEnabled: z.boolean(),
@@ -526,6 +535,7 @@ export function PaymentSettingsSection({
       WaffoPancakeEnabled: values.WaffoPancakeEnabled,
       AlipayEnabled: values.AlipayEnabled,
       AlipayAppId: values.AlipayAppId.trim(),
+      AlipayGateway: values.AlipayGateway.trim(),
       AlipayPrivateKey: values.AlipayPrivateKey.trim(),
       AlipayPublicKey: values.AlipayPublicKey.trim(),
       WechatPayEnabled: values.WechatPayEnabled,
@@ -592,6 +602,7 @@ export function PaymentSettingsSection({
       WaffoPancakeEnabled: initialRef.current.WaffoPancakeEnabled,
       AlipayEnabled: initialRef.current.AlipayEnabled,
       AlipayAppId: initialRef.current.AlipayAppId.trim(),
+      AlipayGateway: initialRef.current.AlipayGateway.trim(),
       AlipayPrivateKey: initialRef.current.AlipayPrivateKey.trim(),
       AlipayPublicKey: initialRef.current.AlipayPublicKey.trim(),
       WechatPayEnabled: initialRef.current.WechatPayEnabled,
@@ -870,6 +881,10 @@ export function PaymentSettingsSection({
 
     if (sanitized.AlipayAppId !== initial.AlipayAppId) {
       updates.push({ key: 'AlipayAppId', value: sanitized.AlipayAppId })
+    }
+
+    if (sanitized.AlipayGateway !== initial.AlipayGateway) {
+      updates.push({ key: 'AlipayGateway', value: sanitized.AlipayGateway })
     }
 
     // 密钥字段：掩码串是后端下发的展示值，不是新密钥，一律跳过以保留库中已存值。
@@ -1260,9 +1275,52 @@ export function PaymentSettingsSection({
                       </FormControl>
                       <FormDescription>
                         {t(
-                          'Site origin where users are redirected back to after payment. Mainland China gateways (Alipay / WeChat Pay) require this domain to be ICP filed: for this site use https://uter.cc (filed), not the operating domain https://uter.ai (not filed). Leave blank to use the server address.'
+                          'Fallback site origin for payment flows that do not take the browser origin. Alipay return_url follows the current site origin, so this field does not move Alipay returns here. Mainland gateways still require a filed domain for the payment website: use https://uter.cc, not https://uter.ai.'
                         )}
                       </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='CustomCallbackAddress'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Async callback address')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          mono
+                          autoComplete='off'
+                          placeholder={t('https://api.example.com')}
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'Public origin shared by all asynchronous payment callbacks (Alipay, WeChat Pay, Epay and others). Enter only the origin, for example https://api.example.com, with no path. Leave blank to use the server address; the address must be publicly reachable by the payment providers.'
+                        )}
+                      </FormDescription>
+                      {callbackAddressWarningText(
+                        callbackAddressWarning(field.value)
+                      ) && (
+                        <Alert variant='destructive'>
+                          <AlertTitle>
+                            {t('Callback address warning')}
+                          </AlertTitle>
+                          <AlertDescription>
+                            {t(
+                              callbackAddressWarningText(
+                                callbackAddressWarning(field.value)
+                              ) as string
+                            )}
+                          </AlertDescription>
+                        </Alert>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1535,32 +1593,6 @@ export function PaymentSettingsSection({
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name='CustomCallbackAddress'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('Callback address')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            mono
-                            autoComplete='off'
-                            placeholder={t('https://gateway.example.com')}
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          {t(
-                            'Only enter the site origin, for example https://api.example.com. Do not include any path such as /api/user/epay/notify. Leave blank to use the server address.'
-                          )}
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 <div className='flex flex-col gap-6'>

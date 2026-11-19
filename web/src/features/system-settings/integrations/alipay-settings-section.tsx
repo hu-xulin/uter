@@ -16,6 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { useQuery } from '@tanstack/react-query'
+import { RefreshCw } from 'lucide-react'
 import { useFormContext, useFormState, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -29,9 +31,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { Switch } from '@/components/ui/switch'
+
+import {
+  getAlipayCallbackDiagnostics,
+  type AlipayCallbackEvent,
+} from '../api'
 
 import {
   SettingsSwitchContent,
@@ -50,6 +58,7 @@ import {
 export interface AlipayFormValues {
   AlipayEnabled: boolean
   AlipayAppId: string
+  AlipayGateway: string
   AlipayPrivateKey: string
   AlipayPublicKey: string
 }
@@ -115,6 +124,28 @@ export function AlipaySettingsSection() {
           />
           <FormField
             control={control}
+            name='AlipayGateway'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Alipay gateway URL')}</FormLabel>
+                <FormControl>
+                  <Input
+                    autoComplete='off'
+                    placeholder='https://openapi.alipay.com/gateway.do'
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    'Production: https://openapi.alipay.com/gateway.do · Sandbox: https://openapi-sandbox.dl.alipaydev.com/gateway.do'
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
             name='AlipayPrivateKey'
             render={({ field }) => (
               <FormItem>
@@ -163,6 +194,8 @@ export function AlipaySettingsSection() {
               </FormItem>
             )}
           />
+          <AlipayCallbackDiagnosticsCard />
+
           <Alert variant='default'>
             <AlertTitle>{t('Setup steps')}</AlertTitle>
             <AlertDescription>
@@ -273,6 +306,149 @@ export function AlipaySettingsSection() {
           </Alert>
         </>
       ) : null}
+    </div>
+  )
+}
+
+
+function AlipayCallbackDiagnosticsCard() {
+  const { t } = useTranslation()
+  const diagnostics = useQuery({
+    queryKey: ['alipay-callback-diagnostics'],
+    queryFn: getAlipayCallbackDiagnostics,
+    enabled: false,
+    meta: { errorToast: false },
+  })
+  const data = diagnostics.data?.data
+
+  return (
+    <div className='space-y-3 rounded-lg border p-4'>
+      <div className='flex flex-wrap items-center justify-between gap-2'>
+        <div>
+          <h4 className='text-base font-semibold'>{t('Callback diagnostics')}</h4>
+          <p className='text-muted-foreground text-sm'>
+            {t(
+              'Checks the notify URL Alipay will call and lists callbacks received by this process.'
+            )}
+          </p>
+        </div>
+        <Button
+          type='button'
+          variant='outline'
+          size='sm'
+          disabled={diagnostics.isFetching}
+          onClick={() => void diagnostics.refetch()}
+        >
+          <RefreshCw />
+          {t('Check callback route')}
+        </Button>
+      </div>
+      {diagnostics.isError && (
+        <p className='text-destructive text-sm'>
+          {diagnostics.error instanceof Error
+            ? diagnostics.error.message
+            : t('Failed to load callback diagnostics')}
+        </p>
+      )}
+      {data && (
+        <div className='space-y-2 text-xs'>
+          <div>
+            <span className='text-muted-foreground'>{t('notify_url')}: </span>
+            <code className='break-all'>{data.notify_url}</code>
+          </div>
+          <div>
+            <span className='text-muted-foreground'>{t('return_url')}: </span>
+            <code className='break-all'>
+              {`${window.location.origin}/wallet?pay=success&trade_no=<trade_no>`}
+            </code>
+          </div>
+          <div>
+            <span className='text-muted-foreground'>{t('Gateway')}: </span>
+            <code className='break-all'>{data.gateway}</code>
+          </div>
+          <div>
+            <span className='text-muted-foreground'>
+              {t('TCP reachability')}:{' '}
+            </span>
+            <span
+              className={
+                data.tcp_reachable ? 'text-success' : 'text-destructive'
+              }
+            >
+              {data.tcp_reachable ? t('Reachable') : t('Unreachable')}
+              {!data.tcp_reachable && data.reach_error
+                ? ` — ${data.reach_error}`
+                : ''}
+            </span>
+          </div>
+          <p className='text-muted-foreground'>
+            {t(
+              'TCP reachability only proves the host accepts connections; it does not prove the route reaches this Uter instance and database.'
+            )}
+          </p>
+          <div>
+            <span className='text-muted-foreground'>
+              {t('HTTP status')}:{' '}
+            </span>
+            <span>
+              {data.http_status || '—'} {data.content_type || ''}{' '}
+              {data.http_server ? `(${data.http_server})` : ''}
+            </span>
+          </div>
+          <div>
+            <span className='text-muted-foreground'>
+              {t('Notify URL target')}:{' '}
+            </span>
+            <span
+              className={
+                data.reaches_uter ? 'text-success' : 'text-destructive'
+              }
+            >
+              {data.reaches_uter
+                ? t('Notify URL reaches Uter')
+                : t('Notify URL does not reach Uter')}
+            </span>
+          </div>
+          {!data.reaches_uter && data.http_status > 0 && (
+            <Alert variant='destructive'>
+              <AlertTitle>{t('Callback domain is misrouted')}</AlertTitle>
+              <AlertDescription>
+                {t(
+                  'The notify URL returned HTTP {{status}} ({{contentType}}) from {{server}}, not a Uter response. Point the callback domain to the same Uter backend as the site.',
+                  {
+                    status: data.http_status,
+                    contentType: data.content_type || '—',
+                    server: data.http_server || '—',
+                  }
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className='space-y-1'>
+            <div className='text-muted-foreground'>
+              {t('Recent callbacks')}
+            </div>
+            {data.events.length === 0 ? (
+              <p className='text-muted-foreground'>{t('No callbacks received')}</p>
+            ) : (
+              <ul className='space-y-1'>
+                {data.events.map((event: AlipayCallbackEvent) => (
+                  <li
+                    key={`${event.time}-${event.trade_no}-${event.result}-${event.reason}`}
+                    className='flex flex-wrap gap-2'
+                  >
+                    <span>{new Date(event.time * 1000).toLocaleString()}</span>
+                    <span className='font-mono'>{event.trade_no || '—'}</span>
+                    <span>{event.result}</span>
+                    {event.reason && <span>{event.reason}</span>}
+                    {event.remote_ip && <span>{event.remote_ip}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

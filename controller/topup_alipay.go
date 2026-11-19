@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -33,6 +34,7 @@ import (
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
@@ -409,10 +411,12 @@ func AlipayNotify(c *gin.Context) {
 	} else {
 		params = loReduceForm(c.Request.URL.Query())
 	}
+	service.RecordPaymentCallback("alipay", params["out_trade_no"], "received", "", c.ClientIP())
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝 webhook 收到请求 path=%q client_ip=%s method=%s param_count=%d", c.Request.URL.Path, c.ClientIP(), c.Request.Method, len(params)))
 
 	sign := params["sign"]
 	if !service.AlipayVerifySign(params, operation_setting.AlipayPublicKey, sign) {
+		service.RecordPaymentCallback("alipay", params["out_trade_no"], "rejected", "sign", c.ClientIP())
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 验签失败 path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
 		return
@@ -428,6 +432,7 @@ func AlipayNotify(c *gin.Context) {
 		return
 	}
 	if appID != operation_setting.AlipayAppId {
+		service.RecordPaymentCallback("alipay", params["out_trade_no"], "rejected", "app_id", c.ClientIP())
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook app_id 不匹配 path=%q client_ip=%s app_id=%s", c.Request.URL.Path, c.ClientIP(), appID))
 		c.String(http.StatusOK, "failure")
 		return
@@ -458,6 +463,7 @@ func AlipayNotify(c *gin.Context) {
 
 	topUp := model.GetTopUpByTradeNo(tradeNo)
 	if topUp == nil {
+		service.RecordPaymentCallback("alipay", tradeNo, "rejected", "order_not_found", c.ClientIP())
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调订单不存在 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
 		return
@@ -469,6 +475,7 @@ func AlipayNotify(c *gin.Context) {
 	}
 	expectedCents := providerExpectedMinorUnits(topUp.ProviderAmount, topUp.Money)
 	if !alipayPaidAmountMatchesOrder(paidAmount, topUp.ProviderAmount, topUp.Money) {
+		service.RecordPaymentCallback("alipay", tradeNo, "rejected", "amount", c.ClientIP())
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调金额不匹配 trade_no=%s 回调金额=%s 本地应付(分)=%d client_ip=%s", tradeNo, totalAmount, expectedCents, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
 		return
@@ -482,6 +489,7 @@ func AlipayNotify(c *gin.Context) {
 	if err != nil {
 		switch {
 		case err == model.ErrTopUpNotFound:
+			service.RecordPaymentCallback("alipay", tradeNo, "rejected", "order_not_found", c.ClientIP())
 			logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调订单不存在 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
 		case err == model.ErrPaymentMethodMismatch:
 			logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝订单支付网关不匹配 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
@@ -494,8 +502,10 @@ func AlipayNotify(c *gin.Context) {
 		return
 	}
 	if alreadyDone {
+		service.RecordPaymentCallback("alipay", tradeNo, "ignored", "already_done", c.ClientIP())
 		logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝重复回调幂等忽略 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
 	} else {
+		service.RecordPaymentCallback("alipay", tradeNo, "success", "", c.ClientIP())
 		logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝充值成功 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
 	}
 	c.String(http.StatusOK, "success")
@@ -515,4 +525,81 @@ func loReduceForm(form url.Values) map[string]string {
 		out[k] = form.Get(k)
 	}
 	return out
+}
+
+// GetAlipayCallbackDiagnostics reports the effective callback URLs and recent
+// process-local callback outcomes. It exists to answer the two questions that
+// are otherwise only visible in server logs: which URL Alipay will call, and
+// whether callbacks actually reach this process.
+func GetAlipayCallbackDiagnostics(c *gin.Context) {
+	callbackOrigin := strings.TrimRight(strings.TrimSpace(operation_setting.CustomCallbackAddress), "/")
+	if callbackOrigin == "" {
+		callbackOrigin = strings.TrimRight(strings.TrimSpace(system_setting.ServerAddress), "/")
+	}
+	notifyURL := callbackOrigin + "/api/user/alipay/notify"
+	returnURL := paymentReturnURLFor(requestOrigin(c), "/wallet?pay=success&trade_no=<trade_no>")
+
+	reachable := false
+	reachError := ""
+	httpStatus := 0
+	contentType := ""
+	httpServer := ""
+	reachesUter := false
+	if parsed, err := url.Parse(notifyURL); err != nil || parsed.Host == "" {
+		reachError = "notify URL is invalid"
+	} else {
+		host := parsed.Host
+		if parsed.Port() == "" {
+			host = net.JoinHostPort(parsed.Hostname(), "443")
+		}
+		conn, err := net.DialTimeout("tcp", host, 3*time.Second)
+		if err != nil {
+			reachError = err.Error()
+		} else {
+			reachable = true
+			_ = conn.Close()
+			if ssrfErr := service.ValidateSSRFProtectedFetchURL(notifyURL); ssrfErr != nil {
+				reachError = ssrfErr.Error()
+			} else {
+				client := &http.Client{
+					Timeout: 5 * time.Second,
+					CheckRedirect: func(req *http.Request, via []*http.Request) error {
+						return http.ErrUseLastResponse
+					},
+				}
+				req, reqErr := http.NewRequestWithContext(c.Request.Context(), http.MethodHead, notifyURL, nil)
+				if reqErr != nil {
+					reachError = reqErr.Error()
+				} else if res, probeErr := client.Do(req); probeErr != nil {
+					reachError = probeErr.Error()
+				} else {
+					httpStatus = res.StatusCode
+					contentType = res.Header.Get("Content-Type")
+					httpServer = res.Header.Get("Server")
+					// A GET/HEAD request reaches the Go route only when the origin
+					// terminates at Uter: it answers 404/405 with X-Uter-Version.
+					reachesUter = res.Header.Get("X-Uter-Version") != "" ||
+						res.StatusCode == http.StatusNotFound ||
+						res.StatusCode == http.StatusMethodNotAllowed
+					_ = res.Body.Close()
+				}
+			}
+		}
+	}
+
+	common.ApiSuccess(c, gin.H{
+		"server_address":          system_setting.ServerAddress,
+		"payment_site_address":    operation_setting.PaymentSiteAddress,
+		"custom_callback_address": operation_setting.CustomCallbackAddress,
+		"notify_url":              notifyURL,
+		"current_return_url":      returnURL,
+		"gateway":                 operation_setting.AlipayGateway,
+		"tcp_reachable":           reachable,
+		"http_status":             httpStatus,
+		"content_type":            contentType,
+		"http_server":             httpServer,
+		"reaches_uter":            reachesUter,
+		"reach_error":             reachError,
+		"events":                  service.RecentPaymentCallbacks("alipay", 30),
+	})
 }

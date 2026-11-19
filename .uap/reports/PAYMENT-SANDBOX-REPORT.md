@@ -38,3 +38,23 @@ fail-closed 配置（3）：`TestConfigRejectsProductionGateway` / `TestConfigRe
 GOWORK=off go test ./service/paymentsandbox/ -count=1 -v   # 21 pass
 node .uap/bin/uap.mjs verify-payment                        # 能力卡生成
 ```
+
+---
+
+<!-- LIVE-PAYMENT-RECONCILIATION-20261118 -->
+
+## 附：人工真实支付对账（2026-11-18）
+
+上文「零真实支付」描述的是**自动化支付沙箱套件**的口径。2026-11-18 操作者在本地站点
+手工完成了一笔 **Alipay 0.14 CNY** 支付，并完成订单/回调/余额/流水的只读核对：
+
+- 订单 `top_ups.id=20`（`trade_no=USR3NOjLUYF2bo1794993184`）已为 `success`；
+- 本机无法接收支付宝异步回调，入账由返回页触发的 `POST /api/user/alipay/query`
+  查单确认（日志：`支付宝查单确认入账`）；
+- 入账 `quota_to_add=10000`，对应流水 `logs.id=7955`；同一 `trade_no` 仅 1 条订单、
+  1 条入账流水，未观察到重复入账；
+- 完整证据与限制见 `.uap/reports/PAYMENT-LIVE-RECONCILIATION-20261118.md|json`。
+
+口径不变：这是一次人工验证，不改变 `financial_integrity=false`、
+`PAYMENT_SANDBOX_VERIFIED` 仍为 BLOCKED 的自动化结论；异步通知、失败/关闭、
+金额不一致、退款等路径仍未验证。

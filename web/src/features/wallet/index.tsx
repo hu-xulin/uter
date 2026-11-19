@@ -152,6 +152,15 @@ export function Wallet(props: WalletProps) {
     fetchUser()
   }, [fetchUser])
 
+  // Payment can complete after the Alipay return poll has given up (webhook
+  // arrives later). Refresh the wallet when the user comes back to the tab so
+  // the credited balance is visible without a full page reload.
+  useEffect(() => {
+    const onFocus = () => void fetchUser()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [fetchUser])
+
   // 支付宝收银台回跳：return_url 带 pay=success&trade_no。异步回调（notify_url）
   // 在本地 / 内网环境不可达时订单会停在 pending，这里主动查单确认，与回调互为兜底。
   //

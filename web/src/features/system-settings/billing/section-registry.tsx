@@ -145,6 +145,9 @@ const BILLING_SECTIONS = [
           CreemProducts: settings.CreemProducts,
           AlipayEnabled: settings.AlipayEnabled ?? false,
           AlipayAppId: settings.AlipayAppId ?? '',
+          AlipayGateway:
+            settings.AlipayGateway ??
+            'https://openapi.alipay.com/gateway.do',
           AlipayPrivateKey: settings.AlipayPrivateKey ?? '',
           AlipayPublicKey: settings.AlipayPublicKey ?? '',
           WechatPayEnabled: settings.WechatPayEnabled ?? false,

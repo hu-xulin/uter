@@ -117,6 +117,7 @@ const defaultBillingSettings: BillingSettings = {
   WaffoPancakeEnabled: true,
   AlipayEnabled: false,
   AlipayAppId: '',
+  AlipayGateway: 'https://openapi.alipay.com/gateway.do',
   AlipayPrivateKey: '',
   AlipayPublicKey: '',
   WechatPayEnabled: false,

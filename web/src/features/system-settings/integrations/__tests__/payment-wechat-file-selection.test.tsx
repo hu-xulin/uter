@@ -62,7 +62,8 @@ const baseDefaults = {
   CreemTestMode: false,
   CreemProducts: '[]',
   AlipayEnabled: false,
-  AlipayAppId: '',
+  AlipayGateway: 'https://openapi.alipay.com/gateway.do',
+    AlipayAppId: '',
   AlipayPrivateKey: '',
   AlipayPublicKey: '',
   WechatPayEnabled: true,
@@ -191,5 +192,22 @@ describe('payment gateway wechat tab', () => {
     })
     // eslint-disable-next-line no-console
     console.log('公钥字段保存后展示:', formItem.textContent)
+  })
+})
+
+describe('payment settings callback address placement', () => {
+  it('keeps the shared asynchronous callback address on the General tab', async () => {
+    const user = userEvent.setup()
+    renderPayment()
+
+    await user.click(screen.getByRole('tab', { name: 'General' }))
+    expect(
+      await screen.findByLabelText('Async callback address')
+    ).toBeVisible()
+
+    await user.click(screen.getByRole('tab', { name: 'Epay' }))
+    expect(
+      screen.queryByLabelText('Async callback address')
+    ).not.toBeInTheDocument()
   })
 })

@@ -159,3 +159,33 @@ export async function runDreamRouterSync(dryRun = false) {
   )
   return res.data
 }
+
+export type AlipayCallbackEvent = {
+  time: number
+  provider: string
+  trade_no?: string
+  result: string
+  reason?: string
+  remote_ip?: string
+}
+
+export type AlipayCallbackDiagnostics = {
+  server_address: string
+  payment_site_address: string
+  custom_callback_address: string
+  notify_url: string
+  current_return_url: string
+  gateway: string
+  tcp_reachable: boolean
+  http_status: number
+  content_type: string
+  http_server: string
+  reaches_uter: boolean
+  reach_error: string
+  events: AlipayCallbackEvent[]
+}
+
+export async function getAlipayCallbackDiagnostics() {
+  const res = await api.get('/api/option/alipay_callback_diagnostics')
+  return res.data
+}

@@ -1,0 +1,62 @@
+{
+  "report_id": "PAYMENT-LIVE-RECONCILIATION-20261118",
+  "kind": "manual_live_payment_reconciliation",
+  "generated_at": "2026-11-18T17:26:00+08:00",
+  "environment": {
+    "database": "one-api.db (local SQLite)",
+    "backend_log": "logs/oneapi-20261118165317.log",
+    "git_head": "af932671517227696a133cd4fca6808bf4f15258"
+  },
+  "payment": {
+    "provider": "alipay_official",
+    "payment_method": "alipay_web",
+    "trade_no": "USR3NOjLUYF2bo1794993184",
+    "user_id": 3,
+    "amount_usd": 0.02,
+    "money_cny": 0.14,
+    "provider_amount": 14,
+    "provider_currency": "CNY",
+    "created_at": "2026-11-18T17:13:04+08:00",
+    "completed_at": "2026-11-18T17:13:49+08:00",
+    "status": "success"
+  },
+  "callback": {
+    "async_notify": "NOT_OBSERVED",
+    "async_notify_reason": "localhost is not reachable by the Alipay server; no /api/alipay/notify entry in backend logs",
+    "query_confirmation": "PASS",
+    "query_endpoint": "POST /api/user/alipay/query",
+    "query_log": "支付宝查单确认入账 trade_no=USR3NOjLUYF2bo1794993184 source=::1"
+  },
+  "ledger": {
+    "log_id": 7955,
+    "type": 1,
+    "created_at": 1794993229,
+    "content": "Online top-up succeeded, amount added: ＄0.020000 quota, payment amount: 0.140000",
+    "callback_payment_method": "alipay_official",
+    "payment_method": "alipay_web",
+    "caller_ip": "::1",
+    "node_name": "uter-master-1",
+    "version": "v1.5.64"
+  },
+  "balance": {
+    "quota_to_add": 10000,
+    "quota_per_unit": 500000,
+    "current_quota_user_3": 100043698,
+    "post_topup_consumption_logs": 0,
+    "post_topup_checkins": 0,
+    "derived_pre_topup_quota": 100033698,
+    "delta": 10000
+  },
+  "idempotency": {
+    "top_ups_rows_for_trade": 1,
+    "ledger_entries_at_completion": 1,
+    "duplicate_credit_observed": false
+  },
+  "scope": {
+    "automated_capability_changed": false,
+    "financial_integrity": false,
+    "payment_sandbox_verified": "BLOCKED",
+    "covered": ["order creation", "payment return", "query confirmation", "order success", "balance credit", "ledger row", "single-credit idempotency"],
+    "not_covered": ["async notify callback", "payment failure/close", "notify replay", "amount mismatch rejection", "refund"]
+  }
+}

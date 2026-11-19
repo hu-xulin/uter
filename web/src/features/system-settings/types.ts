@@ -415,6 +415,7 @@ export type BillingSettings = {
   // Official China payments (Alipay 当面付 / WeChat Pay Native)
   AlipayEnabled: boolean
   AlipayAppId: string
+  AlipayGateway: string
   AlipayPrivateKey: string
   AlipayPublicKey: string
   WechatPayEnabled: boolean
