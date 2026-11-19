@@ -109,6 +109,12 @@ describe('执行身份绑定', () => {
       'tsgo-cache 构建缓存必须被排除（build/self-test 每次重建）');
     assert.ok(basis.excludes.includes('docs/design-system/audit/contrast-validation.json'),
       '生成的审计 JSON 验证报告必须被排除（含墙钟时间戳，每次验证重写）');
+    assert.ok(basis.excludes.includes('docs/design-system/audit/uds8-final-acceptance.json'),
+      'UDS final acceptance JSON 是每轮重新生成的审计输出');
+    assert.ok(basis.excludes.includes('docs/design-system/audit/uds8-final-scan.json'),
+      'UDS final scan JSON 是每轮重新生成的审计输出');
+    assert.ok(basis.excludes.includes('docs/design-system/audit/uds8-legacy-reference-report.json'),
+      'UDS legacy-reference JSON 是每轮重新生成的审计输出');
     assert.ok(!basis.excludes.some((p) => p.includes('/audit/') && p.endsWith('.md')),
       '手写审计 .md 源文档不得被排除');
     assert.ok(basis.excludes.includes('docs/design-system/03-COLOR-STANDARD.md'),
