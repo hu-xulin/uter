@@ -65,6 +65,11 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 	if info.PriceData.GroupRatioInfo.HasSpecialRatio {
 		other.SetPublic("user_group_ratio", info.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	}
+	if info.ChannelPricingApplied {
+		other.SetAdmin("channel_pricing_version", info.ChannelPricingVersion)
+		other.SetAdmin("channel_pricing_model_ratio", info.ChannelPricingModelRatio)
+		other.SetAdmin("channel_pricing_model_price", info.ChannelPricingModelPrice)
+	}
 	if info.IsModelMapped {
 		other.SetPublic("is_model_mapped", true)
 		other.SetPublic("upstream_model_name", info.UpstreamModelName)
@@ -216,6 +221,9 @@ func taskBillingOther(task *model.Task) *model.LogOther {
 			other.SetPublic("model_ratio", bc.ModelRatio)
 		}
 		other.SetPublic("group_ratio", bc.GroupRatio)
+		if bc.ChannelPricingApplied {
+			other.SetAdmin("channel_pricing_version", bc.ChannelPricingVersion)
+		}
 		if priceData := taskBillingContextPriceData(bc); priceData != nil {
 			for k, v := range priceData.OtherRatios() {
 				if !other.SetPublic(k, v) {

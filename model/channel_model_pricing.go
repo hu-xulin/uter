@@ -339,6 +339,7 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 		return 0, err
 	}
 	InvalidateChannelPricingCache()
+	InvalidatePricingCache()
 	return written, nil
 }
 
@@ -369,6 +370,7 @@ func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelI
 		return err
 	}
 	invalidateChannelPricingCache(channelId, modelName)
+	InvalidatePricingCache()
 	return nil
 }
 

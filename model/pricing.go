@@ -57,6 +57,9 @@ type Pricing struct {
 	BillingUsageSchema     map[string]jsplugin.UsageFieldSchema `json:"billing_usage_schema,omitempty"`
 	BillingUsageExamples   []jsplugin.UsageExample              `json:"billing_usage_examples,omitempty"`
 	PricingVersion         string                               `json:"pricing_version,omitempty"`
+	// ChannelPriceName is the enabled channel whose configured sale price is
+	// shown on the plaza. Empty means the global price is displayed.
+	ChannelPriceName string `json:"channel_price_name,omitempty"`
 
 	// 目录规格：定价页模型详情的「上下文 / 最大输出 / 知识截止 / 发布于 / 模态」
 	// 五格直接消费这五个字段。
@@ -230,6 +233,81 @@ func appendPricingEndpoint(endpoints []string, endpoint string) []string {
 	return append(endpoints, endpoint)
 }
 
+// channelInternalPrice is one enabled channel's configured sale price, used
+// only to display the model square's price and discount. Billing resolves the
+// same row per request, so the plaza and the invoice agree.
+type channelInternalPrice struct {
+	channelName     string
+	pricing         ChannelInternalPricing
+	quotaType       int
+	modelRatio      float64
+	completionRatio float64
+	modelPrice      float64
+	inputUSD        float64
+}
+
+// loadChannelInternalPrices returns the lowest configured channel price per
+// model. Channels that are disabled or unnamed are ignored.
+func loadChannelInternalPrices(abilities []AbilityWithChannel) map[string]channelInternalPrice {
+	channelNames := make(map[int]string)
+	for _, ability := range abilities {
+		name := strings.TrimSpace(ability.ChannelName)
+		if name == "" || ability.ChannelStatus != common.ChannelStatusEnabled {
+			continue
+		}
+		if _, exists := channelNames[ability.ChannelId]; !exists {
+			channelNames[ability.ChannelId] = name
+		}
+	}
+	if len(channelNames) == 0 {
+		return nil
+	}
+	var rows []ChannelModelPricing
+	if err := DB.Where("pricing_status = ?", ChannelPricingStatusConfigured).Find(&rows).Error; err != nil {
+		common.SysLog(common.LogText("load channel internal prices failed: %v", err))
+		return nil
+	}
+	best := make(map[string]channelInternalPrice)
+	for _, row := range rows {
+		channelName, enabled := channelNames[row.ChannelId]
+		if !enabled || strings.TrimSpace(row.InternalPricing) == "" {
+			continue
+		}
+		var internal ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
+			continue
+		}
+		candidate := channelInternalPrice{channelName: channelName, pricing: internal}
+		switch internal.Mode {
+		case ChannelPricingModePerMillionTokens:
+			if internal.InputUSDPerMillion == nil || *internal.InputUSDPerMillion <= 0 ||
+				internal.OutputUSDPerMillion == nil {
+				continue
+			}
+			candidate.quotaType = 0
+			candidate.inputUSD = *internal.InputUSDPerMillion
+			candidate.modelRatio = candidate.inputUSD / 2
+			candidate.completionRatio = *internal.OutputUSDPerMillion / candidate.inputUSD
+		case ChannelPricingModePerCall:
+			if internal.PerCallUSD == nil || *internal.PerCallUSD < 0 {
+				continue
+			}
+			candidate.quotaType = 1
+			candidate.modelPrice = *internal.PerCallUSD
+			candidate.inputUSD = *internal.PerCallUSD
+		default:
+			// Per-second media prices are billed through usage expressions and
+			// have no single card price.
+			continue
+		}
+		current, exists := best[row.ModelName]
+		if !exists || candidate.inputUSD < current.inputUSD {
+			best[row.ModelName] = candidate
+		}
+	}
+	return best
+}
+
 func updatePricing() {
 	//modelRatios := common.GetModelRatios()
 	enableAbilities, err := GetAllEnableAbilityWithChannels()
@@ -390,6 +468,7 @@ func updatePricing() {
 		}
 	}
 
+	channelPrices := loadChannelInternalPrices(enableAbilities)
 	pricingMap = make([]Pricing, 0)
 	pluginGeneration := jsplugin.DefaultRegistry.Generation()
 	for model, groups := range modelGroupsMap {
@@ -469,6 +548,21 @@ func updatePricing() {
 		if imageRatio, ok := ratio_setting.GetImageRatio(model); ok {
 			pricing.ImageRatio = &imageRatio
 		}
+		if channelPrice, ok := channelPrices[model]; ok {
+			pricing.ChannelPriceName = channelPrice.channelName
+			switch channelPrice.quotaType {
+			case 1:
+				pricing.ModelPrice = channelPrice.modelPrice
+				pricing.ModelRatio = 0
+				pricing.CompletionRatio = 0
+				pricing.QuotaType = 1
+			default:
+				pricing.ModelRatio = channelPrice.modelRatio
+				pricing.CompletionRatio = channelPrice.completionRatio
+				pricing.ModelPrice = 0
+				pricing.QuotaType = 0
+			}
+		}
 		if ratio_setting.ContainsAudioRatio(model) {
 			audioRatio := ratio_setting.GetAudioRatio(model)
 			pricing.AudioRatio = &audioRatio
@@ -489,6 +583,13 @@ func updatePricing() {
 					pricing.BillingExpr = expr
 				}
 			}
+		}
+		if channelPrice, ok := channelPrices[model]; ok && channelPrice.quotaType == 0 {
+			// A flat token price configured for the channel is what the relay
+			// actually charges, so the plaza must not keep rendering the global
+			// tiered expression (which would ignore the channel discount).
+			pricing.BillingMode = ""
+			pricing.BillingExpr = ""
 		}
 		usageModel := model
 		plugin, ok := pluginGeneration.GetByModel(model)

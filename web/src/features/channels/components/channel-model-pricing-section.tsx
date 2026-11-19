@@ -242,63 +242,72 @@ export function ChannelModelPricingSection(
           return (
             <div
               key={item.model_name}
-              className='flex flex-wrap items-center gap-2 border-b px-3 py-2 text-sm last:border-b-0'
+              className='space-y-1.5 border-b px-3 py-2.5 text-sm last:border-b-0'
             >
-              <span className='min-w-0 flex-1 font-mono break-all'>
-                {item.model_name}
-              </span>
-              <Badge variant={statusVariant(item.pricing_status)}>
-                {t(item.pricing_status)}
-              </Badge>
-              {item.price_shape && !item.price_supported ? (
-                <Badge variant='warning'>
-                  {t('Unsupported price shape')}: {item.price_shape}
+              <div className='flex flex-wrap items-center gap-2'>
+                <span className='font-mono font-medium break-words'>
+                  {item.model_name}
+                </span>
+                <Badge variant={statusVariant(item.pricing_status)}>
+                  {t(item.pricing_status)}
                 </Badge>
-              ) : null}
-              <span className='text-muted-foreground'>
-                {t('Upstream official price')}: {officialPriceLabel(item)}
-              </span>
-              <span className='text-muted-foreground'>
-                {t('Upstream channel price')}: {upstreamQuoteLabel(item)}
-                {item.upstream_quote ? (
-                  <Badge variant='outline' className='ml-1 font-normal'>
-                    {t(item.upstream_quote.price_basis)}
+                {item.price_shape && !item.price_supported ? (
+                  <Badge variant='warning'>
+                    {t('Unsupported price shape')}: {item.price_shape}
                   </Badge>
                 ) : null}
-                {item.upstream_quote?.discount_ratio ? (
-                  <Badge
-                    variant='secondary'
-                    className='ml-1 font-normal'
-                    aria-label={t('Discount group')}
+              </div>
+
+              <div className='text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1'>
+                <span>
+                  {t('Upstream official price')}: {officialPriceLabel(item)}
+                </span>
+                <span>
+                  {t('Upstream channel price')}: {upstreamQuoteLabel(item)}
+                  {item.upstream_quote ? (
+                    <Badge variant='outline' className='ml-1 font-normal'>
+                      {t(item.upstream_quote.price_basis)}
+                    </Badge>
+                  ) : null}
+                  {item.upstream_quote?.discount_ratio ? (
+                    <Badge
+                      variant='secondary'
+                      className='ml-1 font-normal'
+                      aria-label={t('Discount group')}
+                    >
+                      {item.upstream_quote.discount_group}: ×
+                      {item.upstream_quote.discount_ratio}
+                    </Badge>
+                  ) : null}
+                </span>
+              </div>
+
+              <div className='flex flex-wrap items-center gap-x-3 gap-y-1'>
+                <span>
+                  {t('Uter sale price')}: {internalPriceLabel(item)}
+                </span>
+                <span className='text-muted-foreground'>
+                  {t('Pricing rule')}:{' '}
+                  {item.internal
+                    ? pricingRuleLabel(item.internal, t)
+                    : t('No rule')}
+                </span>
+                {item.internal?.mode === 'per_second' ? null : (
+                  <Button
+                    type='button'
+                    size='sm'
+                    variant='outline'
+                    className='ml-auto'
+                    onClick={() => {
+                      setEditing(item)
+                      setDraft(draftFrom(item))
+                    }}
                   >
-                    {item.upstream_quote.discount_group}: ×
-                    {item.upstream_quote.discount_ratio}
-                  </Badge>
-                ) : null}
-              </span>
-              <span>
-                {t('Uter sale price')}: {internalPriceLabel(item)}
-              </span>
-              <span className='text-muted-foreground'>
-                {t('Pricing rule')}:{' '}
-                {item.internal
-                  ? pricingRuleLabel(item.internal, t)
-                  : t('No rule')}
-              </span>
-              {item.internal?.mode === 'per_second' ? null : (
-                <Button
-                  type='button'
-                  size='sm'
-                  variant='outline'
-                  onClick={() => {
-                    setEditing(item)
-                    setDraft(draftFrom(item))
-                  }}
-                >
-                  <Pencil className='size-4' aria-hidden='true' />
-                  {t('Edit')}
-                </Button>
-              )}
+                    <Pencil className='size-4' aria-hidden='true' />
+                    {t('Edit')}
+                  </Button>
+                )}
+              </div>
             </div>
           )
         })}

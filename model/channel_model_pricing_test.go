@@ -360,3 +360,32 @@ func TestNormalizeChannelInternalPricingPerSecond(t *testing.T) {
 	require.True(t, normalized.UsePerSecond)
 	require.InDelta(t, 0.08, normalized.PerSecondPrice, 1e-9)
 }
+
+func TestLoadChannelInternalPricesPrefersLowestConfiguredChannel(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	internal := func(input, output float64) string {
+		encoded, err := common.Marshal(ChannelInternalPricing{
+			Mode:                ChannelPricingModePerMillionTokens,
+			InputUSDPerMillion:  floatPtr(input),
+			OutputUSDPerMillion: floatPtr(output),
+			Source:              "dreamrouter-discount",
+		})
+		require.NoError(t, err)
+		return string(encoded)
+	}
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
+		{ChannelId: 1, Provider: "dreamrouter", ModelName: "m", Currency: "USD", InternalPricing: internal(0.3, 1.2), Source: "dreamrouter-official"},
+		{ChannelId: 2, Provider: "dreamrouter", ModelName: "m", Currency: "USD", InternalPricing: internal(0.2, 0.8), Source: "dreamrouter-official"},
+	})
+	require.NoError(t, err)
+	prices := loadChannelInternalPrices([]AbilityWithChannel{
+		{Ability: Ability{ChannelId: 1, Model: "m", Enabled: true}, ChannelName: "渠道一", ChannelStatus: common.ChannelStatusEnabled},
+		{Ability: Ability{ChannelId: 2, Model: "m", Enabled: true}, ChannelName: "渠道二", ChannelStatus: common.ChannelStatusEnabled},
+		{Ability: Ability{ChannelId: 3, Model: "m", Enabled: true}, ChannelName: "停用渠道", ChannelStatus: common.ChannelStatusManuallyDisabled},
+	})
+	price, ok := prices["m"]
+	require.True(t, ok)
+	require.Equal(t, "渠道二", price.channelName)
+	require.InDelta(t, 0.1, price.modelRatio, 0.0001)
+	require.InDelta(t, 4, price.completionRatio, 0.0001)
+}

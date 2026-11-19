@@ -226,6 +226,9 @@ type TaskBillingContext struct {
 	OriginModelName string                       `json:"origin_model_name,omitempty"` // 模型名称，必须为OriginModelName
 	PerCallBilling  bool                         `json:"per_call_billing,omitempty"`  // 按次计费：跳过轮询阶段的差额结算
 	TieredSnapshot  *billingexpr.BillingSnapshot `json:"tiered_snapshot,omitempty"`
+	// Channel pricing snapshot frozen at submit time.
+	ChannelPricingApplied bool   `json:"channel_pricing_applied,omitempty"`
+	ChannelPricingVersion string `json:"channel_pricing_version,omitempty"`
 }
 
 // ResultRetrievable reports whether retrieval surfaces (native query routes,

@@ -1268,6 +1268,21 @@ func dreamRouterRowBillsPerSecond(row DreamRouterModelRow) bool {
 // 同构的表达方式，因此改用独立的 `official_price_per_second` 字段**如实
 // 下发美元/秒**，由前端按同一维度（每秒价）比价，而不是伪造一个倍率。
 func LoadDreamRouterOfficialReference() map[string]map[string]float64 {
+	legacy := loadLegacyDreamRouterOfficialReference()
+	live := LoadDreamRouterUpstreamOfficialReference()
+	if len(live) == 0 {
+		return legacy
+	}
+	if legacy == nil {
+		return live
+	}
+	for name, entry := range live {
+		legacy[name] = entry
+	}
+	return legacy
+}
+
+func loadLegacyDreamRouterOfficialReference() map[string]map[string]float64 {
 	snapshot := LoadDreamRouterSnapshot()
 	if snapshot == nil || len(snapshot.Models) == 0 {
 		return nil

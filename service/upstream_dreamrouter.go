@@ -8,7 +8,9 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -104,6 +106,39 @@ func dreamRouterLegacyReference() map[string]DreamRouterModelRow {
 	return reference
 }
 
+// dreamRouterExprPriceLine derives the standard-tier list price from the
+// provider's tiered billing expression. Coefficients are quota per token; with
+// QuotaPerUnit = 500000 one million tokens equal two quota units, so the USD
+// price per million tokens is coefficient × 2.
+func dreamRouterExprPriceLine(expr string) (*UpstreamPriceLine, string) {
+	expr = strings.TrimSpace(expr)
+	if expr == "" || !strings.Contains(expr, "tier(") {
+		return nil, ""
+	}
+	coefficient := func(name string) *float64 {
+		re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
+		match := re.FindStringSubmatch(expr)
+		if len(match) != 2 {
+			return nil
+		}
+		value, err := strconv.ParseFloat(match[1], 64)
+		if err != nil || value < 0 {
+			return nil
+		}
+		scaled := value * 2
+		return &scaled
+	}
+	input := coefficient("p")
+	if input == nil || *input <= 0 {
+		return nil, ""
+	}
+	line := &UpstreamPriceLine{Input: input, Currency: "USD", Unit: "per_1m_token"}
+	line.Output = coefficient("c")
+	line.CacheRead = coefficient("cr")
+	line.CacheWrite = coefficient("cc")
+	return line, "DERIVED_FROM_EXPR"
+}
+
 // dreamRouterOfficialLine returns the absolute official price line for a model.
 // It prefers the full sync snapshot and only falls back to the documented
 // ratio space (model_ratio 1 = $2 / 1M tokens, model_price = USD / call).
@@ -137,6 +172,9 @@ func dreamRouterOfficialLine(
 			line.CacheWrite = &createCache
 		}
 		return line, "OFFICIAL_API"
+	}
+	if line, status := dreamRouterExprPriceLine(item.BillingExpr); line != nil {
+		return line, status
 	}
 	if row, ok := legacy[item.ModelName]; ok && row.Official.Input > 0 {
 		value := row.Official.Input
@@ -185,6 +223,47 @@ type UpstreamPriceLine struct {
 	PerSecond  bool     `json:"per_second,omitempty"`
 	PerImage   bool     `json:"per_image,omitempty"`
 	PerCall    bool     `json:"per_call,omitempty"`
+}
+
+// LoadDreamRouterUpstreamOfficialReference exposes the current isolated
+// snapshot's list prices in the ratio-shaped map the plaza consumes. It is the
+// authoritative reference for strike-through prices and discount badges.
+func LoadDreamRouterUpstreamOfficialReference() map[string]map[string]float64 {
+	snapshot := LoadDreamRouterUpstreamSnapshot()
+	if snapshot == nil || len(snapshot.Models) == 0 {
+		return nil
+	}
+	reference := make(map[string]map[string]float64, len(snapshot.Models))
+	for _, item := range snapshot.Models {
+		line := item.OfficialPrice
+		if line == nil || line.Input == nil || *line.Input <= 0 {
+			continue
+		}
+		name := strings.TrimSpace(item.ModelName)
+		if name == "" {
+			continue
+		}
+		if line.PerSecond {
+			reference[name] = map[string]float64{officialPerSecondField: *line.Input}
+			continue
+		}
+		if line.PerCall {
+			reference[name] = map[string]float64{"model_price": *line.Input}
+			continue
+		}
+		entry := map[string]float64{"model_ratio": *line.Input / 2}
+		if line.Output != nil && *line.Output > 0 {
+			entry["completion_ratio"] = *line.Output / *line.Input
+		}
+		if line.CacheRead != nil {
+			entry["cache_ratio"] = *line.CacheRead / *line.Input
+		}
+		if line.CacheWrite != nil {
+			entry["create_cache_ratio"] = *line.CacheWrite / *line.Input
+		}
+		reference[name] = entry
+	}
+	return reference
 }
 
 // DreamRouterDiscountGroupDefault is the public billing group used when a
@@ -364,6 +443,8 @@ type UpstreamModelRecord struct {
 	// Raw upstream billing inputs. These are ratios, not USD prices.
 	ModelRatio       *float64 `json:"model_ratio,omitempty"`
 	ModelPrice       *float64 `json:"model_price,omitempty"`
+	BillingMode      string   `json:"billing_mode,omitempty"`
+	BillingExpr      string   `json:"billing_expr,omitempty"`
 	CompletionRatio  *float64 `json:"completion_ratio,omitempty"`
 	CacheRatio       *float64 `json:"cache_ratio,omitempty"`
 	CreateCacheRatio *float64 `json:"create_cache_ratio,omitempty"`
@@ -398,6 +479,8 @@ type dreamRouterPublicModel struct {
 	QuotaType              int      `json:"quota_type"`
 	ModelRatio             *float64 `json:"model_ratio"`
 	ModelPrice             *float64 `json:"model_price"`
+	BillingMode            string   `json:"billing_mode"`
+	BillingExpr            string   `json:"billing_expr"`
 	CompletionRatio        *float64 `json:"completion_ratio"`
 	CacheRatio             *float64 `json:"cache_ratio"`
 	CreateCacheRatio       *float64 `json:"create_cache_ratio"`
@@ -492,6 +575,8 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 			SupportedEndpoints: item.SupportedEndpointTypes,
 			ModelRatio:         item.ModelRatio,
 			ModelPrice:         item.ModelPrice,
+			BillingMode:        item.BillingMode,
+			BillingExpr:        item.BillingExpr,
 			CompletionRatio:    item.CompletionRatio,
 			CacheRatio:         item.CacheRatio,
 			CreateCacheRatio:   item.CreateCacheRatio,

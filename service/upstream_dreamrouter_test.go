@@ -192,7 +192,7 @@ func TestDreamRouterChannelPricingRecordsDeriveChannelPriceFromDiscount(t *testi
 	require.Contains(t, record.NormalizedPricing, `"input_per_million_usd":5`)
 	require.Contains(t, record.NormalizedPricing, `"output_per_million_usd":25`)
 	require.Contains(t, record.NormalizedPricing, `"unit":"per_1m_token"`)
-	require.Contains(t, record.NormalizedPricing, `"OFFICIAL_API"`)
+	require.NotContains(t, record.NormalizedPricing, `"OFFICIAL_API"`)
 
 	// Channel price is the official price times the upstream group discount,
 	// never the official price itself.
@@ -238,4 +238,21 @@ func TestFetchDreamRouterUpstreamStripsCompatibleVersionPath(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, snapshot.Models, 2)
 	require.Equal(t, server.URL+"/api/pricing", snapshot.SourceEndpoint)
+}
+
+func TestDreamRouterExprPriceLineDerivesStandardTier(t *testing.T) {
+	line, status := dreamRouterExprPriceLine(
+		`len <= 272000 ? tier("standard", p * 2 + c * 10 + cr * 0.1 + cc * 2.5) : tier("long_context", p * 4 + c * 15)`,
+	)
+	require.Equal(t, "DERIVED_FROM_EXPR", status)
+	require.NotNil(t, line)
+	require.NotNil(t, line.Input)
+	require.InDelta(t, 4, *line.Input, 0.0001)
+	require.InDelta(t, 20, *line.Output, 0.0001)
+	require.InDelta(t, 0.2, *line.CacheRead, 0.0001)
+	require.InDelta(t, 5, *line.CacheWrite, 0.0001)
+
+	media, status := dreamRouterExprPriceLine(`(duration > 0 ? duration : 5) * 0.116417925`)
+	require.Nil(t, media)
+	require.Empty(t, status)
 }
