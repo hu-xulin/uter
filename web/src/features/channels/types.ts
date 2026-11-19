@@ -275,6 +275,7 @@ export interface ChannelOfficialPricingTier {
   input_per_million_usd?: number
   output_per_million_usd?: number
   cache_per_million_usd?: number
+  create_cache_per_million_usd?: number
   per_unit_usd?: number
   unit: string
   raw_price_types?: string[]

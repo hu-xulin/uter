@@ -54,16 +54,17 @@ func (ChannelModelPricing) TableName() string { return "channel_model_pricing" }
 // ChannelPricingTier is one official price band. Amounts are USD per unit so
 // comparisons never depend on the source currency or unit.
 type ChannelPricingTier struct {
-	RangeName           string   `json:"range_name"`
-	TimeBand            string   `json:"time_band,omitempty"`
-	MinInputTokens      int64    `json:"min_input_tokens,omitempty"`
-	MaxInputTokens      int64    `json:"max_input_tokens,omitempty"`
-	InputPerMillionUSD  *float64 `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD *float64 `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD  *float64 `json:"cache_per_million_usd,omitempty"`
-	PerUnitUSD          *float64 `json:"per_unit_usd,omitempty"`
-	Unit                string   `json:"unit"`
-	RawPriceTypes       []string `json:"raw_price_types,omitempty"`
+	RangeName                string   `json:"range_name"`
+	TimeBand                 string   `json:"time_band,omitempty"`
+	MinInputTokens           int64    `json:"min_input_tokens,omitempty"`
+	MaxInputTokens           int64    `json:"max_input_tokens,omitempty"`
+	InputPerMillionUSD       *float64 `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD      *float64 `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD       *float64 `json:"cache_per_million_usd,omitempty"`
+	CreateCachePerMillionUSD *float64 `json:"create_cache_per_million_usd,omitempty"`
+	PerUnitUSD               *float64 `json:"per_unit_usd,omitempty"`
+	Unit                     string   `json:"unit"`
+	RawPriceTypes            []string `json:"raw_price_types,omitempty"`
 }
 
 // ChannelOfficialPricing is the normalized official view for one channel

@@ -8,9 +8,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -106,36 +104,42 @@ func dreamRouterLegacyReference() map[string]DreamRouterModelRow {
 	return reference
 }
 
-// dreamRouterExprPriceLine derives the standard-tier list price from the
-// provider's tiered billing expression. Coefficients are quota per token; with
-// QuotaPerUnit = 500000 one million tokens equal two quota units, so the USD
-// price per million tokens is coefficient × 2.
+// dreamRouterExprPriceLine derives the list price from the provider's tiered
+// billing expression. It reuses the same coefficient parser as the full sync:
+// coefficients are USD per million tokens (or per second for duration terms),
+// not quota-space numbers, so they are taken as-is.
 func dreamRouterExprPriceLine(expr string) (*UpstreamPriceLine, string) {
 	expr = strings.TrimSpace(expr)
-	if expr == "" || !strings.Contains(expr, "tier(") {
+	if expr == "" {
 		return nil, ""
 	}
-	coefficient := func(name string) *float64 {
-		re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
-		match := re.FindStringSubmatch(expr)
-		if len(match) != 2 {
-			return nil
-		}
-		value, err := strconv.ParseFloat(match[1], 64)
-		if err != nil || value < 0 {
-			return nil
-		}
-		scaled := value * 2
-		return &scaled
+	if prices, ok := dreamRouterDurationUnitPrices(expr); ok {
+		value := prices.Input
+		return &UpstreamPriceLine{
+			Input: &value, Currency: "USD", Unit: "per_second", PerSecond: true,
+		}, "DERIVED_FROM_EXPR"
 	}
-	input := coefficient("p")
-	if input == nil || *input <= 0 {
+	prices, ok := dreamRouterOfficialUnitPrices(expr)
+	if !ok {
 		return nil, ""
 	}
-	line := &UpstreamPriceLine{Input: input, Currency: "USD", Unit: "per_1m_token"}
-	line.Output = coefficient("c")
-	line.CacheRead = coefficient("cr")
-	line.CacheWrite = coefficient("cc")
+	line := &UpstreamPriceLine{
+		Input:    &prices.Input,
+		Currency: "USD",
+		Unit:     "per_1m_token",
+	}
+	if prices.Output > 0 {
+		output := prices.Output
+		line.Output = &output
+	}
+	if prices.Cache > 0 {
+		cache := prices.Cache
+		line.CacheRead = &cache
+	}
+	if prices.CreateCache > 0 {
+		createCache := prices.CreateCache
+		line.CacheWrite = &createCache
+	}
 	return line, "DERIVED_FROM_EXPR"
 }
 
@@ -173,9 +177,6 @@ func dreamRouterOfficialLine(
 		}
 		return line, "OFFICIAL_API"
 	}
-	if line, status := dreamRouterExprPriceLine(item.BillingExpr); line != nil {
-		return line, status
-	}
 	if row, ok := legacy[item.ModelName]; ok && row.Official.Input > 0 {
 		value := row.Official.Input
 		switch {
@@ -192,6 +193,9 @@ func dreamRouterOfficialLine(
 				Currency: "USD", Unit: "per_1m_token",
 			}, "OFFICIAL_REFERENCE"
 		}
+	}
+	if line, status := dreamRouterExprPriceLine(item.BillingExpr); line != nil {
+		return line, status
 	}
 	return nil, "RATIO_ONLY_NO_ABSOLUTE_PRICE"
 }
@@ -853,6 +857,7 @@ func dreamRouterPricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
 		tier.InputPerMillionUSD = line.Input
 		tier.OutputPerMillionUSD = line.Output
 		tier.CachePerMillionUSD = line.CacheRead
+		tier.CreateCachePerMillionUSD = line.CacheWrite
 		tier.Unit = "per_1m_token"
 	}
 	return tier

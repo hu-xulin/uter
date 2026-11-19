@@ -24,11 +24,13 @@ const (
 
 // BatchPricingItem is one previewed/written internal price.
 type BatchPricingItem struct {
-	ModelName  string   `json:"model_name"`
-	Mode       string   `json:"mode"`
-	InputUSD   *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSD  *float64 `json:"output_per_million_usd,omitempty"`
-	PerCallUSD *float64 `json:"per_call_usd,omitempty"`
+	ModelName     string   `json:"model_name"`
+	Mode          string   `json:"mode"`
+	InputUSD      *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSD     *float64 `json:"output_per_million_usd,omitempty"`
+	CacheUSD      *float64 `json:"cache_per_million_usd,omitempty"`
+	CacheWriteUSD *float64 `json:"create_cache_per_million_usd,omitempty"`
+	PerCallUSD    *float64 `json:"per_call_usd,omitempty"`
 }
 
 // BatchPricingSkipped explains why a model was not priced.
@@ -49,10 +51,12 @@ type BatchPricingResult struct {
 }
 
 type batchBasePrice struct {
-	mode       string
-	inputUSD   *float64
-	outputUSD  *float64
-	perCallUSD *float64
+	mode          string
+	inputUSD      *float64
+	outputUSD     *float64
+	cacheUSD      *float64
+	cacheWriteUSD *float64
+	perCallUSD    *float64
 }
 
 // ApplyChannelBatchPricing applies one multiplier to a channel's model prices.
@@ -201,6 +205,20 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
+		if next, ok := apply(base.cacheUSD); ok && next != nil {
+			item.CacheUSD = next
+			internal.CacheUSDPerMillion = next
+		} else if !ok {
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			continue
+		}
+		if next, ok := apply(base.cacheWriteUSD); ok && next != nil {
+			item.CacheWriteUSD = next
+			internal.CreateCacheUSDPerMillion = next
+		} else if !ok {
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			continue
+		}
 		if next, ok := apply(base.perCallUSD); ok && next != nil {
 			item.PerCallUSD = next
 			internal.PerCallUSD = next
@@ -252,6 +270,12 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 					if tier.OutputPerMillionUSD != nil {
 						base.outputUSD = tier.OutputPerMillionUSD
 					}
+					if tier.CachePerMillionUSD != nil {
+						base.cacheUSD = tier.CachePerMillionUSD
+					}
+					if tier.CreateCachePerMillionUSD != nil {
+						base.cacheWriteUSD = tier.CreateCachePerMillionUSD
+					}
 					return base, ""
 				}
 				if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
@@ -273,6 +297,14 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 				if dreamRouter.CompletionRatio != nil && *dreamRouter.CompletionRatio > 0 {
 					output := input * *dreamRouter.CompletionRatio
 					base.outputUSD = &output
+				}
+				if dreamRouter.CacheRatio != nil && *dreamRouter.CacheRatio > 0 {
+					cache := input * *dreamRouter.CacheRatio
+					base.cacheUSD = &cache
+				}
+				if dreamRouter.CreateCacheRatio != nil && *dreamRouter.CreateCacheRatio > 0 {
+					cacheWrite := input * *dreamRouter.CreateCacheRatio
+					base.cacheWriteUSD = &cacheWrite
 				}
 				return base, ""
 			}

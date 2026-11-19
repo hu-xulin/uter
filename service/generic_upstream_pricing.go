@@ -210,6 +210,10 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.C
 		cache := input * entry.CacheRatio
 		tier.CachePerMillionUSD = &cache
 	}
+	if entry.CreateCacheRatio > 0 {
+		cacheWrite := input * entry.CreateCacheRatio
+		tier.CreateCachePerMillionUSD = &cacheWrite
+	}
 	view.Unit = "per_1m_token"
 	view.Tiers = []model.ChannelPricingTier{tier}
 	if tier.OutputPerMillionUSD == nil {

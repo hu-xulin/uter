@@ -181,3 +181,17 @@ func TestResolveBatchBasePriceSupportsPerImageAsPerCall(t *testing.T) {
 	require.NotNil(t, base.perCallUSD)
 	require.Equal(t, 0.04, *base.perCallUSD)
 }
+
+func TestResolveBatchBasePriceIncludesCacheComponents(t *testing.T) {
+	base, reason := resolveBatchBasePrice(model.ChannelModelPricing{
+		ModelName: "gpt-a",
+		NormalizedPricing: `{"currency":"USD","unit":"per_1m_token","tiers":[
+			{"range_name":"base","input_per_million_usd":2,"output_per_million_usd":4,"cache_per_million_usd":1,"create_cache_per_million_usd":2.5,"unit":"per_1m_token"}
+		]}`,
+	}, BatchPricingBasisOfficial)
+	require.Empty(t, reason)
+	require.NotNil(t, base.cacheUSD)
+	require.Equal(t, 1.0, *base.cacheUSD)
+	require.NotNil(t, base.cacheWriteUSD)
+	require.Equal(t, 2.5, *base.cacheWriteUSD)
+}
