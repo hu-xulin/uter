@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ const channelPricingHistoryLimit = 1000
 
 // ChannelPricingHistoryEntry records one internal sale-price change.
 type ChannelPricingHistoryEntry struct {
+	ID         int64                         `json:"id,omitempty"`
 	ChannelID  int                           `json:"channel_id"`
 	ModelName  string                        `json:"model_name"`
 	Source     string                        `json:"source"`
@@ -21,20 +23,83 @@ type ChannelPricingHistoryEntry struct {
 	ChangedAt  time.Time                     `json:"changed_at"`
 }
 
-type channelPricingHistorySetting struct {
-	Entries []ChannelPricingHistoryEntry `json:"entries"`
-}
-
-// AppendChannelPricingHistory adds one change and keeps a bounded log.
+// AppendChannelPricingHistory writes to the durable table; the option log is a
+// bounded fallback for installations where the table is not available yet.
 func AppendChannelPricingHistory(entry ChannelPricingHistoryEntry) error {
 	if entry.ChannelID <= 0 || strings.TrimSpace(entry.ModelName) == "" {
 		return nil
 	}
 	entry.ChangedAt = time.Now().UTC()
-	setting := channelPricingHistorySetting{}
+	oldJSON, _ := common.Marshal(entry.OldPricing)
+	newJSON, _ := common.Marshal(entry.NewPricing)
+	if err := model.AppendChannelPricingHistory(model.ChannelPricingHistory{
+		ChannelID: entry.ChannelID, ModelName: entry.ModelName, Source: entry.Source,
+		OldPricing: string(oldJSON), NewPricing: string(newJSON),
+		ChangedAt: entry.ChangedAt.Unix(),
+	}); err == nil {
+		return nil
+	} else {
+		common.SysError("append channel pricing history table failed: " + err.Error())
+	}
+	return appendChannelPricingHistoryOption(entry)
+}
+
+// ListChannelPricingHistory returns durable rows first, then falls back to the
+// legacy option log.
+func ListChannelPricingHistory(channelID int) []ChannelPricingHistoryEntry {
+	if channelID <= 0 {
+		return []ChannelPricingHistoryEntry{}
+	}
+	if rows, err := model.ListChannelPricingHistory(channelID, channelPricingHistoryLimit); err == nil {
+		out := make([]ChannelPricingHistoryEntry, 0, len(rows))
+		for _, row := range rows {
+			out = append(out, channelPricingHistoryEntryFromModel(row))
+		}
+		return out
+	}
+	return listChannelPricingHistoryOption(channelID)
+}
+
+// GetChannelPricingHistoryEntry loads one durable row for rollback.
+func GetChannelPricingHistoryEntry(id int64) (*ChannelPricingHistoryEntry, error) {
+	row, err := model.GetChannelPricingHistoryByID(id)
+	if err != nil {
+		return nil, err
+	}
+	entry := channelPricingHistoryEntryFromModel(*row)
+	return &entry, nil
+}
+
+func channelPricingHistoryEntryFromModel(row model.ChannelPricingHistory) ChannelPricingHistoryEntry {
+	entry := ChannelPricingHistoryEntry{
+		ID: row.ID, ChannelID: row.ChannelID, ModelName: row.ModelName,
+		Source: row.Source, ChangedAt: time.Unix(row.ChangedAt, 0).UTC(),
+	}
+	if strings.TrimSpace(row.OldPricing) != "" {
+		var oldPricing model.ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(row.OldPricing, &oldPricing); err == nil {
+			entry.OldPricing = &oldPricing
+		}
+	}
+	if strings.TrimSpace(row.NewPricing) != "" {
+		var newPricing model.ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(row.NewPricing, &newPricing); err == nil {
+			entry.NewPricing = &newPricing
+		}
+	}
+	return entry
+}
+
+type channelPricingHistoryOptionSetting struct {
+	Entries []ChannelPricingHistoryEntry `json:"entries"`
+}
+
+func appendChannelPricingHistoryOption(entry ChannelPricingHistoryEntry) error {
+	setting := channelPricingHistoryOptionSetting{}
 	if raw := strings.TrimSpace(common.OptionMap[ChannelPricingHistoryKey]); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 	}
+	entry.ID = 0
 	setting.Entries = append(setting.Entries, entry)
 	if len(setting.Entries) > channelPricingHistoryLimit {
 		setting.Entries = setting.Entries[len(setting.Entries)-channelPricingHistoryLimit:]
@@ -46,13 +111,12 @@ func AppendChannelPricingHistory(entry ChannelPricingHistoryEntry) error {
 	return model.UpdateOption(ChannelPricingHistoryKey, string(raw))
 }
 
-// ListChannelPricingHistory returns one channel's entries, newest first.
-func ListChannelPricingHistory(channelID int) []ChannelPricingHistoryEntry {
+func listChannelPricingHistoryOption(channelID int) []ChannelPricingHistoryEntry {
 	raw := strings.TrimSpace(common.OptionMap[ChannelPricingHistoryKey])
-	if raw == "" || channelID <= 0 {
+	if raw == "" {
 		return []ChannelPricingHistoryEntry{}
 	}
-	var setting channelPricingHistorySetting
+	var setting channelPricingHistoryOptionSetting
 	if err := common.UnmarshalJsonStr(raw, &setting); err != nil {
 		return []ChannelPricingHistoryEntry{}
 	}
@@ -63,4 +127,9 @@ func ListChannelPricingHistory(channelID int) []ChannelPricingHistoryEntry {
 		}
 	}
 	return out
+}
+
+// ParseHistoryID is a small helper for controller routes.
+func ParseHistoryID(raw string) (int64, error) {
+	return strconv.ParseInt(strings.TrimSpace(raw), 10, 64)
 }

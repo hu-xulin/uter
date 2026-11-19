@@ -390,6 +390,7 @@ func migrateDB() error {
 		&Task{},
 		&TaskPlugin{},
 		&ChannelModelPricing{},
+		&ChannelPricingHistory{},
 		&Model{},
 		&Vendor{},
 		&VendorMergeRule{},
