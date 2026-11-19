@@ -8288,6 +8288,9 @@
     "Markup": "Marge",
     "Fixed multiplier": "Multiplicateur fixe",
     "Fixed amount": "Montant fixe",
-    "No change": "Aucun changement"
+    "No change": "Aucun changement",
+    "Price rolled back": "Prix restauré",
+    "Failed to roll back price": "Échec de la restauration du prix",
+    "Rollback": "Restaurer"
   }
 }

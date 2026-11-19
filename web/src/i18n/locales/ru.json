@@ -8288,6 +8288,9 @@
     "Markup": "Наценка",
     "Fixed multiplier": "Фиксированный множитель",
     "Fixed amount": "Фиксированная сумма",
-    "No change": "Без изменений"
+    "No change": "Без изменений",
+    "Price rolled back": "Цена откатена",
+    "Failed to roll back price": "Не удалось откатить цену",
+    "Rollback": "Откатить"
   }
 }

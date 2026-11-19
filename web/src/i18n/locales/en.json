@@ -8287,6 +8287,9 @@
     "Markup": "Markup",
     "Fixed multiplier": "Fixed multiplier",
     "Fixed amount": "Fixed amount",
-    "No change": "No change"
+    "No change": "No change",
+    "Price rolled back": "Price rolled back",
+    "Failed to roll back price": "Failed to roll back price",
+    "Rollback": "Rollback"
   }
 }

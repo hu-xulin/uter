@@ -8288,6 +8288,9 @@
     "Markup": "値上げ",
     "Fixed multiplier": "固定倍率",
     "Fixed amount": "固定額",
-    "No change": "変更なし"
+    "No change": "変更なし",
+    "Price rolled back": "価格をロールバックしました",
+    "Failed to roll back price": "価格のロールバックに失敗しました",
+    "Rollback": "ロールバック"
   }
 }
