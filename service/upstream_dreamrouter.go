@@ -309,9 +309,6 @@ func dreamRouterChannelInternalPricing(
 		return "", false
 	}
 	now := time.Now().Unix()
-	if line.PerSecond {
-		return "", false
-	}
 	pricing := model.ChannelInternalPricing{
 		Source:             "dreamrouter-discount",
 		DiscountGroup:      group,
@@ -320,6 +317,9 @@ func dreamRouterChannelInternalPricing(
 		UpdatedAt:          now,
 	}
 	switch {
+	case line.PerSecond:
+		pricing.Mode = model.ChannelPricingModePerSecond
+		pricing.PerSecondUSD = line.Input
 	case line.PerCall:
 		pricing.Mode = model.ChannelPricingModePerCall
 		pricing.PerCallUSD = line.Input

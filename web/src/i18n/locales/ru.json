@@ -8374,6 +8374,10 @@
     "No catalog synced yet.": "Каталог ещё не синхронизирован.",
     "Model discovery failed; check Base URL, key and channel type.": "Не удалось обнаружить модели; проверьте Base URL, ключ и тип канала.",
     "Official pricing is unavailable; do not treat it as verified.": "Официальная цена недоступна; не считайте её проверенной.",
-    "Channel pricing failed; existing prices were not changed.": "Не удалось получить цену канала; существующие цены не изменены."
+    "Channel pricing failed; existing prices were not changed.": "Не удалось получить цену канала; существующие цены не изменены.",
+    "Legacy quote migration": "Миграция старых цен",
+    "{{ready}} ready · {{pending}} manual": "{{ready}} готово · {{pending}} вручную",
+    "{{price}} / second": "{{price}} / секунда",
+    "Price per second (USD)": "Цена за секунду (USD)"
   }
 }

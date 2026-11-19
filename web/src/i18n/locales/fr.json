@@ -8374,6 +8374,10 @@
     "No catalog synced yet.": "Aucun catalogue synchronisé pour le moment.",
     "Model discovery failed; check Base URL, key and channel type.": "Échec de la découverte des modèles ; vérifiez l’URL de base, la clé et le type de canal.",
     "Official pricing is unavailable; do not treat it as verified.": "Le prix officiel est indisponible ; ne le considérez pas comme vérifié.",
-    "Channel pricing failed; existing prices were not changed.": "La récupération des prix du canal a échoué ; les prix existants n’ont pas été modifiés."
+    "Channel pricing failed; existing prices were not changed.": "La récupération des prix du canal a échoué ; les prix existants n’ont pas été modifiés.",
+    "Legacy quote migration": "Migration des anciens tarifs",
+    "{{ready}} ready · {{pending}} manual": "{{ready}} prêts · {{pending}} manuels",
+    "{{price}} / second": "{{price}} / seconde",
+    "Price per second (USD)": "Prix par seconde (USD)"
   }
 }

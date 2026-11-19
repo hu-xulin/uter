@@ -25,6 +25,7 @@ const (
 const (
 	ChannelPricingModePerMillionTokens = "per_1m_token"
 	ChannelPricingModePerCall          = "per_call"
+	ChannelPricingModePerSecond        = "per_second"
 )
 
 // ChannelModelPricing is one channel's independent price record for one model.
@@ -96,6 +97,7 @@ type ChannelInternalPricing struct {
 	// global create-cache ratio remains in force.
 	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
 	PerCallUSD               *float64 `json:"per_call_usd,omitempty"`
+	PerSecondUSD             *float64 `json:"per_second_usd,omitempty"`
 	Note                     string   `json:"note,omitempty"`
 	// Source records who last wrote the internal price. Automatic syncs tag
 	// their writes so a later sync may refresh them, while an operator-saved
@@ -117,6 +119,8 @@ type ChannelBillingPricing struct {
 	CreateCacheRatio *float64
 	ModelPrice       float64
 	UsePrice         bool
+	UsePerSecond     bool
+	PerSecondPrice   float64
 	Version          string
 	Source           string
 }
@@ -198,7 +202,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	for _, value := range []*float64{
 		pricing.InputUSDPerMillion, pricing.OutputUSDPerMillion,
 		pricing.CacheUSDPerMillion, pricing.CreateCacheUSDPerMillion,
-		pricing.PerCallUSD,
+		pricing.PerCallUSD, pricing.PerSecondUSD,
 	} {
 		if err := validPricePointer(value); err != nil {
 			return nil, err
@@ -233,6 +237,14 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			return nil, errors.New("per-call price is required")
 		}
 		return &ChannelBillingPricing{UsePrice: true, ModelPrice: *pricing.PerCallUSD}, nil
+	case ChannelPricingModePerSecond:
+		// Per-second prices bill through the task usage expression. A billing
+		// form is still returned so the price can be stored; token/per-call
+		// paths must reject UsePerSecond instead of treating it as free.
+		if pricing.PerSecondUSD == nil || *pricing.PerSecondUSD <= 0 {
+			return nil, errors.New("per-second price is required")
+		}
+		return &ChannelBillingPricing{UsePerSecond: true, PerSecondPrice: *pricing.PerSecondUSD}, nil
 	default:
 		return nil, errors.New("unsupported internal pricing mode")
 	}
@@ -455,12 +467,57 @@ func ResolveEffectiveChannelPricing(channelId int, modelName string) EffectiveCh
 	}
 }
 
+// ResolveChannelUsageDiscount returns the channel-vs-official ratio for task
+// usage billing (per-second, per-image or per-call tasks). Token prices are
+// handled by ResolveChannelBillingPricing and always return 1 here so a task
+// discount is never applied twice.
+func ResolveChannelUsageDiscount(channelId int, modelName string) float64 {
+	if DB == nil || channelId <= 0 || strings.TrimSpace(modelName) == "" {
+		return 1
+	}
+	row, err := GetChannelModelPricing(channelId, modelName)
+	if err != nil || row == nil {
+		return 1
+	}
+	var view ChannelOfficialPricing
+	if err := common.UnmarshalJsonStr(row.NormalizedPricing, &view); err != nil {
+		return 1
+	}
+	if view.ChannelPrice == nil || len(view.Tiers) != 1 {
+		return 1
+	}
+	official := view.Tiers[0]
+	channel := *view.ChannelPrice
+	if official.Unit != channel.Unit || official.PerUnitUSD == nil ||
+		channel.PerUnitUSD == nil || *official.PerUnitUSD <= 0 {
+		return 1
+	}
+	switch official.Unit {
+	case "per_second", "per_image", "per_call", "per_minute":
+	default:
+		return 1
+	}
+	ratio := *channel.PerUnitUSD / *official.PerUnitUSD
+	if math.IsNaN(ratio) || math.IsInf(ratio, 0) || ratio <= 0 || ratio > 100 {
+		common.SysError(fmt.Sprintf(
+			"ignored invalid channel usage discount %.4f for channel %d model %s",
+			ratio, channelId, modelName,
+		))
+		return 1
+	}
+	return ratio
+}
+
 // ResolveChannelBillingPricing returns the configured internal price for the
 // actual channel that will serve the request. Official-only rows are not
 // billable and return ok=false. It delegates to ResolveEffectiveChannelPricing
 // so there is a single decision function.
 func ResolveChannelBillingPricing(channelId int, modelName string) (*ChannelBillingPricing, bool) {
 	effective := ResolveEffectiveChannelPricing(channelId, modelName)
+	if effective.Pricing != nil && effective.Pricing.UsePerSecond {
+		// The token/per-call accessor must not expose a per-second price.
+		return nil, false
+	}
 	return effective.Pricing, effective.Billable
 }
 

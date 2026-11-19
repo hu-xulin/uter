@@ -43,12 +43,13 @@ import type {
 } from '../types'
 
 type EditDraft = {
-  mode: 'per_1m_token' | 'per_call'
+  mode: 'per_1m_token' | 'per_call' | 'per_second'
   input: string
   output: string
   cache: string
   cacheWrite: string
   perCall: string
+  perSecond: string
   note: string
 }
 
@@ -57,15 +58,22 @@ function formatUsd(value: number | undefined): string {
   return `$${value.toFixed(value > 0 && value < 0.01 ? 6 : 4)}`
 }
 
+function modeFromInternal(mode: string | undefined): EditDraft['mode'] {
+  if (mode === 'per_call') return 'per_call'
+  if (mode === 'per_second') return 'per_second'
+  return 'per_1m_token'
+}
+
 function draftFrom(record: ChannelModelPricingRecord): EditDraft {
   const internal = record.internal
   return {
-    mode: internal?.mode ?? 'per_1m_token',
+    mode: modeFromInternal(internal?.mode),
     input: internal?.input_per_million_usd?.toString() ?? '',
     output: internal?.output_per_million_usd?.toString() ?? '',
     cache: internal?.cache_per_million_usd?.toString() ?? '',
     cacheWrite: internal?.create_cache_per_million_usd?.toString() ?? '',
     perCall: internal?.per_call_usd?.toString() ?? '',
+    perSecond: internal?.per_second_usd?.toString() ?? '',
     note: internal?.note ?? '',
   }
 }
@@ -146,6 +154,8 @@ export function ChannelModelPricingSection(
       }
       if (draft.mode === 'per_call') {
         pricing.per_call_usd = parsePrice(draft.perCall)
+      } else if (draft.mode === 'per_second') {
+        pricing.per_second_usd = parsePrice(draft.perSecond)
       } else {
         pricing.input_per_million_usd = parsePrice(draft.input)
         pricing.output_per_million_usd = parsePrice(draft.output)
@@ -176,6 +186,11 @@ export function ChannelModelPricingSection(
 
   const internalPriceLabel = (item: ChannelModelPricingRecord) => {
     if (!item.internal) return t('Not configured')
+    if (item.internal.mode === 'per_second') {
+      return t('{{price}} / second', {
+        price: formatUsd(item.internal.per_second_usd),
+      })
+    }
     if (item.internal.mode === 'per_call') {
       return formatUsd(item.internal.per_call_usd)
     }
@@ -270,18 +285,20 @@ export function ChannelModelPricingSection(
                   ? pricingRuleLabel(item.internal, t)
                   : t('No rule')}
               </span>
-              <Button
-                type='button'
-                size='sm'
-                variant='outline'
-                onClick={() => {
-                  setEditing(item)
-                  setDraft(draftFrom(item))
-                }}
-              >
-                <Pencil className='size-4' aria-hidden='true' />
-                {t('Edit')}
-              </Button>
+              {item.internal?.mode === 'per_second' ? null : (
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  onClick={() => {
+                    setEditing(item)
+                    setDraft(draftFrom(item))
+                  }}
+                >
+                  <Pencil className='size-4' aria-hidden='true' />
+                  {t('Edit')}
+                </Button>
+              )}
             </div>
           )
         })}
@@ -361,7 +378,9 @@ export function ChannelModelPricingSection(
                       ? {
                           ...prev,
                           mode:
-                            value === 'per_call' ? 'per_call' : 'per_1m_token',
+                            value === 'per_call' || value === 'per_second'
+                              ? value
+                              : 'per_1m_token',
                         }
                       : prev
                   )
@@ -375,10 +394,11 @@ export function ChannelModelPricingSection(
                     {t('Per 1M tokens')}
                   </SelectItem>
                   <SelectItem value='per_call'>{t('Per call')}</SelectItem>
+                  <SelectItem value='per_second'>{t('Per second')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            {draft.mode === 'per_call' ? (
+            {draft.mode === 'per_call' && (
               <div className='space-y-1.5'>
                 <Label>{t('Price per call (USD)')}</Label>
                 <Input
@@ -391,7 +411,22 @@ export function ChannelModelPricingSection(
                   }
                 />
               </div>
-            ) : (
+            )}
+            {draft.mode === 'per_second' && (
+              <div className='space-y-1.5'>
+                <Label>{t('Price per second (USD)')}</Label>
+                <Input
+                  inputMode='decimal'
+                  value={draft.perSecond}
+                  onChange={(event) =>
+                    setDraft((prev) =>
+                      prev ? { ...prev, perSecond: event.target.value } : prev
+                    )
+                  }
+                />
+              </div>
+            )}
+            {draft.mode !== 'per_call' && draft.mode !== 'per_second' && (
               <div className='grid gap-3 sm:grid-cols-2'>
                 <div className='space-y-1.5'>
                   <Label>{t('Input / 1M (USD)')}</Label>

@@ -8374,6 +8374,10 @@
     "No catalog synced yet.": "尚未同步目录。",
     "Model discovery failed; check Base URL, key and channel type.": "模型发现失败；请检查 Base URL、密钥和渠道类型。",
     "Official pricing is unavailable; do not treat it as verified.": "官方价格不可用；不要视为已验证。",
-    "Channel pricing failed; existing prices were not changed.": "渠道价格获取失败；现有价格未被修改。"
+    "Channel pricing failed; existing prices were not changed.": "渠道价格获取失败；现有价格未被修改。",
+    "Legacy quote migration": "旧报价迁移",
+    "{{ready}} ready · {{pending}} manual": "{{ready}} 项可迁移 · {{pending}} 项需人工",
+    "{{price}} / second": "{{price}} / 秒",
+    "Price per second (USD)": "每秒价格（美元）"
   }
 }

@@ -1243,3 +1243,23 @@ export async function runChannelSyncDiagnostics(
   )
   return requireServerSuccess(res.data).data as ChannelSyncDiagnostics
 }
+
+export type ChannelPricingMigrationItem = {
+  model_name: string
+  unit?: string
+  channel_price?: number
+  official_price?: number
+  status?: string
+  can_migrate: boolean
+  reason?: string
+}
+
+export async function getChannelPricingMigrationPlan(
+  channelId: number
+): Promise<ChannelPricingMigrationItem[]> {
+  const res = await api.get(`/api/channel/${channelId}/pricing_migration_plan`)
+  return (
+    (requireServerSuccess(res.data).data
+      ?.items as ChannelPricingMigrationItem[]) ?? []
+  )
+}

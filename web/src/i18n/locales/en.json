@@ -8374,6 +8374,10 @@
     "No catalog synced yet.": "No catalog synced yet.",
     "Model discovery failed; check Base URL, key and channel type.": "Model discovery failed; check Base URL, key and channel type.",
     "Official pricing is unavailable; do not treat it as verified.": "Official pricing is unavailable; do not treat it as verified.",
-    "Channel pricing failed; existing prices were not changed.": "Channel pricing failed; existing prices were not changed."
+    "Channel pricing failed; existing prices were not changed.": "Channel pricing failed; existing prices were not changed.",
+    "Legacy quote migration": "Legacy quote migration",
+    "{{ready}} ready · {{pending}} manual": "{{ready}} ready · {{pending}} manual",
+    "{{price}} / second": "{{price}} / second",
+    "Price per second (USD)": "Price per second (USD)"
   }
 }

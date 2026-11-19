@@ -8374,6 +8374,10 @@
     "No catalog synced yet.": "カタログはまだ同期されていません。",
     "Model discovery failed; check Base URL, key and channel type.": "モデル検出に失敗しました。Base URL、キー、チャネル種別を確認してください。",
     "Official pricing is unavailable; do not treat it as verified.": "公式価格を取得できません。検証済みとして扱わないでください。",
-    "Channel pricing failed; existing prices were not changed.": "チャネル価格の取得に失敗しました。既存の価格は変更されていません。"
+    "Channel pricing failed; existing prices were not changed.": "チャネル価格の取得に失敗しました。既存の価格は変更されていません。",
+    "Legacy quote migration": "旧価格の移行",
+    "{{ready}} ready · {{pending}} manual": "{{ready}} 件移行可能 · {{pending}} 件手動",
+    "{{price}} / second": "{{price}} / 秒",
+    "Price per second (USD)": "1秒あたりの価格 (USD)"
   }
 }

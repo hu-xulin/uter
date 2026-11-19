@@ -8374,6 +8374,10 @@
     "No catalog synced yet.": "Chưa đồng bộ danh mục.",
     "Model discovery failed; check Base URL, key and channel type.": "Không phát hiện được mô hình; hãy kiểm tra Base URL, khóa và loại kênh.",
     "Official pricing is unavailable; do not treat it as verified.": "Giá chính thức không khả dụng; đừng coi là đã xác minh.",
-    "Channel pricing failed; existing prices were not changed.": "Lấy giá kênh thất bại; giá hiện có không bị thay đổi."
+    "Channel pricing failed; existing prices were not changed.": "Lấy giá kênh thất bại; giá hiện có không bị thay đổi.",
+    "Legacy quote migration": "Di chuyển giá cũ",
+    "{{ready}} ready · {{pending}} manual": "{{ready}} sẵn sàng · {{pending}} thủ công",
+    "{{price}} / second": "{{price}} / giây",
+    "Price per second (USD)": "Giá mỗi giây (USD)"
   }
 }

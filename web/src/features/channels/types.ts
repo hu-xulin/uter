@@ -309,12 +309,13 @@ export interface ChannelUpstreamQuoteView {
 }
 
 export interface ChannelInternalPricingView {
-  mode: 'per_1m_token' | 'per_call'
+  mode: 'per_1m_token' | 'per_call' | 'per_second'
   input_per_million_usd?: number
   output_per_million_usd?: number
   cache_per_million_usd?: number
   create_cache_per_million_usd?: number
   per_call_usd?: number
+  per_second_usd?: number
   note?: string
   source?: string
   discount_group?: string

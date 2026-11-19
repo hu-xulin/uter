@@ -42,6 +42,7 @@ import {
   approveChannelPricingReviews,
   getChannelPricingAudit,
   getChannelPricingHistory,
+  getChannelPricingMigrationPlan,
   getChannelPricingReviews,
   getChannelPricingSchedule,
   getChannelSyncCapabilities,
@@ -194,6 +195,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const auditQuery = useQuery({
     queryKey: ['channel-pricing-audit', props.channelId],
     queryFn: () => getChannelPricingAudit(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const migrationQuery = useQuery({
+    queryKey: ['channel-pricing-migration', props.channelId],
+    queryFn: () => getChannelPricingMigrationPlan(props.channelId ?? 0),
     enabled: props.channelId != null,
     retry: false,
     meta: { errorToast: false },
@@ -944,6 +952,33 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               ))}
             </div>
           ) : null}
+        </section>
+      ) : null}
+
+      {!disabled && props.channelId != null && migrationQuery.data?.length ? (
+        <section className='space-y-2 rounded-lg border p-3'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <Label>{t('Legacy quote migration')}</Label>
+            <Badge variant='secondary'>
+              {t('{{ready}} ready · {{pending}} manual', {
+                ready: migrationQuery.data.filter((item) => item.can_migrate)
+                  .length,
+                pending: migrationQuery.data.filter((item) => !item.can_migrate)
+                  .length,
+              })}
+            </Badge>
+          </div>
+          <ul className='text-muted-foreground space-y-1 text-sm'>
+            {migrationQuery.data.slice(0, 8).map((item) => (
+              <li key={item.model_name}>
+                <span className='text-foreground font-medium'>
+                  {item.model_name}
+                </span>{' '}
+                · {item.can_migrate ? t('Ready') : t('Manual review')}
+                {item.reason ? ` · ${item.reason}` : ''}
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 

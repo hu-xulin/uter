@@ -148,6 +148,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		}
 	}
 	if hasChannelPricing {
+		if channelPricing.UsePerSecond {
+			return hosttypes.PriceData{}, fmt.Errorf("channel %d model %s uses per-second pricing; only task billing is supported", channelId, billingModelName)
+		}
 		info.ChannelPricingApplied = true
 		info.ChannelPricingModelRatio = channelPricing.ModelRatio
 		info.ChannelPricingCompletionRatio = channelPricing.CompletionRatio
@@ -349,6 +352,9 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		}
 	}
 	if hasChannelPricing {
+		if channelPricing.UsePerSecond {
+			return hosttypes.PriceData{}, fmt.Errorf("channel %d model %s uses per-second pricing; only task billing is supported", channelId, billingModelName)
+		}
 		info.ChannelPricingApplied = true
 		info.ChannelPricingModelRatio = channelPricing.ModelRatio
 		info.ChannelPricingCompletionRatio = channelPricing.CompletionRatio

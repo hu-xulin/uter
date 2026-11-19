@@ -298,3 +298,65 @@ func TestUpsertDerivedPricingPreservesManualOperatorPrice(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, row.InternalPricing, `"input_per_million_usd":9`)
 }
+
+func TestResolveChannelUsageDiscountUsesChannelPrice(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	official := 0.1
+	channel := 0.06
+	view := ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_second",
+		Tiers: []ChannelPricingTier{{
+			RangeName:  "base",
+			Unit:       "per_second",
+			PerUnitUSD: &official,
+		}},
+		ChannelPrice: &ChannelPricingTier{
+			RangeName:  "base",
+			Unit:       "per_second",
+			PerUnitUSD: &channel,
+		},
+		Source: "dreamrouter-official",
+	}
+	normalized, err := common.Marshal(view)
+	require.NoError(t, err)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 8, Provider: "dreamrouter", ModelName: "wan-video",
+		Currency: "USD", NormalizedPricing: string(normalized), Source: "dreamrouter-official",
+	}})
+	require.NoError(t, err)
+
+	require.InDelta(t, 0.6, ResolveChannelUsageDiscount(8, "wan-video"), 0.0001)
+	require.Equal(t, float64(1), ResolveChannelUsageDiscount(8, "unknown-model"))
+
+	// A per-second internal price is stored for display but is not a token
+	// price, so the token relay path must not treat it as billable.
+	seconds := 0.06
+	internal, err := common.Marshal(ChannelInternalPricing{
+		Mode:         ChannelPricingModePerSecond,
+		PerSecondUSD: &seconds,
+		Source:       "dreamrouter-discount",
+	})
+	require.NoError(t, err)
+	var row ChannelModelPricing
+	require.NoError(t, DB.Where("channel_id = ? AND model_name = ?", 8, "wan-video").First(&row).Error)
+	row.InternalPricing = string(internal)
+	row.PricingStatus = ChannelPricingStatusConfigured
+	require.NoError(t, DB.Save(&row).Error)
+	InvalidateChannelPricingCache()
+
+	if _, ok := ResolveChannelBillingPricing(8, "wan-video"); ok {
+		t.Fatal("per-second pricing must not become a token/per-call price")
+	}
+	require.InDelta(t, 0.6, ResolveChannelUsageDiscount(8, "wan-video"), 0.0001)
+}
+
+func TestNormalizeChannelInternalPricingPerSecond(t *testing.T) {
+	price := 0.08
+	normalized, err := NormalizeChannelInternalPricing(&ChannelInternalPricing{
+		Mode: ChannelPricingModePerSecond, PerSecondUSD: &price,
+	})
+	require.NoError(t, err)
+	require.True(t, normalized.UsePerSecond)
+	require.InDelta(t, 0.08, normalized.PerSecondPrice, 1e-9)
+}

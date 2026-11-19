@@ -271,22 +271,11 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 	if pinnedPlugin.Plugin != nil {
 		pluginKey = pinnedPlugin.Plugin.Meta.Key
 	}
-	exprStr, exists := billing_setting.ResolveTaskBillingExpr(pluginKey, modelName, info.UpstreamModelName)
-	useTiered := exists || billing_setting.GetBillingMode(modelName) == billing_setting.BillingModeTieredExpr
-	if useTiered {
+	channelPricing := model.ResolveEffectiveChannelPricing(info.GetChannelID(), modelName)
+	if channelPricing.Billable && channelPricing.Pricing.UsePerSecond {
 		provider, supported := adaptor.(channel.TaskUsageFactsProvider)
-		if billingexpr.UsesFixedPricing(exprStr) {
-			return nil, service.TaskErrorWrapper(fmt.Errorf("fixed pricing is not supported for task usage expressions"), "model_price_error", http.StatusBadRequest)
-		}
-		if !exists || !supported {
-			return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s has no usage expression or meter", modelName), "model_price_error", http.StatusBadRequest)
-		}
-		sharedModel := pinnedPlugin.Generation.SharedModel(modelName) || pinnedPlugin.Generation.SharedModel(info.UpstreamModelName)
-		if sharedModel && pinnedPlugin.Plugin != nil {
-			schema, _ := pinnedPlugin.Plugin.Meta.UsageForModels(info.UpstreamModelName, modelName)
-			if !billing_setting.TaskExprCompatible(exprStr, schema) {
-				return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s pricing is not configured for plugin %s", modelName, pluginKey), "model_price_error", http.StatusBadRequest)
-			}
+		if !supported {
+			return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s does not provide usage facts for per-second pricing", modelName), "model_price_error", http.StatusBadRequest)
 		}
 		var facts map[string]any
 		if validatedProvider, ok := adaptor.(channel.TaskValidatedUsageFactsProvider); ok {
@@ -297,26 +286,81 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		} else {
 			facts = provider.ExtractUsageFacts(c, info)
 		}
-		// 任务表达式只拿到用量事实，但按秒计费的表达式读的是 `duration`
-		// 变量：不把插件汇报的秒数绑定回去，`duration` 恒为 0，表达式永远
-		// 走自己的兜底秒数（wan3.0-video 的 `: 5`），高分辨率长视频会被按
-		// 兜底价少收。见 billingexpr.RequestInputForUsage。
-		cost, trace, runErr := billingexpr.RunExprWithRequest(exprStr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(facts))
-		if runErr != nil || cost < 0 {
-			if runErr == nil {
-				runErr = fmt.Errorf("negative task expression result")
-			}
-			return nil, service.TaskErrorWrapper(runErr, "model_price_error", http.StatusBadRequest)
+		cost, ok := perSecondTaskCost(facts, channelPricing.Pricing.PerSecondPrice)
+		if !ok {
+			return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s has no duration for per-second pricing", modelName), "model_price_error", http.StatusBadRequest)
 		}
+		unitPrice := channelPricing.Pricing.PerSecondPrice
+		info.ChannelPricingApplied = true
+		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
 		noteTaskQuotaClamp(info, clamp)
 		priceData = types.PriceData{Quota: quota, QuotaToPreConsume: quota, GroupRatioInfo: groupRatioInfo}
-		info.TieredBillingSnapshot = &billingexpr.BillingSnapshot{BillingMode: billing_setting.BillingModeTieredExpr, ModelName: modelName, ExprString: exprStr, ExprHash: billingexpr.ExprHashString(exprStr), GroupRatio: groupRatioInfo.GroupRatio, EstimatedQuotaBeforeGroup: cost * common.QuotaPerUnit, EstimatedQuotaAfterGroup: quota, EstimatedTier: trace.MatchedTier, QuotaPerUnit: common.QuotaPerUnit, ExprVersion: billingexpr.ExprVersion(exprStr), TaskUsageBilling: true, UsageFacts: facts}
+		exprStr := "tier(\"base\", duration * " + strconv.FormatFloat(unitPrice, 'f', -1, 64) + ")"
+		info.TieredBillingSnapshot = &billingexpr.BillingSnapshot{
+			BillingMode: billing_setting.BillingModeTieredExpr,
+			ModelName:   modelName, ExprString: exprStr,
+			ExprHash:                  billingexpr.ExprHashString(exprStr),
+			GroupRatio:                groupRatioInfo.GroupRatio,
+			EstimatedQuotaBeforeGroup: cost * common.QuotaPerUnit,
+			EstimatedQuotaAfterGroup:  quota,
+			QuotaPerUnit:              common.QuotaPerUnit,
+			ExprVersion:               billingexpr.ExprVersion(exprStr),
+			TaskUsageBilling:          true,
+			UsageFacts:                facts,
+		}
 	} else {
-		priceData, err = helper.ModelPriceHelperPerCall(c, info)
-		if err != nil {
-			return nil, service.TaskErrorWrapper(err, "model_price_error", http.StatusBadRequest)
+		exprStr, exists := billing_setting.ResolveTaskBillingExpr(pluginKey, modelName, info.UpstreamModelName)
+		useTiered := exists || billing_setting.GetBillingMode(modelName) == billing_setting.BillingModeTieredExpr
+		if useTiered {
+			provider, supported := adaptor.(channel.TaskUsageFactsProvider)
+			if billingexpr.UsesFixedPricing(exprStr) {
+				return nil, service.TaskErrorWrapper(fmt.Errorf("fixed pricing is not supported for task usage expressions"), "model_price_error", http.StatusBadRequest)
+			}
+			if !exists || !supported {
+				return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s has no usage expression or meter", modelName), "model_price_error", http.StatusBadRequest)
+			}
+			sharedModel := pinnedPlugin.Generation.SharedModel(modelName) || pinnedPlugin.Generation.SharedModel(info.UpstreamModelName)
+			if sharedModel && pinnedPlugin.Plugin != nil {
+				schema, _ := pinnedPlugin.Plugin.Meta.UsageForModels(info.UpstreamModelName, modelName)
+				if !billing_setting.TaskExprCompatible(exprStr, schema) {
+					return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s pricing is not configured for plugin %s", modelName, pluginKey), "model_price_error", http.StatusBadRequest)
+				}
+			}
+			var facts map[string]any
+			if validatedProvider, ok := adaptor.(channel.TaskValidatedUsageFactsProvider); ok {
+				facts, err = validatedProvider.ExtractUsageFactsValidated(c, info)
+				if err != nil {
+					return nil, service.TaskErrorWrapperLocal(err, "plugin_usage_invalid", http.StatusBadRequest)
+				}
+			} else {
+				facts = provider.ExtractUsageFacts(c, info)
+			}
+			// 任务表达式只拿到用量事实，但按秒计费的表达式读的是 `duration`
+			// 变量：不把插件汇报的秒数绑定回去，`duration` 恒为 0，表达式永远
+			// 走自己的兜底秒数（wan3.0-video 的 `: 5`），高分辨率长视频会被按
+			// 兜底价少收。见 billingexpr.RequestInputForUsage。
+			cost, trace, runErr := billingexpr.RunExprWithRequest(exprStr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(facts))
+			if runErr != nil || cost < 0 {
+				if runErr == nil {
+					runErr = fmt.Errorf("negative task expression result")
+				}
+				return nil, service.TaskErrorWrapper(runErr, "model_price_error", http.StatusBadRequest)
+			}
+			groupRatioInfo := helper.HandleGroupRatio(c, info)
+			// 渠道价按官方价×上游折扣反推；任务按秒/按张计费走表达式，折扣以倍率
+			// 形式并入有效组倍率，结算快照沿用同一数值，避免预扣与结算口径漂移。
+			effectiveGroupRatio := groupRatioInfo.GroupRatio * model.ResolveChannelUsageDiscount(info.ChannelId, modelName)
+			quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * effectiveGroupRatio)
+			noteTaskQuotaClamp(info, clamp)
+			priceData = types.PriceData{Quota: quota, QuotaToPreConsume: quota, GroupRatioInfo: groupRatioInfo}
+			info.TieredBillingSnapshot = &billingexpr.BillingSnapshot{BillingMode: billing_setting.BillingModeTieredExpr, ModelName: modelName, ExprString: exprStr, ExprHash: billingexpr.ExprHashString(exprStr), GroupRatio: effectiveGroupRatio, EstimatedQuotaBeforeGroup: cost * common.QuotaPerUnit, EstimatedQuotaAfterGroup: quota, EstimatedTier: trace.MatchedTier, QuotaPerUnit: common.QuotaPerUnit, ExprVersion: billingexpr.ExprVersion(exprStr), TaskUsageBilling: true, UsageFacts: facts}
+		} else {
+			priceData, err = helper.ModelPriceHelperPerCall(c, info)
+			if err != nil {
+				return nil, service.TaskErrorWrapper(err, "model_price_error", http.StatusBadRequest)
+			}
 		}
 	}
 	info.PriceData = priceData
@@ -707,4 +751,17 @@ func TaskModel2Dto(task *model.Task) *dto.TaskDto {
 		Username:   task.Username,
 		Data:       task.Data,
 	}
+}
+
+// perSecondTaskCost converts plugin usage facts into a per-second task cost.
+// Missing or non-positive durations are rejected instead of silently charging 0.
+func perSecondTaskCost(facts map[string]any, unitPrice float64) (float64, bool) {
+	if unitPrice <= 0 {
+		return 0, false
+	}
+	input := billingexpr.RequestInputForUsage(facts)
+	if input.Duration == nil || *input.Duration <= 0 {
+		return 0, false
+	}
+	return *input.Duration * unitPrice, true
 }
