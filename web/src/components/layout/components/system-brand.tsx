@@ -24,13 +24,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
-import { BRAND_LOGO_BOX_CLASS } from '@/lib/brand'
+import { BRAND_LOGO_BOX_CLASS, localizedBrandName } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 
 type SystemBrandProps = {
-  defaultName?: string
   /**
    * Visual layout:
    * - 'sidebar': stacked card style (used inside the sidebar header).
@@ -46,12 +44,11 @@ type SystemBrandProps = {
  * - sidebar: stacked card in the sidebar header (display only)
  */
 export function SystemBrand(props: SystemBrandProps) {
-  const { t } = useTranslation()
-  const { status } = useStatus()
+  const { t, i18n } = useTranslation()
   const { logo } = useSystemConfig()
 
   const variant = props.variant ?? 'sidebar'
-  const name = status?.system_name || props.defaultName || 'Uter'
+  const name = localizedBrandName(i18n.language)
 
   if (variant === 'inline') {
     return (
@@ -61,7 +58,7 @@ export function SystemBrand(props: SystemBrandProps) {
         // 品牌名可见，aria-label 只写「返回主页」会与之冲突。
         aria-label={`${name} · ${t('Go to home')}`}
         className={cn(
-          'text-foreground inline-flex h-9 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
+          'text-foreground inline-flex h-10 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
           'hover:bg-accent focus-visible:ring-ring focus-visible:ring-2'
         )}
       >

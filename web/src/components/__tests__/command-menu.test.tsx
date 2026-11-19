@@ -131,3 +131,26 @@ test('pages hidden in the sidebar settings stay out of search', async () => {
   expect(entries).not.toContain('Wallet')
   expect(entries).toContain('Profile')
 })
+
+test('the shortcut badge sits on the vertical center of the search button', async () => {
+  const router = createRouter({
+    routeTree: createRootRoute({
+      component: () => (
+        <SearchProvider>
+          <Search />
+        </SearchProvider>
+      ),
+    }),
+    history: createMemoryHistory(),
+  })
+  await router.load()
+  render(<RouterProvider router={router} />)
+
+  const kbd = screen.getByText('⌘').closest('kbd')
+  expect(kbd).not.toBeNull()
+  // 居中契约：绝对定位 + 上移自身一半，而不是固定 top 偏移。
+  expect(kbd).toHaveClass('top-1/2', '-translate-y-1/2', 'h-5')
+  expect(kbd?.className.split(/\s+/)).not.toContain('top-1')
+  // 右侧内边距与垂直居中留下的 9px 一致，避免徽标贴边。
+  expect(kbd).toHaveClass('end-[9px]', 'px-1')
+})

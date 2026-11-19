@@ -33,7 +33,6 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { SystemUpdateAction } from '@/features/system-update/system-update-action'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useScrolled } from '@/hooks/use-scrolled'
 import { useSystemConfig } from '@/hooks/use-system-config'
@@ -214,14 +213,18 @@ export function PublicHeader(props: PublicHeaderProps) {
       */}
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-marketing-fast',
+          // Match the console header exactly: a fixed 4rem box including the
+          // bottom border. Without the explicit height the border added 1px,
+          // so moving between the public area and the console shifted the
+          // header's bottom edge by one pixel.
+          'fixed inset-x-0 top-0 z-50 h-[var(--app-header-height,4rem)] transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-marketing-fast',
           solidHeader
             ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
             : 'border-b border-transparent bg-transparent'
         )}
       >
-        <div className='mx-auto max-w-7xl px-4 md:px-6'>
-          <nav className='flex h-16 items-center justify-between gap-2 px-2'>
+        <div className='mx-auto h-full max-w-7xl px-4 md:px-6'>
+          <nav className='flex h-full items-center justify-between gap-2 px-2'>
             {/* Logo */}
             <div className='@container/system-brand flex min-w-0 flex-1 items-center gap-1 lg:min-w-36'>
               <Link
@@ -243,7 +246,6 @@ export function PublicHeader(props: PublicHeaderProps) {
                   {loading ? <Skeleton className='h-4 w-16' /> : brandName}
                 </span>
               </Link>
-              <SystemUpdateAction presentation='action' />
             </div>
 
             {/* Desktop nav */}

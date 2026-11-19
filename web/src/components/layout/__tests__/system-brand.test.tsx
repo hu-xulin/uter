@@ -29,7 +29,10 @@ vi.mock('@tanstack/react-router', () => ({
   ),
 }))
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en' },
+  }),
 }))
 vi.mock('@/hooks/use-status', () => ({
   useStatus: () => ({ status: { system_name: 'Uter' } }),
@@ -64,7 +67,7 @@ describe('SystemBrand', () => {
     expect(box?.className).toBe(BRAND_LOGO_BOX_CLASS)
     expect(BRAND_LOGO_BOX_CLASS).toContain('size-(--ds-icon-md)')
     expect(BRAND_LOGO_BOX_CLASS).not.toContain('size-5')
-    expect(screen.getByText('Uter')).toBeInTheDocument()
+    expect(screen.getByText('Uter.ai')).toBeInTheDocument()
   })
 
   test('keeps the sidebar variant on its own 36x36 box', () => {
